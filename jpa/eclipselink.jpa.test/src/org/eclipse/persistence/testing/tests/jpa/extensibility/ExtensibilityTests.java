@@ -546,16 +546,36 @@ public class ExtensibilityTests extends JUnitTestCase {
         String sessionName = originalSession.getName();
         
         // cleanUpProperties will be used to return the factory back to its original state
-        String[] propertyNames = {"javax.persistence.transactionType", "javax.persistence.jtaDataSource", "javax.persistence.nonJtaDataSource"};
-        HashMap cleanUpProperties = new HashMap(propertyNames.length);
-        for (int i=0; i < propertyNames.length; i++) {
-            Object value = originalSession.getProperty(propertyNames[i]);
-            if (value == null) {
-                // that would remove the property
-                value = "";
-            }
-            cleanUpProperties.put(propertyNames[i], value);
+        HashMap cleanUpProperties = new HashMap(4);
+        Object transactionType = originalSession.getProperty(PersistenceUnitProperties.TRANSACTION_TYPE);
+        if (transactionType != null) {
+            // that would remove the property
+            transactionType = "";
         }
+        cleanUpProperties.put(PersistenceUnitProperties.TRANSACTION_TYPE, transactionType);
+        Object jtaDataSource = originalSession.getProperty(PersistenceUnitProperties.JTA_DATASOURCE);
+        if (jtaDataSource != null) {
+            Connector mainConnector = originalSession.getLogin().getConnector(); 
+            if (mainConnector instanceof JNDIConnector) {
+                jtaDataSource = ((JNDIConnector)mainConnector).getName();
+            } else {
+                // that would remove the property
+                jtaDataSource = "";
+            }            
+        }
+        cleanUpProperties.put(PersistenceUnitProperties.JTA_DATASOURCE, jtaDataSource);
+        Object nonJtaDataSource = originalSession.getProperty(PersistenceUnitProperties.NON_JTA_DATASOURCE);
+        if (nonJtaDataSource != null) {
+            Connector readConnector = ((DatabaseLogin)originalSession.getReadConnectionPool().getLogin()).getConnector(); 
+            if (readConnector instanceof JNDIConnector) {
+                nonJtaDataSource = ((JNDIConnector)readConnector).getName();
+            } else {
+                // that would remove the property
+                nonJtaDataSource = "";
+            }            
+        }
+        cleanUpProperties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, nonJtaDataSource);
+        // that would remove the property
         cleanUpProperties.put(PersistenceUnitProperties.METADATA_SOURCE_PROPERTIES_FILE, "");
         
         Map properties = new HashMap();
