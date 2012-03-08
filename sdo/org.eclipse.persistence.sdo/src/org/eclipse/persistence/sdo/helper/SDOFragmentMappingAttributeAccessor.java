@@ -138,7 +138,7 @@ public class SDOFragmentMappingAttributeAccessor extends AttributeAccessor {
     private Object buildFragment(Property property, SDODataObject parentObject, SDODataObject value) {
         //build an XML Fragment from this SDO
         XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
-        XMLMarshaller xmlMarshaller = ((SDOXMLHelper)helperContext.getXMLHelper()).getXmlMarshaller();
+        XMLMarshaller xmlMarshaller = ((SDOXMLHelper)helperContext.getXMLHelper()).getXmlContext().createMarshaller();
         Document doc = xmlPlatform.createDocument();
         XMLRoot root = new XMLRoot();
         root.setObject(value);
