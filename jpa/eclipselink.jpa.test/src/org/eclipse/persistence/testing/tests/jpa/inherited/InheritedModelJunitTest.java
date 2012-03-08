@@ -50,6 +50,7 @@ import junit.framework.*;
 
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.weaving.PersistenceWeaved;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.inherited.Accredidation;
 import org.eclipse.persistence.testing.models.jpa.inherited.Becks;
@@ -68,6 +69,7 @@ import org.eclipse.persistence.testing.models.jpa.inherited.ExpertBeerConsumer;
 import org.eclipse.persistence.testing.models.jpa.inherited.Heineken;
 import org.eclipse.persistence.testing.models.jpa.inherited.InheritedTableManager;
 import org.eclipse.persistence.testing.models.jpa.inherited.Location;
+import org.eclipse.persistence.testing.models.jpa.inherited.NodeImpl;
 import org.eclipse.persistence.testing.models.jpa.inherited.NoiseBylaw;
 import org.eclipse.persistence.testing.models.jpa.inherited.NoviceBeerConsumer;
 import org.eclipse.persistence.testing.models.jpa.inherited.Official;
@@ -149,6 +151,7 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         suite.addTest(new InheritedModelJunitTest("testRelatedBylawWrite"));
         suite.addTest(new InheritedModelJunitTest("testInterfaceBylawWrite"));
         suite.addTest(new InheritedModelJunitTest("testEmbeddableAggregateCollectionAndAggregate"));
+        suite.addTest(new InheritedModelJunitTest("testNodeImplWeaving"));
         
         return suite;
     }
@@ -1820,6 +1823,21 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         
         rollbackTransaction(em);
         
+    }
+    
+    
+    // Bug 370975
+    public void testNodeImplWeaving(){
+        if (isWeavingEnabled()) {
+            Class[] interfaces = NodeImpl.class.getInterfaces();
+            boolean found = false;
+            for (Class c : interfaces){
+                if (c == PersistenceWeaved.class){
+                    found = true;
+                }
+            }
+            assertTrue("NodeImpl was not weaved.", found);
+        }
     }
 
 }
