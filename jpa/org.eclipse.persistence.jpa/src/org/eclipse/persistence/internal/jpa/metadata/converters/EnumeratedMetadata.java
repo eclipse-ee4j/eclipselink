@@ -19,8 +19,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
-import javax.persistence.EnumType;
-
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.EnumTypeConverter;
 
@@ -29,6 +27,8 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
+
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ENUM_ORDINAL;
 
 /**
  * INTERNAL:
@@ -55,7 +55,7 @@ public class EnumeratedMetadata extends MetadataConverter {
      */
     public EnumeratedMetadata() {
         super("<enumerated>");
-        m_enumeratedType = EnumType.ORDINAL.name();
+        m_enumeratedType = JPA_ENUM_ORDINAL;
     }
     
     /**
@@ -116,7 +116,7 @@ public class EnumeratedMetadata extends MetadataConverter {
         }
         boolean isOrdinal = true;
         if (m_enumeratedType != null) {
-            isOrdinal = m_enumeratedType.equals(EnumType.ORDINAL.name());
+            isOrdinal = m_enumeratedType.equals(JPA_ENUM_ORDINAL);
         }
         setConverter(mapping, new EnumTypeConverter(mapping, referenceClass.getName(), isOrdinal), isForMapKey);
     }

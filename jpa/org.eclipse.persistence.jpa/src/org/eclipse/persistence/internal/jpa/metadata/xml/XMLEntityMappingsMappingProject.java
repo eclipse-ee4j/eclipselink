@@ -876,6 +876,17 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         cascadeRefreshMapping.setXPath("orm:cascade-refresh");
         descriptor.addMapping(cascadeRefreshMapping);
         
+        XMLDirectMapping cascadeDetachMapping = new XMLDirectMapping();
+        cascadeDetachMapping.setAttributeName("m_cascadeDetach");
+        cascadeDetachMapping.setGetMethodName("getCascadeDetach");
+        cascadeDetachMapping.setSetMethodName("setCascadeDetach");
+        cascadeDetachMapping.setConverter(new EmptyElementConverter());
+        IsSetNullPolicy cascadeDetachPolicy = new IsSetNullPolicy("isCascadeDetach");
+        cascadeDetachPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);
+        cascadeDetachMapping.setNullPolicy(cascadeDetachPolicy);
+        cascadeDetachMapping.setXPath("orm:cascade-detach");
+        descriptor.addMapping(cascadeDetachMapping);
+        
         return descriptor;
     }
        

@@ -101,8 +101,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.AccessType;
-
 import org.eclipse.persistence.annotations.ExistenceType;
 import org.eclipse.persistence.config.CacheIsolationType;
 import org.eclipse.persistence.descriptors.CMPPolicy;
@@ -144,6 +142,9 @@ import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
 
 import org.eclipse.persistence.mappings.DatabaseMapping;
+
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ACCESS_PROPERTY;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ACCESS_FIELD;
 
 /**
  * INTERNAL:
@@ -394,8 +395,8 @@ public class MetadataDescriptor {
         // Log a warning message if we are overriding a mapping accessor.
         if (m_mappingAccessors.containsKey(accessor.getAttributeName())) {
             MappingAccessor existingAccessor = m_mappingAccessors.get(accessor.getAttributeName());
-            String existingAccessType = existingAccessor.usesPropertyAccess() ? AccessType.PROPERTY.name() : AccessType.FIELD.name();
-            String accessType = accessor.usesPropertyAccess() ? AccessType.PROPERTY.name() : AccessType.FIELD.name();
+            String existingAccessType = existingAccessor.usesPropertyAccess() ? JPA_ACCESS_PROPERTY : JPA_ACCESS_FIELD;
+            String accessType = accessor.usesPropertyAccess() ? JPA_ACCESS_PROPERTY : JPA_ACCESS_FIELD;
             getLogger().logWarningMessage(getLogger().INVERSE_ACCESS_TYPE_MAPPING_OVERRIDE, accessor.getJavaClass().getName(), existingAccessor.getAnnotatedElementName(), existingAccessType, accessor.getAnnotatedElementName(), accessType);
         }
         
@@ -1481,7 +1482,7 @@ public class MetadataDescriptor {
      * modify the behavior of some of our weaving features
      */
     public void setAccessTypeOnClassDescriptor(String accessType){
-        if (accessType.equals(MetadataConstants.PROPERTY)) {
+        if (accessType.equals(JPA_ACCESS_PROPERTY)) {
             m_descriptor.usePropertyAccessForWeaving();
         }
     }
@@ -1809,7 +1810,7 @@ public class MetadataDescriptor {
      * this method and a default access type should have been set. 
      */
     public boolean usesDefaultPropertyAccess() {
-        return m_defaultAccess.equals(MetadataConstants.PROPERTY);
+        return m_defaultAccess.equals(JPA_ACCESS_PROPERTY);
     }
 
     /**

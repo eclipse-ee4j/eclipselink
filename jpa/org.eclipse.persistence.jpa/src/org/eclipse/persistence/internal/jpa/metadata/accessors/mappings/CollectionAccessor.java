@@ -53,21 +53,6 @@ package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.AssociationOverride;
-import javax.persistence.AssociationOverrides;
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
-import javax.persistence.FetchType;
-import javax.persistence.MapKey;
-import javax.persistence.MapKeyClass;
-import javax.persistence.MapKeyColumn;
-import javax.persistence.MapKeyEnumerated;
-import javax.persistence.MapKeyJoinColumn;
-import javax.persistence.MapKeyJoinColumns;
-import javax.persistence.MapKeyTemporal;
-import javax.persistence.OrderBy;
-import javax.persistence.OrderColumn;
-
 import org.eclipse.persistence.annotations.DeleteAll;
 import org.eclipse.persistence.annotations.MapKeyConvert;
 import org.eclipse.persistence.eis.mappings.EISOneToManyMapping;
@@ -97,6 +82,21 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.EmbeddableMapping;
 import org.eclipse.persistence.mappings.ManyToManyMapping;
+
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ATTRIBUTE_OVERRIDE;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ATTRIBUTE_OVERRIDES;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ASSOCIATION_OVERRIDE;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ASSOCIATION_OVERRIDES;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_FETCH_LAZY;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_MAP_KEY;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_MAP_KEY_CLASS;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_MAP_KEY_COLUMN;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_MAP_KEY_ENUMERATED;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_MAP_KEY_JOIN_COLUMN;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_MAP_KEY_JOIN_COLUMNS;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_MAP_KEY_TEMPORAL;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ORDER_BY;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ORDER_COLUMN;
 
 /**
  * INTERNAL:
@@ -151,77 +151,77 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
         setMappedBy((annotation == null) ? "" : (String) annotation.getAttribute("mappedBy"));
         
         // Set the order if one is present.
-        if (isAnnotationPresent(OrderBy.class)) {
-            m_orderBy = new OrderByMetadata(getAnnotation(OrderBy.class), this);
+        if (isAnnotationPresent(JPA_ORDER_BY)) {
+            m_orderBy = new OrderByMetadata(getAnnotation(JPA_ORDER_BY), this);
         }
         
         // Set the map key if one is present.
-        if (isAnnotationPresent(MapKey.class)) {
-            m_mapKey = new MapKeyMetadata(getAnnotation(MapKey.class), this);
+        if (isAnnotationPresent(JPA_MAP_KEY)) {
+            m_mapKey = new MapKeyMetadata(getAnnotation(JPA_MAP_KEY), this);
         }
         
         // Set the map key class if one is defined.
-        if (isAnnotationPresent(MapKeyClass.class)) {
-            m_mapKeyClass = getMetadataClass((String)getAnnotation(MapKeyClass.class).getAttribute("value"));
+        if (isAnnotationPresent(JPA_MAP_KEY_CLASS)) {
+            m_mapKeyClass = getMetadataClass((String)getAnnotation(JPA_MAP_KEY_CLASS).getAttribute("value"));
         }
         
         // Set the map key column if one is defined.
-        if (isAnnotationPresent(MapKeyColumn.class)) {
-            m_mapKeyColumn = new ColumnMetadata(getAnnotation(MapKeyColumn.class), this);
+        if (isAnnotationPresent(JPA_MAP_KEY_COLUMN)) {
+            m_mapKeyColumn = new ColumnMetadata(getAnnotation(JPA_MAP_KEY_COLUMN), this);
         }
         
         // Set the map key join columns if some are present.
         // Process all the map key join columns first.
-        if (isAnnotationPresent(MapKeyJoinColumns.class)) {
-            for (Object jColumn : (Object[]) getAnnotation(MapKeyJoinColumns.class).getAttributeArray("value")) {
+        if (isAnnotationPresent(JPA_MAP_KEY_JOIN_COLUMNS)) {
+            for (Object jColumn : (Object[]) getAnnotation(JPA_MAP_KEY_JOIN_COLUMNS).getAttributeArray("value")) {
                 m_mapKeyJoinColumns.add(new JoinColumnMetadata((MetadataAnnotation)jColumn, this));
             }
         }
         
         // Process the single map key key join column second.
-        if (isAnnotationPresent(MapKeyJoinColumn.class)) {
-            m_mapKeyJoinColumns.add(new JoinColumnMetadata(getAnnotation(MapKeyJoinColumn.class), this));
+        if (isAnnotationPresent(JPA_MAP_KEY_JOIN_COLUMN)) {
+            m_mapKeyJoinColumns.add(new JoinColumnMetadata(getAnnotation(JPA_MAP_KEY_JOIN_COLUMN), this));
         }
         
         // Set the attribute overrides if some are present.
         // Process the attribute overrides first.
-        if (isAnnotationPresent(AttributeOverrides.class)) {
-            for (Object attributeOverride : (Object[]) getAnnotation(AttributeOverrides.class).getAttributeArray("value")) {
+        if (isAnnotationPresent(JPA_ATTRIBUTE_OVERRIDES)) {
+            for (Object attributeOverride : (Object[]) getAnnotation(JPA_ATTRIBUTE_OVERRIDES).getAttributeArray("value")) {
                 addAttributeOverride(new AttributeOverrideMetadata((MetadataAnnotation) attributeOverride, this));
             }
         }
         
         // Process the single attribute override second.  
-        if (isAnnotationPresent(AttributeOverride.class)) {
-            addAttributeOverride(new AttributeOverrideMetadata(getAnnotation(AttributeOverride.class), this));
+        if (isAnnotationPresent(JPA_ATTRIBUTE_OVERRIDE)) {
+            addAttributeOverride(new AttributeOverrideMetadata(getAnnotation(JPA_ATTRIBUTE_OVERRIDE), this));
         }
         
         // Set the association overrides if some are present.
         // Process the attribute overrides first.
-        if (isAnnotationPresent(AssociationOverrides.class)) {
-            for (Object associationOverride : (Object[]) getAnnotation(AssociationOverrides.class).getAttributeArray("value")) {
+        if (isAnnotationPresent(JPA_ASSOCIATION_OVERRIDES)) {
+            for (Object associationOverride : (Object[]) getAnnotation(JPA_ASSOCIATION_OVERRIDES).getAttributeArray("value")) {
                 addAssociationOverride(new AssociationOverrideMetadata((MetadataAnnotation) associationOverride, this));
             }
         }
         
         // Process the single attribute override second.  
-        if (isAnnotationPresent(AssociationOverride.class)) {
-            addAssociationOverride(new AssociationOverrideMetadata(getAnnotation(AssociationOverride.class), this));
+        if (isAnnotationPresent(JPA_ASSOCIATION_OVERRIDE)) {
+            addAssociationOverride(new AssociationOverrideMetadata(getAnnotation(JPA_ASSOCIATION_OVERRIDE), this));
         }
         
         // Set the order column if one is defined.
-        if (isAnnotationPresent(OrderColumn.class)) {
-            m_orderColumn = new OrderColumnMetadata(getAnnotation(OrderColumn.class), this);
+        if (isAnnotationPresent(JPA_ORDER_COLUMN)) {
+            m_orderColumn = new OrderColumnMetadata(getAnnotation(JPA_ORDER_COLUMN), this);
         }
         
         // Set the map key enumerated if one is defined.
-        if (isAnnotationPresent(MapKeyEnumerated.class)) {
-            m_mapKeyEnumerated = new EnumeratedMetadata(getAnnotation(MapKeyEnumerated.class), this);
+        if (isAnnotationPresent(JPA_MAP_KEY_ENUMERATED)) {
+            m_mapKeyEnumerated = new EnumeratedMetadata(getAnnotation(JPA_MAP_KEY_ENUMERATED), this);
         }
         
         // Set the map key temporal if one is defined.
-        if (isAnnotationPresent(MapKeyTemporal.class)) {
-            m_mapKeyTemporal = new TemporalMetadata(getAnnotation(MapKeyTemporal.class), this);
+        if (isAnnotationPresent(JPA_MAP_KEY_TEMPORAL)) {
+            m_mapKeyTemporal = new TemporalMetadata(getAnnotation(JPA_MAP_KEY_TEMPORAL), this);
         }
         
         // Set the convert key if one is defined.
@@ -329,7 +329,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
     protected ColumnMetadata getColumn(String loggingCtx) {
         if (loggingCtx.equals(MetadataLogger.MAP_KEY_COLUMN)) {
             if (m_mapKeyColumn == null) {
-                return new ColumnMetadata(getAnnotation(MapKeyColumn.class), this);
+                return new ColumnMetadata(getAnnotation(JPA_MAP_KEY_COLUMN), this);
             } else {
                 return m_mapKeyColumn;
             }
@@ -343,11 +343,14 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
      * Return the default fetch type for a collection mapping.
      */
     public String getDefaultFetchType() {
-        return FetchType.LAZY.name();
+        return JPA_FETCH_LAZY;
     }
-    
+
+    /**
+     * INTERNAL:
+     */
     public Boolean getDeleteAll() {
-        return this.m_deleteAll;
+        return m_deleteAll;
     }
     
     /**

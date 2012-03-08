@@ -22,14 +22,14 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.columns;
 
-import javax.persistence.DiscriminatorType;
-
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_DISCRIMINATOR_CHAR;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_DISCRIMINATOR_STRING;
 /**
  * INTERNAL:
  * Object to process a JPA discriminator column into an EclipseLink database field.
@@ -124,9 +124,9 @@ public class DiscriminatorColumnMetadata extends MetadataColumn {
         
         field.setLength(MetadataHelper.getValue(m_length, 31));
         
-        if (m_discriminatorType == null || m_discriminatorType.equals(DiscriminatorType.STRING.name())) {
+        if (m_discriminatorType == null || m_discriminatorType.equals(JPA_DISCRIMINATOR_STRING)) {
             field.setType(String.class);
-        } else if (m_discriminatorType.equals(DiscriminatorType.CHAR.name())) {
+        } else if (m_discriminatorType.equals(JPA_DISCRIMINATOR_CHAR)) {
             field.setType(Character.class);
         } else {
             // Through annotation and XML validation, it must be 

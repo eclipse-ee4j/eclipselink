@@ -101,7 +101,6 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.SharedCacheMode;
-import javax.persistence.Embeddable;
 import javax.persistence.spi.PersistenceUnitInfo;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -157,6 +156,8 @@ import org.eclipse.persistence.sequencing.Sequence;
 
 import org.eclipse.persistence.sessions.DatasourceLogin;
 import org.eclipse.persistence.sessions.Project;
+
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_EMBEDDABLE;
 
 /**
  * INTERNAL:
@@ -992,8 +993,8 @@ public class MetadataProject {
             //
             // Callers to this method will have to handle the null case if they
             // so desire.
-            if (cls.isAnnotationPresent(Embeddable.class) || (checkIsIdClass && isIdClass(cls))) {
-                accessor = new EmbeddableAccessor(cls.getAnnotation(Embeddable.class), cls, this);
+            if (cls.isAnnotationPresent(JPA_EMBEDDABLE) || (checkIsIdClass && isIdClass(cls))) {
+                accessor = new EmbeddableAccessor(cls.getAnnotation(JPA_EMBEDDABLE), cls, this);
                 addEmbeddableAccessor(accessor);
             }
        } 

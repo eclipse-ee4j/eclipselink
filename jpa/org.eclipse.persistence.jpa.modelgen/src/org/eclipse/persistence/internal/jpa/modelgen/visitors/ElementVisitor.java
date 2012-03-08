@@ -43,6 +43,9 @@ import org.eclipse.persistence.internal.jpa.modelgen.MetadataMirrorFactory;
 import org.eclipse.persistence.internal.jpa.modelgen.visitors.AnnotationValueVisitor;
 import org.eclipse.persistence.internal.jpa.modelgen.visitors.TypeVisitor;
 
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PERSISTENCE_PACKAGE_PREFIX;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.ECLIPSELINK_PERSISTENCE_PACKAGE_PREFIX;
+
 /**
  * An element visitor. 
  * 
@@ -81,7 +84,7 @@ public class ElementVisitor<R, P> extends AbstractElementVisitor6<MetadataAnnota
             // declaration from CanonicalModelProcessor, but I couldn't find a 
             // way to do this. For now we'll check the strings (similar to what
             // is done with our ASM factory).
-            if (annotation.contains("javax.persistence") || annotation.contains("org.eclipse.persistence.annotations")) {
+            if (annotation.contains(JPA_PERSISTENCE_PACKAGE_PREFIX) || annotation.contains(ECLIPSELINK_PERSISTENCE_PACKAGE_PREFIX)) {
                 annotatedElement.addAnnotation((MetadataAnnotation) visitor.visitAnnotation(annotationMirror, null));
             } 
         }

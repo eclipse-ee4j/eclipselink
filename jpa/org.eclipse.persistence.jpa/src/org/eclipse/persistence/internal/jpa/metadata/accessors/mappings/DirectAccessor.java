@@ -28,12 +28,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.Lob;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-
 import org.eclipse.persistence.annotations.Convert;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
@@ -43,6 +37,11 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 import org.eclipse.persistence.internal.jpa.metadata.converters.LobMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.TemporalMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
+
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ENUMERATED;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_FETCH_LAZY;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_LOB;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_TEMPORAL;
 
 /**
  * A direct accessor.
@@ -85,18 +84,18 @@ public abstract class DirectAccessor extends MappingAccessor {
         super(annotation, accessibleObject, classAccessor);
         
         // Set the lob if one is present.
-        if (isAnnotationPresent(Lob.class)) {
-            m_lob = new LobMetadata(getAnnotation(Lob.class), this);
+        if (isAnnotationPresent(JPA_LOB)) {
+            m_lob = new LobMetadata(getAnnotation(JPA_LOB), this);
         }
         
         // Set the enumerated if one is present.
-        if (isAnnotationPresent(Enumerated.class)) {
-            m_enumerated = new EnumeratedMetadata(getAnnotation(Enumerated.class), this);
+        if (isAnnotationPresent(JPA_ENUMERATED)) {
+            m_enumerated = new EnumeratedMetadata(getAnnotation(JPA_ENUMERATED), this);
         }
         
         // Set the temporal type if one is present.
-        if (isAnnotationPresent(Temporal.class)) {
-            m_temporal = new TemporalMetadata(getAnnotation(Temporal.class), this);
+        if (isAnnotationPresent(JPA_TEMPORAL)) {
+            m_temporal = new TemporalMetadata(getAnnotation(JPA_TEMPORAL), this);
         }
         
         // Set the convert value if one is present.
@@ -175,22 +174,6 @@ public abstract class DirectAccessor extends MappingAccessor {
      */
     public String getFetch() {
         return m_fetch;
-    }
-    
-    /**
-     * INTERNAL:
-     * Return the field classification for the given temporal type.
-     */
-    protected Class getFieldClassification(Enum type) {
-        if (type.name().equals(TemporalType.DATE.name())){
-            return java.sql.Date.class;
-        } else if(type.name().equals(TemporalType.TIME.name())){
-            return java.sql.Time.class;
-        } else if(type.name().equals(TemporalType.TIMESTAMP.name())){
-            return java.sql.Timestamp.class;
-        } else {
-            return null;
-        }
     }
     
     /**
@@ -356,6 +339,6 @@ public abstract class DirectAccessor extends MappingAccessor {
             fetchType = getDefaultFetchType();
         }
         
-        return fetchType.equals(FetchType.LAZY.name());
+        return fetchType.equals(JPA_FETCH_LAZY);
     }
 }

@@ -22,12 +22,16 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.mappings;
 
-import java.util.ArrayList;
-import java.util.List;
-import javax.persistence.CascadeType;
-
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
+import org.eclipse.persistence.mappings.ForeignReferenceMapping;
+
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_CASCADE_ALL;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_CASCADE_DETACH;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_CASCADE_MERGE;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_CASCADE_PERSIST;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_CASCADE_REFRESH;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_CASCADE_REMOVE;
 
 /**
  * INTERNAL:
@@ -51,8 +55,7 @@ public class CascadeMetadata extends ORMetadata {
     private Boolean m_cascadeMerge;
     private Boolean m_cascadeRemove;
     private Boolean m_cascadeRefresh;
-    
-    private List<String> m_types;
+    private Boolean m_cascadeDetach;
     
     /**
      * INTERNAL:
@@ -69,10 +72,20 @@ public class CascadeMetadata extends ORMetadata {
     public CascadeMetadata(Object[] cascadeTypes, MetadataAccessor accessor) {
         super(null, accessor);
         
-        m_types = new ArrayList<String>();
-        
         for (Object cascadeType : cascadeTypes) {
-            m_types.add((String)cascadeType);
+            if (cascadeType.equals(JPA_CASCADE_ALL)) {
+                m_cascadeAll = true;
+            } else if (cascadeType.equals(JPA_CASCADE_PERSIST)) {
+                m_cascadePersist = true;
+            } else if (cascadeType.equals(JPA_CASCADE_MERGE)) {
+                m_cascadeMerge = true;
+            } else if (cascadeType.equals(JPA_CASCADE_REMOVE)) {
+                m_cascadeRemove = true;
+            } else if (cascadeType.equals(JPA_CASCADE_REFRESH)) {
+                m_cascadeRefresh = true; 
+            } else if (cascadeType.equals(JPA_CASCADE_DETACH)) {
+                m_cascadeDetach = true;
+            }
         }
     }
 
@@ -82,25 +95,29 @@ public class CascadeMetadata extends ORMetadata {
     @Override
     public boolean equals(Object objectToCompare) {
         if (objectToCompare instanceof CascadeMetadata) {
-            CascadeMetadata accessMethods = (CascadeMetadata) objectToCompare;
+            CascadeMetadata cascade = (CascadeMetadata) objectToCompare;
             
-            if (! valuesMatch(m_cascadeAll, accessMethods.getCascadeAll())) {
+            if (! valuesMatch(m_cascadeAll, cascade.getCascadeAll())) {
                 return false;
             }
             
-            if (! valuesMatch(m_cascadePersist, accessMethods.getCascadePersist())) {
+            if (! valuesMatch(m_cascadePersist, cascade.getCascadePersist())) {
                 return false;
             }
             
-            if (! valuesMatch(m_cascadeMerge, accessMethods.getCascadeMerge())) {
+            if (! valuesMatch(m_cascadeMerge, cascade.getCascadeMerge())) {
                 return false;
             }
             
-            if (! valuesMatch(m_cascadeRemove, accessMethods.getCascadeRemove())) {
+            if (! valuesMatch(m_cascadeRemove, cascade.getCascadeRemove())) {
                 return false;
             }
             
-            return valuesMatch(m_cascadeRefresh, accessMethods.getCascadeRefresh());
+            if (! valuesMatch(m_cascadeRefresh, cascade.getCascadeRefresh())) {
+                return false;
+            }
+           
+            return valuesMatch(m_cascadeDetach, cascade.getCascadeDetach());
         }
         
         return false;
@@ -112,6 +129,14 @@ public class CascadeMetadata extends ORMetadata {
      */
     public Boolean getCascadeAll() {
         return m_cascadeAll;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public Boolean getCascadeDetach() {
+        return m_cascadeDetach;
     }
 
     /**
@@ -148,41 +173,18 @@ public class CascadeMetadata extends ORMetadata {
     
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
-    public List<String> getTypes() {
-        if (m_types == null) {
-            m_types = new ArrayList<String>();
-        
-            if (isCascadeAll()) {
-                m_types.add(CascadeType.ALL.name());
-            }
-        
-            if (isCascadePersist()) {
-                m_types.add(CascadeType.PERSIST.name());
-            }
-        
-            if (isCascadeMerge()) {
-                m_types.add(CascadeType.MERGE.name());
-            }
-        
-            if (isCascadeRemove()) {
-                m_types.add(CascadeType.REMOVE.name());
-            }
-        
-            if (isCascadeRefresh()) {
-                m_types.add(CascadeType.REFRESH.name());
-            }
-        }
-        
-        return m_types;
+    public boolean isCascadeAll() {
+        return m_cascadeAll != null && m_cascadeAll.booleanValue();
     }
     
     /**
      * INTERNAL:
      * Used for OX mapping.
      */
-    public boolean isCascadeAll() {
-        return m_cascadeAll != null && m_cascadeAll.booleanValue();
+    public boolean isCascadeDetach() {
+        return m_cascadeDetach != null && m_cascadeDetach.booleanValue();
     }
 
     /**
@@ -219,10 +221,48 @@ public class CascadeMetadata extends ORMetadata {
     
     /**
      * INTERNAL:
+     * Process the cascade types for the given mapping.
+     */
+    public void process(ForeignReferenceMapping mapping) {
+        if (isCascadeAll()) {
+            mapping.setCascadeAll(true);
+        } 
+        
+        if (isCascadeDetach()) {
+            mapping.setCascadeDetach(true);
+        }
+        
+        if (isCascadeMerge()) {
+            mapping.setCascadeMerge(true);
+        } 
+            
+        if (isCascadePersist()) {
+            mapping.setCascadePersist(true);
+        } 
+        
+        if (isCascadeRefresh()) {
+            mapping.setCascadeRefresh(true);
+        }
+        
+        if (isCascadeRemove()) {
+            mapping.setCascadeRemove(true);
+        } 
+    }
+    
+    /**
+     * INTERNAL:
      * Used for OX mapping.
      */
     public void setCascadeAll(Boolean cascadeAll) {
         m_cascadeAll = cascadeAll;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setCascadeDetach(Boolean cascadeDetach) {
+        m_cascadeDetach = cascadeDetach;
     }
 
     /**

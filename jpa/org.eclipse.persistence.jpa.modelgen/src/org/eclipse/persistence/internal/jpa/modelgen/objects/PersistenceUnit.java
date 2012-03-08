@@ -28,9 +28,6 @@ import java.util.List;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
-import javax.persistence.Embeddable;
-import javax.persistence.Entity;
-import javax.persistence.MappedSuperclass;
 import javax.tools.Diagnostic.Kind;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
@@ -54,6 +51,10 @@ import org.eclipse.persistence.oxm.XMLContext;
 import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_SUB_PACKAGE;
 import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_PREFIX;
 import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_SUFFIX;
+
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_EMBEDDABLE;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ENTITY;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_MAPPED_SUPERCLASS;
 
 /**
  * A representation of a persistence unit definition. 
@@ -121,12 +122,12 @@ public class PersistenceUnit {
                     removeEmbeddableAccessor(metadataClass);
                 } else {
                     // Otherwise, override the existing accessor!
-                    addEmbeddableAccessor(new EmbeddableAccessor(metadataClass.getAnnotation(Embeddable.class), metadataClass, project));
+                    addEmbeddableAccessor(new EmbeddableAccessor(metadataClass.getAnnotation(JPA_EMBEDDABLE), metadataClass, project));
                 }
             }
         } else if (! excludeUnlistedClasses(metadataClass)) {
             // add it!
-            addEmbeddableAccessor(new EmbeddableAccessor(metadataClass.getAnnotation(Embeddable.class), metadataClass, project));
+            addEmbeddableAccessor(new EmbeddableAccessor(metadataClass.getAnnotation(JPA_EMBEDDABLE), metadataClass, project));
         }
     }
     
@@ -184,12 +185,12 @@ public class PersistenceUnit {
                     removeEntityAccessor(metadataClass);
                 } else {
                     // Otherwise, override the existing accessor!
-                    project.addEntityAccessor(new EntityAccessor(metadataClass.getAnnotation(Entity.class), metadataClass, project));
+                    project.addEntityAccessor(new EntityAccessor(metadataClass.getAnnotation(JPA_ENTITY), metadataClass, project));
                 }
             }
         } else if (! excludeUnlistedClasses(metadataClass)) {
             // add it!
-            project.addEntityAccessor(new EntityAccessor(metadataClass.getAnnotation(Entity.class), metadataClass, project));
+            project.addEntityAccessor(new EntityAccessor(metadataClass.getAnnotation(JPA_ENTITY), metadataClass, project));
         }
     }
     
@@ -223,12 +224,12 @@ public class PersistenceUnit {
                     project.removeMappedSuperclassAccessor(metadataClass);
                 } else {
                     // Otherwise, override the existing accessor!
-                    project.addMappedSuperclass(new MappedSuperclassAccessor(metadataClass.getAnnotation(MappedSuperclass.class), metadataClass, project));
+                    project.addMappedSuperclass(new MappedSuperclassAccessor(metadataClass.getAnnotation(JPA_MAPPED_SUPERCLASS), metadataClass, project));
                 }
             }
         } else if (! excludeUnlistedClasses(metadataClass)) {
             // add it!
-            project.addMappedSuperclass(new MappedSuperclassAccessor(metadataClass.getAnnotation(MappedSuperclass.class), metadataClass, project));
+            project.addMappedSuperclass(new MappedSuperclassAccessor(metadataClass.getAnnotation(JPA_MAPPED_SUPERCLASS), metadataClass, project));
         }
     }
     
@@ -289,15 +290,15 @@ public class PersistenceUnit {
      */
     public boolean containsClass(MetadataClass metadataClass) {
         if (project.hasEntity(metadataClass)) {
-            return isValidAccessor(project.getEntityAccessor(metadataClass), metadataClass.getAnnotation(javax.persistence.Entity.class));
+            return isValidAccessor(project.getEntityAccessor(metadataClass), metadataClass.getAnnotation(JPA_ENTITY));
         }
         
         if (project.hasEmbeddable(metadataClass)) {
-            return isValidAccessor(project.getEmbeddableAccessor(metadataClass), metadataClass.getAnnotation(javax.persistence.Embeddable.class));
+            return isValidAccessor(project.getEmbeddableAccessor(metadataClass), metadataClass.getAnnotation(JPA_EMBEDDABLE));
         }
         
         if (project.hasMappedSuperclass(metadataClass)) {
-            return isValidAccessor(project.getMappedSuperclassAccessor(metadataClass), metadataClass.getAnnotation(javax.persistence.MappedSuperclass.class));
+            return isValidAccessor(project.getMappedSuperclassAccessor(metadataClass), metadataClass.getAnnotation(JPA_MAPPED_SUPERCLASS));
         }
         
         return false;

@@ -35,8 +35,6 @@
  ******************************************************************************/ 
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
-import javax.persistence.FetchType;
-
 import org.eclipse.persistence.annotations.BatchFetch;
 import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.eclipse.persistence.annotations.JoinFetch;
@@ -58,6 +56,8 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectCollectionMapping;
 import org.eclipse.persistence.mappings.DirectMapMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractCompositeDirectCollectionMapping;
+
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_FETCH_LAZY;
 
 /**
  * An abstract direct collection accessor.
@@ -215,7 +215,7 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
      */
     @Override
     public String getDefaultFetchType() {
-        return FetchType.LAZY.name(); 
+        return JPA_FETCH_LAZY; 
     }
     
     /**

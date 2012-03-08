@@ -30,19 +30,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.persistence.PostLoad;
-import javax.persistence.PostPersist;
-import javax.persistence.PostRemove;
-import javax.persistence.PostUpdate;
-import javax.persistence.PrePersist;
-import javax.persistence.PreRemove;
-import javax.persistence.PreUpdate;
-
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataConstants;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
+
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ACCESS_PROPERTY;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_POST_LOAD;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_POST_PERSIST;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_POST_REMOVE;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_POST_UPDATE;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PRE_PERSIST;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PRE_REMOVE;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PRE_UPDATE;
 
 /**
  * INTERNAL:
@@ -194,13 +194,13 @@ public class MetadataMethod extends MetadataAnnotatedElement {
      * an associated set method.
      */
     public boolean isALifeCycleCallbackMethod() {
-        return isAnnotationPresent(PostLoad.class) ||
-               isAnnotationPresent(PostPersist.class) ||
-               isAnnotationPresent(PostRemove.class) ||
-               isAnnotationPresent(PostUpdate.class) ||
-               isAnnotationPresent(PrePersist.class) ||
-               isAnnotationPresent(PreRemove.class) ||
-               isAnnotationPresent(PreUpdate.class);
+        return isAnnotationPresent(JPA_POST_LOAD) ||
+               isAnnotationPresent(JPA_POST_PERSIST) ||
+               isAnnotationPresent(JPA_POST_REMOVE) ||
+               isAnnotationPresent(JPA_POST_UPDATE) ||
+               isAnnotationPresent(JPA_PRE_PERSIST) ||
+               isAnnotationPresent(JPA_PRE_REMOVE) ||
+               isAnnotationPresent(JPA_PRE_UPDATE);
     }
     
     /**
@@ -222,7 +222,7 @@ public class MetadataMethod extends MetadataAnnotatedElement {
      * setting to be processed. Otherwise, it is ignored.
      */
     public boolean isValidPersistenceMethod(boolean mustBeExplicit, ClassAccessor classAccessor) {
-        if (isValidPersistenceElement(mustBeExplicit, MetadataConstants.PROPERTY, classAccessor)) {
+        if (isValidPersistenceElement(mustBeExplicit, JPA_ACCESS_PROPERTY, classAccessor)) {
             return ! isALifeCycleCallbackMethod() && isValidPersistenceMethod(classAccessor, hasDeclaredAnnotations(classAccessor));
         }
         

@@ -35,11 +35,6 @@ package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.AssociationOverride;
-import javax.persistence.AssociationOverrides;
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
-
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
@@ -54,6 +49,11 @@ import org.eclipse.persistence.mappings.AggregateMapping;
 import org.eclipse.persistence.mappings.AggregateObjectMapping;
 import org.eclipse.persistence.mappings.EmbeddableMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractCompositeObjectMapping;
+
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ATTRIBUTE_OVERRIDE;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ATTRIBUTE_OVERRIDES;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ASSOCIATION_OVERRIDE;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ASSOCIATION_OVERRIDES;
 
 /**
  * An embedded relationship accessor. It may define all the same attributes
@@ -100,28 +100,28 @@ public class EmbeddedAccessor extends MappingAccessor {
         
         // Set the attribute overrides if some are present.
         // Process the attribute overrides first.
-        if (isAnnotationPresent(AttributeOverrides.class)) {
-            for (Object attributeOverride : (Object[]) getAnnotation(AttributeOverrides.class).getAttributeArray("value")) {
+        if (isAnnotationPresent(JPA_ATTRIBUTE_OVERRIDES)) {
+            for (Object attributeOverride : (Object[]) getAnnotation(JPA_ATTRIBUTE_OVERRIDES).getAttributeArray("value")) {
                 m_attributeOverrides.add(new AttributeOverrideMetadata((MetadataAnnotation) attributeOverride, this));
             }
         }
         
         // Process the single attribute override second.  
-        if (isAnnotationPresent(AttributeOverride.class)) {
-            m_attributeOverrides.add(new AttributeOverrideMetadata(getAnnotation(AttributeOverride.class), this));
+        if (isAnnotationPresent(JPA_ATTRIBUTE_OVERRIDE)) {
+            m_attributeOverrides.add(new AttributeOverrideMetadata(getAnnotation(JPA_ATTRIBUTE_OVERRIDE), this));
         }
         
         // Set the association overrides if some are present.
         // Process the attribute overrides first.
-        if (isAnnotationPresent(AssociationOverrides.class)) {
-            for (Object associationOverride : (Object[]) getAnnotation(AssociationOverrides.class).getAttributeArray("value")) {
+        if (isAnnotationPresent(JPA_ASSOCIATION_OVERRIDES)) {
+            for (Object associationOverride : (Object[]) getAnnotation(JPA_ASSOCIATION_OVERRIDES).getAttributeArray("value")) {
                 m_associationOverrides.add(new AssociationOverrideMetadata((MetadataAnnotation) associationOverride, this));
             }
         }
         
         // Process the single attribute override second.
-        if (isAnnotationPresent(AssociationOverride.class)) {
-            m_associationOverrides.add(new AssociationOverrideMetadata(getAnnotation(AssociationOverride.class), this));
+        if (isAnnotationPresent(JPA_ASSOCIATION_OVERRIDE)) {
+            m_associationOverrides.add(new AssociationOverrideMetadata(getAnnotation(JPA_ASSOCIATION_OVERRIDE), this));
         }
     }
     

@@ -70,28 +70,10 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-
-import javax.persistence.AssociationOverride;
-import javax.persistence.AssociationOverrides;
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
-import javax.persistence.Basic;
-import javax.persistence.ElementCollection;
-import javax.persistence.Embedded;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Transient;
-import javax.persistence.Version;
 
 import org.eclipse.persistence.annotations.Array;
 import org.eclipse.persistence.annotations.BasicCollection;
@@ -159,7 +141,6 @@ import org.eclipse.persistence.internal.jpa.metadata.structures.StructMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.structures.StructureAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
-import org.eclipse.persistence.internal.jpa.metadata.MetadataConstants;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
@@ -170,6 +151,26 @@ import org.eclipse.persistence.platform.database.oracle.annotations.PLSQLRecord;
 import org.eclipse.persistence.platform.database.oracle.annotations.PLSQLRecords;
 import org.eclipse.persistence.platform.database.oracle.annotations.PLSQLTable;
 import org.eclipse.persistence.platform.database.oracle.annotations.PLSQLTables;
+
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.EL_ACCESS_VIRTUAL;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ACCESS_FIELD;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ACCESS_PROPERTY;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ASSOCIATION_OVERRIDE;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ASSOCIATION_OVERRIDES;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ATTRIBUTE_OVERRIDE;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ATTRIBUTE_OVERRIDES;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_BASIC;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ELEMENT_COLLECTION;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_EMBEDDED;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_EMBEDDED_ID;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ID;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_MANY_TO_MANY;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_MANY_TO_ONE;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_MAPPED_SUPERCLASS;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ONE_TO_MANY;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ONE_TO_ONE;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_VERSION;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_TRANSIENT;
 
 /**
  * INTERNAL:
@@ -403,7 +404,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
      */
     protected void addAccessorFields(boolean processingInverse) {
         for (MetadataField metadataField : getJavaClass().getFields().values()) {
-            if (metadataField.isAnnotationPresent(Transient.class, this) || metadataField.shouldBeIgnored()) {
+            if (metadataField.isAnnotationPresent(JPA_TRANSIENT, this) || metadataField.shouldBeIgnored()) {
                 if (! metadataField.areAnnotationsCompatibleWithTransient(this)) {
                     throw ValidationException.mappingAnnotationsAppliedToTransientAttribute(metadataField);
                 }
@@ -439,7 +440,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
      */
     protected void addAccessorMethods(boolean processingInverse) {
         for (MetadataMethod metadataMethod : getJavaClass().getMethods().values()) {
-            if ( metadataMethod.isAnnotationPresent(Transient.class, this)) {    
+            if ( metadataMethod.isAnnotationPresent(JPA_TRANSIENT, this)) {
                 if (!metadataMethod.areAnnotationsCompatibleWithTransient(this)) {
                     throw ValidationException.mappingAnnotationsAppliedToTransientAttribute(metadataMethod);
                 }
@@ -504,12 +505,12 @@ public abstract class ClassAccessor extends MetadataAccessor {
             // model and any and all mapped superclasses should have been 
             // discovered and we need not investigate this class further.
             if (addMappedSuperclassAccessors) {
-                if (metadataClass.isAnnotationPresent(MappedSuperclass.class)) {
-                    m_mappedSuperclasses.add(new MappedSuperclassAccessor(metadataClass.getAnnotation(MappedSuperclass.class), metadataClass, getDescriptor()));
+                if (metadataClass.isAnnotationPresent(JPA_MAPPED_SUPERCLASS)) {
+                    m_mappedSuperclasses.add(new MappedSuperclassAccessor(metadataClass.getAnnotation(JPA_MAPPED_SUPERCLASS), metadataClass, getDescriptor()));
                     
                     // 266912: process and store mappedSuperclass descriptors on 
                     // the project for later use by the Metamodel API.
-                    getProject().addMetamodelMappedSuperclass(new MappedSuperclassAccessor(metadataClass.getAnnotation(MappedSuperclass.class), metadataClass, getProject()), getDescriptor());
+                    getProject().addMetamodelMappedSuperclass(new MappedSuperclassAccessor(metadataClass.getAnnotation(JPA_MAPPED_SUPERCLASS), metadataClass, getProject()), getDescriptor());
                 }
             }
         } else {
@@ -550,33 +551,33 @@ public abstract class ClassAccessor extends MetadataAccessor {
         } else if (accessibleObject.isArray(this)) {
             return new ArrayAccessor(accessibleObject.getAnnotation(Array.class), accessibleObject, this);
         } else if (accessibleObject.isElementCollection(this)) {
-            return new ElementCollectionAccessor(accessibleObject.getAnnotation(ElementCollection.class), accessibleObject, this);
+            return new ElementCollectionAccessor(accessibleObject.getAnnotation(JPA_ELEMENT_COLLECTION), accessibleObject, this);
         } else if (accessibleObject.isVersion(this)) {
-            return new VersionAccessor(accessibleObject.getAnnotation(Version.class), accessibleObject, this);
+            return new VersionAccessor(accessibleObject.getAnnotation(JPA_VERSION), accessibleObject, this);
         } else if (accessibleObject.isId(this) && ! accessibleObject.isDerivedId(this)) {
-            return new IdAccessor(accessibleObject.getAnnotation(Id.class), accessibleObject, this);
+            return new IdAccessor(accessibleObject.getAnnotation(JPA_ID), accessibleObject, this);
         } else if (accessibleObject.isDerivedIdClass(this)) {
             return new DerivedIdClassAccessor(accessibleObject, this);
         } else if (accessibleObject.isBasic(this)) {
-            return new BasicAccessor(accessibleObject.getAnnotation(Basic.class), accessibleObject, this);
+            return new BasicAccessor(accessibleObject.getAnnotation(JPA_BASIC), accessibleObject, this);
         } else if (accessibleObject.isStructure(this)) {
             return new StructureAccessor(accessibleObject.getAnnotation(Structure.class), accessibleObject, this);
         } else if (accessibleObject.isEmbedded(this)) {
-            return new EmbeddedAccessor(accessibleObject.getAnnotation(Embedded.class), accessibleObject, this);
+            return new EmbeddedAccessor(accessibleObject.getAnnotation(JPA_EMBEDDED), accessibleObject, this);
         } else if (accessibleObject.isEmbeddedId(this)) {
-            return new EmbeddedIdAccessor(accessibleObject.getAnnotation(EmbeddedId.class), accessibleObject, this);
+            return new EmbeddedIdAccessor(accessibleObject.getAnnotation(JPA_EMBEDDED_ID), accessibleObject, this);
         } else if (accessibleObject.isTransformation(this)) { 
             return new TransformationAccessor(accessibleObject.getAnnotation(Transformation.class), accessibleObject, this);
         } else if (accessibleObject.isManyToMany(this)) {
-            return new ManyToManyAccessor(accessibleObject.getAnnotation(ManyToMany.class), accessibleObject, this);
+            return new ManyToManyAccessor(accessibleObject.getAnnotation(JPA_MANY_TO_MANY), accessibleObject, this);
         } else if (accessibleObject.isManyToOne(this)) {
-            return new ManyToOneAccessor(accessibleObject.getAnnotation(ManyToOne.class), accessibleObject, this);
+            return new ManyToOneAccessor(accessibleObject.getAnnotation(JPA_MANY_TO_ONE), accessibleObject, this);
         } else if (accessibleObject.isOneToMany(this)) {
             // A OneToMany can default and doesn't require an annotation to be present.
-            return new OneToManyAccessor(accessibleObject.getAnnotation(OneToMany.class), accessibleObject, this);
+            return new OneToManyAccessor(accessibleObject.getAnnotation(JPA_ONE_TO_MANY), accessibleObject, this);
         } else if (accessibleObject.isOneToOne(this)) {
             // A OneToOne can default and doesn't require an annotation to be present.
-            return new OneToOneAccessor(accessibleObject.getAnnotation(OneToOne.class), accessibleObject, this);
+            return new OneToOneAccessor(accessibleObject.getAnnotation(JPA_ONE_TO_ONE), accessibleObject, this);
         } else if (accessibleObject.isVariableOneToOne(this)) {
             // A VariableOneToOne can default and doesn't require an annotation to be present.
             return new VariableOneToOneAccessor(accessibleObject.getAnnotation(VariableOneToOne.class), accessibleObject, this);
@@ -584,7 +585,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
             return null;
         } else {
             // Default case (everything else falls into a Basic)
-            return new BasicAccessor(accessibleObject.getAnnotation(Basic.class), accessibleObject, this);
+            return new BasicAccessor(accessibleObject.getAnnotation(JPA_BASIC), accessibleObject, this);
         }
     }
     
@@ -1071,7 +1072,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
      * flag.
      */
     @Override
-    public boolean isAnnotationPresent(Class<? extends Annotation> annotation) {
+    public boolean isAnnotationPresent(String annotation) {
         return getAccessibleObject().isAnnotationPresent(annotation, this);
     }
     
@@ -1273,7 +1274,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
         
         // Process the association override annotations.
         // Look for an @AssociationOverrides.
-        MetadataAnnotation associationOverrides = getAnnotation(AssociationOverrides.class);
+        MetadataAnnotation associationOverrides = getAnnotation(JPA_ASSOCIATION_OVERRIDES);
         if (associationOverrides != null) {
             for (Object associationOverride : (Object[]) associationOverrides.getAttributeArray("value")) {
                 processAssociationOverride(new AssociationOverrideMetadata((MetadataAnnotation) associationOverride, this));
@@ -1281,7 +1282,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
         }
         
         // Look for an @AssociationOverride.
-        MetadataAnnotation associationOverride = getAnnotation(AssociationOverride.class);
+        MetadataAnnotation associationOverride = getAnnotation(JPA_ASSOCIATION_OVERRIDE);
         if (associationOverride != null) {
             processAssociationOverride(new AssociationOverrideMetadata(associationOverride, this));
         }
@@ -1318,7 +1319,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
         
         // Process the attribute override annotations.
         // Look for an @AttributeOverrides.
-        MetadataAnnotation attributeOverrides = getAnnotation(AttributeOverrides.class);    
+        MetadataAnnotation attributeOverrides = getAnnotation(JPA_ATTRIBUTE_OVERRIDES);
         if (attributeOverrides != null) {
             for (Object attributeOverride : (Object[]) attributeOverrides.getAttribute("value")){ 
                 processAttributeOverride(new AttributeOverrideMetadata((MetadataAnnotation)attributeOverride, this));
@@ -1326,7 +1327,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
         }
         
         // Look for an @AttributeOverride.
-        MetadataAnnotation attributeOverride = getAnnotation(AttributeOverride.class);
+        MetadataAnnotation attributeOverride = getAnnotation(JPA_ATTRIBUTE_OVERRIDE);
         if (attributeOverride != null) {
             processAttributeOverride(new AttributeOverrideMetadata(attributeOverride, this));
         }
@@ -1807,7 +1808,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
      * processing a mapped superclass.
      */
     public boolean usesFieldAccess() {
-        return getAccessType().equals(MetadataConstants.FIELD);
+        return getAccessType().equals(JPA_ACCESS_FIELD);
     }
     
     /**
@@ -1818,7 +1819,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
      * processing a mapped superclass.
      */
     public boolean usesPropertyAccess() {
-        return getAccessType().equals(MetadataConstants.PROPERTY);
+        return getAccessType().equals(JPA_ACCESS_PROPERTY);
     }
     
     /**
@@ -1829,7 +1830,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
      * processing a mapped superclass.
      */
     public boolean usesVirtualAccess() {
-        return getAccessType().equals(MetadataConstants.VIRTUAL);
+        return getAccessType().equals(EL_ACCESS_VIRTUAL);
     }
 
     public List<PLSQLRecordMetadata> getPLSQLRecords() {

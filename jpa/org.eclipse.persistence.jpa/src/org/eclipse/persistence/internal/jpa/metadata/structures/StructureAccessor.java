@@ -12,8 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.structures;
 
-import javax.persistence.Column;
-
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
@@ -25,6 +23,8 @@ import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
 import org.eclipse.persistence.mappings.structures.StructureMapping;
+
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_COLUMN;
 
 /**
  * Defines a StructureMapping metadata.
@@ -53,7 +53,7 @@ public class StructureAccessor extends MappingAccessor {
         super(embedded, accessibleObject, classAccessor);
         
         // Set the column metadata if one if present.
-        m_column = new ColumnMetadata(getAnnotation(Column.class), this);
+        m_column = new ColumnMetadata(getAnnotation(JPA_COLUMN), this);
     }
     
     /**

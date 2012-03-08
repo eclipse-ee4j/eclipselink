@@ -33,14 +33,6 @@ import java.security.PrivilegedActionException;
 
 import java.util.HashSet;
 
-import javax.persistence.PostLoad;
-import javax.persistence.PostPersist;
-import javax.persistence.PostRemove;
-import javax.persistence.PostUpdate;
-import javax.persistence.PrePersist;
-import javax.persistence.PreRemove;
-import javax.persistence.PreUpdate;
-
 import org.eclipse.persistence.descriptors.DescriptorEventListener;
 
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -61,6 +53,14 @@ import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredMethods;
 import org.eclipse.persistence.internal.security.PrivilegedGetMethods;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
+
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_POST_LOAD;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_POST_PERSIST;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_POST_REMOVE;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_POST_UPDATE;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PRE_PERSIST;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PRE_REMOVE;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PRE_UPDATE;
 
 /**
  * A MetadataEntityListener and is placed on the owning entity's descriptor. 
@@ -460,31 +460,31 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
             MetadataMethod metadataMethod = getMetadataClass(method.getDeclaringClass().getName(), false).getMethod(method.getName(), method.getParameterTypes());
             // Metadata method can be null when dealing with jdk methods: equals, notify, toString, wait etc.. 
             if (metadataMethod != null) {
-                if (metadataMethod.isAnnotationPresent(PostLoad.class, classAccessor) && m_postLoad == null) {
+                if (metadataMethod.isAnnotationPresent(JPA_POST_LOAD, classAccessor) && m_postLoad == null) {
                     setPostLoad(method);
                 }
                 
-                if (metadataMethod.isAnnotationPresent(PostPersist.class, classAccessor) && m_postPersist == null) {
+                if (metadataMethod.isAnnotationPresent(JPA_POST_PERSIST, classAccessor) && m_postPersist == null) {
                     setPostPersist(method);
                 }
                 
-                if (metadataMethod.isAnnotationPresent(PostRemove.class, classAccessor) && m_postRemove == null) {
+                if (metadataMethod.isAnnotationPresent(JPA_POST_REMOVE, classAccessor) && m_postRemove == null) {
                     setPostRemove(method);
                 }
                 
-                if (metadataMethod.isAnnotationPresent(PostUpdate.class, classAccessor) && m_postUpdate == null) {
+                if (metadataMethod.isAnnotationPresent(JPA_POST_UPDATE, classAccessor) && m_postUpdate == null) {
                     setPostUpdate(method);
                 }
                 
-                if (metadataMethod.isAnnotationPresent(PrePersist.class, classAccessor) && m_prePersist == null) {
+                if (metadataMethod.isAnnotationPresent(JPA_PRE_PERSIST, classAccessor) && m_prePersist == null) {
                     setPrePersist(method);
                 }
                 
-                if (metadataMethod.isAnnotationPresent(PreRemove.class, classAccessor) && m_preRemove == null) {
+                if (metadataMethod.isAnnotationPresent(JPA_PRE_REMOVE, classAccessor) && m_preRemove == null) {
                     setPreRemove(method);
                 }
                 
-                if (metadataMethod.isAnnotationPresent(PreUpdate.class, classAccessor) && m_preUpdate == null) {
+                if (metadataMethod.isAnnotationPresent(JPA_PRE_UPDATE, classAccessor) && m_preUpdate == null) {
                     setPreUpdate(method);
                 }
             }

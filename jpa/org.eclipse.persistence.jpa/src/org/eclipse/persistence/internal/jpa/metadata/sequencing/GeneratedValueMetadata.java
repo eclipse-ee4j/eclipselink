@@ -22,8 +22,6 @@ package org.eclipse.persistence.internal.jpa.metadata.sequencing;
 
 import java.util.Map;
 
-import javax.persistence.GenerationType;
-
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
@@ -31,6 +29,11 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.sequencing.Sequence;
 import org.eclipse.persistence.sessions.DatasourceLogin;
+
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_GENERATION_AUTO;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_GENERATION_IDENTITY;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_GENERATION_SEQUENCE;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_GENERATION_TABLE;
 
 /**
  * Metadata object to hold generated value information.
@@ -115,25 +118,25 @@ public class GeneratedValueMetadata extends ORMetadata {
             
         if (sequence == null) {
             // A null strategy will default to AUTO.
-            if (m_strategy == null || m_strategy.equals(GenerationType.AUTO.name())) {
+            if (m_strategy == null || m_strategy.equals(JPA_GENERATION_AUTO)) {
                 if (sequences.containsKey(MetadataProject.DEFAULT_AUTO_GENERATOR)) {
                     login.setDefaultSequence(sequences.get(MetadataProject.DEFAULT_AUTO_GENERATOR));
                 }
-            } else if (m_strategy.equals(GenerationType.TABLE.name())) {
+            } else if (m_strategy.equals(JPA_GENERATION_TABLE)) {
                 if (m_generator.equals("")) {
                     sequence = sequences.get(MetadataProject.DEFAULT_TABLE_GENERATOR);
                 } else {
                     sequence = (Sequence) sequences.get(MetadataProject.DEFAULT_TABLE_GENERATOR).clone();
                     sequence.setName(m_generator);
                 }
-            } else if (m_strategy.equals(GenerationType.SEQUENCE.name())) {
+            } else if (m_strategy.equals(JPA_GENERATION_SEQUENCE)) {
                 if (m_generator.equals("")) {
                     sequence = sequences.get(MetadataProject.DEFAULT_SEQUENCE_GENERATOR);
                 } else {
                     sequence = (Sequence) sequences.get(MetadataProject.DEFAULT_SEQUENCE_GENERATOR).clone();
                     sequence.setName(m_generator);
                 }
-            } else if (m_strategy.equals(GenerationType.IDENTITY.name())) {
+            } else if (m_strategy.equals(JPA_GENERATION_IDENTITY)) {
                 if (m_generator.equals("")) {
                     sequence = sequences.get(MetadataProject.DEFAULT_IDENTITY_GENERATOR);
                 } else {

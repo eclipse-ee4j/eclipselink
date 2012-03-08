@@ -56,6 +56,10 @@ import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.jpa.Archive;
 import org.eclipse.persistence.jpa.ArchiveFactory;
 
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_EMBEDDABLE;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ENTITY;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_STATIC_METAMODEL;
+
 /**
  * INTERNAL:
  * Utility Class that deals with persistence archives for EJB 3.0
@@ -444,14 +448,14 @@ public class PersistenceUnitProcessor {
      * Return if a given class is annotated with @Embeddable.
      */
     public static MetadataAnnotation getEmbeddableAnnotation(MetadataClass candidateClass){
-        return candidateClass.getAnnotation(javax.persistence.Embeddable.class);
+        return candidateClass.getAnnotation(JPA_EMBEDDABLE);
     }
     
     /**
      * Return if a given class is annotated with @Entity.
      */
     public static MetadataAnnotation getEntityAnnotation(MetadataClass candidateClass){
-        return candidateClass.getAnnotation(javax.persistence.Entity.class);
+        return candidateClass.getAnnotation(JPA_ENTITY);
     }
     
     /**
@@ -468,28 +472,28 @@ public class PersistenceUnitProcessor {
      * Return the @StaticMetamodel annotation on the given class.
      */
     public static MetadataAnnotation getStaticMetamodelAnnotation(MetadataClass candidateClass){
-        return candidateClass.getAnnotation(javax.persistence.metamodel.StaticMetamodel.class);
+        return candidateClass.getAnnotation(JPA_STATIC_METAMODEL);
     }
     
     /**
      * Return if a given class is annotated with @Embeddable.
      */
     public static boolean isEmbeddable(MetadataClass candidateClass) {
-        return candidateClass.isAnnotationPresent(javax.persistence.Embeddable.class);
+        return candidateClass.isAnnotationPresent(JPA_EMBEDDABLE);
     }
     
     /**
      * Return if a given class is annotated with @Entity.
      */
     public static boolean isEntity(MetadataClass candidateClass){
-        return candidateClass.isAnnotationPresent(javax.persistence.Entity.class);
+        return candidateClass.isAnnotationPresent(JPA_ENTITY);
     }
     
     /**
      * Return if a given class is annotated with @StaticMetamodel.
      */
     public static boolean isStaticMetamodelClass(MetadataClass candidateClass) {
-        return candidateClass.isAnnotationPresent(javax.persistence.metamodel.StaticMetamodel.class);
+        return candidateClass.isAnnotationPresent(JPA_STATIC_METAMODEL);
     }
     
     /**

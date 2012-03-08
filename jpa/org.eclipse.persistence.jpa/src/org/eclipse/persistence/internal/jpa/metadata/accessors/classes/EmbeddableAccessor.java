@@ -63,12 +63,14 @@ import java.util.Map;
 
 import org.eclipse.persistence.annotations.Cache;
 import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataConstants;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
+
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ACCESS_FIELD;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ACCESS_PROPERTY;
 
 /**
  * INTERNAL:
@@ -412,13 +414,13 @@ public class EmbeddableAccessor extends ClassAccessor {
                 // We don't have an owning entity (only possible during
                 // canonical model generation) so look at the mapped 
                 // superclasses. Ultimate default will be FIELD.
-                String defaultAccessType = MetadataConstants.FIELD;
+                String defaultAccessType = JPA_ACCESS_FIELD;
                 for (MappedSuperclassAccessor mappedSuperclass : getMappedSuperclasses()) {
                     if (! mappedSuperclass.hasAccess()) {
                         if (mappedSuperclass.hasObjectRelationalFieldMappingAnnotationsDefined()) {
-                            defaultAccessType = MetadataConstants.FIELD;
+                            defaultAccessType = JPA_ACCESS_FIELD;
                         } else if (mappedSuperclass.hasObjectRelationalMethodMappingAnnotationsDefined()) {
-                            defaultAccessType = MetadataConstants.PROPERTY;
+                            defaultAccessType = JPA_ACCESS_PROPERTY;
                         }
                             
                         break;

@@ -74,15 +74,11 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
-import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import javax.persistence.Column;
-import javax.persistence.FetchType;
 
 import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.annotations.Convert;
@@ -99,7 +95,6 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.indirection.TransparentIndirectionPolicy;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataConstants;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
@@ -140,6 +135,12 @@ import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.mappings.foundation.MapComponentMapping;
 import org.eclipse.persistence.mappings.foundation.MapKeyMapping;
+
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.EL_ACCESS_VIRTUAL;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ACCESS_FIELD;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ACCESS_PROPERTY;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_COLUMN;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_FETCH_EAGER;
 
 /**
  * INTERNAL:
@@ -503,7 +504,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * INTERNAL:
      */
     protected String getDefaultFetchType() {
-        return FetchType.EAGER.name(); 
+        return JPA_FETCH_EAGER; 
     }
     
     /**
@@ -910,7 +911,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * Method to check if an annotated element has a Column annotation.
      */
     protected boolean hasColumn() {
-        return isAnnotationPresent(Column.class);
+        return isAnnotationPresent(JPA_COLUMN);
     }
     
     /**
@@ -1014,7 +1015,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * flag.
      */
     @Override
-    public boolean isAnnotationPresent(Class<? extends Annotation> annotation) {
+    public boolean isAnnotationPresent(String annotation) {
         return getAccessibleObject().isAnnotationPresent(annotation, getClassAccessor());
     }
     
@@ -2009,7 +2010,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      */
     public boolean usesPropertyAccess() {
         if (hasAccess()) {
-            return getAccess().equals(MetadataConstants.PROPERTY);
+            return getAccess().equals(JPA_ACCESS_PROPERTY);
         } else {
             return hasAccessMethods() ? !usesVirtualAccess() : m_classAccessor.usesPropertyAccess();
         }
@@ -2023,7 +2024,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      */
     public boolean usesVirtualAccess() {
         if (hasAccess()) {
-            return getAccess().equals(MetadataConstants.VIRTUAL);
+            return getAccess().equals(EL_ACCESS_VIRTUAL);
         } else {
             return m_classAccessor.usesVirtualAccess();
         }
@@ -2037,7 +2038,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
      */
     public boolean usesFieldAccess() {
         if (hasAccess()) {
-            return getAccess().equals(MetadataConstants.FIELD);
+            return getAccess().equals(JPA_ACCESS_FIELD);
         } else {
             return m_classAccessor.usesFieldAccess();
         }

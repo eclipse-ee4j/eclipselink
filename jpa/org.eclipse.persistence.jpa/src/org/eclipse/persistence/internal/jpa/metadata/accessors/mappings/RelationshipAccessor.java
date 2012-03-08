@@ -52,12 +52,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
-import javax.persistence.FetchType;
-import javax.persistence.CascadeType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinColumns;
-import javax.persistence.JoinTable;
-
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.RelationTableMechanism;
@@ -89,6 +83,11 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotatedElement;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
+
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_FETCH_LAZY;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_JOIN_COLUMN;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_JOIN_COLUMNS;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_JOIN_TABLE;
 
 /**
  * INTERNAL:
@@ -160,15 +159,15 @@ public abstract class RelationshipAccessor extends MappingAccessor {
         
         // Set the join columns if some are present. 
         // Process all the join columns first.
-        if (isAnnotationPresent(JoinColumns.class)) {
-            for (Object joinColumn : (Object[]) getAnnotation(JoinColumns.class).getAttributeArray("value")) {
+        if (isAnnotationPresent(JPA_JOIN_COLUMNS)) {
+            for (Object joinColumn : (Object[]) getAnnotation(JPA_JOIN_COLUMNS).getAttributeArray("value")) {
                 m_joinColumns.add(new JoinColumnMetadata((MetadataAnnotation)joinColumn, this));
             }
         }
         
         // Process the single key join column second.
-        if (isAnnotationPresent(JoinColumn.class)) {
-            m_joinColumns.add(new JoinColumnMetadata(getAnnotation(JoinColumn.class), this));
+        if (isAnnotationPresent(JPA_JOIN_COLUMN)) {
+            m_joinColumns.add(new JoinColumnMetadata(getAnnotation(JPA_JOIN_COLUMN), this));
         }
         
         // Set the join fields if some are present.
@@ -184,8 +183,8 @@ public abstract class RelationshipAccessor extends MappingAccessor {
         }
         
         // Set the join table if one is present.
-        if (isAnnotationPresent(JoinTable.class)) {
-            m_joinTable = new JoinTableMetadata(getAnnotation(JoinTable.class), this);
+        if (isAnnotationPresent(JPA_JOIN_TABLE)) {
+            m_joinTable = new JoinTableMetadata(getAnnotation(JPA_JOIN_TABLE), this);
         }
         
         // Set the private owned if one is present.
@@ -338,6 +337,7 @@ public abstract class RelationshipAccessor extends MappingAccessor {
     /**
      * INTERNAL:
      */
+    @Override
     public abstract String getDefaultFetchType();
     
     /**
@@ -606,7 +606,7 @@ public abstract class RelationshipAccessor extends MappingAccessor {
             fetchType = getDefaultFetchType();
         }
         
-        return fetchType.equals(FetchType.LAZY.name());
+        return fetchType.equals(JPA_FETCH_LAZY);
     }
   
     /**
@@ -667,14 +667,12 @@ public abstract class RelationshipAccessor extends MappingAccessor {
      */
     protected void processCascadeTypes(ForeignReferenceMapping mapping) {
         if (m_cascade != null) {
-            for (String cascadeType : m_cascade.getTypes()) {
-                setCascadeType(cascadeType, mapping);
-            }
+            m_cascade.process(mapping);
         }
         
         // Apply the persistence unit default cascade-persist if necessary.
         if (getDescriptor().isCascadePersist() && ! mapping.isCascadePersist()) {
-            setCascadeType(CascadeType.PERSIST.name(), mapping);
+            mapping.setCascadePersist(true);
         }
     }
     
@@ -831,26 +829,6 @@ public abstract class RelationshipAccessor extends MappingAccessor {
      */
     public void setBatchFetchSize(Integer batchFetchSize) {
         m_batchFetchSize = batchFetchSize;
-    }
-    
-    /**
-     * INTERNAL:
-     * Set the cascade type on a mapping.
-     */
-    protected void setCascadeType(String type, ForeignReferenceMapping mapping) {
-        if (type.equals(CascadeType.ALL.name())) {
-            mapping.setCascadeAll(true);
-        } else if(type.equals(CascadeType.MERGE.name())) {
-            mapping.setCascadeMerge(true);
-        } else if(type.equals(CascadeType.PERSIST.name())) {
-            mapping.setCascadePersist(true);
-        } else if(type.equals(CascadeType.REFRESH.name())) {
-            mapping.setCascadeRefresh(true);
-        } else if(type.equals(CascadeType.REMOVE.name())) {
-            mapping.setCascadeRemove(true);
-        } else if (type.equals(CascadeType.DETACH.name())) {
-            mapping.setCascadeDetach(true);
-        }
     }
     
     /**

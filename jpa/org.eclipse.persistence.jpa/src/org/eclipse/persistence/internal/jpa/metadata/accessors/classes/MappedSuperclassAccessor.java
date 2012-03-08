@@ -77,22 +77,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.Cacheable;
-import javax.persistence.EntityListeners;
-import javax.persistence.ExcludeDefaultListeners;
-import javax.persistence.ExcludeSuperclassListeners;
-import javax.persistence.IdClass;
-import javax.persistence.NamedNativeQueries;
-import javax.persistence.NamedNativeQuery;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.SqlResultSetMapping;
-import javax.persistence.SqlResultSetMappings;
-import javax.persistence.TableGenerator;
-import javax.persistence.NamedStoredProcedureQuery;
-import javax.persistence.NamedStoredProcedureQueries;
-
 import org.eclipse.persistence.annotations.AdditionalCriteria;
 import org.eclipse.persistence.annotations.Cache;
 import org.eclipse.persistence.annotations.CacheIndex;
@@ -124,7 +108,6 @@ import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListenerMet
 import org.eclipse.persistence.internal.jpa.metadata.locking.OptimisticLockingMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.multitenant.MultitenantMetadata;
 
-import org.eclipse.persistence.internal.jpa.metadata.MetadataConstants;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
@@ -150,6 +133,24 @@ import org.eclipse.persistence.platform.database.oracle.annotations.NamedPLSQLSt
 import org.eclipse.persistence.platform.database.oracle.annotations.NamedPLSQLStoredProcedureQueries;
 import org.eclipse.persistence.platform.database.oracle.annotations.NamedPLSQLStoredProcedureQuery;
 import org.eclipse.persistence.queries.FetchGroupTracker;
+
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ACCESS_FIELD;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ACCESS_PROPERTY;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_CACHEABLE;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_EXCLUDE_DEFAULT_LISTENERS;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_EXCLUDE_SUPERCLASS_LISTENERS;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ENTITY_LISTENERS;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ID_CLASS;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_NAMED_NATIVE_QUERIES;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_NAMED_NATIVE_QUERY;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_NAMED_QUERIES;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_NAMED_QUERY;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_NAMED_STORED_PROCEDURE_QUERIES;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_NAMED_STORED_PROCEDURE_QUERY;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_SEQUENCE_GENERATOR;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_SQL_RESULT_SET_MAPPING;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_SQL_RESULT_SET_MAPPINGS;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_TABLE_GENERATOR;
 
 /**
  * INTERNAL:
@@ -584,13 +585,13 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     protected void initIdClass() {
         if (m_idClass == null || m_idClass.equals(void.class)) {
             // Check for an IdClass annotation.
-            if (isAnnotationPresent(IdClass.class)) {
-                m_idClass = getMetadataClass((String)getAnnotation(IdClass.class).getAttribute("value"));
+            if (isAnnotationPresent(JPA_ID_CLASS)) {
+                m_idClass = getMetadataClass((String) getAnnotation(JPA_ID_CLASS).getAttribute("value"));
             }
         } else {
             // We have an XML specification. Log a message if an annotation has also been defined.
-            if (isAnnotationPresent(IdClass.class)) {
-                getLogger().logConfigMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, getAnnotation(IdClass.class), getJavaClassName(), getLocation());
+            if (isAnnotationPresent(JPA_ID_CLASS)) {
+                getLogger().logConfigMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, getAnnotation(JPA_ID_CLASS), getJavaClassName(), getLocation());
             }
         }
         
@@ -844,9 +845,9 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         // without an explicit access type. Check where the annotations are
         // defined on this entity class.
         if (hasObjectRelationalFieldMappingAnnotationsDefined()) {
-            defaultAccessType = MetadataConstants.FIELD;
+            defaultAccessType = JPA_ACCESS_FIELD;
         } else if (hasObjectRelationalMethodMappingAnnotationsDefined()) {
-            defaultAccessType = MetadataConstants.PROPERTY;
+            defaultAccessType = JPA_ACCESS_PROPERTY;
         } else {
             // 2 - If there are no annotations defined on either the
             // fields or properties, check for an xml default from
@@ -855,7 +856,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
                 defaultAccessType = getDescriptor().getDefaultAccess();
             } else {
                 // 3 - We've exhausted our search, set the access type to FIELD.
-                defaultAccessType = MetadataConstants.FIELD;
+                defaultAccessType = JPA_ACCESS_FIELD;
             }
         }
         
@@ -898,7 +899,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
      * turn is called on the mapped-superclasses of that entity.
      */
     protected void processCacheable() {
-        if (m_cacheable != null || isAnnotationPresent(Cacheable.class)) {
+        if (m_cacheable != null || isAnnotationPresent(JPA_CACHEABLE)) {
             if (getDescriptor().hasCacheable()) {
                 // Ignore cacheable on mapped superclass if cacheable is already 
                 // defined on the entity.
@@ -906,7 +907,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
             } else {
                 // Set the cacheable setting on the descriptor.
                 if (m_cacheable == null) {
-                    m_cacheable = (Boolean) getAnnotation(Cacheable.class).getAttributeBooleanDefaultTrue("value");
+                    m_cacheable = (Boolean) getAnnotation(JPA_CACHEABLE).getAttributeBooleanDefaultTrue("value");
                 } 
                 
                 getDescriptor().setCacheable(m_cacheable);
@@ -1022,7 +1023,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     public void processEntityListeners(ClassLoader loader) {
         if (m_entityListeners.isEmpty()) {
             // Look for an annotation.
-            MetadataAnnotation entityListeners = getAnnotation(EntityListeners.class);
+            MetadataAnnotation entityListeners = getAnnotation(JPA_ENTITY_LISTENERS);
             
             if (entityListeners != null) {
                 for (Object entityListenerClass : (Object[]) entityListeners.getAttribute("value")) {
@@ -1048,7 +1049,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         } else {
             // Don't overrite a true flag that could be set from a subclass
             // that already excluded them.
-            if (isAnnotationPresent(ExcludeDefaultListeners.class)) {
+            if (isAnnotationPresent(JPA_EXCLUDE_DEFAULT_LISTENERS)) {
                 getDescriptor().setExcludeDefaultListeners(true);
             } 
         }
@@ -1065,7 +1066,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         } else {
             // Don't overrite a true flag that could be set from a subclass
             // that already excluded them.
-            if (isAnnotationPresent(ExcludeSuperclassListeners.class)) {
+            if (isAnnotationPresent(JPA_EXCLUDE_SUPERCLASS_LISTENERS)) {
                 getDescriptor().setExcludeSuperclassListeners(true);
             } 
         }
@@ -1237,7 +1238,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         
         // Process the named native query annotations.
         // Look for a @NamedNativeQueries.
-        MetadataAnnotation namedNativeQueries = getAnnotation(NamedNativeQueries.class);
+        MetadataAnnotation namedNativeQueries = getAnnotation(JPA_NAMED_NATIVE_QUERIES);
         if (namedNativeQueries != null) {
             for (Object namedNativeQuery : (Object[]) namedNativeQueries.getAttribute("value")) { 
                 getProject().addQuery(new NamedNativeQueryMetadata((MetadataAnnotation) namedNativeQuery, this));
@@ -1245,7 +1246,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         }
         
         // Look for a @NamedNativeQuery.
-        MetadataAnnotation namedNativeQuery = getAnnotation(NamedNativeQuery.class);
+        MetadataAnnotation namedNativeQuery = getAnnotation(JPA_NAMED_NATIVE_QUERY);
         if (namedNativeQuery != null) {
             getProject().addQuery(new NamedNativeQueryMetadata(namedNativeQuery, this));
         }
@@ -1318,7 +1319,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         
         // Process the named query annotations.
         // Look for a @NamedQueries.
-        MetadataAnnotation namedQueries = getAnnotation(NamedQueries.class);
+        MetadataAnnotation namedQueries = getAnnotation(JPA_NAMED_QUERIES);
         if (namedQueries != null) {
             for (Object namedQuery : (Object[]) namedQueries.getAttributeArray("value")) { 
                 getProject().addQuery(new NamedQueryMetadata((MetadataAnnotation) namedQuery, this));
@@ -1326,7 +1327,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         }
         
         // Look for a @NamedQuery.
-        MetadataAnnotation namedQuery = getAnnotation(NamedQuery.class);
+        MetadataAnnotation namedQuery = getAnnotation(JPA_NAMED_QUERY);
         if (namedQuery != null) {
             getProject().addQuery(new NamedQueryMetadata(namedQuery, this));
         }
@@ -1372,7 +1373,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         
         // Process the JPA named stored procedure query annotations.
         // Look for a JPA @NamedStoredProcedureQueries.
-        MetadataAnnotation jpaNamedStoredProcedureQueries = getAnnotation(NamedStoredProcedureQueries.class);
+        MetadataAnnotation jpaNamedStoredProcedureQueries = getAnnotation(JPA_NAMED_STORED_PROCEDURE_QUERIES);
         if (jpaNamedStoredProcedureQueries != null) {
             for (Object jpaNamedStoredProcedureQuery : (Object[]) jpaNamedStoredProcedureQueries.getAttribute("value")) { 
                 getProject().addQuery(new NamedStoredProcedureQueryMetadata((MetadataAnnotation) jpaNamedStoredProcedureQuery, this));
@@ -1380,7 +1381,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         }
         
         // Look for a JPA @NamedStoredProcedureQuery.
-        MetadataAnnotation jpaNamedStoredProcedureQuery = getAnnotation(NamedStoredProcedureQuery.class);
+        MetadataAnnotation jpaNamedStoredProcedureQuery = getAnnotation(JPA_NAMED_STORED_PROCEDURE_QUERY);
         if (jpaNamedStoredProcedureQuery != null) {
             getProject().addQuery(new NamedStoredProcedureQueryMetadata(jpaNamedStoredProcedureQuery, this));
         }
@@ -1498,9 +1499,9 @@ public class MappedSuperclassAccessor extends ClassAccessor {
             getProject().addSequenceGenerator(m_sequenceGenerator, getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema());
         }
         
-        if (isAnnotationPresent(SequenceGenerator.class)) {
+        if (isAnnotationPresent(JPA_SEQUENCE_GENERATOR)) {
             // Ask the common processor to process what we found.
-            getProject().addSequenceGenerator(new SequenceGeneratorMetadata(getAnnotation(SequenceGenerator.class), this), getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema());
+            getProject().addSequenceGenerator(new SequenceGeneratorMetadata(getAnnotation(JPA_SEQUENCE_GENERATOR), this), getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema());
         }
     }
     
@@ -1517,7 +1518,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
         
         // Process the sql result set mapping query annotations.
         // Look for a @SqlResultSetMappings.
-        MetadataAnnotation sqlResultSetMappings = getAnnotation(SqlResultSetMappings.class);
+        MetadataAnnotation sqlResultSetMappings = getAnnotation(JPA_SQL_RESULT_SET_MAPPINGS);
 
         if (sqlResultSetMappings != null) {
             for (Object sqlResultSetMapping : (Object[]) sqlResultSetMappings.getAttribute("value")) {
@@ -1525,7 +1526,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
             }
         } else {
             // Look for a @SqlResultSetMapping.
-            MetadataAnnotation sqlResultSetMapping = getAnnotation(SqlResultSetMapping.class);
+            MetadataAnnotation sqlResultSetMapping = getAnnotation(JPA_SQL_RESULT_SET_MAPPING);
             
             if (sqlResultSetMapping != null) {
                 getProject().addSQLResultSetMapping(new SQLResultSetMappingMetadata(sqlResultSetMapping, this));
@@ -1544,8 +1545,8 @@ public class MappedSuperclassAccessor extends ClassAccessor {
             getProject().addTableGenerator(m_tableGenerator, getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema());
         }
         
-        if (isAnnotationPresent(TableGenerator.class)) {
-            getProject().addTableGenerator(new TableGeneratorMetadata(getAnnotation(TableGenerator.class), this), getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema());
+        if (isAnnotationPresent(JPA_TABLE_GENERATOR)) {
+            getProject().addTableGenerator(new TableGeneratorMetadata(getAnnotation(JPA_TABLE_GENERATOR), this), getDescriptor().getDefaultCatalog(), getDescriptor().getDefaultSchema());
         }
     }
     

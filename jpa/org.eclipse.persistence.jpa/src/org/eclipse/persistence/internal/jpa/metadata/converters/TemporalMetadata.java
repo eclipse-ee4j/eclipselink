@@ -19,8 +19,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
-import javax.persistence.TemporalType;
-
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.TypeConversionConverter;
 
@@ -29,6 +27,9 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
+
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_TEMPORAL_DATE;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_TEMPORAL_TIME;
 
 /**
  * INTERNAL:
@@ -106,9 +107,9 @@ public class TemporalMetadata extends MetadataConverter {
     public void process(DatabaseMapping mapping, MappingAccessor accessor, MetadataClass referenceClass, boolean isForMapKey) {
         if (isValidTemporalType(referenceClass)) {
             // Set a TypeConversionConverter on the mapping.
-            if (m_temporalType.equals(TemporalType.DATE.name())) {
+            if (m_temporalType.equals(JPA_TEMPORAL_DATE)) {
                 setFieldClassification(mapping, java.sql.Date.class, isForMapKey);
-            } else if(m_temporalType.equals(TemporalType.TIME.name())) {
+            } else if(m_temporalType.equals(JPA_TEMPORAL_TIME)) {
                 setFieldClassification(mapping,java.sql.Time.class, isForMapKey);
             } else {
                 // Through annotation and XML validation, it must be 

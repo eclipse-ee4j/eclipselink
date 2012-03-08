@@ -12,9 +12,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.structures;
 
-import javax.persistence.Column;
-import javax.persistence.FetchType;
-
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
@@ -29,6 +26,9 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 import org.eclipse.persistence.mappings.structures.ArrayMapping;
 import org.eclipse.persistence.mappings.structures.ObjectArrayMapping;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
+
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_COLUMN;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_FETCH_EAGER;
 
 /**
  * An array accessor.
@@ -61,8 +61,8 @@ public class ArrayAccessor extends DirectAccessor {
         m_databaseType = (String) array.getAttribute("databaseType");
                 
         // Set the column if one if defined.
-        if (isAnnotationPresent(Column.class)) {
-            m_column = new ColumnMetadata(getAnnotation(Column.class), this);
+        if (isAnnotationPresent(JPA_COLUMN)) {
+            m_column = new ColumnMetadata(getAnnotation(JPA_COLUMN), this);
         }
     }
 
@@ -231,8 +231,9 @@ public class ArrayAccessor extends DirectAccessor {
         m_targetClassName = targetClassName;
     }
 
+    @Override
     public String getDefaultFetchType() {
-        return FetchType.EAGER.name(); 
+        return JPA_FETCH_EAGER; 
     }
 
     public String getDatabaseType() {

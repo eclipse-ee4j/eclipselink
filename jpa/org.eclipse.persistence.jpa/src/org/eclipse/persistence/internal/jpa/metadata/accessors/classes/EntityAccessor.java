@@ -96,16 +96,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.Inheritance;
-import javax.persistence.PrimaryKeyJoinColumn;
-import javax.persistence.PrimaryKeyJoinColumns;
-import javax.persistence.SecondaryTable;
-import javax.persistence.SecondaryTables;
-import javax.persistence.Table;
-
 import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.eclipse.persistence.annotations.ClassExtractor;
 import org.eclipse.persistence.annotations.Index;
@@ -129,7 +119,6 @@ import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityClassListen
 import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListenerMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.mappings.AccessMethodsMetadata;
 
-import org.eclipse.persistence.internal.jpa.metadata.MetadataConstants;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
@@ -139,6 +128,18 @@ import org.eclipse.persistence.internal.jpa.metadata.tables.IndexMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.tables.SecondaryTableMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.tables.TableMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
+
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ACCESS_FIELD;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ACCESS_PROPERTY;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ENTITY;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_DISCRIMINATOR_COLUMN;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_DISCRIMINATOR_VALUE;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_INHERITANCE;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PRIMARY_KEY_JOIN_COLUMN;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PRIMARY_KEY_JOIN_COLUMNS;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_SECONDARY_TABLE;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_SECONDARY_TABLES;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_TABLE;
 
 /**
  * An entity accessor.
@@ -415,7 +416,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
             return false;
         } else {
             // Nothing was specified in XML. Must look at the annotations now.
-            if (isAnnotationPresent(ClassExtractor.class) && (isAnnotationPresent(DiscriminatorColumn.class) || isAnnotationPresent(DiscriminatorValue.class))) {
+            if (isAnnotationPresent(ClassExtractor.class) && (isAnnotationPresent(JPA_DISCRIMINATOR_COLUMN) || isAnnotationPresent(JPA_DISCRIMINATOR_VALUE))) {
                 throw ValidationException.classExtractorCanNotBeSpecifiedWithDiscriminatorMetadata(getJavaClassName());
             }
             
@@ -429,7 +430,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      */
     public boolean hasInheritance() {
         if (m_inheritance == null) {
-            return isAnnotationPresent(Inheritance.class);
+            return isAnnotationPresent(JPA_INHERITANCE);
         } else {
             return true;
         }
@@ -730,9 +731,9 @@ public class EntityAccessor extends MappedSuperclassAccessor {
             for (MappedSuperclassAccessor mappedSuperclass : getMappedSuperclasses()) {
                 if (! mappedSuperclass.hasAccess()) {
                     if (mappedSuperclass.hasObjectRelationalFieldMappingAnnotationsDefined()) {
-                        defaultAccessType = MetadataConstants.FIELD;
+                        defaultAccessType = JPA_ACCESS_FIELD;
                     } else if (mappedSuperclass.hasObjectRelationalMethodMappingAnnotationsDefined()) {
-                        defaultAccessType = MetadataConstants.PROPERTY;
+                        defaultAccessType = JPA_ACCESS_PROPERTY;
                     }
                         
                     break;
@@ -744,9 +745,9 @@ public class EntityAccessor extends MappedSuperclassAccessor {
             // defined on this entity class. 
             if (defaultAccessType == null) {    
                 if (hasObjectRelationalFieldMappingAnnotationsDefined()) {
-                    defaultAccessType = MetadataConstants.FIELD;
+                    defaultAccessType = JPA_ACCESS_FIELD;
                 } else if (hasObjectRelationalMethodMappingAnnotationsDefined()) {
-                    defaultAccessType = MetadataConstants.PROPERTY;
+                    defaultAccessType = JPA_ACCESS_PROPERTY;
                 } else {
                     // 4 - If there are no annotations defined on either the
                     // fields or properties, check for an xml default from
@@ -756,7 +757,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
                     } else {
                         // 5 - We've exhausted our search, set the access type
                         // to FIELD.
-                        defaultAccessType = MetadataConstants.FIELD;
+                        defaultAccessType = JPA_ACCESS_FIELD;
                     }
                 }
             }
@@ -873,12 +874,12 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * and return the EclipseLink database field.
      */
     public DatabaseField processDiscriminatorColumn() {
-        MetadataAnnotation discriminatorColumn = getAnnotation(DiscriminatorColumn.class);
+        MetadataAnnotation discriminatorColumn = getAnnotation(JPA_DISCRIMINATOR_COLUMN);
         
         if (m_discriminatorColumn == null) {
             m_discriminatorColumn = new DiscriminatorColumnMetadata(discriminatorColumn, this); 
         } else {
-            if (isAnnotationPresent(DiscriminatorColumn.class)) {
+            if (isAnnotationPresent(JPA_DISCRIMINATOR_COLUMN)) {
                 getLogger().logConfigMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, discriminatorColumn, getJavaClassName(), getLocation());
             }
         }
@@ -899,7 +900,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
             // Add the indicator to the inheritance root class' descriptor. The
             // default is the short class name.
             if (m_discriminatorValue == null) {
-                MetadataAnnotation discriminatorValue = getAnnotation(DiscriminatorValue.class);
+                MetadataAnnotation discriminatorValue = getAnnotation(JPA_DISCRIMINATOR_VALUE);
                 
                 if (discriminatorValue == null) {
                     // By default return the alias (i.e. entity name if provided
@@ -923,7 +924,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     protected void processEntity() {        
         // Process the entity name (alias) and default if necessary.
         if (m_entityName == null) {
-            m_entityName = (getAnnotation(Entity.class) == null) ? "" : (String) getAnnotation(Entity.class).getAttributeString("name");
+            m_entityName = (getAnnotation(JPA_ENTITY) == null) ? "" : (String) getAnnotation(JPA_ENTITY).getAttributeString("name");
         }
             
         if (m_entityName.equals("")) {
@@ -973,7 +974,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         // Process the inheritance metadata first. Create one if one does not 
         // exist.
         if (m_inheritance == null) {
-            m_inheritance = new InheritanceMetadata(getAnnotation(Inheritance.class), this);
+            m_inheritance = new InheritanceMetadata(getAnnotation(JPA_INHERITANCE), this);
         }
         
         m_inheritance.process(getDescriptor());
@@ -990,16 +991,16 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         // some defined through annotations.
         if (m_primaryKeyJoinColumns.isEmpty()) {
             // Process all the primary key join columns first.
-            if (isAnnotationPresent(PrimaryKeyJoinColumns.class)) {
-                MetadataAnnotation primaryKeyJoinColumns = getAnnotation(PrimaryKeyJoinColumns.class);
+            if (isAnnotationPresent(JPA_PRIMARY_KEY_JOIN_COLUMNS)) {
+                MetadataAnnotation primaryKeyJoinColumns = getAnnotation(JPA_PRIMARY_KEY_JOIN_COLUMNS);
                 for (Object primaryKeyJoinColumn : (Object[]) primaryKeyJoinColumns.getAttributeArray("value")) { 
                     m_primaryKeyJoinColumns.add(new PrimaryKeyJoinColumnMetadata((MetadataAnnotation) primaryKeyJoinColumn, this));
                 }
             }
             
             // Process the single primary key join column second.
-            if (isAnnotationPresent(PrimaryKeyJoinColumn.class)) {
-                m_primaryKeyJoinColumns.add(new PrimaryKeyJoinColumnMetadata(getAnnotation(PrimaryKeyJoinColumn.class), this));
+            if (isAnnotationPresent(JPA_PRIMARY_KEY_JOIN_COLUMN)) {
+                m_primaryKeyJoinColumns.add(new PrimaryKeyJoinColumnMetadata(getAnnotation(JPA_PRIMARY_KEY_JOIN_COLUMN), this));
             }
         }
         
@@ -1098,8 +1099,9 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         if (getDescriptor().getClassDescriptor().isEISDescriptor()) {
             return;
         }
-        MetadataAnnotation secondaryTable = getAnnotation(SecondaryTable.class);
-        MetadataAnnotation secondaryTables = getAnnotation(SecondaryTables.class);
+        
+        MetadataAnnotation secondaryTable = getAnnotation(JPA_SECONDARY_TABLE);
+        MetadataAnnotation secondaryTables = getAnnotation(JPA_SECONDARY_TABLES);
         
         if (m_secondaryTables.isEmpty()) {
             // Look for a SecondaryTables annotation.
@@ -1133,7 +1135,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * Process table information for the given metadata descriptor.
      */
     protected void processTable() {
-        MetadataAnnotation table = getAnnotation(Table.class);
+        MetadataAnnotation table = getAnnotation(JPA_TABLE);
         
         if (m_table == null) {
             // Check for a table annotation. If no annotation is defined, the 

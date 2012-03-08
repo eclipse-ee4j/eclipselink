@@ -21,8 +21,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.inheritance;
 
-import javax.persistence.InheritanceType;
-
 import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.descriptors.TablePerClassPolicy;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
@@ -32,6 +30,10 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.MappedSuperclassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
+
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_INHERITANCE_JOINED;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_INHERITANCE_SINGLE_TABLE;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_INHERITANCE_TABLE_PER_CLASS;
 
 /**
  * Object to represent inheritance metadata. The processing of this metadata
@@ -197,7 +199,7 @@ public class InheritanceMetadata extends ORMetadata {
         EntityAccessor accessor = (EntityAccessor) descriptor.getClassAccessor();
         
         // Set the correct inheritance policy.
-        if (m_strategy != null && m_strategy.equals(InheritanceType.TABLE_PER_CLASS.name())) {
+        if (m_strategy != null && m_strategy.equals(JPA_INHERITANCE_TABLE_PER_CLASS)) {
             setTablePerClassInheritancePolicy(descriptor);
         } else {
             setInheritancePolicy(descriptor);
@@ -329,21 +331,21 @@ public class InheritanceMetadata extends ORMetadata {
      * INTERNAL:
      */
     public boolean usesJoinedStrategy() {
-        return m_strategy != null && m_strategy.equals(InheritanceType.JOINED.name()); 
+        return m_strategy != null && m_strategy.equals(JPA_INHERITANCE_JOINED); 
     }
     
     /**
      * INTERNAL:
      */
     public boolean usesSingleTableStrategy() {
-        return m_strategy == null || m_strategy.equals(InheritanceType.SINGLE_TABLE.name()); 
+        return m_strategy == null || m_strategy.equals(JPA_INHERITANCE_SINGLE_TABLE); 
     }
     
     /**
      * INTERNAL:
      */
     public boolean usesTablePerClassStrategy() {
-        return m_strategy != null && m_strategy.equals(InheritanceType.TABLE_PER_CLASS.name()); 
+        return m_strategy != null && m_strategy.equals(JPA_INHERITANCE_TABLE_PER_CLASS); 
     }
 }
     

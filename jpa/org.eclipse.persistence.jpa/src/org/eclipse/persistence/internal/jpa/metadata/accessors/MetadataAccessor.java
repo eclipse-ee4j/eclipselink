@@ -116,12 +116,13 @@ import org.eclipse.persistence.internal.jpa.metadata.partitioning.ValuePartition
 import org.eclipse.persistence.internal.jpa.metadata.tables.TableMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
-import org.eclipse.persistence.internal.jpa.metadata.MetadataConstants;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
+
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ACCESS;
 
 /**
  * INTERNAL:
@@ -263,15 +264,20 @@ public abstract class MetadataAccessor extends ORMetadata {
     
     /**
      * INTERNAL:
-     * Return the annotation if it exists.
+     * Return the annotation if it exists. This method should only be called
+     * for non JPA annotations as loading those annotations classes is ok (and
+     * available).
+     * 
+     * JPA annotations should be referenced only by name as to not introduce a
+     * compile dependency.
      */
     public MetadataAnnotation getAnnotation(Class annotation) {
-        return getAnnotation(annotation.getName());
+       return getAnnotation(annotation.getName());
     }
     
     /**
      * INTERNAL:
-     * Return the annotation if it exists.
+     * Return the annotation if it exists. 
      */
     protected abstract MetadataAnnotation getAnnotation(String annotation);
     
@@ -597,7 +603,7 @@ public abstract class MetadataAccessor extends ORMetadata {
         // Look for an annotation as long as an access type hasn't already been 
         // loaded from XML (meaning m_access will not be null at this point)
         if (m_access == null) {
-            MetadataAnnotation access = getAnnotation(MetadataConstants.ACCESS_ANNOTATION);
+            MetadataAnnotation access = getAnnotation(JPA_ACCESS);
             if (access != null) {
                 setAccess((String) access.getAttribute("value"));
             }
@@ -643,9 +649,22 @@ public abstract class MetadataAccessor extends ORMetadata {
     
     /**
      * INTERNAL:
+     * Return true if the annotation exists. This method should only be called
+     * for non native annotations (i.e. JPA) as loading native annotations 
+     * classes is ok since we know they are available from the jar.
+     * 
+     * JPA annotations should be referenced only by name as to not introduce a
+     * compile dependency.
+     */
+    public boolean isAnnotationPresent(Class<? extends Annotation> annotation) {
+        return isAnnotationPresent(annotation.getName());
+    }
+    
+    /**
+     * INTERNAL:
      * Return the annotation if it exists.
      */
-    public abstract boolean isAnnotationPresent(Class<? extends Annotation> annotation);
+    public abstract boolean isAnnotationPresent(String annotation);
     
     /**
      * Subclasses must handle this flag.

@@ -45,13 +45,6 @@ package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 import java.util.Collection;
 import java.util.Map;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.TableGenerator;
-
 import org.eclipse.persistence.annotations.CacheIndex;
 import org.eclipse.persistence.annotations.Index;
 import org.eclipse.persistence.annotations.Mutable;
@@ -84,6 +77,13 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
+
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_BASIC;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_COLUMN;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_FETCH_EAGER;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_GENERATED_VALUE;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_SEQUENCE_GENERATOR;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_TABLE_GENERATOR;
 
 /**
  * INTERNAL:
@@ -137,14 +137,14 @@ public class BasicAccessor extends DirectAccessor {
         super(annotation, accessibleObject, classAccessor);
         
         // Set the basic metadata if one is present.
-        MetadataAnnotation basic = getAnnotation(Basic.class);
+        MetadataAnnotation basic = getAnnotation(JPA_BASIC);
         if (basic != null) {
             setFetch((String) basic.getAttribute("fetch"));
             setOptional((Boolean) basic.getAttribute("optional"));
         }
         
         // Set the column metadata if one if present.
-        m_column = new ColumnMetadata(getAnnotation(Column.class), this);
+        m_column = new ColumnMetadata(getAnnotation(JPA_COLUMN), this);
         
         // Set the mutable value if one is present.
         if (isAnnotationPresent(Mutable.class)) {
@@ -152,18 +152,18 @@ public class BasicAccessor extends DirectAccessor {
         }
         
         // Set the generated value if one is present.
-        if (isAnnotationPresent(GeneratedValue.class)) {
-            m_generatedValue = new GeneratedValueMetadata(getAnnotation(GeneratedValue.class), this);
+        if (isAnnotationPresent(JPA_GENERATED_VALUE)) {
+            m_generatedValue = new GeneratedValueMetadata(getAnnotation(JPA_GENERATED_VALUE), this);
         }
         
         // Set the sequence generator if one is present.        
-        if (isAnnotationPresent(SequenceGenerator.class)) {
-            m_sequenceGenerator = new SequenceGeneratorMetadata(getAnnotation(SequenceGenerator.class), this);
+        if (isAnnotationPresent(JPA_SEQUENCE_GENERATOR)) {
+            m_sequenceGenerator = new SequenceGeneratorMetadata(getAnnotation(JPA_SEQUENCE_GENERATOR), this);
         }
         
         // Set the table generator if one is present.        
-        if (isAnnotationPresent(TableGenerator.class)) {
-            m_tableGenerator = new TableGeneratorMetadata(getAnnotation(TableGenerator.class), this);
+        if (isAnnotationPresent(JPA_TABLE_GENERATOR)) {
+            m_tableGenerator = new TableGeneratorMetadata(getAnnotation(JPA_TABLE_GENERATOR), this);
         }
         
         // Set the table generator if one is present.        
@@ -253,7 +253,7 @@ public class BasicAccessor extends DirectAccessor {
      * INTERNAL:
      */
     public String getDefaultFetchType() {
-        return FetchType.EAGER.name(); 
+        return JPA_FETCH_EAGER; 
     }
     
     /**

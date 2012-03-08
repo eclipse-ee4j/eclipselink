@@ -61,12 +61,6 @@ package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.MapsId;
-import javax.persistence.PrimaryKeyJoinColumn;
-import javax.persistence.PrimaryKeyJoinColumns;
-
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
@@ -94,6 +88,13 @@ import org.eclipse.persistence.mappings.ObjectReferenceMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.mappings.RelationTableMechanism;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
+
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_FETCH_EAGER;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ID;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_MAPS_ID;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PRIMARY_KEY_JOIN_COLUMN;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PRIMARY_KEY_JOIN_COLUMNS;
+
 
 /**
  * INTERNAL:
@@ -137,27 +138,27 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
         
         // Set the primary key join columns if some are present.
         // Process all the primary key join columns first.
-        if (isAnnotationPresent(PrimaryKeyJoinColumns.class)) {
-            for (Object primaryKeyJoinColumn : (Object[]) getAnnotation(PrimaryKeyJoinColumns.class).getAttributeArray("value")) { 
+        if (isAnnotationPresent(JPA_PRIMARY_KEY_JOIN_COLUMNS)) {
+            for (Object primaryKeyJoinColumn : (Object[]) getAnnotation(JPA_PRIMARY_KEY_JOIN_COLUMNS).getAttributeArray("value")) { 
                 m_primaryKeyJoinColumns.add(new PrimaryKeyJoinColumnMetadata((MetadataAnnotation) primaryKeyJoinColumn, this));
             }
         }
         
         // Process the single primary key join column second.
-        if (isAnnotationPresent(PrimaryKeyJoinColumn.class)) {
-            m_primaryKeyJoinColumns.add(new PrimaryKeyJoinColumnMetadata(getAnnotation(PrimaryKeyJoinColumn.class), this));
+        if (isAnnotationPresent(JPA_PRIMARY_KEY_JOIN_COLUMN)) {
+            m_primaryKeyJoinColumns.add(new PrimaryKeyJoinColumnMetadata(getAnnotation(JPA_PRIMARY_KEY_JOIN_COLUMN), this));
         }
         
         // Set the mapped by id if one is present.
-        if (isAnnotationPresent(MapsId.class)) {
+        if (isAnnotationPresent(JPA_MAPS_ID)) {
             // Call getAttributeString in this case because we rely on the
             // mapsId not being null and it's value of "" means we need to
             // default. getAttribute returns null which kills hasMapsId() logic
-            m_mapsId = (String) getAnnotation(MapsId.class).getAttributeString("value");
+            m_mapsId = (String) getAnnotation(JPA_MAPS_ID).getAttributeString("value");
         }
         
         // Set the derived id if one is specified.
-        m_id = isAnnotationPresent(Id.class);
+        m_id = isAnnotationPresent(JPA_ID);
     }
     
     /**
@@ -209,7 +210,7 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
      * Return the default fetch type for an object mapping.
      */
     public String getDefaultFetchType() {
-        return FetchType.EAGER.name();
+        return JPA_FETCH_EAGER;
     }
     
     /**

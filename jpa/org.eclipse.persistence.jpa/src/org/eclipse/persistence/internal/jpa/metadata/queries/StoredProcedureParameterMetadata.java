@@ -18,8 +18,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
-import javax.persistence.ParameterMode;
-
 import org.eclipse.persistence.annotations.Direction;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
@@ -30,6 +28,11 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataC
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 import org.eclipse.persistence.queries.StoredFunctionCall;
 import org.eclipse.persistence.queries.StoredProcedureCall;
+
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PARAMETER_IN;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PARAMETER_INOUT;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PARAMETER_OUT;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PARAMETER_REF_CURSOR;
 
 /**
  * INTERNAL:
@@ -235,9 +238,9 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
      */
     public boolean isOutParameter() {
         String parameterMode = (m_direction == null) ? m_mode : m_direction;
-        return parameterMode != null && ( parameterMode.equals(ParameterMode.OUT.name()) 
-                || parameterMode.equals(ParameterMode.INOUT.name()) 
-                || parameterMode.equals(ParameterMode.REF_CURSOR.name())
+        return parameterMode != null && ( parameterMode.equals(JPA_PARAMETER_OUT) 
+                || parameterMode.equals(JPA_PARAMETER_INOUT) 
+                || parameterMode.equals(JPA_PARAMETER_REF_CURSOR)
                 || parameterMode.equals(Direction.OUT_CURSOR.name()));
     }
     
@@ -272,7 +275,7 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
         if (m_mode == null) {
             if (m_direction == null) {
                 // TODO: Log a defaulting message if parameterMode is null.
-                m_mode = ParameterMode.IN.name();
+                m_mode = JPA_PARAMETER_IN;
             } else {
                 m_mode = m_direction;
             }
@@ -291,7 +294,7 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
              callByIndex = shouldCallByIndex;
          } 
         
-        if (m_mode.equals(ParameterMode.IN.name())) {
+        if (m_mode.equals(JPA_PARAMETER_IN)) {
             if (hasType()) {
                 if (callByIndex) {
                     call.addUnamedArgument(m_queryParameter, getJavaClass(m_type));
@@ -317,7 +320,7 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
                     call.addNamedArgument(m_name, m_queryParameter);
                 }
             }
-        } else if (m_mode.equals(ParameterMode.OUT.name())) {
+        } else if (m_mode.equals(JPA_PARAMETER_OUT)) {
             if (hasType()) {
                 if (callByIndex) {
                     call.addUnamedOutputArgument(m_queryParameter, getJavaClass(m_type));
@@ -346,7 +349,7 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
             
             //set the project level settings on the argument's database fields
             setDatabaseFieldSettings((DatabaseField)call.getParameters().get(call.getParameters().size() - 1));
-        } else if (m_mode.equals(Direction.IN_OUT.name()) || m_mode.equals(ParameterMode.INOUT.name())) {
+        } else if (m_mode.equals(Direction.IN_OUT.name()) || m_mode.equals(JPA_PARAMETER_INOUT)) {
             if (hasType()) {
                 if (callByIndex) {
                     call.addUnamedInOutputArgument(m_queryParameter, m_queryParameter, getJavaClass(m_type));
@@ -380,7 +383,7 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
             }
             
             setDatabaseFieldSettings((DatabaseField) array[1]);
-        } else if (m_mode.equals(Direction.OUT_CURSOR.name()) || m_mode.equals(ParameterMode.REF_CURSOR.name())) {
+        } else if (m_mode.equals(Direction.OUT_CURSOR.name()) || m_mode.equals(JPA_PARAMETER_REF_CURSOR)) {
             boolean multipleCursors = call.getParameterTypes().contains(call.OUT_CURSOR);
             
             if (callByIndex) {

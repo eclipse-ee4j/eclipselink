@@ -20,10 +20,11 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 
-import org.eclipse.persistence.internal.jpa.metadata.MetadataConstants;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.weaving.ClassWeaver;
+
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ACCESS_FIELD;
 
 /**
  * INTERNAL:
@@ -59,7 +60,7 @@ public class MetadataField extends MetadataAnnotatedElement {
      * setting to be processed. Otherwise, it is ignored.
      */
     public boolean isValidPersistenceField(boolean mustBeExplicit, ClassAccessor classAccessor) {
-        if (isValidPersistenceElement(mustBeExplicit, MetadataConstants.FIELD, classAccessor)) {
+        if (isValidPersistenceElement(mustBeExplicit, JPA_ACCESS_FIELD, classAccessor)) {
             return isValidPersistenceField(classAccessor, hasDeclaredAnnotations(classAccessor)); 
         }
 
