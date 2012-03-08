@@ -11389,7 +11389,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
     public void testSharedExpressionInQueries() {
         // the test spawns threads.
-        if (! isOnServer()) {
+        if (isOnServer()) {
             return;
         }
         getServerSession().getProject().getJPQLParseCache().getCache().clear();
