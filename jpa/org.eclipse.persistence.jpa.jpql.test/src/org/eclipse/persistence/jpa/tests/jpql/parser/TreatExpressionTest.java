@@ -17,9 +17,8 @@ import org.junit.Test;
 
 import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries.*;
 
-
 @SuppressWarnings("nls")
-public final class TreatExpressionTest extends EclipseLinkJPQLParserTest {
+public final class TreatExpressionTest extends JPQLParserTest {
 
 	@Test
 	public void testBuildExpression_01() throws Exception {

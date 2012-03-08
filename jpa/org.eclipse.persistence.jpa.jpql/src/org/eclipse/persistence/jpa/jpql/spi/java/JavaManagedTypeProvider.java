@@ -14,9 +14,7 @@
 package org.eclipse.persistence.jpa.jpql.spi.java;
 
 import java.lang.reflect.Member;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import org.eclipse.persistence.jpa.jpql.Assert;
 import org.eclipse.persistence.jpa.jpql.spi.IEmbeddable;
@@ -43,12 +41,12 @@ public class JavaManagedTypeProvider implements IManagedTypeProvider {
 	/**
 	 * The filtered collection of managed types that are {@link IEmbeddable}.
 	 */
-	private Collection<IEmbeddable> embeddables;
+	private Map<String, IEmbeddable> embeddables;
 
 	/**
 	 * The filtered collection of managed types that are {@link IEntity}.
 	 */
-	private Collection<IEntity> entities;
+	private Map<String, IEntity> entities;
 
 	/**
 	 * The cached {@link IManagedType managed types}.
@@ -58,7 +56,7 @@ public class JavaManagedTypeProvider implements IManagedTypeProvider {
 	/**
 	 * The filtered collection of managed types that are {@link IMappedSuperclass}.
 	 */
-	private Collection<IMappedSuperclass> mappedSuperclasses;
+	private Map<String, IMappedSuperclass> mappedSuperclasses;
 
 	/**
 	 * The builder that is responsible to create the {@link IMapping} wrapping a persistent attribute
@@ -91,7 +89,7 @@ public class JavaManagedTypeProvider implements IManagedTypeProvider {
 	 */
 	public IEmbeddable addEmbeddable(Class<?> type) {
 		IEmbeddable embeddable = buildEmbeddable(type);
-		embeddables.add(embeddable);
+		embeddables .put(type.getName(), embeddable);
 		managedTypes.put(type.getName(), embeddable);
 		return embeddable;
 	}
@@ -104,7 +102,7 @@ public class JavaManagedTypeProvider implements IManagedTypeProvider {
 	 */
 	public IEntity addEntity(Class<?> type) {
 		IEntity entity = buildEntity(type);
-		entities.add(entity);
+		entities.put(type.getName(), entity);
 		managedTypes.put(type.getName(), entity);
 		return entity;
 	}
@@ -117,7 +115,7 @@ public class JavaManagedTypeProvider implements IManagedTypeProvider {
 	 */
 	public IMappedSuperclass addMappedSuperclass(Class<?> type) {
 		IMappedSuperclass mappedSuperclass = buildMappedSuperclass(type);
-		mappedSuperclasses.add(mappedSuperclass);
+		mappedSuperclasses.put(type.getName(), mappedSuperclass);
 		managedTypes.put(type.getName(), mappedSuperclass);
 		return mappedSuperclass;
 	}
@@ -138,21 +136,21 @@ public class JavaManagedTypeProvider implements IManagedTypeProvider {
 	 * {@inheritDoc}
 	 */
 	public IterableIterator<IEntity> entities() {
-		return new CloneIterator<IEntity>(entities);
+		return new CloneIterator<IEntity>(entities.values());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public IEmbeddable getEmbeddable(IType type) {
-		return getManagedType(embeddables, type.getName());
+		return getEmbeddable(type.getName());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public IEmbeddable getEmbeddable(String typeName) {
-		return getManagedType(embeddables, typeName);
+		return embeddables.get(typeName);
 	}
 
 	/**
@@ -166,7 +164,7 @@ public class JavaManagedTypeProvider implements IManagedTypeProvider {
 	 * {@inheritDoc}
 	 */
 	public IEntity getEntity(String typeName) {
-		return getManagedType(entities, typeName);
+		return entities.get(typeName);
 	}
 
 	/**
@@ -174,21 +172,9 @@ public class JavaManagedTypeProvider implements IManagedTypeProvider {
 	 */
 	public IEntity getEntityNamed(String entityName) {
 
-		for (IEntity entity : entities) {
+		for (IEntity entity : entities.values()) {
 			if (entity.getName().equals(entityName)) {
 				return entity;
-			}
-		}
-
-		return null;
-	}
-
-	protected <T extends IManagedType> T getManagedType(Collection<T> managedTypes,
-	                                                    String typeName) {
-
-		for (T managedType : managedTypes) {
-			if (managedType.getType().getName().equals(typeName)) {
-				return managedType;
 			}
 		}
 
@@ -199,7 +185,7 @@ public class JavaManagedTypeProvider implements IManagedTypeProvider {
 	 * {@inheritDoc}
 	 */
 	public IManagedType getManagedType(IType type) {
-		return getManagedType(managedTypes.values(), type.getName());
+		return getManagedType(type.getName());
 	}
 
 	/**
@@ -213,14 +199,14 @@ public class JavaManagedTypeProvider implements IManagedTypeProvider {
 	 * {@inheritDoc}
 	 */
 	public IMappedSuperclass getMappedSuperclass(IType type) {
-		return getManagedType(mappedSuperclasses, type.getName());
+		return getMappedSuperclass(type.getName());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public IMappedSuperclass getMappedSuperclass(String typeName) {
-		return getManagedType(mappedSuperclasses, typeName);
+		return mappedSuperclasses.get(typeName);
 	}
 
 	protected IMappingBuilder<Member> getMappingBuilder() {
@@ -248,10 +234,10 @@ public class JavaManagedTypeProvider implements IManagedTypeProvider {
 		Assert.isNotNull(mappingBuilder, "The IMappingBuilder cannot be null");
 
 		this.mappingBuilder     = mappingBuilder;
-		this.entities           = new LinkedList<IEntity>();
-		this.embeddables        = new LinkedList<IEmbeddable>();
+		this.entities           = new HashMap<String, IEntity>();
+		this.embeddables        = new HashMap<String, IEmbeddable>();
 		this.managedTypes       = new HashMap<String, IManagedType>();
-		this.mappedSuperclasses = new LinkedList<IMappedSuperclass>();
+		this.mappedSuperclasses = new HashMap<String, IMappedSuperclass>();
 
 		initialize();
 	}

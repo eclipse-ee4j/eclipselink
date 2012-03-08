@@ -15,6 +15,8 @@ package org.eclipse.persistence.jpa.jpql.parser;
 
 import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
 
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
+
 /**
  * This {@link JPQLGrammar} provides support for parsing JPQL queries defined in <a href="http://jcp.org/en/jsr/detail?id=317">JSR-337
  * - Java Persistence 2.0</a>. EclipseLink 2.1 provides additional support for 2 additional JPQL
@@ -107,16 +109,18 @@ public final class EclipseLinkJPQLGrammar2_1 extends AbstractJPQLGrammar {
 	@Override
 	protected void initializeBNFs() {
 
-		registerBNF(new FuncExpressionBNF());
-		registerBNF(new FuncItemBNF());
+		// Add new query BNF
+		registerBNF(new FunctionExpressionBNF());
+		registerBNF(new FunctionItemBNF());
 		registerBNF(new TreatExpressionBNF());
 
 		// Extend the query BNF to add support for FUNC
-		addChildBNF(FunctionsReturningDatetimeBNF.ID, FuncExpressionBNF.ID);
-		addChildBNF(FunctionsReturningNumericsBNF.ID, FuncExpressionBNF.ID);
-		addChildBNF(FunctionsReturningStringsBNF.ID,  FuncExpressionBNF.ID);
+		addChildBNF(FunctionsReturningDatetimeBNF.ID, FunctionExpressionBNF.ID);
+		addChildBNF(FunctionsReturningNumericsBNF.ID, FunctionExpressionBNF.ID);
+		addChildBNF(FunctionsReturningStringsBNF.ID,  FunctionExpressionBNF.ID);
 
-		// Now supports scalar_expression
+		// Now supports scalar expression
+		addChildBNF(InternalAggregateFunctionBNF.ID,           ScalarExpressionBNF.ID);
 		addChildBNF(InternalConcatExpressionBNF.ID,            ScalarExpressionBNF.ID);
 		addChildBNF(InternalLengthExpressionBNF.ID,            ScalarExpressionBNF.ID);
 		addChildBNF(InternalLocateStringExpressionBNF.ID,      ScalarExpressionBNF.ID);
@@ -137,7 +141,8 @@ public final class EclipseLinkJPQLGrammar2_1 extends AbstractJPQLGrammar {
 	 */
 	@Override
 	protected void initializeExpressionFactories() {
-		registerFactory(new FuncExpressionFactory());
+
+		registerFactory(new FunctionExpressionFactory(FUNC));
 		registerFactory(new TreatExpressionFactory());
 	}
 
@@ -147,11 +152,11 @@ public final class EclipseLinkJPQLGrammar2_1 extends AbstractJPQLGrammar {
 	@Override
 	protected void initializeIdentifiers() {
 
-		registerIdentifierRole(Expression.FUNC,  IdentifierRole.FUNCTION); // FUNC(n, x1, ..., x2)
-		registerIdentifierRole(Expression.TREAT, IdentifierRole.FUNCTION); // TREAT(x AS y)
+		registerIdentifierRole(FUNC,  IdentifierRole.FUNCTION); // FUNC(n, x1, ..., x2)
+		registerIdentifierRole(TREAT, IdentifierRole.FUNCTION); // TREAT(x AS y)
 
-		registerIdentifierVersion(Expression.FUNC,  JPAVersion.VERSION_2_0);
-		registerIdentifierVersion(Expression.TREAT, JPAVersion.VERSION_2_0);
+		registerIdentifierVersion(FUNC,  JPAVersion.VERSION_2_0);
+		registerIdentifierVersion(TREAT, JPAVersion.VERSION_2_0);
 	}
 
 	/**
@@ -159,6 +164,6 @@ public final class EclipseLinkJPQLGrammar2_1 extends AbstractJPQLGrammar {
 	 */
 	@Override
 	public String toString() {
-		return "JPQL grammar for EclipseLink 2.1";
+		return "EclipseLink 2.1";
 	}
 }

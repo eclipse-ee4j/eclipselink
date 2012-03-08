@@ -16,12 +16,15 @@ package org.eclipse.persistence.jpa.tests.jpql.parser;
 import org.junit.runners.Suite.SuiteClasses;
 
 /**
+ * This test suite contains a series of unit-tests that test parsing JPQL queries that follows the
+ * JPQL grammar defined in JPA 1.0.
+ *
  * @version 2.4
  * @since 2.4
  * @author Pascal Filion
  */
-@SuiteClasses
-({
+@SuiteClasses({
+
 	// Test the parser with hundreds of JPQL queries
 	JPQLQueriesTest1_0.class,
 

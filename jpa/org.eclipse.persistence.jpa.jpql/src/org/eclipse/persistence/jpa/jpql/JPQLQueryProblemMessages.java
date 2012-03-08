@@ -15,6 +15,11 @@ package org.eclipse.persistence.jpa.jpql;
 
 /**
  * The list of messages used by {@link JPQLQueryProblem JPQLQueryProblems} when validating a JPQL query.
+ * <p>
+ * Provisional API: This interface is part of an interim API that is still under development and
+ * expected to change significantly before reaching stability. It is available at this early stage
+ * to solicit feedback from pioneering adopters on the understanding that any code that uses this
+ * API will almost certainly be broken (repeatedly) as the API evolves.
  *
  * @version 2.4
  * @since 2.3
@@ -36,6 +41,8 @@ public interface JPQLQueryProblemMessages {
 	String AbstractPathExpression_MissingIdentificationVariable = "ABSTRACT_PATH_EXPRESSION_MISSING_IDENTIFICATION_VARIABLE";
 	String AbstractSchemaName_Invalid = "ABSTRACT_SCHEMA_NAME_INVALID";
 	String AbstractSchemaName_NotResolvable = "ABSTRACT_SCHEMA_NAME_NOT_RESOLVABLE";
+	String AbstractSelectClause_InvalidSelectExpression = "ABSTRACT_SELECT_CLAUSE_INVALID_SELECT_EXPRESSION";
+	String AbstractSelectClause_MissingSelectExpression = "ABSTRACT_SELECT_CLAUSE_MISSING_SELECT_EXPRESSION";
 	String AbstractSelectClause_SelectExpressionEndsWithComma = "ABSTRACT_SELECT_CLAUSE_SELECT_EXPRESSION_ENDS_WITH_COMMA";
 	String AbstractSelectClause_SelectExpressionIsMissingComma = "ABSTRACT_SELECT_CLAUSE_SELECT_EXPRESSION_IS_MISSING_COMMA";
 	String AbstractSelectClause_SelectExpressionMissing = "ABSTRACT_SELECT_CLAUSE_SELECT_MISSING_EXPRESSION";
@@ -88,6 +95,10 @@ public interface JPQLQueryProblemMessages {
 	String CollectionMemberExpression_MissingEntityExpression = "COLLECTION_MEMBER_EXPRESSION_MISSING_ENTITY_EXPRESSION";
 	String CollectionValuedPathExpression_NotCollectionType = "COLLECTION_VALUED_PATH_EXPRESSION_NOT_COLLECTION_TYPE";
 	String CollectionValuedPathExpression_NotResolvable = "COLLECTION_VALUED_PATH_EXPRESSION_NOT_RESOLVABLE";
+	String ColumnExpression_InvalidExpression = "COLUMN_EXPRESSION_INVALID_EXPRESSION";
+	String ColumnExpression_MissingColumn = "COLUMN_EXPRESSION_MISSING_COLUMN";
+	String ColumnExpression_MissingLeftParenthesis = "COLUMN_EXPRESSION_MISSING_LEFT_PARENTHESIS";
+	String ColumnExpression_MissingRightParenthesis = "COLUMN_EXPRESSION_MISSING_RIGHT_PARENTHESIS";
 	String ComparisonExpression_MissingLeftExpression = "COMPARISON_EXPRESSION_MISSING_LEFT_EXPRESSION";
 	String ComparisonExpression_MissingRightExpression = "COMPARISON_EXPRESSION_MISSING_RIGHT_EXPRESSION";
 	String ComparisonExpression_WrongComparisonType = "COMPARISON_EXPRESSION_WRONG_COMPARISON_TYPE";
@@ -98,11 +109,11 @@ public interface JPQLQueryProblemMessages {
 	String ConcatExpression_MissingRightParenthesis = "CONCAT_EXPRESSION_MISSING_RIGHT_PARENTHESIS";
 	String ConstructorExpression_ConstructorItemEndsWithComma = "CONSTRUCTOR_EXPRESSION_CONSTRUCTOR_ITEM_ENDS_WITH_COMMA";
 	String ConstructorExpression_ConstructorItemIsMissingComma = "CONSTRUCTOR_EXPRESSION_CONSTRUCTOR_ITEM_IS_MISSING_COMMA";
-	String ConstructorExpression_MismatchedParameterTypes = "CONSTRUCTOR_EXPRESSION_MISMATCHED_PARAMETER_TYPES";
 	String ConstructorExpression_MissingConstructorItem = "CONSTRUCTOR_EXPRESSION_MISSING_CONSTRUCTOR_ITEM";
 	String ConstructorExpression_MissingConstructorName = "CONSTRUCTOR_EXPRESSION_MISSING_CONSTRUCTOR_NAME";
 	String ConstructorExpression_MissingLeftParenthesis = "CONSTRUCTOR_EXPRESSION_MISSING_LEFT_PARENTHESIS";
 	String ConstructorExpression_MissingRightParenthesis = "CONSTRUCTOR_EXPRESSION_MISSING_RIGHT_PARENTHESIS";
+	String ConstructorExpression_UndefinedConstructor = "CONSTRUCTOR_EXPRESSION_UNDEFINED_CONSTRUCTOR";
 	String ConstructorExpression_UnknownType = "CONSTRUCTOR_EXPRESSION_UNKNOWN_TYPE";
 	String CountFunction_DistinctEmbeddable = "COUNT_FUNCTION_DISTINCT_EMBEDDABLE";
 	String CountFunction_InvalidExpression = "COUNT_FUNCTION_INVALID_EXPRESSION";
@@ -131,16 +142,10 @@ public interface JPQLQueryProblemMessages {
 	String ExistsExpression_MissingExpression = "EXISTS_EXPRESSION_MISSING_EXPRESSION";
 	String ExistsExpression_MissingLeftParenthesis = "EXISTS_EXPRESSION_MISSING_LEFT_PARENTHESIS";
 	String ExistsExpression_MissingRightParenthesis = "EXISTS_EXPRESSION_MISSING_RIGHT_PARENTHESIS";
-	String FuncExpression_InvalidJPAPlatform = "FUNC_EXPRESSION_INVALID_JPA_PLATFORM";
-        String InvalidJPAPlatform = "INVALID_JPA_PLATFORM";
-	String FuncExpression_MissingFunctionName = "FUNC_EXPRESSION_MISSING_FUNCTION_NAME";
-        String OperatorExpression_MissingOperator = "OPERATOR_EXPRESSION_MISSING_OPERATOR";
-        String SQLExpression_MissingSQL = "SQL_EXPRESSION_MISSING_SQL";
-        String ColumnExpression_MissingColumn = "COLUMN_EXPRESSION_MISSING_COLUMN";
-	String FuncExpression_MissingLeftParenthesis = "FUNC_EXPRESSION_MISSING_LEFT_PARENTHESIS";
-	String FuncExpression_MissingRightParenthesis = "FUNC_EXPRESSION_MISSING_RIGHT_PARENTHESIS";
-        String MissingLeftParenthesis = "MISSING_LEFT_PARENTHESIS";
-        String MissingRightParenthesis = "MISSING_RIGHT_PARENTHESIS";
+	String FunctionExpression_InvalidExpression = "FUNCTION_EXPRESSION_INVALID_EXPRESSION";
+	String FunctionExpression_MissingFunctionName = "FUNCTION_EXPRESSION_MISSING_FUNCTION_NAME";
+	String FunctionExpression_MissingLeftParenthesis = "FUNCTION_EXPRESSION_MISSING_LEFT_PARENTHESIS";
+	String FunctionExpression_MissingRightParenthesis = "FUNCTION_EXPRESSION_MISSING_RIGHT_PARENTHESIS";
 	String GroupByClause_GroupByItemEndsWithComma = "GROUP_BY_CLAUSE_GROUP_BY_ITEM_ENDS_WITH_COMMA";
 	String GroupByClause_GroupByItemIsMissingComma = "GROUP_BY_CLAUSE_GROUP_BY_ITEM_IS_MISSING_COMMA";
 	String GroupByClause_GroupByItemMissing = "GROUP_BY_CLAUSE_GROUP_BY_ITEM_MISSING";
@@ -153,6 +158,9 @@ public interface JPQLQueryProblemMessages {
 	String IdentificationVariable_Invalid_JavaIdentifier = "IDENTIFICATION_VARIABLE_INVALID_JAVA_IDENTIFIER";
 	String IdentificationVariable_Invalid_NotDeclared = "IDENTIFICATION_VARIABLE_INVALID_NOT_DECLARED";
 	String IdentificationVariable_Invalid_ReservedWord = "IDENTIFICATION_VARIABLE_INVALID_RESERVED_WORD";
+	String IdentificationVariableDeclaration_InvalidJoin = "IDENTIFICATION_VARIABLE_DECLARATION_INVALID_JOIN";
+	String IdentificationVariableDeclaration_JoinsEndWithComma = "IDENTIFICATION_VARIABLE_DECLARATION_JOINS_END_WITH_COMMA";
+	String IdentificationVariableDeclaration_JoinsHaveComma = "IDENTIFICATION_VARIABLE_DECLARATION_JOINS_HAS_COMMA";
 	String IdentificationVariableDeclaration_MissingRangeVariableDeclaration = "IDENTIFICATION_VARIABLE_DECLARATION_MISSING_RANGE_VARIABLE_DECLARATION";
 	String IndexExpression_InvalidExpression = "INDEX_EXPRESSION_INVALID_EXPRESSION";
 	String IndexExpression_InvalidJPAVersion = "INDEX_EXPRESSION_INVALID_JPA_VERSION";
@@ -162,7 +170,7 @@ public interface JPQLQueryProblemMessages {
 	String IndexExpression_WrongVariable = "INDEX_EXPRESSION_WRONG_VARIABLE";
 	String InExpression_InItemEndsWithComma = "IN_EXPRESSION_IN_ITEM_ENDS_WITH_COMMA";
 	String InExpression_InItemIsMissingComma = "IN_EXPRESSION_IN_ITEM_IS_MISSING_COMMA";
-	String InExpression_MalformedExpression = "IN_EXPRESSION_MALFORMED_EXPRESSION";
+	String InExpression_InvalidExpression = "IN_EXPRESSION_MALFORMED_EXPRESSION";
 	String InExpression_MissingExpression = "IN_EXPRESSION_MISSING_EXPRESSION";
 	String InExpression_MissingInItems = "IN_EXPRESSION_MISSING_IN_ITEMS";
 	String InExpression_MissingLeftParenthesis = "IN_EXPRESSION_MISSING_LEFT_PARENTHESIS";
@@ -173,6 +181,7 @@ public interface JPQLQueryProblemMessages {
 	String InputParameter_NotInteger = "INPUT_PARAMETER_NOT_INTEGER";
 	String InputParameter_SmallerThanOne = "INPUT_PARAMETER_SMALLER_THAN_ONE";
 	String InputParameter_WrongClauseDeclaration = "INPUT_PARAMETER_WRONG_CLAUSE_DECLARATION";
+	String InvalidJPAPlatform = "INVALID_JPA_PLATFORM";
 	String Join_MissingIdentificationVariable = "JOIN_MISSING_IDENTIFICATION_VARIABLE";
 	String Join_MissingJoinAssociationPath = "JOIN_MISSING_JOIN_ASSOCIATION_PATH";
 	String JoinFetch_InvalidIdentification = "JOIN_FETCH_INVALID_IDENTIFICATION";
@@ -253,6 +262,8 @@ public interface JPQLQueryProblemMessages {
 	String ObjectExpression_MissingExpression = "OBJECT_EXPRESSION_MISSING_EXPRESSION";
 	String ObjectExpression_MissingLeftParenthesis = "OBJECT_EXPRESSION_MISSING_LEFT_PARENTHESIS";
 	String ObjectExpression_MissingRightParenthesis = "OBJECT_EXPRESSION_MISSING_RIGHT_PARENTHESIS";
+	String OnClause_InvalidConditionalExpression = "ON_CLAUSE_INVALID_CONDITIONAL_EXPRESSION";
+	String OnClause_MissingConditionalExpression = "ON_CLAUSE_MISSING_CONDITIONAL_EXPRESSION";
 	String OrderByClause_OrderByItemEndsWithComma = "ORDER_BY_CLAUSE_ORDER_BY_ITEM_ENDS_WITH_COMMA";
 	String OrderByClause_OrderByItemIsMissingComma = "ORDER_BY_CLAUSE_ORDER_BY_ITEM_IS_MISSING_COMMA";
 	String OrderByClause_OrderByItemMissing = "ORDER_BY_CLAUSE_ORDER_BY_ITEM_MISSING";
@@ -327,6 +338,7 @@ public interface JPQLQueryProblemMessages {
 	String UpdateItem_NotAssignable = "UPDATE_ITEM_NOT_ASSIGNABLE";
 	String UpdateItem_NotResolvable = "UPDATE_ITEM_NOT_RESOLVABLE";
 	String UpdateItem_NullNotAssignableToPrimitive = "UPDATE_ITEM_NULL_NOT_ASSIGNABLE_TO_PRIMITIVE";
+	String UpdateItem_RelationshipPathExpression = "UPDATE_ITEM_RELATIONSHIP_PATH_EXPRESSION";
 	String UpperExpression_InvalidExpression = "UPPER_EXPRESSION_INVALID_EXPRESSION";
 	String UpperExpression_MissingExpression = "UPPER_EXPRESSION_MISSING_EXPRESSION";
 	String UpperExpression_MissingLeftParenthesis = "UPPER_EXPRESSION_MISSING_LEFT_PARENTHESIS";

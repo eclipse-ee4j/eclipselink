@@ -92,7 +92,7 @@ public final class IdentificationVariableDeclaration extends AbstractExpression 
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void addOrderedChildrenTo(List<StringExpression> children) {
+	protected void addOrderedChildrenTo(List<Expression> children) {
 
 		if (rangeVariableDeclaration != null) {
 			children.add(rangeVariableDeclaration);
@@ -199,8 +199,14 @@ public final class IdentificationVariableDeclaration extends AbstractExpression 
 
 		// Parsing the join expressions
 		if (parsingJoinExpression) {
+
+//			if (/* tolerant && */ word.length() == 0 || !isIdentifier(word)) {
+//				return true;
+//			}
+
 			return !word.equalsIgnoreCase(INNER) &&
 			       !word.equalsIgnoreCase(JOIN)  &&
+			       !word.equalsIgnoreCase(OUTER) &&
 			       !word.equalsIgnoreCase(LEFT)  &&
 			       super.isParsingComplete(wordParser, word, expression);
 		}
@@ -209,6 +215,7 @@ public final class IdentificationVariableDeclaration extends AbstractExpression 
 		return word.equalsIgnoreCase(INNER) ||
 		       word.equalsIgnoreCase(JOIN)  ||
 		       word.equalsIgnoreCase(LEFT)  ||
+		       word.equalsIgnoreCase(OUTER) ||
 		       word.equalsIgnoreCase(IN)    ||
 		       super.isParsingComplete(wordParser, word, expression);
 	}

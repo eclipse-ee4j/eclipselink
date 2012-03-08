@@ -69,7 +69,7 @@ public final class DateTime extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void addOrderedChildrenTo(List<StringExpression> children) {
+	protected void addOrderedChildrenTo(List<Expression> children) {
 		children.add(buildStringExpression(getText()));
 	}
 
@@ -198,6 +198,14 @@ public final class DateTime extends AbstractExpression {
 
 		setText(wordParser.substring(startIndex, stopIndex));
 		wordParser.moveForward(stopIndex - startIndex);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String toActualText() {
+		return getText();
 	}
 
 	/**

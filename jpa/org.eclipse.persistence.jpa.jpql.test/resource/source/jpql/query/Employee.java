@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.Collection;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Embeddable;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
@@ -91,6 +93,8 @@ public class Employee implements Serializable {
 	@ManyToOne
 	@JoinColumn(name = "DEPTNO")
 	private Dept dept;
+	@Embedded
+	private EmbeddedAddress embeddedAddress;
 	@Id
 	@Column(name = "EMP_ID", nullable = false)
 	private Long empId;
@@ -111,5 +115,12 @@ public class Employee implements Serializable {
 	public Employee(Long empId) {
 		super();
 		this.empId = empId;
+	}
+
+	@Embeddable
+	public static class EmbeddedAddress {
+		private String city;
+		private String streetName;
+		private String zipCode;
 	}
 }

@@ -18,17 +18,24 @@ import org.eclipse.persistence.jpa.jpql.parser.AbstractSchemaName;
 import org.eclipse.persistence.jpa.jpql.parser.AnonymousExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionValuedPathExpression;
 import org.eclipse.persistence.jpa.jpql.parser.EntityTypeLiteral;
+import org.eclipse.persistence.jpa.jpql.parser.FunctionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
 import org.eclipse.persistence.jpa.jpql.parser.InputParameter;
 import org.eclipse.persistence.jpa.jpql.parser.Join;
 import org.eclipse.persistence.jpa.jpql.parser.ResultVariable;
 import org.eclipse.persistence.jpa.jpql.parser.StateFieldPathExpression;
 import org.eclipse.persistence.jpa.jpql.parser.StringLiteral;
+import org.eclipse.persistence.jpa.jpql.parser.TreatExpression;
 
 /**
  * This visitor traverses an {@link Expression} and retrieves the "literal" value. The literal to
  * retrieve depends on the {@link LiteralType type}. The literal is basically a string value like an
  * identification variable name, an input parameter, a path expression, an abstract schema name, etc.
+ * <p>
+ * Provisional API: This interface is part of an interim API that is still under development and
+ * expected to change significantly before reaching stability. It is available at this early stage
+ * to solicit feedback from pioneering adopters on the understanding that any code that uses this
+ * API will almost certainly be broken (repeatedly) as the API evolves.
  *
  * @version 2.4
  * @since 2.4
@@ -42,8 +49,7 @@ public abstract class LiteralVisitor extends AnonymousExpressionVisitor {
 	public String literal;
 
 	/**
-	 * The {@link LiteralType} helps to determine when traversing an {@link Expression} what to
-	 * retrieve.
+	 * The {@link LiteralType} helps to determine when traversing an {@link Expression} what to retrieve.
 	 */
 	protected LiteralType type;
 
@@ -98,6 +104,16 @@ public abstract class LiteralVisitor extends AnonymousExpressionVisitor {
 	public void visit(EntityTypeLiteral expression) {
 		if (type == LiteralType.ENTITY_TYPE) {
 			literal = expression.getEntityTypeName();
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void visit(FunctionExpression expression) {
+		if (type == LiteralType.STRING_LITERAL) {
+			literal = expression.getFunctionName();
 		}
 	}
 
@@ -164,6 +180,15 @@ public abstract class LiteralVisitor extends AnonymousExpressionVisitor {
 		if (type == LiteralType.STRING_LITERAL) {
 			literal = expression.getText();
 		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void visit(TreatExpression expression) {
+		expression.getCollectionValuedPathExpression().accept(this);
+		expression.getEntityType().accept(this);
 	}
 
 	protected void visitAbstractPathExpression(AbstractPathExpression expression) {

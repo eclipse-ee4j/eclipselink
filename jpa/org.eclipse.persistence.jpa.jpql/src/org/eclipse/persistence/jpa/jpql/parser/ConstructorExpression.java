@@ -103,7 +103,7 @@ public final class ConstructorExpression extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void addOrderedChildrenTo(List<StringExpression> children) {
+	protected void addOrderedChildrenTo(List<Expression> children) {
 
 		// 'NEW'
 		children.add(buildStringExpression(NEW));

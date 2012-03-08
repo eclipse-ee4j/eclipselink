@@ -13,29 +13,22 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql;
 
-import org.eclipse.persistence.jpa.jpql.parser.AbstractEclipseLinkTraverseParentVisitor;
-import org.eclipse.persistence.jpa.jpql.parser.ColumnExpression;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkExpressionVisitor;
-import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar1;
-import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_0;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_4;
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
-import org.eclipse.persistence.jpa.jpql.parser.FuncExpression;
+import org.eclipse.persistence.jpa.jpql.parser.FunctionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariableBNF;
 import org.eclipse.persistence.jpa.jpql.parser.InputParameter;
-import org.eclipse.persistence.jpa.jpql.parser.InputParameterBNF;
-import org.eclipse.persistence.jpa.jpql.parser.OperatorExpression;
-import org.eclipse.persistence.jpa.jpql.parser.SQLExpression;
-import org.eclipse.persistence.jpa.jpql.parser.SelectClause;
-import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectClause;
-import org.eclipse.persistence.jpa.jpql.parser.TreatExpression;
-
-import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
-import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
+import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
+import org.eclipse.persistence.jpa.jpql.parser.SingleValuedObjectPathExpressionBNF;
 
 /**
- * The grammar validator that adds EclipseLink extension over what the JPA functional specification
- * had defined.
+ * This validator adds EclipseLink extension over what the JPA functional specification had defined.
+ * <p>
+ * Provisional API: This interface is part of an interim API that is still under development and
+ * expected to change significantly before reaching stability. It is available at this early stage
+ * to solicit feedback from pioneering adopters on the understanding that any code that uses this
+ * API will almost certainly be broken (repeatedly) as the API evolves.
  *
  * @version 2.4
  * @since 2.4
@@ -45,189 +38,77 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
                                          implements EclipseLinkExpressionVisitor {
 
 	/**
-	 * This visitor is responsible to traverse the parents of the visited {@link Expression} and
-	 * stops if a parent is {@link FuncExpression}.
+	 * Creates a new <code>EclipseLinkGrammarValidator</code>.
+	 *
+	 * @param jpqlGrammar The {@link JPQLGrammar} that defines how the JPQL query was parsed
 	 */
-	protected FuncExpressionVisitor funcExpressionVisitor;
+	public EclipseLinkGrammarValidator(JPQLGrammar jpqlGrammar) {
+		super(jpqlGrammar);
+	}
 
 	/**
 	 * Creates a new <code>EclipseLinkGrammarValidator</code>.
 	 *
-	 * @param context The context used to query information about the JPQL query
-	 * @exception AssertException The {@link JPQLQueryContext} cannot be <code>null</code>
+	 * @param queryContext The context used to query information about the JPQL query
+	 * @deprecated This constructor only exists for backward compatibility. {@link JPQLQueryContext}
+	 * is no longer required, only {@link JPQLGrammar}
+	 * @see #EclipseLinkGrammarValidator(JPQLGrammar)
 	 */
-	public EclipseLinkGrammarValidator(JPQLQueryContext context) {
-		super(context);
+	@Deprecated
+	public EclipseLinkGrammarValidator(JPQLQueryContext queryContext) {
+		super(queryContext.getGrammar());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected boolean isJoinFetchIdentifiable() {
-		return getGrammar().getProviderVersion() == EclipseLinkJPQLGrammar2_4.VERSION;
-	}
-
-	protected AbstractSingleEncapsulatedExpressionHelper<FuncExpression> buildFuncExpressionHelper() {
-		return new AbstractSingleEncapsulatedExpressionHelper<FuncExpression>() {
+	protected AbstractSingleEncapsulatedExpressionHelper<FunctionExpression> buildFunctionExpressionHelper() {
+		// TODO: Clean up, create an abstract validate method in the superclass
+		final AbstractSingleEncapsulatedExpressionHelper<FunctionExpression> defaultHelper = super.buildFunctionExpressionHelper();
+		return new AbstractSingleEncapsulatedExpressionHelper<FunctionExpression>() {
 			@Override
-			public String expressionInvalidKey() {
-				return null; // Not used
+			protected String expressionInvalidKey() {
+				return defaultHelper.expressionInvalidKey();
 			}
 			@Override
-			public String expressionMissingKey() {
-				return FuncExpression_MissingFunctionName;
+			protected String expressionMissingKey() {
+				return defaultHelper.expressionMissingKey();
 			}
 			@Override
-			public boolean hasExpression(FuncExpression expression) {
-				// A FUNC expression can have no arguments
-				return true;
+			protected boolean hasExpression(FunctionExpression expression) {
+				return defaultHelper.hasExpression(expression);
 			}
 			@Override
-			public boolean isValidExpression(FuncExpression expression) {
-				return true;
+			protected boolean isValidExpression(FunctionExpression expression) {
+				// A COLUMN function accepts only one argument
+				if (expression.getIdentifier() == Expression.COLUMN) {
+					// Only a single expression is allowed
+					Expression children = expression.getExpression();
+					return expression.hasExpression() &&
+					       getChildren(children).size() == 1 &&
+					       // TODO: Temporary to check for IdentificationVariableBNF.ID
+					       (isValid(children, SingleValuedObjectPathExpressionBNF.ID) ||
+					        isValid(children, IdentificationVariableBNF.ID));
+				}
+				// Any other function accepts zero to many arguments
+				return defaultHelper.isValidExpression(expression);
 			}
 			public String leftParenthesisMissingKey() {
-				return FuncExpression_MissingLeftParenthesis;
+				return defaultHelper.leftParenthesisMissingKey();
 			}
 			public String rightParenthesisMissingKey() {
-				return FuncExpression_MissingRightParenthesis;
+				return defaultHelper.rightParenthesisMissingKey();
 			}
 		};
 	}
 
-        protected AbstractSingleEncapsulatedExpressionHelper<SQLExpression> buildSQLExpressionHelper() {
-                return new AbstractSingleEncapsulatedExpressionHelper<SQLExpression>() {
-                        @Override
-                        public String expressionInvalidKey() {
-                                return null; // Not used
-                        }
-                        @Override
-                        public String expressionMissingKey() {
-                                return SQLExpression_MissingSQL;
-                        }
-                        @Override
-                        public boolean hasExpression(SQLExpression expression) {
-                                // A SQL expression can have no arguments
-                                return true;
-                        }
-                        @Override
-                        public boolean isValidExpression(SQLExpression expression) {
-                                return true;
-                        }
-                };
-        }
-
-        protected AbstractSingleEncapsulatedExpressionHelper<ColumnExpression> buildColumnExpressionHelper() {
-                return new AbstractSingleEncapsulatedExpressionHelper<ColumnExpression>() {
-                        @Override
-                        public String expressionInvalidKey() {
-                                return null; // Not used
-                        }
-                        @Override
-                        public String expressionMissingKey() {
-                                return ColumnExpression_MissingColumn;
-                        }
-                        @Override
-                        public boolean hasExpression(ColumnExpression expression) {
-                                // TODO: must have one argument
-                                return true;
-                        }
-                        @Override
-                        public boolean isValidExpression(ColumnExpression expression) {
-                                return true;
-                        }
-                };
-        }
-
-        protected AbstractSingleEncapsulatedExpressionHelper<OperatorExpression> buildOperatorExpressionHelper() {
-                return new AbstractSingleEncapsulatedExpressionHelper<OperatorExpression>() {
-                        @Override
-                        public String expressionInvalidKey() {
-                                return null; // Not used
-                        }
-                        @Override
-                        public String expressionMissingKey() {
-                                return OperatorExpression_MissingOperator;
-                        }
-                        @Override
-                        public boolean hasExpression(OperatorExpression expression) {
-                                // A SQL expression can have no arguments
-                                return true;
-                        }
-                        @Override
-                        public boolean isValidExpression(OperatorExpression expression) {
-                                return true;
-                        }
-                        public String leftParenthesisMissingKey() {
-                                return MissingLeftParenthesis;
-                        }
-                        public String rightParenthesisMissingKey() {
-                                return MissingRightParenthesis;
-                        }
-                };
-        }
-
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected boolean canParseJPA2Identifiers() {
-		// Eclipse 2.x parsed JPQL queries as JPA 2.0 regardless of the JPA version
-		return getGrammar() != EclipseLinkJPQLGrammar1.instance();
-	}
-
-	protected AbstractSingleEncapsulatedExpressionHelper<FuncExpression> funcExpressionHelper() {
-		AbstractSingleEncapsulatedExpressionHelper<FuncExpression> helper = getHelper(FUNC);
-		if (helper == null) {
-			helper = buildFuncExpressionHelper();
-			registerHelper(FUNC, helper);
-		}
-		return helper;
-	}
-
-        protected AbstractSingleEncapsulatedExpressionHelper<ColumnExpression> columnExpressionHelper() {
-                AbstractSingleEncapsulatedExpressionHelper<ColumnExpression> helper = getHelper(COLUMN);
-                if (helper == null) {
-                        helper = buildColumnExpressionHelper();
-                        registerHelper(COLUMN, helper);
-                }
-                return helper;
-        }
-
-        protected AbstractSingleEncapsulatedExpressionHelper<SQLExpression> sqlExpressionHelper() {
-                AbstractSingleEncapsulatedExpressionHelper<SQLExpression> helper = getHelper(SQL);
-                if (helper == null) {
-                        helper = buildSQLExpressionHelper();
-                        registerHelper(SQL, helper);
-                }
-                return helper;
-        }
-
-        protected AbstractSingleEncapsulatedExpressionHelper<OperatorExpression> operatorExpressionHelper() {
-                AbstractSingleEncapsulatedExpressionHelper<OperatorExpression> helper = getHelper(OPERATOR);
-                if (helper == null) {
-                        helper = buildOperatorExpressionHelper();
-                        registerHelper(OPERATOR, helper);
-                }
-                return helper;
-        }
-
-	protected FuncExpressionVisitor funcExpressionVisitor() {
-		if (funcExpressionVisitor == null) {
-			funcExpressionVisitor = new FuncExpressionVisitor();
-		}
-		return funcExpressionVisitor;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected boolean isInExpressionPathValid(Expression pathExpression) {
-		return super.isInExpressionPathValid(pathExpression)         ||
-		       isValid(pathExpression, IdentificationVariableBNF.ID) ||
-		       isValid(pathExpression, InputParameterBNF.ID);
+	protected LiteralVisitor buildLiteralVisitor() {
+		return new EclipseLinkLiteralVisitor();
 	}
 
 	/**
@@ -242,210 +123,15 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean isSubqueryAllowedAnywhere() {
-		return true;
+	protected boolean isJoinFetchIdentifiable() {
+		return getProviderVersion() == EclipseLinkJPQLGrammar2_4.VERSION;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(FuncExpression expression) {
-
-		if (canParseJPA2Identifiers()) {
-			validateAbstractSingleEncapsulatedExpression(expression, funcExpressionHelper());
-
-			// Missing SQL function name
-			if (expression.hasLeftParenthesis()) {
-				String functionName = expression.getFunctionName();
-
-				if (ExpressionTools.stringIsEmpty(functionName)) {
-					int startPosition = position(expression) + FUNC.length();
-
-					if (expression.hasLeftParenthesis()) {
-						startPosition++;
-					}
-
-					int endPosition   = startPosition;
-					addProblem(expression, startPosition, endPosition, FuncExpression_MissingFunctionName);
-				}
-			}
-		}
-		// Invalid EclipseLink version
-		else if (getGrammar() == EclipseLinkJPQLGrammar2_0.instance()) {
-			// TODO
-			addProblem(expression, FuncExpression_InvalidJPAPlatform);
-		}
-		// Invalid platform
-		else {
-			addProblem(expression, FuncExpression_InvalidJPAPlatform);
-		}
-
-		super.visit(expression);
-	}
-
-        /**
-         * {@inheritDoc}
-         */
-        public void visit(SQLExpression expression) {
-
-                if (canParseJPA2Identifiers()) {
-                        validateAbstractSingleEncapsulatedExpression(expression, sqlExpressionHelper());
-
-                        // Missing SQL function name
-                        if (expression.hasLeftParenthesis()) {
-                                String sql = expression.getSQL();
-
-                                if (ExpressionTools.stringIsEmpty(sql)) {
-                                        int startPosition = position(expression) + SQL.length();
-
-                                        if (expression.hasLeftParenthesis()) {
-                                                startPosition++;
-                                        }
-
-                                        int endPosition   = startPosition;
-                                        addProblem(expression, startPosition, endPosition, SQLExpression_MissingSQL);
-                                }
-                        }
-                }
-                // Invalid EclipseLink version
-                else if (getGrammar() == EclipseLinkJPQLGrammar2_4.instance()) {
-                        // TODO
-                        addProblem(expression, InvalidJPAPlatform);
-                }
-                // Invalid platform
-                else {
-                        addProblem(expression, InvalidJPAPlatform);
-                }
-
-                super.visit(expression);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public void visit(OperatorExpression expression) {
-
-                if (canParseJPA2Identifiers()) {
-                        validateAbstractSingleEncapsulatedExpression(expression, operatorExpressionHelper());
-
-                        // Missing SQL function name
-                        if (expression.hasLeftParenthesis()) {
-                                String sql = expression.getOperator();
-
-                                if (ExpressionTools.stringIsEmpty(sql)) {
-                                        int startPosition = position(expression) + OPERATOR.length();
-
-                                        if (expression.hasLeftParenthesis()) {
-                                                startPosition++;
-                                        }
-
-                                        int endPosition   = startPosition;
-                                        addProblem(expression, startPosition, endPosition, OperatorExpression_MissingOperator);
-                                }
-                        }
-                }
-                // Invalid EclipseLink version
-                else if (getGrammar() == EclipseLinkJPQLGrammar2_4.instance()) {
-                        // TODO
-                        addProblem(expression, InvalidJPAPlatform);
-                }
-                // Invalid platform
-                else {
-                        addProblem(expression, InvalidJPAPlatform);
-                }
-
-                super.visit(expression);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public void visit(ColumnExpression expression) {
-
-                if (canParseJPA2Identifiers()) {
-                        validateAbstractSingleEncapsulatedExpression(expression, columnExpressionHelper());
-
-                        // Missing column name
-                        if (expression.hasLeftParenthesis()) {
-                                String sql = expression.getColumn();
-
-                                if (ExpressionTools.stringIsEmpty(sql)) {
-                                        int startPosition = position(expression) + OPERATOR.length();
-
-                                        if (expression.hasLeftParenthesis()) {
-                                                startPosition++;
-                                        }
-
-                                        int endPosition   = startPosition;
-                                        addProblem(expression, startPosition, endPosition, ColumnExpression_MissingColumn);
-                                }
-                        }
-                }
-                // Invalid EclipseLink version
-                else if (getGrammar() == EclipseLinkJPQLGrammar2_4.instance()) {
-                        // TODO
-                        addProblem(expression, InvalidJPAPlatform);
-                }
-                // Invalid platform
-                else {
-                        addProblem(expression, InvalidJPAPlatform);
-                }
-
-                super.visit(expression);
-        }
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(TreatExpression expression) {
-
-		// TODO: Validate syntax
-		if (canParseJPA2Identifiers()) {
-			// TODO
-		}
-		// Invalid EclipseLink version
-		else if (getGrammar() == EclipseLinkJPQLGrammar2_0.instance()) {
-			// TODO
-			addProblem(expression, FuncExpression_InvalidJPAPlatform);
-		}
-		// Invalid platform
-		else {
-			addProblem(expression, FuncExpression_InvalidJPAPlatform);
-		}
-
-		super.visit(expression);
-	}
-
-	/**
-	 * This visitor is responsible to traverse the parents of the visited {@link Expression} and
-	 * stops if a parent is {@link FuncExpression}.
-	 */
-	protected static class FuncExpressionVisitor extends AbstractEclipseLinkTraverseParentVisitor {
-
-		/**
-		 * The {@link FunctionExpression} if it is a parent of the {@link Expression} being visited.
-		 */
-		FuncExpression expression;
-		SelectClause selectClause;
-		SimpleSelectClause simpleSelectClause;
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(FuncExpression expression) {
-			this.expression = expression;
-			super.visit(expression);
-		}
-
-		@Override
-		public void visit(SelectClause expression) {
-			selectClause = expression;
-		}
-
-		@Override
-		public void visit(SimpleSelectClause expression) {
-			simpleSelectClause = expression;
-		}
+	@Override
+	protected boolean isSubqueryAllowedAnywhere() {
+		return getProviderVersion() == EclipseLinkJPQLGrammar2_4.VERSION;
 	}
 }

@@ -22,7 +22,7 @@ import org.eclipse.persistence.jpa.jpql.model.query.UpdateItemStateObject;
  * @since 2.4
  * @author Pascal Filion
  */
-public final class DefaultNewValueStateObjectBuilder extends AbstractNewValueStateObjectBuilder {
+public class DefaultNewValueStateObjectBuilder extends AbstractNewValueStateObjectBuilder {
 
 	/**
 	 * Creates a new <code>DefaultNewValueStateObjectBuilder</code>.

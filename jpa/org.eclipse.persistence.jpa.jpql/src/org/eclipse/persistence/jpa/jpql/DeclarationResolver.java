@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -45,6 +46,7 @@ import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectStatement;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateClause;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateStatement;
+import org.eclipse.persistence.jpa.jpql.spi.IMapping;
 import org.eclipse.persistence.jpa.jpql.spi.IQuery;
 import org.eclipse.persistence.jpa.jpql.spi.IType;
 import org.eclipse.persistence.jpa.jpql.spi.ITypeDeclaration;
@@ -377,8 +379,13 @@ public class DeclarationResolver extends Resolver {
 
 			// Check the JOIN expressions
 			for (String joinIdentificationVariable : declaration.getJoinIdentificationVariables()) {
+
 				if (joinIdentificationVariable.equalsIgnoreCase(variableName)) {
-					return true;
+
+					// Make sure the JOIN expression maps a collection mapping
+					Resolver resolver = getResolver(variableName);
+					IMapping mapping = (resolver != null) ? resolver.getMapping() : null;
+					return (mapping != null) && mapping.isCollection();
 				}
 			}
 		}
@@ -481,7 +488,7 @@ public class DeclarationResolver extends Resolver {
 	 * A <code>Declaration</code> represents either an identification variable declaration or a
 	 * collection member declaration. For a subquery, the declaration can be a derived path expression.
 	 */
-	public static class Declaration {
+	public static class Declaration implements JPQLQueryDeclaration {
 
 		/**
 		 * Either the range variable declaration if this is a range declaration otherwise the
@@ -571,21 +578,14 @@ public class DeclarationResolver extends Resolver {
 		}
 
 		/**
-		 * Returns the range variable declaration if this is a range declaration otherwise the
-		 * collection-valued path expression when this is a collection member declaration.
-		 *
-		 * @return Either the range variable declaration or the collection-valued path expression
+		 * {@inheritDoc}
 		 */
 		public Expression getBaseExpression() {
 			return baseExpression;
 		}
 
 		/**
-		 * Returns the declaration expression, which is either an {@link IdentificationVariableDeclaration}
-		 * or a {@link CollectionMemberDeclaration} when part of a <b>FROM</b> clause, otherwise it's
-		 * either the {@link DeleteClause} or the {@link UpdateClause}.
-		 *
-		 * @return The root of the declaration expression
+		 * {@inheritDoc}
 		 */
 		public Expression getDeclarationExpression() {
 			return declarationExpression;
@@ -625,14 +625,10 @@ public class DeclarationResolver extends Resolver {
 		}
 
 		/**
-		 * Returns the <b>JOIN</b> expressions that were part of the range variable declaration in the
-		 * ordered they were parsed.
-		 *
-		 * @return The ordered list of <b>JOIN</b> expressions or an empty collection if none was
-		 * present
+		 * {@inheritDoc}
 		 */
-		public Collection<Join> getJoins() {
-			return joins.keySet();
+		public List<Join> getJoins() {
+			return new LinkedList<Join>(joins.keySet());
 		}
 
 		/**
@@ -675,15 +671,17 @@ public class DeclarationResolver extends Resolver {
 		}
 
 		/**
-		 * Determines whether the declaration contains <b>JOIN</b> expressions. This can be
-		 * <code>true</code> only when {@link #isRange()} returns <code>true</code>. A collection
-		 * member declaration does not have <b>JOIN</b> expressions.
-		 *
-		 * @return <code>true</code> if at least one <b>JOIN</b> expression was parsed;
-		 * otherwise <code>false</code>
+		 * {@inheritDoc}
 		 */
 		public boolean hasJoins() {
 			return !joins.isEmpty();
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public boolean isCollection() {
+			return !rangeDeclaration;
 		}
 
 		/**

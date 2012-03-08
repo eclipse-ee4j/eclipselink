@@ -44,6 +44,7 @@ public final class FunctionItemBNF extends JPQLQueryBNF {
 		setHandleCollection(true);
 		setFallbackBNFId(ID);
 		setFallbackExpressionFactoryId(PreLiteralExpressionFactory.ID);
+		registerChild(IdentificationVariableBNF.ID);
 		registerChild(ScalarExpressionBNF.ID);
 	}
 }

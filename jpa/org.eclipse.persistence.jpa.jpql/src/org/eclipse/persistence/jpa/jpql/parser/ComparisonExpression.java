@@ -121,7 +121,9 @@ public final class ComparisonExpression extends CompoundExpression {
 	 */
 	@Override
 	protected String parseIdentifier(WordParser wordParser) {
+
 		switch (wordParser.character()) {
+
 			case '<': {
 				switch (wordParser.character(wordParser.position() + 1)) {
 					case '=': return LOWER_THAN_OR_EQUAL;
@@ -138,8 +140,13 @@ public final class ComparisonExpression extends CompoundExpression {
 			}
 
 			// =
-			default: {
+			case '=': {
 				return EQUAL;
+			}
+
+			// TODO: Add support for additional JPQL identifiers
+			default: {
+				return ExpressionTools.EMPTY_STRING;
 			}
 		}
 	}

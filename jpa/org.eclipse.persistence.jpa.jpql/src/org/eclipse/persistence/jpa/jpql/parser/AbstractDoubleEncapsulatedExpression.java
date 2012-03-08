@@ -84,7 +84,7 @@ public abstract class AbstractDoubleEncapsulatedExpression extends AbstractEncap
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void addOrderedEncapsulatedExpressionTo(List<StringExpression> children) {
+	protected void addOrderedEncapsulatedExpressionTo(List<Expression> children) {
 
 		// Fist expression
 		if (firstExpression != null) {

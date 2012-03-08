@@ -121,7 +121,7 @@ public abstract class AbstractSelectStatement extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void addOrderedChildrenTo(List<StringExpression> children) {
+	protected void addOrderedChildrenTo(List<Expression> children) {
 
 		// SELECT clause
 		if (selectClause != null) {

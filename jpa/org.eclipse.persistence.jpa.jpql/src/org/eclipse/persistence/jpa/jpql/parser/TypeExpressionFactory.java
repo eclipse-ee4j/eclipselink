@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -14,7 +14,6 @@
 package org.eclipse.persistence.jpa.jpql.parser;
 
 import org.eclipse.persistence.jpa.jpql.WordParser;
-import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
 
 /**
  * This {@link TypeExpressionFactory} creates a new {@link TypeExpression} when the portion of the
@@ -54,13 +53,5 @@ public final class TypeExpressionFactory extends ExpressionFactory {
 		expression = new TypeExpression(parent);
 		expression.parse(wordParser, tolerant);
 		return expression;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public JPAVersion getVersion() {
-		return JPAVersion.VERSION_2_0;
 	}
 }

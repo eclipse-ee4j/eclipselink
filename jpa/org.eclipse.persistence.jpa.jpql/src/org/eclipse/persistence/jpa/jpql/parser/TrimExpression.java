@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -105,7 +105,7 @@ public final class TrimExpression extends AbstractSingleEncapsulatedExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void addOrderedEncapsulatedExpressionTo(List<StringExpression> children) {
+	protected void addOrderedEncapsulatedExpressionTo(List<Expression> children) {
 
 		// Trim specification
 		if (hasSpecification()) {
@@ -281,7 +281,9 @@ public final class TrimExpression extends AbstractSingleEncapsulatedExpression {
 
 		// Parse the trim character
 		if (!wordParser.startsWithIdentifier(FROM)) {
-			trimCharacter = parse(wordParser, getQueryBNF(PreLiteralExpressionBNF.ID), tolerant);
+			// Make sure to parse with the encapsulated expression because if it is not
+			// the trim character but the string primary, then it has to be parsed correctly
+			trimCharacter = parse(wordParser, getQueryBNF(encapsulatedExpressionBNF()), tolerant);
 		}
 
 		if (hasTrimCharacter()) {
@@ -384,22 +386,40 @@ public final class TrimExpression extends AbstractSingleEncapsulatedExpression {
 		/**
 		 * The leading and trailing parts of the string will be trimmed.
 		 */
-		BOTH,
+		BOTH(Expression.BOTH),
 
 		/**
 		 * Used when the trim specification is not specified, by default it means the leading and
 		 * trailing parts of the string will be trimmed.
 		 */
-		DEFAULT,
+		DEFAULT(ExpressionTools.EMPTY_STRING),
 
 		/**
 		 * Only the leading part of the string will be trimmed.
 		 */
-		LEADING,
+		LEADING(Expression.LEADING),
 
 		/**
 		 * Only the trailing part of the string will be trimmed.
 		 */
-		TRAILING
+		TRAILING(Expression.TRAILING);
+
+		/**
+		 * The actual constant associated with the constant.
+		 */
+		private String value;
+
+		private Specification(String value) {
+			this.value = value;
+		}
+
+		/**
+		 * Returns the actual identifier associated with the constant.
+		 *
+		 * @return The identifier associated with the constant or an empty string for {@link #DEFAULT}
+		 */
+		public String getValue() {
+			return value;
+		}
 	}
 }

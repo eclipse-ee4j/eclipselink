@@ -20,7 +20,7 @@ import org.eclipse.persistence.jpa.jpql.model.query.SelectClauseStateObject;
  * @since 2.4
  * @author Pascal Filion
  */
-public final class EclipseLinkSelectExpressionStateObjectBuilder extends AbstractEclipseLinkSelectExpressionStateObjectBuilder {
+public class EclipseLinkSelectExpressionStateObjectBuilder extends AbstractEclipseLinkSelectExpressionStateObjectBuilder {
 
 	/**
 	 * Creates a new <code>EclipseLinkSelectExpressionStateObjectBuilder</code>.

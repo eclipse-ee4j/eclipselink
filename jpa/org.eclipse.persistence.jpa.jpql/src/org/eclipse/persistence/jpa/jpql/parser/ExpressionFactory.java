@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -15,11 +15,15 @@ package org.eclipse.persistence.jpa.jpql.parser;
 
 import java.util.Arrays;
 import org.eclipse.persistence.jpa.jpql.WordParser;
-import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
 
 /**
  * An <code>ExpressionFactory</code> is responsible to parse a portion of JPQL query that starts
  * with one of the factory's identifiers.
+ *
+ * Provisional API: This interface is part of an interim API that is still under development and
+ * expected to change significantly before reaching stability. It is available at this early stage
+ * to solicit feedback from pioneering adopters on the understanding that any code that uses this
+ * API will almost certainly be broken (repeatedly) as the API evolves.
  *
  * @version 2.4
  * @since 2.3
@@ -36,7 +40,7 @@ public abstract class ExpressionFactory implements Comparable<ExpressionFactory>
 	/**
 	 * The unique identifier of this {@link ExpressionFactory}.
 	 */
-	private String id;
+	private final String id;
 
 	/**
 	 * The JPQL identifiers handled by this factory.
@@ -53,7 +57,29 @@ public abstract class ExpressionFactory implements Comparable<ExpressionFactory>
 	 */
 	protected ExpressionFactory(String id, String... identifiers) {
 		super();
-		initialize(id, identifiers);
+		this.id = id;
+		this.identifiers = identifiers;
+	}
+
+	/**
+	 * Adds the given JPQL identifier to this factory.
+	 *
+	 * @param identifier The JPQL identifier this factory will parse
+	 */
+	void addIdentifier(String identifier) {
+		identifiers = Arrays.copyOf(identifiers, identifiers.length + 1);
+		identifiers[identifiers.length - 1] = identifier;
+	}
+
+	/**
+	 * Adds the given JPQL identifiers to this factory.
+	 *
+	 * @param identifier The JPQL identifiers this factory will parse
+	 */
+	void addIdentifiers(String... identifiers) {
+		int insertionIndex = this.identifiers.length;
+		this.identifiers = Arrays.copyOf(this.identifiers, insertionIndex + identifiers.length);
+		System.arraycopy(identifiers, 0, this.identifiers, insertionIndex, identifiers.length);
 	}
 
 	/**
@@ -118,15 +144,6 @@ public abstract class ExpressionFactory implements Comparable<ExpressionFactory>
 	}
 
 	/**
-	 * Returns the supported JPA version.
-	 *
-	 * @return The version for which this factory can support
-	 */
-	public JPAVersion getVersion() {
-		return JPAVersion.VERSION_1_0;
-	}
-
-	/**
 	 * {@inheritDoc}
 	 */
 	@Override
@@ -141,20 +158,6 @@ public abstract class ExpressionFactory implements Comparable<ExpressionFactory>
 	 */
 	public final String[] identifiers() {
 		return identifiers;
-	}
-
-	private void initialize(String id, String... identifiers) {
-
-		if (id == null) {
-			throw new NullPointerException("The unique identifier of this ExpressionFactory cannot be null");
-		}
-
-		if (identifiers == null) {
-			throw new NullPointerException("The list of supported JPQL identifiers cannot be null");
-		}
-
-		this.id = id;
-		this.identifiers = identifiers;
 	}
 
 	/**

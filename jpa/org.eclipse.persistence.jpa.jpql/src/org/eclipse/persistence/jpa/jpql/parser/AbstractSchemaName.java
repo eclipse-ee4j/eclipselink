@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -52,7 +52,7 @@ public final class AbstractSchemaName extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void addOrderedChildrenTo(List<StringExpression> children) {
+	protected void addOrderedChildrenTo(List<Expression> children) {
 		children.add(buildStringExpression(getText()));
 	}
 
@@ -78,6 +78,14 @@ public final class AbstractSchemaName extends AbstractExpression {
 	@Override
 	protected void parse(WordParser wordParser, boolean tolerant) {
 		wordParser.moveForward(getText());
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String toActualText() {
+		return getText();
 	}
 
 	/**

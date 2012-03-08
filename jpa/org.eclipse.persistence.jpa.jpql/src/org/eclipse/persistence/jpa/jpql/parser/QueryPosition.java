@@ -73,7 +73,7 @@ public final class QueryPosition {
 
 		int length = 0;
 
-		for (StringExpression child : parent.orderedChildren()) {
+		for (Expression child : parent.orderedChildren()) {
 
 			if (child == expression) {
 				length += adjustedPosition;

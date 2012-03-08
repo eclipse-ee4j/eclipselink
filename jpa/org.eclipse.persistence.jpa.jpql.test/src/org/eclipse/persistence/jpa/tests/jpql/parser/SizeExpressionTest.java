@@ -40,7 +40,7 @@ public final class SizeExpressionTest extends JPQLParserTest {
 		SelectStatementTester selectStatement = selectStatement(
 			select(variable("e")),
 			from("Employee", "e"),
-			where(size(avg("e.firstName")))
+			where(size(bad(avg("e.firstName"))))
 		);
 
 		testInvalidQuery(query, selectStatement);

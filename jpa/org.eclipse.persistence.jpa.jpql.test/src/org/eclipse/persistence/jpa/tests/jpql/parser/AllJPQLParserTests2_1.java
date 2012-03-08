@@ -21,8 +21,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;
 
 /**
- * This test suite tests the JPQL queries written for JPA 2.1 and tests them with the JPQL grammar
- * defined for JPA 2.1 as well as with the additional support EclipseLink 2.4 or later offers.
+ * This test suite runs {@link JPQLParserTests2_1} using JPQL grammars written for JPA 2.1.
  *
  * @version 2.4
  * @since 2.4

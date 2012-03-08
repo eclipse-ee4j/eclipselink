@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -97,7 +97,7 @@ public abstract class AbstractSelectClause extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void addOrderedChildrenTo(List<StringExpression> children) {
+	protected void addOrderedChildrenTo(List<Expression> children) {
 
 		// 'SELECT'
 		children.add(buildStringExpression(SELECT));
@@ -216,7 +216,7 @@ public abstract class AbstractSelectClause extends AbstractExpression {
 		}
 
 		// Parse the select expression
-		selectExpression = parse(wordParser, selectItemBNF(), tolerant);
+		selectExpression = parse(wordParser, getQueryBNF(selectItemBNF()), tolerant);
 	}
 
 	/**
@@ -224,7 +224,7 @@ public abstract class AbstractSelectClause extends AbstractExpression {
 	 *
 	 * @return The BNF for the list of select items to parse
 	 */
-	protected abstract JPQLQueryBNF selectItemBNF();
+	public abstract String selectItemBNF();
 
 	/**
 	 * {@inheritDoc}

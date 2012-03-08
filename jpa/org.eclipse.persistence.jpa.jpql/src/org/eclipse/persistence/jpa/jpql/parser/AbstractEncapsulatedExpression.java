@@ -62,7 +62,7 @@ public abstract class AbstractEncapsulatedExpression extends AbstractExpression 
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected final void addOrderedChildrenTo(List<StringExpression> children) {
+	protected final void addOrderedChildrenTo(List<Expression> children) {
 
 		// Identifier
 		children.add(buildStringExpression(getText()));
@@ -84,13 +84,13 @@ public abstract class AbstractEncapsulatedExpression extends AbstractExpression 
 	}
 
 	/**
-	 * Adds the {@link StringExpression StringExpressions} representing the encapsulated {@link
+	 * Adds the {@link Expression Expressions} representing the encapsulated {@link
 	 * Expression}.
 	 *
 	 * @param children The list used to store the string representation of the encapsulated {@link
 	 * Expression}
 	 */
-	protected abstract void addOrderedEncapsulatedExpressionTo(List<StringExpression> children);
+	protected abstract void addOrderedEncapsulatedExpressionTo(List<Expression> children);
 
 	protected boolean areLogicalIdentifiersSupported() {
 		return false;

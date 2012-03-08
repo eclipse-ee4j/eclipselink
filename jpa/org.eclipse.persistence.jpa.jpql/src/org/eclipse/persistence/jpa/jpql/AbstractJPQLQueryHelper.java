@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse protected License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -13,9 +13,9 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeSet;
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
@@ -42,6 +42,11 @@ import org.eclipse.persistence.jpa.jpql.spi.ITypeRepository;
  *     <li>{@link #validateSemantic()}.</li>
  *     </ul></li>
  *
+ * Provisional API: This interface is part of an interim API that is still under development and
+ * expected to change significantly before reaching stability. It is available at this early stage
+ * to solicit feedback from pioneering adopters on the understanding that any code that uses this
+ * API will almost certainly be broken (repeatedly) as the API evolves.
+ *
  * @version 2.4
  * @since 2.3
  * @author Pascal Filion
@@ -64,7 +69,7 @@ public abstract class AbstractJPQLQueryHelper {
 	/**
 	 * The context used to query information about the JPQL query.
 	 */
-	private final JPQLQueryContext queryContext;
+	private JPQLQueryContext queryContext;
 
 	/**
 	 * This visitor is responsible to visit the entire parsed tree representation of the JPQL query
@@ -73,13 +78,19 @@ public abstract class AbstractJPQLQueryHelper {
 	private AbstractSemanticValidator semanticValidator;
 
 	/**
+	 *
+	 */
+	private JPQLGrammar jpqlGrammar;
+
+	/**
 	 * Creates a new <code>AbstractJPQLQueryHelper</code>.
 	 *
 	 * @param jpqlGrammar The {@link JPQLGrammar} that will determine how to parse JPQL queries
 	 */
 	public AbstractJPQLQueryHelper(JPQLGrammar jpqlGrammar) {
 		super();
-		queryContext = buildJPQLQueryContext(jpqlGrammar);
+		Assert.isNotNull(jpqlGrammar, "The JPQLGrammar cannot be null");
+		this.jpqlGrammar = jpqlGrammar;
 	}
 
 	/**
@@ -90,8 +101,11 @@ public abstract class AbstractJPQLQueryHelper {
 	 */
 	protected AbstractJPQLQueryHelper(JPQLQueryContext queryContext) {
 		super();
+
 		Assert.isNotNull(queryContext, "The JPQLQueryContext cannot be null");
+
 		this.queryContext = queryContext;
+		this.jpqlGrammar  = queryContext.getGrammar();
 	}
 
 	/**
@@ -108,7 +122,7 @@ public abstract class AbstractJPQLQueryHelper {
 
 		// Create a map of the positions within the parsed tree
 		QueryPosition queryPosition = getJPQLExpression().buildPosition(
-			queryContext.getQuery().getExpression(),
+			getQueryContext().getQuery().getExpression(),
 			position
 		);
 
@@ -139,7 +153,10 @@ public abstract class AbstractJPQLQueryHelper {
 	 *
 	 * @param queryContext The context used to query information about the JPQL query
 	 * @return A new concrete instance of {@link AbstractGrammarValidator}
+	 * @deprecated Eventually this method should change to accept {@link JPQLGrammar} and not
+	 * {@link JPQLQueryContext} anymore
 	 */
+	@Deprecated
 	protected abstract AbstractGrammarValidator buildGrammarValidator(JPQLQueryContext queryContext);
 
 	/**
@@ -167,12 +184,14 @@ public abstract class AbstractJPQLQueryHelper {
 	 * Disposes of the internal data.
 	 */
 	public void dispose() {
-		queryContext.dispose();
+		if (queryContext != null) {
+			queryContext.dispose();
+		}
 	}
 
 	protected AbstractContentAssistVisitor getContentAssistVisitor() {
 		if (contentAssistVisitor == null) {
-			contentAssistVisitor = buildContentAssistVisitor(queryContext);
+			contentAssistVisitor = buildContentAssistVisitor(getQueryContext());
 		}
 		return contentAssistVisitor;
 	}
@@ -184,12 +203,12 @@ public abstract class AbstractJPQLQueryHelper {
 	 * @since 2.4
 	 */
 	public JPQLGrammar getGrammar() {
-		return queryContext.getGrammar();
+		return jpqlGrammar;
 	}
 
 	protected AbstractGrammarValidator getGrammarValidator() {
 		if (grammarValidator == null) {
-			grammarValidator = buildGrammarValidator(queryContext);
+			grammarValidator = buildGrammarValidator(getQueryContext());
 		}
 		return grammarValidator;
 	}
@@ -200,7 +219,7 @@ public abstract class AbstractJPQLQueryHelper {
 	 * @return The parsed JPQL query
 	 */
 	public JPQLExpression getJPQLExpression() {
-		return queryContext.getJPQLExpression();
+		return getQueryContext().getJPQLExpression();
 	}
 
 	/**
@@ -225,7 +244,7 @@ public abstract class AbstractJPQLQueryHelper {
 		}
 
 		// Find the InputParameters with the given parameter name
-		Collection<InputParameter> inputParameters = queryContext.findInputParameters(parameterName);
+		Collection<InputParameter> inputParameters = getQueryContext().findInputParameters(parameterName);
 
 		// No InputParameter was found
 		if (inputParameters.isEmpty()) {
@@ -274,7 +293,7 @@ public abstract class AbstractJPQLQueryHelper {
 	 * @return The external form representing a named query
 	 */
 	public IQuery getQuery() {
-		return queryContext.getQuery();
+		return getQueryContext().getQuery();
 	}
 
 	/**
@@ -283,6 +302,9 @@ public abstract class AbstractJPQLQueryHelper {
 	 * @return The {@link JPQLQueryContext} that contains information contained in the JPQL query
 	 */
 	public JPQLQueryContext getQueryContext() {
+		if (queryContext == null) {
+			queryContext = buildJPQLQueryContext(jpqlGrammar);
+		}
 		return queryContext;
 	}
 
@@ -307,7 +329,7 @@ public abstract class AbstractJPQLQueryHelper {
 
 	protected AbstractSemanticValidator getSemanticValidator() {
 		if (semanticValidator == null) {
-			semanticValidator = buildSemanticValidator(queryContext);
+			semanticValidator = buildSemanticValidator(getQueryContext());
 		}
 		return semanticValidator;
 	}
@@ -346,7 +368,7 @@ public abstract class AbstractJPQLQueryHelper {
 	 * @param jpqlExpression
 	 */
 	public void setJPQLExpression(JPQLExpression jpqlExpression) {
-		queryContext.setJPQLExpression(jpqlExpression);
+		getQueryContext().setJPQLExpression(jpqlExpression);
 	}
 
 	/**
@@ -356,7 +378,7 @@ public abstract class AbstractJPQLQueryHelper {
 	 * @param query The external form of the JPQL query
 	 */
 	public void setQuery(IQuery query) {
-		queryContext.setQuery(query);
+		getQueryContext().setQuery(query);
 	}
 
 	/**
@@ -366,7 +388,7 @@ public abstract class AbstractJPQLQueryHelper {
 	 * problems} if any was found
 	 */
 	public List<JPQLQueryProblem> validate() {
-		List<JPQLQueryProblem> problems = new ArrayList<JPQLQueryProblem>();
+		List<JPQLQueryProblem> problems = new LinkedList<JPQLQueryProblem>();
 		validate(getJPQLExpression(), problems);
 		return problems;
 	}
@@ -390,7 +412,7 @@ public abstract class AbstractJPQLQueryHelper {
 	 * problems} if any was found
 	 */
 	public List<JPQLQueryProblem> validateGrammar() {
-		List<JPQLQueryProblem> problems = new ArrayList<JPQLQueryProblem>();
+		List<JPQLQueryProblem> problems = new LinkedList<JPQLQueryProblem>();
 		validateGrammar(getJPQLExpression(), problems);
 		return problems;
 	}
@@ -403,7 +425,7 @@ public abstract class AbstractJPQLQueryHelper {
 	 * JPQLQueryProblem problems} if any was found
 	 */
 	public void validateGrammar(Expression expression, List<JPQLQueryProblem> problems) {
-		AbstractGrammarValidator visitor = getGrammarValidator();
+		AbstractGrammarValidator visitor = buildGrammarValidator(getQueryContext());
 		try {
 			visitor.setProblems(problems);
 			expression.accept(visitor);
@@ -420,7 +442,7 @@ public abstract class AbstractJPQLQueryHelper {
 	 * problems} if any was found
 	 */
 	public List<JPQLQueryProblem> validateSemantic() {
-		List<JPQLQueryProblem> problems = new ArrayList<JPQLQueryProblem>();
+		List<JPQLQueryProblem> problems = new LinkedList<JPQLQueryProblem>();
 		validateSemantic(getJPQLExpression(), problems);
 		return problems;
 	}

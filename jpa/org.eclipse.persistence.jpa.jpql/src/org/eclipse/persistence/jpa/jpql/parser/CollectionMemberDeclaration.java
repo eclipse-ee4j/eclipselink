@@ -129,7 +129,7 @@ public final class CollectionMemberDeclaration extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void addOrderedChildrenTo(List<StringExpression> children) {
+	protected void addOrderedChildrenTo(List<Expression> children) {
 
 		// 'IN'
 		children.add(buildStringExpression(IN));

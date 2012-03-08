@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -126,13 +126,13 @@ public final class CollectionExpression extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void addOrderedChildrenTo(List<StringExpression> children) {
+	protected void addOrderedChildrenTo(List<Expression> children) {
 
 		children();
 
 		for (int index = 0, count = this.children.size(); index < count; index++) {
 			Expression expression = getChild(index);
-			children.add((AbstractExpression) expression);
+			children.add(expression);
 
 			// Write ','
 			if (hasComma(index)) {

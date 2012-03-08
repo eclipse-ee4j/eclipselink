@@ -29,6 +29,7 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({
 	AllUtilityTests.class,
 	AllJPQLParserTests.class,
+	AllGrammarValidatorTests.class,
 	AllHermesTests.BatchTestSuite.class
 })
 @RunWith(JPQLTestRunner.class)
@@ -39,7 +40,6 @@ public final class AllHermesTests {
 	}
 
 	@SuiteClasses({
-		AllGrammarValidatorTests.class,
 		AllSemanticValidatorTests.class,
 		AllContentAssistTests.class,
 		AllStateObjectTests.class,

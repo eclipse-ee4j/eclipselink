@@ -14,9 +14,12 @@
 package org.eclipse.persistence.jpa.tests.jpql;
 
 import org.eclipse.persistence.jpa.jpql.AbstractJPQLQueryHelper;
+import org.eclipse.persistence.jpa.jpql.DefaultJPQLQueryContext;
 import org.eclipse.persistence.jpa.jpql.DefaultJPQLQueryHelper;
+import org.eclipse.persistence.jpa.jpql.EclipseLinkJPQLQueryContext;
 import org.eclipse.persistence.jpa.jpql.EclipseLinkJPQLQueryHelper;
-import org.eclipse.persistence.jpa.jpql.parser.DefaultEclipseLinkJPQLGrammar;
+import org.eclipse.persistence.jpa.jpql.JPQLQueryContext;
+import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_3;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar2_0;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;
@@ -47,10 +50,14 @@ public final class AllContentAssistTests {
 			super();
 		}
 
+		private static JPQLQueryContext buildJPQLQueryContext() {
+			return new DefaultJPQLQueryContext(JPQLGrammar2_0.instance());
+		}
+
 		@JPQLQueryHelperTestHelper
 		static AbstractJPQLQueryHelper[] buildJPQLQueryHelpers() {
 			return new AbstractJPQLQueryHelper[] {
-				new DefaultJPQLQueryHelper(JPQLGrammar2_0.instance())
+				new DefaultJPQLQueryHelper(buildJPQLQueryContext())
 			};
 		}
 	}
@@ -65,10 +72,14 @@ public final class AllContentAssistTests {
 			super();
 		}
 
+		private static JPQLQueryContext buildJPQLQueryContext() {
+			return new EclipseLinkJPQLQueryContext(EclipseLinkJPQLGrammar2_3.instance());
+		}
+
 		@JPQLQueryHelperTestHelper
 		static AbstractJPQLQueryHelper[] buildJPQLQueryHelpers() {
 			return new AbstractJPQLQueryHelper[] {
-				new EclipseLinkJPQLQueryHelper(DefaultEclipseLinkJPQLGrammar.instance())
+				new EclipseLinkJPQLQueryHelper(buildJPQLQueryContext())
 			};
 		}
 	}

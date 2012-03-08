@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -54,7 +54,7 @@ public final class SelectClause extends AbstractSelectClause {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected JPQLQueryBNF selectItemBNF() {
-		return getQueryBNF(SelectClauseInternalBNF.ID);
+	public String selectItemBNF() {
+		return SelectClauseInternalBNF.ID;
 	}
 }

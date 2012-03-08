@@ -114,4 +114,25 @@ public final class TrimExpressionTest extends JPQLParserTest {
 
 		testQuery(query, selectStatement);
 	}
+
+	@Test
+	public void testBuildExpression_08() {
+
+		String query = "SELECT p FROM Person p where 'a' = trim(trim('a'))";
+
+		SelectStatementTester selectStatement = selectStatement(
+			select(variable("p")),
+			from("Person", "p"),
+			where(
+					string("'a'")
+				.equal(
+					trim(
+						trim(string("'a'"))
+					)
+				)
+			)
+		);
+
+		testQuery(query, selectStatement);
+	}
 }

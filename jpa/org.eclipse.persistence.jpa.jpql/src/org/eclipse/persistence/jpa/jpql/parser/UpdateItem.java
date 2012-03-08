@@ -93,7 +93,7 @@ public final class UpdateItem extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void addOrderedChildrenTo(List<StringExpression> children) {
+	protected void addOrderedChildrenTo(List<Expression> children) {
 
 		// State field expression
 		if (stateFieldExpression != null) {

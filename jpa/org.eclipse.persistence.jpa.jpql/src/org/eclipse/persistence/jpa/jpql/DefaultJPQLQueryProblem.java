@@ -15,12 +15,11 @@ package org.eclipse.persistence.jpa.jpql;
 
 import java.util.Arrays;
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
-import org.eclipse.persistence.jpa.jpql.spi.IQuery;
 
 /**
- * The default implementation of a {@link JPQLQueryProblem}.
+ * The default implementation of {@link JPQLQueryProblem}.
  *
- * @version 2.3
+ * @version 2.4
  * @since 2.3
  * @author Pascal Filion
  */
@@ -48,11 +47,6 @@ final class DefaultJPQLQueryProblem implements JPQLQueryProblem {
 	private String messageKey;
 
 	/**
-	 * The external form of the query to validate.
-	 */
-	private IQuery query;
-
-	/**
 	 * The position where the problem ends.
 	 */
 	private int startIndex;
@@ -60,7 +54,6 @@ final class DefaultJPQLQueryProblem implements JPQLQueryProblem {
 	/**
 	 * Creates a new <code>DefaultJPQLQueryProblem</code>.
 	 *
-	 * @param query The external form of the query to validate, cannot be <code>null</code>
 	 * @param expression The {@link Expression} that is either not following the BNF grammar or that
 	 * has semantic problems
 	 * @param startIndex The position where the problem was encountered
@@ -69,15 +62,13 @@ final class DefaultJPQLQueryProblem implements JPQLQueryProblem {
 	 * @param messageArguments The list of arguments that can be used to format the localized
 	 * description of the problem
 	 */
-	DefaultJPQLQueryProblem(IQuery query,
-	                        Expression expression,
+	DefaultJPQLQueryProblem(Expression expression,
 	                        int startIndex,
 	                        int endIndex,
 	                        String messageKey,
 	                        String... messageArguments) {
 		super();
 
-		this.query            = query;
 		this.startIndex       = startIndex;
 		this.endIndex         = endIndex;
 		this.expression       = expression;
@@ -116,13 +107,6 @@ final class DefaultJPQLQueryProblem implements JPQLQueryProblem {
 	/**
 	 * {@inheritDoc}
 	 */
-	public IQuery getQuery() {
-		return query;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
 	public int getStartPosition() {
 		return startIndex;
 	}
@@ -142,7 +126,7 @@ final class DefaultJPQLQueryProblem implements JPQLQueryProblem {
 		sb.append(", ");
 		sb.append(endIndex);
 		sb.append("], query=");
-		sb.append(query.getExpression());
+		sb.append(expression);
 		return sb.toString();
 	}
 }

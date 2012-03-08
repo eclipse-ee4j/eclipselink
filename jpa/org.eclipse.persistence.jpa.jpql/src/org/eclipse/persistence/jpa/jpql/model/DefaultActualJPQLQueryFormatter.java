@@ -29,7 +29,7 @@ package org.eclipse.persistence.jpa.jpql.model;
  * @since 2.4
  * @author Pascal Filion
  */
-public final class DefaultActualJPQLQueryFormatter extends AbstractActualJPQLQueryFormatter {
+public class DefaultActualJPQLQueryFormatter extends AbstractActualJPQLQueryFormatter {
 
 	/**
 	 * Creates a new <code>DefaultActualJPQLQueryFormatter</code>.

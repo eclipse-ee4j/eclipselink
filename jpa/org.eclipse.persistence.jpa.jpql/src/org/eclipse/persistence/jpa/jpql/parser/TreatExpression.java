@@ -101,7 +101,7 @@ public final class TreatExpression extends AbstractEncapsulatedExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void addOrderedEncapsulatedExpressionTo(List<StringExpression> children) {
+	protected void addOrderedEncapsulatedExpressionTo(List<Expression> children) {
 
 		// Collection-valued path expression
 		if (collectionValuedPathExpression != null) {

@@ -25,7 +25,7 @@ import org.eclipse.persistence.jpa.jpql.LiteralVisitor;
  * @since 2.4
  * @author Pascal Filion
  */
-public final class DefaultStateObjectBuilder extends BasicStateObjectBuilder {
+public class DefaultStateObjectBuilder extends BasicStateObjectBuilder {
 
 	/**
 	 * Creates a new <code>DefaultStateObjectBuilder</code>.

@@ -95,6 +95,7 @@ import org.eclipse.persistence.jpa.jpql.model.query.SubExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.SubstringExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.SubtractionExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.SumFunctionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.TreatExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.TrimExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.TypeExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.UnknownExpressionStateObject;
@@ -184,6 +185,7 @@ import org.eclipse.persistence.jpa.jpql.parser.SubExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SubstringExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SubtractionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SumFunction;
+import org.eclipse.persistence.jpa.jpql.parser.TreatExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TrimExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TypeExpression;
 import org.eclipse.persistence.jpa.jpql.parser.UnknownExpression;
@@ -201,6 +203,11 @@ import org.eclipse.persistence.jpa.jpql.util.CollectionTools;
  * The default implementation of a {@link IBuilder}, which creates a {@link StateObject}
  * representation of the {@link org.eclipse.persistence.jpa.jpql.parser.Expression Expression} being
  * visited.
+ * <p>
+ * Provisional API: This interface is part of an interim API that is still under development and
+ * expected to change significantly before reaching stability. It is available at this early stage
+ * to solicit feedback from pioneering adopters on the understanding that any code that uses this
+ * API will almost certainly be broken (repeatedly) as the API evolves.
  *
  * @see Expression
  * @see StateObject
@@ -944,21 +951,22 @@ public abstract class BasicStateObjectBuilder implements ExpressionVisitor {
 		stateObject = null;
 	}
 
-        /**
-         * {@inheritDoc}
-         */
-        public void visit(FunctionExpression expression) {
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(FunctionExpression expression) {
 
-                FunctionExpressionStateObject stateObject = new FunctionExpressionStateObject(
-                        parent,
-                        expression.getUnquotedFunctionName(),
-                        buildChildren(expression.getExpression())
-                );
+		FunctionExpressionStateObject stateObject = new FunctionExpressionStateObject(
+			parent,
+			expression.getIdentifier(),
+			expression.getUnquotedFunctionName(),
+			buildChildren(expression.getExpression())
+		);
 
-                stateObject.setExpression(expression);
-                this.stateObject = stateObject;
-        }
-        
+		stateObject.setExpression(expression);
+		this.stateObject = stateObject;
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -1353,6 +1361,13 @@ public abstract class BasicStateObjectBuilder implements ExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	public void visit(OnClause expression) {
+		expression.getConditionalExpression().accept(this);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public final void visit(OrderByClause expression) {
 		// Not done here
 		stateObject = null;
@@ -1599,6 +1614,13 @@ public abstract class BasicStateObjectBuilder implements ExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	public void visit(TreatExpression expression) {
+		// Done by JoinBuilder
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public void visit(TrimExpression expression) {
 
 		expression.getExpression().accept(this);
@@ -1713,13 +1735,6 @@ public abstract class BasicStateObjectBuilder implements ExpressionVisitor {
 	public void visit(WhereClause expression) {
 		expression.getConditionalExpression().accept(this);
 	}
-
-        /**
-         * {@inheritDoc}
-         */
-        public void visit(OnClause expression) {
-                expression.getConditionalExpression().accept(this);
-        }
 
 	/**
 	 * Returns the {@link IBuilder} that is responsible to visit each {@link WhenClause} and to
@@ -2140,6 +2155,23 @@ public abstract class BasicStateObjectBuilder implements ExpressionVisitor {
 
 			expression.getJoinAssociationPath().accept(this);
 			expression.getIdentificationVariable().accept(this);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(TreatExpression expression) {
+
+			TreatExpressionStateObject treatStateObject = new TreatExpressionStateObject(
+				stateObject,
+				expression.hasAs(),
+				literal(expression.getEntityType(), LiteralType.ENTITY_TYPE)
+			);
+
+			treatStateObject.setExpression(expression);
+			stateObject.getJoinAssociationPathStateObject().decorate(treatStateObject);
+			expression.getCollectionValuedPathExpression().accept(this);
 		}
 	}
 

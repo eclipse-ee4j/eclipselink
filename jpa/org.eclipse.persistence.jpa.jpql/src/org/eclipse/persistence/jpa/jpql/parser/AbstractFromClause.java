@@ -39,6 +39,23 @@ public abstract class AbstractFromClause extends AbstractExpression {
 	 */
 	private AbstractExpression declaration;
 
+	@Override
+	protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
+
+		char character = word.charAt(0);
+
+		// TODO: Add parameter tolerant and check for these 4 signs if tolerant is turned on only
+		//       this could happen while parsing an invalid query
+		return character == '+' ||
+		       character == '-' ||
+		       character == '*' ||
+		       character == '/' ||
+		       character == '=' ||
+		       character == '<' ||
+		       character == '>' ||
+		       super.isParsingComplete(wordParser, word, expression);
+	}
+
 	/**
 	 * Determines whether a whitespace was parsed after the identifier <b>FROM</b>.
 	 */
@@ -77,7 +94,7 @@ public abstract class AbstractFromClause extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected final void addOrderedChildrenTo(List<StringExpression> children) {
+	protected final void addOrderedChildrenTo(List<Expression> children) {
 
 		// 'FROM'
 		children.add(buildStringExpression(FROM));

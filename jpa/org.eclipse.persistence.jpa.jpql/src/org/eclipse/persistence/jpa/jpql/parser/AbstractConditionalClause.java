@@ -81,7 +81,7 @@ public abstract class AbstractConditionalClause extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected final void addOrderedChildrenTo(List<StringExpression> children) {
+	protected final void addOrderedChildrenTo(List<Expression> children) {
 
 		// Identifier
 		children.add(buildStringExpression(getText()));

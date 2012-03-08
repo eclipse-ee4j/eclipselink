@@ -13,29 +13,27 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql;
 
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import org.eclipse.persistence.jpa.jpql.DeclarationResolver.Declaration;
+import org.eclipse.persistence.jpa.jpql.DefaultSemanticValidator.CollectionValuedPathExpressionVisitor;
+import org.eclipse.persistence.jpa.jpql.DefaultSemanticValidator.StateFieldPathExpressionVisitor;
+import org.eclipse.persistence.jpa.jpql.DefaultSemanticValidator.VirtualIdentificationVariableFinder;
 import org.eclipse.persistence.jpa.jpql.parser.AbsExpression;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractExpressionVisitor;
+import org.eclipse.persistence.jpa.jpql.parser.AbstractFromClause;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractSchemaName;
-import org.eclipse.persistence.jpa.jpql.parser.AbstractTraverseParentVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.AdditionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.AggregateExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.AggregateFunction;
 import org.eclipse.persistence.jpa.jpql.parser.AllOrAnyExpression;
 import org.eclipse.persistence.jpa.jpql.parser.AndExpression;
-import org.eclipse.persistence.jpa.jpql.parser.AnonymousExpressionVisitor;
+import org.eclipse.persistence.jpa.jpql.parser.ArithmeticExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ArithmeticFactor;
-import org.eclipse.persistence.jpa.jpql.parser.ArithmeticPrimaryBNF;
 import org.eclipse.persistence.jpa.jpql.parser.AvgFunction;
 import org.eclipse.persistence.jpa.jpql.parser.BadExpression;
 import org.eclipse.persistence.jpa.jpql.parser.BetweenExpression;
-import org.eclipse.persistence.jpa.jpql.parser.BooleanPrimaryBNF;
 import org.eclipse.persistence.jpa.jpql.parser.CaseExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CoalesceExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionExpression;
@@ -65,6 +63,7 @@ import org.eclipse.persistence.jpa.jpql.parser.InExpression;
 import org.eclipse.persistence.jpa.jpql.parser.IndexExpression;
 import org.eclipse.persistence.jpa.jpql.parser.InputParameter;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLExpression;
+import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.parser.Join;
 import org.eclipse.persistence.jpa.jpql.parser.KeyExpression;
 import org.eclipse.persistence.jpa.jpql.parser.KeywordExpression;
@@ -82,6 +81,7 @@ import org.eclipse.persistence.jpa.jpql.parser.NullExpression;
 import org.eclipse.persistence.jpa.jpql.parser.NullIfExpression;
 import org.eclipse.persistence.jpa.jpql.parser.NumericLiteral;
 import org.eclipse.persistence.jpa.jpql.parser.ObjectExpression;
+import org.eclipse.persistence.jpa.jpql.parser.OnClause;
 import org.eclipse.persistence.jpa.jpql.parser.OrExpression;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByClause;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByItem;
@@ -89,7 +89,6 @@ import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.ResultVariable;
 import org.eclipse.persistence.jpa.jpql.parser.SelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.SelectStatement;
-import org.eclipse.persistence.jpa.jpql.parser.SimpleArithmeticExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleFromClause;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectStatement;
@@ -97,11 +96,11 @@ import org.eclipse.persistence.jpa.jpql.parser.SizeExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SqrtExpression;
 import org.eclipse.persistence.jpa.jpql.parser.StateFieldPathExpression;
 import org.eclipse.persistence.jpa.jpql.parser.StringLiteral;
-import org.eclipse.persistence.jpa.jpql.parser.StringPrimaryBNF;
 import org.eclipse.persistence.jpa.jpql.parser.SubExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SubstringExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SubtractionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SumFunction;
+import org.eclipse.persistence.jpa.jpql.parser.TreatExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TrimExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TypeExpression;
 import org.eclipse.persistence.jpa.jpql.parser.UnknownExpression;
@@ -112,19 +111,17 @@ import org.eclipse.persistence.jpa.jpql.parser.UpperExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ValueExpression;
 import org.eclipse.persistence.jpa.jpql.parser.WhenClause;
 import org.eclipse.persistence.jpa.jpql.parser.WhereClause;
-import org.eclipse.persistence.jpa.jpql.spi.IConstructor;
-import org.eclipse.persistence.jpa.jpql.spi.IEntity;
-import org.eclipse.persistence.jpa.jpql.spi.IManagedType;
-import org.eclipse.persistence.jpa.jpql.spi.IMapping;
-import org.eclipse.persistence.jpa.jpql.spi.IType;
-import org.eclipse.persistence.jpa.jpql.spi.ITypeDeclaration;
-import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
 
 import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
 
 /**
  * The base validator responsible to gather the problems found in a JPQL query by validating the
  * content to make sure it is semantically valid. The grammar is not validated by this visitor.
+ * <p>
+ * Provisional API: This interface is part of an interim API that is still under development and
+ * expected to change significantly before reaching stability. It is available at this early stage
+ * to solicit feedback from pioneering adopters on the understanding that any code that uses this
+ * API will almost certainly be broken (repeatedly) as the API evolves.
  *
  * @version 2.4
  * @since 2.4
@@ -146,10 +143,9 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	private ComparingEntityTypeLiteralVisitor comparingEntityTypeLiteralVisitor;
 
 	/**
-	 * This validator determines whether the {@link Expression} visited represents
-	 * {@link Expression#NULL}.
+	 * The given helper allows this validator to access the JPA artifacts without using Hermes SPI.
 	 */
-	protected NullValueVisitor nullValueVisitor;
+	protected final SemanticValidatorHelper helper;
 
 	/**
 	 * This flag is used to register the {@link IdentificationVariable IdentificationVariables} that
@@ -165,23 +161,11 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	protected StateFieldPathExpressionVisitor stateFieldPathExpressionVisitor;
 
 	/**
-	 * This finder is responsible to retrieve the abstract schema name from the <b>UPDATE</b> range
-	 * declaration expression.
-	 */
-	protected UpdateClauseAbstractSchemaNameFinder updateClauseAbstractSchemaNameFinder;
-
-	/**
 	 * The {@link IdentificationVariable IdentificationVariables} that are used throughout the query
 	 * (top-level query and subqueries), except the identification variables defining an abstract
 	 * schema name or a collection-valued path expression.
 	 */
 	protected List<IdentificationVariable> usedIdentificationVariables;
-
-	/**
-	 * The {@link TypeValidator TypeVlidators} mapped to their Java class. Those validators validate
-	 * any {@link Expression} by making sure its type matches the desired type.
-	 */
-	protected Map<Class<? extends TypeValidator>, TypeValidator> validators;
 
 	/**
 	 * This finder is responsible to retrieve the virtual identification variable from the
@@ -192,98 +176,18 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	/**
 	 * Creates a new <code>AbstractSemanticValidator</code>.
 	 *
-	 * @param context The context used to query information about the JPQL query
-	 * @exception AssertException The {@link JPQLQueryContext} cannot be <code>null</code>
+	 * @param helper The given helper allows this validator to access the JPA artifacts without using
+	 * Hermes SPI
+	 * @exception NullPointerException The given {@link SemanticValidatorHelper} cannot be <code>null</code>
 	 */
-	protected AbstractSemanticValidator(JPQLQueryContext context) {
-		super(context);
-	}
-
-	protected void addIdentificationVariable(IdentificationVariable identificationVariable,
-	                                         Map<String, List<IdentificationVariable>> identificationVariables) {
-
-		String variableName = (identificationVariable != null) ? identificationVariable.getVariableName() : null;
-
-		if (ExpressionTools.stringIsNotEmpty(variableName)) {
-
-			// Add the IdentificationVariable to the list
-			List<IdentificationVariable> variables = identificationVariables.get(variableName);
-
-			if (variables == null) {
-				variables = new ArrayList<IdentificationVariable>();
-				identificationVariables.put(variableName, variables);
-			}
-
-			variables.add(identificationVariable);
-		}
-	}
-
-	protected boolean areConstructorParametersEquivalent(ITypeDeclaration[] types1, IType[] types2) {
-
-		if ((types1.length == 0) || (types2.length == 0)) {
-			return types2.length == types2.length;
-		}
-
-		if (types1.length != types1.length) {
-			return false;
-		}
-
-		TypeHelper typeHelper = getTypeHelper();
-
-		for (int index = types1.length; --index >= 0; ) {
-
-			// Convert a primitive to its Object type
-			IType type1 = typeHelper.convertPrimitive(types1[index].getType());
-			IType type2 = typeHelper.convertPrimitive(types2[index]);
-
-			if (!type1.isAssignableTo(type2)) {
-				return false;
-			}
-		}
-
-		return true;
+	protected AbstractSemanticValidator(SemanticValidatorHelper helper) {
+		super();
+		Assert.isNotNull(helper, "The helper cannot be null");
+		this.helper = helper;
 	}
 
 	protected ComparingEntityTypeLiteralVisitor buildComparingEntityTypeLiteralVisitor() {
 		return new ComparingEntityTypeLiteralVisitor();
-	}
-
-	protected ResultVariableInOrderByVisitor buildResultVariableInOrderByVisitor() {
-		return new ResultVariableInOrderByVisitor();
-	}
-
-	protected Resolver buildStateFieldResolver(Resolver parentResolver, String path) {
-		Resolver resolver = parentResolver.getChild(path);
-		if (resolver == null) {
-			resolver = new StateFieldResolver(parentResolver, path);
-		}
-		return resolver;
-	}
-
-	protected void collectAllDeclarationIdentificationVariables(Map<String, List<IdentificationVariable>> identificationVariables) {
-
-		JPQLQueryContext currentContext = context.getCurrentContext();
-
-		while (currentContext != null) {
-			collectDeclarationIdentificationVariables(currentContext, identificationVariables);
-			currentContext = currentContext.getParent();
-		}
-	}
-
-	protected void collectDeclarationIdentificationVariables(JPQLQueryContext queryContext,
-	                                                         Map<String, List<IdentificationVariable>> identificationVariables) {
-
-		for (Declaration declaration : queryContext.getActualDeclarationResolver().getDeclarations()) {
-
-			// Register the identification variable from the base expression
-			IdentificationVariable identificationVariable = declaration.identificationVariable;
-			addIdentificationVariable(identificationVariable, identificationVariables);
-
-			// Register the identification variable from the JOIN expressions
-			for (IdentificationVariable joinIdentificationVariable : declaration.joins.values()) {
-				addIdentificationVariable(joinIdentificationVariable, identificationVariables);
-			}
-		}
 	}
 
 	/**
@@ -293,17 +197,6 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	public void dispose() {
 		super.dispose();
 		usedIdentificationVariables.clear();
-	}
-
-	protected AbstractSchemaName findAbstractSchemaName(UpdateItem expression) {
-		UpdateClauseAbstractSchemaNameFinder visitor = getUpdateClauseAbstractSchemaNameFinder();
-		try {
-			expression.accept(visitor);
-			return visitor.expression;
-		}
-		finally {
-			visitor.expression = null;
-		}
 	}
 
 	protected IdentificationVariable findVirtualIdentificationVariable(AbstractSchemaName expression) {
@@ -342,11 +235,12 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 		return comparingEntityTypeLiteralVisitor;
 	}
 
-	protected NullValueVisitor getNullValueVisitor() {
-		if (nullValueVisitor == null) {
-			nullValueVisitor = new NullValueVisitor();
-		}
-		return nullValueVisitor;
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected JPQLGrammar getGrammar() {
+		return helper.getGrammar();
 	}
 
 	protected StateFieldPathExpression getStateFieldPathExpression(Expression expression) {
@@ -367,50 +261,14 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 		return stateFieldPathExpressionVisitor;
 	}
 
-	protected UpdateClauseAbstractSchemaNameFinder getUpdateClauseAbstractSchemaNameFinder() {
-		if (updateClauseAbstractSchemaNameFinder == null) {
-			updateClauseAbstractSchemaNameFinder = new UpdateClauseAbstractSchemaNameFinder();
-		}
-		return updateClauseAbstractSchemaNameFinder;
-	}
-
-	protected TypeValidator getValidator(Class<? extends TypeValidator> validatorClass) {
-		TypeValidator validator = validators.get(validatorClass);
-		if (validator == null) {
-			try {
-				Constructor<? extends TypeValidator> constructor = validatorClass.getDeclaredConstructor(AbstractSemanticValidator.class);
-				constructor.setAccessible(true);
-				validator = constructor.newInstance(this);
-				validators.put(validatorClass, validator);
-			}
-			catch (Exception e) { /* Never happens */ }
-		}
-		return validator;
-	}
-
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	protected void initialize() {
 		super.initialize();
-		validators                     = new HashMap<Class<? extends TypeValidator>, TypeValidator>();
 		usedIdentificationVariables    = new ArrayList<IdentificationVariable>();
 		registerIdentificationVariable = true;
-	}
-
-	/**
-	 * Determines whether the given {@link Expression} is of the correct type based on these rules:
-	 * <ul>
-	 * <li>The {@link Expression} returns a boolean value;</li>
-	 * </ul>
-	 *
-	 * @param expression The {@link Expression} to validate
-	 * @return <code>true</code> if the given {@link Expression} passes the checks; <code>false</code>
-	 * otherwise
-	 */
-	protected boolean isBooleanType(Expression expression) {
-		return isValid(expression, BooleanTypeValidator.class);
 	}
 
 	/**
@@ -434,133 +292,173 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 		}
 	}
 
-	protected boolean isComparisonEquivalentType(Expression expression1, Expression expression2) {
+	protected boolean isIdentificationVariableDeclaredAfter(String variableName,
+	                                                        int variableNameIndex,
+	                                                        int joinIndex,
+	                                                        List<JPQLQueryDeclaration> declarations) {
 
-		IType type1 = getType(expression1);
-		IType type2 = getType(expression2);
+		for (int index = variableNameIndex, declarationCount = declarations.size(); index < declarationCount; index++) {
 
-		// 1. The types are the same
-		// 2. The type cannot be determined, pretend they are equivalent,
-		//    another rule will validate it
-		// 3. One is assignable to the other one
-		TypeHelper typeHelper = getTypeHelper();
+			JPQLQueryDeclaration declaration = declarations.get(index);
 
-		return (type1 == type2) ||
-		       !type1.isResolvable() ||
-		       !type2.isResolvable() ||
-		        typeHelper.isNumericType(type1) && typeHelper.isNumericType(type2) ||
-		        typeHelper.isDateType(type1)    && typeHelper.isDateType(type2)    ||
-		        type1.isAssignableTo(type2) ||
-		        type2.isAssignableTo(type1);
-	}
+			// Ignore the current declaration since it's the same identification variable
+			if (index != variableNameIndex) {
 
-	protected boolean isEquivalentBetweenType(Expression expression1, Expression expression2) {
+				// Check to make sure the Declaration is a known type
+				if (declaration.isRange()   ||
+				    declaration.isDerived() ||
+				    declaration.isCollection()) {
 
-		IType type1 = getType(expression1);
-		IType type2 = getType(expression2);
+					String nextVariableName = declaration.getVariableName();
 
-		// The type cannot be determined, pretend they are equivalent,
-		// another rule will validate it
-		if (!type1.isResolvable() || !type2.isResolvable()) {
-			return true;
+					if (variableName.equalsIgnoreCase(nextVariableName)) {
+						return true;
+					}
+				}
+				// Some implementation could have a Declaration that is not a range, derived or a
+				// collection Declaration, it could represent a JOIN expression
+				else {
+					return false;
+				}
+			}
+
+			// Scan the JOIN expressions
+			if (declaration.hasJoins()) {
+
+				List<Join> joins = declaration.getJoins();
+				int endIndex = (index == variableNameIndex) ? joinIndex : joins.size();
+
+				for (int subIndex = joinIndex; subIndex < endIndex; subIndex++) {
+
+					Join join = joins.get(subIndex);
+
+					String joinVariableName = literal(
+						join.getIdentificationVariable(),
+						LiteralType.IDENTIFICATION_VARIABLE
+					);
+
+					if (variableName.equalsIgnoreCase(joinVariableName)) {
+						return true;
+					}
+				}
+			}
 		}
 
-		TypeHelper typeHelper = getTypeHelper();
-
-		if (type1 == type2) {
-			return typeHelper.isNumericType(type1) ||
-			typeHelper.isStringType(type1)  ||
-			typeHelper.isDateType(type1);
-		}
-		else {
-			return typeHelper.isNumericType(type1) && typeHelper.isNumericType(type2) ||
-			       typeHelper.isStringType(type1)  && typeHelper.isStringType(type2)  ||
-			       typeHelper.isDateType(type1)    && typeHelper.isDateType(type2);
-		}
-	}
-
-	/**
-	 * Determines whether the given {@link Expression} is of the correct type based on these rules:
-	 * <ul>
-	 * <li>The {@link Expression}'s type is an integral type (long or integer).</li>
-	 * </ul>
-	 *
-	 * @param expression The {@link Expression} to validate
-	 * @return <code>true</code> if the given {@link Expression} passes the checks; <code>false</code>
-	 * otherwise
-	 */
-	protected boolean isIntegralType(Expression expression) {
-
-		if (isNumericType(expression)) {
-
-			TypeHelper typeHelper = getTypeHelper();
-			IType type = getType(expression);
-
-			return type == typeHelper.unknownType() ||
-			       typeHelper.isIntegralType(type);
-		}
-
+		// The identification variable was not found after the declaration being validated, that means
+		// it was defined before or it was not defined (which is validated by another rule)
 		return false;
 	}
 
-	protected boolean isNullValue(Expression expression) {
-		NullValueVisitor visitor = getNullValueVisitor();
-		try {
-			expression.accept(visitor);
-			return visitor.valid;
-		}
-		finally {
-			visitor.valid = false;
+	protected void validateAbsExpression(AbsExpression expression) {
+	}
+
+	protected void validateAbstractFromClause(AbstractFromClause expression) {
+
+		// The identification variable declarations are evaluated from left to right in
+		// the FROM clause, and an identification variable declaration can use the result
+		// of a preceding identification variable declaration of the query string
+		List<JPQLQueryDeclaration> declarations = helper.getDeclarations();
+
+		for (int index = 0, count = declarations.size(); index < count; index++) {
+			JPQLQueryDeclaration declaration = declarations.get(index);
+
+			// Check the JOIN expressions in the identification variable declaration
+			if (declaration.isRange() && declaration.hasJoins()) {
+
+				List<Join> joins = declaration.getJoins();
+
+				for (int joinIndex = 0, joinCount = joins.size(); joinIndex < joinCount; joinIndex++) {
+
+					Join join = joins.get(joinIndex);
+
+					// Retrieve the identification variable from the join association path
+					String variableName = literal(
+						join.getJoinAssociationPath(),
+						LiteralType.PATH_EXPRESSION_IDENTIFICATION_VARIABLE
+					);
+
+					// Make sure the identification variable is defined before the JOIN expression
+					if (ExpressionTools.stringIsNotEmpty(variableName) &&
+					    isIdentificationVariableDeclaredAfter(variableName, index, joinIndex, declarations)) {
+
+						int startPosition = position(join.getJoinAssociationPath());
+						int endPosition   = startPosition + variableName.length();
+
+						addProblem(
+							expression,
+							startPosition,
+							endPosition,
+							AbstractFromClause_WrongOrderOfIdentificationVariableDeclaration,
+							variableName
+						);
+					}
+				}
+			}
+			// Check the collection member declaration
+			else if (!declaration.isRange()) {
+
+				// Retrieve the identification variable from the path expression
+				String variableName = literal(
+					declaration.getBaseExpression(),
+					LiteralType.PATH_EXPRESSION_IDENTIFICATION_VARIABLE
+				);
+
+				if (ExpressionTools.stringIsNotEmpty(variableName) &&
+				    isIdentificationVariableDeclaredAfter(variableName, index, -1, declarations)) {
+
+					int startPosition = position(declaration.getDeclarationExpression()) - variableName.length();
+					int endPosition   = startPosition + variableName.length();
+
+					addProblem(
+						expression,
+						startPosition,
+						endPosition,
+						AbstractFromClause_WrongOrderOfIdentificationVariableDeclaration,
+						variableName
+					);
+				}
+			}
 		}
 	}
 
-	/**
-	 * Determines whether the given {@link Expression} is of the correct type based on these rules:
-	 * <ul>
-	 * <li>The {@link Expression} returns a numeric value;</li>
-	 * </ul>
-	 *
-	 * @param expression The {@link Expression} to validate
-	 * @return <code>true</code> if the given {@link Expression} passes the checks; <code>false</code>
-	 * otherwise
-	 */
-	protected boolean isNumericType(Expression expression) {
-		return isValid(expression, NumericTypeValidator.class);
-	}
+	protected void validateAbstractSchemaName(AbstractSchemaName expression) {
 
-	/**
-	 * Determines whether the given {@link Expression} is of the correct type based on these rules:
-	 * <ul>
-	 * <li>The {@link Expression}'s type is a string type.</li>
-	 * </ul>
-	 *
-	 * @param expression The {@link Expression} to validate
-	 * @return <code>true</code> if the given {@link Expression} passes the checks; <code>false</code>
-	 * otherwise
-	 */
-	protected boolean isStringType(Expression expression) {
-		return isValid(expression, StringTypeValidator.class);
-	}
+		String abstractSchemaName = expression.getText();
+		Object managedType = helper.getEntityNamed(abstractSchemaName);
 
-	/**
-	 * Determines whether the given {@link Expression} is of the correct type by using the
-	 * {@link TypeValidator}.
-	 *
-	 * @param expression The {@link Expression} to validate
-	 * @param validatorClass The Java class of the {@link TypeValidator} that will determine if the
-	 * given {@link Expression} has the right type
-	 * @return <code>true</code> if the given {@link Expression} passes the checks; <code>false</code>
-	 * otherwise
-	 */
-	protected boolean isValid(Expression expression, Class<? extends TypeValidator> validatorClass) {
-		TypeValidator validator = getValidator(validatorClass);
-		try {
-			expression.accept(validator);
-			return validator.valid;
+		// If a subquery is defined in a WHERE clause of an update query,
+		// then check for a path expression
+		if (managedType == null) {
+
+			// Find the identification variable from the UPDATE range declaration
+			IdentificationVariable identificationVariable = findVirtualIdentificationVariable(expression);
+			String variableName = (identificationVariable != null) ? identificationVariable.getText() : null;
+
+			if (ExpressionTools.stringIsNotEmpty(variableName)) {
+
+				Object mapping = helper.resolveMapping(variableName, abstractSchemaName);
+				Object type = helper.getMappingType(mapping);
+
+				// Does not resolve to a valid path
+				if (!helper.isTypeResolvable(type)) {
+					addProblem(expression, StateFieldPathExpression_NotResolvable, abstractSchemaName);
+				}
+				// Not a relationship mapping
+				else if (!helper.isRelationshipMapping(mapping)) {
+					addProblem(expression, PathExpression_NotRelationshipMapping, abstractSchemaName);
+				}
+			}
+			// The managed type does not exist
+			else {
+				addProblem(expression, AbstractSchemaName_Invalid, abstractSchemaName);
+			}
 		}
-		finally {
-			validator.valid = false;
-		}
+		// The managed type cannot be resolved
+		// Note: I don't remember how this can happen, a managed type can
+		//       be retrieved but it's not resolvable
+//		else if (!helper.isManagedTypeResolvable(managedType)) {
+//			addProblem(expression, AbstractSchemaName_NotResolvable, abstractSchemaName);
+//		}
 	}
 
 	protected void validateAggregateFunction(AggregateFunction expression) {
@@ -575,20 +473,34 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	}
 
 	/**
-	 * Determines whether the given {@link Expression} is of the correct type based on these rules:
-	 * <ul>
-	 * <li>The {@link Expression} returns a boolean value;</li>
-	 * <li>The {@link Expression}'s type is a boolean type.</li>
-	 * </ul>
+	 * Validates the return type of the left and right expressions defined by the given {@link
+	 * ArithmeticExpression}.
 	 *
-	 * @param expression The {@link Expression} to validate
-	 * @param messageKey The key used to retrieve the localized message describing the problem
+	 * @param expression
+	 * @param leftExpressionWrongTypeMessageKey
+	 * @param rightExpressionWrongTypeMessageKey
 	 */
-	protected void validateBooleanType(Expression expression, String messageKey) {
+	protected void validateArithmeticExpression(ArithmeticExpression expression,
+	                                            String leftExpressionWrongTypeMessageKey,
+	                                            String rightExpressionWrongTypeMessageKey) {
 
-		if (isValid(expression, BooleanPrimaryBNF.ID) && !isBooleanType(expression)) {
-			addProblem(expression, messageKey);
-		}
+	}
+
+	protected void validateAvgFunction(AvgFunction expression) {
+	}
+
+	protected void validateBetweenRangeExpression(BetweenExpression expression) {
+	}
+
+	protected void validateCaseExpression(CaseExpression expression) {
+		// TODO: Anything to validate?
+	}
+
+	protected void validateCoalesceExpression(CoalesceExpression expression) {
+		// TODO: Anything to validate?
+	}
+
+	protected void validateCollectionMemberEntityExpression(CollectionMemberExpression expression) {
 	}
 
 	/**
@@ -610,36 +522,122 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 
 			// A collection_valued_field is designated by the name of an association field in a
 			// one-to-many or a many-to-many relationship or by the name of an element collection field
-			Resolver resolver = getResolver(expression);
-			IType type = resolver.getType();
-			IMapping mapping = resolver.getMapping();
+			Object mapping = helper.resolveMapping(expression);
+			Object type = helper.getMappingType(mapping);
 
 			// Does not resolve to a valid path
-			if (!type.isResolvable() || (mapping == null)) {
-				int startIndex = position(expression);
-				int endIndex   = startIndex + length(expression);
+			if (!helper.isTypeResolvable(type) || (mapping == null)) {
+
+				int startPosition = position(expression);
+				int endPosition   = startPosition + length(expression);
 
 				addProblem(
 					expression,
-					startIndex,
-					endIndex,
+					startPosition,
+					endPosition,
 					CollectionValuedPathExpression_NotResolvable,
 					expression.toParsedText()
 				);
 			}
-			else if (collectionTypeOnly && !mapping.isCollection() ||
-			        !collectionTypeOnly && !mapping.isRelationship()) {
+			else if (collectionTypeOnly && !helper.isCollectionMapping(mapping) ||
+			        !collectionTypeOnly && !helper.isRelationshipMapping(mapping)) {
 
-				int startIndex = position(expression);
-				int endIndex   = startIndex + length(expression);
+				int startPosition = position(expression);
+				int endPosition   = startPosition + length(expression);
 
 				addProblem(
 					expression,
-					startIndex,
-					endIndex,
+					startPosition,
+					endPosition,
 					CollectionValuedPathExpression_NotCollectionType,
 					expression.toParsedText()
 				);
+			}
+		}
+	}
+
+	protected void validateComparisonExpression(ComparisonExpression expression) {
+	}
+
+	protected void validateConcatExpression(ConcatExpression expression) {
+	}
+
+	protected void validateConstructorExpression(ConstructorExpression expression) {
+	}
+
+	protected void validateCountFunction(CountFunction expression) {
+	}
+
+	protected void validateDateTime(DateTime expression) {
+	}
+
+	protected void validateDeleteClause(DeleteClause expression) {
+	}
+
+	protected void validateDeleteStatement(DeleteStatement expression) {
+	}
+
+	protected void validateEntityTypeLiteral(EntityTypeLiteral expression) {
+
+		String entityTypeName = expression.getEntityTypeName();
+
+		if (ExpressionTools.stringIsNotEmpty(entityTypeName)) {
+			Object entity = helper.getEntityNamed(entityTypeName);
+
+			if (entity == null) {
+				int startIndex = position(expression);
+				int endIndex   = startIndex + entityTypeName.length();
+				addProblem(expression, startIndex, endIndex, EntityTypeLiteral_NotResolvable, entityTypeName);
+			}
+		}
+	}
+
+	protected void validateExistsExpression(ExistsExpression expression) {
+	}
+
+	protected void validateFromClause(FromClause expression) {
+		validateAbstractFromClause(expression);
+	}
+
+	protected void validateGroupByClause(GroupByClause expression) {
+	}
+
+	protected void validateIdentificationVariable(IdentificationVariable expression) {
+
+		// Only a non-virtual identification variable is validated
+		if (!expression.isVirtual()) {
+
+			String variable = expression.getText();
+			boolean continueValidating = true;
+
+			// A entity literal type is parsed as an identification variable, check for that case
+			if (isComparingEntityTypeLiteral(expression)) {
+
+				// The identification variable (or entity type literal) does not
+				// correspond  to an entity name, then continue validation
+				Object entity = helper.getEntityNamed(variable);
+				continueValidating = (entity == null);
+			}
+
+			if (continueValidating) {
+
+				// Validate a real identification variable
+				if (registerIdentificationVariable) {
+					usedIdentificationVariables.add(expression);
+				}
+
+				if (ExpressionTools.stringIsNotEmpty(variable)) {
+					validateIdentificationVariable(expression, variable);
+				}
+			}
+		}
+		// The identification variable actually represents a state field path expression that has
+		// a virtual identification, validate that state field path expression instead
+		else {
+			StateFieldPathExpression pathExpression = expression.getStateFieldPathExpression();
+
+			if (pathExpression != null) {
+				pathExpression.accept(this);
 			}
 		}
 	}
@@ -653,15 +651,21 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	protected void validateIdentificationVariable(IdentificationVariable expression, String variable) {
 	}
 
+	protected void validateIdentificationVariableDeclaration(IdentificationVariableDeclaration expression) {
+	}
+
 	protected void validateIdentificationVariables() {
 
 		// Collect the identification variables from the Declarations
 		Map<String, List<IdentificationVariable>> identificationVariables = new HashMap<String, List<IdentificationVariable>>();
-		collectDeclarationIdentificationVariables(context, identificationVariables);
+		helper.collectLocalDeclarationIdentificationVariables(identificationVariables);
 
 		// Check for duplicate identification variables
 		for (Map.Entry<String, List<IdentificationVariable>> entry : identificationVariables.entrySet()) {
+
 			List<IdentificationVariable> variables = entry.getValue();
+
+			// More than one identification variable was used in a declaration
 			if (variables.size() > 1) {
 				for (IdentificationVariable variable : variables) {
 					addProblem(variable, IdentificationVariable_Invalid_Duplicate, variable.getText());
@@ -671,7 +675,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 
 		// Now collect the identification variables from the parent queries
 		identificationVariables.clear();
-		collectAllDeclarationIdentificationVariables(identificationVariables);
+		helper.collectAllDeclarationIdentificationVariables(identificationVariables);
 
 		// Check for undeclared identification variables
 		for (IdentificationVariable identificationVariable : usedIdentificationVariables) {
@@ -685,64 +689,87 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 		}
 	}
 
-	/**
-	 * Determines whether the given {@link Expression} is of the correct type based on these rules:
-	 * <ul>
-	 * <li>The {@link Expression} returns a integral value;</li>
-	 * <li>The {@link Expression}'s type is an integral type (long or integer).</li>
-	 * </ul>
-	 *
-	 * @param expression The {@link Expression} to validate
-	 * @param queryBNF The unique identifier of the query BNF used to validate the type
-	 * @param messageKey The key used to retrieve the localized message describing the problem
-	 */
-	protected void validateIntegralType(Expression expression, String queryBNF, String messageKey) {
+	protected void validateIndexExpression(IndexExpression expression) {
 
-		if (isValid(expression, queryBNF) && !isIntegralType(expression)) {
-			addProblem(expression, messageKey);
+		// The INDEX function can only be applied to identification variables denoting types for
+		// which an order column has been specified
+		String variableName = literal(
+			expression.getExpression(),
+			LiteralType.IDENTIFICATION_VARIABLE
+		);
+
+		// The identification variable is not defined in a JOIN or IN expression
+		if (ExpressionTools.stringIsNotEmpty(variableName) &&
+		    !helper.isCollectionIdentificationVariable(variableName)) {
+
+			addProblem(expression.getExpression(), IndexExpression_WrongVariable, variableName);
 		}
 	}
 
+	protected void validateLengthExpression(LengthExpression expression) {
+	}
+
+	protected void validateLikeExpression(LikeExpression expression) {
+	}
+
+	protected void validateLocateExpression(LocateExpression expression) {
+	}
+
+	protected void validateLowerExpression(LowerExpression expression) {
+	}
+
 	protected void validateMapIdentificationVariable(EncapsulatedIdentificationVariableExpression expression) {
+	}
 
-		// The KEY, VALUE, and ENTRY operators may only be applied to
-		// identification variables that correspond to map-valued associations
-		// or map-valued element collections
-		if (expression.hasExpression()) {
+	protected void validateModExpression(ModExpression expression) {
+	}
 
-			Expression childExpression = expression.getExpression();
-			String variableName = context.literal(childExpression, LiteralType.IDENTIFICATION_VARIABLE);
+	protected void validateNotExpression(NotExpression expression) {
+	}
 
-			// Retrieve the identification variable's type without traversing the type parameters
-			if (ExpressionTools.stringIsNotEmpty(variableName)) {
-				ITypeDeclaration typeDeclaration = getTypeDeclaration(childExpression);
+	protected void validateNullComparisonExpression(NullComparisonExpression expression) {
+	}
 
-				if (!getTypeHelper().isMapType(typeDeclaration.getType())) {
-					addProblem(
-						childExpression,
-						EncapsulatedIdentificationVariableExpression_NotMapValued,
-						expression.getIdentifier()
-					);
-				}
+	protected void validateObjectExpression(ObjectExpression expression) {
+	}
+
+	protected void validateOnClause(OnClause expression) {
+	}
+
+	protected void validateOrderByClause(OrderByClause expression) {
+	}
+
+	protected void validateResultVariable(ResultVariable expression) {
+		// TODO: Validate identification to make sure it does not
+		//       collide with one defined in the FROM clause
+	}
+
+	protected void validateSelectClause(SelectClause expression) {
+	}
+
+	protected void validateSelectStatement(SelectStatement expression) {
+
+		// If the GROUP BY clause is not defined but the HAVING clause is, the result is treated as a
+		// single group, and the select list can only consist of aggregate functions. (page 159)
+		if (!expression.hasGroupByClause() &&
+		     expression.hasHavingClause()) {
+
+			Expression selectExpression = expression.getSelectClause().getSelectExpression();
+
+			if (!isValidWithChildCollectionBypass(selectExpression, AggregateExpressionBNF.ID)) {
+				addProblem(selectExpression, SelectStatement_SelectClauseHasNonAggregateFunctions);
 			}
 		}
 	}
 
-	/**
-	 * Determines whether the given {@link Expression} is of the correct type based on these rules:
-	 * <ul>
-	 * <li>The {@link Expression} returns a numeric value;</li>
-	 * <li>The {@link Expression}'s type is an numeric type.</li>
-	 * </ul>
-	 *
-	 * @param expression The {@link Expression} to validate
-	 * @param messageKey The key used to retrieve the localized message describing the problem
-	 */
-	protected void validateNumericType(Expression expression, String messageKey) {
+	protected void validateSimpleFromClause(SimpleFromClause expression) {
+		validateAbstractFromClause(expression);
+	}
 
-		if (isValid(expression, SimpleArithmeticExpressionBNF.ID) && !isNumericType(expression)) {
-			addProblem(expression, messageKey);
-		}
+	protected void validateSimpleSelectClause(SimpleSelectClause expression) {
+	}
+
+	protected void validateSqrtExpression(SqrtExpression expression) {
 	}
 
 	/**
@@ -753,118 +780,150 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 * @return <code>true</code> if the path expression is a state field path expression; <code>false</code>
 	 * if it's actually a fully qualified enum constant.
 	 */
-	protected boolean validateStateFieldPathExpression(StateFieldPathExpression expression,
-	                                                 boolean associationFieldValid) {
+	protected void validateStateFieldPathExpression(StateFieldPathExpression expression,
+	                                                boolean associationFieldValid) {
 
 		// A single_valued_object_field is designated by the name of an association field in a
 		// one-to-one or many-to-one relationship or a field of embeddable class type
 		if (expression.hasIdentificationVariable() &&
 		   !expression.endsWithDot()) {
 
-			IType type = getType(expression);
-			IMapping mapping = getMapping(expression);
+			Object mapping = helper.resolveMapping(expression);
 
-			// Does not resolve to a valid path
-			if (!type.isResolvable()) {
-				addProblem(expression, StateFieldPathExpression_NotResolvable, expression.toParsedText());
-			}
-			// Make sure an enum constant was parsed as a state field path
-			// expression before checking for a mapping
-			else if ((mapping == null) && type.isEnum()) {
-				String enumConstant = expression.getPath(expression.pathSize() - 1);
-				boolean found = false;
+			// Validate the mapping
+			if (mapping != null) {
 
-				for (String constant : type.getEnumConstants()) {
-					if (constant.equals(enumConstant)) {
-						found = true;
-						break;
-					}
-				}
-
-				if (!found) {
-					int startIndex = position(expression) + type.getName().length() + 1;
-					int endIndex   = startIndex + enumConstant.length();
-					addProblem(expression, startIndex, endIndex, StateFieldPathExpression_InvalidEnumConstant, enumConstant);
-				}
-
-				// Remove the used identification variable since it's is the first
-				// package name of the fully qualified enum constant
-				usedIdentificationVariables.remove(expression.getIdentificationVariable());
-			}
-			else {
-				// No mapping can be found for that path, it could be a transient mapping
-				if ((mapping == null) || mapping.isTransient()) {
-					addProblem(expression, StateFieldPathExpression_NoMapping, expression.toParsedText());
-				}
-				// It is syntactically illegal to compose a path expression from a path expression that
-				// evaluates to a collection
-				else if (mapping.isCollection()) {
+				// It is syntactically illegal to compose a path expression from a path expression
+				// that evaluates to a collection
+				if (helper.isCollectionMapping(mapping)) {
 					addProblem(expression, StateFieldPathExpression_CollectionType, expression.toParsedText());
 				}
 				// For instance, MAX and MIN don't evaluate to an association field
-				else if (!associationFieldValid && mapping.isRelationship()) {
+				else if (!associationFieldValid && helper.isRelationshipMapping(mapping)) {
 					addProblem(expression, StateFieldPathExpression_AssociationField, expression.toParsedText());
 				}
+				// A transient mapping is not allowed
+				else if (helper.isTransient(mapping)) {
+					addProblem(expression, StateFieldPathExpression_NoMapping, expression.toParsedText());
+				}
+			}
+			else {
+				// TODO: Test for an enum type in the wrong location
+				Object type = helper.getType(expression);
 
-				return true;
+				// Does not resolve to a valid path
+				if (!helper.isTypeResolvable(type)) {
+					addProblem(expression, StateFieldPathExpression_NotResolvable, expression.toParsedText());
+				}
+				// An enum constant could have been parsed as a state field path expression
+				else if (helper.isEnumType(type)) {
+
+					// Search for the enum constant
+					String enumConstant = expression.getPath(expression.pathSize() - 1);
+					boolean found = false;
+
+					for (String constant : helper.getEnumConstants(type)) {
+						if (constant.equals(enumConstant)) {
+							found = true;
+							break;
+						}
+					}
+
+					if (!found) {
+						int startIndex = position(expression) + helper.getTypeName(type).length() + 1;
+						int endIndex   = startIndex + enumConstant.length();
+						addProblem(expression, startIndex, endIndex, StateFieldPathExpression_InvalidEnumConstant, enumConstant);
+					}
+
+					// Remove the used identification variable since it's is the first
+					// package name of the fully qualified enum constant
+					usedIdentificationVariables.remove(expression.getIdentificationVariable());
+				}
+				// No mapping can be found for that path
+				else {
+					addProblem(expression, StateFieldPathExpression_NoMapping, expression.toParsedText());
+				}
+			}
+		}
+	}
+
+	protected void validateSubstringExpression(SubstringExpression expression) {
+	}
+
+	protected void validateSubtractionExpression(SubtractionExpression expression) {
+	}
+
+	protected void validateSumFunction(SumFunction expression) {
+	}
+
+	/**
+	 * Validates the given {@link validateUpdateItem} by validating the traversability of the path
+	 * expression. The path expression is valid if it follows one of the following rules:
+	 * <ul>
+	 * <li>The identification variable is omitted if it's not defined in the <b>FROM</b> clause;
+	 * <li>The last path is a state field;
+	 * <li>Only embedded field can be traversed.
+	 * </ul>
+	 *
+	 * @param expression {@link UpdateItem} to validate its path expression
+	 * @return <code>true</code> if the path expression is valid; <code>false</code> otherwise
+	 */
+	protected boolean validateUpdateItem(UpdateItem expression) {
+
+		if (expression.hasStateFieldPathExpression()) {
+
+			// Retrieve the state field path expression
+			StateFieldPathExpression pathExpression = getStateFieldPathExpression(expression.getStateFieldPathExpression());
+
+			if ((pathExpression != null) &&
+			    (pathExpression.hasIdentificationVariable() ||
+			     pathExpression.hasVirtualIdentificationVariable())) {
+
+				// Start traversing the path expression by first retrieving the managed type
+				Object managedType = helper.getManagedType(pathExpression.getIdentificationVariable());
+
+				if (managedType != null) {
+
+					// Continue to traverse the path expression
+					for (int index = pathExpression.hasVirtualIdentificationVariable() ? 0 : 1, count = pathExpression.pathSize(); index < count; index++) {
+
+						// Retrieve the mapping
+						String path = pathExpression.getPath(index);
+						Object mapping = helper.getMappingNamed(managedType, path);
+
+						// A collection mapping cannot be traversed
+						if (helper.isCollectionMapping(mapping)) {
+							addProblem(pathExpression, UpdateItem_RelationshipPathExpression);
+							return false;
+						}
+						// Validate an intermediate path (n + 1, ..., n - 2)
+						else if (index + 1 < count) {
+
+							// A relationship mapping cannot be traversed
+							if (helper.isRelationshipMapping(mapping)) {
+								addProblem(pathExpression, UpdateItem_RelationshipPathExpression);
+								return false;
+							}
+							// A basic mapping cannot be traversed
+							else if (helper.isPropertyMapping(mapping)) {
+								addProblem(pathExpression, UpdateItem_RelationshipPathExpression);
+								return false;
+							}
+						}
+					}
+
+					return true;
+				}
+				else {
+					addProblem(pathExpression, StateFieldPathExpression_NotResolvable, pathExpression.toParsedText());
+				}
 			}
 		}
 
 		return false;
 	}
 
-	/**
-	 * Determines whether the given {@link Expression} is of the correct type based on these rules:
-	 * <ul>
-	 * <li>The {@link Expression} returns a String value;</li>
-	 * <li>The {@link Expression}'s type is a String type.</li>
-	 * </ul>
-	 *
-	 * @param expression The {@link Expression} to validate
-	 * @param messageKey The key used to retrieve the localized message describing the problem
-	 */
-	protected void validateStringType(Expression expression, String messageKey) {
-
-		if (isValid(expression, StringPrimaryBNF.ID) && !isStringType(expression)) {
-			addProblem(expression, messageKey, expression.toParsedText());
-		}
-	}
-
-	protected void validateUpdateItemTypes(UpdateItem expression, IType type) {
-
-		if (expression.hasNewValue()) {
-
-			Expression newValue = expression.getNewValue();
-			TypeHelper typeHelper = getTypeHelper();
-			boolean nullValue = isNullValue(newValue);
-
-			// A NULL value is ignored, except if the type is a primitive, null cannot be
-			// assigned to a mapping of primitive type
-			if (nullValue) {
-				if (typeHelper.isPrimitiveType(type)) {
-					addProblem(expression, UpdateItem_NullNotAssignableToPrimitive);
-				}
-				return;
-			}
-
-			IType newValueType = getType(newValue);
-
-			// Do a quick check for known JDK types:
-			// 1) Date/Time/Timestamp
-			// 2) Any classes related to a number, eg long/Long etc
-			if (!newValueType.isResolvable() ||
-			    typeHelper.isDateType(type) && typeHelper.isDateType(newValueType) ||
-			    (typeHelper.isNumericType(type)         || typeHelper.isPrimitiveType(type)) &&
-			    (typeHelper.isNumericType(newValueType) || typeHelper.isPrimitiveType(newValueType))) {
-
-				return;
-			}
-
-			// The new value's type can't be assigned to the item's type
-			if (!newValueType.isAssignableTo(type)) {
-				addProblem(expression, UpdateItem_NotAssignable, newValueType.getName(), type.getName());
-			}
-		}
+	protected void validateUpperExpression(UpperExpression expression) {
 	}
 
 	protected VirtualIdentificationVariableFinder virtualIdentificationVariableFinder() {
@@ -879,8 +938,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(AbsExpression expression) {
-		// The ABS function takes a numeric argument
-		validateNumericType(expression.getExpression(), AbsExpression_InvalidNumericExpression);
+		validateAbsExpression(expression);
 		super.visit(expression);
 	}
 
@@ -889,45 +947,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(AbstractSchemaName expression) {
-
-		String abstractSchemaName = expression.getText();
-		IManagedType managedType = getEntityNamed(abstractSchemaName);
-
-		// If a subquery defined in a WHERE clause of an update query,
-		// then check for a path expression
-		if (managedType == null) {
-
-			// Find the identification variable from the UPDATE range declaration
-			IdentificationVariable identificationVariable = findVirtualIdentificationVariable(expression);
-			String variableName = (identificationVariable != null) ? identificationVariable.getText() : null;
-
-			if (ExpressionTools.stringIsNotEmpty(variableName)) {
-
-				Resolver parentResolver = context.getResolver(identificationVariable);
-				Resolver resolver = buildStateFieldResolver(parentResolver, abstractSchemaName);
-
-				// Does not resolve to a valid path
-				if (!resolver.getType().isResolvable()) {
-					addProblem(expression, StateFieldPathExpression_NotResolvable, expression.toParsedText());
-				}
-				// Not a relationship mapping
-				else {
-					IMapping mapping = resolver.getMapping();
-
-					if ((mapping == null) || !mapping.isRelationship()) {
-						addProblem(expression, PathExpression_NotRelationshipMapping, expression.toParsedText());
-					}
-				}
-			}
-			// The managed type does not exist
-			else {
-				addProblem(expression, AbstractSchemaName_Invalid, abstractSchemaName);
-			}
-		}
-		// The managed type cannot be resolved
-		else if (!managedType.getType().isResolvable()) {
-			addProblem(expression, AbstractSchemaName_NotResolvable, abstractSchemaName);
-		}
+		validateAbstractSchemaName(expression);
 	}
 
 	/**
@@ -935,8 +955,13 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(AdditionExpression expression) {
-		validateNumericType(expression.getLeftExpression(),  AdditionExpression_LeftExpression_WrongType);
-		validateNumericType(expression.getRightExpression(), AdditionExpression_RightExpression_WrongType);
+
+		validateArithmeticExpression(
+			expression,
+			AdditionExpression_LeftExpression_WrongType,
+			AdditionExpression_RightExpression_WrongType
+		);
+
 		super.visit(expression);
 	}
 
@@ -964,13 +989,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(ArithmeticFactor expression) {
-
-		if (!isValid(expression.getExpression(), ArithmeticPrimaryBNF.ID)) {
-			int startIndex = position(expression) + 1;
-			int endIndex   = startIndex;
-			addProblem(expression, startIndex, endIndex, ArithmeticFactor_InvalidExpression);
-		}
-
+		// Nothing to validate semantically
 		super.visit(expression);
 	}
 
@@ -979,8 +998,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(AvgFunction expression) {
-		// Arguments to the functions AVG must be numeric
-		validateNumericType(expression.getExpression(), AvgFunction_InvalidNumericExpression);
+		validateAvgFunction(expression);
 		super.visit(expression);
 	}
 
@@ -1003,11 +1021,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 		    expression.hasLowerBoundExpression() &&
 		    expression.hasUpperBoundExpression()) {
 
-			if (!isEquivalentBetweenType(expression.getExpression(), expression.getLowerBoundExpression()) ||
-			    !isEquivalentBetweenType(expression.getExpression(), expression.getUpperBoundExpression())) {
-
-				addProblem(expression, BetweenExpression_WrongType);
-			}
+			validateBetweenRangeExpression(expression);
 		}
 
 		super.visit(expression);
@@ -1018,7 +1032,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(CaseExpression expression) {
-		// TODO: Anything to validate?
+		validateCaseExpression(expression);
 		super.visit(expression);
 	}
 
@@ -1027,7 +1041,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(CoalesceExpression expression) {
-		// TODO: Anything to validate?
+		validateCoalesceExpression(expression);
 		super.visit(expression);
 	}
 
@@ -1066,14 +1080,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 		// Expressions that evaluate to embeddable types are not supported in
 		// collection member expressions
 		if (expression.hasEntityExpression()) {
-			Expression entityExpression = expression.getEntityExpression();
-
-			// Check for embeddable type
-			IType type = getType(entityExpression);
-
-			if (getEmbeddable(type) != null) {
-				addProblem(entityExpression, CollectionMemberExpression_Embeddable);
-			}
+			validateCollectionMemberEntityExpression(expression);
 		}
 
 		// The collection-valued path expression designates a collection
@@ -1100,15 +1107,8 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 		if (expression.hasLeftExpression() &&
 		    expression.hasRightExpression()) {
 
-			// The result of the two expressions must be like that of the other argument
-			if (!isComparisonEquivalentType(expression.getLeftExpression(),
-			                                expression.getRightExpression())) {
-
-				addProblem(expression, ComparisonExpression_WrongComparisonType);
-			}
+			validateComparisonExpression(expression);
 		}
-
-		// Comparisons over instances of embeddable class or map entry types are not supported
 
 		super.visit(expression);
 	}
@@ -1118,14 +1118,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(ConcatExpression expression) {
-
-		// The CONCAT function returns a string that is a concatenation of its arguments
-		if (expression.hasExpression()) {
-			for (Expression child : getChildren(expression.getExpression())) {
-				validateStringType(child, ConcatExpression_Expression_WrongType);
-			}
-		}
-
+		validateConcatExpression(expression);
 		super.visit(expression);
 	}
 
@@ -1134,62 +1127,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(ConstructorExpression expression) {
-
-		String className = expression.getClassName();
-
-		// Only test the constructor if it has been specified
-		if (ExpressionTools.stringIsNotEmpty(className)) {
-			IType type = getType(className);
-
-			// Unknown type
-			if (!type.isResolvable()) {
-				int startIndex = position(expression) + 4; // NEW + space
-				int endIndex   = startIndex + className.length();
-				addProblem(expression, startIndex, endIndex, ConstructorExpression_UnknownType, className);
-			}
-			// Test the arguments' types with the constructors' types
-			// TODO: Add support for ... (array)
-			else if (expression.hasLeftParenthesis()) {
-
-				boolean validated = false;
-
-				// Retrieve the constructor's arguments so their type can be calculated
-				ItemExpression visitor = new ItemExpression();
-				expression.getConstructorItems().accept(visitor);
-				IType[] calculatedTypes = null;
-
-				// Retrieve the type's constructors
-				for (IConstructor constructor : type.constructors()) {
-					ITypeDeclaration[] types1 = constructor.getParameterTypes();
-
-					// The number of items match, check their types are equivalent
-					if (visitor.expressions.size() == types1.length) {
-
-						if (calculatedTypes == null) {
-							calculatedTypes = new IType[visitor.expressions.size()];
-
-							for (int index = visitor.expressions.size(); --index >= 0; ) {
-								calculatedTypes[index] = getType(visitor.expressions.get(index));
-							}
-						}
-
-						validated = areConstructorParametersEquivalent(types1, calculatedTypes);
-
-						if (validated) {
-							break;
-						}
-					}
-				}
-
-				// TODO: Mark individual parameters
-				if (!validated) {
-					int startIndex = position(expression) + 4 + className.length() + 1; // NEW + space
-					int endIndex   = startIndex + length(expression.getConstructorItems());
-					addProblem(expression, startIndex, endIndex, ConstructorExpression_MismatchedParameterTypes);
-				}
-			}
-		}
-
+		validateConstructorExpression(expression);
 		super.visit(expression);
 	}
 
@@ -1198,26 +1136,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(CountFunction expression) {
-
-		// The use of DISTINCT with COUNT is not supported for arguments of
-		// embeddable types or map entry types (weird because map entry is not
-		// an allowed in a COUNT expression)
-		if (expression.hasExpression() &&
-		    expression.hasDistinct()) {
-
-			Expression childExpression = expression.getExpression();
-
-			// Check for embeddable type
-			IType type = getType(childExpression);
-
-			if (getEmbeddable(type) != null) {
-				int distinctLength = Expression.DISTINCT.length() + 1; // +1 = space
-				int startIndex  = position(childExpression) - distinctLength;
-				int endIndex    = startIndex + length(childExpression) + distinctLength;
-				addProblem(expression, startIndex, endIndex, CountFunction_DistinctEmbeddable);
-			}
-		}
-
+		validateCountFunction(expression);
 		super.visit(expression);
 	}
 
@@ -1226,7 +1145,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(DateTime expression) {
-		// Nothing to validate semantically
+		validateDateTime(expression);
 	}
 
 	/**
@@ -1234,7 +1153,8 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(DeleteClause expression) {
-		// Nothing to validate semantically
+		validateDeleteClause(expression);
+		super.visit(expression);
 	}
 
 	/**
@@ -1242,7 +1162,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(DeleteStatement expression) {
-		// Nothing to validate semantically
+		validateDeleteStatement(expression);
 		super.visit(expression);
 	}
 
@@ -1251,8 +1171,13 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(DivisionExpression expression) {
-		validateNumericType(expression.getLeftExpression(),  DivisionExpression_LeftExpression_WrongType);
-		validateNumericType(expression.getRightExpression(), DivisionExpression_RightExpression_WrongType);
+
+		validateArithmeticExpression(
+			expression,
+			DivisionExpression_LeftExpression_WrongType,
+			DivisionExpression_RightExpression_WrongType
+		);
+
 		super.visit(expression);
 	}
 
@@ -1270,18 +1195,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(EntityTypeLiteral expression) {
-
-		String entityTypeName = expression.getEntityTypeName();
-
-		if (ExpressionTools.stringIsNotEmpty(entityTypeName)) {
-			IManagedType managedType = getEntityNamed(entityTypeName);
-
-			if (managedType == null) {
-				int startIndex = position(expression);
-				int endIndex   = startIndex + entityTypeName.length();
-				addProblem(expression, startIndex, endIndex, EntityTypeLiteral_NotResolvable, entityTypeName);
-			}
-		}
+		validateEntityTypeLiteral(expression);
 	}
 
 	/**
@@ -1298,7 +1212,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(ExistsExpression expression) {
-		// Nothing to validate semantically
+		validateExistsExpression(expression);
 		super.visit(expression);
 	}
 
@@ -1307,7 +1221,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(FromClause expression) {
-		// Nothing to validate semantically
+		validateFromClause(expression);
 		super.visit(expression);
 	}
 
@@ -1324,6 +1238,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 		//   state fields or lob-valued state fields that are eagerly fetched.
 		// - Grouping by embeddables is not supported.
 
+		validateGroupByClause(expression);
 		super.visit(expression);
 	}
 
@@ -1341,42 +1256,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(IdentificationVariable expression) {
-
-		// Only a non-virtual identification variable is validated
-		if (!expression.isVirtual()) {
-
-			String variable = expression.getText();
-			boolean continueValidating = true;
-
-			// A entity literal type is parsed as an identification variable, check for that case
-			if (isComparingEntityTypeLiteral(expression)) {
-
-				// The identification variable (or entity type literal) does not
-				// correspond  to an entity name, then continue validation
-				IEntity entity = getProvider().getEntityNamed(variable);
-				continueValidating = (entity == null);
-			}
-
-			if (continueValidating) {
-
-				// Validate a real identification variable
-				if (registerIdentificationVariable) {
-					usedIdentificationVariables.add(expression);
-				}
-
-				if (ExpressionTools.stringIsNotEmpty(variable)) {
-					validateIdentificationVariable(expression, variable);
-				}
-			}
-		}
-		// The identification variable actually represents a state field path expression that has
-		// a virtual identification, validate that state field path expression instead
-		else {
-			StateFieldPathExpression pathExpression = expression.getStateFieldPathExpression();
-			if (pathExpression != null) {
-				pathExpression.accept(this);
-			}
-		}
+		validateIdentificationVariable(expression);
 	}
 
 	/**
@@ -1384,7 +1264,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(IdentificationVariableDeclaration expression) {
-		// Nothing to validate semantically
+		validateIdentificationVariableDeclaration(expression);
 		super.visit(expression);
 	}
 
@@ -1393,21 +1273,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(IndexExpression expression) {
-
-		// The INDEX function can only be applied to identification variables denoting types for
-		// which an order column has been specified
-		String variableName = context.literal(
-			expression.getExpression(),
-			LiteralType.IDENTIFICATION_VARIABLE
-		);
-
-		// The identification variable is not defined in a JOIN or IN expression
-		if (ExpressionTools.stringIsNotEmpty(variableName) &&
-		    !context.isCollectionVariableName(variableName)) {
-
-			addProblem(expression.getExpression(), IndexExpression_WrongVariable, variableName);
-		}
-
+		validateIndexExpression(expression);
 		super.visit(expression);
 	}
 
@@ -1488,16 +1354,20 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	@Override
 	public void visit(Join expression) {
 
-		Expression joinAssociationPath = expression.getJoinAssociationPath();
-		validateCollectionValuedPathExpression(joinAssociationPath, false);
-		joinAssociationPath.accept(this);
-
-		try {
-			registerIdentificationVariable = false;
-			expression.getIdentificationVariable().accept(this);
+		if (expression.hasJoinAssociationPath()) {
+			Expression joinAssociationPath = expression.getJoinAssociationPath();
+			validateCollectionValuedPathExpression(joinAssociationPath, false);
+			joinAssociationPath.accept(this);
 		}
-		finally {
-			registerIdentificationVariable = true;
+
+		if (expression.hasIdentificationVariable()) {
+			try {
+				registerIdentificationVariable = false;
+				expression.getIdentificationVariable().accept(this);
+			}
+			finally {
+				registerIdentificationVariable = true;
+			}
 		}
 	}
 
@@ -1534,7 +1404,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(LengthExpression expression) {
-		validateStringType(expression.getExpression(), LengthExpression_WrongType);
+		validateLengthExpression(expression);
 		super.visit(expression);
 	}
 
@@ -1543,7 +1413,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(LikeExpression expression) {
-		// Nothing semantically to validate
+		validateLikeExpression(expression);
 		super.visit(expression);
 	}
 
@@ -1552,16 +1422,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(LocateExpression expression) {
-
-		// The first argument is the string to be located; the second argument is the string to be
-		// searched; the optional third argument is an integer that represents the string position at
-		// which the search is started (by default, the beginning of the string to be searched)
-		validateStringType (expression.getFirstExpression(),  LocateExpression_FirstExpression_WrongType);
-		validateStringType (expression.getSecondExpression(), LocateExpression_SecondExpression_WrongType);
-		validateNumericType(expression.getThirdExpression(),  LocateExpression_ThirdExpression_WrongType);
-
-		// Note that not all databases support the use of the third argument to LOCATE; use of this
-		// argument may result in queries that are not portable
+		validateLocateExpression(expression);
 		super.visit(expression);
 	}
 
@@ -1570,7 +1431,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(LowerExpression expression) {
-		validateStringType(expression.getExpression(), LowerExpression_WrongType);
+		validateLowerExpression(expression);
 		super.visit(expression);
 	}
 
@@ -1597,19 +1458,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(ModExpression expression) {
-
-		validateIntegralType(
-			expression.getFirstExpression(),
-			expression.parameterExpressionBNF(0),
-			ModExpression_FirstExpression_WrongType
-		);
-
-		validateIntegralType(
-			expression.getSecondExpression(),
-			expression.parameterExpressionBNF(1),
-			ModExpression_SecondExpression_WrongType
-		);
-
+		validateModExpression(expression);
 		super.visit(expression);
 	}
 
@@ -1618,8 +1467,13 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(MultiplicationExpression expression) {
-		validateNumericType(expression.getLeftExpression(),  MultiplicationExpression_LeftExpression_WrongType);
-		validateNumericType(expression.getRightExpression(), MultiplicationExpression_RightExpression_WrongType);
+
+		validateArithmeticExpression(
+			expression,
+			MultiplicationExpression_LeftExpression_WrongType,
+			MultiplicationExpression_RightExpression_WrongType
+		);
+
 		super.visit(expression);
 	}
 
@@ -1628,7 +1482,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(NotExpression expression) {
-		validateBooleanType(expression.getExpression(), NotExpression_WrongType);
+		validateNotExpression(expression);
 		super.visit(expression);
 	}
 
@@ -1637,7 +1491,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(NullComparisonExpression expression) {
-		// Nothing semantically to validate, done in the subclass
+		validateNullComparisonExpression(expression);
 		super.visit(expression);
 	}
 
@@ -1671,7 +1525,16 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(ObjectExpression expression) {
-		// Nothing semantically to validate
+		validateObjectExpression(expression);
+		super.visit(expression);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void visit(OnClause expression) {
+		validateOnClause(expression);
 		super.visit(expression);
 	}
 
@@ -1680,7 +1543,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(OrderByClause expression) {
-		// Nothing semantically to validate
+		validateOrderByClause(expression);
 		super.visit(expression);
 	}
 
@@ -1741,8 +1604,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 
 		try {
 			registerIdentificationVariable = false;
-
-			// Nothing semantically to validate
+			validateResultVariable(expression);
 			super.visit(expression);
 		}
 		finally {
@@ -1755,7 +1617,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(SelectClause expression) {
-		// Nothing semantically to validate
+		validateSelectClause(expression);
 		super.visit(expression);
 	}
 
@@ -1764,19 +1626,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(SelectStatement expression) {
-
-		// If the GROUP BY clause is not defined but the HAVING clause is, the result is treated as a
-		// single group, and the select list can only consist of aggregate functions. (page 159)
-		if (!expression.hasGroupByClause() &&
-		     expression.hasHavingClause()) {
-
-			Expression selectExpression = expression.getSelectClause().getSelectExpression();
-
-			if (!isValidWithChildCollectionBypass(selectExpression, AggregateExpressionBNF.ID)) {
-				addProblem(selectExpression, SelectStatement_SelectClauseHasNonAggregateFunctions);
-			}
-		}
-
+		validateSelectStatement(expression);
 		super.visit(expression);
 	}
 
@@ -1785,7 +1635,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(SimpleFromClause expression) {
-		// Nothing semantically to validate
+		validateSimpleFromClause(expression);
 		super.visit(expression);
 	}
 
@@ -1794,7 +1644,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(SimpleSelectClause expression) {
-		// Nothing semantically to validate
+		validateSimpleSelectClause(expression);
 		super.visit(expression);
 	}
 
@@ -1808,7 +1658,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 		List<IdentificationVariable> oldUsedIdentificationVariables = new ArrayList<IdentificationVariable>(usedIdentificationVariables);
 
 		// Create a context for the subquery
-		context.newSubqueryContext(expression);
+		helper.newSubqueryContext(expression);
 
 		try {
 			super.visit(expression);
@@ -1818,7 +1668,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 		}
 		finally {
 			// Revert back to the parent context
-			context.disposeSubqueryContext();
+			helper.disposeSubqueryContext();
 
 			// Revert the list to what it was
 			usedIdentificationVariables.retainAll(oldUsedIdentificationVariables);
@@ -1840,8 +1690,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(SqrtExpression expression) {
-		// The SQRT function takes a numeric argument
-		validateNumericType(expression.getExpression(), SqrtExpression_WrongType);
+		validateSqrtExpression(expression);
 		super.visit(expression);
 	}
 
@@ -1876,26 +1725,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(SubstringExpression expression) {
-
-		validateStringType(expression.getFirstExpression(), SubstringExpression_FirstExpression_WrongType);
-
-		// The second and third arguments of the SUBSTRING function denote the starting position and
-		// length of the substring to be returned. These arguments are integers
-		validateIntegralType(
-			expression.getSecondExpression(),
-			expression.parameterExpressionBNF(1),
-			SubstringExpression_SecondExpression_WrongType
-		);
-
-		// The third argument is optional for JPA 2.0
-		if (getJPAVersion().isNewerThanOrEqual(JPAVersion.VERSION_2_0)) {
-			validateIntegralType(
-				expression.getThirdExpression(),
-				expression.parameterExpressionBNF(2),
-				SubstringExpression_ThirdExpression_WrongType
-			);
-		}
-
+		validateSubstringExpression(expression);
 		super.visit(expression);
 	}
 
@@ -1904,8 +1734,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(SubtractionExpression expression) {
-		validateNumericType(expression.getLeftExpression(),  SubtractionExpression_LeftExpression_WrongType);
-		validateNumericType(expression.getRightExpression(), SubtractionExpression_RightExpression_WrongType);
+		validateSubtractionExpression(expression);
 		super.visit(expression);
 	}
 
@@ -1914,8 +1743,16 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(SumFunction expression) {
-		// Arguments to the functions SUM must be numeric
-		validateNumericType(expression.getExpression(), SumFunction_WrongType);
+		validateSumFunction(expression);
+		super.visit(expression);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void visit(TreatExpression expression) {
+		// Nothing semantically to validate
 		super.visit(expression);
 	}
 
@@ -1933,32 +1770,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(TypeExpression expression) {
-
-//		if (expression.hasExpression()) {
-//			Expression childExpression = expression.getExpression();
-//			String className = childExpression.toParsedText();
-//
-//			if (ExpressionTools.stringIsNotEmpty(className)) {
-//				TypeVisitor visitor = buildResolver();
-//				expression.accept(visitor);
-//				IType type = visitor.getType();
-//
-//				// Resolves to a Java class
-//				if (!type.isResolvable()) {
-//					int startIndex = position(childExpression);
-//					int endIndex   = startIndex + length(childExpression);
-//
-//					addProblem(
-//						childExpression,
-//						startIndex,
-//						endIndex,
-//						TypeExpression_NotResolvable,
-//						className
-//					);
-//				}
-//			}
-//		}
-
+		// TODO: Anything to validate?
 		super.visit(expression);
 	}
 
@@ -1983,49 +1795,8 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 * {@inheritDoc}
 	 */
 	@Override
-	@SuppressWarnings("null")
 	public void visit(UpdateItem expression) {
-
- 		// Retrieve the entity to make sure the state field is part of it
-		AbstractSchemaName abstractSchemaName = findAbstractSchemaName(expression);
-		String name = (abstractSchemaName != null) ? abstractSchemaName.getText() : null;
-
- 		if (ExpressionTools.stringIsNotEmpty(name)) {
- 			IEntity entity = getEntityNamed(name);
-
-			// Check the existence of the state field on the entity
-			if (entity != null) {
-				StateFieldPathExpression pathExpression = getStateFieldPathExpression(expression.getStateFieldPathExpression());
-				String stateFieldValue = (pathExpression != null) ? pathExpression.toParsedText() : null;
-
-				if (ExpressionTools.stringIsNotEmpty(stateFieldValue)) {
-
-					// State field without a dot
-					if (stateFieldValue.indexOf(".") == -1) {
-						IMapping mapping = entity.getMappingNamed(stateFieldValue);
-
- 						if (mapping == null) {
- 							addProblem(pathExpression, UpdateItem_NotResolvable, stateFieldValue);
- 						}
- 						else {
- 							validateUpdateItemTypes(expression, mapping.getType());
- 						}
-					}
-					else {
-						IType type = getType(pathExpression);
-
-						if (!type.isResolvable()) {
- 							addProblem(pathExpression, UpdateItem_NotResolvable, stateFieldValue);
-						}
-						else {
- 							validateUpdateItemTypes(expression, type);
-						}
-					}
-				}
- 			}
- 		}
-
- 		super.visit(expression);
+ 		validateUpdateItem(expression);
 	}
 
 	/**
@@ -2042,9 +1813,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(UpperExpression expression) {
-		// The UPPER function convert a string to upper case,
-		// with regard to the locale of the database
-		validateStringType(expression.getExpression(), UpperExpression_WrongType);
+		validateUpperExpression(expression);
 		super.visit(expression);
 	}
 
@@ -2073,136 +1842,6 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	public void visit(WhereClause expression) {
 		// Nothing semantically to validate
 		super.visit(expression);
-	}
-
-	/**
-	 * This visitor validates expression that is a boolean literal to make sure the type is a
-	 * <b>Boolean</b>.
-	 */
-	protected class BooleanTypeValidator extends TypeValidator {
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		protected boolean isRightType(IType type) {
-			return getTypeHelper().isBooleanType(type);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(AllOrAnyExpression expression) {
-			// ALL|ANY|SOME always returns a boolean value
-			valid = true;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(AndExpression expression) {
-			// AND always returns a boolean value
-			valid = true;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(BetweenExpression expression) {
-			// BETWEEN always returns a boolean value
-			valid = true;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(ComparisonExpression expression) {
-			// A comparison always returns a boolean value
-			valid = true;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(EmptyCollectionComparisonExpression expression) {
-			// IS EMPTY always returns a boolean value
-			valid = true;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(ExistsExpression expression) {
-			// EXISTS always returns a boolean value
-			valid = true;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(KeywordExpression expression) {
-			valid = true;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(LikeExpression expression) {
-			// LIKE always returns a boolean value
-			valid = true;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(NotExpression expression) {
-			// NOT always returns a boolean value
-			valid = true;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(NullComparisonExpression expression) {
-			// IS NULL always returns a boolean value
-			valid = true;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(OrExpression expression) {
-			// OR always returns a boolean value
-			valid = true;
-		}
-	}
-
-	protected static class CollectionValuedPathExpressionVisitor extends AbstractExpressionVisitor {
-
-		/**
-		 * The {@link CollectionValuedPathExpression} if it is the {@link Expression} that
-		 * was visited.
-		 */
-		protected CollectionValuedPathExpression expression;
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(CollectionValuedPathExpression expression) {
-			this.expression = expression;
-		}
 	}
 
 	protected class ComparingEntityTypeLiteralVisitor extends AbstractExpressionVisitor {
@@ -2235,550 +1874,6 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 		public void visit(SubExpression expression) {
 			// Make sure to bypass any sub expression
 			expression.getParent().accept(this);
-		}
-	}
-
-	protected class ItemExpression extends AnonymousExpressionVisitor {
-
-		protected List<Expression> expressions;
-
-		ItemExpression() {
-			super();
-			expressions = new LinkedList<Expression>();
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(CollectionExpression expression) {
-			expression.acceptChildren(this);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		protected void visit(Expression expression) {
-			expressions.add(expression);
-		}
-	}
-
-	protected class NullValueVisitor extends AbstractExpressionVisitor {
-
-		/**
-		 * Determines whether the {@link Expression} visited represents {@link Expression#NULL}.
-		 */
-		protected boolean valid;
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(KeywordExpression expression) {
-			valid = expression.getText() == Expression.NULL;
-		}
-	}
-
-	/**
-	 * This visitor validates expression that is a numeric literal to make sure the type is an
-	 * instance of <b>Number</b>.
-	 */
-	protected class NumericTypeValidator extends TypeValidator {
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		protected boolean isRightType(IType type) {
-			return getTypeHelper().isNumericType(type);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(AbsExpression expression) {
-			// ABS always returns a numeric value
-			valid = true;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(AdditionExpression expression) {
-			// An addition expression always returns a numeric value
-			valid = true;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(ArithmeticFactor expression) {
-			// +/- is always numeric value
-			valid = true;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(AvgFunction expression) {
-			// AVG always returns a double
-			valid = true;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(CountFunction expression) {
-			// COUNT always returns a long
-			valid = true;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(DivisionExpression expression) {
-			// A division expression always returns a numeric value
-			valid = true;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(IndexExpression expression) {
-			// INDEX always returns an integer
-			valid = true;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(LengthExpression expression) {
-			// LENGTH always returns an integer
-			valid = true;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(LocateExpression expression) {
-			// LOCATE always returns an integer
-			valid = true;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(MaxFunction expression) {
-			// SUM always returns a numeric value
-			valid = true;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(MinFunction expression) {
-			// SUM always returns a numeric value
-			valid = true;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(ModExpression expression) {
-			// MOD always returns an integer
-			valid = true;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(MultiplicationExpression expression) {
-			// A multiplication expression always returns a numeric value
-			valid = true;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(NumericLiteral expression) {
-			// A numeric literal is by definition valid
-			valid = true;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(SizeExpression expression) {
-			// SIZE always returns an integer
-			valid = true;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(SqrtExpression expression) {
-			// SQRT always returns a double
-			valid = true;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(SubtractionExpression expression) {
-			// A subtraction expression always returns a numeric value
-			valid = true;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(SumFunction expression) {
-			// SUM always returns a long
-			valid = true;
-		}
-	}
-
-	protected class ResultVariableInOrderByVisitor extends AbstractExpressionVisitor {
-
-		public boolean result;
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(IdentificationVariable expression) {
-			expression.getParent().accept(this);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(OrderByClause expression) {
-			result = true;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(OrderByItem expression) {
-			expression.getParent().accept(this);
-		}
-	}
-
-	/**
-	 * This visitor is meant to retrieve an {@link StateFieldPathExpressionVisitor} if the visited
-	 * {@link Expression} is that object.
-	 */
-	protected static class StateFieldPathExpressionVisitor extends AbstractExpressionVisitor {
-
-		/**
-		 * The {@link StateFieldPathExpression} that was visited; <code>null</code> if he was not.
-		 */
-		protected StateFieldPathExpression expression;
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(StateFieldPathExpression expression) {
-			this.expression = expression;
-		}
-	}
-
-	/**
-	 * This visitor validates that the {@link Expression} is a string primary and to make sure the
-	 * type is String.
-	 */
-	protected class StringTypeValidator extends TypeValidator {
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		protected boolean isRightType(IType type) {
-			return getTypeHelper().isStringType(type);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(ConcatExpression expression) {
-			// CONCAT always returns a string
-			valid = true;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(LowerExpression expression) {
-			// LOWER always returns a string
-			valid = true;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(StringLiteral expression) {
-			// A string literal is by definition valid
-			valid = true;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(SubstringExpression expression) {
-			// SUBSTRING always returns a string
-			valid = true;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(TrimExpression expression) {
-			// TRIM always returns a string
-			valid = true;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(UpperExpression expression) {
-			// UPPER always returns a string
-			valid = true;
-		}
-	}
-
-	/**
-	 * The basic validator for validating the type of an {@link Expression}.
-	 */
-	protected abstract class TypeValidator extends AbstractExpressionVisitor {
-
-		/**
-		 * Determines whether the expression that was visited returns a number.
-		 */
-		protected boolean valid;
-
-		/**
-		 * Determines whether the given {@link IType} is the expected type.
-		 *
-		 * @param type The {@link IType} to validate
-		 * @return <code>true</code> if the given type is of the expected type; <code>false</code> if
-		 * it's not the right type
-		 */
-		protected abstract boolean isRightType(IType type);
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public final void visit(CaseExpression expression) {
-			IType type = getType(expression);
-			valid = isRightType(type);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public final void visit(CoalesceExpression expression) {
-			IType type = getType(expression);
-			valid = isRightType(type);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public final void visit(InputParameter expression) {
-			// An input parameter can't be validated until the query
-			// is executed so it is assumed to be valid
-			valid = true;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(NullExpression expression) {
-			// The missing expression is validated by GrammarValidator
-			valid = true;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public final void visit(NullIfExpression expression) {
-			expression.getFirstExpression().accept(this);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public final void visit(StateFieldPathExpression expression) {
-			IType type = getType(expression);
-			valid = isRightType(type);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public final void visit(SubExpression expression) {
-			expression.getExpression().accept(this);
-		}
-	}
-
-	protected class UpdateClauseAbstractSchemaNameFinder extends AbstractExpressionVisitor {
-
-		protected AbstractSchemaName expression;
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(AbstractSchemaName expression) {
-			this.expression = expression;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(CollectionExpression expression) {
-			expression.getParent().accept(this);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(RangeVariableDeclaration expression) {
-			expression.getAbstractSchemaName().accept(this);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(UpdateClause expression) {
-			expression.getRangeVariableDeclaration().accept(this);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(UpdateItem expression) {
-			expression.getParent().accept(this);
-		}
-	}
-
-	protected static class VirtualIdentificationVariableFinder extends AbstractTraverseParentVisitor {
-
-		/**
-		 * The {@link IdentificationVariable} used to define the abstract schema name from either the
-		 * <b>UPDATE</b> or <b>DELETE</b> clause.
-		 */
-		protected IdentificationVariable expression;
-
-		/**
-		 * Determines if the {@link RangeVariableDeclaration} should traverse its identification
-		 * variable expression or simply visit the parent hierarchy.
-		 */
-		protected boolean traverse;
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(DeleteClause expression) {
-			try {
-				traverse = true;
-				expression.getRangeVariableDeclaration().accept(this);
-			}
-			finally {
-				traverse = false;
-			}
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(DeleteStatement expression) {
-			expression.getDeleteClause().accept(this);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(IdentificationVariable expression) {
-			this.expression = expression;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(RangeVariableDeclaration expression) {
-			if (traverse) {
-				expression.getIdentificationVariable().accept(this);
-			}
-			else {
-				super.visit(expression);
-			}
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(UpdateClause expression) {
-			try {
-				traverse = true;
-				expression.getRangeVariableDeclaration().accept(this);
-			}
-			finally {
-				traverse = false;
-			}
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(UpdateStatement expression) {
-			expression.getUpdateClause().accept(this);
 		}
 	}
 }

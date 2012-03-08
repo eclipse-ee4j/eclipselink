@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -38,6 +39,7 @@ import org.eclipse.persistence.jpa.jpql.parser.AbstractSelectStatement;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionValuedPathExpression;
 import org.eclipse.persistence.jpa.jpql.parser.InputParameter;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLExpression;
+import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.parser.Join;
 import org.eclipse.persistence.jpa.jpql.parser.StateFieldPathExpression;
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -99,6 +101,11 @@ final class JPQLQueryContext {
 	private JPQLExpression jpqlExpression;
 
 	/**
+	 * The JPQL grammar that defines how to parse a JPQL query.
+	 */
+	private JPQLGrammar jpqlGrammar;
+
+	/**
 	 * The JPQL query to convert into an EclipseLink {@link Expression}.
 	 */
 	private String jpqlQuery;
@@ -158,12 +165,16 @@ final class JPQLQueryContext {
 	 */
 	private static final Class<?>[] EMPTY_TYPE = new Class<?>[1];
 
+
 	/**
 	 * Creates a new <code>JPQLQueryContext</code>.
+	 *
+	 * @param jpqlGrammar The JPQL grammar that defines how the JPQL query was parsed
 	 */
-	JPQLQueryContext() {
+	JPQLQueryContext(JPQLGrammar jpqlGrammar) {
 		super();
-		currentContext = this;
+		this.jpqlGrammar    = jpqlGrammar;
+		this.currentContext = this;
 	}
 
 	/**
@@ -178,7 +189,7 @@ final class JPQLQueryContext {
 	                         org.eclipse.persistence.jpa.jpql.parser.Expression currentQuery,
 	                         ReportQuery query) {
 
-		this();
+		this(parent.jpqlGrammar);
 		this.query        = query;
 		this.parent       = parent;
 		this.currentQuery = currentQuery;
@@ -373,6 +384,26 @@ final class JPQLQueryContext {
 	}
 
 	/**
+	 * Returns the type of the given {@link DatabaseMapping}, which is the persistent field type.
+	 *
+	 * @param mapping The {@link DatabaseMapping} to retrieve its persistent field type
+	 * @return The persistent field type
+	 */
+	Class<?> calculateMappingType(DatabaseMapping mapping) {
+		return typeResolver().calculateMappingType(mapping);
+	}
+
+	/**
+	 * Returns the type of the given {@link QueryKey}, which is the persistent field type.
+	 *
+	 * @param mapping The {@link QueryKey} to retrieve its persistent field type
+	 * @return The persistent field type
+	 */
+	Class<?> calculateQueryKeyType(QueryKey queryKey) {
+		return typeResolver().calculateQueryKeyType(queryKey);
+	}
+
+	/**
 	 * Disposes the internal data.
 	 */
 	void dispose() {
@@ -452,6 +483,15 @@ final class JPQLQueryContext {
 			expression = parent.findQueryExpressionImp(variableName);
 		}
 		return expression;
+	}
+
+	/**
+	 * Returns the parent context if the current context is not the root context.
+	 *
+	 * @return The parent context or <code>null</code> if the current context is the root
+	 */
+	JPQLQueryContext getActualParent() {
+		return parent;
 	}
 
 	/**
@@ -582,7 +622,7 @@ final class JPQLQueryContext {
 	 *
 	 * @return The {@link Declaration Declarations} of the current query that was parsed
 	 */
-	Collection<Declaration> getDeclarations() {
+	List<Declaration> getDeclarations() {
 		return getDeclarationResolver().getDeclarations();
 	}
 
@@ -649,6 +689,15 @@ final class JPQLQueryContext {
 	 */
 	Declaration getFirstDeclarationImp() {
 		return getDeclarationResolverImp().getFirstDeclaration();
+	}
+
+	/**
+	 * Returns the {@link JPQLGrammar} that defines how the JPQL query was parsed.
+	 *
+	 * @return The {@link JPQLGrammar} that was used to parse the JPQL query
+	 */
+	JPQLGrammar getGrammar() {
+		return jpqlGrammar;
 	}
 
 	/**
@@ -794,15 +843,27 @@ final class JPQLQueryContext {
 	}
 
 	/**
-	 * Returns the set of {@link Map.Entry Map.Entry} of the input parameters mapped to its type.
+	 * Returns the input parameter types mapped by their literal or <code>null</code> if none was
+	 * present in the JPQL query.
 	 *
-	 * @return The set of {@link Map.Entry Map.Entry} of the input parameters mapped to its type
+	 * @return The input parameter types mapped by their literal or <code>null</code> if none was
+	 * present in the JPQL query
 	 */
-	Set<Map.Entry<String, Class<?>>> inputParameters() {
-		if (inputParameters == null) {
-			return Collections.emptySet();
-		}
-		return inputParameters.entrySet();
+	Map<String, Class<?>> inputParameters() {
+		return inputParameters;
+	}
+
+	/**
+	 * Determines whether the given identification variable is defining a join or a collection member
+	 * declaration expressions.
+	 *
+	 * @param variableName The identification variable to check for what it maps
+	 * @return <code>true</code> if the given identification variable maps a collection-valued field
+	 * defined in a <code>JOIN</code> or <code>IN</code> expression; <code>false</code> if it's not
+	 * defined or it's mapping an abstract schema name
+	 */
+	boolean isCollectionIdentificationVariable(String variableName) {
+		return getDeclarationResolver().isCollectionIdentificationVariable(variableName);
 	}
 
 	/**
@@ -1106,16 +1167,30 @@ final class JPQLQueryContext {
 		return typeResolver().resolveDescriptor(expression);
 	}
 
+	/**
+	 * Resolves the given {@link org.eclipse.persistence.jpa.jpql.parser.Expression Expression} and
+	 * returns the {@link DatabaseMapping}.
+	 *
+	 * @param expression The {@link org.eclipse.persistence.jpa.jpql.parser.Expression Expression} to
+	 * resolve by traversing its path expression
+	 * @return The {@link DatabaseMapping} that is representing the last path or <code>null</code> if
+	 * the path expression could not be resolved
+	 */
 	DatabaseMapping resolveMapping(org.eclipse.persistence.jpa.jpql.parser.Expression expression) {
 		return typeResolver().resolveMapping(expression);
 	}
 
-	Class<?> resolveMappingType(DatabaseMapping mapping) {
-		return typeResolver().resolveMappingType(mapping);
-	}
-
-	Class<?> resolveQueryKeyType(QueryKey queryKey) {
-		return typeResolver().resolveQueryKeyType(queryKey);
+	/**
+	 * Resolves the given {@link org.eclipse.persistence.jpa.jpql.parser.Expression Expression} and
+	 * either returns the {@link DatabaseMapping} or the {@link QueryKey} object.
+	 *
+	 * @param expression The {@link org.eclipse.persistence.jpa.jpql.parser.Expression Expression} to
+	 * resolve by traversing its path expression
+	 * @return Either the {@link DatabaseMapping} or the {@link QueryKey} that is representing the
+	 * last path or <code>null</code> if the path expression could not be resolved
+	 */
+	Object resolveMappingObject(org.eclipse.persistence.jpa.jpql.parser.Expression expression) {
+		return typeResolver().resolveMappingObject(expression);
 	}
 
 	/**

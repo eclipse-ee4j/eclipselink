@@ -83,7 +83,7 @@ public final class SelectStatement extends AbstractSelectStatement {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void addOrderedChildrenTo(List<StringExpression> children) {
+	protected void addOrderedChildrenTo(List<Expression> children) {
 
 		super.addOrderedChildrenTo(children);
 

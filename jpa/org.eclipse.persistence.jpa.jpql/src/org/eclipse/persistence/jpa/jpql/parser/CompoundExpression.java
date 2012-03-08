@@ -79,7 +79,7 @@ public abstract class CompoundExpression extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected final void addOrderedChildrenTo(List<StringExpression> children) {
+	protected final void addOrderedChildrenTo(List<Expression> children) {
 
 		// Left expression
 		if (leftExpression != null) {

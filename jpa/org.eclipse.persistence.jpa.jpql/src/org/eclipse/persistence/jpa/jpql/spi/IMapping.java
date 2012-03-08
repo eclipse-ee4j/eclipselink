@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -96,10 +96,10 @@ public interface IMapping extends IExternalForm,
 	boolean isCollection();
 
 	/**
-	 * Determines whether this {@link IMapping} is a not a collection type mapping.
+	 * Determines whether this {@link IMapping} is a property type mapping.
 	 *
-	 * @return <code>true</code> if this {@link IMapping} is a not collection mapping;
-	 * <code>false</code> otherwise
+	 * @return <code>true</code> if this {@link IMapping} is a property mapping; <code>false</code>
+	 * otherwise
 	 * @since 2.4
 	 */
 	boolean isProperty();

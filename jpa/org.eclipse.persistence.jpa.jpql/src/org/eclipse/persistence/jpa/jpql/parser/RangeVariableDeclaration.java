@@ -117,7 +117,7 @@ public final class RangeVariableDeclaration extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void addOrderedChildrenTo(List<StringExpression> children) {
+	protected void addOrderedChildrenTo(List<Expression> children) {
 
 		// Abstract schema name
 		if (abstractSchemaName != null) {

@@ -16,7 +16,7 @@ package org.eclipse.persistence.jpa.tests.jpql.parser;
 import org.eclipse.persistence.jpa.jpql.parser.AggregateFunction;
 import org.eclipse.persistence.jpa.jpql.parser.MaxFunction;
 
-public final class MaxFunctionTest extends FunctionTest {
+public final class MaxFunctionTest extends AggregateFunctionTest {
 
 	@Override
 	protected AggregateFunctionTester aggregateFunctionTester(ExpressionTester expression) {

@@ -13,6 +13,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.tests.jpql;
 
+import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_4;
 import org.junit.Test;
 
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
@@ -29,7 +30,7 @@ public class EclipseLinkContentAssistTest extends AbstractContentAssistTest {
 	 */
 	@Override
 	boolean isJoinFetchIdentifiable() {
-		return true;
+		return getGrammar().getProviderVersion().equals(EclipseLinkJPQLGrammar2_4.VERSION);
 	}
 
 	@Test

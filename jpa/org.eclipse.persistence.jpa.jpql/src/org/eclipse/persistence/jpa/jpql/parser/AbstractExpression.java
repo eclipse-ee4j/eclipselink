@@ -31,7 +31,6 @@ import org.eclipse.persistence.jpa.jpql.util.iterator.IterableListIterator;
  * (retrieval of the possible {@link ExpressionFactory expression factories}).
  *
  * @see ExpressionFactory
- * @see StringExpression
  * @see JPQLGrammar
  *
  * @version 2.4
@@ -39,13 +38,12 @@ import org.eclipse.persistence.jpa.jpql.util.iterator.IterableListIterator;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-public abstract class AbstractExpression extends StringExpression
-                                         implements Expression {
+public abstract class AbstractExpression implements Expression {
 
 	/**
-	 * The string representation of this {@link Expression}, which needs to include any characters
-	 * that are considered virtual, i.e. that was parsed when the query is incomplete and is needed
-	 * for functionality like content assist.
+	 * The string representation of this {@link AbstractExpression} (which includes its children).
+	 * The string includes characters that are considered virtual, i.e. that was parsed when the
+	 * query is incomplete and is needed for functionality like content assist.
 	 *
 	 * @see #toActualText()
 	 */
@@ -63,24 +61,25 @@ public abstract class AbstractExpression extends StringExpression
 	 *
 	 * @see #orderedChildren()
 	 */
-	private List<StringExpression> orderedChildren;
+	private List<Expression> orderedChildren;
 
 	/**
-	 * The parent of this expression or <code>null</code> if this is the root of the parsed tree
-	 * hierarchy.
+	 * The parent of this {@link AbstractExpression} or <code>null</code> if this object is {@link
+	 * JPQLExpression} – the root of the parsed tree hierarchy.
 	 */
 	private AbstractExpression parent;
 
 	/**
-	 * The string representation of this {@link AbstractExpression}.
+	 * The string representation of this {@link AbstractExpression} (which includes its children).
+	 * The string does not include characters that are considered virtual, i.e. that was parsed when
+	 * the query is incomplete.
 	 *
 	 * @see #toParsedText()
 	 */
 	private String parsedText;
 
 	/**
-	 * If this expression has an identifier or a single value, then it's possible it's using this
-	 * text to store it.
+	 * This attribute can be used to store the {@link AbstractExpression}'s JPQL identifier or a literal.
 	 */
 	private String text;
 
@@ -161,15 +160,18 @@ public abstract class AbstractExpression extends StringExpression
 	}
 
 	/**
-	 * The given {@link ExpressionVisitor} needs to visit this class but it is defined by a
-	 * third-party provider. This method will programmatically invoke the <b>visit</b> method defined
-	 * on the given visitor which signature should be.
+	 * The given {@link ExpressionVisitor} needs to visit this class but it is defined by a third-
+	 * party provider. This method will programmatically invoke the <b>visit</b> method defined on
+	 * the visitor. The method signature should be:
 	 * <p>
-	 * <div nowrap><code>{public|protected|private} void visit(ThirdPartyExpression expression)</code>
+	 * <div nowrap><code>{public|protected|private} void visit(ThirdPartyExpression expression)</code></div>
 	 * <p>
 	 * or
 	 * <p>
-	 * <div nowrap><code>{public|protected|private} void visit(Expression expression)</code><p>
+	 * <div nowrap><code>{public|protected|private} void visit(Expression expression)</code></div>
+	 * <p>
+	 * <b>Note:</b> The package protected visibility (default) should be used with care, if the code
+	 * is running inside OSGi, then the method will not be accessible, even through reflection.
 	 *
 	 * @param visitor The {@link ExpressionVisitor} to visit this {@link Expression} programmatically
 	 * @return <code>true</code> if the call was successfully executed; <code>false</code> otherwise
@@ -181,7 +183,7 @@ public abstract class AbstractExpression extends StringExpression
 				acceptUnknownVisitor(visitor, visitor.getClass(), getClass());
 			}
 			catch (NoSuchMethodException e) {
-				// Try with Expression has the parameter type
+				// Try with Expression as the parameter type
 				acceptUnknownVisitor(visitor, visitor.getClass(), Expression.class);
 			}
 			return true;
@@ -208,15 +210,16 @@ public abstract class AbstractExpression extends StringExpression
 	}
 
 	/**
-	 * The given {@link ExpressionVisitor} needs to visit this class but it is defined by a
-	 * third-party provider. This method will programmatically invoke the <b>visit</b> method defined
-	 * on the given visitor which signature should be.
+	 * The given {@link ExpressionVisitor} needs to visit this class but it is defined by a third-
+	 * party provider. This method will programmatically invoke the <b>visit</b> method defined on
+	 * the visitor. The method signature should be:
 	 * <p>
-	 * <div nowrap><code>{public|protected|private} void visit(ThirdPartyExpression expression)</code>
+	 * <div nowrap><code>{public|protected|private} void visit(ThirdPartyExpression expression)</code></div>
 	 * <p>
 	 * or
 	 * <p>
-	 * <div nowrap><code>{public|protected|private} void visit(Expression expression)</code><p>
+	 * <div nowrap><code>{public|protected|private} void visit(Expression expression)</code></div>
+	 * <p>
 	 *
 	 * @param visitor The {@link ExpressionVisitor} to visit this {@link Expression} programmatically
 	 * @param type The type found in the hierarchy of the given {@link ExpressionVisitor} that will
@@ -249,7 +252,7 @@ public abstract class AbstractExpression extends StringExpression
 	}
 
 	/**
-	 * Adds the children of this {@link Expression} to the given collection.
+	 * Adds the children of this {@link AbstractExpression} to the given collection.
 	 *
 	 * @param children The collection used to store the children
 	 */
@@ -257,11 +260,11 @@ public abstract class AbstractExpression extends StringExpression
 	}
 
 	/**
-	 * Adds the {@link StringExpression StringExpressions} representing this {@link Expression}.
+	 * Adds the children of this {@link AbstractExpression} to the given list.
 	 *
-	 * @param children The list used to store the string representation of this {@link Expression}
+	 * @param children The list used to store the string representation of this {@link AbstractExpression}
 	 */
-	protected void addOrderedChildrenTo(List<StringExpression> children) {
+	protected void addOrderedChildrenTo(List<Expression> children) {
 	}
 
 	/**
@@ -314,24 +317,24 @@ public abstract class AbstractExpression extends StringExpression
 	}
 
 	/**
-	 * Creates a new {@link StringExpression} wrapping the given character value.
+	 * Creates a new {@link Expression} wrapping the given character value.
 	 *
-	 * @param value The character to wrap as a {@link StringExpression}
-	 * @return The {@link StringExpression} representation of the given identifier where the owning
+	 * @param value The character to wrap as a {@link Expression}
+	 * @return The {@link Expression} representation of the given identifier where the owning
 	 * {@link Expression} is this one
 	 */
-	protected final StringExpression buildStringExpression(char value) {
+	protected final Expression buildStringExpression(char value) {
 		return buildStringExpression(String.valueOf(value));
 	}
 
 	/**
-	 * Creates a new {@link StringExpression} wrapping the given string value.
+	 * Creates a new {@link Expression} wrapping the given string value.
 	 *
-	 * @param value The string to wrap as a <code>StringExpression</code>
-	 * @return The {@link StringExpression} representation of the given identifier where the owning
+	 * @param value The string to wrap as a <code>Expression</code>
+	 * @return The {@link Expression} representation of the given identifier where the owning
 	 * {@link Expression} is this one
 	 */
-	protected final StringExpression buildStringExpression(String value) {
+	protected final Expression buildStringExpression(String value) {
 		return new DefaultStringExpression(this, value);
 	}
 
@@ -431,8 +434,7 @@ public abstract class AbstractExpression extends StringExpression
 	/**
 	 * Retrieves the identifiers that are supported by the given BNF.
 	 *
-	 * @param queryBNFId The unique identifier of the BNF for which the supported identifiers are
-	 * requested
+	 * @param queryBNFId The unique identifier of the BNF for which the supported identifiers are requested
 	 * @return The list of JPQL identifiers that can be used with the BNF
 	 * @see ExpressionRegistry#getIdentifiers(String)
 	 */
@@ -600,13 +602,12 @@ public abstract class AbstractExpression extends StringExpression
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	public final IterableListIterator<StringExpression> orderedChildren() {
+	public final IterableListIterator<Expression> orderedChildren() {
 		if (orderedChildren == null) {
-			orderedChildren = new ArrayList<StringExpression>();
+			orderedChildren = new ArrayList<Expression>();
 			addOrderedChildrenTo(orderedChildren);
 		}
-		return new CloneListIterator<StringExpression>(orderedChildren);
+		return new CloneListIterator<Expression>(orderedChildren);
 	}
 
 	/**
@@ -725,8 +726,12 @@ public abstract class AbstractExpression extends StringExpression
 			    (wordParser.position() == length) &&
 			    (character != COMMA)) {
 
-				if ((word.length() > 0) && getExpressionRegistry().getIdentifierRole(word) != IdentifierRole.AGGREGATE) {
-					ExpressionFactory factory = getExpressionRegistry().expressionFactoryForIdentifier(word);
+				ExpressionRegistry expressionRegistry = getExpressionRegistry();
+
+				if ((word.length() > 0) &&
+				    expressionRegistry.getIdentifierRole(word) != IdentifierRole.AGGREGATE) {
+
+					ExpressionFactory factory = expressionRegistry.expressionFactoryForIdentifier(word);
 
 					if (factory != null) {
 						child = parse(wordParser, word, factory, queryBNF, expression, tolerant);
@@ -752,9 +757,9 @@ public abstract class AbstractExpression extends StringExpression
 			// Store the child but skip a very special case, which happens when parsing
 			// two subqueries in a collection expression. Example: (SELECT ... ), (SELECT ... )
 			if ((expression == null) || (child != null)) {
-				 children.add(child);
-				 separatedByCommas.add(Boolean.FALSE);
-				 separatedBySpaces.add(count > 1);
+				children.add(child);
+				separatedByCommas.add(Boolean.FALSE);
+				separatedBySpaces.add(count > 1);
 			}
 
 			// Nothing else to parse
@@ -768,6 +773,9 @@ public abstract class AbstractExpression extends StringExpression
 				// The current expression does not handle collection, then stop the
 				// parsing here so the parent can continue to parse
 				if (!queryBNF.handleCollection()) {
+					break;
+				}
+				else if (isParsingComplete(wordParser, word, expression)) {
 					break;
 				}
 
@@ -853,6 +861,7 @@ public abstract class AbstractExpression extends StringExpression
 		    separatedByCommas.get(0) == Boolean.FALSE &&
 		    separatedBySpaces.get(0) == Boolean.FALSE) {
 
+			// Should never come here
 			expression = children.get(0);
 		}
 		// Return a collection expression, which wraps the sub-expressions
@@ -861,6 +870,7 @@ public abstract class AbstractExpression extends StringExpression
 		}
 		// No query could be found, return a null expression
 		else {
+			// Should never come here
 			expression = null;
 		}
 
@@ -914,8 +924,7 @@ public abstract class AbstractExpression extends StringExpression
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	protected final void populatePosition(QueryPosition queryPosition, int position) {
+	public void populatePosition(QueryPosition queryPosition, int position) {
 
 		queryPosition.addPosition(this, position);
 
@@ -925,13 +934,13 @@ public abstract class AbstractExpression extends StringExpression
 		}
 		else {
 			// Traverse the children in order to find where the cursor is located
-			for (StringExpression stringExpression : orderedChildren()) {
+			for (Expression expression : orderedChildren()) {
 
-				String expressionText = stringExpression.toParsedText();
+				String expressionText = expression.toParsedText();
 
-				// The position is in the StringExpression, traverse it
+				// The position is in the Expression, traverse it
 				if (position <= expressionText.length()) {
-					stringExpression.populatePosition(queryPosition, position);
+					expression.populatePosition(queryPosition, position);
 					return;
 				}
 
@@ -1005,7 +1014,6 @@ public abstract class AbstractExpression extends StringExpression
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public String toActualText() {
 		if (actualText == null) {
 			StringBuilder writer = new StringBuilder();
@@ -1018,7 +1026,6 @@ public abstract class AbstractExpression extends StringExpression
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public String toParsedText() {
 		if (parsedText == null) {
 			StringBuilder writer = new StringBuilder();
@@ -1044,7 +1051,7 @@ public abstract class AbstractExpression extends StringExpression
 	 */
 	@Override
 	public final String toString() {
-		// toString() should only be called during debugging, hence the cached parsed text
+		// toString() should only be called during debugging, thus the cached parsed text
 		// should always be recreated in order to reflect the current state while debugging
 		parsedText = null;
 		return toParsedText();

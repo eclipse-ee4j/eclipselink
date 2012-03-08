@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Oracle. All rights reserved.
+ * Copyright (c) 2011, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -13,6 +13,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.jpql;
 
+import java.util.Collections;
+import java.util.List;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.Join;
@@ -49,23 +51,42 @@ final class JoinDeclaration extends Declaration {
 	 * {@inheritDoc}
 	 */
 	@Override
-	Join getBaseExpression() {
+	public Join getBaseExpression() {
 		return (Join) super.getBaseExpression();
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	boolean isDerived() {
+	public List<Join> getJoins() {
+		return Collections.emptyList();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public boolean hasJoins() {
 		return false;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	boolean isRange() {
+	public boolean isCollection() {
+		return false;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public boolean isDerived() {
+		return false;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public boolean isRange() {
 		return false;
 	}
 

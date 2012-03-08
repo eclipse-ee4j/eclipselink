@@ -127,7 +127,7 @@ public final class LikeExpressionTest extends JPQLParserTest {
 		LikeExpressionTester likeExpression = like(
 			string("'Pascal''s code'"),
 			string("'Pascal'"),
-			TRUE()
+			bad(TRUE())
 		);
 
 		ExpressionTester selectStatement = selectStatement(
@@ -150,7 +150,7 @@ public final class LikeExpressionTest extends JPQLParserTest {
 		LikeExpressionTester likeExpression = like(
 			string("'Pascal''s code'"),
 			string("'Pascal'"),
-			TRUE()
+			bad(TRUE())
 		);
 
 		ExpressionTester selectStatement = selectStatement(

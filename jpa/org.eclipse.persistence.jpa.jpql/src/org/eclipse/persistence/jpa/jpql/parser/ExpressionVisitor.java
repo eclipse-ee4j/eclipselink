@@ -14,7 +14,13 @@
 package org.eclipse.persistence.jpa.jpql.parser;
 
 /**
- * The interface is used to traverse the JPQL parsed tree. It follows the Visitor pattern.
+ * The interface is used to traverse the JPQL parsed tree. It follows the Visitor pattern. It visits
+ * the concrete instances of {@link Expression}.
+ * <p>
+ * Provisional API: This interface is part of an interim API that is still under development and
+ * expected to change significantly before reaching stability. It is available at this early stage
+ * to solicit feedback from pioneering adopters on the understanding that any code that uses this
+ * API will almost certainly be broken (repeatedly) as the API evolves.
  *
  * @version 2.4
  * @since 2.3
@@ -211,19 +217,19 @@ public interface ExpressionVisitor {
 	 */
 	void visit(ExistsExpression expression);
 
-        /**
-         * Visits the {@link FunctionExpression} expression.
-         *
-         * @param expression The {@link Expression} to visit
-         */
-        void visit(FunctionExpression expression);
-
 	/**
 	 * Visits the {@link FromClause} expression.
 	 *
 	 * @param expression The {@link Expression} to visit
 	 */
 	void visit(FromClause expression);
+
+	/**
+	 * Visits the {@link FunctionExpression} expression.
+	 *
+	 * @param expression The {@link Expression} to visit
+	 */
+	void visit(FunctionExpression expression);
 
 	/**
 	 * Visits the {@link GroupByClause} expression.
@@ -238,13 +244,6 @@ public interface ExpressionVisitor {
 	 * @param expression The {@link Expression} to visit
 	 */
 	void visit(HavingClause expression);
-
-        /**
-         * Visits the {@link OnClause} expression.
-         *
-         * @param expression The {@link Expression} to visit
-         */
-        void visit(OnClause expression);
 
 	/**
 	 * Visits the {@link IdentificationVariable} expression.
@@ -408,6 +407,13 @@ public interface ExpressionVisitor {
 	void visit(ObjectExpression expression);
 
 	/**
+	 * Visits the {@link OnClause} expression.
+	 *
+	 * @param expression The {@link Expression} to visit
+	 */
+	void visit(OnClause expression);
+
+	/**
 	 * Visits the {@link OrderByClause} expression.
 	 *
 	 * @param expression The {@link Expression} to visit
@@ -513,13 +519,6 @@ public interface ExpressionVisitor {
 	void visit(SubExpression expression);
 
 	/**
-	 * Visits the {@link SubtractionExpression} expression.
-	 *
-	 * @param expression The {@link Expression} to visit
-	 */
-	void visit(SubtractionExpression expression);
-
-	/**
 	 * Visits the {@link SubstringExpression} expression.
 	 *
 	 * @param expression The {@link Expression} to visit
@@ -527,11 +526,25 @@ public interface ExpressionVisitor {
 	void visit(SubstringExpression expression);
 
 	/**
+	 * Visits the {@link SubtractionExpression} expression.
+	 *
+	 * @param expression The {@link Expression} to visit
+	 */
+	void visit(SubtractionExpression expression);
+
+	/**
 	 * Visits the {@link SumFunction} expression.
 	 *
 	 * @param expression The {@link Expression} to visit
 	 */
 	void visit(SumFunction expression);
+
+	/**
+	 * Visits the {@link TreatExpression} expression.
+	 *
+	 * @param expression The {@link Expression} to visit
+	 */
+	void visit(TreatExpression expression);
 
 	/**
 	 * Visits the {@link TrimExpression} expression.

@@ -132,7 +132,7 @@ public final class BetweenExpression extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void addOrderedChildrenTo(List<StringExpression> children) {
+	protected void addOrderedChildrenTo(List<Expression> children) {
 
 		// Expression
 		if (expression != null) {

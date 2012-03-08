@@ -100,6 +100,6 @@ public final class EclipseLinkJPQLGrammar2_3 extends AbstractJPQLGrammar {
 	 */
 	@Override
 	public String toString() {
-		return "JPQL grammar for EclipseLink 2.3";
+		return "EclipseLink 2.3";
 	}
 }

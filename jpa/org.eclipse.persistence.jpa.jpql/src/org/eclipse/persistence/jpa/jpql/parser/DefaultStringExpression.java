@@ -13,22 +13,16 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.parser;
 
-import org.eclipse.persistence.jpa.jpql.util.iterator.IterableListIterator;
-import org.eclipse.persistence.jpa.jpql.util.iterator.NullListIterator;
+import org.eclipse.persistence.jpa.jpql.WordParser;
 
 /**
- * The default implementation of a {@link StringExpression} that wraps a string.
+ * An implementation of an {@link Expression} that wraps a string.
  *
  * @version 2.4
  * @since 2.3
  * @author Pascal Filion
  */
-public final class DefaultStringExpression extends StringExpression {
-
-	/**
-	 * The {@link Expression} from where the text value comes.
-	 */
-	private final AbstractExpression owningExpression;
+public final class DefaultStringExpression extends AbstractExpression {
 
 	/**
 	 * The wrapped string value.
@@ -38,53 +32,57 @@ public final class DefaultStringExpression extends StringExpression {
 	/**
 	 * Creates a new <code>DefaultStringExpression</code>.
 	 *
-	 * @param owningExpression The {@link Expression} from where the text value
-	 * comes
-	 * @param value The string value to wrap with this {@link StringExpression}
+	 * @param owningExpression The {@link Expression} from where the text value comes
+	 * @param value The string value to wrap with this {@link Expression}
 	 */
 	DefaultStringExpression(AbstractExpression owningExpression, String value) {
-		super();
-		this.value            = value;
-		this.owningExpression = owningExpression;
+		super(owningExpression);
+		this.value = value;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void accept(ExpressionVisitor visitor) {
+		// This object should not be visited
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void acceptChildren(ExpressionVisitor visitor) {
+		// This object does not have children
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public IterableListIterator<StringExpression> orderedChildren() {
-		return NullListIterator.instance();
+	public JPQLQueryBNF getQueryBNF() {
+		return null;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	void populatePosition(QueryPosition queryPosition, int position) {
-		queryPosition.setExpression(owningExpression);
+	protected void parse(WordParser wordParser, boolean tolerant) {
+		// Nothing to parse
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String toActualText() {
-		return value;
+	public void populatePosition(QueryPosition queryPosition, int position) {
+		queryPosition.setExpression(getParent());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String toParsedText() {
-		return value;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String toString() {
-		return value;
+	protected void toParsedText(StringBuilder writer, boolean actual) {
+		writer.append(value);
 	}
 }

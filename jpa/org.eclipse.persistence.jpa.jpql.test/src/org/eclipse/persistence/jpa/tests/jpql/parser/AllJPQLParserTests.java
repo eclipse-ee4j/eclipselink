@@ -29,7 +29,8 @@ import org.junit.runners.Suite.SuiteClasses;
 	AllJPQLParserTests1_0.class,
 	AllJPQLParserTests2_0.class,
 	AllJPQLParserTests2_1.class,
-	AllEclipseLinkJPQLParser2_1Tests.class
+	AllEclipseLinkJPQLParserTests.class,
+	AllEclipseLinkJPQLParserTests2_4.class
 })
 @RunWith(JPQLTestRunner.class)
 public final class AllJPQLParserTests {

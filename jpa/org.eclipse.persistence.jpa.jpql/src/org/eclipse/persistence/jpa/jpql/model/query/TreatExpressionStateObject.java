@@ -26,8 +26,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * returned by the base.
  * <p>
  * <p>
- * <b>Note:</b> {@link IEclipseLinkStateObjectVisitor} needs to be used to traverse this state
- * object.
+ * <b>Note:</b> {@link EclipseLinkStateObjectVisitor} needs to be used to traverse this state object.
  * <p>
  * <div nowrap><b>BNF:</b> <code>join_treat ::= TREAT(collection_valued_path_expression [AS] entity_type_literal)</code><p>
  *

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -18,6 +18,11 @@ import org.eclipse.persistence.jpa.jpql.util.iterator.IterableListIterator;
 /**
  * This is the root interface of the parsed tree representation of a JPQL query. The way a JPQL
  * query is parsed is based on the {@link JPQLGrammar JPQL grammar} used.
+ * <p>
+ * Provisional API: This interface is part of an interim API that is still under development and
+ * expected to change significantly before reaching stability. It is available at this early stage
+ * to solicit feedback from pioneering adopters on the understanding that any code that uses this
+ * API will almost certainly be broken (repeatedly) as the API evolves.
  *
  * @see org.eclipse.persistence.jpa.jpql.spi.IJPQLExtension IJPQLExtension
  * @see JPQLGrammar
@@ -103,6 +108,13 @@ public interface Expression {
 	 * The constant for 'COALESCE'.
 	 */
 	String COALESCE = "COALESCE";
+
+	/**
+	 * The constant 'COLUMN', which is an EclipseLink specific identifier that was added in version 2.4.
+	 *
+	 * @since 2.4
+	 */
+	String COLUMN = "COLUMN";
 
 	/**
 	 * The constant for 'CONCAT'.
@@ -214,10 +226,12 @@ public interface Expression {
 	 */
 	String FUNC = "FUNC";
 
-        /**
-         * The constant 'FUNCTION', part of JPA 2.1.
-         */
-        String FUNCTION = "FUNCTION";
+	/**
+	 * The constant 'FUNCTION', part of JPA 2.1.
+	 *
+	 * @since 2.4
+	 */
+	String FUNCTION = "FUNCTION";
 
 	/**
 	 * The constant for '>'.
@@ -344,16 +358,6 @@ public interface Expression {
 	 */
 	String LIKE = "LIKE";
 
-        /**
-         * The constant 'SQL', which is an EclipseLink specific identifier that was added in version 2.4.
-         */
-        String SQL = "SQL";
-        
-        /**
-         * The constant 'COLUMN', which is an EclipseLink specific identifier that was added in version 2.4.
-         */
-        String COLUMN = "COLUMN";
-        
 	/**
 	 * The constant for 'LOCATE'.
 	 */
@@ -475,12 +479,18 @@ public interface Expression {
 	String OF = "OF";
 
 	/**
-	 * The constant for 'ON', which is an EclipseLink specific identifier that was added in
-	 * version 2.4.
+	 * The constant for 'ON', which is an EclipseLink specific identifier that was added in version 2.4.
 	 *
 	 * @since 2.4
 	 */
 	String ON = "ON";
+
+	/**
+	 * The constant 'OPERATOR', which is an EclipseLink specific identifier that was added in version 2.4.
+	 *
+	 * @since 2.4
+	 */
+	String OPERATOR = "OPERATOR";
 
 	/**
 	 * The constant for 'OR'.
@@ -492,11 +502,6 @@ public interface Expression {
 	 */
 	String ORDER_BY = "ORDER BY";
 
-        /**
-         * The constant 'OPERATOR', which is an EclipseLink specific identifier that was added in version 2.4.
-         */
-        String OPERATOR = "OPERATOR";
-        
 	/**
 	 * The constant for 'OUTER'.
 	 */
@@ -543,6 +548,13 @@ public interface Expression {
 	String SOME = "SOME";
 
 	/**
+	 * The constant 'SQL', which is an EclipseLink specific identifier that was added in version 2.4.
+	 *
+	 * @since 2.4
+	 */
+	String SQL = "SQL";
+
+	/**
 	 * The constant for 'SQRT'.
 	 */
 	String SQRT = "SQRT";
@@ -568,8 +580,7 @@ public interface Expression {
 	String TRAILING = "TRAILING";
 
 	/**
-	 * The constant for 'TREAT', which is an EclipseLink specific identifier that was added in
-	 * version 2.1.
+	 * The constant for 'TREAT', which is an EclipseLink specific identifier that was added in version 2.1.
 	 */
 	String TREAT = "TREAT";
 
@@ -677,6 +688,24 @@ public interface Expression {
 	boolean isAncestor(Expression expression);
 
 	/**
+	 * Creates a list representing this expression and its children. In order to add every piece of
+	 * the expression, {@link #addChildrenTo(Collection)} is called.
+	 *
+	 * @return The {@link Expression Expressions} representing this {@link Expression}
+	 */
+	IterableListIterator<Expression> orderedChildren();
+
+	/**
+	 * Retrieves the <code>Expression</code> located at the given position using the actual
+	 * query, which may have extra whitespace.
+	 *
+	 * @param position The array has one element and is the position of the <code>Expression</code>
+	 * to retrieve
+	 * @return The <code>Expression</code> located at the given position
+	 */
+	void populatePosition(QueryPosition queryPosition, int position);
+
+	/**
 	 * Generates a string representation of this {@link Expression}, which needs to include any
 	 * characters that are considered virtual, i.e. that was parsed when the query is incomplete and
 	 * is needed for functionality like content assist.
@@ -686,9 +715,11 @@ public interface Expression {
 	String toActualText();
 
 	/**
-	 * Generates a string representation of this {@link Expression} and its children.
+	 * Returns a string representation of this {@link Expression} and its children. The expression
+	 * should contain whitespace even if the beautified version would not have any. For instance,
+	 * "SELECT e " should be returned where {@link Expression#toText()} would return "SELECT e".
 	 *
-	 * @return The generated portion of the JPQL query starting with this {@link Expression}
+	 * @return The string representation of this {@link Expression}
 	 */
 	String toParsedText();
 }

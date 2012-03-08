@@ -15,6 +15,7 @@ package org.eclipse.persistence.jpa.tests.jpql.model;
 
 import org.junit.Test;
 
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries.*;
 
 @SuppressWarnings("nls")
@@ -47,7 +48,7 @@ public final class EclipseLinkStateObjectTest2_1 extends EclipseLinkJPQLStateObj
 				.and(
 					path("a.id").in(inputParameter(":id_list"))
 				).and(
-						func("ST_Intersects", path("a.geometry"), path("selectedGeography.geometry"))
+						function(FUNC, "ST_Intersects", path("a.geometry"), path("selectedGeography.geometry"))
 					.equal(
 						string("'TRUE'"))
 				)

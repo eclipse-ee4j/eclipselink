@@ -97,7 +97,7 @@ public final class ArithmeticExpressionFactory extends ExpressionFactory {
 			return expression;
 		}
 
-		char character = wordParser.character();
+		char character = word.charAt(0);// wordParser.character();
 
 		// Subtraction
 		if (character == '-') {

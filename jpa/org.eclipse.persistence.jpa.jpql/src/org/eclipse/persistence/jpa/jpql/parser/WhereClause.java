@@ -13,6 +13,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.parser;
 
+import org.eclipse.persistence.jpa.jpql.WordParser;
+
 /**
  * The <b>WHERE</b> clause of a query consists of a conditional expression used to select objects or
  * values that satisfy the expression. The <b>WHERE</b> clause restricts the result of a select
@@ -33,6 +35,21 @@ public final class WhereClause extends AbstractConditionalClause {
 	 */
 	WhereClause(AbstractExpression parent) {
 		super(parent, WHERE);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
+
+		if (word.equalsIgnoreCase(SELECT) ||
+		    word.equalsIgnoreCase(FROM)) {
+
+			return false;
+		}
+
+		return super.isParsingComplete(wordParser, word, expression);
 	}
 
 	/**

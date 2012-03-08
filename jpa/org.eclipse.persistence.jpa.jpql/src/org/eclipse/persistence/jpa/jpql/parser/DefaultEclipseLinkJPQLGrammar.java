@@ -16,10 +16,10 @@ package org.eclipse.persistence.jpa.jpql.parser;
 import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
 
 /**
- * This {@link JPQLGrammar JPQL grammar} provides support for parsing JPQL queries defined in the
- * latest JPA functional specification and the latest EclipseLink.
+ * This {@link JPQLGrammar JPQL grammar} provides support for parsing JPQL queries defined by the
+ * JPA 2.1 functional specification and the EclipseLink 2.4.
  *
- * @see DefaultJPQLGrammar
+ * @see JPQLGrammar2_1
  * @see EclipseLinkJPQLGrammar2_4
  *
  * @version 2.4
@@ -71,6 +71,6 @@ public final class DefaultEclipseLinkJPQLGrammar implements JPQLGrammar {
 	 */
 	@Override
 	public String toString() {
-		return "Default EclipseLink JPQL Grammar (version 2.4)";
+		return "EclipseLink 2.4 (default)";
 	}
 }

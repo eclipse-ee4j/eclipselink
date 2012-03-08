@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Oracle. All rights reserved.
+ * Copyright (c) 2011, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -159,6 +159,26 @@ public interface IScalarExpressionStateObjectBuilder<T extends IScalarExpression
 	 * @return This {@link T builder}
 	 */
 	T enumLiteral(Enum<? extends Enum<?>> enumConstant);
+
+	/**
+	 * Creates the expression <code><b>&lt;identifier&gt;</b>('functionName' {, expression}*)</b></code>.
+	 *
+	 * @param identifier The JPQL identifier that is used to identify the SQL expression
+	 * @param functionName The name of the native SQL function
+	 * @param arguments The arguments of the expression
+	 * @return This {@link ISimpleSelectExpressionBuilder builder}
+	 */
+	T function(String identifier, String functionName, String... arguments);
+
+	/**
+	 * Creates the expression <code><b>&lt;identifier&gt;</b>('functionName' {, expression}*)</b></code>.
+	 *
+	 * @param identifier The JPQL identifier that is used to identify the SQL expression
+	 * @param functionName The name of the native SQL function
+	 * @param arguments The arguments of the expression
+	 * @return This {@link ISimpleSelectExpressionBuilder builder}
+	 */
+	T function(String identifier, String functionName, T... arguments);
 
 	/**
 	 * Returns the builder that can create a <code><b>CASE</b></code> expression, which requires a

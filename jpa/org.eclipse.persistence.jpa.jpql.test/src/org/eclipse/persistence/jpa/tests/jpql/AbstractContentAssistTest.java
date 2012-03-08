@@ -830,37 +830,40 @@ public abstract class AbstractContentAssistTest extends JPQLCoreTest {
 
 	@Test
 	public void test_AvgFunction_05() {
+
 		String query = "SELECT AVG(";
 		int position = query.length();
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add(DISTINCT);
-		addAll(proposals, bnfAccessor.scalarExpressionFunctions());
+		addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
 		testHasOnlyTheseProposals(query, position, proposals);
 	}
 
 	@Test
 	public void test_AvgFunction_06() {
+
 		String query = "SELECT AVG() From Employee e";
 		int position = "SELECT AVG(".length();
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("e");
 		proposals.add(DISTINCT);
-		addAll(proposals, bnfAccessor.scalarExpressionFunctions());
+		addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
 		testHasOnlyTheseProposals(query, position, proposals);
 	}
 
 	@Test
 	public void test_AvgFunction_07() {
+
 		String query = "SELECT AVG(DISTINCT ) From Employee e";
 		int position = "SELECT AVG(DISTINCT ".length();
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("e");
-		addAll(proposals, bnfAccessor.scalarExpressionFunctions());
+		addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
 		testHasOnlyTheseProposals(query, position, proposals);
 	}
@@ -909,24 +912,26 @@ public abstract class AbstractContentAssistTest extends JPQLCoreTest {
 
 	@Test
 	public void test_AvgFunction_14() {
+
 		String query = "SELECT AVG(DISTINCT e) From Employee e";
 		int position = "SELECT AVG(DISTINCT ".length();
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("e");
-		addAll(proposals, bnfAccessor.scalarExpressionFunctions());
+		addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
 		testHasOnlyTheseProposals(query, position, proposals);
 	}
 
 	@Test
 	public void test_AvgFunction_15() {
+
 		String query = "SELECT AVG(DISTINCT e) From Employee e";
 		int position = "SELECT AVG(DISTINCT e".length();
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("e");
-		addAll(proposals, filter(bnfAccessor.scalarExpressionFunctions(), "e"));
+		addAll(proposals, filter(bnfAccessor.internalAggregateFunctionFunctions(), "e"));
 
 		testHasOnlyTheseProposals(query, position, proposals);
 	}
@@ -940,13 +945,14 @@ public abstract class AbstractContentAssistTest extends JPQLCoreTest {
 
 	@Test
 	public void test_AvgFunction_17() {
+
 		String query = "SELECT AVG() From Employee emp";
 		int position = "SELECT AVG(".length();
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("emp");
 		proposals.add(DISTINCT);
-		addAll(proposals, bnfAccessor.scalarExpressionFunctions());
+		addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
 		testHasOnlyTheseProposals(query, position, proposals);
 	}
@@ -988,13 +994,14 @@ public abstract class AbstractContentAssistTest extends JPQLCoreTest {
 
 	@Test
 	public void test_AvgFunction_23() {
+
 		String query = "SELECT AVG( From Employee emp";
 		int position = "SELECT AVG(".length();
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("emp");
 		proposals.add(DISTINCT);
-		addAll(proposals, bnfAccessor.scalarExpressionFunctions());
+		addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
 		testHasOnlyTheseProposals(query, position, proposals);
 	}
@@ -4561,37 +4568,40 @@ public abstract class AbstractContentAssistTest extends JPQLCoreTest {
 
 	@Test
 	public void test_MaxFunction_05() {
+
 		String query = "SELECT MAX(";
 		int position = query.length();
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add(DISTINCT);
-		addAll(proposals, bnfAccessor.scalarExpressionFunctions());
+		addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
 		testHasOnlyTheseProposals(query, position, proposals);
 	}
 
 	@Test
 	public void test_MaxFunction_06() {
+
 		String query = "SELECT MAX() From Employee e";
 		int position = "SELECT MAX(".length();
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("e");
 		proposals.add(DISTINCT);
-		addAll(proposals, bnfAccessor.scalarExpressionFunctions());
+		addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
 		testHasOnlyTheseProposals(query, position, proposals);
 	}
 
 	@Test
 	public void test_MaxFunction_07() {
+
 		String query = "SELECT MAX(DISTINCT ) From Employee e";
 		int position = "SELECT MAX(DISTINCT ".length();
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("e");
-		addAll(proposals, bnfAccessor.scalarExpressionFunctions());
+		addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
 		testHasOnlyTheseProposals(query, position, proposals);
 	}
@@ -4640,12 +4650,13 @@ public abstract class AbstractContentAssistTest extends JPQLCoreTest {
 
 	@Test
 	public void test_MaxFunction_14() {
+
 		String query = "SELECT MAX(DISTINCT e) From Employee e";
 		int position = "SELECT MAX(DISTINCT ".length();
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("e");
-		addAll(proposals, bnfAccessor.scalarExpressionFunctions());
+		addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
 		testHasOnlyTheseProposals(query, position, proposals);
 	}
@@ -4666,13 +4677,14 @@ public abstract class AbstractContentAssistTest extends JPQLCoreTest {
 
 	@Test
 	public void test_MaxFunction_17() {
+
 		String query = "SELECT MAX() From Employee emp";
 		int position = "SELECT MAX(".length();
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("emp");
 		proposals.add(DISTINCT);
-		addAll(proposals, bnfAccessor.scalarExpressionFunctions());
+		addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
 		testHasOnlyTheseProposals(query, position, proposals);
 	}
@@ -4714,13 +4726,14 @@ public abstract class AbstractContentAssistTest extends JPQLCoreTest {
 
 	@Test
 	public void test_MaxFunction_23() {
+
 		String query = "SELECT MAX( From Employee emp";
 		int position = "SELECT MAX(".length();
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("emp");
 		proposals.add(DISTINCT);
-		addAll(proposals, bnfAccessor.scalarExpressionFunctions());
+		addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
 		testHasOnlyTheseProposals(query, position, proposals);
 	}
@@ -4762,37 +4775,40 @@ public abstract class AbstractContentAssistTest extends JPQLCoreTest {
 
 	@Test
 	public void test_MinFunction_05() {
+
 		String query = "SELECT MIN(";
 		int position = query.length();
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add(DISTINCT);
-		addAll(proposals, bnfAccessor.scalarExpressionFunctions());
+		addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
 		testHasOnlyTheseProposals(query, position, proposals);
 	}
 
 	@Test
 	public void test_MinFunction_06() {
+
 		String query = "SELECT MIN() From Employee e";
 		int position = "SELECT MIN(".length();
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("e");
 		proposals.add(DISTINCT);
-		addAll(proposals, bnfAccessor.scalarExpressionFunctions());
+		addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
 		testHasOnlyTheseProposals(query, position, proposals);
 	}
 
 	@Test
 	public void test_MinFunction_07() {
+
 		String query = "SELECT MIN(DISTINCT ) From Employee e";
 		int position = "SELECT MIN(DISTINCT ".length();
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("e");
-		addAll(proposals, bnfAccessor.scalarExpressionFunctions());
+		addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
 		testHasOnlyTheseProposals(query, position, proposals);
 	}
@@ -4841,12 +4857,13 @@ public abstract class AbstractContentAssistTest extends JPQLCoreTest {
 
 	@Test
 	public void test_MinFunction_14() {
+
 		String query = "SELECT MIN(DISTINCT e) From Employee e";
 		int position = "SELECT MIN(DISTINCT ".length();
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("e");
-		addAll(proposals, bnfAccessor.scalarExpressionFunctions());
+		addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
 		testHasOnlyTheseProposals(query, position, proposals);
 	}
@@ -4867,13 +4884,14 @@ public abstract class AbstractContentAssistTest extends JPQLCoreTest {
 
 	@Test
 	public void test_MinFunction_17() {
+
 		String query = "SELECT MIN() From Employee emp";
 		int position = "SELECT MIN(".length();
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("emp");
 		proposals.add(DISTINCT);
-		addAll(proposals, bnfAccessor.scalarExpressionFunctions());
+		addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
 		testHasOnlyTheseProposals(query, position, proposals);
 	}
@@ -4915,13 +4933,14 @@ public abstract class AbstractContentAssistTest extends JPQLCoreTest {
 
 	@Test
 	public void test_MinFunction_23() {
+
 		String query = "SELECT MIN( From Employee emp";
 		int position = "SELECT MIN(".length();
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("emp");
 		proposals.add(DISTINCT);
-		addAll(proposals, bnfAccessor.scalarExpressionFunctions());
+		addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
 		testHasOnlyTheseProposals(query, position, proposals);
 	}
@@ -5475,13 +5494,14 @@ public abstract class AbstractContentAssistTest extends JPQLCoreTest {
 
 	@Test
 	public void test_Restriction_01() throws Exception {
+
 		String query = "SELECT AVG(e.name) FROM Employee e";
 		int position = "SELECT AVG(".length();
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("e");
 		proposals.add(DISTINCT);
-		addAll(proposals, bnfAccessor.scalarExpressionFunctions());
+		addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
 		testHasOnlyTheseProposals(query, position, proposals);
 	}
@@ -6041,37 +6061,40 @@ public abstract class AbstractContentAssistTest extends JPQLCoreTest {
 
 	@Test
 	public void test_SumFunction_05() {
+
 		String query = "SELECT SUM(";
 		int position = query.length();
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add(DISTINCT);
-		addAll(proposals, bnfAccessor.scalarExpressionFunctions());
+		addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
 		testHasOnlyTheseProposals(query, position, proposals);
 	}
 
 	@Test
 	public void test_SumFunction_06() {
+
 		String query = "SELECT SUM() From Employee e";
 		int position = "SELECT SUM(".length();
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("e");
 		proposals.add(DISTINCT);
-		addAll(proposals, bnfAccessor.scalarExpressionFunctions());
+		addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
 		testHasOnlyTheseProposals(query, position, proposals);
 	}
 
 	@Test
 	public void test_SumFunction_07() {
+
 		String query = "SELECT SUM(DISTINCT ) From Employee e";
 		int position = "SELECT SUM(DISTINCT ".length();
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("e");
-		addAll(proposals, bnfAccessor.scalarExpressionFunctions());
+		addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
 		testHasOnlyTheseProposals(query, position, proposals);
 	}
@@ -6120,12 +6143,13 @@ public abstract class AbstractContentAssistTest extends JPQLCoreTest {
 
 	@Test
 	public void test_SumFunction_14() {
+
 		String query = "SELECT SUM(DISTINCT e) From Employee e";
 		int position = "SELECT SUM(DISTINCT ".length();
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("e");
-		addAll(proposals, bnfAccessor.scalarExpressionFunctions());
+		addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
 		testHasOnlyTheseProposals(query, position, proposals);
 	}
@@ -6146,13 +6170,14 @@ public abstract class AbstractContentAssistTest extends JPQLCoreTest {
 
 	@Test
 	public void test_SumFunction_17() {
+
 		String query = "SELECT SUM() From Employee emp";
 		int position = "SELECT SUM(".length();
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("emp");
 		proposals.add(DISTINCT);
-		addAll(proposals, bnfAccessor.scalarExpressionFunctions());
+		addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
 		testHasOnlyTheseProposals(query, position, proposals);
 	}
@@ -6194,13 +6219,14 @@ public abstract class AbstractContentAssistTest extends JPQLCoreTest {
 
 	@Test
 	public void test_SumFunction_23() {
+
 		String query = "SELECT SUM( From Employee emp";
 		int position = "SELECT SUM(".length();
 
 		List<String> proposals = new ArrayList<String>();
 		proposals.add("emp");
 		proposals.add(DISTINCT);
-		addAll(proposals, bnfAccessor.scalarExpressionFunctions());
+		addAll(proposals, bnfAccessor.internalAggregateFunctionFunctions());
 
 		testHasOnlyTheseProposals(query, position, proposals);
 	}

@@ -14,15 +14,15 @@
 package org.eclipse.persistence.internal.jpa.jpql;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.ResourceBundle;
 import org.eclipse.persistence.exceptions.JPQLException;
 import org.eclipse.persistence.expressions.Expression;
-import org.eclipse.persistence.internal.jpa.jpql.spi.JavaManagedTypeProvider;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.jpa.jpql.EclipseLinkJPQLQueryHelper;
+import org.eclipse.persistence.jpa.jpql.EclipseLinkGrammarValidator;
+import org.eclipse.persistence.jpa.jpql.EclipseLinkSemanticValidator;
 import org.eclipse.persistence.jpa.jpql.JPQLQueryProblem;
 import org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages;
 import org.eclipse.persistence.jpa.jpql.JPQLQueryProblemResourceBundle;
@@ -34,8 +34,6 @@ import org.eclipse.persistence.jpa.jpql.parser.JPQLExpression;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.parser.SelectStatement;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateStatement;
-import org.eclipse.persistence.jpa.jpql.spi.IManagedTypeProvider;
-import org.eclipse.persistence.jpa.jpql.spi.java.JavaQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.DeleteAllQuery;
 import org.eclipse.persistence.queries.JPAQueryBuilder;
@@ -89,13 +87,18 @@ public final class HermesParser implements JPAQueryBuilder {
 	 * @param databaseQuery The EclipseLink {@link DatabaseQuery} where the input parameter types are added
 	 */
 	private void addArguments(JPQLQueryContext queryContext, DatabaseQuery databaseQuery) {
-		for (Map.Entry<String, Class<?>> inputParameters : queryContext.inputParameters()) {
-			databaseQuery.addArgument(inputParameters.getKey().substring(1), inputParameters.getValue());
-		}
-	}
 
-	private IManagedTypeProvider buildProvider(AbstractSession session) {
-		return new JavaManagedTypeProvider(session);
+		Map<String, Class<?>> inputParameters = queryContext.inputParameters();
+
+		if (inputParameters != null) {
+
+			for (String inputParameter : inputParameters.keySet()) {
+				databaseQuery.addArgument(
+					inputParameter.substring(1),
+					inputParameters.get(inputParameter)
+				);
+			}
+		}
 	}
 
 	/**
@@ -112,16 +115,18 @@ public final class HermesParser implements JPAQueryBuilder {
 	                                         String selectionCriteria,
 	                                         AbstractSession session) {
 
+		JPQLGrammar jpqlGrammar = jpqlGrammar();
+
 		// Create the parsed tree representation of the selection criteria
 		JPQLExpression jpqlExpression = new JPQLExpression(
 			selectionCriteria,
-			jpqlGrammar(),
+			jpqlGrammar,
 			ConditionalExpressionBNF.ID,
 			validateQueries
 		);
 
 		// Caches the info and add a virtual range variable declaration
-		JPQLQueryContext queryContext = new JPQLQueryContext();
+		JPQLQueryContext queryContext = new JPQLQueryContext(jpqlGrammar);
 		queryContext.cache(session, null, jpqlExpression, selectionCriteria);
 		queryContext.addRangeVariableDeclaration(entityName, "this");
 
@@ -146,19 +151,31 @@ public final class HermesParser implements JPAQueryBuilder {
 	 * @param messageKey The key used to retrieve the localized message
 	 */
 	private void logProblems(JPQLQueryContext queryContext,
-	                         List<JPQLQueryProblem> problems,
+	                         Collection<JPQLQueryProblem> problems,
 	                         String messageKey) {
 
 		ResourceBundle bundle = ResourceBundle.getBundle(JPQLQueryProblemResourceBundle.class.getName());
 		StringBuilder sb = new StringBuilder();
 
-		for (int index = 0, count = problems.size(); index < count; index++)  {
+		for (JPQLQueryProblem problem : problems)  {
 
-			JPQLQueryProblem problem = problems.get(index);
+			// Retrieve the localized message
+			String message;
 
-			// Create the localized message
-			String message = bundle.getString(problem.getMessageKey());
-			message = MessageFormat.format(message, (Object[]) problem.getMessageArguments());
+			try {
+				message = bundle.getString(problem.getMessageKey());
+			}
+			catch (NullPointerException e) {
+				// In case the resource bundle was not updated
+				message = problem.getMessageKey();
+			}
+
+			// Now format the localized message
+			String[] arguments = problem.getMessageArguments();
+
+			if (arguments.length > 0) {
+				message = MessageFormat.format(message, (Object[]) arguments);
+			}
 
 			// Append the description
 			sb.append("\n");
@@ -187,17 +204,20 @@ public final class HermesParser implements JPAQueryBuilder {
 	                                       DatabaseQuery query,
 	                                       AbstractSession session) {
 
+		JPQLGrammar jpqlGrammar = jpqlGrammar();
+
 		// Parse the JPQL query
 		JPQLExpression jpqlExpression = new JPQLExpression(jpqlQuery, jpqlGrammar(), validateQueries);
 
-		// Create the context
-		JPQLQueryContext queryContext = new JPQLQueryContext();
+		// Create a context that caches the information contained in the JPQL query
+		// (especially from the FROM clause)
+		JPQLQueryContext queryContext = new JPQLQueryContext(jpqlGrammar);
 		queryContext.cache(session, query, jpqlExpression, jpqlQuery);
 
-		// Validate the query
-		validate(queryContext, jpqlExpression, session, jpqlQuery);
+		// Validate the JPQL query
+		validate(queryContext, jpqlExpression);
 
-		// Create the DatabaseQuery
+		// Create the DatabaseQuery by visiting the parsed tree
 		DatabaseQueryVisitor visitor = new DatabaseQueryVisitor(queryContext);
 		jpqlExpression.accept(visitor);
 
@@ -214,30 +234,27 @@ public final class HermesParser implements JPAQueryBuilder {
 	 * Grammatically and semantically validates the JPQL query. If the query is not valid, then an
 	 * exception will be thrown.
 	 */
-	private void validate(JPQLQueryContext queryContext,
-	                      JPQLExpression expression,
-	                      AbstractSession session,
-	                      String jpqlQuery) {
+	private void validate(JPQLQueryContext queryContext, JPQLExpression jpqlExpression) {
 
 		if (validateQueries) {
 
-			List<JPQLQueryProblem> problems = new ArrayList<JPQLQueryProblem>();
+			Collection<JPQLQueryProblem> problems = new LinkedList<JPQLQueryProblem>();
 
-			// Create the helper
-			EclipseLinkJPQLQueryHelper queryHelper = new EclipseLinkJPQLQueryHelper(jpqlGrammar());
-			queryHelper.setJPQLExpression(expression);
-			queryHelper.setQuery(new JavaQuery(buildProvider(session), jpqlQuery));
-
-			// Validate the query using the grammar
-			queryHelper.validateGrammar(expression, problems);
+			// Validate the JPQL query grammatically
+			EclipseLinkGrammarValidator grammar = new EclipseLinkGrammarValidator(jpqlGrammar());
+			grammar.setProblems(problems);
+			jpqlExpression.accept(grammar);
 
 			if (!problems.isEmpty()) {
 				logProblems(queryContext, problems, JPQLQueryProblemMessages.HermesParser_GrammarValidator_ErrorMessage);
-				problems.clear();
+				problems = new LinkedList<JPQLQueryProblem>();
 			}
 
-			// Now validate the semantic of the query
-			queryHelper.validateSemantic(expression, problems);
+			// Validate the JPQL query semantically
+			EclipseLinkSemanticValidatorHelper helper = new EclipseLinkSemanticValidatorHelper(queryContext);
+			EclipseLinkSemanticValidator semantic = new EclipseLinkSemanticValidator(helper);
+			semantic.setProblems(problems);
+			jpqlExpression.accept(semantic);
 
 			if (!problems.isEmpty()) {
 				logProblems(queryContext, problems, JPQLQueryProblemMessages.HermesParser_SemanticValidator_ErrorMessage);

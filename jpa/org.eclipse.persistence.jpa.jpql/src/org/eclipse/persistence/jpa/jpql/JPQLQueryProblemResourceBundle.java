@@ -26,12 +26,20 @@ import java.util.ListResourceBundle;
 public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
 
 	/**
+	 * The file name of the .properties file that is equivalent to this {@link ListResourceBundle}.
+	 */
+	public static final String PROPERTIES_FILE_NAME = JPQLQueryProblemResourceBundle.class.getPackage().getName() + ".jpa_jpql_validation";
+
+	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	protected Object[][] getContents() {
 
 		Object[][] contents = {
+
+			// Generic
+			{"INVALID_JPA_PLATFORM", "JPA 1.0 does not support the expression."},
 
 			// AbsExpression - Grammar
 			{"ABS_EXPRESSION_INVALID_EXPRESSION",         "The encapsulated expression is not a valid expression."},
@@ -45,6 +53,7 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
 			{"ABSTRACT_FROM_CLAUSE_IDENTIFICATION_VARIABLE_DECLARATION_ENDS_WITH_COMMA",  "The FROM clause cannot end with a comma."},
 			{"ABSTRACT_FROM_CLAUSE_IDENTIFICATION_VARIABLE_DECLARATION_IS_MISSING_COMMA", "The FROM clause has ''{0}'' and ''{1}'' that are not separated by a comma."},
 			{"ABSTRACT_FROM_CLAUSE_MISSING_IDENTIFICATION_VARIABLE_DECLARATION",          "The FROM clause must defined at least one identification variable declaration."},
+			// AbstractFromClause - Semantic
 			{"ABSTRACT_FROM_CLAUSE_WRONG_ORDER_OF_IDENTIFICATION_VARIABLE_DECLARATION",   "The identification variable ''{0}'' is declared after its usage. Identification variables are evaluated from left to right."},
 
 			// AbstractPathExpression - Grammar
@@ -58,10 +67,11 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
 			{"PATH_EXPRESSION_NOT_RELATIONSHIP_MAPPING", "The derived path ''{0}'' does not represent an association field."},
 
 			// AbstractSelectClause - Grammar
+			{"ABSTRACT_SELECT_CLAUSE_INVALID_SELECT_EXPRESSION",          "The select expression is not a valid expression."},
+			{"ABSTRACT_SELECT_CLAUSE_MISSING_SELECT_EXPRESSION",          "The select expression is missing from the SELECT clause."},
 			{"ABSTRACT_SELECT_CLAUSE_SELECT_EXPRESSION_ENDS_WITH_COMMA",  "The select expression cannot end with a comma."},
 			{"ABSTRACT_SELECT_CLAUSE_SELECT_EXPRESSION_IS_MISSING_COMMA", "The SELECT clause has ''{0}'' and ''{1}'' that are not separated by a comma."},
 			{"ABSTRACT_SELECT_CLAUSE_SELECT_EXPRESSION_MALFORMED",        "The select expression is malformed."},
-			{"ABSTRACT_SELECT_CLAUSE_SELECT_MISSING_EXPRESSION",          "The select expression is missing from the SELECT clause."},
 
 			// AbstractSelectStatement - Grammar
 			{"ABSTRACT_SELECT_STATEMENT_FROM_CLAUSE_MSSING", "A select statement must have a FROM clause."},
@@ -139,6 +149,12 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
 			{"COLLECTION_VALUED_PATH_EXPRESSION_NOT_RESOLVABLE",      "The collection-valued path ''{0}'' cannot be resolved to a valid association field."},
 			{"COLLECTION_VALUED_PATH_EXPRESSION_NOT_COLLECTION_TYPE", "The collection-valued path ''{0}'' must resolve to an association field."},
 
+			// ColumnExpression - Grammar
+			{"COLUMN_EXPRESSION_INVALID_EXPRESSION",        "Only a single expression must be specified."},
+			{"COLUMN_EXPRESSION_MISSING_COLUMN",            "The COLUMN name must be specified."},
+			{"COLUMN_EXPRESSION_MISSING_LEFT_PARENTHESIS",  "The left parenthesis is missing from the COLUMN expression."},
+			{"COLUMN_EXPRESSION_MISSING_RIGHT_PARENTHESIS", "The right parenthesis is missing from the COLUMN expression."},
+
 			// ComparisonExpression - Grammar
 			{"COMPARISON_EXPRESSION_MISSING_LEFT_EXPRESSION",  "A comparison expression must define the left side of the comparison."},
 			{"COMPARISON_EXPRESSION_MISSING_RIGHT_EXPRESSION", "A comparison expression must define the right side of the comparison."},
@@ -161,7 +177,7 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
 			{"CONSTRUCTOR_EXPRESSION_MISSING_LEFT_PARENTHESIS",          "The left parenthesis is missing from the constructor expression."},
 			{"CONSTRUCTOR_EXPRESSION_MISSING_RIGHT_PARENTHESIS",         "The right parenthesis is missing from the constructor expression."},
 			// ConstructorExpression - Semantic
-			{"CONSTRUCTOR_EXPRESSION_MISMATCHED_PARAMETER_TYPES",        "No constructors can be found that match the argument types."},
+			{"CONSTRUCTOR_EXPRESSION_UNDEFINED_CONSTRUCTOR",             "No constructors can be found that match the argument types."},
 			{"CONSTRUCTOR_EXPRESSION_UNKNOWN_TYPE",                      "''{0}'' cannot be resolved to a type."},
 
 			// CountFunction - Grammar
@@ -210,26 +226,12 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
 			{"EXISTS_EXPRESSION_MISSING_LEFT_PARENTHESIS",  "The left parenthesis is missing from the EXISTS expression."},
 			{"EXISTS_EXPRESSION_MISSING_RIGHT_PARENTHESIS", "The right parenthesis is missing from the EXISTS expression."},
 
-			// FuncExpression - Grammar
-			{"FUNC_EXPRESSION_INVALID_JPA_PLATFORM",      "A FUNC expression can only be used when the platform is EclipseLink."},
-			{"FUNC_EXPRESSION_MISSING_FUNCTION_NAME",     "The SQL function name must be specified."},
-			{"FUNC_EXPRESSION_MISSING_LEFT_PARENTHESIS",  "The left parenthesis is missing from the FUNC expression."},
-			{"FUNC_EXPRESSION_MISSING_RIGHT_PARENTHESIS", "The right parenthesis is missing from the FUNC expression."},
+			// FunctionExpression - Grammar
+			{"FUNCTION_EXPRESSION_INVALID_EXPRESSION",        "The argument is not valid."},
+			{"FUNCTION_EXPRESSION_MISSING_FUNCTION_NAME",     "The SQL function name must be specified."},
+			{"FUNCTION_EXPRESSION_MISSING_LEFT_PARENTHESIS",  "The left parenthesis is missing from the expression."},
+			{"FUNCTION_EXPRESSION_MISSING_RIGHT_PARENTHESIS", "The right parenthesis is missing from the expression."},
 
-                        // Generic
-                        {"INVALID_JPA_PLATFORM",      "Expression can only be used when the platform is EclipseLink."},
-                        {"MISSING_LEFT_PARENTHESIS",  "The left parenthesis is missing from the expression."},
-                        {"MISSING_RIGHT_PARENTHESIS", "The right parenthesis is missing from the expression."},
-
-                        // SQLExpression - Grammar
-                        {"SQL_EXPRESSION_MISSING_SQL",     "The SQL value must be specified."},
-                        
-                        // ColumnExpression - Grammar
-                        {"COLUMN_EXPRESSION_MISSING_COLUMN",     "The COLUMN name must be specified."},
-                        
-                        // OperatorExpression - Grammar
-                        {"OPERATOR_EXPRESSION_MISSING_OPERATOR",     "The OPERATOR name must be specified."},
-                        
 			// GroupByClause - Grammar
 			{"GROUP_BY_CLAUSE_GROUP_BY_ITEM_ENDS_WITH_COMMA",  "The select expression cannot end with a comma."},
 			{"GROUP_BY_CLAUSE_GROUP_BY_ITEM_IS_MISSING_COMMA", "The GROUP BY clause has ''{0}'' and ''{1}'' that are not separated by a comma."},
@@ -252,6 +254,9 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
 			{"IDENTIFICATION_VARIABLE_INVALID_NOT_DECLARED",        "The identification variable ''{0}'' is not defined in the FROM clause."},
 
 			// IdentificationVariableDeclaration - Grammar
+			{"IDENTIFICATION_VARIABLE_DECLARATION_INVALID_JOIN",                       "''{0}'' is not a valid JOIN expression."},
+			{"IDENTIFICATION_VARIABLE_DECLARATION_JOINS_END_WITH_COMMA",               "The JOIN expressions cannot end with a comma."},
+			{"IDENTIFICATION_VARIABLE_DECLARATION_JOINS_HAS_COMMA",                    "JOIN expressions cannot be separated by a comma."},
 			{"IDENTIFICATION_VARIABLE_DECLARATION_MISSING_RANGE_VARIABLE_DECLARATION", "The range variable declaration must be specified."},
 
 			// IndexExpression - Grammar
@@ -405,6 +410,10 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
 			{"OBJECT_EXPRESSION_MISSING_LEFT_PARENTHESIS",  "The left parenthesis is missing from the OBJECT expression."},
 			{"OBJECT_EXPRESSION_MISSING_RIGHT_PARENTHESIS", "The right parenthesis is missing from the OBJECT expression."},
 
+			// OnClause - Grammar
+			{"ON_CLAUSE_INVALID_CONDITIONAL_EXPRESSION", "The expression is not a valid conditional expression."},
+			{"ON_CLAUSE_MISSING_CONDITIONAL_EXPRESSION", "The conditional expression is missing from the JOIN condition."},
+
 			// OrderByClause - Grammar
 			{"ORDER_BY_CLAUSE_ORDER_BY_ITEM_ENDS_WITH_COMMA",  "The select expression cannot end with a comma."},
 			{"ORDER_BY_CLAUSE_ORDER_BY_ITEM_IS_MISSING_COMMA", "The ORDER BY clause has ''{0}'' and ''{1}'' that are not separated by a comma."},
@@ -457,8 +466,8 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
 			{"SUB_EXPRESSION_MISSING_RIGHT_PARENTHESIS", "The right parenthesis is missing from the sub-expression."},
 
 			// SubtractionExpression - Semantic
-			{"SUBTRACTION_EXPRESSION_LEFT_EXPRESSION_WRONG_TYPE",  "The left side of the substraction is not a valid arithmetic expression."},
-			{"SUBTRACTION_EXPRESSION_RIGHT_EXPRESSION_WRONG_TYPE", "The right side of the substraction is not a valid arithmetic expression."},
+			{"SUBTRACTION_EXPRESSION_LEFT_EXPRESSION_WRONG_TYPE",  "The left side of the subtraction is not a valid arithmetic expression."},
+			{"SUBTRACTION_EXPRESSION_RIGHT_EXPRESSION_WRONG_TYPE", "The right side of the subtraction is not a valid arithmetic expression."},
 
 			// SubstringExpression - Grammar
 			{"SUBSTRING_EXPRESSION_INVALID_FIRST_EXPRESSION",     "The first argument is not a valid expression."},
@@ -517,6 +526,7 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
 			{"UPDATE_ITEM_NOT_ASSIGNABLE",                      "Type mismatch: cannot convert from {0} to {1}."},
 			{"UPDATE_ITEM_NOT_RESOLVABLE",                      "The state field cannot be resolved."},
 			{"UPDATE_ITEM_NULL_NOT_ASSIGNABLE_TO_PRIMITIVE",    "NULL cannot be assigned to a primitive value."},
+			{"UPDATE_ITEM_RELATIONSHIP_PATH_EXPRESSION",        "An association field cannot be used in an update item's path expression."},
 
 			// UpperExpression - Grammar
 			{"UPPER_EXPRESSION_INVALID_EXPRESSION",        "The encapsulated expression is not a valid expression."},

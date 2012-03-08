@@ -57,6 +57,7 @@ import org.eclipse.persistence.jpa.jpql.model.query.EntryExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.EnumTypeStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.ExistsExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.FromClauseStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.FunctionExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.GroupByClauseStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.HavingClauseStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.IdentificationVariableDeclarationStateObject;
@@ -102,6 +103,7 @@ import org.eclipse.persistence.jpa.jpql.model.query.SubExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.SubstringExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.SubtractionExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.SumFunctionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.TreatExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.TrimExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.TypeExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.UnknownExpressionStateObject;
@@ -850,6 +852,31 @@ public abstract class AbstractJPQLQueryFormatter extends BaseJPQLQueryFormatter 
 	/**
 	 * {@inheritDoc}
 	 */
+	public void visit(FunctionExpressionStateObject stateObject) {
+
+		if (stateObject.isDecorated()) {
+			stateObject.getDecorator().accept(this);
+		}
+		else {
+			writer.append(formatIdentifier(stateObject.getIdentifier()));
+			writer.append(formatIdentifier(LEFT_PARENTHESIS));
+
+			if (stateObject.hasFunctionName()) {
+				writer.append(stateObject.getQuotedFunctionName());
+
+				if (stateObject.hasItems()) {
+					writer.append(COMMA_SPACE);
+				}
+			}
+
+			toStringChildren(stateObject, true);
+			writer.append(formatIdentifier(RIGHT_PARENTHESIS));
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public void visit(GroupByClauseStateObject stateObject) {
 
 		if (stateObject.isDecorated()) {
@@ -1354,6 +1381,40 @@ public abstract class AbstractJPQLQueryFormatter extends BaseJPQLQueryFormatter 
 	 */
 	public void visit(SumFunctionStateObject stateObject) {
 		toStringAggregateFunction(stateObject);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(TreatExpressionStateObject stateObject) {
+
+		if (stateObject.isDecorated()) {
+			stateObject.getDecorator().accept(this);
+		}
+		else {
+			// TREAT
+			writer.append(formatIdentifier(TREAT));
+
+			// (
+			writer.append(formatIdentifier(LEFT_PARENTHESIS));
+
+			// Collection-valued path expression
+			stateObject.getJoinAssociationPathStateObject().toText(writer);
+
+			writer.append(SPACE);
+
+			// AS
+			if (stateObject.hasAs()) {
+				writer.append(formatIdentifier(AS));
+				writer.append(SPACE);
+			}
+
+			// Entity type name
+			writer.append(stateObject.getEntityTypeName());
+
+			// )
+			writer.append(formatIdentifier(RIGHT_PARENTHESIS));
+		}
 	}
 
 	/**

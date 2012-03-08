@@ -152,13 +152,13 @@ public abstract class AbstractStateObjectVisitor implements StateObjectVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(DerivedPathVariableDeclarationStateObject stateObject) {
+	public void visit(DerivedPathIdentificationVariableDeclarationStateObject stateObject) {
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(DerivedPathIdentificationVariableDeclarationStateObject stateObject) {
+	public void visit(DerivedPathVariableDeclarationStateObject stateObject) {
 	}
 
 	/**
@@ -201,6 +201,12 @@ public abstract class AbstractStateObjectVisitor implements StateObjectVisitor {
 	 * {@inheritDoc}
 	 */
 	public void visit(FromClauseStateObject stateObject) {
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(FunctionExpressionStateObject stateObject) {
 	}
 
 	/**
@@ -453,6 +459,12 @@ public abstract class AbstractStateObjectVisitor implements StateObjectVisitor {
 	 * {@inheritDoc}
 	 */
 	public void visit(SumFunctionStateObject stateObject) {
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(TreatExpressionStateObject stateObject) {
 	}
 
 	/**

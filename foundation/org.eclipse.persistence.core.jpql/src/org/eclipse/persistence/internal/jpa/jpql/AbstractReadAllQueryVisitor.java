@@ -15,7 +15,6 @@ package org.eclipse.persistence.internal.jpa.jpql;
 
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
-import org.eclipse.persistence.internal.expressions.QueryKeyExpression;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractEclipseLinkExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractFromClause;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractSelectClause;
@@ -332,8 +331,8 @@ abstract class AbstractReadAllQueryVisitor extends AbstractEclipseLinkExpression
 
 	private class JoinExpressionVisitor extends AbstractEclipseLinkExpressionVisitor {
 
-		private void addNonFetchJoinedAttribute(org.eclipse.persistence.jpa.jpql.parser.Expression expression,
-		                                        IdentificationVariable identificationVariable) {
+		private Expression addNonFetchJoinedAttribute(org.eclipse.persistence.jpa.jpql.parser.Expression expression,
+		                                              IdentificationVariable identificationVariable) {
 
 			String variableName = identificationVariable.getVariableName();
 
@@ -344,16 +343,6 @@ abstract class AbstractReadAllQueryVisitor extends AbstractEclipseLinkExpression
 			if (queryExpression == null) {
 				queryExpression = queryContext.buildExpression(expression);
 				queryContext.addQueryExpression(variableName, queryExpression);
-				if (expression instanceof Join) {
-				    Join join = (Join)expression;
-				    if (join.hasOnClause()) {
-				        if (join.isLeftJoin()) {
-				            ((QueryKeyExpression)queryExpression).getBaseExpression().leftJoin(queryExpression, queryContext.buildExpression(join.getOnClause()));
-				        } else {
-                                            ((QueryKeyExpression)queryExpression).getBaseExpression().join(queryExpression, queryContext.buildExpression(join.getOnClause()));
-				        }
-				    }
-				}
 			}
 
 			ObjectLevelReadQuery query = (ObjectLevelReadQuery) queryContext.getDatabaseQuery();
@@ -361,6 +350,8 @@ abstract class AbstractReadAllQueryVisitor extends AbstractEclipseLinkExpression
 			if (query.getExpressionBuilder() != queryExpression) {
 				query.addNonFetchJoinedAttribute(queryExpression);
 			}
+
+			return queryExpression;
 		}
 
 		/**
@@ -411,17 +402,25 @@ abstract class AbstractReadAllQueryVisitor extends AbstractEclipseLinkExpression
 
 			if (expression.hasIdentificationVariable()) {
 
-				addNonFetchJoinedAttribute(
-					expression,
-					(IdentificationVariable) expression.getIdentificationVariable()
-				);
+				IdentificationVariable identificationVariable = (IdentificationVariable) expression.getIdentificationVariable();
+				Expression queryExpression = addNonFetchJoinedAttribute(expression, identificationVariable);
+
+				if (expression.hasOnClause()) {
+
+					Expression onClause = queryContext.buildExpression(expression.getOnClause());
+
+					if (expression.isLeftJoin()) {
+						queryExpression = queryExpression.leftJoin(queryExpression, onClause);
+					}
+					else {
+						queryExpression = queryExpression.join(queryExpression, onClause);
+					}
+				}
 
 				if (expression.hasFetch()) {
 
-					IdentificationVariable identificationVariable = (IdentificationVariable) expression.getIdentificationVariable();
 					String variableName = identificationVariable.getVariableName();
-
-					Expression queryExpression = queryContext.getQueryExpression(variableName);
+					queryExpression = queryContext.getQueryExpression(variableName);
 
 					if (queryExpression == null) {
 						queryExpression = queryContext.buildExpression(expression);
@@ -630,8 +629,9 @@ abstract class AbstractReadAllQueryVisitor extends AbstractEclipseLinkExpression
 				query.addOrdering(queryExpression.descending());
 			}
 			else if (expression.getOrdering() == Ordering.ASC) {
-                                query.addOrdering(queryExpression.ascending());
-                        } else {
+				query.addOrdering(queryExpression.ascending());
+			}
+			else {
 				query.addOrdering(queryExpression);
 			}
 		}

@@ -45,7 +45,7 @@ public final class ConditionalExpressionBNF extends JPQLQueryBNF {
 		super.initialize();
 		setHandleAggregate(true);
 		setFallbackBNFId(ID);
-		setFallbackExpressionFactoryId(LiteralExpressionFactory.ID);
+		setFallbackExpressionFactoryId(PreLiteralExpressionFactory.ID);
 		registerExpressionFactory(OrExpressionFactory.ID);
 		registerChild(ConditionalTermBNF.ID);
 	}

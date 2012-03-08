@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Oracle. All rights reserved.
+ * Copyright (c) 2011, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -13,14 +13,19 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.util;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 
 /**
- * This utility class provides utility methods related to collection.
+ * This utility class provides utility methods related to collections, iterators and arrays.
+ * <p>
+ * Provisional API: This interface is part of an interim API that is still under development and
+ * expected to change significantly before reaching stability. It is available at this early stage
+ * to solicit feedback from pioneering adopters on the understanding that any code that uses this
+ * API will almost certainly be broken (repeatedly) as the API evolves.
  *
  * @version 2.4
  * @since 2.4
@@ -33,49 +38,6 @@ public final class CollectionTools {
 	 */
 	private CollectionTools() {
 		super();
-	}
-
-	/**
-	 * Adds to the given {@link Collection} the given items.
-	 *
-	 * @param collection The {@link Collection} that will receive the items returned by the {@link Iterator}
-	 * @param items The list of items to add to the {@link Collection}
-	 * @return The given {@link Collection}
-	 */
-	public static Collection<String> addAll(Collection<String> collection, CharSequence... items) {
-		for (CharSequence item : items) {
-			collection.add(item.toString());
-		}
-		return collection;
-	}
-
-	/**
-	 * Adds to the given {@link Collection} the given items.
-	 *
-	 * @param collection The {@link Collection} that will receive the items returned by the {@link Iterator}
-	 * @param items The list of items to add to the {@link Collection}
-	 * @return The given {@link Collection}
-	 */
-	public static <T extends Collection<I>, I> T addAll(T collection, I... items) {
-		for (I item : items) {
-			collection.add(item);
-		}
-		return collection;
-	}
-
-	/**
-	 * Adds to the given {@link Collection} the items returned by the given {@link Iterator}.
-	 *
-	 * @param collection The {@link Collection} that will receive the items returned by the {@link Iterator}
-	 * @param index The position where to start inserting the items
-	 * @param iterator The {@link Iterator} that will return the items to add to the {@link Collection}
-	 * @return The given {@link Collection}
-	 */
-	public static <T extends List<I>, I> T addAll(T collection, int index, Iterator<? extends I> iterator) {
-		while (iterator.hasNext()) {
-			collection.add(index++, iterator.next());
-		}
-		return collection;
 	}
 
 	/**
@@ -93,33 +55,38 @@ public final class CollectionTools {
 	}
 
 	/**
-	 * Creates a new {@link List} by iterating over the given {@link ListIterator}.
+	 * Creates a new array and adds the items returned by the given {@link Iterator}.
+	 *
+	 * @param componentType The type of the array
+	 * @param iterator The {@link Iterator} that will iterate over the collection of items to add
+	 * into the new array in the same order they are returned
+	 * @return A new array filled with the items returned by the given iterator.
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> T[] array(Class<T> componentType, Iterator<T> iterator) {
+
+		if (!iterator.hasNext()) {
+			return (T[]) Array.newInstance(componentType, 0);
+		}
+
+		ArrayList<T> list = new ArrayList<T>();
+
+		while (iterator.hasNext()) {
+			list.add(iterator.next());
+		}
+
+		T[] array = (T[]) Array.newInstance(componentType, list.size());
+		return list.toArray(array);
+	}
+
+	/**
+	 * Creates a new {@link List} and adds the items returned by the given {@link ListIterator}.
 	 *
 	 * @param iterator The {@link ListIterator} to iterate over items to add into a list in the same
 	 * order they are returned
 	 * @return A new {@link List}
 	 */
-	public static <T> List<T> list(ListIterator<? extends T> iterator) {
-		List<T> list = new ArrayList<T>();
-		while (iterator.hasNext()) {
-			list.add(iterator.next());
-		}
-		return list;
-	}
-
-	/**
-	 * Returns the count of items that are iterated by the given {@link Iterator}. Once the count has
-	 * been calculated, the {@link Iterator} can no longer be used to traverse the item.
-	 *
-	 * @param iterator The {@link Iterator} that traverses a series of item
-	 * @return The count of items the given {@link Iterator} returned
-	 */
-	public static int size(Iterator<?> iterator) {
-		int count = 0;
-		while (iterator.hasNext()) {
-			iterator.next();
-			count++;
-		}
-		return count;
+	public static <T> List<T> list(Iterator<? extends T> iterator) {
+		return addAll(new ArrayList<T>(), iterator);
 	}
 }

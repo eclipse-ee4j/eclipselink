@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -19,24 +19,23 @@ import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.WordParser;
 
 /**
- * The <code>state_field_path_expression</code> must have a string, numeric, or enum value. The
- * literal and/or <code>input_parameter</code> values must be like the same abstract schema type of
- * the <code>state_field_path_expression</code> in type.
+ * The state field path expression must have a string, numeric, or enum value. The literal and/or
+ * input parameter values must be like the same abstract schema type of the state field path
+ * expression in type.
  * <p>
- * The results of the <code>subquery</code> must be like the same abstract schema type of the
- * <code>state_field_path_expression</code> in type.
+ * The results of the subquery must be like the same abstract schema type of the state field path
+ * expression in type.
  * <p>
  * There must be at least one element in the comma separated list that defines the set of values for
- * the <b>IN</b> expression. If the value of a <code>state_field_path_expression</code> in an
- * <b>IN</b> or <b>NOT IN</b> expression is <b>NULL</b> or unknown, the value of the expression is
- * unknown.
+ * the <b>IN</b> expression. If the value of a state field path expression in an <b>IN</b> or
+ * <b>NOT IN</b> expression is <b>NULL</b> or unknown, the value of the expression is unknown.
  * <p>
  * JPA 1.0:
  * <div nowrap><b>BNF:</b> <code>in_expression ::= state_field_path_expression [NOT] IN(in_item {, in_item}* | subquery)</code><p>
  * JPA 2.0
  * <div nowrap><b>BNF:</b> <code>in_expression ::= {state_field_path_expression | type_discriminator} [NOT] IN { ( in_item {, in_item}* ) | (subquery) | collection_valued_input_parameter }</code><p>
  * <p>
- * <div nowrap>Example: </code><b>SELECT</b> c <b>FROM</b> Customer c <b>WHERE</b> c.home.city <b>IN</b>(:city)</p>
+ * <div nowrap>Example: </code><b>SELECT</b> c <b>FROM</b> Customer c <b>WHERE</b> c.home.city <b>IN</b> :city</p>
  * <p>
  * <div nowrap>Example: </code><b>SELECT</b> p <b>FROM</b> Project p <b>WHERE</b> <b>TYPE</b>(p) <b>IN</b>(LargeProject, SmallProject)</p>
  *
@@ -137,7 +136,7 @@ public final class InExpression extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void addOrderedChildrenTo(List<StringExpression> children) {
+	protected void addOrderedChildrenTo(List<Expression> children) {
 
 		// State field path expression or type discriminator
 		if (hasExpression()) {
@@ -222,6 +221,16 @@ public final class InExpression extends AbstractExpression {
 			expression = buildNullExpression();
 		}
 		return expression;
+	}
+
+	/**
+	 * Returns the unique identifier of the query BNF that describe the expression being tested by
+	 * the <code>IN</code> expression.
+	 *
+	 * @return {@link InExpressionItemBNF#ID}
+	 */
+	public String getExpressionItemBNF() {
+		return InExpressionItemBNF.ID;
 	}
 
 	/**
@@ -314,6 +323,16 @@ public final class InExpression extends AbstractExpression {
 	 */
 	public boolean hasSpaceAfterIn() {
 		return hasSpaceAfterIn;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
+		return word.equalsIgnoreCase(AND) ||
+		       word.equalsIgnoreCase(OR)  ||
+		       super.isParsingComplete(wordParser, word, expression);
 	}
 
 	/**

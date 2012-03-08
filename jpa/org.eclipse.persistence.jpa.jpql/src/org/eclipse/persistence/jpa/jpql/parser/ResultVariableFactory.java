@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -56,8 +56,8 @@ public final class ResultVariableFactory extends ExpressionFactory {
 		// expression and it will have an identification variable
 		if (((expression != null) || word.equalsIgnoreCase(Expression.AS)) &&
 		    isSupported(parent) &&
-		    (word.indexOf(".") == -1))
-		{
+		    (word.indexOf(".") == -1)) {
+
 			ResultVariable resultVariable = new ResultVariable(parent, expression);
 			resultVariable.parse(wordParser, tolerant);
 			return resultVariable;
@@ -78,17 +78,6 @@ public final class ResultVariableFactory extends ExpressionFactory {
 		// Use the default factory
 		ExpressionFactory factory = registry.getExpressionFactory(LiteralExpressionFactory.ID);
 		return factory.buildExpression(parent, wordParser, word, queryBNF, expression, tolerant);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public JPAVersion getVersion() {
-		// We return JPA 1.0 because the check will be done in the build method
-		// otherwise identification variable, state field path expression won't
-		// be parsed
-		return JPAVersion.VERSION_1_0;
 	}
 
 	private boolean isSupported(AbstractExpression parent) {

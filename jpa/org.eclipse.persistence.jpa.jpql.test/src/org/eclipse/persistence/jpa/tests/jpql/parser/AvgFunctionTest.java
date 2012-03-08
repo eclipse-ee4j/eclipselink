@@ -16,7 +16,7 @@ package org.eclipse.persistence.jpa.tests.jpql.parser;
 import org.eclipse.persistence.jpa.jpql.parser.AggregateFunction;
 import org.eclipse.persistence.jpa.jpql.parser.AvgFunction;
 
-public final class AvgFunctionTest extends FunctionTest {
+public final class AvgFunctionTest extends AggregateFunctionTest {
 
 	@Override
 	protected AggregateFunctionTester aggregateFunctionTester(ExpressionTester expression) {

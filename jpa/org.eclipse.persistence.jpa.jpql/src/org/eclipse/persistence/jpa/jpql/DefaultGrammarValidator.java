@@ -13,34 +13,57 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql;
 
+import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
+import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
+
 /**
- * This validator is responsible to gather the problems found in a JPQL query by validating it
- * against the JPQL grammar. The semantic is not validated by this visitor.
+ * This validator is responsible to validate a JPQL query grammatically purely based on the JPA
+ * specification document.
  *
+ * @see <a href="http://jcp.org/en/jsr/detail?id=220">JSR 220: Enterprise JavaBeans™ 3.0</a>
+ * @see <a href="http://jcp.org/en/jsr/detail?id=317">JSR 317: Java™ Persistence 2.0</a>
+ * @see <a href="http://jcp.org/en/jsr/detail?id=338">JSR 338: Java™ Persistence 2.1</a>
  * @see DefaultSemanticValidator
+ * <p>
+ * Provisional API: This interface is part of an interim API that is still under development and
+ * expected to change significantly before reaching stability. It is available at this early stage
+ * to solicit feedback from pioneering adopters on the understanding that any code that uses this
+ * API will almost certainly be broken (repeatedly) as the API evolves.
  *
  * @version 2.4
- * @since 2.3
+ * @since 2.4
  * @author Pascal Filion
  */
-public final class DefaultGrammarValidator extends AbstractGrammarValidator {
+public class DefaultGrammarValidator extends AbstractGrammarValidator {
 
 	/**
 	 * Creates a new <code>DefaultGrammarValidator</code>.
 	 *
-	 * @param context The context used to query information about the JPQL query
-	 * @exception AssertException The {@link JPQLQueryContext} cannot be <code>null</code>
+	 * @param jpqlGrammar The {@link JPQLGrammar} that defines how the JPQL query was parsed
 	 */
-	public DefaultGrammarValidator(JPQLQueryContext context) {
-		super(context);
+	public DefaultGrammarValidator(JPQLGrammar jpqlGrammar) {
+		super(jpqlGrammar);
+	}
+
+	/**
+	 * Creates a new <code>DefaultGrammarValidator</code>.
+	 *
+	 * @param queryContext The context used to query information about the JPQL query
+	 * @deprecated This constructor only exists for backward compatibility. {@link JPQLQueryContext}
+	 * is no longer required, only {@link JPQLGrammar}
+	 * @see #DefaultGrammarValidator(JPQLGrammar)
+	 */
+	@Deprecated
+	public DefaultGrammarValidator(JPQLQueryContext queryContext) {
+		super(queryContext.getGrammar());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	boolean isSubqueryAllowedAnywhere() {
-		return false;
+	protected LiteralVisitor buildLiteralVisitor() {
+		return new DefaultLiteralVisitor();
 	}
 
 	/**
@@ -49,5 +72,13 @@ public final class DefaultGrammarValidator extends AbstractGrammarValidator {
 	@Override
 	protected boolean isJoinFetchIdentifiable() {
 		return false;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected boolean isSubqueryAllowedAnywhere() {
+		return getJPAVersion().isNewerThanOrEqual(JPAVersion.VERSION_2_1);
 	}
 }

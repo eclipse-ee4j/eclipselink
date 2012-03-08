@@ -16,8 +16,8 @@ package org.eclipse.persistence.jpa.jpql.parser;
 import org.eclipse.persistence.jpa.jpql.WordParser;
 
 /**
- * This {@link FunctionExpressionFactory} creates a new {@link FunctionExpression} when the portion of the
- * query to parse starts with <b>FUNCTION</b>.
+ * This {@link FunctionExpressionFactory} creates a new {@link FunctionExpression} when the portion
+ * of the query to parse starts with an identifier related to a SQL function.
  *
  * @see FunctionExpression
  *
@@ -33,10 +33,19 @@ public final class FunctionExpressionFactory extends ExpressionFactory {
 	public static final String ID = Expression.FUNCTION;
 
 	/**
-	 * Creates a new <code>FuncExpressionFactory</code>.
+	 * Creates a new <code>FunctionExpressionFactory</code>.
 	 */
 	public FunctionExpressionFactory() {
-		super(ID, Expression.FUNCTION);
+		super(ID);
+	}
+
+	/**
+	 * Creates a new <code>FunctionExpressionFactory</code>.
+	 *
+	 * @param identifiers The JPQL identifiers handled by this factory
+	 */
+	public FunctionExpressionFactory(String... identifiers) {
+		super(ID, identifiers);
 	}
 
 	/**
@@ -50,7 +59,22 @@ public final class FunctionExpressionFactory extends ExpressionFactory {
 	                                             AbstractExpression expression,
 	                                             boolean tolerant) {
 
-		expression = new FunctionExpression(parent);
+		// Search for the constant that is registered with this factory
+		String identifier = null;
+
+		for (String possibleIdentifier : identifiers()) {
+			if (possibleIdentifier.equalsIgnoreCase(word)) {
+				identifier = possibleIdentifier;
+				break;
+			}
+		}
+
+		// No constant was found
+		if (identifier == null) {
+			return null;
+		}
+
+		expression = new FunctionExpression(parent, identifier);
 		expression.parse(wordParser, tolerant);
 		return expression;
 	}

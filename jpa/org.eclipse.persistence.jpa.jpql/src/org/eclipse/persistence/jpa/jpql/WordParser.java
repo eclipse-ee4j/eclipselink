@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -13,17 +13,20 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql;
 
-
 /**
  * This "parser" holds onto the string version of the Java Persistence query that is parsed into a
  * parsed tree. It uses a cursor that let the current {@link Expression} object to parse its section
  * of the query.
+ * <p>
+ * Provisional API: This interface is part of an interim API that is still under development and
+ * expected to change significantly before reaching stability. It is available at this early stage
+ * to solicit feedback from pioneering adopters on the understanding that any code that uses this
+ * API will almost certainly be broken (repeatedly) as the API evolves.
  *
- * @version 2.3
+ * @version 2.4
  * @since 2.3
  * @author Pascal Filion
  */
-@SuppressWarnings("nls")
 public final class WordParser {
 
 	/**
@@ -48,9 +51,6 @@ public final class WordParser {
 	 */
 	public WordParser(CharSequence query) {
 		super();
-
-		checkText(query);
-
 		this.text   = query;
 		this.length = text.length();
 		this.cursor = 0;
@@ -75,12 +75,6 @@ public final class WordParser {
 		return (position >= length) ? '\0' : text.charAt(position);
 	}
 
-	private void checkText(CharSequence query) {
-		if (query == null) {
-			throw new NullPointerException("The query cannot be null");
-		}
-	}
-
 	/**
 	 * Determines whether the query ends with the given suffix and the end position is the end of the
 	 * range for testing.
@@ -91,15 +85,6 @@ public final class WordParser {
 	 * the query; <code>false</code> otherwise
 	 */
 	public boolean endsWith(int endPosition, String suffix) {
-		// Skip whitespace between the endPosition and the character before them
-//		for (int index = endPosition; --index >= 0; )
-//		{
-//			if (Character.isWhitespace(text.charAt(index)))
-//			{
-//				endPosition--;
-//			}
-//		}
-
 		return startsWith(suffix, endPosition - suffix.length());
 	}
 
@@ -176,25 +161,14 @@ public final class WordParser {
 	}
 
 	/**
-	 * Determines whether the given character is a character that can be used in a number. This
-	 * includes all numeric characters [0, 9] and the period character.
+	 * Determines whether the given character is a character that can be used in a number. This only
+	 * includes the numeric characters [0, 9] and the period character.
 	 *
 	 * @param character The character to test if it's a digit
 	 * @return <code>true</code> if the given character is a digit; <code>false</code> otherwise
 	 */
 	public boolean isDigit(char character) {
-		return (character == '.') ||
-		        Character.isDigit(character);
-	}
-
-	public boolean isParsingComplete(char character) {
-		return Character.isWhitespace(character) ||
-		       isDelimitor(character)            ||
-		       character == '>' ||
-		       character == '<' ||
-		       character == '/' ||
-		       character == '*' ||
-		       character == '=';
+		return (character == '.') || Character.isDigit(character);
 	}
 
 	/**
@@ -205,6 +179,28 @@ public final class WordParser {
 	 */
 	public boolean isTail() {
 		return cursor >= length;
+	}
+
+	/**
+	 * Determines whether the given character is not considered to be part of a word (which is
+	 * usually comprise of alphanumeric characters).
+	 *
+	 * @param character The character used to determine if it should be part of a word or not
+	 * @return <code>true</code> if the character can be part of a word; <code>false</code> if it is
+	 * not an alphanumeric character, which usually means is a whitespace, a delimiter or an
+	 * arithmetic symbol
+	 * @see Character#isWhitespace(char)
+	 * @see #isArithmeticSymbol(char)
+	 * @see #isDelimitor(char)
+	 */
+	public boolean isWordSeparator(char character) {
+		return Character.isWhitespace(character) ||
+		       isDelimitor(character)            ||
+		       character == '>' ||
+		       character == '<' ||
+		       character == '/' ||
+		       character == '*' ||
+		       character == '=';
 	}
 
 	/**
@@ -529,22 +525,36 @@ public final class WordParser {
 
 		char character = character();
 
-		// Check if the first character is either '+' or '-' and make sure
-		// it's not used for a numeric value, which in that case, a numeric
-		// value will be created
+		// Check if the first character is either '+' or '-' and make sure it's not used for a numeric
+		// value, which in that case, a numeric value will be created
 		if (character == '-' ||
 		    character == '+') {
 
-			if ((cursor + 1 < length) && isDigit(character(cursor + 1))) {
+			moveForward(1);
+			int count = skipLeadingWhitespace();
+			character = character(cursor);
+			moveBackward(count + 1);
+
+			if (isDigit(character)) {
 				return Boolean.TRUE;
+			}
+
+			if (character == '-' ||
+			    character == '+' ||
+			    character == '+' ||
+			    character == '/') {
+
+				return null;
 			}
 
 			return Boolean.FALSE;
 		}
-		else if (character == '.') {
+
+		if (character == '.') {
 			return isDigit(character(cursor + 1));
 		}
-		else if (isDigit(character)) {
+
+		if (isDigit(character)) {
 			return Boolean.TRUE;
 		}
 
@@ -756,7 +766,7 @@ public final class WordParser {
 		for (int index = position; index < length; index++) {
 			char character = text.charAt(index);
 
-			if (isParsingComplete(character)) {
+			if (isWordSeparator(character)) {
 				index = length;
 			}
 			else {

@@ -16,8 +16,8 @@ package org.eclipse.persistence.jpa.jpql.parser;
 import org.eclipse.persistence.jpa.jpql.WordParser;
 
 /**
- * This {@link OnClauseFactory} creates a new {@link OnClause} when the portion of the query
- * to parse starts with <b>ON</b>.
+ * This {@link OnClauseFactory} creates a new {@link OnClause} when the portion of the query to
+ * parse starts with <b>ON</b>.
  *
  * @see WhereClause
  *

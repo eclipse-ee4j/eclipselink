@@ -52,6 +52,11 @@ import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
  * JPQLQueryContext context = new JPQLQueryContext(DefaultJPQLGrammar.instance());
  * context.setJPQLExpression(jpqlExpression);
  * context.setQuery(query);</code></pre>
+ * <p>
+ * Provisional API: This interface is part of an interim API that is still under development and
+ * expected to change significantly before reaching stability. It is available at this early stage
+ * to solicit feedback from pioneering adopters on the understanding that any code that uses this
+ * API will almost certainly be broken (repeatedly) as the API evolves.
  *
  * @version 2.4
  * @since 2.3
@@ -623,7 +628,7 @@ public abstract class JPQLQueryContext {
 	}
 
 	/**
-	 * Retrieves the external class for the given fully qualified class name.
+	 * Retrieves the external class with the given fully qualified class name.
 	 *
 	 * @param name The fully qualified class name of the class to retrieve
 	 * @return The external form of the class to retrieve
@@ -701,7 +706,7 @@ public abstract class JPQLQueryContext {
 	 * defined in a <code>JOIN</code> or <code>IN</code> expression; <code>false</code> if it's not
 	 * defined or it's mapping an abstract schema name
 	 */
-	public boolean isCollectionVariableName(String variableName) {
+	public boolean isCollectionIdentificationVariable(String variableName) {
 		return getDeclarationResolver().isCollectionIdentificationVariable(variableName);
 	}
 

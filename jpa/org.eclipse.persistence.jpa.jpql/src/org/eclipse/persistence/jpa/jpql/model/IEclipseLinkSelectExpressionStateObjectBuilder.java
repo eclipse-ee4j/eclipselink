@@ -26,25 +26,6 @@ public interface IEclipseLinkSelectExpressionStateObjectBuilder extends ISelectE
 	IEclipseLinkSelectExpressionStateObjectBuilder append();
 
 	/**
-	 * Creates the expression <code><b>FUNC('functionName, {expression}*)</b></code>.
-	 *
-	 * @param functionName The name of the native SQL function
-	 * @param builders The arguments of the expression
-	 * @return This {@link ISimpleSelectExpressionBuilder builder}
-	 */
-	IEclipseLinkSelectExpressionStateObjectBuilder func(String functionName,
-	                                                    IEclipseLinkSelectExpressionStateObjectBuilder... builders);
-
-	/**
-	 * Creates the expression <code><b>FUNC('functionName, {expression}*)</b></code>.
-	 *
-	 * @param functionName The name of the native SQL function
-	 * @param arguments The arguments of the expression
-	 * @return This {@link ISimpleSelectExpressionBuilder builder}
-	 */
-	IEclipseLinkSelectExpressionStateObjectBuilder func(String functionName, String... arguments);
-
-	/**
 	 * {@inheritDoc}
 	 */
 	IEclipseLinkSelectExpressionStateObjectBuilder new_(String className,

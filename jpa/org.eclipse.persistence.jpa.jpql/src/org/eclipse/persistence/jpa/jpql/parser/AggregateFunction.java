@@ -89,7 +89,7 @@ public abstract class AggregateFunction extends AbstractSingleEncapsulatedExpres
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void addOrderedEncapsulatedExpressionTo(List<StringExpression> children) {
+	protected void addOrderedEncapsulatedExpressionTo(List<Expression> children) {
 
 		if (hasDistinct) {
 			children.add(buildStringExpression(DISTINCT));
@@ -117,8 +117,7 @@ public abstract class AggregateFunction extends AbstractSingleEncapsulatedExpres
 	 */
 	@Override
 	public String encapsulatedExpressionBNF() {
-		return ScalarExpressionBNF.ID;
-//		return StateFieldPathExpressionBNF.ID;
+		return InternalAggregateFunctionBNF.ID;
 	}
 
 	/**

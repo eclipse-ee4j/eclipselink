@@ -16,24 +16,15 @@ package org.eclipse.persistence.jpa.jpql.model.query;
 /**
  * The interface is used to traverse the {@link StateObject} hierarchy that represents a JPQL
  * query as well as what EclipseLink adds on top of the basic grammar.
+ * <p>
+ * Provisional API: This interface is part of an interim API that is still under development and
+ * expected to change significantly before reaching stability. It is available at this early stage
+ * to solicit feedback from pioneering adopters on the understanding that any code that uses this
+ * API will almost certainly be broken (repeatedly) as the API evolves.
  *
  * @version 2.4
  * @since 2.4
  * @author Pascal Filion
  */
 public interface EclipseLinkStateObjectVisitor extends StateObjectVisitor {
-
-	/**
-	 * Visits the given {@link FuncExpressionStateObject}.
-	 *
-	 * @param stateObject The {@link FuncExpressionStateObject} to visit
-	 */
-	void visit(FuncExpressionStateObject stateObject);
-
-	/**
-	 * Visits the given {@link TreatExpressionStateObject}.
-	 *
-	 * @param stateObject The {@link TreatExpressionStateObject} to visit
-	 */
-	void visit(TreatExpressionStateObject stateObject);
 }

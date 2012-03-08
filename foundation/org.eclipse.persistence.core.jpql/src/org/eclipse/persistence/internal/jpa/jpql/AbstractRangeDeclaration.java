@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Oracle. All rights reserved.
+ * Copyright (c) 2011, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -13,7 +13,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.jpql;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -65,7 +64,7 @@ abstract class AbstractRangeDeclaration extends Declaration {
 	 * {@inheritDoc}
 	 */
 	@Override
-	RangeVariableDeclaration getBaseExpression() {
+	public RangeVariableDeclaration getBaseExpression() {
 		return (RangeVariableDeclaration) super.getBaseExpression();
 	}
 
@@ -73,7 +72,7 @@ abstract class AbstractRangeDeclaration extends Declaration {
 	 * {@inheritDoc}
 	 */
 	@Override
-	IdentificationVariableDeclaration getDeclarationExpression() {
+	public IdentificationVariableDeclaration getDeclarationExpression() {
 		return (IdentificationVariableDeclaration) super.getDeclarationExpression();
 	}
 
@@ -84,7 +83,7 @@ abstract class AbstractRangeDeclaration extends Declaration {
 	 * @return The ordered list of <b>JOIN</b> expressions or an empty collection if none was
 	 * present
 	 */
-	Collection<Join> getJoins() {
+	public List<Join> getJoins() {
 		return (joins == null) ? Collections.<Join>emptyList() : joins;
 	}
 
@@ -94,7 +93,14 @@ abstract class AbstractRangeDeclaration extends Declaration {
 	 * @return <code>true</code> if at least one <b>JOIN</b> expression was parsed; otherwise
 	 * <code>false</code>
 	 */
-	boolean hasJoins() {
+	public boolean hasJoins() {
 		return joins != null;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public final boolean isCollection() {
+		return false;
 	}
 }

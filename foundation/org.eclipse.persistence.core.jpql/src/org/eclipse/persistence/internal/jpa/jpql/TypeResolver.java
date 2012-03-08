@@ -29,7 +29,6 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.descriptors.InstanceVariableAttributeAccessor;
 import org.eclipse.persistence.internal.descriptors.MethodAttributeAccessor;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
-import org.eclipse.persistence.internal.queries.MapContainerPolicy;
 import org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy;
 import org.eclipse.persistence.jpa.jpql.ResolverBuilder;
 import org.eclipse.persistence.jpa.jpql.parser.AbsExpression;
@@ -51,7 +50,6 @@ import org.eclipse.persistence.jpa.jpql.parser.CollectionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionMemberDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionMemberExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionValuedPathExpression;
-import org.eclipse.persistence.jpa.jpql.parser.ColumnExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ComparisonExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConcatExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConstructorExpression;
@@ -67,7 +65,6 @@ import org.eclipse.persistence.jpa.jpql.parser.EntryExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ExistsExpression;
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.FromClause;
-import org.eclipse.persistence.jpa.jpql.parser.FuncExpression;
 import org.eclipse.persistence.jpa.jpql.parser.FunctionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.GroupByClause;
 import org.eclipse.persistence.jpa.jpql.parser.HavingClause;
@@ -95,13 +92,11 @@ import org.eclipse.persistence.jpa.jpql.parser.NullIfExpression;
 import org.eclipse.persistence.jpa.jpql.parser.NumericLiteral;
 import org.eclipse.persistence.jpa.jpql.parser.ObjectExpression;
 import org.eclipse.persistence.jpa.jpql.parser.OnClause;
-import org.eclipse.persistence.jpa.jpql.parser.OperatorExpression;
 import org.eclipse.persistence.jpa.jpql.parser.OrExpression;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByClause;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByItem;
 import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.ResultVariable;
-import org.eclipse.persistence.jpa.jpql.parser.SQLExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.SelectStatement;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleFromClause;
@@ -129,9 +124,6 @@ import org.eclipse.persistence.jpa.jpql.parser.WhereClause;
 import org.eclipse.persistence.mappings.AggregateMapping;
 import org.eclipse.persistence.mappings.AttributeAccessor;
 import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.mappings.DirectMapMapping;
-import org.eclipse.persistence.mappings.ForeignReferenceMapping;
-import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.mappings.querykeys.DirectQueryKey;
 import org.eclipse.persistence.mappings.querykeys.ForeignReferenceQueryKey;
 import org.eclipse.persistence.mappings.querykeys.QueryKey;
@@ -185,6 +177,94 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
 	TypeResolver(JPQLQueryContext queryContext) {
 		super();
 		this.queryContext = queryContext;
+	}
+
+	/**
+	 * Returns the type of the given {@link DatabaseMapping}, which is the persistent field type.
+	 *
+	 * @param mapping The {@link DatabaseMapping} to retrieve its persistent field type
+	 * @return The persistent field type
+	 */
+	@SuppressWarnings({ "null", "unchecked" })
+	Class<?> calculateMappingType(DatabaseMapping mapping) {
+
+		// For aggregate mappings (@Embedded and @EmbeddedId), we need to use the descriptor
+		// because its mappings have to be retrieve from this one and not from the descriptor
+		// returned when querying it with a Java type
+		if (mapping.isAggregateMapping()) {
+			ClassDescriptor descriptor = ((AggregateMapping) mapping).getReferenceDescriptor();
+			if (descriptor != null) {
+				return descriptor.getJavaClass();
+			}
+		}
+
+		// Relationship mapping
+		if (mapping.isForeignReferenceMapping()) {
+			ClassDescriptor descriptor = mapping.getReferenceDescriptor();
+			if (descriptor != null) {
+				return descriptor.getJavaClass();
+			}
+		}
+		// Collection mapping
+		else if (mapping.isCollectionMapping()) {
+			return mapping.getContainerPolicy().getContainerClass();
+		}
+
+		// Property mapping
+		AttributeAccessor accessor = mapping.getAttributeAccessor();
+
+		// Attribute
+		if (accessor.isInstanceVariableAttributeAccessor()) {
+			InstanceVariableAttributeAccessor attributeAccessor = (InstanceVariableAttributeAccessor) accessor;
+			Field field = attributeAccessor.getAttributeField();
+
+			if (field == null) {
+				try {
+					field = mapping.getDescriptor().getJavaClass().getDeclaredField(attributeAccessor.getAttributeName());
+				}
+				catch (Exception e) {}
+			}
+
+			return field.getType();
+		}
+
+		// Property
+		if (accessor.isMethodAttributeAccessor()) {
+			MethodAttributeAccessor methodAccessor = (MethodAttributeAccessor) accessor;
+			Method method = methodAccessor.getGetMethod();
+
+			if (method == null) {
+				try {
+					method = mapping.getDescriptor().getJavaClass().getDeclaredMethod(methodAccessor.getGetMethodName());
+				}
+				catch (Exception e) {}
+			}
+
+			return method.getReturnType();
+		}
+
+		// Anything else
+		return accessor.getAttributeClass();
+	}
+
+	/**
+	 * Returns the type of the given {@link QueryKey}, which is the persistent field type.
+	 *
+	 * @param mapping The {@link QueryKey} to retrieve its persistent field type
+	 * @return The persistent field type
+	 */
+	Class<?> calculateQueryKeyType(QueryKey queryKey) {
+
+		// ForeignReferenceQueryKey
+		if (queryKey.isForeignReferenceQueryKey()) {
+			ForeignReferenceQueryKey foreignReferenceQueryKey = (ForeignReferenceQueryKey) queryKey;
+			return foreignReferenceQueryKey.getReferenceClass();
+		}
+
+		// DirectQueryKey
+		DirectQueryKey key = (DirectQueryKey) queryKey;
+		Class<?> type = key.getField().getType();
+		return (type != null) ? type : Object.class;
 	}
 
 	/**
@@ -365,6 +445,38 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
 		}
 	}
 
+	/**
+	 * Resolves the given {@link org.eclipse.persistence.jpa.jpql.parser.Expression Expression} and
+	 * either returns the {@link DatabaseMapping} or the {@link QueryKey} object.
+	 *
+	 * @param expression The {@link org.eclipse.persistence.jpa.jpql.parser.Expression Expression} to
+	 * resolve by traversing its path expression
+	 * @return Either the {@link DatabaseMapping} or the {@link QueryKey} that is representing the
+	 * last path or <code>null</code> if the path expression could not be resolved
+	 */
+	Object resolveMappingObject(Expression expression) {
+
+		PathResolver resolver = pathResolver();
+
+		QueryKey oldQueryKey          = resolver.queryKey;
+		DatabaseMapping oldMapping    = resolver.mapping;
+		ClassDescriptor oldDescriptor = resolver.descriptor;
+
+		try {
+			resolver.mapping    = null;
+			resolver.descriptor = null;
+			resolver.queryKey   = null;
+
+			expression.accept(resolver);
+			return (resolver.mapping != null) ? resolver.mapping : resolver.queryKey;
+		}
+		finally {
+			resolver.mapping    = oldMapping;
+			resolver.queryKey   = oldQueryKey;
+			resolver.descriptor = oldDescriptor;
+		}
+	}
+
 	private Class<?> resolveMappingType(AbstractPathExpression expression) {
 
 		PathResolver resolver = pathResolver();
@@ -381,10 +493,10 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
 			expression.accept(resolver);
 
 			if (resolver.mapping != null) {
-				return resolveMappingType(resolver.mapping);
+				return calculateMappingType(resolver.mapping);
 			}
 			else if (resolver.queryKey != null) {
-				return resolveQueryKeyType(resolver.queryKey);
+				return calculateQueryKeyType(resolver.queryKey);
 			}
 			else {
 				return queryContext.getEnumType(expression.toParsedText());
@@ -395,114 +507,6 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
 			resolver.queryKey   = oldQueryKey;
 			resolver.descriptor = oldDescriptor;
 		}
-	}
-
-	@SuppressWarnings({ "unchecked", "null" })
-	Class<?> resolveMappingType(DatabaseMapping mapping) {
-
-		// For aggregate mappings (@Embedded and @EmbeddedId), we need to use the descriptor
-		// because its mappings have to be retrieve from this one and not from the descriptor
-		// returned when querying it with a Java type
-		if (mapping.isAggregateMapping()) {
-			ClassDescriptor descriptor = ((AggregateMapping) mapping).getReferenceDescriptor();
-			if (descriptor != null) {
-				return descriptor.getJavaClass();
-			}
-		}
-
-		if (mapping.isForeignReferenceMapping()) {
-			ForeignReferenceMapping referenceMapping = (ForeignReferenceMapping) mapping;
-
-			// Map<K, V>
-			if (mapping.isDirectMapMapping()) {
-				DirectMapMapping directMapMapping = (DirectMapMapping) mapping;
-
-				Class<?> key = directMapMapping.getKeyClass();
-				Class<?> value = directMapMapping.getValueClass();
-
-				if (key == null) {
-					MapContainerPolicy mapPolicy = (MapContainerPolicy) mapping.getContainerPolicy();
-					Object keyValue = mapPolicy.getKeyType();
-					if (keyValue instanceof Class<?>) {
-						key = (Class<?>) keyValue;
-					}
-					else if (keyValue instanceof ClassDescriptor) {
-						ClassDescriptor descriptor = (ClassDescriptor) keyValue;
-						key = descriptor.getJavaClass();
-					}
-				}
-
-				if (value == null) {
-					value = mapping.getAttributeClassification();
-				}
-
-				return mapping.getContainerPolicy().getContainerClass();
-			}
-
-			if (mapping.isCollectionMapping()) {
-				ContainerPolicy containerPolicy = mapping.getContainerPolicy();
-
-				// Collection<T>
-				if (containerPolicy.isCollectionPolicy()) {
-					Class<?> propertyType = referenceMapping.getReferenceClass();
-					if (propertyType == null) {
-						propertyType = mapping.getAttributeClassification();
-					}
-					return propertyType;
-				}
-
-				if (containerPolicy.isMapPolicy()) {
-					MapContainerPolicy mapPolicy = (MapContainerPolicy) containerPolicy;
-					return mapPolicy.getContainerClass();
-				}
-			}
-
-			// T
-			return referenceMapping.getReferenceClass();
-		}
-
-		if (mapping.isDirectToFieldMapping()) {
-			AbstractDirectMapping directMapping = (AbstractDirectMapping) mapping;
-			Class<?> type = directMapping.getAttributeClassification();
-			if (type != null) {
-				return type;
-			}
-		}
-
-		AttributeAccessor accessor = mapping.getAttributeAccessor();
-
-		// Attribute
-		if (accessor.isInstanceVariableAttributeAccessor()) {
-			InstanceVariableAttributeAccessor attributeAccessor = (InstanceVariableAttributeAccessor) accessor;
-			Field field = attributeAccessor.getAttributeField();
-
-			if (field == null) {
-				try {
-					field = mapping.getDescriptor().getJavaClass().getDeclaredField(attributeAccessor.getAttributeName());
-				}
-				catch (Exception e) {}
-			}
-
-			return field.getType();
-		}
-
-		// Property
-		if (accessor.isMethodAttributeAccessor()) {
-			MethodAttributeAccessor methodAccessor = (MethodAttributeAccessor) accessor;
-			Method method = methodAccessor.getGetMethod();
-
-			if (method == null) {
-				try {
-					method = mapping.getDescriptor().getJavaClass().getDeclaredMethod(methodAccessor.getGetMethodName());
-				}
-				catch (Exception e) {}
-			}
-
-			return method.getReturnType();
-		}
-
-		// Anything else
-		return accessor.getAttributeClass();
 	}
 
 	QueryKey resolveQueryKey(org.eclipse.persistence.jpa.jpql.parser.Expression expression) {
@@ -528,35 +532,12 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
 		}
 	}
 
-	Class<?> resolveQueryKeyType(QueryKey queryKey) {
-
-		Class<?> type;
-
-		// ForeignReferenceQueryKey
-		if (queryKey.isForeignReferenceQueryKey()) {
-			ForeignReferenceQueryKey foreignReferenceQueryKey = (ForeignReferenceQueryKey) queryKey;
-			type = foreignReferenceQueryKey.getReferenceClass();
-		}
-		// DirectQueryKey
-		else {
-			DirectQueryKey key = (DirectQueryKey) queryKey;
-			type = key.getField().getType();
-		}
-
-		return (type != null) ? type : Object.class;
-	}
-
 	/**
 	 * {@inheritDoc}
 	 */
 	public void visit(AbsExpression expression) {
-
 		// Visit the child expression in order to create the resolver
 		expression.getExpression().accept(this);
-
-//		if (!isNumericType()) {
-//			type = Object.class;
-//		}
 	}
 
 	/**
@@ -793,34 +774,6 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
 		type = Object.class;
 	}
 
-        /**
-         * {@inheritDoc}
-         */
-        public void visit(FuncExpression expression) {
-                type = Object.class;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public void visit(ColumnExpression expression) {
-                type = Object.class;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public void visit(SQLExpression expression) {
-                type = Object.class;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public void visit(OperatorExpression expression) {
-                type = Object.class;
-        }
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -852,7 +805,7 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
 			expression.accept(resolver);
 
 			if (resolver.mapping != null) {
-				type = resolveMappingType(resolver.mapping);
+				type = calculateMappingType(resolver.mapping);
 			}
 			else {
 				type = resolver.descriptor.getJavaClass();
@@ -1080,6 +1033,13 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	public void visit(OnClause expression) {
+		expression.getConditionalExpression().accept(this);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public void visit(OrderByClause expression) {
 		type = Object.class;
 	}
@@ -1248,13 +1208,13 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
 		expression.getExpression().accept(this);
 	}
 
+
 	/**
 	 * {@inheritDoc}
 	 */
 	public void visit(UnknownExpression expression) {
 		type = Object.class;
 	}
-
 
 	/**
 	 * {@inheritDoc}
@@ -1307,13 +1267,6 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
 	public void visit(WhereClause expression) {
 		expression.getConditionalExpression().accept(this);
 	}
-
-        /**
-         * {@inheritDoc}
-         */
-        public void visit(OnClause expression) {
-                expression.getConditionalExpression().accept(this);
-        }
 
 	/**
 	 * Visits the given {@link ArithmeticExpression} and create the appropriate {@link Resolver}.
@@ -1551,20 +1504,38 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
 
 			// Now traverse the rest of the path
 			for (int index = expression.hasVirtualIdentificationVariable() ? 0 : 1, count = expression.pathSize(); index < count; index++) {
+
 				String path = expression.getPath(index);
 				mapping = descriptor.getObjectBuilder().getMappingForAttributeName(path);
+
 				if (mapping == null) {
 					queryKey = descriptor.getQueryKeyNamed(path);
+
 					if ((queryKey != null) && queryKey.isForeignReferenceQueryKey()) {
 						ForeignReferenceQueryKey referenceQueryKey = (ForeignReferenceQueryKey) queryKey;
 						descriptor = queryContext.getDescriptor(referenceQueryKey.getReferenceClass());
 					}
 					else {
+						if (index + 1 < count) {
+							mapping = null;
+						}
 						descriptor = null;
 					}
 				}
+				// A collection mapping cannot be used in a path (if it's not the last path)
+				else if (mapping.isCollectionMapping() && (index + 1 < count)) {
+					mapping    = null;
+					descriptor = null;
+				}
 				else {
 					descriptor = mapping.getReferenceDescriptor();
+				}
+
+				if (descriptor == null) {
+					if (index + 1 < count) {
+						mapping = null;
+					}
+					break;
 				}
 			}
 		}

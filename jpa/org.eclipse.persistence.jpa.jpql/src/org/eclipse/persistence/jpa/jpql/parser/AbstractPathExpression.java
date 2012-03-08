@@ -114,7 +114,7 @@ public abstract class AbstractPathExpression extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected final void addOrderedChildrenTo(List<StringExpression> children) {
+	protected final void addOrderedChildrenTo(List<Expression> children) {
 		checkPaths();
 		children.add(identificationVariable);
 		children.add(buildStringExpression(getText()));

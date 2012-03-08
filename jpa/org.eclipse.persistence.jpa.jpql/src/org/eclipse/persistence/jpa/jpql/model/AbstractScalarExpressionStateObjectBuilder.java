@@ -30,6 +30,7 @@ import org.eclipse.persistence.jpa.jpql.model.query.DateTimeStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.DivisionExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.EntityTypeLiteralStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.EnumTypeStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.FunctionExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.IdentificationVariableStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.IndexExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.InputParameterStateObject;
@@ -303,6 +304,40 @@ public abstract class AbstractScalarExpressionStateObjectBuilder<T extends IScal
 	 */
 	public T enumLiteral(Enum<? extends Enum<?>> enumConstant) {
 		StateObject stateObject = new EnumTypeStateObject(parent, enumConstant);
+		add(stateObject);
+		return (T) this;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public T function(String identifier, String functionName, String... arguments) {
+
+		StateObject stateObject = new FunctionExpressionStateObject(
+			getParent(),
+			identifier,
+			functionName,
+			literals(arguments)
+		);
+
+		add(stateObject);
+		return (T) this;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public T function(String identifier, String functionName, T... arguments) {
+
+		checkBuilders(arguments);
+
+		StateObject stateObject = new FunctionExpressionStateObject(
+			getParent(),
+			identifier,
+			functionName,
+			stateObjects(arguments)
+		);
+
 		add(stateObject);
 		return (T) this;
 	}

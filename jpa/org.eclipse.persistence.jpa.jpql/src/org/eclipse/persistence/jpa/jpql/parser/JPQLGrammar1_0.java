@@ -356,8 +356,10 @@ public final class JPQLGrammar1_0 extends AbstractJPQLGrammar {
 		registerBNF(new IdentificationVariableDeclarationBNF());
 		registerBNF(new InExpressionBNF());
 		registerBNF(new InExpressionExpressionBNF());
+		registerBNF(new InExpressionItemBNF());
 		registerBNF(new InItemBNF());
 		registerBNF(new InputParameterBNF());
+		registerBNF(new InternalAggregateFunctionBNF());
 		registerBNF(new InternalBetweenExpressionBNF());
 		registerBNF(new InternalConcatExpressionBNF());
 		registerBNF(new InternalCountBNF());
@@ -606,6 +608,6 @@ public final class JPQLGrammar1_0 extends AbstractJPQLGrammar {
 	 */
 	@Override
 	public String toString() {
-		return "JPQLGrammar for JPA 1.0";
+		return "JPQLGrammar 1.0";
 	}
 }

@@ -15,6 +15,11 @@ package org.eclipse.persistence.jpa.jpql.parser;
 
 /**
  * The abstract implementation of {@link EclipseLinkExpressionVisitor}.
+ * <p>
+ * Provisional API: This interface is part of an interim API that is still under development and
+ * expected to change significantly before reaching stability. It is available at this early stage
+ * to solicit feedback from pioneering adopters on the understanding that any code that uses this
+ * API will almost certainly be broken (repeatedly) as the API evolves.
  *
  * @version 2.4
  * @since 2.4
@@ -23,33 +28,4 @@ package org.eclipse.persistence.jpa.jpql.parser;
 public abstract class AbstractEclipseLinkExpressionVisitor extends AbstractExpressionVisitor
                                                            implements EclipseLinkExpressionVisitor {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(FuncExpression expression) {
-	}
-	
-        /**
-         * {@inheritDoc}
-         */
-        public void visit(ColumnExpression expression) {
-        }
-	
-        /**
-         * {@inheritDoc}
-         */
-        public void visit(SQLExpression expression) {
-        }
-        
-        /**
-         * {@inheritDoc}
-         */
-        public void visit(OperatorExpression expression) {
-        }
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(TreatExpression expression) {
-	}
 }

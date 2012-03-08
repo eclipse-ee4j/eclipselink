@@ -157,7 +157,7 @@ public final class JPQLExpression extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void addOrderedChildrenTo(List<StringExpression> children) {
+	protected void addOrderedChildrenTo(List<Expression> children) {
 
 		if (queryStatement != null) {
 			children.add(queryStatement);

@@ -22,13 +22,13 @@ import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_4;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar1_0;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar2_0;
+import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar2_1;
 import org.eclipse.persistence.jpa.tests.jpql.JPQLTestRunner;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;
 
 /**
- * This test suite tests the JPQL queries written for JPA 1.0 and tests them with the JPQL grammar
- * defined for JPA 1.0 and 2.0 as well as with the additional support EclipseLink 1.x and 2.x offer.
+ * This test suite runs {@link JPQLParserTests1_0} using JPQL grammars written for JPA 1.0 and higher.
  *
  * @version 2.4
  * @since 2.4
@@ -49,6 +49,7 @@ public final class AllJPQLParserTests1_0 {
 		return new JPQLGrammar[] {
 			JPQLGrammar1_0.instance(),
 			JPQLGrammar2_0.instance(),
+			JPQLGrammar2_1.instance(),
 			EclipseLinkJPQLGrammar1.instance(),
 			EclipseLinkJPQLGrammar2_0.instance(),
 			EclipseLinkJPQLGrammar2_1.instance(),

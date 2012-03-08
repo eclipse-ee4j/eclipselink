@@ -98,7 +98,7 @@ public final class ResultVariable extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void addOrderedChildrenTo(List<StringExpression> children) {
+	protected void addOrderedChildrenTo(List<Expression> children) {
 
 		// Select expression
 		if (selectExpression != null) {

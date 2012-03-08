@@ -15,6 +15,11 @@ package org.eclipse.persistence.jpa.jpql.model.query;
 
 /**
  * The visitor is used to traverse the {@link StateObject} hierarchy that represents a JPQL query.
+ * <p>
+ * Provisional API: This interface is part of an interim API that is still under development and
+ * expected to change significantly before reaching stability. It is available at this early stage
+ * to solicit feedback from pioneering adopters on the understanding that any code that uses this
+ * API will almost certainly be broken (repeatedly) as the API evolves.
  *
  * @version 2.4
  * @since 2.4
@@ -170,18 +175,18 @@ public interface StateObjectVisitor {
 	void visit(DeleteStatementStateObject stateObject);
 
 	/**
-	 * Visits the given {@link DerivedPathDeclarationStateObject}.
-	 *
-	 * @param stateObject The {@link DerivedPathDeclarationStateObject} to visit
-	 */
-	void visit(DerivedPathVariableDeclarationStateObject stateObject);
-
-	/**
 	 * Visits the given {@link DerivedPathIdentificationVariableDeclarationStateObject}.
 	 *
 	 * @param stateObject The {@link DerivedPathIdentificationVariableDeclarationStateObject} to visit
 	 */
 	void visit(DerivedPathIdentificationVariableDeclarationStateObject stateObject);
+
+	/**
+	 * Visits the given {@link DerivedPathDeclarationStateObject}.
+	 *
+	 * @param stateObject The {@link DerivedPathDeclarationStateObject} to visit
+	 */
+	void visit(DerivedPathVariableDeclarationStateObject stateObject);
 
 	/**
 	 * Visits the given {@link DivisionExpressionStateObject}.
@@ -231,6 +236,13 @@ public interface StateObjectVisitor {
 	 * @param stateObject The {@link FromClauseStateObject} to visit
 	 */
 	void visit(FromClauseStateObject stateObject);
+
+	/**
+	 * Visits the given {@link FunctionExpressionStateObject}.
+	 *
+	 * @param stateObject The {@link FunctionExpressionStateObject} to visit
+	 */
+	void visit(FunctionExpressionStateObject stateObject);
 
 	/**
 	 * Visits the given {@link GroupByClauseStateObject}.
@@ -525,6 +537,13 @@ public interface StateObjectVisitor {
 	 * @param stateObject The {@link SumFunctionStateObject} to visit
 	 */
 	void visit(SumFunctionStateObject stateObject);
+
+	/**
+	 * Visits the given {@link TreatExpressionStateObject}.
+	 *
+	 * @param stateObject The {@link TreatExpressionStateObject} to visit
+	 */
+	void visit(TreatExpressionStateObject stateObject);
 
 	/**
 	 * Visits the given {@link TrimExpressionStateObject}.

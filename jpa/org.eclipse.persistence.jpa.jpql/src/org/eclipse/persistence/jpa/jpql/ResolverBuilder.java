@@ -98,6 +98,7 @@ import org.eclipse.persistence.jpa.jpql.parser.SubExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SubstringExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SubtractionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SumFunction;
+import org.eclipse.persistence.jpa.jpql.parser.TreatExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TrimExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TypeExpression;
 import org.eclipse.persistence.jpa.jpql.parser.UnknownExpression;
@@ -163,6 +164,11 @@ import org.eclipse.persistence.jpa.jpql.spi.IType;
  * the constructor is defined. The types of the arguments to the constructor are defined by the
  * above rules.</li>
  * </ul>
+ * <p>
+ * Provisional API: This interface is part of an interim API that is still under development and
+ * expected to change significantly before reaching stability. It is available at this early stage
+ * to solicit feedback from pioneering adopters on the understanding that any code that uses this
+ * API will almost certainly be broken (repeatedly) as the API evolves.
  *
  * @version 2.4
  * @since 2.3
@@ -676,12 +682,12 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
 		resolver = buildClassResolver(Object.class);
 	}
 
-        /**
-         * {@inheritDoc}
-         */
-        public void visit(FunctionExpression expression) {
-                resolver = buildClassResolver(Object.class);
-        }
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(FunctionExpression expression) {
+		resolver = buildClassResolver(Object.class);
+	}
 
 	/**
 	 * {@inheritDoc}
@@ -922,6 +928,13 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	public void visit(OnClause expression) {
+		expression.getConditionalExpression().accept(this);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public void visit(OrderByClause expression) {
 		resolver = buildClassResolver(Object.class);
 	}
@@ -1095,6 +1108,24 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	public void visit(TreatExpression expression) {
+
+		// Visit the identification variable in order to create the resolver
+		expression.getCollectionValuedPathExpression().accept(this);
+
+		// Retrieve the entity type name
+		String entityTypeName = getQueryContext().literal(
+			expression.getEntityType(),
+			LiteralType.ENTITY_TYPE
+		);
+
+		// Wrap the Resolver for down casting
+		resolver = new TreatResolver(resolver, entityTypeName);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public void visit(TrimExpression expression) {
 		resolver = buildClassResolver(String.class);
 	}
@@ -1167,13 +1198,6 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
 	public void visit(WhereClause expression) {
 		expression.getConditionalExpression().accept(this);
 	}
-
-        /**
-         * {@inheritDoc}
-         */
-        public void visit(OnClause expression) {
-                expression.getConditionalExpression().accept(this);
-        }
 
 	/**
 	 * Visits the given {@link ArithmeticExpression} and create the appropriate {@link Resolver}.

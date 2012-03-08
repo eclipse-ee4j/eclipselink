@@ -70,7 +70,9 @@ import org.eclipse.persistence.jpa.jpql.parser.EntityTypeLiteral;
 import org.eclipse.persistence.jpa.jpql.parser.EntryExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ExistsExpression;
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
+import org.eclipse.persistence.jpa.jpql.parser.ExpressionRegistry;
 import org.eclipse.persistence.jpa.jpql.parser.FromClause;
+import org.eclipse.persistence.jpa.jpql.parser.FunctionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.GroupByClause;
 import org.eclipse.persistence.jpa.jpql.parser.GroupByItemBNF;
 import org.eclipse.persistence.jpa.jpql.parser.HavingClause;
@@ -86,6 +88,7 @@ import org.eclipse.persistence.jpa.jpql.parser.InternalFromClauseBNF;
 import org.eclipse.persistence.jpa.jpql.parser.InternalJoinBNF;
 import org.eclipse.persistence.jpa.jpql.parser.InternalWhenClauseBNF;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLExpression;
+import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLQueryBNF;
 import org.eclipse.persistence.jpa.jpql.parser.Join;
 import org.eclipse.persistence.jpa.jpql.parser.KeyExpression;
@@ -130,6 +133,7 @@ import org.eclipse.persistence.jpa.jpql.parser.SubExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SubstringExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SubtractionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SumFunction;
+import org.eclipse.persistence.jpa.jpql.parser.TreatExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TrimExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TypeExpression;
 import org.eclipse.persistence.jpa.jpql.parser.UnknownExpression;
@@ -140,10 +144,16 @@ import org.eclipse.persistence.jpa.jpql.parser.UpperExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ValueExpression;
 import org.eclipse.persistence.jpa.jpql.parser.WhenClause;
 import org.eclipse.persistence.jpa.jpql.parser.WhereClause;
+import org.eclipse.persistence.jpa.jpql.spi.IEmbeddable;
 import org.eclipse.persistence.jpa.jpql.spi.IEntity;
 import org.eclipse.persistence.jpa.jpql.spi.IManagedType;
+import org.eclipse.persistence.jpa.jpql.spi.IManagedTypeProvider;
+import org.eclipse.persistence.jpa.jpql.spi.IMappedSuperclass;
 import org.eclipse.persistence.jpa.jpql.spi.IMapping;
+import org.eclipse.persistence.jpa.jpql.spi.IQuery;
 import org.eclipse.persistence.jpa.jpql.spi.IType;
+import org.eclipse.persistence.jpa.jpql.spi.ITypeDeclaration;
+import org.eclipse.persistence.jpa.jpql.spi.ITypeRepository;
 import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
 import org.eclipse.persistence.jpa.jpql.util.filter.AndFilter;
 import org.eclipse.persistence.jpa.jpql.util.filter.Filter;
@@ -154,13 +164,28 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 /**
  * The abstract definition that provides support for finding the possible proposals within a JPQL
  * query at the given position.
+ * <p>
+ * Provisional API: This interface is part of an interim API that is still under development and
+ * expected to change significantly before reaching stability. It is available at this early stage
+ * to solicit feedback from pioneering adopters on the understanding that any code that uses this
+ * API will almost certainly be broken (repeatedly) as the API evolves.
  *
  * @version 2.4
  * @since 2.4
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-public abstract class AbstractContentAssistVisitor extends AbstractVisitor {
+public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVisitor {
+
+	/**
+	 * This visitor determines whether the visited {@link Expression} is the {@link CollectionExpression}.
+	 */
+	private CollectionExpressionVisitor collectionExpressionVisitor;
+
+	/**
+	 * The context used to query information about the JPQL query.
+	 */
+	protected final JPQLQueryContext context;
 
 	/**
 	 * This is used to change the position of the cursor in order to add possible proposals
@@ -177,6 +202,11 @@ public abstract class AbstractContentAssistVisitor extends AbstractVisitor {
 	 * child expression to be visited.
 	 */
 	protected Stack<Expression> lockedExpressions;
+
+	/**
+	 * This visitor determines whether the visited {@link Expression} is the {@link NullExpression}.
+	 */
+	private NullExpressionVisitor nullExpressionVisitor;
 
 	/**
 	 * Used to determine if the cursor is an expression contained in a collection, if not, then this
@@ -218,13 +248,16 @@ public abstract class AbstractContentAssistVisitor extends AbstractVisitor {
 	protected static final int SPACE_LENGTH = 1;
 
 	/**
-	 * Creates a new <code>AbstractContentAssistVisitor</code>.
+	 * Creates a new <code>AbstractVisitor</code>.
 	 *
-	 * @param queryContext The context used to query information about the query
-	 * @exception AssertException The {@link JPQLQueryContext} cannot be <code>null</code>
+	 * @param context The context used to query information about the JPQL query
+	 * @exception NullPointerException The {@link JPQLQueryContext} cannot be <code>null</code>
 	 */
-	protected AbstractContentAssistVisitor(JPQLQueryContext queryContext) {
-		super(queryContext);
+	protected AbstractContentAssistVisitor(JPQLQueryContext context) {
+		super();
+		Assert.isNotNull(context, "The JPQLQueryContext cannot be null");
+		this.context = context;
+		initialize();
 	}
 
 	/**
@@ -848,6 +881,15 @@ public abstract class AbstractContentAssistVisitor extends AbstractVisitor {
 		return new AppendableExpressionVisitor();
 	}
 
+	/**
+	 * Creates a visitor that collects the {@link CollectionExpression} if it's been visited.
+	 *
+	 * @return A new {@link CollectionExpressionVisitor}
+	 */
+	protected CollectionExpressionVisitor buildCollectionExpressionVisitor() {
+		return new CollectionExpressionVisitor();
+	}
+
 	protected CollectionMappingFilter buildCollectionMappingFilter() {
 		return new CollectionMappingFilter();
 	}
@@ -968,6 +1010,15 @@ public abstract class AbstractContentAssistVisitor extends AbstractVisitor {
 		return new MappingFilterBuilder();
 	}
 
+	/**
+	 * Creates a visitor that collects the {@link NullExpression} if it's been visited.
+	 *
+	 * @return A new {@link NullExpressionVisitor}
+	 */
+	protected NullExpressionVisitor buildNullExpressionVisitor() {
+		return new NullExpressionVisitor();
+	}
+
 	protected OrderByClauseCollectionHelper buildOrderByClauseCollectionHelper() {
 		return new OrderByClauseCollectionHelper();
 	}
@@ -1073,11 +1124,9 @@ public abstract class AbstractContentAssistVisitor extends AbstractVisitor {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Disposes this visitor.
 	 */
-	@Override
 	public void dispose() {
-		super.dispose();
 		word          = null;
 		proposals     = null;
 		wordParser    = null;
@@ -1176,6 +1225,38 @@ public abstract class AbstractContentAssistVisitor extends AbstractVisitor {
 		return helper;
 	}
 
+	/**
+	 * Casts the given {@link Expression} to a {@link CollectionExpression} if it is actually an
+	 * object of that type.
+	 *
+	 * @param expression The {@link Expression} to cast
+	 * @return The given {@link Expression} if it is a {@link CollectionExpression} or <code>null</code>
+	 * if it is any other object
+	 */
+	protected CollectionExpression getCollectionExpression(Expression expression) {
+		CollectionExpressionVisitor visitor = getCollectionExpressionVisitor();
+		try {
+			expression.accept(visitor);
+			return visitor.expression;
+		}
+		finally {
+			visitor.expression = null;
+		}
+	}
+
+	/**
+	 * Returns the visitor that collects the {@link CollectionExpression} if it's been visited.
+	 *
+	 * @return The {@link CollectionExpressionVisitor}
+	 * @see #buildCollectionExpressionVisitor()
+	 */
+	protected CollectionExpressionVisitor getCollectionExpressionVisitor() {
+		if (collectionExpressionVisitor == null) {
+			collectionExpressionVisitor = buildCollectionExpressionVisitor();
+		}
+		return collectionExpressionVisitor;
+	}
+
 	protected CompletenessVisitor getCompletenessVisitor() {
 		TrailingCompletenessVisitor helper = (TrailingCompletenessVisitor) helpers.get(TrailingCompletenessVisitor.class);
 		if (helper == null) {
@@ -1248,6 +1329,51 @@ public abstract class AbstractContentAssistVisitor extends AbstractVisitor {
 		return helper;
 	}
 
+	/**
+	 * Retrieves the {@link IEmbeddable} for the given {@link IType} if one exists.
+	 *
+	 * @param type The {@link IType} that is mapped as an embeddable
+	 * @return The given {@link IType} mapped as an embeddable; <code>null</code> if none exists or
+	 * if it's mapped as a different managed type
+	 */
+	protected IEmbeddable getEmbeddable(IType type) {
+		return getProvider().getEmbeddable(type);
+	}
+
+	/**
+	 * Retrieves the {@link IEntity} for the given {@link IType} if one exists.
+	 *
+	 * @param type The {@link IType} that is mapped as an entity
+	 * @return The given {@link IType} mapped as an entity; <code>null</code> if none exists or if
+	 * it's mapped as a different managed type
+	 */
+	protected IEntity getEntity(IType type) {
+		return getProvider().getEntity(type);
+	}
+
+	/**
+	 * Retrieves the entity with the given abstract schema name, which can also be the entity class
+	 * name.
+	 *
+	 * @param entityName The abstract schema name, which can be different from the entity class name
+	 * but by default, it's the same
+	 * @return The managed type that has the given name or <code>null</code> if none could be found
+	 */
+	protected IEntity getEntityNamed(String entityName) {
+		return getProvider().getEntityNamed(entityName);
+	}
+
+	/**
+	 * Returns the registry containing the {@link JPQLQueryBNF JPQLQueryBNFs} and the {@link
+	 * org.eclipse.persistence.jpa.jpql.parser.ExpressionFactory ExpressionFactories} that are used
+	 * to properly parse a JPQL query.
+	 *
+	 * @return The registry containing the information related to the JPQL grammar
+	 */
+	protected ExpressionRegistry getExpressionRegistry() {
+		return getQueryContext().getExpressionRegistry();
+	}
+
 	protected AcceptableTypeVisitor getExpressionTypeVisitor() {
 		AcceptableTypeVisitor helper = getHelper(AcceptableTypeVisitor.class);
 		if (helper == null) {
@@ -1282,6 +1408,15 @@ public abstract class AbstractContentAssistVisitor extends AbstractVisitor {
 			registerHelper(FromClauseSelectStatementHelper.class, helper);
 		}
 		return helper;
+	}
+
+	/**
+	 * Returns the JPQL grammar that will be used to define how to parse a JPQL query.
+	 *
+	 * @return The grammar that was used to parse this {@link Expression}
+	 */
+	protected JPQLGrammar getGrammar() {
+		return getQueryContext().getGrammar();
 	}
 
 	protected GroupByClauseCollectionHelper getGroupByClauseCollectionHelper() {
@@ -1331,6 +1466,26 @@ public abstract class AbstractContentAssistVisitor extends AbstractVisitor {
 		return (T) helpers.get(helperClass);
 	}
 
+	/**
+	 * Retrieves the role of the given identifier. A role helps to describe the purpose of the
+	 * identifier in a query.
+	 *
+	 * @param identifier The identifier for which its role is requested
+	 * @return The role of the given identifier
+	 */
+	protected IdentifierRole getIdentifierRole(String identifier) {
+		return getExpressionRegistry().getIdentifierRole(identifier);
+	}
+
+	/**
+	 * Retrieves the JPA version in which the identifier was first introduced.
+	 *
+	 * @return The version in which the identifier was introduced
+	 */
+	protected JPAVersion getIdentifierVersion(String identifier) {
+		return getExpressionRegistry().getIdentifierVersion(identifier);
+	}
+
 	protected CompletenessVisitor getIncompleteCollectionExpressionVisitor() {
 		IncompleteCollectionExpressionVisitor helper = getHelper(IncompleteCollectionExpressionVisitor.class);
 		if (helper == null) {
@@ -1347,6 +1502,56 @@ public abstract class AbstractContentAssistVisitor extends AbstractVisitor {
 			registerHelper(JoinCollectionHelper.class, helper);
 		}
 		return helper;
+	}
+
+	/**
+	 * Returns the version of the Java Persistence this entity for which it was defined.
+	 *
+	 * @return The version of the Java Persistence being used
+	 */
+	protected JPAVersion getJPAVersion() {
+		return getQueryContext().getJPAVersion();
+	}
+
+	/**
+	 * Returns the parsed tree representation of the JPQL query.
+	 *
+	 * @return The parsed tree representation of the JPQL query
+	 */
+	protected JPQLExpression getJPQLExpression() {
+		return context.getJPQLExpression();
+	}
+
+	/**
+	 * Retrieves the entity for the given type.
+	 *
+	 * @param type The type that is used as a managed type
+	 * @return The managed type for the given type, if one exists, <code>null</code> otherwise
+	 */
+	protected IManagedType getManagedType(IType type) {
+		return getProvider().getManagedType(type);
+	}
+
+	/**
+	 * Retrieves the {@link IMappedSuperclass} for the given {@link IType} if one exists.
+	 *
+	 * @param type The {@link IType} that is mapped as an embeddable
+	 * @return The given {@link IType} mapped as an mapped super class; <code>null</code> if none
+	 * exists or if it's mapped as a different managed type
+	 */
+	protected IMappedSuperclass getMappedSuperclass(IType type) {
+		return getProvider().getMappedSuperclass(type);
+	}
+
+	/**
+	 * Returns the {@link IMapping} for the field represented by the given {@link Expression}.
+	 *
+	 * @param expression The {@link Expression} representing a state field path expression or a
+	 * collection-valued path expression
+	 * @return Either the {@link IMapping} or <code>null</code> if none exists
+	 */
+	protected IMapping getMapping(Expression expression) {
+		return context.getMapping(expression);
 	}
 
 	protected Filter<IMapping> getMappingCollectionFilter() {
@@ -1374,6 +1579,19 @@ public abstract class AbstractContentAssistVisitor extends AbstractVisitor {
 			helpers.put(PropertyMappingFilter.class, helper);
 		}
 		return helper;
+	}
+
+	/**
+	 * Returns the visitor that collects the {@link NullExpression} if it's been visited.
+	 *
+	 * @return The {@link NullExpressionVisitor}
+	 * @see #buildNullExpressionVisitor()
+	 */
+	protected NullExpressionVisitor getNullExpressionVisitor() {
+		if (nullExpressionVisitor == null) {
+			nullExpressionVisitor = buildNullExpressionVisitor();
+		}
+		return nullExpressionVisitor;
 	}
 
 	protected OrderByClauseCollectionHelper getOrderByClauseCollectionHelper() {
@@ -1416,6 +1634,52 @@ public abstract class AbstractContentAssistVisitor extends AbstractVisitor {
 		return proposals;
 	}
 
+	/**
+	 * Retrieves the provider of managed types.
+	 *
+	 * @return The object that has access to the application's managed types.
+	 */
+	protected IManagedTypeProvider getProvider() {
+		return getQuery().getProvider();
+	}
+
+	/**
+	 * Returns the external form of the JPQL query.
+	 *
+	 * @return The external form of the JPQL query
+	 */
+	protected IQuery getQuery() {
+		return context.getQuery();
+	}
+
+	/**
+	 * Retrieves the BNF object that was registered for the given unique identifier.
+	 *
+	 * @param queryBNFID The unique identifier of the {@link JPQLQueryBNF} to retrieve
+	 * @return The {@link JPQLQueryBNF} representing a section of the grammar
+	 */
+	protected JPQLQueryBNF getQueryBNF(String queryBNFId) {
+		return getExpressionRegistry().getQueryBNF(queryBNFId);
+	}
+
+	/**
+	 * Returns the {@link JPQLQueryContext} that is used by this visitor.
+	 *
+	 * @return The {@link JPQLQueryContext} holding onto the JPQL query and the cached information
+	 */
+	protected JPQLQueryContext getQueryContext() {
+		return context;
+	}
+
+	/**
+	 * Returns the string representation of the JPQL query.
+	 *
+	 * @return A non-<code>null</code> string representation of the JPQL query
+	 */
+	protected String getQueryExpression() {
+		return getQuery().getExpression();
+	}
+
 	protected RangeVariableDeclarationVisitor getRangeVariableDeclarationVisitor() {
 		RangeVariableDeclarationVisitor helper = getHelper(RangeVariableDeclarationVisitor.class);
 		if (helper == null) {
@@ -1423,6 +1687,18 @@ public abstract class AbstractContentAssistVisitor extends AbstractVisitor {
 			registerHelper(RangeVariableDeclarationVisitor.class, helper);
 		}
 		return helper;
+	}
+
+	/**
+	 * Creates or retrieved the cached {@link Resolver} for the given {@link Expression}. The
+	 * {@link Resolver} can return the {@link IType} and {@link ITypeDeclaration} of the {@link
+	 * Expression} and either the {@link IManagedType} or the {@link IMapping}.
+	 *
+	 * @param expression The {@link Expression} for which its {@link Resolver} will be retrieved
+	 * @return {@link Resolver} for the given {@link Expression}
+	 */
+	protected Resolver getResolver(Expression expression) {
+		return context.getResolver(expression);
 	}
 
 	protected ResultVariableVisitor getResultVariableVisitor() {
@@ -1515,6 +1791,66 @@ public abstract class AbstractContentAssistVisitor extends AbstractVisitor {
 		return helper;
 	}
 
+	/**
+	 * Retrieves the external type for the given Java type.
+	 *
+	 * @param type The Java type to wrap with an external form
+	 * @return The external form of the given type
+	 */
+	protected IType getType(Class<?> type) {
+		return getTypeRepository().getType(type);
+	}
+
+	/**
+	 * Returns the {@link IType} of the given {@link Expression}.
+	 *
+	 * @param expression The {@link Expression} for which its type will be calculated
+	 * @return Either the {@link IType} that was resolved by this {@link Resolver} or the
+	 * {@link IType} for {@link IType#UNRESOLVABLE_TYPE} if it could not be resolved
+	 */
+	protected IType getType(Expression expression) {
+		return context.getType(expression);
+	}
+
+	/**
+	 * Retrieves the external class for the given fully qualified class name.
+	 *
+	 * @param typeName The fully qualified class name of the class to retrieve
+	 * @return The external form of the class to retrieve
+	 */
+	protected IType getType(String name) {
+		return getTypeRepository().getType(name);
+	}
+
+	/**
+	 * Returns the {@link ITypeDeclaration} of the field handled by this {@link Resolver}.
+	 *
+	 * @param expression The {@link Expression} for which its type declaration will be calculated
+	 * @return Either the {@link ITypeDeclaration} that was resolved by this {@link Resolver} or the
+	 * {@link ITypeDeclaration} for {@link IType#UNRESOLVABLE_TYPE} if it could not be resolved
+	 */
+	protected ITypeDeclaration getTypeDeclaration(Expression expression) {
+		return context.getTypeDeclaration(expression);
+	}
+
+	/**
+	 * Returns a helper that gives access to the most common {@link IType types}.
+	 *
+	 * @return A helper containing a collection of methods related to {@link IType}
+	 */
+	protected TypeHelper getTypeHelper() {
+		return getTypeRepository().getTypeHelper();
+	}
+
+	/**
+	 * Returns the type repository for the application.
+	 *
+	 * @return The repository of {@link IType ITypes}
+	 */
+	protected ITypeRepository getTypeRepository() {
+		return getProvider().getTypeRepository();
+	}
+
 	protected UpdateItemCollectionHelper getUpdateItemCollectionHelper() {
 		UpdateItemCollectionHelper helper = getHelper(UpdateItemCollectionHelper.class);
 		if (helper == null) {
@@ -1525,11 +1861,9 @@ public abstract class AbstractContentAssistVisitor extends AbstractVisitor {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Initializes this visitor.
 	 */
-	@Override
 	protected void initialize() {
-		super.initialize();
 
 		helpers = new HashMap<Class<?>, Object>();
 		lockedExpressions = new Stack<Expression>();
@@ -1698,6 +2032,24 @@ public abstract class AbstractContentAssistVisitor extends AbstractVisitor {
 	 */
 	protected boolean isLocked(Expression expression) {
 		return !lockedExpressions.empty() && (lockedExpressions.peek() == expression);
+	}
+
+	/**
+	 * Determines whether the given {@link Expression} is the {@link NullExpression}.
+	 *
+	 * @param expression The {@link Expression} to visit
+	 * @return <code>true</code> if the given {@link Expression} is {@link NullExpression};
+	 * <code>false</code> otherwise
+	 */
+	protected boolean isNull(Expression expression) {
+		NullExpressionVisitor visitor = getNullExpressionVisitor();
+		try {
+			expression.accept(visitor);
+			return visitor.expression != null;
+		}
+		finally {
+			visitor.expression = null;
+		}
 	}
 
 	/**
@@ -2468,6 +2820,15 @@ public abstract class AbstractContentAssistVisitor extends AbstractVisitor {
 	 * {@inheritDoc}
 	 */
 	@Override
+	public void visit(FunctionExpression expression) {
+		super.visit(expression);
+		visitSingleEncapsulatedExpression(expression, IdentificationVariableType.ALL);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void visit(GroupByClause expression) {
 		if (!isLocked(expression)) {
 			super.visit(expression);
@@ -3165,6 +3526,81 @@ public abstract class AbstractContentAssistVisitor extends AbstractVisitor {
 	public void visit(SumFunction expression) {
 		super.visit(expression);
 		visitAggregateFunction(expression);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void visit(TreatExpression expression) {
+		super.visit(expression);
+		int position = getPosition(expression) - getCorrections().peek();
+
+		// Within "TREAT"
+		if (isPositionWithin(position, TREAT)) {
+			if (isValidVersion(TREAT)) {
+				getProposals().addIdentifier(TREAT);
+			}
+		}
+		// After "TREAT("
+		else if (expression.hasLeftParenthesis()) {
+			int length = TREAT.length() + 1;
+
+			// Right after "TREAT("
+			if (position == length) {
+				addLeftIdentificationVariables(expression);
+			}
+
+			// After "<collection-valued path expression> "
+			if (expression.hasCollectionValuedPathExpression() &&
+			    expression.hasSpaceAfterCollectionValuedPathExpression()) {
+
+				Expression collectionValuedPathExpression = expression.getCollectionValuedPathExpression();
+				length += length(collectionValuedPathExpression) + SPACE_LENGTH;
+
+				// Within "AS"
+				if (isPositionWithin(position, length, AS)) {
+					getProposals().addIdentifier(AS);
+
+					// If the entity type is not specified, then we can add
+					// the possible abstract schema names
+					if (!expression.hasEntityType()) {
+
+						// If the type of the path expression is resolvable,
+						// then filter the abstract schema types
+						IType type = getType(collectionValuedPathExpression);
+
+						if (type.isResolvable()) {
+							addEntities(type);
+						}
+						else {
+							addEntities();
+						}
+					}
+				}
+			}
+
+			// After "AS "
+			if (expression.hasAs() &&
+			    expression.hasSpaceAfterAs()) {
+
+				length += AS.length() + SPACE_LENGTH;
+
+				// Right after "AS "
+				if (position == length) {
+					// If the type of the path expression is resolvable,
+					// then filter the abstract schema types
+					IType type = getType(expression.getCollectionValuedPathExpression());
+
+					if (type.isResolvable()) {
+						addEntities(type);
+					}
+					else {
+						addEntities();
+					}
+				}
+			}
+		}
 	}
 
 	/**
@@ -5019,6 +5455,32 @@ public abstract class AbstractContentAssistVisitor extends AbstractVisitor {
 		JPQLQueryBNF queryBNF(T expression, int index);
 	}
 
+	/**
+	 * This visitor retrieves the {@link CollectionExpression} if it is visited.
+	 */
+	protected static class CollectionExpressionVisitor extends AbstractExpressionVisitor {
+
+		/**
+		 * The {@link CollectionExpression} if it is the {@link Expression} that was visited.
+		 */
+		protected CollectionExpression expression;
+
+		/**
+		 * Creates a new <code>CollectionExpressionVisitor</code>.
+		 */
+		protected CollectionExpressionVisitor() {
+			super();
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(CollectionExpression expression) {
+			this.expression = expression;
+		}
+	}
+
 	protected class CollectionMappingFilter implements Filter<IMapping> {
 
 		/**
@@ -6100,6 +6562,14 @@ public abstract class AbstractContentAssistVisitor extends AbstractVisitor {
 		public void visit(SizeExpression expression) {
 			filter = getMappingCollectionFilter();
 		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(TreatExpression expression) {
+			filter = getMappingCollectionFilter();
+		}
 	}
 
 	/**
@@ -6139,6 +6609,32 @@ public abstract class AbstractContentAssistVisitor extends AbstractVisitor {
 			IType mappingType = value.getType();
 			mappingType = getTypeHelper().convertPrimitive(mappingType);
 			return mappingType.isAssignableTo(type);
+		}
+	}
+
+	/**
+	 * This visitor checks to see if the visited expression is {@link NullExpression}.
+	 */
+	protected static class NullExpressionVisitor extends AbstractExpressionVisitor {
+
+		/**
+		 * The {@link NullExpression} if it is the {@link Expression} that was visited.
+		 */
+		protected NullExpression expression;
+
+		/**
+		 * Creates a new <code>NullExpressionVisitor</code>.
+		 */
+		protected NullExpressionVisitor() {
+			super();
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(NullExpression expression) {
+			this.expression = expression;
 		}
 	}
 
@@ -7039,7 +7535,7 @@ public abstract class AbstractContentAssistVisitor extends AbstractVisitor {
 
 	protected class TrailingCompletenessVisitor extends CompletenessVisitor {
 
-		/**
+ 		/**
 		 * {@inheritDoc}
 		 */
 		@Override
@@ -7560,6 +8056,14 @@ public abstract class AbstractContentAssistVisitor extends AbstractVisitor {
 		 */
 		@Override
 		public void visit(SumFunction expression) {
+			complete = expression.hasRightParenthesis();
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(TreatExpression expression) {
 			complete = expression.hasRightParenthesis();
 		}
 

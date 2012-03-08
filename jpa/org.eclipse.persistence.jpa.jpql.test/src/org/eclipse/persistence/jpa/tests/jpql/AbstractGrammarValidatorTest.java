@@ -14,11 +14,12 @@
 package org.eclipse.persistence.jpa.tests.jpql;
 
 import java.util.List;
-import org.eclipse.persistence.jpa.jpql.AbstractJPQLQueryHelper;
+import org.eclipse.persistence.jpa.jpql.AbstractGrammarValidator;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.JPQLQueryProblem;
 import org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages;
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
+import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLQueryStringFormatter;
 import org.junit.Test;
 
@@ -31,14 +32,6 @@ import org.junit.Test;
  */
 @SuppressWarnings("nls")
 public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest {
-
-	private JPQLQueryStringFormatter buildFormatter_01() {
-		return new JPQLQueryStringFormatter() {
-			public String format(String query) {
-				return query.replace(",,", ", ,");
-			}
-		};
-	}
 
 	private JPQLQueryStringFormatter buildFormatter_1() throws Exception {
 		return new JPQLQueryStringFormatter() {
@@ -80,27 +73,61 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 		};
 	}
 
+	private JPQLQueryStringFormatter buildFormatter_7() {
+		return new JPQLQueryStringFormatter() {
+			public String format(String query) {
+				return query.replace("0,)", "0, )");
+			}
+		};
+	}
+
+	private JPQLQueryStringFormatter buildFormatter_8() {
+		return new JPQLQueryStringFormatter() {
+			public String format(String query) {
+				return query.replace(",,", ", ,");
+			}
+		};
+	}
+
+	@Override
+	protected abstract AbstractGrammarValidator buildValidator();
+
+	@Override
+	protected AbstractGrammarValidator getValidator() {
+		return (AbstractGrammarValidator) super.getValidator();
+	}
+
 	protected abstract boolean isJoinFetchIdentifiable();
 
+	protected abstract boolean isSubqueryAllowedAnywhere();
+
 	@Test
-	public void test_AbsExpression_InvalidExpression() throws Exception {
+	public final void test_AbsExpression_InvalidExpression() throws Exception {
 
 		String query = "SELECT ABS(SELECT o FROM Order o) FROM Employee e";
-		int startPosition = "SELECT ABS(".length();
-		int endPosition   = "SELECT ABS(SELECT o FROM Order o".length();
-
 		List<JPQLQueryProblem> problems = validate(query);
 
-		testHasOnlyOneProblem(
-			problems,
-			JPQLQueryProblemMessages.AbsExpression_InvalidExpression,
-			startPosition,
-			endPosition
-		);
+		if (isSubqueryAllowedAnywhere()) {
+			testDoesNotHaveProblem(
+				problems,
+				JPQLQueryProblemMessages.AbsExpression_InvalidExpression
+			);
+		}
+		else {
+			int startPosition = "SELECT ABS(".length();
+			int endPosition   = "SELECT ABS(SELECT o FROM Order o".length();
+
+			testHasOnlyOneProblem(
+				problems,
+				JPQLQueryProblemMessages.AbsExpression_InvalidExpression,
+				startPosition,
+				endPosition
+			);
+		}
 	}
 
 	@Test
-	public void test_AbsExpression_MissingExpression() throws Exception {
+	public final void test_AbsExpression_MissingExpression() throws Exception {
 
 		String query = "SELECT ABS() FROM Employee e";
 		int startPosition = "SELECT ABS(".length();
@@ -117,7 +144,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_AbsExpression_MissingLeftParenthesis() throws Exception {
+	public final void test_AbsExpression_MissingLeftParenthesis() throws Exception {
 
 		String query = "SELECT ABS 4 + 5) FROM Employee e";
 		int startPosition = "SELECT ABS".length();
@@ -134,7 +161,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_AbsExpression_MissingRightParenthesis() throws Exception {
+	public final void test_AbsExpression_MissingRightParenthesis() throws Exception {
 
 		String query = "SELECT ABS(e.age + 100 FROM Employee e";
 		int startPosition = "SELECT ABS(e.age + 100".length();
@@ -151,7 +178,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_AbstractFromClause_IdentificationVariableDeclarationEndWithComma_1() throws Exception {
+	public final void test_AbstractFromClause_IdentificationVariableDeclarationEndWithComma_1() throws Exception {
 
 		String query = "SELECT e FROM Employee e JOIN e.managers m,";
 
@@ -169,7 +196,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_AbstractFromClause_IdentificationVariableDeclarationEndWithComma_2() throws Exception {
+	public final void test_AbstractFromClause_IdentificationVariableDeclarationEndWithComma_2() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE EXISTS(SELECT o FROM Order o,)";
 
@@ -187,7 +214,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_AbstractFromClause_IdentificationVariableDeclarationIsMissingComma() throws Exception {
+	public final void test_AbstractFromClause_IdentificationVariableDeclarationIsMissingComma() throws Exception {
 
 		String query = "SELECT e FROM Employee e Address a";
 
@@ -205,7 +232,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_AbstractFromClause_MissingIdentificationVariableDeclaration_1() throws Exception {
+	public final void test_AbstractFromClause_MissingIdentificationVariableDeclaration_1() throws Exception {
 
 		String query = "SELECT e FROM";
 
@@ -223,7 +250,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_AbstractFromClause_MissingIdentificationVariableDeclaration_2() throws Exception {
+	public final void test_AbstractFromClause_MissingIdentificationVariableDeclaration_2() throws Exception {
 
 		String query = "SELECT e FROM ";
 
@@ -241,7 +268,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_AbstractFromClause_MissingIdentificationVariableDeclaration_3() throws Exception {
+	public final void test_AbstractFromClause_MissingIdentificationVariableDeclaration_3() throws Exception {
 
 		String query = "SELECT e FROM WHERE e.name = 'JPQL'";
 
@@ -259,7 +286,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_AbstractFromClause_MissingIdentificationVariableDeclaration_4() throws Exception {
+	public final void test_AbstractFromClause_MissingIdentificationVariableDeclaration_4() throws Exception {
 
 		String query = "SELECT e FROM Employee e, Order o WHERE EXISTS(SELECT o FROM)";
 
@@ -277,7 +304,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_AbstractFromClause_MissingIdentificationVariableDeclaration_5() throws Exception {
+	public final void test_AbstractFromClause_MissingIdentificationVariableDeclaration_5() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE EXISTS(SELECT o FROM WHERE o.price > 2000)";
 
@@ -295,25 +322,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_AbstractFromClause_WrongOrderOfIdentificationVariableDeclaration() throws Exception {
-
-		String query = "SELECT e FROM Employee e JOIN a.people p, Address a";
-
-		int startPosition = "SELECT e FROM Employee e JOIN ".length();
-		int endPosition   = startPosition + 1;
-
-		List<JPQLQueryProblem> problems = validate(query);
-
-		testHasOnlyOneProblem(
-			problems,
-			JPQLQueryProblemMessages.AbstractFromClause_WrongOrderOfIdentificationVariableDeclaration,
-			startPosition,
-			endPosition
-		);
-	}
-
-	@Test
-	public void test_AbstractPathExpression_CannotEndWithComma() throws Exception {
+	public final void test_AbstractPathExpression_CannotEndWithComma() throws Exception {
 
 		String query = "SELECT e. FROM Employee e";
 
@@ -331,7 +340,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_AbstractPathExpression_MissingIdentificationVariable() throws Exception {
+	public final void test_AbstractPathExpression_MissingIdentificationVariable() throws Exception {
 
 		String query = "SELECT .name FROM Employee e";
 
@@ -349,7 +358,142 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_AbstractSelectClause_SelectExpressionEndsWithComma_1() throws Exception {
+	public final void test_AbstractSelectClause_InvalidSelectExpression_1() throws Exception {
+
+		String query = "SELECT (SELECT e FROM Employee e) FROM Employee e";
+		List<JPQLQueryProblem> problems = validate(query);
+
+		if (isSubqueryAllowedAnywhere()) {
+			testDoesNotHaveProblem(
+				problems,
+				JPQLQueryProblemMessages.AbstractSelectClause_InvalidSelectExpression
+			);
+		}
+		else {
+			int startPosition = "SELECT ".length();
+			int endPosition   = "SELECT (SELECT e FROM Employee e)".length();
+
+			testHasOnlyOneProblem(
+				problems,
+				JPQLQueryProblemMessages.AbstractSelectClause_InvalidSelectExpression,
+				startPosition,
+				endPosition
+			);
+		}
+	}
+
+	@Test
+	public final void test_AbstractSelectClause_InvalidSelectExpression_2() throws Exception {
+
+		String query = "SELECT (SELECT e F) FROM Employee e";
+		List<JPQLQueryProblem> problems = validate(query);
+
+		if (isSubqueryAllowedAnywhere()) {
+			testDoesNotHaveProblem(
+				problems,
+				JPQLQueryProblemMessages.AbstractSelectClause_InvalidSelectExpression
+			);
+		}
+		else {
+			int startPosition = "SELECT ".length();
+			int endPosition   = "SELECT (SELECT e F)".length();
+
+			testHasOnlyOneProblem(
+				problems,
+				JPQLQueryProblemMessages.AbstractSelectClause_InvalidSelectExpression,
+				startPosition,
+				endPosition
+			);
+		}
+	}
+
+	@Test
+	public final void test_AbstractSelectClause_MissingSelectExpression_1() throws Exception {
+
+		String query = "SELECT";
+		int startPosition = query.length();
+		int endPosition   = startPosition;
+
+		List<JPQLQueryProblem> problems = validate(query);
+
+		testHasProblem(
+			problems,
+			JPQLQueryProblemMessages.AbstractSelectClause_MissingSelectExpression,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public final void test_AbstractSelectClause_MissingSelectExpression_2() throws Exception {
+
+		String query = "SELECT ";
+		int startPosition = query.length();
+		int endPosition   = startPosition;
+
+		List<JPQLQueryProblem> problems = validate(query);
+
+		testHasProblem(
+			problems,
+			JPQLQueryProblemMessages.AbstractSelectClause_MissingSelectExpression,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public final void test_AbstractSelectClause_MissingSelectExpression_3() throws Exception {
+
+		String query = "SELECT FROM Employee e";
+		int startPosition = "SELECT ".length();
+		int endPosition   = startPosition;
+
+		List<JPQLQueryProblem> problems = validate(query);
+
+		testHasOnlyOneProblem(
+			problems,
+			JPQLQueryProblemMessages.AbstractSelectClause_MissingSelectExpression,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public final void test_AbstractSelectClause_MissingSelectExpression_4() throws Exception {
+
+		String query = "SELECT e FROM Employee e WHERE EXISTS(SELECT )";
+		int startPosition = "SELECT e FROM Employee e WHERE EXISTS(SELECT ".length();
+		int endPosition   = startPosition;
+
+		List<JPQLQueryProblem> problems = validate(query, buildFormatter_1());
+
+		testHasProblem(
+			problems,
+			JPQLQueryProblemMessages.AbstractSelectClause_MissingSelectExpression,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public final void test_AbstractSelectClause_MissingSelectExpression_5() throws Exception {
+
+		String query = "SELECT e FROM Employee e WHERE EXISTS(SELECT FROM Order o)";
+		int startPosition = "SELECT e FROM Employee e WHERE EXISTS(SELECT ".length();
+		int endPosition   = startPosition;
+
+		List<JPQLQueryProblem> problems = validate(query);
+
+		testHasOnlyOneProblem(
+			problems,
+			JPQLQueryProblemMessages.AbstractSelectClause_MissingSelectExpression,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public final void test_AbstractSelectClause_SelectExpressionEndsWithComma_1() throws Exception {
 
 		String query = "SELECT e, AVG(e.age), FROM Employee e";
 		int startPosition = "SELECT e, AVG(e.age)".length();
@@ -366,7 +510,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_AbstractSelectClause_SelectExpressionIsMissingComma_1() throws Exception {
+	public final void test_AbstractSelectClause_SelectExpressionIsMissingComma_1() throws Exception {
 
 		String query = "SELECT e AVG(e.age) FROM Employee e";
 		int startPosition = "SELECT e".length();
@@ -383,7 +527,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_AbstractSelectClause_SelectExpressionIsMissingComma_2() throws Exception {
+	public final void test_AbstractSelectClause_SelectExpressionIsMissingComma_2() throws Exception {
 
 		String query = "SELECT e, AVG(e.age) e.name FROM Employee e";
 		int startPosition = "SELECT e, AVG(e.age)".length();
@@ -400,92 +544,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_AbstractSelectClause_SelectExpressionMissing_1() throws Exception {
-
-		String query = "SELECT";
-		int startPosition = query.length();
-		int endPosition   = startPosition;
-
-		List<JPQLQueryProblem> problems = validate(query);
-
-		testHasProblem(
-			problems,
-			JPQLQueryProblemMessages.AbstractSelectClause_SelectExpressionMissing,
-			startPosition,
-			endPosition
-		);
-	}
-
-	@Test
-	public void test_AbstractSelectClause_SelectExpressionMissing_2() throws Exception {
-
-		String query = "SELECT ";
-		int startPosition = query.length();
-		int endPosition   = startPosition;
-
-		List<JPQLQueryProblem> problems = validate(query);
-
-		testHasProblem(
-			problems,
-			JPQLQueryProblemMessages.AbstractSelectClause_SelectExpressionMissing,
-			startPosition,
-			endPosition
-		);
-	}
-
-	@Test
-	public void test_AbstractSelectClause_SelectExpressionMissing_3() throws Exception {
-
-		String query = "SELECT FROM Employee e";
-		int startPosition = "SELECT ".length();
-		int endPosition   = startPosition;
-
-		List<JPQLQueryProblem> problems = validate(query);
-
-		testHasOnlyOneProblem(
-			problems,
-			JPQLQueryProblemMessages.AbstractSelectClause_SelectExpressionMissing,
-			startPosition,
-			endPosition
-		);
-	}
-
-	@Test
-	public void test_AbstractSelectClause_SelectExpressionMissing_4() throws Exception {
-
-		String query = "SELECT e FROM Employee e WHERE EXISTS(SELECT )";
-		int startPosition = "SELECT e FROM Employee e WHERE EXISTS(SELECT ".length();
-		int endPosition   = startPosition;
-
-		List<JPQLQueryProblem> problems = validate(query, buildFormatter_1());
-
-		testHasProblem(
-			problems,
-			JPQLQueryProblemMessages.AbstractSelectClause_SelectExpressionMissing,
-			startPosition,
-			endPosition
-		);
-	}
-
-	@Test
-	public void test_AbstractSelectClause_SelectExpressionMissing_5() throws Exception {
-
-		String query = "SELECT e FROM Employee e WHERE EXISTS(SELECT FROM Order o)";
-		int startPosition = "SELECT e FROM Employee e WHERE EXISTS(SELECT ".length();
-		int endPosition   = startPosition;
-
-		List<JPQLQueryProblem> problems = validate(query);
-
-		testHasOnlyOneProblem(
-			problems,
-			JPQLQueryProblemMessages.AbstractSelectClause_SelectExpressionMissing,
-			startPosition,
-			endPosition
-		);
-	}
-
-	@Test
-	public void test_AbstractSelectStatement_FromClauseMissing_1() throws Exception {
+	public final void test_AbstractSelectStatement_FromClauseMissing_1() throws Exception {
 
 		String query = "SELECT e";
 		int startPosition = query.length();
@@ -502,7 +561,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_AbstractSelectStatement_FromClauseMissing_2() throws Exception {
+	public final void test_AbstractSelectStatement_FromClauseMissing_2() throws Exception {
 
 		String query = "SELECT e WHERE e.name = 'JPQL'";
 		int startPosition = "SELECT e ".length();
@@ -519,7 +578,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_AbstractSelectStatement_FromClauseMissing_3() throws Exception {
+	public final void test_AbstractSelectStatement_FromClauseMissing_3() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE ALL(SELECT E WHERE e.name = 'JPQL') < e";
 		int startPosition = "SELECT e FROM Employee e WHERE ALL(SELECT E ".length();
@@ -536,7 +595,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_AllOrAnyExpression_InvalidExpression() throws Exception {
+	public final void test_AllOrAnyExpression_InvalidExpression() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE SOME(AVG(e.name)) = TRUE";
 		int startPosition = "SELECT e FROM Employee e WHERE SOME(".length();
@@ -553,7 +612,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_AllOrAnyExpression_MissingExpression() throws Exception {
+	public final void test_AllOrAnyExpression_MissingExpression() throws Exception {
 
 		String query = "SELECT e FROM Employee e JOIN e.addresses a WHERE ALL() = TRUE";
 		int startPosition = "SELECT e FROM Employee e JOIN e.addresses a WHERE ALL(".length();
@@ -570,7 +629,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_AllOrAnyExpression_MissingLeftParenthesis() throws Exception {
+	public final void test_AllOrAnyExpression_MissingLeftParenthesis() throws Exception {
 
 		String query = "SELECT e FROM Employee e JOIN e.addresses a WHERE SOME SELECT p FROM Order p) = TRUE";
 		int startPosition = "SELECT e FROM Employee e JOIN e.addresses a WHERE SOME".length();
@@ -587,7 +646,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_AllOrAnyExpression_MissingRightParenthesis() throws Exception {
+	public final void test_AllOrAnyExpression_MissingRightParenthesis() throws Exception {
 
 		String query = "SELECT e FROM Employee e JOIN e.addresses a WHERE SOME(SELECT p FROM Order p = TRUE";
 		int startPosition = "SELECT e FROM Employee e JOIN e.addresses a WHERE SOME(SELECT p FROM Order p".length();
@@ -604,7 +663,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_AllOrAnyExpression_NotPartOfComparisonExpression() throws Exception {
+	public final void test_AllOrAnyExpression_NotPartOfComparisonExpression() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE ALL(SELECT a FROM Address a)";
 
@@ -622,12 +681,12 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_ArithmeticExpression_InvalidLeftExpression() throws Exception {
+	public final void test_ArithmeticExpression_InvalidLeftExpression() throws Exception {
 
-		String query = "SELECT e FROM Employee e WHERE LOWER(e.name) + LENGTH(e.name)";
+		String query = "SELECT e FROM Employee e WHERE FROM Employee e + LENGTH(e.name) < 2";
 
 		int startPosition = "SELECT e FROM Employee e WHERE ".length();
-		int endPosition   = "SELECT e FROM Employee e WHERE LOWER(e.name)".length();
+		int endPosition   = "SELECT e FROM Employee e WHERE FROM Employee e".length();
 
 		List<JPQLQueryProblem> problems = validate(query);
 
@@ -640,12 +699,12 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_ArithmeticExpression_InvalidRightExpression() throws Exception {
+	public final void test_ArithmeticExpression_InvalidRightExpression() throws Exception {
 
-		String query = "SELECT e FROM Employee e WHERE LENGTH(e.name) + LOWER(e.name)";
+		String query = "SELECT e FROM Employee e WHERE LENGTH(e.name) + FROM Employee e < 2";
 
 		int startPosition = "SELECT e FROM Employee e WHERE LENGTH(e.name) + ".length();
-		int endPosition   = query.length();
+		int endPosition   = "SELECT e FROM Employee e WHERE LENGTH(e.name) + FROM Employee e".length();
 
 		List<JPQLQueryProblem> problems = validate(query);
 
@@ -658,7 +717,25 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_ArithmeticExpression_MissingRightExpression_1() throws Exception {
+	public final void test_ArithmeticExpression_MissingLeftExpression() throws Exception {
+
+		String query = "SELECT e FROM Employee e WHERE + +LENGTH(e.name) < 2";
+
+		int startPosition = "SELECT e FROM Employee e WHERE ".length();
+		int endPosition   = startPosition;
+
+		List<JPQLQueryProblem> problems = validate(query);
+
+		testHasOnlyOneProblem(
+			problems,
+			JPQLQueryProblemMessages.ArithmeticExpression_MissingLeftExpression,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public final void test_ArithmeticExpression_MissingRightExpression_1() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE LENGTH(e.name) +";
 
@@ -676,7 +753,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_ArithmeticExpression_MissingRightExpression_2() throws Exception {
+	public final void test_ArithmeticExpression_MissingRightExpression_2() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE LENGTH(e.name) + ";
 
@@ -694,7 +771,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_ArithmeticFactor_MissingExpression_1() throws Exception {
+	public final void test_ArithmeticFactor_MissingExpression_1() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE -";
 		int startPosition = "SELECT e FROM Employee e WHERE -".length();
@@ -711,7 +788,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_ArithmeticFactor_MissingExpression_2() throws Exception {
+	public final void test_ArithmeticFactor_MissingExpression_2() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE e.age + -";
 		int startPosition = "SELECT e FROM Employee e WHERE e.age + -".length();
@@ -727,27 +804,8 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 		);
 	}
 
-//	@Test
-//	public void test_ArithmeticExpression_MissingLeftExpression()
-//	{
-//		String query = "SELECT e FROM Employee e WHERE + LENGTH(e.name)";
-//
-//		int startPosition = "SELECT e FROM Employee e WHERE ".length();
-//		int endPosition   = startPosition;
-//
-//		List<QueryProblem> problems = validate(query);
-//
-//		testHasOnlyOneProblem
-//		(
-//			problems,
-//			QueryProblemMessages.ArithmeticExpression_MissingLeftExpression,
-//			startPosition,
-//			endPosition
-//		);
-//	}
-
 	@Test
-	public void test_AvgFunction_InvalidExpression() throws Exception {
+	public final void test_AvgFunction_InvalidExpression() throws Exception {
 
 		String query = "SELECT AVG(e) FROM Employee e";
 		int startPosition = "SELECT AVG(".length();
@@ -764,7 +822,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_AvgFunction_MissingExpression_1() throws Exception {
+	public final void test_AvgFunction_MissingExpression_1() throws Exception {
 
 		String query = "SELECT AVG() FROM Employee e";
 		int startPosition = "SELECT AVG(".length();
@@ -781,7 +839,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_AvgFunction_MissingExpression_2() throws Exception {
+	public final void test_AvgFunction_MissingExpression_2() throws Exception {
 
 		String query = "SELECT AVG(DISTINCT) FROM Employee e";
 		int startPosition = "SELECT AVG(DISTINCT".length();
@@ -798,7 +856,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_AvgFunction_MissingExpression_3() throws Exception {
+	public final void test_AvgFunction_MissingExpression_3() throws Exception {
 
 		String query = "SELECT AVG(DISTINCT ) FROM Employee e";
 		int startPosition = "SELECT AVG(DISTINCT ".length();
@@ -815,7 +873,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_AvgFunction_MissingLeftParenthesis_1() throws Exception {
+	public final void test_AvgFunction_MissingLeftParenthesis_1() throws Exception {
 
 		String query = "SELECT AVG e.age) FROM Employee e";
 		int startPosition = "SELECT AVG".length();
@@ -832,7 +890,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_AvgFunction_MissingLeftParenthesis_2() throws Exception {
+	public final void test_AvgFunction_MissingLeftParenthesis_2() throws Exception {
 
 		String query = "SELECT AVG DISTINCT e.age) FROM Employee e";
 		int startPosition = "SELECT AVG".length();
@@ -849,7 +907,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_AvgFunction_MissingRightParenthesis() throws Exception {
+	public final void test_AvgFunction_MissingRightParenthesis() throws Exception {
 
 		String query = "SELECT AVG(DISTINCT e.age FROM Employee e";
 
@@ -867,7 +925,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_BetweenExpression_MissingAnd_1() throws Exception {
+	public final void test_BetweenExpression_MissingAnd_1() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE e.age BETWEEN 20";
 
@@ -885,7 +943,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_BetweenExpression_MissingAnd_2() throws Exception {
+	public final void test_BetweenExpression_MissingAnd_2() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE e.age BETWEEN 20 ";
 
@@ -903,7 +961,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_BetweenExpression_MissingAnd_3() throws Exception {
+	public final void test_BetweenExpression_MissingAnd_3() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE e.age BETWEEN 20 40";
 
@@ -921,7 +979,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_BetweenExpression_MissingExpression() throws Exception {
+	public final void test_BetweenExpression_MissingExpression() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE BETWEEN 20 AND 40";
 
@@ -939,7 +997,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_BetweenExpression_MissingLowerBoundExpression() throws Exception {
+	public final void test_BetweenExpression_MissingLowerBoundExpression() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE e.age BETWEEN AND 40";
 
@@ -957,7 +1015,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_BetweenExpression_MissingUpperBoundExpression_1() throws Exception {
+	public final void test_BetweenExpression_MissingUpperBoundExpression_1() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE e.age BETWEEN 20 AND";
 
@@ -975,7 +1033,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_BetweenExpression_MissingUpperBoundExpression_2() throws Exception {
+	public final void test_BetweenExpression_MissingUpperBoundExpression_2() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE e.age BETWEEN 20 AND ";
 
@@ -993,7 +1051,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_CaseExpression_MissingElseExpression_1() throws Exception {
+	public final void test_CaseExpression_MissingElseExpression_1() throws Exception {
 
 		String query = "UPDATE Employee e " +
 		               "SET e.salary = " +
@@ -1018,7 +1076,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_CaseExpression_MissingElseExpression_2() throws Exception {
+	public final void test_CaseExpression_MissingElseExpression_2() throws Exception {
 
 		String query = "SELECT e.name," +
 		               "       CASE TYPE(e) WHEN Exempt THEN 'Exempt'" +
@@ -1044,7 +1102,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_CaseExpression_MissingElseIdentifier_1() throws Exception {
+	public final void test_CaseExpression_MissingElseIdentifier_1() throws Exception {
 
 		String query = "UPDATE Employee e " +
 		               "SET e.salary = " +
@@ -1068,7 +1126,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_CaseExpression_MissingElseIdentifier_2() throws Exception {
+	public final void test_CaseExpression_MissingElseIdentifier_2() throws Exception {
 
 		String query = "UPDATE Employee e " +
 		               "SET e.salary = " +
@@ -1092,7 +1150,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_CaseExpression_MissingEndIdentifier() throws Exception {
+	public final void test_CaseExpression_MissingEndIdentifier() throws Exception {
 
 		String query = "UPDATE Employee e " +
 		               "SET e.salary = " +
@@ -1116,7 +1174,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_CaseExpression_MissingWhenClause() throws Exception {
+	public final void test_CaseExpression_MissingWhenClause() throws Exception {
 
 		String query = "UPDATE Employee e " +
 		               "SET e.salary = " +
@@ -1140,24 +1198,32 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_CoalesceExpression_InvalidExpression() throws Exception {
+	public final void test_CoalesceExpression_InvalidExpression() throws Exception {
 
 		String query = "SELECT COALESCE(SELECT e) FROM Employee e";
-		int startPosition = "SELECT COALESCE(".length();
-		int endPosition   = "SELECT COALESCE(SELECT e".length();
-
 		List<JPQLQueryProblem> problems = validate(query);
 
-		testHasOnlyOneProblem(
-			problems,
-			JPQLQueryProblemMessages.CoalesceExpression_InvalidExpression,
-			startPosition,
-			endPosition
-		);
+		if (isSubqueryAllowedAnywhere()) {
+			testDoesNotHaveProblem(
+				problems,
+				JPQLQueryProblemMessages.CoalesceExpression_InvalidExpression
+			);
+		}
+		else {
+			int startPosition = "SELECT COALESCE(".length();
+			int endPosition   = "SELECT COALESCE(SELECT e".length();
+
+			testHasOnlyOneProblem(
+				problems,
+				JPQLQueryProblemMessages.CoalesceExpression_InvalidExpression,
+				startPosition,
+				endPosition
+			);
+		}
 	}
 
 	@Test
-	public void test_CoalesceExpression_MissingExpression() throws Exception {
+	public final void test_CoalesceExpression_MissingExpression() throws Exception {
 
 		String query = "SELECT COALESCE() FROM Employee e";
 		int startPosition = "SELECT COALESCE(".length();
@@ -1174,7 +1240,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_CoalesceExpression_MissingLeftParenthesis() throws Exception {
+	public final void test_CoalesceExpression_MissingLeftParenthesis() throws Exception {
 
 		String query = "SELECT COALESCE 4 + 5) FROM Employee e";
 		int startPosition = "SELECT COALESCE".length();
@@ -1191,7 +1257,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_CoalesceExpression_MissingRightParenthesis() throws Exception {
+	public final void test_CoalesceExpression_MissingRightParenthesis() throws Exception {
 
 		String query = "SELECT COALESCE(e.age + 100 FROM Employee e";
 		int startPosition = "SELECT COALESCE(e.age + 100".length();
@@ -1208,7 +1274,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_CollectionMemberDeclaration_MissingCollectionValuedPathExpression() throws Exception {
+	public final void test_CollectionMemberDeclaration_MissingCollectionValuedPathExpression() throws Exception {
 
 		String query = "SELECT e FROM Employee e, IN() AS m";
 
@@ -1226,7 +1292,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_CollectionMemberDeclaration_MissingIdentificationVariable_1() throws Exception {
+	public final void test_CollectionMemberDeclaration_MissingIdentificationVariable_1() throws Exception {
 
 		String query = "SELECT e FROM Employee e, IN(e.employees) AS";
 
@@ -1244,7 +1310,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_CollectionMemberDeclaration_MissingIdentificationVariable_2() throws Exception {
+	public final void test_CollectionMemberDeclaration_MissingIdentificationVariable_2() throws Exception {
 
 		String query = "SELECT e FROM Employee e, IN(e.employees) AS ";
 
@@ -1262,7 +1328,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_CollectionMemberDeclaration_MissingLeftParenthesis() throws Exception {
+	public final void test_CollectionMemberDeclaration_MissingLeftParenthesis() throws Exception {
 
 		String query = "SELECT e FROM Employee e, IN e.managers) AS m";
 
@@ -1280,7 +1346,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_CollectionMemberDeclaration_MissingRightParenthesis() throws Exception {
+	public final void test_CollectionMemberDeclaration_MissingRightParenthesis() throws Exception {
 
 		String query = "SELECT e FROM Employee e, IN(e.employees AS m";
 
@@ -1298,7 +1364,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_CollectionMemberExpression_MissingCollectionValuedPathExpression() throws Exception {
+	public final void test_CollectionMemberExpression_MissingCollectionValuedPathExpression() throws Exception {
 
 		String query = "SELECT e, f FROM Employee e, e.employees f WHERE e.name MEMBER OF ";
 
@@ -1316,7 +1382,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_CollectionMemberExpression_MissingEntityExpression() throws Exception {
+	public final void test_CollectionMemberExpression_MissingEntityExpression() throws Exception {
 
 		String query = "SELECT e, f FROM Employee e, e.employees f WHERE MEMBER f.offices";
 
@@ -1334,7 +1400,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_CollectionValuedPathExpression_NotCollectionType_01() throws Exception {
+	public final void test_CollectionValuedPathExpression_NotCollectionType_01() throws Exception {
 
 		String query = "SELECT c FROM Customer c WHERE c.lastName MEMBER 6";
 		int startPosition = "SELECT c FROM Customer c WHERE c.lastName MEMBER ".length();
@@ -1351,7 +1417,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_CollectionValuedPathExpression_NotCollectionType_02() throws Exception {
+	public final void test_CollectionValuedPathExpression_NotCollectionType_02() throws Exception {
 
 		String query = "SELECT c FROM Customer c WHERE 6 IS EMPTY";
 		int startPosition = "SELECT c FROM Customer c WHERE ".length();
@@ -1368,7 +1434,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_ComparisonExpression_MissingLeftExpression() throws Exception {
+	public final void test_ComparisonExpression_MissingLeftExpression() throws Exception {
 
 		String query = "SELECT e FROM EMPLOYEE e WHERE > 20";
 
@@ -1386,7 +1452,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_ComparisonExpression_MissingLEftRightExpression() throws Exception {
+	public final void test_ComparisonExpression_MissingLEftRightExpression() throws Exception {
 
 		String query = "SELECT e FROM EMPLOYEE e WHERE >";
 
@@ -1408,7 +1474,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_ComparisonExpression_MissingRightExpression() throws Exception {
+	public final void test_ComparisonExpression_MissingRightExpression() throws Exception {
 
 		String query = "SELECT e FROM EMPLOYEE e WHERE e.age >";
 
@@ -1426,12 +1492,12 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_ConcatExpression_InvalidFirstExpression() throws Exception {
+	public final void test_ConcatExpression_InvalidFirstExpression() throws Exception {
 
-		String query = "SELECT e FROM Employee e WHERE CONCAT(FALSE, e.lastName)";
+		String query = "SELECT e FROM Employee e WHERE CONCAT(ALL(SELECT d FROM Dept d), e.lastName)";
 
 		int startPosition = "SELECT e FROM Employee e WHERE CONCAT(".length();
-		int endPosition   = "SELECT e FROM Employee e WHERE CONCAT(FALSE".length();
+		int endPosition   = "SELECT e FROM Employee e WHERE CONCAT(ALL(SELECT d FROM Dept d)".length();
 
 		List<JPQLQueryProblem> problems = validate(query);
 
@@ -1444,9 +1510,9 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_ConcatExpression_InvalidSecondExpression() throws Exception {
+	public final void test_ConcatExpression_InvalidSecondExpression() throws Exception {
 
-		String query = "SELECT e FROM Employee e WHERE CONCAT(e.firstName, TRUE)";
+		String query = "SELECT e FROM Employee e WHERE CONCAT(e.firstName, ALL(SELECT d FROM Dept d))";
 
 		int startPosition = "SELECT e FROM Employee e WHERE CONCAT(e.firstName, ".length();
 		int endPosition   = query.length() - 1;
@@ -1462,7 +1528,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_ConcatExpression_MissingLeftParenthesis() throws Exception {
+	public final void test_ConcatExpression_MissingLeftParenthesis() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE CONCAT e.firstName, e.lastName)";
 
@@ -1480,7 +1546,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_ConcatExpression_MissingRightParenthesis() throws Exception {
+	public final void test_ConcatExpression_MissingRightParenthesis() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE CONCAT(e.firstName, e.lastName";
 
@@ -1498,7 +1564,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_ConstructorExpression_ConstructorItemEndsWithComma() throws Exception {
+	public final void test_ConstructorExpression_ConstructorItemEndsWithComma() throws Exception {
 
 		String query = "SELECT NEW project1.Employee(e.name,) FROM Employee e";
 
@@ -1516,7 +1582,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_ConstructorExpression_ConstructorItemIsMissingComma() throws Exception {
+	public final void test_ConstructorExpression_ConstructorItemIsMissingComma() throws Exception {
 
 		String query = "SELECT NEW project1.Employee(e.name e.age) FROM Employee e";
 
@@ -1534,7 +1600,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_ConstructorExpression_MissingConstructorItem() throws Exception {
+	public final void test_ConstructorExpression_MissingConstructorItem() throws Exception {
 
 		String query = "SELECT NEW project1.Employee() FROM Employee e";
 
@@ -1552,7 +1618,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_ConstructorExpression_MissingConstructorName() throws Exception {
+	public final void test_ConstructorExpression_MissingConstructorName() throws Exception {
 
 		String query = "SELECT NEW (e.name) FROM Employee e";
 
@@ -1570,7 +1636,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_ConstructorExpression_MissingLeftParenthesis() throws Exception {
+	public final void test_ConstructorExpression_MissingLeftParenthesis() throws Exception {
 
 		String query = "SELECT NEW project1.Employee e.name) FROM Employee e";
 
@@ -1588,7 +1654,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_ConstructorExpression_MissingRightParenthesis() throws Exception {
+	public final void test_ConstructorExpression_MissingRightParenthesis() throws Exception {
 
 		String query = "SELECT NEW project1.Employee(e.name FROM Employee e";
 
@@ -1606,7 +1672,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_CountFunction_InvalidExpression() throws Exception {
+	public final void test_CountFunction_InvalidExpression() throws Exception {
 
 		String query = "SELECT COUNT(AVG(e.age)) FROM Employee e";
 		int startPosition = "SELECT COUNT(".length();
@@ -1623,7 +1689,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_CountFunction_MissingExpression_1() throws Exception {
+	public final void test_CountFunction_MissingExpression_1() throws Exception {
 
 		String query = "SELECT COUNT() FROM Employee e";
 		int startPosition = "SELECT COUNT(".length();
@@ -1640,7 +1706,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_CountFunction_MissingExpression_2() throws Exception {
+	public final void test_CountFunction_MissingExpression_2() throws Exception {
 
 		String query = "SELECT COUNT(DISTINCT) FROM Employee e";
 		int startPosition = "SELECT COUNT(DISTINCT".length();
@@ -1657,7 +1723,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_CountFunction_MissingExpression_3() throws Exception {
+	public final void test_CountFunction_MissingExpression_3() throws Exception {
 
 		String query = "SELECT COUNT(DISTINCT ) FROM Employee e";
 		int startPosition = "SELECT COUNT(DISTINCT ".length();
@@ -1674,7 +1740,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_CountFunction_MissingLeftParenthesis_1() throws Exception {
+	public final void test_CountFunction_MissingLeftParenthesis_1() throws Exception {
 
 		String query = "SELECT COUNT e.age) FROM Employee e";
 		int startPosition = "SELECT COUNT".length();
@@ -1691,7 +1757,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_CountFunction_MissingLeftParenthesis_2() throws Exception {
+	public final void test_CountFunction_MissingLeftParenthesis_2() throws Exception {
 
 		String query = "SELECT COUNT DISTINCT e.age) FROM Employee e";
 		int startPosition = "SELECT COUNT".length();
@@ -1708,7 +1774,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_CountFunction_MissingRightParenthesis() throws Exception {
+	public final void test_CountFunction_MissingRightParenthesis() throws Exception {
 
 		String query = "SELECT COUNT(DISTINCT e.age FROM Employee e";
 		int startPosition = "SELECT COUNT(DISTINCT e.age".length();
@@ -1725,7 +1791,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_DateTime_JDBCEscapeFormat_InvalidSpecification() throws Exception {
+	public final void test_DateTime_JDBCEscapeFormat_InvalidSpecification() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE e.startDate < {jdbc '2008-12-31'}";
 
@@ -1743,7 +1809,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_DateTime_JDBCEscapeFormat_MissingCloseQuote() throws Exception {
+	public final void test_DateTime_JDBCEscapeFormat_MissingCloseQuote() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE e.startDate < {d '2008-12-31}";
 
@@ -1761,7 +1827,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_DateTime_JDBCEscapeFormat_MissingOpenQuote() throws Exception {
+	public final void test_DateTime_JDBCEscapeFormat_MissingOpenQuote() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE e.startDate < {d 2008-12-31'}";
 
@@ -1779,7 +1845,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_DateTime_JDBCEscapeFormat_MissingRightCurlyBrace() throws Exception {
+	public final void test_DateTime_JDBCEscapeFormat_MissingRightCurlyBrace() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE e.startDate < {d '2008-12-31'";
 
@@ -1797,7 +1863,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_DeleteClause_FromMissing_1() throws Exception {
+	public final void test_DeleteClause_FromMissing_1() throws Exception {
 
 		String query = "DELETE";
 		int startPosition = query.length();
@@ -1814,7 +1880,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_DeleteClause_FromMissing_2() throws Exception {
+	public final void test_DeleteClause_FromMissing_2() throws Exception {
 
 		String query = "DELETE ";
 		int startPosition = query.length();
@@ -1831,7 +1897,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_DeleteClause_FromMissing_3() throws Exception {
+	public final void test_DeleteClause_FromMissing_3() throws Exception {
 
 		String query = "DELETE Employee e WHERE e.name = 'Pascal'";
 		int startPosition = "DELETE ".length();
@@ -1848,7 +1914,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_DeleteClause_MultipleRangeVariableDeclaration() throws Exception {
+	public final void test_DeleteClause_MultipleRangeVariableDeclaration() throws Exception {
 
 		String query = "DELETE FROM Employee e, Address a WHERE e.name = 'Pascal'";
 		int startPosition = "DELETE FROM Employee e".length();
@@ -1865,7 +1931,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_DeleteClause_RangeVariableDeclarationMalformed() throws Exception {
+	public final void test_DeleteClause_RangeVariableDeclarationMalformed() throws Exception {
 
 		String query = "DELETE FROM Employee e a WHERE e.name = 'Pascal'";
 		int startPosition = "DELETE FROM Employee e".length();
@@ -1882,7 +1948,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_DeleteClause_RangeVariableDeclarationMalformed_FromMissing() throws Exception {
+	public final void test_DeleteClause_RangeVariableDeclarationMalformed_FromMissing() throws Exception {
 
 		String query = "DELETE Employee e a WHERE e.name = 'Pascal'";
 		int startPosition1 = "DELETE ".length();
@@ -1904,7 +1970,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_DeleteClause_RangeVariableDeclarationMissing_1() throws Exception {
+	public final void test_DeleteClause_RangeVariableDeclarationMissing_1() throws Exception {
 
 		String query = "DELETE ";
 		List<JPQLQueryProblem> problems = validate(query);
@@ -1916,7 +1982,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_DeleteClause_RangeVariableDeclarationMissing_2() throws Exception {
+	public final void test_DeleteClause_RangeVariableDeclarationMissing_2() throws Exception {
 
 		String query = "DELETE FROM";
 		int startPosition = query.length() + 1;
@@ -1933,7 +1999,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_DeleteClause_RangeVariableDeclarationMissing_3() throws Exception {
+	public final void test_DeleteClause_RangeVariableDeclarationMissing_3() throws Exception {
 
 		String query = "DELETE FROM ";
 		int startPosition = query.length();
@@ -1950,7 +2016,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_DeleteClause_RangeVariableDeclarationMissing_4() throws Exception {
+	public final void test_DeleteClause_RangeVariableDeclarationMissing_4() throws Exception {
 
 		String query = "DELETE FROM WHERE e.name = 'Pascal'";
 		int startPosition = "DELETE FROM ".length();
@@ -1967,7 +2033,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_EmptyCollectionComparisonExpression_MissingExpression() throws Exception {
+	public final void test_EmptyCollectionComparisonExpression_MissingExpression() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE IS NOT EMPTY";
 
@@ -1985,7 +2051,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_EntryExpression_InvalidExpression() throws Exception {
+	public final void test_EntryExpression_InvalidExpression() throws Exception {
 
 		String query = "SELECT ENTRY(e.name) FROM Employee e";
 		int startPosition = "SELECT ENTRY(".length();
@@ -2002,7 +2068,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_EntryExpression_MissingExpression() throws Exception {
+	public final void test_EntryExpression_MissingExpression() throws Exception {
 
 		String query = "SELECT ENTRY() FROM Employee e JOIN e.addresses a";
 		int startPosition = "SELECT ENTRY(".length();
@@ -2019,7 +2085,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_EntryExpression_MissingLeftParenthesis() throws Exception {
+	public final void test_EntryExpression_MissingLeftParenthesis() throws Exception {
 
 		String query = "SELECT ENTRY a) FROM Employee e JOIN e.addresses a";
 		int startPosition = "SELECT ENTRY".length();
@@ -2036,7 +2102,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_EntryExpression_MissingRightParenthesis() throws Exception {
+	public final void test_EntryExpression_MissingRightParenthesis() throws Exception {
 
 		String query = "SELECT ENTRY(a FROM Employee e JOIN e.addresses a";
 		int startPosition = "SELECT ENTRY(a".length();
@@ -2053,7 +2119,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_ExistsExpression_InvalidExpression() throws Exception {
+	public final void test_ExistsExpression_InvalidExpression() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE EXISTS(e.name)";
 		int startPosition = "SELECT e FROM Employee e WHERE EXISTS(".length();
@@ -2070,7 +2136,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_ExistsExpression_MissingExpression() throws Exception {
+	public final void test_ExistsExpression_MissingExpression() throws Exception {
 
 		String query = "SELECT e FROM Employee e JOIN e.addresses a WHERE EXISTS()";
 		int startPosition = "SELECT e FROM Employee e JOIN e.addresses a WHERE EXISTS(".length();
@@ -2087,7 +2153,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_ExistsExpression_MissingLeftParenthesis() throws Exception {
+	public final void test_ExistsExpression_MissingLeftParenthesis() throws Exception {
 
 		String query = "SELECT e FROM Employee e JOIN e.addresses a WHERE EXISTS SELECT p FROM Order p)";
 		int startPosition = "SELECT e FROM Employee e JOIN e.addresses a WHERE EXISTS".length();
@@ -2104,7 +2170,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_ExistsExpression_MissingRightParenthesis() throws Exception {
+	public final void test_ExistsExpression_MissingRightParenthesis() throws Exception {
 
 		String query = "SELECT e FROM Employee e JOIN e.addresses a WHERE EXISTS(SELECT p FROM Order p";
 		int startPosition = query.length();
@@ -2121,7 +2187,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_GroupByClause_GroupByItemEndsWithComma() throws Exception {
+	public final void test_GroupByClause_GroupByItemEndsWithComma() throws Exception {
 
 		String query = "SELECT e FROM Employee e GROUP BY e.name, e.age,";
 		int startPosition = query.length() - 1;
@@ -2138,7 +2204,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_GroupByClause_GroupByItemIsMissingComma_1() throws Exception {
+	public final void test_GroupByClause_GroupByItemIsMissingComma_1() throws Exception {
 
 		String query = "SELECT e FROM Employee e GROUP BY e.name e.age";
 		int startPosition = "SELECT e FROM Employee e GROUP BY e.name".length();
@@ -2155,7 +2221,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_GroupByClause_GroupByItemIsMissingComma_2() throws Exception {
+	public final void test_GroupByClause_GroupByItemIsMissingComma_2() throws Exception {
 
 		String query = "SELECT e FROM Employee e GROUP BY e.name, e.age e";
 		int startPosition = "SELECT e FROM Employee e GROUP BY e.name, e.age".length();
@@ -2172,7 +2238,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_GroupByClause_GroupByItemMissing() throws Exception {
+	public final void test_GroupByClause_GroupByItemMissing() throws Exception {
 
 		String query = "SELECT e FROM Employee e GROUP BY";
 		int startPosition = query.length();
@@ -2189,7 +2255,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_HavingClause_ConditionalExpressionMissing_1() throws Exception {
+	public final void test_HavingClause_ConditionalExpressionMissing_1() throws Exception {
 
 		String query = "SELECT e FROM Employee e HAVING";
 		int startPosition = "SELECT e FROM Employee e ".length();
@@ -2206,7 +2272,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_HavingClause_ConditionalExpressionMissing_2() throws Exception {
+	public final void test_HavingClause_ConditionalExpressionMissing_2() throws Exception {
 
 		String query = "SELECT e FROM Employee e HAVING ";
 		int startPosition = "SELECT e FROM Employee e ".length();
@@ -2223,7 +2289,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_HavingClause_InvalidConditionalExpression() throws Exception {
+	public final void test_HavingClause_InvalidConditionalExpression() throws Exception {
 
 		String query = "SELECT e FROM Employee e HAVING LENGTH(e.name)";
 		int startPosition = "SELECT e FROM Employee e HAVING ".length();
@@ -2240,7 +2306,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_IdentificationVariable_Invalid_Duplicate_1() throws Exception {
+	public final void test_IdentificationVariable_Invalid_Duplicate_1() throws Exception {
 
 		String query = "SELECT e FROM Employee e, Address e";
 
@@ -2262,7 +2328,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_IdentificationVariable_Invalid_Duplicate_2() throws Exception {
+	public final void test_IdentificationVariable_Invalid_Duplicate_2() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE EXISTS(SELECT e.manager FROM Employee e)";
 
@@ -2271,7 +2337,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_IdentificationVariable_Invalid_Duplicate_3() throws Exception {
+	public final void test_IdentificationVariable_Invalid_Duplicate_3() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE EXISTS(SELECT e.manager FROM Employee e, Address e)";
 
@@ -2293,7 +2359,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_IdentificationVariable_Invalid_Duplicate_4() throws Exception {
+	public final void test_IdentificationVariable_Invalid_Duplicate_4() throws Exception {
 
 		String query = "SELECT COUNT(e) AS es FROM Employee e ORDER BY es";
 
@@ -2302,7 +2368,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_IdentificationVariable_Invalid_Duplicate_5() throws Exception {
+	public final void test_IdentificationVariable_Invalid_Duplicate_5() throws Exception {
 
 		String query = "SELECT COUNT(e) AS e FROM Employee e ORDER BY e";
 
@@ -2324,7 +2390,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_IdentificationVariable_Invalid_JavaIdentifier_1() throws Exception {
+	public final void test_IdentificationVariable_Invalid_JavaIdentifier_1() throws Exception {
 
 		String query = "SELECT e FROM Employee 2e";
 
@@ -2342,7 +2408,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_IdentificationVariable_Invalid_JavaIdentifier_2() throws Exception {
+	public final void test_IdentificationVariable_Invalid_JavaIdentifier_2() throws Exception {
 
 		String query = "SELECT e!q FROM Employee e";
 
@@ -2360,7 +2426,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_IdentificationVariable_Invalid_ReservedWord() throws Exception {
+	public final void test_IdentificationVariable_Invalid_ReservedWord() throws Exception {
 
 		String query = "SELECT e FROM Employee e, Adress AVG";
 
@@ -2378,7 +2444,85 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_IdentificationVariableDeclaration_MissingRangeVariableDeclaration1() throws Exception {
+	public final void test_IdentificationVariableDeclaration_InvalidJoin_1() throws Exception {
+
+		String query = "SELECT e FROM Employee e";
+		List<JPQLQueryProblem> problems = validate(query);
+
+		testDoesNotHaveProblem(
+			problems,
+			JPQLQueryProblemMessages.IdentificationVariableDeclaration_InvalidJoin
+		);
+	}
+
+	@Test
+	public final void test_IdentificationVariableDeclaration_InvalidJoin_2() throws Exception {
+
+		String query = "SELECT e FROM Employee e GROUP BY e.name";
+		List<JPQLQueryProblem> problems = validate(query);
+
+		testDoesNotHaveProblem(
+			problems,
+			JPQLQueryProblemMessages.IdentificationVariableDeclaration_InvalidJoin
+		);
+	}
+
+	@Test
+	public final void test_IdentificationVariableDeclaration_InvalidJoin_3() throws Exception {
+
+		String query = "SELECT e FROM Employee e JOIN e.employees d";
+		List<JPQLQueryProblem> problems = validate(query);
+
+		testDoesNotHaveProblem(
+			problems,
+			JPQLQueryProblemMessages.IdentificationVariableDeclaration_InvalidJoin
+		);
+	}
+
+	@Test
+	public final void test_IdentificationVariableDeclaration_InvalidJoin_4() throws Exception {
+
+		String query = "SELECT e FROM Employee e JOIN e.employees d JOIN d.addresses a";
+		List<JPQLQueryProblem> problems = validate(query);
+
+		testDoesNotHaveProblem(
+			problems,
+			JPQLQueryProblemMessages.IdentificationVariableDeclaration_InvalidJoin
+		);
+	}
+
+	@Test
+	public final void test_IdentificationVariableDeclaration_InvalidJoin_5() throws Exception {
+
+		String query = "SELECT e FROM Employee e LIKE 'e'";
+
+		int startPosition = "SELECT e FROM Employee e ".length();
+		int endPosition   = "SELECT e FROM Employee e LIKE 'e'".length();
+
+		List<JPQLQueryProblem> problems = validate(query);
+
+		testHasProblem(
+			problems,
+			JPQLQueryProblemMessages.IdentificationVariableDeclaration_InvalidJoin,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public final void test_IdentificationVariableDeclaration_JoinsEndWithComma_1() throws Exception {
+
+		String query = "SELECT e FROM Employee e";
+		List<JPQLQueryProblem> problems = validate(query);
+
+		testDoesNotHaveProblem(
+			problems,
+			JPQLQueryProblemMessages.IdentificationVariableDeclaration_JoinsEndWithComma
+		);
+	}
+
+	@Test
+	public final void test_IdentificationVariableDeclaration_MissingRangeVariableDeclaration1() throws Exception {
 
 		String query = "SELECT e FROM JOIN e.managers m";
 
@@ -2396,7 +2540,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_IdentificationVariableDeclaration_MissingRangeVariableDeclaration2() throws Exception {
+	public final void test_IdentificationVariableDeclaration_MissingRangeVariableDeclaration2() throws Exception {
 
 		String query = "SELECT e FROM Employee e JOIN e.managers m, JOIN e.addresses a, Address add";
 
@@ -2414,7 +2558,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_IndexExpression_InvalidExpression() throws Exception {
+	public final void test_IndexExpression_InvalidExpression() throws Exception {
 
 		String query = "SELECT INDEX(e.name) FROM Employee e";
 		int startPosition = "SELECT INDEX(".length();
@@ -2431,7 +2575,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_IndexExpression_MissingExpression() throws Exception {
+	public final void test_IndexExpression_MissingExpression() throws Exception {
 
 		String query = "SELECT INDEX() FROM Employee e";
 		int startPosition = "SELECT INDEX(".length();
@@ -2448,7 +2592,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_IndexExpression_MissingLeftParenthesis() throws Exception {
+	public final void test_IndexExpression_MissingLeftParenthesis() throws Exception {
 
 		String query = "SELECT INDEX e) FROM Employee e";
 		int startPosition = "SELECT INDEX".length();
@@ -2465,7 +2609,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_IndexExpression_MissingRightParenthesis() throws Exception {
+	public final void test_IndexExpression_MissingRightParenthesis() throws Exception {
 
 		String query = "SELECT INDEX(e FROM Employee e";
 		int startPosition = "SELECT INDEX(e".length();
@@ -2482,7 +2626,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_InExpression_InItemIsMissingComma() throws Exception {
+	public final void test_InExpression_InItemIsMissingComma() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE e.name IN(?1 ?2)";
 		int startPosition = "SELECT e FROM Employee e WHERE e.name IN(?1".length();
@@ -2499,7 +2643,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_InExpression_InItemsEndWithComma() throws Exception {
+	public final void test_InExpression_InItemsEndWithComma() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE e.name IN(?1, ?2,)";
 		int startPosition = "SELECT e FROM Employee e WHERE e.name IN(?1, ?2".length();
@@ -2516,24 +2660,24 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_InExpression_MalformedExpression() throws Exception {
+	public final void test_InExpression_InvalidExpression() throws Exception {
 
-		String query = "SELECT e FROM Employee e WHERE e IN(e.address.street)";
+		String query = "SELECT e FROM Employee e WHERE ABS(e.age) IN(e.address.street)";
 		int startPosition = "SELECT e FROM Employee e WHERE ".length();
-		int endPosition   = "SELECT e FROM Employee e WHERE e".length();
+		int endPosition   = "SELECT e FROM Employee e WHERE ABS(e.age)".length();
 
 		List<JPQLQueryProblem> problems = validate(query);
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.InExpression_MalformedExpression,
+			JPQLQueryProblemMessages.InExpression_InvalidExpression,
 			startPosition,
 			endPosition
 		);
 	}
 
 	@Test
-	public void test_InExpression_MissingExpression() throws Exception {
+	public final void test_InExpression_MissingExpression() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE IN(e.address.street)";
 		int startPosition = "SELECT e FROM Employee e WHERE ".length();
@@ -2550,7 +2694,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_InExpression_MissingInItems() throws Exception {
+	public final void test_InExpression_MissingInItems() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE e.name IN()";
 		int startPosition = "SELECT e FROM Employee e WHERE e.name IN(".length();
@@ -2567,7 +2711,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_InExpression_MissingLeftParenthesis_1() throws Exception {
+	public final void test_InExpression_MissingLeftParenthesis_1() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE e.name IN e.address.street)";
 		int startPosition = "SELECT e FROM Employee e WHERE e.name IN".length();
@@ -2584,7 +2728,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_InExpression_MissingLeftParenthesis_2() throws Exception {
+	public final void test_InExpression_MissingLeftParenthesis_2() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE e.name IN :name";
 		List<JPQLQueryProblem> problems = validate(query);
@@ -2592,7 +2736,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_InExpression_MissingRightParenthesis_1() throws Exception {
+	public final void test_InExpression_MissingRightParenthesis_1() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE e.name IN(e.address.street";
 		int startPosition = query.length();
@@ -2609,7 +2753,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_InExpression_MissingRightParenthesis_2() throws Exception {
+	public final void test_InExpression_MissingRightParenthesis_2() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE e.name IN :name";
 		List<JPQLQueryProblem> problems = validate(query);
@@ -2617,7 +2761,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_InputParameter_JavaIdentifier_1() throws Exception {
+	public final void test_InputParameter_JavaIdentifier_1() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE :2AVG = 'Pascal'";
 
@@ -2635,7 +2779,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_InputParameter_JavaIdentifier_2() throws Exception {
+	public final void test_InputParameter_JavaIdentifier_2() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE :e!qb = 'Pascal'";
 
@@ -2653,7 +2797,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_InputParameter_MissingParameter_1() throws Exception {
+	public final void test_InputParameter_MissingParameter_1() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE ? = 'Pascal'";
 
@@ -2671,7 +2815,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_InputParameter_MissingParameter_2() throws Exception {
+	public final void test_InputParameter_MissingParameter_2() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE : = 'Pascal'";
 
@@ -2689,7 +2833,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_InputParameter_Mixture() throws Exception {
+	public final void test_InputParameter_Mixture() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE :name = 'Pascal' AND e.age < ?1";
 
@@ -2711,7 +2855,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_InputParameter_NotInteger_1() throws Exception {
+	public final void test_InputParameter_NotInteger_1() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE ?1a = 'Pascal'";
 
@@ -2729,7 +2873,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_InputParameter_NotInteger_2() throws Exception {
+	public final void test_InputParameter_NotInteger_2() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE ?1.1 = 'Pascal'";
 
@@ -2747,7 +2891,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_InputParameter_SmallerThanOne_1() throws Exception {
+	public final void test_InputParameter_SmallerThanOne_1() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE ?0 = 'Pascal'";
 
@@ -2765,43 +2909,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_InputParameter_WrongClauseDeclaration_1() throws Exception {
-
-		String query = "SELECT ?1 FROM Employee e";
-
-		int startPosition = "SELECT ".length();
-		int endPosition   = "SELECT ?1".length();
-
-		List<JPQLQueryProblem> problems = validate(query);
-
-		testHasOnlyOneProblem(
-			problems,
-			JPQLQueryProblemMessages.InputParameter_WrongClauseDeclaration,
-			startPosition,
-			endPosition
-		);
-	}
-
-	@Test
-	public void test_InputParameter_WrongClauseDeclaration_2() throws Exception {
-
-		String query = "SELECT :name FROM Employee e";
-
-		int startPosition = "SELECT ".length();
-		int endPosition   = "SELECT :name".length();
-
-		List<JPQLQueryProblem> problems = validate(query);
-
-		testHasOnlyOneProblem(
-			problems,
-			JPQLQueryProblemMessages.InputParameter_WrongClauseDeclaration,
-			startPosition,
-			endPosition
-		);
-	}
-
-	@Test
-	public void test_Join_MissingIdentificationVariable_1() throws Exception {
+	public final void test_Join_MissingIdentificationVariable_1() throws Exception {
 
 		String query = "SELECT e FROM Employee e JOIN e.employees ";
 
@@ -2819,7 +2927,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_Join_MissingIdentificationVariable_2() throws Exception {
+	public final void test_Join_MissingIdentificationVariable_2() throws Exception {
 
 		String query = "SELECT e FROM Employee e JOIN e.employees AS";
 
@@ -2837,7 +2945,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_Join_MissingIdentificationVariable_3() throws Exception {
+	public final void test_Join_MissingIdentificationVariable_3() throws Exception {
 
 		String query = "SELECT e FROM Employee e JOIN e.employees AS ";
 
@@ -2855,7 +2963,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_Join_MissingJoinAssociationPath_1() throws Exception {
+	public final void test_Join_MissingJoinAssociationPath_1() throws Exception {
 
 		String query = "SELECT e FROM Employee e JOIN ";
 
@@ -2873,7 +2981,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_Join_MissingJoinAssociationPath_2() throws Exception {
+	public final void test_Join_MissingJoinAssociationPath_2() throws Exception {
 
 		String query = "SELECT e FROM Employee e JOIN AS p";
 
@@ -2891,7 +2999,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_JoinFetch_MissingIdentificationVariable_1() throws Exception {
+	public final void test_JoinFetch_MissingIdentificationVariable_1() throws Exception {
 
 		String query = "SELECT e FROM Employee e JOIN e.employees ";
 		List<JPQLQueryProblem> problems = validate(query);
@@ -2903,7 +3011,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_JoinFetch_MissingIdentificationVariable_2() throws Exception {
+	public final void test_JoinFetch_MissingIdentificationVariable_2() throws Exception {
 
 		String query = "SELECT e FROM Employee e JOIN FETCH e.employees AS";
 		List<JPQLQueryProblem> problems = validate(query);
@@ -2933,7 +3041,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_JoinFetch_MissingIdentificationVariable_3() throws Exception {
+	public final void test_JoinFetch_MissingIdentificationVariable_3() throws Exception {
 
 		String query = "SELECT e FROM Employee e JOIN FETCH e.employees AS ";
 		List<JPQLQueryProblem> problems = validate(query);
@@ -2963,7 +3071,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_JoinFetch_MissingIdentificationVariable_4() throws Exception {
+	public final void test_JoinFetch_MissingIdentificationVariable_4() throws Exception {
 
 		String query = "SELECT e FROM Employee e JOIN FETCH e.employees AS emp";
 		List<JPQLQueryProblem> problems = validate(query);
@@ -2988,7 +3096,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_JoinFetch_MissingJoinAssociationPath_1() throws Exception {
+	public final void test_JoinFetch_MissingJoinAssociationPath_1() throws Exception {
 
 		String query = "SELECT e FROM Employee e JOIN FETCH";
 
@@ -3006,7 +3114,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_JoinFetch_MissingJoinAssociationPath_2() throws Exception {
+	public final void test_JoinFetch_MissingJoinAssociationPath_2() throws Exception {
 
 		String query = "SELECT e FROM Employee e JOIN FETCH ";
 
@@ -3024,7 +3132,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_JoinFetch_WrongClauseDeclaration() throws Exception {
+	public final void test_JoinFetch_WrongClauseDeclaration() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE EXISTS(SELECT o FROM Order o JOIN FETCH o.stores)";
 
@@ -3042,7 +3150,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_JPQLExpression_InvalidQuery_1() throws Exception {
+	public final void test_JPQLExpression_InvalidQuery_1() throws Exception {
 
 		String query = ExpressionTools.EMPTY_STRING;
 		int startPosition = 0;
@@ -3059,7 +3167,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_JPQLExpression_InvalidQuery_2() throws Exception {
+	public final void test_JPQLExpression_InvalidQuery_2() throws Exception {
 
 		String query = "S";
 		int startPosition = 0;
@@ -3076,7 +3184,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_JPQLExpression_InvalidQuery_3() throws Exception {
+	public final void test_JPQLExpression_InvalidQuery_3() throws Exception {
 
 		String query = "JPA version 2.0";
 		int startPosition = 0;
@@ -3093,7 +3201,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_JPQLExpression_InvalidQuery_4() throws Exception {
+	public final void test_JPQLExpression_InvalidQuery_4() throws Exception {
 
 		String query = "SELECT e FROM Employee e";
 		List<JPQLQueryProblem> problems = validate(query);
@@ -3101,7 +3209,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_JPQLExpression_InvalidQuery_5() throws Exception {
+	public final void test_JPQLExpression_InvalidQuery_5() throws Exception {
 
 		String query = "UPDATE Employee e SET e.salary = e.salary * 1.20";
 		List<JPQLQueryProblem> problems = validate(query);
@@ -3109,7 +3217,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_JPQLExpression_InvalidQuery_6() throws Exception {
+	public final void test_JPQLExpression_InvalidQuery_6() throws Exception {
 
 		String query = "DELETE FROM Employee e WHERE e.name = 'Pascal'";
 		List<JPQLQueryProblem> problems = validate(query);
@@ -3117,7 +3225,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_JPQLExpression_UnknownEnding_1() throws Exception {
+	public final void test_JPQLExpression_UnknownEnding_1() throws Exception {
 
 		String query = "SELECT e FROM Employee e";
 		List<JPQLQueryProblem> problems = validate(query);
@@ -3125,7 +3233,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_JPQLExpression_UnknownEnding_2() throws Exception {
+	public final void test_JPQLExpression_UnknownEnding_2() throws Exception {
 
 		String query = "SELECT e FROM Employee e FROM";
 		int startPosition = "SELECT e FROM Employee e ".length();
@@ -3142,7 +3250,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_KeyExpression_InvalidExpression() throws Exception {
+	public final void test_KeyExpression_InvalidExpression() throws Exception {
 
 		String query = "SELECT KEY(a.street) FROM Employee e JOIN e.addresses a";
 		int startPosition = "SELECT KEY(".length();
@@ -3159,7 +3267,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_KeyExpression_MissingExpression() throws Exception {
+	public final void test_KeyExpression_MissingExpression() throws Exception {
 
 		String query = "SELECT KEY() FROM Employee e JOIN e.addresses a";
 		int startPosition = "SELECT KEY(".length();
@@ -3176,7 +3284,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_KeyExpression_MissingLeftParenthesis() throws Exception {
+	public final void test_KeyExpression_MissingLeftParenthesis() throws Exception {
 
 		String query = "SELECT KEY a) FROM Employee e JOIN e.addresses a";
 		int startPosition = "SELECT KEY".length();
@@ -3193,7 +3301,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_KeyExpression_MissingRightParenthesis() throws Exception {
+	public final void test_KeyExpression_MissingRightParenthesis() throws Exception {
 
 		String query = "SELECT KEY(a FROM Employee e JOIN e.addresses a";
 		int startPosition = "SELECT KEY(a".length();
@@ -3210,11 +3318,11 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_LengthExpression_InvalidExpression() throws Exception {
+	public final void test_LengthExpression_InvalidExpression() throws Exception {
 
-		String query = "SELECT e FROM Employee e WHERE LENGTH(2) = 2";
+		String query = "SELECT e FROM Employee e WHERE LENGTH(ALL(SELECT d FROM Dept d)) = 2";
 		int startPosition = "SELECT e FROM Employee e WHERE LENGTH(".length();
-		int endPosition   = "SELECT e FROM Employee e WHERE LENGTH(2".length();
+		int endPosition   = "SELECT e FROM Employee e WHERE LENGTH(ALL(SELECT d FROM Dept d)".length();
 
 		List<JPQLQueryProblem> problems = validate(query);
 
@@ -3227,7 +3335,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_LengthExpression_MissingExpression() throws Exception {
+	public final void test_LengthExpression_MissingExpression() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE LENGTH() = 2";
 		int startPosition = "SELECT e FROM Employee e WHERE LENGTH(".length();
@@ -3244,7 +3352,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_LengthExpression_MissingLeftParenthesis() throws Exception {
+	public final void test_LengthExpression_MissingLeftParenthesis() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE LENGTH e.name) = 2";
 		int startPosition = "SELECT e FROM Employee e WHERE LENGTH".length();
@@ -3261,7 +3369,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_LengthExpression_MissingRightParenthesis() throws Exception {
+	public final void test_LengthExpression_MissingRightParenthesis() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE LENGTH(e.name = 2";
 		int startPosition = "SELECT e FROM Employee e WHERE LENGTH(e.name".length();
@@ -3278,7 +3386,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_LikeExpression_InvalidEscapeCharacter_1() throws Exception {
+	public final void test_LikeExpression_InvalidEscapeCharacter_1() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE e.name LIKE 'Pascal' ESCAPE 'C'";
 		List<JPQLQueryProblem> problems = validate(query);
@@ -3290,7 +3398,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_LikeExpression_InvalidEscapeCharacter_2() throws Exception {
+	public final void test_LikeExpression_InvalidEscapeCharacter_2() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE e.name LIKE 'Pascal' ESCAPE :name";
 		List<JPQLQueryProblem> problems = validate(query);
@@ -3302,7 +3410,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_LikeExpression_InvalidEscapeCharacter_3() throws Exception {
+	public final void test_LikeExpression_InvalidEscapeCharacter_3() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE e.name LIKE 'Pascal' ESCAPE 'CHAR'";
 		int startPosition = "SELECT e FROM Employee e WHERE e.name LIKE 'Pascal' ESCAPE ".length();
@@ -3319,7 +3427,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_LikeExpression_InvalidEscapeCharacter_4() throws Exception {
+	public final void test_LikeExpression_InvalidEscapeCharacter_4() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE e.name LIKE 'Pascal' ESCAPE TRUE";
 		int startPosition = "SELECT e FROM Employee e WHERE e.name LIKE 'Pascal' ESCAPE ".length();
@@ -3336,7 +3444,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_LikeExpression_MissingEscapeCharacter_1() throws Exception {
+	public final void test_LikeExpression_MissingEscapeCharacter_1() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE e.name LIKE 'Pascal' ESCAPE";
 		int startPosition = query.length();
@@ -3353,7 +3461,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_LikeExpression_MissingEscapeCharacter_2() throws Exception {
+	public final void test_LikeExpression_MissingEscapeCharacter_2() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE e.name LIKE 'Pascal' ESCAPE ";
 		int startPosition = query.length();
@@ -3370,7 +3478,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_LikeExpression_MissingPatternValue_1() throws Exception {
+	public final void test_LikeExpression_MissingPatternValue_1() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE e.name LIKE";
 		int startPosition = query.length();
@@ -3387,7 +3495,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_LikeExpression_MissingPatternValue_2() throws Exception {
+	public final void test_LikeExpression_MissingPatternValue_2() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE e.name LIKE ";
 		int startPosition = query.length();
@@ -3404,7 +3512,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_LikeExpression_MissingStringExpression() throws Exception {
+	public final void test_LikeExpression_MissingStringExpression() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE LIKE 'Pascal'";
 		int startPosition = "SELECT e FROM Employee e WHERE ".length();
@@ -3421,11 +3529,11 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_LocateExpression_InvalidFirstExpression() throws Exception {
+	public final void test_LocateExpression_InvalidFirstExpression() throws Exception {
 
-		String query = "SELECT e FROM Employee e WHERE LOCATE(2, 'JPQL', 2)";
+		String query = "SELECT e FROM Employee e WHERE LOCATE(ALL(SELECT d FROM Dept d), 'JPQL', 2)";
 		int startPosition = "SELECT e FROM Employee e WHERE LOCATE(".length();
-		int endPosition   = "SELECT e FROM Employee e WHERE LOCATE(2".length();
+		int endPosition   = "SELECT e FROM Employee e WHERE LOCATE(ALL(SELECT d FROM Dept d)".length();
 
 		List<JPQLQueryProblem> problems = validate(query);
 
@@ -3438,12 +3546,12 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_LocateExpression_InvalidSecondExpression() throws Exception {
+	public final void test_LocateExpression_InvalidSecondExpression() throws Exception {
 
-		String query = "SELECT e FROM Employee e WHERE LOCATE('JPQL', 2, 2)";
+		String query = "SELECT e FROM Employee e WHERE LOCATE('JPQL', ALL(SELECT d FROM Dept d), 2)";
 
 		int startPosition = "SELECT e FROM Employee e WHERE LOCATE('JPQL', ".length();
-		int endPosition   = "SELECT e FROM Employee e WHERE LOCATE('JPQL', 2".length();
+		int endPosition   = "SELECT e FROM Employee e WHERE LOCATE('JPQL', ALL(SELECT d FROM Dept d)".length();
 
 		List<JPQLQueryProblem> problems = validate(query);
 
@@ -3456,7 +3564,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_LocateExpression_InvalidThirdExpression() throws Exception {
+	public final void test_LocateExpression_InvalidThirdExpression() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE LOCATE(e.name, 'JPQL', e)";
 		int startPosition = "SELECT e FROM Employee e WHERE LOCATE(e.name, 'JPQL', ".length();
@@ -3473,7 +3581,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_LocateExpression_MissingFirstComma_1() throws Exception {
+	public final void test_LocateExpression_MissingFirstComma_1() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE LOCATE(e.name";
 
@@ -3491,7 +3599,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_LocateExpression_MissingFirstComma_2() throws Exception {
+	public final void test_LocateExpression_MissingFirstComma_2() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE LOCATE(e.name e.age, 2 + e.startDate)";
 		int startPosition = "SELECT e FROM Employee e WHERE LOCATE(e.name".length();
@@ -3508,7 +3616,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_LocateExpression_MissingFirstExpression_1() throws Exception {
+	public final void test_LocateExpression_MissingFirstExpression_1() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE LOCATE(";
 		int startPosition = "SELECT e FROM Employee e WHERE LOCATE(".length();
@@ -3525,7 +3633,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_LocateExpression_MissingFirstExpression_2() throws Exception {
+	public final void test_LocateExpression_MissingFirstExpression_2() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE LOCATE(, e.age)";
 		int startPosition = "SELECT e FROM Employee e WHERE LOCATE(".length();
@@ -3542,7 +3650,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_LocateExpression_MissingFirstSecondExpression() throws Exception {
+	public final void test_LocateExpression_MissingFirstSecondExpression() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE LOCATE(, ";
 
@@ -3564,7 +3672,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_LocateExpression_MissingLeftParenthesis() throws Exception {
+	public final void test_LocateExpression_MissingLeftParenthesis() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE LOCATE e.name, e.age)";
 		int startPosition = "SELECT e FROM Employee e WHERE LOCATE".length();
@@ -3581,7 +3689,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_LocateExpression_MissingRightParenthesis() throws Exception {
+	public final void test_LocateExpression_MissingRightParenthesis() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE LOCATE(e.name, e.age";
 		int startPosition = query.length();
@@ -3598,7 +3706,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_LocateExpression_MissingSecondComma() throws Exception {
+	public final void test_LocateExpression_MissingSecondComma() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE LOCATE(e.name, e.age 2 + e.startDate)";
 		int startPosition = "SELECT e FROM Employee e WHERE LOCATE(e.name, e.age".length();
@@ -3615,7 +3723,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_LocateExpression_MissingSecondExpression_1() throws Exception {
+	public final void test_LocateExpression_MissingSecondExpression_1() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE LOCATE(e.name,";
 		int startPosition = "SELECT e FROM Employee e WHERE LOCATE(e.name,".length();
@@ -3632,7 +3740,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_LocateExpression_MissingSecondExpression_2() throws Exception {
+	public final void test_LocateExpression_MissingSecondExpression_2() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE LOCATE(e.name, ";
 		int startPosition = "SELECT e FROM Employee e WHERE LOCATE(e.name, ".length();
@@ -3649,7 +3757,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_LocateExpression_MissingThirdExpression_1() throws Exception {
+	public final void test_LocateExpression_MissingThirdExpression_1() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE LOCATE(e.name, e.age,";
 		int startPosition = query.length();
@@ -3666,7 +3774,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_LocateExpression_MissingThirdExpression_2() throws Exception {
+	public final void test_LocateExpression_MissingThirdExpression_2() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE LOCATE(e.name, e.age, ";
 		int startPosition = query.length();
@@ -3683,7 +3791,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_LocateExpression_MissingThirdExpression_3() throws Exception {
+	public final void test_LocateExpression_MissingThirdExpression_3() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE LOCATE(e.name, e.age, )";
 		int startPosition = query.length() - 1;
@@ -3700,7 +3808,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_LogicalExpression_InvalidLeftExpression() throws Exception {
+	public final void test_LogicalExpression_InvalidLeftExpression() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE LENGTH(e.name) AND e.name = 'JPQL'";
 
@@ -3718,7 +3826,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_LogicalExpression_InvalidRightExpression() throws Exception {
+	public final void test_LogicalExpression_InvalidRightExpression() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE e.name = 'JPQL' AND LENGTH(e.name)";
 
@@ -3736,7 +3844,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_LogicalExpression_MissingLeftExpression() throws Exception {
+	public final void test_LogicalExpression_MissingLeftExpression() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE AND e.name = 'JPQL'";
 
@@ -3754,7 +3862,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_LogicalExpression_MissingRightExpression_1() throws Exception {
+	public final void test_LogicalExpression_MissingRightExpression_1() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE e.name = 'JPQL' AND";
 
@@ -3772,7 +3880,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_LogicalExpression_MissingRightExpression_2() throws Exception {
+	public final void test_LogicalExpression_MissingRightExpression_2() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE e.name = 'JPQL' AND ";
 
@@ -3790,11 +3898,11 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_LowerExpression_InvalidExpression() throws Exception {
+	public final void test_LowerExpression_InvalidExpression() throws Exception {
 
-		String query = "SELECT e FROM Employee e WHERE LOWER(2) = 'PASCAL'";
+		String query = "SELECT e FROM Employee e WHERE LOWER(ALL(SELECT d FROM Dept d)) = 'PASCAL'";
 		int startPosition = "SELECT e FROM Employee e WHERE LOWER(".length();
-		int endPosition   = "SELECT e FROM Employee e WHERE LOWER(2".length();
+		int endPosition   = "SELECT e FROM Employee e WHERE LOWER(ALL(SELECT d FROM Dept d)".length();
 
 		List<JPQLQueryProblem> problems = validate(query);
 
@@ -3807,7 +3915,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_LowerExpression_MissingExpression() throws Exception {
+	public final void test_LowerExpression_MissingExpression() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE LOWER() = 'PASCAL'";
 		int startPosition = "SELECT e FROM Employee e WHERE LOWER(".length();
@@ -3824,7 +3932,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_LowerExpression_MissingLeftParenthesis() throws Exception {
+	public final void test_LowerExpression_MissingLeftParenthesis() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE LOWER e.name) = 'PASCAL'";
 		int startPosition = "SELECT e FROM Employee e WHERE LOWER".length();
@@ -3841,7 +3949,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_LowerExpression_MissingRightParenthesis() throws Exception {
+	public final void test_LowerExpression_MissingRightParenthesis() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE LOWER(e.name = 'PASCAL'";
 		int startPosition = "SELECT e FROM Employee e WHERE LOWER(e.name".length();
@@ -3858,7 +3966,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_MaxFunction_InvalidExpression() throws Exception {
+	public final void test_MaxFunction_InvalidExpression() throws Exception {
 
 		String query = "SELECT MAX(e) FROM Employee e";
 		int startPosition = "SELECT MAX(".length();
@@ -3875,7 +3983,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_MaxFunction_MissingExpression_1() throws Exception {
+	public final void test_MaxFunction_MissingExpression_1() throws Exception {
 
 		String query = "SELECT MAX() FROM Employee e";
 		int startPosition = "SELECT MAX(".length();
@@ -3892,7 +4000,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_MaxFunction_MissingExpression_2() throws Exception {
+	public final void test_MaxFunction_MissingExpression_2() throws Exception {
 
 		String query = "SELECT MAX(DISTINCT) FROM Employee e";
 		int startPosition = "SELECT MAX(DISTINCT".length();
@@ -3909,7 +4017,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_MaxFunction_MissingExpression_3() throws Exception {
+	public final void test_MaxFunction_MissingExpression_3() throws Exception {
 
 		String query = "SELECT MAX(DISTINCT ) FROM Employee e";
 		int startPosition = "SELECT MAX(DISTINCT ".length();
@@ -3926,7 +4034,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_MaxFunction_MissingLeftParenthesis_1() throws Exception {
+	public final void test_MaxFunction_MissingLeftParenthesis_1() throws Exception {
 
 		String query = "SELECT MAX e.age) FROM Employee e";
 		int startPosition = "SELECT MAX".length();
@@ -3943,7 +4051,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_MaxFunction_MissingLeftParenthesis_2() throws Exception {
+	public final void test_MaxFunction_MissingLeftParenthesis_2() throws Exception {
 
 		String query = "SELECT MAX DISTINCT e.age) FROM Employee e";
 		int startPosition = "SELECT MAX".length();
@@ -3960,7 +4068,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_MaxFunction_MissingRightParenthesis() throws Exception {
+	public final void test_MaxFunction_MissingRightParenthesis() throws Exception {
 
 		String query = "SELECT MAX(DISTINCT e.age FROM Employee e";
 		int startPosition = "SELECT MAX(DISTINCT e.age".length();
@@ -3977,7 +4085,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_MinFunction_InvalidExpression() throws Exception {
+	public final void test_MinFunction_InvalidExpression() throws Exception {
 
 		String query = "SELECT MIN(e) FROM Employee e";
 		int startPosition = "SELECT MIN(".length();
@@ -3994,7 +4102,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_MinFunction_MissingExpression_1() throws Exception {
+	public final void test_MinFunction_MissingExpression_1() throws Exception {
 
 		String query = "SELECT MIN() FROM Employee e";
 		int startPosition = "SELECT MIN(".length();
@@ -4011,7 +4119,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_MinFunction_MissingExpression_2() throws Exception {
+	public final void test_MinFunction_MissingExpression_2() throws Exception {
 
 		String query = "SELECT MIN(DISTINCT) FROM Employee e";
 
@@ -4029,7 +4137,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_MinFunction_MissingExpression_3() throws Exception {
+	public final void test_MinFunction_MissingExpression_3() throws Exception {
 
 		String query = "SELECT MIN(DISTINCT ) FROM Employee e";
 		int startPosition = "SELECT MIN(DISTINCT ".length();
@@ -4046,7 +4154,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_MinFunction_MissingLeftParenthesis_1() throws Exception {
+	public final void test_MinFunction_MissingLeftParenthesis_1() throws Exception {
 
 		String query = "SELECT MIN e.age) FROM Employee e";
 		int startPosition = "SELECT MIN".length();
@@ -4063,7 +4171,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_MinFunction_MissingLeftParenthesis_2() throws Exception {
+	public final void test_MinFunction_MissingLeftParenthesis_2() throws Exception {
 
 		String query = "SELECT MIN DISTINCT e.age) FROM Employee e";
 		int startPosition = "SELECT MIN".length();
@@ -4080,7 +4188,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_MinFunction_MissingRightParenthesis() throws Exception {
+	public final void test_MinFunction_MissingRightParenthesis() throws Exception {
 
 		String query = "SELECT MIN(DISTINCT e.age FROM Employee e";
 		int startPosition = "SELECT MIN(DISTINCT e.age".length();
@@ -4097,12 +4205,12 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_ModExpression_InvalidFirstExpression() throws Exception {
+	public final void test_ModExpression_InvalidFirstExpression() throws Exception {
 
-		String query = "SELECT e FROM Employee e WHERE MOD(TRUE, e.age)";
+		String query = "SELECT e FROM Employee e WHERE MOD(ALL(SELECT d FROM Dept d), e.age)";
 
 		int startPosition = "SELECT e FROM Employee e WHERE MOD(".length();
-		int endPosition   = "SELECT e FROM Employee e WHERE MOD(TRUE".length();
+		int endPosition   = "SELECT e FROM Employee e WHERE MOD(ALL(SELECT d FROM Dept d)".length();
 
 		List<JPQLQueryProblem> problems = validate(query);
 
@@ -4115,12 +4223,12 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_ModExpression_InvalidSecondParenthesis() throws Exception {
+	public final void test_ModExpression_InvalidSecondParenthesis() throws Exception {
 
-		String query = "SELECT e FROM Employee e WHERE MOD(e.name, TRUE)";
+		String query = "SELECT e FROM Employee e WHERE MOD(e.name, ALL(SELECT d FROM Dept d))";
 
 		int startPosition = "SELECT e FROM Employee e WHERE MOD(e.name, ".length();
-		int endPosition   = "SELECT e FROM Employee e WHERE MOD(e.name, TRUE".length();
+		int endPosition   = "SELECT e FROM Employee e WHERE MOD(e.name, ALL(SELECT d FROM Dept d)".length();
 
 		List<JPQLQueryProblem> problems = validate(query);
 
@@ -4133,7 +4241,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_ModExpression_MissingComma_1() throws Exception {
+	public final void test_ModExpression_MissingComma_1() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE MOD(e.name";
 
@@ -4151,7 +4259,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_ModExpression_MissingComma_2() throws Exception {
+	public final void test_ModExpression_MissingComma_2() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE MOD(e.name e.age)";
 
@@ -4169,7 +4277,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_ModExpression_MissingFirstExpression() throws Exception {
+	public final void test_ModExpression_MissingFirstExpression() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE MOD(, e.age)";
 
@@ -4187,7 +4295,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_ModExpression_MissingLeftParenthesis_1() throws Exception {
+	public final void test_ModExpression_MissingLeftParenthesis_1() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE MOD";
 
@@ -4205,7 +4313,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_ModExpression_MissingLeftParenthesis_2() throws Exception {
+	public final void test_ModExpression_MissingLeftParenthesis_2() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE MOD e.name, e.age)";
 
@@ -4223,7 +4331,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_ModExpression_MissingRightParenthesis() throws Exception {
+	public final void test_ModExpression_MissingRightParenthesis() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE MOD(e.name, e.age";
 
@@ -4241,7 +4349,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_ModExpression_MissingSecondExpression_1() throws Exception {
+	public final void test_ModExpression_MissingSecondExpression_1() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE MOD(e.name,";
 
@@ -4259,7 +4367,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_ModExpression_MissingSecondExpression_2() throws Exception {
+	public final void test_ModExpression_MissingSecondExpression_2() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE MOD(e.name, ";
 
@@ -4277,7 +4385,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_ModExpression_MissingSecondExpression_3() throws Exception {
+	public final void test_ModExpression_MissingSecondExpression_3() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE MOD(e.name, )";
 
@@ -4295,7 +4403,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_NotExpression_MissingExpression_1() throws Exception {
+	public final void test_NotExpression_MissingExpression_1() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE NOT";
 		int startPosition = query.length();
@@ -4312,7 +4420,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_NotExpression_MissingExpression_2() throws Exception {
+	public final void test_NotExpression_MissingExpression_2() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE NOT ";
 		int startPosition = query.length();
@@ -4329,7 +4437,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_NullIfExpression_InvalidFirstExpression() throws Exception {
+	public final void test_NullIfExpression_InvalidFirstExpression() throws Exception {
 
 		String query = "SELECT NULLIF(e, 4 + e.age) FROM Employee e";
 
@@ -4347,7 +4455,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_NullIfExpression_InvalidSecondExpression() throws Exception {
+	public final void test_NullIfExpression_InvalidSecondExpression() throws Exception {
 
 		String query = "SELECT NULLIF('JPQL', e) FROM Employee e";
 
@@ -4365,7 +4473,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_NullIfExpression_MissingComma() throws Exception {
+	public final void test_NullIfExpression_MissingComma() throws Exception {
 
 		String query = "SELECT NULLIF('JPQL' 4 + e.age) FROM Employee e";
 
@@ -4383,7 +4491,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_NullIfExpression_MissingFirstExpression_1() throws Exception {
+	public final void test_NullIfExpression_MissingFirstExpression_1() throws Exception {
 
 		String query = "SELECT NULLIF( FROM Employee e";
 
@@ -4401,7 +4509,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_NullIfExpression_MissingFirstExpression_2() throws Exception {
+	public final void test_NullIfExpression_MissingFirstExpression_2() throws Exception {
 
 		String query = "SELECT NULLIF(, 4 + e.age) FROM Employee e";
 
@@ -4419,7 +4527,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_NullIfExpression_MissingLeftParenthesis() throws Exception {
+	public final void test_NullIfExpression_MissingLeftParenthesis() throws Exception {
 
 		String query = "SELECT NULLIF 'JPQL', 4 + e.age) FROM Employee e";
 
@@ -4437,7 +4545,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_NullIfExpression_MissingRightParenthesis() throws Exception {
+	public final void test_NullIfExpression_MissingRightParenthesis() throws Exception {
 
 		String query = "SELECT NULLIF('JPQL', 4 + e.age FROM Employee e";
 
@@ -4455,7 +4563,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_NullIfExpression_MissingSecondExpression_1() throws Exception {
+	public final void test_NullIfExpression_MissingSecondExpression_1() throws Exception {
 
 		String query = "SELECT NULLIF('JPQL', FROM Employee e";
 
@@ -4473,7 +4581,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_NullIfExpression_MissingSecondExpression_2() throws Exception {
+	public final void test_NullIfExpression_MissingSecondExpression_2() throws Exception {
 
 		String query = "SELECT NULLIF('JPQL',) FROM Employee e";
 
@@ -4491,7 +4599,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_NullIfExpression_MissingSecondExpression_3() throws Exception {
+	public final void test_NullIfExpression_MissingSecondExpression_3() throws Exception {
 
 		String query = "SELECT NULLIF('JPQL', ) FROM Employee e";
 
@@ -4509,7 +4617,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_NumericLiteral_Invalid_1() throws Exception {
+	public final void test_NumericLiteral_Invalid_1() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE e.age > 1.2FF";
 
@@ -4527,7 +4635,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_NumericLiteral_Invalid_2() throws Exception {
+	public final void test_NumericLiteral_Invalid_2() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE e.age > 2";
 		List<JPQLQueryProblem> problems = validate(query);
@@ -4539,7 +4647,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_NumericLiteral_Invalid_3() throws Exception {
+	public final void test_NumericLiteral_Invalid_3() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE e.age > 2.2";
 		List<JPQLQueryProblem> problems = validate(query);
@@ -4551,7 +4659,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_NumericLiteral_Invalid_4() throws Exception {
+	public final void test_NumericLiteral_Invalid_4() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE e.age > 2.2D";
 		List<JPQLQueryProblem> problems = validate(query);
@@ -4563,7 +4671,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_NumericLiteral_Invalid_5() throws Exception {
+	public final void test_NumericLiteral_Invalid_5() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE e.age > 2.2E10";
 		List<JPQLQueryProblem> problems = validate(query);
@@ -4575,7 +4683,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_NumericLiteral_Invalid_6() throws Exception {
+	public final void test_NumericLiteral_Invalid_6() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE e.age > 2.2E-10";
 		List<JPQLQueryProblem> problems = validate(query);
@@ -4587,7 +4695,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_NumericLiteral_Invalid_7() throws Exception {
+	public final void test_NumericLiteral_Invalid_7() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE e.age > 0.34999999999999997779553950749686919152736663818359375";
 		List<JPQLQueryProblem> problems = validate(query);
@@ -4599,7 +4707,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_NumericLiteral_Invalid_8() throws Exception {
+	public final void test_NumericLiteral_Invalid_8() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE e.age > 2.2F";
 		List<JPQLQueryProblem> problems = validate(query);
@@ -4611,7 +4719,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_NumericLiteral_Invalid_9() throws Exception {
+	public final void test_NumericLiteral_Invalid_9() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE e.age > 2L";
 		List<JPQLQueryProblem> problems = validate(query);
@@ -4623,7 +4731,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_ObjectExpression_InvalidExpression() throws Exception {
+	public final void test_ObjectExpression_InvalidExpression() throws Exception {
 
 		String query = "SELECT OBJECT(e.name) FROM Employee e";
 		int startPosition = "SELECT OBJECT(".length();
@@ -4640,7 +4748,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_ObjectExpression_MissingExpression() throws Exception {
+	public final void test_ObjectExpression_MissingExpression() throws Exception {
 
 		String query = "SELECT OBJECT() FROM Employee e";
 		int startPosition = "SELECT OBJECT(".length();
@@ -4657,7 +4765,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_ObjectExpression_MissingLeftParenthesis() throws Exception {
+	public final void test_ObjectExpression_MissingLeftParenthesis() throws Exception {
 
 		String query = "SELECT OBJECT e) FROM Employee e";
 		int startPosition = "SELECT OBJECT".length();
@@ -4674,7 +4782,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_ObjectExpression_MissingRightParenthesis() throws Exception {
+	public final void test_ObjectExpression_MissingRightParenthesis() throws Exception {
 
 		String query = "SELECT OBJECT(e FROM Employee e";
 		int startPosition = "SELECT OBJECT(e".length();
@@ -4691,7 +4799,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_OrderByClause_OrderByItemEndsWithComma() throws Exception {
+	public final void test_OrderByClause_OrderByItemEndsWithComma() throws Exception {
 
 		String query = "SELECT e FROM Employee e ORDER BY e.name, e.age,";
 		int startPosition = query.length() - 1;
@@ -4708,7 +4816,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_OrderByClause_OrderByItemIsMissingComma_1() throws Exception {
+	public final void test_OrderByClause_OrderByItemIsMissingComma_1() throws Exception {
 
 		String query = "SELECT e FROM Employee e ORDER BY e.name e.age";
 		int startPosition = "SELECT e FROM Employee e ORDER BY e.name".length();
@@ -4725,7 +4833,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_OrderByClause_OrderByItemIsMissingComma_2() throws Exception {
+	public final void test_OrderByClause_OrderByItemIsMissingComma_2() throws Exception {
 
 		String query = "SELECT e FROM Employee e ORDER BY e.name, e.age e";
 		int startPosition = "SELECT e FROM Employee e ORDER BY e.name, e.age".length();
@@ -4742,7 +4850,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_OrderByClause_OrderByItemMissing() throws Exception {
+	public final void test_OrderByClause_OrderByItemMissing() throws Exception {
 
 		String query = "SELECT e FROM Employee e ORDER BY";
 		int startPosition = query.length();
@@ -4759,9 +4867,9 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_OrderByItem_InvalidPath() throws Exception {
+	public final void test_OrderByItem_InvalidPath_1() throws Exception {
 
-		String query = "SELECT e FROM Employee e ORDER BY 2";
+		String query = "SELECT e FROM Employee e ORDER BY ALL(SELECT d FROM Dept d)";
 		int startPosition = "SELECT e FROM Employee e ORDER BY ".length();
 		int endPosition   = query.length();
 
@@ -4776,7 +4884,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_OrderByItem_MissingStateFieldPathExpression() throws Exception {
+	public final void test_OrderByItem_MissingStateFieldPathExpression() throws Exception {
 
 		String query = "SELECT e FROM Employee e ORDER BY ASC";
 		int startPosition = "SELECT e FROM Employee e ORDER BY ".length();
@@ -4793,7 +4901,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_RangeVariableDeclaration_MissingAbstractSchemaName() throws Exception {
+	public final void test_RangeVariableDeclaration_MissingAbstractSchemaName() throws Exception {
 
 		String query = "SELECT e FROM AS e";
 		int startPosition = "SELECT e FROM ".length();
@@ -4810,7 +4918,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_RangeVariableDeclaration_MissingIdentificationVariable_1() throws Exception {
+	public final void test_RangeVariableDeclaration_MissingIdentificationVariable_1() throws Exception {
 
 		String query = "SELECT o FROM Order o, Employee";
 		int startPosition = "SELECT o FROM Order o, Employee".length();
@@ -4827,7 +4935,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_RangeVariableDeclaration_MissingIdentificationVariable_2() throws Exception {
+	public final void test_RangeVariableDeclaration_MissingIdentificationVariable_2() throws Exception {
 
 		String query = "SELECT o FROM Order o, Employee ";
 		int startPosition = "SELECT o FROM Order o, Employee ".length();
@@ -4844,7 +4952,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_RangeVariableDeclaration_MissingIdentificationVariable_3() throws Exception {
+	public final void test_RangeVariableDeclaration_MissingIdentificationVariable_3() throws Exception {
 
 		String query = "SELECT o FROM Order o, Employee AS";
 		int startPosition = "SELECT o FROM Order o, Employee AS".length();
@@ -4861,7 +4969,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_RangeVariableDeclaration_MissingIdentificationVariable_4() throws Exception {
+	public final void test_RangeVariableDeclaration_MissingIdentificationVariable_4() throws Exception {
 
 		String query = "SELECT o FROM Order o, Employee AS ";
 		int startPosition = "SELECT o FROM Order o, Employee AS ".length();
@@ -4878,7 +4986,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_ResultVariable_MissingResultVariable() throws Exception {
+	public final void test_ResultVariable_MissingResultVariable() throws Exception {
 
 		String query = "SELECT AVG(e.age) AS FROM Employee e";
 		int startPosition = "SELECT AVG(e.age) AS ".length();
@@ -4895,7 +5003,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_ResultVariable_MissingSelectExpression() throws Exception {
+	public final void test_ResultVariable_MissingSelectExpression() throws Exception {
 
 		String query = "SELECT AS e1 FROM Employee e";
 		int startPosition = "SELECT ".length();
@@ -4912,7 +5020,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_SimpleSelectClause_NotSingleExpression() throws Exception {
+	public final void test_SimpleSelectClause_NotSingleExpression() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE EXISTS(SELECT AVG(o.price), e FROM Order o)";
 		int startPosition = "SELECT e FROM Employee e WHERE EXISTS(SELECT ".length();
@@ -4929,7 +5037,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_SimpleSelectStatement_InvalidLocation_1() throws Exception {
+	public final void test_SimpleSelectStatement_InvalidLocation_1() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE EXISTS(SELECT o.date FROM Order o)";
 		List<JPQLQueryProblem> problems = validate(query);
@@ -4937,7 +5045,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_SimpleSelectStatement_InvalidLocation_2() throws Exception {
+	public final void test_SimpleSelectStatement_InvalidLocation_2() throws Exception {
 
 		String query = "SELECT e FROM Employee e HAVING ALL(SELECT o.name FROM Order o) = 'JPQL'";
 		List<JPQLQueryProblem> problems = validate(query);
@@ -4945,7 +5053,57 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_SizeExpression_InvalidMissing() throws Exception {
+	public final void test_SimpleSelectStatement_InvalidLocation_3() throws Exception {
+
+		String query = "SELECT (SELECT e FROM Employee e), AVG(e.age) FROM Employee e";
+		List<JPQLQueryProblem> problems = validate(query);
+
+		if (isSubqueryAllowedAnywhere()) {
+			testDoesNotHaveProblem(
+				problems,
+				JPQLQueryProblemMessages.SimpleSelectStatement_InvalidLocation
+			);
+		}
+		else {
+			int startPosition = "SELECT (".length();
+			int endPosition   = "SELECT (SELECT e FROM Employee e".length();
+
+			testHasOnlyOneProblem(
+				problems,
+				JPQLQueryProblemMessages.SimpleSelectStatement_InvalidLocation,
+				startPosition,
+				endPosition
+			);
+		}
+	}
+
+	@Test
+	public final void test_SimpleSelectStatement_InvalidLocation_4() throws Exception {
+
+		String query = "SELECT AVG(e.age), (SELECT e FROM Employee e) FROM Employee e";
+		List<JPQLQueryProblem> problems = validate(query);
+
+		if (isSubqueryAllowedAnywhere()) {
+			testDoesNotHaveProblem(
+				problems,
+				JPQLQueryProblemMessages.SimpleSelectStatement_InvalidLocation
+			);
+		}
+		else {
+			int startPosition = "SELECT AVG(e.age), (".length();
+			int endPosition   = "SELECT AVG(e.age), (SELECT e FROM Employee e".length();
+
+			testHasOnlyOneProblem(
+				problems,
+				JPQLQueryProblemMessages.SimpleSelectStatement_InvalidLocation,
+				startPosition,
+				endPosition
+			);
+		}
+	}
+
+	@Test
+	public final void test_SizeExpression_InvalidMissing() throws Exception {
 
 		String query = "SELECT SIZE(e) FROM Employee e";
 		int startPosition = "SELECT SIZE(".length();
@@ -4962,7 +5120,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_SizeExpression_MissingExpression() throws Exception {
+	public final void test_SizeExpression_MissingExpression() throws Exception {
 
 		String query = "SELECT SIZE() FROM Employee e JOIN e.addresses a";
 		int startPosition = "SELECT SIZE(".length();
@@ -4979,7 +5137,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_SizeExpression_MissingLeftParenthesis() throws Exception {
+	public final void test_SizeExpression_MissingLeftParenthesis() throws Exception {
 
 		String query = "SELECT SIZE a) FROM Employee e JOIN e.addresses a";
 		int startPosition = "SELECT SIZE".length();
@@ -4996,7 +5154,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_SizeExpression_MissingRightParenthesis() throws Exception {
+	public final void test_SizeExpression_MissingRightParenthesis() throws Exception {
 
 		String query = "SELECT SIZE(a.street FROM Employee e JOIN e.addresses a";
 		int startPosition = "SELECT SIZE(a.street".length();
@@ -5013,7 +5171,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_SqrtExpression_InvalidExpression() throws Exception {
+	public final void test_SqrtExpression_InvalidExpression() throws Exception {
 
 		String query = "SELECT SQRT(EXISTS()) FROM Employee e";
 		int startPosition = "SELECT SQRT(".length();
@@ -5030,7 +5188,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_SqrtExpression_MissingExpression() throws Exception {
+	public final void test_SqrtExpression_MissingExpression() throws Exception {
 
 		String query = "SELECT SQRT() FROM Employee e";
 		int startPosition = "SELECT SQRT(".length();
@@ -5047,7 +5205,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_SqrtExpression_MissingLeftParenthesis() throws Exception {
+	public final void test_SqrtExpression_MissingLeftParenthesis() throws Exception {
 
 		String query = "SELECT SQRT 4 + 5) FROM Employee e";
 		int startPosition = "SELECT SQRT".length();
@@ -5064,7 +5222,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_SqrtExpression_MissingRightParenthesis() throws Exception {
+	public final void test_SqrtExpression_MissingRightParenthesis() throws Exception {
 
 		String query = "SELECT SQRT(e.age + 100 FROM Employee e";
 		int startPosition = "SELECT SQRT(e.age + 100".length();
@@ -5081,12 +5239,12 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_SubExpression_MissingExpression() throws Exception {
+	public final void test_SubExpression_MissingExpression() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE () = 2";
 
-		int startPosition = "SELECT e FROM Employee e WHERE ".length();
-		int endPosition   = startPosition + 2;
+		int startPosition = "SELECT e FROM Employee e WHERE (".length();
+		int endPosition   = startPosition;
 
 		List<JPQLQueryProblem> problems = validate(query);
 
@@ -5099,7 +5257,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_SubExpression_MissingRightParenthesis() throws Exception {
+	public final void test_SubExpression_MissingRightParenthesis() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE (2 + e.age";
 
@@ -5117,7 +5275,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_SubstringExpression_InvalidFirstExpression() throws Exception {
+	public final void test_SubstringExpression_InvalidFirstExpression() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE SUBSTRING(e, 0, 1)";
 
@@ -5135,12 +5293,12 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_SubstringExpression_InvalidSecondExpression() throws Exception {
+	public final void test_SubstringExpression_InvalidSecondExpression() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE SUBSTRING(e.name, e, 1)";
 
 		int startPosition = "SELECT e FROM Employee e WHERE SUBSTRING(e.name, ".length();
-		int endPosition   = startPosition + 1;
+		int endPosition   = "SELECT e FROM Employee e WHERE SUBSTRING(e.name, e".length();
 
 		List<JPQLQueryProblem> problems = validate(query);
 
@@ -5153,7 +5311,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_SubstringExpression_InvalidThirdExpression() throws Exception {
+	public final void test_SubstringExpression_InvalidThirdExpression() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE SUBSTRING(e.name, 0, e)";
 
@@ -5171,7 +5329,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_SubstringExpression_MissingFirstComma() throws Exception {
+	public final void test_SubstringExpression_MissingFirstComma() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE SUBSTRING(e.name 0, 1)";
 
@@ -5189,7 +5347,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_SubstringExpression_MissingFirstExpression() throws Exception {
+	public final void test_SubstringExpression_MissingFirstExpression() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE SUBSTRING(, 0, 1)";
 
@@ -5207,7 +5365,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_SubstringExpression_MissingLeftParenthesis() throws Exception {
+	public final void test_SubstringExpression_MissingLeftParenthesis() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE SUBSTRING e.name, 0, 1)";
 
@@ -5225,7 +5383,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_SubstringExpression_MissingRightParenthesis() throws Exception {
+	public final void test_SubstringExpression_MissingRightParenthesis() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE SUBSTRING(e.name, 0, 1";
 
@@ -5243,7 +5401,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_SubstringExpression_MissingSecondComma() throws Exception {
+	public final void test_SubstringExpression_MissingSecondComma() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE SUBSTRING(e.name, 0 1)";
 
@@ -5261,14 +5419,14 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_SubstringExpression_MissingSecondExpression() throws Exception {
+	public final void test_SubstringExpression_MissingSecondExpression() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE SUBSTRING(e.name, , 1)";
 
 		int startPosition = "SELECT e FROM Employee e WHERE SUBSTRING(e.name, ".length();
 		int endPosition   = startPosition;
 
-		List<JPQLQueryProblem> problems = validate(query, buildFormatter_01());
+		List<JPQLQueryProblem> problems = validate(query, buildFormatter_8());
 
 		testHasProblem(
 			problems,
@@ -5279,67 +5437,82 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_SubstringExpression_MissingThirdExpression_1() throws Exception {
+	public final void test_SubstringExpression_MissingThirdExpression_1() throws Exception {
 
-//		String query = "SELECT e FROM Employee e WHERE SUBSTRING(e.name, 0,";
+		String query = "SELECT e FROM Employee e WHERE SUBSTRING(e.name, 0,";
+		List<JPQLQueryProblem> problems = validate(query);
 
-//		int startPosition = query.length();
-//		int endPosition   = startPosition;
+		if (jpqlGrammar.getJPAVersion().isNewerThan(JPAVersion.VERSION_1_0)) {
+			int startPosition = query.length();
+			int endPosition   = startPosition;
 
-		// TODO: Support platform and it should be done through an extension rather than
-		// hard coding it in the unit-tests (like using IPlatform)
-//		List<JPQLQueryProblem> problems = validate(query, IPlatform.JAVA);
-//
-//		testHasProblem(
-//			problems,
-//			JPQLQueryProblemMessages.SubstringExpression_MissingThirdExpression,
-//			startPosition,
-//			endPosition
-//		);
+			testHasProblem(
+				problems,
+				JPQLQueryProblemMessages.SubstringExpression_MissingThirdExpression,
+				startPosition,
+				endPosition
+			);
+		}
+		else {
+			testDoesNotHaveProblem(
+				problems,
+				JPQLQueryProblemMessages.SubstringExpression_MissingThirdExpression
+			);
+		}
 	}
 
 	@Test
-	public void test_SubstringExpression_MissingThirdExpression_2() throws Exception {
+	public final void test_SubstringExpression_MissingThirdExpression_2() throws Exception {
 
-//		String query = "SELECT e FROM Employee e WHERE SUBSTRING(e.name, 0, ";
+		String query = "SELECT e FROM Employee e WHERE SUBSTRING(e.name, 0, ";
+		List<JPQLQueryProblem> problems = validate(query);
 
-//		int startPosition = query.length();
-//		int endPosition   = startPosition;
+		if (jpqlGrammar.getJPAVersion().isNewerThan(JPAVersion.VERSION_1_0)) {
+			int startPosition = query.length();
+			int endPosition   = startPosition;
 
-		// TODO: Support platform and it should be done through an extension rather than
-		// hard coding it in the unit-tests (like using IPlatform)
-//		List<JPQLQueryProblem> problems = validate(query, IPlatform.JAVA);
-//
-//		testHasProblem(
-//			problems,
-//			JPQLQueryProblemMessages.SubstringExpression_MissingThirdExpression,
-//			startPosition,
-//			endPosition
-//		);
+			testHasProblem(
+				problems,
+				JPQLQueryProblemMessages.SubstringExpression_MissingThirdExpression,
+				startPosition,
+				endPosition
+			);
+		}
+		else {
+			testDoesNotHaveProblem(
+				problems,
+				JPQLQueryProblemMessages.SubstringExpression_MissingThirdExpression
+			);
+		}
 	}
 
 	@Test
-	public void test_SubstringExpression_MissingThirdExpression_3() throws Exception {
+	public final void test_SubstringExpression_MissingThirdExpression_3() throws Exception {
 
-//		String query = "SELECT e FROM Employee e WHERE SUBSTRING(e.name, 0, )";
+		String query = "SELECT e FROM Employee e WHERE SUBSTRING(e.name, 0, )";
+		List<JPQLQueryProblem> problems = validate(query, buildFormatter_7());
 
-//		int startPosition = query.length() - 1;
-//		int endPosition   = startPosition;
+		if (jpqlGrammar.getJPAVersion().isNewerThan(JPAVersion.VERSION_1_0)) {
+			int startPosition = query.length() - 1;
+			int endPosition   = startPosition;
 
-		// TODO: Support platform and it should be done through an extension rather than
-		// hard coding it in the unit-tests (like using IPlatform)
-//		List<JPQLQueryProblem> problems = validate(query, IPlatform.JAVA, buildFormatter_7());
-//
-//		testHasProblem(
-//			problems,
-//			JPQLQueryProblemMessages.SubstringExpression_MissingThirdExpression,
-//			startPosition,
-//			endPosition
-//		);
+			testHasProblem(
+				problems,
+				JPQLQueryProblemMessages.SubstringExpression_MissingThirdExpression,
+				startPosition,
+				endPosition
+			);
+		}
+		else {
+			testDoesNotHaveProblem(
+				problems,
+				JPQLQueryProblemMessages.SubstringExpression_MissingThirdExpression
+			);
+		}
 	}
 
 	@Test
-	public void test_SubstringExpression_MissingThirdExpression_4() throws Exception {
+	public final void test_SubstringExpression_MissingThirdExpression_4() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE SUBSTRING(e.name, 0)";
 
@@ -5348,7 +5521,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_SumFunction_InvalidExpression() throws Exception {
+	public final void test_SumFunction_InvalidExpression() throws Exception {
 
 		String query = "SELECT SUM(e) FROM Employee e";
 		int startPosition = "SELECT SUM(".length();
@@ -5365,7 +5538,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_SumFunction_MissingExpression_1() throws Exception {
+	public final void test_SumFunction_MissingExpression_1() throws Exception {
 
 		String query = "SELECT SUM() FROM Employee e";
 		int startPosition = "SELECT SUM(".length();
@@ -5382,7 +5555,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_SumFunction_MissingExpression_2() throws Exception {
+	public final void test_SumFunction_MissingExpression_2() throws Exception {
 
 		String query = "SELECT SUM(DISTINCT) FROM Employee e";
 		int startPosition = "SELECT SUM(DISTINCT".length();
@@ -5399,7 +5572,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_SumFunction_MissingExpression_3() throws Exception {
+	public final void test_SumFunction_MissingExpression_3() throws Exception {
 
 		String query = "SELECT SUM(DISTINCT ) FROM Employee e";
 		int startPosition = "SELECT SUM(DISTINCT ".length();
@@ -5416,7 +5589,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_SumFunction_MissingLeftParenthesis_1() throws Exception {
+	public final void test_SumFunction_MissingLeftParenthesis_1() throws Exception {
 
 		String query = "SELECT SUM e.age) FROM Employee e";
 		int startPosition = "SELECT SUM".length();
@@ -5433,7 +5606,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_SumFunction_MissingLeftParenthesis_2() throws Exception {
+	public final void test_SumFunction_MissingLeftParenthesis_2() throws Exception {
 
 		String query = "SELECT SUM DISTINCT e.age) FROM Employee e";
 		int startPosition = "SELECT SUM".length();
@@ -5450,7 +5623,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_SumFunction_MissingRightParenthesis() throws Exception {
+	public final void test_SumFunction_MissingRightParenthesis() throws Exception {
 
 		String query = "SELECT SUM(DISTINCT e.age FROM Employee e";
 		int startPosition = "SELECT SUM(DISTINCT e.age".length();
@@ -5467,7 +5640,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_TrimExpression_InvalidExpression() throws Exception {
+	public final void test_TrimExpression_InvalidExpression() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE TRIM(e) = 'JPQL'";
 		int startPosition = "SELECT e FROM Employee e WHERE TRIM(".length();
@@ -5484,7 +5657,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_TrimExpression_InvalidTrimCharacter() throws Exception {
+	public final void test_TrimExpression_InvalidTrimCharacter() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE TRIM(e FROM ' JPQL ') = 'JPQL'";
 		int startPosition = "SELECT e FROM Employee e WHERE TRIM(".length();
@@ -5501,7 +5674,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_TrimExpression_MissingExpression() throws Exception {
+	public final void test_TrimExpression_MissingExpression() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE TRIM() = 'JPQL'";
 		int startPosition = "SELECT e FROM Employee e WHERE TRIM(".length();
@@ -5518,7 +5691,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_TrimExpression_MissingLeftParenthesis() throws Exception {
+	public final void test_TrimExpression_MissingLeftParenthesis() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE TRIM ' JPQL ') = 'JPQL'";
 		int startPosition = "SELECT e FROM Employee e WHERE TRIM".length();
@@ -5535,7 +5708,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_TrimExpression_MissingRightParenthesis() throws Exception {
+	public final void test_TrimExpression_MissingRightParenthesis() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE TRIM(' JPQL ' = 'JPQL'";
 		int startPosition = "SELECT e FROM Employee e WHERE TRIM(' JPQL '".length();
@@ -5552,7 +5725,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_TrimExpression_NotSingleStringLiteral() throws Exception {
+	public final void test_TrimExpression_NotSingleStringLiteral() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE TRIM('u2' FROM ' JPQL ') = 'JPQL'";
 		int startPosition = "SELECT e FROM Employee e WHERE TRIM(".length();
@@ -5569,7 +5742,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_TypeExpression_InvalidExpression() throws Exception {
+	public final void test_TypeExpression_InvalidExpression() throws Exception {
 
 		String query = "SELECT TYPE(e.name) FROM Employee e";
 		int startPosition = "SELECT TYPE(".length();
@@ -5586,7 +5759,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_TypeExpression_MissingExpression() throws Exception {
+	public final void test_TypeExpression_MissingExpression() throws Exception {
 
 		String query = "SELECT TYPE() FROM Employee e";
 		int startPosition = "SELECT TYPE(".length();
@@ -5602,150 +5775,8 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 		);
 	}
 
-	@Test
-	public void test_TypeExpression_MissingLeftParenthesis() throws Exception {
-
-		String query = "SELECT TYPE e) FROM Employee e";
-		int startPosition = "SELECT TYPE".length();
-		int endPosition   = startPosition;
-
-		List<JPQLQueryProblem> problems = validate(query);
-
-		testHasOnlyOneProblem(
-			problems,
-			JPQLQueryProblemMessages.TypeExpression_MissingLeftParenthesis,
-			startPosition,
-			endPosition
-		);
-	}
-
-	@Test
-	public void test_TypeExpression_MissingRightParenthesis() throws Exception {
-
-		String query = "SELECT TYPE(e FROM Employee e";
-		int startPosition = "SELECT TYPE(e".length();
-		int endPosition   = startPosition;
-
-		List<JPQLQueryProblem> problems = validate(query);
-
-		testHasOnlyOneProblem(
-			problems,
-			JPQLQueryProblemMessages.TypeExpression_MissingRightParenthesis,
-			startPosition,
-			endPosition
-		);
-	}
-
-	@Test
-	public void test_UpdateClause_MissingRangeVariableDeclaration() throws Exception {
-
-		String query = "UPDATE SET e.name = 'Pascal'";
-
-		int startPosition = "UPDATE ".length();
-		int endPosition   = startPosition;
-
-		List<JPQLQueryProblem> problems = validate(query);
-
-		testHasOnlyOneProblem(
-			problems,
-			JPQLQueryProblemMessages.UpdateClause_MissingRangeVariableDeclaration,
-			startPosition,
-			endPosition
-		);
-	}
-
-	@Test
-	public void test_UpdateClause_MissingSet() throws Exception {
-
-		String query = "UPDATE Employee e e.name = 'Pascal'";
-
-		int startPosition = "UPDATE Employee e ".length();
-		int endPosition   = startPosition;
-
-		List<JPQLQueryProblem> problems = validate(query);
-
-		testHasOnlyOneProblem(
-			problems,
-			JPQLQueryProblemMessages.UpdateClause_MissingSet,
-			startPosition,
-			endPosition
-		);
-	}
-
-	@Test
-	public void test_UpdateClause_MissingUpdateItems_1() throws Exception {
-
-		String query = "UPDATE Employee e SET";
-
-		int startPosition = query.length();
-		int endPosition   = startPosition;
-
-		List<JPQLQueryProblem> problems = validate(query);
-
-		testHasOnlyOneProblem(
-			problems,
-			JPQLQueryProblemMessages.UpdateClause_MissingUpdateItems,
-			startPosition,
-			endPosition
-		);
-	}
-
-	@Test
-	public void test_UpdateClause_MissingUpdateItems_2() throws Exception {
-
-		String query = "UPDATE Employee e SET ";
-
-		int startPosition = query.length();
-		int endPosition   = startPosition;
-
-		List<JPQLQueryProblem> problems = validate(query);
-
-		testHasOnlyOneProblem(
-			problems,
-			JPQLQueryProblemMessages.UpdateClause_MissingUpdateItems,
-			startPosition,
-			endPosition
-		);
-	}
-
-	@Test
-	public void test_UpdateClause_UpdateItemEndsWithComma_1() throws Exception {
-
-		String query = "UPDATE Employee e SET e.name = 'JPQL',";
-
-		int startPosition = query.length() - 1;
-		int endPosition   = startPosition + 1;
-
-		List<JPQLQueryProblem> problems = validate(query);
-
-		testHasOnlyOneProblem(
-			problems,
-			JPQLQueryProblemMessages.UpdateClause_UpdateItemEndsWithComma,
-			startPosition,
-			endPosition
-		);
-	}
-
-	@Test
-	public void test_UpdateClause_UpdateItemEndsWithComma_2() throws Exception {
-
-		String query = "UPDATE Employee e SET e.name = 'JPQL', ";
-
-		int startPosition = "UPDATE Employee e SET e.name = 'JPQL'".length();
-		int endPosition   = startPosition + 1;
-
-		List<JPQLQueryProblem> problems = validate(query);
-
-		testHasOnlyOneProblem(
-			problems,
-			JPQLQueryProblemMessages.UpdateClause_UpdateItemEndsWithComma,
-			startPosition,
-			endPosition
-		);
-	}
-
 //	@Test
-//	public void test_UpdateItem_InvalidNewValue()
+//	public final void test_UpdateItem_InvalidNewValue()
 //	{
 //		String query = "UPDATE Employee e SET e.name = LENGTH(e.age)";
 //
@@ -5764,7 +5795,149 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 //	}
 
 	@Test
-	public void test_UpdateClause_UpdateItemIsMissingComma() throws Exception {
+	public final void test_TypeExpression_MissingLeftParenthesis() throws Exception {
+
+		String query = "SELECT TYPE e) FROM Employee e";
+		int startPosition = "SELECT TYPE".length();
+		int endPosition   = startPosition;
+
+		List<JPQLQueryProblem> problems = validate(query);
+
+		testHasOnlyOneProblem(
+			problems,
+			JPQLQueryProblemMessages.TypeExpression_MissingLeftParenthesis,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public final void test_TypeExpression_MissingRightParenthesis() throws Exception {
+
+		String query = "SELECT TYPE(e FROM Employee e";
+		int startPosition = "SELECT TYPE(e".length();
+		int endPosition   = startPosition;
+
+		List<JPQLQueryProblem> problems = validate(query);
+
+		testHasOnlyOneProblem(
+			problems,
+			JPQLQueryProblemMessages.TypeExpression_MissingRightParenthesis,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public final void test_UpdateClause_MissingRangeVariableDeclaration() throws Exception {
+
+		String query = "UPDATE SET e.name = 'Pascal'";
+
+		int startPosition = "UPDATE ".length();
+		int endPosition   = startPosition;
+
+		List<JPQLQueryProblem> problems = validate(query);
+
+		testHasOnlyOneProblem(
+			problems,
+			JPQLQueryProblemMessages.UpdateClause_MissingRangeVariableDeclaration,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public final void test_UpdateClause_MissingSet() throws Exception {
+
+		String query = "UPDATE Employee e e.name = 'Pascal'";
+
+		int startPosition = "UPDATE Employee e ".length();
+		int endPosition   = startPosition;
+
+		List<JPQLQueryProblem> problems = validate(query);
+
+		testHasOnlyOneProblem(
+			problems,
+			JPQLQueryProblemMessages.UpdateClause_MissingSet,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public final void test_UpdateClause_MissingUpdateItems_1() throws Exception {
+
+		String query = "UPDATE Employee e SET";
+
+		int startPosition = query.length();
+		int endPosition   = startPosition;
+
+		List<JPQLQueryProblem> problems = validate(query);
+
+		testHasOnlyOneProblem(
+			problems,
+			JPQLQueryProblemMessages.UpdateClause_MissingUpdateItems,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public final void test_UpdateClause_MissingUpdateItems_2() throws Exception {
+
+		String query = "UPDATE Employee e SET ";
+
+		int startPosition = query.length();
+		int endPosition   = startPosition;
+
+		List<JPQLQueryProblem> problems = validate(query);
+
+		testHasOnlyOneProblem(
+			problems,
+			JPQLQueryProblemMessages.UpdateClause_MissingUpdateItems,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public final void test_UpdateClause_UpdateItemEndsWithComma_1() throws Exception {
+
+		String query = "UPDATE Employee e SET e.name = 'JPQL',";
+
+		int startPosition = query.length() - 1;
+		int endPosition   = startPosition + 1;
+
+		List<JPQLQueryProblem> problems = validate(query);
+
+		testHasOnlyOneProblem(
+			problems,
+			JPQLQueryProblemMessages.UpdateClause_UpdateItemEndsWithComma,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public final void test_UpdateClause_UpdateItemEndsWithComma_2() throws Exception {
+
+		String query = "UPDATE Employee e SET e.name = 'JPQL', ";
+
+		int startPosition = "UPDATE Employee e SET e.name = 'JPQL'".length();
+		int endPosition   = startPosition + 1;
+
+		List<JPQLQueryProblem> problems = validate(query);
+
+		testHasOnlyOneProblem(
+			problems,
+			JPQLQueryProblemMessages.UpdateClause_UpdateItemEndsWithComma,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public final void test_UpdateClause_UpdateItemIsMissingComma() throws Exception {
 
 		String query = "UPDATE Employee e SET e.name = 'JPQL' e.age = 20";
 
@@ -5782,7 +5955,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_UpdateItem_MissingEqualSign_1() throws Exception {
+	public final void test_UpdateItem_MissingEqualSign_1() throws Exception {
 
 		String query = "UPDATE Employee e SET e.name";
 
@@ -5800,7 +5973,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_UpdateItem_MissingEqualSign_2() throws Exception {
+	public final void test_UpdateItem_MissingEqualSign_2() throws Exception {
 
 		String query = "UPDATE Employee e SET e.name ";
 
@@ -5818,7 +5991,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_UpdateItem_MissingNewValue_1() throws Exception {
+	public final void test_UpdateItem_MissingNewValue_1() throws Exception {
 
 		String query = "UPDATE Employee e SET e.name =";
 
@@ -5836,7 +6009,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_UpdateItem_MissingNewValue_2() throws Exception {
+	public final void test_UpdateItem_MissingNewValue_2() throws Exception {
 
 		String query = "UPDATE Employee e SET e.name = ";
 
@@ -5854,7 +6027,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_UpdateItem_MissingStateFieldPathExpression() throws Exception {
+	public final void test_UpdateItem_MissingStateFieldPathExpression() throws Exception {
 
 		String query = "UPDATE Employee e SET = 'Pascal'";
 
@@ -5872,11 +6045,11 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_UpperExpression_InvalidExpression() throws Exception {
+	public final void test_UpperExpression_InvalidExpression() throws Exception {
 
-		String query = "SELECT e FROM Employee e WHERE UPPER(2) = 'PASCAL'";
+		String query = "SELECT e FROM Employee e WHERE UPPER(ALL(SELECT d FROM Dept d)) = 'PASCAL'";
 		int startPosition = "SELECT e FROM Employee e WHERE UPPER(".length();
-		int endPosition   = "SELECT e FROM Employee e WHERE UPPER(2".length();
+		int endPosition   = "SELECT e FROM Employee e WHERE UPPER(ALL(SELECT d FROM Dept d)".length();
 
 		List<JPQLQueryProblem> problems = validate(query);
 
@@ -5889,7 +6062,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_UpperExpression_MissingExpression() throws Exception {
+	public final void test_UpperExpression_MissingExpression() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE UPPER() = 'PASCAL'";
 		int startPosition = "SELECT e FROM Employee e WHERE UPPER(".length();
@@ -5906,7 +6079,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_UpperExpression_MissingLeftParenthesis() throws Exception {
+	public final void test_UpperExpression_MissingLeftParenthesis() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE UPPER e.name) = 'PASCAL'";
 		int startPosition = "SELECT e FROM Employee e WHERE UPPER".length();
@@ -5923,7 +6096,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_UpperExpression_MissingRightParenthesis() throws Exception {
+	public final void test_UpperExpression_MissingRightParenthesis() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE UPPER(e.name = 'PASCAL'";
 		int startPosition = "SELECT e FROM Employee e WHERE UPPER(e.name".length();
@@ -5940,7 +6113,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_ValidQuery_01() throws Exception {
+	public final void test_ValidQuery_01() throws Exception {
 
 		String query = "UPDATE Product " +
 		               "SET partNumber = CASE TYPE(project) WHEN com.titan.domain.EnumType.FIRST_NAME THEN '1' " +
@@ -5953,7 +6126,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_ValueExpression_InvalidExpression() throws Exception {
+	public final void test_ValueExpression_InvalidExpression() throws Exception {
 
 		String query = "SELECT VALUE(e.name) FROM Employee e";
 		int startPosition = "SELECT VALUE(".length();
@@ -5970,7 +6143,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_ValueExpression_MissingExpression() throws Exception {
+	public final void test_ValueExpression_MissingExpression() throws Exception {
 
 		String query = "SELECT VALUE() FROM Employee e JOIN e.addresses a";
 		int startPosition = "SELECT VALUE(".length();
@@ -5987,7 +6160,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_ValueExpression_MissingLeftParenthesis() throws Exception {
+	public final void test_ValueExpression_MissingLeftParenthesis() throws Exception {
 
 		String query = "SELECT VALUE a) FROM Employee e JOIN e.addresses a";
 		int startPosition = "SELECT VALUE".length();
@@ -6004,7 +6177,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_ValueExpression_MissingRightParenthesis() throws Exception {
+	public final void test_ValueExpression_MissingRightParenthesis() throws Exception {
 
 		String query = "SELECT VALUE(a FROM Employee e JOIN e.addresses a";
 		int startPosition = "SELECT VALUE(a".length();
@@ -6021,7 +6194,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_WhenClause_MissingThenExpression() throws Exception {
+	public final void test_WhenClause_MissingThenExpression() throws Exception {
 
 		String query = "UPDATE Employee e " +
 		               "SET e.salary = " +
@@ -6030,8 +6203,6 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 		               "    END";
 
 		List<JPQLQueryProblem> problems = validate(query);
-
-		query = query.replaceAll("\\s+", " ");
 
 		int startPosition = "UPDATE Employee e SET e.salary = CASE WHEN e.rating = 1 THEN ".length();
 		int endPosition = startPosition;
@@ -6045,7 +6216,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_WhenClause_MissingThenIdentifier() throws Exception {
+	public final void test_WhenClause_MissingThenIdentifier() throws Exception {
 
 		String query = "UPDATE Employee e " +
 		               "SET e.salary = " +
@@ -6069,7 +6240,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_WhenClause_MissingWhenExpression() throws Exception {
+	public final void test_WhenClause_MissingWhenExpression() throws Exception {
 
 		String query = "UPDATE Employee e " +
 		               "SET e.salary = " +
@@ -6093,7 +6264,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_WhereClause_ConditionalExpressionMissing_1() throws Exception {
+	public final void test_WhereClause_ConditionalExpressionMissing_1() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE";
 		int startPosition = "SELECT e FROM Employee e ".length();
@@ -6110,7 +6281,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_WhereClause_ConditionalExpressionMissing_2() throws Exception {
+	public final void test_WhereClause_ConditionalExpressionMissing_2() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE ";
 		int startPosition = "SELECT e FROM Employee e ".length();
@@ -6127,7 +6298,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public void test_WhereClause_HavingConditionalExpression() throws Exception {
+	public final void test_WhereClause_HavingConditionalExpression() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE LENGTH(e.name)";
 		int startPosition = "SELECT e FROM Employee e WHERE ".length();
@@ -6141,10 +6312,5 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 			startPosition,
 			endPosition
 		);
-	}
-
-	@Override
-	protected List<JPQLQueryProblem> validate(AbstractJPQLQueryHelper queryHelper) {
-		return queryHelper.validateGrammar();
 	}
 }

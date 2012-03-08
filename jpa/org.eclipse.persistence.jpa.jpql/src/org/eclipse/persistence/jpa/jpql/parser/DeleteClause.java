@@ -100,7 +100,7 @@ public final class DeleteClause extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void addOrderedChildrenTo(List<StringExpression> children) {
+	protected void addOrderedChildrenTo(List<Expression> children) {
 
 		// 'DELETE'
 		children.add(buildStringExpression(DELETE));

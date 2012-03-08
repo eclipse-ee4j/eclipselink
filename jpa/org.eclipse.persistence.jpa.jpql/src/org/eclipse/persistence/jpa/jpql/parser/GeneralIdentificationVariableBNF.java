@@ -48,5 +48,6 @@ public final class GeneralIdentificationVariableBNF extends JPQLQueryBNF {
 		registerExpressionFactory(IdentificationVariableFactory.ID);
 		registerExpressionFactory(KeyExpressionFactory.ID);
 		registerExpressionFactory(ValueExpressionFactory.ID);
+//		registerChild(IdentificationVariableBNF.ID);
 	}
 }

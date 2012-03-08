@@ -15,9 +15,9 @@ package org.eclipse.persistence.internal.jpa.jpql;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.LinkedList;
+import java.util.List;
+import org.eclipse.persistence.jpa.jpql.LiteralType;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractEclipseLinkExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionMemberDeclaration;
@@ -60,7 +60,7 @@ final class DeclarationResolver {
 	/**
 	 * The {@link Declaration} objects mapped to their identification variable.
 	 */
-	private Map<String, Declaration> declarations;
+	private List<Declaration> declarations;
 
 	/**
 	 * This visitor is responsible to visit the current query's declaration and populate this
@@ -94,7 +94,7 @@ final class DeclarationResolver {
 	/**
 	 * The result variables used to identify select expressions.
 	 */
-	private Set<String> resultVariables;
+	private Collection<IdentificationVariable> resultVariables;
 
 	/**
 	 * Determines whether the <code><b>SELECT</b></code> clause was visited in order to retrieve the
@@ -144,10 +144,7 @@ final class DeclarationResolver {
 		declaration.baseExpression         = rangeVariableDeclaration;
 		declaration.identificationVariable = (IdentificationVariable) rangeVariableDeclaration.getIdentificationVariable();
 
-		// Identification variable is always used as upper case because .equals() is used instead of
-		// .equalsIgnoreCase(), which means equivalency will be used because intern() was used everywhere
-		variableName = variableName.toUpperCase().intern();
-		declarations.put(variableName, declaration);
+		declarations.add(declaration);
 
 		// Make sure it marked as the base declaration
 		if (baseDeclaration == null) {
@@ -182,17 +179,9 @@ final class DeclarationResolver {
 
 			declaration.declarationExpression.accept(visitor);
 
-			String variableName = null;
-
 			// Now replace the old declaration with the new one
-			for (Map.Entry<String, Declaration> entry : declarations.entrySet()) {
-				if (entry.getValue() == declaration) {
-					variableName = entry.getKey();
-					break;
-				}
-			}
-
-			declarations.put(variableName, visitor.declaration);
+			int index = declarations.indexOf(declaration);
+			declarations.set(index, visitor.declaration);
 
 			// Update the base declaration
 			if (baseDeclaration == declaration) {
@@ -244,7 +233,14 @@ final class DeclarationResolver {
 	 * declaration
 	 */
 	Declaration getDeclaration(String variableName) {
-		return declarations.get(variableName);
+
+		for (Declaration declaration : declarations) {
+			if (declaration.getVariableName().equalsIgnoreCase(variableName)) {
+				return declaration;
+			}
+		}
+
+		return null;
 	}
 
 	/**
@@ -252,8 +248,8 @@ final class DeclarationResolver {
 	 *
 	 * @return The {@link Declaration Declarations} of the current query that was parsed
 	 */
-	Collection<Declaration> getDeclarations() {
-		return declarations.values();
+	List<Declaration> getDeclarations() {
+		return declarations;
 	}
 
 	/**
@@ -289,6 +285,25 @@ final class DeclarationResolver {
 	}
 
 	/**
+	 * Returns
+	 *
+	 * @return
+	 */
+	Collection<IdentificationVariable> getResultVariables() {
+
+		if (parent != null) {
+			return parent.getResultVariables();
+		}
+
+		if (!resultVariablesPopulated) {
+			resultVariablesPopulated = true;
+			queryContext.getJPQLExpression().accept(resultVariableVisitor());
+		}
+
+		return resultVariables;
+	}
+
+	/**
 	 * Initializes this <code>DeclarationResolver</code>.
 	 *
 	 * @param queryContext The context used to query information about the query
@@ -298,7 +313,57 @@ final class DeclarationResolver {
 	private void initialize(JPQLQueryContext queryContext, DeclarationResolver parent) {
 		this.parent       = parent;
 		this.queryContext = queryContext;
-		this.declarations = new LinkedHashMap<String, Declaration>();
+		this.declarations = new LinkedList<Declaration>();
+	}
+
+	/**
+	 * Determines whether the given identification variable is defining a <b>JOIN</b> or <code>IN</code>
+	 * expressions for a collection-valued field.
+	 *
+	 * @param variableName The identification variable to check for what it maps
+	 * @return <code>true</code> if the given identification variable maps a collection-valued field
+	 * defined in a <code>JOIN</code> or <code>IN</code> expression; <code>false</code> if it's not
+	 * defined or it's mapping an abstract schema name
+	 */
+	boolean isCollectionIdentificationVariable(String variableName) {
+		boolean result = isCollectionIdentificationVariableImp(variableName);
+		if (!result && (parent != null)) {
+			result = parent.isCollectionIdentificationVariableImp(variableName);
+		}
+		return result;
+	}
+
+	boolean isCollectionIdentificationVariableImp(String variableName) {
+
+		for (Declaration declaration : declarations) {
+
+			// Check for a collection member declaration
+			if (!declaration.isRange() &&
+			     declaration.getVariableName().equalsIgnoreCase(variableName)) {
+
+				return true;
+			}
+			else if (declaration.isRange()) {
+
+				RangeDeclaration rangeDeclaration = (RangeDeclaration) declaration;
+
+				// Check the JOIN expressions
+				for (Join join : rangeDeclaration.getJoins()) {
+
+					String joinVariableName = queryContext.literal(
+						join.getIdentificationVariable(),
+						LiteralType.IDENTIFICATION_VARIABLE
+					);
+
+					if (joinVariableName.equalsIgnoreCase(variableName)) {
+						Declaration joinDeclaration = queryContext.getDeclaration(joinVariableName);
+						return joinDeclaration.getMapping().isCollectionMapping();
+					}
+				}
+			}
+		}
+
+		return false;
 	}
 
 	/**
@@ -337,12 +402,13 @@ final class DeclarationResolver {
 			return parent.isResultVariable(variableName);
 		}
 
-		if (!resultVariablesPopulated) {
-			resultVariablesPopulated = true;
-			queryContext.getJPQLExpression().accept(resultVariableVisitor());
+		for (IdentificationVariable resultVariable : getResultVariables()) {
+			if (resultVariable.getText().equalsIgnoreCase(variableName)) {
+				return true;
+			}
 		}
 
-		return resultVariables.contains(variableName);
+		return false;
 	}
 
 	/**
@@ -392,7 +458,7 @@ final class DeclarationResolver {
 
 	private ResultVariableVisitor resultVariableVisitor() {
 		if (resultVariableVisitor == null) {
-			resultVariables = new HashSet<String>();
+			resultVariables = new HashSet<IdentificationVariable>();
 			resultVariableVisitor = new ResultVariableVisitor();
 		}
 		return resultVariableVisitor;
@@ -414,7 +480,7 @@ final class DeclarationResolver {
 		 * The list of {@link Declaration} objects to which new ones will be added by traversing the
 		 * declaration clause.
 		 */
-		Map<String, Declaration> declarations;
+		List<Declaration> declarations;
 
 		/**
 		 * The {@link JPQLQueryContext} is used to query information about the application metadata and
@@ -439,15 +505,12 @@ final class DeclarationResolver {
 			Declaration declaration = new CollectionDeclaration(queryContext);
 			declaration.baseExpression = expression.getCollectionValuedPathExpression();
 			declaration.declarationExpression = expression;
+			declarations.add(declaration);
 
 			// A derived collection member declaration does not have an identification variable
-			if (expression.isDerived()) {
-				declarations.put(declaration.baseExpression.toParsedText(), declaration);
-			}
-			else {
+			if (!expression.isDerived()) {
 				IdentificationVariable identificationVariable = (IdentificationVariable) expression.getIdentificationVariable();
 				declaration.identificationVariable = identificationVariable;
-				declarations.put(identificationVariable.getVariableName(), declaration);
 			}
 
 			if (baseDeclaration == null) {
@@ -517,7 +580,7 @@ final class DeclarationResolver {
 				JoinDeclaration declaration = new JoinDeclaration(queryContext);
 				declaration.baseExpression = expression;
 				declaration.identificationVariable = identificationVariable;
-				declarations.put(identificationVariable.getVariableName(), declaration);
+				declarations.add(declaration);
 			}
 		}
 
@@ -550,7 +613,7 @@ final class DeclarationResolver {
 			currentDeclaration.identificationVariable = identificationVariable;
 			currentDeclaration.baseExpression = expression;
 			currentDeclaration.rootPath = rootPath;
-			declarations.put(identificationVariable.getVariableName(), currentDeclaration);
+			declarations.add(currentDeclaration);
 
 			if (baseDeclaration == null) {
 				baseDeclaration = currentDeclaration;
@@ -697,7 +760,7 @@ final class DeclarationResolver {
 		@Override
 		public void visit(ResultVariable expression) {
 			IdentificationVariable identificationVariable = (IdentificationVariable) expression.getResultVariable();
-			resultVariables.add(identificationVariable.getVariableName());
+			resultVariables.add(identificationVariable);
 		}
 
 		/**

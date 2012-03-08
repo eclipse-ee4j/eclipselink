@@ -62,7 +62,7 @@ public abstract class AbstractSingleEncapsulatedExpression extends AbstractEncap
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void addOrderedEncapsulatedExpressionTo(List<StringExpression> children) {
+	protected void addOrderedEncapsulatedExpressionTo(List<Expression> children) {
 		if (expression != null) {
 			children.add(expression);
 		}
@@ -115,7 +115,7 @@ public abstract class AbstractSingleEncapsulatedExpression extends AbstractEncap
 	}
 
 	/**
-	 * Sets
+	 * Manually sets
 	 *
 	 * @param expression
 	 */

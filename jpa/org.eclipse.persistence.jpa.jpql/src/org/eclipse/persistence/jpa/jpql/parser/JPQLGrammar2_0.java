@@ -401,6 +401,7 @@ public final class JPQLGrammar2_0 extends AbstractJPQLGrammar {
 		addChildBNF(DateTimePrimaryBNF.ID,                DateTimeTimestampLiteralBNF.ID);
 		addChildBNF(EntityExpressionBNF.ID,               SingleValuedObjectPathExpressionBNF.ID);
 		addChildBNF(EnumPrimaryBNF.ID,                    CaseExpressionBNF.ID);
+		addChildBNF(InExpressionItemBNF.ID,               TypeExpressionBNF.ID);
 		addChildBNF(InternalCountBNF.ID,                  SingleValuedObjectPathExpressionBNF.ID);
 		addChildBNF(InternalOrderByItemBNF.ID,            ResultVariableBNF.ID);
 		addChildBNF(LiteralBNF.ID,                        EntityTypeLiteralBNF.ID);
@@ -479,6 +480,6 @@ public final class JPQLGrammar2_0 extends AbstractJPQLGrammar {
 	 */
 	@Override
 	public String toString() {
-		return "JPQLGrammar for JPA 2.0";
+		return "JPQLGrammar 2.0";
 	}
 }

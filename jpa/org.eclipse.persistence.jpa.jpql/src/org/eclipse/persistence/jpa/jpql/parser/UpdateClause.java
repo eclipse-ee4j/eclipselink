@@ -114,7 +114,7 @@ public final class UpdateClause extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void addOrderedChildrenTo(List<StringExpression> children) {
+	protected void addOrderedChildrenTo(List<Expression> children) {
 
 		// 'UPDATE'
 		children.add(buildStringExpression(UPDATE));
@@ -286,7 +286,7 @@ public final class UpdateClause extends AbstractExpression {
 	 */
 	@Override
 	protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
-		return word.equalsIgnoreCase(SET) ||
+		return word.equalsIgnoreCase(SET)   ||
 		       super.isParsingComplete(wordParser, word, expression);
 	}
 

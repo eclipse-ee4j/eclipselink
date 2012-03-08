@@ -93,6 +93,8 @@ public final class EclipseLinkJPQLGrammar2_0 extends AbstractJPQLGrammar {
 	protected void initializeBNFs() {
 		addChildBNF(InternalOrderByItemBNF.ID, ScalarExpressionBNF.ID);
 		addChildBNF(GroupByItemBNF.ID,         ScalarExpressionBNF.ID);
+		addChildBNF(InExpressionItemBNF.ID,    IdentificationVariableBNF.ID);
+		addChildBNF(InExpressionItemBNF.ID,    InputParameterBNF.ID);
 		addChildBNF(InItemBNF.ID,              ScalarExpressionBNF.ID);
 	}
 
@@ -115,6 +117,6 @@ public final class EclipseLinkJPQLGrammar2_0 extends AbstractJPQLGrammar {
 	 */
 	@Override
 	public String toString() {
-		return "JPQL grammar for EclipseLink 2.0";
+		return "EclipseLink 2.0";
 	}
 }

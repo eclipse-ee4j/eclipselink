@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Oracle. All rights reserved.
+ * Copyright (c) 2011, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -51,17 +51,23 @@ final class DerivedDeclaration extends AbstractRangeDeclaration {
 		// If the derived expression is a class (non direct collection), then create a new expression
 		// builder for it, this builder will be compared as equal to the outer reference
 		if ((mapping != null) && (mapping.getReferenceDescriptor() != null)) {
+
 			Expression expression = new ExpressionBuilder(mapping.getReferenceDescriptor().getJavaClass());
 			queryContext.addUsedIdentificationVariable(rootPath);
 			queryContext.addQueryExpression(rootPath, expression);
 
-			if (queryContext.getParent().getQueryExpressionImp(rootPath) == null) {
-				queryContext.getParent().addQueryExpressionImp(rootPath, queryContext.buildExpression(baseExpression));
+			// Check to see if the Expression exists in the parent's context,
+			// if not, then create/cache a new instance
+			JPQLQueryContext parentContext = queryContext.getParent();
+
+			if (parentContext.getQueryExpressionImp(rootPath) == null) {
+				parentContext.addQueryExpressionImp(rootPath, queryContext.buildExpression(baseExpression));
 			}
 
 			return expression;
 		}
 		else {
+
 			// Otherwise it will be derived by duplicating the join to the outer builder inside the
 			// sub select. The same could be done for direct collection, but difficult to create a
 			// builder on a table. Retrieve the superquery identification variable from the derived path
@@ -83,16 +89,14 @@ final class DerivedDeclaration extends AbstractRangeDeclaration {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	boolean isDerived() {
+	public boolean isDerived() {
 		return true;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	boolean isRange() {
+	public boolean isRange() {
 		return false;
 	}
 

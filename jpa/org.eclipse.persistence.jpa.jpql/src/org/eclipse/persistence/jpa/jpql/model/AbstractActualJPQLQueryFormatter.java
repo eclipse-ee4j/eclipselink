@@ -57,6 +57,7 @@ import org.eclipse.persistence.jpa.jpql.model.query.EntryExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.EnumTypeStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.ExistsExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.FromClauseStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.FunctionExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.GroupByClauseStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.HavingClauseStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.IdentificationVariableDeclarationStateObject;
@@ -102,6 +103,7 @@ import org.eclipse.persistence.jpa.jpql.model.query.SubExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.SubstringExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.SubtractionExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.SumFunctionStateObject;
+import org.eclipse.persistence.jpa.jpql.model.query.TreatExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.TrimExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.TypeExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.UnknownExpressionStateObject;
@@ -132,6 +134,7 @@ import org.eclipse.persistence.jpa.jpql.parser.EmptyCollectionComparisonExpressi
 import org.eclipse.persistence.jpa.jpql.parser.EncapsulatedIdentificationVariableExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ExistsExpression;
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
+import org.eclipse.persistence.jpa.jpql.parser.FunctionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.GroupByClause;
 import org.eclipse.persistence.jpa.jpql.parser.HavingClause;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariableDeclaration;
@@ -148,6 +151,7 @@ import org.eclipse.persistence.jpa.jpql.parser.ResultVariable;
 import org.eclipse.persistence.jpa.jpql.parser.SelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.SelectStatement;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectClause;
+import org.eclipse.persistence.jpa.jpql.parser.TreatExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TrimExpression;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateClause;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateItem;
@@ -1246,6 +1250,52 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 	/**
 	 * {@inheritDoc}
 	 */
+	public void visit(FunctionExpressionStateObject stateObject) {
+
+		if (stateObject.isDecorated()) {
+			toText(stateObject);
+		}
+		else {
+			FunctionExpression expression = stateObject.getExpression();
+
+			// FUNC
+			appendIdentifier((expression != null) ? expression.getActualIdentifier() : FUNC, FUNC);
+
+			// (
+			if (shouldOutput(expression) || expression.hasLeftParenthesis()) {
+				writer.append(LEFT_PARENTHESIS);
+			}
+			else if (exactMatch && expression.hasSpaceAfterIdentifier()) {
+				writer.append(SPACE);
+			}
+
+			// Function name
+			if (stateObject.hasFunctionName()) {
+
+				writer.append(stateObject.getQuotedFunctionName());
+
+				if (shouldOutput(expression) || expression.hasComma()) {
+					writer.append(COMMA);
+				}
+
+				if (shouldOutput(expression) || expression.hasSpaceAfterComma()) {
+					writer.append(SPACE);
+				}
+			}
+
+			// Arguments
+			toStringChildren(stateObject, true);
+
+			// )
+			if (shouldOutput(expression) || expression.hasRightParenthesis()) {
+				writer.append(RIGHT_PARENTHESIS);
+			}
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public void visit(GroupByClauseStateObject stateObject) {
 
 		if (stateObject.isDecorated()) {
@@ -1921,6 +1971,52 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 	 */
 	public void visit(SumFunctionStateObject stateObject) {
 		toStringAggregateFunction(stateObject);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(TreatExpressionStateObject stateObject) {
+
+		if (stateObject.isDecorated()) {
+			toText(stateObject);
+		}
+		else {
+			TreatExpression expression = stateObject.getExpression();
+
+			// TREAT
+			appendIdentifier((expression != null) ? expression.getActualIdentifier() : TREAT, TREAT);
+
+			// (
+			if (shouldOutput(expression) || expression.hasLeftParenthesis()) {
+				writer.append(LEFT_PARENTHESIS);
+			}
+
+			// Join association path expression
+			stateObject.getJoinAssociationPathStateObject().accept(this);
+
+			if (shouldOutput(expression) || expression.hasSpaceAfterCollectionValuedPathExpression()) {
+				writer.append(SPACE);
+			}
+
+			// AS
+			if (stateObject.hasAs()) {
+
+				appendIdentifier((expression != null) ? expression.getActualAsIdentifier() : AS, AS);
+
+				if (shouldOutput(expression) || expression.hasSpaceAfterAs()) {
+					writer.append(SPACE);
+				}
+			}
+
+			// Entity type name
+			writer.append(stateObject.getEntityTypeName());
+
+			// )
+			if (shouldOutput(expression) || expression.hasRightParenthesis()) {
+				writer.append(RIGHT_PARENTHESIS);
+			}
+		}
 	}
 
 	/**

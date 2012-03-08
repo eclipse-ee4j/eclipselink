@@ -86,7 +86,7 @@ public final class UpdateStatement extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void addOrderedChildrenTo(List<StringExpression> children) {
+	protected void addOrderedChildrenTo(List<Expression> children) {
 
 		// Update clause
 		children.add(updateClause);

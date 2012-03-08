@@ -16,6 +16,11 @@ package org.eclipse.persistence.jpa.jpql.parser;
 /**
  * This visitor allows a subclass to simply override {@link #visit(Expression)} and perform the
  * same task for all visited {@link Expression expressions}.
+ * <p>
+ * Provisional API: This interface is part of an interim API that is still under development and
+ * expected to change significantly before reaching stability. It is available at this early stage
+ * to solicit feedback from pioneering adopters on the understanding that any code that uses this
+ * API will almost certainly be broken (repeatedly) as the API evolves.
  *
  * @version 2.4
  * @since 2.3
@@ -227,12 +232,12 @@ public abstract class AnonymousExpressionVisitor implements ExpressionVisitor {
 		visit((Expression) expression);
 	}
 
-        /**
-         * {@inheritDoc}
-         */
-        public void visit(FunctionExpression expression) {
-            visit((Expression) expression);
-        }
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(FunctionExpression expression) {
+		visit((Expression) expression);
+	}
 
 	/**
 	 * {@inheritDoc}
@@ -412,6 +417,13 @@ public abstract class AnonymousExpressionVisitor implements ExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	public void visit(OnClause expression) {
+		visit((Expression) expression);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public void visit(OrderByClause expression) {
 		visit((Expression) expression);
 	}
@@ -517,13 +529,6 @@ public abstract class AnonymousExpressionVisitor implements ExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(SubtractionExpression expression) {
-		visit((Expression) expression);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
 	public void visit(SubstringExpression expression) {
 		visit((Expression) expression);
 	}
@@ -531,7 +536,21 @@ public abstract class AnonymousExpressionVisitor implements ExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	public void visit(SubtractionExpression expression) {
+		visit((Expression) expression);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public void visit(SumFunction expression) {
+		visit((Expression) expression);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(TreatExpression expression) {
 		visit((Expression) expression);
 	}
 
@@ -604,11 +623,4 @@ public abstract class AnonymousExpressionVisitor implements ExpressionVisitor {
 	public void visit(WhereClause expression) {
 		visit((Expression) expression);
 	}
-
-        /**
-         * {@inheritDoc}
-         */
-        public void visit(OnClause expression) {
-                visit((Expression) expression);
-        }
 }

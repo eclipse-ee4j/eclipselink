@@ -127,16 +127,14 @@ final class RangeDeclaration extends AbstractRangeDeclaration {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	boolean isDerived() {
+	public boolean isDerived() {
 		return false;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
-	boolean isRange() {
+	public boolean isRange() {
 		return true;
 	}
 

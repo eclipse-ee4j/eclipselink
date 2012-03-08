@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Oracle. All rights reserved.
+ * Copyright (c) 2011, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -13,14 +13,16 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql;
 
-import org.eclipse.persistence.jpa.jpql.parser.ColumnExpression;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkExpressionVisitor;
-import org.eclipse.persistence.jpa.jpql.parser.FuncExpression;
-import org.eclipse.persistence.jpa.jpql.parser.OperatorExpression;
-import org.eclipse.persistence.jpa.jpql.parser.SQLExpression;
-import org.eclipse.persistence.jpa.jpql.parser.TreatExpression;
 
 /**
+ * An implementation of a {@link ResolverBuilder} that adds support for EclipseLink extension.
+ * <p>
+ * Provisional API: This interface is part of an interim API that is still under development and
+ * expected to change significantly before reaching stability. It is available at this early stage
+ * to solicit feedback from pioneering adopters on the understanding that any code that uses this
+ * API will almost certainly be broken (repeatedly) as the API evolves.
+ *
  * @version 2.4
  * @since 2.4
  * @author Pascal Filion
@@ -35,51 +37,5 @@ public class EclipseLinkResolverBuilder extends ResolverBuilder
 	 */
 	public EclipseLinkResolverBuilder(EclipseLinkJPQLQueryContext queryContext) {
 		super(queryContext);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(FuncExpression expression) {
-		resolver = buildClassResolver(Object.class);
-	}
-
-        /**
-         * {@inheritDoc}
-         */
-        public void visit(ColumnExpression expression) {
-                resolver = buildClassResolver(Object.class);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public void visit(SQLExpression expression) {
-                resolver = buildClassResolver(Object.class);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public void visit(OperatorExpression expression) {
-                resolver = buildClassResolver(Object.class);
-        }
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(TreatExpression expression) {
-
-		// Visit the identification variable in order to create the resolver
-		expression.getCollectionValuedPathExpression().accept(this);
-
-		// Retrieve the entity type name
-		String entityTypeName = getQueryContext().literal(
-			expression.getEntityType(),
-			LiteralType.ENTITY_TYPE
-		);
-
-		// Wrap the Resolver for down casting
-		resolver = new TreatResolver(resolver, entityTypeName);
 	}
 }

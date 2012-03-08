@@ -22,8 +22,8 @@ import org.eclipse.persistence.jpa.jpql.model.query.AbstractConditionalClauseSta
  * @since 2.4
  * @author Pascal Filion
  */
-public final class DefaultConditionalExpressionStateObjectBuilder extends AbstractConditionalExpressionStateObjectBuilder<IConditionalExpressionStateObjectBuilder>
-                                                                  implements IConditionalExpressionStateObjectBuilder {
+public class DefaultConditionalExpressionStateObjectBuilder extends AbstractConditionalExpressionStateObjectBuilder<IConditionalExpressionStateObjectBuilder>
+                                                            implements IConditionalExpressionStateObjectBuilder {
 
 	/**
 	 * Creates a new <code>DefaultConditionalExpressionStateObjectBuilder</code>.

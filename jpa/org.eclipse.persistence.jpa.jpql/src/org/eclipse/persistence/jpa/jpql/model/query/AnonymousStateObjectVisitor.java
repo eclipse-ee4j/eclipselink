@@ -173,14 +173,14 @@ public abstract class AnonymousStateObjectVisitor implements StateObjectVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(DerivedPathVariableDeclarationStateObject stateObject) {
+	public void visit(DerivedPathIdentificationVariableDeclarationStateObject stateObject) {
 		visit((StateObject) stateObject);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(DerivedPathIdentificationVariableDeclarationStateObject stateObject) {
+	public void visit(DerivedPathVariableDeclarationStateObject stateObject) {
 		visit((StateObject) stateObject);
 	}
 
@@ -230,6 +230,13 @@ public abstract class AnonymousStateObjectVisitor implements StateObjectVisitor 
 	 * {@inheritDoc}
 	 */
 	public void visit(FromClauseStateObject stateObject) {
+		visit((StateObject) stateObject);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(FunctionExpressionStateObject stateObject) {
 		visit((StateObject) stateObject);
 	}
 
@@ -532,6 +539,13 @@ public abstract class AnonymousStateObjectVisitor implements StateObjectVisitor 
 	 * {@inheritDoc}
 	 */
 	public void visit(SumFunctionStateObject stateObject) {
+		visit((StateObject) stateObject);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(TreatExpressionStateObject stateObject) {
 		visit((StateObject) stateObject);
 	}
 

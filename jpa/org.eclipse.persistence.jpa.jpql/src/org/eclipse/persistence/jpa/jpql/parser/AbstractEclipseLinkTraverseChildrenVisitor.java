@@ -17,45 +17,16 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * This {@link ExpressionVisitor} traverses the entire hierarchy of the JPQL parsed tree by going
  * down into each of the children of any given {@link Expression}. It is up to the subclass to
  * complete the behavior.
+ * <p>
+ * Provisional API: This interface is part of an interim API that is still under development and
+ * expected to change significantly before reaching stability. It is available at this early stage
+ * to solicit feedback from pioneering adopters on the understanding that any code that uses this
+ * API will almost certainly be broken (repeatedly) as the API evolves.
  *
  * @version 2.4
  * @since 2.4
  * @author Pascal Filion
  */
-public abstract class AbstractEclipseLinkTraverseChildrenVisitor extends AbstractTraverseChildrenVisitor implements EclipseLinkExpressionVisitor {
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(FuncExpression expression) {
-		visit((Expression) expression);
-	}
-	
-        /**
-         * {@inheritDoc}
-         */
-        public void visit(ColumnExpression expression) {
-                visit((Expression) expression);
-        }
-	
-        /**
-         * {@inheritDoc}
-         */
-        public void visit(SQLExpression expression) {
-                visit((Expression) expression);
-        }
-        
-        /**
-         * {@inheritDoc}
-         */
-        public void visit(OperatorExpression expression) {
-                visit((Expression) expression);
-        }
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(TreatExpression expression) {
-		visit((Expression) expression);
-	}
+public abstract class AbstractEclipseLinkTraverseChildrenVisitor extends AbstractTraverseChildrenVisitor
+                                                                 implements EclipseLinkExpressionVisitor {
 }

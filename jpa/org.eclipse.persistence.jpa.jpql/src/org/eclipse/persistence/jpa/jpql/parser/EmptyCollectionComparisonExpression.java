@@ -119,7 +119,7 @@ public final class EmptyCollectionComparisonExpression extends AbstractExpressio
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void addOrderedChildrenTo(List<StringExpression> children) {
+	protected void addOrderedChildrenTo(List<Expression> children) {
 
 		// Expression
 		if (expression != null) {

@@ -54,10 +54,16 @@ public final class PreLiteralExpressionFactory extends ExpressionFactory {
 		// When the tolerant mode is turned on, parse the invalid portion of the query
 		if (tolerant && registry.isIdentifier(word)) {
 			ExpressionFactory factory = registry.expressionFactoryForIdentifier(word);
-			if (factory != null) {
-				return factory.buildExpression(parent, wordParser, word, queryBNF, expression, tolerant);
+
+			if (factory == null) {
+				return null;
 			}
-			return null;
+
+			expression = factory.buildExpression(parent, wordParser, word, queryBNF, expression, tolerant);
+
+			if (expression != null) {
+				return new BadExpression(parent, expression);
+			}
 		}
 
 		ExpressionFactory factory = registry.getExpressionFactory(LiteralExpressionFactory.ID);

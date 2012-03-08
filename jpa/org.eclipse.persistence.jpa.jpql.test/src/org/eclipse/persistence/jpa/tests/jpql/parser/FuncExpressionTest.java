@@ -13,56 +13,23 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
-import org.junit.Test;
-
-import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries.*;
-
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
 @SuppressWarnings("nls")
-public final class FuncExpressionTest extends EclipseLinkJPQLParserTest {
+public final class FuncExpressionTest extends AbstractFunctionExpressionTest {
 
-	@Test
-	public void testBuildExpression_01() {
-
-		// SELECT FUNC('NVL', e.firstName, 'NoFirstName'),
-		//        func('NVL', e.lastName, 'NoLastName')
-		// FROM Employee e
-
-		ExpressionTester selectStatement = selectStatement(
-			select(
-				func("'NVL'", path("e.firstName"), string("'NoFirstName'")),
-				func("'NVL'", path("e.lastName"), string("'NoLastName'"))
-			),
-			from("Employee", "e")
-		);
-
-		testQuery(query_224(), selectStatement);
+	@Override
+	protected String functionName(int index) {
+		switch (index) {
+			case 0:  return "'NVC'";
+			case 1:  return "'invalid";
+			case 2:  return "''";
+			default: return "'sql'";
+		}
 	}
 
-	@Test
-	public void testBuildExpression_02() {
-
-		// SELECT a
-		// FROM Asset a, Geography selectedGeography
-      // WHERE selectedGeography.id = :id AND
-      //       a.id IN (:id_list) AND
-      //       FUNC('ST_Intersects', a.geometry, selectedGeography.geometry) = 'TRUE'
-
-		ExpressionTester selectStatement = selectStatement(
-			select(variable("a")),
-			from("Asset", "a", "Geography", "selectedGeography"),
-			where(
-					path("selectedGeography.id").equal(inputParameter(":id"))
-				.and(
-					path("a.id").in(inputParameter(":id_list"))
-				).and(
-						func("'ST_Intersects'", path("a.geometry"), path("selectedGeography.geometry"))
-					.equal(
-						string("'TRUE'"))
-				)
-			)
-		);
-
-		testQuery(query_225(), selectStatement);
+	@Override
+	protected String identifier(int index) {
+		return FUNC;
 	}
 }

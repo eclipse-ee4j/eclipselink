@@ -88,25 +88,25 @@ public interface IType extends IExternalForm {
 	/**
 	 * Determines whether this type is an instance of the given type.
 	 *
-	 * @param type The type used to determine if the class represented by this
-	 * external form is an instance of with one
-	 * @return <code>true</code> if this type is an instance of the given type;
-	 * <code>false</code> otherwise
+	 * @param type The type used to determine if the class represented by this external form is an
+	 * instance of with one
+	 * @return <code>true</code> if this type is an instance of the given type; <code>false</code>
+	 * otherwise
 	 */
 	boolean isAssignableTo(IType type);
 
 	/**
-	 * Determines whether this {@link IType} represents an <code>Enum</code>.
+	 * Determines whether this {@link IType} represents an {@link Enum}.
 	 *
-	 * @return <code>true</code> if this is an <code>Enum</code>; <code>false</code> otherwise
+	 * @return <code>true</code> if this is an {@link Enum}; <code>false</code> otherwise
 	 */
 	boolean isEnum();
 
 	/**
 	 * Determines whether this Java type actually exists.
 	 *
-	 * @return <code>true</code> if the actual Java type can be located on the application's
-	 * class path; <code>false</code> if it could not be found
+	 * @return <code>true</code> if the actual Java type can be located on the application's class
+	 * path; <code>false</code> if it could not be found
 	 */
 	boolean isResolvable();
 }

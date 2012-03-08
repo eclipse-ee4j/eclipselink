@@ -13,7 +13,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.model;
 
-import org.eclipse.persistence.jpa.jpql.model.query.FuncExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.SelectClauseStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.StateObject;
 
@@ -40,40 +39,6 @@ public abstract class AbstractEclipseLinkSelectExpressionStateObjectBuilder exte
 	@Override
 	public IEclipseLinkSelectExpressionStateObjectBuilder append() {
 		return (IEclipseLinkSelectExpressionStateObjectBuilder) super.append();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public IEclipseLinkSelectExpressionStateObjectBuilder func(String functionName,
-	                                                           IEclipseLinkSelectExpressionStateObjectBuilder... builders) {
-
-		checkBuilders(builders);
-
-		StateObject stateObject = new FuncExpressionStateObject(
-			getParent(),
-			functionName,
-			stateObjects(builders)
-		);
-
-		add(stateObject);
-		return this;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public IEclipseLinkSelectExpressionStateObjectBuilder func(String functionName,
-	                                                           String... arguments) {
-
-		StateObject stateObject = new FuncExpressionStateObject(
-			getParent(),
-			functionName,
-			literals(arguments)
-		);
-
-		add(stateObject);
-		return this;
 	}
 
 	/**

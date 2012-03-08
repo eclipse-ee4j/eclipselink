@@ -76,7 +76,9 @@ public abstract class JPQLCoreTest extends JPQLBasicTest {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		jpqlQueryTestHelper.setUp();
+		if (jpqlQueryTestHelper != null) {
+			jpqlQueryTestHelper.setUp();
+		}
 	}
 
 	/**
@@ -85,7 +87,9 @@ public abstract class JPQLCoreTest extends JPQLBasicTest {
 	@Override
 	protected void setUpClass() throws Exception {
 		super.setUpClass();
-		jpqlQueryTestHelper.setUpBefore();
+		if (jpqlQueryTestHelper != null) {
+			jpqlQueryTestHelper.setUpBefore();
+		}
 	}
 
 	/**
@@ -94,7 +98,9 @@ public abstract class JPQLCoreTest extends JPQLBasicTest {
 	@Override
 	protected void tearDown() throws Exception {
 		super.tearDown();
-		jpqlQueryTestHelper.tearDown();
+		if (jpqlQueryTestHelper != null) {
+			jpqlQueryTestHelper.tearDown();
+		}
 	}
 
 	/**
@@ -103,7 +109,9 @@ public abstract class JPQLCoreTest extends JPQLBasicTest {
 	@Override
 	protected void tearDownClass() throws Exception {
 		super.tearDownClass();
-		jpqlQueryTestHelper.tearDownAfter();
-		jpqlQueryTestHelper = null;
+		if (jpqlQueryTestHelper != null) {
+			jpqlQueryTestHelper.tearDownAfter();
+			jpqlQueryTestHelper = null;
+		}
 	}
 }

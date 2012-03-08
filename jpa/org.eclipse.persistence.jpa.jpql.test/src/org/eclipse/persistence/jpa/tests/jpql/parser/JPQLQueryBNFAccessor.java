@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Oracle. All rights reserved.
+ * Copyright (c) 2011, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -21,6 +21,7 @@ import org.eclipse.persistence.jpa.jpql.parser.ConditionalExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.ConstructorItemBNF;
 import org.eclipse.persistence.jpa.jpql.parser.ExpressionRegistry;
 import org.eclipse.persistence.jpa.jpql.parser.IdentifierRole;
+import org.eclipse.persistence.jpa.jpql.parser.InternalAggregateFunctionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.InternalCountBNF;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLQueryBNF;
 import org.eclipse.persistence.jpa.jpql.parser.ScalarExpressionBNF;
@@ -28,13 +29,16 @@ import org.eclipse.persistence.jpa.jpql.parser.SelectItemBNF;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectExpressionBNF;
 
 /**
+ * This accessor is used to easily retrieve the JPQL identifiers registered with various {@link
+ * JPQLQueryBNF}. Note: the methods are added as needed.
+ *
  * @version 2.4
  * @since 2.3
  * @author Pascal Filion
  */
 public class JPQLQueryBNFAccessor {
 
-	public ExpressionRegistry registry;
+	protected ExpressionRegistry registry;
 
 	/**
 	 * Creates a new <code>JPQLQueryBNFAccessor</code>.
@@ -114,6 +118,18 @@ public class JPQLQueryBNFAccessor {
 
 	public JPQLQueryBNF getQueryBNF(String queryBNFId) {
 		return registry.getQueryBNF(queryBNFId);
+	}
+
+	public ExpressionRegistry getRegistry() {
+		return registry;
+	}
+
+	public Iterable<String> internalAggregateFunctionFunctions() {
+		return functions(internalAggregateFunctionIdentifiers());
+	}
+
+	public Iterable<String> internalAggregateFunctionIdentifiers() {
+		return getIdentifiers(InternalAggregateFunctionBNF.ID);
 	}
 
 	public Iterable<String> scalarExpressionFunctions() {

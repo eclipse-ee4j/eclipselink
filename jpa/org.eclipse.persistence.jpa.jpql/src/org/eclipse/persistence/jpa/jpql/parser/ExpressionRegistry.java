@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -25,6 +25,11 @@ import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
  * This registry contains the necessary information used by Hermes parser. When parsing a JPQL query,
  * the {@link org.eclipse.persistence.jpa.jpql.spi.JPQLGrammar JPQLGrammar} given to {@link
  * JPQLExpression} will give access to this registry.
+ *
+ * Provisional API: This interface is part of an interim API that is still under development and
+ * expected to change significantly before reaching stability. It is available at this early stage
+ * to solicit feedback from pioneering adopters on the understanding that any code that uses this
+ * API will almost certainly be broken (repeatedly) as the API evolves.
  *
  * @see org.eclipse.persistence.jpa.jpql.spi.JPQLGrammar JPQLGrammar
  *
@@ -92,6 +97,28 @@ public class ExpressionRegistry {
 	}
 
 	/**
+	 * Adds the given JPQL identifier to this factory.
+	 *
+	 * @param expressionFactoryId The unique identifier of the {@link ExpressionFactory} to add more
+	 * JPQL identifiers
+	 * @param identifier The JPQL identifier this factory will parse
+	 */
+	public void addIdentifier(String expressionFactoryId, String identifier) {
+		getExpressionFactory(expressionFactoryId).addIdentifier(identifier);
+	}
+
+	/**
+	 * Adds the given JPQL identifiers to this factory.
+	 *
+	 * @param expressionFactoryId The unique identifier of the {@link ExpressionFactory} to add more
+	 * JPQL identifiers
+	 * @param identifier The JPQL identifiers this factory will parse
+	 */
+	public void addIdentifiers(String expressionFactoryId, String... identifiers) {
+		getExpressionFactory(expressionFactoryId).addIdentifiers(identifiers);
+	}
+
+	/**
 	 * Retrieves the {@link ExpressionFactory} that is responsible for creating the {@link Expression}
 	 * object that represents the given JPQL identifier.
 	 *
@@ -118,8 +145,7 @@ public class ExpressionRegistry {
 	}
 
 	/**
-	 * Retrieves the registered {@link ExpressionFactory} that was registered for the given unique
-	 * identifier.
+	 * Retrieves the registered {@link ExpressionFactory} that was registered for the given unique identifier.
 	 *
 	 * @param expressionFactoryId The unique identifier of the {@link ExpressionFactory} to retrieve
 	 * @return The {@link ExpressionFactory} mapped with the given unique identifier

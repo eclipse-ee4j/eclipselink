@@ -14,6 +14,8 @@
 package org.eclipse.persistence.jpa.tests.jpql;
 
 import java.util.List;
+import org.eclipse.persistence.jpa.jpql.AbstractGrammarValidator;
+import org.eclipse.persistence.jpa.jpql.EclipseLinkGrammarValidator;
 import org.eclipse.persistence.jpa.jpql.JPQLQueryProblem;
 import org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_0;
@@ -24,6 +26,10 @@ import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_4;
 import org.junit.Test;
 
 /**
+ * The unit-test class used for testing a JPQL query grammatically when the JPA version is 1.0 and
+ * 2.0 and EclipseLink is the persistence provider. The EclipseLink version supported is 2.0, 2.1,
+ * 2.2 and 2.3.
+ *
  * @version 2.4
  * @since 2.4
  * @author Pascal Filion
@@ -31,100 +37,52 @@ import org.junit.Test;
 @SuppressWarnings("nls")
 public class EclipseLinkGrammarValidatorTest extends AbstractGrammarValidatorTest {
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected boolean isSubqueryAllowedAnywhere() {
+		return isEclipseLink2_4();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected AbstractGrammarValidator buildValidator() {
+		return new EclipseLinkGrammarValidator(jpqlGrammar);
+	}
+
 	protected boolean isEclipseLink2_0() {
-		return getGrammar().getProviderVersion() == EclipseLinkJPQLGrammar2_0.instance().getProviderVersion();
+		return jpqlGrammar.getProviderVersion() == EclipseLinkJPQLGrammar2_0.VERSION;
 	}
 
 	protected boolean isEclipseLink2_1() {
-		return getGrammar().getProviderVersion() == EclipseLinkJPQLGrammar2_1.instance().getProviderVersion();
+		return jpqlGrammar.getProviderVersion() == EclipseLinkJPQLGrammar2_1.VERSION;
 	}
 
 	protected boolean isEclipseLink2_2() {
-		return getGrammar().getProviderVersion() == EclipseLinkJPQLGrammar2_2.instance().getProviderVersion();
+		return jpqlGrammar.getProviderVersion() == EclipseLinkJPQLGrammar2_2.VERSION;
 	}
 
 	protected boolean isEclipseLink2_3() {
-		return getGrammar().getProviderVersion() == EclipseLinkJPQLGrammar2_3.instance().getProviderVersion();
+		return jpqlGrammar.getProviderVersion() == EclipseLinkJPQLGrammar2_3.VERSION;
 	}
 
 	protected boolean isEclipseLink2_4() {
-		return getGrammar().getProviderVersion() == EclipseLinkJPQLGrammar2_4.instance().getProviderVersion();
+		return jpqlGrammar.getProviderVersion() == EclipseLinkJPQLGrammar2_4.VERSION;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected boolean isJoinFetchIdentifiable() {
-		return getGrammar().getProviderVersion() == EclipseLinkJPQLGrammar2_4.instance().getProviderVersion();
+		return isEclipseLink2_4();
 	}
 
 	@Test
-	public void test_FuncExpression_MissingFunctionName() throws Exception {
-
-		// Ignore
-		if (getGrammar() == EclipseLinkJPQLGrammar2_0.instance()) {
-			return;
-		}
-
-		String query = "SELECT FUNC() FROM Employee e";
-		int startPosition = "SELECT FUNC(".length();
-		int endPosition   = startPosition;
-
-		List<JPQLQueryProblem> problems = validate(query);
-
-		testHasOnlyOneProblem(
-			problems,
-			JPQLQueryProblemMessages.FuncExpression_MissingFunctionName,
-			startPosition,
-			endPosition
-		);
-	}
-
-	@Test
-	public void test_FuncExpression_MissingLeftParenthesis() throws Exception {
-
-		// Ignore
-		if (getGrammar() == EclipseLinkJPQLGrammar2_0.instance()) {
-			return;
-		}
-
-		String query = "SELECT FUNC 'getName', 'String') FROM Employee e";
-		int startPosition = "SELECT FUNC".length();
-		int endPosition   = startPosition;
-
-		List<JPQLQueryProblem> problems = validate(query);
-
-		testHasOnlyOneProblem(
-			problems,
-			JPQLQueryProblemMessages.FuncExpression_MissingLeftParenthesis,
-			startPosition,
-			endPosition
-		);
-	}
-
-	@Test
-	public void test_FuncExpression_MissingRightParenthesis() throws Exception {
-
-		// Ignore
-		if (getGrammar() == EclipseLinkJPQLGrammar2_0.instance()) {
-			return;
-		}
-
-		String query = "SELECT FUNC('getName', 'String' FROM Employee e";
-		int startPosition = "SELECT FUNC('getName', 'String'".length();
-		int endPosition   = startPosition;
-
-		List<JPQLQueryProblem> problems = validate(query);
-
-		testHasOnlyOneProblem(
-			problems,
-			JPQLQueryProblemMessages.FuncExpression_MissingRightParenthesis,
-			startPosition,
-			endPosition
-		);
-	}
-
-	@Test
-	@Override
-	public void test_OrderByItem_InvalidPath() throws Exception {
+	public final void test_OrderByItem_InvalidPath_2() throws Exception {
 
 		String query = "SELECT e FROM Employee e ORDER BY e.name 2";
 
@@ -133,32 +91,6 @@ public class EclipseLinkGrammarValidatorTest extends AbstractGrammarValidatorTes
 		testDoesNotHaveProblem(
 			problems,
 			JPQLQueryProblemMessages.OrderByItem_InvalidPath
-		);
-	}
-
-	@Test
-	public void test_SimpleSelectStatement_InvalidLocation_3() throws Exception {
-
-		String query = "SELECT (SELECT e FROM Employee e) FROM Employee e";
-
-		List<JPQLQueryProblem> problems = validate(query);
-
-		testDoesNotHaveProblem(
-			problems,
-			JPQLQueryProblemMessages.SimpleSelectStatement_InvalidLocation
-		);
-	}
-
-	@Test
-	public void test_SimpleSelectStatement_InvalidLocation_4() throws Exception {
-
-		String query = "SELECT (SELECT e F) FROM Employee e";
-
-		List<JPQLQueryProblem> problems = validate(query);
-
-		testDoesNotHaveProblem(
-			problems,
-			JPQLQueryProblemMessages.SimpleSelectStatement_InvalidLocation
 		);
 	}
 }

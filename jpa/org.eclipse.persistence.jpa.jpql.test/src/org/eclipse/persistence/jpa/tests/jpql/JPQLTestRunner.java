@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -44,8 +44,16 @@ import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.Statement;
 
 /**
- * This JUnit runner is used to inject objects that are instantiated by a test suite into each of
- * its unit-test before they run.
+ * This JUnit runner is the sole runner of Hermes unit-tests because it modifies the default
+ * behavior by adding the following support:
+ * <ul>
+ * <li>Adds the ability to inject objects that are instantiated by a test suite into the unit-test
+ * before they are run.
+ * <li>Because one unit-test can be run more than once with different state of any given object,
+ * this cause issues in Eclipse because the IDE uses {@link Object#toString()} and cannot
+ * discriminate between those identical tests. This runner changes the test's description by adding
+ * enough information in order to make each test's description unique.
+ * </ul>
  *
  * @version 2.4
  * @since 2.4
@@ -84,61 +92,20 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
 	 * The list of registered helpers that inject values from the test suite into the unit-tests
 	 * before they are running.
 	 */
-	private static final Map<Class<? extends Annotation>, ToStringWriter> testRunnerHelpers;
+	private static final Map<Class<? extends Annotation>, DescriptionBuilder> testRunnerHelpers;
 
 	/**
 	 * Registers the supported test runner helpers.
 	 */
 	static {
 
-		testRunnerHelpers = new HashMap<Class<? extends Annotation>, ToStringWriter>();
+		testRunnerHelpers = new HashMap<Class<? extends Annotation>, DescriptionBuilder>();
 
-		testRunnerHelpers.put(IJPQLQueryBuilderTestHelper.class, new ToStringWriter() {
-			public String toString(Object object) {
-				IJPQLQueryBuilder builder = (IJPQLQueryBuilder) object;
-				StringBuilder sb = new StringBuilder();
-				sb.append(builder.getClass().getSimpleName());
-				sb.append("[");
-				sb.append(builder.getGrammar().toString());
-				sb.append("]");
-				return sb.toString();
-			}
-		});
-
-		testRunnerHelpers.put(IJPQLQueryFormatterTestHelper.class, new ToStringWriter() {
-			public String toString(Object object) {
-				BaseJPQLQueryFormatter formatter = (BaseJPQLQueryFormatter) object;
-				StringBuilder sb = new StringBuilder();
-				sb.append(formatter.getClass().getSimpleName());
-				sb.append("[");
-				sb.append(formatter.getIdentifierStyle().name());
-				if (object instanceof AbstractActualJPQLQueryFormatter) {
-					AbstractActualJPQLQueryFormatter actualFormatter = (AbstractActualJPQLQueryFormatter) object;
-					sb.append("|");
-					sb.append(actualFormatter.isUsingExactMatch());
-				}
-				sb.append("]");
-				return sb.toString();
-			}
-		});
-
-		testRunnerHelpers.put(JPQLGrammarTestHelper.class, new ToStringWriter() {
-			public String toString(Object object) {
-				return object.toString();
-			}
-		});
-
-		testRunnerHelpers.put(JPQLQueryHelperTestHelper.class, new ToStringWriter() {
-			public String toString(Object object) {
-				return object.getClass().getSimpleName();
-			}
-		});
-
-		testRunnerHelpers.put(JPQLQueryTestHelperTestHelper.class, new ToStringWriter() {
-			public String toString(Object object) {
-				return object.getClass().getSimpleName();
-			}
-		});
+		testRunnerHelpers.put(IJPQLQueryBuilderTestHelper.class,   buildJPQLQueryBuilderTestHelperDescriptionBuilder());
+		testRunnerHelpers.put(IJPQLQueryFormatterTestHelper.class, buildJPQLQueryFormatterTestHelperDescriptionBuilder());
+		testRunnerHelpers.put(JPQLGrammarTestHelper.class,         buildJPQLGrammarTestHelperDescriptionBuilder());
+		testRunnerHelpers.put(JPQLQueryHelperTestHelper.class,     buildJPQLQueryHelperTestHelperDescriptionBuilder());
+		testRunnerHelpers.put(JPQLQueryTestHelperTestHelper.class, buildJPQLQueryTestHelperTestHelperDescriptionBuilder());
 	}
 
 	/**
@@ -161,6 +128,63 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
 	public JPQLTestRunner(Class<?> testClass, SuiteHelper suiteHelper) throws InitializationError {
 		super(testClass);
 		this.suiteHelper = suiteHelper;
+	}
+
+	private static DescriptionBuilder buildJPQLGrammarTestHelperDescriptionBuilder() {
+		return new DescriptionBuilder() {
+			public String toString(Object object) {
+				return object.toString();
+			}
+		};
+	}
+
+	private static DescriptionBuilder buildJPQLQueryBuilderTestHelperDescriptionBuilder() {
+		return new DescriptionBuilder() {
+			public String toString(Object object) {
+				IJPQLQueryBuilder builder = (IJPQLQueryBuilder) object;
+				StringBuilder sb = new StringBuilder();
+				sb.append(builder.getClass().getSimpleName());
+				sb.append("[");
+				sb.append(builder.getGrammar().toString());
+				sb.append("]");
+				return sb.toString();
+			}
+		};
+	}
+
+	private static DescriptionBuilder buildJPQLQueryFormatterTestHelperDescriptionBuilder() {
+		return new DescriptionBuilder() {
+			public String toString(Object object) {
+				BaseJPQLQueryFormatter formatter = (BaseJPQLQueryFormatter) object;
+				StringBuilder sb = new StringBuilder();
+				sb.append(formatter.getClass().getSimpleName());
+				sb.append("[");
+				sb.append(formatter.getIdentifierStyle().name());
+				if (object instanceof AbstractActualJPQLQueryFormatter) {
+					AbstractActualJPQLQueryFormatter actualFormatter = (AbstractActualJPQLQueryFormatter) object;
+					sb.append("|");
+					sb.append(actualFormatter.isUsingExactMatch());
+				}
+				sb.append("]");
+				return sb.toString();
+			}
+		};
+	}
+
+	private static DescriptionBuilder buildJPQLQueryHelperTestHelperDescriptionBuilder() {
+		return new DescriptionBuilder() {
+			public String toString(Object object) {
+				return object.getClass().getSimpleName();
+			}
+		};
+	}
+
+	private static DescriptionBuilder buildJPQLQueryTestHelperTestHelperDescriptionBuilder() {
+		return new DescriptionBuilder() {
+			public String toString(Object object) {
+				return object.getClass().getSimpleName();
+			}
+		};
 	}
 
 	private List<Runner> buildChildren() {
@@ -342,8 +366,9 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
 	private void initializeDescriptionHelper(List<Throwable> errors) {
 
 		descriptionHelper = new DescriptionHelper();
+		Class<?> unitTest = getTestClass().getJavaClass();
 
-		for (Method method : getTestClass().getJavaClass().getDeclaredMethods()) {
+		for (Method method : unitTest.getDeclaredMethods()) {
 
 			if (isHelperMethod(method)) {
 
@@ -352,10 +377,7 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
 					if (method.isAnnotationPresent(annotation)) {
 
 						try {
-							if (!method.isAccessible()) {
-								method.setAccessible(true);
-							}
-
+							method.setAccessible(true);
 							Object value = method.invoke(null);
 
 							descriptionHelper.helpers.put(
@@ -397,6 +419,20 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
 		child.run(notifier);
 	}
 
+	/**
+	 * This interface is used to create the description of a unit-tests.
+	 */
+	private static interface DescriptionBuilder {
+
+		/**
+		 * Creates a string representation of the given object.
+		 *
+		 * @param object The object to convert into a human readable string
+		 * @return A unique description for the given object
+		 */
+		String toString(Object object);
+	}
+
 	private static class DescriptionHelper {
 
 		private Map<Class<? extends Annotation>, Object[]> helpers;
@@ -416,7 +452,18 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
 		JPQLBasicTestRunner(Class<?> testClass, SuiteHelper suiteHelper) throws InitializationError {
 			super(testClass);
 			this.suiteHelper = suiteHelper;
+//			sort(buildSorter());
 		}
+
+//		private Comparator<Description> buildComparator() {
+//			return new Comparator<Description>() {
+//				public int compare(Description description1, Description description2) {
+//					String displayName1 = description1.getDisplayName();
+//					String displayName2 = description1.getDisplayName();
+//					return displayName1.compareTo(displayName2);
+//				}
+//			};
+//		}
 
 		private Description buildDescription() {
 
@@ -437,6 +484,10 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
 			suiteHelper.addAdditionalInfo(writer);
 			return writer.toString();
 		}
+
+//		private Sorter buildSorter() {
+//			return new Sorter(buildComparator());
+//		}
 
 		/**
 		 * {@inheritDoc}
@@ -637,7 +688,9 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
 		private SuiteHelper parent;
 		private List<Class<? extends Annotation>> primaryKeys;
 
-		SuiteHelper(SuiteHelper parent, Map<Class<? extends Annotation>, Object> helpers) {
+		SuiteHelper(SuiteHelper parent,
+		            Map<Class<? extends Annotation>, Object> helpers) {
+
 			this(parent, helpers, Collections.<Class<? extends Annotation>>emptyList());
 		}
 
@@ -656,8 +709,8 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
 			for (Class<? extends Annotation> primaryKey : primaryKeys) {
 				writer.append(" - ");
 				Object helper = helpers.get(primaryKey);
-				ToStringWriter toStringWriter = testRunnerHelpers.get(primaryKey);
-				writer.append(toStringWriter.toString(helper));
+				DescriptionBuilder descriptionBuilder = testRunnerHelpers.get(primaryKey);
+				writer.append(descriptionBuilder.toString(helper));
 			}
 
 			if (parent != null) {
@@ -693,9 +746,5 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
 				parent.injectValues(test);
 			}
 		}
-	}
-
-	private static interface ToStringWriter {
-		String toString(Object object);
 	}
 }
