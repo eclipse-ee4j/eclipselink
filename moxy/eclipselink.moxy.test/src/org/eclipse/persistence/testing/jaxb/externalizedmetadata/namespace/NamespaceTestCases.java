@@ -35,10 +35,10 @@ import org.w3c.dom.Document;
  */
 public class NamespaceTestCases extends XMLTestCase {
 
-    private JAXBContext ctx = null;
-
-    private static final String XML_BINDINGS = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/namespace/xml-bindings.xml";
-    private static final String XML_INSTANCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/namespace/instance.xml";
+    private static final String BINDINGS1 = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/namespace/xml-bindings.xml";
+    private static final String INSTANCE1 = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/namespace/instance.xml";
+    private static final String BINDINGS2 = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/namespace/bindings-rootelement.xml";
+    private static final String INSTANCE2 = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/namespace/instance2.xml";
 
     public NamespaceTestCases(String name) throws Exception {
         super(name);
@@ -46,23 +46,6 @@ public class NamespaceTestCases extends XMLTestCase {
 
     public String getName() {
         return "ExternalizedMetadata - Namespace: " + super.getName();
-    }
-
-    private JAXBContext getJAXBContext() {
-        if (ctx == null) {
-            try {
-                InputStream iStream = ClassLoader.getSystemResourceAsStream(XML_BINDINGS);
-
-                Map<String, Object> properties = new HashMap<String, Object>();
-                properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
-
-                ctx = JAXBContextFactory.createContext(new Class[]{ Customer.class }, properties);
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
-        return ctx;
     }
 
     private Object getControlObject() {
@@ -85,21 +68,50 @@ public class NamespaceTestCases extends XMLTestCase {
      * </ul>
      */
     public void testBasicNamespaces() throws Exception {
+        InputStream bindings = ClassLoader.getSystemResourceAsStream(BINDINGS1);
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, bindings);
+
+        JAXBContext ctx = JAXBContextFactory.createContext(new Class[]{ Customer.class }, properties);
+
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
         builderFactory.setNamespaceAware(true);
-
         DocumentBuilder parser = builderFactory.newDocumentBuilder();
 
         // Marshal control doc to Document
-        Marshaller m = getJAXBContext().createMarshaller();
+        Marshaller m = ctx.createMarshaller();
         Document marshalDoc = parser.newDocument();
         m.marshal(getControlObject(), marshalDoc);
 
         // Parse instance doc to Document
-        InputStream iStream = ClassLoader.getSystemResourceAsStream(XML_INSTANCE);
+        InputStream iStream = ClassLoader.getSystemResourceAsStream(INSTANCE1);
         Document unmarshalDoc = parser.parse(iStream);
 
         // Compare
+        assertXMLIdentical(unmarshalDoc, marshalDoc);
+    }
+
+    /**
+     * Test that root elements that are in a non-default namespace are prefixed correctly.
+     */
+    public void testNonDefaultRootElement() throws Exception {
+        InputStream bindings = ClassLoader.getSystemResourceAsStream(BINDINGS2);
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, bindings);
+
+        JAXBContext ctx = JAXBContextFactory.createContext(new Class[]{ Customer.class }, properties);
+
+        DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+        builderFactory.setNamespaceAware(true);
+        DocumentBuilder parser = builderFactory.newDocumentBuilder();
+
+        Marshaller m = ctx.createMarshaller();
+        Document marshalDoc = parser.newDocument();
+        m.marshal(getControlObject(), marshalDoc);
+
+        InputStream iStream = ClassLoader.getSystemResourceAsStream(INSTANCE2);
+        Document unmarshalDoc = parser.parse(iStream);
+
         assertXMLIdentical(unmarshalDoc, marshalDoc);
     }
 
