@@ -127,4 +127,8 @@ public class IDResolverWrapper extends IDResolver {
         throw XMLMarshalException.wrappedIDResolverWithMultiID(id.toString(), this.resolver);
     }
 
+    public Object getResolver() {
+        return this.resolver;
+    }
+
 }

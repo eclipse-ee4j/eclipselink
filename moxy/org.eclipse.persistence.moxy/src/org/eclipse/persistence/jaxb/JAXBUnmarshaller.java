@@ -786,32 +786,32 @@ public class JAXBUnmarshaller implements Unmarshaller {
         if (key == null) {
             throw new IllegalArgumentException();
         }
-        if(key.equals(JAXBContext.MEDIA_TYPE)) {
-        	MediaType mType = MediaType.getMediaTypeByName((String)value);
-        	if(mType != null){
-        		xmlUnmarshaller.setMediaType(mType);
-        	}else{
-        	   throw new PropertyException(key, value);
-        	}       
-        } else if(key.equals(JAXBContext.JSON_ATTRIBUTE_PREFIX)){ 
-        	attributePrefix = (String)value;
-        } else if (JAXBContext.JSON_INCLUDE_ROOT.equals(key)) {            	
-        	includeRoot = (Boolean)value;
-        } else if(JAXBUnmarshaller.JSON_NAMESPACE_PREFIX_MAPPER.equals(key)){
-        	if(value instanceof Map){
+        if (key.equals(JAXBContext.MEDIA_TYPE)) {
+            MediaType mType = MediaType.getMediaTypeByName((String)value);
+            if (mType != null){
+                xmlUnmarshaller.setMediaType(mType);
+            } else {
+               throw new PropertyException(key, value);
+            }
+        } else if (key.equals(JAXBContext.JSON_ATTRIBUTE_PREFIX)){
+            attributePrefix = (String)value;
+        } else if (JAXBContext.JSON_INCLUDE_ROOT.equals(key)) {
+            includeRoot = (Boolean)value;
+        } else if (JAXBUnmarshaller.JSON_NAMESPACE_PREFIX_MAPPER.equals(key)){
+            if (value instanceof Map){
                 Map<String, String> namespaces = (Map<String, String>)value;
-         	    NamespaceResolver nr = new NamespaceResolver();
-         	    Iterator<Entry<String, String>> namesapcesIter = namespaces.entrySet().iterator();
-         	    for(int i=0;i<namespaces.size(); i++){
-         	    	Entry<String, String> nextEntry = namesapcesIter.next();
-         	    	nr.put(nextEntry.getValue(), nextEntry.getKey());
-         	    }
-         	    setNamespaceResolver(nr);
-        	}else if (value instanceof NamespacePrefixMapper){
-                    setNamespaceResolver(new PrefixMapperNamespaceResolver((NamespacePrefixMapper)value, null));
-        	}
-        } else if(JAXBContext.JSON_VALUE_WRAPPER.equals(key)){
-        	xmlUnmarshaller.setValueWrapper((String)value); 
+                NamespaceResolver nr = new NamespaceResolver();
+                Iterator<Entry<String, String>> namesapcesIter = namespaces.entrySet().iterator();
+                for (int i=0;i<namespaces.size(); i++){
+                    Entry<String, String> nextEntry = namesapcesIter.next();
+                    nr.put(nextEntry.getValue(), nextEntry.getKey());
+                }
+                setNamespaceResolver(nr);
+            } else if (value instanceof NamespacePrefixMapper){
+                setNamespaceResolver(new PrefixMapperNamespaceResolver((NamespacePrefixMapper)value, null));
+            }
+        } else if (JAXBContext.JSON_VALUE_WRAPPER.equals(key)){
+            xmlUnmarshaller.setValueWrapper((String)value);
         } else if (JAXBContext.ID_RESOLVER.equals(key)) {
             setIDResolver((IDResolver) value);
         } else if (SUN_ID_RESOLVER.equals(key) || SUN_JSE_ID_RESOLVER.equals(key)) {
@@ -824,9 +824,35 @@ public class JAXBUnmarshaller implements Unmarshaller {
     public Object getProperty(String key) throws PropertyException {
         if (key == null) {
             throw new IllegalArgumentException();
-        } 
-        if(key.equals(JAXBContext.MEDIA_TYPE)) {
-        	return xmlUnmarshaller.getMediaType().getName();
+        }
+        if (key.equals(MEDIA_TYPE)) {
+            return xmlUnmarshaller.getMediaType().getName();
+        } else if (key.equals(JSON_ATTRIBUTE_PREFIX)) {
+            return attributePrefix;
+        } else if (key.equals(JSON_INCLUDE_ROOT)) {
+            return includeRoot;
+        } else if (key.equals(JSON_NAMESPACE_PREFIX_MAPPER)) {
+            if (namespaceResolver instanceof PrefixMapperNamespaceResolver) {
+                PrefixMapperNamespaceResolver wrapper = (PrefixMapperNamespaceResolver) namespaceResolver;
+                return wrapper.getPrefixMapper();
+            } else {
+                Map<String, String> nsMap = new HashMap<String, String>();
+                Map<String, String> prefixesToNS = namespaceResolver.getPrefixesToNamespaces();
+                // Reverse the prefixesToNS map
+                Iterator<Entry<String, String>> namesapcesIter = prefixesToNS.entrySet().iterator();
+                for (int i = 0; i < prefixesToNS.size(); i++) {
+                    Entry<String, String> nextEntry = namesapcesIter.next();
+                    nsMap.put(nextEntry.getValue(), nextEntry.getKey());
+                }
+                return nsMap;
+            }
+        } else if (key.equals(JSON_VALUE_WRAPPER)) {
+            return xmlUnmarshaller.getValueWrapper();
+        } else if (ID_RESOLVER.equals(key)) {
+            return xmlUnmarshaller.getIDResolver();
+        } else if (SUN_ID_RESOLVER.equals(key) || SUN_JSE_ID_RESOLVER.equals(key)) {
+            IDResolverWrapper wrapper = (IDResolverWrapper) xmlUnmarshaller.getIDResolver();
+            return wrapper.getResolver();
         }
         throw new PropertyException(key);
     }

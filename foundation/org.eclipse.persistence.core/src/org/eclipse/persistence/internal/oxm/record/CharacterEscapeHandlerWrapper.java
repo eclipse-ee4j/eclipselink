@@ -58,4 +58,8 @@ public class CharacterEscapeHandlerWrapper implements CharacterEscapeHandler {
         }
     }
 
+    public Object getHandler() {
+        return this.handler;
+    }
+
 }

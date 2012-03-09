@@ -303,6 +303,29 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             return xmlMarshaller.isFragment();
         } else if (JAXBContext.MEDIA_TYPE.equals(key)) {
             return xmlMarshaller.getMediaType().getName();
+        } else if (NAMESPACE_PREFIX_MAPPER.equals(key)) {
+            return xmlMarshaller.getNamespacePrefixMapper();
+        } else if (INDENT_STRING.equals(key) || SUN_INDENT_STRING.equals(key) || SUN_JSE_INDENT_STRING.equals(key)) {
+            return xmlMarshaller.getIndentString();
+        } else if (CHARACTER_ESCAPE_HANDLER.equals(key)) {
+            return xmlMarshaller.getCharacterEscapeHandler();
+        } else if (XML_DECLARATION.equals(key)) {
+            return !xmlMarshaller.isFragment();
+        } else if (JAXBContext.JSON_ATTRIBUTE_PREFIX.equals(key)) {
+            return xmlMarshaller.getAttributePrefix();
+        } else if (JAXBContext.JSON_INCLUDE_ROOT.equals(key)) {
+            return xmlMarshaller.isIncludeRoot();
+        } else if (JAXBContext.JSON_VALUE_WRAPPER.equals(key)) {
+            return xmlMarshaller.getValueWrapper(); 
+        } else if (SUN_CHARACTER_ESCAPE_HANDLER.equals(key) || SUN_JSE_CHARACTER_ESCAPE_HANDLER.equals(key)) {
+            if (xmlMarshaller.getCharacterEscapeHandler() instanceof CharacterEscapeHandlerWrapper) {
+                CharacterEscapeHandlerWrapper wrapper = (CharacterEscapeHandlerWrapper) xmlMarshaller.getCharacterEscapeHandler();
+                return wrapper.getHandler();
+            }
+            return xmlMarshaller.getCharacterEscapeHandler();
+        } else if (SUN_NAMESPACE_PREFIX_MAPPER.equals(key) || SUN_JSE_NAMESPACE_PREFIX_MAPPER.equals(key)) {
+            NamespacePrefixMapperWrapper wrapper = (NamespacePrefixMapperWrapper) xmlMarshaller.getNamespacePrefixMapper();
+            return wrapper.getPrefixMapper();
         }
         throw new PropertyException(key);
     }
