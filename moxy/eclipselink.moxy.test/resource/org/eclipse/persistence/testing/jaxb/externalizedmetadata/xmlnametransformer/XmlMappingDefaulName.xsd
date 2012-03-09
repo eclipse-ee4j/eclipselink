@@ -1,0 +1,10 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:complexType name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlnametransformer.XmlMappingDefaultNameRoot_TYPE">
+      <xsd:sequence>
+         <xsd:element name="element_ELEMENT" type="xsd:string" minOccurs="0"/>
+      </xsd:sequence>
+      <xsd:attribute name="attribute_ATTRIBUTE" type="xsd:string"/>
+   </xsd:complexType>
+   <xsd:element name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlnametransformer.XmlMappingDefaultNameRoot_ROOT" type="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlnametransformer.XmlMappingDefaultNameRoot_TYPE"/>
+</xsd:schema>

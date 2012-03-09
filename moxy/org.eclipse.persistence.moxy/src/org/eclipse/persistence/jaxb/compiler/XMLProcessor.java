@@ -791,7 +791,7 @@ public class XMLProcessor {
         // set schema name
         QName qName;
         if (name.equals(DEFAULT)) {
-            name = oldProperty.getPropertyName();
+            name = typeInfo.getXmlNameTransformer().transformAttributeName(oldProperty.getPropertyName());
         }
         if (namespace.equals(DEFAULT)) {
             if (nsInfo.isAttributeFormQualified()) {
@@ -967,7 +967,7 @@ public class XMLProcessor {
         // set schema name
         QName qName;
         if (name.equals(DEFAULT)) {
-            name = oldProperty.getPropertyName();
+            name = typeInfo.getXmlNameTransformer().transformElementName(oldProperty.getPropertyName());
         }
         if (namespace.equals(DEFAULT)) {
             if (nsInfo.isElementFormQualified()) {
