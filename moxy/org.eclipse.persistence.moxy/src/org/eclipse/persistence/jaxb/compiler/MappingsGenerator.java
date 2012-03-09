@@ -278,8 +278,10 @@ public class MappingsGenerator {
         if (!manyValueJavaClass.isAssignableFrom(javaClass)){
             if(namespace.length() != 0) {
                 if(isDefaultNamespaceAllowed && globalNamespaceResolver.getDefaultNamespaceURI() == null && namespace.length() != 0) {
-                    globalNamespaceResolver.setDefaultNamespaceURI(namespace);
-                    namespaceInfo.getNamespaceResolverForDescriptor().setDefaultNamespaceURI(namespace);
+                    if (!namespaceInfo.getNamespaceResolverForDescriptor().getPrefixesToNamespaces().containsValue(namespace)) {
+                        globalNamespaceResolver.setDefaultNamespaceURI(namespace);
+                        namespaceInfo.getNamespaceResolverForDescriptor().setDefaultNamespaceURI(namespace);
+                    }
                 }
             }
             if (rootElem == null) {
