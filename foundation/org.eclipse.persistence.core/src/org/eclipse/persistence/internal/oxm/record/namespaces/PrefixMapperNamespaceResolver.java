@@ -115,4 +115,9 @@ public class PrefixMapperNamespaceResolver extends NamespaceResolver {
             super.put(newPrefix, uri);
         }
     }
+
+    public NamespacePrefixMapper getPrefixMapper() {
+    	return this.prefixMapper;
+    }
+
 }

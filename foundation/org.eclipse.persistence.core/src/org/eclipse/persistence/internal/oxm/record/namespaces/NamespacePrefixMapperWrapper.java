@@ -101,4 +101,9 @@ public class NamespacePrefixMapperWrapper extends NamespacePrefixMapper {
             throw XMLMarshalException.errorInvokingPrefixMapperMethod(GET_PRE_DECL_NAMESPACE_URIS2_METHOD_NAME, prefixMapper);
         }
     }
+
+    public Object getPrefixMapper() {
+    	return this.prefixMapper;
+    }
+    
 }

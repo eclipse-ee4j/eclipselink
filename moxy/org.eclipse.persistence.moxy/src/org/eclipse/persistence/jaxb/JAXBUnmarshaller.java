@@ -685,6 +685,12 @@ public class JAXBUnmarshaller implements Unmarshaller {
         if (key == null) {
             throw new IllegalArgumentException();
         }
+        if (ID_RESOLVER.equals(key)) {
+            return xmlUnmarshaller.getIDResolver();
+        } else if (SUN_ID_RESOLVER.equals(key) || SUN_JSE_ID_RESOLVER.equals(key)) {
+            IDResolverWrapper wrapper = (IDResolverWrapper) xmlUnmarshaller.getIDResolver();
+            return wrapper.getResolver();
+        }
         throw new PropertyException(key);
     }
 
