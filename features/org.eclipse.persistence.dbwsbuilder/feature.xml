@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="org.eclipse.persistence.dbws.source"
+      id="org.eclipse.persistence.dbwsbuilder"
       label="%featureName"
       version="@VERSION@.@QUALIFIER@"
       provider-name="%providerName">
@@ -22,22 +22,33 @@
       <discovery label="%secondaryUpdateSiteName" url="%secondaryUpdateURL"/>
    </url>
 
+   <includes
+         id="org.eclipse.persistence.dbws"
+         version="@VERSION@.@QUALIFIER@"/>
+
    <plugin
-         id="org.eclipse.persistence.asm.source"
+         id="javax.servlet"
          download-size="0"
          install-size="0"
-         version="@ASM_VERSION@"
+         version="@SERVLET_VERSION@"
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.persistence.core.source"
+         id="javax.wsdl"
          download-size="0"
          install-size="0"
-         version="@VERSION@.@QUALIFIER@"
+         version="@WSDL_VERSION@"
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.persistence.dbws.source"
+         id="org.eclipse.persistence.oracleddlparser"
+         download-size="0"
+         install-size="0"
+         version="@ORACLEDDL_VERSION@"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.persistence.dbws.builder"
          download-size="0"
          install-size="0"
          version="@VERSION@.@QUALIFIER@"

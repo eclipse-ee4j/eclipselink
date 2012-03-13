@@ -44,24 +44,10 @@
          unpack="false"/>
 
    <plugin
-         id="javax.wsdl"
-         download-size="0"
-         install-size="0"
-         version="@WSDL_VERSION@"
-         unpack="false"/>
-
-   <plugin
          id="org.eclipse.persistence.asm"
          download-size="0"
          install-size="0"
          version="@ASM_VERSION@"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.persistence.oracleddlparser"
-         download-size="0"
-         install-size="0"
-         version="@ORACLEDDL_VERSION@"
          unpack="false"/>
 
    <plugin
@@ -73,13 +59,6 @@
 
    <plugin
          id="org.eclipse.persistence.dbws"
-         download-size="0"
-         install-size="0"
-         version="@VERSION@.@QUALIFIER@"
-         unpack="false"/>
-
-   <plugin
-         id="org.eclipse.persistence.dbws.builder"
          download-size="0"
          install-size="0"
          version="@VERSION@.@QUALIFIER@"

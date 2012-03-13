@@ -366,6 +366,9 @@
           <param name="feature.name" value="org.eclipse.persistence.dbws"/>
         </antcall>
         <antcall target="jar-feature">
+          <param name="feature.name" value="org.eclipse.persistence.dbwsbuilder"/>
+        </antcall>
+        <antcall target="jar-feature">
           <param name="feature.name" value="org.eclipse.persistence.jpa"/>
         </antcall>
         <antcall target="jar-feature">
@@ -376,6 +379,9 @@
         </antcall>
         <antcall target="jar-feature">
           <param name="feature.name" value="org.eclipse.persistence.dbws.source"/>
+        </antcall>
+        <antcall target="jar-feature">
+          <param name="feature.name" value="org.eclipse.persistence.dbwsbuilder.source"/>
         </antcall>
         <antcall target="jar-feature">
           <param name="feature.name" value="org.eclipse.persistence.jpa.source"/>

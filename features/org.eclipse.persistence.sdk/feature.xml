@@ -35,6 +35,14 @@
          version="@VERSION@.@QUALIFIER@"/>
 
    <includes
+         id="org.eclipse.persistence.dbws"
+         version="@VERSION@.@QUALIFIER@"/>
+
+   <includes
+         id="org.eclipse.persistence.dbwsbuilder"
+         version="@VERSION@.@QUALIFIER@"/>
+
+   <includes
          id="org.eclipse.persistence.jpa.source"
          version="@VERSION@.@QUALIFIER@"/>
 
@@ -44,6 +52,14 @@
 
    <includes
          id="org.eclipse.persistence.sdo.source"
+         version="@VERSION@.@QUALIFIER@"/>
+
+   <includes
+         id="org.eclipse.persistence.dbws.source"
+         version="@VERSION@.@QUALIFIER@"/>
+
+   <includes
+         id="org.eclipse.persistence.dbwsbuilder.source"
          version="@VERSION@.@QUALIFIER@"/>
 
 </feature>
