@@ -13,6 +13,7 @@
 package org.eclipse.persistence.testing.jaxb.json.rootlevellist;
 
 import java.io.InputStream;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -68,6 +69,11 @@ public class WithoutXmlRootElementTestCases extends JSONMarshalUnmarshalTestCase
         for(int x=0; x<control.size(); x++) {
             assertEquals(control.get(x), test.get(x));
         }
+    }
+
+    public void testUnmarshalEmptyList() throws Exception {
+        List<WithoutXmlRootElementRoot>  test = (List<WithoutXmlRootElementRoot>) jsonUnmarshaller.unmarshal(new StreamSource(new StringReader("[]")), WithoutXmlRootElementRoot.class).getValue();
+        assertEquals(0, test.size());
     }
 
 }

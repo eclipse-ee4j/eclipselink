@@ -80,6 +80,10 @@ public class XMLRoot {
      * @param name the new local name
      */
     public void setLocalName(String name) {
+        if(null == name) {
+            this.localName = XMLConstants.EMPTY_STRING;
+            return;
+        }
     	int colonIdx = name.indexOf(XMLConstants.COLON);
     	if(colonIdx > -1){
             this.localName = name.substring(colonIdx +1);
