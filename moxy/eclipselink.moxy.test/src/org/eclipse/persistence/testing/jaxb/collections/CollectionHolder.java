@@ -61,6 +61,9 @@ public class CollectionHolder {
 
     protected List<byte[]> collection11;
 
+    @XmlAttribute
+    protected List<String> collection12;
+
     public CollectionHolder(){
     }
 
@@ -143,6 +146,14 @@ public class CollectionHolder {
         this.collection11 = collection11;
     }
 
+    public List<String> getCollection12() {
+        return collection12;
+    }
+
+    public void setCollection12(List<String> collection12) {
+        this.collection12 = collection12;
+    }
+    
     public boolean equals(Object compareObject){
 
          if(compareObject instanceof CollectionHolder){
@@ -158,6 +169,7 @@ public class CollectionHolder {
                     && compareCollections(collection9, compareCollectionHolder.getCollection9())
                     && compareCollections(collection10, compareCollectionHolder.getCollection10())
                     && compareCollections(collection11, compareCollectionHolder.getCollection11())
+                    && compareCollections(collection12, compareCollectionHolder.getCollection12())
                     ;
          }
          return false;

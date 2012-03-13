@@ -37,6 +37,7 @@ public class CollectionHolderInitialized extends CollectionHolder{
         collection9 = TEST_LIST;
         collection10 = TEST_MAP;
         collection11 = TEST_LIST;
+        collection12 = TEST_LIST;
     }
 
 }
