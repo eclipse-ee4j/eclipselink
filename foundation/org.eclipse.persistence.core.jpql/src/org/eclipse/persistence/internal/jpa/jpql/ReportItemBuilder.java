@@ -95,7 +95,7 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
 	/**
 	 * The {@link ReportQuery} to add the select expressions.
 	 */
-	ReportQuery query;
+	private ReportQuery query;
 
 	/**
 	 * The {@link JPQLQueryContext} is used to query information about the application metadata and
@@ -107,17 +107,20 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
 	 * This array is used to store the type of the select {@link Expression JPQL Expression} that is
 	 * converted into an {@link Expression EclipseLink Expression}.
 	 */
-	Class<?>[] type;
+	final Class<?>[] type;
 
 	/**
 	 * Creates a new <code>ReportItemBuilder</code>.
 	 *
 	 * @param queryContext The context used to query information about the application metadata and
 	 * cached information
+	 * @param query The {@link ReportQuery} to populate by using this visitor to visit the parsed
+	 * tree representation of the JPQL query
 	 */
-	ReportItemBuilder(JPQLQueryContext queryContext) {
+	ReportItemBuilder(JPQLQueryContext queryContext, ReportQuery query) {
 		super();
-		this.type = new Class<?>[1];
+		this.query        = query;
+		this.type         = new Class<?>[1];
 		this.queryContext = queryContext;
 	}
 

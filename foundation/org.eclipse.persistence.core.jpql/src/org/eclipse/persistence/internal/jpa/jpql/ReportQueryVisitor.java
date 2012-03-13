@@ -14,6 +14,7 @@
 package org.eclipse.persistence.internal.jpa.jpql;
 
 import org.eclipse.persistence.jpa.jpql.parser.AbstractSelectClause;
+import org.eclipse.persistence.jpa.jpql.parser.AbstractSelectStatement;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkAnonymousExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.GroupByClause;
@@ -21,8 +22,7 @@ import org.eclipse.persistence.jpa.jpql.parser.HavingClause;
 import org.eclipse.persistence.queries.ReportQuery;
 
 /**
- * This visitor is responsible to complete the initialization of the {@link ReportQuery} by visiting
- * the expression clauses.
+ * This visitor is responsible to populate a {@link ReportQuery}.
  *
  * @version 2.4
  * @since 2.3
@@ -32,57 +32,21 @@ import org.eclipse.persistence.queries.ReportQuery;
 final class ReportQueryVisitor extends AbstractReadAllQueryVisitor {
 
 	/**
-	 * The visitor is responsible to add the group items to the query.
-	 */
-	private GroupByVisitor groupByVisitor;
-
-	/**
-	 * The visitor is responsible to create the attributes by visiting the select items.
-	 */
-	private ReportItemBuilder selectItemsBuilder;
-
-	/**
 	 * This array is used to store the type of the select {@link Expression JPQL Expression} that is
 	 * converted into an {@link Expression EclipseLink Expression}.
 	 */
-	Class<?>[] type;
+	Class<?> type;
 
 	/**
 	 * Creates a new <code>ReportQueryVisitor</code>.
 	 *
 	 * @param queryContext The context used to query information about the application metadata and
 	 * cached information
+	 * @param query The {@link ReportQuery} to populate by using this visitor to visit the parsed
+	 * tree representation of the JPQL query
 	 */
-	ReportQueryVisitor(JPQLQueryContext queryContext) {
-		super(queryContext);
-	}
-
-	private GroupByVisitor groupByVisitor() {
-		if (groupByVisitor == null) {
-			groupByVisitor = new GroupByVisitor();
-		}
-		return groupByVisitor;
-	}
-
-	/**
-	 * Returns the builder that is responsible to create the {@link Expression Expressions} for each
-	 * of the select items.
-	 *
-	 * @return The builder used for the select items
-	 */
-	private ReportItemBuilder selectItemsBuilder() {
-		if (selectItemsBuilder == null) {
-			selectItemsBuilder = new ReportItemBuilder(queryContext);
-		}
-		return selectItemsBuilder;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void visit(GroupByClause expression) {
-		expression.accept(groupByVisitor());
+	ReportQueryVisitor(JPQLQueryContext queryContext, ReportQuery query) {
+		super(queryContext, query);
 	}
 
 	/**
@@ -97,34 +61,46 @@ final class ReportQueryVisitor extends AbstractReadAllQueryVisitor {
 	 * {@inheritDoc}
 	 */
 	@Override
-	void visitAbstractSelectClause(AbstractSelectClause expression) {
-		super.visitAbstractSelectClause(expression);
-		visitSelectClause(expression);
+	public void visit(GroupByClause expression) {
+		GroupByVisitor visitor = new GroupByVisitor();
+		expression.accept(visitor);
 	}
 
-	private void visitSelectClause(AbstractSelectClause expression) {
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	void visitAbstractSelectClause(AbstractSelectClause expression) {
 
-		ReportItemBuilder builder = selectItemsBuilder();
-		Class<?> previousType = builder.type[0];
-		ReportQuery previousQuery = builder.query;
+		// First set couple flags on the query
+		super.visitAbstractSelectClause(expression);
 
-		try {
-			builder.type[0] = null;
-			builder.query   = (ReportQuery) query;
+		// Now visit the select expressions and create the corresponding EclipseLink Expressions
+		ReportItemBuilder builder = new ReportItemBuilder(queryContext, (ReportQuery) query);
+		expression.accept(builder);
+		type = builder.type[0];
+	}
 
-			expression.accept(builder);
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	void visitAbstractSelectStatement(AbstractSelectStatement expression) {
 
-			type[0] = builder.type[0];
+		super.visitAbstractSelectStatement(expression);
+
+		if (expression.hasHavingClause()) {
+			expression.getHavingClause().accept(this);
 		}
-		finally {
-			builder.query   = previousQuery;
-			builder.type[0] = previousType;
+
+		if (expression.hasGroupByClause()) {
+			expression.getGroupByClause().accept(this);
 		}
 	}
 
 	/**
-	 * This visitor is responsible to add the grouping {@link Expression Expressions} by traversing
-	 * the group items.
+	 * This visitor is responsible to add the grouping {@link Expression Expressions}
+	 * by traversing the group items.
 	 */
 	private class GroupByVisitor extends EclipseLinkAnonymousExpressionVisitor {
 

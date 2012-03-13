@@ -356,10 +356,13 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 
 		try {
 			// Visit the subquery to populate it
-			queryContext.populateReportQuery(expression, subquery, type);
+			ReportQueryVisitor visitor = new ReportQueryVisitor(queryContext, subquery);
+			expression.accept(visitor);
+			type[0] = visitor.type;
 
 			// Add the joins between the subquery and the parent query
 			appendJoinVariables(expression, subquery);
+
 			return subquery;
 		}
 		finally {
@@ -1095,7 +1098,9 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 		else {
 			String variableName = expression.getVariableName();
 
-			// Result variable
+			// A result variable is parsed as an identification variable
+			// TODO: Do we still need to do this since the following does:
+			// queryContext.findQueryExpression(variableName)
 			if (queryContext.isResultVariable(variableName)) {
 				queryExpression = queryContext.getQueryExpression(variableName);
 			}

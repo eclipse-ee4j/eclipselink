@@ -80,8 +80,7 @@ abstract class AbstractRangeDeclaration extends Declaration {
 	 * Returns the <b>JOIN</b> expressions that were part of the range variable declaration in the
 	 * ordered they were parsed.
 	 *
-	 * @return The ordered list of <b>JOIN</b> expressions or an empty collection if none was
-	 * present
+	 * @return The ordered list of <b>JOIN</b> expressions or an empty collection if none was present
 	 */
 	public List<Join> getJoins() {
 		return (joins == null) ? Collections.<Join>emptyList() : joins;

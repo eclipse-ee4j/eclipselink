@@ -35,7 +35,6 @@ import org.eclipse.persistence.jpa.jpql.EclipseLinkLiteralVisitor;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.LiteralType;
 import org.eclipse.persistence.jpa.jpql.LiteralVisitor;
-import org.eclipse.persistence.jpa.jpql.parser.AbstractSelectStatement;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionValuedPathExpression;
 import org.eclipse.persistence.jpa.jpql.parser.InputParameter;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLExpression;
@@ -45,7 +44,6 @@ import org.eclipse.persistence.jpa.jpql.parser.StateFieldPathExpression;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.querykeys.QueryKey;
 import org.eclipse.persistence.queries.DatabaseQuery;
-import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 
 /**
@@ -108,7 +106,7 @@ final class JPQLQueryContext {
 	/**
 	 * The JPQL query to convert into an EclipseLink {@link Expression}.
 	 */
-	private String jpqlQuery;
+	private CharSequence jpqlQuery;
 
 	/**
 	 * This visitor is used to retrieve a variable name from various type of
@@ -132,11 +130,6 @@ final class JPQLQueryContext {
 	 * JPQL query.
 	 */
 	private DatabaseQuery query;
-
-	/**
-	 * This visitor is responsible to create and populate a {@link ReportQuery}.
-	 */
-	private ReportQueryVisitor reportQueryVisitor;
 
 	/**
 	 * The EclipseLink {@link AbstractSession} this context will use.
@@ -247,14 +240,13 @@ final class JPQLQueryContext {
 	 */
 	void addRangeVariableDeclaration(String entityName, String variableName) {
 
-		// Add the virtual range variable declaration
-		RangeDeclaration declaration = getDeclarationResolverImp().addRangeVariableDeclaration(
+		// This method should only be used by HermesParser.buildSelectionCriteria()
+		declarationResolver = new DeclarationResolver(this, null);
+
+		declarationResolver.addRangeVariableDeclaration(
 			entityName,
 			variableName
 		);
-
-		// Make sure the base Expression is initialized
-		declaration.getQueryExpression();
 	}
 
 	/**
@@ -374,7 +366,7 @@ final class JPQLQueryContext {
 	void cache(AbstractSession session,
 	           DatabaseQuery query,
 	           JPQLExpression jpqlExpression,
-	           String jpqlQuery) {
+	           CharSequence jpqlQuery) {
 
 		this.query          = query;
 		this.session        = session;
@@ -401,25 +393,6 @@ final class JPQLQueryContext {
 	 */
 	Class<?> calculateQueryKeyType(QueryKey queryKey) {
 		return typeResolver().calculateQueryKeyType(queryKey);
-	}
-
-	/**
-	 * Disposes the internal data.
-	 */
-	void dispose() {
-
-		query          = null;
-		session        = null;
-		jpqlQuery      = null;
-		currentQuery   = null;
-		jpqlExpression = null;
-		currentContext = this;
-
-		if (types != null)                       types.clear();
-		if (expressions != null)                 expressions.clear();
-		if (inputParameters != null)             inputParameters.clear();
-		if (declarationResolver != null)         declarationResolver.dispose();
-		if (usedIdentificationVariables != null) usedIdentificationVariables.clear();
 	}
 
 	/**
@@ -727,7 +700,7 @@ final class JPQLQueryContext {
 	 *
 	 * @return The string representation of the JPQL query
 	 */
-	String getJPQLQuery() {
+	CharSequence getJPQLQuery() {
 		return (parent != null) ? parent.getJPQLQuery() : jpqlQuery;
 	}
 
@@ -1095,63 +1068,6 @@ final class JPQLQueryContext {
 		}
 
 		return parameterTypeVisitor;
-	}
-
-	/**
-	 * Visits the given <code><b>SELECT</b></code> query or subquery and populates the given {@link
-	 * ReportQuery}.
-	 *
-	 * @param expression The {@link AbstractSelectStatement} to visit and to convert its information
-	 * by populating the given query
-	 * @param query The {@link ReportQuery} to populate
-	 */
-	void populateReportQuery(AbstractSelectStatement expression, ReportQuery query) {
-		populateReportQuery(expression, query, EMPTY_TYPE);
-	}
-
-	/**
-	 * Visits the given <code><b>SELECT</b></code> query or subquery and populates the given {@link
-	 * ReportQuery}.
-	 *
-	 * @param expression The {@link AbstractSelectStatement} to visit and to convert its information
-	 * by populating the given query
-	 * @param query The {@link ReportQuery} to populate
-	 * @param type This array of a single element is used to store the result type
-	 */
-	void populateReportQuery(AbstractSelectStatement expression,
-	                         ReportQuery query,
-	                         Class<?>[] type) {
-
-		ReportQueryVisitor visitor = reportQueryVisitor();
-		Class<?>[] previousType = visitor.type;
-		ObjectLevelReadQuery previousQuery = visitor.query;
-		try {
-			visitor.type  = type;
-			visitor.query = query;
-			expression.accept(visitor);
-		}
-		finally {
-			visitor.type  = previousType;
-			visitor.query = previousQuery;
-		}
-	}
-
-	/**
-	 * Returns the visitor that will visit the parsed JPQL query and populate an {@link ReportQuery}.
-	 *
-	 * @return The visitor used for a query of report query type
-	 */
-	private ReportQueryVisitor reportQueryVisitor() {
-
-		if (parent != null) {
-			return parent.reportQueryVisitor();
-		}
-
-		if (reportQueryVisitor == null) {
-			reportQueryVisitor = new ReportQueryVisitor(this);
-		}
-
-		return reportQueryVisitor;
 	}
 
 	/**

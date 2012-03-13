@@ -35,7 +35,6 @@ import org.eclipse.persistence.jpa.jpql.parser.MinFunction;
 import org.eclipse.persistence.jpa.jpql.parser.ObjectExpression;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByClause;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByItem;
-import org.eclipse.persistence.jpa.jpql.parser.OrderByItem.Ordering;
 import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.ResultVariable;
 import org.eclipse.persistence.jpa.jpql.parser.SelectClause;
@@ -51,7 +50,7 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 
 /**
- * This visitor is responsible to populate a {@link ReadAllQuery} by traversing a {@link
+ * This visitor is responsible to populate an {@link ObjectLevelReadQuery} by traversing a {@link
  * org.eclipse.persistence.jpa.query.parser.Expression JPQL Expression} representing a
  * <b>SELECT</b> query.
  *
@@ -64,26 +63,6 @@ import org.eclipse.persistence.queries.ObjectLevelReadQuery;
  * @author John Bracken
  */
 abstract class AbstractReadAllQueryVisitor extends AbstractEclipseLinkExpressionVisitor {
-
-	/**
-	 * This visitor is responsible to determine if the select expression is the <code>COUNT</code> function.
-	 */
-	private CountFunctionVisitor countFunctionVisitor;
-
-	/**
-	 * This visitor is responsible to add the non-fetch joined attributes to the query.
-	 */
-	private JoinExpressionVisitor joinVisitor;
-
-	/**
-	 * This visitor is responsible to determine if there is a one-to-one relationship selected.
-	 */
-	private OneToOneSelectedVisitor oneToOneSelectedVisitor;
-
-	/**
-	 * This visitor is responsible to add the order items to the query.
-	 */
-	private OrderByVisitor orderByVisitor;
 
 	/**
 	 * The {@link ObjectLevelReadQuery} to populate.
@@ -102,64 +81,18 @@ abstract class AbstractReadAllQueryVisitor extends AbstractEclipseLinkExpression
 	 * @param queryContext The context used to query information about the application metadata and
 	 * cached information
 	 */
-	AbstractReadAllQueryVisitor(JPQLQueryContext queryContext) {
+	AbstractReadAllQueryVisitor(JPQLQueryContext queryContext, ObjectLevelReadQuery query) {
 		super();
+		this.query = query;
 		this.queryContext = queryContext;
 	}
 
-	private CountFunctionVisitor countFunctionVisitor() {
-		if (countFunctionVisitor == null) {
-			countFunctionVisitor = new CountFunctionVisitor();
-		}
-		return countFunctionVisitor;
-	}
-
-	private boolean hasNotCountFunction(AbstractSelectClause expression) {
-		CountFunctionVisitor visitor = countFunctionVisitor();
-		expression.accept(visitor);
-		return visitor.hasCountFunction;
-	}
-
 	/**
-	 * Determines whether there is a one-to-one relationship selected. This includes a chain of
-	 * relationships.
-	 * <p>
-	 * <ul>
-	 * <li>True: SELECT employee.address FROM ..... // Simple 1:1
-	 * <li>True: SELECT a.b.c.d FROM ..... // where a->b, b->c and c->d are all 1:1.
-	 * <li>False: SELECT OBJECT(employee) FROM ..... // simple SELECT
-	 * <li>False: SELECT phoneNumber.areaCode FROM ..... // direct-to-field
-	 * </ul>
-	 *
-	 * @param expression The select expression to introspect.
-	 * @return <code>true</code> if the select expression represents a relationship; <code>false</code>
-	 * otherwise
+	 * {@inheritDoc}
 	 */
-	private boolean hasOneToOneSelected(AbstractSelectClause expression) {
-		OneToOneSelectedVisitor visitor = oneToOneSelectedVisitor();
-		expression.accept(visitor);
-		return visitor.oneToOneSelected;
-	}
-
-	private JoinExpressionVisitor joinVisitor() {
-		if (joinVisitor == null) {
-			joinVisitor = new JoinExpressionVisitor();
-		}
-		return joinVisitor;
-	}
-
-	private OneToOneSelectedVisitor oneToOneSelectedVisitor() {
-		if (oneToOneSelectedVisitor == null) {
-			oneToOneSelectedVisitor = new OneToOneSelectedVisitor();
-		}
-		return oneToOneSelectedVisitor;
-	}
-
-	private OrderByVisitor orderyByVisitor() {
-		if (orderByVisitor == null) {
-			orderByVisitor = new OrderByVisitor();
-		}
-		return orderByVisitor;
+	@Override
+	public void visit(CollectionExpression expression) {
+		expression.acceptChildren(this);
 	}
 
 	/**
@@ -175,7 +108,24 @@ abstract class AbstractReadAllQueryVisitor extends AbstractEclipseLinkExpression
 	 */
 	@Override
 	public void visit(OrderByClause expression) {
-		expression.accept(orderyByVisitor());
+		expression.getOrderByItems().accept(this);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void visit(OrderByItem expression) {
+
+		// Create the order by item expression
+		Expression queryExpression = queryContext.buildExpression(expression.getExpression());
+
+		// Create the ordering item
+		switch (expression.getOrdering()) {
+			case ASC:  query.addOrdering(queryExpression.ascending());  break;
+			case DESC: query.addOrdering(queryExpression.descending()); break;
+			default:   query.addOrdering(queryExpression);
+		}
 	}
 
 	/**
@@ -183,6 +133,7 @@ abstract class AbstractReadAllQueryVisitor extends AbstractEclipseLinkExpression
 	 */
 	@Override
 	public void visit(SelectClause expression) {
+		// Select couple flags
 		visitAbstractSelectClause(expression);
 	}
 
@@ -192,16 +143,13 @@ abstract class AbstractReadAllQueryVisitor extends AbstractEclipseLinkExpression
 	@Override
 	public void visit(SelectStatement expression) {
 
-		// SELECT FROM WHERE GROUP BY HAVING
+		// Handle SELECT/FROM/WHERE
 		visitAbstractSelectStatement(expression);
 
 		// ORDER BY
 		if (expression.hasOrderByClause()) {
 			expression.getOrderByClause().accept(this);
 		}
-
-		// Add join expressions to the query (but not the join fetch expressions)
-		expression.getFromClause().accept(joinVisitor());
 	}
 
 	/**
@@ -217,6 +165,7 @@ abstract class AbstractReadAllQueryVisitor extends AbstractEclipseLinkExpression
 	 */
 	@Override
 	public void visit(SimpleSelectClause expression) {
+		// Select couple flags
 		visitAbstractSelectClause(expression);
 	}
 
@@ -225,12 +174,8 @@ abstract class AbstractReadAllQueryVisitor extends AbstractEclipseLinkExpression
 	 */
 	@Override
 	public void visit(SimpleSelectStatement expression) {
-
-		// SELECT FROM WHERE GROUP BY HAVING
+		// Handle SELECT/FROM/WHERE
 		visitAbstractSelectStatement(expression);
-
-		// Add join expressions to the query (but not the join fetch expressions)
-		expression.getFromClause().accept(joinVisitor());
 	}
 
 	/**
@@ -253,19 +198,34 @@ abstract class AbstractReadAllQueryVisitor extends AbstractEclipseLinkExpression
 			query.setReferenceClass(expressionBuilder.getQueryClass());
 			query.changeDescriptor(queryContext.getSession());
 		}
+
+		// Add join expressions to the query (but not the join fetch expressions)
+		JoinVisitor visitor = new JoinVisitor();
+		expression.accept(visitor);
 	}
 
 	void visitAbstractSelectClause(AbstractSelectClause expression) {
 
 		// DISTINCT
-		if (expression.hasDistinct() && !hasNotCountFunction(expression)) {
-			query.useDistinct();
+		if (expression.hasDistinct()) {
+
+			CountFunctionVisitor visitor = new CountFunctionVisitor();
+			expression.accept(visitor);
+
+			if (!visitor.hasCountFunction) {
+				query.useDistinct();
+			}
 		}
 
 		// Indicate on the query if "return null if primary key null".
 		// This means we want nulls returned if we expect an outer join
-		boolean buildNullForNullPK = hasOneToOneSelected(expression);
-		query.setShouldBuildNullForNullPk(buildNullForNullPK);
+		// True:  SELECT employee.address FROM ..... // Simple 1:1
+		// True:  SELECT a.b.c.d FROM ..... // where a->b, b->c and c->d are all 1:1.
+		// False: SELECT OBJECT(employee) FROM ..... // simple SELECT
+		// False: SELECT phoneNumber.areaCode FROM ..... // direct-to-field
+		OneToOneSelectedVisitor visitor = new OneToOneSelectedVisitor();
+		expression.accept(visitor);
+		query.setShouldBuildNullForNullPk(visitor.oneToOneSelected);
 	}
 
 	void visitAbstractSelectStatement(AbstractSelectStatement expression) {
@@ -277,14 +237,6 @@ abstract class AbstractReadAllQueryVisitor extends AbstractEclipseLinkExpression
 
 		if (expression.hasWhereClause()) {
 			expression.getWhereClause().accept(this);
-		}
-
-		if (expression.hasGroupByClause()) {
-			expression.getGroupByClause().accept(this);
-		}
-
-		if (expression.hasHavingClause()) {
-			expression.getHavingClause().accept(this);
 		}
 	}
 
@@ -329,7 +281,7 @@ abstract class AbstractReadAllQueryVisitor extends AbstractEclipseLinkExpression
 		}
 	}
 
-	private class JoinExpressionVisitor extends AbstractEclipseLinkExpressionVisitor {
+	private class JoinVisitor extends AbstractEclipseLinkExpressionVisitor {
 
 		private Expression addNonFetchJoinedAttribute(org.eclipse.persistence.jpa.jpql.parser.Expression expression,
 		                                              IdentificationVariable identificationVariable) {
@@ -590,50 +542,6 @@ abstract class AbstractReadAllQueryVisitor extends AbstractEclipseLinkExpression
 		@Override
 		public void visit(ValueExpression expression) {
 			oneToOneSelected = true;
-		}
-	}
-
-	/**
-	 * This visitor is responsible to create the ordering {@link Expression Expressions} by
-	 * traversing the order by items.
-	 */
-	private class OrderByVisitor extends AbstractEclipseLinkExpressionVisitor {
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(CollectionExpression expression) {
-			expression.acceptChildren(this);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(OrderByClause expression) {
-			expression.getOrderByItems().accept(this);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(OrderByItem expression) {
-
-			// Create the order by item expression
-			Expression queryExpression = queryContext.buildExpression(expression.getExpression());
-
-			// Create the ordering item
-			if (expression.getOrdering() == Ordering.DESC) {
-				query.addOrdering(queryExpression.descending());
-			}
-			else if (expression.getOrdering() == Ordering.ASC) {
-				query.addOrdering(queryExpression.ascending());
-			}
-			else {
-				query.addOrdering(queryExpression);
-			}
 		}
 	}
 }

@@ -15,9 +15,10 @@ package org.eclipse.persistence.internal.jpa.jpql;
 
 import org.eclipse.persistence.jpa.jpql.parser.DeleteClause;
 import org.eclipse.persistence.jpa.jpql.parser.DeleteStatement;
+import org.eclipse.persistence.queries.DeleteAllQuery;
 
 /**
- * This builder is responsible to populate a {@link DeleteAllQuery}.
+ * This builder is responsible to populate a {@link DeleteAllQuery} representing a <b>DELETE</b> query.
  *
  * @version 2.4
  * @since 2.3
@@ -31,9 +32,11 @@ final class DeleteQueryVisitor extends AbstractModifyAllQueryBuilder {
 	 *
 	 * @param queryContext The context used to query information about the application metadata and
 	 * cached information
+	 * @param query The {@link DeleteAllQuery} to populate by using this visitor to visit the parsed
+	 * tree representation of the JPQL query
 	 */
-	DeleteQueryVisitor(JPQLQueryContext queryContext) {
-		super(queryContext);
+	DeleteQueryVisitor(JPQLQueryContext queryContext, DeleteAllQuery query) {
+		super(queryContext, query);
 	}
 
 	/**

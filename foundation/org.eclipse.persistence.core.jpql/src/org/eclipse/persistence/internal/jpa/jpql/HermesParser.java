@@ -104,7 +104,7 @@ public final class HermesParser implements JPAQueryBuilder {
 	/**
 	 * {@inheritDoc}
 	 */
-	public DatabaseQuery buildQuery(String jpqlQuery, AbstractSession session) {
+	public DatabaseQuery buildQuery(CharSequence jpqlQuery, AbstractSession session) {
 		return populateQueryImp(jpqlQuery, null, session);
 	}
 
@@ -131,8 +131,7 @@ public final class HermesParser implements JPAQueryBuilder {
 		queryContext.addRangeVariableDeclaration(entityName, "this");
 
 		// Validate the query
-		// Note: Currently turned off, I need to tweak validation to support JPQL fragment
-//		validate(jpqlExpression, session, selectionCriteria);
+		validate(queryContext, jpqlExpression.getQueryStatement());
 
 		// Create the Expression representing the selection criteria
 		return queryContext.buildExpression(jpqlExpression.getQueryStatement());
@@ -196,11 +195,11 @@ public final class HermesParser implements JPAQueryBuilder {
 	/**
 	 * {@inheritDoc}
 	 */
-	public void populateQuery(String jpqlQuery, DatabaseQuery query, AbstractSession session) {
+	public void populateQuery(CharSequence jpqlQuery, DatabaseQuery query, AbstractSession session) {
 		populateQueryImp(jpqlQuery, query, session);
 	}
 
-	private DatabaseQuery populateQueryImp(String jpqlQuery,
+	private DatabaseQuery populateQueryImp(CharSequence jpqlQuery,
 	                                       DatabaseQuery query,
 	                                       AbstractSession session) {
 
@@ -218,7 +217,7 @@ public final class HermesParser implements JPAQueryBuilder {
 		validate(queryContext, jpqlExpression);
 
 		// Create the DatabaseQuery by visiting the parsed tree
-		DatabaseQueryVisitor visitor = new DatabaseQueryVisitor(queryContext);
+		DatabaseQueryVisitor visitor = new DatabaseQueryVisitor(queryContext, jpqlQuery);
 		jpqlExpression.accept(visitor);
 
 		// Add the input parameter types to the DatabaseQuery
@@ -233,8 +232,14 @@ public final class HermesParser implements JPAQueryBuilder {
 	/**
 	 * Grammatically and semantically validates the JPQL query. If the query is not valid, then an
 	 * exception will be thrown.
+	 *
+	 * @param queryContext The context used to query information about the application metadata and
+	 * cached information
+	 * @param expression The {@link org.eclipse.persistence.jpa.jpql.parser.Expression Expression} to
+	 * validate grammatically and semantically
 	 */
-	private void validate(JPQLQueryContext queryContext, JPQLExpression jpqlExpression) {
+	private void validate(JPQLQueryContext queryContext,
+	                      org.eclipse.persistence.jpa.jpql.parser.Expression expression) {
 
 		if (validateQueries) {
 
@@ -243,7 +248,7 @@ public final class HermesParser implements JPAQueryBuilder {
 			// Validate the JPQL query grammatically
 			EclipseLinkGrammarValidator grammar = new EclipseLinkGrammarValidator(jpqlGrammar());
 			grammar.setProblems(problems);
-			jpqlExpression.accept(grammar);
+			expression.accept(grammar);
 
 			if (!problems.isEmpty()) {
 				logProblems(queryContext, problems, JPQLQueryProblemMessages.HermesParser_GrammarValidator_ErrorMessage);
@@ -254,7 +259,7 @@ public final class HermesParser implements JPAQueryBuilder {
 			EclipseLinkSemanticValidatorHelper helper = new EclipseLinkSemanticValidatorHelper(queryContext);
 			EclipseLinkSemanticValidator semantic = new EclipseLinkSemanticValidator(helper);
 			semantic.setProblems(problems);
-			jpqlExpression.accept(semantic);
+			expression.accept(semantic);
 
 			if (!problems.isEmpty()) {
 				logProblems(queryContext, problems, JPQLQueryProblemMessages.HermesParser_SemanticValidator_ErrorMessage);
@@ -265,12 +270,14 @@ public final class HermesParser implements JPAQueryBuilder {
 	/**
 	 * This visitor traverses the parsed tree and create the right EclipseLink query and populates it.
 	 */
-	private class DatabaseQueryVisitor extends AbstractExpressionVisitor {
+	private static class DatabaseQueryVisitor extends AbstractExpressionVisitor {
 
+		private final String jpqlQuery;
 		private final JPQLQueryContext queryContext;
 
-		DatabaseQueryVisitor(JPQLQueryContext queryContext) {
+		DatabaseQueryVisitor(JPQLQueryContext queryContext, CharSequence jpqlQuery) {
 			super();
+			this.jpqlQuery    = jpqlQuery.toString();
 			this.queryContext = queryContext;
 		}
 
@@ -278,6 +285,15 @@ public final class HermesParser implements JPAQueryBuilder {
 			ReadAllQueryBuilder visitor = new ReadAllQueryBuilder(queryContext);
 			expression.accept(visitor);
 			return visitor.query;
+		}
+
+		private AbstractReadAllQueryVisitor buildVisitor(ObjectLevelReadQuery query) {
+
+			if (query.isReportQuery()) {
+				return new ReportQueryVisitor(queryContext, (ReportQuery) query);
+			}
+
+			return new ObjectLevelReadQueryVisitor(queryContext, query);
 		}
 
 		/**
@@ -292,15 +308,14 @@ public final class HermesParser implements JPAQueryBuilder {
 			if (query == null) {
 				query = new DeleteAllQuery();
 				queryContext.setDatabasQuery(query);
-				query.setJPQLString(queryContext.getJPQLQuery());
+				query.setJPQLString(jpqlQuery);
 			}
 
 			query.setSession(queryContext.getSession());
 			query.setShouldDeferExecutionInUOW(false);
 
 			// Now populate it
-			DeleteQueryVisitor visitor = new DeleteQueryVisitor(queryContext);
-			visitor.query = query;
+			DeleteQueryVisitor visitor = new DeleteQueryVisitor(queryContext, query);
 			expression.accept(visitor);
 		}
 
@@ -324,18 +339,11 @@ public final class HermesParser implements JPAQueryBuilder {
 			if (query == null) {
 				query = buildReadAllQuery(expression);
 				queryContext.setDatabasQuery(query);
-				query.setJPQLString(queryContext.getJPQLQuery());
+				query.setJPQLString(jpqlQuery);
 			}
 
 			// Now populate it
-			if (query.isReportQuery()) {
-				queryContext.populateReportQuery(expression, (ReportQuery) query);
-			}
-			else {
-				ObjectLevelReadQueryVisitor visitor = new ObjectLevelReadQueryVisitor(queryContext);
-				visitor.query = query;
-				expression.accept(visitor);
-			}
+			expression.accept(buildVisitor(query));
 		}
 
 		/**
@@ -350,15 +358,14 @@ public final class HermesParser implements JPAQueryBuilder {
 			if (query == null) {
 				query = new UpdateAllQuery();
 				queryContext.setDatabasQuery(query);
-				query.setJPQLString(queryContext.getJPQLQuery());
+				query.setJPQLString(jpqlQuery);
 			}
 
 			query.setSession(queryContext.getSession());
 			query.setShouldDeferExecutionInUOW(false);
 
 			// Now populate it
-			UpdateQueryVisitor visitor = new UpdateQueryVisitor(queryContext);
-			visitor.query = query;
+			UpdateQueryVisitor visitor = new UpdateQueryVisitor(queryContext, query);
 			expression.accept(visitor);
 		}
 	}

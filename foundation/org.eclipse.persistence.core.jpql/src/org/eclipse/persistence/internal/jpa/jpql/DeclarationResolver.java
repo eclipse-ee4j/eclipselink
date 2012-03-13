@@ -14,6 +14,7 @@
 package org.eclipse.persistence.internal.jpa.jpql;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -63,12 +64,6 @@ final class DeclarationResolver {
 	private List<Declaration> declarations;
 
 	/**
-	 * This visitor is responsible to visit the current query's declaration and populate this
-	 * resolver with the list of declarations.
-	 */
-	private DeclarationVisitor declarationVisitor;
-
-	/**
 	 * The parent {@link DeclarationResolver} which represents the superquery's declaration or
 	 * <code>null</code> if this is used for the top-level query.
 	 */
@@ -81,11 +76,6 @@ final class DeclarationResolver {
 	private boolean populated;
 
 	/**
-	 * This visitor is responsible to convert the abstract schema name into a path expression.
-	 */
-	private QualifyRangeDeclarationVisitor qualifyRangeDeclarationVisitor;
-
-	/**
 	 * The {@link JPQLQueryContext} is used to query information about the application metadata and
 	 * cached information.
 	 */
@@ -95,18 +85,6 @@ final class DeclarationResolver {
 	 * The result variables used to identify select expressions.
 	 */
 	private Collection<IdentificationVariable> resultVariables;
-
-	/**
-	 * Determines whether the <code><b>SELECT</b></code> clause was visited in order to retrieve the
-	 * list of result variables.
-	 */
-	private boolean resultVariablesPopulated;
-
-	/**
-	 * The visitor that visits the <code><b>SELECT</b></code> clause and gather the list of result
-	 * variables.
-	 */
-	private ResultVariableVisitor resultVariableVisitor;
 
 	/**
 	 * Creates a new <code>DeclarationResolver</code>.
@@ -126,10 +104,14 @@ final class DeclarationResolver {
 	 *
 	 * @param entityName The name of the entity to be accessible with the given variable name
 	 * @param variableName The identification variable used to navigate to the entity
-	 * @return The {@link RangeDeclaration} that contains the information of the "virtual" range
-	 * variable declaration
 	 */
-	RangeDeclaration addRangeVariableDeclaration(String entityName, String variableName) {
+	void addRangeVariableDeclaration(String entityName, String variableName) {
+
+		// This method should only be used by HermesParser.buildSelectionCriteria(),
+		// initializes these variables right away since this method should only be
+		// called by HermesParser.buildSelectionCriteria()
+		populated = true;
+		resultVariables = Collections.emptySet();
 
 		// Create the "virtual" range variable declaration
 		RangeVariableDeclaration rangeVariableDeclaration = new RangeVariableDeclaration(
@@ -146,12 +128,14 @@ final class DeclarationResolver {
 
 		declarations.add(declaration);
 
-		// Make sure it marked as the base declaration
+		// Make sure it is marked as the base declaration and the base Expression is created
 		if (baseDeclaration == null) {
 			baseDeclaration = declaration;
-		}
 
-		return declaration;
+			// Make sure the base Expression is initialized, which will cache it
+			// into the right context as well (the top-level context)
+			declaration.getQueryExpression();
+		}
 	}
 
 	/**
@@ -169,57 +153,22 @@ final class DeclarationResolver {
 	 */
 	void convertUnqualifiedDeclaration(RangeDeclaration declaration, String outerVariableName) {
 
-		QualifyRangeDeclarationVisitor visitor = qualifyRangeDeclarationVisitor();
+		QualifyRangeDeclarationVisitor visitor = new QualifyRangeDeclarationVisitor();
 
-		try {
-			// Convert the declaration expression into a derived declaration
-			visitor.declaration       = declaration;
-			visitor.outerVariableName = outerVariableName;
-			visitor.queryContext      = queryContext.getCurrentContext();
+		// Convert the declaration expression into a derived declaration
+		visitor.declaration       = declaration;
+		visitor.outerVariableName = outerVariableName;
+		visitor.queryContext      = queryContext.getCurrentContext();
 
-			declaration.declarationExpression.accept(visitor);
+		declaration.declarationExpression.accept(visitor);
 
-			// Now replace the old declaration with the new one
-			int index = declarations.indexOf(declaration);
-			declarations.set(index, visitor.declaration);
+		// Now replace the old declaration with the new one
+		int index = declarations.indexOf(declaration);
+		declarations.set(index, visitor.declaration);
 
-			// Update the base declaration
-			if (baseDeclaration == declaration) {
-				baseDeclaration = visitor.declaration;
-			}
-		}
-		finally {
-			visitor.declaration       = null;
-			visitor.queryContext      = null;
-			visitor.outerVariableName = null;
-		}
-	}
-
-	private DeclarationVisitor declarationVisitor() {
-
-		if (parent != null) {
-			return parent.declarationVisitor();
-		}
-
-		if (declarationVisitor == null) {
-			declarationVisitor = new DeclarationVisitor();
-		}
-
-		return declarationVisitor;
-	}
-
-	/**
-	 * Disposes the internal data.
-	 */
-	void dispose() {
-
-		populated = false;
-		baseDeclaration = null;
-		resultVariablesPopulated = false;
-		declarations.clear();
-
-		if (resultVariables != null) {
-			resultVariables.clear();
+		// Update the base declaration
+		if (baseDeclaration == declaration) {
+			baseDeclaration = visitor.declaration;
 		}
 	}
 
@@ -295,9 +244,10 @@ final class DeclarationResolver {
 			return parent.getResultVariables();
 		}
 
-		if (!resultVariablesPopulated) {
-			resultVariablesPopulated = true;
-			queryContext.getJPQLExpression().accept(resultVariableVisitor());
+		if (resultVariables == null) {
+			resultVariables = new HashSet<IdentificationVariable>();
+			ResultVariableVisitor visitor = new ResultVariableVisitor();
+			queryContext.getJPQLExpression().accept(visitor);
 		}
 
 		return resultVariables;
@@ -427,41 +377,12 @@ final class DeclarationResolver {
 
 	private void populateImp(Expression expression) {
 
-		DeclarationVisitor visitor = declarationVisitor();
+		DeclarationVisitor visitor = new DeclarationVisitor();
+		visitor.queryContext = queryContext;
+		visitor.declarations = declarations;
 
-		try {
-			visitor.queryContext = queryContext.getCurrentContext();
-			visitor.declarations = declarations;
-
-			expression.accept(visitor);
-			baseDeclaration = visitor.baseDeclaration;
-		}
-		finally {
-			visitor.queryContext    = null;
-			visitor.declarations    = null;
-			visitor.baseDeclaration = null;
-		}
-	}
-
-	private QualifyRangeDeclarationVisitor qualifyRangeDeclarationVisitor() {
-
-		if (parent != null) {
-			return parent.qualifyRangeDeclarationVisitor();
-		}
-
-		if (qualifyRangeDeclarationVisitor == null) {
-			qualifyRangeDeclarationVisitor = new QualifyRangeDeclarationVisitor();
-		}
-
-		return qualifyRangeDeclarationVisitor;
-	}
-
-	private ResultVariableVisitor resultVariableVisitor() {
-		if (resultVariableVisitor == null) {
-			resultVariables = new HashSet<IdentificationVariable>();
-			resultVariableVisitor = new ResultVariableVisitor();
-		}
-		return resultVariableVisitor;
+		expression.accept(visitor);
+		baseDeclaration = visitor.baseDeclaration;
 	}
 
 	private static class DeclarationVisitor extends AbstractEclipseLinkExpressionVisitor {

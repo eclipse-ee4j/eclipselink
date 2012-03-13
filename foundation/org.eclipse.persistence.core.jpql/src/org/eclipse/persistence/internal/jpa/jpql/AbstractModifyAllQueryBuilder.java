@@ -20,7 +20,7 @@ import org.eclipse.persistence.jpa.jpql.parser.WhereClause;
 import org.eclipse.persistence.queries.ModifyAllQuery;
 
 /**
- * This builder is responsible to initialize a modify all query.
+ * This builder is responsible to populate a {@link ModifyAllQuery}.
  *
  * @see DeleteQueryVisitor
  * @see UpdateQueryVisitor
@@ -35,11 +35,11 @@ abstract class AbstractModifyAllQueryBuilder extends AbstractEclipseLinkExpressi
 	/**
 	 * The {@link ModifyAllQuery} to update.
 	 */
-	ModifyAllQuery query;
+	final ModifyAllQuery query;
 
 	/**
-	 * The {@link JPQLQueryContext} is used to query information about the application metadata and
-	 * cached information.
+	 * The {@link ModifyAllQuery} to populate by using this visitor to visit the parsed tree
+	 * representation of the JPQL query.
 	 */
 	final JPQLQueryContext queryContext;
 
@@ -48,9 +48,12 @@ abstract class AbstractModifyAllQueryBuilder extends AbstractEclipseLinkExpressi
 	 *
 	 * @param queryContext The context used to query information about the application metadata and
 	 * cached information
+	 * @param query The {@link ModifyAllQuery} to populate by using this visitor to visit the parsed
+	 * tree representation of the JPQL query
 	 */
-	AbstractModifyAllQueryBuilder(JPQLQueryContext queryContext) {
+	AbstractModifyAllQueryBuilder(JPQLQueryContext queryContext, ModifyAllQuery query) {
 		super();
+		this.query = query;
 		this.queryContext = queryContext;
 	}
 

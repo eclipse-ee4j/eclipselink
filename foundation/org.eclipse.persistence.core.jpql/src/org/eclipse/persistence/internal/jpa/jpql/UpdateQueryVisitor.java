@@ -21,7 +21,7 @@ import org.eclipse.persistence.jpa.jpql.parser.UpdateStatement;
 import org.eclipse.persistence.queries.UpdateAllQuery;
 
 /**
- * This builder is responsible to populate a {@link UpdateAllQuery}.
+ * This builder is responsible to populate a {@link UpdateAllQuery} representing an <b>UPDATE</b> query.
  *
  * @version 2.4
  * @since 2.3
@@ -35,9 +35,11 @@ final class UpdateQueryVisitor extends AbstractModifyAllQueryBuilder {
 	 *
 	 * @param queryContext The context used to query information about the application metadata and
 	 * cached information
+	 * @param query The {@link UpdateAllQuery} to populate by using this visitor to visit the parsed
+	 * tree representation of the JPQL query
 	 */
-	UpdateQueryVisitor(JPQLQueryContext queryContext) {
-		super(queryContext);
+	UpdateQueryVisitor(JPQLQueryContext queryContext, UpdateAllQuery query) {
+		super(queryContext, query);
 	}
 
 	/**
