@@ -181,6 +181,9 @@
     <!-- Default ant target, compiles all components and tests, builds eclipselink.jar. -->
     <target name="build" depends="build-eclipselink-jar, build-core-test" description="build all EclipseLink distribution files except docs"/>
 
+    <!-- Default ant target, compiles all components and tests, builds eclipselink.jar. -->
+    <target name="build-no-test" depends="build-eclipselink-jar, build-util, package-all" description="build all EclipseLink distribution files except docs"/>
+
     <!-- Compiles all components and tests (excluding extensions). -->
     <target name="build-all-but-ext" depends="build, build-util, build-util-test, gen-wls-shared-lib"/>
 
@@ -573,46 +576,6 @@
                 <include name="org.eclipse.persistence*.source*.jar"/>
                 <exclude name="*equinox*.jar"/>
             </zipgroupfileset>
-        </jar>
-    </target>
-
-    <target name="package-wls-shared-lib">
-        <!-- artifact definitions -->
-        <property name="imp.version.string"       value="2_3_1"/>
-        <property name="spec.version"             value="2.3"/>
-        <property name="wls-shared-lib.base.name" value="org.eclipse.persistence"/>
-	    <property name="wls-shared-lib.name"      value="${wls-shared-lib.base.name}${imp.version.string}-shared-lib"/>
-        <!-- location to assemble ear components -->
-        <property name="shared-lib.dir"           value="${build.dir}/shared-lib"/>
-        <!-- location to generate metadata artifacts -->
-        <property name="metadata.dir"             value="${shared-lib.dir}/etc"/>
-     
-        
-        <!-- Create Metadata -->
-        <echo message="&lt;weblogic-application&gt;"                                     file="${metadata.dir}/weblogic-application.xml" append="false"/>
-        <echo message="  &lt;prefer-application-packages&gt;"                            file="${metadata.dir}/weblogic-application.xml" append="true"/>
-        <echo message="    &lt;package-name&gt;org.eclipse.persistence.*&lt;/package-name&gt;" file="${metadata.dir}/weblogic-application.xml" append="true"/>
-        <echo message="    &lt;package-name&gt;commonj.sdo.*&lt;/package-name&gt;"             file="${metadata.dir}/weblogic-application.xml" append="true"/>
-        <echo message="  &lt;/prefer-application-packages&gt;"                           file="${metadata.dir}/weblogic-application.xml" append="true"/>
-        <echo message="&lt;/weblogic-application&gt;"                                    file="${metadata.dir}/weblogic-application.xml" append="true"/>
-            
-        <echo message="&lt;application&gt;"                                              file="${metadata.dir}/application.xml" append="false"/>
-        <echo message="  &lt;display-name&gt;${wls-shared-lib.base.name}${imp.version.string}-shared-lib&lt;/display-name&gt;" file="${metadata.dir}/application.xml" append="true"/>
-        <echo message="  &lt;module&gt;"                                                 file="${metadata.dir}/application.xml" append="true"/>
-        <echo message="        &lt;java&gt;&lt;/java&gt;"                                      file="${metadata.dir}/application.xml" append="true"/>
-        <echo message="  &lt;/module&gt;"                                                file="${metadata.dir}/application.xml" append="true"/>
-        <echo message="&lt;/application&gt;"                                             file="${metadata.dir}/application.xml" append="true"/>
-
-        <!-- generate Ear file -->
-        <!-- if eclipselink.jar exists, generate ear with "o.e.p:spec version:imp version" -->
-        <jar destfile="${wls-shared-lib.base.name}${imp.version.string}-shared-lib.ear">
-            <metainf dir="${metadata.dir}" includes="*.xml"/>
-            <manifest>
-                <attribute name="Extension-Name"         value="${wls-shared-lib.base.name}"/>
-                <attribute name="Specification-Version"  value="${spec.version}"/>
-                <attribute name="Implementation-Version" value="${version.string}"/>
-            </manifest>
-            <fileset dir="build" includes="**/*"/>
         </jar>
     </target>
 
