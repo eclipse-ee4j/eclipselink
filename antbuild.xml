@@ -198,7 +198,7 @@
     <target name="build-no-test" depends="build-eclipselink-jar, build-util, package-all" description="build all EclipseLink distribution files except docs"/>
 
     <!-- Compiles all components and tests (excluding extensions). -->
-    <target name="build-all-but-ext" depends="build, build-util, build-util-test"/>
+    <target name="build-all-but-ext" depends="build, build-util, build-util-test, gen-wls-shared-lib"/>
 
     <!-- Compiles Oracle component, tests and extensions (excluding utilities). -->
     <target name="build-oracle" depends="build-oracle-extension, build-oracle-extension-test"/>
@@ -207,7 +207,7 @@
     <target name="build-nosql" depends="build-nosql-extension, build-nosql-extension-test"/>
 
     <!-- Builds and packages all jars, javadoc, and builds installer. -->
-    <target name="build-distribution" depends="build-all-but-ext, package-all"/>
+    <target name="build-distribution" depends="build-all-but-ext, package-all, gen-wls-shared-lib"/>
 
 <!-- ================================================================================= -->
 
@@ -228,6 +228,9 @@
             <fileset dir="${trunk.build.location}" includes="${eclipselink.src.install.prefix}${eclipselink.zip.suffix}*"/>
         </delete>
          <delete failonerror="false">
+            <fileset dir="${trunk.build.location}" includes="org.eclipse.persistence*.ear"/>
+        </delete>
+        <delete failonerror="false">
             <fileset dir="${eclipselink.util.rename}" includes="${package-rename.jar}*"/>
         </delete>
     </target>
@@ -316,7 +319,7 @@
             </fileset>
         </copy>
     </target>
-    
+
     <target name="build-core-ant" unless="use.maven">
         <ant antfile="antbuild.xml" dir="${eclipselink.hermes}"           target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.core}"             target="build"/>
@@ -355,7 +358,7 @@
         <ant antfile="antbuild.xml" dir="${eclipselink.equinox}"          target="jar"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.moxy}"             target="jar"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.sdo}"              target="jar"/>
-        
+
         <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle}" target="jar"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.extension.nosql}"  target="jar"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.modelgen}"         target="jar"/>
@@ -601,18 +604,18 @@
                     javax/persistence/criteria/SetJoin.class,
                     javax/persistence/criteria/Subquery.class,
 
-					javax/persistence/ConstructorResult.class,
-					javax/persistence/NamedStoredProcedureQueries.class,
-					javax/persistence/NamedStoredProcedureQuery.class,
-					javax/persistence/ParameterMode.class,
-					javax/persistence/StoredProcedureParameter.class,
-					javax/persistence/StoredProcedureQuery.class,
-					javax/persistence/SynchronizationType.class,
-					javax/persistence/criteria/CommonAbstractQuery.class,
-					javax/persistence/criteria/CriteriaDelete.class,
-					javax/persistence/criteria/CriteriaUpdate.class
+                    javax/persistence/ConstructorResult.class,
+                    javax/persistence/NamedStoredProcedureQueries.class,
+                    javax/persistence/NamedStoredProcedureQuery.class,
+                    javax/persistence/ParameterMode.class,
+                    javax/persistence/StoredProcedureParameter.class,
+                    javax/persistence/StoredProcedureQuery.class,
+                    javax/persistence/SynchronizationType.class,
+                    javax/persistence/criteria/CommonAbstractQuery.class,
+                    javax/persistence/criteria/CriteriaDelete.class,
+                    javax/persistence/criteria/CriteriaUpdate.class
             "/>
-			<!-- from ConstructorResult.class above, these are JPA 2.1 classes -->
+            <!-- from ConstructorResult.class above, these are JPA 2.1 classes -->
             <fileset
                 dir="${eclipselink.moxy.dynamicxjc}/${classes.dir}"
                 includes="**/*.class,"/>
@@ -634,14 +637,14 @@
             </resourcecount>
         <echo message="count='${count}'"/>
         <condition property="eclipselink.src.exist">
-        	 <not>
-        	     <equals arg1="${count}" arg2="0"/>
-        	 </not>
+             <not>
+                 <equals arg1="${count}" arg2="0"/>
+             </not>
         </condition>
         <say message="EclipseLink jar verified! '${eclipselink.src.exist}'" unless="eclipselink.src.exist"/>
         <say message="Source exists in EclipseLink jarfile! ${eclipselink.src.exist}" if="eclipselink.src.exist"/>
     </target>
-    
+
     <target name="package-eclipselink-bundles">
         <delete file="${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
         <zip destfile="${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}">
@@ -666,6 +669,10 @@
                 <include name="org.eclipse.persistence*oracleddl*.jar"/>
             </zipfileset>
         </zip>
+    </target>
+
+    <target name="gen-wls-shared-lib" description="call out to build a shared lib for WLS using the current build">
+        <ant antfile="sharedlib.xml"    dir="."   target="create-shared-lib-install"/>
     </target>
 
     <!-- Packages the eclipselink source jar. -->
