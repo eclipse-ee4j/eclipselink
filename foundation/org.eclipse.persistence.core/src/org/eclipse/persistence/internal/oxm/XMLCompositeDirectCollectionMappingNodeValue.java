@@ -81,7 +81,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
             XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
             marshalRecord.closeStartGroupingElements(groupingFragment);
         } else {
-            if (xmlCompositeDirectCollectionMapping.getWrapperNullPolicy() != null ) {
+            if ((xmlCompositeDirectCollectionMapping.usesSingleNode() && !xmlCompositeDirectCollectionMapping.isDefaultEmptyContainer()) || xmlCompositeDirectCollectionMapping.getWrapperNullPolicy() != null) {
                 XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
                 marshalRecord.closeStartGroupingElements(groupingFragment);
             } else {
