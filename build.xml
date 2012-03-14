@@ -642,7 +642,7 @@
         <delete dir="${build.dir}/commonj.sdo" failonerror="false"/>
         <delete dir="${build.dir}/javax.xml.bind" failonerror="false"/>
         <delete dir="${eclipselink.javadocs}" failonerror="false"/>
-        <unzip src="${eclipselink.sdo.plugins}/${commonj.sdo.src.zip}" dest="${build.dir}/commonj.sdo/src"/>
+        <unzip src="${eclipselink.sdo.plugins}/${commonj.sdo.src.jar}" dest="${build.dir}/commonj.sdo/src"/>
         <unzip src="${eclipselink.plugins}/${jaxb-api.src.jar}" dest="${build.dir}/javax.xml.bind/src"/>
         <javadoc
             maxmemory="384m"
