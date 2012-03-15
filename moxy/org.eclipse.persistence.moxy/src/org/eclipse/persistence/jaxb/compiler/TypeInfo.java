@@ -1084,15 +1084,6 @@ public class TypeInfo {
      */
     public void setXmlNameTransformer(XMLNameTransformer xmlNameTransformer) {
         this.xmlNameTransformer = xmlNameTransformer;
-        if(getXmlType() !=null && getXmlType().getName() !=null && javaClassName != null){
-            String newName = null;
-            try{
-                newName = (xmlNameTransformer.transformTypeName(javaClassName));                
-            }catch(Exception ex){
-                throw org.eclipse.persistence.exceptions.JAXBException.exceptionDuringNameTransformation(javaClassName, xmlNameTransformer.getClass().getName(), ex);
-            }
-            getXmlType().setName(newName);
-        }
     }
 
     

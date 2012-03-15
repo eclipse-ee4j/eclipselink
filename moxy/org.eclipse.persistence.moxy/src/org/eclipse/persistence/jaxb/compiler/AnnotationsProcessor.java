@@ -1334,11 +1334,6 @@ public class AnnotationsProcessor {
             xmlType.setFactoryMethod(typeAnnotation.factoryMethod());
         } else {
             // set defaults
-            try {
-                xmlType.setName(info.getXmlNameTransformer().transformTypeName(javaClass.getName()));
-            } catch (Exception ex) {
-                throw org.eclipse.persistence.exceptions.JAXBException.exceptionDuringNameTransformation(javaClass.getName(), info.getXmlNameTransformer().getClass().getName(), ex);
-            }
             xmlType.setNamespace(packageNamespace.getNamespace());
         }
         info.setXmlType(xmlType);
