@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xml-bindings 
+    xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm"
+    version="2.3" 
+    package-name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlnametransformer" 
+    xml-name-transformer="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlnametransformer.XmlMappingDefaultNameNameTransformer">
+    <java-types>
+        <java-type name="XmlMappingSpecifiedNameRoot">
+            <xml-root-element name="root-specified"/>
+            <xml-type name="type-specified"/>
+            <java-attributes>
+                <xml-element java-attribute="element" name="element-specified"/>
+                <xml-attribute java-attribute="attribute" name="attribute-specified"/>
+            </java-attributes>
+        </java-type>
+    </java-types>
+</xml-bindings>

@@ -16,22 +16,18 @@ import org.eclipse.persistence.oxm.XMLNameTransformer;
 
 public class XmlMappingDefaultNameNameTransformer implements XMLNameTransformer {
 
-    @Override
     public String transformTypeName(String name) {
         return name + "_TYPE";
     }
 
-    @Override
     public String transformElementName(String name) {
         return name + "_ELEMENT";
     }
 
-    @Override
     public String transformAttributeName(String name) {
         return name + "_ATTRIBUTE";
     }
 
-    @Override
     public String transformRootElementName(String name) {
         return name + "_ROOT";
     }
