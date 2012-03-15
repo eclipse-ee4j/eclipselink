@@ -1435,7 +1435,9 @@ public class AnnotationsProcessor {
             }
             // use value in package-info.java as last resort - will default if
             // not set
-            info.setXmlAccessType(org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType.fromValue(packageNamespace.getAccessType().name()));
+            if(!(info.isSetXmlAccessType())) {
+                info.setXmlAccessType(org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType.fromValue(packageNamespace.getAccessType().name()));
+            }
         }
     }
 

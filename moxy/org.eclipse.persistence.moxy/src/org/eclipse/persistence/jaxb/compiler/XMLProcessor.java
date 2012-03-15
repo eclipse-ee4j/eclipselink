@@ -168,6 +168,9 @@ public class XMLProcessor {
             if (packageInfo == null) {
                 packageInfo = new PackageInfo();                             
             }
+            if(xmlBindings.isSetXmlAccessorType()) {
+                packageInfo.setAccessType(xmlBindings.getXmlAccessorType());
+            }
             JavaTypes jTypes = xmlBindings.getJavaTypes();
             if (jTypes != null) {
                 for (JavaType javaType : jTypes.getJavaType()) {
@@ -212,14 +215,6 @@ public class XMLProcessor {
                     // handle class-level @XmlAccessorType override
                     if (javaType.isSetXmlAccessorType()) {
                         info.setXmlAccessType(javaType.getXmlAccessorType());
-                    } else if (!info.isSetXmlAccessType()) {
-                        if (xmlBindings.isSetXmlAccessorType()) {
-                            // handle package-level @XmlAccessorType override
-                            info.setXmlAccessType(xmlBindings.getXmlAccessorType());
-                        } else {
-                            // finally, check the NamespaceInfo
-                            info.setXmlAccessType(packageInfo.getAccessType());
-                        }
                     }
                     // handle @XmlInlineBinaryData override
                     if (javaType.isSetXmlInlineBinaryData()) {

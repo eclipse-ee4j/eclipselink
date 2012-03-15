@@ -26,6 +26,7 @@ import org.eclipse.persistence.testing.jaxb.externalizedmetadata.multiplebinding
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.multiplebindings.MultipleBindingsSimpleTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessororder.XmlAccessorOrderTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessortype.XmlAccessorTypeTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessortype.inheritance.XmlAccessorTypeInheritanceTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.XmlAdapterTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.list.XmlAdapterListTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.negative.XmlAdapterNegativeTestCases;
@@ -102,6 +103,7 @@ public class ExternalizedMetadataTestSuite extends TestSuite {
         suite.addTestSuite(XmlRootElementTestCases.class);
         suite.addTestSuite(XmlTypeTestCases.class);
         suite.addTestSuite(XmlAccessorTypeTestCases.class);
+     	suite.addTestSuite(XmlAccessorTypeInheritanceTestCases.class);
         suite.addTestSuite(XmlAccessorOrderTestCases.class);
         suite.addTestSuite(JAXBContextFactoryTestCases.class);
         suite.addTestSuite(XmlElementTestCases.class);
