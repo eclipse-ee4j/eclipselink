@@ -51,6 +51,7 @@ import junit.framework.TestSuite;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.CodeExample;
 import org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass.DesignPattern;
@@ -1048,8 +1049,49 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             assertTrue("Embeddable is null", inventor.getPatentCollection() != null);
             assertFalse("Collection is empty", inventor.getPatentCollection().getPatents().isEmpty());
             assertTrue("Target is incorrect", inventor.getPatentCollection().getPatents().get(0).getId() == 1);
-            rollbackTransaction(em);
         } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
+    }
+
+    public void testEmbeddedOneToOne(){
+        EntityManager em = createEntityManager(DDL_PU);
+        try{
+            beginTransaction(em);
+            PatentInvestigator investigator = new PatentInvestigator();
+            investigator.setId(1);
+            Patent lastPatent = new Patent();
+            lastPatent.setId(1);
+            investigator.setLastCompleted(new PatentInvestigation("Last", lastPatent));
+            em.persist(investigator);
+            em.persist(lastPatent);
+            em.flush();
+            em.clear();
+            
+            PatentInvestigator investigatorRead = em.find(PatentInvestigator.class, investigator.getId());
+            assertTrue("investigatorRead.getLast() == null", investigatorRead.getLast() != null);
+            assertTrue("investigatorRead.getLast.getPatent() == null", investigatorRead.getLast().getPatent() != null);
+            assertTrue("investigatorRead.getLast.getPatent().getId() is incorrect", investigatorRead.getLast().getPatent().getId() == lastPatent.getId());
+            assertTrue("investigatorRead.getCurrent() != null", investigatorRead.getCurrent() == null);
+            assertTrue("investigatorRead.getNext() != null", investigatorRead.getNext() == null);
+            
+            Patent currentPatent = new Patent();
+            currentPatent.setId(2);
+            em.persist(currentPatent);
+            em.flush();
+            em.createNativeQuery("UPDATE " + em.unwrap(ServerSession.class).getDescriptor(PatentInvestigator.class).getDefaultTable().getName() + " SET CURRENT_DESRIPTION = 'Current', CURRENT_PATENT = " + currentPatent.getId() + " WHERE ID = " + investigator.getId()).executeUpdate();            
+            em.refresh(investigatorRead);
+            assertTrue("after refresh investigatorRead.getLast() == null", investigatorRead.getLast() != null);
+            assertTrue("after refresh investigatorRead.getLast.getPatent() == null", investigatorRead.getLast().getPatent() != null);
+            assertTrue("after refresh investigatorRead.getLast.getPatent().getId() is incorrect", investigatorRead.getLast().getPatent().getId() == lastPatent.getId());
+            assertTrue("after refresh investigatorRead.getCurrent() == null", investigatorRead.getCurrent() != null);
+            assertTrue("after refresh investigatorRead.getCurrent.getPatent() == null", investigatorRead.getCurrent().getPatent() != null);
+            assertTrue("after refresh investigatorRead.getCurrent.getPatent().getId() is incorrect", investigatorRead.getCurrent().getPatent().getId() == currentPatent.getId());
+            assertTrue("after refresh investigatorRead.getNext() != null", investigatorRead.getNext() == null);
+
+        } finally {
+            rollbackTransaction(em);
             closeEntityManager(em);
         }
     }

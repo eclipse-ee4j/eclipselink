@@ -299,6 +299,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "metadata_warning_inverse_access_type_mapping_override", "Overriding the {2} mapping attribute [{1}] with the {4} mapping attribute [{3}] from class [{0}]. To avoid this warning you should mark the attribute [{1}] as transient."},
         { "metadata_warning_partitioned_not_set", "@Partitioning found on the element {1} of class {0}, but no @Partitioned.  The @Partitioned annotation must be used to set the partitioning policy, @Partitioning just defines the policy, but does not set it."},
         { "metadata_warning_reference_column_not_found", "The reference column name [{0}] mapped on the element [{1}] does not correspond to a valid id or basic field/column on the mapping reference. Will use referenced column name as provided."},
+        { "metadata_warning_ignore_is_null_allowed", "isNullAllowed is reset to false in {0} because the the aggregate has a target foreign key {1}"},
         { "non_jpa_allowed_type_used_for_collection_using_lazy_access", "Element [{1}] within entity class [{0}] uses a collection type [{2}] when the JPA specification only supports java.util.Collection, " +
             "java.util.Set, java.util.List, or java.util.Map.  This type is supported with eager loading; using lazy loading with this collection type requires additional configuration and an IndirectContainer implementation " +
             "that extends [{2}] or setting the mapping to use basic indirection and the type to be ValueholderInterface." },
