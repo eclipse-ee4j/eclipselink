@@ -30,6 +30,7 @@ import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
 import org.eclipse.persistence.mappings.foundation.MapKeyMapping;
 import org.eclipse.persistence.mappings.querykeys.QueryKey;
@@ -1073,10 +1074,18 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
             // controlled through JPA metadata processing.
         }
         
-        // disallow null for aggregates with relationships
-        for (DatabaseMapping mapping: getReferenceDescriptor().getMappings()){
-            if (mapping.isForeignReferenceMapping() || mapping.isAbstractCompositeDirectCollectionMapping()){
-                isNullAllowed = false;
+        // disallow null for aggregates with target foreign key relationships
+        if (isNullAllowed) {
+            for (DatabaseMapping mapping: getReferenceDescriptor().getMappings()){
+                if (mapping.isCollectionMapping() || 
+                        (mapping.isObjectReferenceMapping() && !((ObjectReferenceMapping)mapping).isForeignKeyRelationship()) || 
+                        mapping.isAbstractCompositeDirectCollectionMapping()) {
+                    isNullAllowed = false;
+                    Object[] args = new Object[2];
+                    args[0] = this;
+                    args[1] = mapping;
+                    session.log(SessionLog.WARNING, SessionLog.EJB_OR_METADATA, "metadata_warning_ignore_is_null_allowed", args);
+                }
             }
         }
         
