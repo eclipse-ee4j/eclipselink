@@ -13,6 +13,7 @@
 package org.eclipse.persistence.testing.jaxb.innerclasses;
 
 import org.eclipse.persistence.testing.jaxb.innerclasses.notincontext.InnerClassNotInContextTestCases;
+import org.eclipse.persistence.testing.jaxb.innerclasses.unreferenced.UnreferencedInnerClassTestCases;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -25,6 +26,7 @@ public class InnerClassTestSuite extends TestSuite {
         suite.addTestSuite(MappedInnerClassNoneTestCases.class);
         suite.addTestSuite(UnmappedInnerClassTestCases.class);
         suite.addTestSuite(InnerClassNotInContextTestCases.class);
+        suite.addTestSuite(UnreferencedInnerClassTestCases.class);
         return suite;
     }
 
