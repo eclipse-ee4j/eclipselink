@@ -29,6 +29,11 @@ import org.eclipse.persistence.logging.SessionLog;
  */
 public class Oracle10Platform extends Oracle9Platform  {
     
+    public Oracle10Platform(){
+        super();
+        //bug 374136: override setting the FIRST_ROWS hint as this is not needed on Oracle10g
+        HINT = "";
+    }
 
     /**
      * Internal: This gets called on each batch statement execution

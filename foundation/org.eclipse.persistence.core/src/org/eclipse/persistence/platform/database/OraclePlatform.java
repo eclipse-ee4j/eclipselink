@@ -749,12 +749,12 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     }
     
     //Oracle Rownum support
-    private static final String SELECT = "SELECT * FROM (SELECT ";
-    private static final String HINT = "/*+ FIRST_ROWS */ ";
-    private static final String FROM = "a.*, ROWNUM rnum  FROM (";
-    private static final String END_FROM = ") a ";
-    private static final String MAX_ROW = "WHERE ROWNUM <= ";
-    private static final String MIN_ROW = ") WHERE rnum > ";
+    protected String SELECT = "SELECT * FROM (SELECT ";
+    protected String HINT = "/*+ FIRST_ROWS */ ";
+    protected String FROM = "a.*, ROWNUM rnum  FROM (";
+    protected String END_FROM = ") a ";
+    protected String MAX_ROW = "WHERE ROWNUM <= ";
+    protected String MIN_ROW = ") WHERE rnum > ";
     
     /**
      * INTERNAL:
@@ -841,7 +841,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
                 return true;
             }
             if (exception.getErrorCode() == 17002){
-        	      return true;
+                return true;
             }
             if (exception.getErrorCode() == 2399){
                 return true;
