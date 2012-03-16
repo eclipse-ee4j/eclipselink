@@ -1,16 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 2008 - 2012 Oracle Corporation. All rights reserved.
- *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
+ * Copyright (c) 2008, 2009 Sun Microsystems. All rights reserved. 
+ * 
+ * This program and the accompanying materials are made available under the 
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
+ * which accompanies this distribution. 
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
- *
+ * 
  * Contributors:
- *     Linda DeMichiel - Java Persistence 2.1
- *     Linda DeMichiel - Java Persistence 2.0
+ *     Linda DeMichiel - Java Persistence 2.0 - Version 2.0 (October 1, 2009)
+ *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
  ******************************************************************************/
 package javax.persistence;
@@ -50,19 +50,4 @@ public interface Cache {
      * Clear the cache.
      */
     public void evictAll();
-
-    /**
-     * Return an object of the specified type to allow access to the
-     * provider-specific API.  If the provider's Cache
-     * implementation does not support the specified class, the
-     * PersistenceException is thrown.
-     * @param cls  the class of the object to be returned.  This is
-     * normally either the underlying Cache implementation
-     * class or an interface that it implements.
-     * @return an instance of the specified class
-     * @throws PersistenceException if the provider does not
-     * support the call
-     * @since Java Persistence 2.1
-     */
-    public <T> T unwrap(Class<T> cls);
 }

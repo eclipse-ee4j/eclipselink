@@ -1,18 +1,18 @@
 /*******************************************************************************
- * Copyright (c) 2008 - 2012 Oracle Corporation. All rights reserved.
- *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
+ * Copyright (c) 2008, 2009 Sun Microsystems. All rights reserved. 
+ * 
+ * This program and the accompanying materials are made available under the 
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
+ * which accompanies this distribution. 
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
- *
+ * 
  * Contributors:
- *     Linda DeMichiel - Java Persistence 2.1
- *     Linda DeMichiel - Java Persistence 2.0
+ *     Linda DeMichiel - Java Persistence 2.0 - Version 2.0 (October 1, 2009)
+ *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
- ******************************************************************************/ 
+ ******************************************************************************/
 package javax.persistence;
 
 import java.util.List;
@@ -39,10 +39,8 @@ public interface TypedQuery<X> extends Query {
      * @throws QueryTimeoutException if the query execution exceeds
      *         the query timeout value set and only the statement is
      *         rolled back
-     * @throws TransactionRequiredException if a lock mode other than
-     *         <code>NONE</code> has been set and there is no transaction
-     *         or the persistence context has not been joined to the
-     *         transaction
+     * @throws TransactionRequiredException if a lock mode has
+     *         been set and there is no transaction
      * @throws PessimisticLockException if pessimistic locking
      *         fails and the transaction is rolled back
      * @throws LockTimeoutException if pessimistic locking
@@ -63,10 +61,8 @@ public interface TypedQuery<X> extends Query {
      * @throws QueryTimeoutException if the query execution exceeds
      *         the query timeout value set and only the statement is
      *         rolled back
-     * @throws TransactionRequiredException if a lock mode other than
-     *         <code>NONE</code> has been set and there is no transaction
-     *         or the persistence context has not been joined to the
-     *         transaction
+     * @throws TransactionRequiredException if a lock mode has
+     *         been set and there is no transaction
      * @throws PessimisticLockException if pessimistic locking
      *         fails and the transaction is rolled back
      * @throws LockTimeoutException if pessimistic locking
@@ -148,7 +144,7 @@ public interface TypedQuery<X> extends Query {
                                TemporalType temporalType);
 
     /**
-     * Bind an argument value to a named parameter.
+     * Bind an argument to a named parameter.
      * @param name  parameter name
      * @param value  parameter value
      * @return the same query instance
@@ -185,7 +181,7 @@ public interface TypedQuery<X> extends Query {
                                TemporalType temporalType);
 
     /**
-     * Bind an argument value to a positional parameter.
+     * Bind an argument to a positional parameter.
      * @param position  position
      * @param value  parameter value
      * @return the same query instance

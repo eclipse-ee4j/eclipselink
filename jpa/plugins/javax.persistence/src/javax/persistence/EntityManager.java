@@ -1,26 +1,24 @@
 /*******************************************************************************
- * Copyright (c) 2008 - 2012 Oracle Corporation. All rights reserved.
- *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
+ * Copyright (c) 2008, 2009 Sun Microsystems. All rights reserved. 
+ * 
+ * This program and the accompanying materials are made available under the 
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
+ * which accompanies this distribution. 
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
- *
+ * 
  * Contributors:
- *     Linda DeMichiel - Java Persistence 2.1
- *     Linda DeMichiel - Java Persistence 2.0
+ *     Linda DeMichiel - Java Persistence 2.0 - Version 2.0 (October 1, 2009)
+ *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
- ******************************************************************************/ 
+ ******************************************************************************/
 package javax.persistence;
 
 import java.util.Map;
 import javax.persistence.metamodel.Metamodel;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.CriteriaUpdate;
-import javax.persistence.criteria.CriteriaDelete;
 
 /**
  * Interface used to interact with the persistence context.
@@ -44,7 +42,6 @@ import javax.persistence.criteria.CriteriaDelete;
  * @see TypedQuery
  * @see CriteriaQuery
  * @see PersistenceContext
- * @see StoredProcedureQuery
  * 
  * @since Java Persistence 1.0
  */
@@ -60,9 +57,10 @@ public interface EntityManager {
      * thrown at flush or commit time.) 
      * @throws IllegalArgumentException if the instance is not an
      *         entity
-     * @throws TransactionRequiredException if there is no transaction when
-     *         invoked on a container-managed entity manager of that is of type 
-     *         <code>PersistenceContextType.TRANSACTION</code>
+     * @throws TransactionRequiredException if invoked on a
+     *         container-managed entity manager of type 
+     *         <code>PersistenceContextType.TRANSACTION</code> and there is 
+     *         no transaction
      */
     public void persist(Object entity);
     
@@ -73,9 +71,10 @@ public interface EntityManager {
      * @return the managed instance that the state was merged to
      * @throws IllegalArgumentException if instance is not an
      *         entity or is a removed entity
-     * @throws TransactionRequiredException if there is no transaction when
-     *         invoked on a container-managed entity manager of that is of type 
-     *         <code>PersistenceContextType.TRANSACTION</code>
+     * @throws TransactionRequiredException if invoked on a
+     *         container-managed entity manager of type 
+     *         <code>PersistenceContextType.TRANSACTION</code> and there is 
+     *         no transaction
      */    
     public <T> T merge(T entity);
     
@@ -159,10 +158,8 @@ public interface EntityManager {
      *         not a valid type for that entity's primary key or 
      *         is null
      * @throws TransactionRequiredException if there is no 
-     *         transaction and a lock mode other than <code>NONE</code> is
-     *         specified or if invoked on an entity manager which has
-     *         not been joined to the current transaction and a lock
-     *         mode other than <code>NONE</code> is specified
+     *         transaction and a lock mode other than NONE is
+     *         specified
      * @throws OptimisticLockException if the optimistic version 
      *         check fails
      * @throws PessimisticLockException if pessimistic locking 
@@ -214,10 +211,8 @@ public interface EntityManager {
      *         not a valid type for that entity's primary key or 
      *         is null
      * @throws TransactionRequiredException if there is no 
-     *         transaction and a lock mode other than <code>NONE</code> is
-     *         specified or if invoked on an entity manager which has
-     *         not been joined to the current transaction and a lock
-     *         mode other than <code>NONE</code> is specified
+     *         transaction and a lock mode other than <code>NONE</code> is 
+     *         specified
      * @throws OptimisticLockException if the optimistic version 
      *         check fails
      * @throws PessimisticLockException if pessimistic locking 
@@ -247,7 +242,7 @@ public interface EntityManager {
      * @return the found entity instance
      * @throws IllegalArgumentException if the first argument does
      *         not denote an entity type or the second argument is
-     *         not a valid type for that entity's primary key or
+     *         not a valid type for that entity’s primary key or
      *         is null
      * @throws EntityNotFoundException if the entity state 
      *         cannot be accessed
@@ -259,8 +254,7 @@ public interface EntityManager {
      * Synchronize the persistence context to the
      * underlying database.
      * @throws TransactionRequiredException if there is
-     *         no transaction or if the entity manager has not been
-     *         joined to the current transaction
+     *         no transaction
      * @throws PersistenceException if the flush fails
      */
     public void flush();
@@ -300,8 +294,7 @@ public interface EntityManager {
      * @throws IllegalArgumentException if the instance is not an
      *         entity or is a detached entity
      * @throws TransactionRequiredException if there is no 
-     *         transaction or if invoked on an entity manager which
-     *         has not been joined to the current transaction
+     *         transaction
      * @throws EntityNotFoundException if the entity does not exist 
      *         in the database when pessimistic locking is 
      *         performed
@@ -346,8 +339,7 @@ public interface EntityManager {
      * @throws IllegalArgumentException if the instance is not an
      *         entity or is a detached entity
      * @throws TransactionRequiredException if there is no 
-     *         transaction or if invoked on an entity manager which
-     *         has not been joined to the current transaction
+     *         transaction
      * @throws EntityNotFoundException if the entity does not exist 
      *         in the database when pessimistic locking is 
      *         performed
@@ -370,9 +362,10 @@ public interface EntityManager {
      * @param entity  entity instance
      * @throws IllegalArgumentException if the instance is not
      *         an entity or the entity is not managed
-     * @throws TransactionRequiredException if there is no
-     *         transaction when invoked on a container-managed
-     *         entity manager of type <code>PersistenceContextType.TRANSACTION</code>
+     * @throws TransactionRequiredException if invoked on a
+     *         container-managed entity manager of type 
+     *         <code>PersistenceContextType.TRANSACTION</code> and there is 
+     *         no transaction
      * @throws EntityNotFoundException if the entity no longer
      *         exists in the database
      */    
@@ -389,9 +382,10 @@ public interface EntityManager {
      *        and hints
      * @throws IllegalArgumentException if the instance is not 
      *         an entity or the entity is not managed 
-     * @throws TransactionRequiredException if there is no
-     *         transaction when invoked on a container-managed
-     *         entity manager of type <code>PersistenceContextType.TRANSACTION</code>
+     * @throws TransactionRequiredException if invoked on a 
+     *         container-managed entity manager of type
+     *         <code>PersistenceContextType.TRANSACTION</code> and there is
+     *         no transaction 
      * @throws EntityNotFoundException if the entity no longer 
      *         exists in the database 
      * @since Java Persistence 2.0
@@ -416,14 +410,11 @@ public interface EntityManager {
      * @param lockMode  lock mode
      * @throws IllegalArgumentException if the instance is not
      *         an entity or the entity is not managed
-     * @throws TransactionRequiredException if invoked on a 
-     *         container-managed entity manager of type
-     *         <code>PersistenceContextType.TRANSACTION</code> when there is
-     *         no transaction; if invoked on an extended entity manager when
-     *         there is no transaction and a lock mode other than <code>NONE</code>
-     *         has been specified; or if invoked on an extended entity manager
-     *         that has not been joined to the current transaction and a
-     *         lock mode other than <code>NONE</code> has been specified
+     * @throws TransactionRequiredException if there is no 
+     *         transaction and if invoked on a container-managed
+     *         <code>EntityManager</code> instance with
+     *         <code>PersistenceContextType.TRANSACTION</code> or with a lock mode 
+     *         other than <code>NONE</code>
      * @throws EntityNotFoundException if the entity no longer exists
      *         in the database
      * @throws PessimisticLockException if pessimistic locking fails
@@ -461,14 +452,11 @@ public interface EntityManager {
      *        and hints
      * @throws IllegalArgumentException if the instance is not
      *         an entity or the entity is not managed
-     * @throws TransactionRequiredException if invoked on a 
-     *         container-managed entity manager of type
-     *         <code>PersistenceContextType.TRANSACTION</code> when there is
-     *         no transaction; if invoked on an extended entity manager when
-     *         there is no transaction and a lock mode other than <code>NONE</code>
-     *         has been specified; or if invoked on an extended entity manager
-     *         that has not been joined to the current transaction and a
-     *         lock mode other than <code>NONE</code> has been specified
+     * @throws TransactionRequiredException if there is no 
+     *         transaction and if invoked on a container-managed
+     *         <code>EntityManager</code> instance with
+     *         <code>PersistenceContextType.TRANSACTION</code> or with a lock mode 
+     *         other than <code>NONE</code>
      * @throws EntityNotFoundException if the entity no longer exists
      *         in the database
      * @throws PessimisticLockException if pessimistic locking fails
@@ -518,8 +506,7 @@ public interface EntityManager {
      * @param entity  entity instance
      * @return lock mode
      * @throws TransactionRequiredException if there is no 
-     *         transaction or if the entity manager has not been
-     *         joined to the current transaction
+     *         transaction
      * @throws IllegalArgumentException if the instance is not a
      *         managed entity and a transaction is active
      * @since Java Persistence 2.0
@@ -569,28 +556,6 @@ public interface EntityManager {
     public <T> TypedQuery<T> createQuery(CriteriaQuery<T> criteriaQuery); 
 
     /**
-     * Create an instance of <code>Query</code> for executing a criteria
-     * update query.
-     * @param updateQuery  a criteria update query object
-     * @return the new query instance
-     * @throws IllegalArgumentException if the update query is
-     *         found to be invalid
-     * @since Java Persistence 2.1
-     */
-    public Query createQuery(CriteriaUpdate updateQuery);
-
-    /**
-     * Create an instance of <code>Query</code> for executing a criteria
-     * delete query.
-     * @param deleteQuery  a criteria delete query object
-     * @return the new query instance
-     * @throws IllegalArgumentException if the delete query is
-     *         found to be invalid
-     * @since Java Persistence 2.1
-     */
-    public Query createQuery(CriteriaDelete deleteQuery);
-
-    /**
      * Create an instance of <code>TypedQuery</code> for executing a
      * Java Persistence query language statement.
      * The select list of the query must contain only a single
@@ -637,13 +602,6 @@ public interface EntityManager {
     /**
      * Create an instance of <code>Query</code> for executing
      * a native SQL statement, e.g., for update or delete.
-     * If the query is not an update or delete query, query
-     * execution will result in each row of the SQL result
-     * being returned as a result of type Object[] (or a result
-     * of type Object if there is only one column in the select
-     * list.)  Column values are returned in the order of their
-     * appearance in the select list and default JDBC type
-     * mappings are applied.
      * @param sqlString a native SQL query string
      * @return the new query instance
      */
@@ -668,103 +626,15 @@ public interface EntityManager {
     public Query createNativeQuery(String sqlString, String resultSetMapping);
 
     /**
-     * Create an instance of <code>StoredProcedureQuery</code> for executing a
-     * stored procedure in the database.
-     * <p>Parameters must be registered before the stored procedure can
-     * be executed.
-     * <p>If the stored procedure returns one or more result sets,
-     * any result set will be returned as a list of type Object[].
-     * @param name name assigned to the stored procedure query
-     * in metadata
-     * @return the new stored procedure query instance
-     * @throws IllegalArgumentException if a query has not been
-     * defined with the given name
-     * @since Java Persistence 2.1
-     */
-    public StoredProcedureQuery createNamedStoredProcedureQuery(String name);
-
-    /**
-     * Create an instance of <code>StoredProcedureQuery</code> for executing a
-     * stored procedure in the database.
-     * <p>Parameters must be registered before the stored procedure can
-     * be executed.
-     * <p>If the stored procedure returns one or more result sets,
-     * any result set will be returned as a list of type Object[].
-     * @param procedureName name of the stored procedure in the
-     * database
-     * @return the new stored procedure query instance
-     * @throws IllegalArgumentException if a stored procedure of the
-     * given name does not exist (or the query execution will
-     * fail)
-     * @since Java Persistence 2.1
-     */
-    public StoredProcedureQuery createStoredProcedureQuery(String procedureName);
-
-    /**
-     * Create an instance of <code>StoredProcedureQuery</code> for executing a
-     * stored procedure in the database.
-     * <p>Parameters must be registered before the stored procedure can
-     * be executed.
-     * <p>The <code>resultClass</code> arguments must be specified in the order in
-     * which the result sets will be returned by the stored procedure
-     * invocation.
-     * @param procedureName name of the stored procedure in the
-     * database
-     * @param resultClasses classes to which the result sets
-     * produced by the stored procedure are to
-     * be mapped
-     * @return the new stored procedure query instance
-     * @throws IllegalArgumentException if a stored procedure of the
-     * given name does not exist (or the query execution will
-     * fail)
-     * @since Java Persistence 2.1
-     */
-    public StoredProcedureQuery createStoredProcedureQuery(
-	       String procedureName, Class... resultClasses);
-
-    /**
-     * Create an instance of <code>StoredProcedureQuery</code> for executing a
-     * stored procedure in the database.
-     * <p>Parameters must be registered before the stored procedure can
-     * be executed.
-     * <p>The <code>resultSetMapping</code> arguments must be specified in the order
-     * in which the result sets will be returned by the stored
-     * procedure invocation.
-     * @param procedureName name of the stored procedure in the
-     *        database
-     * @param resultSetMappings the names of the result set mappings
-     *        to be used in mapping result sets
-     *        returned by the stored procedure
-     * @return the new stored procedure query instance
-     * @throws IllegalArgumentException if a stored procedure or
-     *         result set mapping of the given name does not exist
-     *         (or the query execution will fail)
-     */
-    public StoredProcedureQuery createStoredProcedureQuery(
-              String procedureName, String... resultSetMappings);
-
-    /**
      * Indicate to the entity manager that a JTA transaction is
-     * active and join the persistence context to it. 
-     * <p>This method should be called on a JTA application 
+     * active. This method should be called on a JTA application 
      * managed entity manager that was created outside the scope
-     * of the active transaction or on an entity manager of type
-     * <code>SynchronizationType.UNSYNCHRONIZED</code> to associate
-     * it with the current JTA transaction.
+     * of the active transaction to associate it with the current
+     * JTA transaction.
      * @throws TransactionRequiredException if there is
      *         no transaction
      */
     public void joinTransaction();
-
-    /**
-     * Determine whether the entity manager is joined to the
-     * current transaction. Returns false if the entity manager
-     * is not joined to the current transaction or if no
-     * transaction is active
-     * @return boolean
-     * @since Java Persistence 2.1
-     */
-    public boolean isJoinedToTransaction();
 
     /**
      * Return an object of the specified type to allow access to the
@@ -784,8 +654,8 @@ public interface EntityManager {
     /**
      * Return the underlying provider object for the <code>EntityManager</code>,
      * if available. The result of this method is implementation
-     * specific. 
-     * <p>The <code>unwrap</code> method is to be preferred for new applications.
+     * specific. The <code>unwrap</code> method is to be preferred for new 
+     * applications.
      * @return underlying provider object for EntityManager
      */
     public Object getDelegate();
@@ -799,7 +669,7 @@ public interface EntityManager {
      * except for <code>getProperties</code>, 
      * <code>getTransaction</code>, and <code>isOpen</code> (which will return false).
      * If this method is called when the entity manager is
-     * joined to an active transaction, the persistence
+     * associated with an active transaction, the persistence
      * context remains managed until the transaction completes. 
      * @throws IllegalStateException if the entity manager
      *         is container-managed

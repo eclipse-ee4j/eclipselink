@@ -1,18 +1,18 @@
 /*******************************************************************************
- * Copyright (c) 2008 - 2012 Oracle Corporation. All rights reserved.
- *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
+ * Copyright (c) 2008, 2009 Sun Microsystems. All rights reserved. 
+ * 
+ * This program and the accompanying materials are made available under the 
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
+ * which accompanies this distribution. 
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
- *
+ * 
  * Contributors:
- *     Linda DeMichiel - Java Persistence 2.1
- *     Linda DeMichiel - Java Persistence 2.0
+ *     Linda DeMichiel - Java Persistence 2.0 - Version 2.0 (October 1, 2009)
+ *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
- ******************************************************************************/ 
+ ******************************************************************************/
 package javax.persistence;
 
 import java.lang.annotation.Target;
@@ -20,12 +20,8 @@ import java.lang.annotation.Retention;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Used in conjunction with the {@link SqlResultSetMapping} annotation or
- * {@link ConstructorResult} annotation to map a column of the SELECT
- * list of a SQL query.
- *
- * <p> The <code>name</code> element references the name of a column in the SELECT list
- *  &#8212; i.e., column alias, if applicable. Scalar result types can be 
+ * References name of a column in the SELECT clause of a SQL query - 
+ * i.e., column alias, if applicable. Scalar result types can be 
  * included in the query result by specifying this annotation in 
  * the metadata.
  *
@@ -63,12 +59,4 @@ public @interface ColumnResult {
 
     /** (Required) The name of a column in the SELECT clause of a SQL query */
     String name();
-
-    /** 
-     *  (Optional) The Java type to which the column type is to be mapped.
-     *  If the <code>type</code> element is not specified, the default JDBC type 
-     *  mapping for the column will be used.
-     *  @since Java Persistence 2.1
-     */
-    Class type() default void.class;
 }

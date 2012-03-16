@@ -1,18 +1,18 @@
 /*******************************************************************************
- * Copyright (c) 2008 - 2012 Oracle Corporation. All rights reserved.
- *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
+ * Copyright (c) 2008, 2009 Sun Microsystems. All rights reserved. 
+ * 
+ * This program and the accompanying materials are made available under the 
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
+ * which accompanies this distribution. 
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
- *
+ * 
  * Contributors:
- *     Linda DeMichiel - Java Persistence 2.1
- *     Linda DeMichiel - Java Persistence 2.0
+ *     Linda DeMichiel - Java Persistence 2.0 - Version 2.0 (October 1, 2009)
+ *     Specification available from http://jcp.org/en/jsr/detail?id=317
  *
- ******************************************************************************/ 
+ ******************************************************************************/
 package javax.persistence.criteria;
 
 import javax.persistence.metamodel.Attribute;
@@ -26,36 +26,6 @@ import javax.persistence.metamodel.Attribute;
  * @since Java Persistence 2.0
  */
 public interface Fetch<Z, X> extends FetchParent<Z, X> {
-
-    /**
-     *  Modify the fetch join to restrict the result according to
-     *  the specified ON condition and return the fetch join object.  
-     *  Replaces the previous ON condition, if any.
-     *  @param restriction  a simple or compound boolean expression
-     *  @return the modified fetch join object
-     *  @since Java Persistence 2.1
-     */
-    Fetch<Z, X> on(Expression<Boolean> restriction);
-
-
-    /**
-     *  Modify the fetch join to restrict the result according to
-     *  the specified ON condition and return the fetch join object.  
-     *  Replaces the previous ON condition, if any.
-     *  @param restrictions  zero or more restriction predicates
-     *  @return the modified fetch join object
-     *  @since Java Persistence 2.1
-     */
-    Fetch<Z, X> on(Predicate... restrictions);
-
-    /** 
-     *  Return the predicate that corresponds to the ON 
-     *  restriction(s), or null if no ON condition has been
-     *  specified.
-     *  @return the ON restriction predicate
-     *  @since Java Persistence 2.1
-     */
-    Predicate getOn();
 
     /**
      * Return the metamodel attribute corresponding to the 
