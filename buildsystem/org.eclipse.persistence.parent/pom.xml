@@ -15,6 +15,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <tycho.version>0.11.1</tycho.version>
         <maven.compiler.version>2.3.2</maven.compiler.version>
+        <junit4-version>4.8.1</junit4-version>
         <!-- maven.test.version>1.8</maven.test.version -->
         <!-- maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format -->
         <!-- PROJECT Properties -->
@@ -183,6 +184,11 @@
             <layout>p2</layout>
 	    <url>http://archive.eclipse.org/rt/eclipselink/compdep-update</url>
         </repository>
+        <!-- repository>
+            <id>Local_CompDeps</id>
+            <layout>p2</layout>
+            <url>file:///D:/_EL_Trunk2/buildsystem/compdeps/p2repo</url>
+        </repository -->
     </repositories>
 
 </project>
