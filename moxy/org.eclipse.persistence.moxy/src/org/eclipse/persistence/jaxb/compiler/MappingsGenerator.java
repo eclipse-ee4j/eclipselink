@@ -1520,7 +1520,7 @@ public class MappingsGenerator {
         String mapClassName = property.getType().getRawName();
         mapping.useCollectionClass(ArrayList.class);
 
-        mapping.setAttributeAccessor(new MapValueAttributeAccessor(mapping.getAttributeAccessor(), mapping.getContainerPolicy(), generatedClass, mapClassName));
+        mapping.setAttributeAccessor(new MapValueAttributeAccessor(mapping.getAttributeAccessor(), mapping.getContainerPolicy(), generatedClass, mapClassName, helper.getClassLoader()));
         return mapping;
     }
 
