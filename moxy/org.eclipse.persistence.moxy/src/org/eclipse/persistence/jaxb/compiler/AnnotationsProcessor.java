@@ -1114,19 +1114,6 @@ public class AnnotationsProcessor {
                         classesToProcess.add(helper.getJavaClass(jClassName));
                     }
                 }
-                // handle inner classes
-                for (Iterator<JavaClass> jClassIt = javaClass.getDeclaredClasses().iterator(); jClassIt.hasNext();) {
-                    JavaClass innerClass = jClassIt.next();
-                    if(Modifier.isStatic(innerClass.getModifiers())) {
-                        if (shouldGenerateTypeInfo(innerClass)) {
-                            CompilerHelper.addClassToClassLoader(innerClass, helper.getClassLoader());
-                            TypeInfo tInfo = typeInfo.get(innerClass.getQualifiedName());
-                            if ((tInfo != null && !tInfo.isTransient()) || !helper.isAnnotationPresent(innerClass, XmlTransient.class)) {
-                                classesToProcess.add(innerClass);
-                            }
-                        }
-                    }
-                }
             }
         }
     }
