@@ -22,7 +22,8 @@ import javax.persistence.AttributeOverrides;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ColumnResult;
-import javax.persistence.ConstructorResult;
+//TODO: JPA 2.1 reference
+//import javax.persistence.ConstructorResult;
 import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -35,7 +36,8 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapKeyColumn;
-import javax.persistence.NamedStoredProcedureQuery;
+//TODO: JPA 2.1 reference
+//import javax.persistence.NamedStoredProcedureQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SecondaryTable;
@@ -64,6 +66,8 @@ import static javax.persistence.GenerationType.*;
     name="JPA21_SALARY",
     pkJoinColumns=@PrimaryKeyJoinColumn(name="EMP_ID", referencedColumnName="EMP_ID")
 )
+// TODO: JPA 2.1 references
+/*
 @NamedStoredProcedureQuery(
     name="ReadUsingMultipleResultSetMappings",
     procedureName="Read_Multiple_Result_Sets",
@@ -91,6 +95,7 @@ import static javax.persistence.GenerationType.*;
         }
     )
 })
+*/
 @ObjectTypeConverter(
     name="sex",
     dataType=String.class,

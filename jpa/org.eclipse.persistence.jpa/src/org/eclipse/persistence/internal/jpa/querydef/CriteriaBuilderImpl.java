@@ -25,9 +25,11 @@ import java.util.Set;
 import javax.persistence.Tuple;
 import javax.persistence.criteria.CollectionJoin;
 import javax.persistence.criteria.CompoundSelection;
-import javax.persistence.criteria.CriteriaDelete;
+// TODO JPA 2.1 development to be re-introduced at a later date
+//import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.CriteriaUpdate;
+//TODO JPA 2.1 development to be re-introduced at a later date
+//import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.ListJoin;
@@ -2453,6 +2455,8 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         }
     }
 
+    // TODO: JPA 2.1 development to be re-introduced at a later date.
+    /*
     public <T> CriteriaDelete<T> createCriteriaDelete(Class<T> targetEntity) {
         // TODO: implement
         throw new RuntimeException("Not implemented ... WIP ...");
@@ -2496,6 +2500,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     public <X, T extends X> Root<T> treat(Root<X> root, Class<T> type) {
         // TODO: implement
         throw new RuntimeException("Not implemented ... WIP ...");
-    }    
+    }   
+    */ 
 }
 

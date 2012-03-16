@@ -17,7 +17,8 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import javax.persistence.StoredProcedureQuery;
+//TODO: JPA 2.1 reference
+//import javax.persistence.StoredProcedureQuery;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.jpa.JpaEntityManager;
@@ -105,6 +106,8 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
      */
     public void testQueryUsingPositionalParameterAndSingleResultSet() {
         // TODO: only works on mysql currently
+        // TODO: JPA 2.1 references
+        /*
         if (supportsStoredProcedures() && getPlatform().isMySQL()) {
             EntityManager em = createEntityManager();
             beginTransaction(em);
@@ -140,6 +143,7 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
             
             closeEntityManager(em);
         }
+        */
     }
     
     /**
@@ -242,6 +246,8 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
      */
     public void testQueryWithMultipleResultsFromAnnotations() throws Exception {
         // TODO: only works on mysql currently
+        // TODO: JPA 2.1 references
+        /*
         if (supportsStoredProcedures() && getPlatform().isMySQL()) {
             StoredProcedureQuery multipleResultSetQuery = createEntityManager().createNamedStoredProcedureQuery("ReadUsingMultipleResultSetMappings");
             
@@ -284,6 +290,7 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
             // Verify there as no more results available
             assertFalse("More results available", multipleResultSetQuery.hasMoreResults());
         }
+        */
     }
     
     /**
@@ -291,6 +298,8 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
      */
     public void testQueryWithResultClass() {
         // TODO: only works on mysql currently
+        // TODO: JPA 2.1 references
+        /*
         if (supportsStoredProcedures() && getPlatform().isMySQL()) {
             EntityManager em = createEntityManager();
             beginTransaction(em);
@@ -326,6 +335,7 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
             
             closeEntityManager(em);
         }
+        */
     }
     
     /**
@@ -333,6 +343,8 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
      */
     public void testQueryWithResultClassPositional() {
         // TODO: only works on mysql currently
+        // TODO: JPA 2.1 references
+        /*
         if (supportsStoredProcedures() && getPlatform().isMySQL()) {
             EntityManager em = createEntityManager();
             beginTransaction(em);
@@ -368,12 +380,15 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
             
             closeEntityManager(em);
         }
+        */
     }    
     
     /**
      * Tests a NamedStoredProcedureQuery using a result-set mapping. 
      */
     public void testQueryWithResultSetMapping() {
+        // TODO: JPA 2.1 references
+        /*
         if (supportsStoredProcedures()) {
             EntityManager em = createEntityManager();
             beginTransaction(em);
@@ -407,12 +422,15 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
             
             closeEntityManager(em);
         }
+        */
     }
     
     /**
      * Tests a NamedStoredProcedureQuery annotation using a result-set mapping. 
      */
     public void testQueryWithResultSetFieldMapping() {
+        // TODO: JPA 2.1 references
+        /*
         if (supportsStoredProcedures()) {
             EntityManager em = createEntityManager();
             beginTransaction(em);
@@ -446,5 +464,6 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
             
             closeEntityManager(em);
         }
+        */
     }
 }

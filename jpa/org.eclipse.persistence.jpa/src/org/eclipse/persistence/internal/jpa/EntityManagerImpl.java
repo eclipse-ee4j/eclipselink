@@ -30,10 +30,12 @@ import java.util.*;
 
 import javax.persistence.*;
 import javax.persistence.OptimisticLockException;
-import javax.persistence.criteria.CriteriaDelete;
+//TODO JPA 2.1 development to be re-introduced at a later date
+//import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaUpdate;
+//TODO JPA 2.1 development to be re-introduced at a later date
+//import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.metamodel.Metamodel;
 import javax.sql.DataSource;
 
@@ -1081,6 +1083,8 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * @throws IllegalArgumentException if a query has not been
      * defined with the given name
      */
+    // TODO JPA 2.1 development to be re-introduced at a later date
+    /*
     public StoredProcedureQuery createNamedStoredProcedureQuery(String name) {
         try {
             verifyOpen();
@@ -1092,6 +1096,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             throw e;
         }
     }
+    */
     
     /**
      * Create an instance of Query for executing a native SQL query.
@@ -2597,6 +2602,8 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         }
     }
     
+    // TODO JPA 2.1 development to be re-introduced at a later date
+    /*
     public Query createQuery(CriteriaUpdate updateQuery) {
         // TODO: implement
         throw new RuntimeException("Not implemented ... WIP ...");
@@ -2626,4 +2633,5 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         // TODO: implement
         throw new RuntimeException("Not implemented ... WIP ...");
     }
+    */
 }

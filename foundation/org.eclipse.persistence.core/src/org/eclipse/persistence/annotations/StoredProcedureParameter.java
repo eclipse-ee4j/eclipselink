@@ -17,7 +17,8 @@ package org.eclipse.persistence.annotations;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import javax.persistence.ParameterMode;
+// TODO JPA 2.1 development to be re-introduced at a later date
+//import javax.persistence.ParameterMode;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
@@ -44,7 +45,8 @@ public @interface StoredProcedureParameter {
     /**
      * (Optional) The direction of the stored procedure parameter.
      */
-    ParameterMode mode() default ParameterMode.IN;
+    // TODO JPA 2.1 development to be re-introduced at a later date
+    //ParameterMode mode() default ParameterMode.IN;
 
     /**
      * (Optional) Stored procedure parameter name.

@@ -27,10 +27,12 @@ import java.util.Map;
 import javax.persistence.FlushModeType;
 import javax.persistence.LockModeType;
 import javax.persistence.Parameter;
-import javax.persistence.ParameterMode;
+// TODO JPA 2.1 development to be re-introduced at a later date
+//import javax.persistence.ParameterMode;
 import javax.persistence.PersistenceException;
 import javax.persistence.QueryTimeoutException;
-import javax.persistence.StoredProcedureQuery;
+// TODO JPA 2.1 development to be re-introduced at a later date
+//import javax.persistence.StoredProcedureQuery;
 import javax.persistence.TemporalType;
 
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
@@ -46,7 +48,8 @@ import org.eclipse.persistence.queries.StoredProcedureCall;
  * Concrete JPA query class. The JPA query wraps a StoredProcesureQuery which 
  * is executed.
  */
-public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedureQuery {
+// TODO JPA 2.1 development to be re-introduced at a later date
+public class StoredProcedureQueryImpl extends QueryImpl /* implements StoredProcedureQuery */ {
     protected List resultList;
     
     /**
@@ -285,10 +288,12 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
      * @param mode parameter mode
      * @return the same query instance
      */
+    /*
     public StoredProcedureQuery registerStoredProcedureParameter(int position, Class type, ParameterMode mode) {
-        // TODO: to implement
+        // TODO JPA 2.1 development to be re-introduced at a later date
         return null;
     }
+    */
 
     /**
      * Register a named parameter.
@@ -301,10 +306,12 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
      * @param mode parameter mode
      * @return the same query instance
      */
+    /*
     public StoredProcedureQuery registerStoredProcedureParameter(String parameterName, Class type, ParameterMode mode) {
-        // TODO: to implement
+        // TODO JPA 2.1 development to be re-introduced at a later date
         return null;
     }
+    */
     
     /**
      * Set the position of the first result to retrieve.
@@ -342,6 +349,8 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
      * @throws IllegalArgumentException if the second argument is not valid for 
      * the implementation
      */
+    // TODO JPA 2.1 development to be re-introduced at a later date
+    /*
     public StoredProcedureQuery setHint(String hintName, Object value) {
         try {
             entityManager.verifyOpen();
@@ -352,6 +361,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             throw e;
         }
     }
+    */
     
     /**
      * Set the lock mode type to be used for the query execution.
@@ -385,10 +395,13 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
      * positional parameter of the query or if the value argument is of 
      * incorrect type
      */
+    // TODO JPA 2.1 development to be re-introduced at a later date
+    /*
     public StoredProcedureQuery setParameter(int position, Calendar value, TemporalType temporalType) {
         entityManager.verifyOpen();
         return setParameter(position, convertTemporalType(value, temporalType));
     }
+    */
     
     /**
      * Bind an instance of java.util.Date to a positional parameter.
@@ -401,10 +414,13 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
      * positional parameter of the query or if the value argument is of 
      * incorrect type
      */
+    // TODO JPA 2.1 development to be re-introduced at a later date
+    /*
     public StoredProcedureQuery setParameter(int position, Date value, TemporalType temporalType) {
         entityManager.verifyOpen();
         return setParameter(position, convertTemporalType(value, temporalType));
     }
+    */
     
     /**
      * Bind an argument to a positional parameter.
@@ -415,6 +431,8 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
      * @throws IllegalArgumentException if position does not correspond to a 
      * positional parameter of the query or if the argument is of incorrect type
      */
+    // TODO JPA 2.1 development to be re-introduced at a later date
+    /*
     public StoredProcedureQuery setParameter(int position, Object value) {
         try {
             entityManager.verifyOpen();
@@ -425,6 +443,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             throw e;
         }
     }
+    */
     
     /**
      * Bind an instance of java.util.Calendar to a Parameter object.
@@ -436,6 +455,8 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
      * @throws IllegalArgumentException if the parameter does not correspond to 
      * a parameter of the query
      */
+    // TODO JPA 2.1 development to be re-introduced at a later date
+    /*
     public StoredProcedureQuery setParameter(Parameter<Calendar> param, Calendar value, TemporalType temporalType) {
         if (param == null) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NULL_PARAMETER_PASSED_TO_SET_PARAMETER"));
@@ -443,7 +464,8 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
         
         return this.setParameter(param.getName(), value, temporalType);
     }
-
+     */
+    
     /**
      * Bind an instance of java.util.Date to a Parameter object.
      * 
@@ -454,6 +476,8 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
      * @throws IllegalArgumentException if the parameter does not correspond to 
      * a parameter of the query
      */
+    // TODO JPA 2.1 development to be re-introduced at a later date
+    /*
     public StoredProcedureQuery setParameter(Parameter<Date> param, Date value, TemporalType temporalType) {
         if (param == null) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NULL_PARAMETER_PASSED_TO_SET_PARAMETER"));
@@ -461,6 +485,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
         
         return this.setParameter(param.getName(), value, temporalType);
     }
+    */
     
     /**
      * Bind the value of a Parameter object.
@@ -471,6 +496,8 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
      * @throws IllegalArgumentException if the parameter does not correspond to 
      * a parameter of the query
      */
+    // TODO JPA 2.1 development to be re-introduced at a later date
+    /*
     public <T> StoredProcedureQuery setParameter(Parameter<T> param, T value) {
         if (param == null) {
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("NULL_PARAMETER_PASSED_TO_SET_PARAMETER"));
@@ -478,7 +505,8 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
         
         return this.setParameter(param.getName(), value);
     }
-
+    */
+    
     /**
      * Bind an instance of java.util.Calendar to a named parameter.
      * 
@@ -490,10 +518,13 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
      * correspond to a parameter of the query or if the value argument is of 
      * incorrect type
      */
+    // TODO JPA 2.1 development to be re-introduced at a later date
+    /*
     public StoredProcedureQuery setParameter(String name, Calendar value, TemporalType temporalType) {
         entityManager.verifyOpen();
         return setParameter(name, convertTemporalType(value, temporalType));
     }
+    */
 
     /**
      * Bind an instance of java.util.Date to a named parameter.
@@ -506,10 +537,13 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
      * correspond to a parameter of the query or if the value argument is of 
      * incorrect type
      */
+    // TODO JPA 2.1 development to be re-introduced at a later date
+    /*
     public StoredProcedureQuery setParameter(String name, Date value, TemporalType temporalType) {
         entityManager.verifyOpen();
         return setParameter(name, convertTemporalType(value, temporalType));
     }
+    */
     
     /**
      * Bind an argument to a named parameter.
@@ -521,6 +555,8 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
      * correspond to a parameter of the query or if the argument is of incorrect 
      * type
      */
+    // TODO JPA 2.1 development to be re-introduced at a later date
+    /*
     public StoredProcedureQuery setParameter(String name, Object value) {
         try {
             entityManager.verifyOpen();
@@ -531,5 +567,6 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             throw e;
         }
     }
+    */
 }
 
