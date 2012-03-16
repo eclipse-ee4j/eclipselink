@@ -29,6 +29,7 @@ public class XmlValueTestSuite {
         suite.addTestSuite(NestedAttributeTestCases.class);
         suite.addTestSuite(IntegerTestCases.class);
         suite.addTestSuite(NestedTextTestCases.class);
+        suite.addTestSuite(XsiTypeTestCases.class);
         return suite;
     }
 
