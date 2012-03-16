@@ -224,7 +224,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
             }
             objectBuilder.removeExtraNamespacesFromNamespaceResolver(marshalRecord, extraNamespaces, session);
         } else {
-            if (!isSelfFragment) {
+            if (!(isSelfFragment || xPathFragment.nameIsText())) {
                 xPathNode.startElement(marshalRecord, xPathFragment, object, session, namespaceResolver, null, objectValue);
             }
 
@@ -233,7 +233,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
             updateNamespaces(schemaType, marshalRecord,((XMLField)xmlCompositeObjectMapping.getField()));
             marshalRecord.characters(stringValue);
 
-            if (!isSelfFragment) {
+            if (!(isSelfFragment || xPathFragment.nameIsText())) {
                 marshalRecord.endElement(xPathFragment, namespaceResolver);
             }
         }
