@@ -36,7 +36,7 @@
            <format property="compdeps.build.date" pattern="yyyyMMdd"/>
            <format property="compdeps.build.time" pattern="HHmm"/>
         </tstamp>
-        
+
         <dirname  property="compdeps.build.location_temp" file="${ant.file.compdeps}"/>
         <pathconvert targetos="unix" property="compdeps.build.location">
             <path>
@@ -216,7 +216,7 @@
         <say  message="   '${antlr.prefix}_${antlr.criteria}.jar' not found! Generated features will be invalid."               unless="antlr.version"/>
         <say  message="   asm.version              = '${asm.version}'"                                                              if="asm.version"/>
         <say  message="   '${asm.prefix}_${asm.criteria}.jar' not found! Generated features will be invalid."                   unless="asm.version"/>
-        
+
         <echo message="Searching ${compdeps.2.jpa.plugins.dir}..."/>
         <selectbundle basename="${persistence.prefix}"  directory="${compdeps.2.jpa.plugins.dir}"
                      criterion="${persistence.criteria}" property="persistence.version" versiononly="true"
@@ -235,7 +235,7 @@
         />
         <say  message="   sdo.version              = '${sdo.version}'"                                                              if="sdo.version"/>
         <say  message="   '${sdo.prefix}_${sdo.criteria}.jar' not found! Generated features will be invalid."                   unless="sdo.version"/>
-        
+
         <echo message="Searching ${compdeps.2.util.plugins.dir}..."/>
         <selectbundle basename="${oracleddl.prefix}"  directory="${compdeps.2.util.plugins.dir}"
                      criterion="${oracleddl.criteria}" property="oracleddl.version" versiononly="true"
@@ -293,8 +293,8 @@
         <filter token="PROVIDER"             value="${specification.vendor}"/>
         <filter token="REPOS_NAME"           value="${p2.release.repos.name}"/>
         <filter token="MILESTONE_REPOS"      value="${p2.release.repos.name}"/>
-        <filter token="PRIME_UPDATE_URL"     value="${p2.release.repos.url}"/> 
-        <filter token="SECOND_UPDATE_URL"    value="${p2.release.repos.url}"/> 
+        <filter token="PRIME_UPDATE_URL"     value="${p2.release.repos.url}"/>
+        <filter token="SECOND_UPDATE_URL"    value="${p2.release.repos.url}"/>
         <copy todir="${bld.src.dir}" filtering="true">
             <fileset dir="${compdeps.build.location}">
                 <include name="**/feature*.*"/>
@@ -397,6 +397,5 @@
             <arg line=" -compress -publishArtifacts -configs all" />
         </java>
     </target>
-
 
 </project>

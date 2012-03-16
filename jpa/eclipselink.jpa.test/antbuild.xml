@@ -478,7 +478,33 @@
         <available file="${jpatest.build.location}/${classes.dir}/org/eclipse/persistence/testing/models/jpa/advanced/Address_.class" property="modelgen.created.classes.exist"/>
     </target>
 
+    <!-- Excluding JPA 2.1 tests: when both jpa2.0 compatability (2.0 compiled), and 2.1 functionality testing (2.1 compiled) need to be performed a "jpa20.compile.classpath" will need to be used -->
     <target name="compile-standard">
+        <javac srcdir="${eclipselink.jpa.test}/${src.dir}"
+               destdir="${eclipselink.jpa.test}/${classes.dir}"
+               debug="${javac.debug}"
+               debuglevel="${javac.debuglevel}"
+               optimize="${javac.optimize}"
+               source="${javac.version}"
+               target="${javac.version}"
+               deprecation="${javac.deprecation}"
+               failonerror="true">
+            <include name="org/eclipse/persistence/testing/**"/>
+            <exclude name="org/eclipse/persistence/testing/models/jpa21/**"/>
+            <exclude name="org/eclipse/persistence/testing/models/jpa/advanced/**"/>
+            <exclude name="org/eclipse/persistence/testing/models/jpa/metamodel/**"/>
+            <exclude name="org/eclipse/persistence/testing/tests/jpa21/**"/>
+            <exclude name="org/eclipse/persistence/testing/tests/jpa/FullRegressionTestSuite.java"/>
+            <exclude name="org/eclipse/persistence/testing/tests/jpa/AllCMP3TestRunModel.java"/>
+            <exclude name="org/eclipse/persistence/testing/tests/jpa/criteria/CriteriaServerTestSuite.java"/>
+            <classpath>
+                <path refid="compile.path"/>
+            </classpath>
+        </javac>
+    </target>
+
+    <!-- Prototype only: intended for the time when both jpa2.0 compatability (2.0 compiled), and 2.1 functionality testing (2.1 compiled) will need to be performed -->
+    <target name="compile-jpa21-standard">
         <javac srcdir="${eclipselink.jpa.test}/${src.dir}"
                destdir="${eclipselink.jpa.test}/${classes.dir}"
                debug="${javac.debug}"
@@ -495,7 +521,7 @@
             <exclude name="org/eclipse/persistence/testing/tests/jpa/AllCMP3TestRunModel.java"/>
             <exclude name="org/eclipse/persistence/testing/tests/jpa/criteria/CriteriaServerTestSuite.java"/>
             <classpath>
-                <path refid="compile.path"/>
+                <path refid="jpa21.compile.path"/>
             </classpath>
         </javac>
     </target>
@@ -558,7 +584,7 @@
     </target>
 
     <!-- Packages JPA persistent unit test jars. -->
-    <target name="package" depends="config-trunk, config-flat, package-annotation, package-ddl, package-xml-only, package-xml-merge, package-jpa21-model, package-xml-extended, package-validation-failed, package-jpa-advanced-field-access, package-jpa-advanced-properties, package-jpa-pu_with_spaces, package-partitioned, package-plsql, package-jpa-performance, package-jpa-performance2, package-cascade-deletes, package-jpa-metamodel, package-delimited, package-beanvalidation, 
+    <target name="package" depends="config-trunk, config-flat, package-annotation, package-ddl, package-xml-only, package-xml-merge, package-jpa21-model, package-xml-extended, package-validation-failed, package-jpa-advanced-field-access, package-jpa-advanced-properties, package-jpa-pu_with_spaces, package-partitioned, package-plsql, package-jpa-performance, package-jpa-performance2, package-cascade-deletes, package-jpa-metamodel, package-delimited, package-beanvalidation,
     package-composite-advanced, package-composite-advanced-member_1, package-composite-advanced-member_2, package-composite-advanced-member_3, 
     package-xml-composite-advanced, package-xml-composite-advanced-member_1, package-xml-composite-advanced-member_2, package-xml-composite-advanced-member_3,
     package-xml-extended-composite-advanced, package-xml-extended-composite-advanced-member_1, package-xml-extended-composite-advanced-member_2, package-xml-extended-composite-advanced-member_3, package-extensibility" description="build EclipseLink jar">
