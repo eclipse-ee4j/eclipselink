@@ -33,13 +33,15 @@ public class MapValueAttributeAccessor extends AttributeAccessor {
     private Class mapClass;
     private ContainerPolicy containerPolicy;
     private Class generatedEntryClass;
+    private ClassLoader classLoader;
     
-    public MapValueAttributeAccessor(AttributeAccessor nestedAccessor, ContainerPolicy cp, Class generatedEntryClass, String mapClassName) {
+    public MapValueAttributeAccessor(AttributeAccessor nestedAccessor, ContainerPolicy cp, Class generatedEntryClass, String mapClassName, ClassLoader classLoader) {
         this.nestedAccessor = nestedAccessor;
         this.mapClassName = mapClassName;
         this.containerPolicy = cp;
         this.generatedEntryClass = generatedEntryClass;
-    }   
+        this.classLoader = classLoader;
+    }
     
     public Object getAttributeValueFromObject(Object object)throws DescriptorException {
         Object value = nestedAccessor.getAttributeValueFromObject(object);
@@ -99,11 +101,11 @@ public class MapValueAttributeAccessor extends AttributeAccessor {
             mapClassName = "java.util.TreeMap";
         }
       
-        try{            
-            mapClass =PrivilegedAccessHelper.getClassForName(mapClassName);
+        try{
+            mapClass =PrivilegedAccessHelper.getClassForName(mapClassName, true, classLoader);
         }catch (ClassNotFoundException e){
             throw XMLMarshalException.unmarshalException(e);
-        }     
+        }
     }
 
 }
