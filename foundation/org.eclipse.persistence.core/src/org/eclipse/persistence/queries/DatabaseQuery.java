@@ -2487,6 +2487,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
             return false;
         }
         if (!((DatasourcePlatform)session.getDatasourcePlatform()).shouldPrepare(this)) {
+            this.shouldPrepare = false;
             return false;
         }
         if (this.nullableArguments != null) {
