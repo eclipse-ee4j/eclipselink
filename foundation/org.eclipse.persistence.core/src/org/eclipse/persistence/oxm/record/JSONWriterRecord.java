@@ -561,10 +561,6 @@ public class JSONWriterRecord extends MarshalRecord {
                           writer.write("\\");
                           break;
                       }
-                      case '/': {
-                          writer.write("\\/");
-                          break;
-                      }
                       default: {
                           if(Character.isISOControl(character)){
                               writer.write("\\u");

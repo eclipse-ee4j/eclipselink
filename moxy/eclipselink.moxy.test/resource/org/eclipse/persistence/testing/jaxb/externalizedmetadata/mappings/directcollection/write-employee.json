@@ -7,6 +7,6 @@
       "entry":["This is some private data", "This is more private data"]    
   },
   "character-data":{
-       "entry":["<characters>a b c d e f g<\/characters>","<characters>h i j k l m n<\/characters>"]
+       "entry":["<characters>a b c d e f g</characters>","<characters>h i j k l m n</characters>"]
   }
 }}
