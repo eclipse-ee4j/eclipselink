@@ -38,6 +38,7 @@ import org.eclipse.persistence.exceptions.ExceptionHandler;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.platform.server.ServerPlatform;
+import org.eclipse.persistence.queries.JPAQueryBuilderManager;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.SessionEventListener;
 import org.eclipse.persistence.sessions.SessionProfiler;
@@ -174,7 +175,7 @@ public class PersistenceUnitProperties {
     public static final String NATIVE_SQL = "eclipselink.jdbc.native-sql";
 
     /**
-     * The <code>"eclipselink.jdbc.sql-cast"</code> property specifies is
+     * The <code>"eclipselink.jdbc.sql-cast"</code> property specifies if
      * platform specific CAST SQL operations should be used. Casting is normally
      * not required, and can cause issues when used. Allowed Values (String):
      * <ul>
@@ -186,6 +187,37 @@ public class PersistenceUnitProperties {
      */
     public static final String SQL_CAST = "eclipselink.jdbc.sql-cast";
 
+    /**
+     * The <code>"eclipselink.jpql.parser"</code> property allows the
+     * JPQL parser to be configured.
+     * Two JPQL parsers are provided:
+     * <ul>
+     * <li>"Hermes" (DEFAULT) - new parser as of EclipseLink 2.4, provides extended JPQL support.
+     * <li>"ANTLR" - old parser used previous to EclipseLink 2.4, can be used for backward compatibility.
+     * </ul>
+     * 
+     * @see ParserType
+     * @see JPAQueryBuilderManager
+     */
+    public static final String JPQL_PARSER = "eclipselink.jpql.parser";
+    
+    /**
+     * The <code>"eclipselink.jpql.validation"</code> property allows the
+     * JPQL parser validation level to be configured.
+     * This setting is only supported in the Hermes parser.
+     * Valid values are:
+     * <ul>
+     * <li>"EclipseLink" (DEFAULT) - allows EclipseLink JPQL extensions.
+     * <li>"JPA 1.0" - only allows valid JPA 1.0 JPQL.
+     * <li>"JPA 2.0" - only allows valid JPA 2.0 JPQL.
+     * <li>"JPA 2.1" - only allows valid JPA 2.1 JPQL.
+     * <li>"None" - no JPQL validation is done.
+     * </ul>
+     * 
+     * @see ParserValidationType
+     */
+    public static final String JPQL_VALIDATION = "eclipselink.jpql.validation";
+    
     /**
      * The <code>"wait"</code> property.
      * This can be append to any connection pool property,
@@ -834,8 +866,8 @@ public class PersistenceUnitProperties {
      * specifies an instance of <a href =
      * http://download.oracle.com/javaee/6/docs/api/javax/validation/ValidatorFactory.html>javax.validation.ValidatorFactory</a> used by
      * EclipseLink to perform Automatic Validation upon Lifecycle Events. If the
-     * propoerty is not specified, and if Bean Validation API is visible to
-     * Eclipselink, it will try to instantiate an insance of
+     * property is not specified, and if Bean Validation API is visible to
+     * Eclipselink, it will try to instantiate an instance of
      * <code>javax.validation.ValidationFactory</code> by calling
      * <code>Validation.buildDefaultValidatorFactory()</code>
      */

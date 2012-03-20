@@ -2366,15 +2366,17 @@ public class ObjectBuilder implements Cloneable, Serializable {
      */
     public boolean isPrimaryKeyExpression(boolean requiresExactMatch, Expression expression, AbstractSession session) {
         expression.getBuilder().setSession(session.getRootSession(null));
-        Set<DatabaseField> fields = new HashSet(this.descriptor.getPrimaryKeyFields().size());
-        boolean isValid = expression.extractPrimaryKeyFields(requiresExactMatch, this.descriptor, fields);
+        List<DatabaseField> keyFields = this.descriptor.getPrimaryKeyFields();
+        int size = keyFields.size();
+        Set<DatabaseField> fields = new HashSet(size);
+        boolean isValid = expression.extractFields(requiresExactMatch, true, this.descriptor, keyFields, fields);
         if (requiresExactMatch && (!isValid)) {
             return false;
         }
         // Check that the sizes match.
-        if (fields.size() != this.descriptor.getPrimaryKeyFields().size()) {
+        if (fields.size() != size) {
             return false;
-        }        
+        }
         return true;
     }
 

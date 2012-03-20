@@ -55,6 +55,7 @@ public class TestRunModel extends TestModel {
             tests.add("org.eclipse.persistence.testing.tests.directmap.DirectMapMappingModel");
             tests.add("org.eclipse.persistence.testing.tests.feature.FeatureTestModel");
             tests.add("org.eclipse.persistence.testing.tests.feature.FeatureTestModelWithoutBinding");
+            //tests.add("org.eclipse.persistence.testing.tests.feature.FeatureTestModelWithINNERJoins"); TODO: fix subselects
             tests.add("org.eclipse.persistence.testing.tests.feature.TopLinkBatchUpdatesTestModel");
             tests.add("org.eclipse.persistence.testing.tests.feature.JDBCBatchUpdatesTestModel");
             tests.add("org.eclipse.persistence.testing.tests.feature.ParameterizedBatchUpdatesTestModel");

@@ -18,6 +18,8 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.ResourceBundle;
+
+import org.eclipse.persistence.config.ParserValidationType;
 import org.eclipse.persistence.exceptions.JPQLException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -32,11 +34,15 @@ import org.eclipse.persistence.jpa.jpql.parser.DefaultEclipseLinkJPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.parser.DeleteStatement;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLExpression;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
+import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar1_0;
+import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar2_0;
+import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar2_1;
 import org.eclipse.persistence.jpa.jpql.parser.SelectStatement;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateStatement;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.DeleteAllQuery;
 import org.eclipse.persistence.queries.JPAQueryBuilder;
+import org.eclipse.persistence.queries.JPAQueryBuilderManager;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReportQuery;
@@ -138,7 +144,17 @@ public final class HermesParser implements JPAQueryBuilder {
 	}
 
 	private JPQLGrammar jpqlGrammar() {
-		return DefaultEclipseLinkJPQLGrammar.instance();
+	        if (JPAQueryBuilderManager.systemQueryBuilderValidationLevel == ParserValidationType.EclipseLink) {
+                    return DefaultEclipseLinkJPQLGrammar.instance();
+	        } else if (JPAQueryBuilderManager.systemQueryBuilderValidationLevel == ParserValidationType.JPA10) {
+                    return JPQLGrammar1_0.instance();
+                } else if (JPAQueryBuilderManager.systemQueryBuilderValidationLevel == ParserValidationType.JPA20) {
+                    return JPQLGrammar2_0.instance();
+                } else if (JPAQueryBuilderManager.systemQueryBuilderValidationLevel == ParserValidationType.JPA21) {
+                    return JPQLGrammar2_1.instance();
+                } else {
+                    return DefaultEclipseLinkJPQLGrammar.instance();
+                }
 	}
 
 	/**

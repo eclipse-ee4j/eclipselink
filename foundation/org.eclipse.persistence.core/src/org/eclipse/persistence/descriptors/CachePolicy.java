@@ -15,8 +15,10 @@ package org.eclipse.persistence.descriptors;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.io.*;
 
 import org.eclipse.persistence.exceptions.*;
@@ -906,7 +908,7 @@ public class CachePolicy implements Cloneable, Serializable {
     }
 
     /**
-     * PUBLIC:
+     * INTERNAL:
      * Lookup the expression in the cache if it contains any indexes.
      */
     public CacheKey checkCacheByIndex(Expression expression, AbstractRecord translationRow, ClassDescriptor descriptor, AbstractSession session) {
@@ -935,6 +937,26 @@ public class CachePolicy implements Cloneable, Serializable {
             }
         }
         return null;
+    }
+
+    /**
+     * INTERNAL:
+     * Lookup the expression in the cache if it contains any indexes.
+     */
+    public boolean isIndexableExpression(Expression expression, ClassDescriptor descriptor, AbstractSession session) {
+        if (!hasCacheIndexes()) {
+            return false;
+        }
+        for (CacheIndex index : this.cacheIndexes.values()) {
+            List<DatabaseField> searchFields = index.getFields();
+            int size = searchFields.size();
+            Set<DatabaseField> foundFields = new HashSet(size);
+            boolean isValid = expression.extractFields(true, false, descriptor, searchFields, foundFields);
+            if (isValid && (foundFields.size() == size)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

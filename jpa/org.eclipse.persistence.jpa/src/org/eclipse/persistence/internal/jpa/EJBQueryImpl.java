@@ -38,7 +38,6 @@ import javax.persistence.TypedQuery;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
-import org.eclipse.persistence.internal.helper.BasicTypeHelperImpl;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
@@ -173,8 +172,9 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
                         && (!readQuery.hasHierarchicalExpressions())) {
                     databaseQuery.checkDescriptor(session);
                     Expression selectionCriteria = databaseQuery.getSelectionCriteria();
-                    if ((selectionCriteria) != null
-                            && databaseQuery.getDescriptor().getObjectBuilder().isPrimaryKeyExpression(true, selectionCriteria, session)) {
+                    if ((selectionCriteria != null)
+                            && (databaseQuery.getDescriptor().getObjectBuilder().isPrimaryKeyExpression(true, selectionCriteria, session)
+                            || (databaseQuery.getDescriptor().getCachePolicy().isIndexableExpression(selectionCriteria, databaseQuery.getDescriptor(), session)))) {
                         ReadObjectQuery newQuery = new ReadObjectQuery();
                         newQuery.copyFromQuery(databaseQuery);
                         databaseQuery = newQuery;

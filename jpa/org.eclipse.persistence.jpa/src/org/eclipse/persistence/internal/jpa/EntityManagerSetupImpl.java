@@ -101,6 +101,7 @@ import org.eclipse.persistence.config.CacheCoordinationProtocol;
 import org.eclipse.persistence.config.DescriptorCustomizer;
 import org.eclipse.persistence.config.ExclusiveConnectionMode;
 import org.eclipse.persistence.config.LoggerType;
+import org.eclipse.persistence.config.ParserType;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.ProfilerType;
 import org.eclipse.persistence.config.SessionCustomizer;
@@ -130,6 +131,7 @@ import org.eclipse.persistence.platform.database.converters.StructConverter;
 import org.eclipse.persistence.platform.database.events.DatabaseEventListener;
 import org.eclipse.persistence.platform.database.partitioning.DataPartitioningCallback;
 import org.eclipse.persistence.platform.server.ServerPlatformBase;
+import org.eclipse.persistence.queries.JPAQueryBuilderManager;
 import org.eclipse.persistence.tools.profiler.PerformanceMonitor;
 import org.eclipse.persistence.tools.profiler.PerformanceProfiler;
 import org.eclipse.persistence.tools.profiler.QueryMonitor;
@@ -1975,6 +1977,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
 
         // In deploy ServerPlatform could've changed which will affect the loggers.
         boolean serverPlatformChanged = updateServerPlatform(m, loader);
+        updateJPQLParser(m);
 
         if (!session.hasBroker()) {
             updateLoggers(m, serverPlatformChanged, loader);        
@@ -2396,6 +2399,29 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
            }else{
                  session.handleException(ValidationException.invalidBooleanValueForSettingNativeSQL(nativeSQLString));
            }
+        }
+    }
+
+    /**
+     * Enable or disable the capability of Native SQL function.  
+     * The method needs to be called in deploy stage.
+     */
+    protected void updateJPQLParser(Map m) {
+        // Set JPQL parser if it was specified.
+        String parser = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JPQL_PARSER, m, this.session);
+        if (parser != null) {
+           if (parser.equalsIgnoreCase(ParserType.Hermes)) {
+               JPAQueryBuilderManager.systemQueryBuilderClassName = "org.eclipse.persistence.internal.jpa.jpql.HermesParser";
+           } else if (parser.equalsIgnoreCase(ParserType.ANTLR)) {
+               JPAQueryBuilderManager.systemQueryBuilderClassName = "org.eclipse.persistence.queries.ANTLRQueryBuilder";
+           } else {
+               this.session.handleException(ValidationException.invalidValueForProperty(parser, PersistenceUnitProperties.JPQL_PARSER, null));
+           }
+        }
+        // Set JPQL parser validation mode if it was specified.
+        String validation = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JPQL_VALIDATION, m, this.session);
+        if (validation != null) {
+           JPAQueryBuilderManager.systemQueryBuilderValidationLevel = validation;
         }
     }
     

@@ -14,6 +14,9 @@
 package org.eclipse.persistence.queries;
 
 import java.security.AccessController;
+import java.security.PrivilegedActionException;
+
+import org.eclipse.persistence.config.ParserValidationType;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
@@ -34,6 +37,9 @@ import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
  */
 public final class JPAQueryBuilderManager {
 
+    public static String systemQueryBuilderClassName = "org.eclipse.persistence.internal.jpa.jpql.HermesParser";
+    public static String systemQueryBuilderValidationLevel = ParserValidationType.EclipseLink;
+    
     /**
      * The {@link JPAQueryBuilder} that will be used to create a {@link DatabaseQuery} by parsing
      * a JPQL query.
@@ -45,24 +51,36 @@ public final class JPAQueryBuilderManager {
      *
      * @return The {@link ANTLRQueryBuilder}.
      */
-   private static JPAQueryBuilder buildDefaultQueryBuilder() {
-
-   	try {
-   		// PERFORMANCE: Load the parser class through reflection so there is no direct dependency
-         Class parserClass = loadParserClass();
-
-         if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-            return (JPAQueryBuilder) AccessController.doPrivileged(
-               new PrivilegedNewInstanceFromClass(parserClass)
-            );
-         }
-         return (JPAQueryBuilder) PrivilegedAccessHelper.newInstanceFromClass(parserClass);
-      }
-      catch (Exception e) {
-         e.printStackTrace();
-         throw new IllegalStateException("Could not load the parser class." /* TODO: Localize string */, e);
-      }
-   }
+    private static JPAQueryBuilder buildDefaultQueryBuilder() {
+        try {
+            Class parserClass = null;
+            // use class.forName() to avoid loading parser classes for JAXB
+            // Use Class.forName not thread class loader to avoid class loader issues.
+            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                try {
+                    parserClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(systemQueryBuilderClassName));
+                } catch (PrivilegedActionException exception) {
+                }
+            } else {
+                parserClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(systemQueryBuilderClassName);
+            }                  
+            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                try {
+                    return (JPAQueryBuilder)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(parserClass));
+                } catch (PrivilegedActionException exception) {
+                }
+            } else {
+                return (JPAQueryBuilder)PrivilegedAccessHelper.newInstanceFromClass(parserClass);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new IllegalStateException("Could not load the JPQL parser class." /* TODO: Localize string */, e);
+        }
+        // PERFORMANCE: class for name and newInstance() is an attempt to keep
+        // the antlr-based impl classes from loading.
+        // return new ANTLRQueryBuilder();
+        return null;
+    }
 
    /**
     * This method returns the {@link JPAQueryBuilder} that has been set for the EclipseLink
@@ -77,22 +95,6 @@ public final class JPAQueryBuilderManager {
       }
       return systemQueryBuilder;
    }
-
-   private static Class loadParserClass() throws Exception {
-
-//      String parserClassName = "org.eclipse.persistence.internal.jpa.jpql.HermesParser";
-      String parserClassName = "org.eclipse.persistence.queries.ANTLRQueryBuilder";
-
-      // Use class.forName() to avoid loading parser classes for JAXB
-      // Use Class.forName not thread class loader to avoid class loader issues
-      if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-         return (Class) AccessController.doPrivileged(
-            new PrivilegedClassForName(parserClassName)
-         );
-      }
-
-      return PrivilegedAccessHelper.getClassForName(parserClassName);
-	}
 
    /**
     * Sets the system {@link JPAQueryBuilder} to be used across the EclipseLink environment.

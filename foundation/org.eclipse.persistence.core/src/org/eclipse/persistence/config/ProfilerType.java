@@ -19,7 +19,7 @@
  * 
  * <p>JPA persistence property Usage:
  * 
- * <p><code>properties.add(PersistenceUnitProperties.ProfilerType, ProfilerType.PerformanceProfiler);</code>
+ * <p><code>properties.add(PersistenceUnitProperties.PROFILER, ProfilerType.PerformanceProfiler);</code>
  * <p>Property values are case-insensitive.
  * 
  * @see QueryMonitor

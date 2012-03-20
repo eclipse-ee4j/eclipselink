@@ -311,7 +311,7 @@ public class RelationExpression extends CompoundExpression {
      * Return if the expression is not a valid primary key expression and add all primary key fields to the set.
      */
     @Override
-    public boolean extractPrimaryKeyFields(boolean requireExactMatch, ClassDescriptor descriptor, Set<DatabaseField> fields) {
+    public boolean extractFields(boolean requireExactMatch, boolean primaryKey, ClassDescriptor descriptor, List<DatabaseField> searchFields, Set<DatabaseField> foundFields) {
         // If an exact match is required then the operator must be equality.
         if (requireExactMatch && (!(this.operator.getSelector() == ExpressionOperator.Equal))) {
             return false;
@@ -341,14 +341,14 @@ public class RelationExpression extends CompoundExpression {
             }
             DatabaseMapping mapping = descriptor.getObjectBuilder().getMappingForAttributeName(child.getName());
             if (mapping != null) {
-                if (!mapping.isPrimaryKeyMapping()) {
+                if (primaryKey && !mapping.isPrimaryKeyMapping()) {
                     return false;
                 }
                 // Only support referencing limited number of relationship types.            
                 if (mapping.isObjectReferenceMapping() || mapping.isAggregateObjectMapping()) {
                     for (DatabaseField mappingField : mapping.getFields()) {
-                        if (descriptor.getPrimaryKeyFields().contains(mappingField)) {
-                            fields.add(mappingField);
+                        if (searchFields.contains(mappingField)) {
+                            foundFields.add(mappingField);
                         }                        
                     }
                     return true;
@@ -383,8 +383,8 @@ public class RelationExpression extends CompoundExpression {
                 }
                 if (mapping.isObjectReferenceMapping() || mapping.isAggregateObjectMapping()) {
                     for (DatabaseField mappingField : mapping.getFields()) {
-                        if (descriptor.getPrimaryKeyFields().contains(mappingField)) {
-                            fields.add(mappingField);
+                        if (searchFields.contains(mappingField)) {
+                            foundFields.add(mappingField);
                         }                        
                     }
                     return true;
@@ -399,10 +399,10 @@ public class RelationExpression extends CompoundExpression {
         } else {
             return false;
         }
-        if ((field == null) || (!descriptor.getPrimaryKeyFields().contains(field))) {
+        if ((field == null) || (!searchFields.contains(field))) {
             return false;
         }
-        fields.add(field);
+        foundFields.add(field);
         return true;
     }
     

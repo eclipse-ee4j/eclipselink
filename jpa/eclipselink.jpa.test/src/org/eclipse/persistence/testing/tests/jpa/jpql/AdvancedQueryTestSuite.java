@@ -2422,7 +2422,6 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             counter = new QuerySQLTracker(getServerSession());
             // Query by primary key.
             query = em.createQuery("Select employee from Employee employee where employee.firstName = :firstName and employee.lastName = :lastName");
-            query.setHint(QueryHints.QUERY_TYPE, QueryType.ReadObject);
             query.setParameter("firstName", employee.getFirstName());
             query.setParameter("lastName", employee.getLastName());
             counter.getSqlStatements().clear();
@@ -2436,19 +2435,18 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             employee.setLastName("fail");
             commitTransaction(em);
             query = em.createQuery("Select employee from Employee employee where employee.firstName = :firstName and employee.lastName = :lastName");
-            query.setHint(QueryHints.QUERY_TYPE, QueryType.ReadObject);
             query.setParameter("firstName", employee.getFirstName());
-            query.setParameter("lastName", employee.getLastName());
+            query.setParameter("lastName", lastName);
             counter.getSqlStatements().clear();
             try {
                 queryResult = null;
                 queryResult = (Employee)query.getSingleResult();
             } catch (NoResultException ignore) {}
             if (queryResult != null) {
-            //    fail("Employees should not be found, " + queryResult);
+                fail("Employees should not be found, " + queryResult);
             }
             if (counter.getSqlStatements().size() == 0) {
-            //    fail("Cache hit should not occur: " + counter.getSqlStatements());
+                fail("Cache hit should not occur: " + counter.getSqlStatements());
             }
             closeEntityManager(em);
             em = createEntityManager();
@@ -2459,7 +2457,6 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             em.persist(buyer);
             commitTransaction(em);
             query = em.createQuery("Select b from Buyer b where b.name = :name");
-            query.setHint(QueryHints.QUERY_TYPE, QueryType.ReadObject);
             query.setParameter("name", buyer.getName());
             counter.getSqlStatements().clear();
             Buyer queryResult2 = (Buyer)query.getSingleResult();
@@ -2476,12 +2473,15 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             closeEntityManagerAndTransaction(em);
             em = createEntityManager();
             beginTransaction(em);
-            try {
+            if (buyer != null) {
+                buyer = em.find(Buyer.class, buyer.getId());
                 em.remove(buyer);
+            }
+            if (employee != null) {
                 Employee reset = em.find(Employee.class, employee.getId());
                 reset.setLastName(lastName);
-                commitTransaction(em);
-            } catch (Exception ignore) {}
+            }
+            commitTransaction(em);
             closeEntityManagerAndTransaction(em);            
         }
     }

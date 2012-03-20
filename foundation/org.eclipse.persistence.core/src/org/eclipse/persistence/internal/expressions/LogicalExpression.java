@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.expressions;
 
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.persistence.exceptions.*;
@@ -84,7 +85,7 @@ public class LogicalExpression extends CompoundExpression {
      * Return if the expression is not a valid primary key expression and add all primary key fields to the set.
      */
     @Override
-    public boolean extractPrimaryKeyFields(boolean requireExactMatch, ClassDescriptor descriptor, Set<DatabaseField> fields) {
+    public boolean extractFields(boolean requireExactMatch, boolean primaryKey, ClassDescriptor descriptor, List<DatabaseField> searchFields, Set<DatabaseField> foundFields) {
         // If this is a primary key expression then it can only have and/or relationships.
         if (this.operator.getSelector() != ExpressionOperator.And) {
             // If this is an exact primary key expression it can not have ors.
@@ -93,11 +94,11 @@ public class LogicalExpression extends CompoundExpression {
                 return false;
             }
         }
-        boolean validExpression = this.firstChild.extractPrimaryKeyFields(requireExactMatch, descriptor, fields);
+        boolean validExpression = this.firstChild.extractFields(requireExactMatch, primaryKey, descriptor, searchFields, foundFields);
         if (requireExactMatch && (!validExpression)) {
             return false;
         }
-        return this.secondChild.extractPrimaryKeyFields(requireExactMatch, descriptor, fields);
+        return this.secondChild.extractFields(requireExactMatch, primaryKey, descriptor, searchFields, foundFields);
     }
 
     /**
