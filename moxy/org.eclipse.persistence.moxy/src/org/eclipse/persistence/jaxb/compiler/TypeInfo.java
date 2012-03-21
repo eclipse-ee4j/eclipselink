@@ -13,6 +13,7 @@
 package org.eclipse.persistence.jaxb.compiler;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -264,7 +265,37 @@ public class TypeInfo {
      */
     public void addProperty(String name, Property property) {
         if(originalProperties.get(name) != null) {
-            throw org.eclipse.persistence.exceptions.JAXBException.duplicatePropertyName(name, this.getJavaClassName());
+            // Duplicate property, see if either is transient and only keep the non-transient one
+            Property existingProperty = originalProperties.get(name);
+            if (existingProperty.isTransient() && property.isTransient()) {
+                // Both transient, keep the one that matches AccessType
+                if (this.getXmlAccessType().equals(XmlAccessType.FIELD)) {
+                    if (!property.isMethodProperty()) {
+                        // Existing property must be method property
+                        // Remove it and use the new property
+                        propertyList.remove(existingProperty);
+                    } else {
+                        return;
+                    }
+                } else {
+                    if (property.isMethodProperty()) {
+                        // Existing property must be field property
+                        // Remove it and use the new property
+                        propertyList.remove(existingProperty);
+                    } else {
+                        return;
+                    }
+                }
+            } else if (existingProperty.isTransient()) {
+                // Continue, and overwrite it
+                propertyList.remove(existingProperty);
+            } else if (property.isTransient()) {
+                // Do nothing
+                return;
+            } else {
+                // Neither is transient - truly a duplicate property collision
+                throw org.eclipse.persistence.exceptions.JAXBException.duplicatePropertyName(name, this.getJavaClassName());
+            }
         }
         originalProperties.put(name, property);
         properties.put(name, property);
@@ -292,6 +323,15 @@ public class TypeInfo {
             for (int i = 0; i < properties.size(); i++) {
                 Property next = properties.get(i);
                 this.addProperty(next.getPropertyName(), next);
+            }
+            // If a property is marked transient, ensure it doesn't exist in the propOrder
+            List<String> propOrderList = Arrays.asList(getPropOrder());
+            ArrayList<Property> propsList = getPropertyList();
+            for (int i = 0; i < propsList.size(); i++) {
+                Property p = propsList.get(i);
+                if (p.isTransient() && propOrderList.contains(p.getPropertyName())) {
+                    throw org.eclipse.persistence.exceptions.JAXBException.transientInProporder(p.getPropertyName());
+                }
             }
         }
     }

@@ -1702,12 +1702,6 @@ public class AnnotationsProcessor {
             	if(property != null){
             		property.setTransient(true);
             	}
-                // If a property is marked transient ensure it doesn't exist in
-                // the propOrder
-                List<String> propOrderList = Arrays.asList(info.getPropOrder());
-                if (propOrderList.contains(nextField.getName())) {
-                    throw JAXBException.transientInProporder(nextField.getName());
-                }
             }
         }
         return properties;
@@ -2739,14 +2733,6 @@ public class AnnotationsProcessor {
                 boolean isLocation = helper.isAnnotationPresent(property.getElement(), XmlLocation.class);
                 if (!isTransient || (isTransient && isLocation)) {
                     properties.add(property);
-                } else {
-                    // If a property is marked transient ensure it doesn't exist
-                    // in the propOrder
-                    List<String> propOrderList = Arrays.asList(info.getPropOrder());
-                    if (propOrderList.contains(propertyName)) {
-                        throw JAXBException.transientInProporder(propertyName);
-                    }
-                    property.setTransient(true);
                 }
             }
         }
