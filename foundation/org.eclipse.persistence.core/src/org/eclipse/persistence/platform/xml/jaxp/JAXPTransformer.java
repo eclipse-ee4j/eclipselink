@@ -43,6 +43,7 @@ public class JAXPTransformer implements XMLTransformer {
     private boolean fragment;
     private static final String NO = "no";
     private static final String YES = "yes";
+    private static TransformerFactory sharedTransformerFactory;
     private Transformer transformer;
     private String encoding;
     private boolean formatted;
@@ -156,30 +157,37 @@ public class JAXPTransformer implements XMLTransformer {
         return fragment;
     }
     
-    public Transformer getTransformer(){
-    	if(transformer == null){
-   			try {
-    	            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-    	            transformer = transformerFactory.newTransformer();
-    	            if (formatted) {
-    	                transformer.setOutputProperty(OutputKeys.INDENT, YES);
-    	            } else {
-    	                transformer.setOutputProperty(OutputKeys.INDENT, NO);
-    	            }
-    	            if(encoding != null){
-        	            transformer.setOutputProperty(OutputKeys.ENCODING, encoding);
-    	            }
-    	            if(version != null){
-    	                transformer.setOutputProperty(OutputKeys.VERSION, version);
-    	            }
-
-    	        } catch (TransformerConfigurationException e) {
-    	            throw XMLPlatformException.xmlPlatformTransformException(e);
-    	        }
-    	}
-    	return transformer;
+    public Transformer getTransformer() {
+        if (transformer == null) {
+            try {
+                if (sharedTransformerFactory == null) {
+                    createSharedTransformerFactory();
+                }
+                transformer = sharedTransformerFactory.newTransformer();
+                if (formatted) {
+                    transformer.setOutputProperty(OutputKeys.INDENT, YES);
+                } else {
+                    transformer.setOutputProperty(OutputKeys.INDENT, NO);
+                }
+                if (encoding != null) {
+                    transformer.setOutputProperty(OutputKeys.ENCODING, encoding);
+                }
+                if (version != null) {
+                    transformer.setOutputProperty(OutputKeys.VERSION, version);
+                }
+            } catch (TransformerConfigurationException e) {
+                throw XMLPlatformException.xmlPlatformTransformException(e);
+            }
+        }
+        return transformer;
     }
-
+    
+    private static synchronized void createSharedTransformerFactory() {
+        if (sharedTransformerFactory == null) {
+            sharedTransformerFactory = TransformerFactory.newInstance();
+        }
+    }
+    
     private static class TransformErrorListener implements ErrorListener {
 
         public void error(TransformerException exception) throws TransformerException {
