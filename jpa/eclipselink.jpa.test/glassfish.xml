@@ -133,6 +133,7 @@
                           org.eclipse.persistence.jpa.modelgen_*.jar
                           org.eclipse.persistence.dbws_*.jar
                           org.eclipse.persistence.oracle_*.jar
+                          org.eclipse.persistence.moxy_*.jar
                           org.eclipse.persistence.sdo_*.jar"
                 excludes="org.eclipse.persistence.*.source*.jar"/>
         </copy>
