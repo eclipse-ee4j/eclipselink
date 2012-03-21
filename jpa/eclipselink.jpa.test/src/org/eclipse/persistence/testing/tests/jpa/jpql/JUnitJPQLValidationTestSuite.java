@@ -110,7 +110,8 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         suite.addTest(new JUnitJPQLValidationTestSuite("commitOptimisticLockExceptionTest"));
         suite.addTest(new JUnitJPQLValidationTestSuite("JTAOptimisticLockExceptionTest"));
         suite.addTest(new JUnitJPQLValidationTestSuite("testParameterNameValidation"));
-        suite.addTest(new JUnitJPQLValidationTestSuite("testModArgumentValidation"));
+        // JPQL should not validate floats, database may allow (could be 1.0 and valid, or db could truncate)
+        //suite.addTest(new JUnitJPQLValidationTestSuite("testModArgumentValidation"));
         suite.addTest(new JUnitJPQLValidationTestSuite("testInExpressionValidation"));
         suite.addTest(new JUnitJPQLValidationTestSuite("testOrderableTypeInOrderByItem"));
         suite.addTest(new JUnitJPQLValidationTestSuite("testNonExistentOrderByAlias"));

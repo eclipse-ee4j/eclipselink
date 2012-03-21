@@ -37,7 +37,8 @@ import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
  */
 public final class JPAQueryBuilderManager {
 
-    public static String systemQueryBuilderClassName = "org.eclipse.persistence.internal.jpa.jpql.HermesParser";
+    //public static String systemQueryBuilderClassName = "org.eclipse.persistence.internal.jpa.jpql.HermesParser";
+    public static String systemQueryBuilderClassName = "org.eclipse.persistence.queries.ANTLRQueryBuilder";
     public static String systemQueryBuilderValidationLevel = ParserValidationType.EclipseLink;
     
     /**

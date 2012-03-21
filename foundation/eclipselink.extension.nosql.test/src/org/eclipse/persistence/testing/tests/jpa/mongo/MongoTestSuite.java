@@ -498,12 +498,6 @@ public class MongoTestSuite extends JUnitTestCase {
             if (results.size() != 10) {
                 fail("Expected 10 result: " + results);
             }
-            query = em.createQuery("Select o from Order o where o.lineItems.itemName = :name");
-            query.setParameter("name", "stuff");
-            results = query.getResultList();
-            if (results.size() != 10) {
-                fail("Expected 10 result: " + results);
-            }
             query = em.createQuery("Select o from Order o join o.lineItems l where l.itemName = :name");
             query.setParameter("name", "stuff");
             results = query.getResultList();
