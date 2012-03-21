@@ -87,14 +87,14 @@
         <echo message="    ${nosql_test.classes.dir}"/>
         <echo message="    ${nosql_test.report.dir}"/>
         <echo message="    ${nosql_test.run.dir}"/>
-        <echo message="    ${nosql_test.build.location}/${eclipselink.nosql.depend.test.jar}"/>
-        <echo message="    ${nosql_test.build.location}/eclipselink-mongo-model.jar"/>
+        <echo message="    ${nosql_test.build.location}/${nosql.depend.test.jar}"/>
+        <echo message="    ${nosql_test.build.location}/${mongo.model.jar}"/>
         <delete includeEmptyDirs="true" failonerror="false">
             <fileset dir="${nosql_test.classes.dir}"/>
             <fileset dir="${nosql_test.report.dir}"/>
             <fileset dir="${nosql_test.run.dir}"/>
-            <fileset dir="${nosql_test.build.location}" includes="${eclipselink.nosql.depend.test.jar}"/>
-            <fileset dir="${nosql_test.build.location}" includes="eclipselink-mongo-model.jar"/>
+            <fileset dir="${nosql_test.build.location}" includes="${nosql.depend.test.jar}"/>
+            <fileset dir="${nosql_test.build.location}" includes="${mongo.model.jar}"/>
         </delete>
     </target>
 
@@ -127,9 +127,15 @@
 
         <!-- Determine appropriate settings for nosql lib variables (overrides of .lib variables won't get reset) -->
         <!-- Check first in nosql extensions dir   -->
-        <condition property="mongo.lib" value="${nosql.extensions.depend.dir}/${mongo.jar}"
-                                               else="${extensions.depend.dir}/${mongo.jar}">
-            <available file="${nosql.extensions.depend.dir}/${mongo.jar}"/>
+        <condition property="mongo.lib" value="${nosql_test.2.common.plugins.dir}/${mongo.jar}">
+            <available file="${nosql_test.2.common.plugins.dir}/${mongo.jar}"/>
+        </condition>
+
+        <condition property="coretest.framework.lib" value="${nosql_test.2.core.test.dir}/${coretest.framework.jar}">
+            <available file="${nosql_test.2.core.test.dir}/${coretest.framework.jar}"/>
+        </condition>
+        <condition property="jpatest.framework.lib" value="${nosql_test.2.jpa.test.dir}/${jpatest.framework.jar}">
+            <available file="${nosql_test.2.jpa.test.dir}/${jpatest.framework.jar}"/>
         </condition>
 
         <!-- Create needed directories
@@ -138,19 +144,19 @@
         <mkdir dir="${nosql_test.report.dir}"/ -->
 
         <!-- Determine availability of compile dependencies   -->
-        <available file="${nosql_test.2.common.plugins.dir}/${antlr}_${version.string}.jar" property="antlr.bundle.exist"/>
-        <available file="${nosql_test.2.common.plugins.dir}/${asm}_${version.string}.jar" property="asm.bundle.exist"/>
-        <available file="${nosql_test.2.common.plugins.dir}/org.eclipse.persistence.jpa_${version.string}.jar" property="jpa.bundle.exist"/>
-        <available file="${nosql_test.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar" property="core.bundle.exist"/>
+        <available file="${nosql_test.2.jpa.dir}/${classes.dir}"         type="dir"                              property="jpa.classes.exist"/>
+        <available file="${nosql_test.2.core.dir}/${classes.dir}"        type="dir"                              property="core.classes.exist"/>
+        <available file="${nosql_test.2.nosql.dir}/${classes.dir}"       type="dir"                              property="nosql.classes.exist"/>
+        <available file="${nosql_test.2.common.plugins.dir}/${antlr}_${version.string}.jar"                      property="antlr.bundle.exist"/>
+        <available file="${nosql_test.2.common.plugins.dir}/${asm}_${version.string}.jar"                        property="asm.bundle.exist"/>
+        <available file="${nosql_test.2.common.plugins.dir}/org.eclipse.persistence.jpa_${version.string}.jar"   property="jpa.bundle.exist"/>
+        <available file="${nosql_test.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"  property="core.bundle.exist"/>
         <available file="${nosql_test.2.common.plugins.dir}/org.eclipse.persistence.nosql_${version.string}.jar" property="nosql.bundle.exist"/>
-        <available file="${nosql_test.2.base.dir}/${eclipselink.jar}" property="eclipselink.jar.exist"/>
-        <available file="${nosql_test.2.jpa.dir}/${classes.dir}" type="dir" property="jpa.classes.exist"/>
-        <available file="${nosql_test.2.core.dir}/${classes.dir}" type="dir" property="core.classes.exist"/>
-        <available file="${nosql_test.2.nosql.dir}/${classes.dir}" type="dir" property="nosql.classes.exist"/>
-        <available file="${junit.lib}" property="junit.lib.exist"/>
-        <available file="${nosql_test.2.common.plugins.dir}/${unsigned.persistence10.jar}" property="persistence.bundle.exist"/>
-        <available file="${nosql_test.2.core.test.dir}/${eclipselink.tests.jar}" property="test.framework.exist"/>
-        <available file="${nosql_test.2.jpa.test.dir}/${eclipselink.tests.jar}" property="jpatest.framework.exist"/>
+        <available file="${nosql_test.2.base.dir}/${eclipselink.jar}"                                            property="eclipselink.jar.exist"/>
+        <available file="${junit.lib}"                                                                           property="junit.lib.exist"/>
+        <available file="${nosql_test.2.common.plugins.dir}/${unsigned.persistence10.jar}"                       property="persistence.bundle.exist"/>
+        <available file="${coretest.framework.lib}"                                                              property="test.framework.exist"/>
+        <available file="${jpatest.framework.lib}"                                                               property="jpatest.framework.exist"/>
         <!-- Determine availability of runtime dependencies   -->
         <available file="${nosql_test.2.jpa.dir}/${resource.dir}" type="dir" property="jpa.resources.exist"/>
         <available file="${nosql_test.2.core.dir}/${resource.dir}" type="dir" property="core.resources.exist"/>
@@ -245,8 +251,8 @@
             <pathelement path="${junit.lib}"/>
         </path>
         <path id="nosql_test.test.infrastructure.path">
-            <pathelement path="${nosql_test.2.core.test.dir}/${eclipselink.tests.jar}"/>
-            <pathelement path="${nosql_test.2.jpa.test.dir}/${eclipselink.tests.jar}"/>
+            <pathelement path="${coretest.framework.lib}"/>
+            <pathelement path="${jpatest.framework.lib}"/>
             <pathelement path="${junit.lib}"/>
         </path>
         <path id="nosql_test.public.dependency.path">
@@ -258,9 +264,9 @@
         <fail message="Product classes do not exist anywhere! Compile product or populate jars." if="use.failed"/>
         <!-- Define 'Helper' path refids -->
         <path id="nosql_test.runtime.only.path">
-            <pathelement path="${nosql_test.build.location}/${eclipselink.nosql.depend.test.jar}"/>
-            <pathelement path="${nosql_test.build.location}/eclipselink-mongo-model.jar"/>
-            <pathelement path="${nosql_test.build.location}/eclipselink-jpa-nosql-tests.jar"/>
+            <pathelement path="${nosql_test.build.location}/${nosql.depend.test.jar}"/>
+            <pathelement path="${nosql_test.build.location}/${mongo.model.jar}"/>
+            <pathelement path="${nosql_test.build.location}/${nosql.tests.jar}"/>
             <pathelement path="${nosql_test.run.dir}"/>
             <pathelement path="${jdbc.driver.jar}"/>
             <pathelement path="${nosql_test.2.core.test.dir}/resource"/>
@@ -282,8 +288,8 @@
         <echo message="Following is a list of dependencies and their status ('found=' anything but 'true' means it wasn't found):"/>
         <echo message="    Test infrastructure:"/>
         <echo message="        '${junit.lib}' :: found='${junit.lib.exist}'"/>
-        <echo message="        '${nosql_test.2.jpa.test.dir}/${eclipselink.tests.jar}' :: found='${jpatest.framework.exist}'"/>
-        <echo message="        '${nosql_test.2.core.test.dir}/${eclipselink.tests.jar}' :: found='${test.framework.exist}'"/>
+        <echo message="        '${jpatest.framework.lib}' :: found='${jpatest.framework.exist}'"/>
+        <echo message="        '${coretest.framework.lib}' :: found='${test.framework.exist}'"/>
         <echo message="The test framework is currently part of the core.test and jpa.test projects. Be sure they are built."/>
         <echo message="    nosql dependency location: '${nosql.extensions.depend.dir}' :: found='${nosql.depend.dir.exist}'"/>
         <echo message="    dependency location:        '${extensions.depend.dir}' :: found='${ext.depend.dir.exist}'"/>
@@ -317,18 +323,18 @@
 
     <target name="package">
         <!-- Package the Mongo JPA model jar. -->
-        <jar jarfile="eclipselink-mongo-model.jar">
+        <jar jarfile="${mongo.model.jar}">
             <zipfileset dir="resource/mongo" includes="*.xml" prefix="META-INF"/>
             <fileset dir="${nosql_test.classes.dir}"
                      includes="org/eclipse/persistence/testing/models/jpa/mongo/**"/>
         </jar>
         <!-- Package the JPA nosql specific tests jar. -->
-        <jar jarfile="eclipselink-jpa-nosql-tests.jar">
+        <jar jarfile="${nosql.tests.jar}">
             <fileset dir="${nosql_test.classes.dir}"
                      includes="org/eclipse/persistence/testing/tests/jpa/**"/>
         </jar>
         <!-- Build tests jar. -->
-        <jar jarfile="${eclipselink.nosql.depend.test.jar}">
+        <jar jarfile="${nosql.depend.test.jar}">
             <fileset dir="${nosql_test.classes.dir}"
                      includes="org/eclipse/persistence/**/*.class"
                      excludes="org/eclipse/persistence/testing/models/jpa/**,
