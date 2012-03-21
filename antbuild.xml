@@ -272,6 +272,7 @@
     <target name="clean-core-antbuilt" unless="use.maven" description="Clean the runtime projects" >
         <ant antfile="antbuild.xml" dir="${eclipselink.hermes}"           target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.core}"             target="clean"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.core.hermes}"      target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.dbws}"             target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.jpa}"              target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.osgi}"             target="clean"/>
@@ -323,6 +324,7 @@
     <target name="build-core-ant" unless="use.maven">
         <ant antfile="antbuild.xml" dir="${eclipselink.hermes}"           target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.core}"             target="build"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.core.hermes}"      target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.dbws}"             target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.jpa}"              target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.osgi}"             target="build"/>
