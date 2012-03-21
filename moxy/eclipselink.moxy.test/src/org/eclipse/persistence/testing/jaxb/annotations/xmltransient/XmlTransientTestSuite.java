@@ -19,9 +19,11 @@ import junit.framework.TestSuite;
 public class XmlTransientTestSuite extends TestCase {
 
     public static Test suite() {
-        TestSuite suite = new TestSuite("Predicate Test Suite");
+        TestSuite suite = new TestSuite("XmlTransient Test Suite");
         suite.addTestSuite(XmlTransientFieldTestCases.class);
         suite.addTestSuite(XmlTransientPropertyTestCases.class);
+        suite.addTestSuite(DoubleTransientTestCases.class);
+        suite.addTestSuite(PropOrderTestCases.class);
         return suite;
     }
 
