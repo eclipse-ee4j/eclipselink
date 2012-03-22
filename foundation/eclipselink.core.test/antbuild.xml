@@ -90,12 +90,14 @@
         <echo message="    ${core_test.classes.dir}"/>
         <echo message="    ${core_test.report.dir}"/>
         <echo message="    ${core_test.run.dir}"/>
-        <echo message="    ${core_test.build.location}/${eclipselink.tests.jar}"/>
+        <echo message="    ${core_test.build.location}/${coretest.framework.jar}"/>
+        <echo message="    ${core_test.build.location}/${core.test.jar}"/>
         <delete includeEmptyDirs="true" failonerror="false">
             <fileset dir="${core_test.classes.dir}"/>
             <fileset dir="${core_test.report.dir}"/>
             <fileset dir="${core_test.run.dir}"/>
-            <fileset dir="${core_test.build.location}" includes="${eclipselink.tests.jar}"/>
+            <fileset dir="${core_test.build.location}" includes="${coretest.framework.jar}"/>
+            <fileset dir="${core_test.build.location}" includes="${core.test.jar}"/>
         </delete>
     </target>
 
@@ -215,7 +217,8 @@
             <pathelement path="${core_test.2.common.plugins.dir}/${connector.jar}"/>
         </path>
         <path id="core_test.runtime.only.path">
-            <pathelement path="${core_test.build.location}/${eclipselink.tests.jar}"/>
+            <pathelement path="${core_test.build.location}/${coretest.framework.jar}"/>
+            <pathelement path="${core_test.build.location}/${core.test.jar}"/>
             <pathelement path="${core_test.run.dir}"/>
             <pathelement path="${jdbc.driver.jar}"/>
             <pathelement path="${tools.lib}"/>
@@ -251,9 +254,13 @@
 
     <!-- Packages tests jar. -->
     <target name="package" depends="compile, process-resource" description="jar for local testing">
-        <delete file="${core_test.build.location}/${eclipselink.tests.jar}" failonerror="false"/>
-        <jar jarfile="${core_test.build.location}/${eclipselink.tests.jar}">
-           <fileset dir="${core_test.classes.dir}"/>
+        <delete file="${core_test.build.location}/${coretest.framework.jar}" failonerror="false"/>
+        <jar jarfile="${core_test.build.location}/${coretest.framework.jar}">
+           <fileset dir="${core_test.classes.dir}" includes="org/eclipse/persistence/testing/framework/**/*.class"/>
+        </jar>
+        <delete file="${core_test.build.location}/${core.test.jar}" failonerror="false"/>
+        <jar jarfile="${core_test.build.location}/${core.test.jar}">
+           <fileset dir="${core_test.classes.dir}" excludes="org/eclipse/persistence/testing/framework/**/*.class"/>
         </jar>
     </target>
 
@@ -356,8 +363,8 @@
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.eis.xmlfile.XMLFileTestModel"/>
         </antcall>
 
-		<!--PLSQL -->
-		<antcall target="run-test-prompt" inheritRefs="true">
+        <!--PLSQL -->
+        <antcall target="run-test-prompt" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.plsql.PLSQLTestModel"/>
         </antcall>
         <antcall target="run-test-prompt" inheritRefs="true">
@@ -419,9 +426,9 @@
         <echo>Running test on ${db.url}</echo>
         <mkdir dir="${core_test.run.dir}"/>
         <mkdir dir="${core_test.report.dir}"/>
-		<!-- 282012: On a 64-bit JVM - The XML processing at the end of the testing requires at least 1536 -->
-		<!-- Note: on a legacy XP OS with 4GB ram - the max is 1536 - use of 2048 will cause [junit] [WARN ] Unable to acquire some virtual address space - reduced from 2048 to 1908MB. -->
-		<junit printsummary="yes" failureproperty="junit.failed" fork="yes" forkmode="once" showoutput="true" maxmemory="${max.heap.memory}" dir="${core_test.run.dir}">
+        <!-- 282012: On a 64-bit JVM - The XML processing at the end of the testing requires at least 1536 -->
+        <!-- Note: on a legacy XP OS with 4GB ram - the max is 1536 - use of 2048 will cause [junit] [WARN ] Unable to acquire some virtual address space - reduced from 2048 to 1908MB. -->
+        <junit printsummary="yes" failureproperty="junit.failed" fork="yes" forkmode="once" showoutput="true" maxmemory="${max.heap.memory}" dir="${core_test.run.dir}">
             <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
             <jvmarg value="-Ddb.driver=${db.driver}"/>
             <jvmarg value="-Ddb.url=${db.url}"/>

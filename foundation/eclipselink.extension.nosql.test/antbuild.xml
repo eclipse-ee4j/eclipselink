@@ -87,13 +87,15 @@
         <echo message="    ${nosql_test.classes.dir}"/>
         <echo message="    ${nosql_test.report.dir}"/>
         <echo message="    ${nosql_test.run.dir}"/>
-        <echo message="    ${nosql_test.build.location}/${nosql.depend.test.jar}"/>
+        <echo message="    ${nosql_test.build.location}/${nosql.jpa.test.jar}"/>
+        <echo message="    ${nosql_test.build.location}/${nosql.test.jar}"/>
         <echo message="    ${nosql_test.build.location}/${mongo.model.jar}"/>
         <delete includeEmptyDirs="true" failonerror="false">
             <fileset dir="${nosql_test.classes.dir}"/>
             <fileset dir="${nosql_test.report.dir}"/>
             <fileset dir="${nosql_test.run.dir}"/>
-            <fileset dir="${nosql_test.build.location}" includes="${nosql.depend.test.jar}"/>
+            <fileset dir="${nosql_test.build.location}" includes="${nosql.jpa.test.jar}"/>
+            <fileset dir="${nosql_test.build.location}" includes="${nosql.test.jar}"/>
             <fileset dir="${nosql_test.build.location}" includes="${mongo.model.jar}"/>
         </delete>
     </target>
@@ -264,9 +266,9 @@
         <fail message="Product classes do not exist anywhere! Compile product or populate jars." if="use.failed"/>
         <!-- Define 'Helper' path refids -->
         <path id="nosql_test.runtime.only.path">
-            <pathelement path="${nosql_test.build.location}/${nosql.depend.test.jar}"/>
+            <pathelement path="${nosql_test.build.location}/${nosql.jpa.test.jar}"/>
             <pathelement path="${nosql_test.build.location}/${mongo.model.jar}"/>
-            <pathelement path="${nosql_test.build.location}/${nosql.tests.jar}"/>
+            <pathelement path="${nosql_test.build.location}/${nosql.test.jar}"/>
             <pathelement path="${nosql_test.run.dir}"/>
             <pathelement path="${jdbc.driver.jar}"/>
             <pathelement path="${nosql_test.2.core.test.dir}/resource"/>
@@ -329,16 +331,16 @@
                      includes="org/eclipse/persistence/testing/models/jpa/mongo/**"/>
         </jar>
         <!-- Package the JPA nosql specific tests jar. -->
-        <jar jarfile="${nosql.tests.jar}">
-            <fileset dir="${nosql_test.classes.dir}"
-                     includes="org/eclipse/persistence/testing/tests/jpa/**"/>
-        </jar>
-        <!-- Build tests jar. -->
-        <jar jarfile="${nosql.depend.test.jar}">
+        <jar jarfile="${nosql.test.jar}">
             <fileset dir="${nosql_test.classes.dir}"
                      includes="org/eclipse/persistence/**/*.class"
                      excludes="org/eclipse/persistence/testing/models/jpa/**,
                                org/eclipse/persistence/testing/tests/jpa/**"/>
+        </jar>
+        <!-- Build tests jar. -->
+        <jar jarfile="${nosql.jpa.test.jar}">
+            <fileset dir="${nosql_test.classes.dir}"
+                     includes="org/eclipse/persistence/testing/tests/jpa/**"/>
         </jar>
     </target>
 

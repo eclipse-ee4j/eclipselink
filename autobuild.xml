@@ -76,7 +76,7 @@
             depends="clean, build-no-javadoc, build-utils, test-srg"
     />
     <target name="build-oracle"     description="Trigger the automated oracle build"
-            depends="init, build-oracle-extension, build-nosql-extension, publish-oracle"
+            depends="init, build-oracle-extension, publish-oracle"
     />
 
     <target name="init" depends="pre-init, common-init"/>
@@ -111,7 +111,7 @@
         <!-- #                       the db properties for automated testing       -->
         <property name="coretest.prop.file" value="${log.dir}/mysql.jpa.test.properties"/>
         <property name="test.properties.run" value="${coretest.prop.file}"/>
-        
+
         <!-- build.type should default to "SNAPSHOT, unless it is set to "M#"    -->
         <!--   or "RELEASE" on the command-line for milestone or release builds  -->
         <property name="build.type" value="SNAPSHOT"/>
@@ -129,7 +129,7 @@
         <!--   server, this is brittle, but easier for now                         -->
         <property name="M2_HOME" value="/shared/common/apache-maven-3.0.3"/>
         <echo message="'M2_HOME' set to: '${M2_HOME}'"/>
-        
+
         <property file="${basedir}/autobuild.properties"/>
 
         <!-- Set version.string appropriately. variable should only be used for   -->
@@ -333,10 +333,6 @@
         <ant antfile="antbuild.xml" dir="${build.root.dir}" target="build-oracle-extension"/>
     </target>
 
-    <target name="build-nosql-extension">
-        <ant antfile="antbuild.xml" dir="${build.root.dir}" target="build-nosql-extension"/>
-    </target>
-
     <target name="build-no-javadoc" depends="get-dependencies">
         <ant antfile="antbuild.xml" dir="${build.root.dir}" target="build"/>
     </target>
@@ -493,8 +489,6 @@
             <arg value="-m ${version.string}"/>
             <arg value="${build.root.dir}/foundation/plugins/org.eclipse.persistence.oracle.jar"/>
             <arg value="${build.root.dir}/foundation/plugins/org.eclipse.persistence.oracle.source.jar"/>
-            <arg value="${build.root.dir}/foundation/plugins/org.eclipse.persistence.nosql.jar"/>
-            <arg value="${build.root.dir}/foundation/plugins/org.eclipse.persistence.nosql.source.jar"/>
         </exec>
     </target>
 

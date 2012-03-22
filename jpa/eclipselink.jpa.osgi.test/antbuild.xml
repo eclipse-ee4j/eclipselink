@@ -146,11 +146,12 @@
             <fileset dir="${eclipselink.jpa.osgi.test}/${classes.dir}">
                 <include name="org/eclipse/persistence/testing/**"/>
             </fileset>
-            <fileset dir="${eclipselink.jpa.test}" includes="eclipselink-advanced-field-access-model.jar,eclipselink-jpa-tests.jar"/>
+            <fileset dir="${eclipselink.jpa.test}" includes="eclipselink-advanced-field-access-model.jar,${jpa.test.jar}"/>
             <fileset file="${junit.lib}"/>
             <fileset file="${jdbc.driver.jar}"/>
         </copy>
-        <copy file="${eclipselink.core.test.dir}/eclipselink-core-tests.jar" toFile="${eclipselink.jpa.osgi.test}/${build.dir}/${jpa.osgi}/core-tests.jar"/>
+        <copy file="${eclipselink.core.test.dir}/${coretest.framework.jar}"  todir="${eclipselink.jpa.osgi.test}/${build.dir}/${jpa.osgi}"/>
+        <copy file="${eclipselink.core.test.dir}/${core.test.jar}"           todir="${eclipselink.jpa.osgi.test}/${build.dir}/${jpa.osgi}"/>
         <jar jarfile="${eclipselink.jpa.osgi.test}/${jpa.osgi}.jar" manifest="${eclipselink.jpa.osgi.test}/${build.dir}/${jpa.osgi}/META-INF/MANIFEST.MF">
             <fileset dir="${eclipselink.jpa.osgi.test}/${build.dir}/${jpa.osgi}"/>
             <fileset dir="${ant.home}/lib" includes="ant-junit.jar,ant.jar"/>

@@ -87,20 +87,20 @@
         <echo message="    ${oracle_test.classes.dir}"/>
         <echo message="    ${oracle_test.report.dir}"/>
         <echo message="    ${oracle_test.run.dir}"/>
-        <echo message="    ${oracle_test.build.location}/${eclipselink.oracle.depend.test.jar}"/>
+        <echo message="    ${oracle_test.build.location}/${oracle.test.jar}"/>
         <echo message="    ${oracle_test.build.location}/eclipselink-struct-converter-model.jar"/>
         <echo message="    ${oracle_test.build.location}/eclipselink-customfeatures-model.jar"/>
         <echo message="    ${oracle_test.build.location}/eclipselink-dcn-model.jar"/>
-        <echo message="    ${oracle_test.build.location}/eclipselink-jpa-oracle-tests.jar"/>
+        <echo message="    ${oracle_test.build.location}/${oracle.jpa.test.jar}"/>
         <delete includeEmptyDirs="true" failonerror="false">
             <fileset dir="${oracle_test.classes.dir}"/>
             <fileset dir="${oracle_test.report.dir}"/>
             <fileset dir="${oracle_test.run.dir}"/>
-            <fileset dir="${oracle_test.build.location}" includes="${eclipselink.oracle.depend.test.jar}"/>
+            <fileset dir="${oracle_test.build.location}" includes="${oracle.test.jar}"/>
             <fileset dir="${oracle_test.build.location}" includes="eclipselink-struct-converter-model.jar"/>
             <fileset dir="${oracle_test.build.location}" includes="eclipselink-customfeatures-model.jar"/>
             <fileset dir="${oracle_test.build.location}" includes="eclipselink-dcn-model.jar"/>
-            <fileset dir="${oracle_test.build.location}" includes="eclipselink-jpa-oracle-tests.jar"/>
+            <fileset dir="${oracle_test.build.location}" includes="${oracle.jpa.test.jar}"/>
         </delete>
     </target>
 
@@ -184,8 +184,8 @@
         <available file="${oracle_test.2.oracle.dir}/${classes.dir}" type="dir" property="oracle.classes.exist"/>
         <available file="${junit.lib}" property="junit.lib.exist"/>
         <available file="${oracle_test.2.common.plugins.dir}/${unsigned.persistence10.jar}" property="persistence.bundle.exist"/>
-        <available file="${oracle_test.2.core.test.dir}/${eclipselink.tests.jar}" property="test.framework.exist"/>
-        <available file="${oracle_test.2.jpa.test.dir}/${eclipselink.tests.jar}" property="jpatest.framework.exist"/>
+        <available file="${oracle_test.2.core.test.dir}/${coretest.framework.jar}" property="test.framework.exist"/>
+        <available file="${oracle_test.2.jpa.test.dir}/${jpatest.framework.jar}" property="jpatest.framework.exist"/>
         <!-- Determine availability of runtime dependencies   -->
         <available file="${oracle_test.2.jpa.dir}/${resource.dir}" type="dir" property="jpa.resources.exist"/>
         <available file="${oracle_test.2.core.dir}/${resource.dir}" type="dir" property="core.resources.exist"/>
@@ -200,8 +200,8 @@
         <available file="${oracle.aqapi.lib}"     property="oracle.aqapi.lib.exist"/>
         <available file="${oracle.sdoapi.lib}"    property="oracle.sdoapi.lib.exist"/>
         <available file="${oracle.xmlparser.lib}" property="oracle.xmlparser.lib.exist"/>
-        <available file="${oracle.ucp.lib}"	      property="oracle.ucp.lib.exist"/>
-        <available file="${oracle.nosql.lib}"	  property="oracle.nosql.lib.exist"/>
+        <available file="${oracle.ucp.lib}"       property="oracle.ucp.lib.exist"/>
+        <available file="${oracle.nosql.lib}"     property="oracle.nosql.lib.exist"/>
 
         <!-- Determine where to get product classes, based upon availability  -->
         <condition property="use.eclipselink">
@@ -299,8 +299,8 @@
             <pathelement path="${junit.lib}"/>
         </path>
         <path id="oracle_test.test.infrastructure.path">
-            <pathelement path="${oracle_test.2.core.test.dir}/${eclipselink.tests.jar}"/>
-            <pathelement path="${oracle_test.2.jpa.test.dir}/${eclipselink.tests.jar}"/>
+            <pathelement path="${oracle_test.2.core.test.dir}/${coretest.framework.jar}"/>
+            <pathelement path="${oracle_test.2.jpa.test.dir}/${jpatest.framework.jar}"/>
             <pathelement path="${junit.lib}"/>
         </path>
         <path id="oracle_test.public.dependency.path">
@@ -312,7 +312,7 @@
         <fail message="Product classes do not exist anywhere! Compile product or populate jars." if="use.failed"/>
         <!-- Define 'Helper' path refids -->
         <path id="oracle_test.runtime.only.path">
-            <pathelement path="${oracle_test.build.location}/${eclipselink.oracle.depend.test.jar}"/>
+            <pathelement path="${oracle_test.build.location}/${oracle.test.jar}"/>
             <pathelement path="${oracle_test.run.dir}"/>
             <pathelement path="${jdbc.driver.jar}"/>
             <pathelement path="${oracle_test.2.core.test.dir}/resource"/>
@@ -334,8 +334,8 @@
         <echo message="Following is a list of dependencies and their status ('found=' anything but 'true' means it wasn't found):"/>
         <echo message="    Test infrastructure:"/>
         <echo message="        '${junit.lib}' :: found='${junit.lib.exist}'"/>
-        <echo message="        '${oracle_test.2.jpa.test.dir}/${eclipselink.tests.jar}' :: found='${jpatest.framework.exist}'"/>
-        <echo message="        '${oracle_test.2.core.test.dir}/${eclipselink.tests.jar}' :: found='${test.framework.exist}'"/>
+        <echo message="        '${oracle_test.2.jpa.test.dir}/${jpatest.framework.jar}' :: found='${jpatest.framework.exist}'"/>
+        <echo message="        '${oracle_test.2.core.test.dir}/${coretest.framework.jar}' :: found='${test.framework.exist}'"/>
         <echo message="The test framework is currently part of the core.test and jpa.test projects. Be sure they are built."/>
         <echo message="    oracle dependency location: '${oracle.extensions.depend.dir}' :: found='${oracle.depend.dir.exist}'"/>
         <echo message="    dependency location:        '${extensions.depend.dir}' :: found='${ext.depend.dir.exist}'"/>
@@ -418,12 +418,12 @@
                      includes="org/eclipse/persistence/testing/models/jpa/nosql/**"/>
         </jar>
         <!-- Package the JPA oracle specific tests jar. -->
-        <jar jarfile="eclipselink-jpa-oracle-tests.jar">
+        <jar jarfile="${oracle.jpa.test.jar}">
             <fileset dir="${oracle_test.classes.dir}"
                      includes="org/eclipse/persistence/testing/tests/jpa/**"/>
         </jar>
         <!-- Build tests jar. -->
-        <jar jarfile="${eclipselink.oracle.depend.test.jar}">
+        <jar jarfile="${oracle.test.jar}">
             <fileset dir="${oracle_test.classes.dir}"
                      includes="org/eclipse/persistence/**/*.class"
                      excludes="org/eclipse/persistence/testing/models/jpa/**,

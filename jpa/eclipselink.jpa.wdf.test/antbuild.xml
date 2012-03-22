@@ -90,7 +90,7 @@
     <target name="clean" description="Clean the build">
         <delete includeEmptyDirs="true" failonerror="false">
             <fileset dir="${wdf_test.build.location}/${classes.dir}"/>
-            <fileset file="${wdf_test.build.location}/${eclipselink.tests.jar}"/>
+            <fileset file="${wdf_test.build.location}/${wdf.tests.jar}"/>
             <fileset file="${wdf_test.build.location}/${eclipselink.wdf.jpa1.model}.jar"/>
             <fileset file="${wdf_test.build.location}/${eclipselink.wdf.jpa2.model}.jar"/>
         </delete>
@@ -102,7 +102,7 @@
         <mkdir dir="${wdf_test.build.location}/${classes.dir}"/>
         <path id="base.compile.path">
             <pathelement path="${wdf_test.2.core.test.dir}/${classes.dir}"/>
-            <pathelement path="${wdf_test.2.core.test.dir}/${eclipselink.tests.jar}"/>
+            <pathelement path="${wdf_test.2.core.test.dir}/${wdf.tests.jar}"/>
             <pathelement path="${wdf_test.2.jpa.plugins.dir}/${persistence20.jar}"/>
             <pathelement path="${wdf_test.2.common.plugins.dir}/${ejb.jar}"/>
             <!-- These paths are unneeded for compile or run (from core.depend) may be needed in future -->
@@ -217,7 +217,7 @@
 
         <copy file="${wdf_test.2.jpa.test}/resource/server/jndi.properties" todir="stage" filtering="true"/>
 
-        <jar jarfile="${wdf_test.build.location}/${eclipselink.tests.jar}">
+        <jar jarfile="${wdf_test.build.location}/${wdf.tests.jar}">
            <zipfileset dir="${wdf_test.build.location}/resource/ejb" includes="*.xml" prefix="META-INF"/>
            <fileset dir="${wdf_test.build.location}/${classes.dir}"
                     includes="org/eclipse/persistence/testing/framework/**/*.class,
@@ -280,7 +280,7 @@
         <path id="run.path">
             <pathelement path="${jdbc.driver.jar}"/>
             <path refid="compile.path"/>
-            <pathelement path="${wdf_test.build.location}/${eclipselink.tests.jar}"/>
+            <pathelement path="${wdf_test.build.location}/${wdf.tests.jar}"/>
             <pathelement path="${wdf_test.build.location}/${eclipselink.wdf.jpa2.model}.jar"/>
             <pathelement path="${wdf_test.build.location}/${eclipselink.wdf.jpa1.model}.jar"/>
             <pathelement path="${wdf_test.build.location}"/>
@@ -352,7 +352,7 @@
     <target name="server-build-ear" depends="build-against-jar" >
         <copy overwrite="true" file="./resource/ear/application.xml" todir="${build.dir}/META-INF"/>
         <ear destfile="${wdf_test.build.location}/${build.dir}/servertest.ear" appxml="${build.dir}/META-INF/application.xml">
-            <fileset file="${wdf_test.build.location}/${eclipselink.tests.jar}"/>
+            <fileset file="${wdf_test.build.location}/${wdf.tests.jar}"/>
             <zipfileset dir="${wdf_test.build.location}" includes="${eclipselink.wdf.jpa1.model}.jar" prefix="${LIB_PREFIX}"/>
         </ear>
         <copy file="${wdf_test.build.location}/${build.dir}/servertest.ear" todir="${basedir}"/>

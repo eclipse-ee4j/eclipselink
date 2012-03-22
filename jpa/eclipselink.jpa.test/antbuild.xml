@@ -362,7 +362,7 @@
             <pathelement path="${eclipselink.core.dir}/${classes.dir}"/>
             <pathelement path="${eclipselink.jpa}/${classes.dir}"/>
             <pathelement path="${eclipselink.core.test.dir}/${classes.dir}"/>
-            <pathelement path="${eclipselink.core.test.dir}/${eclipselink.tests.jar}"/>
+            <pathelement path="${eclipselink.core.test.dir}/${coretest.framework.jar}"/>
             <fileset dir="${eclipselink.jpa}/../${plugins.dir}"
                 includes="${eclipselink.jpa.depend}"/>
             <pathelement path="${eclipselink.core.lib.dir}/${unsigned.persistence10.jar}"/>
@@ -607,17 +607,19 @@
     package-composite-advanced, package-composite-advanced-member_1, package-composite-advanced-member_2, package-composite-advanced-member_3,
     package-xml-composite-advanced, package-xml-composite-advanced-member_1, package-xml-composite-advanced-member_2, package-xml-composite-advanced-member_3,
     package-xml-extended-composite-advanced, package-xml-extended-composite-advanced-member_1, package-xml-extended-composite-advanced-member_2, package-xml-extended-composite-advanced-member_3, package-extensibility" description="build EclipseLink jar">
-        <jar jarfile="${eclipselink.jpa.test}/${eclipselink.tests.jar}">
+        <jar jarfile="${eclipselink.jpa.test}/${jpatest.framework.jar}">
+           <fileset dir="${eclipselink.jpa.test}/${classes.dir}"  includes="org/eclipse/persistence/testing/framework/**/*.class"/>
+        </jar>
+        <jar jarfile="${eclipselink.jpa.test}/${jpa.test.jar}">
            <fileset dir="${eclipselink.jpa.test}/${classes.dir}"
-                    includes="org/eclipse/persistence/testing/framework/**/*.class,
-                              org/eclipse/persistence/testing/tests/**/*.class"
-                    excludes="org/eclipse/persistence/testing/tests/jpa21/**/*.class"/>
+                    includes="org/eclipse/persistence/testing/tests/**/*.class"
+                    excludes="org/eclipse/persistence/testing/framework/**/*.class,
+                             org/eclipse/persistence/testing/tests/jpa21/**/*.class"/>
         </jar>
         <!-- commented out because is misleading with no 21 test classes added to jar -->
-        <!-- jar jarfile="${eclipselink.jpa.test}/${eclipselink.jpa21.tests.jar}">
+        <!-- jar jarfile="${eclipselink.jpa.test}/${jpa21.test.jar}">
            <fileset dir="${eclipselink.jpa.test}/${classes.dir}"
-                    includes="org/eclipse/persistence/testing/framework/**/*.class,
-                              org/eclipse/persistence/testing/tests/jpa21/**/*.class"/>
+                    includes="org/eclipse/persistence/testing/tests/jpa21/**/*.class"/>
         </jar -->
     </target>
 
@@ -1155,10 +1157,12 @@
         <delete includeEmptyDirs="true" failonerror="false">
             <fileset dir="${eclipselink.jpa.test}/${classes.dir}"/>
             <fileset dir="${eclipselink.jpa.test}/${build.dir}"/>
-            <fileset file="${eclipselink.jpa.test}/${eclipselink.tests.jar}"/>
-            <fileset file="${eclipselink.jpa.test}/${eclipselink.jpa21.tests.jar}"/>
+            <fileset file="${eclipselink.jpa.test}/${jpa.test.jar}"/>
+            <fileset file="${eclipselink.jpa.test}/${jpa21.test.jar}"/>
+            <fileset file="${eclipselink.jpa.test}/${jpatest.framework}.jar"/>
+            <fileset file="${eclipselink.jpa.test}/*-model.jar"/>
             <fileset file="${eclipselink.jpa.test}/${eclipselink.jpa21.model}.jar"/>
-            <fileset file="${eclipselink.jpa.test}/${eclipselink.annotation.model}.jar"/>
+        <fileset file="${eclipselink.jpa.test}/${eclipselink.annotation.model}.jar"/>
             <fileset file="${eclipselink.jpa.test}/${eclipselink.ddl.generation.model}.jar"/>
             <fileset file="${eclipselink.jpa.test}/${eclipselink.xml.only.model}.jar"/>
             <fileset file="${eclipselink.jpa.test}/${eclipselink.xml.extended.model}.jar"/>
@@ -1204,7 +1208,8 @@
             <pathelement path="${eclipselink.jpa.test}/${classes.dir}"/>
             <path refid="compile.path"/>
             <pathelement path="${jdbc.driver.jar}"/>
-            <pathelement path="${eclipselink.jpa.test}/${eclipselink.tests.jar}"/>
+            <pathelement path="${eclipselink.jpa.test}/${jpatest.framework.jar}"/>
+            <pathelement path="${eclipselink.jpa.test}/${jpa.test.jar}"/>
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.annotation.model}.jar"/>
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.ddl.generation.model}.jar"/>
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.xml.only.model}.jar"/>
@@ -1243,14 +1248,16 @@
             <pathelement path="${eclipselink.jpa.test}/${classes.dir}"/>
             <path refid="compile.path"/>
             <pathelement path="${jdbc.driver.jar}"/>
-            <pathelement path="${eclipselink.jpa.test}/${eclipselink.jpa21.tests.jar}"/>
+            <pathelement path="${eclipselink.jpa.test}/${jpatest.framework.jar}"/>
+            <pathelement path="${eclipselink.jpa.test}/${jpa21.test.jar}"/>
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.jpa21.model}.jar"/>
         </path>
         <path id="run.extended.classpath">
             <pathelement path="${eclipselink.jpa.test}/${classes.dir}"/>
             <path refid="compile.path"/>
             <pathelement path="${jdbc.driver.jar}"/>
-            <pathelement path="${eclipselink.jpa.test}/${eclipselink.tests.jar}"/>
+            <pathelement path="${eclipselink.jpa.test}/${jpatest.framework.jar}"/>
+            <pathelement path="${eclipselink.jpa.test}/${jpa.test.jar}"/>
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.xml.extended.model}.jar"/>
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.xml.extended.composite.advanced.model}.jar"/>
             <pathelement path="${eclipselink.jpa.test}/${eclipselink.xml.extended.composite.advanced.model.member_1}.jar"/>
@@ -1261,7 +1268,8 @@
             <pathelement path="${eclipselink.jpa.test}/${classes.dir}"/>
             <path refid="compile.path"/>
             <pathelement path="${jdbc.driver.jar}"/>
-            <pathelement path="${eclipselink.jpa.test}/${eclipselink.tests.jar}"/>
+            <pathelement path="${eclipselink.jpa.test}/${jpatest.framework.jar}"/>
+            <pathelement path="${eclipselink.jpa.test}/${jpa.test.jar}"/>
             <pathelement path="${eclipselink.jpa.test}/${jpa.performance}.jar"/>
             <pathelement path="${eclipselink.jpa.test}/${jpa.performance2}.jar"/>
         </path>
@@ -1278,7 +1286,7 @@
             <pathelement path="${eclipselink.extension.oracle.test.dir}/${eclipselink.timestamptz.model}.jar"/>
             <pathelement path="${eclipselink.extension.oracle.test.dir}/${eclipselink.customfeatures.model}.jar"/>
             <pathelement path="${eclipselink.extension.oracle.test.dir}/${eclipselink.proxyauthentication.model}.jar"/>
-            <pathelement path="${eclipselink.extension.oracle.test.dir}/${eclipselink.jpa.oracle}-tests.jar"/>
+            <pathelement path="${eclipselink.extension.oracle.test.dir}/${oracle.jpa.test.jar}"/>
             <pathelement path="${eclipselink.extension.oracle.test.dir}/eclipselink-dcn-model.jar"/>
             <pathelement path="${oracle.extensions.depend.dir}/${oracle.sdoapi.jar}"/>
         </path>
@@ -1287,8 +1295,9 @@
             <pathelement path="${eclipselink.extension.oracle.dir}/${classes.dir}"/>
             <path refid="compile.path"/>
             <pathelement path="${oracle.extensions.depend.dir}/${oracle.nosql.jar}"/>
-            <pathelement path="${eclipselink.jpa.test}/${eclipselink.tests.jar}"/>
-            <pathelement path="${eclipselink.extension.oracle.test.dir}/eclipselink-jpa-oracle-tests.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/${jpatest.framework.jar}"/>
+            <pathelement path="${eclipselink.jpa.test}/${jpa.test.jar}"/>
+            <pathelement path="${eclipselink.extension.oracle.test.dir}/${oracle.jpa.test.jar}"/>
             <pathelement path="${eclipselink.extension.oracle.test.dir}/eclipselink-nosql-model.jar"/>
         </path>
     </target>
@@ -1471,7 +1480,8 @@
             <pathelement path="${eclipselink.jpa.test}/woven-${eclipselink.xml.composite.advanced.model.member_3}.jar"/>
             <pathelement path="${jdbc.driver.jar}"/>
             <pathelement path="${eclipselink.jpa.test}/${classes.dir}"/>
-            <pathelement path="${eclipselink.jpa.test}/${eclipselink.tests.jar}"/>
+            <pathelement path="${eclipselink.jpa.test}/${jpatest.framework.jar}"/>
+            <pathelement path="${eclipselink.jpa.test}/${jpa.test.jar}"/>
             <path refid="compile.path"/>
         </path>
         <path id="run.extended.classpath.static">
@@ -1482,7 +1492,8 @@
             <pathelement path="${eclipselink.jpa.test}/woven-${eclipselink.xml.extended.composite.advanced.model.member_3}.jar"/>
             <pathelement path="${jdbc.driver.jar}"/>
             <pathelement path="${eclipselink.jpa.test}/${classes.dir}"/>
-            <pathelement path="${eclipselink.jpa.test}/${eclipselink.tests.jar}"/>
+            <pathelement path="${eclipselink.jpa.test}/${jpatest.framework.jar}"/>
+            <pathelement path="${eclipselink.jpa.test}/${jpa.test.jar}"/>
             <path refid="compile.path"/>
         </path>
         <antcall target="run-test" inheritRefs="true">
