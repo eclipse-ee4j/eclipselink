@@ -200,7 +200,7 @@
     <!-- Compiles Oracle component, tests and extensions (excluding utilities). -->
     <target name="build-oracle" depends="build-oracle-extension, build-oracle-extension-test"/>
 
-    <!-- Builds and packages all jars, javadoc, and builds installer. -->
+    <!-- Builds and packages all jars,javadoc, and builds installer. -->
     <target name="build-distribution" depends="build-all-but-ext, package-all, gen-wls-shared-lib"/>
 
 <!-- ================================================================================= -->
@@ -391,8 +391,8 @@
 
     <target name="build-all-core-except-dbws-test">
         <ant antfile="antbuild.xml" dir="${eclipselink.core.test}"             target="build"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.extension.nosql.test}"  target="build"/>
         <ant antfile="${eclipselink.jpa.test}/antbuild.xml"                    target="all"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.extension.nosql.test}"  target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.jpa.wdf.test}"          target="build-against-jar"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.moxy.test}"             target="compile-tests-against-jar"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.sdo.test}"              target="compile-sdo-tests-against-jar"/>
@@ -920,7 +920,7 @@
             depends="test-core-srg, test-jpa-srg, test-moxy-srg, test-sdo-srg, test-dbws-srg, test-dbws-builder-srg"
             />
     <target name="test-lrg" description="run all the LRG test suites"
-            depends="test-core, test-nosql, test-jpa, test-wdf, test-moxy, test-sdo, test-dbws, test-dbws-builder"
+            depends="test-core, test-jpa, test-nosql, test-wdf, test-moxy, test-sdo, test-dbws, test-dbws-builder"
             />
 
     <!-- Run core LRG. -->
