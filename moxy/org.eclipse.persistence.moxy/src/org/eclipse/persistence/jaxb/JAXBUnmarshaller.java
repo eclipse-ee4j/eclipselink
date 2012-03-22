@@ -124,7 +124,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
     public Object unmarshal(File file) throws JAXBException {
         try {
             Object value = xmlUnmarshaller.unmarshal(file);
-            return createJAXBElementIfRequired(value);
+            return createJAXBElementOrUnwrapIfRequired(value);
         } catch (XMLMarshalException xmlMarshalException) {
             throw handleXMLMarshalException(xmlMarshalException);
         }
@@ -135,7 +135,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
             XMLInputFactory xmlInputFactory = getXMLInputFactory();
             if(null == xmlInputFactory || 
                 XMLUnmarshaller.NONVALIDATING != xmlUnmarshaller.getValidationMode()) {
-                return createJAXBElementIfRequired(xmlUnmarshaller.unmarshal(inputStream));
+                return createJAXBElementOrUnwrapIfRequired(xmlUnmarshaller.unmarshal(inputStream));
             } else {
                 if(null == inputStream) {
                     throw XMLMarshalException.nullArgumentException();
@@ -158,7 +158,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
     public Object unmarshal(URL url) throws JAXBException {
         try {
             Object value = xmlUnmarshaller.unmarshal(url);
-            return createJAXBElementIfRequired(value);
+            return createJAXBElementOrUnwrapIfRequired(value);
         } catch (XMLMarshalException xmlMarshalException) {
             throw handleXMLMarshalException(xmlMarshalException);
         }
@@ -167,7 +167,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
     public Object unmarshal(InputSource inputSource) throws JAXBException {
         try {
             Object value = xmlUnmarshaller.unmarshal(inputSource);
-            return createJAXBElementIfRequired(value);
+            return createJAXBElementOrUnwrapIfRequired(value);
         } catch (XMLMarshalException xmlMarshalException) {
             throw handleXMLMarshalException(xmlMarshalException);
         }
@@ -178,7 +178,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
             XMLInputFactory xmlInputFactory = getXMLInputFactory();
             if(null == xmlInputFactory || 
                 XMLUnmarshaller.NONVALIDATING != xmlUnmarshaller.getValidationMode()) {
-                return createJAXBElementIfRequired(xmlUnmarshaller.unmarshal(reader));
+                return createJAXBElementOrUnwrapIfRequired(xmlUnmarshaller.unmarshal(reader));
             } else {
                 if(null == reader) {
                     throw XMLMarshalException.nullArgumentException();
@@ -200,7 +200,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
     public Object unmarshal(Node node) throws JAXBException {
         try {
             Object value = xmlUnmarshaller.unmarshal(node);
-            return createJAXBElementIfRequired(value);
+            return createJAXBElementOrUnwrapIfRequired(value);
         } catch (XMLMarshalException xmlMarshalException) {
             throw handleXMLMarshalException(xmlMarshalException);
         }
@@ -290,7 +290,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
     public Object unmarshal(Source source) throws JAXBException {
         try {
             Object value = xmlUnmarshaller.unmarshal(source);
-            return createJAXBElementIfRequired(value);
+            return createJAXBElementOrUnwrapIfRequired(value);
         } catch (XMLMarshalException xmlMarshalException) {
             throw handleXMLMarshalException(xmlMarshalException);
         }
@@ -518,7 +518,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
             staxReader.setErrorHandler(xmlUnmarshaller.getErrorHandler());
             XMLStreamReaderInputSource inputSource = new XMLStreamReaderInputSource(streamReader);
             Object value = xmlUnmarshaller.unmarshal(staxReader, inputSource);
-            return createJAXBElementIfRequired(value);
+            return createJAXBElementOrUnwrapIfRequired(value);
         } catch (XMLMarshalException xmlMarshalException) {
             throw handleXMLMarshalException(xmlMarshalException);
         }
@@ -634,7 +634,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
             XMLEventReaderReader staxReader = new XMLEventReaderReader(xmlUnmarshaller);
             XMLEventReaderInputSource inputSource = new XMLEventReaderInputSource(eventReader);
             Object value = xmlUnmarshaller.unmarshal(staxReader, inputSource);
-            return createJAXBElementIfRequired(value);
+            return createJAXBElementOrUnwrapIfRequired(value);
         } catch (XMLMarshalException xmlMarshalException) {
             throw handleXMLMarshalException(xmlMarshalException);
         }
@@ -750,11 +750,13 @@ public class JAXBUnmarshaller implements Unmarshaller {
         ((JAXBUnmarshalListener)xmlUnmarshaller.getUnmarshalListener()).setClassBasedUnmarshalEvents(callbacks);
     }
 
-    private Object createJAXBElementIfRequired(Object value){
+    private Object createJAXBElementOrUnwrapIfRequired(Object value){
         if(value instanceof XMLRoot){
             JAXBElement jaxbElement = createJAXBElementFromXMLRoot((XMLRoot)value, Object.class);
             jaxbElement.setNil(((XMLRoot) value).isNil()); 
             return jaxbElement;
+        } else if(value instanceof WrappedValue) {
+            return ((WrappedValue)value).getValue();
         }
         return value;
     }

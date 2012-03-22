@@ -2829,12 +2829,15 @@ public class AnnotationsProcessor {
         }
         // Add a non-named element declaration for each enumeration to trigger
         // class generation
-        ElementDeclaration elem = new ElementDeclaration(null, javaClass, javaClass.getQualifiedName(), false);
+        if(info.getXmlRootElement() == null) {
+            //process the root element and use that as the element
+            ElementDeclaration elem = new ElementDeclaration(null, javaClass, javaClass.getQualifiedName(), false);
 
-        // if(this.javaClassToTypeMappingInfos.get(javaClass) != null) {
-        // elem.setTypeMappingInfo(this.javaClassToTypeMappingInfos.get(javaClass));
-        // }
-        this.getLocalElements().add(elem);
+            // if(this.javaClassToTypeMappingInfos.get(javaClass) != null) {
+            // elem.setTypeMappingInfo(this.javaClassToTypeMappingInfos.get(javaClass));
+            // }
+            this.getLocalElements().add(elem);
+        }
     }
 
     public QName getSchemaTypeOrNullFor(JavaClass javaClass) {
