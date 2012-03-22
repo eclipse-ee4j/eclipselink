@@ -746,7 +746,6 @@
         <zip zipfile="${eclipselink.tst.jar.prefix}${eclipselink.zip.suffix}" duplicate="preserve">
             <zipfileset dir="${basedir}">
                 <include name="${eclipselink.core.test}/${coretest.framework.jar}"/>
-                <include name="${eclipselink.core.test}/eclipselink-core-tests.jar"/>
                 <include name="${eclipselink.jpa.test}/${jpatest.framework.jar}"/>
                 <include name="${eclipselink.jpa.test}/eclipselink-jpa-tests.jar"/>
                 <include name="${eclipselink.jpa.test}/eclipselink-annotation-model.jar"/>
