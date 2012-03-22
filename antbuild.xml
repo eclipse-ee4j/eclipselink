@@ -942,7 +942,7 @@
     </target>
     <!-- Run nosql Tests -->
     <target name="test-nosql" description="run all nosql specific tests">
-        <ant antfile="antbuild.xml" dir="${eclipselink.extension.nosql.test}"      target="test-nosql"/>
+        <!-- ant antfile="antbuild.xml" dir="${eclipselink.extension.nosql.test}"      target="test"/ -->
     </target>
     <!-- Run JPA LRG. -->
     <target name="test-jpa" description="run the jpa tests">
