@@ -36,6 +36,7 @@ import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 
 import org.eclipse.persistence.config.DescriptorCustomizer;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.JAXBException;
@@ -2654,24 +2655,32 @@ public class MappingsGenerator {
                              this.qNamesToDeclaredClasses.put(next, declaredClass);
                          }catch(Exception e){
                          }
-            		} else if(nextElement.getJavaType().isEnum() && !(helper.getClassLoader() instanceof DynamicClassLoader)) {
-            		    //Only generate enum wrappers in non-dynamic case.
-                        Class generatedClass = addEnumerationWrapperAndDescriptor(type, nextElement.getJavaType().getRawName(), nextElement, nextClassName, attributeTypeName);
-                        this.qNamesToGeneratedClasses.put(next, generatedClass);
-                        if(nextElement.getTypeMappingInfo() != null) {
-                            typeMappingInfoToGeneratedClasses.put(nextElement.getTypeMappingInfo(), generatedClass);
-                        }
-                        try{
-                            Class declaredClass = PrivilegedAccessHelper.getClassForName(nextClassName, false, helper.getClassLoader());
-                            this.qNamesToDeclaredClasses.put(next, declaredClass);
-                        }catch(Exception e){
-                        }
             		}
-            		continue;
-            	}
-                Class generatedClass = generateWrapperClassAndDescriptor(type, next, nextElement, nextClassName, attributeTypeName);
+                    if(nextElement.getJavaType().isEnum()) {
+                        if(!(helper.getClassLoader() instanceof DynamicClassLoader)) {
+                            //  Only generate enum wrappers in non-dynamic case.
+                            Class generatedClass = addEnumerationWrapperAndDescriptor(type, nextElement.getJavaType().getRawName(), nextElement, nextClassName, attributeTypeName);
+                            this.qNamesToGeneratedClasses.put(next, generatedClass);
+                            if(nextElement.getTypeMappingInfo() != null) {
+                                typeMappingInfoToGeneratedClasses.put(nextElement.getTypeMappingInfo(), generatedClass);
+                            }
+                            try{
+                                Class declaredClass = PrivilegedAccessHelper.getClassForName(nextClassName, false, helper.getClassLoader());
+                                this.qNamesToDeclaredClasses.put(next, declaredClass);
+                            }catch(Exception ex) {
+                            
+                            }
+                        }                	
 
+                    }
+                    continue;
+                }
+                Class generatedClass = generateWrapperClassAndDescriptor(type, next, nextElement, nextClassName, attributeTypeName);
+                
                 this.qNamesToGeneratedClasses.put(next, generatedClass);
+                if(type != null && type.isEnumerationType() && nextElement.isXmlRootElement()) {
+                    this.classToGeneratedClasses.put(type.getJavaClassName(), generatedClass);
+                }
                 try{
                     Class declaredClass = PrivilegedAccessHelper.getClassForName(nextClassName, false, helper.getClassLoader());
                     this.qNamesToDeclaredClasses.put(next, declaredClass);
@@ -2711,13 +2720,13 @@ public class MappingsGenerator {
     private Class addEnumerationWrapperAndDescriptor(TypeInfo type, String javaClassName, ElementDeclaration nextElement, String nextClassName, String attributeTypeName) {
         Class generatedClass = classToGeneratedClasses.get(javaClassName);
         if(generatedClass == null){
-            generatedClass = generateWrapperClassAndDescriptor(type, null, nextElement, nextClassName, attributeTypeName);
+            generatedClass = generateWrapperClassAndDescriptor(type, nextElement.getElementName(), nextElement, nextClassName, attributeTypeName);
             classToGeneratedClasses.put(javaClassName, generatedClass);
         }
         return generatedClass;
     }
 
-    private Class generateWrapperClassAndDescriptor(TypeInfo type, QName next, ElementDeclaration nextElement, String nextClassName, String attributeTypeName){
+     private Class generateWrapperClassAndDescriptor(TypeInfo type, QName next, ElementDeclaration nextElement, String nextClassName, String attributeTypeName){
         String namespaceUri = null;
       	if(next!= null){
               //generate a class/descriptor for this element
@@ -2868,8 +2877,12 @@ public class MappingsGenerator {
 	  				    }
 	  				}
 	  				desc.setNamespaceResolver(resolver);
-	  				desc.setDefaultRootElement("");
-	  				desc.addRootElement(getQualifiedString(prefix, next.getLocalPart()));
+	  				if(nextElement.isXmlRootElement()) {
+	  				    desc.setDefaultRootElement(getQualifiedString(prefix, next.getLocalPart()));
+	  				} else {
+	  				    desc.setDefaultRootElement("");
+	  				    desc.addRootElement(getQualifiedString(prefix, next.getLocalPart()));
+	  				}
 	              } else {
 	                  if(namespaceUri.equals("")) {
 	                      desc.setDefaultRootElement(next.getLocalPart());
@@ -2878,8 +2891,12 @@ public class MappingsGenerator {
 	                      String prefix = getPrefixForNamespace(namespaceUri, resolver, null);
 
 	                      desc.setNamespaceResolver(resolver);
-	                      desc.setDefaultRootElement("");
-	                      desc.addRootElement(getQualifiedString(prefix, next.getLocalPart()));
+                          if(nextElement.isXmlRootElement()) {
+                              desc.setDefaultRootElement(getQualifiedString(prefix, next.getLocalPart()));
+                          } else {
+                              desc.setDefaultRootElement("");
+                              desc.addRootElement(getQualifiedString(prefix, next.getLocalPart()));
+                          }
 	  				}
 	  			}
 	          }
