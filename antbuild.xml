@@ -239,9 +239,7 @@
         <ant antfile="antbuild.xml" dir="${eclipselink.util.rename}"      target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.util.sigcompare}"  target="clean"/>
         <ant antfile="build.xml"    dir="${eclipselink.util.workbench}"   target="clean"/>
-        <delete file="${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
-        <delete file="${eclipselink.javadoc.install.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
-        <delete file="${eclipselink.install.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
+        <delete file="*${eclipselink.zip.suffix}" failonerror="false"/>
     </target>
     <target name="clean-core-mavenbuilt" if="use.maven" description="Clean the maven built runtime projects">
         <java dir="${eclipselink.mvn.parent}" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">

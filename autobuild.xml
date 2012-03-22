@@ -414,6 +414,7 @@
         <copy file="${build.root.dir}/${eclipselink.install.prefix}${eclipselink.zip.suffix}"          tofile="${download.dir}/${eclipselink.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
         <copy file="${build.root.dir}/${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"      tofile="${download.dir}/${eclipselink.src.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
         <copy file="${build.root.dir}/${eclipselink.tst.src.prefix}${eclipselink.zip.suffix}"          tofile="${download.dir}/${eclipselink.tst.src.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
+        <copy file="${build.root.dir}/${eclipselink.tst.jar.prefix}${eclipselink.zip.suffix}"          tofile="${download.dir}/${eclipselink.tst.jar.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
         <copy file="${build.root.dir}/${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}"  tofile="${download.dir}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
         <copy todir="${download.dir}" failonerror="false">
             <fileset  dir="${build.root.dir}">
@@ -696,6 +697,7 @@
                 <include name="${eclipselink.install.prefix}-${version.string}${eclipselink.zip.suffix}"/>
                 <include name="${eclipselink.src.install.prefix}-${version.string}${eclipselink.zip.suffix}"/>
                 <include name="${eclipselink.tst.src.prefix}-${version.string}${eclipselink.zip.suffix}"/>
+                <include name="${eclipselink.tst.jar.prefix}-${version.string}${eclipselink.zip.suffix}"/>
                 <include name="${eclipselink.install.prefix}*${version.qualifier}-shared-lib.zip"/>
                 <!-- copy all test results pages -->
                 <include name="**/eclipselink-*${version.string}.html"/>
