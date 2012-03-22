@@ -633,6 +633,18 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
 
         this.containerPolicy.prepare(this, getSession());
 
+        if (hasJoining() && isExpressionQuery()) {
+            // 1-m join fetching with pagination requires an order by.
+            if (this.joinedAttributeManager.isToManyJoin()
+                    && ((this.maxRows > 0) || (this.firstResult > 0) || this.containerPolicy.isCursorPolicy())) {
+                if (!hasOrderByExpressions()) {
+                    for (DatabaseField primaryKey : this.descriptor.getPrimaryKeyFields()) {
+                        addOrdering(getExpressionBuilder().getField(primaryKey));
+                    }
+                }
+            }
+        }
+
         if (this.containerPolicy.overridesRead()) {
             return;
         }

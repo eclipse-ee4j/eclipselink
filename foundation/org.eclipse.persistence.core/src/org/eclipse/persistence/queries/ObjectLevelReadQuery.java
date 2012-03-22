@@ -1825,7 +1825,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         super.prepare();
         prepareQuery();
         if (hasJoining()) {
-            getJoinedAttributeManager().computeJoiningMappingQueries(session);
+            this.joinedAttributeManager.computeJoiningMappingQueries(session);
         }
         computeBatchReadMappingQueries();
     }

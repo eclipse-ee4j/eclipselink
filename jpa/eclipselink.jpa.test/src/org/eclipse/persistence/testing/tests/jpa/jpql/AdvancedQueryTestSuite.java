@@ -2144,6 +2144,8 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                 fail("Should have been 3 queries but was: " + counter.getSqlStatements().size());
             }
             clearCache();
+            counter.remove();
+            counter = null;
             for (Employee employee : results) {
                 verifyObject(employee);
             }
