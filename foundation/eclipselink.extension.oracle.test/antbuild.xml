@@ -185,6 +185,7 @@
         <available file="${junit.lib}" property="junit.lib.exist"/>
         <available file="${oracle_test.2.common.plugins.dir}/${unsigned.persistence10.jar}" property="persistence.bundle.exist"/>
         <available file="${oracle_test.2.core.test.dir}/${coretest.framework.jar}" property="test.framework.exist"/>
+        <available file="${oracle_test.2.core.test.dir}/${core.test.jar}" property="core.test.models.exist"/>
         <available file="${oracle_test.2.jpa.test.dir}/${jpatest.framework.jar}" property="jpatest.framework.exist"/>
         <!-- Determine availability of runtime dependencies   -->
         <available file="${oracle_test.2.jpa.dir}/${resource.dir}" type="dir" property="jpa.resources.exist"/>
@@ -240,6 +241,7 @@
         <condition property="dependency.ok">
             <and>
                 <isset property="test.framework.exist"/>
+                <isset property="core.test.models.exist"/>
                 <isset property="jpatest.framework.exist"/>
                 <isset property="junit.lib.exist"/>
                 <isset property="oracle.xdb.lib.exist"/>
@@ -300,6 +302,7 @@
         </path>
         <path id="oracle_test.test.infrastructure.path">
             <pathelement path="${oracle_test.2.core.test.dir}/${coretest.framework.jar}"/>
+            <pathelement path="${oracle_test.2.core.test.dir}/${core.test.jar}"/>
             <pathelement path="${oracle_test.2.jpa.test.dir}/${jpatest.framework.jar}"/>
             <pathelement path="${junit.lib}"/>
         </path>
@@ -335,6 +338,7 @@
         <echo message="    Test infrastructure:"/>
         <echo message="        '${junit.lib}' :: found='${junit.lib.exist}'"/>
         <echo message="        '${oracle_test.2.jpa.test.dir}/${jpatest.framework.jar}' :: found='${jpatest.framework.exist}'"/>
+        <echo message="        '${oracle_test.2.core.test.dir}/${core.test.jar}' :: found='${core.test.models.exist}'"/>
         <echo message="        '${oracle_test.2.core.test.dir}/${coretest.framework.jar}' :: found='${test.framework.exist}'"/>
         <echo message="The test framework is currently part of the core.test and jpa.test projects. Be sure they are built."/>
         <echo message="    oracle dependency location: '${oracle.extensions.depend.dir}' :: found='${oracle.depend.dir.exist}'"/>
