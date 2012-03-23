@@ -2488,6 +2488,9 @@ public class AnnotationsProcessor {
                         }
                     }
                     
+                    if(XMLConstants.EMPTY_STRING.equals(url)) {
+                        isDefaultNamespaceAllowed = false;
+                    }
                     if ("##default".equals(url)) {
                         url = namespaceInfo.getNamespace();
                     }
