@@ -699,6 +699,7 @@ public class XMLField extends DatabaseField {
 
     /**
     * INTERNAL:
+    * Called from DOMRecord and XMLReader.  MappingNodeValues call XMLReader which calls this method so that other XMLReader subclasses can override.
     */
     public Object convertValueBasedOnSchemaType(Object value, XMLConversionManager xmlConversionManager, XMLRecord record) {
         if (getSchemaType() != null) { 

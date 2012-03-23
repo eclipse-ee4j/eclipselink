@@ -74,9 +74,8 @@ public class FieldTransformerNodeValue extends NodeValue {
     }
 
     public void attribute(UnmarshalRecord unmarshalRecord, String namespaceURI, String localName, String value) {
-        XMLConversionManager xmlConversionManager = (XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager();
-        Object objectValue = xmlField.convertValueBasedOnSchemaType(value, xmlConversionManager, unmarshalRecord);
-
+        XMLConversionManager xmlConversionManager = (XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager();        
+        Object objectValue = unmarshalRecord.getXMLReader().convertValueBasedOnSchemaType(xmlField, value, xmlConversionManager, unmarshalRecord);
         // PUT VALUE INTO A RECORD KEYED ON XMLFIELD
         if (null == unmarshalRecord.getTransformationRecord()) {
             unmarshalRecord.setTransformationRecord(new XMLTransformationRecord("ROOT", unmarshalRecord));
@@ -100,7 +99,7 @@ public class FieldTransformerNodeValue extends NodeValue {
             Class typeClass = xmlField.getJavaClass(unmarshalRecord.getTypeQName());
             value = xmlConversionManager.convertObject(value, typeClass, unmarshalRecord.getTypeQName());
         } else {
-            value = xmlField.convertValueBasedOnSchemaType(value, xmlConversionManager, unmarshalRecord);
+            value = unmarshalRecord.getXMLReader().convertValueBasedOnSchemaType(xmlField, value, xmlConversionManager, unmarshalRecord);
         }
 
         // PUT VALUE INTO A RECORD KEYED ON XMLFIELD

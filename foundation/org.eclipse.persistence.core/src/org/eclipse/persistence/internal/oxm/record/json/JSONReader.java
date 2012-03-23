@@ -30,11 +30,14 @@ import org.eclipse.persistence.internal.libraries.antlr.runtime.RecognitionExcep
 import org.eclipse.persistence.internal.libraries.antlr.runtime.TokenRewriteStream;
 import org.eclipse.persistence.internal.libraries.antlr.runtime.tree.CommonTree;
 import org.eclipse.persistence.internal.libraries.antlr.runtime.tree.Tree;
+import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.record.SAXUnmarshallerHandler;
 import org.eclipse.persistence.internal.oxm.record.XMLReaderAdapter;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
+import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
+import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -291,6 +294,40 @@ public class JSONReader extends XMLReaderAdapter {
         	returnString += subString;
         }
         return returnString;
+    }
+    
+    /**
+     * INTERNAL:
+     * @since 2.4
+     */
+    public Object convertValueBasedOnSchemaType(XMLField xmlField, Object value, XMLConversionManager xmlConversionManager, XMLRecord record) {
+        if (xmlField.getSchemaType() != null) { 
+        	if(XMLConstants.QNAME_QNAME.equals(xmlField.getSchemaType())){
+        		String stringValue = (String)value;
+        		int indexOpen = stringValue.indexOf('{');
+        		int indexClose = stringValue.indexOf('}');
+        		String uri = null;    
+        		String localName = null;
+        		if(indexOpen > -1 && indexClose > -1){
+        		    uri = stringValue.substring(indexOpen+1, indexClose);
+        		    localName = stringValue.substring(indexClose + 1);
+        		}else{
+        			localName = stringValue;
+        		}
+        		if(uri != null){
+        			return new QName(uri, localName);
+        		}else{
+        			return new QName(localName);
+        		}
+        	}else{
+	            Class fieldType = xmlField.getType();
+	            if (fieldType == null) {
+	                fieldType = xmlField.getJavaClass(xmlField.getSchemaType());
+	            }            
+	            return xmlConversionManager.convertObject(value, fieldType, xmlField.getSchemaType());
+        	}
+        }
+        return value;
     }
 
     private static class JSONAttributes extends IndexedAttributeList {

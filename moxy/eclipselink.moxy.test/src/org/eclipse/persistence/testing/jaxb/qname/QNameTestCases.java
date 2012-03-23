@@ -14,19 +14,15 @@ package org.eclipse.persistence.testing.jaxb.qname;
 
 import javax.xml.namespace.QName;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
-import org.eclipse.persistence.testing.jaxb.inheritance.A;
-import org.eclipse.persistence.testing.jaxb.inheritance.B;
-import org.eclipse.persistence.testing.jaxb.inheritance.C;
-import org.eclipse.persistence.testing.jaxb.inheritance.D;
-import org.eclipse.persistence.testing.jaxb.inheritance.E;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class QNameTestCases extends JAXBTestCases {
+public class QNameTestCases extends JAXBWithJSONTestCases {
 
     public QNameTestCases(String name) throws Exception {
         super(name);
         setClasses(new Class[] { Root.class });
         setControlDocument("org/eclipse/persistence/testing/jaxb/qname/qname.xml");
+        setControlJSON("org/eclipse/persistence/testing/jaxb/qname/qname.json");
     }
 
     @Override

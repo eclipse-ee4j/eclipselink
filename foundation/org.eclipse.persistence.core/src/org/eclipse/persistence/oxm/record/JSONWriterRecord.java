@@ -579,6 +579,15 @@ public class JSONWriterRecord extends MarshalRecord {
             throw XMLMarshalException.marshalException(e);
         }
     }
+    
+    protected String getStringForQName(QName qName){
+        if(null == qName) {
+            return null;
+        }
+        XMLConversionManager xmlConversionManager = (XMLConversionManager) getSession().getDatasourcePlatform().getConversionManager();
+
+        return (String) xmlConversionManager.convertObject(qName, String.class);       
+    }
 
     /**
      * Receive notification of a node.

@@ -27,9 +27,12 @@ import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.ext.LexicalHandler;
 import javax.xml.validation.ValidatorHandler;
 
+import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.XMLConstants;
+import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
+import org.eclipse.persistence.oxm.record.XMLRecord;
 
 /**
  * INTERNAL:
@@ -96,6 +99,15 @@ public class XMLReader implements org.xml.sax.XMLReader {
      */
     public char getNamespaceSeparator(){
     	return namespaceSeparator;
+    }
+    
+    
+    /**
+     * INTERNAL:
+     * @since 2.4
+     */
+    public Object convertValueBasedOnSchemaType(XMLField xmlField, Object value, XMLConversionManager xmlConversionManager, XMLRecord record) {
+    	return xmlField.convertValueBasedOnSchemaType(value, xmlConversionManager, record);    	
     }
 
     public DTDHandler getDTDHandler () {

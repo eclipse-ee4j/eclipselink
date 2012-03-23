@@ -265,7 +265,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
             Class typeClass = xmlField.getJavaClass(unmarshalRecord.getTypeQName());
             value = xmlConversionManager.convertObject(value, typeClass, unmarshalRecord.getTypeQName());
         } else {
-            value = xmlField.convertValueBasedOnSchemaType(value, xmlConversionManager, unmarshalRecord);
+            value = unmarshalRecord.getXMLReader().convertValueBasedOnSchemaType(xmlField, value, xmlConversionManager, unmarshalRecord);
         }       
 
         if (xmlCompositeDirectCollectionMapping.hasValueConverter()) {

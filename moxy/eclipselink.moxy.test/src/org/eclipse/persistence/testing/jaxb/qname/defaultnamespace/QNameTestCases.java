@@ -16,14 +16,15 @@ import java.util.ArrayList;
 
 import javax.xml.namespace.QName;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class QNameTestCases extends JAXBTestCases {
+public class QNameTestCases extends JAXBWithJSONTestCases {
 
     public QNameTestCases(String name) throws Exception {
         super(name);
         setClasses(new Class[] { Root.class });
         setControlDocument("org/eclipse/persistence/testing/jaxb/qname/defaultnamespace/qname.xml");
+        setControlJSON("org/eclipse/persistence/testing/jaxb/qname/defaultnamespace/qname.json");
     }
 
     @Override

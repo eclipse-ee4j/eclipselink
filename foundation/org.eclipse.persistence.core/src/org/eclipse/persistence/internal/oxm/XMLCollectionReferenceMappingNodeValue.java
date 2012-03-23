@@ -81,7 +81,8 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
      */
     public void attribute(UnmarshalRecord unmarshalRecord, String namespaceURI, String localName, String value) {
         if (value != null) {
-            Object realValue = xmlField.convertValueBasedOnSchemaType(value, (XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager(),unmarshalRecord);
+            Object realValue = unmarshalRecord.getXMLReader().convertValueBasedOnSchemaType(xmlField, value, (XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager(), unmarshalRecord);
+
             // build a reference which will be resolved after unmarshalling is complete
             xmlCollectionReferenceMapping.buildReference(unmarshalRecord, xmlField, realValue, unmarshalRecord.getSession());
         }
@@ -110,8 +111,8 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
         if (unmarshalRecord.getTypeQName() != null) {
             Class typeClass = xmlField.getJavaClass(unmarshalRecord.getTypeQName());
             value = xmlConversionManager.convertObject(value, typeClass, unmarshalRecord.getTypeQName());
-        } else {
-            value = xmlField.convertValueBasedOnSchemaType(value, xmlConversionManager, unmarshalRecord);
+        } else {            
+            value = unmarshalRecord.getXMLReader().convertValueBasedOnSchemaType(xmlField, value, xmlConversionManager, unmarshalRecord);
         }
 
         // build a reference which will be resolved after unmarshalling is complete
