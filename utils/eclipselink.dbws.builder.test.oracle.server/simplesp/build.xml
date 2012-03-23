@@ -1,0 +1,114 @@
+<?xml version="1.0"?>
+<!--
+  XML formatting conventions:
+    http://otn.oracle.com/products/jdev/tips/duff/teamxml.html
+
+  Ant naming conventions:
+    - regardless of the actual OS platform,'/' is the directory separator
+      (Ant will convert as appropriate).
+    - properties have periods '.', tasks have hyphens '-'.
+    - OS environment variables are in ALLCAPS and have 'env' as a prefix
+      e.g. ${env.XXX}.
+    - Ant properties are lower case.
+    - xxx.home = root of a product or component's installation.
+    - xxx.dir = root of a directory structure.
+    - xxx.jlib.dir = a directory that contains jars, also known
+      as "java libraries".
+    - xxx.jlib = comma-separated list of jars.
+    - tasks with the word 'compile' in them (obviously!) compile
+      Java source to the staging directory.
+    - tasks with the word 'build' in them extract from the staging
+      directory Java class files (and other runtime artifacts such
+      as MANIFEST.MF files, deployment XML files, etc) using a variety
+      of inclusion and/or exclusion patterns in order to create
+      a Java archive of some sort: jar, war, ear.
+-->
+<project
+  name="simplesp"
+  default="build"
+  >
+  <property
+    name="config.dir"
+    value="${basedir}/config"
+  />
+  <import
+    file="${config.dir}/fixed.xml"
+  />
+
+  <target
+    name="init"
+    >
+    <delete-dir-quietly dir="${stage.dir}"/>
+    <mkdir dir="${stage.dir}"/>
+    <!-- replace filter tokens in DBWS builder file -->
+    <copy
+      todir="${stage.dir}"
+      overwrite="true"
+      >
+      <fileset
+        dir="${config.dir}"
+        includes="${dbws.builder.file}"
+      />
+      <filterset
+        refid="tokens"
+      />
+    </copy>
+  </target>
+
+  <target
+    name="reset-database"
+    depends="init"
+    >
+    <sql
+      onerror="continue"
+      driver="${db.driver}"
+      url="${db.url}"
+      userid="${db.user}"
+      password="${db.pwd}"
+      classpathref="db.path"
+      delimiter="|"
+      src="${config.dir}/setup.sql"
+    />
+  </target>
+
+  <target
+    name="build"
+    depends="init"
+    >
+    <java
+      classname="org.eclipse.persistence.tools.dbws.DBWSBuilder"
+      fork="true"
+      classpathRef="project.path"
+      >
+      <arg line="-builderFile ${stage.dir}/${dbws.builder.file} -stageDir ${stage.dir} -packageAs ${server.platform} ${ant.project.name}.war"/>
+    </java>
+  </target>
+
+  <target
+    name="run-client"
+    >
+    <javac
+      fork="true"
+      memoryMaximumSize="256m"
+      srcdir="${src.dir}"
+      destdir="${stage.dir}"
+      includes="**/*.java"
+      debug="true"
+      debuglevel="lines,vars,source"
+      failonerror="true"
+      classpathref="project.path"
+    />
+    <java
+      classname="test.Client"
+      fork="true"
+      >
+      <classpath>
+        <pathelement location="${stage.dir}"/>
+        <path refid="project.path"/>
+      </classpath>
+      <arg line="${server.host} ${server.port}"/>
+    </java>
+
+  </target>
+
+</project>
