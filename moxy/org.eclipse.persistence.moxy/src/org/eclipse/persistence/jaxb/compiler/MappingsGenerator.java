@@ -229,20 +229,22 @@ public class MappingsGenerator {
         }
         
         JavaClass manyValueJavaClass = helper.getJavaClass(ManyValue.class);
-        if(!manyValueJavaClass.isAssignableFrom(javaClass)){
-        if (rootElem == null) {
-            descriptor.setDefaultRootElement("");
-        } else {
-            if (namespace.length() == 0) {
-                descriptor.setDefaultRootElement(elementName);
+        if (!manyValueJavaClass.isAssignableFrom(javaClass)){
+            if(namespace.length() != 0) {
+                if(isDefaultNamespaceAllowed && globalNamespaceResolver.getDefaultNamespaceURI() == null && namespace.length() != 0) {
+                    globalNamespaceResolver.setDefaultNamespaceURI(namespace);
+                    namespaceInfo.getNamespaceResolverForDescriptor().setDefaultNamespaceURI(namespace);
+                }
+            }
+            if (rootElem == null) {
+                descriptor.setDefaultRootElement("");
             } else {
-            	if(isDefaultNamespaceAllowed && globalNamespaceResolver.getDefaultNamespaceURI() == null){
-            		globalNamespaceResolver.setDefaultNamespaceURI(namespace);
-            	    namespaceInfo.getNamespaceResolverForDescriptor().setDefaultNamespaceURI(namespace);
-            	}
-                descriptor.setDefaultRootElement(getQualifiedString(getPrefixForNamespace(namespace, namespaceInfo.getNamespaceResolverForDescriptor(), null), elementName));
-	        }
-        }
+                if (namespace.length() == 0) {
+                    descriptor.setDefaultRootElement(elementName);
+                } else {
+                    descriptor.setDefaultRootElement(getQualifiedString(getPrefixForNamespace(namespace, namespaceInfo.getNamespaceResolverForDescriptor(), null), elementName));
+    	        }
+            }
         }
         
         descriptor.setNamespaceResolver(namespaceInfo.getNamespaceResolverForDescriptor());

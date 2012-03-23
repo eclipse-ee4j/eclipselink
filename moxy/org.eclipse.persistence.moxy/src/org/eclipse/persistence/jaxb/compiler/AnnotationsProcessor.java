@@ -2196,6 +2196,9 @@ public class AnnotationsProcessor {
                     XmlElementDecl elementDecl = (XmlElementDecl) helper.getAnnotation(next, XmlElementDecl.class);
                     String url = elementDecl.namespace();
                     Class scopeClass = elementDecl.scope(); 
+                    if(XMLConstants.EMPTY_STRING.equals(url)) {
+                        isDefaultNamespaceAllowed = false;
+                    }
                     if ("##default".equals(url)) {
                         url = namespaceInfo.getNamespace();
                     }
