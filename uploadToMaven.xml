@@ -44,7 +44,7 @@
     <!-- The following properties defined so they can be overridden for testing -->
     <property name="mavenant.dir" value="${build.deps.dir}/mavenant"/>
     <property name="eclipselink.root.download.dir" value="home/data/httpd/download.eclipse.org/rt/eclipselink"/>
-    
+
     <path id="maven-ant-tasks.classpath" path="${mavenant.dir}/maven-ant-tasks-2.0.8.jar" />
     <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant"
              classpathref="maven-ant-tasks.classpath" />
@@ -95,6 +95,9 @@
         <property name="oracleddl.prefix"   value="org.eclipse.persistence.oracleddlparser"/>
         <property name="oracleddl.criteria" value="[1.0.0,9.0.0)"/>
         <property name="oracleddl.name"     value="EclipseLink OracleDDL Parser"/>
+        <property name="hermes.prefix"      value="org.eclipse.persistence.jpa.jpql"/>
+        <property name="hermes.criteria"    value="[1.0.0,9.0.0)"/>
+        <property name="hermes.name"        value="EclipseLink Hermes JPQL Parser"/>
 
         <selectbundle basename="${jpaapi2.prefix}"  directory="${maven.2.jpa.plugins.dir}"
                      criterion="${jpaapi2.criteria}" property="jpaapi2.version" versiononly="true"
@@ -111,12 +114,16 @@
         <selectbundle basename="${oracleddl.prefix}"  directory="${maven.2.util.plugins.dir}"
                      criterion="${oracleddl.criteria}" property="oracleddl.version" versiononly="true"
         />
-        
+        <selectbundle basename="${hermes.prefix}"  directory="${maven.2.common.plugins.dir}"
+                     criterion="${hermes.criteria}" property="hermes.version" versiononly="true"
+        />
+
         <echo message="jpaapi2.version   = ${jpaapi2.version}"/>
         <echo message="sdoapi.version    = ${sdoapi.version}"/>
         <echo message="antlr.version     = ${antlr.version}"/>
         <echo message="asm.version       = ${asm.version}"/>
         <echo message="oracleddl.version = ${oracleddl.version}"/>
+        <echo message="hermes.version    = ${hermes.version}"/>
     </target>
 
     <target name="upload-maven-init" depends="discover-static-built-info">
@@ -124,7 +131,7 @@
         <tstamp>
             <format property="build.date" pattern="yyyyMMdd"/>
         </tstamp>
- 
+
         <fail message="Cannot upload to Maven without a release.version defined!" unless="release.version"/>
         <fail message="Cannot upload to Maven without a build.date defined!"      unless="build.date"/>
         <fail message="Cannot upload to Maven without a build.type defined!"      unless="build.type"/>
@@ -184,9 +191,12 @@
         <!-- These use above, in order, to define a single library for an artifact dependency -->
         <property name="dep.antlr"         value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.antlr${dep.ver}${antlr.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.asm"           value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.asm${dep.ver}${asm.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
+        <property name="dep.hermes"        value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.jpa.jpql${dep.ver}${hermes.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.dbws"          value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.dbws${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.core"          value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.core${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
+        <property name="dep.core.parser"   value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.core.jpql${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.oracle"        value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.oracle${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
+        <property name="dep.nosql"         value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.nosql${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.jpa"           value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.jpa${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.jpa.equinox"   value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.equinox${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.jpa.modelgen"  value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.jpa.modelgen${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
@@ -207,7 +217,8 @@
         <!--   canonical modelgen processor during compilation. It has no real dependencies, nor is anything really       -->
         <!--   dependant upon it, but it is needed for this compiler functionality to work. (think of it as a compiler    -->
         <!--   add-on). It will need to be downloaded independently for this feature (modelgen) to work.                  -->
-        <property name="core.dependencies"     value="${deps.head}${dep.asm}${dep.antlr}${deps.foot}"/>
+        <property name="jpql.dependencies"     value="${deps.head}${dep.hermes}${deps.foot}"/>
+        <property name="core.dependencies"     value="${deps.head}${dep.asm}${dep.antlr}${dep.hermes}${dep.core.parser}${deps.foot}"/>
         <property name="oracle.dependencies"   value="${deps.head}${dep.asm}${dep.core}${deps.foot}"/>
         <property name="jpa.dependencies"      value="${deps.head}${dep.asm}${dep.core}${deps.foot}"/>
         <property name="modelgen.dependencies" value="${deps.head}${dep.core}${dep.jpa}${dep.jpa.processor}${deps.foot}"/>
@@ -284,6 +295,15 @@
         </antcall>
         <antcall target="upload-artifact">
             <param name="groupId" value="org.eclipse.persistence"/>
+            <param name="artifactId" value="org.eclipse.persistence.jpa.jpql"/>
+            <param name="artifactVersion" value="${maven.version}"/>
+            <param name="artifact" value="${maven.2.common.plugins.dir}/org.eclipse.persistence.jpa.jpql_${hermes.version}.jar"/>
+            <param name="artifactSrc" value="${maven.2.common.plugins.dir}/org.eclipse.persistence.jpa.jpql.source_${hermes.version}.jar"/>
+            <param name="artifactName" value="${hermes.name}"/>
+            <param name="dependencies" value=""/>
+        </antcall>
+        <antcall target="upload-artifact">
+            <param name="groupId" value="org.eclipse.persistence"/>
             <param name="artifactId" value="org.eclipse.persistence.core"/>
             <param name="artifactVersion" value="${maven.version}"/>
             <param name="artifact" value="${maven.2.common.plugins.dir}/${eclipselink.core.bndl.prefix}_${version.string}.jar"/>
@@ -293,11 +313,29 @@
         </antcall>
         <antcall target="upload-artifact">
             <param name="groupId" value="org.eclipse.persistence"/>
+            <param name="artifactId" value="org.eclipse.persistence.core.jpql"/>
+            <param name="artifactVersion" value="${maven.version}"/>
+            <param name="artifact" value="${maven.2.common.plugins.dir}/org.eclipse.persistence.core.jpql_${version.string}.jar"/>
+            <param name="artifactSrc" value="${maven.2.common.plugins.dir}/org.eclipse.persistence.core.jpql.source_${version.string}.jar"/>
+            <param name="artifactName" value="EclipseLink Hermes JPQL Extensions"/>
+            <param name="dependencies" value="${jpql.dependencies}"/>
+        </antcall>
+        <antcall target="upload-artifact">
+            <param name="groupId" value="org.eclipse.persistence"/>
             <param name="artifactId" value="org.eclipse.persistence.oracle"/>
             <param name="artifactVersion" value="${maven.version}"/>
             <param name="artifact" value="${maven.2.common.plugins.dir}/${eclipselink.oracle.bndl.prefix}_${version.string}.jar"/>
             <param name="artifactSrc" value="${maven.2.common.plugins.dir}/${eclipselink.oracle.bndl.prefix}.source_${version.string}.jar"/>
             <param name="artifactName" value="EclipseLink Oracle Extensions"/>
+            <param name="dependencies" value="${oracle.dependencies}"/>
+        </antcall>
+        <antcall target="upload-artifact">
+            <param name="groupId" value="org.eclipse.persistence"/>
+            <param name="artifactId" value="org.eclipse.persistence.nosql"/>
+            <param name="artifactVersion" value="${maven.version}"/>
+            <param name="artifact" value="${maven.2.common.plugins.dir}/org.eclipse.persistence.nosql_${version.string}.jar"/>
+            <param name="artifactSrc" value="${maven.2.common.plugins.dir}/org.eclipse.persistence.nosql.source_${version.string}.jar"/>
+            <param name="artifactName" value="EclipseLink NoSQL database Extensions"/>
             <param name="dependencies" value="${oracle.dependencies}"/>
         </antcall>
         <antcall target="upload-artifact">
