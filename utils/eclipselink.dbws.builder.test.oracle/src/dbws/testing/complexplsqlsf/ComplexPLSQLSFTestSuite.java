@@ -410,13 +410,11 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
                   "name=\"TableToVArrayTest\" " +
                   "catalogPattern=\"COMPLEXPKG2\" " +
                   "procedurePattern=\"TABLETOVARRAY\" " +
-                  "returnType=\"varchar2arrayType\" " +
               "/>" +
               "<plsql-procedure " +
                   "name=\"TablesToVArrayTest\" " +
                   "catalogPattern=\"COMPLEXPKG2\" " +
                   "procedurePattern=\"TABLESTOVARRAY\" " +
-                  "returnType=\"varchar2arrayType\" " +
               "/>" +
               "<plsql-procedure " +
                   "name=\"VArrayToTableTest\" " +
@@ -442,19 +440,16 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
                   "name=\"TableToPhoneTest\" " +
                   "catalogPattern=\"COMPLEXPKG2\" " +
                   "procedurePattern=\"TABLETOPHONE\" " +
-                  "returnType=\"a_phone2_typeType\" " +
               "/>" +
               "<plsql-procedure " +
                   "name=\"TableAndVArrayToPhoneTest\" " +
                   "catalogPattern=\"COMPLEXPKG2\" " +
                   "procedurePattern=\"TABLEANDVARRAYTOPHONE\" " +
-                  "returnType=\"a_phone2_typeType\" " +
               "/>" +
               "<plsql-procedure " +
                   "name=\"TableAndVArrayToVArrayTest\" " +
                   "catalogPattern=\"COMPLEXPKG2\" " +
                   "procedurePattern=\"TABLEANDVARRAYTOVARRAY\" " +
-                  "returnType=\"varchar2arrayType\" " +
               "/>" +
               "<plsql-procedure " +
                   "name=\"TableAndVArrayToTableTest\" " +
@@ -465,13 +460,11 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
 	              "name=\"RecordToVArrayTest\" " +
 	              "catalogPattern=\"COMPLEXPKG2\" " +
 	              "procedurePattern=\"RECORDTOVARRAY\" " +
-                  "returnType=\"varchar2arrayType\" " +
 	          "/>" +
 	          "<plsql-procedure " +
 	              "name=\"RecordToPhoneTest\" " +
 	              "catalogPattern=\"COMPLEXPKG2\" " +
 	              "procedurePattern=\"RECORDTOPHONE\" " +
-                  "returnType=\"a_phone2_typeType\" " +
 	          "/>" +
               "<plsql-procedure " +
 	              "name=\"VArrayToRecordTest\" " +
@@ -487,7 +480,6 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
 	              "name=\"PLSQLToPhoneTypeTableTest\" " +
 	              "catalogPattern=\"COMPLEXPKG2\" " +
 	              "procedurePattern=\"PLSQLTOPHONETYPETABLE\" " +
-	              "returnType=\"a_phone2_type_tableType\" " +
 	          "/>" +
 	          "<plsql-procedure " +
 	              "name=\"PhoneTypeTableToPLSQLTest\" " +
@@ -498,7 +490,6 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
 		          "name=\"CreateCustomerTest\" " +
 		          "catalogPattern=\"COMPLEXPKG2\" " +
 		          "procedurePattern=\"CREATECUSTOMER\" " +
-	              "returnType=\"a_customer2_typeType\" " +
 		      "/>" +
               "<plsql-procedure " +
 		          "name=\"CreateComplexRecordTest\" " +
@@ -509,7 +500,6 @@ public class ComplexPLSQLSFTestSuite extends DBWSTestSuite {
 		          "name=\"CreatePhoneTypeVArrayTest\" " +
 		          "catalogPattern=\"COMPLEXPKG2\" " +
 		          "procedurePattern=\"CREATE_PHONETYPEVARRAY\" " +
-		          "returnType=\"a_phone2_type_varrayType\" " +
 		      "/>" +
               "<plsql-procedure " +
 		          "name=\"CreateMoreComplexRecordTest\" " +

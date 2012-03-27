@@ -427,8 +427,8 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             switch (rargJdbcType) {
                 case OTHER:
                     // if user overrides returnType, assume they're right
-                    if (returnType == null) {
-                        returnType = rarg.getTypeName();
+                    if (returnType == null || returnType.length() == 0) {
+                        returnType = rargDataType.getTypeName();
                     }
                     String packageName = storedProcedure.getCatalogName();
                     String returnTypeName = (packageName != null && packageName.length() > 0) ?
@@ -438,12 +438,10 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                 case STRUCT:
                 case ARRAY:
                     // if user overrides returnType, assume they're right
-                    if (returnType != null) {
-                        result.setType(buildCustomQName(returnType, dbwsBuilder));
+                    if (returnType == null || returnType.length() == 0) {
+                        returnType = rargDataType.getTypeName().toLowerCase().concat(TYPE_STR);
                     }
-                    else {
-                        result.setType(ANY_QNAME);
-                    }
+                    result.setType(buildCustomQName(returnType, dbwsBuilder));
                     break;
                 default :
                     // scalar types
