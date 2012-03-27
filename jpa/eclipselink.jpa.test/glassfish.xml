@@ -59,26 +59,14 @@
         <os family="Windows"/>
     </condition>
 
-    <condition property="is.v3.original">
-        <and>
-            <contains string="${server.version}" substring="original"/>
-            <contains string="${server.version}" substring="3"/>
-        </and>
+    <condition property="is.v2">
+        <equals arg1="${server.version}" arg2="2" trim="true"/>
     </condition>
 
-    <condition property="is.v3.revised">
-        <and>
-            <not>
-                <contains string="${server.version}" substring="original"/>
-            </not>
-            <contains string="${server.version}" substring="3"/>
-        </and>
-    </condition>
-
-    <condition property="is.v3">
+    <condition property="is.revised">
         <or>
-            <isset property="is.v3.original"/>
-            <isset property="is.v3.revised"/>
+            <equals arg1="${server.version}" arg2="4" trim="true"/>
+            <contains string="${server.version}" substring="3"/>
         </or>
     </condition>
 
@@ -118,11 +106,11 @@
         <antcall target="copy-eclipselink-and-persistence-latest-jars-to-glassfish3" inheritRefs="true"/>
     </target>
 
-    <target name="copy-eclipselink-to-glassfish2" unless="is.v3">
+    <target name="copy-eclipselink-to-glassfish2" if="is.v2">
         <copy file="${eclipselink.lib}" todir="${glassfish.home}/domains/domain1/lib"/>
     </target>
 
-    <target name="copy-eclipselink-and-persistence-latest-jars-to-glassfish3" if="is.v3.revised">
+    <target name="copy-eclipselink-and-persistence-latest-jars-to-glassfish3" if="is.revised">
         <delete>
             <fileset dir="${glassfish.home}/modules">
                 <include name="javax.persistence*.jar"/>
