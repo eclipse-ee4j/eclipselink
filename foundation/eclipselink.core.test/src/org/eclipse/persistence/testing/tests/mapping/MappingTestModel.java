@@ -167,6 +167,8 @@ public class MappingTestModel extends TestModel {
         suite.addTest(new ReadAllTest(Employee.class, 6));
         suite.addTest(new ReadAllTest(Shipment.class, 8));
         suite.addTest(new ReadAllTest(Computer.class, 6));
+        // EL Bug 375463
+        suite.addTest(new ObjectTypeMappingBooleanToCharTest());
 
         return suite;
     }

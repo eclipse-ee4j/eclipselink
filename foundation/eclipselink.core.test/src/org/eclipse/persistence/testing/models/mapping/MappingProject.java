@@ -51,6 +51,7 @@ public class MappingProject extends Project {
         buildShipmentDescriptor();
         buildSecureSystemDescriptor();
         buildIdentificationDescriptor();
+        buildPeripheralDescriptor();
     }
 
     protected void buildAddressDescriptor() {
@@ -787,6 +788,45 @@ public class MappingProject extends Project {
         manytomanymapping.addTargetRelationKeyFieldName("MAP_EMSP.EMP_LNAME", "MAP_EMP.LNAME");
         manytomanymapping.addTargetRelationKeyFieldName("MAP_EMSP.EMP_FNAME", "MAP_EMP.FNAME");
         descriptor.addMapping(manytomanymapping);
+        addDescriptor(descriptor);
+    }
+    
+    public void buildPeripheralDescriptor() {
+        RelationalDescriptor descriptor = new RelationalDescriptor();
+        descriptor.setJavaClass(Peripheral.class);
+        descriptor.addTableName("MAP_PERIPHERAL");
+        descriptor.addPrimaryKeyFieldName("MAP_PERIPHERAL.ID");
+        
+        // ClassDescriptor Properties.
+        descriptor.setAlias("Peripheral");
+        descriptor.setAmendmentClass(Peripheral.class);
+        descriptor.setAmendmentMethodName("addToDescriptor");
+        
+        // Query Manager.
+        descriptor.getQueryManager().checkCacheForDoesExist();
+
+        // Mappings.
+        DirectToFieldMapping validMapping = new DirectToFieldMapping();
+        validMapping.setAttributeName("valid");
+        validMapping.setFieldName("MAP_PERIPHERAL.VALID");
+        ObjectTypeConverter validMappingConverter = new ObjectTypeConverter();
+        validMappingConverter.addConversionValue(new Character('N'), new java.lang.Boolean("false"));
+        validMappingConverter.addConversionValue(new Character('Y'), new java.lang.Boolean("true"));
+        validMapping.setConverter(validMappingConverter);
+        descriptor.addMapping(validMapping);
+        
+        DirectToFieldMapping idMapping = new DirectToFieldMapping();
+        idMapping.setAttributeName("id");
+        idMapping.setFieldName("MAP_PERIPHERAL.ID");
+        descriptor.addMapping(idMapping);
+        
+        DirectToFieldMapping nameMapping = new DirectToFieldMapping();
+        nameMapping.setAttributeName("name");
+        nameMapping.setFieldName("MAP_PERIPHERAL.NAME");
+        descriptor.addMapping(nameMapping);
+        
+        descriptor.applyAmendmentMethod();
+        
         addDescriptor(descriptor);
     }
 }
