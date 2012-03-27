@@ -120,6 +120,7 @@ public class MappingSystem extends TestSystem {
             schemaManager.replaceObject(Address.tableDefinition());
             schemaManager.replaceObject(Monitor.tableDefinition());
             schemaManager.replaceObject(Hardware.tableDefinition());
+            schemaManager.replaceObject(Peripheral.tableDefinition());
             schemaManager.replaceObject(SecureSystem.tableDefinition());
             schemaManager.replaceObject(Identification.tableDefinition());
             schemaManager.createSequences();

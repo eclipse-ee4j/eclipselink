@@ -287,6 +287,7 @@ public class CommitOrderTest extends TestCase {
         sb.append("org.eclipse.persistence.testing.models.mapping.Keyboard" + cr);
         sb.append("org.eclipse.persistence.testing.models.mapping.Joystick" + cr);
         sb.append("org.eclipse.persistence.testing.models.mapping.Key" + cr);
+        sb.append("org.eclipse.persistence.testing.models.mapping.Peripheral" + cr);
         sb.append("org.eclipse.persistence.testing.models.mapping.Phone" + cr);
         sb.append("org.eclipse.persistence.testing.models.mapping.SecureSystem" + cr);
         sb.append("org.eclipse.persistence.testing.models.mapping.Shipment" + cr);

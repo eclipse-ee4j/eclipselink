@@ -9,8 +9,6 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     11/19/2010-2.2 Michael O'Brien 
- *       - 304512: Do not rebuild the base for constant expressions in rebuildOn() 
  ******************************************************************************/  
 package org.eclipse.persistence.internal.expressions;
 
@@ -169,15 +167,8 @@ public class ConstantExpression extends Expression {
      * return the root of the new tree
      */
     public Expression rebuildOn(Expression newBase) {
-        /**
-         * 304512: For constant expressions we do not modify the localBase on the clone,
-         * we just return the clone in this case.
-         * Normally we rebuild on the newBase and set this to the localBase of the clone
-         * before returning it if this were not a constant expression
-         */
         Expression result = (ConstantExpression)clone();
-        // We still want to set the localBase or we will get a conforming exception
-        result.setLocalBase(newBase);
+        result.setLocalBase(getLocalBase().rebuildOn(newBase));
         return result;
     }
 
