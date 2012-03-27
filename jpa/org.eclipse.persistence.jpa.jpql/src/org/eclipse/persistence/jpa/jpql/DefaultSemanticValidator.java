@@ -1445,9 +1445,9 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
 		protected boolean valid;
 
 		/**
-		 * Determines whether the given {@link IType} is the expected type.
+		 * Determines whether the given type is the expected type.
 		 *
-		 * @param type The {@link IType} to validate
+		 * @param type The type to validate
 		 * @return <code>true</code> if the given type is of the expected type; <code>false</code> if
 		 * it's not the right type
 		 */

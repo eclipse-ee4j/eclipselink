@@ -282,11 +282,7 @@ public final class ConstructorExpression extends AbstractExpression {
 		}
 
 		// Parse the constructor items
-		constructorItems = parse(
-			wordParser,
-			getQueryBNF(ConstructorItemBNF.ID),
-			tolerant
-		);
+		constructorItems = parse(wordParser, ConstructorItemBNF.ID, tolerant);
 
 		if (hasConstructorItems()) {
 			count = wordParser.skipLeadingWhitespace();

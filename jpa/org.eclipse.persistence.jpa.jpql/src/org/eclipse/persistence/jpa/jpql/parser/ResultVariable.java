@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -219,11 +219,7 @@ public final class ResultVariable extends AbstractExpression {
 
 		// Parse the result variable
 		if (tolerant) {
-			resultVariable = parse(
-				wordParser,
-				getQueryBNF(IdentificationVariableBNF.ID),
-				tolerant
-			);
+			resultVariable = parse(wordParser, IdentificationVariableBNF.ID, tolerant);
 		}
 		else {
 			resultVariable = new IdentificationVariable(this, wordParser.word());

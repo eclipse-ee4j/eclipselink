@@ -280,12 +280,10 @@ public final class CollectionExpression extends AbstractExpression {
 	/**
 	 * Returns a string representation of this {@link Expression} and its children. The expression
 	 * should contain whitespace even if the beautified version would not have any. For instance,
-	 * "SELECT e " should be returned where {@link Expression#toText()} would return "SELECT e".
+	 * "SELECT e " should be returned where {@link Expression#toParsedText()} would return "SELECT e".
 	 *
 	 * @param endIndex The index used to determine when to create the string representation, which
 	 * is exclusive
-	 * @param writer The buffer used to append this {@link CollectionExpression}'s string
-	 * representation
 	 * @return The string representation of this {@link Expression}
 	 */
 	public String toActualText(int endIndex) {
@@ -299,8 +297,6 @@ public final class CollectionExpression extends AbstractExpression {
 	 *
 	 * @param endIndex The index used to determine when to create the string representation, which
 	 * is exclusive
-	 * @param writer The buffer used to append this {@link CollectionExpression}'s string
-	 * representation
 	 * @return The string representation of this {@link Expression}
 	 */
 	public String toParsedText(int endIndex) {

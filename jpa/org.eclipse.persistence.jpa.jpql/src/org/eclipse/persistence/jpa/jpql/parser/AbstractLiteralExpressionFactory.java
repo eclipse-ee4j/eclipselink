@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -13,7 +13,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.parser;
 
-import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.WordParser;
 
 /**
@@ -69,28 +68,28 @@ public abstract class AbstractLiteralExpressionFactory extends ExpressionFactory
 	                                             AbstractExpression expression,
 	                                             boolean tolerant) {
 
+		switch (wordParser.getWordType()) {
+
+			case NUMERIC_LITERAL: {
+				expression = new NumericLiteral(parent, word);
+				expression.parse(wordParser, tolerant);
+				return expression;
+			}
+
+			case STRING_LITERAL: {
+				expression = new StringLiteral(parent, word);
+				expression.parse(wordParser, tolerant);
+				return expression;
+			}
+
+			case INPUT_PARAMETER: {
+				expression = new InputParameter(parent, word);
+				expression.parse(wordParser, tolerant);
+				return expression;
+			}
+		}
+
 		char character = word.charAt(0);
-
-		// StringLiteral
-		if (ExpressionTools.isQuote(character)) {
-			expression = new StringLiteral(parent);
-			expression.parse(wordParser, tolerant);
-			return expression;
-		}
-
-		// InputParameter
-		if (ExpressionTools.isParameter(character)) {
-			expression = new InputParameter(parent, word);
-			expression.parse(wordParser, tolerant);
-			return expression;
-		}
-
-		// NumericLiteral
-		if (wordParser.startsWithDigit() == Boolean.TRUE) {
-			expression = new NumericLiteral(parent, word);
-			expression.parse(wordParser, tolerant);
-			return expression;
-		}
 
 		// StateFieldPathExpression
 		if (word.indexOf(AbstractExpression.DOT) > -1) {

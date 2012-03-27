@@ -15,12 +15,8 @@ package org.eclipse.persistence.jpa.jpql;
 
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_4;
-import org.eclipse.persistence.jpa.jpql.parser.Expression;
-import org.eclipse.persistence.jpa.jpql.parser.FunctionExpression;
-import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariableBNF;
 import org.eclipse.persistence.jpa.jpql.parser.InputParameter;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
-import org.eclipse.persistence.jpa.jpql.parser.SingleValuedObjectPathExpressionBNF;
 
 /**
  * This validator adds EclipseLink extension over what the JPA functional specification had defined.
@@ -57,50 +53,6 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
 	@Deprecated
 	public EclipseLinkGrammarValidator(JPQLQueryContext queryContext) {
 		super(queryContext.getGrammar());
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected AbstractSingleEncapsulatedExpressionHelper<FunctionExpression> buildFunctionExpressionHelper() {
-		// TODO: Clean up, create an abstract validate method in the superclass
-		final AbstractSingleEncapsulatedExpressionHelper<FunctionExpression> defaultHelper = super.buildFunctionExpressionHelper();
-		return new AbstractSingleEncapsulatedExpressionHelper<FunctionExpression>() {
-			@Override
-			protected String expressionInvalidKey() {
-				return defaultHelper.expressionInvalidKey();
-			}
-			@Override
-			protected String expressionMissingKey() {
-				return defaultHelper.expressionMissingKey();
-			}
-			@Override
-			protected boolean hasExpression(FunctionExpression expression) {
-				return defaultHelper.hasExpression(expression);
-			}
-			@Override
-			protected boolean isValidExpression(FunctionExpression expression) {
-				// A COLUMN function accepts only one argument
-				if (expression.getIdentifier() == Expression.COLUMN) {
-					// Only a single expression is allowed
-					Expression children = expression.getExpression();
-					return expression.hasExpression() &&
-					       getChildren(children).size() == 1 &&
-					       // TODO: Temporary to check for IdentificationVariableBNF.ID
-					       (isValid(children, SingleValuedObjectPathExpressionBNF.ID) ||
-					        isValid(children, IdentificationVariableBNF.ID));
-				}
-				// Any other function accepts zero to many arguments
-				return defaultHelper.isValidExpression(expression);
-			}
-			public String leftParenthesisMissingKey() {
-				return defaultHelper.leftParenthesisMissingKey();
-			}
-			public String rightParenthesisMissingKey() {
-				return defaultHelper.rightParenthesisMissingKey();
-			}
-		};
 	}
 
 	/**

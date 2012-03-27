@@ -68,7 +68,6 @@ import org.eclipse.persistence.jpa.jpql.parser.EmptyCollectionComparisonExpressi
 import org.eclipse.persistence.jpa.jpql.parser.EntityTypeLiteral;
 import org.eclipse.persistence.jpa.jpql.parser.EntryExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ExistsExpression;
-import org.eclipse.persistence.jpa.jpql.parser.ExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.FromClause;
 import org.eclipse.persistence.jpa.jpql.parser.FunctionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.GroupByClause;
@@ -132,8 +131,9 @@ import org.eclipse.persistence.mappings.querykeys.QueryKey;
 import org.eclipse.persistence.queries.ReportQuery;
 
 /**
- * This {@link ExpressionVisitor} visits an {@link org.eclipse.jpa.query.parser.Expression JPQL
- * Expression} and creates an {@link org.eclipse.persistence.expressions.Expression Expression}.
+ * This {@link ExpressionVisitor} visits an {@link org.eclipse.persistence.jpa.jpql.parser.Expression
+ * JPQL Expression} and creates the corresponding {@link org.eclipse.persistence.expressions.
+ * Expression EclipseLink Expression}.
  *
  * @version 2.4
  * @since 2.3
@@ -1907,7 +1907,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 
 		try {
 			visitor.hasNot                   = expression.hasNot();
-			visitor.singleInputParameter     = !expression.hasLeftParenthesis();
+			visitor.singleInputParameter     = expression.isSingleInputParameter();
 			visitor.stateFieldPathExpression = stateFieldPathExpression;
 
 			expression.getInItems().accept(visitor);
@@ -1965,8 +1965,8 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	private class ChildrenExpressionVisitor extends AnonymousExpressionVisitor {
 
 		/**
-		 * The list of {@link org.eclipse.persistence.jpa.query.parser.Expression} that are the
-		 * children of an expression.
+		 * The list of {@link org.eclipse.persistence.jpa.jpql.parser.Expression Expression} that are
+		 * the children of an expression.
 		 */
 		List<org.eclipse.persistence.jpa.jpql.parser.Expression> expressions;
 
@@ -2013,7 +2013,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 		private boolean hasNot;
 		private boolean singleInputParameter;
 		private Expression stateFieldPathExpression;
-		private ExpressionVisitor visitor;
+		private InItemExpressionVisitor visitor;
 
 		/**
 		 * Creates a new <code>InExpressionBuilder</code>.
@@ -2030,6 +2030,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 		public void visit(CollectionExpression expression) {
 
 			Collection<Expression> expressions = new ArrayList<Expression>();
+			visitor.childrenCount = expression.childrenSize();
 
 			for (org.eclipse.persistence.jpa.jpql.parser.Expression child : expression.children()) {
 				child.accept(visitor);
@@ -2051,7 +2052,17 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 		public void visit(InputParameter expression) {
 
 			if (singleInputParameter) {
-				expression.accept(ExpressionBuilderVisitor.this);
+				String parameterName = expression.getParameter();
+
+				// The type is by default Collection
+				Class<?> type = Collection.class;
+
+				// Create the expression
+				queryExpression = queryContext.getBaseExpression();
+				queryExpression = queryExpression.getParameter(parameterName.substring(1), type);
+
+				// Cache the input parameter type, which is by default Collection
+				queryContext.addInputParameter(parameterName, type);
 
 				if (hasNot) {
 					queryExpression = stateFieldPathExpression.notIn(queryExpression);
@@ -2093,6 +2104,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 
 			// First create the subquery
 			ReportQuery subquery = buildSubquery(expression);
+
 			// Now create the IN expression
 			if (hasNot) {
 				queryExpression = stateFieldPathExpression.notIn(subquery);
@@ -2104,6 +2116,8 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 
 		private class InItemExpressionVisitor extends AnonymousExpressionVisitor {
 
+			private int childrenCount;
+
 			/**
 			 * {@inheritDoc}
 			 */
@@ -2112,6 +2126,31 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 				ClassDescriptor descriptor = queryContext.getDescriptor(expression.getVariableName());
 				queryExpression = queryContext.getBaseExpression();
 				queryExpression = new ConstantExpression(descriptor.getJavaClass(), queryExpression);
+			}
+
+			/**
+			 * {@inheritDoc}
+			 */
+			@Override
+			public void visit(InputParameter expression) {
+
+				// Special case for a single encapsulated input parameter
+				if (childrenCount == 1) {
+					String parameterName = expression.getParameter();
+
+					// The type is by default Collection
+					Class<?> type = List.class;
+
+					// Create the expression
+					queryExpression = queryContext.getBaseExpression();
+					queryExpression = queryExpression.getParameter(parameterName.substring(1), type);
+
+					// Cache the input parameter type, which is by default Collection
+					queryContext.addInputParameter(parameterName, type);
+				}
+				else {
+					expression.accept(ExpressionBuilderVisitor.this);
+				}
 			}
 
 			/**

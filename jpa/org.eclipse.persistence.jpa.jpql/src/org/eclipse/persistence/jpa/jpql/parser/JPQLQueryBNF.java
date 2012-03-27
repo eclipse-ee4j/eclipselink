@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -442,7 +442,7 @@ public abstract class JPQLQueryBNF {
 	}
 
 	/**
-	 * Registers a unique identifier that will be used to create the {@link Expression representing
+	 * Registers a unique identifier that will be used to create the {@link Expression} representing
 	 * this BNF rule.
 	 *
 	 * @param expressionFactory The unique identifier that is responsible to create the
@@ -491,9 +491,6 @@ public abstract class JPQLQueryBNF {
 	 * registered {@link ExpressionFactory expression factories} cannot parse it.
 	 * <p>
 	 * Note: This method is only called if {@link #getFallbackBNFId()} does not return <code>null</code>.
-	 *
-	 * @return The unique identifier of the {@link ExpressionFactory} to use when no other factories
-	 * can be used automatically
 	 */
 	public void setFallbackExpressionFactoryId(String fallbackExpressionFactoryId) {
 		this.fallbackExpressionFactoryId = fallbackExpressionFactoryId;

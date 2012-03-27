@@ -97,8 +97,6 @@ public class LikeExpressionStateObject extends AbstractStateObject {
 	 *
 	 * @param parent The parent of this state object, which cannot be <code>null</code>
 	 * @param stringStateObject The {@link StateObject} representing the string expression
-	 * @param patternValue
-	 * @param escapeCharacter
 	 * @exception NullPointerException The given parent cannot be <code>null</code>
 	 */
 	public LikeExpressionStateObject(StateObject parent,
@@ -114,8 +112,12 @@ public class LikeExpressionStateObject extends AbstractStateObject {
 	 * @param stringStateObject The {@link StateObject} representing the string expression
 	 * @param not Determines whether the <code><b>NOT</b></code> identifier is part of the expression
 	 * or not
-	 * @param patternValue
-	 * @param escapeCharacter
+	 * @param patternValue A string literal or a string-valued input parameter in which an underscore
+	 * (_) stands for any single character, a percent (%) character stands for any sequence of
+	 * characters (including the empty sequence), and all other characters stand for themselves
+	 * @param escapeCharacter A single-character string literal or a character-valued input parameter
+	 * (i.e., char or Character) and is used to escape the special meaning of the underscore and
+	 * percent characters in <code>pattern_value</code>
 	 * @exception NullPointerException The given parent cannot be <code>null</code>
 	 */
 	public LikeExpressionStateObject(StateObject parent,
@@ -136,7 +138,9 @@ public class LikeExpressionStateObject extends AbstractStateObject {
 	 *
 	 * @param parent The parent of this state object, which cannot be <code>null</code>
 	 * @param stringStateObject The {@link StateObject} representing the string expression
-	 * @param patternValue
+	 * @param patternValue a string literal or a string-valued input parameter in which an underscore
+	 * (_) stands for any single character, a percent (%) character stands for any sequence of
+	 * characters (including the empty sequence), and all other characters stand for themselves
 	 * @exception NullPointerException The given parent cannot be <code>null</code>
 	 */
 	public LikeExpressionStateObject(StateObject parent,

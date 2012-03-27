@@ -29,7 +29,7 @@ import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLQueryStringFormatter;
 import static org.junit.Assert.*;
 
 /**
- * The abstract definition of a unit-tests used to test a validator.
+ * The abstract definition of a unit-test testing an {@link AbstractValidator}.
  *
  * @version 2.4
  * @since 2.3
@@ -39,8 +39,7 @@ import static org.junit.Assert.*;
 public abstract class AbstractValidatorTest extends JPQLCoreTest {
 
 	/**
-	 * The {@link JPQLGrammar} that is injected by the test suite,
-	 * which is used to parse the JPQL query.
+	 * The {@link JPQLGrammar} that is injected by the test suite, which is used to parse the JPQL query.
 	 */
 	@JPQLGrammarTestHelper
 	protected JPQLGrammar jpqlGrammar;
@@ -51,8 +50,7 @@ public abstract class AbstractValidatorTest extends JPQLCoreTest {
 	private ResourceBundle propertiesFile;
 
 	/**
-	 * The {@link ResourceBundle} that contains the key-value pairs coming from
-	 * {@link JPQLQueryProblemResourceBundle}.
+	 * The {@link ResourceBundle} that contains the key-value pairs coming from {@link JPQLQueryProblemResourceBundle}.
 	 */
 	private ResourceBundle resourceBundle;
 

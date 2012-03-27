@@ -225,8 +225,8 @@ public class ArithmeticFactorStateObject extends AbstractStateObject {
 	/**
 	 * Returns the {@link StateObject} that represents the arithmetic primary expression.
 	 *
-	 * @return The {@link StateObject} that represents the arithmetic primary expression or
-	 * <code>null</code> if none was specified
+	 * @param stateObject The {@link StateObject} that represents the arithmetic primary expression
+	 * or <code>null</code> if none was specified
 	 */
 	public void setStateObject(StateObject stateObject) {
 		StateObject oldStateObject = this.stateObject;

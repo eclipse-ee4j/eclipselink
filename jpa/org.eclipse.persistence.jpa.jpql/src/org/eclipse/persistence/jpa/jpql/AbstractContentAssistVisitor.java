@@ -55,6 +55,7 @@ import org.eclipse.persistence.jpa.jpql.parser.CollectionMemberExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionValuedPathExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionValuedPathExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.ComparisonExpression;
+import org.eclipse.persistence.jpa.jpql.parser.ComparisonExpressionFactory;
 import org.eclipse.persistence.jpa.jpql.parser.ConcatExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConditionalExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.ConstructorExpression;
@@ -70,6 +71,7 @@ import org.eclipse.persistence.jpa.jpql.parser.EntityTypeLiteral;
 import org.eclipse.persistence.jpa.jpql.parser.EntryExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ExistsExpression;
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
+import org.eclipse.persistence.jpa.jpql.parser.ExpressionFactory;
 import org.eclipse.persistence.jpa.jpql.parser.ExpressionRegistry;
 import org.eclipse.persistence.jpa.jpql.parser.FromClause;
 import org.eclipse.persistence.jpa.jpql.parser.FunctionExpression;
@@ -163,7 +165,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
 /**
  * The abstract definition that provides support for finding the possible proposals within a JPQL
- * query at the given position.
+ * query at a certain position.
  * <p>
  * Provisional API: This interface is part of an interim API that is still under development and
  * expected to change significantly before reaching stability. It is available at this early stage
@@ -353,6 +355,18 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		addAllCompounds(getQueryBNF(queryBNFId));
 	}
 
+	protected void addAllExpressionFactoryIdentifiers(ExpressionFactory expressionFactory) {
+		for (String identifier : expressionFactory.identifiers()) {
+			proposals.addIdentifier(identifier);
+		}
+	}
+
+	protected void addAllExpressionFactoryIdentifiers(String expressionFactoryId) {
+		addAllExpressionFactoryIdentifiers(
+			getExpressionRegistry().getExpressionFactory(expressionFactoryId)
+		);
+	}
+
 	/**
 	 * Adds the JPQL identifiers that are registered with the given {@link JPQLQueryBNF} as valid
 	 * proposals if their role is {@link IdentifierRole#FUNCTION} and the beginning starts with the
@@ -392,6 +406,20 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	 */
 	protected void addAllFunctions(String queryBNFId) {
 		addAllFunctions(getQueryBNF(queryBNFId), queryPosition.getPosition());
+	}
+
+	/**
+	 * Adds the JPQL identifiers that are registered with the given {@link JPQLQueryBNF} as valid
+	 * proposals if their role is {@link IdentifierRole#FUNCTION} and the beginning starts with the
+	 * current word.
+	 *
+	 * @param queryBNFId The unique identifier of the {@link JPQLQueryBNF} for which the registered
+	 * JPQL identifiers will be
+	 * @param queryBNF The {@link JPQLQueryBNF} for which the registered JPQL identifiers will be
+	 * added as proposals if they pass the checks
+	 */
+	protected void addAllFunctions(String queryBNFId, int position) {
+		addAllFunctions(getQueryBNF(queryBNFId), position);
 	}
 
 	/**
@@ -1655,7 +1683,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	/**
 	 * Retrieves the BNF object that was registered for the given unique identifier.
 	 *
-	 * @param queryBNFID The unique identifier of the {@link JPQLQueryBNF} to retrieve
+	 * @param queryBNFId The unique identifier of the {@link JPQLQueryBNF} to retrieve
 	 * @return The {@link JPQLQueryBNF} representing a section of the grammar
 	 */
 	protected JPQLQueryBNF getQueryBNF(String queryBNFId) {
@@ -1818,8 +1846,8 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	 * @param typeName The fully qualified class name of the class to retrieve
 	 * @return The external form of the class to retrieve
 	 */
-	protected IType getType(String name) {
-		return getTypeRepository().getType(name);
+	protected IType getType(String typeName) {
+		return getTypeRepository().getType(typeName);
 	}
 
 	/**
@@ -1886,8 +1914,8 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	 * @return <code>true</code> if the given identifier is used in an aggregate expression;
 	 * <code>false</code> otherwise
 	 */
-	protected boolean isAggregate(String proposal) {
-		return getIdentifierRole(proposal) == IdentifierRole.AGGREGATE;
+	protected boolean isAggregate(String identifier) {
+		return getIdentifierRole(identifier) == IdentifierRole.AGGREGATE;
 	}
 
 	protected boolean isAppendable(Expression expression) {
@@ -2206,11 +2234,9 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	}
 
 	/**
-	 * Prepares this visitor by prepopulating it with the necessary data that is required to properly
+	 * Prepares this visitor by pre-populating it with the necessary data that is required to properly
 	 * gather the list of proposals based on the caret position.
 	 *
-	 * @param proposals The object used to store the possible proposals gathered based on the
-	 * position in the query
 	 * @param queryPosition Contains the position of the cursor within the parsed {@link Expression}
 	 */
 	public void prepare(QueryPosition queryPosition) {
@@ -2615,12 +2641,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 
 		// Within the comparison operator
 		if (isPositionWithin(position, length, expression.getComparisonOperator())) {
-			proposals.addIdentifier(LOWER_THAN);
-			proposals.addIdentifier(LOWER_THAN_OR_EQUAL);
-			proposals.addIdentifier(DIFFERENT);
-			proposals.addIdentifier(EQUAL);
-			proposals.addIdentifier(GREATER_THAN);
-			proposals.addIdentifier(GREATER_THAN_OR_EQUAL);
+			addAllExpressionFactoryIdentifiers(ComparisonExpressionFactory.ID);
 		}
 
 		// After the comparison operator
@@ -2634,7 +2655,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		if (position == length) {
 			addAllIdentificationVariables();
 			addAllFunctions(expression.rightExpressionBNF());
-			addAllClauses(expression.rightExpressionBNF().getId());
+			addAllClauses(expression.rightExpressionBNF());
 		}
 	}
 
@@ -6055,7 +6076,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 * {@inheritDoc}
 		 */
 		public JPQLQueryBNF queryBNF(AbstractFromClause expression, int index) {
-			return expression.declarationBNF();
+			return getQueryBNF(expression.declarationBNF());
 		}
 	}
 
@@ -6512,8 +6533,8 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	}
 
 	/**
-	 * This visitor is responsible to create the right {@link Filter<IMapping>} based on the type
-	 * of the {@link Expression}.
+	 * This visitor is responsible to create the right {@link Filter} based on the type of the {@link
+	 * Expression}.
 	 */
 	protected class MappingFilterBuilder extends AbstractTraverseParentVisitor {
 
@@ -7285,7 +7306,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		/**
 		 * Returns the clause's expression.
 		 *
-		 * @param expression The {@link AbstractSelectStatement} being visited
+		 * @param clause The {@link AbstractSelectStatement} being visited
 		 * @return The clause's expression
 		 */
 		Expression getClauseExpression(C clause);
@@ -8265,7 +8286,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	 * <p>
 	 * For instance, if the query is "<code>SELECT e FROM Employee e WHERE IN</code>" and the cursor
 	 * is at the end of the query, then <code>IN</code> would be parsed with {@link InExpression}.
-	 * However, due to how {@link ContentAssistVisitor} works, the identifier <code>INDEX</code>
+	 * However, due to how {@link AbstractContentAssistVisitor} works, the identifier <code>INDEX</code>
 	 * is not added as a valid proposal. This visitor adds that functionality.
 	 */
 	protected class VisitParentVisitor extends AnonymousExpressionVisitor {

@@ -28,7 +28,7 @@ import org.eclipse.persistence.jpa.jpql.spi.ITypeRepository;
  * The concrete implementation of {@link ITypeDeclaration} that is wrapping the representation
  * of the declaration description of a type.
  *
- * @see IMapping
+ * @see org.eclipse.persistence.jpa.jpql.spi.IMapping IMapping
  * @see IType
  *
  * @version 2.4

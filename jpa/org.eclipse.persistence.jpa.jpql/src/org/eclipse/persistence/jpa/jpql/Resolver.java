@@ -245,7 +245,7 @@ public abstract class Resolver {
 	/**
 	 * Retrieves the external class for the given fully qualified class name.
 	 *
-	 * @param name The fully qualified class name of the class to retrieve
+	 * @param typeName The fully qualified class name of the class to retrieve
 	 * @return The external form of the class to retrieve
 	 */
 	protected final IType getType(String typeName) {
@@ -284,9 +284,9 @@ public abstract class Resolver {
 	}
 
 	/**
-	 * Determines whether the {@link Expression} to be created, which wraps the attribute or query
-	 * key name allows the target of the 1:1 relationship to be <code>null</code> if there is no
-	 * corresponding relationship in the database.
+	 * Determines whether the {@link org.eclipse.persistence.jpa.jpql.parser.Expression Expression}
+	 * to be created, which wraps the attribute or query key name allows the target of the 1:1
+	 * relationship to be <code>null</code> if there is no corresponding relationship in the database.
 	 *
 	 * @return <code>true</code> to allow <code>null</code> if the corresponding relationship in the
 	 * database does not exists; <code>false</code> otherwise
@@ -296,9 +296,9 @@ public abstract class Resolver {
 	}
 
 	/**
-	 * Sets whether the {@link Expression} to be created, which wraps the attribute or query
-	 * key name allows the target of the 1:1 relationship to be <code>null</code> if there is no
-	 * corresponding relationship in the database.
+	 * Sets whether the {@link org.eclipse.persistence.jpa.jpql.parser.Expression Expression} to be
+	 * created, which wraps the attribute or query key name allows the target of the 1:1 relationship
+	 * to be <code>null</code> if there is no corresponding relationship in the database.
 	 *
 	 * @param nullAllowed <code>true</code> to allow <code>null</code> if the corresponding
 	 * relationship in the database does not exists; <code>false</code> otherwise

@@ -81,9 +81,9 @@ public class SimpleSelectClauseStateObject extends AbstractSelectClauseStateObje
 	}
 
 	/**
-	 * Creates and returns a new {@link ISimpleSelectExpressionBuilder} that can be used to
-	 * programmatically create a single select expression and once the expression is complete,
-	 * {@link ISimpleSelectExpressionBuilder#commit()} will push the {@link StateObject}
+	 * Creates and returns a new {@link ISimpleSelectExpressionStateObjectBuilder} that can be used
+	 * to programmatically create a single select expression and once the expression is complete,
+	 * {@link ISimpleSelectExpressionStateObjectBuilder#commit()} will push the {@link StateObject}
 	 * representation of that expression as this clause's select expression.
 	 *
 	 * @return A new builder that can be used to quickly create a select expression

@@ -41,9 +41,12 @@ public interface JPQLQueryDeclaration {
 	Expression getBaseExpression();
 
 	/**
-	 * Returns the declaration expression, which is either an {@link IdentificationVariableDeclaration}
-	 * or a {@link CollectionMemberDeclaration} when part of a <b>FROM</b> clause, otherwise it's
-	 * either the {@link DeleteClause} or the {@link UpdateClause}.
+	 * Returns the declaration expression, which is either an {@link org.eclipse.persistence.jpa.jpql.
+	 * parser.IdentificationVariableDeclaration IdentificationVariableDeclaration} or a {@link
+	 * org.eclipse.persistence.jpa.jpql.parser.CollectionMemberDeclaration CollectionMemberDeclaration}
+	 * when part of a <b>FROM</b> clause, otherwise it's either the {@link org.eclipse.persistence.
+	 * jpa.jpql.parser.DeleteClause DeleteClause} or the {@link org.eclipse.persistence.jpa.jpql.
+	 * parser.UpdateClause UpdateClause}.
 	 *
 	 * @return The root of the declaration expression
 	 */
@@ -77,15 +80,17 @@ public interface JPQLQueryDeclaration {
 	boolean hasJoins();
 
 	/**
-	 * Determines whether this {@link Declaration}
+	 * Determines whether this {@link JPQLQueryDeclaration} declaration represents a collection
+	 * member declaration or not.
 	 *
-	 * @return <code>true</code>
+	 * @return <code>true</code> if this is a collection member declaration; <code>false</code>
+	 * otherwise
 	 */
 	boolean isCollection();
 
 	/**
 	 * Determines whether the "root" object is a derived path expression where the identification
-	 * variable is declared in the superquery, otherwise it's an entity name.
+	 * variable is declared in the super query, otherwise it's an entity name.
 	 *
 	 * @return <code>true</code> if the root path is a derived path expression; <code>false</code>
 	 * otherwise
@@ -93,7 +98,7 @@ public interface JPQLQueryDeclaration {
 	boolean isDerived();
 
 	/**
-	 * Determines whether this {@link Declaration} represents a range identification variable
+	 * Determines whether this {@link JPQLQueryDeclaration} represents a range identification variable
 	 * declaration, example: "Employee e".
 	 *
 	 * @return <code>true</code> if the declaration is over an abstract schema name; <code>false</code>

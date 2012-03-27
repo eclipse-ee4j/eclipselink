@@ -63,7 +63,7 @@ public class ChangeSupport {
 	 *
 	 * @param source The object for which this object will take care of notifying the listeners upon
 	 * changes made to the object's internal state
-	 * @exception AssertException The source {@link StateObject} cannot be <code>null</code>
+	 * @exception NullPointerException The source {@link StateObject} cannot be <code>null</code>
 	 */
 	public ChangeSupport(StateObject source) {
 		super();
@@ -200,7 +200,7 @@ public class ChangeSupport {
 	 * parent.
 	 *
 	 * @param list The list used to determine if the given item can be moved up in that list
-	 * @param stateObject The item that could potentially be moved up
+	 * @param item The item that could potentially be moved up
 	 * @return <code>true</code> if the object can be moved up by one unit; <code>false</code>
 	 * otherwise
 	 */
@@ -288,7 +288,7 @@ public class ChangeSupport {
 	 *
 	 * @param source The object for which this object will take care of notifying the listeners upon
 	 * changes made to the object's internal state
-	 * @exception AssertException The source {@link StateObject} cannot be <code>null</code>
+	 * @exception NullPointerException The source {@link StateObject} cannot be <code>null</code>
 	 */
 	protected void initialize(StateObject source) {
 
@@ -559,7 +559,7 @@ public class ChangeSupport {
 	 * @param source The {@link ListHolderStateObject} from where the change is coming
 	 * @param items The list of items to which the child is removed
 	 * @param listName The name associated with the list
-	 * @param items The items to removed from the list
+	 * @param newItems The items to removed from the list
 	 * @param <T> The type of the items
 	 */
 	public <T> void replaceItems(ListHolderStateObject<T> source,

@@ -225,7 +225,6 @@ public abstract class AbstractExpression implements Expression {
 	 * @param type The type found in the hierarchy of the given {@link ExpressionVisitor} that will
 	 * be used to retrieve the visit method
 	 * @param parameterType The parameter type of the visit method
-	 * @return <code>true</code> if the call was successfully executed; <code>false</code> otherwise
 	 * @see #acceptUnknownVisitor(ExpressionVisitor)
 	 * @since 2.4
 	 */
@@ -623,19 +622,20 @@ public abstract class AbstractExpression implements Expression {
 	 * Parses the given text by using the specified BNF.
 	 *
 	 * @param wordParser The text to parse based on the current position of the cursor
-	 * @param queryBNF The {@link JPQLQueryBNF} used to determine how to parse from the current
-	 * position of the cursor within the JPQL query
+	 * @param queryBNFId The unique identifier of the {@link JPQLQueryBNF} that is used to determine
+	 * how to parse the text at the current cursor position within the JPQL query
 	 * @param tolerant Determines whether the parsing system should be tolerant, meaning if it should
 	 * try to parse invalid or incomplete queries
 	 * @return The {@link Expression} representing the given sub-query
 	 */
-	protected AbstractExpression parse(WordParser wordParser, JPQLQueryBNF queryBNF, boolean tolerant) {
+	protected AbstractExpression parse(WordParser wordParser, String queryBNFId, boolean tolerant) {
 
 		// Quick check so we don't create some objects for no reasons
 		if (wordParser.isTail()) {
 			return null;
 		}
 
+		JPQLQueryBNF queryBNF = getQueryBNF(queryBNFId);
 		List<AbstractExpression> children = new LinkedList<AbstractExpression>();
 		List<Boolean> separatedByCommas = new LinkedList<Boolean>();
 		List<Boolean> separatedBySpaces = new LinkedList<Boolean>();
@@ -653,10 +653,12 @@ public abstract class AbstractExpression implements Expression {
 			child = null;
 
 			// Right away create a SubExpression and parse the encapsulated expression
-			if (wordParser.startsWith(LEFT_PARENTHESIS)) {
+			if (character == LEFT_PARENTHESIS) {
+
 				expression = new SubExpression(this, queryBNF.getId());
 				expression.parse(wordParser, tolerant);
 
+				// Something has been parsed, which means it's not the beginning anymore
 				beginning = false;
 
 				// Continue to the next character/word
@@ -670,7 +672,7 @@ public abstract class AbstractExpression implements Expression {
 			}
 
 			// Retrieve the next word, including any arithmetic symbols
-			String word = wordParser.potentialWord();
+			String word = wordParser.word();
 
 			if (word.length() > 0) {
 
@@ -682,7 +684,9 @@ public abstract class AbstractExpression implements Expression {
 				}
 
 				// Parse using the ExpressionFactory that is mapped with a JPQL identifier (word)
-				if (shouldParseWithFactoryFirst()) {
+				if (wordParser.getWordType() == WordParser.WordType.WORD &&
+				    shouldParseWithFactoryFirst()) {
+
 					ExpressionFactory factory = queryBNF.getExpressionFactory(word);
 
 					if (factory != null) {
@@ -691,10 +695,12 @@ public abstract class AbstractExpression implements Expression {
 						if (child != null) {
 							expression = updateParsingInfo(expression, child, children, separatedByCommas, separatedBySpaces);
 
+							// Something has been parsed, which means it's not the beginning anymore
+							beginning = false;
+
 							// Continue with the next character/word
 							count     = wordParser.skipLeadingWhitespace();
 							character = wordParser.character();
-							beginning = false;
 						}
 					}
 				}
@@ -706,10 +712,12 @@ public abstract class AbstractExpression implements Expression {
 					if (child != null) {
 						expression = updateParsingInfo(expression, child, children, separatedByCommas, separatedBySpaces);
 
+						// Something has been parsed, which means it's not the beginning anymore
+						beginning = false;
+
 						// Continue to the next character/word
 						count     = wordParser.skipLeadingWhitespace();
 						character = wordParser.character();
-						beginning = false;
 					}
 				}
 			}
@@ -798,7 +806,7 @@ public abstract class AbstractExpression implements Expression {
 				}
 
 				// No more text, the query ends with a comma
-				word = wordParser.potentialWord();
+				word = wordParser.word();
 				boolean stopParsing = tolerant && (word.length() == 0 || isParsingComplete(wordParser, word, null));
 
 				if (wordParser.isTail() || stopParsing) {
@@ -885,7 +893,8 @@ public abstract class AbstractExpression implements Expression {
 	 * @param word The current word to parse
 	 * @param factory The factory used to determine if the text matches the criteria for it to create
 	 * the expression
-	 * @param queryBNF The BNF helping to parse the query
+	 * @param queryBNF The {@link JPQLQueryBNF} that is used to determine how to parse the text at
+	 * the current cursor position within the JPQL query
 	 * @param expression The {@link Expression} that has just been parsed or <code>null</code>
 	 * @param tolerant Determines whether the parsing system should be tolerant, meaning if it should
 	 * try to parse invalid or incomplete queries
@@ -907,16 +916,18 @@ public abstract class AbstractExpression implements Expression {
 	 * is extracted from {@link WordParser} at the current location.
 	 *
 	 * @param wordParser The text to parse based on the current position of the cursor
-	 * @param queryBNF The grammar used to retrieve the {@link ExpressionFactory expression factory}
+	 * @param queryBNFId The unique identifier of the {@link JPQLQueryBNF} that is used to determine
+	 * how to parse the text at the current cursor position within the JPQL query
 	 * @param tolerant Determines whether the parsing system should be tolerant, meaning if it should
 	 * try to parse invalid or incomplete queries
 	 * @return The {@link Expression} representing the given sub-query
 	 */
 	protected AbstractExpression parseSingleExpression(WordParser wordParser,
-	                                                   JPQLQueryBNF queryBNF,
+	                                                   String queryBNFId,
 	                                                   boolean tolerant) {
 
-		String word = wordParser.potentialWord();
+		String word = wordParser.word();
+		JPQLQueryBNF queryBNF = getQueryBNF(queryBNFId);
 		ExpressionFactory factory = queryBNF.getExpressionFactory(word);
 		return (factory == null) ? null : parse(wordParser, word, factory, queryBNF, null, tolerant);
 	}

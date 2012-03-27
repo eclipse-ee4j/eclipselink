@@ -16,7 +16,7 @@ package org.eclipse.persistence.jpa.jpql.model;
 import org.eclipse.persistence.jpa.jpql.model.query.StateObject;
 
 /**
- * The default implementation of {@link IProblem}.
+ * The default implementation of {@link Problem}.
  *
  * @version 2.4
  * @since 2.4
@@ -45,7 +45,7 @@ public final class DefaultProblem implements Problem {
 	/**
 	 * Creates a new <code>DefaultProblem</code>.
 	 *
-	 * @param stateObject
+	 * @param stateObject The {@link StateObject} where the problem was found
 	 * @param messageKey The key used to retrieve the localized message describing the problem found
 	 * with the current state of this {@link StateObject}
 	 * @param arguments A list of arguments that can be used to complete the message or an empty list

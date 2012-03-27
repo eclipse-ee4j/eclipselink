@@ -24,7 +24,6 @@ import org.eclipse.persistence.jpa.jpql.util.iterator.IterableListIterator;
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
  * API will almost certainly be broken (repeatedly) as the API evolves.
  *
- * @see org.eclipse.persistence.jpa.jpql.spi.IJPQLExtension IJPQLExtension
  * @see JPQLGrammar
  *
  * @version 2.4
@@ -434,6 +433,13 @@ public interface Expression {
 	String NOT_BETWEEN = "NOT BETWEEN";
 
 	/**
+	 * The constant for '!='.
+	 *
+	 * @since 2.4
+	 */
+	String NOT_EQUAL = "!=";
+
+	/**
 	 * The constant for 'NOT EXISTS'.
 	 */
 	String NOT_EXISTS = "NOT EXISTS";
@@ -638,8 +644,7 @@ public interface Expression {
 
 	/**
 	 * Visits the children of this {@link Expression}. This method can be used to optimize traversing
-	 * the children since a new list is not created every time {@link #children()} or {@link
-	 * #getChildren()} is called.
+	 * the children since a new list is not created every time {@link #children()} is called.
 	 * <p>
 	 * This does not traverse the {@link Expression} sub-hierarchy, use a subclass of
 	 * {@link AbstractTraverseChildrenVisitor} in order to traverse the entire sub-hierarchy.
@@ -666,7 +671,7 @@ public interface Expression {
 	/**
 	 * Returns the parent of this {@link Expression}.
 	 *
-	 * @return The parent of this {@link Expression, which is never <code>null</code> except for the
+	 * @return The parent of this {@link Expression}, which is never <code>null</code> except for the
 	 * root of the tree
 	 */
 	Expression getParent();
@@ -689,7 +694,7 @@ public interface Expression {
 
 	/**
 	 * Creates a list representing this expression and its children. In order to add every piece of
-	 * the expression, {@link #addChildrenTo(Collection)} is called.
+	 * the expression.
 	 *
 	 * @return The {@link Expression Expressions} representing this {@link Expression}
 	 */
@@ -699,9 +704,8 @@ public interface Expression {
 	 * Retrieves the <code>Expression</code> located at the given position using the actual
 	 * query, which may have extra whitespace.
 	 *
-	 * @param position The array has one element and is the position of the <code>Expression</code>
+	 * @param position The array has one element and is the position of the {@link Expression}
 	 * to retrieve
-	 * @return The <code>Expression</code> located at the given position
 	 */
 	void populatePosition(QueryPosition queryPosition, int position);
 
@@ -717,7 +721,7 @@ public interface Expression {
 	/**
 	 * Returns a string representation of this {@link Expression} and its children. The expression
 	 * should contain whitespace even if the beautified version would not have any. For instance,
-	 * "SELECT e " should be returned where {@link Expression#toText()} would return "SELECT e".
+	 * "SELECT e " should be returned where {@link Expression#toParsedText()} would return "SELECT e".
 	 *
 	 * @return The string representation of this {@link Expression}
 	 */

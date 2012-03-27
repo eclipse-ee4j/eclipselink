@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -22,7 +22,6 @@ import org.eclipse.persistence.jpa.jpql.spi.ITypeDeclaration;
  * path expression, singled valued object field, or a collection-valued path expression).
  *
  * @see CollectionValuedFieldResolver
- * @see SingleValuedObjectFieldResolver
  * @see StateFieldResolver
  *
  * @version 2.4
@@ -135,7 +134,6 @@ public abstract class AbstractPathResolver extends Resolver {
 	/**
 	 * Retrieves the {@link IMapping} for the given property name.
 	 *
-	 * @param propertyName The name of the {@link IMapping} to retrieve
 	 * @return Either the {@link IMapping} or <code>null</code> if none exists
 	 */
 	protected IMapping resolveMapping() {

@@ -348,9 +348,8 @@ public interface SemanticValidatorHelper {
 	/**
 	 * Changes the state of this helper to use the given subquery.
 	 *
-	 * @param currentQuery The parsed tree representation of the subquery that will become the
-	 * current query
-	 * @see #disposeSubQueryContext()
+	 * @param expression The parsed tree representation of the subquery that will become the current query
+	 * @see #disposeSubqueryContext()
 	 */
 	void newSubqueryContext(SimpleSelectStatement expression);
 

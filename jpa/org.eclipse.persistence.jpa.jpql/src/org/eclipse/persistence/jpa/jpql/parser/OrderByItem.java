@@ -33,7 +33,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * state_field_path_expression} in the <b>SELECT</b> clause
  * <li>A {@link ResultVariable result_variable} that refers to an orderable item in the <b>SELECT</b>
  * clause for which the same {@link ResultVariable result_variable} has been specified. This may be
- * the result of an aggregate_expression, a {@link ScalarExpression scalar_expression}, or a {@link
+ * the result of an aggregate_expression, a <code>scalar_expression</code>, or a {@link
  * StateFieldPathExpression state_field_path_expression} in the <b>SELECT</b> clause.
  * </ol>
  * <p>
@@ -229,11 +229,7 @@ public final class OrderByItem extends AbstractExpression {
 	protected void parse(WordParser wordParser, boolean tolerant) {
 
 		// Parse the state field path expression
-		expression = parse(
-			wordParser,
-			getQueryBNF(InternalOrderByItemBNF.ID),
-			tolerant
-		);
+		expression = parse(wordParser, InternalOrderByItemBNF.ID, tolerant);
 
 		hasSpaceAfterExpression = wordParser.skipLeadingWhitespace() > 0;
 

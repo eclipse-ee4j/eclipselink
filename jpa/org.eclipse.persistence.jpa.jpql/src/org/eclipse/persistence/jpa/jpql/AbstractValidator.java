@@ -85,18 +85,17 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 
 	/**
 	 * This visitor is used to retrieve a variable name from various type of
-	 * {@link org.eclipse.persistence.jpa.query.parser.Expression JPQL Expression}.
+	 * {@link org.eclipse.persistence.jpa.jpql.parser.Expression JPQL Expression}.
 	 */
 	private LiteralVisitor literalVisitor;
 
 	/**
-	 * The list of {@link QueryProblem QueryProblems} describing grammatical and semantic issues
-	 * found in the query.
+	 * The list of {@link JPQLQueryProblem} describing grammatical and semantic issues found in the query.
 	 */
 	private Collection<JPQLQueryProblem> problems;
 
 	/**
-	 * The {@link ExpressionValidator ExpressionValidators} mapped by the BNF IDs.
+	 * The {@link BNFValidator} mapped by the BNF IDs.
 	 */
 	private Map<String, BNFValidator> validators;
 
@@ -167,8 +166,8 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 	 * @param expression The {@link Expression} that is either not following the BNF grammar or that
 	 * has semantic problems
 	 * @param messageKey The key used to retrieve the localized message describing the problem
-	 * @param messageArguments The list of arguments that can be used to format the localized
-	 * description of the problem
+	 * @param arguments The list of arguments that can be used to format the localized description of
+	 * the problem
 	 */
 	protected void addProblem(Expression expression, String messageKey, String... arguments) {
 		int startPosition = position(expression);
@@ -197,7 +196,7 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 	 * @param messageKey The key used to retrieve the localized message describing the problem
 	 * @param messageArguments The list of arguments that can be used to format the localized
 	 * description of the problem
-	 * @return The {@link QueryProblem} describing a problem
+	 * @return The {@link JPQLQueryProblem} describing a problem
 	 */
 	protected JPQLQueryProblem buildProblem(Expression expression,
 	                                        int startPosition,
@@ -218,7 +217,7 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 	 * Calculates the position of the given expression by calculating the length of what is before.
 	 *
 	 * @param expression The expression to determine its position within the parsed tree
-	 * @param position The current position
+	 * @param length The current length
 	 * @return The length of the string representation of what comes before the given expression
 	 */
 	protected int calculatePosition(Expression expression, int length) {
@@ -253,8 +252,8 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 	}
 
 	/**
-	 * Returns the {@link ExpressionValidator} that can be used to validate an {@link Expression} by
-	 * making sure its BNF is part of the given BNF.
+	 * Returns the {@link BNFValidator} that can be used to validate an {@link Expression} by making
+	 * sure its BNF is part of the given BNF.
 	 *
 	 * @param queryBNF The BNF used to determine the validity of an {@link Expression}
 	 * @return A {@link BNFValidator} that can determine if an {@link Expression} follows the given BNF
@@ -283,11 +282,12 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 	}
 
 	/**
-	 * Retrieves the children of the given {@link Expression}. If it only has one child and it's a
-	 * {@link CollectionExpression}, then its children will be added to the collection.
+	 * Returns a list containing either the given {@link Expression} if it's not a {@link
+	 * CollectionExpression} or the children of the given {@link CollectionExpression}.
 	 *
 	 * @param expression The {@link Expression} to visit
-	 * @return The children of the given {@link Expression}
+	 * @return A list containing either the given {@link Expression} or the children of {@link
+	 * CollectionExpression}
 	 */
 	protected List<Expression> getChildren(Expression expression) {
 		ChildrenCollectorVisitor visitor = getChildrenCollectorVisitor();
@@ -373,8 +373,8 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 	 * @param queryBNFId The unique identifier of the {@link JPQLQueryBNF} to retrieve
 	 * @return The {@link JPQLQueryBNF} representing a section of the grammar
 	 */
-	protected JPQLQueryBNF getQueryBNF(String queryBNF) {
-		return getGrammar().getExpressionRegistry().getQueryBNF(queryBNF);
+	protected JPQLQueryBNF getQueryBNF(String queryBNFId) {
+		return getGrammar().getExpressionRegistry().getQueryBNF(queryBNFId);
 	}
 
 	/**
@@ -475,7 +475,7 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 	 *
 	 * @param problems A non-<code>null</code> collection that will be used to store the {@link
 	 * JPQLQueryProblem problems} if any was found
-	 * @exception AssertException The Collection cannot be <code>null</code>
+	 * @exception NullPointerException The Collection cannot be <code>null</code>
 	 */
 	public void setProblems(Collection<JPQLQueryProblem> problems) {
 		Assert.isNotNull(problems, "The Collection cannot be null");
@@ -524,7 +524,7 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 		/**
 		 * Creates a new <code>ExpressionValidator</code>.
 		 *
-		 * @param queryBNF The query BNF used to determine if the expression's BNF is valid
+		 * @param queryBNFs The query BNF used to determine if the expression's BNF is valid
 		 */
 		protected BNFValidator(JPQLQueryBNF... queryBNFs) {
 			super();
@@ -691,8 +691,7 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 	protected static class ChildrenCollectorVisitor extends AnonymousExpressionVisitor {
 
 		/**
-		 * The unique {@link Expression} that was visited or the {@link CollectionExpression}'s
-		 * children.
+		 * The unique {@link Expression} that was visited or the children of {@link CollectionExpression}.
 		 */
 		protected List<Expression> expressions;
 
@@ -710,6 +709,14 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 		@Override
 		protected void visit(Expression expression) {
 			expressions.add(expression);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(NullExpression expression) {
+			// Don't add it
 		}
 	}
 

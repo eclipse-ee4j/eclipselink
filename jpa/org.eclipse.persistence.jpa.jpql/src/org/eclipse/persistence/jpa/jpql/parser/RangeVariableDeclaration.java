@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -293,11 +293,7 @@ public final class RangeVariableDeclaration extends AbstractExpression {
 				return null;
 			}
 
-			return parse(
-				wordParser,
-				getQueryBNF(AbstractSchemaNameBNF.ID),
-				tolerant
-			);
+			return parse(wordParser, AbstractSchemaNameBNF.ID, tolerant);
 		}
 
 		String word = wordParser.word();
@@ -317,11 +313,7 @@ public final class RangeVariableDeclaration extends AbstractExpression {
 	private AbstractExpression parseIdentificationVariable(WordParser wordParser, boolean tolerant) {
 
 		if (tolerant) {
-			return parse(
-				wordParser,
-				getQueryBNF(IdentificationVariableBNF.ID),
-				tolerant
-			);
+			return parse(wordParser, IdentificationVariableBNF.ID, tolerant);
 		}
 
 		AbstractExpression expression = new IdentificationVariable(

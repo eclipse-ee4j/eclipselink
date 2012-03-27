@@ -121,8 +121,8 @@ public abstract class AggregateFunctionStateObject extends AbstractSingleEncapsu
 	 * Sets whether the <code><b>DISTINCT</b></code> keyword should be part of the query, which is
 	 * used to return only distinct (different) values.
 	 *
-	 * @param distinct <code>true</code> to add <code><b>DISTINCT</b></code> to the query in order to
-	 * have distinct values; <code>false</code> if it is not required
+	 * @return <code>true</code> to add <code><b>DISTINCT</b></code> to the query in order to have
+	 * distinct values; <code>false</code> if it is not required
 	 */
 	public boolean hasDistinct() {
 		return distinct;

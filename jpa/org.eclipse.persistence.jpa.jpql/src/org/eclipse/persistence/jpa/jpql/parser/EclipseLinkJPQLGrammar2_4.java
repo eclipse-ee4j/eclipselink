@@ -13,6 +13,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.parser;
 
+import org.eclipse.persistence.jpa.jpql.parser.FunctionExpressionFactory.ParameterCount;
 import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
 
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
@@ -92,6 +93,7 @@ public final class EclipseLinkJPQLGrammar2_4 extends AbstractJPQLGrammar {
 	@Override
 	protected void initializeBNFs() {
 
+		registerBNF(new InternalColumnExpressionBNF());
 		registerBNF(new OnClauseBNF());
 
 		// Extend the query BNF to add support for ON
@@ -117,7 +119,14 @@ public final class EclipseLinkJPQLGrammar2_4 extends AbstractJPQLGrammar {
 
 		registerFactory(new OnClauseFactory());
 
-		addIdentifiers(FunctionExpressionFactory.ID, COLUMN, FUNCTION, OPERATOR, SQL);
+		// Add a new FunctionExpression for 'COLUMN' since it has different rules
+		FunctionExpressionFactory columnExpressionFactory = new FunctionExpressionFactory(COLUMN, COLUMN);
+		columnExpressionFactory.setParameterCount(ParameterCount.ONE);
+		columnExpressionFactory.setParameterQueryBNFId(InternalColumnExpressionBNF.ID);
+		registerFactory(columnExpressionFactory);
+
+		// Add COLUMN ExpressionFactory to FunctionExpressionBNF
+		addChildFactory(FunctionExpressionBNF.ID, COLUMN);
 	}
 
 	/**
@@ -125,6 +134,9 @@ public final class EclipseLinkJPQLGrammar2_4 extends AbstractJPQLGrammar {
 	 */
 	@Override
 	protected void initializeIdentifiers() {
+
+		// Expand FunctionExpression to support 'FUNCTION', 'OPERATOR' and 'SQL'
+		addIdentifiers(FunctionExpressionFactory.ID, FUNCTION, OPERATOR, SQL);
 
 		registerIdentifierRole(COLUMN,   IdentifierRole.FUNCTION);          // FUNCTION(n, x1, ..., x2)
 		registerIdentifierRole(FUNCTION, IdentifierRole.FUNCTION);          // FUNCTION(n, x1, ..., x2)

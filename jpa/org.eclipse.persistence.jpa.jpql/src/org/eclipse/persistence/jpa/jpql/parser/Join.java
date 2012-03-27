@@ -115,6 +115,7 @@ public final class Join extends AbstractExpression {
 	public void acceptChildren(ExpressionVisitor visitor) {
 		getJoinAssociationPath().accept(visitor);
 		getIdentificationVariable().accept(visitor);
+		getOnClause().accept(visitor);
 	}
 
 	/**
@@ -406,11 +407,7 @@ public final class Join extends AbstractExpression {
 
 		// Parse the join association path expression
 		if (tolerant) {
-			joinAssociationPath = parse(
-				wordParser,
-				getQueryBNF(JoinAssociationPathExpressionBNF.ID),
-				tolerant
-			);
+			joinAssociationPath = parse(wordParser, JoinAssociationPathExpressionBNF.ID, tolerant);
 		}
 		// TREAT expression
 		else if (wordParser.startsWithIdentifier(TREAT)) {
@@ -438,11 +435,7 @@ public final class Join extends AbstractExpression {
 		parsingIdentificationVariable = true;
 
 		if (tolerant) {
-			identificationVariable = parse(
-				wordParser,
-				getQueryBNF(IdentificationVariableBNF.ID),
-				tolerant
-			);
+			identificationVariable = parse(wordParser, IdentificationVariableBNF.ID, tolerant);
 		}
 		else {
 			String word = wordParser.word();
@@ -473,7 +466,7 @@ public final class Join extends AbstractExpression {
 
 		// Parse 'ON' clause
 		if (tolerant) {
-			onClause = parse(wordParser, getQueryBNF(OnClauseBNF.ID), tolerant);
+			onClause = parse(wordParser, OnClauseBNF.ID, tolerant);
 		}
 		else if (wordParser.startsWithIdentifier(ON)) {
 			onClause = new OnClause(this);

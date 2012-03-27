@@ -22,7 +22,7 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
  * declared in the <code><b>FROM</b></code> clause of a <code><b>SELECT</b></code> subquery. The
  * "root" object is not an entity name but a derived path expression.
  *
- * @see IdentificationVariableDeclaration
+ * @see org.eclipse.persistence.jpa.jpql.parser.IdentificationVariableDeclaration IdentificationVariableDeclaration
  *
  * @version 2.4
  * @since 2.4

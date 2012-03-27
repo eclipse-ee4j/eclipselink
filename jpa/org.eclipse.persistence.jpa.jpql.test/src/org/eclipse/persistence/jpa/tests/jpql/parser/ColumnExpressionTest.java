@@ -32,4 +32,9 @@ public final class ColumnExpressionTest extends AbstractFunctionExpressionTest {
 	protected String identifier(int index) {
 		return Expression.COLUMN;
 	}
+
+	@Override
+	protected boolean isExpression_14_Bad() {
+		return true;
+	}
 }

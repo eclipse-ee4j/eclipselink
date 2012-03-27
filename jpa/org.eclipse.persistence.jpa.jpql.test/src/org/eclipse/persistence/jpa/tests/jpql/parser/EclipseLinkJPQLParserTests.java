@@ -25,6 +25,8 @@ import org.junit.runners.Suite.SuiteClasses;
  * @author Pascal Filion
  */
 @SuiteClasses({
+	EclipseLinkComparisonExpressionTest.class,
+	EclipseLinkLikeExpressionTest.class,
 	FuncExpressionTest.class,
 	TreatExpressionTest.class
 })

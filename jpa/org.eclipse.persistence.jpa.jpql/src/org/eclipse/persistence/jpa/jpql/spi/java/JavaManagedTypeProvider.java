@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -59,8 +59,8 @@ public class JavaManagedTypeProvider implements IManagedTypeProvider {
 	private Map<String, IMappedSuperclass> mappedSuperclasses;
 
 	/**
-	 * The builder that is responsible to create the {@link IMapping} wrapping a persistent attribute
-	 * or property.
+	 * The builder that is responsible to create the {@link org.eclipse.persistence.jpa.jpql.spi.
+	 * IMapping IMapping} wrapping a persistent attribute or property.
 	 */
 	private IMappingBuilder<Member> mappingBuilder;
 
@@ -72,8 +72,8 @@ public class JavaManagedTypeProvider implements IManagedTypeProvider {
 	/**
 	 * Creates a new <code>JavaManagedTypeProvider</code>.
 	 *
-	 * @param mappingBuilder The builder that is responsible to create the {@link IMapping} wrapping
-	 * a persistent attribute or property
+	 * @param mappingBuilder The builder that is responsible to create the {@link org.eclipse.
+	 * persistence.jpa.jpql.spi.IMapping IMapping} wrapping a persistent attribute or property
 	 * @exception NullPointerException The {@link IMappingBuilder} cannot be <code>null</code>
 	 */
 	public JavaManagedTypeProvider(IMappingBuilder<Member> mappingBuilder) {

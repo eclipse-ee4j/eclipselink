@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -56,7 +56,7 @@ public abstract class JavaManagedType implements IManagedType {
 	private final IManagedTypeProvider provider;
 
 	/**
-	 * The cached {@link IType} representing the managed type.
+	 * The cached {@link JavaType} representing the managed type.
 	 */
 	private final JavaType type;
 
@@ -64,7 +64,7 @@ public abstract class JavaManagedType implements IManagedType {
 	 * Creates a new <code>JavaManagedType</code>.
 	 *
 	 * @param provider The provider of JPA managed types
-	 * @param type The {@link IType} wrapping the Java type
+	 * @param type The {@link org.eclipse.persistence.jpa.jpql.spi.IType IType} wrapping the Java type
 	 * @param mappingBuilder The builder that is responsible to create the {@link IMapping} wrapping
 	 * a persistent attribute or property
 	 */

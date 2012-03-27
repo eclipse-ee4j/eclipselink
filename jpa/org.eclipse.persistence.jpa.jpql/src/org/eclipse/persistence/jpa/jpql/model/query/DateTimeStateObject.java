@@ -82,10 +82,11 @@ public class DateTimeStateObject extends SimpleStateObject {
 
 	/**
 	 * Determines whether this {@link DateTime} represents the JPQL identifier
-	 * {@link Expression#CURRENT_DATE CURRENT_DATE}.
+	 * {@link org.eclipse.persistence.jpa.jpql.parser.Expression#CURRENT_DATE CURRENT_DATE}.
 	 *
-	 * @return <code>true</code> if this {@link Expression} represents
-	 * {@link Expression#CURRENT_DATE CURRENT_DATE}; <code>false</code> otherwise
+	 * @return <code>true</code> if this {@link org.eclipse.persistence.jpa.jpql.parser.Expression
+	 * Expression} represents {@link org.eclipse.persistence.jpa.jpql.parser.Expression#CURRENT_DATE
+	 * CURRENT_DATE}; <code>false</code> otherwise
 	 */
 	public boolean isCurrentDate() {
 		return CURRENT_DATE.equalsIgnoreCase(getText());
@@ -93,10 +94,11 @@ public class DateTimeStateObject extends SimpleStateObject {
 
 	/**
 	 * Determines whether this {@link DateTime} represents the JPQL identifier
-	 * {@link Expression#CURRENT_TIME CURRENT_TIME}.
+	 * {@link org.eclipse.persistence.jpa.jpql.parser.Expression#CURRENT_TIME CURRENT_TIME}.
 	 *
-	 * @return <code>true</code> if this {@link Expression} represents
-	 * {@link Expression#CURRENT_TIME CURRENT_TIME}; <code>false</code> otherwise
+	 * @return <code>true</code> if this {@link org.eclipse.persistence.jpa.jpql.parser.Expression
+	 * Expression} represents {@link org.eclipse.persistence.jpa.jpql.parser.Expression#CURRENT_TIME
+	 * CURRENT_TIME}; <code>false</code> otherwise
 	 */
 	public boolean isCurrentTime() {
 		return CURRENT_TIME.equalsIgnoreCase(getText());
@@ -104,11 +106,11 @@ public class DateTimeStateObject extends SimpleStateObject {
 
 	/**
 	 * Determines whether this {@link DateTime} represents the JPQL identifier
-	 * {@link Expression#CURRENT_TIMESTAMP CURRENT_TIMESTAMP}.
+	 * {@link org.eclipse.persistence.jpa.jpql.parser.Expression#CURRENT_TIMESTAMP CURRENT_TIMESTAMP}.
 	 *
-	 * @return <code>true</code> if this {@link Expression} represents
-	 * {@link Expression#CURRENT_TIMESTAMP CURRENT_TIMESTAMP}; <code>false</code>
-	 * otherwise
+	 * @return <code>true</code> if this {@link org.eclipse.persistence.jpa.jpql.parser.Expression
+	 * Expression} represents {@link org.eclipse.persistence.jpa.jpql.parser.Expression#CURRENT_TIMESTAMP
+	 * CURRENT_TIMESTAMP}; <code>false</code> otherwise
 	 */
 	public boolean isCurrentTimestamp() {
 		return CURRENT_TIMESTAMP.equalsIgnoreCase(getText());
@@ -118,8 +120,8 @@ public class DateTimeStateObject extends SimpleStateObject {
 	 * Determines whether this {@link DateTime} represents the JDBC escape syntax for date, time,
 	 * timestamp formats.
 	 *
-	 * @return <code>true</code> if this {@link Expression} represents a JDBC escape syntax;
-	 * <code>false</code> otherwise
+	 * @return <code>true</code> if this {@link org.eclipse.persistence.jpa.jpql.parser.Expression
+	 * Expression} represents a JDBC escape syntax; <code>false</code> otherwise
 	 */
 	public boolean isJDBCDate() {
 		return hasText() ? (getText().charAt(0) == LEFT_CURLY_BRACKET) : false;

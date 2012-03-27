@@ -182,7 +182,7 @@ public class IdentificationVariableStateObject extends SimpleStateObject {
 	/**
 	 * Returns the {@link IType} of the field handled by this object.
 	 *
-	 * @return Either the {@link IType} that was resolved by this {@link Resolver} or the {@link IType}
+	 * @return Either the {@link IType} that was resolved by this state object or the {@link IType}
 	 * for {@link IType#UNRESOLVABLE_TYPE} if it could not be resolved
 	 */
 	public IType getType() {

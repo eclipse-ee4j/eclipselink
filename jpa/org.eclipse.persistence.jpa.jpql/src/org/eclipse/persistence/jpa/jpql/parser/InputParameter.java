@@ -106,6 +106,14 @@ public final class InputParameter extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
+	public String toActualText() {
+		return getText();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public String toParsedText() {
 		return getText();
 	}

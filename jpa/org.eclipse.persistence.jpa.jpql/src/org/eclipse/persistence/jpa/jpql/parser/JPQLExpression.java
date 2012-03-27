@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -305,10 +305,10 @@ public final class JPQLExpression extends AbstractExpression {
 			// If the query BNF is not the JPQL query BNF, then we need to parse
 			// it with a broader check when parsing
 			if (queryBNFId == JPQLStatementBNF.ID) {
-				queryStatement = parseSingleExpression(wordParser, getQueryBNF(), tolerant);
+				queryStatement = parseSingleExpression(wordParser, queryBNFId, tolerant);
 			}
 			else {
-				queryStatement = parse(wordParser, getQueryBNF(), tolerant);
+				queryStatement = parse(wordParser, queryBNFId, tolerant);
 			}
 
 			int count = wordParser.skipLeadingWhitespace();

@@ -166,8 +166,8 @@ public abstract class EncapsulatedIdentificationVariableExpressionStateObject ex
 	/**
 	 * Returns the {@link IType} of the field handled by this object.
 	 *
-	 * @return Either the {@link IType} that was resolved by this {@link Resolver} or the {@link IType}
-	 * for {@link IType#UNRESOLVABLE_TYPE} if it could not be resolved
+	 * @return Either the {@link IType} of the identification variable or the {@link IType} for
+	 * {@link IType#UNRESOLVABLE_TYPE} if it could not be resolved
 	 */
 	public IType getType() {
 

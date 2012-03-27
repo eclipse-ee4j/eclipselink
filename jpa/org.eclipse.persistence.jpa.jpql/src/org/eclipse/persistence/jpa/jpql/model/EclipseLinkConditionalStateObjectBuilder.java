@@ -16,7 +16,7 @@ package org.eclipse.persistence.jpa.jpql.model;
 import org.eclipse.persistence.jpa.jpql.model.query.AbstractConditionalClauseStateObject;
 
 /**
- * The EclipseLink extension over the basic support provided by {@link IConditionalStateObjectBuilder}.
+ * The EclipseLink extension over the basic support provided by {@link IConditionalExpressionStateObjectBuilder}.
  *
  * @version 2.4
  * @since 2.4

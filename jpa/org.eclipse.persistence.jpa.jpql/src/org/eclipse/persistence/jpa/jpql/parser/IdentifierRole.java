@@ -14,8 +14,7 @@
 package org.eclipse.persistence.jpa.jpql.parser;
 
 /**
- * A role describes the purpose of the JPQL identifier. To retrieve the role of an identifier, one
- * can use {@link JPQLExpression#identifierRole(String)} where the string is the identifier.
+ * A role describes the purpose of the JPQL identifier.
  *
  * @version 2.4
  * @since 2.3

@@ -126,7 +126,7 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
 	 * @throws InitializationError If the given test class is malformed
 	 */
 	public JPQLTestRunner(Class<?> testClass, SuiteHelper suiteHelper) throws InitializationError {
-		super(testClass);
+		this(testClass);
 		this.suiteHelper = suiteHelper;
 	}
 
@@ -233,14 +233,17 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
 
 		try {
 
+			// Create a runner for multiple unit-tests
 			if (testClass.isAnnotationPresent(SuiteClasses.class)) {
 				return new JPQLTestRunner(testClass, suiteHelper);
 			}
 
+			// Create a runner for a single unit-test
 			if (JPQLBasicTest.class.isAssignableFrom(testClass)) {
 				return new JPQLBasicTestRunner(testClass, suiteHelper);
 			}
 
+			// Create the default runner
 			return new AllDefaultPossibilitiesBuilder(true).runnerForClass(testClass);
 		}
 		catch (Throwable e) {
@@ -335,6 +338,7 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
 	 */
 	@Override
 	protected List<Runner> getChildren() {
+		// Cache the Description since JUnit always recreate it, this will increase performance
 		if (runners == null) {
 			runners = buildChildren();
 		}
@@ -346,6 +350,7 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
 	 */
 	@Override
 	public Description getDescription() {
+		// Cache the Description since JUnit always recreate it, this will increase performance
 		if (description == null) {
 			description = super.getDescription();
 		}
@@ -357,6 +362,10 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
 	 */
 	@Override
 	protected String getName() {
+		// Cache the Description since JUnit always recreate it, this will increase performance and
+		// also, add the extra information otherwise Eclipse will not be able to update the status of
+		// the tests, it uses the display string to retrieve the node from the JUnit view, if two
+		// nodes have the same display string, then only the last one is updated
 		if (name == null) {
 			name = buildDisplayString();
 		}
@@ -452,18 +461,7 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
 		JPQLBasicTestRunner(Class<?> testClass, SuiteHelper suiteHelper) throws InitializationError {
 			super(testClass);
 			this.suiteHelper = suiteHelper;
-//			sort(buildSorter());
 		}
-
-//		private Comparator<Description> buildComparator() {
-//			return new Comparator<Description>() {
-//				public int compare(Description description1, Description description2) {
-//					String displayName1 = description1.getDisplayName();
-//					String displayName2 = description1.getDisplayName();
-//					return displayName1.compareTo(displayName2);
-//				}
-//			};
-//		}
 
 		private Description buildDescription() {
 
@@ -478,16 +476,27 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
 			return description;
 		}
 
+		@Override
+		protected List<FrameworkMethod> getChildren() {
+			List<FrameworkMethod> methods = super.getChildren();
+			Collections.sort(methods, buildMethodComparator());
+			return methods;
+		}
+
+		private Comparator<FrameworkMethod> buildMethodComparator() {
+			return new Comparator<FrameworkMethod>() {
+				public int compare(FrameworkMethod method1, FrameworkMethod method2) {
+					return method1.getName().compareTo(method2.getName());
+				}
+			};
+		}
+
 		private String buildDisplayString() {
 			StringBuilder writer = new StringBuilder();
-			writer.append(this.getName());
+			writer.append(getName());
 			suiteHelper.addAdditionalInfo(writer);
 			return writer.toString();
 		}
-
-//		private Sorter buildSorter() {
-//			return new Sorter(buildComparator());
-//		}
 
 		/**
 		 * {@inheritDoc}

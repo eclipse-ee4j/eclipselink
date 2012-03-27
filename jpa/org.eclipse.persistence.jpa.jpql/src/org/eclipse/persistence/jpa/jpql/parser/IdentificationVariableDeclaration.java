@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -228,11 +228,7 @@ public final class IdentificationVariableDeclaration extends AbstractExpression 
 
 		// Parse the range variable declaration
 		if (tolerant) {
-			rangeVariableDeclaration = parse(
-				wordParser,
-				getQueryBNF(RangeVariableDeclarationBNF.ID),
-				tolerant
-			);
+			rangeVariableDeclaration = parse(wordParser, RangeVariableDeclarationBNF.ID, tolerant);
 		}
 		else {
 			rangeVariableDeclaration = new RangeVariableDeclaration(this);
@@ -243,7 +239,7 @@ public final class IdentificationVariableDeclaration extends AbstractExpression 
 
 		// Parse the JOIN expressions
 		parsingJoinExpression = true;
-		joins = parse(wordParser, getQueryBNF(InternalJoinBNF.ID), tolerant);
+		joins = parse(wordParser, InternalJoinBNF.ID, tolerant);
 
 		// If there are no JOIN expressions and there is more text to parse, then re-add the space so
 		// it can be owned by a parent expression. The only exception to that is if it's followed by

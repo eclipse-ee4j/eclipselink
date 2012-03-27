@@ -15,6 +15,8 @@ package org.eclipse.persistence.jpa.jpql.parser;
 
 import org.eclipse.persistence.jpa.jpql.WordParser;
 
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
+
 /**
  * This {@link ComparisonExpressionFactory} creates a new {@link ComparisonExpression} when the
  * portion of the query to parse starts with <b><</b>, <b>></b>, <b><></b>, <b><=</b>, <b>>=</b>
@@ -38,12 +40,12 @@ public final class ComparisonExpressionFactory extends ExpressionFactory {
 	 * Creates a new <code>ComparisonExpressionFactory</code>.
 	 */
 	public ComparisonExpressionFactory() {
-		super(ID, Expression.DIFFERENT,
-		          Expression.EQUAL,
-		          Expression.GREATER_THAN,
-		          Expression.GREATER_THAN_OR_EQUAL,
-		          Expression.LOWER_THAN,
-		          Expression.LOWER_THAN_OR_EQUAL);
+		super(ID, DIFFERENT,
+		          EQUAL,
+		          GREATER_THAN,
+		          GREATER_THAN_OR_EQUAL,
+		          LOWER_THAN,
+		          LOWER_THAN_OR_EQUAL);
 	}
 
 	/**
@@ -57,13 +59,75 @@ public final class ComparisonExpressionFactory extends ExpressionFactory {
 	                                             AbstractExpression expression,
 	                                             boolean tolerant) {
 
-		ComparisonExpression comparisonExpression = new ComparisonExpression(parent);
-		comparisonExpression.parse(wordParser, tolerant);
+		String operator = null;
 
-		if (expression != null) {
-			comparisonExpression.setLeftExpression(expression);
+		// First look for known operator (<, <=, =, =>, <>)
+		switch (wordParser.character()) {
+
+			// <, <=, <>
+			case '<': {
+				switch (wordParser.character(wordParser.position() + 1)) {
+					case '=': {
+						operator = LOWER_THAN_OR_EQUAL;
+						break;
+					}
+					case '>': {
+						operator = DIFFERENT;
+						break;
+					}
+					default: {
+						operator = LOWER_THAN;
+						break;
+					}
+				}
+				break;
+			}
+
+			// >, >=
+			case '>': {
+				switch (wordParser.character(wordParser.position() + 1)) {
+					case '=': {
+						operator = GREATER_THAN_OR_EQUAL;
+						break;
+					}
+					default: {
+						operator = GREATER_THAN;
+						break;
+					}
+				}
+				break;
+			}
+
+			// =
+			case '=': {
+				operator = EQUAL;
+				break;
+			}
 		}
 
-		return comparisonExpression;
+		// Now look for additional identifiers
+		if (operator == null) {
+			for (String identifier : identifiers()) {
+				if (wordParser.startsWithIdentifier(identifier)) {
+					operator = identifier;
+					break;
+				}
+			}
+		}
+
+		// The operator was found, create the expression
+		if (operator != null) {
+
+			ComparisonExpression comparisonExpression = new ComparisonExpression(parent, operator);
+			comparisonExpression.parse(wordParser, tolerant);
+
+			if (expression != null) {
+				comparisonExpression.setLeftExpression(expression);
+			}
+
+			return comparisonExpression;
+		}
+
+		return null;
 	}
 }

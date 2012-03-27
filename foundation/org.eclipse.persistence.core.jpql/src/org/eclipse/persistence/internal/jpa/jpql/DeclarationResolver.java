@@ -234,9 +234,11 @@ final class DeclarationResolver {
 	}
 
 	/**
-	 * Returns
+	 * Returns the variables that got defined in the select expression. This only applies to JPQL
+	 * queries built for JPA 2.0 or later.
 	 *
-	 * @return
+	 * @return The variables identifying the select expressions, if any was defined or an empty set
+	 * if none were defined
 	 */
 	Collection<IdentificationVariable> getResultVariables() {
 

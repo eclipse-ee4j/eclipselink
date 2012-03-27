@@ -221,7 +221,7 @@ public final class TypeHelper {
 	/**
 	 * Retrieves the external class for the given fully qualified class name.
 	 *
-	 * @param name The fully qualified class name of the class to retrieve
+	 * @param typeName The fully qualified class name of the class to retrieve
 	 * @return The external form of the class to retrieve
 	 */
 	public IType getType(String typeName) {
@@ -339,10 +339,10 @@ public final class TypeHelper {
 	}
 
 	/**
-	 * Determines whether the given {@link IType} is an instance of {@link Numeric}.
+	 * Determines whether the given {@link IType} is an instance of {@link Number}.
 	 *
 	 * @param type The type to check it's assignability
-	 * @return <code>true</code> if the given {@link IType} is an instance of {@link Numeric};
+	 * @return <code>true</code> if the given {@link IType} is an instance of {@link Number};
 	 * <code>false</code> otherwise
 	 */
 	public boolean isNumericType(IType type) {

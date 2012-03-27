@@ -13,6 +13,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.queries;
 
+import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
@@ -52,9 +53,9 @@ public interface JPAQueryBuilder {
     * @param session The EclipseLink {@link AbstractSession} that this query will execute against
     * @return The fully initialized {@link Expression}
     */
-//   Expression buildSelectionCriteria(String entityName,
-//                                     String selectionCriteria,
-//                                     AbstractSession session);
+   Expression buildSelectionCriteria(String entityName,
+                                     String selectionCriteria,
+                                     AbstractSession session);
 
 	/**
     * Populates the given {@link DatabaseQuery} by parsing the given JPQL query.

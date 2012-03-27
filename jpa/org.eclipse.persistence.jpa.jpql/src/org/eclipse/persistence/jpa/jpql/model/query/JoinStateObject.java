@@ -295,8 +295,8 @@ public class JoinStateObject extends AbstractStateObject {
 	/**
 	 * Sets whether the <code><b>AS</b></code> identifier is used or not.
 	 *
-	 * @param hasAs <code>true</code> if the <code><b>AS</b></code> identifier is part of the
-	 * expression; <code>false</code> otherwise
+	 * @param as <code>true</code> if the <code><b>AS</b></code> identifier is part of the expression;
+	 * <code>false</code> otherwise
 	 */
 	public void setAs(boolean as) {
 		boolean oldAs = this.as;

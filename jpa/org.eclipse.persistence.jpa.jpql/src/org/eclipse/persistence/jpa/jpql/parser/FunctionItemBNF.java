@@ -24,7 +24,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
 public final class FunctionItemBNF extends JPQLQueryBNF {
 
 	/**
-	 * The unique identifier of this {@link InternalFunctionExpressionBNF}.
+	 * The unique identifier of this {@link FunctionItemBNF}.
 	 */
 	public static final String ID = "function_item";
 

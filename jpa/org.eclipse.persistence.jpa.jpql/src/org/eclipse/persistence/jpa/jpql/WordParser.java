@@ -14,9 +14,9 @@
 package org.eclipse.persistence.jpa.jpql;
 
 /**
- * This "parser" holds onto the string version of the Java Persistence query that is parsed into a
- * parsed tree. It uses a cursor that let the current {@link Expression} object to parse its section
- * of the query.
+ * This "parser" holds onto the string version of the JPQL query that is parsed into a parsed tree.
+ * It uses a cursor that lets the current {@link org.eclipse.persistence.jpa.jpql.parser.Expression
+ * Expression} object to parse its fragment of the query.
  * <p>
  * Provisional API: This interface is part of an interim API that is still under development and
  * expected to change significantly before reaching stability. It is available at this early stage
@@ -30,24 +30,26 @@ package org.eclipse.persistence.jpa.jpql;
 public final class WordParser {
 
 	/**
-	 * The current position of the cursor within the text.
+	 * The current position of the cursor within the JPQL query.
 	 */
 	private int cursor;
 
 	/**
-	 * The total length of the string.
+	 * The length of the JPQL query.
 	 */
 	private final int length;
 
 	/**
-	 * The string representation of the Java Persistence query to parse.
+	 * The string representation of the JPQL query.
 	 */
 	private final CharSequence text;
+
+	private WordType wordType;
 
 	/**
 	 * Creates a new <code>WordParser</code>.
 	 *
-	 * @param text The string representation of the Java Persistence query to parse
+	 * @param query The string representation of the JPQL query
 	 */
 	public WordParser(CharSequence query) {
 		super();
@@ -57,19 +59,21 @@ public final class WordParser {
 	}
 
 	/**
-	 * Retrieves the character at the current position of the cursor.
+	 * Retrieves the character at the current cursor position.
 	 *
-	 * @return The character retrieved from the string at the cursor position
+	 * @return The character retrieved from the string at the current cursor position or '\0' if the
+	 * position is beyond the end of the text
 	 */
 	public char character() {
 		return character(cursor);
 	}
 
 	/**
-	 * Retrieves the character at the given position.
+	 * Retrieves the character at the given cursor position.
 	 *
 	 * @param position The position of the character to return
-	 * @return The character retrieved from the string at the given position
+	 * @return The character retrieved from the string at the given position or '\0' if the position
+	 * is beyond the end of the text
 	 */
 	public char character(int position) {
 		return (position >= length) ? '\0' : text.charAt(position);
@@ -129,6 +133,10 @@ public final class WordParser {
 		return substring(startPosition, endPosition);
 	}
 
+	public WordType getWordType() {
+		return wordType;
+	}
+
 	/**
 	 * Determines whether the given character is an arithmetic symbol, which is one of the following:
 	 * { '>', '<', '/', '*', '-', '+', '=', '{' }.
@@ -139,6 +147,7 @@ public final class WordParser {
 	 */
 	public boolean isArithmeticSymbol(char character) {
 		return character == '>' ||
+		       character == '!' ||
 		       character == '<' ||
 		       character == '/' ||
 		       character == '*' ||
@@ -154,7 +163,7 @@ public final class WordParser {
 	 * @param character The character to test
 	 * @return <code>true</code> if the given character is a delimiter; <code>false</code> otherwise
 	 */
-	public boolean isDelimitor(char character) {
+	public boolean isDelimiter(char character) {
 		return character == '(' ||
 		       character == ')' ||
 		       character == ',';
@@ -195,12 +204,8 @@ public final class WordParser {
 	 */
 	public boolean isWordSeparator(char character) {
 		return Character.isWhitespace(character) ||
-		       isDelimitor(character)            ||
-		       character == '>' ||
-		       character == '<' ||
-		       character == '/' ||
-		       character == '*' ||
-		       character == '=';
+		       isDelimiter(character)            ||
+		       isArithmeticSymbol(character);
 	}
 
 	/**
@@ -218,7 +223,7 @@ public final class WordParser {
 	 * @param word The word used to determine how much to move the position forward
 	 */
 	public void moveBackward(CharSequence word) {
-		moveBackward(word.length());
+		cursor -= word.length();
 	}
 
 	/**
@@ -250,6 +255,15 @@ public final class WordParser {
 		String word = substring(cursor, cursor + position);
 		cursor += position;
 		return word;
+	}
+
+	/**
+	 * Retrieves the numeric literal that should be the current word to parse.
+	 *
+	 * @return The numeric literal value
+	 */
+	public String numericLiteral() {
+		return substring(cursor, scanNumericLiteral(cursor));
 	}
 
 	/**
@@ -312,7 +326,7 @@ public final class WordParser {
 			char character = text.charAt(index);
 
 			if (Character.isWhitespace(character) ||
-			    isDelimitor(character) ||
+			    isDelimiter(character) ||
 			    isArithmeticSymbol(character)) {
 
 				break;
@@ -333,42 +347,103 @@ public final class WordParser {
 		return cursor;
 	}
 
-	/**
-	 * Retrieves
-	 *
-	 * @return
-	 */
-	public String potentialWord() {
-		return substring(cursor, potentialWordEndPosition());
-	}
+	private int scanNumericLiteral(int startPosition) {
 
-	/**
-	 * Retrieves
-	 *
-	 * @return
-	 */
-	public int potentialWordEndPosition() {
+		int endIndex = startPosition;
+		boolean digitParsed = false;
+		boolean dotParsed = false;
 
-		int endIndex = cursor;
+		for (; endIndex < length; endIndex++) {
+			char character = text.charAt(endIndex);
 
-		for (int index = cursor; index < length; index++) {
-			char character = text.charAt(index);
+			// Usual digit
+			if (character >= '0' && character <= '9') {
+				digitParsed = true;
+			}
+			// The arithmetic sign before the number
+			else if ((character == '+' || character == '-')) {
 
-			if (isArithmeticSymbol(character)) {
-				if (endIndex == cursor) {
-					endIndex++;
+				// '+' or '-' is only valid at the beginning of the literal
+				if (endIndex > startPosition) {
+					break;
+				}
+			}
+			// The separator of integer and decimal values
+			else if (character == '.') {
+
+				// A '.' was already parsed, it is not a valid numeric literal
+				if (dotParsed) {
+					endIndex = startPosition + 1;
+					wordType = WordType.WORD;
+					break;
+				}
+
+				dotParsed = true;
+			}
+			// Parse the exponent
+			else if (character == 'e' || character == 'E') {
+
+				if (!digitParsed) {
+					wordType = WordType.WORD;
+					return endIndex;
+				}
+
+				for (int index = ++endIndex; index < length; index++) {
+					character = text.charAt(index);
+
+					// The first character can be '+', '-' or a number
+					if ((index == endIndex) && (character == '-' || character == '+') ||
+					    character >= '0' && character <= '9') {
+
+						endIndex++;
+						continue;
+					}
+
+					// If it is not a character like '(', then it's not a valid number
+					if (!isWordSeparator(character)) {
+						endIndex++;
+						wordType = WordType.WORD;
+					}
+
+					break;
 				}
 
 				break;
 			}
+			// A float/double or long number
+			else if (character == 'f' || character == 'F' ||
+			         character == 'd' || character == 'D' ||
+			         character == 'l' || character == 'L') {
 
-			if (Character.isWhitespace(character) ||
-			    isDelimitor(character)) {
+				// A single arithmetic symbol
+				// Example: "-LENGTH..." -> "-"
+				if (!digitParsed) {
+					wordType = WordType.WORD;
+					break;
+				}
 
-				index = length;
-			}
-			else {
 				endIndex++;
+
+				// End of the text
+				if (endIndex == length) {
+					break;
+				}
+
+				character = text.charAt(endIndex);
+
+				// Done parsing the numeric literal
+				if (isWordSeparator(character)) {
+					break;
+				}
+			}
+			// Example: "-AVG..." -> "-"
+			else if (!digitParsed && Character.isJavaIdentifierPart(character)) {
+				wordType = WordType.WORD;
+				break;
+			}
+			// Done parsing the numeric literal
+			else if (isWordSeparator(character)) {
+				break;
 			}
 		}
 
@@ -376,37 +451,50 @@ public final class WordParser {
 	}
 
 	/**
-	 * Retrieves the previous word from the current position. Any character from the position to the
-	 * first whitespace will be ignore.
-	 * <p>
-	 * For instance, "<b>SELECT</b> <b>AVG</b>(e.age) <b>FROM</b> Employee e":
-	 * <ul>
-	 * <li>Position 3, result is an empty string;
-	 * <li>Position 6, result is an empty string;
-	 * <li>Position 7, result is "SELECT".
-	 * <li>Position 10, result is "SELECT".
-	 * <li>Position 13, result is "SELECT".
-	 * </ul>
+	 * Retrieves the first word from the given text starting at the specified position.
 	 *
-	 * @param position The position to start looking for a word in reverse
-	 * @return The previous word that is separated by whitespace with the position
+	 * @param wordParser The {@link WordParser} contains the string and the current position that
+	 * will be used to parse the literal
+	 * @return The first word contained in the text, if none could be found, then an empty string is
+	 * returned
 	 */
-	public String previousWord(int position) {
+	private int scanStringLiteral(int startPosition) {
 
-		// Find the first whitespace before the word at the given position
-		while (--position >= 0) {
-			char character = text.charAt(position);
+		int endIndex = startPosition;
+		char startQuote = text.charAt(endIndex);
 
-			if (Character.isWhitespace(character)) {
+		for (endIndex++; endIndex < length; endIndex++) {
+
+			char character = text.charAt(endIndex);
+
+			if (character == startQuote) {
+				endIndex++;
+
+				// Verify the single quote is escaped with another single quote
+				if ((startQuote == '\'') && (endIndex < length)) {
+					char nextCharacter = text.charAt(endIndex);
+
+					// The single quote is escaped, continue
+					if (nextCharacter == '\'') {
+						continue;
+					}
+				}
+				// Verify the double quote is escaped with backslash
+				else if ((startQuote == '\"') && (endIndex - 2 > startPosition)) {
+					char previousCharacter = text.charAt(endIndex - 2);
+
+					// The double quote is escaped, continue
+					if (previousCharacter == '\\') {
+						continue;
+					}
+				}
+
+				// Reached the end of the string literal
 				break;
 			}
 		}
 
-		if (position <= 0) {
-			return ExpressionTools.EMPTY_STRING;
-		}
-
-		return entireWord(position);
+		return endIndex;
 	}
 
 	/**
@@ -421,7 +509,6 @@ public final class WordParser {
 	/**
 	 * Removes the whitespace that starts the given text.
 	 *
-	 * @param text The text to have the whitespace removed from the beginning of the string
 	 * @return The number of whitespace removed
 	 */
 	public int skipLeadingWhitespace() {
@@ -470,7 +557,7 @@ public final class WordParser {
 	 * specified prefix.
 	 *
 	 * @param prefix The prefix
-	 * @param offset Where to begin looking in the query
+	 * @param startIndex Where to begin looking in the query
 	 * @return <code>true</code> if the character sequence represented by the
 	 * argument is a prefix of the substring of this object starting at index <code>startIndex</code>;
 	 * <code>false</code> otherwise
@@ -577,7 +664,7 @@ public final class WordParser {
 			char character = text.charAt(nextCharacterIndex);
 
 			if (Character.isWhitespace(character) ||
-			    isDelimitor(character)) {
+			    isDelimiter(character)) {
 				return true;
 			}
 		}
@@ -742,38 +829,186 @@ public final class WordParser {
 	}
 
 	/**
-	 * Returns the position at which a word ends, the position is determined by the current position
-	 * of the cursor.
+	 * Returns the position a word would end based on the current cursor position. {@link #getWordType()}
+	 * can be used to determine the type of word that was scanned.
 	 *
-	 * @return The position where the current word ends, it ends when a whitespace, a delimitor {',',
-	 * '(', ')'} or a math symbol is encountered
+	 * @return The position where the current word ends
+	 * @see #word() WordParser.word()
+	 * @see WordType
 	 */
 	public int wordEndPosition() {
 		return wordEndPosition(cursor);
 	}
 
 	/**
-	 * Returns the position at which a word ends.
+	 * Returns the position a word would end based on the given start position. {@link #getWordType()}
+	 * can be used to determine the type of word that was scanned.
 	 *
-	 * @param position The beginning of the search where the word ends
-	 * @return The position where the current word ends, it ends when a whitespace, a delimitor {',',
-	 * '(', ')'} or a math symbol is encountered
+	 * @param position The position to start scanning the text
+	 * @return The position where the current word ends
+	 * @see #word() WordParser.word()
+	 * @see WordType
 	 */
 	public int wordEndPosition(int position) {
 
-		int endIndex = position;
+		if (position >= length) {
+			return position;
+		}
 
-		for (int index = position; index < length; index++) {
-			char character = text.charAt(index);
+		char character = text.charAt(position);
+		int endIndex = position + 1;
 
-			if (isWordSeparator(character)) {
-				index = length;
+		// Parse a string literal
+		if (character == '\'' ||
+		    character == '\"') {
+
+			wordType = WordType.STRING_LITERAL;
+			return scanStringLiteral(position);
+		}
+
+		// Parse an input parameter
+		if (character == '?' ||
+		    character == ':') {
+
+			wordType = WordType.INPUT_PARAMETER;
+
+			for (; endIndex < length; endIndex++) {
+				character = text.charAt(endIndex);
+
+				// Special case for '!='
+				if ((character == '!') && (endIndex + 1 < length)) {
+					character = text.charAt(endIndex + 1);
+
+					if (character == '=') {
+						break;
+					}
+
+					endIndex++;
+					continue;
+				}
+
+				if (isWordSeparator(character)) {
+					break;
+				}
 			}
-			else {
-				endIndex++;
+
+			return endIndex;
+		}
+
+		// Parse an arithmetic symbol
+		if (character == '/' ||
+		    character == '*' ||
+		    character == '+' ||
+		    character == '-') {
+
+			wordType = WordType.WORD;
+			return endIndex;
+		}
+
+		// Parse JDBC date
+		if (character == '{') {
+			// TODO
+			wordType = WordType.WORD;
+			return endIndex;
+		}
+
+		// Parse a numeric literal
+		if (isDigit(character)) {
+
+			wordType = WordType.NUMERIC_LITERAL;
+			endIndex = scanNumericLiteral(position);
+
+			// The word is a valid numeric literal, stop now,
+			// otherwise scan for the entire word
+			if (wordType == WordType.NUMERIC_LITERAL) {
+				return endIndex;
 			}
 		}
 
+		// '='
+		else if (character == '=') {
+			wordType = WordType.WORD;
+			return endIndex;
+		}
+
+		// <, <>, <=
+		else if (character == '<') {
+
+			wordType = WordType.WORD;
+
+			if (endIndex < length) {
+				character = text.charAt(endIndex);
+
+				if (character == '>' ||
+				    character == '=') {
+
+					return endIndex + 1;
+				}
+
+				return endIndex;
+			}
+		}
+
+		// >, >=, !=
+		else if (character == '>' ||
+		         character == '!') {
+
+			wordType = WordType.WORD;
+
+			// End of the text
+			if (endIndex == length) {
+				return endIndex;
+			}
+
+			// Scan the next character
+			char nextCharacter = text.charAt(endIndex);
+
+			if (nextCharacter == '=') {
+				return ++endIndex;
+			}
+
+			if (character == '>') {
+				return endIndex;
+			}
+		}
+
+		//
+		else if (isWordSeparator(character)) {
+			return --endIndex;
+		}
+
+		// Scan for an entire word
+		for (int index = endIndex; index < length; index++) {
+			character = text.charAt(index);
+
+			// Special case for '!='
+			if ((character == '!') && (endIndex + 1 < length)) {
+				character = text.charAt(index + 1);
+
+				if (character == '=') {
+					return endIndex;
+				}
+
+				endIndex++;
+				continue;
+			}
+
+			if (isWordSeparator(character)) {
+				break;
+			}
+
+			// Continue to the next character
+			endIndex++;
+		}
+
+		wordType = WordType.WORD;
 		return endIndex;
+	}
+
+	public enum WordType {
+		INPUT_PARAMETER,
+		NUMERIC_LITERAL,
+		STRING_LITERAL,
+		WORD
 	}
 }

@@ -28,7 +28,7 @@ public interface IAbstractConditionalExpressionStateObjectBuilder<T extends ISca
 	 * Creates the expression <code><b>ALL(subquery)</b></code>.
 	 *
 	 * @param subquery The already constructed subquery
-	 * @return This {@link T builder}
+	 * @return This builder
 	 */
 	T all(SimpleSelectStatementStateObject subquery);
 
@@ -36,7 +36,7 @@ public interface IAbstractConditionalExpressionStateObjectBuilder<T extends ISca
 	 * Creates the expression <code><b>x AND y</b></code>.
 	 *
 	 * @param builder The right side of the logical expression
-	 * @return This {@link T builder}
+	 * @return This builder
 	 */
 	T and(T builder);
 
@@ -44,7 +44,7 @@ public interface IAbstractConditionalExpressionStateObjectBuilder<T extends ISca
 	 * Creates the expression <code><b>ANY(subquery)</b></code>.
 	 *
 	 * @param subquery The already constructed subquery
-	 * @return This {@link T builder}
+	 * @return This builder
 	 */
 	T any(SimpleSelectStatementStateObject subquery);
 
@@ -53,7 +53,7 @@ public interface IAbstractConditionalExpressionStateObjectBuilder<T extends ISca
 	 *
 	 * @param lowerBoundExpression The lower bound expression
 	 * @param upperBoundExpression The upper bound expression
-	 * @return This {@link T builder}
+	 * @return This builder
 	 */
 	T between(T lowerBoundExpression, T upperBoundExpression);
 
@@ -61,7 +61,7 @@ public interface IAbstractConditionalExpressionStateObjectBuilder<T extends ISca
 	 * Creates a new collection-valued path expression.
 	 *
 	 * @param path The collection-valued path expression
-	 * @return This {@link T builder}
+	 * @return This builder
 	 */
 	T collectionPath(String path);
 
@@ -122,7 +122,7 @@ public interface IAbstractConditionalExpressionStateObjectBuilder<T extends ISca
 	 * Creates the expression representing an identification variable.
 	 *
 	 * @param variable The identification variable
-	 * @return This {@link T builder}
+	 * @return This builder
 	 */
 	T variable(String variable);
 }

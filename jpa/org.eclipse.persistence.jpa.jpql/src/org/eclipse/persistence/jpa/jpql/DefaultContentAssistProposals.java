@@ -305,7 +305,7 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
 				startPosition = wordParser.position() - partialWord.length() + dotIndex + 1;
 			}
 			else if (insert) {
-				wordsToReplace = wordParser.potentialWord();
+				wordsToReplace = wordParser.word();
 				startPosition = wordParser.position() - partialWord.length();
 			}
 			else {
@@ -383,7 +383,8 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
 	/**
 	 * Returns the {@link JPQLGrammar} that defines how the JPQL query was parsed.
 	 *
-	 * @return The {@link JPQLGrammar} that was used to parse this {@link Expression}
+	 * @return The {@link JPQLGrammar} that was used to parse this {@link org.eclipse.persistence.
+	 * jpa.jpql.parser.Expression Expression}
 	 */
 	public JPQLGrammar getGrammar() {
 		return jpqlGrammar;
@@ -545,8 +546,8 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
 	/**
 	 * This contains the result of inserting a proposal into a JPQL query at a given position.
 	 *
-	 * @see ContentAssistItems#buildEscapedQuery(String, String, int, boolean)
-	 * @see ContentAssistItems#buildQuery(String, String, int, boolean)
+	 * @see ContentAssistProposals#buildEscapedQuery(String, String, int, boolean)
+	 * @see ContentAssistProposals#buildQuery(String, String, int, boolean)
 	 */
 	private final class Result implements ResultQuery {
 

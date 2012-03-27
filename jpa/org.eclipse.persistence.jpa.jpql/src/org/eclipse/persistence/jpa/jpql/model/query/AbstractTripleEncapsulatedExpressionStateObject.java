@@ -20,7 +20,7 @@ import org.eclipse.persistence.jpa.jpql.parser.AbstractTripleEncapsulatedExpress
 import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
 
 /**
- * This {@link Expression} takes care of parsing an expression that encapsulates three expressions
+ * This state object takes care of parsing an expression that encapsulates three expressions
  * separated by a comma.
  *
  * <div nowrap><b>BNF:</b> <code>expression ::= &lt;identifier&gt;(first_expression, second_expression, third_expression)</code><p>

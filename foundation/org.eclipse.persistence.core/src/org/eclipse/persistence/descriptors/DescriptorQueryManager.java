@@ -1,45 +1,68 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2011 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     10/15/2010-2.2 Guy Pelletier 
+ *     10/15/2010-2.2 Guy Pelletier
  *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
- *     04/01/2011-2.3 Guy Pelletier 
+ *     04/01/2011-2.3 Guy Pelletier
  *       - 337323: Multi-tenant with shared schema support (part 2)
- *     05/24/2011-2.3 Guy Pelletier 
+ *     05/24/2011-2.3 Guy Pelletier
  *       - 345962: Join fetch query when using tenant discriminator column fails.
- *     08/18/2011-2.3.1 Guy Pelletier 
+ *     08/18/2011-2.3.1 Guy Pelletier
  *       - 355093: Add new 'includeCriteria' flag to Multitenant metadata
- *     09/09/2011-2.3.1 Guy Pelletier 
+ *     09/09/2011-2.3.1 Guy Pelletier
  *       - 356197: Add new VPD type to MultitenantType
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.descriptors;
 
-import java.util.*;
-import java.io.*;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.mappings.*;
-import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
+import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.DescriptorException;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.internal.queries.ReportItem;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
+import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.expressions.CompoundExpression;
 import org.eclipse.persistence.internal.expressions.FunctionExpression;
 import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.internal.expressions.SubSelectExpression;
+import org.eclipse.persistence.internal.helper.ConcurrentFixedCache;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
+import org.eclipse.persistence.internal.queries.ReportItem;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.ChangeRecord;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.queries.Call;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.DeleteObjectQuery;
+import org.eclipse.persistence.queries.DoesExistQuery;
+import org.eclipse.persistence.queries.InsertObjectQuery;
+import org.eclipse.persistence.queries.JPAQueryBuilder;
+import org.eclipse.persistence.queries.JPAQueryBuilderManager;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.queries.ReadObjectQuery;
+import org.eclipse.persistence.queries.ReportQuery;
+import org.eclipse.persistence.queries.UpdateObjectQuery;
+import org.eclipse.persistence.queries.WriteObjectQuery;
 
 /**
  * <p><b>Purpose</b>: The query manager allows for the database operations that EclipseLink
@@ -233,7 +256,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * INTERNAL:
      * Clone the query manager
      */
-    public Object clone() {
+	public Object clone() {
         DescriptorQueryManager manager = null;
         try {
             manager = (DescriptorQueryManager)super.clone();
@@ -286,7 +309,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * Convert all the class-name-based settings in this Query Manager to actual class-based
      * settings
      * This method is implemented by subclasses as necessary.
-     * @param classLoader 
+     * @param classLoader
      */
     public void convertClassNamesToClasses(ClassLoader classLoader){
         Iterator queryVectors = getQueries().values().iterator();
@@ -303,7 +326,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
             getReadAllQuery().convertClassNamesToClasses(classLoader);
         }
     };
-    
+
     /**
      * ADVANCED:
      * Returns the join expression that should be appended to all of the descriptors expressions
@@ -511,8 +534,8 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
     public DatabaseQuery getQuery(String name, Vector arguments) {
         DatabaseQuery query = getLocalQuery(name, arguments);
 
-        // CR#3711: Check if a query with the same name exists for this descriptor.  
-        // If not, recursively check descriptors of parent classes.  If nothing is 
+        // CR#3711: Check if a query with the same name exists for this descriptor.
+        // If not, recursively check descriptors of parent classes.  If nothing is
         // found in parents, return null.
         if (query == null) {
             DatabaseQuery parentQuery = getQueryFromParent(name, arguments);
@@ -553,7 +576,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
         // different argument set; we can have only one query with
         // no arguments; Vector queries is not sorted;
         // When asked for the query with no parameters the
-        // old version did return the first query - wrong: 
+        // old version did return the first query - wrong:
         // return (DatabaseQuery) queries.firstElement();
         int argumentTypesSize = 0;
         if (arguments != null) {
@@ -566,7 +589,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
         return getLocalQueryByArgumentTypes(name, argumentTypes);
 
     }
-    
+
     /**
      * INTERNAL:
      * Return the query from the set of pre-defined queries with the given name and argument types.
@@ -720,7 +743,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
     public boolean hasAdditionalCriteria() {
         return additionalCriteria != null;
     }
-    
+
     /**
      * INTERNAL:
      * Return if a custom join expression is used.
@@ -810,7 +833,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
             ((DatabaseQuery)it.next()).setDescriptor(descriptor);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Post initialize the mappings
@@ -895,32 +918,33 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
             if (getDescriptor().hasInheritance() && getDescriptor().getInheritancePolicy().hasView()) {
                 throw DescriptorException.additionalCriteriaNotSupportedWithInheritanceViews(getDescriptor());
             }
-            
-            String jpql = "select this from " + descriptor.getAlias() + " this where " + additionalCriteria.trim();
-            
+
             JPAQueryBuilder queryBuilder = JPAQueryBuilderManager.getQueryBuilder();
-            DatabaseQuery databaseQuery = queryBuilder.buildQuery(jpql, session);
-            
-            updatePropertyParameterExpression(databaseQuery.getSelectionCriteria());
-                 
-            additionalJoinExpression = databaseQuery.getSelectionCriteria().and(additionalJoinExpression);
-        } 
-            
+            Expression selectionCriteria = queryBuilder.buildSelectionCriteria(
+               getDescriptor().getAlias(),
+               additionalCriteria,
+               session
+            );
+
+            updatePropertyParameterExpression(selectionCriteria);
+            additionalJoinExpression = selectionCriteria.and(additionalJoinExpression);
+        }
+
         if (additionalJoinExpression != null) {
-            // The make sure the additional join expression has the correct 
-            // context, rebuild the additional join expression on a new 
+            // The make sure the additional join expression has the correct
+            // context, rebuild the additional join expression on a new
             // expression builder.
             additionalJoinExpression = additionalJoinExpression.rebuildOn(new ExpressionBuilder());
         }
     }
-    
+
     /**
      * INTERNAL:
      * This method will walk the given expression and mark any parameter
      * expressions as property expressions. This is done when additional
-     * criteria has been specified and parameter values must be resolved 
+     * criteria has been specified and parameter values must be resolved
      * through session properties.
-     * 
+     *
      * @see postInitialize
      */
     protected void updatePropertyParameterExpression(Expression exp) {
@@ -937,12 +961,12 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
                 updatePropertyParameterExpression(item.getAttributeExpression());
             }
         }
-        
+
         if (exp.isParameterExpression()) {
             ((ParameterExpression) exp).setIsProperty(true);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Execute the post insert operation for the query
@@ -1117,13 +1141,13 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
     /**
      * ADVANCED:
      * Set the additional join criteria that will be used to form the additional
-     * join expression. The additionalCriteria is a jpql fragment at this point. 
+     * join expression. The additionalCriteria is a jpql fragment at this point.
      * @see setAdditionalJoinExpression
      */
     public void setAdditionalCriteria(String additionalCriteria) {
         this.additionalCriteria = additionalCriteria;
     }
-    
+
     /**
      * ADVANCED:
      * Set the additional join expression. Used in conjunction with
@@ -1162,8 +1186,8 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * This allows the user to override the SQL generated by EclipseLink, with their own SQL or procedure call.
      * The arguments are translated from the fields of the source row,
      * through replacing the field names marked by '#' with the values for those fields.
-     * Warning: Allowing an unverified SQL string to be passed into this 
-     * method makes your application vulnerable to SQL injection attacks. 
+     * Warning: Allowing an unverified SQL string to be passed into this
+     * method makes your application vulnerable to SQL injection attacks.
      * <p>
      *    Example, "delete from EMPLOYEE where EMPLOYEE_ID = #EMPLOYEE_ID".
      */
@@ -1197,7 +1221,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      */
     public void setDescriptor(ClassDescriptor descriptor) {
         this.descriptor = descriptor;
-        //Gross alert: This is for the case when we are reading from XML, and 
+        //Gross alert: This is for the case when we are reading from XML, and
         //we have to compensate for no descriptor available at read time.  - JL
         populateQueries();
 
@@ -1227,8 +1251,8 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * The arguments are translated from the fields of the source row, through replacing the field names marked by '#'
      * with the values for those fields.
      * This must return null if the object does not exist, otherwise return a database row.
-     * Warning: Allowing an unverified SQL string to be passed into this 
-     * method makes your application vulnerable to SQL injection attacks. 
+     * Warning: Allowing an unverified SQL string to be passed into this
+     * method makes your application vulnerable to SQL injection attacks.
      * <p>
      * Example, "select EMPLOYEE_ID from EMPLOYEE where EMPLOYEE_ID = #EMPLOYEE_ID".
      */
@@ -1294,7 +1318,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
         this.insertQuery.setIsUserDefined(true);
         this.insertQuery.setDescriptor(getDescriptor());
     }
-    
+
     /**
      * ADVANCED:
      * Set the receiver's insert call.
@@ -1315,8 +1339,8 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * This allows the user to override the SQL generated by EclipseLink, with their own SQL or procedure call.
      * The arguments are translated from the fields of the source row,
      * through replacing the field names marked by '#' with the values for those fields.
-     * Warning: Allowing an unverified SQL string to be passed into this 
-     * method makes your application vulnerable to SQL injection attacks. 
+     * Warning: Allowing an unverified SQL string to be passed into this
+     * method makes your application vulnerable to SQL injection attacks.
      * <p>
      * Example, "insert into EMPLOYEE (F_NAME, L_NAME) values (#F_NAME, #L_NAME)".
      */
@@ -1413,7 +1437,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
         }
         return tablesJoinExpressions;
     }
-    
+
     /**
      * INTERNAL:
      * Used to set the multiple table join expression that was generated by EclipseLink as opposed
@@ -1477,8 +1501,8 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * The arguments are translated from the fields of the read arguments row,
      * through replacing the field names marked by '#' with the values for those fields.
      * Note that this is only used on readAllObjects(Class), and not when an expression is provided.
-     * Warning: Allowing an unverified SQL string to be passed into this 
-     * method makes your application vulnerable to SQL injection attacks. 
+     * Warning: Allowing an unverified SQL string to be passed into this
+     * method makes your application vulnerable to SQL injection attacks.
      * <p>
      * Example, "select * from EMPLOYEE"
      */
@@ -1548,8 +1572,8 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * The arguments are translated from the fields of the read arguments row,
      * through replacing the field names marked by '#' with the values for those fields.
      * This must accept only the primary key of the object as arguments.
-     * Warning: Allowing an unverified SQL string to be passed into this 
-     * method makes your application vulnerable to SQL injection attacks. 
+     * Warning: Allowing an unverified SQL string to be passed into this
+     * method makes your application vulnerable to SQL injection attacks.
      * <p>
      * Example, "select * from EMPLOYEE where EMPLOYEE_ID = #EMPLOYEE_ID"
      */
@@ -1603,8 +1627,8 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * The arguments are translated from the fields of the source row,
      * through replacing the field names marked by '#' with the values for those fields.
      * This must check the optimistic lock field and raise an error on optimistic lock failure.
-     * Warning: Allowing an unverified SQL string to be passed into this 
-     * method makes your application vulnerable to SQL injection attacks. 
+     * Warning: Allowing an unverified SQL string to be passed into this
+     * method makes your application vulnerable to SQL injection attacks.
      * <p>
      * Example, "update EMPLOYEE set F_NAME to #F_NAME, L_NAME to #L_NAME where EMPLOYEE_ID = #EMPLOYEE_ID".
      */
@@ -1690,7 +1714,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
     public int getUpdateCallCacheSize() {
         return getCachedUpdateCalls().getMaxSize();
     }
-    
+
     /**
      * ADVANCED:
      * Set the size of the update call cache.
@@ -1702,7 +1726,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
     public void setUpdateCallCacheSize(int updateCallCacheSize) {
         getCachedUpdateCalls().setMaxSize(updateCallCacheSize);
     }
-    
+
     /**
      * INTERNAL:
      * Return the cached update SQL call based on the updated fields.
@@ -1711,7 +1735,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
     public Vector getCachedUpdateCalls(Vector updateFields) {
         return (Vector) getCachedUpdateCalls().get(updateFields);
     }
-    
+
     /**
      * INTERNAL:
      * Cache a clone of the update SQL calls based on the updated fields.
@@ -1734,7 +1758,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
         }
         getCachedUpdateCalls().put(updateFields, vectorToCache);
     }
-    
+
     /**
      * INTERNAL:
      * Return the cached SQL call for the expression query.
@@ -1743,7 +1767,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
     public DatabaseQuery getCachedExpressionQuery(DatabaseQuery query) {
         return (DatabaseQuery) getCachedExpressionQueries().get(query);
     }
-    
+
     /**
      * INTERNAL:
      * Set the cached SQL call for the expression query.

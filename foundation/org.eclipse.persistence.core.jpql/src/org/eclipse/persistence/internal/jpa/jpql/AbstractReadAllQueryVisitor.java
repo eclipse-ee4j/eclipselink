@@ -51,10 +51,10 @@ import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 
 /**
  * This visitor is responsible to populate an {@link ObjectLevelReadQuery} by traversing a {@link
- * org.eclipse.persistence.jpa.query.parser.Expression JPQL Expression} representing a
+ * org.eclipse.persistence.jpa.jpql.parser.Expression JPQL Expression} representing a
  * <b>SELECT</b> query.
  *
- * @see ReadAllQueryVisitor
+ * @see ObjectLevelReadQueryVisitor
  * @see ReportQueryVisitor
  *
  * @version 2.4
@@ -243,7 +243,7 @@ abstract class AbstractReadAllQueryVisitor extends AbstractEclipseLinkExpression
 	private class CountFunctionVisitor extends EclipseLinkAnonymousExpressionVisitor {
 
 		/**
-		 * Determines whether the single {@link org.eclipse.persistence.jpa.query.parser.Expression
+		 * Determines whether the single {@link org.eclipse.persistence.jpa.jpql.parser.Expression
 		 * Expression} is the <b>COUNT</b> expression.
 		 */
 		boolean hasCountFunction;
@@ -405,7 +405,7 @@ abstract class AbstractReadAllQueryVisitor extends AbstractEclipseLinkExpression
 	private class OneToOneSelectedVisitor extends EclipseLinkAnonymousExpressionVisitor {
 
 		/**
-		 * Determines whether the visited {@link org.eclipse.persistence.jpa.query.parser.Expression
+		 * Determines whether the visited {@link org.eclipse.persistence.jpa.jpql.parser.Expression
 		 * Expression} represents a relationship.
 		 */
 		boolean oneToOneSelected;

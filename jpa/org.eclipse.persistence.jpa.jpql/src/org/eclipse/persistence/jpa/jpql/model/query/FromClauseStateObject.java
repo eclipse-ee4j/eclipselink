@@ -27,8 +27,8 @@ import org.eclipse.persistence.jpa.jpql.spi.IManagedType;
  * <p>
  * <pre><code>BNF: from_clause ::= FROM identification_variable_declaration {, {identification_variable_declaration | collection_member_declaration}}*</code></pre>
  *
- * @see CollectionMemberVariableDeclarationStateObject
- * @see IdentificationVariableDeclaration
+ * @see CollectionMemberDeclarationStateObject
+ * @see IdentificationVariableDeclarationStateObject
  * @see JoinStateObject
  * @see SelectStatementStateObject
  *

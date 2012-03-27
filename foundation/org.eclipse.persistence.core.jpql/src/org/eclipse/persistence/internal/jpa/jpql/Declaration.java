@@ -38,9 +38,12 @@ abstract class Declaration implements JPQLQueryDeclaration {
 	Expression baseExpression;
 
 	/**
-	 * The declaration expression, which is either an {@link IdentificationVariableDeclaration} or
-	 * a {@link CollectionMemberDeclaration} when part of a <b>FROM</b> clause, otherwise it's
-	 * either the {@link DeleteClause} or the {@link UpdateClause}.
+	 * The declaration expression, which is either an {@link org.eclipse.persistence.jpa.jpql.parser.
+	 * IdentificationVariableDeclaration IdentificationVariableDeclaration} or a {@link
+	 * org.eclipse.persistence.jpa.jpql.parser.CollectionMemberDeclaration CollectionMemberDeclaration}
+	 * when part of a <b>FROM</b> clause, otherwise it's either the {@link org.eclipse.persistence.
+	 * jpa.jpql.parser.DeleteClause DeleteClause} or the {@link org.eclipse.persistence.jpa.jpql.
+	 * parser.UpdateClause UpdateClause}.
 	 */
 	Expression declarationExpression;
 

@@ -1463,4 +1463,11 @@ public final class JPQLQueries {
 		       "From Employee e " +
 		       "Where Exists(Select e.name From In e.phoneNumbers Where e.zipCode = 27519)";
 	}
+
+	public static String query_231() {
+		return "UPDATE Employee e SET e.salary = e.salary*(1+(:percent/100)) " +
+		       "WHERE EXISTS (SELECT p " +
+		       "              FROM e.projects p " +
+		       "              WHERE p.name LIKE :projectName)";
+	}
 }

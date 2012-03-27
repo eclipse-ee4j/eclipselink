@@ -17,7 +17,6 @@ import org.junit.Test;
 
 import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries.*;
 
-
 /**
  * This unit-tests tests the parsed tree representation of a JPQL query.
  *
@@ -27,6 +26,14 @@ import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries.*;
  */
 @SuppressWarnings("nls")
 public final class JPQLQueriesTest1_0 extends JPQLParserTest {
+
+	private JPQLQueryStringFormatter buildQueryFormatter_1() {
+		return new JPQLQueryStringFormatter() {
+			public String format(String query) {
+				return query.replace("1+(", "1 + (");
+			}
+		};
+	}
 
 	@Test
 	public void test_Query_001() {
@@ -4213,5 +4220,46 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 		);
 
 		testQuery(query_230(), selectStatement);
+	}
+
+	@Test
+	public void test_Query_231() {
+
+		// UPDATE Employee e SET e.salary = e.salary*(1+(:percent/100))
+		// WHERE EXISTS (SELECT p
+		//               FROM e.projects p
+		//               WHERE p.name LIKE :projectName)
+
+		ExpressionTester updateStatement = updateStatement(
+			update(
+				"Employee", "e",
+				set(
+					"e.salary",
+						path("e.salary")
+					.multiply(
+						sub(
+								numeric(1)
+							.add(
+								sub(inputParameter(":percent").divide(numeric(100))
+								)
+							)
+						)
+					)
+				)
+			),
+			where(exists(
+				subquery(
+					subSelect(variable("p")),
+					subFrom(
+						identificationVariableDeclaration(
+							rangeVariableDeclaration(collectionPath("e.projects"), variable("p"))
+						)
+					),
+					where(path("p.name").like(inputParameter(":projectName")))
+				)
+			))
+		);
+
+		testQuery(query_231(), updateStatement, buildQueryFormatter_1());
 	}
 }

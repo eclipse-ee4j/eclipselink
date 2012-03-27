@@ -53,7 +53,7 @@ public class DefaultGrammarValidatorTest2_1 extends AbstractGrammarValidatorTest
 	}
 
 	@Test
-	public final void test_FunctionExpression_MissingFunctionName() throws Exception {
+	public final void test_FunctionExpression_MissingFunctionName_1() throws Exception {
 
 		String query = "SELECT FUNCTION() FROM Employee e";
 		int startPosition = "SELECT FUNCTION(".length();
@@ -70,7 +70,19 @@ public class DefaultGrammarValidatorTest2_1 extends AbstractGrammarValidatorTest
 	}
 
 	@Test
-	public final void test_FunctionExpression_MissingLeftParenthesis() throws Exception {
+	public final void test_FunctionExpression_MissingFunctionName_2() throws Exception {
+
+		String query = "SELECT FUNCTION('sql') FROM Employee e";
+		List<JPQLQueryProblem> problems = validate(query);
+
+		testDoesNotHaveProblem(
+			problems,
+			JPQLQueryProblemMessages.FunctionExpression_MissingFunctionName
+		);
+	}
+
+	@Test
+	public final void test_FunctionExpression_MissingLeftParenthesis_1() throws Exception {
 
 		String query = "SELECT FUNCTION 'getName', 'String') FROM Employee e";
 		int startPosition = "SELECT FUNCTION".length();
@@ -87,7 +99,19 @@ public class DefaultGrammarValidatorTest2_1 extends AbstractGrammarValidatorTest
 	}
 
 	@Test
-	public final void test_FunctionExpression_MissingRightParenthesis() throws Exception {
+	public final void test_FunctionExpression_MissingLeftParenthesis_2() throws Exception {
+
+		String query = "SELECT FUNCTION('getName', 'String') FROM Employee e";
+		List<JPQLQueryProblem> problems = validate(query);
+
+		testDoesNotHaveProblem(
+			problems,
+			JPQLQueryProblemMessages.FunctionExpression_MissingLeftParenthesis
+		);
+	}
+
+	@Test
+	public final void test_FunctionExpression_MissingRightParenthesis_1() throws Exception {
 
 		String query = "SELECT FUNCTION('getName', 'String' FROM Employee e";
 		int startPosition = "SELECT FUNCTION('getName', 'String'".length();
@@ -100,6 +124,93 @@ public class DefaultGrammarValidatorTest2_1 extends AbstractGrammarValidatorTest
 			JPQLQueryProblemMessages.FunctionExpression_MissingRightParenthesis,
 			startPosition,
 			endPosition
+		);
+	}
+
+	@Test
+	public final void test_FunctionExpression_MissingRightParenthesis_2() throws Exception {
+
+		String query = "SELECT FUNCTION('getName', 'String') FROM Employee e";
+		List<JPQLQueryProblem> problems = validate(query);
+
+		testDoesNotHaveProblem(
+			problems,
+			JPQLQueryProblemMessages.FunctionExpression_MissingRightParenthesis
+		);
+	}
+
+	@Test
+	public final void test_OnClause_InvalidConditionalExpression_1() throws Exception {
+
+		String query = "select e from Employee e join e.address a on a.id > 2";
+		List<JPQLQueryProblem> problems = validate(query);
+
+		testDoesNotHaveProblem(
+			problems,
+			JPQLQueryProblemMessages.OnClause_InvalidConditionalExpression
+		);
+	}
+
+	@Test
+	public final void test_OnClause_InvalidConditionalExpression_2() throws Exception {
+
+		String query = "select e from Employee e join e.address a on a.id";
+		int startPosition = "select e from Employee e join e.address a on ".length();
+		int endPosition   = query.length();
+
+		List<JPQLQueryProblem> problems = validate(query);
+
+		testHasOnlyOneProblem(
+			problems,
+			JPQLQueryProblemMessages.OnClause_InvalidConditionalExpression,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public final void test_OnClause_MissingConditionalExpression_1() throws Exception {
+
+		String query = "select e from Employee e join e.address a on";
+		int startPosition = "select e from Employee e join e.address a on".length();
+		int endPosition   = query.length();
+
+		List<JPQLQueryProblem> problems = validate(query);
+
+		testHasOnlyOneProblem(
+			problems,
+			JPQLQueryProblemMessages.OnClause_MissingConditionalExpression,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public final void test_OnClause_MissingConditionalExpression_2() throws Exception {
+
+		String query = "select e from Employee e join e.address a on where e.id > 2";
+		int startPosition = "select e from Employee e join e.address a on ".length();
+		int endPosition   = startPosition;
+
+		List<JPQLQueryProblem> problems = validate(query);
+
+		testHasOnlyOneProblem(
+			problems,
+			JPQLQueryProblemMessages.OnClause_MissingConditionalExpression,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public final void test_OnClause_MissingConditionalExpression_3() throws Exception {
+
+		String query = "select e from Employee e join e.address a on e.id > 2";
+		List<JPQLQueryProblem> problems = validate(query);
+
+		testDoesNotHaveProblem(
+			problems,
+			JPQLQueryProblemMessages.OnClause_MissingConditionalExpression
 		);
 	}
 }

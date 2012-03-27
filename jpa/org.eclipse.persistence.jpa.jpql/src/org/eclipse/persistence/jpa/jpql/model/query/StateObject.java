@@ -145,7 +145,7 @@ public interface StateObject {
 	 * Determines whether this {@link StateObject} is being decorated by another {@link StateObject},
 	 * which means the behavior is modified by the given one.
 	 *
-	 * @param <code>true</code> if this {@link StateObject} is being decorated; <code>false</code>
+	 * return <code>true</code> if this {@link StateObject} is being decorated; <code>false</code>
 	 * otherwise
 	 */
 	boolean isDecorated();

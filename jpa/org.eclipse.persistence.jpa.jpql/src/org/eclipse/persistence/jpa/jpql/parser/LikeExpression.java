@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -364,9 +364,20 @@ public final class LikeExpression extends AbstractExpression {
 	 */
 	@Override
 	protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
+
+		char character = word.charAt(0);
+
+		if (getQueryBNF(PatternValueBNF.ID).handleAggregate() &&
+		    (character == '+' || character == '-' || character == '*' || character == '/')) {
+
+			return false;
+		}
+
 		return super.isParsingComplete(wordParser, word, expression) ||
-		       word.equalsIgnoreCase(AND) ||
-		       word.equalsIgnoreCase(OR);
+		       word.equalsIgnoreCase(ESCAPE) ||
+		       word.equalsIgnoreCase(AND)    ||
+		       word.equalsIgnoreCase(OR)     ||
+		       expression != null;
 	}
 
 	/**
@@ -389,11 +400,7 @@ public final class LikeExpression extends AbstractExpression {
 		hasSpaceAfterLike = wordParser.skipLeadingWhitespace() > 0;
 
 		// Parse the pattern value
-		patternValue = parse(
-			wordParser,
-			getQueryBNF(PatternValueBNF.ID),
-			tolerant
-		);
+		patternValue = parse(wordParser, PatternValueBNF.ID, tolerant);
 
 		int count = wordParser.skipLeadingWhitespace();
 
@@ -419,7 +426,7 @@ public final class LikeExpression extends AbstractExpression {
 
 		// Single escape character
 		if (character == SINGLE_QUOTE) {
-			escapeCharacter = new StringLiteral(this);
+			escapeCharacter = new StringLiteral(this, wordParser.word());
 			escapeCharacter.parse(wordParser, tolerant);
 
 			count = 0;
@@ -432,7 +439,7 @@ public final class LikeExpression extends AbstractExpression {
 		}
 		// Parse an invalid expression
 		else if (tolerant) {
-			escapeCharacter = parse(wordParser, getQueryBNF(PreLiteralExpressionBNF.ID), tolerant);
+			escapeCharacter = parse(wordParser, PreLiteralExpressionBNF.ID, tolerant);
 
 			if (!hasEscape && (escapeCharacter == null) && !wordParser.isTail()) {
 				hasSpaceAfterPatternValue = false;

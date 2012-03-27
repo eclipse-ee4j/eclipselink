@@ -105,9 +105,9 @@ public interface StateObjectVisitor {
 	void visit(CoalesceExpressionStateObject stateObject);
 
 	/**
-	 * Visits the given {@link CollectionMemberVariableDeclarationStateObject}.
+	 * Visits the given {@link CollectionMemberDeclarationStateObject}.
 	 *
-	 * @param stateObject The {@link CollectionMemberVariableDeclarationStateObject} to visit
+	 * @param stateObject The {@link CollectionMemberDeclarationStateObject} to visit
 	 */
 	void visit(CollectionMemberDeclarationStateObject stateObject);
 
@@ -182,9 +182,9 @@ public interface StateObjectVisitor {
 	void visit(DerivedPathIdentificationVariableDeclarationStateObject stateObject);
 
 	/**
-	 * Visits the given {@link DerivedPathDeclarationStateObject}.
+	 * Visits the given {@link DerivedPathVariableDeclarationStateObject}.
 	 *
-	 * @param stateObject The {@link DerivedPathDeclarationStateObject} to visit
+	 * @param stateObject The {@link DerivedPathVariableDeclarationStateObject} to visit
 	 */
 	void visit(DerivedPathVariableDeclarationStateObject stateObject);
 

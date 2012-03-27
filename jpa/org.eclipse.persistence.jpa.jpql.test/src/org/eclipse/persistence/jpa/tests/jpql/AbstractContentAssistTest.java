@@ -19,7 +19,19 @@ import java.util.List;
 import org.eclipse.persistence.jpa.jpql.AbstractJPQLQueryHelper;
 import org.eclipse.persistence.jpa.jpql.DefaultContentAssistProposals;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
+import org.eclipse.persistence.jpa.jpql.parser.AndExpressionFactory;
+import org.eclipse.persistence.jpa.jpql.parser.ArithmeticExpressionFactory;
+import org.eclipse.persistence.jpa.jpql.parser.BetweenExpressionFactory;
+import org.eclipse.persistence.jpa.jpql.parser.CollectionMemberExpressionFactory;
+import org.eclipse.persistence.jpa.jpql.parser.ComparisonExpressionFactory;
+import org.eclipse.persistence.jpa.jpql.parser.EmptyCollectionComparisonExpressionFactory;
+import org.eclipse.persistence.jpa.jpql.parser.ExpressionFactory;
+import org.eclipse.persistence.jpa.jpql.parser.ExpressionRegistry;
+import org.eclipse.persistence.jpa.jpql.parser.InExpressionFactory;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
+import org.eclipse.persistence.jpa.jpql.parser.LikeExpressionFactory;
+import org.eclipse.persistence.jpa.jpql.parser.NullComparisonExpressionFactory;
+import org.eclipse.persistence.jpa.jpql.parser.OrExpressionFactory;
 import org.eclipse.persistence.jpa.jpql.spi.IEntity;
 import org.eclipse.persistence.jpa.jpql.spi.IQuery;
 import org.eclipse.persistence.jpa.jpql.spi.java.JavaQuery;
@@ -1694,22 +1706,43 @@ public abstract class AbstractContentAssistTest extends JPQLCoreTest {
 		);
 	}
 
+	protected final void addIdentifiers(List<String> identifiers, String... expressionFactoryIds) {
+
+		ExpressionRegistry registry = getGrammar().getExpressionRegistry();
+
+		for (String id : expressionFactoryIds) {
+			ExpressionFactory factory = registry.getExpressionFactory(id);
+
+			for (String identifier : factory.identifiers()) {
+				identifiers.add(identifier);
+			}
+		}
+	}
+
 	@Test
 	public void test_CompoundFunction_01() {
+
 		String query = "SELECT e FROM Employee e WHERE e.name ";
 		int position = query.length();
+
+		List<String> identifiers = new ArrayList<String>();
+
+		addIdentifiers(
+			identifiers,
+			ComparisonExpressionFactory.ID,
+			LikeExpressionFactory.ID,
+			CollectionMemberExpressionFactory.ID,
+			BetweenExpressionFactory.ID,
+			EmptyCollectionComparisonExpressionFactory.ID,
+			NullComparisonExpressionFactory.ID,
+			InExpressionFactory.ID,
+			ArithmeticExpressionFactory.ID,
+			AndExpressionFactory.ID,
+			OrExpressionFactory.ID
+		);
+
 		// TODO: Add better check since AND and OR are not valid proposals
-		testHasOnlyTheseProposals(query, position, LIKE, NOT_LIKE,
-		                                    MEMBER, MEMBER_OF, NOT_MEMBER, NOT_MEMBER_OF,
-		                                    BETWEEN, NOT_BETWEEN,
-		                                    IS_EMPTY, IS_NOT_EMPTY,
-		                                    IS_NULL, IS_NOT_NULL,
-		                                    IN, NOT_IN,
-		                                    GREATER_THAN, GREATER_THAN_OR_EQUAL,
-		                                    LOWER_THAN, LOWER_THAN_OR_EQUAL,
-		                                    EQUAL, DIFFERENT,
-		                                    PLUS, MINUS, DIVISION, MULTIPLICATION,
-		                                    AND, OR);
+		testHasOnlyTheseProposals(query, position, identifiers);
 	}
 
 	@Test

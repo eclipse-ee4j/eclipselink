@@ -82,7 +82,7 @@ public class TreatExpressionStateObject extends AbstractStateObject {
 	 * @param parent The parent of this state object, which is temporary since this state object will
 	 * be parented with the state object representing the join's association path expression
 	 * @param as Determines whether the <code><b>AS</b></code> identifier is used or not
-	 * @param entityTypeName
+	 * @param entityTypeName The entity type name used to cast the base expression
 	 */
 	public TreatExpressionStateObject(JoinStateObject parent, boolean as, String entityTypeName) {
 		super(parent);
@@ -96,7 +96,7 @@ public class TreatExpressionStateObject extends AbstractStateObject {
 	 *
 	 * @param parent The parent of this state object, which is temporary since this state object will
 	 * be parented with the state object representing the join's association path expression
-	 * @param entityTypeName
+	 * @param entityTypeName The entity type name used to cast the base expression
 	 */
 	public TreatExpressionStateObject(JoinStateObject parent, String entityTypeName) {
 		this(parent, false, entityTypeName);
@@ -148,7 +148,7 @@ public class TreatExpressionStateObject extends AbstractStateObject {
 	}
 
 	/**
-	 * Resolves the entity type name to the external form of the actual {@link Entity}.
+	 * Resolves the entity type name to the external form of the actual {@link IEntity}.
 	 *
 	 * @return Either the {@link IEntity} with the same entity type name or <code>null</code> if the
 	 * managed type provider does not have an entity with that name

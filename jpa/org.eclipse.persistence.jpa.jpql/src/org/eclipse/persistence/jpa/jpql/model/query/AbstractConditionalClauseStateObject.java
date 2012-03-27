@@ -128,9 +128,9 @@ public abstract class AbstractConditionalClauseStateObject extends AbstractState
 	}
 
 	/**
-	 * Creates and returns a new {@link IConditionalStateObjectBuilder} that can be used to
+	 * Creates and returns a new {@link IConditionalExpressionStateObjectBuilder} that can be used to
 	 * programmatically create a conditional expression and once the expression is complete,
-	 * {@link IConditionalStateObjectBuilder#commit()} will push the {@link StateObject}
+	 * {@link IConditionalExpressionStateObjectBuilder#commit()} will push the {@link StateObject}
 	 * representation of that expression as this clause's conditional expression.
 	 *
 	 * @return A new builder that can be used to quickly create a conditional expression

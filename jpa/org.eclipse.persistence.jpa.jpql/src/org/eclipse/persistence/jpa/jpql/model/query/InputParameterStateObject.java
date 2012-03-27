@@ -42,7 +42,7 @@ public class InputParameterStateObject extends SimpleStateObject {
 	 * Creates a new <code>InputParameterStateObject</code>.
 	 *
 	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @param paramter The positional or named input parameter
+	 * @param parameter The positional or named input parameter
 	 * @exception NullPointerException The given parent cannot be <code>null</code>
 	 */
 	public InputParameterStateObject(StateObject parent, String parameter) {
@@ -89,7 +89,7 @@ public class InputParameterStateObject extends SimpleStateObject {
 	}
 
 	/**
-	 * Keeps a reference of the {@link XXX parsed object} object, which should only be
+	 * Keeps a reference of the {@link InputParameter parsed object} object, which should only be
 	 * done when this object is instantiated during the conversion of a parsed JPQL query into
 	 * {@link StateObject StateObjects}.
 	 *

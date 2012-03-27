@@ -64,7 +64,8 @@ public class AllOrAnyExpressionStateObject extends AbstractSingleEncapsulatedExp
 	 * @param parent The parent of this state object, which cannot be <code>null</code>
 	 * @param identifier One of the three possible JPQL identifiers: <code><b>ALL</b></code>,
 	 * <code><b>ANY</b></code> or <code><b>SOME</b></code>
-	 * @exception AssertException The given JPQL identifier is one from the possible choices
+	 * @exception org.eclipse.persistence.jpa.jpql.Assert.AssertException The given JPQL identifier
+	 * is one from the possible choices
 	 * @exception NullPointerException The given parent cannot be <code>null</code>
 	 */
 	public AllOrAnyExpressionStateObject(StateObject parent, String identifier) {
@@ -80,7 +81,8 @@ public class AllOrAnyExpressionStateObject extends AbstractSingleEncapsulatedExp
 	 * @param identifier One of the three possible JPQL identifiers: <code><b>ALL</b></code>,
 	 * <code><b>ANY</b></code> or <code><b>SOME</b></code>
 	 * @param stateObject The {@link StateObject} representing the encapsulated expression
-	 * @exception AssertException The given JPQL identifier is one from the possible choices
+	 * @exception org.eclipse.persistence.jpa.jpql.Assert.AssertException The given JPQL identifier
+	 * is one from the possible choices
 	 * @exception NullPointerException The given parent cannot be <code>null</code>
 	 */
 	public AllOrAnyExpressionStateObject(StateObject parent,
@@ -100,7 +102,8 @@ public class AllOrAnyExpressionStateObject extends AbstractSingleEncapsulatedExp
 	 * @param identifier One of the three possible JPQL identifiers: <code><b>ALL</b></code>,
 	 * <code><b>ANY</b></code> or <code><b>SOME</b></code>
 	 * @param jpqlFragment The portion of the query representing the encapsulated expression
-	 * @exception AssertException The given JPQL identifier is one from the possible choices
+	 * @exception org.eclipse.persistence.jpa.jpql.Assert.AssertException The given JPQL identifier
+	 * is one from the possible choices
 	 * @exception NullPointerException The given parent cannot be <code>null</code>
 	 */
 	public AllOrAnyExpressionStateObject(StateObject parent, String identifier, String jpqlFragment) {
@@ -171,7 +174,8 @@ public class AllOrAnyExpressionStateObject extends AbstractSingleEncapsulatedExp
 	 *
 	 * @param identifier One of the three possible JPQL identifiers: <code><b>ALL</b></code>,
 	 * <code><b>ANY</b></code> or <code><b>SOME</b></code>
-	 * @exception AssertException The given JPQL identifier is one from the possible choices
+	 * @exception org.eclipse.persistence.jpa.jpql.Assert.AssertException The given JPQL identifier
+	 * is one from the possible choices
 	 */
 	public void setIdentifier(String identifier) {
 

@@ -185,7 +185,7 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
 	 * @param mapping The {@link DatabaseMapping} to retrieve its persistent field type
 	 * @return The persistent field type
 	 */
-	@SuppressWarnings({ "null", "unchecked" })
+	@SuppressWarnings("null")
 	Class<?> calculateMappingType(DatabaseMapping mapping) {
 
 		// For aggregate mappings (@Embedded and @EmbeddedId), we need to use the descriptor
@@ -250,7 +250,7 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
 	/**
 	 * Returns the type of the given {@link QueryKey}, which is the persistent field type.
 	 *
-	 * @param mapping The {@link QueryKey} to retrieve its persistent field type
+	 * @param queryKey The {@link QueryKey} to retrieve its persistent field type
 	 * @return The persistent field type
 	 */
 	Class<?> calculateQueryKeyType(QueryKey queryKey) {
@@ -271,7 +271,6 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
 	 * Returns the visitor that collects the {@link CollectionExpression} if it's been visited.
 	 *
 	 * @return The {@link CollectionExpressionVisitor}
-	 * @see #buildCollectionExpressionVisitor()
 	 */
 	protected CollectionExpressionVisitor collectionExpressionVisitor() {
 		if (collectionExpressionVisitor == null) {
@@ -384,7 +383,7 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
 	}
 
 	/**
-	 * Returns the type of the given {@link Expression.
+	 * Returns the type of the given {@link Expression}.
 	 *
 	 * @param expression The {@link Expression} to resolve its type
 	 * @return Either the closest type or {@link Object} if it could not be determined
@@ -1269,7 +1268,8 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
 	}
 
 	/**
-	 * Visits the given {@link ArithmeticExpression} and create the appropriate {@link Resolver}.
+	 * Visits the given {@link ArithmeticExpression} and creates the appropriate {@link org.eclipse.
+	 * persistence.expressions.Expression Expression}.
 	 *
 	 * @param expression The {@link ArithmeticExpression} to visit
 	 */
@@ -1299,9 +1299,9 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
 	}
 
 	/**
-	 * Visits the given {@link Expression} and creates a {@link Resolver} that will check the type
-	 * for each of its children. If the type is the same, then it's the {@link Expression}'s type;
-	 * otherwise the type will be {@link Object}.
+	 * Visits the given {@link Expression} and creates the appropriate {@link org.eclipse.persistence.
+	 * expressions.Expression Expression} that will check the type for each of its children. If the
+	 * type is the same, then it's the {@link Expression}'s type; otherwise the type will be {@link Object}.
 	 *
 	 * @param expression The {@link Expression} to calculate the type of its children
 	 * @param extraExpression This {@link Expression} will be resolved, if it's not <code>null</code>

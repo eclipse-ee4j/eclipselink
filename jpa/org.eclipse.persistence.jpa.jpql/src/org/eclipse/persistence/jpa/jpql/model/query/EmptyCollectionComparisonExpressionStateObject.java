@@ -180,12 +180,12 @@ public class EmptyCollectionComparisonExpressionStateObject extends AbstractStat
 	}
 
 	/**
-	 * Keeps a reference of the {@link EmptyCollectionComparison parsed object} object, which should
-	 * only be done when this object is instantiated during the conversion of a parsed JPQL query
-	 * into {@link StateObject StateObjects}.
+	 * Keeps a reference of the {@link EmptyCollectionComparisonExpression parsed object} object,
+	 * which should only be done when this object is instantiated during the conversion of a parsed
+	 * JPQL query into {@link StateObject StateObjects}.
 	 *
-	 * @param expression The {@link EmptyCollectionComparison parsed object} representing an
-	 * <code><b>EMPTY</b></code expression
+	 * @param expression The {@link EmptyCollectionComparisonExpression parsed object} representing
+	 * an <code><b>EMPTY</b></code expression
 	 */
 	public void setExpression(EmptyCollectionComparisonExpression expression) {
 		super.setExpression(expression);

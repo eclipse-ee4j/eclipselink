@@ -34,7 +34,7 @@ import org.eclipse.persistence.jpa.jpql.spi.ITypeRepository;
  * <li>Calculates the result type of a query: {@link #getResultType()};</li>
  * <li>Calculates the type of an input parameter: {@link #getParameterType(String)}.</li>
  * <li>Calculates the possible choices to complete the query from a given
- *     position (used for content assist): {@link #buildContentAssistItems(int)}.</li>
+ *     position (used for content assist): {@link #buildContentAssistProposals(int)}.</li>
  * <li>Validates the query by introspecting it grammatically and semantically:
  *     <ul>
  *     <li>{@link #validate()},</li>
@@ -67,6 +67,11 @@ public abstract class AbstractJPQLQueryHelper {
 	private AbstractGrammarValidator grammarValidator;
 
 	/**
+	 * The {@link JPQLGrammar} that will determine how to parse JPQL queries.
+	 */
+	private JPQLGrammar jpqlGrammar;
+
+	/**
 	 * The context used to query information about the JPQL query.
 	 */
 	private JPQLQueryContext queryContext;
@@ -76,11 +81,6 @@ public abstract class AbstractJPQLQueryHelper {
 	 * and to validate the semantic of the information.
 	 */
 	private AbstractSemanticValidator semanticValidator;
-
-	/**
-	 *
-	 */
-	private JPQLGrammar jpqlGrammar;
 
 	/**
 	 * Creates a new <code>AbstractJPQLQueryHelper</code>.
@@ -168,9 +168,22 @@ public abstract class AbstractJPQLQueryHelper {
 	 */
 	protected abstract JPQLQueryContext buildJPQLQueryContext(JPQLGrammar jpqlGrammar);
 
+	/**
+	 * Creates the {@link Comparator} that can sort {@link IType ITypes} based on the numerical
+	 * priority.
+	 *
+	 * @return {@link NumericTypeComparator}
+	 */
 	protected Comparator<IType> buildNumericTypeComparator() {
 		return new NumericTypeComparator(getTypeHelper());
 	}
+
+	/**
+	 * Creates the concrete instance of the tool that can refactor the content of a JPQL query.
+	 *
+	 * @return The concrete instance of {@link RefactoringTool}
+	 */
+	public abstract RefactoringTool buildRefactoringTool();
 
 	/**
 	 * Creates the concrete instance of the validator that will semantically validate the JPQL query.
@@ -311,10 +324,10 @@ public abstract class AbstractJPQLQueryHelper {
 	/**
 	 * Calculates the type of the query result of the JPQL query.
 	 * <p>
-	 * See {@link TypeVisitor} to understand how the type is calculated.
+	 * See {@link Resolver} to understand how the type is calculated.
 	 *
 	 * @return The result type of the JPQL query if it could accurately be calculated or the
-	 * {@link IClass} for <code>Object</code> if it could not be calculated
+	 * {@link IType} for <code>Object</code> if it could not be calculated
 	 */
 	public IType getResultType() {
 
@@ -363,9 +376,12 @@ public abstract class AbstractJPQLQueryHelper {
 	}
 
 	/**
-	 * Sets
+	 * Sets the parsed tree representation of the JPQL query. If the expression was parsed outside of
+	 * the scope of this context, then this method has to be invoked before {@link #setQuery(IQuery)}
+	 * because the JPQL query is automatically parsed by that method.
 	 *
-	 * @param jpqlExpression
+	 * @param jpqlExpression The parsed representation of the JPQL query to manipulate
+	 * @see #setQuery(IQuery)
 	 */
 	public void setJPQLExpression(JPQLExpression jpqlExpression) {
 		getQueryContext().setJPQLExpression(jpqlExpression);
@@ -396,7 +412,7 @@ public abstract class AbstractJPQLQueryHelper {
 	/**
 	 * Validates the query by introspecting it grammatically and semantically.
 	 *
-	 * @param jpqlExpression The parsed tree representation of the query
+	 * @param expression The parsed tree representation of the JPQL fragment to validate
 	 * @param problems A non-<code>null</code> list that will be used to store the {@link
 	 * JPQLQueryProblem problems} if any was found
 	 */

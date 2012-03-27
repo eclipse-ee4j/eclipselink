@@ -116,53 +116,6 @@ public final class ExpressionTools {
 	}
 
 	/**
-	 * Retrieves the first word from the given text starting at the specified position.
-	 *
-	 * @param text The text from which the first word will be retrieved
-	 * @param position The position of the cursor where to start retrieving the word
-	 * @return The first word contained in the text, if none could be found, then an empty string is
-	 * returned
-	 */
-	public static String parseLiteral(WordParser wordParser) {
-
-		int startPosition = wordParser.position();
-		int endIndex = startPosition + 1;
-		char startQuote = wordParser.character();
-
-		for (int length = wordParser.length(); endIndex < length; endIndex++) {
-			char character = wordParser.character(endIndex);
-
-			if (character == startQuote) {
-				endIndex++;
-
-				// Verify if the single quote is escaped with another single quote
-				if ((startQuote == '\'') && (endIndex < length)) {
-					char nextCharacter = wordParser.character(endIndex);
-
-					// The single quote is escaped, continue
-					if (nextCharacter == '\'') {
-						continue;
-					}
-				}
-				// Verify if the double quote is escaped with backslash
-				else if ((startQuote == '\"') && (endIndex - 2 > startPosition)) {
-					char previousCharacter = wordParser.character(endIndex - 2);
-
-					// The double quote is escaped, continue
-					if (previousCharacter == '\\') {
-						continue;
-					}
-				}
-
-				// Reached the end of the string literal
-				break;
-			}
-		}
-
-		return wordParser.substring(wordParser.position(), endIndex);
-	}
-
-	/**
 	 * Returns the given string literal by wrapping it with single quotes. Any single quote within
 	 * the string will be escaped with another single quote.
 	 *

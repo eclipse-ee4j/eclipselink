@@ -16,10 +16,10 @@ package org.eclipse.persistence.jpa.jpql;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkExpressionVisitor;
 
 /**
- * This visitor traverses an {@link Expression} and retrieves the "literal" value. The literal to
- * retrieve depends on the {@link LiteralType type}. The literal is basically a string value like an
- * identification variable name, an input parameter, a path expression, an abstract schema name,
- * etc.
+ * This visitor traverses an {@link org.eclipse.persistence.jpa.jpql.parser.Expression Expression}
+ * and retrieves the "literal" value. The literal to retrieve depends on the {@link LiteralType type}.
+ * The literal is basically a string value like an identification variable name, an input parameter,
+ * a path expression, an abstract schema name, etc.
  * <p>
  * Provisional API: This interface is part of an interim API that is still under development and
  * expected to change significantly before reaching stability. It is available at this early stage

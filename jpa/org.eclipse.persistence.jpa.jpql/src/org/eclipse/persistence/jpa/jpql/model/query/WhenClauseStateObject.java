@@ -86,7 +86,7 @@ public class WhenClauseStateObject extends AbstractConditionalClauseStateObject 
 	 * @param parent The parent of this state object
 	 * @param whenJpqlFragment The string representation of the <code><b>WHEN</b></code> clause to
 	 * parse and to convert into a {@link StateObject}
-	 * @param whenJpqlFragment The string representation of the <code><b>THEN</b></code> expression
+	 * @param thenJpqlFragment The string representation of the <code><b>THEN</b></code> expression
 	 * to parse and to convert into a {@link StateObject}
 	 * @exception NullPointerException The given parent cannot be <code>null</code>
 	 */

@@ -234,11 +234,7 @@ public abstract class AbstractDoubleEncapsulatedExpression extends AbstractEncap
 		int count = 0;
 
 		// Parse the first expression
-		firstExpression = parse(
-			wordParser,
-			getQueryBNF(parameterExpressionBNF(0)),
-			tolerant
-		);
+		firstExpression = parse(wordParser, parameterExpressionBNF(0), tolerant);
 
 		if (hasFirstExpression()) {
 			count = wordParser.skipLeadingWhitespace();
@@ -258,11 +254,7 @@ public abstract class AbstractDoubleEncapsulatedExpression extends AbstractEncap
 		}
 
 		// Parse the second expression
-		secondExpression = parse(
-			wordParser,
-			getQueryBNF(parameterExpressionBNF(1)),
-			tolerant
-		);
+		secondExpression = parse(wordParser, parameterExpressionBNF(1), tolerant);
 
 		if (!hasSecondExpression()) {
 			wordParser.moveBackward(count);

@@ -35,7 +35,7 @@ import org.eclipse.persistence.jpa.jpql.spi.IManagedTypeProvider;
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
  * API will almost certainly be broken (repeatedly) as the API evolves.
  *
- * @see EclipseLinkRefactoringTools
+ * @see EclipseLinkRefactoringTool
  *
  * @version 2.4
  * @since 2.4
@@ -47,8 +47,8 @@ public class DefaultRefactoringTool extends RefactoringTool {
 	 * Creates a new <code>RefactoringTool</code>.
 	 *
 	 * @param managedTypeProvider The external form of a provider that gives access to the JPA metadata
-	 * @param jpqlQueryBuilder The builder that creates the {@link StateObject} representation of the
-	 * JPQL query
+	 * @param jpqlQueryBuilder The builder that creates the {@link org.eclipse.persistence.jpa.jpql.
+	 * model.query.StateObject StateObject} representation of the JPQL query
 	 * @param jpqlQuery The JPQL query to manipulate
 	 */
 	public DefaultRefactoringTool(IManagedTypeProvider managedTypeProvider,
@@ -62,8 +62,8 @@ public class DefaultRefactoringTool extends RefactoringTool {
 	 * Creates a new <code>RefactoringTool</code>.
 	 *
 	 * @param managedTypeProvider The external form of a provider that gives access to the JPA metadata
-	 * @param jpqlQueryBuilder The builder that creates the {@link StateObject} representation of the
-	 * JPQL query
+	 * @param jpqlQueryBuilder The builder that creates the {@link org.eclipse.persistence.jpa.jpql.
+	 * model.query.StateObject} representation of the JPQL query
 	 * @param jpqlFragment The JPQL query to manipulate or a single JPQL fragment, which is parsed
 	 * using the JPQL query BNF identifier by the given ID
 	 * @param jpqlQueryBNFId The unique identifier of the {@link org.eclipse.persistence.jpa.jpql.

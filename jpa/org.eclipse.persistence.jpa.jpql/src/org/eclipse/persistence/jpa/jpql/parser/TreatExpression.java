@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -240,7 +240,7 @@ public final class TreatExpression extends AbstractEncapsulatedExpression {
 		if (tolerant) {
 			collectionValuedPathExpression = parse(
 				wordParser,
-				getQueryBNF(CollectionValuedPathExpressionBNF.ID),
+				CollectionValuedPathExpressionBNF.ID,
 				tolerant
 			);
 		}
@@ -261,7 +261,7 @@ public final class TreatExpression extends AbstractEncapsulatedExpression {
 
 		// Entity type
 		if (tolerant) {
-			entityType = parse(wordParser, getQueryBNF(EntityTypeLiteralBNF.ID), tolerant);
+			entityType = parse(wordParser, EntityTypeLiteralBNF.ID, tolerant);
 		}
 		else {
 			entityType = new EntityTypeLiteral(this, wordParser.word());

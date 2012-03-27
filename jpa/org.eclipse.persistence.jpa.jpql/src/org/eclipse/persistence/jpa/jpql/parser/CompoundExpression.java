@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -201,18 +201,19 @@ public abstract class CompoundExpression extends AbstractExpression {
 	protected abstract String parseIdentifier(WordParser wordParser);
 
 	/**
-	 * Returns the BNF used to determine how to parse the right expression.
+	 * Returns the unique identifier of the {@link JPQLQueryBNF} used to determine how to parse the
+	 * right expression.
 	 *
-	 * @return The BNF used when parsing the expression after the identifier
+	 * @return The ID of the BNF used when parsing the expression after the identifier
 	 */
-	public abstract JPQLQueryBNF rightExpressionBNF();
+	public abstract String rightExpressionBNF();
 
 	/**
 	 * Sets the given {@link Expression} to be the first expression of this compound one.
 	 *
 	 * @param leftExpression The expression that was parsed before the identifier
 	 */
-	public final void setLeftExpression(AbstractExpression leftExpression) {
+	protected final void setLeftExpression(AbstractExpression leftExpression) {
 		this.leftExpression = leftExpression;
 		if (leftExpression != null) {
 			this.leftExpression.setParent(this);
@@ -224,7 +225,7 @@ public abstract class CompoundExpression extends AbstractExpression {
 	 *
 	 * @param rightExpression The expression that was parsed after the identifier
 	 */
-	public final void setRightExpression(AbstractExpression rightExpression) {
+	protected final void setRightExpression(AbstractExpression rightExpression) {
 		this.rightExpression = rightExpression;
 		if (rightExpression != null) {
 			this.rightExpression.setParent(this);

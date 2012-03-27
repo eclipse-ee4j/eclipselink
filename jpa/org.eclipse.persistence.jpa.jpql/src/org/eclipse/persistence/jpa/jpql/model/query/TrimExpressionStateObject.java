@@ -87,7 +87,6 @@ public class TrimExpressionStateObject extends AbstractSingleEncapsulatedExpress
 	 * @param specification Defines the way the string is trimmed, or {@link org.eclipse.persistence.
 	 * jpa.jpql.parser.TrimExpression.Specification#DEFAULT Specification.DEFAULT} when it is not
 	 * present
-	 * @param stateObject The {@link StateObject} representing the string primary
 	 * @exception NullPointerException The given parent cannot be <code>null</code>
 	 */
 	public TrimExpressionStateObject(StateObject parent,

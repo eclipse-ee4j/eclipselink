@@ -308,11 +308,7 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
 		int count = 0;
 
 		// Parse the first expression
-		firstExpression = parse(
-			wordParser,
-			getQueryBNF(parameterExpressionBNF(0)),
-			tolerant
-		);
+		firstExpression = parse(wordParser, parameterExpressionBNF(0), tolerant);
 
 		if (hasFirstExpression()) {
 			count = wordParser.skipLeadingWhitespace();
@@ -328,11 +324,7 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
 		}
 
 		// Parse the second expression
-		secondExpression = parse(
-			wordParser,
-			getQueryBNF(parameterExpressionBNF(1)),
-			tolerant
-		);
+		secondExpression = parse(wordParser, parameterExpressionBNF(1), tolerant);
 
 		if (!hasFirstComma) {
 			hasSpaceAfterFirstComma = (count > 0);
@@ -350,11 +342,7 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
 		}
 
 		// Parse the third expression
-		thirdExpression = parse(
-			wordParser,
-			getQueryBNF(parameterExpressionBNF(2)),
-			tolerant
-		);
+		thirdExpression = parse(wordParser, parameterExpressionBNF(2), tolerant);
 
 		if (!hasSecondComma && (!isThirdExpressionOptional() || hasThirdExpression())) {
 			hasSpaceAfterSecondComma = (count > 0);

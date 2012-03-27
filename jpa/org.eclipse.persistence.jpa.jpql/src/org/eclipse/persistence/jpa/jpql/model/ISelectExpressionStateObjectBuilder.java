@@ -27,7 +27,7 @@ public interface ISelectExpressionStateObjectBuilder extends IScalarExpressionSt
 	/**
 	 * Appends the previously created select item and starts a new stack to create a new select item.
 	 *
-	 * @return This {@link IConditionalStateObjectBuilder builder}
+	 * @return This builder
 	 */
 	ISelectExpressionStateObjectBuilder append();
 
@@ -41,7 +41,7 @@ public interface ISelectExpressionStateObjectBuilder extends IScalarExpressionSt
 	 *
 	 * @param className The fully qualified class name
 	 * @param parameters The parameters of the constructor
-	 * @return This {@link IConditionalStateObjectBuilder builder}
+	 * @return This builder
 	 */
 	ISelectExpressionStateObjectBuilder new_(String className, ISelectExpressionStateObjectBuilder... parameters);
 
@@ -49,7 +49,7 @@ public interface ISelectExpressionStateObjectBuilder extends IScalarExpressionSt
 	 * Creates the expression <code><b>OBJECT(identification_variable)</b></code>.
 	 *
 	 * @param identificationVariable The identification variable
-	 * @return This {@link IConditionalStateObjectBuilder builder}
+	 * @return This builder
 	 */
 	ISelectExpressionStateObjectBuilder object(String identificationVariable);
 
@@ -57,7 +57,7 @@ public interface ISelectExpressionStateObjectBuilder extends IScalarExpressionSt
 	 * Defines the current state object with the given result variable.
 	 *
 	 * @param resultVariable The variable identifying the current select expression
-	 * @return This {@link IConditionalStateObjectBuilder builder}
+	 * @return This builder
 	 */
 	ISelectExpressionStateObjectBuilder resultVariable(String resultVariable);
 
@@ -65,7 +65,7 @@ public interface ISelectExpressionStateObjectBuilder extends IScalarExpressionSt
 	 * Defines the current state object with the given result variable.
 	 *
 	 * @param resultVariable The variable identifying the current select expression
-	 * @return This {@link IConditionalStateObjectBuilder builder}
+	 * @return This builder
 	 */
 	ISelectExpressionStateObjectBuilder resultVariableAs(String resultVariable);
 

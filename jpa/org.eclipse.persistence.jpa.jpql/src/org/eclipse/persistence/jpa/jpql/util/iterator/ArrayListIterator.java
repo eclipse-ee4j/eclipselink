@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -19,8 +19,9 @@ import java.util.NoSuchElementException;
 /**
  * An <code>ArrayListIterator</code> provides a {@link ListIterator} for an array of objects.
  * <p>
- * The name might be a bit confusing: this is a {@link ListIterator} for an {@link Array};
- * <em>not</em> an {@link Iterator} for an {@link ArrayList}.
+ * The name might be a bit confusing: this is a {@link ListIterator} for an {@link java.lang.reflect.
+ * Array Array};
+ * <em>not</em> an {@link java.util.Iterator Iterator} for an {@link java.util.ArrayList ArrayList}.
  *
  * @version 2.4
  * @since 2.4

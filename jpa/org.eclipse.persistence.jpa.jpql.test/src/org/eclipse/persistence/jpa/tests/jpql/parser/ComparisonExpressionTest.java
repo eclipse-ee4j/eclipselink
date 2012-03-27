@@ -17,6 +17,7 @@ import org.junit.Test;
 
 @SuppressWarnings("nls")
 public final class ComparisonExpressionTest extends JPQLParserTest {
+
 	@Test
 	public void testBuildExpression_01() {
 
@@ -178,6 +179,40 @@ public final class ComparisonExpressionTest extends JPQLParserTest {
 			select(variable("e")),
 			from("Employee", "e"),
 			where(comparison)
+		);
+
+		testInvalidQuery(query, selectStatement);
+	}
+
+	@Test
+	public void testBuildExpression_12() {
+
+		String query = "SELECT e FROM Employee e WHERE e.age <";
+
+		ComparisonExpressionTester comparison = path("e.age").lowerThan(nullExpression());
+		comparison.hasSpaceAfterIdentifier = false;
+
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(comparison)
+		);
+
+		testInvalidQuery(query, selectStatement);
+	}
+
+	@Test
+	public void testBuildExpression_13() {
+
+		String query = "SELECT e FROM Employee e WHERE e.age < ORDER BY e.name";
+
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(path("e.age").lowerThan(nullExpression())),
+			nullExpression(),
+			nullExpression(),
+			orderBy(orderByItem(path("e.name")))
 		);
 
 		testInvalidQuery(query, selectStatement);

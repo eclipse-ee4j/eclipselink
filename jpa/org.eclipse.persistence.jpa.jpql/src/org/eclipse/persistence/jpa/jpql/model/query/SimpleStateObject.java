@@ -50,8 +50,8 @@ public abstract class SimpleStateObject extends AbstractStateObject {
 	 * Creates a new <code>SimpleStateObject</code>.
 	 *
 	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
 	 * @param text The text held by this state object
+	 * @exception NullPointerException The given parent cannot be <code>null</code>
 	 */
 	protected SimpleStateObject(StateObject parent, String text) {
 		super(parent);

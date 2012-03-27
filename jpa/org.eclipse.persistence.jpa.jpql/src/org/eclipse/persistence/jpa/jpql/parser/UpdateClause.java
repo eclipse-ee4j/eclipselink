@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -305,7 +305,7 @@ public final class UpdateClause extends AbstractExpression {
 		if (tolerant && !wordParser.startsWithIdentifier(SET)) {
 			rangeVariableDeclaration = parse(
 				wordParser,
-				getQueryBNF(RangeVariableDeclarationBNF.ID),
+				RangeVariableDeclarationBNF.ID,
 				tolerant
 			);
 		}
@@ -325,11 +325,7 @@ public final class UpdateClause extends AbstractExpression {
 		}
 
 		// Parse update items
-		updateItems = parse(
-			wordParser,
-			getQueryBNF(InternalUpdateClauseBNF.ID),
-			tolerant
-		);
+		updateItems = parse(wordParser, InternalUpdateClauseBNF.ID, tolerant);
 	}
 
 	/**

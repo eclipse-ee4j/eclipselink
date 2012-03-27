@@ -25,21 +25,21 @@ import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
 /**
  * An <code><b>ORDER BY</b></code> item must be one of the following:
  * <ol>
- * <li> A {@link StateFieldPathExpression state_field_path_expression} that evaluates to an orderable
- * state field of an entity or embeddable class abstract schema type designated in the
+ * <li> A {@link StateFieldPathExpressionStateObject state_field_path_expression} that evaluates to
+ * an orderable state field of an entity or embeddable class abstract schema type designated in the
  * <code><b>SELECT</b></code> clause by one of the following:
  *   <ul>
  *   <li>A general_identification_variable
  *   <li>A single_valued_object_path_expression
  *   </ul>
- * <li>A {@link StateFieldPathExpression state_field_path_expression} that evaluates to the same
- * state field of the same entity or embeddable abstract schema type as a {@link StateFieldPathExpression
- * state_field_path_expression} in the <b>SELECT</b> clause
- * <li>A {@link ResultVariable result_variable} that refers to an orderable item in the
- * <code><b>SELECT</b></code> clause for which the same {@link ResultVariableStateObject
- * result_variable} has been specified. This may be the result of an aggregate_expression, a {@link
- * ScalarExpression scalar_expression}, or a {@link StateFieldPathExpression state_field_path_expression}
- * in the <code><b>SELECT</b></code> clause.
+ * <li>A {@link StateFieldPathExpressionStateObject state_field_path_expression} that evaluates to
+ * the same state field of the same entity or embeddable abstract schema type as a {@link
+ * StateFieldPathExpressionStateObject state_field_path_expression} in the <b>SELECT</b> clause
+ * <li>A {@link ResultVariableStateObject result_variable} that refers to an orderable item in the
+ * <code><b>SELECT</b></code> clause for which the same {@link ResultVariableStateObject result_variable}
+ * has been specified. This may be the result of an aggregate_expression, a <code>scalar_expression</code>,
+ * or a {@link StateFieldPathExpressionStateObject state_field_path_expression} in the
+ * <code><b>SELECT</b></code> clause.
  * </ol>
  * <p>
  * The keyword <code><b>ASC</b></code> specifies that ascending ordering be used for the associated
@@ -121,7 +121,7 @@ public class OrderByItemStateObject extends AbstractStateObject {
 	 * Creates a new <code>OrderByItemStateObject</code>.
 	 *
 	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @param stateObject The {@link StateObject} of the item
+	 * @param jpqlFragment The JPQL fragment representing the ordering item
 	 * @param ordering One of the possible {@link Ordering} choice
 	 * @exception NullPointerException The given parent cannot be <code>null</code>
 	 */

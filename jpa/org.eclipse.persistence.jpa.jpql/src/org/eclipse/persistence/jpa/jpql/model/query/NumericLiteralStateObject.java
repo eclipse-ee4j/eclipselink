@@ -57,7 +57,7 @@ public class NumericLiteralStateObject extends SimpleStateObject {
 	 * Creates a new <code>NumericLiteralStateObject</code>.
 	 *
 	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @param text The string representation of the numeric literal
+	 * @param numeric The string representation of the numeric literal
 	 * @exception NullPointerException The given parent cannot be <code>null</code>
 	 */
 	public NumericLiteralStateObject(StateObject parent, String numeric) {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -24,22 +24,22 @@ public enum JPAVersion {
 
 	/**
 	 * The constant for the default version used by the parsing system, which is always the latest
-	 * version of the Java Persistence functional specification.
+	 * version of the Java Persistence functional specification, which is version 2.0.
 	 */
 	DEFAULT_VERSION(2.0),
 
 	/**
-	 * The constant for the Java Persistence version 1.0.
+	 * The constant for the Java Persistence specification 1.0.
 	 */
 	VERSION_1_0(1.0),
 
 	/**
-	 * The constant for the Java Persistence version 2.0.
+	 * The constant for the Java Persistence specification 2.0.
 	 */
 	VERSION_2_0(2.0),
 
 	/**
-	 * The constant for the Java Persistence version 2.1.
+	 * The constant for the Java Persistence specification 2.1.
 	 */
 	VERSION_2_1(2.1);
 
@@ -49,7 +49,7 @@ public enum JPAVersion {
 	private double version;
 
 	/**
-	 * Creates a new <code>IJPAVersion</code>.
+	 * Creates a new <code>JPAVersion</code>.
 	 *
 	 * @param version The actual version number
 	 */
@@ -74,14 +74,15 @@ public enum JPAVersion {
 	}
 
 	/**
-	 * Returns the list of {@link IJPAVersion IJPAVersions} excluding {@link #DEFAULT_VERSION}.
+	 * Returns the list of {@link JPAVersion} excluding {@link #DEFAULT_VERSION}.
 	 *
 	 * @return The list of unique constants
 	 */
 	public static JPAVersion[] versions() {
-		JPAVersion[] values = new JPAVersion[2];
+		JPAVersion[] values = new JPAVersion[3];
 		values[0] = VERSION_1_0;
 		values[1] = VERSION_2_0;
+		values[2] = VERSION_2_1;
 		return values;
 	}
 
@@ -123,8 +124,8 @@ public enum JPAVersion {
 	/**
 	 * Determines whether this constant represents a version that is older than the given version.
 	 *
-	 * @param jpaVersion The constant to verify if it's representing a version that is more recent
-	 * than this one
+	 * @param version The constant to verify if it's representing a version that is more recent than
+	 * this one
 	 * @return <code>true</code> if this constant represents an earlier version and the given
 	 * constant represents a version that is more recent; <code>false</code> if the given constant
 	 * represents an earlier version and this constant represents a more recent version

@@ -21,7 +21,7 @@ import org.eclipse.persistence.jpa.jpql.parser.CollectionExpression;
  * This {@link StateObject} is a temporary object used to store a list of {@link StateObject
  * StateObjects}. Those objects are not parented. {@link StateObjectVisitor} is not aware of this
  * object either, to visit it, the visitor will be notified via reflection, see {@link
- * #acceptUnknownVisitor(StateObjectVisitor)}.
+ * AbstractStateObject#acceptUnknownVisitor(StateObjectVisitor)}.
  *
  * @see CollectionExpression
  *

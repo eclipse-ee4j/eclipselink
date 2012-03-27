@@ -98,7 +98,7 @@ public class SelectStatementStateObject extends AbstractSelectStatementStateObje
 	 *
 	 * @param jpqlFragment The fragment of the JPQL to parse that represents the ordering items, the
 	 * fragment cannot start with <code><b>ORDER BY</b></code>
-	 * @return The {@link OrderyByClauseStateObject}
+	 * @return The {@link OrderByClauseStateObject}
 	 */
 	public OrderByClauseStateObject addOrderByClause(String jpqlFragment) {
 		OrderByClauseStateObject stateObject = addOrderByClause();
@@ -130,7 +130,7 @@ public class SelectStatementStateObject extends AbstractSelectStatementStateObje
 	 * Adds the given path as a select item, which can either be an identification variable or a
 	 * state-field path expression.
 	 *
-	 * @param jpqlFragment The select expression to parse as a select item
+	 * @param path The select expression to parse as a select item
 	 * @return The {@link StateObject} encapsulating the given path
 	 */
 	public StateObject addSelectItem(String path) {
@@ -221,10 +221,10 @@ public class SelectStatementStateObject extends AbstractSelectStatementStateObje
 	}
 
 	/**
-	 * Creates and returns a new {@link ISelectExpressionBuilder} that can be used to
+	 * Creates and returns a new {@link ISelectExpressionStateObjectBuilder} that can be used to
 	 * programmatically create a single select expression and once the expression is complete,
-	 * {@link ISelectExpressionBuilder#commit()} will push the {@link StateObject} representation of
-	 * that expression as this clause's select expression.
+	 * {@link ISelectExpressionStateObjectBuilder#commit()} will push the {@link StateObject}
+	 * representation of that expression as this clause's select expression.
 	 *
 	 * @return A new builder that can be used to quickly create a select expression
 	 */

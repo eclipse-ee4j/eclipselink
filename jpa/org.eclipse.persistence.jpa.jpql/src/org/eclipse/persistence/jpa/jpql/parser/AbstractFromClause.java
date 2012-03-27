@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -134,7 +134,7 @@ public abstract class AbstractFromClause extends AbstractExpression {
 	 *
 	 * @return The BNF of the declaration part of this clause
 	 */
-	public abstract JPQLQueryBNF declarationBNF();
+	public abstract String declarationBNF();
 
 	/**
 	 * Returns the actual <b>FROM</b> identifier found in the string representation of the JPQL
@@ -270,7 +270,7 @@ public abstract class AbstractFromClause extends AbstractExpression {
 			}
 
 			count = wordParser.skipLeadingWhitespace();
-			word  = wordParser.potentialWord();
+			word  = wordParser.word();
 		}
 
 		if (children != null) {

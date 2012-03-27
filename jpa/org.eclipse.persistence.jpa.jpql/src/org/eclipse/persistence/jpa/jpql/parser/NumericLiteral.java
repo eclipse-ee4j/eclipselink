@@ -14,6 +14,7 @@
 package org.eclipse.persistence.jpa.jpql.parser;
 
 import java.util.List;
+import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.WordParser;
 
 /**
@@ -30,6 +31,15 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * @author Pascal Filion
  */
 public final class NumericLiteral extends AbstractExpression {
+
+	/**
+	 * Creates a new <code>NumericLiteral</code>.
+	 *
+	 * @param parent The parent of this expression
+	 */
+	public NumericLiteral(AbstractExpression parent) {
+		super(parent);
+	}
 
 	/**
 	 * Creates a new <code>NumericLiteral</code>.
@@ -83,42 +93,20 @@ public final class NumericLiteral extends AbstractExpression {
 	 */
 	@Override
 	protected void parse(WordParser wordParser, boolean tolerant) {
-
-		String text = getText();
-		wordParser.moveForward(text);
-
-		// Complete the parsing of an approximate number that is of the form
-		// <number>e-<integer>
-		if (Character.toUpperCase(text.charAt(text.length() - 1)) == 'E') {
-			int startIndex = wordParser.position();
-			int endIndex = wordParser.position();
-
-			for (int count = wordParser.length(); endIndex < count; endIndex++) {
-				char character = wordParser.character(endIndex);
-
-				if ((endIndex == startIndex) && (character == '-')) {
-					continue;
-				}
-
-				if (!Character.isDigit(character)) {
-					break;
-				}
-			}
-
-			if (endIndex > 0) {
-				text += wordParser.substring(wordParser.position(), endIndex);
-				setText(text);
-				wordParser.setPosition(endIndex);
-			}
+		String numeric = getText();
+		if (numeric == ExpressionTools.EMPTY_STRING) {
+			numeric = wordParser.numericLiteral();
+			setText(numeric);
 		}
-		else if (text.equals(PLUS) || text.equals(MINUS)) {
-			String word = wordParser.word();
-			if (word.length() > 0 && Character.isDigit(word.charAt(0))) {
-				text += word;
-				wordParser.moveForward(word);
-				setText(text);
-			}
-		}
+		wordParser.moveForward(numeric);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String toActualText() {
+		return getText();
 	}
 
 	/**

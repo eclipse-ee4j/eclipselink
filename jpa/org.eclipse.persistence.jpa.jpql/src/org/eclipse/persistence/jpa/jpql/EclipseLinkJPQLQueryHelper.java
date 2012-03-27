@@ -13,7 +13,10 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql;
 
+import org.eclipse.persistence.jpa.jpql.model.EclipseLinkJPQLQueryBuilder;
+import org.eclipse.persistence.jpa.jpql.model.IJPQLQueryBuilder;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
+import org.eclipse.persistence.jpa.jpql.spi.IQuery;
 
 /**
  * This helper can perform the following operations over a JPQL query:
@@ -21,7 +24,7 @@ import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
  * <li>Calculates the result type of a query: {@link #getResultType()};</li>
  * <li>Calculates the type of an input parameter: {@link #getParameterType(String)}.</li>
  * <li>Calculates the possible choices to complete the query from a given
- *     position (used for content assist): {@link #buildContentAssistItems(int)}.</li>
+ *     position (used for content assist): {@link #buildContentAssistProposals(int)}.</li>
  * <li>Validates the query by introspecting it grammatically and semantically:
  *     <ul>
  *     <li>{@link #validate()},</li>
@@ -48,7 +51,7 @@ public class EclipseLinkJPQLQueryHelper extends AbstractJPQLQueryHelper {
 	/**
 	 * Creates a new <code>EclipseLinkJPQLQueryHelper</code>.
 	 *
-	 * @param jpqlGrammar
+	 * @param jpqlGrammar The {@link JPQLGrammar} that will determine how to parse JPQL queries
 	 */
 	public EclipseLinkJPQLQueryHelper(JPQLGrammar jpqlGrammar) {
 		super(jpqlGrammar);
@@ -76,7 +79,7 @@ public class EclipseLinkJPQLQueryHelper extends AbstractJPQLQueryHelper {
 	 */
 	@Override
 	protected EclipseLinkGrammarValidator buildGrammarValidator(JPQLQueryContext queryContext) {
-		return new EclipseLinkGrammarValidator(queryContext);
+		return new EclipseLinkGrammarValidator(queryContext.getGrammar());
 	}
 
 	/**
@@ -85,6 +88,30 @@ public class EclipseLinkJPQLQueryHelper extends AbstractJPQLQueryHelper {
 	@Override
 	protected JPQLQueryContext buildJPQLQueryContext(JPQLGrammar jpqlGrammar) {
 		return new EclipseLinkJPQLQueryContext(jpqlGrammar);
+	}
+
+	/**
+	 * Creates the right {@link IJPQLQueryBuilder} based on the JPQL grammar.
+	 *
+	 * @return A new concrete instance of {@link IJPQLQueryBuilder}
+	 */
+	protected IJPQLQueryBuilder buildQueryBuilder() {
+		return new EclipseLinkJPQLQueryBuilder(getGrammar());
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public RefactoringTool buildRefactoringTool() {
+
+		IQuery query = getQuery();
+
+		return new DefaultRefactoringTool(
+			query.getProvider(),
+			buildQueryBuilder(),
+			query.getExpression()
+		);
 	}
 
 	/**

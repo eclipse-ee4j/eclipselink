@@ -430,7 +430,7 @@ public final class JPQLGrammar2_1 extends AbstractJPQLGrammar {
 	@Override
 	protected void initializeExpressionFactories() {
 
-		registerFactory(new FunctionExpressionFactory(FUNCTION));
+		registerFactory(new FunctionExpressionFactory(FunctionExpressionFactory.ID, FUNCTION));
 		registerFactory(new OnClauseFactory());
 		registerFactory(new TreatExpressionFactory());
 	}

@@ -18,7 +18,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.ResourceBundle;
-
 import org.eclipse.persistence.config.ParserValidationType;
 import org.eclipse.persistence.exceptions.JPQLException;
 import org.eclipse.persistence.expressions.Expression;
@@ -52,7 +51,6 @@ import org.eclipse.persistence.queries.UpdateAllQuery;
  * The default implementation used to parse a JPQL query into a {@link DatabaseQuery}. It uses
  * {@link JPQLExpression} to parse the JPQL query.
  *
- * @see EclipseLinkJPQLQueryHelper
  * @see JPQLExpression
  *
  * @version 2.4
@@ -144,17 +142,24 @@ public final class HermesParser implements JPAQueryBuilder {
 	}
 
 	private JPQLGrammar jpqlGrammar() {
-	        if (JPAQueryBuilderManager.systemQueryBuilderValidationLevel == ParserValidationType.EclipseLink) {
-                    return DefaultEclipseLinkJPQLGrammar.instance();
-	        } else if (JPAQueryBuilderManager.systemQueryBuilderValidationLevel == ParserValidationType.JPA10) {
-                    return JPQLGrammar1_0.instance();
-                } else if (JPAQueryBuilderManager.systemQueryBuilderValidationLevel == ParserValidationType.JPA20) {
-                    return JPQLGrammar2_0.instance();
-                } else if (JPAQueryBuilderManager.systemQueryBuilderValidationLevel == ParserValidationType.JPA21) {
-                    return JPQLGrammar2_1.instance();
-                } else {
-                    return DefaultEclipseLinkJPQLGrammar.instance();
-                }
+
+		if (JPAQueryBuilderManager.systemQueryBuilderValidationLevel == ParserValidationType.EclipseLink) {
+			return DefaultEclipseLinkJPQLGrammar.instance();
+		}
+
+		if (JPAQueryBuilderManager.systemQueryBuilderValidationLevel == ParserValidationType.JPA10) {
+			return JPQLGrammar1_0.instance();
+		}
+
+		if (JPAQueryBuilderManager.systemQueryBuilderValidationLevel == ParserValidationType.JPA20) {
+			return JPQLGrammar2_0.instance();
+		}
+
+		if (JPAQueryBuilderManager.systemQueryBuilderValidationLevel == ParserValidationType.JPA21) {
+			return JPQLGrammar2_1.instance();
+		}
+
+		return DefaultEclipseLinkJPQLGrammar.instance();
 	}
 
 	/**

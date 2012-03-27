@@ -30,7 +30,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
 public final class DateTimeFactory extends ExpressionFactory {
 
 	/**
-	 * The unique identifier of this {@link FunctionsReturningDatetimeFactory}.
+	 * The unique identifier of this {@link DateTimeFactory}.
 	 */
 	public static final String ID = "functions_returning_datetime";
 

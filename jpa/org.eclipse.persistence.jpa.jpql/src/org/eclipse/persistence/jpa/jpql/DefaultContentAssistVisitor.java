@@ -25,11 +25,11 @@ package org.eclipse.persistence.jpa.jpql;
  * context.{@link JPQLQueryContext#setQuery(org.eclipse.persistence.jpa.jpql.spi.IQuery) setQuery(query)};
  *
  * // Create a map of the positions within the parsed tree
- * {@link QueryPosition} queryPosition = context.getJPQLExpression().buildPosition(query.getExpression(), position);
+ * {@link org.eclipse.persistence.jpa.jpql.parser.QueryPosition QueryPosition} queryPosition = context.getJPQLExpression().buildPosition(query.getExpression(), position);
  *
  * // Create the visitor and visit the parsed tree
  * ContentAssistVisitor visitor = new ContentAssistVisitor(context);
- * visitor.{@link #prepare(QueryPosition) prepare(queryPosition)};
+ * visitor.{@link #prepare(org.eclipse.persistence.jpa.jpql.parser.QueryPosition) prepare(queryPosition)};
  * queryPosition.getExpression().accept(visitor);
  *
  * // Retrieve the proposals
@@ -57,7 +57,7 @@ public class DefaultContentAssistVisitor extends AbstractContentAssistVisitor {
 	 * Creates a new <code>DefaultContentAssistVisitor</code>.
 	 *
 	 * @param queryContext The context used to query information about the query
-	 * @exception AssertException The {@link JPQLQueryContext} cannot be <code>null</code>
+	 * @exception NullPointerException The {@link JPQLQueryContext} cannot be <code>null</code>
 	 */
 	public DefaultContentAssistVisitor(JPQLQueryContext queryContext) {
 		super(queryContext);

@@ -236,10 +236,10 @@ public class SelectClauseStateObject extends AbstractSelectClauseStateObject
 	}
 
 	/**
-	 * Creates and returns a new {@link ISelectExpressionBuilder} that can be used to
+	 * Creates and returns a new {@link ISelectExpressionStateObjectBuilder} that can be used to
 	 * programmatically create a single select expression and once the expression is complete,
-	 * {@link ISelectExpressionBuilder#commit()} will push the {@link StateObject} representation of
-	 * that expression as this clause's select expression.
+	 * {@link ISelectExpressionStateObjectBuilder#commit()} will push the {@link StateObject}
+	 * representation of that expression as this clause's select expression.
 	 *
 	 * @return A new builder that can be used to quickly create a select expression
 	 */

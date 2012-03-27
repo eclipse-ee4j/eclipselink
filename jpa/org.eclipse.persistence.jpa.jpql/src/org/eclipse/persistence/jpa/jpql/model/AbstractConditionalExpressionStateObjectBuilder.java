@@ -21,7 +21,6 @@ import org.eclipse.persistence.jpa.jpql.model.query.AndExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.BetweenExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.CollectionMemberExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.ComparisonExpressionStateObject;
-import org.eclipse.persistence.jpa.jpql.model.query.ConcatExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.EmptyCollectionComparisonExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.ExistsExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.InExpressionStateObject;
@@ -41,8 +40,8 @@ import org.eclipse.persistence.jpa.jpql.parser.TrimExpression.Specification;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
 /**
- * The abstract implementation of {@link IConditionalStateObjectBuilder} that supports the creation
- * of the conditional expression based on the JPQL grammar defined in JPA 2.0.
+ * The abstract implementation of {@link IConditionalExpressionStateObjectBuilder} that supports the
+ * creation of the conditional expression based on the JPQL grammar defined in JPA 2.0.
  *
  * @version 2.4
  * @since 2.4
@@ -155,16 +154,6 @@ public abstract class AbstractConditionalExpressionStateObjectBuilder<T extends 
 		);
 
 		add(stateObject);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public T concat(T parameter1, T parameter2) {
-		checkBuilders(parameter1, parameter2);
-		StateObject stateObject = new ConcatExpressionStateObject(getParent(), stateObjects(2));
-		add(stateObject);
-		return (T) this;
 	}
 
 	/**

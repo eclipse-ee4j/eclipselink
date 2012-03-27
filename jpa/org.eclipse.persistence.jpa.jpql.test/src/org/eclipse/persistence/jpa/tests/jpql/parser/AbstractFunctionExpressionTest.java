@@ -41,6 +41,10 @@ public abstract class AbstractFunctionExpressionTest extends JPQLParserTest {
 
 	protected abstract String identifier(int index);
 
+	protected boolean isExpression_14_Bad() {
+		return false;
+	}
+
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
@@ -356,7 +360,12 @@ public abstract class AbstractFunctionExpressionTest extends JPQLParserTest {
 		// SELECT FUNCTION('functionName', LENGTH(e.name)) FROM Employee e
 		String query = "SELECT " + identifier + "(" + functionName + ", LENGTH(e.name)) FROM Employee e";
 
-		FunctionExpressionTester function = function(identifier, functionName, length(path("e.name")));
+		FunctionExpressionTester function = function(
+			identifier,
+			functionName,
+			isExpression_14_Bad() ? bad(length(path("e.name"))) : length(path("e.name"))
+		);
+
 		function.hasComma = true;
 		function.hasLeftParenthesis = true;
 		function.hasRightParenthesis = true;

@@ -21,8 +21,9 @@ import static org.eclipse.persistence.jpa.jpql.spi.IEclipseLinkMappingType.*;
 import static org.eclipse.persistence.jpa.jpql.spi.IMappingType.*;
 
 /**
- * The concrete implementation of {@link IMapping} that is wrapping the runtime representation
- * of an EclipseLink mapping that is represented by a persistent attribute.
+ * The concrete implementation of {@link org.eclipse.persistence.jpa.jpql.spi.IMapping IMapping}
+ * that is wrapping the runtime representation of an EclipseLink mapping that is represented by a
+ * persistent attribute.
  *
  * @version 2.4
  * @since 2.4

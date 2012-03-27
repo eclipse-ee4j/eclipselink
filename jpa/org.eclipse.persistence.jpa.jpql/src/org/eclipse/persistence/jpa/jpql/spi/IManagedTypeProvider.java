@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -69,7 +69,7 @@ public interface IManagedTypeProvider extends IExternalForm {
 	 *
 	 * @param typeName The fully qualified type name of the {@link IEntity} to retrieve
 	 * @return The {@link IEntity} with the given name; otherwise <code>null</code>
-	 * @see #getEntityName(String)
+	 * @see #getEntityNamed(String)
 	 * @since 2.4
 	 */
 	IEntity getEntity(String typeName);

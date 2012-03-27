@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Oracle. All rights reserved.
+ * Copyright (c) 2011, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -16,11 +16,15 @@ package org.eclipse.persistence.jpa.jpql.spi.java;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import org.eclipse.persistence.jpa.jpql.spi.IManagedType;
 
 /**
- * The abstract implementation of {@link IMapping} that is wrapping the runtime representation
- * of a persistent field.
+ * The abstract implementation of {@link org.eclipse.persistence.jpa.jpql.spi.IMapping IMapping}
+ * that is wrapping the runtime representation of a persistent field.
  *
  * @version 2.4
  * @since 2.4
@@ -67,7 +71,46 @@ public abstract class AbstractFieldMapping extends AbstractMapping {
 	 */
 	@Override
 	protected Class<?> getMemberType() {
-		return getMember().getType();
+
+		Field field = getMember();
+
+		// One to One
+		OneToOne oneToOne = field.getAnnotation(OneToOne.class);
+		if (oneToOne != null) {
+			Class<?> targetEntity = oneToOne.targetEntity();
+			if (targetEntity != void.class) {
+				return targetEntity;
+			}
+		}
+
+		// Many to One
+		ManyToOne manyToOne = field.getAnnotation(ManyToOne.class);
+		if (manyToOne != null) {
+			Class<?> targetEntity = manyToOne.targetEntity();
+			if (targetEntity != void.class) {
+				return targetEntity;
+			}
+		}
+
+		// Many to Many
+		ManyToMany manyToMany = field.getAnnotation(ManyToMany.class);
+		if (manyToMany != null) {
+			Class<?> targetEntity = manyToMany.targetEntity();
+			if (targetEntity != void.class) {
+				return targetEntity;
+			}
+		}
+
+		// One to Many
+		OneToMany oneToMany = field.getAnnotation(OneToMany.class);
+		if (oneToMany != null) {
+			Class<?> targetEntity = oneToMany.targetEntity();
+			if (targetEntity != void.class) {
+				return targetEntity;
+			}
+		}
+
+		return field.getType();
 	}
 
 	/**

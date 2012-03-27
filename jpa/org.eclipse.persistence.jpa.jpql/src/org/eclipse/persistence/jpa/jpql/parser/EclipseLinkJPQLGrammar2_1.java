@@ -120,6 +120,7 @@ public final class EclipseLinkJPQLGrammar2_1 extends AbstractJPQLGrammar {
 		addChildBNF(FunctionsReturningStringsBNF.ID,  FunctionExpressionBNF.ID);
 
 		// Now supports scalar expression
+		addChildBNF(InItemBNF.ID,                              ScalarExpressionBNF.ID);
 		addChildBNF(InternalAggregateFunctionBNF.ID,           ScalarExpressionBNF.ID);
 		addChildBNF(InternalConcatExpressionBNF.ID,            ScalarExpressionBNF.ID);
 		addChildBNF(InternalLengthExpressionBNF.ID,            ScalarExpressionBNF.ID);
@@ -131,6 +132,7 @@ public final class EclipseLinkJPQLGrammar2_1 extends AbstractJPQLGrammar {
 		addChildBNF(InternalSubstringStringExpressionBNF.ID,   ScalarExpressionBNF.ID);
 		addChildBNF(InternalSubstringPositionExpressionBNF.ID, ScalarExpressionBNF.ID);
 		addChildBNF(InternalUpperExpressionBNF.ID,             ScalarExpressionBNF.ID);
+		addChildBNF(PatternValueBNF.ID,                        ScalarExpressionBNF.ID);
 
 		// Extend the query BNF to add support for TREAT
 		addChildBNF(JoinAssociationPathExpressionBNF.ID, TreatExpressionBNF.ID);
@@ -142,7 +144,7 @@ public final class EclipseLinkJPQLGrammar2_1 extends AbstractJPQLGrammar {
 	@Override
 	protected void initializeExpressionFactories() {
 
-		registerFactory(new FunctionExpressionFactory(FUNC));
+		registerFactory(new FunctionExpressionFactory(FunctionExpressionFactory.ID, FUNC));
 		registerFactory(new TreatExpressionFactory());
 	}
 
@@ -152,11 +154,16 @@ public final class EclipseLinkJPQLGrammar2_1 extends AbstractJPQLGrammar {
 	@Override
 	protected void initializeIdentifiers() {
 
-		registerIdentifierRole(FUNC,  IdentifierRole.FUNCTION); // FUNC(n, x1, ..., x2)
-		registerIdentifierRole(TREAT, IdentifierRole.FUNCTION); // TREAT(x AS y)
+		// Expand ComparisonExpression to support !=
+		addIdentifiers(ComparisonExpressionFactory.ID, NOT_EQUAL);
 
-		registerIdentifierVersion(FUNC,  JPAVersion.VERSION_2_0);
-		registerIdentifierVersion(TREAT, JPAVersion.VERSION_2_0);
+		registerIdentifierRole(FUNC,      IdentifierRole.FUNCTION);  // FUNC(n, x1, ..., x2)
+		registerIdentifierRole(NOT_EQUAL, IdentifierRole.AGGREGATE); // x != y
+		registerIdentifierRole(TREAT,     IdentifierRole.FUNCTION);  // TREAT(x AS y)
+
+		registerIdentifierVersion(FUNC,      JPAVersion.VERSION_2_0);
+		registerIdentifierVersion(NOT_EQUAL, JPAVersion.VERSION_2_0);
+		registerIdentifierVersion(TREAT,     JPAVersion.VERSION_2_0);
 	}
 
 	/**

@@ -108,13 +108,11 @@ public abstract class AbstractMapping implements IMapping {
 	/**
 	 * Calculates the type of the mapping represented by this external form.
 	 *
-	 * @param annotations The {@link Annotation Annotations} that are present on the {@link Field}
+	 * @param annotations The {@link Annotation Annotations} that are present on the member
 	 * @return The mapping type, which is one of the constants defined in {@link org.eclipse.
 	 * persistence.jpa.jpql.spi.IMappingType IMappingType} when the provider is generic JPA
 	 */
 	protected int calculateMappingType(Annotation[] annotations) {
-
-		// TODO: Add support for excluding default mappings if it's overridden in an orm.xml
 
 		if (hasAnnotation(annotations, ElementCollection.class)) {
 			return ELEMENT_COLLECTION;
@@ -166,12 +164,14 @@ public abstract class AbstractMapping implements IMapping {
 
 			return ONE_TO_MANY;
 		}
+
 		// 1:1
-		else if (parent.getProvider().getEntity(type) != null) {
+		if (parent.getProvider().getEntity(type) != null) {
 			return ONE_TO_ONE;
 		}
+
 		// Embedded
-		else if (parent.getProvider().getEmbeddable(type) != null) {
+		if (parent.getProvider().getEmbeddable(type) != null) {
 			return EMBEDDED;
 		}
 

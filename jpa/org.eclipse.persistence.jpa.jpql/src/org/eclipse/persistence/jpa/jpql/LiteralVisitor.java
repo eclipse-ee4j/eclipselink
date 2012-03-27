@@ -28,9 +28,10 @@ import org.eclipse.persistence.jpa.jpql.parser.StringLiteral;
 import org.eclipse.persistence.jpa.jpql.parser.TreatExpression;
 
 /**
- * This visitor traverses an {@link Expression} and retrieves the "literal" value. The literal to
- * retrieve depends on the {@link LiteralType type}. The literal is basically a string value like an
- * identification variable name, an input parameter, a path expression, an abstract schema name, etc.
+ * This visitor traverses an {@link org.eclipse.persistence.jpa.jpql.parser.Expression Expression}
+ * and retrieves the "literal" value. The literal to retrieve depends on the {@link LiteralType type}.
+ * The literal is basically a string value like an identification variable name, an input parameter,
+ * a path expression, an abstract schema name, etc.
  * <p>
  * Provisional API: This interface is part of an interim API that is still under development and
  * expected to change significantly before reaching stability. It is available at this early stage
@@ -44,12 +45,14 @@ import org.eclipse.persistence.jpa.jpql.parser.TreatExpression;
 public abstract class LiteralVisitor extends AnonymousExpressionVisitor {
 
 	/**
-	 * The literal value retrieved from the visited {@link Expression}.
+	 * The literal value retrieved from the visited {@link org.eclipse.persistence.jpa.jpql.parser.
+	 * Expression Expression}.
 	 */
 	public String literal;
 
 	/**
-	 * The {@link LiteralType} helps to determine when traversing an {@link Expression} what to retrieve.
+	 * The {@link LiteralType} helps to determine when traversing an {@link org.eclipse.persistence.
+	 * jpa.jpql.parser.Expression Expression} what to retrieve.
 	 */
 	protected LiteralType type;
 

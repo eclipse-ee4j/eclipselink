@@ -60,7 +60,7 @@ public class NumericResolver extends Resolver {
 	 * Creates a new <code>NumericResolver</code>.
 	 *
 	 * @param parent The parent {@link Resolver}, which is never <code>null</code>
-	 * @param resolvers The {@link Resolver resolvers} used to calculate the numeric type
+	 * @param typeResolvers The {@link Resolver resolvers} used to calculate the numeric type
 	 */
 	public NumericResolver(Resolver parent, Collection<Resolver> typeResolvers) {
 		super(parent);

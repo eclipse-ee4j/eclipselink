@@ -56,7 +56,7 @@ public class CloneIterator<E> implements IterableIterator<E> {
 
 	/**
 	 * Creates a new <code>CloneIterator</code> using a copy of the specified collection. The {@link
-	 * #remove()} method will not be supported, unless a subclass overrides the {@link #remove(Object)}.
+	 * #remove()} method will not be supported, unless a subclass overrides {@link #remove(Object)}.
 	 *
 	 * @param collection The collection that is copied in order to iterate over its items without
 	 * being changed concurrently

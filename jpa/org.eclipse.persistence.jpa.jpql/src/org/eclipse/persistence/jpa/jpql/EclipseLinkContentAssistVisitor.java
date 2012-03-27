@@ -36,7 +36,7 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 	 * Creates a new <code>EclipseLinkContentAssistVisitor</code>.
 	 *
 	 * @param queryContext The context used to query information about the query
-	 * @exception AssertException The {@link JPQLQueryContext} cannot be <code>null</code>
+	 * @exception NullPointerException The {@link JPQLQueryContext} cannot be <code>null</code>
 	 */
 	public EclipseLinkContentAssistVisitor(JPQLQueryContext queryContext) {
 		super(queryContext);

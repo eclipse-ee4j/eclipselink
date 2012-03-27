@@ -27,7 +27,7 @@ public interface IScalarExpressionStateObjectBuilder<T extends IScalarExpression
 	 * Creates the expression <code><b>ABS(x)</b></code>.
 	 *
 	 * @param builder The parameter of the <code><b>ABS</b></code> expression
-	 * @return This {@link T builder}
+	 * @return This This builder
 	 */
 	T abs(T builder);
 
@@ -35,7 +35,7 @@ public interface IScalarExpressionStateObjectBuilder<T extends IScalarExpression
 	 * Creates the expression <code><b>x + y</b></code>.
 	 *
 	 * @param builder The right side of the addition expression
-	 * @return This {@link T builder}
+	 * @return This builder
 	 */
 	T add(T builder);
 
@@ -43,7 +43,7 @@ public interface IScalarExpressionStateObjectBuilder<T extends IScalarExpression
 	 * Creates the expression <code><b>AVG(path)</b></code>.
 	 *
 	 * @param path The state field path expression
-	 * @return This {@link T builder}
+	 * @return This This builder
 	 */
 	T avg(String path);
 
@@ -51,7 +51,7 @@ public interface IScalarExpressionStateObjectBuilder<T extends IScalarExpression
 	 * Creates the expression <code><b>AVG(DISTINCT path)</b></code>.
 	 *
 	 * @param path The state field path expression
-	 * @return This {@link T builder}
+	 * @return This This builder
 	 */
 	T avgDistinct(String path);
 
@@ -60,7 +60,7 @@ public interface IScalarExpressionStateObjectBuilder<T extends IScalarExpression
 	 *
 	 * @param builder The {@link ICaseExpressionStateObjectBuilder builder} of a <code><b>CASE</b></code>
 	 * expression
-	 * @return This {@link T builder}
+	 * @return This This builder
 	 */
 	T case_(ICaseExpressionStateObjectBuilder builder);
 
@@ -70,7 +70,7 @@ public interface IScalarExpressionStateObjectBuilder<T extends IScalarExpression
 	 * @param builder1 The first scalar expression
 	 * @param builder2 The second scalar expression
 	 * @param builders The subsequent scalar expressions
-	 * @return This {@link T builder}
+	 * @return This This builder
 	 */
 	T coalesce(T builder1,
 	           T builder2,
@@ -82,7 +82,7 @@ public interface IScalarExpressionStateObjectBuilder<T extends IScalarExpression
 	 * @param builder1 The first argument of the expression
 	 * @param builder2 The second argument of the expression
 	 * @param builders The subsequence arguments of the expression, which are optional
-	 * @return This {@link T builder}
+	 * @return This This builder
 	 */
 	T concat(T builder1,
 	         T builder2,
@@ -94,7 +94,7 @@ public interface IScalarExpressionStateObjectBuilder<T extends IScalarExpression
 	 *                                       single_valued_object_path_expression)</b></code>.
 	 *
 	 * @param path The state field path expression
-	 * @return This {@link T builder}
+	 * @return This This builder
 	 */
 	T count(String path);
 
@@ -104,35 +104,35 @@ public interface IScalarExpressionStateObjectBuilder<T extends IScalarExpression
 	 *                                                single_valued_object_path_expression)</b></code>.
 	 *
 	 * @param path The state field path expression
-	 * @return This {@link T builder}
+	 * @return This This builder
 	 */
 	T countDistinct(String path);
 
 	/**
 	 * Creates the expression representing <code><b>CURRENT_DATE</b></code>.
 	 *
-	 * @return This {@link T builder}
+	 * @return This This builder
 	 */
 	T currentDate();
 
 	/**
 	 * Creates the expression representing <code><b>CURRENT_TIME</b></code>.
 	 *
-	 * @return This {@link T builder}
+	 * @return This This builder
 	 */
 	T currentTime();
 
 	/**
 	 * Creates the expression representing <code><b>CURRENT_TIMESTAMP</b></code>.
 	 *
-	 * @return This {@link T builder}
+	 * @return This This builder
 	 */
 	T currentTimestamp();
 
 	/**
 	 * Creates a new date using the JDBC syntax of a date.
 	 *
-	 * @return This {@link T builder}
+	 * @return This This builder
 	 */
 	T date(String jdbcDate);
 
@@ -140,7 +140,7 @@ public interface IScalarExpressionStateObjectBuilder<T extends IScalarExpression
 	 * Creates the expression <code><b>x ÷ y</b></code>.
 	 *
 	 * @param builder The right side of the addition expression
-	 * @return This {@link T builder}
+	 * @return This This builder
 	 */
 	T divide(T builder);
 
@@ -148,7 +148,7 @@ public interface IScalarExpressionStateObjectBuilder<T extends IScalarExpression
 	 * Creates a new entity type literal.
 	 *
 	 * @param entityTypeName The short name of the entity
-	 * @return This {@link T builder}
+	 * @return This This builder
 	 */
 	T entityType(String entityTypeName);
 
@@ -156,7 +156,7 @@ public interface IScalarExpressionStateObjectBuilder<T extends IScalarExpression
 	 * Creates a new enum literal.
 	 *
 	 * @param enumConstant The enum constant
-	 * @return This {@link T builder}
+	 * @return This This builder
 	 */
 	T enumLiteral(Enum<? extends Enum<?>> enumConstant);
 
@@ -166,7 +166,7 @@ public interface IScalarExpressionStateObjectBuilder<T extends IScalarExpression
 	 * @param identifier The JPQL identifier that is used to identify the SQL expression
 	 * @param functionName The name of the native SQL function
 	 * @param arguments The arguments of the expression
-	 * @return This {@link ISimpleSelectExpressionBuilder builder}
+	 * @return This builder
 	 */
 	T function(String identifier, String functionName, String... arguments);
 
@@ -176,13 +176,13 @@ public interface IScalarExpressionStateObjectBuilder<T extends IScalarExpression
 	 * @param identifier The JPQL identifier that is used to identify the SQL expression
 	 * @param functionName The name of the native SQL function
 	 * @param arguments The arguments of the expression
-	 * @return This {@link ISimpleSelectExpressionBuilder builder}
+	 * @return This builder
 	 */
 	T function(String identifier, String functionName, T... arguments);
 
 	/**
 	 * Returns the builder that can create a <code><b>CASE</b></code> expression, which requires a
-	 * {@link IConditionalStateObjectBuilder} to build the <code><b>WHEN</b></code> clauses.
+	 * {@link IConditionalExpressionStateObjectBuilder} to build the <code><b>WHEN</b></code> clauses.
 	 *
 	 * @return The builder of a <code><b>CASE</b></code> expression
 	 */
@@ -192,7 +192,7 @@ public interface IScalarExpressionStateObjectBuilder<T extends IScalarExpression
 	 * Creates the expression <code><b>INDEX(identification_variable)</b></code>.
 	 *
 	 * @param variable The identification variable
-	 * @return This {@link T builder}
+	 * @return This This builder
 	 */
 	T index(String variable);
 
@@ -200,7 +200,7 @@ public interface IScalarExpressionStateObjectBuilder<T extends IScalarExpression
 	 * Creates the expression <code><b>LENGTH(expression)</b></code>.
 	 *
 	 * @param builder The encapsulated expression
-	 * @return This {@link T builder}
+	 * @return This This builder
 	 */
 	T length(T builder);
 
@@ -209,7 +209,7 @@ public interface IScalarExpressionStateObjectBuilder<T extends IScalarExpression
 	 *
 	 * @param parameter1 The first string primary
 	 * @param parameter2 The second string primary
-	 * @return This {@link T builder}
+	 * @return This This builder
 	 */
 	T locate(T parameter1, T parameter2);
 
@@ -219,7 +219,7 @@ public interface IScalarExpressionStateObjectBuilder<T extends IScalarExpression
 	 * @param parameter1 The first string primary
 	 * @param parameter2 The second string primary
 	 * @param parameter3 The position of the search within the string
-	 * @return This {@link T builder}
+	 * @return This This builder
 	 */
 	T locate(T parameter1, T parameter2, T parameter3);
 
@@ -227,7 +227,7 @@ public interface IScalarExpressionStateObjectBuilder<T extends IScalarExpression
 	 * Creates the expression <code><b>MAX(path)</b></code>.
 	 *
 	 * @param path The state field path expression
-	 * @return This {@link T builder}
+	 * @return This This builder
 	 */
 	T max(String path);
 
@@ -235,7 +235,7 @@ public interface IScalarExpressionStateObjectBuilder<T extends IScalarExpression
 	 * Creates the expression <code><b>MAX(DISTINCT path)</b></code>.
 	 *
 	 * @param path The state field path expression
-	 * @return This {@link T builder}
+	 * @return This This builder
 	 */
 	T maxDistinct(String path);
 
@@ -243,7 +243,7 @@ public interface IScalarExpressionStateObjectBuilder<T extends IScalarExpression
 	 * Creates the expression <code><b>AVG(path)</b></code>.
 	 *
 	 * @param path The state field path expression
-	 * @return This {@link T builder}
+	 * @return This This builder
 	 */
 	T min(String path);
 
@@ -251,7 +251,7 @@ public interface IScalarExpressionStateObjectBuilder<T extends IScalarExpression
 	 * Creates the expression <code><b>AVG(DISTINCT path)</b></code>.
 	 *
 	 * @param path The state field path expression
-	 * @return This {@link T builder}
+	 * @return This This builder
 	 */
 	T minDistinct(String path);
 
@@ -259,7 +259,7 @@ public interface IScalarExpressionStateObjectBuilder<T extends IScalarExpression
 	 * Creates the expression <code><b>- x</b></code>.
 	 *
 	 * @param builder The expression that will have the plus sign prepended
-	 * @return This {@link T builder}
+	 * @return This This builder
 	 */
 	T minus(T builder);
 
@@ -268,7 +268,7 @@ public interface IScalarExpressionStateObjectBuilder<T extends IScalarExpression
 	 *
 	 * @param parameter1 The first parameter
 	 * @param parameter2 The second parameter
-	 * @return This {@link T builder}
+	 * @return This This builder
 	 */
 	T mod(T parameter1, T parameter2);
 
@@ -276,7 +276,7 @@ public interface IScalarExpressionStateObjectBuilder<T extends IScalarExpression
 	 * Creates the expression <code><b>x × y</b></code>.
 	 *
 	 * @param builder The right side of the addition expression
-	 * @return This {@link T builder}
+	 * @return This This builder
 	 */
 	T multiply(T builder);
 
@@ -285,7 +285,7 @@ public interface IScalarExpressionStateObjectBuilder<T extends IScalarExpression
 	 *
 	 * @param builder1 The first scalar expression
 	 * @param builder2 The second scalar expression
-	 * @return This {@link T builder}
+	 * @return This This builder
 	 */
 	T nullIf(T builder1, T builder2);
 
@@ -293,7 +293,7 @@ public interface IScalarExpressionStateObjectBuilder<T extends IScalarExpression
 	 * Creates the numeric literal.
 	 *
 	 * @param number The numeric literal
-	 * @return This {@link T builder}
+	 * @return This This builder
 	 */
 	T numeric(Number number);
 
@@ -301,7 +301,7 @@ public interface IScalarExpressionStateObjectBuilder<T extends IScalarExpression
 	 * Creates the numeric literal.
 	 *
 	 * @param number The numeric literal
-	 * @return This {@link T builder}
+	 * @return This This builder
 	 */
 	T numeric(String number);
 
@@ -309,7 +309,7 @@ public interface IScalarExpressionStateObjectBuilder<T extends IScalarExpression
 	 * Creates the input parameter.
 	 *
 	 * @param parameter The named or positional input parameter
-	 * @return This {@link T builder}
+	 * @return This This builder
 	 */
 	T parameter(String parameter);
 
@@ -317,7 +317,7 @@ public interface IScalarExpressionStateObjectBuilder<T extends IScalarExpression
 	 * Creates a new state field path expression.
 	 *
 	 * @param path The state field path path expression
-	 * @return This {@link T builder}
+	 * @return This This builder
 	 */
 	T path(String path);
 
@@ -325,7 +325,7 @@ public interface IScalarExpressionStateObjectBuilder<T extends IScalarExpression
 	 * Creates the expression <code><b>+ x</b></code>.
 	 *
 	 * @param builder The expression that will have the plus sign prepended
-	 * @return This {@link T builder}
+	 * @return This This builder
 	 */
 	T plus(T builder);
 
@@ -333,7 +333,7 @@ public interface IScalarExpressionStateObjectBuilder<T extends IScalarExpression
 	 * Creates the expression <code><b>SIZE(collection_valued_path_expression)</b></code>.
 	 *
 	 * @param path The collection-valued path expression
-	 * @return This {@link T builder}
+	 * @return This This builder
 	 */
 	T size(String path);
 
@@ -341,7 +341,7 @@ public interface IScalarExpressionStateObjectBuilder<T extends IScalarExpression
 	 * Creates the expression <code><b>SQRT(x)</b></code>.
 	 *
 	 * @param builder The parameter of the <code><b>ABS</b></code> expression
-	 * @return This {@link T builder}
+	 * @return This This builder
 	 */
 	T sqrt(T builder);
 
@@ -349,7 +349,7 @@ public interface IScalarExpressionStateObjectBuilder<T extends IScalarExpression
 	 * Creates a new string literal.
 	 *
 	 * @param literal The string literal
-	 * @return This {@link T builder}
+	 * @return This This builder
 	 */
 	T string(String literal);
 
@@ -357,7 +357,7 @@ public interface IScalarExpressionStateObjectBuilder<T extends IScalarExpression
 	 * Creates an encapsulated expression: <code><b>(expression)</b></code>.
 	 *
 	 * @param builder The expression that will be encapsulated
-	 * @return This {@link T builder}
+	 * @return This This builder
 	 */
 	T sub(T builder);
 
@@ -365,7 +365,7 @@ public interface IScalarExpressionStateObjectBuilder<T extends IScalarExpression
 	 * Creates the expression <code><b>x - y</b></code>.
 	 *
 	 * @param builder The right side of the addition expression
-	 * @return This {@link T builder}
+	 * @return This This builder
 	 */
 	T subtract(T builder);
 
@@ -373,7 +373,7 @@ public interface IScalarExpressionStateObjectBuilder<T extends IScalarExpression
 	 * Creates the expression <code><b>SUM(path)</b></code>.
 	 *
 	 * @param path The state field path expression
-	 * @return This {@link T builder}
+	 * @return This This builder
 	 */
 	T sum(String path);
 
@@ -381,15 +381,15 @@ public interface IScalarExpressionStateObjectBuilder<T extends IScalarExpression
 	 * Creates the expression <code><b>SUM(path)</b></code>.
 	 *
 	 * @param path The state field path expression
-	 * @return This {@link T builder}
+	 * @return This This builder
 	 */
 	T sumDistinct(String path);
 
 	/**
 	 * Creates the expression <code><b>TYPE(identification_variable | single_valued_object_path_expression | input_parameter)</b></code>.
 	 *
-	 * @param variable The identification variable or the input parameter
-	 * @return This {@link T builder}
+	 * @param path The identification variable or the input parameter
+	 * @return This This builder
 	 */
 	T type(String path);
 }

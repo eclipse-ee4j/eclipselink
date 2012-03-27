@@ -67,8 +67,12 @@ public abstract class ExpressionFactory implements Comparable<ExpressionFactory>
 	 * @param identifier The JPQL identifier this factory will parse
 	 */
 	void addIdentifier(String identifier) {
-		identifiers = Arrays.copyOf(identifiers, identifiers.length + 1);
-		identifiers[identifiers.length - 1] = identifier;
+
+		String[] newIdentifiers = new String[identifiers.length + 1];
+		newIdentifiers[identifiers.length] = identifier;
+		System.arraycopy(identifiers, 0, newIdentifiers, 0, identifiers.length);
+
+		identifiers = newIdentifiers;
 	}
 
 	/**
@@ -77,9 +81,14 @@ public abstract class ExpressionFactory implements Comparable<ExpressionFactory>
 	 * @param identifier The JPQL identifiers this factory will parse
 	 */
 	void addIdentifiers(String... identifiers) {
-		int insertionIndex = this.identifiers.length;
-		this.identifiers = Arrays.copyOf(this.identifiers, insertionIndex + identifiers.length);
-		System.arraycopy(identifiers, 0, this.identifiers, insertionIndex, identifiers.length);
+
+		int originalLength = this.identifiers.length;
+
+		String[] newIdentifiers = new String[this.identifiers.length + identifiers.length];
+		System.arraycopy(this.identifiers, 0, newIdentifiers, 0, this.identifiers.length);
+		System.arraycopy(identifiers, 0, newIdentifiers, originalLength, identifiers.length);
+
+		this.identifiers = newIdentifiers;
 	}
 
 	/**

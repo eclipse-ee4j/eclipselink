@@ -17,8 +17,8 @@ import java.lang.reflect.Field;
 import org.eclipse.persistence.jpa.jpql.spi.IManagedType;
 
 /**
- * The concrete implementation of {@link IMapping} that is wrapping the runtime representation
- * of a persistent attribute.
+ * The concrete implementation of {@link org.eclipse.persistence.jpa.jpql.spi.IMapping IMapping}
+ * that is wrapping the runtime representation of a persistent attribute.
  *
  * @version 2.4
  * @since 2.3

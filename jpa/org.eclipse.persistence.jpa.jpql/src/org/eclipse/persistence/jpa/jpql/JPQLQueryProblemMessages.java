@@ -142,10 +142,14 @@ public interface JPQLQueryProblemMessages {
 	String ExistsExpression_MissingExpression = "EXISTS_EXPRESSION_MISSING_EXPRESSION";
 	String ExistsExpression_MissingLeftParenthesis = "EXISTS_EXPRESSION_MISSING_LEFT_PARENTHESIS";
 	String ExistsExpression_MissingRightParenthesis = "EXISTS_EXPRESSION_MISSING_RIGHT_PARENTHESIS";
+	String FunctionExpression_HasExpression = "FUNCTION_EXPRESSION_HAS_EXPRESSION";
 	String FunctionExpression_InvalidExpression = "FUNCTION_EXPRESSION_INVALID_EXPRESSION";
+	String FunctionExpression_MissingExpression = "FUNCTION_EXPRESSION_MISSING_EXPRESSION";
 	String FunctionExpression_MissingFunctionName = "FUNCTION_EXPRESSION_MISSING_FUNCTION_NAME";
 	String FunctionExpression_MissingLeftParenthesis = "FUNCTION_EXPRESSION_MISSING_LEFT_PARENTHESIS";
+	String FunctionExpression_MissingOneExpression = "FUNCTION_EXPRESSION_MISSING_ONE_EXPRESSION";
 	String FunctionExpression_MissingRightParenthesis = "FUNCTION_EXPRESSION_MISSING_RIGHT_PARENTHESIS";
+	String FunctionExpression_MoreThanOneExpression = "FUNCTION_EXPRESSION_MORE_THAN_ONE_EXPRESSION";
 	String GroupByClause_GroupByItemEndsWithComma = "GROUP_BY_CLAUSE_GROUP_BY_ITEM_ENDS_WITH_COMMA";
 	String GroupByClause_GroupByItemIsMissingComma = "GROUP_BY_CLAUSE_GROUP_BY_ITEM_IS_MISSING_COMMA";
 	String GroupByClause_GroupByItemMissing = "GROUP_BY_CLAUSE_GROUP_BY_ITEM_MISSING";

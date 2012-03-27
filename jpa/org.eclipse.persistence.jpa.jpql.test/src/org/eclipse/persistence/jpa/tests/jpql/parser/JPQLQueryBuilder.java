@@ -239,7 +239,7 @@ public final class JPQLQueryBuilder {
 					// Make sure the whitespace is a real space
 					character = SPACE;
 
-					// '( " will always be converted to '('
+					// '( ' will always be converted to '('
 					char previousCharacter = (index > 0) ? jpqlQuery.charAt(index - 1) : '\0';
 
 					if (previousCharacter == LEFT_PARENTHESIS) {
@@ -411,6 +411,7 @@ public final class JPQLQueryBuilder {
 					// Add a whitespace before
 					if ((previousCharacter != '>') &&
 					    (previousCharacter != '<') &&
+					    (previousCharacter != '!') && /* Add support for something like !"#%/ */
 					    (whitespaceParsed == 0)) {
 
 						sb.append(' ');

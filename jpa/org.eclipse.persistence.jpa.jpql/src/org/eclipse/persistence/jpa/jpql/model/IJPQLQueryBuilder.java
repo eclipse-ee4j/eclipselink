@@ -30,9 +30,7 @@ import org.eclipse.persistence.jpa.jpql.spi.IManagedTypeProvider;
  * <ul>
  * <li>Generic JPA 1.0: {@link JPQLQueryBuilder1_0}</li>
  * <li>Generic JPA 2.0: {@link JPQLQueryBuilder2_0}</li>
- * <li>JPA 1.0/EclipseLink 1.x: {@link EclipseLinkJPQLQueryBuilder1}</li>
- * <li>JPA 2.0/EclipseLink 2.0: {@link EclipseLinkJPQLQueryBuilder2_0}</li>
- * <li>JPA 2.0/EclipseLink 2.1 or later: {@link EclipseLinkJPQLQueryBuilder2_1}</li>
+ * <li>EclipseLink: {@link EclipseLinkJPQLQueryBuilder}</li>
  * </ul>
  *
  * @see IManagedTypeProvider
@@ -46,8 +44,8 @@ public interface IJPQLQueryBuilder {
 
 	/**
 	 * Creates a builder that can create a <code><b>CASE</b></code> expression programmatically. Once
-	 * the expression is complete, {@link ICaseExpressionStateObjectBuilder#build()} will return the
-	 * result.
+	 * the expression is complete, {@link ICaseExpressionStateObjectBuilder#buildStateObject()} will
+	 * return the result.
 	 *
 	 * @param parent The {@link StateObject} that will be the parent of the newly created model
 	 * @return The builder of a <code><b>CASE</b></code> expression
@@ -100,8 +98,8 @@ public interface IJPQLQueryBuilder {
 
 	/**
 	 * Creates a builder that can create a conditional expression programmatically. Once the
-	 * expression is complete, {@link IConditionalStateObjectBuilder#commit()} will push the result
-	 * onto the given state object.
+	 * expression is complete, {@link IConditionalExpressionStateObjectBuilder#commit()} will push
+	 * the result onto the given state object.
 	 *
 	 * @param stateObject The clause for which a conditional expression can be created
 	 * @return The builder of a conditional expression
@@ -110,8 +108,8 @@ public interface IJPQLQueryBuilder {
 
 	/**
 	 * Creates a builder that can create a select expression programmatically. Once the expression is
-	 * complete, {@link ISelectExpressionBuilder#commit()} will push the result onto the given state
-	 * object.
+	 * complete, {@link ISelectExpressionStateObjectBuilder#commit()} will push the result onto the
+	 * given state object.
 	 *
 	 * @param stateObject The clause for which one or many select expressions can be created
 	 * @return The builder of a conditional expression
@@ -120,8 +118,8 @@ public interface IJPQLQueryBuilder {
 
 	/**
 	 * Creates a builder that can create a single select expression programmatically. Once the
-	 * expression is complete, {@link ISimpleSelectExpressionBuilder#commit()} will push the result
-	 * onto the given state object.
+	 * expression is complete, {@link ISimpleSelectExpressionStateObjectBuilder#commit()} will push
+	 * the result onto the given state object.
 	 *
 	 * @param stateObject The clause for which a select expression can be created
 	 * @return The builder of a conditional expression

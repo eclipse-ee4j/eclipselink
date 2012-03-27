@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Oracle. All rights reserved.
+ * Copyright (c) 2011, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -21,8 +21,9 @@ import static org.eclipse.persistence.jpa.jpql.spi.IEclipseLinkMappingType.*;
 import static org.eclipse.persistence.jpa.jpql.spi.IMappingType.*;
 
 /**
- * The concrete implementation of {@link IMapping} that is wrapping the runtime representation
- * of an EclipseLink mapping that is represented by a property.
+ * The concrete implementation of {@link org.eclipse.persistence.jpa.jpql.spi.IMapping IMapping}
+ * that is wrapping the runtime representation of an EclipseLink mapping that is represented by a
+ * property.
  *
  * @version 2.4
  * @since 2.4

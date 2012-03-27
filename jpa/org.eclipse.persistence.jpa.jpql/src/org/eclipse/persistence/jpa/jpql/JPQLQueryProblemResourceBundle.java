@@ -227,10 +227,14 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
 			{"EXISTS_EXPRESSION_MISSING_RIGHT_PARENTHESIS", "The right parenthesis is missing from the EXISTS expression."},
 
 			// FunctionExpression - Grammar
-			{"FUNCTION_EXPRESSION_INVALID_EXPRESSION",        "The argument is not valid."},
-			{"FUNCTION_EXPRESSION_MISSING_FUNCTION_NAME",     "The SQL function name must be specified."},
-			{"FUNCTION_EXPRESSION_MISSING_LEFT_PARENTHESIS",  "The left parenthesis is missing from the expression."},
-			{"FUNCTION_EXPRESSION_MISSING_RIGHT_PARENTHESIS", "The right parenthesis is missing from the expression."},
+			{"FUNCTION_EXPRESSION_HAS_EXPRESSION",            "The function {0} should not have any argument."},
+			{"FUNCTION_EXPRESSION_INVALID_EXPRESSION",        "The function {0}''s argument is not valid."},
+			{"FUNCTION_EXPRESSION_MISSING_EXPRESSION",        "The function {0}''s argument must be specified."},
+			{"FUNCTION_EXPRESSION_MISSING_FUNCTION_NAME",     "The function name must be specified."},
+			{"FUNCTION_EXPRESSION_MISSING_LEFT_PARENTHESIS",  "The left parenthesis is missing from the function {0}."},
+			{"FUNCTION_EXPRESSION_MISSING_ONE_EXPRESSION",    "The function {0} must have one argument specified."},
+			{"FUNCTION_EXPRESSION_MISSING_RIGHT_PARENTHESIS", "The right parenthesis is missing from the function {0}."},
+			{"FUNCTION_EXPRESSION_MORE_THAN_ONE_EXPRESSION",  "The function {0} has more than one argument, can only specify one argument."},
 
 			// GroupByClause - Grammar
 			{"GROUP_BY_CLAUSE_GROUP_BY_ITEM_ENDS_WITH_COMMA",  "The select expression cannot end with a comma."},

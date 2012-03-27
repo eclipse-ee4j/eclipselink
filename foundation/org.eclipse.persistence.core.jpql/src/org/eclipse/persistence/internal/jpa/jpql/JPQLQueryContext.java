@@ -77,7 +77,7 @@ final class JPQLQueryContext {
 	private DeclarationResolver declarationResolver;
 
 	/**
-	 * The builder that can convert a {@link org.eclipse.persistence.jpa.query.parser.Expression JPQL
+	 * The builder that can convert a {@link org.eclipse.persistence.jpa.jpql.parser.Expression JPQL
 	 * Expression} into an {@link Expression EclipseLink Expression}.
 	 */
 	private ExpressionBuilderVisitor expressionBuilder;
@@ -302,10 +302,10 @@ final class JPQLQueryContext {
 	}
 
 	/**
-	 * Converts the given {@link org.eclipse.persistence.jpa.query.parser.Expression JPQL Expression}
+	 * Converts the given {@link org.eclipse.persistence.jpa.jpql.parser.Expression JPQL Expression}
 	 * into an {@link Expression}.
 	 *
-	 * @param expression The {@link org.eclipse.persistence.jpa.query.parser.Expression JPQL Expression}
+	 * @param expression The {@link org.eclipse.persistence.jpa.jpql.parser.Expression JPQL Expression}
 	 * to visit and to convert into an {@link Expression}
 	 * @return The {@link Expression} representing the given parsed expression
 	 */
@@ -314,10 +314,10 @@ final class JPQLQueryContext {
 	}
 
 	/**
-	 * Converts the given {@link org.eclipse.persistence.jpa.query.parser.Expression JPQL Expression}
+	 * Converts the given {@link org.eclipse.persistence.jpa.jpql.parser.Expression JPQL Expression}
 	 * into an {@link Expression}.
 	 *
-	 * @param expression The {@link org.eclipse.persistence.jpa.query.parser.Expression JPQL Expression}
+	 * @param expression The {@link org.eclipse.persistence.jpa.jpql.parser.Expression JPQL Expression}
 	 * to visit and to convert into an {@link Expression}
 	 * @param type The given array will be used to store the type of the given expression
 	 * @return The {@link Expression} representing the given parsed expression
@@ -388,7 +388,7 @@ final class JPQLQueryContext {
 	/**
 	 * Returns the type of the given {@link QueryKey}, which is the persistent field type.
 	 *
-	 * @param mapping The {@link QueryKey} to retrieve its persistent field type
+	 * @param queryKey The {@link QueryKey} to retrieve its persistent field type
 	 * @return The persistent field type
 	 */
 	Class<?> calculateQueryKeyType(QueryKey queryKey) {
@@ -768,11 +768,10 @@ final class JPQLQueryContext {
 	}
 
 	/**
-	 * Returns the {@link IType} of the given {@link Expression}.
+	 * Returns the Java class of the given {@link Expression}.
 	 *
 	 * @param expression The {@link Expression} for which its type will be calculated
-	 * @return Either the {@link IType} that was resolved by this {@link Resolver} or the
-	 * {@link IType} for {@link IType#UNRESOLVABLE_TYPE} if it could not be resolved
+	 * @return Either the Java class that was resolved or the <code>null</code> if it could not be resolved
 	 */
 	Class<?> getType(org.eclipse.persistence.jpa.jpql.parser.Expression expression) {
 		return typeResolver().resolve(expression);
@@ -781,7 +780,7 @@ final class JPQLQueryContext {
 	/**
 	 * Retrieves the external class for the given fully qualified class name.
 	 *
-	 * @param name The fully qualified class name of the class to retrieve
+	 * @param typeName The fully qualified class name of the class to retrieve
 	 * @return The external form of the class to retrieve
 	 */
 	Class<?> getType(String typeName) {
@@ -1044,12 +1043,12 @@ final class JPQLQueryContext {
 
 	/**
 	 * Changes the state of this context to use the given subquery. Once the subquery is created and
-	 * populated, {@link #disposeSubQueryContext()} has to be called.
+	 * populated, {@link #disposeSubqueryContext()} has to be called.
 	 *
 	 * @param currentQuery The parsed tree representation of the subquery that will become the
 	 * current {@link DatabaseQuery}
 	 * @param query The {@link ReportQuery} for the subquery
-	 * @see #disposeSubQueryContext()
+	 * @see #disposeSubqueryContext()
 	 */
 	void newSubQueryContext(org.eclipse.persistence.jpa.jpql.parser.Expression currentQuery,
 	                        ReportQuery query) {

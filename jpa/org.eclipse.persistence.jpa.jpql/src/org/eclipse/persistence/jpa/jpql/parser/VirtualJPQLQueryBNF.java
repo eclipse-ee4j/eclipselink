@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Oracle. All rights reserved.
+ * Copyright (c) 2011, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -55,10 +55,10 @@ public final class VirtualJPQLQueryBNF extends JPQLQueryBNF {
 	}
 
 	/**
-	 * Registers a unique identifier that will be used to create the {@link Expression representing
+	 * Registers a unique identifier that will be used to create the {@link Expression} representing
 	 * this BNF rule.
 	 *
-	 * @param expressionFactory The unique identifier that is responsible to create the
+	 * @param expressionFactoryId The unique identifier that is responsible to create the
 	 * {@link Expression} for this BNF rule
 	 */
 	public void registerFactory(String expressionFactoryId) {
@@ -71,7 +71,7 @@ public final class VirtualJPQLQueryBNF extends JPQLQueryBNF {
 	 * @param queryBNFId The unique identifier of the BNF rule
 	 * @exception NullPointerException The <code>queryBNFId</code> cannot be <code>null</code>
 	 */
-	public void registerQueryBNF(String queryBNF) {
-		registerChild(queryBNF);
+	public void registerQueryBNF(String queryBNFId) {
+		registerChild(queryBNFId);
 	}
 }

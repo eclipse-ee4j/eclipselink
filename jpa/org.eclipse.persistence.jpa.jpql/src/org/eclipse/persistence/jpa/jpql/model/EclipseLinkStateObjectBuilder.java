@@ -18,8 +18,8 @@ import org.eclipse.persistence.jpa.jpql.LiteralVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkExpressionVisitor;
 
 /**
- * The default implementation of {@link StateObjectBuilder}, which provides support based on the
- * JPQL grammar defined in the Java Persistence functional specification and for the additional
+ * The default implementation of {@link BasicStateObjectBuilder}, which provides support based on
+ * the JPQL grammar defined in the Java Persistence functional specification and for the additional
  * support provided by EclipseLink.
  * <p>
  * Provisional API: This interface is part of an interim API that is still under development and

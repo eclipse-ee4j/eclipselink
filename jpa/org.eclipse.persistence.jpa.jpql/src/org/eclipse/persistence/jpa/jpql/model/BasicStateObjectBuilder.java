@@ -475,9 +475,9 @@ public abstract class BasicStateObjectBuilder implements ExpressionVisitor {
 	}
 
 	/**
-	 * Returns
+	 * Returns the {@link StateObject} that was created based on the visited {@link Expression}.
 	 *
-	 * @return
+	 * @return The {@link StateObject} that was created based on the visited {@link Expression}
 	 */
 	public StateObject getStateObject() {
 		return stateObject;

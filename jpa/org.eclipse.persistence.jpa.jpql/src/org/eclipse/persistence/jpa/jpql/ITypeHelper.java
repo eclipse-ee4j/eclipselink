@@ -111,7 +111,7 @@ public interface ITypeHelper {
 	/**
 	 * Retrieves the external class for the given fully qualified class name.
 	 *
-	 * @param name The fully qualified class name of the class to retrieve
+	 * @param typeName The fully qualified class name of the class to retrieve
 	 * @return The external form of the class to retrieve
 	 */
 	Object getType(String typeName);

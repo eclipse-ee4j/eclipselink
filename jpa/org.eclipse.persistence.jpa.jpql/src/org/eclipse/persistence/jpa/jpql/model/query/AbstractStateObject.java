@@ -145,7 +145,6 @@ public abstract class AbstractStateObject implements StateObject {
 	 * @param type The type found in the hierarchy of the given {@link StateObjectVisitor} that will
 	 * be used to retrieve the visit method
 	 * @param parameterType The parameter type of the visit method
-	 * @return <code>true</code> if the call was successfully executed; <code>false</code> otherwise
 	 * @see #acceptUnknownVisitor(ExpressionVisitor)
 	 * @since 2.4
 	 */

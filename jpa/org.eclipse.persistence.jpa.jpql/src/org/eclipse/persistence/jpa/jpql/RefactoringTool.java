@@ -157,8 +157,8 @@ public abstract class RefactoringTool {
 	 * Creates the visitor that will traverse the {@link StateObject} representation of the JPQL
 	 * query and will rename the enum constant.
 	 *
-	 * @param oldEnumConstant The new name of the enum constant
-	 * @param newEnumConstant The current name of the enum constant to rename
+	 * @param oldClassName The new name of the enum constant
+	 * @param newClassName The current name of the enum constant to rename
 	 * @return A new {@link EnumConstantRenamer}
 	 */
 	protected EnumConstantRenamer buildEnumConstantRenamer(String oldClassName, String newClassName) {
@@ -362,7 +362,7 @@ public abstract class RefactoringTool {
 	/**
 	 * Renames a field from the given type.
 	 *
-	 * @param typeName The fully qualified name of the type that got one of its attributes renamed
+	 * @param type The Java class from which the change originate
 	 * @param oldFieldName The current name of the attribute to rename
 	 * @param newFieldName The new name of the attribute
 	 */
@@ -373,7 +373,7 @@ public abstract class RefactoringTool {
 	/**
 	 * Renames a field from the given type.
 	 *
-	 * @param typeName The fully qualified name of the type that got one of its attributes renamed
+	 * @param type The {@link IType} from which the change originate
 	 * @param oldFieldName The current name of the attribute to rename
 	 * @param newFieldName The new name of the attribute
 	 */

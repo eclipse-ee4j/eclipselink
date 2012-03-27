@@ -158,7 +158,7 @@ public final class ArithmeticFactor extends AbstractExpression {
 		wordParser.skipLeadingWhitespace();
 
 		// Parse the expression
-		expression = parse(wordParser, getQueryBNF(), tolerant);
+		expression = parse(wordParser, ArithmeticFactorBNF.ID, tolerant);
 	}
 
 	/**

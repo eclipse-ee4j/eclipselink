@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -15,6 +15,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
 
 import java.util.Collection;
 import java.util.List;
+import org.eclipse.persistence.jpa.jpql.Assert;
 import org.eclipse.persistence.jpa.jpql.WordParser;
 
 /**
@@ -27,6 +28,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * @since 2.3
  * @author Pascal Filion
  */
+@SuppressWarnings("nls")
 public abstract class AbstractSingleEncapsulatedExpression extends AbstractEncapsulatedExpression {
 
 	/**
@@ -111,15 +113,17 @@ public abstract class AbstractSingleEncapsulatedExpression extends AbstractEncap
 	 */
 	@Override
 	protected void parseEncapsulatedExpression(WordParser wordParser, boolean tolerant) {
-		expression = parse(wordParser, getQueryBNF(encapsulatedExpressionBNF()), tolerant);
+		expression = parse(wordParser, encapsulatedExpressionBNF(), tolerant);
 	}
 
 	/**
-	 * Manually sets
+	 * Manually sets the encapsulated {@link Expression} to become the given one.
 	 *
-	 * @param expression
+	 * @param expression The new encapsulated {@link Expression}, which cannot be <code>null</code>
+	 * @exception NullPointerException The given {@link AbstractExpression} cannot be <code>null</code>
 	 */
 	public final void setExpression(AbstractExpression expression) {
+		Assert.isNotNull(expression, "The Expression cannot be null");
 		this.expression = expression;
 		this.expression.setParent(this);
 	}

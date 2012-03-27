@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -158,24 +158,6 @@ public abstract class AbstractConditionalClause extends AbstractExpression {
 	}
 
 	/**
-	 * Parses the given expression has a <b>WHERE</b> clause.
-	 *
-	 * @param conditionalExpression The expression representing a condition expression
-	 * @param tolerant Determines whether the parsing system should be tolerant, meaning if it should
-	 * try to parse invalid or incomplete queries
-	 * @return The {@link Expression} representing the given text
-	 */
-	protected final Expression parse(CharSequence expression, boolean tolerant) {
-		conditionalExpression = parse(
-			new WordParser(expression),
-			getQueryBNF(ConditionalExpressionBNF.ID),
-			tolerant
-		);
-		this.hasSpace = true;
-		return conditionalExpression;
-	}
-
-	/**
 	 * {@inheritDoc}
 	 */
 	@Override
@@ -187,11 +169,7 @@ public abstract class AbstractConditionalClause extends AbstractExpression {
 		hasSpace = wordParser.skipLeadingWhitespace() > 0;
 
 		// Parse the conditional expression
-		conditionalExpression = parse(
-			wordParser,
-			getQueryBNF(ConditionalExpressionBNF.ID),
-			tolerant
-		);
+		conditionalExpression = parse(wordParser, ConditionalExpressionBNF.ID, tolerant);
 	}
 
 	/**

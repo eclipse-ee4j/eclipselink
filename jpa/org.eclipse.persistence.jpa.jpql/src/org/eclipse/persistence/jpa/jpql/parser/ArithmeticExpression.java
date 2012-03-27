@@ -95,7 +95,7 @@ public abstract class ArithmeticExpression extends CompoundExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public final JPQLQueryBNF rightExpressionBNF() {
-		return getQueryBNF(ArithmeticTermBNF.ID);
+	public final String rightExpressionBNF() {
+		return ArithmeticTermBNF.ID;
 	}
 }

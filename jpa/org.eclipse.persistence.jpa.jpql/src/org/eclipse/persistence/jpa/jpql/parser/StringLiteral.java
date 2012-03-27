@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -35,12 +35,18 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
 public final class StringLiteral extends AbstractExpression {
 
 	/**
+	 * Caches the value indicating if the string literal has the closing quote.
+	 */
+	private Boolean hasCloseQuote;
+
+	/**
 	 * Creates a new <code>StringLiteral</code>.
 	 *
 	 * @param parent The parent of this expression
+	 * @param literal The string literal
 	 */
-	public StringLiteral(AbstractExpression parent) {
-		super(parent);
+	public StringLiteral(AbstractExpression parent, String literal) {
+		super(parent, literal);
 	}
 
 	/**
@@ -96,9 +102,12 @@ public final class StringLiteral extends AbstractExpression {
 	 * otherwise
 	 */
 	public boolean hasCloseQuote() {
-		String text = getText();
-		int length = text.length();
-		return (length > 1) && ExpressionTools.isQuote(text.charAt(length - 1));
+		if (hasCloseQuote == null) {
+			String text = getText();
+			int length = text.length();
+			hasCloseQuote = (length > 1) && ExpressionTools.isQuote(text.charAt(length - 1));
+		}
+		return hasCloseQuote;
 	}
 
 	/**
@@ -106,9 +115,15 @@ public final class StringLiteral extends AbstractExpression {
 	 */
 	@Override
 	protected void parse(WordParser wordParser, boolean tolerant) {
-		String literal = ExpressionTools.parseLiteral(wordParser);
-		wordParser.moveForward(literal);
-		setText(literal);
+		wordParser.moveForward(getText());
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String toActualText() {
+		return getText();
 	}
 
 	/**

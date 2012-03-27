@@ -777,8 +777,6 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 *
 	 * @param expression The {@link StateFieldPathExpression} the validate
 	 * @param associationFieldValid Determines whether an association field is a valid type
-	 * @return <code>true</code> if the path expression is a state field path expression; <code>false</code>
-	 * if it's actually a fully qualified enum constant.
 	 */
 	protected void validateStateFieldPathExpression(StateFieldPathExpression expression,
 	                                                boolean associationFieldValid) {
@@ -857,7 +855,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	}
 
 	/**
-	 * Validates the given {@link validateUpdateItem} by validating the traversability of the path
+	 * Validates the given {@link UpdateItem} by validating the traversability of the path
 	 * expression. The path expression is valid if it follows one of the following rules:
 	 * <ul>
 	 * <li>The identification variable is omitted if it's not defined in the <b>FROM</b> clause;

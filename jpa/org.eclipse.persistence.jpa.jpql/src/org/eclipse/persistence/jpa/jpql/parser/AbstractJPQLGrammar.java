@@ -86,7 +86,7 @@ public abstract class AbstractJPQLGrammar implements JPQLGrammar {
 	 *
 	 * @param expressionFactoryId The unique identifier of the {@link ExpressionFactory} to add more
 	 * JPQL identifiers
-	 * @param identifier The JPQL identifiers this factory will parse
+	 * @param identifiers The JPQL identifiers this factory will parse
 	 */
 	public void addIdentifiers(String expressionFactoryId, String... identifiers) {
 		registry.addIdentifiers(expressionFactoryId, identifiers);
@@ -168,7 +168,7 @@ public abstract class AbstractJPQLGrammar implements JPQLGrammar {
 
 	/**
 	 * Registers the JPQL identifiers support by this {@link IJPQLExtension}. The registration
-	 * involves registering the {@link IJPAVersion} and the {@link IdentifierRole}.
+	 * involves registering the {@link JPAVersion} and the {@link IdentifierRole}.
 	 */
 	protected abstract void initializeIdentifiers();
 
@@ -202,7 +202,7 @@ public abstract class AbstractJPQLGrammar implements JPQLGrammar {
 	}
 
 	/**
-	 * Registers the {@link IJPAVersion} for which the given JPQL identifier was defined.
+	 * Registers the {@link JPAVersion} for which the given JPQL identifier was defined.
 	 *
 	 * @param identifier The JPQL identifier to register in which version it was added to the grammar
 	 * @param version The version when the JPQL identifier was added to the grammar
@@ -227,12 +227,11 @@ public abstract class AbstractJPQLGrammar implements JPQLGrammar {
 	 * ID is not <code>null</code>. This will be used to parse a portion of the query when the
 	 * registered {@link ExpressionFactory expression factories} cannot parse it.
 	 * <p>
-	 * Note: This method is only called if {@link #getFallbackBNFId()} does not return <code>null</code>.
+	 * Note: This method is only called if {@link JPQLQueryBNF#getFallbackBNFId() JPQLQueryBNF.
+	 * getFallbackBNFId()} does not return <code>null</code>.
 	 *
 	 * @param queryBNFId The unique identifier of the BNF to modify its fallback expression factory
 	 * unique identifier
-	 * @return The unique identifier of the {@link ExpressionFactory} to use when no other factories
-	 * can be used automatically
 	 */
 	public void setFallbackExpressionFactoryId(String queryBNFId, String fallbackExpressionFactoryId) {
 		registry.setFallbackExpressionFactoryId(queryBNFId, fallbackExpressionFactoryId);

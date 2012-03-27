@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -16,8 +16,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
 import org.eclipse.persistence.jpa.jpql.WordParser;
 
 /**
- * The {@link StringLiteralExpressionFactory} responsible to parse a sub-query starting with a
- * single quote.
+ * This {@link StringLiteralFactory} is responsible to parse a sub-query starting with a single quote.
  *
  * @see StringLiteral
  *
@@ -51,7 +50,7 @@ public final class StringLiteralFactory extends ExpressionFactory {
 	                                             AbstractExpression expression,
 	                                             boolean tolerant) {
 
-		expression = new StringLiteral(parent);
+		expression = new StringLiteral(parent, word);
 		expression.parse(wordParser, tolerant);
 		return expression;
 	}

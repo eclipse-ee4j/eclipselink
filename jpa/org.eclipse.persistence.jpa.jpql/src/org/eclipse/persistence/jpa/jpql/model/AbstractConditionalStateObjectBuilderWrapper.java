@@ -119,15 +119,6 @@ public abstract class AbstractConditionalStateObjectBuilderWrapper implements IC
 	/**
 	 * {@inheritDoc}
 	 */
-	public IConditionalExpressionStateObjectBuilder concat(IConditionalExpressionStateObjectBuilder parameter1,
-	                                             IConditionalExpressionStateObjectBuilder parameter2) {
-
-		return delegate.concat(parameter1, parameter2);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
 	public IConditionalExpressionStateObjectBuilder count(String path) {
 		return delegate.count(path);
 	}

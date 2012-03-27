@@ -22,8 +22,6 @@ import java.util.NoSuchElementException;
  * to {@link #hasNext()}. Likewise, it will return <code>false</code> to a call to {@link #hasPrevious()}<
  * until a call to {@link #next()}, at which point a call to {@link #previous()} will return the
  * single element.
- * <p>
- * A {@link SingleElementIterator} is equivalent to the {@link Iterator}.
  *
  * @version 2.4
  * @since 2.4

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -19,8 +19,9 @@ import org.eclipse.persistence.jpa.jpql.spi.ITypeDeclaration;
 
 /**
  * This {@link Resolver} compares each {@link IType} retrieved from the list of {@link Resolver
- * Resolvers} that were gathered for a given {@link Expression} and returns that type if they are
- * all the same type otherwise the {@link IType} for <code>Object</code> is returned.
+ * Resolvers} that were gathered for a given {@link org.eclipse.persistence.jpa.jpql.parser.Expression
+ * Expression} and returns that type if they are all the same type otherwise the {@link IType} for
+ * <code>Object</code> is returned.
  *
  * @version 2.4
  * @since 2.3

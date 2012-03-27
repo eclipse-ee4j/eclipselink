@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Oracle. All rights reserved.
+ * Copyright (c) 2011, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -19,14 +19,14 @@ import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 /**
  * This context is used to store information related to the JPQL query.
  *
- * <pre><code> {@link IQuery} externalQuery = ...;
+ * <pre><code> {@link org.eclipse.persistence.jpa.jpql.spi.IQuery IQuery} externalQuery = ...;
  *
  * JPQLQueryContext context = new JPQLQueryContext(DefaultJPQLGrammar.instance());
  * context.setQuery(query);</code></pre>
  *
  * If the JPQL query is already parsed, then the context can use it and it needs to be set before
- * setting the {@link IQuery}:
- * <pre><code> {@link JPQLExpression} jpqlExpression = ...;
+ * setting the {@link org.eclipse.persistence.jpa.jpql.spi.IQuery IQuery}:
+ * <pre><code> {@link org.eclipse.persistence.jpa.jpql.parser.JPQLExpression JPQLExpression} jpqlExpression = ...;
  *
  * JPQLQueryContext context = new JPQLQueryContext(DefaultJPQLGrammar.instance());
  * context.setJPQLExpression(jpqlExpression);
@@ -51,8 +51,8 @@ public class DefaultJPQLQueryContext extends JPQLQueryContext {
 	 * @param parent The parent context
 	 * @param currentQuery The parsed tree representation of the subquery
 	 */
-	protected DefaultJPQLQueryContext(JPQLQueryContext currentContext, Expression currentQuery) {
-		super(currentContext, currentQuery);
+	protected DefaultJPQLQueryContext(JPQLQueryContext parent, Expression currentQuery) {
+		super(parent, currentQuery);
 	}
 
 	/**

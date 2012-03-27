@@ -32,8 +32,9 @@ import org.eclipse.persistence.queries.ReportQuery;
 final class ReportQueryVisitor extends AbstractReadAllQueryVisitor {
 
 	/**
-	 * This array is used to store the type of the select {@link Expression JPQL Expression} that is
-	 * converted into an {@link Expression EclipseLink Expression}.
+	 * This array is used to store the type of the select {@link org.eclipse.persistence.jpa.jpql
+	 * parser.Expression JPQL Expression} that is converted into an {@link org.eclipse.persistence.
+	 * expressions.Expression EclipseLink Expression}.
 	 */
 	Class<?> type;
 
@@ -99,8 +100,8 @@ final class ReportQueryVisitor extends AbstractReadAllQueryVisitor {
 	}
 
 	/**
-	 * This visitor is responsible to add the grouping {@link Expression Expressions}
-	 * by traversing the group items.
+	 * This visitor is responsible to add the {@link org.eclipse.persistence.jpa.jpql.parser.Expression
+	 * group items} by traversing the group items.
 	 */
 	private class GroupByVisitor extends EclipseLinkAnonymousExpressionVisitor {
 

@@ -17,7 +17,6 @@ import org.eclipse.persistence.jpa.jpql.model.EclipseLinkActualJPQLQueryFormatte
 import org.eclipse.persistence.jpa.jpql.model.IJPQLQueryBuilder;
 import org.eclipse.persistence.jpa.jpql.model.IJPQLQueryFormatter;
 import org.eclipse.persistence.jpa.jpql.model.query.EclipseLinkStateObjectVisitor;
-import org.eclipse.persistence.jpa.jpql.model.query.FunctionExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.TreatExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.spi.IManagedTypeProvider;
 
@@ -39,7 +38,7 @@ import org.eclipse.persistence.jpa.jpql.spi.IManagedTypeProvider;
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
  * API will almost certainly be broken (repeatedly) as the API evolves.
  *
- * @see DefaultRefactoringTools
+ * @see DefaultRefactoringTool
  *
  * @version 2.4
  * @since 2.4
@@ -51,8 +50,8 @@ public class EclipseLinkRefactoringTool extends RefactoringTool {
 	 * Creates a new <code>EclipseLinkRefactoringTool</code>.
 	 *
 	 * @param managedTypeProvider The external form of a provider that gives access to the JPA metadata
-	 * @param jpqlQueryBuilder The builder that creates the {@link StateObject} representation of the
-	 * JPQL query
+	 * @param jpqlQueryBuilder The builder that creates the {@link org.eclipse.persistence.jpa.jpql.
+	 * model.query.StateObject StateObject} representation of the JPQL query
 	 * @param jpqlQuery The JPQL query to manipulate
 	 */
 	public EclipseLinkRefactoringTool(IManagedTypeProvider managedTypeProvider,
@@ -66,8 +65,8 @@ public class EclipseLinkRefactoringTool extends RefactoringTool {
 	 * Creates a new <code>EclipseLinkRefactoringTool</code>.
 	 *
 	 * @param managedTypeProvider The external form of a provider that gives access to the JPA metadata
-	 * @param jpqlQueryBuilder The builder that creates the {@link StateObject} representation of the
-	 * JPQL query
+	 * @param jpqlQueryBuilder The builder that creates the {@link org.eclipse.persistence.jpa.jpql.
+	 * model.query.StateObject StateObject} representation of the JPQL query
 	 * @param jpqlFragment The JPQL query to manipulate or a single JPQL fragment, which is parsed
 	 * using the JPQL query BNF identifier by the given ID
 	 * @param jpqlQueryBNFId The unique identifier of the {@link org.eclipse.persistence.jpa.jpql.
@@ -121,13 +120,7 @@ public class EclipseLinkRefactoringTool extends RefactoringTool {
 		/**
 		 * {@inheritDoc}
 		 */
-		public void visit(FunctionExpressionStateObject stateObject) {
-			// Nothing to do
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
+		@Override
 		public void visit(TreatExpressionStateObject stateObject) {
 			if (oldEntityName.equals(stateObject.getEntityTypeName())) {
 				stateObject.setEntityTypeName(newEntityName);

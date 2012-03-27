@@ -80,10 +80,11 @@ public final class CollectionTools {
 	}
 
 	/**
-	 * Creates a new {@link List} and adds the items returned by the given {@link ListIterator}.
+	 * Creates a new {@link List} and adds the items returned by the given {@link java.util.ListIterator
+	 * ListIterator}.
 	 *
-	 * @param iterator The {@link ListIterator} to iterate over items to add into a list in the same
-	 * order they are returned
+	 * @param iterator The {@link java.util.ListIterator ListIterator} to iterate over items to add
+	 * into a list in the same order they are returned
 	 * @return A new {@link List}
 	 */
 	public static <T> List<T> list(Iterator<? extends T> iterator) {

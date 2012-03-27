@@ -106,8 +106,8 @@ public abstract class JPQLQueryContext {
 	private JPQLGrammar jpqlGrammar;
 
 	/**
-	 * This visitor is used to retrieve a variable name from various type of
-	 * {@link org.eclipse.persistence.jpa.query.parser.Expression JPQL Expression}.
+	 * This visitor is used to retrieve a variable name from various type of {@link org.eclipse.
+	 * persistence.jpa.jpql.parser.Expression JPQL Expression}.
 	 */
 	private LiteralVisitor literalVisitor;
 
@@ -392,9 +392,9 @@ public abstract class JPQLQueryContext {
 	}
 
 	/**
-	 * Returns the registry containing the {@link JPQLQueryBNF JPQLQueryBNFs} and the {@link
-	 * org.eclipse.persistence.jpa.jpql.parser.ExpressionFactory ExpressionFactories} that are used
-	 * to properly parse a JPQL query.
+	 * Returns the registry containing the {@link org.eclipse.persistence.jpa.jpql.parser.JPQLQueryBNF
+	 * JPQLQueryBNFs} and the {@link org.eclipse.persistence.jpa.jpql.parser.ExpressionFactory
+	 * ExpressionFactories} that are used to properly parse a JPQL query.
 	 *
 	 * @return The registry containing the information related to the JPQL grammar
 	 */
@@ -533,11 +533,12 @@ public abstract class JPQLQueryContext {
 	}
 
 	/**
-	 * Retrieves the {@link Expression} for the query (either the top-level query {@link JPQLExpression}
-	 * or the subquery {@link SimpleSelectStatement}) owning the given {@link Expression}.
+	 * Retrieves the {@link Expression} representing the query statement (either the top-level query
+	 * {@link JPQLExpression} or the subquery {@link SimpleSelectStatement}) owning the given {@link
+	 * Expression}.
 	 *
 	 * @param expression A child of the "root" {@link Expression} to retrieve
-	 * @return
+	 * @return The query statement that is the "root" parent of the given {@link Expression}
 	 */
 	public Expression getQueryExpression(Expression expression) {
 		QueryExpressionVisitor visitor = getQueryExpressionVisitor();
@@ -560,7 +561,8 @@ public abstract class JPQLQueryContext {
 	/**
 	 * Creates or retrieved the cached {@link Resolver} for the given {@link Expression}. The
 	 * {@link Resolver} can return the {@link IType} and {@link ITypeDeclaration} of the {@link
-	 * Expression} and either the {@link IManagedType} or the {@link IMapping}.
+	 * Expression} and either the {@link org.eclipse.persistence.jpa.jpql.spi.IManagedType IManagedType}
+	 * or the {@link IMapping}.
 	 *
 	 * @param expression The {@link Expression} for which its {@link Resolver} will be retrieved
 	 * @return {@link Resolver} for the given {@link Expression}
@@ -630,7 +632,7 @@ public abstract class JPQLQueryContext {
 	/**
 	 * Retrieves the external class with the given fully qualified class name.
 	 *
-	 * @param name The fully qualified class name of the class to retrieve
+	 * @param typeName The fully qualified class name of the class to retrieve
 	 * @return The external form of the class to retrieve
 	 */
 	public IType getType(String typeName) {
@@ -763,7 +765,7 @@ public abstract class JPQLQueryContext {
 	 *
 	 * @param currentQuery The parsed tree representation of the subquery that will become the
 	 * current query
-	 * @see #disposeSubQueryContext()
+	 * @see #disposeSubqueryContext()
 	 */
 	public void newSubqueryContext(Expression currentQuery) {
 

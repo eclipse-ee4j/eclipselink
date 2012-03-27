@@ -23,15 +23,14 @@ import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
 
 /**
  * This registry contains the necessary information used by Hermes parser. When parsing a JPQL query,
- * the {@link org.eclipse.persistence.jpa.jpql.spi.JPQLGrammar JPQLGrammar} given to {@link
- * JPQLExpression} will give access to this registry.
+ * the {@link JPQLGrammar} given to {@link JPQLExpression} will give access to this registry.
  *
  * Provisional API: This interface is part of an interim API that is still under development and
  * expected to change significantly before reaching stability. It is available at this early stage
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
  * API will almost certainly be broken (repeatedly) as the API evolves.
  *
- * @see org.eclipse.persistence.jpa.jpql.spi.JPQLGrammar JPQLGrammar
+ * @see JPQLGrammar
  *
  * @version 2.4
  * @since 2.4
@@ -112,7 +111,7 @@ public class ExpressionRegistry {
 	 *
 	 * @param expressionFactoryId The unique identifier of the {@link ExpressionFactory} to add more
 	 * JPQL identifiers
-	 * @param identifier The JPQL identifiers this factory will parse
+	 * @param identifiers The JPQL identifiers this factory will parse
 	 */
 	public void addIdentifiers(String expressionFactoryId, String... identifiers) {
 		getExpressionFactory(expressionFactoryId).addIdentifiers(identifiers);
@@ -271,7 +270,7 @@ public class ExpressionRegistry {
 	}
 
 	/**
-	 * Registers the {@link IJPAVersion} for which the given JPQL identifier was defined.
+	 * Registers the {@link JPAVersion} for which the given JPQL identifier was defined.
 	 *
 	 * @param identifier The JPQL identifier to register in which version it was added to the grammar
 	 * @param version The version when the JPQL identifier was added to the grammar
@@ -305,12 +304,11 @@ public class ExpressionRegistry {
 	 * ID is not <code>null</code>. This will be used to parse a portion of the query when the
 	 * registered {@link ExpressionFactory expression factories} cannot parse it.
 	 * <p>
-	 * Note: This method is only called if {@link #getFallbackBNFId()} does not return <code>null</code>.
+	 * Note: This method is only called if {@link JPQLQueryBNF#getFallbackBNFId() JPQLQueryBNF.
+	 * getFallbackBNFId()} does not return <code>null</code>.
 	 *
 	 * @param queryBNFId The unique identifier of the BNF to modify its fallback expression factory
 	 * unique identifier
-	 * @return The unique identifier of the {@link ExpressionFactory} to use when no other factories
-	 * can be used automatically
 	 * @exception NullPointerException The {@link JPQLQueryBNF} identified by the given ID does not exist
 	 */
 	public void setFallbackExpressionFactoryId(String queryBNFId, String fallbackExpressionFactoryId) {

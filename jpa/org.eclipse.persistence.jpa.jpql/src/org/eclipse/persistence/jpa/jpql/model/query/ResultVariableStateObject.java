@@ -80,9 +80,9 @@ public class ResultVariableStateObject extends AbstractStateObject {
 	 * Creates a new <code>ResultVariableStateObject</code>.
 	 *
 	 * @param parent The parent of this state object, which cannot be <code>null</code>
-	 * @param selectStateObject The {@link StateObject} representing the
+	 * @param stateObject The {@link StateObject} representing the select item
 	 * @param as Determines whether the <code><b>AS</b></code> identifier is used or not
-	 * @param resultVariable
+	 * @param resultVariable The variable identifying the select item
 	 * @exception NullPointerException The given parent cannot be <code>null</code>
 	 */
 	public ResultVariableStateObject(SelectClauseStateObject parent,
@@ -99,10 +99,10 @@ public class ResultVariableStateObject extends AbstractStateObject {
 	/**
 	 * Creates a new <code>ResultVariableStateObject</code>.
 	 *
-	 * @exception NullPointerException The given parent cannot be <code>null</code>
-	 * @param selectStateObject The {@link StateObject} representing the
-	 * @param resultVariable
 	 * @param parent The parent of this state object, which cannot be <code>null</code>
+	 * @param stateObject The {@link StateObject} representing the select item
+	 * @param resultVariable The variable identifying the select item
+	 * @exception NullPointerException The given parent cannot be <code>null</code>
 	 */
 	public ResultVariableStateObject(SelectClauseStateObject parent,
 	                                 StateObject stateObject,
@@ -290,7 +290,7 @@ public class ResultVariableStateObject extends AbstractStateObject {
 	/**
 	 * Sets the {@link StateObject} representing a single select expression.
 	 *
-	 * @param selectStateObject The {@link StateObject} representing a single select expression
+	 * @param stateObject The {@link StateObject} representing a single select expression
 	 */
 	public void setStateObject(StateObject stateObject) {
 		StateObject oldStateObject = this.stateObject;

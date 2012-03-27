@@ -151,8 +151,8 @@ import org.eclipse.persistence.jpa.jpql.spi.IType;
  *
  * <li>The result type of a <code>single_valued_path_expression</code> that is an
  * identification_variable to which the <code>ENTRY</code> function has been applied is
- * {@link java.util.Map#Entry}, where the key and value types of the map entry are determined by the
- * above rules as applied to the map key and map value respectively.</li>
+ * {@link java.util.Map.Entry Map.Entry}, where the key and value types of the map entry are
+ * determined by the above rules as applied to the map key and map value respectively.</li>
  *
  * <li>The result type of a <code>scalar_expression</code> is the type of the scalar value to which
  * the expression evaluates.</li>
@@ -228,7 +228,7 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
 	 * Creates a new {link Resolver} that simply wraps the already determined type by using its
 	 * fully qualified class name.
 	 *
-	 * @param type The fully qualified class name of the Java type to wrap with a {@link Resolver}
+	 * @param typeName The fully qualified class name of the Java type to wrap with a {@link Resolver}
 	 * @return A new {@link Resolver}
 	 */
 	protected Resolver buildClassNameResolver(String typeName) {

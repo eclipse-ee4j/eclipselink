@@ -16,6 +16,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
 import java.util.List;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.WordParser;
+import org.eclipse.persistence.jpa.jpql.parser.FunctionExpressionFactory.ParameterCount;
 
 /**
  * This expression adds support to call native database functions.
@@ -46,6 +47,21 @@ public final class FunctionExpression extends AbstractSingleEncapsulatedExpressi
 	private boolean hasSpaceAfterComma;
 
 	/**
+	 * The number of {@link ParameterCount parameters} a {@link FunctionExpression} can have.
+	 *
+	 * @since 2.4
+	 */
+	private ParameterCount parameterCount;
+
+	/**
+	 * The unique identifier of the {@link JPQLQueryBNF} that will be used to parse the arguments of
+	 * the function expression.
+	 *
+	 * @since 2.4
+	 */
+	private String parameterQueryBNFId;
+
+	/**
 	 * Creates a new <code>FuncExpression</code>.
 	 *
 	 * @param parent The parent of this expression
@@ -54,6 +70,26 @@ public final class FunctionExpression extends AbstractSingleEncapsulatedExpressi
 	public FunctionExpression(AbstractExpression parent, String identifier) {
 		super(parent);
 		setText(identifier);
+	}
+
+	/**
+	 * Creates a new <code>FunctionExpression</code>.
+	 *
+	 * @param parent The parent of this expression
+	 * @param identifier The JPQL identifier
+	 * @param parameterCount The number of {@link ParameterCount parameters} a {@link
+	 * FunctionExpression} can have
+	 * @param parameterQueryBNFId The unique identifier of the {@link JPQLQueryBNF} that will be used
+	 * to parse the arguments of the function expression
+	 */
+	public FunctionExpression(AbstractExpression parent,
+	                          String identifier,
+	                          ParameterCount parameterCount,
+	                          String parameterQueryBNFId) {
+
+		this(parent, identifier);
+		this.parameterCount      = parameterCount;
+		this.parameterQueryBNFId = parameterQueryBNFId;
 	}
 
 	/**
@@ -87,7 +123,7 @@ public final class FunctionExpression extends AbstractSingleEncapsulatedExpressi
 	 */
 	@Override
 	public String encapsulatedExpressionBNF() {
-		return FunctionItemBNF.ID;
+		return parameterQueryBNFId;
 	}
 
 	/**
@@ -97,6 +133,17 @@ public final class FunctionExpression extends AbstractSingleEncapsulatedExpressi
 	 */
 	public String getFunctionName() {
 		return functionName;
+	}
+
+	/**
+	 * Returns the number of parameters a {@link FunctionExpression} can have, which will be during
+	 * validation.
+	 *
+	 * @return The number of parameters (encapsulated expressions) allowed by this expression
+	 * @since 2.4
+	 */
+	public ParameterCount getParameterCount() {
+		return parameterCount;
 	}
 
 	/**
@@ -163,7 +210,7 @@ public final class FunctionExpression extends AbstractSingleEncapsulatedExpressi
 		// Parse the function name outside of a CollectionExpression so we can retrieve it
 		// with getFunctionName()
 		if (wordParser.startsWith(SINGLE_QUOTE)) {
-			functionName = ExpressionTools.parseLiteral(wordParser);
+			functionName = wordParser.word();
 			wordParser.moveForward(functionName);
 			count = wordParser.skipLeadingWhitespace();
 		}

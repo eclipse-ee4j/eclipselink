@@ -40,9 +40,6 @@ public final class ArithmeticExpressionFactory extends ExpressionFactory {
 
 	/**
 	 * Creates a new <code>AbstractArithmeticExpressionFactory</code>.
-	 *
-	 * @param id The unique identifier of this <code>ExpressionFactory</code>
-	 * @param identifier The JPQL identifier handled by this factory
 	 */
 	public ArithmeticExpressionFactory() {
 		super(ID, Expression.PLUS,
@@ -55,7 +52,7 @@ public final class ArithmeticExpressionFactory extends ExpressionFactory {
 	 * Creates the {@link Expression} this factory for which it is responsible.
 	 *
 	 * @param parent The parent of the new {@link Expression}
-	 * @param character
+	 * @param character The arithmetic character
 	 * @return A new {@link CompoundExpression}
 	 */
 	private CompoundExpression buildExpression(AbstractExpression parent, char character) {
@@ -69,7 +66,6 @@ public final class ArithmeticExpressionFactory extends ExpressionFactory {
 	 * {@inheritDoc}
 	 */
 	@Override
-	@SuppressWarnings("null")
 	protected final AbstractExpression buildExpression(AbstractExpression parent,
 	                                                   WordParser wordParser,
 	                                                   String word,
@@ -82,7 +78,7 @@ public final class ArithmeticExpressionFactory extends ExpressionFactory {
 		// Return right away the number literal
 		// "1 + 1" can't be parsed as "1, +1"
 		if ((type == Boolean.TRUE) && (expression == null)) {
-			expression = new NumericLiteral(parent, wordParser.word());
+			expression = new NumericLiteral(parent);
 			expression.parse(wordParser, tolerant);
 			return expression;
 		}
@@ -97,7 +93,7 @@ public final class ArithmeticExpressionFactory extends ExpressionFactory {
 			return expression;
 		}
 
-		char character = word.charAt(0);// wordParser.character();
+		char character = word.charAt(0);
 
 		// Subtraction
 		if (character == '-') {
@@ -116,26 +112,33 @@ public final class ArithmeticExpressionFactory extends ExpressionFactory {
 		}
 
 		if (expression != null) {
+
+			// Determine whether the Expression that is already parsed
+			// is an addition or subtraction expression, if that is the case,
+			// then we have to follow the mathematical precedence: * and / takes
+			// precedence over + and -
 			expression.accept(visitor());
+
+			if (visitor.found) {
+				visitor.found = false;
+
+				// [a + b] * [c] will become [a + [b * c]]
+				ArithmeticExpression arithmeticException = (ArithmeticExpression) expression;
+
+				CompoundExpression compoundExpression = buildExpression(parent, character);
+				compoundExpression.setLeftExpression((AbstractExpression) arithmeticException.getRightExpression());
+				compoundExpression.parse(wordParser, tolerant);
+				arithmeticException.setRightExpression(compoundExpression);
+
+				return arithmeticException;
+			}
 		}
 
-		if ((visitor != null) && visitor.found) {
-			visitor.found = false;
-			ArithmeticExpression arithmeticException = (ArithmeticExpression) expression;
-
-			CompoundExpression compoundExpression = buildExpression(parent, character);
-			compoundExpression.setLeftExpression((AbstractExpression) arithmeticException.getRightExpression());
-			compoundExpression.parse(wordParser, tolerant);
-			arithmeticException.setRightExpression(compoundExpression);
-
-			return arithmeticException;
-		}
-		else {
-			CompoundExpression compoundExpression = buildExpression(parent, character);
-			compoundExpression.setLeftExpression(expression);
-			compoundExpression.parse(wordParser, tolerant);
-			return compoundExpression;
-		}
+		// Create the ArithmeticExpression
+		CompoundExpression compoundExpression = buildExpression(parent, character);
+		compoundExpression.setLeftExpression(expression);
+		compoundExpression.parse(wordParser, tolerant);
+		return compoundExpression;
 	}
 
 	private ArithmeticExpressionVisitor visitor() {

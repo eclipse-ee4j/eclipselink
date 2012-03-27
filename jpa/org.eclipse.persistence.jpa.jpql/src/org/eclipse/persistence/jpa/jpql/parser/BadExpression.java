@@ -140,7 +140,7 @@ public final class BadExpression extends AbstractExpression {
 	 */
 	@Override
 	protected void parse(WordParser wordParser, boolean tolerant) {
-		expression = parse(wordParser, getQueryBNF(), tolerant);
+		expression = parse(wordParser, BadExpressionBNF.ID, tolerant);
 	}
 
 	/**

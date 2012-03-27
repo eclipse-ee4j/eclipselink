@@ -14,16 +14,17 @@
 package org.eclipse.persistence.jpa.jpql;
 
 /**
- * Some {@link Expression} can have a "literal", this enumeration is used to visit an {@link
+ * Some {@link org.eclipse.persistence.jpa.jpql.parser.Expression Expression} can have a "literal",
+ * this enumeration is used to visit an {@link org.eclipse.persistence.jpa.jpql.parser.Expression
  * Expression} and to retrieve the right value.
- *
- * @see JPQLQueryContext#literal(Expression, LiteralType)
- * @see LiteralVisitor
  * <p>
  * Provisional API: This interface is part of an interim API that is still under development and
  * expected to change significantly before reaching stability. It is available at this early stage
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
  * API will almost certainly be broken (repeatedly) as the API evolves.
+ *
+ * @see JPQLQueryContext#literal(org.eclipse.persistence.jpa.jpql.parser.Expression, LiteralType) JPQLQueryContext.literal(Expression, LiteralType)
+ * @see LiteralVisitor
  *
  * @version 2.4
  * @since 2.3

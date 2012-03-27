@@ -13,7 +13,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql;
 
-import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -62,6 +61,7 @@ import org.eclipse.persistence.jpa.jpql.spi.ITypeDeclaration;
  * @since 2.3
  * @author Pascal Filion
  */
+@SuppressWarnings("nls")
 public class DeclarationResolver extends Resolver {
 
 	/**
@@ -302,7 +302,7 @@ public class DeclarationResolver extends Resolver {
 
 	/**
 	 * Returns the variables that got defined in the select expression. This only applies to JPQL
-	 * queries built for JPA 2.0.
+	 * queries built for JPA 2.0 or later.
 	 *
 	 * @return The variables identifying the select expressions, if any was defined or an empty set
 	 * if none were defined
@@ -505,7 +505,7 @@ public class DeclarationResolver extends Resolver {
 
 		/**
 		 * Determines whether the "root" object is a derived path expression where the identification
-		 * variable is declared in the superquery, otherwise it's an entity name.
+		 * variable is declared in the super query, otherwise it's an entity name.
 		 */
 		protected boolean derived;
 
@@ -574,7 +574,7 @@ public class DeclarationResolver extends Resolver {
 		protected Map.Entry<Join, String> buildMapEntry(Map.Entry<Join, IdentificationVariable> entry) {
 			IdentificationVariable variable = entry.getValue();
 			String variableName = (variable != null) ? variable.getText() : ExpressionTools.EMPTY_STRING;
-			return new SimpleEntry<Join, String>(entry.getKey(), variableName);
+			return new SimpleEntry(entry.getKey(), variableName);
 		}
 
 		/**
@@ -1033,6 +1033,55 @@ public class DeclarationResolver extends Resolver {
 
 			expression.setVirtualIdentificationVariable(outerVariableName, declaration.rootPath);
 			expression.getAbstractSchemaName().accept(this);
+		}
+	}
+
+	/**
+	 * A simple implementation of {@link Map.Entry}.
+	 */
+	private static class SimpleEntry implements Map.Entry<Join, String> {
+
+		/**
+		 * The key of this entry.
+		 */
+		private final Join key;
+
+		/**
+		 * The value of this entry.
+		 */
+		private String value;
+
+		/**
+		 * Creates a new <code>SimpleEntry</code>.
+		 *
+		 * @param key The key of this entry
+		 * @param value The value of this entry
+		 */
+		SimpleEntry(Join key, String value) {
+			super();
+			this.key   = key;
+			this.value = value;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public Join getKey() {
+			return key;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public String getValue() {
+			return value;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public String setValue(String value) {
+			throw new IllegalAccessError("This Map.Entry is read-only");
 		}
 	}
 }

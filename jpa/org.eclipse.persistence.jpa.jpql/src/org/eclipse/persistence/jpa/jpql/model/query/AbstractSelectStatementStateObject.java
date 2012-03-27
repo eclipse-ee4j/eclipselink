@@ -18,6 +18,7 @@ import java.util.Iterator;
 import java.util.List;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractSelectStatement;
 import org.eclipse.persistence.jpa.jpql.spi.IEntity;
+import org.eclipse.persistence.jpa.jpql.util.iterator.IterableListIterator;
 
 import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
 
@@ -219,10 +220,10 @@ public abstract class AbstractSelectStatementStateObject extends AbstractStateOb
 	 * @param identificationVariable The unique identifier identifying the entity
 	 * @return The {@link StateObject} representing the range variable declaration
 	 */
-	public IdentificationVariableDeclarationStateObject addRangeDeclaration(String abstractSchemaName,
+	public IdentificationVariableDeclarationStateObject addRangeDeclaration(String entityName,
 	                                                                        String identificationVariable) {
 
-		return getFromClause().addRangeDeclaration(abstractSchemaName, identificationVariable);
+		return getFromClause().addRangeDeclaration(entityName, identificationVariable);
 	}
 
 	/**
@@ -266,9 +267,8 @@ public abstract class AbstractSelectStatementStateObject extends AbstractStateOb
 	protected abstract AbstractSelectClauseStateObject buildSelectClause();
 
 	/**
-	 * Returns the {@link IVariableDeclarationStateObject IVariableDeclarationStateObjects} defining
-	 * the variable declarations, which are mapping an entity to a variable or a collection-valued
-	 * member to a variable.
+	 * Returns the list of {@link VariableDeclarationStateObject} defining the variable declarations,
+	 * which are mapping an entity to a variable or a collection-valued member to a variable.
 	 * <p>
 	 * Example:
 	 * <ul>
@@ -276,9 +276,9 @@ public abstract class AbstractSelectStatementStateObject extends AbstractStateOb
 	 * <li><code>IN (e.employees) AS emps</code></li>
 	 * </ul>
 	 *
-	 * @return The list of {@link IVariableDeclarationStateObject}
+	 * @return The list of {@link VariableDeclarationStateObject}
 	 */
-	public Iterator<? extends VariableDeclarationStateObject> declarations() {
+	public IterableListIterator<? extends VariableDeclarationStateObject> declarations() {
 		return fromClause.items();
 	}
 

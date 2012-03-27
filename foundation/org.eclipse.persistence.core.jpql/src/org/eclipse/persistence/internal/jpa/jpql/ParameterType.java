@@ -107,7 +107,8 @@ final class ParameterTypeVisitor extends AbstractEclipseLinkTraverseParentVisito
 	/**
 	 * Creates a new <code>ParameterTypeVisitor</code>.
 	 *
-	 * @param query The external form representing the JPQL query
+	 * @param queryContext The context used to query information about the application metadata and
+	 * cached information
 	 */
 	ParameterTypeVisitor(JPQLQueryContext queryContext) {
 		super();
@@ -128,8 +129,6 @@ final class ParameterTypeVisitor extends AbstractEclipseLinkTraverseParentVisito
 	/**
 	 * Returns the type, if it can be determined, of the input parameter.
 	 *
-	 * @param typeVisitor The visitor used to calculate the type of the {@link Expression} that was
-	 * found to have the closest type of the input parameter
 	 * @return Either the closed type or {@link Object} if it can't be determined
 	 */
 	Class<?> getType() {

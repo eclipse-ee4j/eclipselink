@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -407,11 +407,7 @@ public final class CaseExpression extends AbstractExpression {
 		parsingType = ParsingType.CASE;
 
 		if (!wordParser.startsWithIdentifier(WHEN)) {
-			caseOperand = parse(
-				wordParser,
-				getQueryBNF(CaseOperandBNF.ID),
-				tolerant
-			);
+			caseOperand = parse(wordParser, CaseOperandBNF.ID, tolerant);
 		}
 
 		hasSpaceAfterCaseOperand = wordParser.skipLeadingWhitespace() > 0;
@@ -419,11 +415,7 @@ public final class CaseExpression extends AbstractExpression {
 		// Parse the WHEN clauses
 		parsingType = ParsingType.WHEN;
 
-		whenClauses = parse(
-			wordParser,
-			getQueryBNF(WhenClauseBNF.ID),
-			tolerant
-		);
+		whenClauses = parse(wordParser, WhenClauseBNF.ID, tolerant);
 
 		hasSpaceAfterWhenClauses = wordParser.skipLeadingWhitespace() > 0;
 
@@ -439,11 +431,7 @@ public final class CaseExpression extends AbstractExpression {
 		// Parse the ELSE expression
 		parsingType = ParsingType.ELSE;
 
-		elseExpression = parse(
-			wordParser,
-			getQueryBNF(ElseExpressionBNF.ID),
-			tolerant
-		);
+		elseExpression = parse(wordParser, ElseExpressionBNF.ID, tolerant);
 
 		hasSpaceAfterElseExpression = wordParser.skipLeadingWhitespace() > 0;
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -13,7 +13,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.parser;
 
-import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.WordParser;
 
 /**
@@ -59,9 +58,10 @@ public final class ComparisonExpression extends CompoundExpression {
 	 * Creates a new <code>ComparisonExpression</code>.
 	 *
 	 * @param parent The parent of this expression
+	 * @param identifier The comparator identifier
 	 */
-	public ComparisonExpression(AbstractExpression parent) {
-		super(parent, ExpressionTools.EMPTY_STRING);
+	public ComparisonExpression(AbstractExpression parent, String identifier) {
+		super(parent, identifier);
 	}
 
 	/**
@@ -121,41 +121,14 @@ public final class ComparisonExpression extends CompoundExpression {
 	 */
 	@Override
 	protected String parseIdentifier(WordParser wordParser) {
-
-		switch (wordParser.character()) {
-
-			case '<': {
-				switch (wordParser.character(wordParser.position() + 1)) {
-					case '=': return LOWER_THAN_OR_EQUAL;
-					case '>': return DIFFERENT;
-					default:  return LOWER_THAN;
-				}
-			}
-
-			case '>': {
-				switch (wordParser.character(wordParser.position() + 1)) {
-					case '=': return GREATER_THAN_OR_EQUAL;
-					default:  return GREATER_THAN;
-				}
-			}
-
-			// =
-			case '=': {
-				return EQUAL;
-			}
-
-			// TODO: Add support for additional JPQL identifiers
-			default: {
-				return ExpressionTools.EMPTY_STRING;
-			}
-		}
+		return getText();
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public JPQLQueryBNF rightExpressionBNF() {
-		return getQueryBNF();
+	public String rightExpressionBNF() {
+		return ComparisonExpressionBNF.ID;
 	}
 }

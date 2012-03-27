@@ -29,7 +29,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * <p>
  * <div nowrap><b>BNF:</b> <code>identification_variable_declaration ::= range_variable_declaration { join | fetch_join }*</code><p>
  *
- * @see IdentificationVariableDeclaration
+ * @see org.eclipse.persistence.jpa.jpql.parser.IdentificationVariableDeclaration IdentificationVariableDeclaration
  *
  * @version 2.4
  * @since 2.4
@@ -108,13 +108,13 @@ public class IdentificationVariableDeclarationStateObject extends AbstractIdenti
 	/**
 	 * Adds a new <code><b>JOIN FETCH</b></code> expression to this declaration.
 	 *
-	 * @param joinType One of the joining types: <code><b>LEFT JOIN FETCH</b></code>, <code><b>LEFT
+	 * @param joinFetchType One of the joining types: <code><b>LEFT JOIN FETCH</b></code>, <code><b>LEFT
 	 * OUTER JOIN FETCH</b></code>, <code><b>INNER JOIN FETCH</b></code> or <code><b>JOIN FETCH</b></code>
 	 * @param paths The join association path expression
 	 * @return A new {@link JoinStateObject}
 	 */
 	public JoinStateObject addJoinFetch(String joinFetchType,
-	                                         ListIterator<String> paths) {
+	                                    ListIterator<String> paths) {
 
 		JoinStateObject stateObject = addJoinFetch(joinFetchType);
 		stateObject.setJoinAssociationPaths(paths);
@@ -125,7 +125,7 @@ public class IdentificationVariableDeclarationStateObject extends AbstractIdenti
 	/**
 	 * Adds a new <code><b>JOIN FETCH</b></code> expression to this declaration.
 	 *
-	 * @param joinType One of the joining types: <code><b>LEFT JOIN FETCH</b></code>, <code><b>LEFT
+	 * @param joinFetchType One of the joining types: <code><b>LEFT JOIN FETCH</b></code>, <code><b>LEFT
 	 * OUTER JOIN FETCH</b></code>, <code><b>INNER JOIN FETCH</b></code> or <code><b>JOIN FETCH</b></code>
 	 * @param path The join association path expression
 	 * @return A new {@link JoinStateObject}
@@ -140,7 +140,7 @@ public class IdentificationVariableDeclarationStateObject extends AbstractIdenti
 	/**
 	 * Adds a new <code><b>JOIN FETCH</b></code> expression to this declaration.
 	 *
-	 * @param joinType One of the joining types: <code><b>LEFT JOIN FETCH</b></code>, <code><b>LEFT
+	 * @param joinFetchType One of the joining types: <code><b>LEFT JOIN FETCH</b></code>, <code><b>LEFT
 	 * OUTER JOIN FETCH</b></code>, <code><b>INNER JOIN FETCH</b></code> or <code><b>JOIN FETCH</b></code>
 	 * @return A new {@link JoinStateObject}
 	 */
@@ -154,7 +154,7 @@ public class IdentificationVariableDeclarationStateObject extends AbstractIdenti
 	 * Adds a new <code><b>LEFT JOIN FETCH</b></code> expression to this declaration.
 	 *
 	 * @param path The join association path expression
-	 * @return A new {@link FetchJoinStateObject}
+	 * @return A new {@link JoinStateObject}
 	 */
 	public JoinStateObject addLeftJoinFetch(String path) {
 		return addJoinFetch(LEFT_JOIN_FETCH, path);

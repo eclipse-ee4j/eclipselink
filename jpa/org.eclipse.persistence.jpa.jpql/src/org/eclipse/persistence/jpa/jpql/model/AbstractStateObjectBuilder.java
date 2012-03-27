@@ -53,7 +53,7 @@ public abstract class AbstractStateObjectBuilder {
 	}
 
 	/**
-	 * Makes sure the given {@link IScalarExpressionStateObjectBuilder<?> builder} is this one.
+	 * Makes sure the given {@link IScalarExpressionStateObjectBuilder builder} is this one.
 	 *
 	 * @param builder The builder that was passed as an argument, which is only meant to create the
 	 * stack of {@link StateObject StateObjects} in the right order
@@ -63,7 +63,7 @@ public abstract class AbstractStateObjectBuilder {
 	}
 
 	/**
-	 * Makes sure the given {@link IScalarExpressionStateObjectBuilder<?> builder} is this one.
+	 * Makes sure the given {@link IScalarExpressionStateObjectBuilder builder} is this one.
 	 *
 	 * @param builders The builders that were passed as arguments, which is only meant to create the
 	 * stack of {@link StateObject StateObjects} in the right order

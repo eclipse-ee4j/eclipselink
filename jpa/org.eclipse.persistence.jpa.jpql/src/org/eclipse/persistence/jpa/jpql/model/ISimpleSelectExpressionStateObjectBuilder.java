@@ -16,9 +16,9 @@ package org.eclipse.persistence.jpa.jpql.model;
 /**
  * This builder can be used to easily create a select expression defined for a subquery without
  * having to create each object manually. The builder is associated with {@link org.eclipse.
- * persistence.jpa.jpql.model.query.SimpleClauseStateObject SimpleClauseStateObject}.
+ * persistence.jpa.jpql.model.query.SimpleSelectClauseStateObject SimpleSelectClauseStateObject}.
  *
- * @see ISelectExpressionBuilder
+ * @see ISelectExpressionStateObjectBuilder
  *
  * @version 2.4
  * @since 2.4

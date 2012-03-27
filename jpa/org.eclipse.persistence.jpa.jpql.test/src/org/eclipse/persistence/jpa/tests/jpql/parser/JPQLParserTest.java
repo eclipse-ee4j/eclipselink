@@ -122,7 +122,8 @@ import static org.junit.Assert.*;
  * This abstract class provides the functionality to create an equivalent tree representation
  * ({@link ExpressionTester}) of the parsed tree representation ({@link Expression}) of a JPQL query.
  * <p>
- * Note: This class provides the {@link ExpressionTester} for all JPQL grammars (1.0, 2.0 and 2.1).
+ * Note: This class provides the {@link ExpressionTester} for all JPQL grammars (1.0, 2.0 and 2.1),
+ * as well as for EclipseLink (all versions).
  *
  * @version 2.4
  * @since 2.3
@@ -1994,6 +1995,12 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
+	protected static ComparisonExpressionTester notEqual(ExpressionTester leftExpression,
+	                                                     ExpressionTester rightExpression) {
+
+		return comparison(leftExpression, Expression.NOT_EQUAL, rightExpression);
+	}
+
 	protected static ExistsExpressionTester notExists(ExpressionTester subquery) {
 		return new ExistsExpressionTester(subquery, true);
 	}
@@ -3406,6 +3413,10 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 			return JPQLParserTest.notBetween(this, lowerBoundExpression, upperBoundExpression);
 		}
 
+		public final ComparisonExpressionTester notEqual(ExpressionTester expression) {
+			return JPQLParserTest.notEqual(this, expression);
+		}
+
 		public final InExpressionTester notIn(ExpressionTester... inItems) {
 			if (inItems.length == 1) {
 				return JPQLParserTest.notIn(this, inItems[0]);
@@ -4791,6 +4802,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		ExpressionTester memberOf(ExpressionTester collectionPath);
 		MultiplicationExpressionTester multiply(ExpressionTester expression);
 		BetweenExpressionTester notBetween(ExpressionTester lowerBoundExpression, ExpressionTester upperBoundExpression);
+		ComparisonExpressionTester notEqual(ExpressionTester expression);
 		InExpressionTester notIn(ExpressionTester... inItems);
 		InExpressionTester notIn(String inputParameter);
 		LikeExpressionTester notLike(ExpressionTester expression);
