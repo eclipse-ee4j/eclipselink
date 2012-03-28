@@ -2042,7 +2042,10 @@ public class MappingsGenerator {
         }           
         String prefix = globalNamespaceResolver.resolveNamespaceURI(URI);
         if(prefix == null){
-            if(suggestedPrefix != null){
+            if(URI.equals(globalNamespaceResolver.getDefaultNamespaceURI())) { 
+                namespaceResolver.setDefaultNamespaceURI(URI);
+                return null;
+            } else if(suggestedPrefix != null){
         	    prefix = globalNamespaceResolver.generatePrefix(suggestedPrefix);
             }else{
         	    prefix = globalNamespaceResolver.generatePrefix();
