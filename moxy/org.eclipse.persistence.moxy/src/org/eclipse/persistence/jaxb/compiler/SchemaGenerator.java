@@ -306,64 +306,12 @@ public class SchemaGenerator {
             type.setSimpleContent(content);
             info.setComplexType(type);
         } else {
-            ComplexType type = new ComplexType();
-            JavaClass superClass = CompilerHelper.getNextMappedSuperClass(myClass, this.typeInfo, this.helper);
-            // Handle abstract class
-            if (myClass.isAbstract()) {
-                type.setAbstractValue(true);
-            }
-
-            Extension extension = null;
-            if (superClass != null) {
-                TypeInfo parentTypeInfo = this.typeInfo.get(superClass.getQualifiedName());
-                if (parentTypeInfo != null) {
-                    extension = new Extension();
-                    // may need to qualify the type
-                    String parentPrefix = getPrefixForNamespace(schema, parentTypeInfo.getClassNamespace());
-                    if (parentPrefix != null) {
-                        extension.setBaseType(parentPrefix + COLON + parentTypeInfo.getSchemaTypeName());
-                    } else {
-                        extension.setBaseType(parentTypeInfo.getSchemaTypeName());
-                    }
-                    ComplexContent content = new ComplexContent();
-                    content.setExtension(extension);
-                    type.setComplexContent(content);
-                }
-            }
-            
+            ComplexType type = createComplexTypeForClass(myClass, info);
             TypeDefParticle compositor = null;
-            String[] propOrder = null;
-            if (info.isSetPropOrder()) {
-                propOrder = info.getPropOrder();
-            }
-            
-            if (propOrder != null && propOrder.length == 0) {
-                // Note that the spec requires an 'all' to be generated 
-                // in cases where propOrder == 0, however, the TCK 
-                // requires the extension case to use sequences
-                if (info.hasElementRefs()) {
-                    // generate a sequence to satisfy TCK
-                    compositor = new Sequence();
-                    if (extension != null) {
-                        extension.setSequence((Sequence) compositor);
-                    } else {
-                        type.setSequence((Sequence) compositor);
-                    }
-                } else if (extension != null) {
-                    compositor = new All();
-                    extension.setAll((All) compositor);
-                } else {
-                    compositor = new All();
-                    type.setAll((All) compositor);
-                }
+            if(type.getComplexContent() != null && type.getComplexContent().getExtension() != null) {
+                compositor = type.getComplexContent().getExtension().getTypeDefParticle();
             } else {
-                // generate a sequence to satisfy TCK
-                compositor = new Sequence();
-                if (extension != null) {
-                    extension.setSequence((Sequence) compositor);
-                } else {
-                    type.setSequence((Sequence) compositor);
-                }
+                compositor = type.getTypeDefParticle();
             }
             if (typeName.equals(EMPTY_STRING)) {
                 if (rootElement != null) {
@@ -383,6 +331,72 @@ public class SchemaGenerator {
         }
     }
 
+    
+    private ComplexType createComplexTypeForClass(JavaClass myClass, TypeInfo info) {
+
+        Schema schema = getSchemaForNamespace(info.getClassNamespace());
+        
+        ComplexType type = new ComplexType();
+        JavaClass superClass = CompilerHelper.getNextMappedSuperClass(myClass, this.typeInfo, this.helper);
+        // Handle abstract class
+        if (myClass.isAbstract()) {
+            type.setAbstractValue(true);
+        }
+
+        Extension extension = null;
+        if (superClass != null) {
+            TypeInfo parentTypeInfo = this.typeInfo.get(superClass.getQualifiedName());
+            if (parentTypeInfo != null) {
+                extension = new Extension();
+                // may need to qualify the type
+                String parentPrefix = getPrefixForNamespace(schema, parentTypeInfo.getClassNamespace());
+                if (parentPrefix != null) {
+                    extension.setBaseType(parentPrefix + COLON + parentTypeInfo.getSchemaTypeName());
+                } else {
+                    extension.setBaseType(parentTypeInfo.getSchemaTypeName());
+                }
+                ComplexContent content = new ComplexContent();
+                content.setExtension(extension);
+                type.setComplexContent(content);
+            }
+        }
+        
+        TypeDefParticle compositor = null;
+        String[] propOrder = null;
+        if (info.isSetPropOrder()) {
+            propOrder = info.getPropOrder();
+        }
+        
+        if (propOrder != null && propOrder.length == 0) {
+            // Note that the spec requires an 'all' to be generated 
+            // in cases where propOrder == 0, however, the TCK 
+            // requires the extension case to use sequences
+            if (info.hasElementRefs()) {
+                // generate a sequence to satisfy TCK
+                compositor = new Sequence();
+                if (extension != null) {
+                    extension.setSequence((Sequence) compositor);
+                } else {
+                    type.setSequence((Sequence) compositor);
+                }
+            } else if (extension != null) {
+                compositor = new All();
+                extension.setAll((All) compositor);
+            } else {
+                compositor = new All();
+                type.setAll((All) compositor);
+            }
+        } else {
+            // generate a sequence to satisfy TCK
+            compositor = new Sequence();
+            if (extension != null) {
+                extension.setSequence((Sequence) compositor);
+            } else {
+                type.setSequence((Sequence) compositor);
+            }
+        }
+        return type;
+    }
     public void addToSchemaType(TypeInfo ownerTypeInfo, java.util.List<Property> properties, TypeDefParticle compositor, ComplexType type, Schema workingSchema) {
         //If there are no properties we don't want a sequence/choice or all tag written out
         if (properties.size() == 0) {
@@ -780,12 +794,16 @@ public class SchemaGenerator {
                                 // may need an anonymous complex type
                                 if (typeName == null) {
                                     Schema schema = getSchemaForNamespace(next.getNamespaceURI());
-                                    ComplexType cType = new ComplexType();
-                                    TypeDefParticle particle = new Sequence();
-                                    cType.setTypeDefParticle(particle);
-                                    element.setComplexType(cType);
+                                    ComplexType cType = createComplexTypeForClass(javaClass, type);
+                                    TypeDefParticle particle = null;
+                                    if(cType.getComplexContent() != null && cType.getComplexContent().getExtension() != null) {
+                                        particle = cType.getComplexContent().getExtension().getTypeDefParticle();
+                                    } else {
+                                        particle = cType.getTypeDefParticle();
+                                    }
                                     addToSchemaType(type, type.getPropertyList(), particle, cType, schema);
                                     targetSchema = schema;
+                                    element.setComplexType(cType);
                                 } else {
                                     //  check namespace of schemaType
                                     if (type.getClassNamespace().equals(namespaceURI)) {

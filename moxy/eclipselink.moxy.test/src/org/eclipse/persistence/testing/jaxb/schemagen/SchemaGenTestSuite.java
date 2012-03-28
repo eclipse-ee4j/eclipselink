@@ -23,6 +23,7 @@ import org.eclipse.persistence.testing.jaxb.schemagen.inheritance.SchemaGenInher
 import org.eclipse.persistence.testing.jaxb.schemagen.scope.SchemaGenScopeTestCases;
 import org.eclipse.persistence.testing.jaxb.schemagen.typearray.TypeArraySchemaGenTestCases;
 import org.eclipse.persistence.testing.jaxb.schemagen.anonymoustype.AnonymousTypeTestCases;
+import org.eclipse.persistence.testing.jaxb.schemagen.anonymoustype.inheritance.AnonymousTypeInheritanceTestCases;
 import org.eclipse.persistence.testing.jaxb.schemagen.classarray.ClassArraySchemaGenTestCases;
 import org.eclipse.persistence.testing.jaxb.schemagen.customizedmapping.xmltype.SchemaGenXMLTypeTestCases;
 import org.eclipse.persistence.testing.jaxb.schemagen.customizedmapping.xmlelementref.SchemaGenXmlElementRefByteArrayTestCases;
@@ -53,6 +54,7 @@ public class SchemaGenTestSuite extends TestSuite {
         suite.addTestSuite(SchemaGenImportURLTestCases.class);
         suite.addTestSuite(DateTestCases.class);
         suite.addTestSuite(AnonymousTypeTestCases.class);
+        suite.addTestSuite(AnonymousTypeInheritanceTestCases.class);
         suite.addTestSuite(SchemaGenInheritanceTestCases.class);
         suite.addTestSuite(InherianceWithTransientTestCases.class);
         suite.addTestSuite(InheritanceImportsTestCases.class);
