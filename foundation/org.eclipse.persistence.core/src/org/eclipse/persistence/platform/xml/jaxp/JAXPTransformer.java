@@ -43,7 +43,6 @@ public class JAXPTransformer implements XMLTransformer {
     private boolean fragment;
     private static final String NO = "no";
     private static final String YES = "yes";
-    private static TransformerFactory sharedTransformerFactory;
     private Transformer transformer;
     private String encoding;
     private boolean formatted;
@@ -135,6 +134,7 @@ public class JAXPTransformer implements XMLTransformer {
         }
     }
 
+    //NB - this does NOT use the TransformerFactory singleton
     public void transform(Document sourceDocument, Node resultParentNode, URL stylesheet) throws XMLPlatformException {
         try {
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
@@ -156,14 +156,12 @@ public class JAXPTransformer implements XMLTransformer {
     public boolean isFragment() {
         return fragment;
     }
-    
+
+    //NB - this DOES use the TransformerFactory singleton
     public Transformer getTransformer() {
         if (transformer == null) {
             try {
-                if (sharedTransformerFactory == null) {
-                    createSharedTransformerFactory();
-                }
-                transformer = sharedTransformerFactory.newTransformer();
+                transformer = TransformerFactoryHelper.getTransformerFactory().newTransformer();
                 if (formatted) {
                     transformer.setOutputProperty(OutputKeys.INDENT, YES);
                 } else {
@@ -181,13 +179,15 @@ public class JAXPTransformer implements XMLTransformer {
         }
         return transformer;
     }
-    
-    private static synchronized void createSharedTransformerFactory() {
-        if (sharedTransformerFactory == null) {
-            sharedTransformerFactory = TransformerFactory.newInstance();
+
+    private static class TransformerFactoryHelper {
+        //http://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html helper class
+        private static final TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        static TransformerFactory getTransformerFactory() {
+            return transformerFactory;
         }
     }
-    
+
     private static class TransformErrorListener implements ErrorListener {
 
         public void error(TransformerException exception) throws TransformerException {
