@@ -12,14 +12,14 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelements;
 
-import java.io.File;
 import java.io.InputStream;
+import java.io.Writer;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
@@ -29,67 +29,100 @@ import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLChoiceCollectionMapping;
-import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
-import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlvalue.CDNPricesNoAnnotation;
-import org.w3c.dom.Document;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 /**
  * Tests XmlElements via eclipselink-oxm.xml
  *
  */
-public class XmlElementsTestCases extends ExternalizedMetadataTestCases {
+public class XmlElementsTestCases extends JAXBWithJSONTestCases{
     private static final String CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelements";
     private static final String PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelements/";
     
-    /**
+    private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelements/foo.xml";
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelements/foo.json";
+     /**
      * This is the preferred (and only) constructor.
      * 
      * @param name
+     * @throws Exception 
      */
-    public XmlElementsTestCases(String name) {
+    public XmlElementsTestCases(String name) throws Exception {
         super(name);
+        setClasses(new Class[] { Foo.class });
+        setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
     }
     
-    /**
-     * Tests @XmlElements schema generation via eclipselink-oxm.xml.  
-     * 
-     * Positive test.
-     */
-    public void testXmlElementsSchemaGen() {
-        MySchemaOutputResolver outputResolver = generateSchema(CONTEXT_PATH, PATH, 1);
-        // validate schema
-        String controlSchema = PATH + "schema.xsd";
-        compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
-    }
+    
+	 public Map getProperties(){
+			InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelements/eclipselink-oxm.xml");
 
-    /**
-     * Tests @XmlElements schema generation via eclipselink-oxm.xml.  Here, an
-     * xml-element-wrapper is also used.
-     * 
-     * Positive test.
-     */
-    public void testXmlElementsWithWrapperSchemaGen() {
-        String metadataFile = PATH + "eclipselink-oxm-wrapper.xml";
-        MySchemaOutputResolver outputResolver = generateSchemaWithFileName(new Class[] { Foo.class }, CONTEXT_PATH, metadataFile, 1);
-        
-        // validate schema
-        String controlSchema = PATH + "schema_wrapper.xsd";
-        compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
-    }
+			HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+		    metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelements", new StreamSource(inputStream));
+		    Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+		    properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);		
+	        
+	        return properties;
+		}
+   
+	    public void testSchemaGen() throws Exception{
+	    	List controlSchemas = new ArrayList();
+	    	InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelements/schema.xsd");	    	
+	    	controlSchemas.add(is);	    	
+	    	super.testSchemaGen(controlSchemas);
+	    	
+	    }
+
+	    public void testInstanceDocValidation() {
+	    	InputStream schema = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelements/schema.xsd");        
+	        StreamSource schemaSource = new StreamSource(schema); 
+	                
+	        InputStream instanceDocStream = ClassLoader.getSystemResourceAsStream(XML_RESOURCE);
+	        String result = validateAgainstSchema(instanceDocStream, schemaSource);        
+	        assertTrue("Instance doc validation (employee.xml) failed unxepectedly: " + result, result == null);
+	    }
+	    
+		@Override
+		protected Object getControlObject() {
+			// setup control objects
+	        Foo foo = new Foo();
+	        List theItems = new ArrayList();
+	        theItems.add(new Float(2.5));
+	        theItems.add(new Integer(1));
+	        foo.items = theItems;
+	        return foo;
+		}   
+
 
     /**
      * Tests @XmlElements schema generation via eclipselink-oxm.xml.  Here, an
      * xml-element-wrapper and xml-idref are used.
      * 
      * Positive test.
+     * @throws Exception 
      */
-    public void testXmlElementsWithIdRefSchemaGen() {
-        String metadataFile = PATH + "eclipselink-oxm-idref.xml";
-        MySchemaOutputResolver outputResolver = generateSchemaWithFileName(new Class[] { Bar.class, Address.class, Phone.class }, CONTEXT_PATH, metadataFile, 1);
+		
+    public void testXmlElementsWithIdRefSchemaGen() throws Exception {
+    	InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelements/eclipselink-oxm-idref.xml");
+
+		HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+	    metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelements", new StreamSource(inputStream));
+	    Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+	    properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);		
         
-        // validate schema
-        String controlSchema = PATH + "schema_idref.xsd";
-        compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
+	    List controlSchemas = new ArrayList();
+    	InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelements/schema_idref.xsd");	    	
+    	controlSchemas.add(is);	 
+
+    	JAXBContext ctx = (JAXBContext) JAXBContextFactory.createContext(new Class[] { Bar.class, Address.class, Phone.class }, properties);
+ 
+    	 MyStreamSchemaOutputResolver outputResolver = new MyStreamSchemaOutputResolver();
+         ctx.generateSchema(outputResolver);
+
+         List<Writer> generatedSchemas = outputResolver.getSchemaFiles();
+         compareSchemas(controlSchemas, generatedSchemas);
+	
     }
 
     /**
@@ -100,7 +133,7 @@ public class XmlElementsTestCases extends ExternalizedMetadataTestCases {
      */
     public void testXmlElementsWithInvalidIdRef() {
         String metadataFile = PATH + "eclipselink-oxm-idref-invalid.xml";
-        InputStream iStream = loader.getResourceAsStream(metadataFile);
+        InputStream iStream = getClass().getClassLoader().getResourceAsStream(metadataFile);
         if (iStream == null) {
             fail("Couldn't load metadata file [" + metadataFile + "]");
         }
@@ -120,120 +153,15 @@ public class XmlElementsTestCases extends ExternalizedMetadataTestCases {
         assertTrue("The expected exception did not occur.", exception);
     }
 
-    /**
-     * Tests @XmlElements via eclipselink-oxm.xml.
-     * 
-     * Positive test.
-     * @throws JAXBException 
-     */
-    public void testXmlElements() throws JAXBException {
-        // load XML metadata
-    	
-    	Class[] classes = new Class[] { Foo.class};
-        MySchemaOutputResolver outputResolver = generateSchema(classes, CONTEXT_PATH, PATH, 1);
-    	        
-        // load instance doc
-        String src = PATH + "foo.xml";
-        InputStream iDocStream = loader.getResourceAsStream(src);
-        if (iDocStream == null) {
-            fail("Couldn't load instance doc [" + src + "]");
-        }
 
-        // unmarshal
-        Object obj = null;
-        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-        try {
-            obj = unmarshaller.unmarshal(iDocStream);
-            assertFalse("Unmarshalled object is null.", obj == null);
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("Unmarshal operation failed.");
-        }
-
-        Document testDoc = parser.newDocument();
-        Document ctrlDoc = parser.newDocument();
-        try {
-            ctrlDoc = getControlDocument(src);
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("An unexpected exception occurred loading control document [" + src + "].");
-        }
-
-        // marshal
-        Marshaller marshaller = jaxbContext.createMarshaller();
-        try {
-            marshaller.marshal(obj, testDoc);
-            assertTrue("Document comparison failed unxepectedly: ", compareDocuments(ctrlDoc, testDoc));
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("Unmarshal operation failed.");
-        }
-    }
-
-    /**
-     * Tests @XmlElements via eclipselink-oxm.xml.  Here an xml-element-wrapper
-     * is also used.
-     * 
-     * Positive test.
-     * @throws JAXBException 
-     */
-    public void testXmlElementsWithWrapper() throws JAXBException {
-        String metadataFile = PATH + "eclipselink-oxm-wrapper.xml";
-        
-        Class[] classes = new Class[]{Foo.class};
-        MySchemaOutputResolver outputResolver = generateSchemaWithFileName(classes, CONTEXT_PATH, metadataFile, 1);
-        
-        // load instance doc
-        String src = PATH + "foo-wrapper.xml";
-        InputStream iDocStream = loader.getResourceAsStream(src);
-        if (iDocStream == null) {
-            fail("Couldn't load instance doc [" + src + "]");
-        }
-
-        // unmarshal
-        Object obj = null;
-        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-        try {
-            obj = unmarshaller.unmarshal(iDocStream);
-            assertFalse("Unmarshalled object is null.", obj == null);
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("Unmarshal operation failed.");
-        }
-
-        Document testDoc = parser.newDocument();
-        Document ctrlDoc = parser.newDocument();
-        try {
-            ctrlDoc = getControlDocument(src);
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("An unexpected exception occurred loading control document [" + src + "].");
-        }
-
-        // marshal
-        Marshaller marshaller = jaxbContext.createMarshaller();
-        try {
-            marshaller.marshal(obj, testDoc);
-            assertTrue("Document comparison failed unxepectedly: ", compareDocuments(ctrlDoc, testDoc));
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("Unmarshal operation failed.");
-        }
-    }
-    
     /**
      * Test setting the container class via container-type attribute.
      * 
      * Positive test.
      */
     public void testContainerType() {
-        JAXBContext jCtx = null;
-        try {
-            jCtx = createContext(new Class[] { Foo.class }, CONTEXT_PATH, PATH + "eclipselink-oxm.xml");
-        } catch (JAXBException e) {
-            fail("JAXBContext creation failed.");
-        }
-        XMLDescriptor xDesc = jCtx.getXMLContext().getDescriptor(new QName("foo"));
+  
+        XMLDescriptor xDesc = ((JAXBContext)jaxbContext).getXMLContext().getDescriptor(new QName("foo"));
         assertNotNull("No descriptor was generated for Foo.", xDesc);
         DatabaseMapping mapping = xDesc.getMappingForAttributeName("items");
         assertNotNull("No mapping exists on Foo for attribute [items].", mapping);

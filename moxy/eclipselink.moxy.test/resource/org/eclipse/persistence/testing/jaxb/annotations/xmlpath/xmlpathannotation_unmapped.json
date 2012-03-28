@@ -1,0 +1,37 @@
+{"root":{
+   "employees":{
+      "employee":[
+	     {  "employee-info":{ 
+	            "id":101
+                 },
+		 "personal-info":{
+		    "extra-element":"Some Text",
+		    "first-name":"Jane",
+		    "last-name":"Doe"
+		 },
+		 "contact-info":{
+		    "address-id":"102",
+	               "phones":{
+			   "phone-number":["123-4567","234-5678"]
+			}
+		 },
+		 "extra-attributes":{
+		    "attr2":"value2",
+		    "attr1":"value1"
+		 }
+	   }
+      ]
+   },
+   "addresses":{
+      "address":[
+            {
+           "id":"102",
+	   "street":"123 Fake Street",
+	   "city":"Ottawa"
+	   }
+       ]
+   }
+}}
+
+		
+			    

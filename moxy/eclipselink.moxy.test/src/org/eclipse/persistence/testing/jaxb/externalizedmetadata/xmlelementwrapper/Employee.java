@@ -31,6 +31,11 @@ public class Employee {
             return false;
         }
         Employee emp = (Employee) obj;
+        
+        if (emp.digits == null && digits == null) {
+            return true;
+        }
+        
         if (emp.digits == null && digits != null) {
             return false;
         }

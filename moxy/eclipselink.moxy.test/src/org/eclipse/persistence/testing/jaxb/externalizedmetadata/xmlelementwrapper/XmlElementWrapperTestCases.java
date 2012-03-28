@@ -12,70 +12,114 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementwrapper;
 
-import java.io.File;
 import java.io.InputStream;
+import java.io.Writer;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.JAXBContext;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
-import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
-import org.w3c.dom.Document;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 /**
  * Tests XmlElementWrapper via eclipselink-oxm.xml
  *
  */
-public class XmlElementWrapperTestCases extends ExternalizedMetadataTestCases {
-    private boolean shouldGenerateSchema = true;
-    private MySchemaOutputResolver outputResolver; 
-    private static final String CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementwrapper";
+public class XmlElementWrapperTestCases extends JAXBWithJSONTestCases{
+   
     private static final String PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelementwrapper/";
-    
+	private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelementwrapper/employee.xml";
+	private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelementwrapper/employee.json";
     /**
      * This is the preferred (and only) constructor.
      * 
      * @param name
+     * @throws Exception 
      */
-    public XmlElementWrapperTestCases(String name) {
+    public XmlElementWrapperTestCases(String name) throws Exception {
         super(name);
+        setClasses(new Class[] { Employee.class });
+		setControlDocument(XML_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
     }
     
-    /**
-     * Tests @XmlElementWrapper via eclipselink-oxm.xml.  This tests validates
-     * schema generation when an @XmlElementWrapper is present in code/xml.   
-     * 
-     * Positive test.
-     */
-    public void doTestSchemaGeneration() {
-        outputResolver = generateSchema(CONTEXT_PATH, PATH, 1);
-        shouldGenerateSchema = false;
-        // validate schema
-        String controlSchema = PATH + "schema.xsd";
-        compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
-    }
+    public Map getProperties() {
+		InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelementwrapper/eclipselink-oxm.xml");
 
+		HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+		metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementwrapper",
+						new StreamSource(inputStream));
+		Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+		properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY,
+				metadataSourceMap);
+
+		return properties;
+	}
+
+	public void testSchemaGen() throws Exception {
+		List controlSchemas = new ArrayList();
+		InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelementwrapper/schema.xsd");
+		controlSchemas.add(is);
+		super.testSchemaGen(controlSchemas);
+
+	}
+
+	public void testInstanceDocValidation() {
+		InputStream schema = ClassLoader
+				.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelementwrapper/schema.xsd");
+		StreamSource schemaSource = new StreamSource(schema);
+
+		InputStream instanceDocStream = ClassLoader
+				.getSystemResourceAsStream(XML_RESOURCE);
+		String result = validateAgainstSchema(instanceDocStream, schemaSource);
+		assertTrue("Instance doc validation (employee.xml) failed unxepectedly: "+ result, result == null);
+	}
+
+	@Override
+	protected Object getControlObject() {
+		// setup control objects
+		Employee emp = new Employee();
+        int[] theDigits = new int[] { 666, 999 };
+        emp.digits = theDigits;
+        return emp;
+	}
+
+    
     /**
      * Tests @XmlElementWrapper via eclipselink-oxm.xml.  No overrides are done,
      * so the class annotations should be used to generate the schema.
      * 
      * Positive test.
+     * @throws Exception 
      */
-    public void testXmlElementWrapperNoOverride() {
-        outputResolver = generateSchema(new Class[] { Employee.class }, 1);
-        // validate schema
-        String controlSchema = PATH + "schemaNoOverride.xsd";
-        compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
-        
-        String src = PATH + "employee.xml";
-        String result = validateAgainstSchema(src, EMPTY_NAMESPACE, outputResolver);
-        assertTrue("Schema validation failed unxepectedly: " + result, result == null);
+    public void testXmlElementWrapperNoOverrideSchemaGen() throws Exception {
+    	 JAXBContext ctx = JAXBContextFactory.createContext(new Class[] { Employee.class }, null);
+    	
+    	 MyStreamSchemaOutputResolver outputResolver = new MyStreamSchemaOutputResolver();
+         ctx.generateSchema(outputResolver);
+
+         List<Writer> generatedSchemas = outputResolver.getSchemaFiles();
+         
+     	List controlSchemas = new ArrayList();
+		InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelementwrapper/schemaNoOverride.xsd");
+		controlSchemas.add(is);
+         compareSchemas(controlSchemas, generatedSchemas);
+
+ 		InputStream schema = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelementwrapper/schemaNoOverride.xsd");
+
+ 		StreamSource schemaSource = new StreamSource(schema);
+
+ 		InputStream instanceDocStream = ClassLoader
+			.getSystemResourceAsStream(XML_RESOURCE);
+ 		String result = validateAgainstSchema(instanceDocStream, schemaSource);
+ 		assertTrue("Schema validation failed unxepectedly: " + result, result == null);
+
+    
     }
 
     /**
@@ -89,53 +133,32 @@ public class XmlElementWrapperTestCases extends ExternalizedMetadataTestCases {
      * declaration is assumed to already exist and is not created.
      * 
      * Positive test.
+     * @throws Exception 
      */
-    public void testXmlElementWrapperNS() {
-        String metadataFile = PATH + "eclipselink-oxm-ns.xml";
-        
-        outputResolver = generateSchemaWithFileName(CONTEXT_PATH, metadataFile, 1);
+    public void testXmlElementWrapperNSSchemaGen() throws Exception {
+    	InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelementwrapper/eclipselink-oxm-ns.xml");
 
-        // validate schema
-        String controlSchema = PATH + "schema_ns.xsd";
-        compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
+		HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+		metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementwrapper",
+						new StreamSource(inputStream));
+		Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+		properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY,
+				metadataSourceMap);
+    	
+    	 JAXBContext ctx = JAXBContextFactory.createContext(new Class[] { Employee.class }, properties);
+    	
+    	 MyStreamSchemaOutputResolver outputResolver = new MyStreamSchemaOutputResolver();
+         ctx.generateSchema(outputResolver);
+
+         List<Writer> generatedSchemas = outputResolver.getSchemaFiles();
+         
+     	List controlSchemas = new ArrayList();
+		InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelementwrapper/schema_ns.xsd");
+		controlSchemas.add(is);
+         compareSchemas(controlSchemas, generatedSchemas);
+    
     }
-
-    /**
-     * Tests @XmlElementWrapper via eclipselink-oxm.xml.  Here, a number of
-     * overrides are performed.
-     * 
-     * Positive test.
-     */
-    public void testXmlElementWrapper() {
-        if (shouldGenerateSchema) {
-            doTestSchemaGeneration();
-        }
-        String src = PATH + "employee.xml";
-        String result = validateAgainstSchema(src, EMPTY_NAMESPACE, outputResolver);
-        assertTrue("Schema validation failed unxepectedly: " + result, result == null);
-    }
-
-    /**
-     * Tests @XmlElementWrapper via eclipselink-oxm.xml.  Here, a number of
-     * overrides are performed.  In addition, an @XmlElement annotation is
-     * used to override the name of the wrapped element from 'digits' to 
-     * 'a-digit'.
-     * 
-     * Positive test.
-     */
-    public void testXmlElementWrapperWithXmlElementOverride() {
-        String metadataFile = PATH + "eclipselink-oxm-xmlelement.xml";
-
-        outputResolver = generateSchemaWithFileName(CONTEXT_PATH, metadataFile, 1);
-
-        // validate schema
-        String controlSchema = PATH + "schema_xmlelement.xsd";
-        compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
-
-        String src = PATH + "employee-xmlelement.xml";
-        String result = validateAgainstSchema(src, EMPTY_NAMESPACE, outputResolver);
-        assertTrue("Schema validation failed unxepectedly: " + result, result == null);
-    }
+  
 
     /**
      * Tests @XmlElementWrapper via eclipselink-oxm.xml.  The instance document
@@ -144,96 +167,15 @@ public class XmlElementWrapperTestCases extends ExternalizedMetadataTestCases {
      * Negative test.
      */
     public void testXmlElementWrapperNoWrapper() {
-        if (shouldGenerateSchema) {
-            doTestSchemaGeneration();
-        }
-        String src = PATH + "employee-invalid.xml";
-        String result = validateAgainstSchema(src, EMPTY_NAMESPACE, outputResolver);
-        assertTrue("Schema validation passed unxepectedly", result != null);
+    	InputStream schema = ClassLoader
+		.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelementwrapper/schema.xsd");
+StreamSource schemaSource = new StreamSource(schema);
+
+InputStream instanceDocStream = ClassLoader
+		.getSystemResourceAsStream(PATH + "employee-invalid.xml");
+String result = validateAgainstSchema(instanceDocStream, schemaSource);
+assertTrue("Schema validation passed unxepectedly", result != null);
+
     }
-
-    /**
-     * Tests @XmlElementWrapper via eclipselink-oxm.xml.  The instance document
-     * contains a nil 'my-digits' wrapper element.  
-     * 
-     * Positive test.
-     */
-    public void testXmlElementWrapperNil() {
-        if (shouldGenerateSchema) {
-            doTestSchemaGeneration();
-        }
-        String src = PATH + "employee-nil-wrapper.xml";
-        String result = validateAgainstSchema(src, EMPTY_NAMESPACE, outputResolver);
-        assertTrue("Schema validation failed unxepectedly: " + result, result == null);
-    }
-
-    /**
-     * Tests @XmlElementWrapper via eclipselink-oxm.xml.  Here, a number of
-     * overrides are performed. A marshal operation is performed to ensure
-     * the wrapper is processed correctly.
-     * 
-     * Positive test.
-     * @throws JAXBException 
-     */
-    public void testXmlElementWrapperMarshal() throws JAXBException {
-        if (shouldGenerateSchema) {
-            doTestSchemaGeneration();
-        }
-        
-        Employee emp = new Employee();
-        int[] theDigits = new int[] { 666, 999 };
-        emp.digits = theDigits;
-        
-        Document testDoc = parser.newDocument();
-        
-        Marshaller marshaller = getJAXBContext().createMarshaller();
-        try {
-            marshaller.marshal(emp, testDoc);
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("An unexpected exception occurred marshalling the Employee.");
-        }
-
-        String src = PATH + "employee.xml";
-        Document ctrlDoc = parser.newDocument();
-        try {
-            ctrlDoc = getControlDocument(src);
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("An unexpected exception occurred loading control document [" + src + "].");
-        }
-
-        assertTrue("Document comparison failed unxepectedly: ", compareDocuments(ctrlDoc, testDoc));
-    }
-
-    /**
-     * Tests @XmlElementWrapper via eclipselink-oxm.xml.  Here, a number of
-     * overrides are performed. An unmarshal operation is performed to ensure
-     * the wrapper is processed correctly.
-     * 
-     * Positive test.
-     * @throws JAXBException 
-     */
-    public void testXmlElementWrapperUnmarshal() throws JAXBException {
-        if (shouldGenerateSchema) {
-            doTestSchemaGeneration();
-        }
-        
-        Employee emp = null;
-        Unmarshaller unmarshaller = getJAXBContext().createUnmarshaller();
-        try {
-            String src = PATH + "employee.xml";
-            emp = (Employee) unmarshaller.unmarshal(getControlDocument(src));
-            assertNotNull("The Employee object is null after unmarshal.", emp);
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("An unexpected exception occurred unmarshalling the document.");
-        }
-
-        Employee ctrlEmp = new Employee();
-        int[] theDigits = new int[] { 666, 999 };
-        ctrlEmp.digits = theDigits;
-
-        assertTrue("The unmarshalled Employee did not match the control Employee object.", ctrlEmp.equals(emp));
-    }
+  
 }

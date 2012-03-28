@@ -12,101 +12,72 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlenum;
 
-import java.io.File;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
 
-import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
-import org.w3c.dom.Document;
-
+import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 /**
  * Tests XmlEnum via eclipselink-oxm.xml
  *
  */
-public class XmlEnumTestCases extends ExternalizedMetadataTestCases {
-    private static final String CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlenum";
-    private static final String PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlenum/";
-    
+public class XmlEnumTestCases extends JAXBWithJSONTestCases{
+    private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlenum/game.xml";
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlenum/game.json";
     /**
      * This is the preferred (and only) constructor.
      * 
      * @param name
+     * @throws Exception 
      */
-    public XmlEnumTestCases(String name) {
+    public XmlEnumTestCases(String name) throws Exception {
         super(name);
-    }
-
-    /**
-     * Tests @XmlEnum schema generation via eclipselink-oxm.xml.
-     * 
-     * Positive test.
-     */
-    public void testXmlEnumSchemaGen() {
-        String metadataFile = PATH + "eclipselink-oxm-game.xml";
-        MySchemaOutputResolver outputResolver = generateSchemaWithFileName(new Class[] { Game.class }, CONTEXT_PATH, metadataFile, 1);
-        // validate schema
-        String controlSchema = PATH + "game-schema.xsd";
-        compareSchemas(outputResolver.schemaFiles.get(EMPTY_NAMESPACE), new File(controlSchema));
+        setClasses(new Class[] { Game.class });
+        setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
     }
     
-    /**
-     * Tests @XmlEnum via eclipselink-oxm.xml.
-     * 
-     * Positive test.
-     * @throws JAXBException 
-     */
-    public void testXmlEnumUnmarshalThenMarshal() throws JAXBException {
-        // load XML metadata
-        String metadataFile = PATH + "eclipselink-oxm-game.xml";
-        
-        Class[] classes = new Class[] { Game.class };
-        MySchemaOutputResolver outputResolver = generateSchemaWithFileName(classes, CONTEXT_PATH, metadataFile, 1);
-               
-        // load instance doc
-        String src = PATH + "game.xml";
-        InputStream iDocStream = loader.getResourceAsStream(src);
-        if (iDocStream == null) {
-            fail("Couldn't load instance doc [" + src + "]");
-        }
+	 public Map getProperties(){
+			InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlenum/eclipselink-oxm-game.xml");
 
-        // setup control objects
-        Game gameCtrl = new Game();
-        gameCtrl.card = Card.DIAMONDS;
-        gameCtrl.coin = Coin.DIME;
-        
-        // unmarshal
-        Game gameObj = null;
-        Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-        try {
-            gameObj = (Game) unmarshaller.unmarshal(iDocStream);
-            assertFalse("Unmarshalled object is null.", gameObj == null);
-            assertTrue("Unmarshal failed - object is not equal to control Game", gameObj.equals(gameCtrl));
-        } catch (javax.xml.bind.JAXBException e) {
-            e.printStackTrace();
-            fail("Unmarshal operation failed.");
-        }
+			HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+		    metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlenum", new StreamSource(inputStream));
+		    Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+		    properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);		
+	        
+	        return properties;
+		}
+    
+	    public void testSchemaGen() throws Exception{
+	    	List controlSchemas = new ArrayList();
+	    	InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlenum/game-schema.xsd");	    	
+	    	controlSchemas.add(is);	    	
+	    	super.testSchemaGen(controlSchemas);
+	    	
+	    }
 
-        Document testDoc = parser.newDocument();
-        Document ctrlDoc = parser.newDocument();
-        try {
-            ctrlDoc = getControlDocument(src);
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("An unexpected exception occurred loading control document [" + src + "].");
-        }
-
-        // marshal
-        Marshaller marshaller = jaxbContext.createMarshaller();
-        try {
-            marshaller.marshal(gameCtrl, testDoc);
-            assertTrue("Document comparison failed unxepectedly: ", compareDocuments(ctrlDoc, testDoc));
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("Unmarshal operation failed.");
-        }
-    }
+	    public void testInstanceDocValidation() {
+	    	InputStream schema = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlenum/game-schema.xsd");        
+	        StreamSource schemaSource = new StreamSource(schema); 
+	                
+	        InputStream instanceDocStream = ClassLoader.getSystemResourceAsStream(XML_RESOURCE);
+	        String result = validateAgainstSchema(instanceDocStream, schemaSource);        
+	        assertTrue("Instance doc validation (employee.xml) failed unxepectedly: " + result, result == null);
+	    }
+	    
+		@Override
+		protected Object getControlObject() {
+			// setup control objects
+	        Game gameCtrl = new Game();
+	        gameCtrl.card = Card.DIAMONDS;
+	        gameCtrl.coin = Coin.DIME;
+	        return gameCtrl;
+		}   
 }

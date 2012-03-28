@@ -21,4 +21,11 @@ public class Foo {
     //    @javax.xml.bind.annotation.XmlElement(name="B", type=Float.class)
     //})
     public List items;
+    
+    public boolean equals(Object compareObj){
+    	if(compareObj instanceof Foo){
+    		return items.equals(((Foo)compareObj).items);
+    	}
+    	return false;
+    }
 }

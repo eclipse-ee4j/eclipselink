@@ -57,7 +57,8 @@ import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementref.X
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementrefs.XmlElementRefsTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelements.XmlElementsTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementwrapper.XmlElementWrapperTestCases;
-import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlenum.XmlEnumTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlenum.XmlEnumTestCasesoriginal;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlidref.XmlIdRefExceptionTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlidref.XmlIdRefTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlinlinebinarydata.XmlInlineBinaryDataTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmljoinnode.XmlJoinNodeTestCases;
@@ -161,6 +162,7 @@ public class ExternalizedMetadataTestSuite extends TestSuite {
         suite.addTestSuite(XmlListOnXmlAttributeTestCases.class);
         suite.addTestSuite(XmlAnyElementTestCases.class);
         suite.addTestSuite(XmlIdRefTestCases.class);
+        suite.addTestSuite(XmlIdRefExceptionTestCases.class);
         suite.addTestSuite(XmlMixedTestCases.class);
         suite.addTestSuite(XmlAnyAttributeTestCases.class);
         suite.addTestSuite(XmlMimeTypeCases.class);
@@ -171,7 +173,7 @@ public class ExternalizedMetadataTestSuite extends TestSuite {
         suite.addTestSuite(XmlElementRefsTestCases.class);
         suite.addTestSuite(XmlSchemaTypeTestCases.class);
         suite.addTestSuite(XmlSchemaTypesTestCases.class);
-        suite.addTestSuite(XmlEnumTestCases.class);
+        suite.addTestSuite(XmlEnumTestCasesoriginal.class);
         suite.addTestSuite(XmlInlineBinaryDataTestCases.class);
         suite.addTestSuite(XmlRegistryTestCases.class);
         suite.addTestSuite(XmlRegistryNonLocalTestCases.class);

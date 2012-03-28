@@ -23,4 +23,14 @@ public class Root {
     public List<Employee> employees;
     @XmlElement(name="address")
     public List<Address> addresses;
+    
+    public boolean equals(Object compareObj){
+    	if (compareObj instanceof Root){
+    		Root rootObj = (Root)compareObj;
+    		return (employees == null && rootObj.employees ==null || employees.equals(rootObj.employees) )&& 
+    		(addresses == null && rootObj.addresses ==null || addresses.equals(rootObj.addresses) );
+    	}
+    	return false;
+    }
+    
 }

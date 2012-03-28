@@ -17,18 +17,31 @@ import java.util.Vector;
 
 import javax.xml.namespace.QName;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class XmlPathUnmappedTestCases extends JAXBTestCases {
+public class XmlPathUnmappedTestCases extends JAXBWithJSONTestCases {
 
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlpath/xmlpathannotation.xml";
     private static final String XML_RESOURCE_UNMAPPED = "org/eclipse/persistence/testing/jaxb/annotations/xmlpath/xmlpathannotation_unmapped.xml";
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlpath/xmlpathannotation.json";
+    private static final String JSON_RESOURCE_UNMAPPED = "org/eclipse/persistence/testing/jaxb/annotations/xmlpath/xmlpathannotation_unmapped.json";
     
     public XmlPathUnmappedTestCases(String name) throws Exception {
         super(name);
         setClasses(new Class[] {Root.class, Employee.class, Address.class, PhoneNumber.class});
         setControlDocument(XML_RESOURCE_UNMAPPED);
         setWriteControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE_UNMAPPED);
+        setWriteControlJSON(JSON_RESOURCE);
+    }
+    
+    public Object getJSONReadControlObject(){
+    	Root root = (Root)getControlObject();
+    	Employee emp = root.employees.get(0);
+    	emp.attributes = new HashMap<QName, String>();
+        emp.attributes.put(new QName("attr1"), "value1");
+        emp.attributes.put(new QName("attr2"), "value2");
+    	return root;
     }
     
     public Object getControlObject() {

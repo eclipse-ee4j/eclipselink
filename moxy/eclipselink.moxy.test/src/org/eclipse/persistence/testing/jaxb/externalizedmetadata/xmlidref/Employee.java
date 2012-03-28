@@ -19,4 +19,12 @@ public class Employee {
     public Address homeAddress;
     
     public Address workAddress;
+    
+    public boolean equals(Object compareObj){
+    	if (compareObj instanceof Employee){
+    		Employee emp = (Employee)compareObj;
+    		return name.equals(emp.name) && homeAddress.equals(emp.homeAddress) && workAddress.equals(emp.workAddress);
+    	}
+    	return false;
+    }
 }

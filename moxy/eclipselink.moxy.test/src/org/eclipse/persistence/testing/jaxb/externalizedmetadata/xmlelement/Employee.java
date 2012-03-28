@@ -36,4 +36,28 @@ public class Employee {
     public Object myUtilDate;
     
     public List myEmployees;
+    
+    public boolean equals(Object o ){
+    	if(o instanceof Employee){
+    		Employee emp = (Employee)o;
+    		if(!firstName.equals(emp.firstName) || !lastName.equals(emp.lastName) || id != emp.id || getMyInt() != emp.getMyInt()){
+    			return false;
+    		}
+    		if(myEmployees == null){
+    			if(emp.myEmployees != null){
+    				return false;
+    			}
+    		}else{
+    			if(myEmployees.size() != emp.myEmployees.size()){
+    				return false;
+    			}
+    			if(!myEmployees.equals(emp.myEmployees)){
+    				return false;
+    			}
+    		
+    		}    		
+    		return true;
+    	}
+    	return false;
+    }
 }

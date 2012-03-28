@@ -16,14 +16,16 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class XmlPathToAttributeTestCases extends JAXBTestCases {
+public class XmlPathToAttributeTestCases extends JAXBWithJSONTestCases {
 	   private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlpath/xmlpath.xml";
+	   private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlpath/xmlpath.json";
 
 		public XmlPathToAttributeTestCases(String name) throws Exception {
 			super(name);
 			setControlDocument(XML_RESOURCE);
+			setControlJSON(JSON_RESOURCE);
 			setClasses(new Class[]{TestObjectToAttribute.class});
 		}
 

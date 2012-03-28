@@ -17,4 +17,13 @@ public class Address {
     
     @javax.xml.bind.annotation.XmlID
 	public String city;
+    
+    
+    public boolean equals(Object compareObj){
+    	if (compareObj instanceof Address){
+    		Address addr = (Address)compareObj;
+    		return id.equals(addr.id) && city.equals(addr.city);
+    	}
+    	return false;
+    }
 }

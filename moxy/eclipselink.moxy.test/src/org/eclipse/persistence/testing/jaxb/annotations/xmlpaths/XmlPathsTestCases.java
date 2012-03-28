@@ -12,54 +12,40 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.annotations.xmlpaths;
 
-import java.io.File;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
-import org.w3c.dom.Document;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 /**
  * Tests XmlChoiceObjectMappings via eclipselink-oxm.xml
  * 
  */
-public class XmlPathsTestCases extends ExternalizedMetadataTestCases {
-    private static final String CONTEXT_PATH = "org.eclipse.persistence.testing.jaxb.annotations.xmlpaths";
-    private static final String PATH = "org/eclipse/persistence/testing/jaxb/annotations/xmlpaths/";
+public class XmlPathsTestCases extends JAXBWithJSONTestCases{
     private static final String INT_VAL = "66";
-    private static final String FLT_VAL = "66.66";
-    private JAXBContext jCtx;
-    private MySchemaOutputResolver resolver;
+    private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlpaths/employee.xml";
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlpaths/employee.json";
 
     /**
      * This is the preferred (and only) constructor.
      * 
      * @param name
+     * @throws Exception 
      */
-    public XmlPathsTestCases(String name) {
+    public XmlPathsTestCases(String name) throws Exception {
         super(name);
+        setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
+        setClasses(new Class[]{Employee.class});    
     }
     
-    /**
-     * This method's primary purpose id to generate schema(s). Validation of
-     * generated schemas will occur in the testXXXGen method(s) below. Note that
-     * the JAXBContext is created from this call and is required for
-     * marshal/unmarshal, etc. tests.
-     * 
-     */
-    public void setUp() throws Exception {
-        super.setUp();
-        jCtx = (JAXBContext) JAXBContextFactory.createContext(new Class[] { Employee.class }, null);
-        resolver = new MySchemaOutputResolver();
-        jCtx.generateSchema(resolver);
-    }
-
-
+  
     /**
      * Return the control Employee.
      * 
@@ -71,78 +57,25 @@ public class XmlPathsTestCases extends ExternalizedMetadataTestCases {
         return emp;
     }
     
-    public void testEmployeeSchemaGen() {
+    
+    
+    public void testEmployeeSchemaGen() throws Exception {
         // validate the schema
-        compareSchemas(resolver.schemaFiles.get(EMPTY_NAMESPACE), new File(PATH + "employee.xsd"));
+    	List controlSchemas = new ArrayList();
+    	controlSchemas.add(getClass().getClassLoader().getResourceAsStream("org/eclipse/persistence/testing/jaxb/annotations/xmlpaths/employee.xsd"));
+    	super.testSchemaGen(controlSchemas);
     }
+    
 
     public void testInstanceDocValidation() {
-        String src = PATH + "employee.xml";
-        String result = validateAgainstSchema(src, EMPTY_NAMESPACE, resolver);
+    	InputStream schema = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/annotations/xmlpaths/employee.xsd");        
+        StreamSource schemaSource = new StreamSource(schema); 
+                
+        InputStream instanceDocStream = ClassLoader.getSystemResourceAsStream(XML_RESOURCE);
+        String result = validateAgainstSchema(instanceDocStream, schemaSource);        
         assertTrue("Instance doc validation (employee.xml) failed unxepectedly: " + result, result == null);
     }
-    
-    /**
-     * Tests XmlChoiceMapping configuration via eclipselink-oxm.xml. 
-     * Here an unmarshal operation is performed. Utilizes xml-attribute and 
-     * xml-element.
-     * 
-     * Positive test.
-     */
-    public void testChoiceMappingUnmarshal() {
-        // load instance doc
-        InputStream iDocStream = loader.getResourceAsStream(PATH + "employee.xml");
-        if (iDocStream == null) {
-            fail("Couldn't load instance doc [" + PATH + "employee.xml" + "]");
-        }
-
-        // setup control Employee
-        Employee ctrlEmp = getControlObject();
-        // writeOnlyThing should not be read in
-        try {
-            Unmarshaller unmarshaller = jCtx.createUnmarshaller();
-            Employee empObj = (Employee) unmarshaller.unmarshal(iDocStream);
-            assertNotNull("Unmarshalled object is null.", empObj);
-            assertTrue("Unmarshal failed:  Employee objects are not equal", ctrlEmp.equals(empObj));
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("Unmarshal operation failed.");
-        }
-    }
-
-    /**
-     * Tests XmlChoiceMapping configuration via eclipselink-oxm.xml. Here a
-     * marshal operation is performed. Utilizes xml-attribute and xml-element
-     * 
-     * Positive test.
-     */
-    public void testChoiceMappingMarshal() {
-        // load instance doc
-        String src = PATH + "employee.xml";
-
-        // setup control document
-        Document testDoc = parser.newDocument();
-        Document ctrlDoc = parser.newDocument();
-        try {
-            ctrlDoc = getControlDocument(src);
-        } catch (Exception e) {
-            e.printStackTrace();
-            fail("An unexpected exception occurred loading control document [" + src + "].");
-        }
-
-        // test marshal
-        try {
-            Marshaller marshaller = jCtx.createMarshaller();
-            Employee ctrlEmp = getControlObject();
-            marshaller.marshal(ctrlEmp, testDoc);
-            //marshaller.marshal(ctrlEmp, System.out);
-            assertTrue("Document comparison failed unxepectedly: ", compareDocuments(ctrlDoc, testDoc));
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            fail("Marshal operation failed.");
-        }
-    }
-    
+ 
     public void testInvalidXmlPaths() {
         try {
             JAXBContext jaxbCtx = (JAXBContext) JAXBContextFactory.createContext(new Class[] { InvalidEmployee.class }, null);
