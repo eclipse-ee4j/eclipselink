@@ -88,7 +88,13 @@ public class PersistenceWeaver implements ClassTransformer {
             if (classDetails != null) {
                 ((AbstractSession)session).log(SessionLog.FINEST, SessionLog.WEAVER, "begin_weaving_class", className);
                 ClassReader classReader = new ClassReader(classfileBuffer);
-                ClassWriter classWriter = new ComputeClassWriter(loader, ClassWriter.COMPUTE_FRAMES);
+                ClassWriter classWriter = null;
+                String introspectForHierarchy = System.getProperty(SystemProperties.WEAVING_REFLECTIVE_INTROSPECTION, null);
+                if (introspectForHierarchy != null){
+                    classWriter = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+                } else {
+                    classWriter = new ComputeClassWriter(loader, ClassWriter.COMPUTE_FRAMES);
+                }
                 ClassWeaver classWeaver = new ClassWeaver(classWriter, classDetails);
                 classReader.accept(classWeaver, 0);
                 if (classWeaver.alreadyWeaved) {

@@ -38,6 +38,14 @@ public class SystemProperties {
      * on the path provided to WEAVING_OUTPUT_PATH will not be overridden.  If this is set to true, they will be
      */
     public static final String WEAVING_SHOULD_OVERWRITE = "eclipselink.weaving.overwrite.existing";
+    
+    /**
+     * This property can be used to tell EclipseLink to process classes in the ASM Default manner.  The fix for bug
+     * 370975 changes EclipseLink's weaving support to use ASM itself to examine class hierarchies.  Setting this flag to
+     * true will cause us to use the default reflection mechanism again.  This flag provides a means to workaround any issues encountered with
+     * the ASM-based weaving introspection
+     */
+    public static final String WEAVING_REFLECTIVE_INTROSPECTION = "eclipselink.weaving.reflective-introspection";
 
     /**
      * This property is used in conjunction with
