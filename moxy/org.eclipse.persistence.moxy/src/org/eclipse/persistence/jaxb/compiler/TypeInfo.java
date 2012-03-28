@@ -324,13 +324,16 @@ public class TypeInfo {
                 Property next = properties.get(i);
                 this.addProperty(next.getPropertyName(), next);
             }
-            // If a property is marked transient, ensure it doesn't exist in the propOrder
-            List<String> propOrderList = Arrays.asList(getPropOrder());
-            ArrayList<Property> propsList = getPropertyList();
-            for (int i = 0; i < propsList.size(); i++) {
-                Property p = propsList.get(i);
-                if (p.isTransient() && propOrderList.contains(p.getPropertyName())) {
-                    throw org.eclipse.persistence.exceptions.JAXBException.transientInProporder(p.getPropertyName());
+
+            if (!this.isTransient()) {
+                // If a property is marked transient, ensure it doesn't exist in the propOrder
+                List<String> propOrderList = Arrays.asList(getPropOrder());
+                ArrayList<Property> propsList = getPropertyList();
+                for (int i = 0; i < propsList.size(); i++) {
+                    Property p = propsList.get(i);
+                    if (p.isTransient() && propOrderList.contains(p.getPropertyName())) {
+                        throw org.eclipse.persistence.exceptions.JAXBException.transientInProporder(p.getPropertyName());
+                    }
                 }
             }
         }
