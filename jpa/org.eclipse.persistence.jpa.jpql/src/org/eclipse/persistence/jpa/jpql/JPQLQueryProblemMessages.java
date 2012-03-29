@@ -279,7 +279,6 @@ public interface JPQLQueryProblemMessages {
 	String ResultVariable_InvalidJPAVersion = "RESULT_VARIABLE_INVALID_JPA_VERSION";
 	String ResultVariable_MissingResultVariable = "RESULT_VARIABLE_MISSING_RESULT_VARIABLE";
 	String ResultVariable_MissingSelectExpression = "RESULT_VARIABLE_MISSING_SELECT_EXPRESSION";
-	String SelectStatement_SelectClauseHasNonAggregateFunctions = "SELECT_STATEMENT_SELECT_CLAUSE_HAS_NON_AGGREGATE_FUNCTIONS";
 	String SimpleSelectClause_NotSingleExpression = "SIMPLE_SELECT_CLAUSE_NOT_SINGLE_EXPRESSION";
 	String SimpleSelectStatement_InvalidLocation = "SIMPLE_SELECT_STATEMENT_INVALID_LOCATION";
 	String SizeExpression_InvalidExpression = "SIZE_EXPRESSION_INVALID_EXPRESSION";

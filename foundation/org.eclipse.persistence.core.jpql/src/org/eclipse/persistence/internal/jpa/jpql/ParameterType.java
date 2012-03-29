@@ -15,12 +15,18 @@ package org.eclipse.persistence.internal.jpa.jpql;
 
 import java.util.Collection;
 import org.eclipse.persistence.jpa.jpql.parser.AbsExpression;
+import org.eclipse.persistence.jpa.jpql.parser.AbstractDoubleEncapsulatedExpression;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractEclipseLinkTraverseParentVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractSchemaName;
 import org.eclipse.persistence.jpa.jpql.parser.AdditionExpression;
+import org.eclipse.persistence.jpa.jpql.parser.AllOrAnyExpression;
 import org.eclipse.persistence.jpa.jpql.parser.AndExpression;
+import org.eclipse.persistence.jpa.jpql.parser.ArithmeticFactor;
 import org.eclipse.persistence.jpa.jpql.parser.AvgFunction;
 import org.eclipse.persistence.jpa.jpql.parser.BetweenExpression;
+import org.eclipse.persistence.jpa.jpql.parser.CaseExpression;
+import org.eclipse.persistence.jpa.jpql.parser.CoalesceExpression;
+import org.eclipse.persistence.jpa.jpql.parser.CollectionMemberExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionValuedPathExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ComparisonExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CompoundExpression;
@@ -34,6 +40,7 @@ import org.eclipse.persistence.jpa.jpql.parser.EntityTypeLiteral;
 import org.eclipse.persistence.jpa.jpql.parser.EntryExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ExistsExpression;
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
+import org.eclipse.persistence.jpa.jpql.parser.FunctionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
 import org.eclipse.persistence.jpa.jpql.parser.InExpression;
 import org.eclipse.persistence.jpa.jpql.parser.IndexExpression;
@@ -42,13 +49,17 @@ import org.eclipse.persistence.jpa.jpql.parser.KeyExpression;
 import org.eclipse.persistence.jpa.jpql.parser.KeywordExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LengthExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LikeExpression;
+import org.eclipse.persistence.jpa.jpql.parser.LocateExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LowerExpression;
 import org.eclipse.persistence.jpa.jpql.parser.MaxFunction;
 import org.eclipse.persistence.jpa.jpql.parser.MinFunction;
 import org.eclipse.persistence.jpa.jpql.parser.ModExpression;
 import org.eclipse.persistence.jpa.jpql.parser.MultiplicationExpression;
+import org.eclipse.persistence.jpa.jpql.parser.NotExpression;
 import org.eclipse.persistence.jpa.jpql.parser.NullComparisonExpression;
+import org.eclipse.persistence.jpa.jpql.parser.NullIfExpression;
 import org.eclipse.persistence.jpa.jpql.parser.NumericLiteral;
+import org.eclipse.persistence.jpa.jpql.parser.ObjectExpression;
 import org.eclipse.persistence.jpa.jpql.parser.OrExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SizeExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SqrtExpression;
@@ -62,6 +73,7 @@ import org.eclipse.persistence.jpa.jpql.parser.TypeExpression;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateItem;
 import org.eclipse.persistence.jpa.jpql.parser.UpperExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ValueExpression;
+import org.eclipse.persistence.jpa.jpql.parser.WhenClause;
 
 /**
  * This visitor's responsibility is to find the type of an input parameter.
@@ -179,8 +191,24 @@ final class ParameterTypeVisitor extends AbstractEclipseLinkTraverseParentVisito
 	 * {@inheritDoc}
 	 */
 	@Override
+	public void visit(AllOrAnyExpression expression) {
+		super.visit(expression);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void visit(AndExpression expression) {
 		visitCompoundExpression(expression);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void visit(ArithmeticFactor expression) {
+		super.visit(expression);
 	}
 
 	/**
@@ -247,6 +275,38 @@ final class ParameterTypeVisitor extends AbstractEclipseLinkTraverseParentVisito
 		}
 		else {
 			type = Boolean.class;
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void visit(CaseExpression expression) {
+		super.visit(expression);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void visit(CoalesceExpression expression) {
+		super.visit(expression);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void visit(CollectionMemberExpression expression) {
+
+		Expression pathExpression = expression.getCollectionValuedPathExpression();
+
+		if (pathExpression.isAncestor(inputParameter)) {
+			type = Collection.class;
+		}
+		else {
+			type = Object.class;
 		}
 	}
 
@@ -355,6 +415,14 @@ final class ParameterTypeVisitor extends AbstractEclipseLinkTraverseParentVisito
 	 * {@inheritDoc}
 	 */
 	@Override
+	public void visit(FunctionExpression expression) {
+		type = Object.class;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void visit(IdentificationVariable expression) {
 		// The identification variable always have a return type
 		this.expression = expression;
@@ -450,6 +518,14 @@ final class ParameterTypeVisitor extends AbstractEclipseLinkTraverseParentVisito
 	 * {@inheritDoc}
 	 */
 	@Override
+	public void visit(LocateExpression expression) {
+		super.visit(expression);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void visit(LowerExpression expression) {
 		// The lower function always have a return type
 		this.expression = expression;
@@ -478,8 +554,7 @@ final class ParameterTypeVisitor extends AbstractEclipseLinkTraverseParentVisito
 	 */
 	@Override
 	public void visit(ModExpression expression) {
-		// The modulo function always have a return type
-		this.expression = expression;
+		visitDoubleEncapsulatedExpression(expression);
 	}
 
 	/**
@@ -488,6 +563,14 @@ final class ParameterTypeVisitor extends AbstractEclipseLinkTraverseParentVisito
 	@Override
 	public void visit(MultiplicationExpression expression) {
 		visitCompoundExpression(expression);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void visit(NotExpression expression) {
+		super.visit(expression);
 	}
 
 	/**
@@ -510,9 +593,25 @@ final class ParameterTypeVisitor extends AbstractEclipseLinkTraverseParentVisito
 	 * {@inheritDoc}
 	 */
 	@Override
+	public void visit(NullIfExpression expression) {
+		visitDoubleEncapsulatedExpression(expression);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void visit(NumericLiteral expression) {
 		// A numerical expression always have a return type
 		this.expression = expression;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void visit(ObjectExpression expression) {
+		super.visit(expression);
 	}
 
 	/**
@@ -646,16 +745,43 @@ final class ParameterTypeVisitor extends AbstractEclipseLinkTraverseParentVisito
 		this.expression = expression;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void visit(WhenClause expression) {
+		super.visit(expression);
+	}
+
 	private void visitCompoundExpression(CompoundExpression expression) {
 
-		Expression leftExpression  = expression.getLeftExpression();
-		Expression rightExpression = expression.getRightExpression();
+		visitDoubleExpressions(
+			expression,
+			expression.getLeftExpression(),
+			expression.getRightExpression(),
+			true
+		);
+	}
+
+	private void visitDoubleEncapsulatedExpression(AbstractDoubleEncapsulatedExpression expression) {
+		visitDoubleExpressions(
+			expression,
+			expression.getFirstExpression(),
+			expression.getSecondExpression(),
+			false
+		);
+	}
+
+	private void visitDoubleExpressions(Expression expression,
+	                                    Expression firstExpression,
+	                                    Expression secondExpression,
+	                                    boolean traverseParent) {
 
 		// Now traverse the other side to find its return type
-		if (leftExpression.isAncestor(inputParameter)) {
+		if (firstExpression.isAncestor(inputParameter)) {
 			if (currentExpression == null) {
 				currentExpression = expression;
-				rightExpression.accept(this);
+				secondExpression.accept(this);
 				currentExpression = null;
 			}
 			else {
@@ -665,10 +791,10 @@ final class ParameterTypeVisitor extends AbstractEclipseLinkTraverseParentVisito
 			}
 		}
 		// Now traverse the other side to find its return type
-		else if (rightExpression.isAncestor(inputParameter)) {
+		else if (secondExpression.isAncestor(inputParameter)) {
 			if (currentExpression == null) {
 				currentExpression = expression;
-				leftExpression.accept(this);
+				firstExpression.accept(this);
 				currentExpression = null;
 			}
 			else {
@@ -677,9 +803,13 @@ final class ParameterTypeVisitor extends AbstractEclipseLinkTraverseParentVisito
 				expression = null;
 			}
 		}
-		// Otherwise continue up
-		else {
+		// Continue to traverse the hierarchy
+		else if (traverseParent) {
 			super.visit(expression);
+		}
+		// Otherwise stop here, the expression has a type
+		else {
+			this.expression = expression;
 		}
 	}
 }

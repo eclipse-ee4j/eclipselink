@@ -25,7 +25,6 @@ import org.eclipse.persistence.jpa.jpql.parser.AbstractExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractFromClause;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractSchemaName;
 import org.eclipse.persistence.jpa.jpql.parser.AdditionExpression;
-import org.eclipse.persistence.jpa.jpql.parser.AggregateExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.AggregateFunction;
 import org.eclipse.persistence.jpa.jpql.parser.AllOrAnyExpression;
 import org.eclipse.persistence.jpa.jpql.parser.AndExpression;
@@ -748,18 +747,6 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	}
 
 	protected void validateSelectStatement(SelectStatement expression) {
-
-		// If the GROUP BY clause is not defined but the HAVING clause is, the result is treated as a
-		// single group, and the select list can only consist of aggregate functions. (page 159)
-		if (!expression.hasGroupByClause() &&
-		     expression.hasHavingClause()) {
-
-			Expression selectExpression = expression.getSelectClause().getSelectExpression();
-
-			if (!isValidWithChildCollectionBypass(selectExpression, AggregateExpressionBNF.ID)) {
-				addProblem(selectExpression, SelectStatement_SelectClauseHasNonAggregateFunctions);
-			}
-		}
 	}
 
 	protected void validateSimpleFromClause(SimpleFromClause expression) {

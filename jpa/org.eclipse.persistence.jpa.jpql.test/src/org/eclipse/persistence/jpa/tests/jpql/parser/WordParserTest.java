@@ -1133,4 +1133,43 @@ public final class WordParserTest {
 		assertEquals("-", word);
 		assertSame(WordType.WORD, wordParser.getWordType());
 	}
+
+	@Test
+	public void testWord_80() {
+
+		String query = "SELECT e FROM Employee e WHERE e.name = all.persistence.eclipse.jpa.jpql.TYPE.FULL_TIME";
+
+		WordParser wordParser = new WordParser(query);
+		wordParser.moveForward("SELECT e FROM Employee e WHERE e.name = ");
+
+		CharSequence word = wordParser.word();
+		assertEquals("all.persistence.eclipse.jpa.jpql.TYPE.FULL_TIME", word);
+		assertSame(WordType.WORD, wordParser.getWordType());
+	}
+
+	@Test
+	public void testWord_81() {
+
+		String query = "SELECT e FROM Employee e WHERE all.persistence.eclipse.jpa.jpql.TYPE.FULL_TIME = e.name";
+
+		WordParser wordParser = new WordParser(query);
+		wordParser.moveForward("SELECT e FROM Employee e WHERE ");
+
+		CharSequence word = wordParser.word();
+		assertEquals("all.persistence.eclipse.jpa.jpql.TYPE.FULL_TIME", word);
+		assertSame(WordType.WORD, wordParser.getWordType());
+	}
+
+	@Test
+	public void testWord_82() {
+
+		String query = "SELECT e FROM Employee e WHERE all.persistence.eclipse.jpa.jpql.TYPE.FULL_TIME= e.name";
+
+		WordParser wordParser = new WordParser(query);
+		wordParser.moveForward("SELECT e FROM Employee e WHERE ");
+
+		CharSequence word = wordParser.word();
+		assertEquals("all.persistence.eclipse.jpa.jpql.TYPE.FULL_TIME", word);
+		assertSame(WordType.WORD, wordParser.getWordType());
+	}
 }

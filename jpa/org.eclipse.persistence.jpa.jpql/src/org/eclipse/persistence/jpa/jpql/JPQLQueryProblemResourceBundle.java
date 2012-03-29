@@ -432,9 +432,6 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
 			{"RESULT_VARIABLE_MISSING_SELECT_EXPRESSION", "The select item is missing from the result variable declaration."},
 			{"RESULT_VARIABLE_MISSING_RESULT_VARIABLE",   "The result variable is missing from the select item declaration."},
 
-			// SelectStatement - Semantic
-			{"SELECT_STATEMENT_SELECT_CLAUSE_HAS_NON_AGGREGATE_FUNCTIONS", "The select list can only consist of aggregate functions because there is no GROUP BY clause and the HAVING clause is used."},
-
 			// SimpleSelectClause - Grammar
 			{"SIMPLE_SELECT_CLAUSE_NOT_SINGLE_EXPRESSION", "Only one expression can be declared in a SELECT clause of a subquery."},
 

@@ -1570,52 +1570,6 @@ public class DefaultSemanticValidatorTest2_0 extends AbstractSemanticValidatorTe
 	}
 
 	@Test
-	public void test_SelectStatement_SelectClauseHasNonAggregateFunctions_1() throws Exception {
-
-		String query = "SELECT e FROM Employee e HAVING COUNT(e) >= 5";
-		int startPosition = "SELECT ".length();
-		int endPosition   = "SELECT e".length();
-
-		List<JPQLQueryProblem> problems = validate(query);
-
-		testHasProblem(
-			problems,
-			JPQLQueryProblemMessages.SelectStatement_SelectClauseHasNonAggregateFunctions,
-			startPosition,
-			endPosition
-		);
-	}
-
-	@Test
-	public void test_SelectStatement_SelectClauseHasNonAggregateFunctions_2() throws Exception {
-
-		String query = "SELECT AVG(e.age), e FROM Employee e HAVING COUNT(e) >= 5";
-		int startPosition = "SELECT ".length();
-		int endPosition   = "SELECT AVG(e.age), e".length();
-
-		List<JPQLQueryProblem> problems = validate(query);
-
-		testHasProblem(
-			problems,
-			JPQLQueryProblemMessages.SelectStatement_SelectClauseHasNonAggregateFunctions,
-			startPosition,
-			endPosition
-		);
-	}
-
-	@Test
-	public void test_SelectStatement_SelectClauseHasNonAggregateFunctions_3() throws Exception {
-
-		String query = "SELECT AVG(e.age), COUNT(e) FROM Employee e HAVING COUNT(e) >= 5";
-		List<JPQLQueryProblem> problems = validate(query);
-
-		testDoesNotHaveProblem(
-			problems,
-			JPQLQueryProblemMessages.SelectStatement_SelectClauseHasNonAggregateFunctions
-		);
-	}
-
-	@Test
 	public void test_SqrtExpression_WrongType_1() throws Exception {
 
 		String query = "SELECT a FROM Address a WHERE SQRT(a.zip) = 2";

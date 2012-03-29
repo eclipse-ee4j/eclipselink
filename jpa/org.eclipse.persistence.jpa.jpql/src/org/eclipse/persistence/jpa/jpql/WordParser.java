@@ -993,7 +993,16 @@ public final class WordParser {
 				continue;
 			}
 
-			if (isWordSeparator(character)) {
+			if (Character.isWhitespace(character) ||
+			    isDelimiter(character) ||
+			    character == '>' ||
+		       character == '<' ||
+		       character == '/' ||
+		       character == '*' ||
+		       character == '-' ||
+		       character == '+' ||
+		       character == '=') {
+
 				break;
 			}
 
