@@ -28,6 +28,7 @@ public class DDLGenerationServerTestSuite extends TestSuite {
         suite.addTest(DDLGenerationTestSuite.suite());
         suite.addTest(DDLTablePerClassTestSuite.suite());
         suite.addTest(DDLTableSuffixTestSuite.suite());
+        suite.addTest(DDLGenerationExtendTablesJUnitTestSuite.suite());
         return suite;
     }
 }

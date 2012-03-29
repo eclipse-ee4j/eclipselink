@@ -42,6 +42,7 @@ public class DDLGenerationExtendTablesJUnitTestSuite extends
 
     public DDLGenerationExtendTablesJUnitTestSuite(String name) {
         super(name);
+        setPuName(DDL_PU);
     }
     
     /**
@@ -86,6 +87,10 @@ public class DDLGenerationExtendTablesJUnitTestSuite extends
     }
     
     public static Test suite() {
+        if (System.getProperty("server.platform") != null) {
+            // "MulitPU-1" is the persistence unit name used on servers
+            DDL_PU = "MulitPU-1";
+        }
         TestSuite suite = new TestSuite();
         suite.setName("DDLCreateAndAlterTablesTestSuite");
         suite.addTest(new DDLGenerationExtendTablesJUnitTestSuite("testSetup"));
@@ -121,7 +126,7 @@ public class DDLGenerationExtendTablesJUnitTestSuite extends
         tests.add("testSimpleSelectFoo");
         Collections.sort(tests);
         for (String test : tests) {
-            suite.addTest(new DDLGenerationTestSuite(test));
+            suite.addTest(new DDLGenerationExtendTablesJUnitTestSuite(test));
         }
         return suite;
     }

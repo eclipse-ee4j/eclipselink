@@ -95,7 +95,7 @@ import javax.persistence.TypedQuery;
  */
 public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
     // the persistence unit name which is used in this test suite
-    protected static final String DDL_PU = "ddlGeneration";
+    protected static String DDL_PU = "ddlGeneration";
     private static final String DDL_TPC_PU = "ddlTablePerClass";
 
     private static final String DDL_TABLE_CREATION_SUFFIX_PU = "ddlTableSuffix";
