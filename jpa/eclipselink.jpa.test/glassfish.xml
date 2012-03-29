@@ -97,11 +97,11 @@
     
     <!-- Copies libraries to domain1 -->
     <target name="glassfish-install" depends="install-latest-glassfish">
-        <copy file="${junit.lib}" todir="${glassfish.home}/domains/domain1/lib"/>
-        <copy file="${jdbc.driver.jar}" todir="${glassfish.home}/domains/domain1/lib/ext"/>
-        <copy file="${oracle.extensions.depend.dir}/${oracle.sdoapi.jar}" todir="${glassfish.home}/domains/domain1/lib"/>
-        <copy file="${oracle.extensions.depend.dir}/${oracle.xdb.jar}" todir="${glassfish.home}/domains/domain1/lib"/>
-        <copy file="${jpatest.2.sdo.plugins.dir}/${commonj.sdo.jar}" tofile="${glassfish.home}/modules/commonj.sdo.jar" overwrite="true"/>
+        <copy file="${junit.lib}" todir="${glassfish.home}/domains/domain1/lib" failonerror="false"/>
+        <copy file="${jdbc.driver.jar}" todir="${glassfish.home}/domains/domain1/lib/ext" failonerror="false"/>
+        <copy file="${oracle.extensions.depend.dir}/${oracle.sdoapi.jar}" todir="${glassfish.home}/domains/domain1/lib" failonerror="false"/>
+        <copy file="${oracle.extensions.depend.dir}/${oracle.xdb.jar}" todir="${glassfish.home}/domains/domain1/lib" failonerror="false"/>
+        <copy file="${jpatest.2.sdo.plugins.dir}/${commonj.sdo.jar}" tofile="${glassfish.home}/modules/commonj.sdo.jar" overwrite="true" failonerror="false"/>
         <antcall target="copy-eclipselink-to-glassfish2" inheritRefs="true"/>
         <antcall target="copy-eclipselink-and-persistence-latest-jars-to-glassfish3" inheritRefs="true"/>
     </target>
