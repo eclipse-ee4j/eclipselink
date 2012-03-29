@@ -8,6 +8,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/eclipselink.core.test"/>
 	<classpathentry kind="lib" path="/eclipselink.jpa.test/eclipselink-tests.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/javax.persistence 2.1.0"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/javax.persistence 2.0.0"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

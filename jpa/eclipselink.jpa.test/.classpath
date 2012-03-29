@@ -15,6 +15,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/eclipselink.jpa.modelgen.test"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.jpa.osgi"/>
 	<classpathentry kind="var" path="JAXRS_LIB"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/javax.persistence 2.1.0"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/javax.persistence 2.0.0"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
