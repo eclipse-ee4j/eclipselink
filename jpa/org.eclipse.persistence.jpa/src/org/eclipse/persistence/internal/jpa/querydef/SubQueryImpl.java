@@ -574,6 +574,7 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
             this.subQuery.setReferenceClass(root.getJavaType());
             this.subQuery.setExpressionBuilder(root.getCurrentNode().getBuilder());
             this.queryType = root.getJavaType();
+            this.currentNode.setBaseExpression(((AbstractQueryImpl)this.parent).getBaseExpression());
         }
         if (!this.roots.contains(root)) {
             this.roots.add(root);
@@ -599,6 +600,10 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
         for (Join join: this.correlatedJoins){
             ((JoinImpl)join).findRootAndParameters(query);
         }
+    }
+
+    protected org.eclipse.persistence.expressions.Expression getBaseExpression() {
+        return this.currentNode.getSubQuery().getExpressionBuilder();
     }
 
 }
