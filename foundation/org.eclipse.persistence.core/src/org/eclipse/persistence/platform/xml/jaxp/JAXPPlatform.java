@@ -55,14 +55,6 @@ public class JAXPPlatform implements XMLPlatform {
 	
 	private XPathFactory xPathFactory;
 	private SchemaFactory schemaFactory;
-	
-    private static final DocumentBuilderFactory SHARED_DOCUMENT_BUILDER_FACTORY = newDocumentBuilderFactory();
-    
-    private static DocumentBuilderFactory newDocumentBuilderFactory() {
-        DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-        documentBuilderFactory.setNamespaceAware(true);
-        return documentBuilderFactory;
-    }
     
     public JAXPPlatform() {
         super();
@@ -151,7 +143,7 @@ public class JAXPPlatform implements XMLPlatform {
 
     public Document createDocument() throws XMLPlatformException {
         try {
-            DocumentBuilder documentBuilder = SHARED_DOCUMENT_BUILDER_FACTORY.newDocumentBuilder();
+            DocumentBuilder documentBuilder = DocumentBuilderFactoryHelper.getDocumentBuilderFactory().newDocumentBuilder();
             return documentBuilder.newDocument();
         } catch (Exception e) {
             throw XMLPlatformException.xmlPlatformCouldNotCreateDocument(e);
@@ -164,7 +156,7 @@ public class JAXPPlatform implements XMLPlatform {
                 return createDocumentWithSystemIdentifier(name, systemIdentifier);
             }
 
-            DocumentBuilder documentBuilder = SHARED_DOCUMENT_BUILDER_FACTORY.newDocumentBuilder();
+            DocumentBuilder documentBuilder = DocumentBuilderFactoryHelper.getDocumentBuilderFactory().newDocumentBuilder();
             DOMImplementation domImpl = documentBuilder.getDOMImplementation();
             DocumentType docType = domImpl.createDocumentType(name, publicIdentifier, systemIdentifier);
             Document document = domImpl.createDocument(null, name, docType);
@@ -185,7 +177,7 @@ public class JAXPPlatform implements XMLPlatform {
                 return document;
             }
 
-            DocumentBuilder documentBuilder = SHARED_DOCUMENT_BUILDER_FACTORY.newDocumentBuilder();
+            DocumentBuilder documentBuilder = DocumentBuilderFactoryHelper.getDocumentBuilderFactory().newDocumentBuilder();
             DOMImplementation domImpl = documentBuilder.getDOMImplementation();
             DocumentType docType = domImpl.createDocumentType(name, null, systemIdentifier);
             document = domImpl.createDocument(null, name, docType);
@@ -310,4 +302,14 @@ public class JAXPPlatform implements XMLPlatform {
         }
     }
     
+    private static class DocumentBuilderFactoryHelper {
+        private static DocumentBuilderFactory documentBuilderFactory;
+        static {
+            documentBuilderFactory = DocumentBuilderFactory.newInstance();
+            documentBuilderFactory.setNamespaceAware(true);
+        }
+        static DocumentBuilderFactory getDocumentBuilderFactory() {
+            return documentBuilderFactory;
+        }
+    }
 }
