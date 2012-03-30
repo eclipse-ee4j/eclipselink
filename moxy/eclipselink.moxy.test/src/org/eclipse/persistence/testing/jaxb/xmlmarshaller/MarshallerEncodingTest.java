@@ -70,7 +70,7 @@ public class MarshallerEncodingTest extends OXTestCase {
         Employee employee = new Employee();
         employee.setID(CONTROL_EMPLOYEE_ID);
 
-        employee.setName("Bob");
+        employee.setName("Bob\u0A00Jones");
 
         Phone p = new Phone();
         p.setNumber("123456789");

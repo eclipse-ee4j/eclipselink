@@ -27,7 +27,8 @@ public class MarshallerEncodingTestCases extends TestCase {
     private final static String XML_UTF16LE_HEADER = "<?xml version=\"1.0\" encoding=\"UTF-16LE\"?>";
     private final static String XML_ISOLATIN_HEADER = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>";
     private final static String XML_INVALID_HEADER = "<?xml version=\"1.0\" encoding = \"INVALID\"?>";
-    private final static String XML_BODY = "<employee><id>123</id><name>Bob</name><phone>123456789</phone></employee>";
+    private final static String XML_BODY = "<employee><id>123</id><name>Bob\u0A00Jones</name><phone>123456789</phone></employee>";
+    private final static String XML_BODY_ONE_BYTE = "<employee><id>123</id><name>Bob&#2560;Jones</name><phone>123456789</phone></employee>";
 
     public MarshallerEncodingTestCases(String name) {
         super(name);
@@ -55,7 +56,12 @@ public class MarshallerEncodingTestCases extends TestCase {
     private static TestSuite buildEncodingSuite(String encoding, String controlHeader) {
         TestSuite suite = new TestSuite(encoding);
 
-        String controlString = controlHeader + Helper.cr() + XML_BODY;
+        String controlString;
+        if("US-ASCII".equals(encoding) || "ISO-8859-1".equals(encoding)) {
+            controlString = controlHeader + Helper.cr() + XML_BODY_ONE_BYTE;
+        } else {
+            controlString = controlHeader + Helper.cr() + XML_BODY;
+        }
 
         // suite.addTest(new MarshallerEncodingTest("testXMLHeader", encoding, controlString));
         suite.addTest(new MarshallerEncodingTest("testXMLEncoding", encoding, controlString));
