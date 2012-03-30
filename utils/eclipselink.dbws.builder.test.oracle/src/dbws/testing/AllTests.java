@@ -45,6 +45,7 @@ import dbws.testing.simpleplsqlsp.SimplePLSQLSPTestSuite;
 import dbws.testing.simplesf.SimpleSFTestSuite;
 import dbws.testing.simplesp.SimpleSPTestSuite;
 import dbws.testing.simpletablewithnestedsql.SimpleTableWithNestedSQLTestSuite;
+import dbws.testing.strongrefcursor.StrongRefCursorTestSuite;
 import dbws.testing.tabletype.TableTypeTestSuite;
 import dbws.testing.toplevelsimpleplsqlsp.TopLevelSimplePLSQLSPTestSuite;
 import dbws.testing.types.TypesTestSuite;
@@ -75,6 +76,7 @@ import static dbws.testing.DBWSTestSuite.buildConnection;
     SimpleSFTestSuite.class,
     SimpleSPTestSuite.class,
     SimpleTableWithNestedSQLTestSuite.class,
+    //StrongRefCursorTestSuite.class,
     TableTypeTestSuite.class,
     TopLevelSimplePLSQLSPTestSuite.class,
     TypesTestSuite.class,
