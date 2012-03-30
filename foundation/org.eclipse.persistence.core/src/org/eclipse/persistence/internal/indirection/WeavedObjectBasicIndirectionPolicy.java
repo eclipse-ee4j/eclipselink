@@ -72,7 +72,10 @@ public class WeavedObjectBasicIndirectionPolicy extends BasicIndirectionPolicy {
     public Object getRealAttributeValueFromObject(Object object, Object attribute) {
         Object value = super.getRealAttributeValueFromObject(object, attribute);
         // Provide the indirection policy with a callback that allows it to do any updates it needs as the result of getting the value.
-        updateValueInObject(object, value, attribute);
+        if (value != attribute) {
+            //if the attribute was already unwrapped then do not call this method
+            updateValueInObject(object, value, attribute);
+        }
         return value;
     }
     

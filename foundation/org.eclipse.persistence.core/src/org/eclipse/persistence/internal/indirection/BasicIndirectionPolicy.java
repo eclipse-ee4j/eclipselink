@@ -361,6 +361,17 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
 
     /**
      * INTERNAL:
+     * set the source object into QueryBasedValueHolder.
+     * Used only by transparent indirection.
+     */
+    public void setSourceObject(Object sourceObject, Object attributeValue) {        
+        if (attributeValue instanceof QueryBasedValueHolder) {
+            ((QueryBasedValueHolder)attributeValue).setSourceObject(sourceObject);
+        }
+    }
+    
+    /**
+     * INTERNAL:
      *    Return whether the type is appropriate for the indirection policy.
      * In this case, the attribute type MUST be ValueHolderInterface.
      */

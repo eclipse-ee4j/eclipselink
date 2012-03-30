@@ -18,6 +18,7 @@ import java.util.Map;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 
@@ -181,7 +182,7 @@ public interface IdentityMap extends Cloneable{
      * Notify the cache that a lazy relationship has been triggered in the object
      * and the cache may need to be updated
      */
-    public void lazyRelationshipLoaded(Object object, ForeignReferenceMapping mapping);
+    public void lazyRelationshipLoaded(Object rootEntity, ValueHolderInterface valueHolder,  ForeignReferenceMapping mapping);
 
     /**
      * Store the object in the cache at its primary key.

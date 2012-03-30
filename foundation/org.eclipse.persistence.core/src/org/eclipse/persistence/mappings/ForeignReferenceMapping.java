@@ -1366,7 +1366,9 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         }else{
             setAttributeValueInObject(targetObject, attributeValue);
         }
-        this.indirectionPolicy.setSourceObject(targetObject, attributeValue);
+        if (parentCacheKey != null){
+            this.indirectionPolicy.setSourceObject(parentCacheKey.getObject(), attributeValue);
+        }
         return attributeValue;
     }    
 

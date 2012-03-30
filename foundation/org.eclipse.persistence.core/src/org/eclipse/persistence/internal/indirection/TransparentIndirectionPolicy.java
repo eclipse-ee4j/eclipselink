@@ -443,7 +443,6 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
     /**
      * INTERNAL:
      * set the source object into QueryBasedValueHolder.
-     * Used only by transparent indirection.
      */
     public void setSourceObject(Object sourceObject, Object attributeValue) {        
         if( attributeValue instanceof IndirectContainer) {

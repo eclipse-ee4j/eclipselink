@@ -269,6 +269,13 @@ public class ClassDescriptor implements Cloneable, Serializable {
     protected List<VirtualAttributeMethodInfo> virtualAttributeMethods = null;
     
     /**
+     * A list of AttributeAccessors in order of access from root to leaf to arrive at current AggregateDescriptor.
+     * Only application for Aggregate Descriptors.
+     */
+    
+    protected List<AttributeAccessor> accessorTree;
+    
+    /**
      * PUBLIC:
      * Return a new descriptor.
      */
@@ -1221,6 +1228,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
         } catch (Exception exception) {
             ;
         }
+        
 
         Vector mappingsVector = NonSynchronizedVector.newInstance();
 
@@ -1847,6 +1855,13 @@ public class ClassDescriptor implements Cloneable, Serializable {
      */
     public String getAmendmentMethodName() {
         return amendmentMethodName;
+    }
+
+    /**
+     * @return the accessorTree
+     */
+    public List<AttributeAccessor> getAccessorTree() {
+        return accessorTree;
     }
 
     /**
@@ -4052,6 +4067,13 @@ public class ClassDescriptor implements Cloneable, Serializable {
      */
     public void setAmendmentMethodName(String amendmentMethodName) {
         this.amendmentMethodName = amendmentMethodName;
+    }
+
+    /**
+     * @param accessorTree the accessorTree to set
+     */
+    public void setAccessorTree(List<AttributeAccessor> accessorTree) {
+        this.accessorTree = accessorTree;
     }
 
     /**

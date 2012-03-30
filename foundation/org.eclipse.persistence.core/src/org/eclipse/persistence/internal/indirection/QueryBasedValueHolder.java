@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.indirection;
 
+import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -119,10 +120,14 @@ public class QueryBasedValueHolder extends DatabaseValueHolder {
      * For query based VH, we notify the cache that the valueholder has been triggered
      */
     public void postInstantiate(){
-        if (query.getSourceMapping() != null && query.getSourceMapping().isForeignReferenceMapping()){
-            ClassDescriptor descriptor = session.getDescriptor(sourceObject);
-            if (descriptor != null && !descriptor.isAggregateDescriptor()){
-                session.getIdentityMapAccessorInstance().getIdentityMap(descriptor).lazyRelationshipLoaded(sourceObject, (ForeignReferenceMapping)query.getSourceMapping());
+        DatabaseMapping mapping = query.getSourceMapping();
+        if (mapping != null && mapping.isForeignReferenceMapping()){
+            ClassDescriptor descriptor = mapping.getDescriptor();
+            if (descriptor == null || descriptor.isAggregateDescriptor()){
+                descriptor = session.getDescriptor(sourceObject);
+            }
+            if (descriptor != null){
+                session.getIdentityMapAccessorInstance().getIdentityMap(descriptor).lazyRelationshipLoaded(sourceObject, this, (ForeignReferenceMapping)query.getSourceMapping());
             }
         }
     } 

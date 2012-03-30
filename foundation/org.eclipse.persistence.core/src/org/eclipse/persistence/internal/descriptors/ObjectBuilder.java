@@ -793,7 +793,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
                         cacheKey.setObject(domainObject);
                     }
                     copyQueryInfoToCacheKey(cacheKey, query, databaseRow, session, concreteDescriptor);
-                } else if (returnCacheKey && (cacheKey == null || (domainWasMissing && query.shouldRetrieveBypassCache()))) {
+                } else if (cacheKey == null || (domainWasMissing && query.shouldRetrieveBypassCache())) {
                     cacheKey = new CacheKey(primaryKey);
                     cacheKey.setObject(domainObject);
                 }
@@ -914,7 +914,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
                         cacheKey.setObject(protectedObject);
                     }
                     copyQueryInfoToCacheKey(cacheKey, query, databaseRow, session, concreteDescriptor);
-                }else if (returnCacheKey && (cacheKey == null || (domainWasMissing && query.shouldRetrieveBypassCache()))){
+                }else if (cacheKey == null || (domainWasMissing && query.shouldRetrieveBypassCache())){
                     cacheKey = new CacheKey(primaryKey);
                     cacheKey.setObject(protectedObject);
                 }

@@ -2195,6 +2195,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     public void setRedirector(QueryRedirector redirector) {
         this.redirector = redirector;
         this.doNotRedirect = false;
+        this.setIsPrepared(false);
     }
 
     /**

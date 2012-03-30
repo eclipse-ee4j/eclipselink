@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.identitymaps.IdentityMap;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -68,7 +69,7 @@ public class CacheAuditor extends CacheInterceptor {
     }
     
     @Override
-    public void lazyRelationshipLoaded(Object object, ForeignReferenceMapping mapping) {
+    public void lazyRelationshipLoaded(Object rootEntity, ValueHolderInterface valueHolder, ForeignReferenceMapping mapping) {
         // TODO Auto-generated method stub
         
     }

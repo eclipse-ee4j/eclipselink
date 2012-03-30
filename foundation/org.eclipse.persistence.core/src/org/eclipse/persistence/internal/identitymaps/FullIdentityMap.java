@@ -17,6 +17,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 
 /**
@@ -177,7 +178,7 @@ public class FullIdentityMap extends AbstractIdentityMap {
      * Notify the cache that a lazy relationship has been triggered in the object
      * and the cache may need to be updated
      */
-    public void lazyRelationshipLoaded(Object object, ForeignReferenceMapping mapping){
+    public void lazyRelationshipLoaded(Object object, ValueHolderInterface valueHolder, ForeignReferenceMapping mapping){
         //NO-OP
     }
 

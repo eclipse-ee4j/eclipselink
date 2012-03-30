@@ -1152,6 +1152,15 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         super.initialize(session);
 
         ClassDescriptor clonedDescriptor = (ClassDescriptor)getReferenceDescriptor().clone();
+        
+        List<AttributeAccessor> accessorTree = getDescriptor().getAccessorTree();
+        if (accessorTree == null){
+            accessorTree = new ArrayList();
+        }else{
+            accessorTree = new ArrayList<AttributeAccessor>(accessorTree);
+        }
+        accessorTree.add(getAttributeAccessor());
+        clonedDescriptor.setAccessorTree(accessorTree);
         if (isMapKeyMapping() && clonedDescriptor.isAggregateDescriptor()){
             clonedDescriptor.descriptorIsAggregateCollection();
         }
