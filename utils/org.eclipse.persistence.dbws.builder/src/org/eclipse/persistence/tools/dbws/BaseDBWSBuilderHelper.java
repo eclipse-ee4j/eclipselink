@@ -117,6 +117,11 @@ import static org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentat
 import static org.eclipse.persistence.tools.dbws.NamingConventionTransformer.ElementStyle.ATTRIBUTE;
 import static org.eclipse.persistence.tools.dbws.NamingConventionTransformer.ElementStyle.ELEMENT;
 import static org.eclipse.persistence.tools.dbws.NamingConventionTransformer.ElementStyle.NONE;
+import static org.eclipse.persistence.tools.dbws.Util.BOOLEAN_STR;
+import static org.eclipse.persistence.tools.dbws.Util.DATE_STR;
+import static org.eclipse.persistence.tools.dbws.Util.DECIMAL_STR;
+import static org.eclipse.persistence.tools.dbws.Util.INTEGER_STR;
+import static org.eclipse.persistence.tools.dbws.Util.NUMBER_STR;
 import static org.eclipse.persistence.tools.dbws.Util.CREATE_OPERATION_NAME;
 import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_CLASS_FILE;
 import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_SOURCE_FILE;
@@ -180,12 +185,7 @@ public abstract class BaseDBWSBuilderHelper {
     public static final String ITEM_MAPPING_NAME = "item";
     public static final String ITEMS_MAPPING_ATTRIBUTE_NAME = "items";
     public static final String ITEMS_MAPPING_FIELD_NAME = "ITEMS";
-    public static final String BOOLEAN_STR = "BOOLEAN";
-    public static final String DATE_STR = "DATE";
-    public static final String DECIMAL_STR = "DECIMAL";
-    public static final String INTEGER_STR = "INTEGER";
     public static final String MTOM_STR = "MTOM";
-    public static final String NUMBER_STR = "NUMBER";
     public static final String SWAREF_STR = "SWAREF";
 
     protected List<TableType> dbTables = new ArrayList<TableType>();

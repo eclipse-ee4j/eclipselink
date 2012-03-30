@@ -127,8 +127,12 @@ public class Util {
     public static final String PROVIDER_LISTENER_CLASS_FILE = PROVIDER_LISTENER + DOT_CLASS;
     public static final String PROVIDER_LISTENER_SOURCE_FILE = PROVIDER_LISTENER + DOT_JAVA;
 
+    public static final String COMMA = ",";
+    public static final String SEMICOLON = ";";
+    public static final String SINGLE_SPACE = " ";
     public static final String PERCENT = "%";
     public static final String UNDERSCORE = "_";
+    
     public static final String BUILDING_QUERYOP_FOR = "Building QueryOperation for ";
     public static final String APP_OCTET_STREAM = "application/octet-stream";
     public static final String TYPE_STR = "Type";
@@ -156,6 +160,7 @@ public class Util {
     public static final String LONGVARBINARY_STR = "LONGVARBINARY";
     public static final String NCHAR_STR = "NCHAR";
     public static final String NCLOB_STR = "NCLOB";
+    public static final String NUMBER_STR = "NUMBER";
     public static final String NUMERIC_STR = "NUMERIC";
     public static final String OTHER_STR = "OTHER";
     public static final String RAW_STR = "RAW";

@@ -21,6 +21,7 @@ import java.util.Stack;
 
 //EclipseLink imports
 import org.eclipse.persistence.tools.oracleddl.metadata.CharType;
+import org.eclipse.persistence.tools.oracleddl.metadata.CompositeDatabaseTypeWithEnclosedType;
 import org.eclipse.persistence.tools.oracleddl.metadata.DatabaseType;
 import org.eclipse.persistence.tools.oracleddl.metadata.FieldType;
 import org.eclipse.persistence.tools.oracleddl.metadata.NumericType;
@@ -29,29 +30,46 @@ import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLPackageType;
 import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLRecordType;
 import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLType;
 import org.eclipse.persistence.tools.oracleddl.metadata.PrecisionType;
+import org.eclipse.persistence.tools.oracleddl.metadata.ROWTYPEType;
 import org.eclipse.persistence.tools.oracleddl.metadata.RawType;
 import org.eclipse.persistence.tools.oracleddl.metadata.ScalarDatabaseTypeEnum;
 import org.eclipse.persistence.tools.oracleddl.metadata.SizedType;
+import org.eclipse.persistence.tools.oracleddl.metadata.TableType;
 import org.eclipse.persistence.tools.oracleddl.metadata.VarChar2Type;
 import org.eclipse.persistence.tools.oracleddl.metadata.VarCharType;
 import org.eclipse.persistence.tools.oracleddl.metadata.visit.BaseDatabaseTypeVisitor;
 import static org.eclipse.persistence.internal.helper.Helper.NL;
+import static org.eclipse.persistence.tools.dbws.Util.COMMA;
 import static org.eclipse.persistence.tools.dbws.Util.FLOAT_STR;
 import static org.eclipse.persistence.tools.dbws.Util.INTEGER_STR;
 import static org.eclipse.persistence.tools.dbws.Util.NUMERIC_STR;
 import static org.eclipse.persistence.tools.dbws.Util.OTHER_STR;
+import static org.eclipse.persistence.tools.dbws.Util.SEMICOLON;
+import static org.eclipse.persistence.tools.dbws.Util.SINGLE_SPACE;
+import static org.eclipse.persistence.tools.dbws.Util.UNDERSCORE;
 import static org.eclipse.persistence.tools.dbws.Util.getJDBCTypeFromTypeName;
 import static org.eclipse.persistence.tools.dbws.Util.getJDBCTypeNameFromType;
 
 public class ShadowDDLGenerator {
 
-    protected Map<PLSQLType, DDLWrapper> createDDLs = new HashMap<PLSQLType, DDLWrapper>();
-    protected Map<PLSQLType, DDLWrapper> dropDDLs = new HashMap<PLSQLType, DDLWrapper>();
+    static final String ROWTYPE_PREFIX = "_ROWTYPE_SQL";
+    
+    protected PLSQLPackageType plsqlPackageType;
+    protected Map<String, Integer> rowTYPETypeCounts;
+    protected Map<CompositeDatabaseTypeWithEnclosedType, DDLWrapper> createDDLs = 
+        new HashMap<CompositeDatabaseTypeWithEnclosedType, DDLWrapper>();
+    protected Map<CompositeDatabaseTypeWithEnclosedType, DDLWrapper> dropDDLs =
+        new HashMap<CompositeDatabaseTypeWithEnclosedType, DDLWrapper>();
 
     public ShadowDDLGenerator(PLSQLPackageType plsqlPackageType) {
+        this.plsqlPackageType = plsqlPackageType;
+        //count all the %ROWTYPE's and assign unique number
+        CountROWTYPETypesVisitor countVisitor = new CountROWTYPETypesVisitor();
+        plsqlPackageType.accept(countVisitor);
+        rowTYPETypeCounts = countVisitor.getRowTYPETypeCounts();
         // visit all the PLSQLType's
-        DDLWrapperGeneratorVisitor visitor = new DDLWrapperGeneratorVisitor();
-        plsqlPackageType.accept(visitor);
+        DDLWrapperGeneratorVisitor generatorVisitor = new DDLWrapperGeneratorVisitor();
+        plsqlPackageType.accept(generatorVisitor);
     }
 
     public String getCreateDDLFor(PLSQLType plsqlType) {
@@ -59,7 +77,7 @@ public class ShadowDDLGenerator {
     }
     public List<String> getAllCreateDDLs() {
         List<String> allDDLs = new ArrayList<String>();
-        for (Map.Entry<PLSQLType, DDLWrapper> me : createDDLs.entrySet()) {
+        for (Map.Entry<CompositeDatabaseTypeWithEnclosedType, DDLWrapper> me : createDDLs.entrySet()) {
             allDDLs.add(me.getValue().ddl);
         }
         return allDDLs;
@@ -70,17 +88,35 @@ public class ShadowDDLGenerator {
     }
     public List<String> getAllDropDDLs() {
         List<String> allDDLs = new ArrayList<String>();
-        for (Map.Entry<PLSQLType, DDLWrapper> me : dropDDLs.entrySet()) {
+        for (Map.Entry<CompositeDatabaseTypeWithEnclosedType, DDLWrapper> me : dropDDLs.entrySet()) {
             allDDLs.add(me.getValue().ddl);
         }
         return allDDLs;
     }
+    
+    protected String getShadowROWTYPETypeName(ROWTYPEType rowTYPEType) {
+        StringBuilder sb = new StringBuilder(rowTYPEType.getPackageType().getPackageName().toUpperCase());
+        sb.append(ROWTYPE_PREFIX);
+        sb.append(rowTYPETypeCounts.get(rowTYPEType.getTypeName()));
+        return sb.toString();
+    }
+    
+    class CountROWTYPETypesVisitor extends BaseDatabaseTypeVisitor {
+        Map<String, Integer> rowTYPETypeCounts = new HashMap<String, Integer>();
+        int initialRowTYPETypeCount = 0;
+        @Override
+        public void beginVisit(ROWTYPEType rowTYPEType) {
+            Integer rowTYPETypeCount = rowTYPETypeCounts.get(rowTYPEType.getTypeName());
+            if (rowTYPETypeCount == null) {
+                rowTYPETypeCounts.put(rowTYPEType.getTypeName(), Integer.valueOf(initialRowTYPETypeCount++));
+            }
+        }
+        public Map<String, Integer> getRowTYPETypeCounts() {
+            return rowTYPETypeCounts;
+        }
+    }
 
     class DDLWrapperGeneratorVisitor extends BaseDatabaseTypeVisitor {
-        static final String COMMA = ",";
-        static final String SEMICOLON = ";";
-        static final String UNDERSCORE = "_";
-        static final String SINGLE_SPACE = " ";
         static final String COR_TYPE = "CREATE OR REPLACE TYPE ";
         static final String DROP_TYPE = "DROP TYPE ";
         static final String FORCE = " FORCE";
@@ -97,6 +133,7 @@ public class ShadowDDLGenerator {
         static final String DOUBLE_DEFAULTSIZE = "126";
         static final String LONG_DEFAULTSIZE = "32760";
         protected Stack<PLSQLRecordType> recordTypes = new Stack<PLSQLRecordType>();
+        protected Stack<ROWTYPEType> rowTYPETypes = new Stack<ROWTYPEType>();
         @Override
         public void beginVisit(PLSQLRecordType recordType) {
             if (recordTypes.isEmpty()) {
@@ -210,6 +247,58 @@ public class ShadowDDLGenerator {
                 collectionType.getTypeName().toUpperCase() + FORCE + SEMICOLON;
             ddlWrapper.finished = true;
             dropDDLs.put(collectionType, ddlWrapper);
+        }
+        @Override
+        public void beginVisit(ROWTYPEType rowTYPEType) {
+            if (rowTYPETypes.isEmpty()) {
+                rowTYPETypes.push(rowTYPEType);
+            }
+            else if (!rowTYPETypes.peek().equals(rowTYPEType)) {
+                rowTYPETypes.push(rowTYPEType);
+            }
+            DDLWrapper ddlWrapper = createDDLs.get(rowTYPEType);
+            if (ddlWrapper == null) {
+                ddlWrapper = new DDLWrapper();
+                ddlWrapper.ddl = COR_TYPE + getShadowROWTYPETypeName(rowTYPEType) + AS_OBJECT;
+                //manually 'crawl' thru %ROWTYPE to TableType to columns and build up type fields
+                DatabaseType enclosedType = rowTYPEType.getEnclosedType();
+                if (enclosedType.isTableType()) {
+                    TableType tableType =  (TableType)enclosedType;
+                    ddlWrapper.ddl += NL;
+                    for (int i = 0, len = tableType.getColumns().size(); i < len; i++) {
+                        FieldType f = tableType.getColumns().get(i);
+                        ddlWrapper.ddl += SPACES + f.getFieldName() + SINGLE_SPACE;
+                        DatabaseType fieldDataType = f.getEnclosedType();
+                        String fieldShadowName = getShadowTypeName(fieldDataType);
+                        ddlWrapper.ddl += fieldShadowName;
+                        if (i < len -1) {
+                            ddlWrapper.ddl += COMMA + NL;
+                        }
+                    }
+                    createDDLs.put(rowTYPEType, ddlWrapper);
+                }
+                /*
+                else {
+                   //Huh? a %ROWTYPE that points to something other than a TableType?
+                   //ignore for now
+                }
+                 */
+            }
+        }
+        public void endVisit(ROWTYPEType rowTYPEType) {
+            rowTYPETypes.pop();
+            DDLWrapper ddlWrapper = createDDLs.get(rowTYPEType);
+            if (ddlWrapper != null && !ddlWrapper.finished) {
+                ddlWrapper.ddl += END_OBJECT;
+                ddlWrapper.finished = true;
+            }
+            ddlWrapper = dropDDLs.get(rowTYPEType);
+            if (ddlWrapper == null) {
+                ddlWrapper = new DDLWrapper();
+                ddlWrapper.ddl = DROP_TYPE + getShadowROWTYPETypeName(rowTYPEType) + FORCE + SEMICOLON;
+                ddlWrapper.finished = true;
+                dropDDLs.put(rowTYPEType, ddlWrapper);
+            }
         }
         protected String getShadowTypeName(DatabaseType dataType ) {
             String shadowTypeName = null;

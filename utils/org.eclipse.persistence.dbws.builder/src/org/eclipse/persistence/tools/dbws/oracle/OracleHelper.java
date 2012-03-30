@@ -612,6 +612,10 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                     schemaPats, packagePats);
                 //check for overloading
                 for (PLSQLPackageType pakage : packages) {
+                    //check DDL generation
+                    ShadowDDLGenerator ddlGenerator = new ShadowDDLGenerator(pakage);
+                    dbwsBuilder.getTypeDDL().addAll(ddlGenerator.getAllCreateDDLs());
+                    dbwsBuilder.getTypeDropDDL().addAll(ddlGenerator.getAllDropDDLs());
                     Map<String, List<ProcedureType>> overloadMap = new HashMap<String, List<ProcedureType>>();
                     List<ProcedureType> procedures = pakage.getProcedures();
                     for (ProcedureType procedure : procedures) {
