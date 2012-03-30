@@ -14,6 +14,8 @@ package org.eclipse.persistence.oxm.record;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetEncoder;
 import java.util.Stack;
 
 import javax.xml.namespace.QName;
@@ -67,7 +69,7 @@ public class JSONWriterRecord extends MarshalRecord {
     protected static final String NULL="null";
     protected String attributePrefix;
     protected boolean charactersAllowed = false;
-    	
+    protected CharsetEncoder encoder;
 
     public JSONWriterRecord(){
         super();
@@ -84,6 +86,7 @@ public class JSONWriterRecord extends MarshalRecord {
     public void setMarshaller(XMLMarshaller marshaller) {
         super.setMarshaller(marshaller);
         attributePrefix = marshaller.getAttributePrefix();
+        encoder = Charset.forName(marshaller.getEncoding()).newEncoder();
     }
 
     /**
@@ -562,7 +565,7 @@ public class JSONWriterRecord extends MarshalRecord {
                           break;
                       }
                       default: {
-                          if(Character.isISOControl(character)){
+                          if(Character.isISOControl(character) || !encoder.canEncode(character)){
                               writer.write("\\u");
                               String hex = Integer.toHexString(character).toUpperCase();
                               for(int i=hex.length(); i<4; i++){

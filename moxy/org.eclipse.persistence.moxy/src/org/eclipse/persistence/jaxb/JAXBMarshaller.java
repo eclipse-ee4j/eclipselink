@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.jaxb;
 
+import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.Writer;
 import java.io.File;
@@ -447,11 +448,11 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
 
     public void marshal(Object object, File file) throws JAXBException {
         try {
-            java.io.FileWriter writer = new java.io.FileWriter(file);
+            FileOutputStream outputStream = new FileOutputStream(file);
             try {
-                marshal(object, writer);
+                marshal(object, outputStream);
             } finally {
-                writer.close();
+                outputStream.close();
             }
         } catch (Exception ex) {
             throw new MarshalException(ex);

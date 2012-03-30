@@ -16,6 +16,7 @@ import org.eclipse.persistence.testing.jaxb.json.attribute.JSONAttributePrefixEm
 import org.eclipse.persistence.testing.jaxb.json.attribute.JSONAttributePrefixOnContextTestCases;
 import org.eclipse.persistence.testing.jaxb.json.attribute.JSONAttributePrefixOnMarshallerTestCases;
 import org.eclipse.persistence.testing.jaxb.json.characters.EscapeCharactersTestCases;
+import org.eclipse.persistence.testing.jaxb.json.characters.UsAsciiTestCases;
 import org.eclipse.persistence.testing.jaxb.json.namespaces.DifferentNamespacesTestCases;
 import org.eclipse.persistence.testing.jaxb.json.namespaces.NamespaceInheritanceTestCases;
 import org.eclipse.persistence.testing.jaxb.json.namespaces.NamespacesOnContextTestCases;
@@ -50,6 +51,7 @@ public class JSONTestSuite extends TestSuite {
           suite.addTestSuite(XMLValuePropDifferentTestCases.class);
           suite.addTestSuite(NumberTestCases.class);
           suite.addTestSuite(EscapeCharactersTestCases.class);
+          suite.addTestSuite(UsAsciiTestCases.class);
           suite.addTest(RootLevelListTestCases.suite());
           return suite;
 	}

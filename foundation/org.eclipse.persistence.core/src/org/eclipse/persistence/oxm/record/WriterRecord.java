@@ -14,6 +14,8 @@ package org.eclipse.persistence.oxm.record;
 
 import java.io.Writer;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,6 +27,7 @@ import org.eclipse.persistence.internal.oxm.record.XMLFragmentReader;
 import org.eclipse.persistence.oxm.CharacterEscapeHandler;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
+import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Node;
 import org.xml.sax.Attributes;
@@ -58,6 +61,7 @@ public class WriterRecord extends MarshalRecord {
     protected Writer writer;
     protected boolean isStartElementOpen = false;
     protected boolean isProcessingCData = false;
+    protected CharsetEncoder encoder;
 
     /**
      * Return the Writer that the object will be marshalled to.
@@ -255,7 +259,7 @@ public class WriterRecord extends MarshalRecord {
         }
 
         try {
-            if(value.indexOf('"') > -1 || value.indexOf('&') > -1 || value.indexOf('<') > -1) {
+            if(encoder.maxBytesPerChar() < 4 || value.indexOf('"') > -1 || value.indexOf('&') > -1 || value.indexOf('<') > -1) {
                   char[] chars = value.toCharArray();
                   for (int x = 0, charsSize = chars.length; x < charsSize; x++) {
                       char character = chars[x];
@@ -273,7 +277,13 @@ public class WriterRecord extends MarshalRecord {
                           break;
                       }
                       default:
-                          writer.write(character);
+                          if(encoder.canEncode(character)) {
+                              writer.write(character);
+                          } else {
+                              writer.write("&#");
+                              writer.write(String.valueOf((int) character));
+                              writer.write(';');
+                          }
                       }
                   }
             } else {
@@ -504,6 +514,12 @@ public class WriterRecord extends MarshalRecord {
         public void startDTD(String name, String publicId, String systemId) throws SAXException {}
         public void endDTD() throws SAXException {}
 
+    }
+
+    @Override
+    public void setMarshaller(XMLMarshaller marshaller) {
+        super.setMarshaller(marshaller);
+        encoder = Charset.forName(marshaller.getEncoding()).newEncoder();
     }
 
 }

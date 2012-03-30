@@ -475,21 +475,20 @@ public class XMLMarshaller implements Cloneable {
         if ((object == null) || (outputStream == null)) {
             throw XMLMarshalException.nullArgumentException();
         }
-        if(MediaType.APPLICATION_JSON == mediaType) {
-            marshal(object, new OutputStreamWriter(outputStream));
-            return;
-        }
         try {
+            String encoding = getEncoding();
             boolean isXMLRoot = false;
             String version = DEFAULT_XML_VERSION;
-            String encoding = getEncoding();
             if (object instanceof XMLRoot) {
                 isXMLRoot = true;
                 XMLRoot xroot = (XMLRoot) object;
                 version = xroot.getXMLVersion() != null ? xroot.getXMLVersion() : version;
                 encoding = xroot.getEncoding() != null ? xroot.getEncoding() : encoding;
             }
-            
+            if(MediaType.APPLICATION_JSON == mediaType) {
+                marshal(object, new OutputStreamWriter(outputStream, encoding));
+                return;
+            }
             if(encoding.equals(XMLConstants.DEFAULT_XML_ENCODING)){
                 AbstractSession session = null;
                 XMLDescriptor xmlDescriptor = null;
