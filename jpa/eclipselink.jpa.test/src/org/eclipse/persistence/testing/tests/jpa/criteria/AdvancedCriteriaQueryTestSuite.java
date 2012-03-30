@@ -20,8 +20,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.math.BigInteger;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Parameter;
@@ -34,6 +36,7 @@ import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import javax.persistence.criteria.CriteriaBuilder.In;
@@ -63,8 +66,10 @@ import org.eclipse.persistence.testing.models.jpa.advanced.Dealer;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmploymentPeriod;
+import org.eclipse.persistence.testing.models.jpa.advanced.LargeProject;
 import org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumber;
 import org.eclipse.persistence.testing.models.jpa.advanced.Project;
+import org.eclipse.persistence.testing.models.jpa.advanced.SmallProject;
 import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitDomainObjectComparer;
 
 /**
@@ -102,7 +107,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
 
     public static Test suite() {
         TestSuite suite = new TestSuite();
-        suite.setName("AdvancedQueryTestSuite");
+        suite.setName("AdvancedCriteriaQueryTestSuite");
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testSetup"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testInCollectionEntity"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testInCollectionPrimitives"));
@@ -117,6 +122,14 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testGroupByHaving"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testAlternateSelection"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testSubqueryExists"));
+        suite.addTest(new AdvancedCriteriaQueryTestSuite("testSubqueryNotExists"));
+        suite.addTest(new AdvancedCriteriaQueryTestSuite("testSubqueryExistsAfterAnd"));
+        suite.addTest(new AdvancedCriteriaQueryTestSuite("testSubqueryExistsBeforeAnd"));
+        suite.addTest(new AdvancedCriteriaQueryTestSuite("testSubqueryNotExistsAfterAnd"));
+        suite.addTest(new AdvancedCriteriaQueryTestSuite("testSubqueryNotExistsBeforeAnd"));
+        suite.addTest(new AdvancedCriteriaQueryTestSuite("testSubqueryExistsNested"));
+        suite.addTest(new AdvancedCriteriaQueryTestSuite("testSubqueryExistsNestedAfterAnd"));
+        suite.addTest(new AdvancedCriteriaQueryTestSuite("testSubqueryExistsNestedAfterLiteralAnd"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testSubQuery"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testInSubQuery"));
         suite.addTest(new AdvancedCriteriaQueryTestSuite("testInLiteral"));
@@ -768,29 +781,352 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         }
     }
     
-    public void testSubqueryExists(){
+    protected static Set<Integer> getIds(Collection<Employee> employees) {
+        Set<Integer> ids = new HashSet<Integer>(employees.size());
+        for (Employee emp : employees) {
+            ids.add(emp.getId());
+        }
+        return ids;
+    }
+    protected void compareIds(List<Employee> jpqlEmployees, List<Employee> criteriaEmployees) {
+        Set<Integer> jpqlIds = getIds(jpqlEmployees);
+        Set<Integer> criteriaIds = getIds(criteriaEmployees);
+        if (!jpqlIds.equals(criteriaIds)) {
+            fail("jpql: " + jpqlIds + "; criteria: " + criteriaIds);
+        }
+    }
+    
+    public void testSubqueryExists() {
         EntityManager em = createEntityManager();
+        List<Employee> jpqlEmployees;
+        List<Employee> criteriaEmployees;
         beginTransaction(em);
-        try{
-            em.createQuery("SELECT e FROM Employee e WHERE EXISTS (SELECT p FROM e.projects p)").getResultList();
+        try {
+            jpqlEmployees = em.createQuery("SELECT e FROM Employee e WHERE EXISTS (SELECT p FROM e.projects p)").getResultList();
+            em.clear();
             CriteriaBuilder qbuilder = em.getCriteriaBuilder();
             CriteriaQuery<Employee> cquery = qbuilder.createQuery(Employee.class);
             Root<Employee> customer = cquery.from(Employee.class);
-            cquery.select(customer).distinct(true);
-        // create correlated subquery
+            // create correlated subquery
+            Subquery<Project> sq = cquery.subquery(Project.class);
+            Root<Employee> sqc = sq.correlate(customer);
+            Path<Project> sqo = sqc.join("projects");
+            sq.select(sqo);
+            cquery.where(qbuilder.exists(sq));
+            TypedQuery<Employee> tquery = em.createQuery(cquery);
+            criteriaEmployees = tquery.getResultList();
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
+        compareIds(jpqlEmployees, criteriaEmployees);
+        for (Employee emp : criteriaEmployees){
+            assertTrue("Found someone without projects", !emp.getProjects().isEmpty());
+        }
+    }
+
+    public void testSubqueryNotExists() {
+        EntityManager em = createEntityManager();
+        List<Employee> jpqlEmployees;
+        List<Employee> criteriaEmployees;
+        beginTransaction(em);
+        try {
+            jpqlEmployees = em.createQuery("SELECT e FROM Employee e WHERE NOT EXISTS (SELECT p FROM e.projects p)").getResultList();
+            em.clear();
+            CriteriaBuilder qbuilder = em.getCriteriaBuilder();
+            CriteriaQuery<Employee> cquery = qbuilder.createQuery(Employee.class);
+            Root<Employee> customer = cquery.from(Employee.class);
+            // create correlated subquery
             Subquery<Project> sq = cquery.subquery(Project.class);
             Root<Employee> sqc = sq.correlate(customer);
             Path<Project> sqo = sqc.join("projects");
             sq.select(sqo);
             cquery.where(qbuilder.not(qbuilder.exists(sq)));
             TypedQuery<Employee> tquery = em.createQuery(cquery);
-            List<Employee> result = tquery.getResultList();
-            for (Employee emp : result){
-                assertTrue("Found someone not from Ottawa", emp.getProjects().isEmpty());
-            }
+            criteriaEmployees = tquery.getResultList();
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
+        }
+        compareIds(jpqlEmployees, criteriaEmployees);
+        for (Employee emp : criteriaEmployees){
+            assertTrue("Found someone with projects", emp.getProjects().isEmpty());
+        }
+    }
+
+    // cquery.where(qbuilder.and(isMale, qbuilder.exists(sq)));
+    public void testSubqueryExistsAfterAnd() {
+        EntityManager em = createEntityManager();
+        List<Employee> jpqlEmployees;
+        List<Employee> criteriaEmployees;
+        beginTransaction(em);
+        try {
+            jpqlEmployees = em.createQuery("SELECT e FROM Employee e WHERE e.gender = org.eclipse.persistence.testing.models.jpa.advanced.Employee.Gender.Male AND EXISTS (SELECT p FROM e.projects p)").getResultList();
+            em.clear();
+            CriteriaBuilder qbuilder = em.getCriteriaBuilder();
+            CriteriaQuery<Employee> cquery = qbuilder.createQuery(Employee.class);
+            Root<Employee> customer = cquery.from(Employee.class);
+            // create correlated subquery
+            Subquery<Project> sq = cquery.subquery(Project.class);
+            Root<Employee> sqc = sq.correlate(customer);
+            Path<Project> sqo = sqc.join("projects");
+            sq.select(sqo);
+            Predicate isMale = qbuilder.equal(customer.get("gender"), Employee.Gender.Male);
+            cquery.where(qbuilder.and(isMale, qbuilder.exists(sq)));
+            TypedQuery<Employee> tquery = em.createQuery(cquery);
+            criteriaEmployees = tquery.getResultList();
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
+        compareIds(jpqlEmployees, criteriaEmployees);
+        for (Employee emp : criteriaEmployees){
+            assertTrue("Found someone not male", emp.getGender() != null && emp.isMale());
+            assertTrue("Found someone without projects", !emp.getProjects().isEmpty());
+        }
+    }
+
+    // cquery.where(qbuilder.and(qbuilder.exists(sq), isMale));
+    public void testSubqueryExistsBeforeAnd() {
+        EntityManager em = createEntityManager();
+        List<Employee> jpqlEmployees;
+        List<Employee> criteriaEmployees;
+        beginTransaction(em);
+        try {
+            jpqlEmployees = em.createQuery("SELECT e FROM Employee e WHERE EXISTS (SELECT p FROM e.projects p) AND e.gender = org.eclipse.persistence.testing.models.jpa.advanced.Employee.Gender.Male").getResultList();
+            em.clear();
+            CriteriaBuilder qbuilder = em.getCriteriaBuilder();
+            CriteriaQuery<Employee> cquery = qbuilder.createQuery(Employee.class);
+            Root<Employee> customer = cquery.from(Employee.class);
+            // create correlated subquery
+            Subquery<Project> sq = cquery.subquery(Project.class);
+            Root<Employee> sqc = sq.correlate(customer);
+            Path<Project> sqo = sqc.join("projects");
+            sq.select(sqo);
+            Predicate isMale = qbuilder.equal(customer.get("gender"), Employee.Gender.Male);
+            cquery.where(qbuilder.and(qbuilder.exists(sq), isMale));
+            TypedQuery<Employee> tquery = em.createQuery(cquery);
+            criteriaEmployees = tquery.getResultList();
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
+        compareIds(jpqlEmployees, criteriaEmployees);
+        for (Employee emp : criteriaEmployees){
+            assertTrue("Found someone not male", emp.getGender() != null && emp.isMale());
+            assertTrue("Found someone without projects", !emp.getProjects().isEmpty());
+        }
+    }
+
+    // cquery.where(qbuilder.and(isFemale, qbuilder.not(qbuilder.exists(sq))));
+    public void testSubqueryNotExistsAfterAnd() {
+        EntityManager em = createEntityManager();
+        List<Employee> jpqlEmployees;
+        List<Employee> criteriaEmployees;
+        beginTransaction(em);
+        try {
+            jpqlEmployees = em.createQuery("SELECT e FROM Employee e WHERE e.gender = org.eclipse.persistence.testing.models.jpa.advanced.Employee.Gender.Female AND NOT EXISTS (SELECT p FROM e.projects p)").getResultList();
+            em.clear();
+            CriteriaBuilder qbuilder = em.getCriteriaBuilder();
+            CriteriaQuery<Employee> cquery = qbuilder.createQuery(Employee.class);
+            Root<Employee> customer = cquery.from(Employee.class);
+            // create correlated subquery
+            Subquery<Project> sq = cquery.subquery(Project.class);
+            Root<Employee> sqc = sq.correlate(customer);
+            Path<Project> sqo = sqc.join("projects");
+            sq.select(sqo);
+            Predicate isFemale = qbuilder.equal(customer.get("gender"), Employee.Gender.Female);
+            cquery.where(qbuilder.and(isFemale, qbuilder.not(qbuilder.exists(sq))));
+            TypedQuery<Employee> tquery = em.createQuery(cquery);
+            criteriaEmployees = tquery.getResultList();
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
+        compareIds(jpqlEmployees, criteriaEmployees);
+        for (Employee emp : criteriaEmployees){
+            assertTrue("Found someone not female", emp.getGender() != null && emp.isFemale());
+            assertTrue("Found someone with projects", emp.getProjects().isEmpty());
+        }
+    }
+
+    // cquery.where(qbuilder.and(qbuilder.not(qbuilder.exists(sq)), isFemale));
+    public void testSubqueryNotExistsBeforeAnd() {
+        EntityManager em = createEntityManager();
+        List<Employee> jpqlEmployees;
+        List<Employee> criteriaEmployees;
+        beginTransaction(em);
+        try {
+            jpqlEmployees = em.createQuery("SELECT e FROM Employee e WHERE NOT EXISTS (SELECT p FROM e.projects p) AND e.gender = org.eclipse.persistence.testing.models.jpa.advanced.Employee.Gender.Female").getResultList();
+            em.clear();
+            CriteriaBuilder qbuilder = em.getCriteriaBuilder();
+            CriteriaQuery<Employee> cquery = qbuilder.createQuery(Employee.class);
+            Root<Employee> customer = cquery.from(Employee.class);
+            // create correlated subquery
+            Subquery<Project> sq = cquery.subquery(Project.class);
+            Root<Employee> sqc = sq.correlate(customer);
+            Path<Project> sqo = sqc.join("projects");
+            sq.select(sqo);
+            Predicate isFemale = qbuilder.equal(customer.get("gender"), Employee.Gender.Female);
+            cquery.where(qbuilder.and(qbuilder.not(qbuilder.exists(sq)), isFemale));
+            TypedQuery<Employee> tquery = em.createQuery(cquery);
+            criteriaEmployees = tquery.getResultList();
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
+        compareIds(jpqlEmployees, criteriaEmployees);
+        for (Employee emp : criteriaEmployees){
+            assertTrue("Found someone not female", emp.getGender() != null && emp.isFemale());
+            assertTrue("Found someone with projects", emp.getProjects().isEmpty());
+        }
+    }
+
+    public void testSubqueryExistsNested() {
+        EntityManager em = createEntityManager();
+        List<Employee> jpqlEmployees;
+        List<Employee> criteriaEmployees;
+        beginTransaction(em);
+        try {
+            jpqlEmployees = em.createQuery("SELECT e FROM Employee e WHERE EXISTS (SELECT p FROM Project p WHERE e.projects = p AND EXISTS (SELECT t FROM Employee t WHERE p.teamLeader = t))").getResultList();
+            em.clear();
+            
+            CriteriaBuilder builder = em.getCriteriaBuilder();
+            CriteriaQuery<Employee> mainQuery = builder.createQuery(Employee.class);
+            Subquery<Object> subQuery1 = mainQuery.subquery(Object.class);
+            Subquery<Object> subQuery2 = subQuery1.subquery(Object.class);
+
+            Root<Employee> mainEmployee = mainQuery.from(Employee.class);
+            mainQuery.select(mainEmployee);
+            
+            Root<Project> sub1Project = subQuery1.from(Project.class);
+            Join<Employee, Project> mainEmployeeProjects = mainEmployee.join("projects");
+
+            Root<Employee> sub2Employee = subQuery2.from(Employee.class);
+            Join<Employee, Employee> sub1ProjectTeamLeader = sub1Project.join("teamLeader");
+            
+            subQuery2.where(builder.equal(sub2Employee, sub1ProjectTeamLeader));
+            subQuery1.where(builder.and(builder.exists(subQuery2), builder.equal(sub1Project, mainEmployeeProjects)));
+            mainQuery.where(builder.exists(subQuery1));
+            
+            TypedQuery<Employee> tquery = em.createQuery(mainQuery);
+            criteriaEmployees = tquery.getResultList();
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
+        compareIds(jpqlEmployees, criteriaEmployees);
+        for (Employee emp : criteriaEmployees){
+            assertTrue("Found someone without projects", !emp.getProjects().isEmpty());
+            boolean atLeastOneProjectHasLeader = false;
+            for (Project proj : emp.getProjects()) {
+                if (proj.getTeamLeader() != null) {
+                    atLeastOneProjectHasLeader = true;
+                    break;
+                }
+            }
+            assertTrue("None of employee's projects has a leader", atLeastOneProjectHasLeader);
+        }
+    }
+
+    public void testSubqueryExistsNestedAfterAnd() {
+        EntityManager em = createEntityManager();
+        List<Employee> jpqlEmployees;
+        List<Employee> criteriaEmployees;
+        beginTransaction(em);
+        try {
+            jpqlEmployees = em.createQuery("SELECT e FROM Employee e WHERE e.gender = org.eclipse.persistence.testing.models.jpa.advanced.Employee.Gender.Male AND EXISTS (SELECT p FROM Project p WHERE 'Sales Reporting' <> p.name AND e.projects = p AND EXISTS (SELECT t FROM Employee t WHERE p.teamLeader = t))").getResultList();
+            em.clear();
+            
+            CriteriaBuilder builder = em.getCriteriaBuilder();
+            CriteriaQuery<Employee> mainQuery = builder.createQuery(Employee.class);
+            Subquery<Object> subQuery1 = mainQuery.subquery(Object.class);
+            Subquery<Object> subQuery2 = subQuery1.subquery(Object.class);
+            
+            Root<Employee> mainEmployee = mainQuery.from(Employee.class);
+            mainQuery.select(mainEmployee);
+            
+            Root<Project> sub1Project = subQuery1.from(Project.class);
+            Join<Employee, Project> mainEmployeeProjects = mainEmployee.join("projects");
+
+            Root<Employee> sub2Employee = subQuery2.from(Employee.class);
+            Join<Employee, Employee> sub1ProjectTeamLeader = sub1Project.join("teamLeader");
+                        
+            subQuery2.where(builder.equal(sub2Employee, sub1ProjectTeamLeader));
+            Predicate notSalesReporting = builder.not(builder.equal(builder.literal("Sales Reporting"), sub1Project.get("name")));
+            subQuery1.where(builder.and(notSalesReporting, builder.and(builder.exists(subQuery2), builder.equal(sub1Project, mainEmployeeProjects))));
+            Predicate isMale = builder.equal(mainEmployee.get("gender"), Employee.Gender.Male);
+            mainQuery.where(builder.and(isMale, builder.exists(subQuery1)));
+            
+            TypedQuery<Employee> tquery = em.createQuery(mainQuery);
+            criteriaEmployees = tquery.getResultList();
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
+        compareIds(jpqlEmployees, criteriaEmployees);
+        for (Employee emp : criteriaEmployees){
+            assertTrue("Found someone not male", emp.getGender() != null && emp.isMale());
+            assertTrue("Found someone without projects", !emp.getProjects().isEmpty());
+            boolean atLeastOneProjectHasLeader = false;
+            for (Project proj : emp.getProjects()) {
+                if (!proj.getName().equals("Sales Reporting")) {
+                    if (proj.getTeamLeader() != null) {
+                        atLeastOneProjectHasLeader = true;
+                        break;
+                    }
+                }
+            }
+            assertTrue("None of employee's projects has a leader", atLeastOneProjectHasLeader);
+        }
+    }
+
+    public void testSubqueryExistsNestedAfterLiteralAnd() {
+        EntityManager em = createEntityManager();
+        List<Employee> jpqlEmployees;
+        List<Employee> criteriaEmployees;
+        beginTransaction(em);
+        try {
+            jpqlEmployees = em.createQuery("SELECT e FROM Employee e WHERE EXISTS (SELECT p FROM Project p WHERE e.projects = p AND EXISTS (SELECT t FROM Employee t WHERE p.teamLeader = t))").getResultList();
+            em.clear();
+            
+            CriteriaBuilder builder = em.getCriteriaBuilder();
+            CriteriaQuery<Employee> mainQuery = builder.createQuery(Employee.class);
+            Subquery<Object> subQuery1 = mainQuery.subquery(Object.class);
+            Subquery<Object> subQuery2 = subQuery1.subquery(Object.class);
+            
+            Root<Employee> mainEmployee = mainQuery.from(Employee.class);
+            mainQuery.select(mainEmployee);
+            
+            Root<Project> sub1Project = subQuery1.from(Project.class);
+            Join<Employee, Project> mainEmployeeProjects = mainEmployee.join("projects");
+
+            Root<Employee> sub2Employee = subQuery2.from(Employee.class);
+            Join<Employee, Employee> sub1ProjectTeamLeader = sub1Project.join("teamLeader");
+            
+            subQuery2.where(builder.equal(sub2Employee, sub1ProjectTeamLeader));
+            Predicate oneEqualsOne = builder.equal(builder.literal(1), builder.literal(1));
+            subQuery1.where(builder.and(oneEqualsOne, builder.and(builder.exists(subQuery2), builder.equal(sub1Project, mainEmployeeProjects))));
+            Predicate twoEqualsTwo = builder.equal(builder.literal(2), builder.literal(2));
+            mainQuery.where(builder.and(twoEqualsTwo, builder.exists(subQuery1)));
+            
+            TypedQuery<Employee> tquery = em.createQuery(mainQuery);
+            criteriaEmployees = tquery.getResultList();
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
+        compareIds(jpqlEmployees, criteriaEmployees);
+        for (Employee emp : criteriaEmployees){
+            assertTrue("Found someone without projects", !emp.getProjects().isEmpty());
+            boolean atLeastOneProjectHasLeader = false;
+            for (Project proj : emp.getProjects()) {
+                if (proj.getTeamLeader() != null) {
+                    atLeastOneProjectHasLeader = true;
+                    break;
+                }
+            }
+            assertTrue("None of employee's projects has a leader", atLeastOneProjectHasLeader);
         }
     }
 
@@ -801,7 +1137,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
-            // Test cusored stream.
+            // Test cursored stream.
             Query query = em.createQuery(em.getCriteriaBuilder().createQuery(Employee.class));
             query.setHint(QueryHints.CURSOR, true);
             query.setHint(QueryHints.CURSOR_INITIAL_SIZE, 2);

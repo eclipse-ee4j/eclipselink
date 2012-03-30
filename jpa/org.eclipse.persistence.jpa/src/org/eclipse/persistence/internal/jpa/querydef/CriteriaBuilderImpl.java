@@ -1,3 +1,16 @@
+/*******************************************************************************
+ * Copyright (c) 2009, 2011 Oracle. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * Contributors:
+ *     Gordon Yorke - Initial development
+ *
+ ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.querydef;
 
 import java.io.Serializable;
@@ -26,6 +39,7 @@ import javax.persistence.metamodel.Type.PersistenceType;
 
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.expressions.ExpressionMath;
+import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.internal.expressions.FunctionExpression;
 import org.eclipse.persistence.internal.expressions.ArgumentListFunctionExpression;
@@ -270,7 +284,8 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable {
      * @return exists predicate
      */
     public Predicate exists(Subquery<?> subquery){
-        return new CompoundExpressionImpl(metamodel, new ExpressionBuilder().exists(((SubQueryImpl)subquery).subQuery), buildList(subquery), "exists");
+        // Setting SubQuery's SubSelectExpression as a base for the expression created by operator allows setting a new ExpressionBuilder later in the SubSelectExpression (see integrateRoot method in SubQueryImpl).
+        return new CompoundExpressionImpl(metamodel, ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.Exists)).expressionFor(((SubQueryImpl)subquery).getCurrentNode()), buildList(subquery), "exists");
     }
 
     /**
@@ -444,19 +459,19 @@ public class CriteriaBuilderImpl implements CriteriaBuilder, Serializable {
             return ((PredicateImpl)restriction).not();
         }
         org.eclipse.persistence.expressions.Expression parentNode = null;
+        List<Expression<?>> compoundExpressions = null;
         String name = "not";
         if (((InternalExpression)restriction).isCompoundExpression() && ((CompoundExpressionImpl)restriction).getOperation().equals("exists")){
             FunctionExpression exp = (FunctionExpression) ((InternalSelection)restriction).getCurrentNode();
             SubSelectExpression sub = (SubSelectExpression) exp.getChildren().get(0);
-            parentNode = new ExpressionBuilder().notExists(sub.getSubQuery());
+            parentNode = ExpressionOperator.getOperator(Integer.valueOf(ExpressionOperator.NotExists)).expressionFor(sub);
             name = "notExists";
+            compoundExpressions = ((CompoundExpressionImpl)restriction).getChildExpressions();
         }else{
             parentNode = ((InternalSelection)restriction).getCurrentNode().not();
+            compoundExpressions = buildList(restriction);
         }
-        if (((InternalExpression)restriction).isCompoundExpression()){
-            ((CompoundExpressionImpl)restriction).setParentNode(parentNode);
-        }
-        return new CompoundExpressionImpl(this.metamodel, parentNode, buildList(restriction), name);
+        return new CompoundExpressionImpl(this.metamodel, parentNode, compoundExpressions, name);
     }
 
     /**

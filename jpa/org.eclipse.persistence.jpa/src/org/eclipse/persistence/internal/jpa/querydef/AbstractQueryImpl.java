@@ -317,5 +317,13 @@ public abstract class AbstractQueryImpl<T> implements AbstractQuery<T>, Serializ
     protected void findJoins(FromImpl root) {
         root.findJoins(this);
     }
+    
+    protected org.eclipse.persistence.expressions.Expression getBaseExpression() {
+        if (this.roots.isEmpty()) {
+            return new ExpressionBuilder();
+        } else {
+            return ((RootImpl)this.roots.iterator().next()).getCurrentNode();
+        }
+    }
 
 }
