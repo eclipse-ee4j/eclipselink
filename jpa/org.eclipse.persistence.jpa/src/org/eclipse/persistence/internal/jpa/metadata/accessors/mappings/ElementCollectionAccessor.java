@@ -199,6 +199,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
             setCollectionTable(new CollectionTableMetadata(getAnnotation(JPA_COLLECTION_TABLE), this, true));
         }
         
+        // Set the composite member if one is defined.
         if (isAnnotationPresent(CompositeMember.class)) {
             m_compositeMember = (String) getAnnotation(CompositeMember.class).getAttributeString("value");
         }
@@ -420,8 +421,12 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
         return getCollectionTable().getDatabaseTable();
     }
     
+    /**
+     * INTERNAL: 
+     * Used for OX mapping.
+     */
     public Boolean getDeleteAll() {
-        return this.m_deleteAll;
+        return m_deleteAll;
     }
     
     /**
@@ -959,8 +964,12 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
         m_compositeMember = compositeMember;
     }
     
-    public void setDeleteAll(Boolean m_deleteAll) {
-        this.m_deleteAll = m_deleteAll;
+    /**
+     * INTERNAL: 
+     * Used for OX mapping.
+     */
+    public void setDeleteAll(Boolean deleteAll) {
+        m_deleteAll = deleteAll;
     }
     
     /**
