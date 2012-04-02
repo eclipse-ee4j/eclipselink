@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.readonly;
 
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="root")
@@ -22,18 +23,22 @@ public class RootObject {
    String[] readOnlyStringArray;
    String[] writeOnlyStringArray;
    
+   @XmlElement
    public String getWriteOnlyString() {
        return writeOnlyString;
    }
    
+   @XmlElement
    public void setReadOnlyString(String string) {
        this.readOnlyString = string;
    }
    
+   @XmlElement
    public String[] getWriteOnlyStringArray() {
        return writeOnlyStringArray;
    }
    
+   @XmlElement
    public void setReadOnlyStringArray(String[] array) {
        this.readOnlyStringArray = array;
    }

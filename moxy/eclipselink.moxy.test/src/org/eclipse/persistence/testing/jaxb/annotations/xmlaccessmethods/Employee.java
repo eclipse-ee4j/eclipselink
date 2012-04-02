@@ -14,6 +14,7 @@ package org.eclipse.persistence.testing.jaxb.annotations.xmlaccessmethods;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -44,10 +45,12 @@ public class Employee {
     // cause a context creation exception
     private int id;
 
+    @XmlElement
     public void setName(int name) {
         this.id = name;
     }
 
+    @XmlElement
     public int getId() {
         return this.id;
     }
