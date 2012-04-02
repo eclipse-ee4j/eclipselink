@@ -76,12 +76,12 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
     public void jsonToObjectTest(Object testObject) throws Exception {
         log("\n**xmlToObjectTest**");
         log("Expected:");
-        log(getReadControlObject().toString());
+        log(getJSONReadControlObject().toString());
         log("Actual:");
         log(testObject.toString());
 
-        if ((getReadControlObject() instanceof JAXBElement) && (testObject instanceof JAXBElement)) {
-            JAXBElement controlObj = (JAXBElement)getReadControlObject();
+        if ((getJSONReadControlObject() instanceof JAXBElement) && (testObject instanceof JAXBElement)) {
+            JAXBElement controlObj = (JAXBElement)getJSONReadControlObject();
             JAXBElement testObj = (JAXBElement)testObject;
             compareJAXBElementObjects(controlObj, testObj, false);
         } else {

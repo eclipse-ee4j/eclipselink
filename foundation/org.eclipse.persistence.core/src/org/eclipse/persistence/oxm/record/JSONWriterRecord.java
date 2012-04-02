@@ -327,8 +327,8 @@ public class JSONWriterRecord extends MarshalRecord {
                 if(position != null && position.isCollection() && !position.isEmptyCollection()) {
                     writer.write(']');
                 }
-                levels.peek().setCollection(false);
             }
+            levels.peek().setCollection(false);
         } catch (IOException e) {
             throw XMLMarshalException.marshalException(e);
         }

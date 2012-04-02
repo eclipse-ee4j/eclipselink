@@ -17,6 +17,7 @@ import org.eclipse.persistence.testing.jaxb.xmlelement.model.EmptyJSONArrayTestC
 import org.eclipse.persistence.testing.jaxb.xmlelement.model.FullTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlelement.model.FullTestCasesNS;
 import org.eclipse.persistence.testing.jaxb.xmlelement.model.SpecialCharacterTestCases;
+import org.eclipse.persistence.testing.jaxb.xmlelement.order.ElementOrderingTestCases;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -35,7 +36,7 @@ public class XmlElementTestSuite extends TestSuite {
         suite.addTestSuite(EmptyCollectionTestCases.class);
         suite.addTestSuite(EmptyJSONArrayTestCases.class);
         suite.addTestSuite(SpecialCharacterTestCases.class);
-
+        suite.addTestSuite(ElementOrderingTestCases.class);
         return suite;
     }
 

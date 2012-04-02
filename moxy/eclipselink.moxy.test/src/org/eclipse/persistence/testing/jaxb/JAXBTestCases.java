@@ -222,7 +222,13 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
                 instream = ClassLoader.getSystemResourceAsStream(resourceName);
             }
             jaxbUnmarshaller.setProperty(org.eclipse.persistence.jaxb.JAXBContext.MEDIA_TYPE, "application/xml");
-                Object testObject = jaxbUnmarshaller.unmarshal(instream);
+            Object testObject = null;
+            if(getUnmarshalClass() != null){
+            	testObject = jaxbUnmarshaller.unmarshal(new StreamSource(instream), getUnmarshalClass());
+            }else{
+            	testObject = jaxbUnmarshaller.unmarshal(instream);
+            }
+                
                 instream.close();
                 xmlToObjectTest(testObject);
 
