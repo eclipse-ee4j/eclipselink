@@ -2624,6 +2624,12 @@ public class AnnotationsProcessor {
                 JavaClass[] paramTypes = { (JavaClass) getMethod.getReturnType() };
                 setMethod = cls.getDeclaredMethod(setMethodName, paramTypes);
 
+                if(setMethod == null && !(hasJAXBAnnotations(getMethod))) {
+                    //if there's no corresponding setter, and not explicitly
+                    //annotated, don't process
+                    isPropertyTransient = true;
+                }
+                    
                 if (setMethod != null && hasJAXBAnnotations(setMethod)) {
                     // use the set method if it exists and is annotated
                     boolean isTransient = helper.isAnnotationPresent(setMethod, XmlTransient.class);
@@ -2665,6 +2671,10 @@ public class AnnotationsProcessor {
                     // try is instead of get
                     getMethodName = IS_STR + propertyName;
                     getMethod = cls.getDeclaredMethod(getMethodName, new JavaClass[] {});                 
+                }
+
+                if(getMethod == null && !(hasJAXBAnnotations(setMethod))) {
+                    isPropertyTransient = true;
                 }
                 if (getMethod != null && hasJAXBAnnotations(getMethod)) {
                     // use the set method if it exists and is annotated

@@ -32,9 +32,16 @@ public class Employee {
     public int getId() {
         return id;
     }
+
+    public void setId(int id) {
+        this.id = id;
+    }
     
     public boolean getIsSet() {
         return true;
+    }
+
+    public void setIsSet(boolean isSet) {
     }
     
     public boolean equals(Object obj){

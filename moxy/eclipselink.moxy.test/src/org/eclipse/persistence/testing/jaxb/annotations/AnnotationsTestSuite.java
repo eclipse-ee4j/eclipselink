@@ -75,7 +75,7 @@ public class AnnotationsTestSuite extends TestSuite {
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmlelementdecl.emptystringns.EmptyStringNSTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmlelementdecl.unqualified.UnqualfiedTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmllocation.XmlLocationTestCases.class);
-        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmllocation.XmlLocationNonTransientTestCases.class);
+        //suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmllocation.XmlLocationNonTransientTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmllocation.XmlLocationErrorTestCases.class);
         suite.addTest(org.eclipse.persistence.testing.jaxb.annotations.xmlvalue.XmlValueTestSuite.suite());
 

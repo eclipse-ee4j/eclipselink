@@ -49,7 +49,7 @@ public class XmlAccessorTypePackageClassOverrideTestCases extends JAXBWithJSONTe
     }
     
     protected Object getControlObject() {
-		Employee emp = new Employee(0);	
+		Employee emp = new Employee(666);	
 		emp.firstName = "firstName";
 		emp.lastName = "lastName";		
 		return emp;

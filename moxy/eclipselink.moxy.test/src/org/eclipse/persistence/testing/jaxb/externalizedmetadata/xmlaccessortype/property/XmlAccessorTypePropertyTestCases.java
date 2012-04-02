@@ -48,7 +48,7 @@ public class XmlAccessorTypePropertyTestCases extends JAXBWithJSONTestCases {
     }
     
     protected Object getControlObject() {
-		Employee emp = new Employee(0);	
+		Employee emp = new Employee(66);	
 		return emp;
 	}
 
