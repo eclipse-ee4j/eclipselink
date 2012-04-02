@@ -56,7 +56,6 @@ import org.eclipse.persistence.queries.DeleteObjectQuery;
 import org.eclipse.persistence.queries.DoesExistQuery;
 import org.eclipse.persistence.queries.InsertObjectQuery;
 import org.eclipse.persistence.queries.JPAQueryBuilder;
-import org.eclipse.persistence.queries.JPAQueryBuilderManager;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
