@@ -120,7 +120,6 @@ public class ReadConnectionPool extends ConnectionPool {
                 }
             }
             this.connectionsAvailable.add(connection);
-            connection.incrementCallCount(getOwner());
             leastBusyConnection = connection;
         }
 
