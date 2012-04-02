@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2011 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -13,6 +13,8 @@
 package org.eclipse.persistence.transaction.jboss;
 
 import javax.transaction.TransactionManager;
+
+import org.eclipse.persistence.exceptions.TransactionException;
 import org.eclipse.persistence.transaction.JTATransactionController;
 
 /**
@@ -25,13 +27,22 @@ import org.eclipse.persistence.transaction.JTATransactionController;
  * @see org.eclipse.persistence.transaction.JTATransactionController
  */
 public class JBossTransactionController extends JTATransactionController {
-    public static final String JNDI_TRANSACTION_MANAGER_NAME = "java:/TransactionManager";
+    public static final String JNDI_TRANSACTION_MANAGER_NAME_AS4 = "java:/TransactionManager";
+    public static final String JNDI_TRANSACTION_MANAGER_NAME_AS7 = "java:jboss/TransactionManager";
 
     /**
      * INTERNAL:
      * Obtain and return the JTA TransactionManager on this platform
      */
     protected TransactionManager acquireTransactionManager() throws Exception {
-        return (TransactionManager)jndiLookup(JNDI_TRANSACTION_MANAGER_NAME);
+        try {
+            return (TransactionManager)jndiLookup(JNDI_TRANSACTION_MANAGER_NAME_AS7);
+        } catch(TransactionException transactionException) {
+            if (transactionException.getErrorCode() == TransactionException.ERROR_DOING_JNDI_LOOKUP) {
+                return (TransactionManager)jndiLookup(JNDI_TRANSACTION_MANAGER_NAME_AS4);
+            } else {
+                throw transactionException;
+            }
+        }
     }
 }
