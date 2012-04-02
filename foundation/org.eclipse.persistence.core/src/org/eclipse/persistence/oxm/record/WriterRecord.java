@@ -259,7 +259,7 @@ public class WriterRecord extends MarshalRecord {
         }
 
         try {
-            if(encoder.maxBytesPerChar() < 4 || value.indexOf('"') > -1 || value.indexOf('&') > -1 || value.indexOf('<') > -1) {
+            if((null != encoder && encoder.maxBytesPerChar() < 4) || value.indexOf('"') > -1 || value.indexOf('&') > -1 || value.indexOf('<') > -1) {
                   char[] chars = value.toCharArray();
                   for (int x = 0, charsSize = chars.length; x < charsSize; x++) {
                       char character = chars[x];
