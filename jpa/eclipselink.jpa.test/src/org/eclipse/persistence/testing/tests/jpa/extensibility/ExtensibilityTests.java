@@ -422,6 +422,11 @@ public class ExtensibilityTests extends JUnitTestCase {
     public void testExistingEntityManagerAfterRefresh(){
         EntityManagerFactory emf = getEntityManagerFactory();
         EntityManager em = emf.createEntityManager();
+        Map properties = new HashMap();
+        properties.put(PersistenceUnitProperties.METADATA_SOURCE_XML_FILE, "extension2.xml");
+        JpaHelper.getEntityManagerFactory(em).refreshMetadata(properties);
+        em.close();
+        em = emf.createEntityManager();
         
         persistEmployeeData(em);
         clearCache();
@@ -430,7 +435,6 @@ public class ExtensibilityTests extends JUnitTestCase {
         // workaround for server testing issue
         em.find(Address.class, add.getId());
         try {
-            Map properties = new HashMap();
             properties.put(PersistenceUnitProperties.METADATA_SOURCE_XML_FILE, "extension.xml");
             JpaHelper.getEntityManagerFactory(em).refreshMetadata(properties);
             EntityManager em2 = emf.createEntityManager();
