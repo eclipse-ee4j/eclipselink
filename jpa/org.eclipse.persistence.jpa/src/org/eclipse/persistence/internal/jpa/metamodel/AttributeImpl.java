@@ -285,8 +285,9 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T>, Serializab
      *          corresponds to an association
      */
     public boolean isAssociation() {
-        // Only a ReferenceMapping that extends ObjectReferenceMapping returns true
-        return getMapping().isReferenceMapping();
+        // If the mapping a relationship to another entity.
+        return getMapping().isForeignReferenceMapping() && !getMapping().isDirectCollectionMapping()
+            && !getMapping().isAggregateCollectionMapping();
     }
 
     /**

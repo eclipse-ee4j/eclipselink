@@ -500,6 +500,48 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
         addOperator(ExpressionOperator.sybaseToCharOperator());
         addOperator(ExpressionOperator.simpleFunction(ExpressionOperator.Ceil, "CEILING"));
         addOperator(modOperator());
+        addOperator(trimOperator());
+        addOperator(trim2Operator());
+    }
+    
+    /**
+     * INTERNAL:
+     * Use RTRIM(LTRIM(?)) function for trim.
+     */
+    public static ExpressionOperator trimOperator() {
+        ExpressionOperator exOperator = new ExpressionOperator();
+        exOperator.setType(ExpressionOperator.FunctionOperator);
+        exOperator.setSelector(ExpressionOperator.Trim);
+        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(2);
+        v.add("RTRIM(LTRIM(");
+        v.add(")");
+        exOperator.printsAs(v);
+        exOperator.bePrefix();
+        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        return exOperator;
+    }
+    
+    /**
+     * INTERNAL:
+     * Build Trim operator.
+     */
+    public static ExpressionOperator trim2Operator() {
+        ExpressionOperator exOperator = new ExpressionOperator();
+        exOperator.setType(ExpressionOperator.FunctionOperator);
+        exOperator.setSelector(ExpressionOperator.Trim2);
+        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(5);
+        v.add("RTRIM(");
+        v.add(" FROM LTRIM(");
+        v.add(" FROM ");
+        v.add("))");
+        exOperator.printsAs(v);
+        int[] argumentIndices = new int[3];
+        argumentIndices[0] = 1;
+        argumentIndices[1] = 1;
+        argumentIndices[2] = 0;
+        exOperator.setArgumentIndices(argumentIndices);
+        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        return exOperator;
     }
 
     @Override

@@ -12,6 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.mongo;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.*;
 
 import javax.persistence.Column;
@@ -24,6 +26,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.MapKey;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Version;
 
 import org.eclipse.persistence.annotations.DataFormatType;
@@ -31,6 +35,7 @@ import org.eclipse.persistence.annotations.Field;
 import org.eclipse.persistence.annotations.JoinField;
 import org.eclipse.persistence.annotations.JoinFields;
 import org.eclipse.persistence.annotations.NoSql;
+import org.eclipse.persistence.internal.helper.Helper;
 
 /**
  * Model order class, maps to ORDER record.
@@ -46,6 +51,21 @@ public class Order {
     @Version
     public long version;
     public String orderedBy;
+    @Temporal(TemporalType.TIMESTAMP)
+    public Date orderDate = new Date();
+    public java.sql.Time orderTime = Helper.timeFromDate(new Date());
+    public java.sql.Timestamp orderTimestamp = new java.sql.Timestamp(new Date().getTime());
+    public java.sql.Date orderDateDate = Helper.dateFromCalendar(Calendar.getInstance());
+    @Temporal(TemporalType.TIMESTAMP)
+    public Calendar orderCal = Calendar.getInstance();
+    public byte[] image = "bytes".getBytes();
+    public BigDecimal amount = BigDecimal.valueOf(0);
+    public BigInteger amountBigInt = BigInteger.valueOf(0);
+    public int amountInt = 0;
+    public long amountLong = 0;
+    public double amountDouble = 0;
+    public float amountFloat = 0;
+    public short amountShort = 0;
     @Field(name="address")
     public Address address;
     @OneToOne

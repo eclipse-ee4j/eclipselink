@@ -296,7 +296,15 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
             addQuery(query.getName(), query);
         }
     }
-
+    
+    /**
+     * INTERNAL
+     * Return the query builder used to parser JPQL.
+     */
+    public JPAQueryBuilder getQueryBuilder() {
+        return getParent().getQueryBuilder();
+    }
+    
     /**
      * INTERNAL:
      * PERF: Used for quick check if logging is OFF entirely.

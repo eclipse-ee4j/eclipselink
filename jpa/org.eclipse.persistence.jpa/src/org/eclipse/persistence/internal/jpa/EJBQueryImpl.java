@@ -49,7 +49,6 @@ import org.eclipse.persistence.queries.Cursor;
 import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.JPAQueryBuilder;
-import org.eclipse.persistence.queries.JPAQueryBuilderManager;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
@@ -135,7 +134,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
             databaseQuery = (DatabaseQuery) session.getProject().getJPQLParseCache().get(jpqlQuery);
         }
         if ((databaseQuery == null) || (!databaseQuery.isPrepared())) {
-            JPAQueryBuilder queryBuilder = JPAQueryBuilderManager.getQueryBuilder();
+            JPAQueryBuilder queryBuilder = session.getQueryBuilder();
             databaseQuery = queryBuilder.buildQuery(jpqlQuery, session);
             
             // If the query uses fetch joins, need to use JPA default of not

@@ -2391,6 +2391,9 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * Extract primary key attribute values from the domainObject.
      */
     public Object extractPrimaryKeyFromObject(Object domainObject, AbstractSession session, boolean shouldReturnNullIfNull) {
+        if (domainObject == null) {
+            return null;
+        }
         // Avoid using the cached id for XML, as the relational descriptor may be different than the xml one.
         boolean isPersistenceEntity = (domainObject instanceof PersistenceEntity) && (!isXMLObjectBuilder());
         if (isPersistenceEntity) {

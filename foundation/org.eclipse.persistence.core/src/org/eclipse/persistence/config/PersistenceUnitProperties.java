@@ -38,7 +38,7 @@ import org.eclipse.persistence.exceptions.ExceptionHandler;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.platform.server.ServerPlatform;
-import org.eclipse.persistence.queries.JPAQueryBuilderManager;
+import org.eclipse.persistence.queries.JPAQueryBuilder;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.SessionEventListener;
 import org.eclipse.persistence.sessions.SessionProfiler;
@@ -197,7 +197,7 @@ public class PersistenceUnitProperties {
      * </ul>
      * 
      * @see ParserType
-     * @see JPAQueryBuilderManager
+     * @see JPAQueryBuilder
      */
     public static final String JPQL_PARSER = "eclipselink.jpql.parser";
     

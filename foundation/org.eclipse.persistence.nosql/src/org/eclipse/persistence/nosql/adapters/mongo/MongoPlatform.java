@@ -12,10 +12,13 @@
  ******************************************************************************/  
 package org.eclipse.persistence.nosql.adapters.mongo;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Vector;
 
 import javax.resource.cci.InteractionSpec;
+import javax.resource.cci.MappedRecord;
 import javax.resource.cci.Record;
 
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
@@ -41,6 +44,7 @@ import org.eclipse.persistence.internal.expressions.QueryKeyExpression;
 import org.eclipse.persistence.internal.expressions.RelationExpression;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.internal.expressions.SQLStatement;
+import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
@@ -82,11 +86,23 @@ public class MongoPlatform extends EISPlatform {
      */
     public MongoPlatform() {
         super();
-        setShouldConvertDataToStrings(true);
         setIsMappedRecordSupported(true);
         setIsIndexedRecordSupported(false);
         setIsDOMRecordSupported(true);
         setSupportsLocalTransactions(true);
+    }
+
+    /**
+     * Mongo does not support all Java types.
+     * Convert unsupported types to string.
+     */
+    @Override
+    public void setValueInRecord(String key, Object value, MappedRecord record, EISAccessor accessor) {
+        Object recordValue = value;
+        if ((value instanceof BigDecimal) || (value instanceof BigInteger)) {
+            recordValue = getConversionManager().convertObject(value, ClassConstants.STRING);
+        }
+        record.put(key, recordValue);
     }
     
     /**

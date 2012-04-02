@@ -171,7 +171,7 @@ public class JPQLCall implements Serializable, Call {
     public void populateQuery(AbstractSession session) {
         if (!isParsed()) {
             
-            JPAQueryBuilder queryBuilder = JPAQueryBuilderManager.getQueryBuilder();
+            JPAQueryBuilder queryBuilder = session.getQueryBuilder();
             queryBuilder.populateQuery(getEjbqlString(), getQuery(), session);
 
             // Make sure we don't parse and prepare again.

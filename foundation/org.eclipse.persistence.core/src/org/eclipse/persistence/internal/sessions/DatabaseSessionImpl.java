@@ -12,15 +12,21 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.sessions;
 
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.*;
 
+import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.helper.DBPlatformHelper;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.security.PrivilegedClassForName;
+import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.sequencing.Sequencing;
 import org.eclipse.persistence.internal.sequencing.SequencingHome;
 import org.eclipse.persistence.internal.sequencing.SequencingFactory;
@@ -37,6 +43,7 @@ import org.eclipse.persistence.platform.server.ServerPlatform;
 import org.eclipse.persistence.platform.server.NoServerPlatform;
 import org.eclipse.persistence.platform.server.ServerPlatformBase;
 import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.JPAQueryBuilder;
 
 /**
  * Implementation of org.eclipse.persistence.sessions.DatabaseSession
@@ -78,6 +85,9 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      * Used to store the server platform that handles server-specific functionality for Oc4j, WLS,  etc.
      */
     private ServerPlatform serverPlatform;
+
+    /** Store the query builder used to parse JPQL. */
+    protected JPAQueryBuilder queryBuilder;
 
     /**
      * INTERNAL:
@@ -224,6 +234,67 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
     public DatabaseSessionImpl(org.eclipse.persistence.sessions.Project project) {
         super(project);
         this.setServerPlatform(new NoServerPlatform(this));
+    }
+    
+    /**
+     * INTERNAL
+     * Return the query builder used to parser JPQL.
+     */
+    @Override
+    public JPAQueryBuilder getQueryBuilder() {
+        if (this.queryBuilder == null) {
+            this.queryBuilder = buildDefaultQueryBuilder();
+        }
+        return this.queryBuilder;
+    }
+    
+    /**
+     * INTERNAL
+     * Set the query builder used to parser JPQL.
+     */
+    public void setQueryBuilder(JPAQueryBuilder queryBuilder) {
+        this.queryBuilder = queryBuilder;
+    }
+    
+    /**
+     * INTERNAL
+     * Build the JPQL builder based on session properties.
+     */
+    protected JPAQueryBuilder buildDefaultQueryBuilder() {
+        String queryBuilderClassName = (String)getProperty(PersistenceUnitProperties.JPQL_PARSER);
+        if (queryBuilderClassName == null) {
+            queryBuilderClassName = "org.eclipse.persistence.internal.jpa.jpql.HermesParser";
+            //queryBuilderClassName = "org.eclipse.persistence.queries.ANTLRQueryBuilder";
+        }
+        String validation = (String)getProperty(PersistenceUnitProperties.JPQL_VALIDATION);
+        JPAQueryBuilder builder = null;
+        try {
+            Class parserClass = null;
+            // use class.forName() to avoid loading parser classes for JAXB
+            // Use Class.forName not thread class loader to avoid class loader issues.
+            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                try {
+                    parserClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(queryBuilderClassName));
+                } catch (PrivilegedActionException exception) {
+                }
+            } else {
+                parserClass = PrivilegedAccessHelper.getClassForName(queryBuilderClassName);
+            }
+            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                try {
+                    builder = (JPAQueryBuilder)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(parserClass));
+                } catch (PrivilegedActionException exception) {
+                }
+            } else {
+                builder = (JPAQueryBuilder)PrivilegedAccessHelper.newInstanceFromClass(parserClass);
+            }
+        } catch (Exception e) {
+            throw new IllegalStateException("Could not load the JPQL parser class." /* TODO: Localize string */, e);
+        }
+        if (validation != null) {
+            builder.setValidationLevel(validation);
+        }
+        return builder;
     }
 
     /**

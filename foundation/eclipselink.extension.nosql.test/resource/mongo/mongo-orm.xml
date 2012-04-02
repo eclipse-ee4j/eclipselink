@@ -11,6 +11,12 @@
                 <field name="_id"/>
                 <generated-value/>
             </id>
+            <basic name="orderDate">
+                <temporal>TIMESTAMP</temporal>
+            </basic>
+            <basic name="orderCal">
+                <temporal>TIMESTAMP</temporal>
+            </basic>
             <version name="version"/>
             <one-to-one name="customer">
                 <join-field name="customerId" referenced-field-name="_id"/>

@@ -176,6 +176,8 @@
                     <include name="org.eclipse.persistence.core_*"/>
                     <include name="org.eclipse.persistence.asm_*"/>
                     <include name="org.eclipse.persistence.antlr_*"/>
+                    <include name="org.eclipse.persistence.jpa.jpql_*"/>
+                    <include name="org.eclipse.persistence.core.jpql_*"/>
                     <include name="org.eclipse.persistence.jpa.equinox_*"/>
                     <include name="org.eclipse.persistence.jpa.equinox.weaving_*"/>
                     <include name="org.eclipse.persistence.jpa.osgi_*"/>

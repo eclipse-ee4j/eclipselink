@@ -20,93 +20,104 @@ import org.eclipse.persistence.internal.jpa.parsing.jpql.JPQLParserFactory;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
- * This class defines the default {@link JPAQueryBuilder} implementation that uses an Antlr-based
- * parser and {@link DatabaseQuery} conversion mechanism.
- *
+ * This class defines the default {@link JPAQueryBuilder} implementation that
+ * uses an Antlr-based parser and {@link DatabaseQuery} conversion mechanism.
+ * 
  * @see JPQLParser
  * @see JPQLParser
  * @see JPQLParserFactory
  * @see JPAQueryBuilder
- * @see JPAQueryBuilderManager
- *
+ * 
  * @version 2.4
  * @since 2.2
  * @author John Bracken
  */
 public final class ANTLRQueryBuilder implements JPAQueryBuilder {
 
-   /**
-    * Creates a new <code>ANTLRQueryBuilder</code>.
-    */
-	public ANTLRQueryBuilder() {
-		super();
-	}
+    /**
+     * Creates a new <code>ANTLRQueryBuilder</code>.
+     */
+    public ANTLRQueryBuilder() {
+        super();
+    }
 
-	/**
-    * Builds a {@link JPQLParseTree} based on the given query and associated {@link AbstractSession}.
-    *
-    * @param jpqlQuery The JPQL query
-    * @param session The associated session
-    * @return The {@link JPQLParseTree}
-    */
-   private JPQLParseTree buildParseTree(CharSequence jpqlQuery, AbstractSession session) {
-   	JPQLParseTree parseTree = JPQLParser.buildParseTree(jpqlQuery.toString());
-   	parseTree.setClassLoader(session.getDatasourcePlatform().getConversionManager().getLoader());
-   	return parseTree;
-   }
+    /**
+     * Allow the parser validation level to be set.
+     * 
+     * @param level
+     *            The validation levels are defined in ParserValidationType
+     */
+    public void setValidationLevel(String level) {
+        // Not supported.
+    }
+    
+    /**
+     * Builds a {@link JPQLParseTree} based on the given query and associated
+     * {@link AbstractSession}.
+     * 
+     * @param jpqlQuery
+     *            The JPQL query
+     * @param session
+     *            The associated session
+     * @return The {@link JPQLParseTree}
+     */
+    private JPQLParseTree buildParseTree(CharSequence jpqlQuery, AbstractSession session) {
+        JPQLParseTree parseTree = JPQLParser.buildParseTree(jpqlQuery.toString());
+        parseTree.setClassLoader(session.getDatasourcePlatform().getConversionManager().getLoader());
+        return parseTree;
+    }
 
-   /**
-    * {@inheritDoc}
-    */
-   public DatabaseQuery buildQuery(CharSequence jpqlQuery, AbstractSession session) {
-   	// TODO - must set class loader
+    /**
+     * {@inheritDoc}
+     */
+    public DatabaseQuery buildQuery(CharSequence jpqlQuery, AbstractSession session) {
+        // TODO - must set class loader
 
-   	JPQLParseTree parseTree = buildParseTree(jpqlQuery, session);
-   	DatabaseQuery databaseQuery = parseTree.createDatabaseQuery();
-   	databaseQuery.setJPQLString(jpqlQuery.toString());
+        JPQLParseTree parseTree = buildParseTree(jpqlQuery, session);
+        DatabaseQuery databaseQuery = parseTree.createDatabaseQuery();
+        databaseQuery.setJPQLString(jpqlQuery.toString());
 
-   	populateQueryInternal(session, parseTree, databaseQuery);
+        populateQueryInternal(session, parseTree, databaseQuery);
 
-   	return databaseQuery;
-   }
+        return databaseQuery;
+    }
 
-   /**
-	 * {@inheritDoc}
-	 */
-	public Expression buildSelectionCriteria(String entityName,
-	                                         String additionalCriteria,
-	                                         AbstractSession session) {
+    /**
+     * {@inheritDoc}
+     */
+    public Expression buildSelectionCriteria(String entityName, String additionalCriteria, AbstractSession session) {
 
-      StringBuilder jpqlQuery = new StringBuilder();
-      jpqlQuery.append("select this from ");
-      jpqlQuery.append(entityName);
-      jpqlQuery.append(" this where ");
-      jpqlQuery.append(additionalCriteria.trim());
-      return buildQuery(jpqlQuery, session).getSelectionCriteria();
-	}
+        StringBuilder jpqlQuery = new StringBuilder();
+        jpqlQuery.append("select this from ");
+        jpqlQuery.append(entityName);
+        jpqlQuery.append(" this where ");
+        jpqlQuery.append(additionalCriteria.trim());
+        return buildQuery(jpqlQuery, session).getSelectionCriteria();
+    }
 
-   /**
-    * {@inheritDoc}
-    */
-   public void populateQuery(CharSequence jpqlQuery, DatabaseQuery query, AbstractSession session) {
-   	new JPQLParserFactory().populateQuery(jpqlQuery.toString(), (ObjectLevelReadQuery) query, session);
-   }
+    /**
+     * {@inheritDoc}
+     */
+    public void populateQuery(CharSequence jpqlQuery, DatabaseQuery query, AbstractSession session) {
+        new JPQLParserFactory().populateQuery(jpqlQuery.toString(), (ObjectLevelReadQuery) query, session);
+    }
 
-   /**
-    * Populates the given query based on the provided parse tree and session.
-    *
-    * @param session The associated {@link AbstractSession}
-    * @param parseTree The parse tree for the given query
-    * @param databaseQuery The database query to be updated
-    */
-   private void populateQueryInternal(AbstractSession session,
-                                      JPQLParseTree parseTree,
-                                      DatabaseQuery databaseQuery) {
+    /**
+     * Populates the given query based on the provided parse tree and session.
+     * 
+     * @param session
+     *            The associated {@link AbstractSession}
+     * @param parseTree
+     *            The parse tree for the given query
+     * @param databaseQuery
+     *            The database query to be updated
+     */
+    private void populateQueryInternal(AbstractSession session, JPQLParseTree parseTree, DatabaseQuery databaseQuery) {
 
-   	// TODO - must set class loader.
-   	parseTree.populateQuery(databaseQuery, session);
+        // TODO - must set class loader.
+        parseTree.populateQuery(databaseQuery, session);
 
-   	// Bug#4646580 Add arguments to query.
-   	parseTree.addParametersToQuery(databaseQuery);
-   }
+        // Bug#4646580 Add arguments to query.
+        parseTree.addParametersToQuery(databaseQuery);
+    }
 }

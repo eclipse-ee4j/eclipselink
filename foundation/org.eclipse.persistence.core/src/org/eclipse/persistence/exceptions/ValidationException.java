@@ -2544,7 +2544,7 @@ public class ValidationException extends EclipseLinkException {
     }
     
     public static ValidationException invalidValueForProperty(Object specifiedValue, String property, Exception error) {
-        Object[] args = { specifiedValue, property, error.toString() };
+        Object[] args = { specifiedValue, property, String.valueOf(error) };
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INVALID_VALUE_FOR_PROPERTY, args), error);
         validationException.setErrorCode(INVALID_VALUE_FOR_PROPERTY);
         return validationException;

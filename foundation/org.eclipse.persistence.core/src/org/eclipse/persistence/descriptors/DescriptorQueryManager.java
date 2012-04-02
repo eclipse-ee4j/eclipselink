@@ -919,7 +919,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
                 throw DescriptorException.additionalCriteriaNotSupportedWithInheritanceViews(getDescriptor());
             }
 
-            JPAQueryBuilder queryBuilder = JPAQueryBuilderManager.getQueryBuilder();
+            JPAQueryBuilder queryBuilder = session.getQueryBuilder();
             Expression selectionCriteria = queryBuilder.buildSelectionCriteria(
                getDescriptor().getAlias(),
                additionalCriteria,

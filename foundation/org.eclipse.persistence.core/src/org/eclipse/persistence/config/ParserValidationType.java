@@ -12,7 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.config;
 
-import org.eclipse.persistence.queries.JPAQueryBuilderManager;
+import org.eclipse.persistence.queries.JPAQueryBuilder;
 
 /**
  * Parser type property values.
@@ -22,7 +22,7 @@ import org.eclipse.persistence.queries.JPAQueryBuilderManager;
  * <p><code>properties.add(PersistenceUnitProperties.JPQL_VALIDATION, ParserValidationType.JPA21);</code>
  * <p>Property values are case-insensitive.
  * 
- * @see JPAQueryBuilderManager
+ * @see JPAQueryBuilder
  */
 public class ParserValidationType {
     public static final String EclipseLink = "EclipseLink";

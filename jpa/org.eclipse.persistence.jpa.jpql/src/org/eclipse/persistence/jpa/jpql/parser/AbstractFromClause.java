@@ -41,7 +41,9 @@ public abstract class AbstractFromClause extends AbstractExpression {
 
 	@Override
 	protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
-
+	        if (word.length() == 0) {
+	            return true;
+	        }
 		char character = word.charAt(0);
 
 		// TODO: Add parameter tolerant and check for these 4 signs if tolerant is turned on only

@@ -35,7 +35,6 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.queries.JPAQueryBuilderManager;
 import org.eclipse.persistence.sessions.Connector;
 import org.eclipse.persistence.sessions.DefaultConnector;
 import org.eclipse.persistence.sessions.JNDIConnector;
@@ -251,7 +250,7 @@ public abstract class JUnitTestCase extends TestCase {
      * Return if the Hermes parser is being used for JPQL.
      */
     public boolean isHermesParser() {
-        return JPAQueryBuilderManager.getQueryBuilder().getClass().getName().indexOf("Hermes") != -1;
+        return getDatabaseSession().getQueryBuilder().getClass().getName().indexOf("Hermes") != -1;
     }
     
     /**

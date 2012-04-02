@@ -86,7 +86,9 @@ public class MongoTestSuite extends JUnitTestCase {
 
     @Override
     public Map getPersistenceProperties() {
-        return new HashMap();
+        Map properties = new HashMap();
+        properties.put(PersistenceUnitProperties.LOGGING_LEVEL, super.getPersistenceProperties().get(PersistenceUnitProperties.LOGGING_LEVEL));
+        return properties;
     }
     
     public void testSetup() {

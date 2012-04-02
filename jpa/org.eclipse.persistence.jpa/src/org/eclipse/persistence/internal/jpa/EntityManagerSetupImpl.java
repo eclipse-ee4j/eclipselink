@@ -131,7 +131,6 @@ import org.eclipse.persistence.platform.database.converters.StructConverter;
 import org.eclipse.persistence.platform.database.events.DatabaseEventListener;
 import org.eclipse.persistence.platform.database.partitioning.DataPartitioningCallback;
 import org.eclipse.persistence.platform.server.ServerPlatformBase;
-import org.eclipse.persistence.queries.JPAQueryBuilderManager;
 import org.eclipse.persistence.tools.profiler.PerformanceMonitor;
 import org.eclipse.persistence.tools.profiler.PerformanceProfiler;
 import org.eclipse.persistence.tools.profiler.QueryMonitor;
@@ -2410,18 +2409,12 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         // Set JPQL parser if it was specified.
         String parser = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JPQL_PARSER, m, this.session);
         if (parser != null) {
-           if (parser.equalsIgnoreCase(ParserType.Hermes)) {
-               JPAQueryBuilderManager.systemQueryBuilderClassName = "org.eclipse.persistence.internal.jpa.jpql.HermesParser";
-           } else if (parser.equalsIgnoreCase(ParserType.ANTLR)) {
-               JPAQueryBuilderManager.systemQueryBuilderClassName = "org.eclipse.persistence.queries.ANTLRQueryBuilder";
-           } else {
-               this.session.handleException(ValidationException.invalidValueForProperty(parser, PersistenceUnitProperties.JPQL_PARSER, null));
-           }
+            this.session.setProperty(PersistenceUnitProperties.JPQL_PARSER, parser);
         }
         // Set JPQL parser validation mode if it was specified.
         String validation = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JPQL_VALIDATION, m, this.session);
         if (validation != null) {
-           JPAQueryBuilderManager.systemQueryBuilderValidationLevel = validation;
+            this.session.setProperty(PersistenceUnitProperties.JPQL_VALIDATION, validation);
         }
     }
     
