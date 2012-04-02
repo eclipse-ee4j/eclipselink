@@ -43,7 +43,7 @@ import dbws.testing.DBWSTestSuite;
 public class RowTypeTestSuite extends DBWSTestSuite {
 
     static final String ROWTYPE_TEST_TABLE = "ROWTYPE_TEST_TABLE";
-    static final String CREATE_ROWTYPE_TEST_TABLE = "CREATE TABLE " + ROWTYPE_TEST_TABLE +
+    static final String CREATE_ROWTYPE_TEST_TABLE = "CREATE TABLE " + ROWTYPE_TEST_TABLE + " (" +
         "\nID NUMBER NOT NULL," +
         "\nNAME VARCHAR(25)," +
         "\nSINCE DATE," +
