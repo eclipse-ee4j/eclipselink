@@ -2,7 +2,7 @@
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
-  
+
     <url>http://www.eclipse.org/eclipselink/</url>
     <name>EclipseLink Parent</name>
     <groupId>org.eclipse.persistence</groupId>
@@ -13,21 +13,20 @@
     <properties>
         <!-- TOOL Properties -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <tycho.version>0.11.1</tycho.version>
-        <maven.compiler.version>2.3.2</maven.compiler.version>
+        <tycho.version>0.14.1</tycho.version>
         <junit4-version>4.8.1</junit4-version>
-        <!-- maven.test.version>1.8</maven.test.version -->
         <!-- maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format -->
         <!-- PROJECT Properties -->
-    	<release.version>2.4.0</release.version>
-    	<build.type>SNAPSHOT</build.type>
-	    <svn.revision>NA</svn.revision>
-    	<src>./src</src>
-    	<!-- BUILD Properties -->
-        <orbit.drop>R20120119162704</orbit.drop>
+        <release.version>2.4.0</release.version>
+        <build.type>SNAPSHOT</build.type>
+        <svn.revision>NA</svn.revision>
+        <src>./src</src>
+        <!-- BUILD Properties -->
+        <!-- orbit.drop>R20120119162704</orbit.drop -->
+        <orbit.drop>S20120308061416</orbit.drop>
         <eclipse.drop>indigo</eclipse.drop>
     </properties>
-  
+
     <modules>
         <module>../../jpa/org.eclipse.persistence.jpa.jpql</module>
         <module>../../foundation/org.eclipse.persistence.core</module>
@@ -46,16 +45,16 @@
         <defaultGoal>verify</defaultGoal>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>${maven.compiler.version}</version>
+                <groupId>org.eclipse.tycho</groupId>
+                <artifactId>tycho-compiler-plugin</artifactId>
+                <version>${tycho.version}</version>
                 <configuration>
                     <source>1.5</source>
                     <target>1.5</target>
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.sonatype.tycho</groupId>
+                <groupId>org.eclipse.tycho</groupId>
                 <artifactId>tycho-maven-plugin</artifactId>
                 <version>${tycho.version}</version>
                 <extensions>true</extensions>
@@ -64,7 +63,7 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.sonatype.tycho</groupId>
+                <groupId>org.eclipse.tycho</groupId>
                 <artifactId>target-platform-configuration</artifactId>
                 <version>${tycho.version}</version>
                 <configuration>
@@ -118,8 +117,8 @@
             </plugin>
             <!-- Mostly working source bundle   generation -->
             <plugin>
-                <groupId>org.sonatype.tycho</groupId>
-                <artifactId>maven-osgi-source-plugin</artifactId>
+                <groupId>org.eclipse.tycho</groupId>
+                <artifactId>tycho-source-plugin</artifactId>
                 <version>${tycho.version}</version>
                 <executions>
                     <execution>
@@ -138,36 +137,40 @@
                 </executions>
             </plugin>
         </plugins>
-	<directory>../../target</directory>
-	<sourceDirectory>${src}</sourceDirectory>
-	<scriptSourceDirectory>./scripts</scriptSourceDirectory>
-	<testSourceDirectory>../${testId}/src</testSourceDirectory>
-	<outputDirectory>./target/classes</outputDirectory>
-	<testOutputDirectory>../${testId}/target/classes</testOutputDirectory>
+    <directory>../../target</directory>
+    <sourceDirectory>${src}</sourceDirectory>
+    <scriptSourceDirectory>./scripts</scriptSourceDirectory>
+    <testSourceDirectory>../${testId}/src</testSourceDirectory>
+    <outputDirectory>./target/classes</outputDirectory>
+    <testOutputDirectory>../${testId}/target/classes</testOutputDirectory>
         <resources>
             <resource>
-		<directory>../../buildsystem/org.eclipse.persistence.parent/resource</directory>
+        <directory>../../buildsystem/org.eclipse.persistence.parent/resource</directory>
             </resource>
         </resources>
         <testResources>
             <testResource>
-		<directory>../${testId}/resources</directory>
+        <directory>../${testId}/resources</directory>
             </testResource>
         </testResources>
         <finalName>${project.artifactId}_${release.version}.${build.qualifier}</finalName>
     </build>
-    
+
     <pluginRepositories>
-        <pluginRepository>
+    <pluginRepository>
+        <id>tycho-0.14.0-staged</id>
+        <url>https://oss.sonatype.org/content/repositories/orgeclipsetycho-004/</url>
+    </pluginRepository>
+        <!-- pluginRepository>
             <id>sonatype-staging</id>
             <url>https://repository.sonatype.org/content/repositories/sonatype_org-031/</url>
-        </pluginRepository>
-        <!-- pluginRepository>
+        </pluginRepository -->
+        <pluginRepository>
             <id>maven-eclipse</id>
             <url>http://repo1.maven.org</url>
-        </pluginRepository -->
+        </pluginRepository>
     </pluginRepositories>
-    
+
     <repositories>
         <repository>
             <id>Eclipse</id>
@@ -177,18 +180,13 @@
         <repository>
             <id>Orbit</id>
             <layout>p2</layout>
-	    <url>http://download.eclipse.org/tools/orbit/downloads/drops/${orbit.drop}/repository</url>
+        <url>http://download.eclipse.org/tools/orbit/downloads/drops/${orbit.drop}/repository</url>
         </repository>
         <repository>
             <id>EL_CompDeps</id>
             <layout>p2</layout>
-	    <url>http://archive.eclipse.org/rt/eclipselink/compdep-update</url>
+        <url>http://archive.eclipse.org/rt/eclipselink/compdep-update</url>
         </repository>
-        <!-- repository>
-            <id>Local_CompDeps</id>
-            <layout>p2</layout>
-            <url>file:///D:/_EL_Trunk2/buildsystem/compdeps/p2repo</url>
-        </repository -->
     </repositories>
 
 </project>

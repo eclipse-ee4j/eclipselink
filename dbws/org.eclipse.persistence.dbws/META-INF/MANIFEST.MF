@@ -9,13 +9,12 @@ Created-By: 1.6.0_21 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.dbws
 Require-Bundle: org.eclipse.persistence.core;bundle-version="2.4.0",
- org.eclipse.persistence.asm;bundle-version="3.3.1",
- javax.servlet;bundle-version="2.4.0"
+ org.eclipse.persistence.asm;bundle-version="3.3.1"
 Bundle-Vendor: Eclipse.org - EclipseLink Project
 Bundle-Version: 2.4.0.qualifier
 Bundle-ManifestVersion: 2
 Import-Package: javax.activation;resolution:=optional,
- javax.servlet,
+ javax.servlet;bundle-version="2.4.0",
  javax.xml.namespace;resolution:=optional,
  javax.xml.parsers;resolution:=optional,
  javax.xml.soap;version="1.0",

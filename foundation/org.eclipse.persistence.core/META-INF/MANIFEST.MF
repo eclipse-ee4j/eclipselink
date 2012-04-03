@@ -154,7 +154,7 @@ Export-Package: org.eclipse.persistence;version="2.4.0",
  org.eclipse.persistence.transaction.wls;version="2.4.0"
 Bundle-ClassPath: .
 HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.core
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.eclipse.persistence.antlr;bundle-version="3.2.0";resolution:=optional,
  org.eclipse.persistence.asm;bundle-version="3.3.1";resolution:=optional
 Bundle-SymbolicName: org.eclipse.persistence.core

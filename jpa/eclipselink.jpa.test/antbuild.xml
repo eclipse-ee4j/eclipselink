@@ -66,11 +66,12 @@
         </path>
     </pathconvert>
     <!-- condition property="jpatest.2.base.dir" value="../.." else="..">
-        <contains string="${jpatest.build.location}" substring="jpa"/>
+        <contains string="${jpatest.build.location}" substring="jpa/${ant.project.name}"/>
     </condition -->
     <property name="env" environment="env" value="env"/>
 
     <!-- Allows a user to overide certain user specific properties. -->
+    <!-- local property overrides -->
     <condition property="custom.bld.properties.message" value="Loading ${user.home}/build.properties..."
                                                      else="Notice: custom properties file '${user.home}/build.properties' not found to load.">
         <available file="${user.home}/build.properties"/>
