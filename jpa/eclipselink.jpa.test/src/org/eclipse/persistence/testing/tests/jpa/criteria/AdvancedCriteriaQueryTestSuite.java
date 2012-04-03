@@ -1007,7 +1007,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         List<Employee> criteriaEmployees;
         beginTransaction(em);
         try {
-            jpqlEmployees = em.createQuery("SELECT e FROM Employee e WHERE EXISTS (SELECT p FROM Project p WHERE e.projects = p AND EXISTS (SELECT t FROM Employee t WHERE p.teamLeader = t))").getResultList();
+            jpqlEmployees = em.createQuery("SELECT e FROM Employee e join e.projects ep WHERE EXISTS (SELECT p FROM Project p WHERE ep = p AND EXISTS (SELECT t FROM Employee t WHERE p.teamLeader = t))").getResultList();
             em.clear();
             
             CriteriaBuilder builder = em.getCriteriaBuilder();
@@ -1054,7 +1054,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         List<Employee> criteriaEmployees;
         beginTransaction(em);
         try {
-            jpqlEmployees = em.createQuery("SELECT e FROM Employee e WHERE e.gender = org.eclipse.persistence.testing.models.jpa.advanced.Employee.Gender.Male AND EXISTS (SELECT p FROM Project p WHERE 'Sales Reporting' <> p.name AND e.projects = p AND EXISTS (SELECT t FROM Employee t WHERE p.teamLeader = t))").getResultList();
+            jpqlEmployees = em.createQuery("SELECT e FROM Employee e join e.projects ep WHERE e.gender = org.eclipse.persistence.testing.models.jpa.advanced.Employee.Gender.Male AND EXISTS (SELECT p FROM Project p WHERE 'Sales Reporting' <> p.name AND ep = p AND EXISTS (SELECT t FROM Employee t WHERE p.teamLeader = t))").getResultList();
             em.clear();
             
             CriteriaBuilder builder = em.getCriteriaBuilder();
@@ -1106,7 +1106,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
         List<Employee> criteriaEmployees;
         beginTransaction(em);
         try {
-            jpqlEmployees = em.createQuery("SELECT e FROM Employee e WHERE EXISTS (SELECT p FROM Project p WHERE e.projects = p AND EXISTS (SELECT t FROM Employee t WHERE p.teamLeader = t))").getResultList();
+            jpqlEmployees = em.createQuery("SELECT e FROM Employee e join e.projects ep WHERE EXISTS (SELECT p FROM Project p WHERE ep = p AND EXISTS (SELECT t FROM Employee t WHERE p.teamLeader = t))").getResultList();
             em.clear();
             
             CriteriaBuilder builder = em.getCriteriaBuilder();

@@ -57,7 +57,6 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.internal.jpa.metamodel.AttributeImpl;
 import org.eclipse.persistence.internal.jpa.metamodel.BasicTypeImpl;
 import org.eclipse.persistence.internal.jpa.metamodel.EmbeddableTypeImpl;
@@ -1300,7 +1299,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertEquals(PersistentAttributeType.ONE_TO_MANY, anAttribute.getPersistentAttributeType());
             
             boolean isAssociation = anAttribute.isAssociation();
-            assertFalse(isAssociation);
+            assertTrue(isAssociation);
         } catch (IllegalArgumentException iae) {
             iae.printStackTrace();
             exceptionThrown = true;
@@ -1334,7 +1333,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertEquals(GalacticPosition.class, anAttribute.getJavaType());
             boolean isAssociation = anAttribute.isAssociation();
             // Only a ReferenceMapping that extends ObjectReferenceMapping returns true            
-            assertFalse(isAssociation);
+            assertTrue(isAssociation);
         } catch (IllegalArgumentException iae) {
             iae.printStackTrace();
             exceptionThrown = true;
