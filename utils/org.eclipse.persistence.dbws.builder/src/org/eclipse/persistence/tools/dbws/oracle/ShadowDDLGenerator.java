@@ -72,8 +72,8 @@ public class ShadowDDLGenerator {
         plsqlPackageType.accept(generatorVisitor);
     }
 
-    public String getCreateDDLFor(PLSQLType plsqlType) {
-        return createDDLs.get(plsqlType).ddl;
+    public String getCreateDDLFor(CompositeDatabaseTypeWithEnclosedType dType) {
+        return createDDLs.get(dType).ddl;
     }
     public List<String> getAllCreateDDLs() {
         List<String> allDDLs = new ArrayList<String>();
@@ -83,8 +83,8 @@ public class ShadowDDLGenerator {
         return allDDLs;
     }
 
-    public String getDropDDLFor(PLSQLType plsqlType) {
-        return dropDDLs.get(plsqlType).ddl;
+    public String getDropDDLFor(CompositeDatabaseTypeWithEnclosedType dType) {
+        return dropDDLs.get(dType).ddl;
     }
     public List<String> getAllDropDDLs() {
         List<String> allDDLs = new ArrayList<String>();
@@ -125,7 +125,7 @@ public class ShadowDDLGenerator {
         static final String SPACES = "      ";
         static final String AS_OBJECT = " AS OBJECT (";
         static final String AS_TABLE_OF = " AS TABLE OF ";
-        static final String END_OBJECT = ");";
+        static final String END_OBJECT = "\n);";
         static final String NUMBER_STR = "NUMBER";
         static final String ROWID_STR = "VARCHAR2(256)";
         static final String NUMBER_DEFAULTSIZE = "38";
