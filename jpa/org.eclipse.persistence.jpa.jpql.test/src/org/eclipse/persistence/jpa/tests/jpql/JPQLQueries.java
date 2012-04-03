@@ -1297,7 +1297,7 @@ public final class JPQLQueries {
 		       "                    WHEN Intern THEN 'Intern' " +
 		       "                    ELSE 'NonExempt' " +
 		       "       END " +
-		       "FROM Employee e " +
+		       "FROM Employee e, Contractor c " +
 		       "WHERE e.dept.name = 'Engineering'";
 	}
 
@@ -1331,9 +1331,9 @@ public final class JPQLQueries {
 	}
 
 	public static String query_211() {
-		return "SELECT TYPE(e) " +
-		       "FROM Employee e " +
-		       "WHERE TYPE(e) <> Exempt";
+		return "SELECT TYPE(employee) " +
+		       "FROM Employee employee " +
+		       "WHERE TYPE(employee) <> Exempt";
 	}
 
 	public static String query_212() {

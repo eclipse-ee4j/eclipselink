@@ -85,7 +85,7 @@ public abstract class AbstractStateObjectTest2_0 extends AbstractStateObjectTest
 					string("'NonExempt'")
 				)
 			),
-			from("Employee", "e"),
+			from("Employee", "e", "Contractor", "c"),
 			where(path("e.dept.name").equal(string("'Engineering'")))
 		);
 	}
@@ -166,14 +166,14 @@ public abstract class AbstractStateObjectTest2_0 extends AbstractStateObjectTest
 
 	public static StateObjectTester stateObject_211() {
 
-		// SELECT TYPE(e)
-		// FROM Employee e
-		// WHERE TYPE(e) <> Exempt
+		// SELECT TYPE(employee)
+		// FROM Employee employee
+		// WHERE TYPE(employee) <> Exempt
 
 		return selectStatement(
-			select(type("e")),
-			from("Employee", "e"),
-			where(type("e").different(variable("Exempt")))
+			select(type("employee")),
+			from("Employee", "employee"),
+			where(type("employee").different(variable("Exempt")))
 		);
 	}
 

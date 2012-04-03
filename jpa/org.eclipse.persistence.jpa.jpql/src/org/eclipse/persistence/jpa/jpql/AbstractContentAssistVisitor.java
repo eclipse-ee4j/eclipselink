@@ -2230,7 +2230,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	 * @return The length of the text, which may contain virtual text
 	 */
 	protected int length(Expression expression) {
-		return expression.toActualText().length();
+		return expression.getLength();
 	}
 
 	/**

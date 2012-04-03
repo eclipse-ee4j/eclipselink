@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Oracle. All rights reserved.
+ * Copyright (c) 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -13,18 +13,17 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.tests.jpql;
 
-import org.eclipse.persistence.jpa.jpql.model.EclipseLinkJPQLQueryBuilder;
-import org.eclipse.persistence.jpa.jpql.model.IJPQLQueryBuilder;
-import org.eclipse.persistence.jpa.jpql.model.JPQLQueryBuilder1_0;
-import org.eclipse.persistence.jpa.jpql.model.JPQLQueryBuilder2_0;
-import org.eclipse.persistence.jpa.jpql.model.JPQLQueryBuilder2_1;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar1;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_0;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_1;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_2;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_3;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_4;
-import org.eclipse.persistence.jpa.tests.jpql.model.IJPQLQueryBuilderTestHelper;
+import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
+import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar1_0;
+import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar2_0;
+import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar2_1;
+import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLGrammarTestHelper;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;
 
@@ -37,27 +36,27 @@ import org.junit.runners.Suite.SuiteClasses;
  * @author Pascal Filion
  */
 @SuiteClasses({
-	RefactoringToolTest1_0.class
+	BasicRefactoringToolTest1_0.class
 })
 @RunWith(JPQLTestRunner.class)
-public final class AllRefactoringToolTest1_0 {
+public final class AllBasicRefactoringToolTest1_0 {
 
-	private AllRefactoringToolTest1_0() {
+	private AllBasicRefactoringToolTest1_0() {
 		super();
 	}
 
-	@IJPQLQueryBuilderTestHelper
-	static IJPQLQueryBuilder[] buildJPQLQueryBuilders() {
-		return new IJPQLQueryBuilder[] {
-			new JPQLQueryBuilder1_0(),
-			new JPQLQueryBuilder2_0(),
-			new JPQLQueryBuilder2_1(),
-			new EclipseLinkJPQLQueryBuilder(EclipseLinkJPQLGrammar1.instance()),
-			new EclipseLinkJPQLQueryBuilder(EclipseLinkJPQLGrammar2_0.instance()),
-			new EclipseLinkJPQLQueryBuilder(EclipseLinkJPQLGrammar2_1.instance()),
-			new EclipseLinkJPQLQueryBuilder(EclipseLinkJPQLGrammar2_2.instance()),
-			new EclipseLinkJPQLQueryBuilder(EclipseLinkJPQLGrammar2_3.instance()),
-			new EclipseLinkJPQLQueryBuilder(EclipseLinkJPQLGrammar2_4.instance())
+	@JPQLGrammarTestHelper
+	static JPQLGrammar[] buildJPQLGrammars() {
+		return new JPQLGrammar[] {
+			JPQLGrammar1_0.instance(),
+			JPQLGrammar2_0.instance(),
+			JPQLGrammar2_1.instance(),
+			EclipseLinkJPQLGrammar1.instance(),
+			EclipseLinkJPQLGrammar2_0.instance(),
+			EclipseLinkJPQLGrammar2_1.instance(),
+			EclipseLinkJPQLGrammar2_2.instance(),
+			EclipseLinkJPQLGrammar2_3.instance(),
+			EclipseLinkJPQLGrammar2_4.instance()
 		};
 	}
 }

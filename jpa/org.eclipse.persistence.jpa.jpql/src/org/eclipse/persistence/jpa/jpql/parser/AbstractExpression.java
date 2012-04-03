@@ -57,6 +57,12 @@ public abstract class AbstractExpression implements Expression {
 	private List<Expression> children;
 
 	/**
+	 * The position of this {@link AbstractExpression} in relation to its parent hierarchy by
+	 * calculating the length of the string representation of what comes before.
+	 */
+	private int offset;
+
+	/**
 	 * The string representation of this {@link AbstractExpression}.
 	 *
 	 * @see #orderedChildren()
@@ -155,6 +161,7 @@ public abstract class AbstractExpression implements Expression {
 	 */
 	protected AbstractExpression(AbstractExpression parent, String text) {
 		super();
+		this.offset = -1;
 		this.text   = text;
 		this.parent = parent;
 	}
@@ -348,6 +355,39 @@ public abstract class AbstractExpression implements Expression {
 	}
 
 	/**
+	 * Calculates the position of the given {@link Expression} by calculating the length of what is
+	 * before.
+	 *
+	 * @param expression The {@link Expression} to determine its position within the parsed tree
+	 * @param length The current length
+	 * @return The length of the string representation of what comes before the given {@link Expression}
+	 * @since 2.4
+	 */
+	protected final int calculatePosition(Expression expression, int length) {
+
+		Expression parent = expression.getParent();
+
+		// Reach the root
+		if (parent == null) {
+			return length;
+		}
+
+		// Traverse the child expression until the expression
+		for (Expression childExpression : parent.orderedChildren()) {
+
+			// Continue to calculate the position by going up the hierarchy
+			if (childExpression == expression) {
+				return calculatePosition(parent, length);
+			}
+
+			length += childExpression.getLength();
+		}
+
+		// It should never reach this
+		throw new RuntimeException("The position of the Expression could not be calculated: " + expression);
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	public final IterableListIterator<Expression> children() {
@@ -458,6 +498,23 @@ public abstract class AbstractExpression implements Expression {
 	 */
 	protected JPAVersion getJPAVersion() {
 		return getRoot().getJPAVersion();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public int getLength() {
+		return toActualText().length();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public final int getOffset() {
+		if (offset == -1) {
+			offset = calculatePosition(this, 0);
+		}
+		return offset;
 	}
 
 	/**

@@ -323,10 +323,10 @@ public abstract class AbstractPathExpression extends AbstractExpression {
 		checkPaths();
 		StringBuilder writer = new StringBuilder();
 
-		for (int index = startIndex, count = stopIndex; index < count; index++) {
+		for (int index = startIndex; index < stopIndex; index++) {
 			writer.append(paths.get(index));
 
-			if (index < count - 1) {
+			if (index < stopIndex - 1) {
 				writer.append(DOT);
 			}
 		}

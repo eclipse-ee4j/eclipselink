@@ -84,7 +84,7 @@ public final class JPQLQueriesTest2_0 extends JPQLParserTest {
 		//                     WHEN Intern THEN 'Intern'
 		//                     ELSE 'NonExempt'
 		//        END
-		// FROM Employee e
+		// FROM Employee e, Contractor c
 		// WHERE e.dept.name = 'Engineering'
 
 		ExpressionTester selectStatement = selectStatement(
@@ -100,7 +100,7 @@ public final class JPQLQueriesTest2_0 extends JPQLParserTest {
 					string("'NonExempt'")
 				)
 			),
-			from("Employee", "e"),
+			from("Employee", "e", "Contractor", "c"),
 			where(path("e.dept.name").equal(string("'Engineering'")))
 		);
 
@@ -200,14 +200,14 @@ public final class JPQLQueriesTest2_0 extends JPQLParserTest {
 	@Test
 	public void test_Query_211() {
 
-		// SELECT TYPE(e)
-		// FROM Employee e
-		// WHERE TYPE(e) <> Exempt
+		// SELECT TYPE(employee)
+		// FROM Employee employee
+		// WHERE TYPE(employee) <> Exempt
 
 		ExpressionTester selectStatement = selectStatement(
-			select(type("e")),
-			from("Employee", "e"),
-			where(type("e").different(variable("Exempt")))
+			select(type("employee")),
+			from("Employee", "employee"),
+			where(type("employee").different(variable("Exempt")))
 		);
 
 		testQuery(query_211(), selectStatement);

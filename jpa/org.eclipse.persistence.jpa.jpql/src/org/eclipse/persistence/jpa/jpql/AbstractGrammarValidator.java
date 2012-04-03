@@ -83,6 +83,7 @@ import org.eclipse.persistence.jpa.jpql.parser.KeyExpression;
 import org.eclipse.persistence.jpa.jpql.parser.KeywordExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LengthExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LikeExpression;
+import org.eclipse.persistence.jpa.jpql.parser.LikeExpressionEscapeCharacterBNF;
 import org.eclipse.persistence.jpa.jpql.parser.LocateExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LogicalExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LowerExpression;
@@ -2366,7 +2367,8 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 			// Check for an input parameter
 			character = literal(escapeCharacter, LiteralType.INPUT_PARAMETER);
 
-			if (character.length() == 0) {
+			if ((character.length() == 0) &&
+			    !isValid(escapeCharacter, LikeExpressionEscapeCharacterBNF.ID)) {
 
 				int startPosition = position(expression) +
 				                    length(expression.getStringExpression()) +

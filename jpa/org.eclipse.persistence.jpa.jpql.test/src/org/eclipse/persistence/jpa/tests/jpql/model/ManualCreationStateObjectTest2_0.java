@@ -218,7 +218,7 @@ public final class ManualCreationStateObjectTest2_0 extends AbstractStateObjectT
 		//                     WHEN Intern THEN 'Intern'
 		//                     ELSE 'NonExempt'
 		//        END
-		// FROM Employee e
+		// FROM Employee e, Contractor c
 		// WHERE e.dept.name = 'Engineering'
 
 		JPQLQueryStateObject jpqlStateObject = buildJPQLQueryStateObject();
@@ -241,6 +241,7 @@ public final class ManualCreationStateObjectTest2_0 extends AbstractStateObjectT
 
 		SelectStatementStateObject select = jpqlStateObject.addSelectStatement();
 		select.addRangeDeclaration("Employee", "e");
+		select.addRangeDeclaration("Contractor", "c");
 		select.addSelectItem("e.name");
 		select.addSelectItem(case_);
 		select.addWhereClause().getBuilder().path("e.dept.name").equal("'Engineering'").commit();
@@ -257,13 +258,14 @@ public final class ManualCreationStateObjectTest2_0 extends AbstractStateObjectT
 		//                     WHEN Intern THEN 'Intern'
 		//                     ELSE 'NonExempt'
 		//        END
-		// FROM Employee e
+		// FROM Employee e, Contractor c
 		// WHERE e.dept.name = 'Engineering'
 
 		JPQLQueryStateObject jpqlStateObject = buildJPQLQueryStateObject();
 
 		SelectStatementStateObject select = jpqlStateObject.addSelectStatement();
 		select.addRangeDeclaration("Employee", "e");
+		select.addRangeDeclaration("Contractor", "c");
 		select.addSelectItem("e.name");
 		select.getSelectClause().parse("CASE TYPE(e) WHEN Exempt THEN 'Exempt' WHEN Contractor THEN 'Contractor' WHEN Intern THEN 'Intern' ELSE 'NonExempt' END");
 		select.addWhereClause("e.dept.name = 'Engineering'");
@@ -479,18 +481,18 @@ public final class ManualCreationStateObjectTest2_0 extends AbstractStateObjectT
 	@Test
 	public void test_Query_211_a() throws Exception {
 
-		// SELECT TYPE(e)
-		// FROM Employee e
-		// WHERE TYPE(e) <> Exempt
+		// SELECT TYPE(employee)
+		// FROM Employee employee
+		// WHERE TYPE(employee) <> Exempt
 
 		JPQLQueryStateObject jpqlStateObject = buildJPQLQueryStateObject();
 
 		SelectStatementStateObject select = jpqlStateObject.addSelectStatement();
-		select.addSelectItem(new TypeExpressionStateObject(select, "e"));
-		select.addRangeDeclaration("Employee", "e");
+		select.addSelectItem(new TypeExpressionStateObject(select, "employee"));
+		select.addRangeDeclaration("Employee", "employee");
 
 		IConditionalExpressionStateObjectBuilder builder = select.addWhereClause().getBuilder();
-		builder.type("e").different(builder.variable("Exempt")).commit();
+		builder.type("employee").different(builder.variable("Exempt")).commit();
 
 		test(stateObject_211(), jpqlStateObject, query_211());
 	}
@@ -498,16 +500,16 @@ public final class ManualCreationStateObjectTest2_0 extends AbstractStateObjectT
 	@Test
 	public void test_Query_211_b() throws Exception {
 
-		// SELECT TYPE(e)
-		// FROM Employee e
-		// WHERE TYPE(e) <> Exempt
+		// SELECT TYPE(employee)
+		// FROM Employee employee
+		// WHERE TYPE(employee) <> Exempt
 
 		JPQLQueryStateObject jpqlStateObject = buildJPQLQueryStateObject();
 
 		SelectStatementStateObject select = jpqlStateObject.addSelectStatement();
-		select.addSelectItem(new TypeExpressionStateObject(select, "e"));
-		select.addRangeDeclaration("Employee", "e");
-		select.addWhereClause("TYPE(e) <> Exempt");
+		select.addSelectItem(new TypeExpressionStateObject(select, "employee"));
+		select.addRangeDeclaration("Employee", "employee");
+		select.addWhereClause("TYPE(employee) <> Exempt");
 
 		test(stateObject_211(), jpqlStateObject, query_211());
 	}

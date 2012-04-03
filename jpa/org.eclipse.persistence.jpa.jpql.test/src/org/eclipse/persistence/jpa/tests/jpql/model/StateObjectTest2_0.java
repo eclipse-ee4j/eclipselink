@@ -59,7 +59,7 @@ public final class StateObjectTest2_0 extends AbstractStateObjectTest2_0 {
 		//                     WHEN Intern THEN 'Intern'
 		//                     ELSE 'NonExempt'
 		//        END
-		// FROM Employee e
+		// FROM Employee e, Contractor c
 		// WHERE e.dept.name = 'Engineering'
 
 		testQuery(query_206(),  stateObject_206());
@@ -113,9 +113,9 @@ public final class StateObjectTest2_0 extends AbstractStateObjectTest2_0 {
 	@Test
 	public void test_Query_211() throws Exception {
 
-		// SELECT TYPE(e)
-		// FROM Employee e
-		// WHERE TYPE(e) <> Exempt
+		// SELECT TYPE(employee)
+		// FROM Employee employee
+		// WHERE TYPE(employee) <> Exempt
 
 		testQuery(query_211(), stateObject_211());
 	}

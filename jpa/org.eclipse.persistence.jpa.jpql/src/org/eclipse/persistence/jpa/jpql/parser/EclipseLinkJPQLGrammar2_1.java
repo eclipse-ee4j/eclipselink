@@ -132,6 +132,7 @@ public final class EclipseLinkJPQLGrammar2_1 extends AbstractJPQLGrammar {
 		addChildBNF(InternalSubstringStringExpressionBNF.ID,   ScalarExpressionBNF.ID);
 		addChildBNF(InternalSubstringPositionExpressionBNF.ID, ScalarExpressionBNF.ID);
 		addChildBNF(InternalUpperExpressionBNF.ID,             ScalarExpressionBNF.ID);
+		addChildBNF(LikeExpressionEscapeCharacterBNF.ID,      ScalarExpressionBNF.ID);
 		addChildBNF(PatternValueBNF.ID,                        ScalarExpressionBNF.ID);
 
 		// Extend the query BNF to add support for TREAT

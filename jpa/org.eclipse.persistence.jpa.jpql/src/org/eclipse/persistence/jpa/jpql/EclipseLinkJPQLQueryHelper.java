@@ -70,6 +70,18 @@ public class EclipseLinkJPQLQueryHelper extends AbstractJPQLQueryHelper {
 	 * {@inheritDoc}
 	 */
 	@Override
+	public BasicRefactoringTool buildBasicRefactoringTool() {
+		return new EclipseLinkBasicRefactoringTool(
+			getQuery().getExpression(),
+			getGrammar(),
+			getProvider()
+		);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	protected AbstractContentAssistVisitor buildContentAssistVisitor(JPQLQueryContext queryContext) {
 		return new EclipseLinkContentAssistVisitor(queryContext);
 	}

@@ -170,7 +170,7 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 	 * the problem
 	 */
 	protected void addProblem(Expression expression, String messageKey, String... arguments) {
-		int startPosition = position(expression);
+		int startPosition = expression.getOffset();
 		int endPosition   = startPosition + length(expression);
 		addProblem(expression, startPosition, endPosition, messageKey, arguments);
 	}
@@ -211,37 +211,6 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 			messageKey,
 			messageArguments
 		);
-	}
-
-	/**
-	 * Calculates the position of the given expression by calculating the length of what is before.
-	 *
-	 * @param expression The expression to determine its position within the parsed tree
-	 * @param length The current length
-	 * @return The length of the string representation of what comes before the given expression
-	 */
-	protected int calculatePosition(Expression expression, int length) {
-
-		Expression parent = expression.getParent();
-
-		// Reach the root
-		if (parent == null) {
-			return length;
-		}
-
-		// Traverse the expression until the expression
-		for (Expression childExpression : parent.orderedChildren()) {
-
-			// Continue to calculate the position by going up the hierarchy
-			if (childExpression == expression) {
-				return calculatePosition(parent, length);
-			}
-
-			length += childExpression.toActualText().length();
-		}
-
-		// It should never reach this
-		throw new RuntimeException("The position of the Expression could not be calculated: " + expression);
 	}
 
 	/**
@@ -432,7 +401,7 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 	 * @return The length of the string representation of the given {@link Expression}
 	 */
 	protected int length(Expression expression) {
-		return expression.toActualText().length();
+		return expression.getLength();
 	}
 
 	/**
@@ -466,7 +435,7 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 	 * @return The length of the string representation of what comes before the given expression
 	 */
 	protected int position(Expression expression) {
-		return calculatePosition(expression, 0);
+		return expression.getOffset();
 	}
 
 	/**

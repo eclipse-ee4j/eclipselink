@@ -27,7 +27,6 @@ import org.junit.runners.Suite.SuiteClasses;
  * @author Pascal Filion
  */
 @SuiteClasses({
-//	WordParserTest.class
 	AllUtilityTests.class,
 	AllJPQLParserTests.class,
 	AllGrammarValidatorTests.class,

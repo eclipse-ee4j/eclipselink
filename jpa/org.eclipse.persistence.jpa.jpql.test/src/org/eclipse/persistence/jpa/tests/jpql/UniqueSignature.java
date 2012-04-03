@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Oracle. All rights reserved.
+ * Copyright (c) 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -13,29 +13,20 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.tests.jpql;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite.SuiteClasses;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * The root test suite containing the unit-tests testing the refactoring functionality.
+ * This annotation can be added to unit-test when it is run more than once and the signature of its
+ * methods remain identical. This will allow Eclipse to differentiate between them.
  *
  * @version 2.4
  * @since 2.4
  * @author Pascal Filion
  */
-@SuiteClasses({
-	AllRefactoringToolTest1_0.class,
-	AllRefactoringToolTest2_0.class,
-	AllRefactoringToolTest2_1.class,
-
-	AllBasicRefactoringToolTest1_0.class,
-	AllBasicRefactoringToolTest2_0.class,
-	AllBasicRefactoringToolTest2_1.class,
-})
-@RunWith(JPQLTestRunner.class)
-public final class AllRefactoringToolTests {
-
-	private AllRefactoringToolTests() {
-		super();
-	}
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface UniqueSignature {
 }

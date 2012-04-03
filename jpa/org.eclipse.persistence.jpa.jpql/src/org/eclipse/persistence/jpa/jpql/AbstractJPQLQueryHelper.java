@@ -31,21 +31,37 @@ import org.eclipse.persistence.jpa.jpql.spi.ITypeRepository;
 /**
  * This helper can perform the following operations over a JPQL query:
  * <ul>
- * <li>Calculates the result type of a query: {@link #getResultType()};</li>
- * <li>Calculates the type of an input parameter: {@link #getParameterType(String)}.</li>
+ * <li>Calculates the result type of a query: {@link #getResultType()};
+ * </li>
+ * <li>Calculates the type of an input parameter: {@link #getParameterType(String)}.
+ * </li>
  * <li>Calculates the possible choices to complete the query from a given
- *     position (used for content assist): {@link #buildContentAssistProposals(int)}.</li>
+ *     position (used for content assist): {@link #buildContentAssistProposals(int)}.
+ * </li>
  * <li>Validates the query by introspecting it grammatically and semantically:
  *     <ul>
  *     <li>{@link #validate()},</li>
  *     <li>{@link #validateGrammar()},</li>
  *     <li>{@link #validateSemantic()}.</li>
- *     </ul></li>
+ *     </ul>
+ * </li>
+ * <li>Refactoring support:
+ *     <ul>
+ *     <li>{@link #buildBasicRefactoringTool()} provides support for generating the delta of the
+ *     refactoring operation through a collection of {@link TextEdit} objects.</li>
+ *     <li>{@link #buildRefactoringTool()} provides support for refactoring the JPQL query through
+ *     the editable {@link org.eclipse.persistence.jpa.jpql.model.query.StateObject StateObject} and
+ *     once all refactoring operations have been executed, the {@link org.eclipse.persistence.jpa.
+ *     jpql.model.IJPQLQueryFormatter IJPQLQueryFormatter} will generate a new string representation
+ *     of the JPQL query.</li>
+ *     </ul>
+ * </li>
+ * </ul>
  *
  * Provisional API: This interface is part of an interim API that is still under development and
  * expected to change significantly before reaching stability. It is available at this early stage
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
- * API will almost certainly be broken (repeatedly) as the API evolves.
+ * API will almost certainly be broken (repeatedly) as the API evolves.<p>
  *
  * @version 2.4
  * @since 2.3
@@ -107,6 +123,16 @@ public abstract class AbstractJPQLQueryHelper {
 		this.queryContext = queryContext;
 		this.jpqlGrammar  = queryContext.getGrammar();
 	}
+
+	/**
+	 * Creates the concrete instance of the tool that can refactor the content of a JPQL query. This
+	 * version simply provides the delta of the refactoring operations.
+	 *
+	 * @return The concrete instance of {@link RefactoringTool}
+	 * @see #buildRefactoringTool
+	 * @since 2.4
+	 */
+	public abstract BasicRefactoringTool buildBasicRefactoringTool();
 
 	/**
 	 * Retrieves the possibles choices that can complete the query from the given position within
@@ -179,9 +205,14 @@ public abstract class AbstractJPQLQueryHelper {
 	}
 
 	/**
-	 * Creates the concrete instance of the tool that can refactor the content of a JPQL query.
+	 * Creates the concrete instance of the tool that can refactor the content of a JPQL query. This
+	 * version provides a way to manipulate the editable version of the JPQL query ({@link org.
+	 * eclipse.persistence.jpa.jpql.model.query.StateObject StateObject} and simply outputs the
+	 * result of the refactoring operations, i.e. the updated JPQL query).
 	 *
 	 * @return The concrete instance of {@link RefactoringTool}
+	 * @see #buildSimpleRefactoringTool
+	 * @since 2.4
 	 */
 	public abstract RefactoringTool buildRefactoringTool();
 

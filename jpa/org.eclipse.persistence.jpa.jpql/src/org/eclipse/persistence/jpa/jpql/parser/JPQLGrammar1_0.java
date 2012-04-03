@@ -383,6 +383,7 @@ public final class JPQLGrammar1_0 extends AbstractJPQLGrammar {
 		registerBNF(new JoinFetchBNF());
 		registerBNF(new JPQLStatementBNF());
 		registerBNF(new LikeExpressionBNF());
+		registerBNF(new LikeExpressionEscapeCharacterBNF());
 		registerBNF(new LiteralBNF());
 		registerBNF(new NewValueBNF());
 		registerBNF(new NullComparisonExpressionBNF());

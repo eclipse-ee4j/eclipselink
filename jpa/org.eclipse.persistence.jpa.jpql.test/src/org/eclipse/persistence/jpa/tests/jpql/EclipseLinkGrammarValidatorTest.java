@@ -41,14 +41,6 @@ public class EclipseLinkGrammarValidatorTest extends AbstractGrammarValidatorTes
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected boolean isSubqueryAllowedAnywhere() {
-		return isEclipseLink2_4();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	protected AbstractGrammarValidator buildValidator() {
 		return new EclipseLinkGrammarValidator(jpqlGrammar);
 	}
@@ -78,6 +70,14 @@ public class EclipseLinkGrammarValidatorTest extends AbstractGrammarValidatorTes
 	 */
 	@Override
 	protected boolean isJoinFetchIdentifiable() {
+		return isEclipseLink2_4();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected boolean isSubqueryAllowedAnywhere() {
 		return isEclipseLink2_4();
 	}
 

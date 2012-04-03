@@ -13,10 +13,23 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
+import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_1;
+import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_2;
+import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_3;
+import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_4;
+import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.junit.Test;
 
 @SuppressWarnings("nls")
 public final class LikeExpressionTest extends JPQLParserTest {
+
+	protected boolean isEclipseLink21OrLater() {
+		JPQLGrammar jpqlGrammar = getGrammar();
+		return jpqlGrammar == EclipseLinkJPQLGrammar2_1.instance() ||
+		       jpqlGrammar == EclipseLinkJPQLGrammar2_2.instance() ||
+		       jpqlGrammar == EclipseLinkJPQLGrammar2_3.instance() ||
+		       jpqlGrammar == EclipseLinkJPQLGrammar2_4.instance();
+	}
 
 	@Test
 	public void testBuildExpression_01() {
@@ -127,7 +140,7 @@ public final class LikeExpressionTest extends JPQLParserTest {
 		LikeExpressionTester likeExpression = like(
 			string("'Pascal''s code'"),
 			string("'Pascal'"),
-			bad(TRUE())
+			isEclipseLink21OrLater() ? TRUE() : bad(TRUE())
 		);
 
 		ExpressionTester selectStatement = selectStatement(
@@ -150,7 +163,7 @@ public final class LikeExpressionTest extends JPQLParserTest {
 		LikeExpressionTester likeExpression = like(
 			string("'Pascal''s code'"),
 			string("'Pascal'"),
-			bad(TRUE())
+			isEclipseLink21OrLater() ? TRUE() : bad(TRUE())
 		);
 
 		ExpressionTester selectStatement = selectStatement(

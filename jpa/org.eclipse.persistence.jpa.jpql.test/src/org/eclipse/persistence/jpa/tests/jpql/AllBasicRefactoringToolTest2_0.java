@@ -13,51 +13,46 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.tests.jpql;
 
-import org.eclipse.persistence.jpa.jpql.model.EclipseLinkJPQLQueryBuilder;
-import org.eclipse.persistence.jpa.jpql.model.IJPQLQueryBuilder;
-import org.eclipse.persistence.jpa.jpql.model.JPQLQueryBuilder1_0;
-import org.eclipse.persistence.jpa.jpql.model.JPQLQueryBuilder2_0;
-import org.eclipse.persistence.jpa.jpql.model.JPQLQueryBuilder2_1;
-import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar1;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_0;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_1;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_2;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_3;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_4;
-import org.eclipse.persistence.jpa.tests.jpql.model.IJPQLQueryBuilderTestHelper;
+import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
+import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar2_0;
+import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar2_1;
+import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLGrammarTestHelper;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;
 
 /**
  * The root test suite containing the unit-tests testing the refactoring functionality when the JPA
- * version is 1.0.
+ * version is 2.0.
  *
  * @version 2.4
  * @since 2.4
  * @author Pascal Filion
  */
 @SuiteClasses({
-	RefactoringToolTest1_0.class
+	BasicRefactoringToolTest2_0.class
 })
 @RunWith(JPQLTestRunner.class)
-public final class AllRefactoringToolTest1_0 {
+public final class AllBasicRefactoringToolTest2_0 {
 
-	private AllRefactoringToolTest1_0() {
+	private AllBasicRefactoringToolTest2_0() {
 		super();
 	}
 
-	@IJPQLQueryBuilderTestHelper
-	static IJPQLQueryBuilder[] buildJPQLQueryBuilders() {
-		return new IJPQLQueryBuilder[] {
-			new JPQLQueryBuilder1_0(),
-			new JPQLQueryBuilder2_0(),
-			new JPQLQueryBuilder2_1(),
-			new EclipseLinkJPQLQueryBuilder(EclipseLinkJPQLGrammar1.instance()),
-			new EclipseLinkJPQLQueryBuilder(EclipseLinkJPQLGrammar2_0.instance()),
-			new EclipseLinkJPQLQueryBuilder(EclipseLinkJPQLGrammar2_1.instance()),
-			new EclipseLinkJPQLQueryBuilder(EclipseLinkJPQLGrammar2_2.instance()),
-			new EclipseLinkJPQLQueryBuilder(EclipseLinkJPQLGrammar2_3.instance()),
-			new EclipseLinkJPQLQueryBuilder(EclipseLinkJPQLGrammar2_4.instance())
+	@JPQLGrammarTestHelper
+	static JPQLGrammar[] buildJPQLGrammars() {
+		return new JPQLGrammar[] {
+			JPQLGrammar2_0.instance(),
+			JPQLGrammar2_1.instance(),
+			EclipseLinkJPQLGrammar2_0.instance(),
+			EclipseLinkJPQLGrammar2_1.instance(),
+			EclipseLinkJPQLGrammar2_2.instance(),
+			EclipseLinkJPQLGrammar2_3.instance(),
+			EclipseLinkJPQLGrammar2_4.instance()
 		};
 	}
 }

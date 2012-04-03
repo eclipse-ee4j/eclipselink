@@ -13,10 +13,10 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.tests.jpql;
 
-import org.eclipse.persistence.jpa.jpql.model.EclipseLinkJPQLQueryBuilder;
-import org.eclipse.persistence.jpa.jpql.model.IJPQLQueryBuilder;
-import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_1;
-import org.eclipse.persistence.jpa.tests.jpql.model.IJPQLQueryBuilderTestHelper;
+import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_4;
+import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
+import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar2_1;
+import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLGrammarTestHelper;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;
 
@@ -29,17 +29,20 @@ import org.junit.runners.Suite.SuiteClasses;
  * @author Pascal Filion
  */
 @SuiteClasses({
-	EclipseLinkRefactoringToolTest2_1.class
+	BasicRefactoringToolTest2_1.class
 })
 @RunWith(JPQLTestRunner.class)
-public final class AllEclipseLinkRefactoringToolTest2_1 {
+public final class AllBasicRefactoringToolTest2_1 {
 
-	private AllEclipseLinkRefactoringToolTest2_1() {
+	private AllBasicRefactoringToolTest2_1() {
 		super();
 	}
 
-	@IJPQLQueryBuilderTestHelper
-	static IJPQLQueryBuilder buildJPQLQueryBuilder() {
-		return new EclipseLinkJPQLQueryBuilder(EclipseLinkJPQLGrammar2_1.instance());
+	@JPQLGrammarTestHelper
+	static JPQLGrammar[] buildJPQLGrammars() {
+		return new JPQLGrammar[] {
+			JPQLGrammar2_1.instance(),
+			EclipseLinkJPQLGrammar2_4.instance()
+		};
 	}
 }

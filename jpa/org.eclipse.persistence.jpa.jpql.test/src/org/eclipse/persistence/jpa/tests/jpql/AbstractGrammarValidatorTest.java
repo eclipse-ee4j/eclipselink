@@ -18,6 +18,10 @@ import org.eclipse.persistence.jpa.jpql.AbstractGrammarValidator;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.JPQLQueryProblem;
 import org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages;
+import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_1;
+import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_2;
+import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_3;
+import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_4;
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLQueryStringFormatter;
@@ -3411,18 +3415,30 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	@Test
 	public final void test_LikeExpression_InvalidEscapeCharacter_4() throws Exception {
 
-		String query = "SELECT e FROM Employee e WHERE e.name LIKE 'Pascal' ESCAPE TRUE";
-		int startPosition = "SELECT e FROM Employee e WHERE e.name LIKE 'Pascal' ESCAPE ".length();
-		int endPosition   = query.length();
-
+		String query = "SELECT e FROM Employee e WHERE e.name LIKE 'Pascal' ESCAPE UPPER('_')";
 		List<JPQLQueryProblem> problems = validate(query);
 
-		testHasProblem(
-			problems,
-			JPQLQueryProblemMessages.LikeExpression_InvalidEscapeCharacter,
-			startPosition,
-			endPosition
-		);
+		if (jpqlGrammar == EclipseLinkJPQLGrammar2_1.instance() ||
+		    jpqlGrammar == EclipseLinkJPQLGrammar2_2.instance() ||
+		    jpqlGrammar == EclipseLinkJPQLGrammar2_3.instance() ||
+		    jpqlGrammar == EclipseLinkJPQLGrammar2_4.instance()) {
+
+			testDoesNotHaveProblem(
+				problems,
+				JPQLQueryProblemMessages.LikeExpression_InvalidEscapeCharacter
+			);
+		}
+		else {
+			int startPosition = "SELECT e FROM Employee e WHERE e.name LIKE 'Pascal' ESCAPE ".length();
+			int endPosition   = query.length();
+
+			testHasProblem(
+				problems,
+				JPQLQueryProblemMessages.LikeExpression_InvalidEscapeCharacter,
+				startPosition,
+				endPosition
+			);
+		}
 	}
 
 	@Test

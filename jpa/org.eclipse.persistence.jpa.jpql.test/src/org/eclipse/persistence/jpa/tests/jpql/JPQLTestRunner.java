@@ -457,10 +457,15 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
 		private Description description;
 		private SuiteHelper suiteHelper;
 		private JPQLBasicTest test;
+		private boolean uniquenessRequired;
 
 		JPQLBasicTestRunner(Class<?> testClass, SuiteHelper suiteHelper) throws InitializationError {
 			super(testClass);
 			this.suiteHelper = suiteHelper;
+			// Check to see if the signature of the test methods needs to be unique,
+			// this is required when the same test is run more than once and the
+			// generated signature remains identical
+			uniquenessRequired = testClass.isAnnotationPresent(UniqueSignature.class);
 		}
 
 		private Description buildDescription() {
@@ -476,11 +481,11 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
 			return description;
 		}
 
-		@Override
-		protected List<FrameworkMethod> getChildren() {
-			List<FrameworkMethod> methods = super.getChildren();
-			Collections.sort(methods, buildMethodComparator());
-			return methods;
+		private String buildDisplayString() {
+			StringBuilder writer = new StringBuilder();
+			writer.append(getName());
+			suiteHelper.addAdditionalInfo(writer);
+			return writer.toString();
 		}
 
 		private Comparator<FrameworkMethod> buildMethodComparator() {
@@ -489,13 +494,6 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
 					return method1.getName().compareTo(method2.getName());
 				}
 			};
-		}
-
-		private String buildDisplayString() {
-			StringBuilder writer = new StringBuilder();
-			writer.append(getName());
-			suiteHelper.addAdditionalInfo(writer);
-			return writer.toString();
 		}
 
 		/**
@@ -518,6 +516,13 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
 			return test;
 		}
 
+		@Override
+		protected List<FrameworkMethod> getChildren() {
+			List<FrameworkMethod> methods = super.getChildren();
+			Collections.sort(methods, buildMethodComparator());
+			return methods;
+		}
+
 		/**
 		 * {@inheritDoc}
 		 */
@@ -531,7 +536,8 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
 
 		private void instantiateTest() throws Throwable {
 
-			Constructor<?> constructor = getTestClass().getJavaClass().getConstructor();
+			Class<?> testClass = getTestClass().getJavaClass();
+			Constructor<?> constructor = testClass.getConstructor();
 			constructor.setAccessible(true);
 			test = (JPQLBasicTest) constructor.newInstance();
 
@@ -564,9 +570,19 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
 		 */
 		@Override
 		protected String testName(FrameworkMethod method) {
+
+			// Create the signature of the method, which will have the helpers' additional information
 			StringBuilder writer = new StringBuilder();
 			writer.append(method.getName());
 			suiteHelper.addAdditionalInfo(writer);
+
+			// It is possible two signatures maybe be identical, add something unique
+			if (uniquenessRequired) {
+				writer.append(" (");
+				writer.append(hashCode());
+				writer.append(")");
+			}
+
 			return writer.toString();
 		}
 

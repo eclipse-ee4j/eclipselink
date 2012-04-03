@@ -16,6 +16,7 @@ package org.eclipse.persistence.jpa.tests.jpql;
 import org.eclipse.persistence.jpa.jpql.model.EclipseLinkJPQLQueryBuilder;
 import org.eclipse.persistence.jpa.jpql.model.IJPQLQueryBuilder;
 import org.eclipse.persistence.jpa.jpql.model.JPQLQueryBuilder2_0;
+import org.eclipse.persistence.jpa.jpql.model.JPQLQueryBuilder2_1;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_0;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_1;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_2;
@@ -47,6 +48,7 @@ public final class AllRefactoringToolTest2_0 {
 	static IJPQLQueryBuilder[] buildJPQLQueryBuilders() {
 		return new IJPQLQueryBuilder[] {
 			new JPQLQueryBuilder2_0(),
+			new JPQLQueryBuilder2_1(),
 			new EclipseLinkJPQLQueryBuilder(EclipseLinkJPQLGrammar2_0.instance()),
 			new EclipseLinkJPQLQueryBuilder(EclipseLinkJPQLGrammar2_1.instance()),
 			new EclipseLinkJPQLQueryBuilder(EclipseLinkJPQLGrammar2_2.instance()),

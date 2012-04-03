@@ -437,9 +437,9 @@ public final class LikeExpression extends AbstractExpression {
 			escapeCharacter.parse(wordParser, tolerant);
 			count = 0;
 		}
-		// Parse an invalid expression
-		else if (tolerant) {
-			escapeCharacter = parse(wordParser, PreLiteralExpressionBNF.ID, tolerant);
+		// Parse with the BNF
+		else {
+			escapeCharacter = parse(wordParser, LikeExpressionEscapeCharacterBNF.ID, tolerant);
 
 			if (!hasEscape && (escapeCharacter == null) && !wordParser.isTail()) {
 				hasSpaceAfterPatternValue = false;

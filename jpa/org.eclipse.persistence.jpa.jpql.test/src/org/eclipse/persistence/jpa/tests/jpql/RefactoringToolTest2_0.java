@@ -38,12 +38,12 @@ public final class RefactoringToolTest2_0 extends AbstractRefactoringToolTest {
 	@Test
 	public void test_RenameEntityName_1() throws Exception {
 
-		// SELECT TYPE(e) FROM Employee e WHERE TYPE(e) <> Exempt
+		// SELECT TYPE(employee) FROM Employee employee WHERE TYPE(employee) <> Exempt
 		String jpqlQuery = query_211();
 		RefactoringTool refactoringTool = buildRefactoringTool(jpqlQuery);
 		refactoringTool.renameEntityName("Exempt", "Exemption");
 
-		String expected = "SELECT TYPE(e) FROM Employee e WHERE TYPE(e) <> Exemption";
+		String expected = "SELECT TYPE(employee) FROM Employee employee WHERE TYPE(employee) <> Exemption";
 		assertEquals(expected, refactoringTool.toActualText());
 	}
 
@@ -56,18 +56,18 @@ public final class RefactoringToolTest2_0 extends AbstractRefactoringToolTest {
 		//                     WHEN Intern THEN 'Intern'
 		//                     ELSE 'NonExempt'
 		//        END
-		// FROM Employee e
+		// FROM Employee e, Contractor c
 		// WHERE e.dept.name = 'Engineering'
 
 		String jpqlQuery = query_206();
 		RefactoringTool refactoringTool = buildRefactoringTool(jpqlQuery);
 
 		refactoringTool.renameEntityName("Exempt", "Exemption");
-		String expected = "SELECT e.name, CASE TYPE(e) WHEN Exemption THEN 'Exempt' WHEN Contractor THEN 'Contractor' WHEN Intern THEN 'Intern' ELSE 'NonExempt' END FROM Employee e WHERE e.dept.name = 'Engineering'";
+		String expected = "SELECT e.name, CASE TYPE(e) WHEN Exemption THEN 'Exempt' WHEN Contractor THEN 'Contractor' WHEN Intern THEN 'Intern' ELSE 'NonExempt' END FROM Employee e, Contractor c WHERE e.dept.name = 'Engineering'";
 		assertEquals(expected, refactoringTool.toActualText());
 
 		refactoringTool.renameEntityName("Contractor", "Manager");
-		expected = "SELECT e.name, CASE TYPE(e) WHEN Exemption THEN 'Exempt' WHEN Manager THEN 'Contractor' WHEN Intern THEN 'Intern' ELSE 'NonExempt' END FROM Employee e WHERE e.dept.name = 'Engineering'";
+		expected = "SELECT e.name, CASE TYPE(e) WHEN Exemption THEN 'Exempt' WHEN Manager THEN 'Contractor' WHEN Intern THEN 'Intern' ELSE 'NonExempt' END FROM Employee e, Manager c WHERE e.dept.name = 'Engineering'";
 		assertEquals(expected, refactoringTool.toActualText());
 	}
 

@@ -15,48 +15,33 @@ package org.eclipse.persistence.jpa.tests.jpql;
 
 import org.eclipse.persistence.jpa.jpql.model.EclipseLinkJPQLQueryBuilder;
 import org.eclipse.persistence.jpa.jpql.model.IJPQLQueryBuilder;
-import org.eclipse.persistence.jpa.jpql.model.JPQLQueryBuilder1_0;
-import org.eclipse.persistence.jpa.jpql.model.JPQLQueryBuilder2_0;
 import org.eclipse.persistence.jpa.jpql.model.JPQLQueryBuilder2_1;
-import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar1;
-import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_0;
-import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_1;
-import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_2;
-import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_3;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_4;
 import org.eclipse.persistence.jpa.tests.jpql.model.IJPQLQueryBuilderTestHelper;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;
 
 /**
- * The root test suite containing the unit-tests testing the refactoring functionality when the JPA
- * version is 1.0.
+ * This test suite containing the unit-tests testing the refactoring functionality with JPA 2.1.
  *
  * @version 2.4
  * @since 2.4
  * @author Pascal Filion
  */
 @SuiteClasses({
-	RefactoringToolTest1_0.class
+	RefactoringToolTest2_1.class
 })
 @RunWith(JPQLTestRunner.class)
-public final class AllRefactoringToolTest1_0 {
+public final class AllRefactoringToolTest2_1 {
 
-	private AllRefactoringToolTest1_0() {
+	private AllRefactoringToolTest2_1() {
 		super();
 	}
 
 	@IJPQLQueryBuilderTestHelper
 	static IJPQLQueryBuilder[] buildJPQLQueryBuilders() {
 		return new IJPQLQueryBuilder[] {
-			new JPQLQueryBuilder1_0(),
-			new JPQLQueryBuilder2_0(),
 			new JPQLQueryBuilder2_1(),
-			new EclipseLinkJPQLQueryBuilder(EclipseLinkJPQLGrammar1.instance()),
-			new EclipseLinkJPQLQueryBuilder(EclipseLinkJPQLGrammar2_0.instance()),
-			new EclipseLinkJPQLQueryBuilder(EclipseLinkJPQLGrammar2_1.instance()),
-			new EclipseLinkJPQLQueryBuilder(EclipseLinkJPQLGrammar2_2.instance()),
-			new EclipseLinkJPQLQueryBuilder(EclipseLinkJPQLGrammar2_3.instance()),
 			new EclipseLinkJPQLQueryBuilder(EclipseLinkJPQLGrammar2_4.instance())
 		};
 	}

@@ -80,7 +80,7 @@ public final class QueryPosition {
 				break;
 			}
 			else {
-				length += child.toParsedText().length();
+				length += child.getLength();
 			}
 		}
 
