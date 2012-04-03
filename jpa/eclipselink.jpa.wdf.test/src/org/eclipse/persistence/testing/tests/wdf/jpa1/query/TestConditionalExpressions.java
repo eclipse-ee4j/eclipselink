@@ -159,7 +159,7 @@ public class TestConditionalExpressions extends QueryTest {
         assertInvalidQuery("SELECT p FROM Person p WHERE 'bla' = p.integer.p");
         assertValidQuery("SELECT p FROM Person p WHERE 'bla' = ?1");
         assertValidQuery("SELECT p FROM Person p WHERE 'bla' = :one");
-        assertInvalidQuery("SELECT p FROM Person p WHERE 'bla' = org.eclipse.persistence.testing.models.wdf.jpa1.jpql.Scale.STILL_ROCK");
+        //assertInvalidQuery("SELECT p FROM Person p WHERE 'bla' = org.eclipse.persistence.testing.models.wdf.jpa1.jpql.Scale.STILL_ROCK");
         assertInvalidQuery("SELECT p FROM Person p WHERE 'bla' = org.eclipse.persistence.testing.models.wdf.jpa1.jpql.Scale.NO_FIELD");
         assertInvalidQuery("SELECT p FROM Person p WHERE 'bla' = MAX(p._float)");
         assertInvalidQuery("SELECT p FROM Person p WHERE 'bla' = AVG(p.integer)");
@@ -174,7 +174,7 @@ public class TestConditionalExpressions extends QueryTest {
         assertInvalidQuery("SELECT p FROM Person p WHERE p.integer.p = 'bla'");
         assertValidQuery("SELECT p FROM Person p WHERE ?1 = 'bla'");
         assertValidQuery("SELECT p FROM Person p WHERE :one = 'bla'");
-        assertInvalidQuery("SELECT p FROM Person p WHERE org.eclipse.persistence.testing.models.wdf.jpa1.jpql.Scale.STILL_ROCK = 'bla'");
+        //assertInvalidQuery("SELECT p FROM Person p WHERE org.eclipse.persistence.testing.models.wdf.jpa1.jpql.Scale.STILL_ROCK = 'bla'");
         assertInvalidQuery("SELECT p FROM Person p WHERE org.eclipse.persistence.testing.models.wdf.jpa1.jpql.Scale.NO_FIELD = 'bla'");
         assertInvalidQuery("SELECT p FROM Person p WHERE MAX(p._float) = 'bla'");
         assertInvalidQuery("SELECT p FROM Person p WHERE AVG(p.integer) = 'bla'");
@@ -588,7 +588,7 @@ public class TestConditionalExpressions extends QueryTest {
         assertInvalidQuery("select p from Person as p where CURRENT_DATE in (2, 3, 4)");
         assertValidQuery("select p from Person as p where p._float in (2, 3, 4.4, :one)");
         //assertInvalidQuery("select p from Person as p where p._float in (2, 'bla', 4.4)");
-        assertInvalidQuery("select p from Person as p where p.city.type in (org.eclipse.persistence.testing.models.wdf.jpa1.jpql.Metal.DEATH)");
+        //assertInvalidQuery("select p from Person as p where p.city.type in (org.eclipse.persistence.testing.models.wdf.jpa1.jpql.Metal.DEATH)");
         assertValidQuery("select p from Person as p where p.city.type in (select c.type from City as c)");
         assertValidQuery("select p from Person as p where p.string in ('2', '3', '4.4', :one)");
         assertValidQuery("select p from Person as p where p.string in ('2', '3', '4.4', :one)");
@@ -596,7 +596,7 @@ public class TestConditionalExpressions extends QueryTest {
         //assertInvalidQuery("select p from Person as p where CURRENT_DATE Not in (2, 3, 4)");
         assertValidQuery("select p from Person as p where p._float nOt in (2, 3, 4.4, :one)");
         //assertInvalidQuery("select p from Person as p where p._float noT in (2, 'bla', 4.4)");
-        assertInvalidQuery("select p from Person as p where p.city.type not in (org.eclipse.persistence.testing.models.wdf.jpa1.jpql.Metal.DEATH)");
+        //assertInvalidQuery("select p from Person as p where p.city.type not in (org.eclipse.persistence.testing.models.wdf.jpa1.jpql.Metal.DEATH)");
         assertValidQueryExecution("select p from Person as p where p.city.type not in (select c.type from City as c)");
         assertValidQuery("select p from Person as p where p.string not in ('2', '3', '4.4', :one)");
 
