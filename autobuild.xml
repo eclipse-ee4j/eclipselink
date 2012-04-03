@@ -550,13 +550,13 @@
             <format property="run.date" pattern="yyyyMMdd"/>
             <format property="run.time" pattern="HHmm"/>
         </tstamp>
-        <!-- commit.hash="git log -1 --format=%h" -->
+        <property name="commit.hash.cmd" value="${git.exec} log -1 --format=%h">
         <!-- property name="version.qualifier" value="v${build.date}-{commit.hash}"/ -->
         <property name="version.qualifier" value="v${build.date}-r${svn.revision}"/>
     </target>
 
     <target name="promote-init" depends="promote-pre-init, common-init">
-        <!-- This depends upon freezing nightly builds after an RC# build - otherwise the nightly to be -->
+        <!-- This depends upon freezing nightly builds after an RC# build otherwise the nightly to be -->
         <!-- promoted to a 'RELEASE' build (same as last milestone) could expire off the nightly site   -->
         <property name="promote.source.dir"           value="${eclipselink.root.download.dir}/nightly/${release.version}/${build.date}"/>
         <property name="promote.archive.unsigned.lib" value="${promote.source.dir}/${p2.archive.presigned.zip}"/>
