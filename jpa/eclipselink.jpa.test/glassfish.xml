@@ -126,11 +126,13 @@
                 includes="org.eclipse.persistence.antlr_*.jar
                           org.eclipse.persistence.asm_*.jar
                           org.eclipse.persistence.core_*.jar
-                          org.eclipse.persistence.jpa_*.jar
-                          org.eclipse.persistence.jpa.modelgen_*.jar
+                          org.eclipse.persistence.core.jpql_*.jar
                           org.eclipse.persistence.dbws_*.jar
-                          org.eclipse.persistence.oracle_*.jar
+                          org.eclipse.persistence.jpa_*.jar
+                          org.eclipse.persistence.jpa.jpql_*.jar
+                          org.eclipse.persistence.jpa.modelgen_*.jar
                           org.eclipse.persistence.moxy_*.jar
+                          org.eclipse.persistence.oracle_*.jar
                           org.eclipse.persistence.sdo_*.jar"
                 excludes="org.eclipse.persistence.*.source*.jar"/>
         </copy>
