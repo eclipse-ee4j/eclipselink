@@ -550,7 +550,7 @@
             <format property="run.date" pattern="yyyyMMdd"/>
             <format property="run.time" pattern="HHmm"/>
         </tstamp>
-        <property name="commit.hash.cmd" value="${git.exec} log -1 --format=%h">
+        <property name="commit.hash.cmd" value="${git.exec} log -1 --format=%h"/>
         <!-- property name="version.qualifier" value="v${build.date}-{commit.hash}"/ -->
         <property name="version.qualifier" value="v${build.date}-r${svn.revision}"/>
     </target>
