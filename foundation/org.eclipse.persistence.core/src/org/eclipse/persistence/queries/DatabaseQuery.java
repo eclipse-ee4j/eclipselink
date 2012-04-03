@@ -771,7 +771,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         } else {
             checkDescriptor(session);
         }
-        QueryRedirector localRedirector = getRedirector();
+        QueryRedirector localRedirector = getRedirectorForQuery();
         // refactored redirection for bug 3241138
         if (localRedirector != null) {
             return redirectQuery(localRedirector, queryToExecute, session, translationRow);
@@ -1189,7 +1189,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * 
      * @see QueryRedirector
      */
-    public QueryRedirector getRedirector() {
+    public QueryRedirector getRedirectorForQuery() {
         if (doNotRedirect) {
             return null;
         }
@@ -1197,13 +1197,24 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
             return redirector;
         }
         if (descriptor != null) {
-            redirector = getDefaultRedirector();
-            if (redirector == null)
-                doNotRedirect = true; // PERF - short circuit no default
-            // redirector
-            return redirector;
+            return getDefaultRedirector();
         }
         return null;
+    }
+
+    /**
+     * PUBLIC: Return the query redirector. A redirector can be used in a query
+     * to replace its execution with the execution of code. This can be used for
+     * named or parameterized queries to allow dynamic configuration of the
+     * query base on the query arguments.
+     * 
+     * @see QueryRedirector
+     */
+    public QueryRedirector getRedirector() {
+        if (doNotRedirect) {
+            return null;
+        }
+        return redirector;
     }
 
     /**

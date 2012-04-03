@@ -253,6 +253,8 @@ public class QueryFrameworkTestSuite extends TestSuite {
         // Created for BUG# 2692956
         addTest(new RedirectQueryOnUOWTest());
         addTest(new RedirectorOnDescriptorTest());
+        
+        addTest(new DoNotRedirectDefaultRedirectorTest());
 
         //created for BUG# 3037982
         addTest(new SetReferenceClassTest());

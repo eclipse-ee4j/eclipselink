@@ -62,7 +62,7 @@ public class InsertObjectQuery extends WriteObjectQuery {
      */
     public void executeCommit() throws DatabaseException {
         // Check for redirection.
-        QueryRedirector localRedirector = getRedirector();
+        QueryRedirector localRedirector = getRedirectorForQuery();
         // refactored redirection for bug 3241138
         if ( localRedirector!= null) {
             redirectQuery(localRedirector, this, session, translationRow);

@@ -60,7 +60,7 @@ public class UpdateObjectQuery extends WriteObjectQuery {
      */
     public void executeCommit() throws DatabaseException, OptimisticLockException {
         // Check for redirection.
-        QueryRedirector localRedirector = getRedirector();
+        QueryRedirector localRedirector = getRedirectorForQuery();
         // refactored redirection for bug 3241138
         if ( localRedirector!= null) {
             redirectQuery(localRedirector, this, session, translationRow);
@@ -75,7 +75,7 @@ public class UpdateObjectQuery extends WriteObjectQuery {
      */
     public void executeCommitWithChangeSet() throws DatabaseException, OptimisticLockException {
         // Check for redirection.
-        QueryRedirector localRedirector = getRedirector();
+        QueryRedirector localRedirector = getRedirectorForQuery();
         // refactored redirection for bug 3241138
         if ( localRedirector!= null) {
             redirectQuery(localRedirector, this, session, translationRow);
