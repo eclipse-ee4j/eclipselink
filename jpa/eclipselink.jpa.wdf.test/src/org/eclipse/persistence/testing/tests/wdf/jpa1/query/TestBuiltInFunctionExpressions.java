@@ -51,7 +51,7 @@ public class TestBuiltInFunctionExpressions extends QueryTest {
 
     @Test
     public void testConcatHandling6() {
-        /* 6 */assertInvalidQuery("SELECT p FROM Person p where 'a' = concat((select max(p1.string) from Person p1), (select max(p1.string) from Person p1))");
+        /* 6 */assertValidQuery("SELECT p FROM Person p where 'a' = concat((select max(p1.string) from Person p1), (select max(p1.string) from Person p1))");
     }
 
     @Test
@@ -97,7 +97,7 @@ public class TestBuiltInFunctionExpressions extends QueryTest {
 
     @Test
     public void testSubstringHandling14() {
-        /* 14 */assertInvalidQuery("SELECT p FROM Person p where 'a' = substring((select max(p1.string) from Person p1), (select max(p1.integer) from Person p1), (select max(p1.integer) from Person p1))");
+        /* 14 */assertValidQuery("SELECT p FROM Person p where 'a' = substring((select max(p1.string) from Person p1), (select max(p1.integer) from Person p1), (select max(p1.integer) from Person p1))");
     }
 
     @Test
@@ -231,7 +231,7 @@ public class TestBuiltInFunctionExpressions extends QueryTest {
 
     @Test
     public void testUpperHandling41() {
-        /* 41 */assertInvalidQuery("SELECT p FROM Person p where upper((select max(p1.string) from Person p1)) = lower((select max(p1.string) from Person p1))");
+        /* 41 */assertValidQuery("SELECT p FROM Person p where upper((select max(p1.string) from Person p1)) = lower((select max(p1.string) from Person p1))");
     }
 
     @Test
@@ -272,7 +272,7 @@ public class TestBuiltInFunctionExpressions extends QueryTest {
 
     @Test
     public void testLengthHandling49() {
-        /* 49 */assertInvalidQuery("SELECT p FROM Person p where length((select max(p1.string) from Person p1)) = 666");
+        /* 49 */assertValidQuery("SELECT p FROM Person p where length((select max(p1.string) from Person p1)) = 666");
     }
 
     @Test
@@ -313,7 +313,7 @@ public class TestBuiltInFunctionExpressions extends QueryTest {
 
     @Test
     public void testLocateHandling57() {
-        /* 57 */assertInvalidQuery("SELECT p FROM Person p where 666 = locate((select max(p1.string) from Person p1), (select max(p1.string) from Person p1), (select max(p1.integer) from Person p1))");
+        /* 57 */assertValidQuery("SELECT p FROM Person p where 666 = locate((select max(p1.string) from Person p1), (select max(p1.string) from Person p1), (select max(p1.integer) from Person p1))");
     }
 
     @Test
@@ -349,7 +349,7 @@ public class TestBuiltInFunctionExpressions extends QueryTest {
 
     @Test
     public void testAbsHandling64() {
-        /* 64 */assertInvalidQuery("SELECT p FROM Person p where abs((select max(p1.bigInteger) from Person p1)) = 666");
+        /* 64 */assertValidQuery("SELECT p FROM Person p where abs((select max(p1.bigInteger) from Person p1)) = 666");
     }
 
     @ToBeInvestigated
@@ -402,7 +402,7 @@ public class TestBuiltInFunctionExpressions extends QueryTest {
 
     @Test
     public void testSqrtHandling74() {
-        /* 74 */assertInvalidQuery("SELECT p FROM Person p where sqrt((select max(p1.bigInteger) from Person p1)) = 666");
+        /* 74 */assertValidQuery("SELECT p FROM Person p where sqrt((select max(p1.bigInteger) from Person p1)) = 666");
     }
 
     @ToBeInvestigated
@@ -438,7 +438,7 @@ public class TestBuiltInFunctionExpressions extends QueryTest {
 
     @Test
     public void testModHandling81() {
-        /* 81 */assertInvalidQuery("SELECT p FROM Person p where 666 = mod(p._float, p._float)");
+        /* 81 */assertValidQuery("SELECT p FROM Person p where 666 = mod(p._float, p._float)");
     }
 
     @Test
@@ -448,12 +448,12 @@ public class TestBuiltInFunctionExpressions extends QueryTest {
 
     @Test
     public void testModHandling83() {
-        /* 83 */assertInvalidQuery("SELECT p FROM Person p where 666 = mod(p.string, p.string)");
+        /* 83 */assertValidQuery("SELECT p FROM Person p where 666 = mod(p.string, p.string)");
     }
 
     @Test
     public void testModHandling84() {
-        /* 84 */assertInvalidQuery("SELECT p FROM Person p where mod((select max(p1.bigInteger) from Person p1), (select max(p1.bigInteger) from Person p1)) = 666");
+        /* 84 */assertValidQuery("SELECT p FROM Person p where mod((select max(p1.bigInteger) from Person p1), (select max(p1.bigInteger) from Person p1)) = 666");
     }
 
     @ToBeInvestigated
