@@ -70,7 +70,6 @@ public class DefaultJPQLQueryHelper extends AbstractJPQLQueryHelper {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public BasicRefactoringTool buildBasicRefactoringTool() {
 		return new DefaultBasicRefactoringTool(
 			getQuery().getExpression(),

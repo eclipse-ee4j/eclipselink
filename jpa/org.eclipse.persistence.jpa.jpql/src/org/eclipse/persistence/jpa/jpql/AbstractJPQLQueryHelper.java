@@ -130,9 +130,10 @@ public abstract class AbstractJPQLQueryHelper {
 	 *
 	 * @return The concrete instance of {@link RefactoringTool}
 	 * @see #buildRefactoringTool
-	 * @since 2.4
+	 * @since 2.5
+	 * NOTE: This was commented because Dali API can't change at this point
 	 */
-	public abstract BasicRefactoringTool buildBasicRefactoringTool();
+//	public abstract BasicRefactoringTool buildBasicRefactoringTool();
 
 	/**
 	 * Retrieves the possibles choices that can complete the query from the given position within

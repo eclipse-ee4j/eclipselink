@@ -69,7 +69,6 @@ public class EclipseLinkJPQLQueryHelper extends AbstractJPQLQueryHelper {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public BasicRefactoringTool buildBasicRefactoringTool() {
 		return new EclipseLinkBasicRefactoringTool(
 			getQuery().getExpression(),
