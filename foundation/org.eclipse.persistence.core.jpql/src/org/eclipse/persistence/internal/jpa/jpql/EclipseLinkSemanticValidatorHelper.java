@@ -362,12 +362,12 @@ public final class EclipseLinkSemanticValidatorHelper implements SemanticValidat
 			return false;
 		}
 
-		try {
-			// We do a try/catch, it should be faster than doing an instance of
-			// since a QueryKey is used a lot less than a DatabaseMapping
-			return ((DatabaseMapping) mapping).isForeignReferenceMapping();
-		}
-		catch (ClassCastException e) {
+		if (mapping instanceof DatabaseMapping) {
+		        DatabaseMapping databaseMapping = (DatabaseMapping) mapping;
+			return databaseMapping.isForeignReferenceMapping()
+			        || databaseMapping.isAbstractCompositeCollectionMapping()
+                                || databaseMapping.isAbstractCompositeDirectCollectionMapping();
+		} else {
 			return ((QueryKey) mapping).isForeignReferenceQueryKey();
 		}
 	}

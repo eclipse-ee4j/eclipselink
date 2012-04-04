@@ -462,7 +462,7 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
         exOperator.setSelector(ExpressionOperator.Trim);
         Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(2);
         v.add("RTRIM(LTRIM(");
-        v.add(")");
+        v.add("))");
         exOperator.printsAs(v);
         exOperator.bePrefix();
         exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);

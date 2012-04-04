@@ -514,7 +514,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
         exOperator.setSelector(ExpressionOperator.Trim);
         Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(2);
         v.add("RTRIM(LTRIM(");
-        v.add(")");
+        v.add("))");
         exOperator.printsAs(v);
         exOperator.bePrefix();
         exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
@@ -530,16 +530,10 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
         exOperator.setType(ExpressionOperator.FunctionOperator);
         exOperator.setSelector(ExpressionOperator.Trim2);
         Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(5);
-        v.add("RTRIM(");
-        v.add(" FROM LTRIM(");
-        v.add(" FROM ");
-        v.add("))");
+        v.add("STR_REPLACE(");
+        v.add(", ");
+        v.add(", NULL)");
         exOperator.printsAs(v);
-        int[] argumentIndices = new int[3];
-        argumentIndices[0] = 1;
-        argumentIndices[1] = 1;
-        argumentIndices[2] = 0;
-        exOperator.setArgumentIndices(argumentIndices);
         exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
         return exOperator;
     }
