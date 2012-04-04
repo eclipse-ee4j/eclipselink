@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2010 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -39,6 +39,8 @@
  *       - 312123: JPA: Validation error during Id processing on parameterized generic OneToOne Entity relationship from MappedSuperclass
  *     09/16/2010-2.2 Guy Pelletier 
  *       - 283028: Add support for letting an @Embeddable extend a @MappedSuperclass
+ *     04/04/2012-2.3.3 Guy Pelletier 
+ *       - 362180: ConcurrentModificationException on predeploy for AttributeOverride
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
@@ -784,6 +786,16 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         fieldENDDATE.setUnique(false);
         fieldENDDATE.setIsIdentity(false);
         table.addField(fieldENDDATE);
+        
+        FieldDefinition CAPTION_field = new FieldDefinition();
+        CAPTION_field.setName("CAPTION");
+        CAPTION_field.setTypeName("VARCHAR");
+        CAPTION_field.setSize(40);
+        CAPTION_field.setShouldAllowNull(true);
+        CAPTION_field.setIsPrimaryKey(false);
+        CAPTION_field.setUnique(false);
+        CAPTION_field.setIsIdentity(false);
+        table.addField(CAPTION_field);
 
         return table;
     }
@@ -1892,6 +1904,16 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         ALCOHOL_CONTENT_field.setIsIdentity(false);
         ALCOHOL_CONTENT_field.setShouldAllowNull(true);
         table.addField(ALCOHOL_CONTENT_field);
+        
+        FieldDefinition CAPTION_field = new FieldDefinition();
+        CAPTION_field.setName("CAPTION");
+        CAPTION_field.setTypeName("VARCHAR");
+        CAPTION_field.setSize(40);
+        CAPTION_field.setShouldAllowNull(true);
+        CAPTION_field.setIsPrimaryKey(false);
+        CAPTION_field.setUnique(false);
+        CAPTION_field.setIsIdentity(false);
+        table.addField(CAPTION_field);
         
         return table;
     }
