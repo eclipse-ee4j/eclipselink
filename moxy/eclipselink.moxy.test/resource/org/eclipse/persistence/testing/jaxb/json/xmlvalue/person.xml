@@ -2,5 +2,5 @@
    <address>someStreet someCity somePostalCode</address>
    <firstName>Sally</firstName>
    <lastName>Smith</lastName>
-   <phoneNumber>1234567</phoneNumber>
+   <phoneNumber areaCode="613">1234567</phoneNumber>
 </person>

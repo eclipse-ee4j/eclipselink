@@ -105,7 +105,7 @@ public class XMLMarshaller implements Cloneable {
     private MediaType mediaType = MediaType.APPLICATION_XML;
     private String attributePrefix;
     private boolean includeRoot;
-    private String valueWrapper;
+    private String valueWrapper = XMLConstants.VALUE_WRAPPER;
     private NamespacePrefixMapper mapper;
     private String indentString;
     private CharacterEscapeHandler charEscapeHandler;

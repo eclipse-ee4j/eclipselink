@@ -1,11 +1,10 @@
 {"person":{
-   "address":{
-      "value":["someStreet","someCity","somePostalCode"]
-    },
+   "address":"someStreet someCity somePostalCode",
    "firstName":"Sally",
    "lastName":"Smith",
    "phoneNumber":{
-      "value":"1234567"  
+      "areaCode":"613",
+      "valuewrapper":"1234567"  
       }
  }
 }

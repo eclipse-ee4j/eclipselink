@@ -16,9 +16,7 @@ package org.eclipse.persistence.testing.jaxb.javadoc.xmlvalue;
 
 import java.io.StringWriter;
 
-import javax.xml.bind.MarshalException;
 
-import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.jaxb.JAXBMarshaller;
 import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
@@ -27,6 +25,7 @@ public class XmlValueSimpleContentTest extends JAXBWithJSONTestCases {
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/javadoc/xmlvalue/xmlvaluesimplecontent.xml";
     private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/javadoc/xmlvalue/xmlvaluesimplecontent.json";
+    private final static String JSON_RESOURCE_DEFAULT = "org/eclipse/persistence/testing/jaxb/javadoc/xmlvalue/xmlvaluesimplecontentdefault.json";
 
     public XmlValueSimpleContentTest(String name) throws Exception {
         super(name);
@@ -49,13 +48,11 @@ public class XmlValueSimpleContentTest extends JAXBWithJSONTestCases {
     public void testJSONNoValuePropException() throws Exception{
     	jaxbMarshaller = jaxbContext.createMarshaller();
     	jaxbMarshaller.setProperty(JAXBMarshaller.MEDIA_TYPE, "application/json");
-    	try{
-    	    jaxbMarshaller.marshal(getControlObject(), new StringWriter());
-    	}catch(MarshalException e){
-    		assertTrue(e.getLinkedException() instanceof JAXBException);
-    		assertTrue(((JAXBException)e.getLinkedException()).getErrorCode() == JAXBException.JSON_VALUE_WRAPPER_REQUIRED);
-    		return;
-    	}
-    	fail("An exception should have occurred");
+    	
+    	StringWriter sw = new StringWriter();
+    	jaxbMarshaller.marshal(getControlObject(), sw);
+    	
+    	compareStrings("**testJSONMarshalToStringWriter**", sw.toString(), JSON_RESOURCE_DEFAULT);
+    	    	
     }
 }

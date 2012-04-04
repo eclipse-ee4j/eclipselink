@@ -1,4 +1,4 @@
 {"employee":{
-  "@department-numbers":["1","4"],
+  "@department-numbers":"1 4",
   "name":"John Doe"
 }}

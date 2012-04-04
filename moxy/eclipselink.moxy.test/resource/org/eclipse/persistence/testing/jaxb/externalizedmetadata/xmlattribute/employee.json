@@ -2,5 +2,5 @@
    "fname":"Joe",
    "lname":"Oracle",
    "id":66,
-   "things":["thinga","thingb"]
+   "things":"thinga thingb"
    }}

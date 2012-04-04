@@ -104,7 +104,7 @@ public class XMLUnmarshaller implements Cloneable {
     private StrBuffer stringBuffer;
     private MediaType mediaType = MediaType.APPLICATION_XML;
     private IDResolver idResolver;
-    private String valueWrapper;
+    private String valueWrapper = XMLConstants.VALUE_WRAPPER;
 
     static {
         try {

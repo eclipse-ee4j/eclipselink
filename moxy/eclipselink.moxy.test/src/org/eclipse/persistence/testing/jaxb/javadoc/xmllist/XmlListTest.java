@@ -14,7 +14,6 @@ package org.eclipse.persistence.testing.jaxb.javadoc.xmllist;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.io.IOException;
 
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 

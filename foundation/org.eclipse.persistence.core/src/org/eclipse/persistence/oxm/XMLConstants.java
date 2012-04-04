@@ -157,4 +157,5 @@ public class XMLConstants {
     public static final Class LOCATOR_CLASS = org.xml.sax.Locator.class;
     public static final String LOCATOR_CLASS_NAME = "org.xml.sax.Locator";
 
+    static final String VALUE_WRAPPER= "value";
 }

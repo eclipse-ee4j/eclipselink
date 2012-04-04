@@ -34,7 +34,7 @@ public class XMLValuePropTestCases extends JAXBWithJSONTestCases {
 
 	public Map getProperties(){
 		Map props = new HashMap();		
-		props.put(JAXBContext.JSON_VALUE_WRAPPER, "value");
+		props.put(JAXBContext.JSON_VALUE_WRAPPER, "valuewrapper");
 		return props;		   
 	}
 	
@@ -46,6 +46,7 @@ public class XMLValuePropTestCases extends JAXBWithJSONTestCases {
 		p.setMiddleNames(new ArrayList());
 		PhoneNumber phone = new PhoneNumber();
 		phone.number = "1234567";
+		phone.areaCode = "613";
 		p.setPhoneNumber(phone);
 		
 		Address addr = new Address();
@@ -55,8 +56,8 @@ public class XMLValuePropTestCases extends JAXBWithJSONTestCases {
 		addressInfos.add("somePostalCode");
 		addr.setAddressInfo(addressInfos);
 		p.setAddress(addr);
-		
-		return p;
+				
+		return p;		
 	}
 
 }

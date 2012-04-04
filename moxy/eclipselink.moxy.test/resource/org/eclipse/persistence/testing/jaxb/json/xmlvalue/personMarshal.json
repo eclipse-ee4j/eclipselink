@@ -1,10 +1,9 @@
 {"person":{
-   "address":{
-      "marshalWrapper":["someStreet","someCity","somePostalCode"]
-    },
+   "address":"someStreet someCity somePostalCode",
    "firstName":"Sally",
    "lastName":"Smith",
    "phoneNumber":{
+      "areaCode":"613",
       "marshalWrapper":"1234567"  
       }
  }

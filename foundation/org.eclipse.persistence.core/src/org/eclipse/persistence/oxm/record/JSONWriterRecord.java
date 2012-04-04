@@ -76,10 +76,6 @@ public class JSONWriterRecord extends MarshalRecord {
         namespaceSeparator = XMLConstants.DOT;
     }
 
-    public boolean supportsSingleNode(){
-        return false;
-    }
-
     /**
      * INTERNAL:
      */
@@ -185,8 +181,6 @@ public class JSONWriterRecord extends MarshalRecord {
                 }
             }
             
-         
-
             if(position == null || !position.isCollection() || position.isEmptyCollection()){
             	   if(position !=null && position.needToOpenComplex){
                        writer.write('{');
@@ -338,9 +332,14 @@ public class JSONWriterRecord extends MarshalRecord {
      * INTERNAL:
      */
      public void characters(String value) {
+    	  boolean textWrapperOpened = false;
           if(!charactersAllowed){    
-        	   throw JAXBException.jsonValuePropertyRequired(value);        	   		
+        	   if(textWrapperFragment != null){
+        		   openStartElement(textWrapperFragment, namespaceResolver);
+        		   textWrapperOpened = true;
+        	   }
     	   }
+    	 
            Level position = levels.peek();
            position.setNeedToOpenComplex(false);
            try {
@@ -349,7 +348,12 @@ public class JSONWriterRecord extends MarshalRecord {
                writer.write('"');
            } catch (IOException e) {
                throw XMLMarshalException.marshalException(e);
-           }         
+           }        
+           if(textWrapperOpened){    
+          	   if(textWrapperFragment != null){
+               	   endElement(textWrapperFragment, namespaceResolver);
+          	   }
+      	   }           
      }
 
      public void attribute(XPathFragment xPathFragment, NamespaceResolver namespaceResolver,  Object value, QName schemaType){
@@ -363,6 +367,7 @@ public class JSONWriterRecord extends MarshalRecord {
      }
 
      public void characters(QName schemaType, Object value, String mimeType, boolean isCDATA){    	     	 
+    	
          Level position = levels.peek();
          position.setNeedToOpenComplex(false);
          if(mimeType != null) {
@@ -401,6 +406,7 @@ public class JSONWriterRecord extends MarshalRecord {
             }
         }
          charactersAllowed = false;
+       
      }
 
      
@@ -466,9 +472,15 @@ public class JSONWriterRecord extends MarshalRecord {
      }
 
      protected void nonStringCharacters(String value){
-    	if(!charactersAllowed){    
-    	   throw JAXBException.jsonValuePropertyRequired(value);   
+    	boolean textWrapperOpened = false;
+        if(!charactersAllowed){    
+           if(textWrapperFragment != null){
+        	   openStartElement(textWrapperFragment, namespaceResolver);
+        	   textWrapperOpened = true;
+           }
     	}
+    	 
+          
         Level position = levels.peek();
         position.setNeedToOpenComplex(false);
         try {
@@ -476,6 +488,11 @@ public class JSONWriterRecord extends MarshalRecord {
          } catch (IOException e) {
              throw XMLMarshalException.marshalException(e);
          }
+        if(textWrapperOpened){    
+           if(textWrapperFragment != null){
+           	   endElement(textWrapperFragment, namespaceResolver);
+           }
+    	}          
       }
 
     /**

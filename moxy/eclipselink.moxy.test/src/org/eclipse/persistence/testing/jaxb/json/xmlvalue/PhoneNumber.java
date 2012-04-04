@@ -12,6 +12,7 @@
 ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.json.xmlvalue;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlValue;
 
 public class PhoneNumber {
@@ -19,10 +20,20 @@ public class PhoneNumber {
     @XmlValue
     public String number;
     
+    @XmlAttribute
+    public String areaCode;
+    
     public boolean equals(Object obj) {
         if(!(obj instanceof PhoneNumber)) {
             return false;
         } else {
+        	if(areaCode == null){
+        		if(((PhoneNumber)obj).areaCode != null){
+        			return false;
+        		}
+        	}else if(!this.areaCode.equals(((PhoneNumber)obj).areaCode)){
+        		return false;
+        	}
             return this.number.equals(((PhoneNumber)obj).number);
         }
     }

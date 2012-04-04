@@ -52,7 +52,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
     	 if(nextFragment == null ){
     		 return xPathFragment.isAttribute() || xPathFragment.nameIsText();
     	 }else{
-             return  (nextFragment != null) && (nextFragment.nameIsText() || nextFragment.isAttribute());
+             return  (nextFragment != null) && (nextFragment.nameIsText() || nextFragment.isAttribute());    		 
     	 }       
     }
 
@@ -92,7 +92,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
         StringBuilder stringValueStringBuilder = new StringBuilder();
         String newValue;
         QName schemaType = null;
-        if (xmlCompositeDirectCollectionMapping.usesSingleNode() && marshalRecord.supportsSingleNode()) {
+        if (xmlCompositeDirectCollectionMapping.usesSingleNode()) {
             if(xPathFragment != null && !xPathFragment.isAttribute() && !xPathFragment.nameIsText) {
                 marshalRecord.openStartElement(xPathFragment, namespaceResolver);
             }
@@ -124,34 +124,21 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
                 if (xmlCompositeDirectCollectionMapping.isCDATA()) {
                     marshalRecord.cdata(stringValueStringBuilder.toString());
                 } else {
-                    marshalRecord.characters(stringValueStringBuilder.toString());
+                	marshalRecord.characters(stringValueStringBuilder.toString());
                     if (xPathFragment != null && !xPathFragment.isAttribute() && !xPathFragment.nameIsText) {
                     	marshalRecord.endElement(xPathFragment, namespaceResolver);
                     }
                 }
             }
         } else {
-            XPathFragment textXPathFragment = null; 
-            if(xPathFragment.nameIsText() && marshalRecord.getTextWrapperFragment() != null && xPathFragment.getXMLField().getXPathFragment() == xPathFragment){
-              	textXPathFragment = marshalRecord.getTextWrapperFragment();   
-            }   
-            if(textXPathFragment !=null){
-            	marshalRecord.openStartElement(textXPathFragment, namespaceResolver);
-            }
-                                     
+                                                
             marshalRecord.startCollection();
          
             while (cp.hasNext(iterator)) {
                 objectValue = cp.next(iterator, session);
          	    marshalSingleValue(xPathFragment, marshalRecord, object, objectValue, session, namespaceResolver, ObjectMarshalContext.getInstance());
             }
-            marshalRecord.endCollection();
-            
-            if(textXPathFragment!=null){
-            	marshalRecord.endElement(textXPathFragment, namespaceResolver);
-            }
-        	
-            
+            marshalRecord.endCollection();        
         }
         return true;
         
@@ -159,7 +146,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
 
     public void attribute(UnmarshalRecord unmarshalRecord, String namespaceURI, String localName, String value) {
         Object collection = unmarshalRecord.getContainerInstance(this);
-        if (xmlCompositeDirectCollectionMapping.usesSingleNode() && unmarshalRecord.supportsSingleNode()) {
+        if (xmlCompositeDirectCollectionMapping.usesSingleNode()) {
             StringTokenizer stringTokenizer = new StringTokenizer(value);
             while (stringTokenizer.hasMoreTokens()) {
                 addUnmarshalValue(unmarshalRecord, stringTokenizer.nextToken(), collection);
@@ -213,7 +200,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
         Object collection = unmarshalRecord.getContainerInstance(this);
         unmarshalRecord.resetStringBuffer();
 
-        if (xmlCompositeDirectCollectionMapping.usesSingleNode() && unmarshalRecord.supportsSingleNode()) {
+        if (xmlCompositeDirectCollectionMapping.usesSingleNode()) {
             StringTokenizer stringTokenizer = new StringTokenizer((String) value);
             while (stringTokenizer.hasMoreTokens()) {
                 addUnmarshalValue(unmarshalRecord, stringTokenizer.nextToken(), collection);
@@ -230,7 +217,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
         Object value = unmarshalRecord.getCharacters().toString();
         unmarshalRecord.resetStringBuffer();
 
-        if (xmlCompositeDirectCollectionMapping.usesSingleNode() && unmarshalRecord.supportsSingleNode()) {
+        if (xmlCompositeDirectCollectionMapping.usesSingleNode()) {
             StringTokenizer stringTokenizer = new StringTokenizer((String) value);
             while (stringTokenizer.hasMoreTokens()) {
                 addUnmarshalValue(unmarshalRecord, stringTokenizer.nextToken(), collection);

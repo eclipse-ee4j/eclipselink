@@ -12,10 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.annotations.xmljoinnode.xmlvalue;
 
-import java.io.StringWriter;
 import java.util.ArrayList;
 
-import javax.xml.bind.JAXBException;
 
 import org.eclipse.persistence.jaxb.JAXBMarshaller;
 import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
@@ -33,19 +31,7 @@ public class XmlJoinNodesWithValueTestCases extends JAXBWithJSONTestCases {
         jaxbMarshaller.setProperty(JAXBMarshaller.JSON_VALUE_WRAPPER, "value");
         jaxbUnmarshaller.setProperty(JAXBUnmarshaller.JSON_VALUE_WRAPPER, "value");
     }
-
-    public void testJSONMarshalNoValueProperty() throws Exception{
-    	JAXBMarshaller m = (JAXBMarshaller) jaxbContext.createMarshaller();
-    	m.setProperty(JAXBMarshaller.MEDIA_TYPE, "application/json");
-    	try{
-    	    m.marshal(getControlObject(), new StringWriter());
-    	}catch (JAXBException jbe){
-    		assertEquals(((org.eclipse.persistence.exceptions.JAXBException)jbe.getLinkedException()).getErrorCode(), org.eclipse.persistence.exceptions.JAXBException.JSON_VALUE_WRAPPER_REQUIRED);
-    		return;
-    	}
-    	fail("A JAXBException should have occurred.");
-    }
-    
+   
     @Override
     protected Object getControlObject() {
         Root root = new Root();
