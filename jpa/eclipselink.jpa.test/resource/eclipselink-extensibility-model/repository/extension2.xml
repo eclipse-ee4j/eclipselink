@@ -8,7 +8,7 @@
     <entity name="ExtensibilityAddress" class="Address">
         <attributes>
             <basic name="appartmentNumber" access="VIRTUAL" attribute-type="java.lang.String">
-                <column name="FLEX1"/>
+                <column name="FLEX2"/>
                 <access-methods get-method="get" set-method="set"/>
             </basic>
         </attributes>

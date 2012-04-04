@@ -4,6 +4,7 @@
         <%%datasource-type%%>%%data-source-name%%</%%datasource-type%%>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <properties>
+            <property name="eclipselink.ddl-generation" value="create-or-extend-tables"/>
             <property name="eclipselink.metadata-source.xml.file" value="extension.xml"/>
             <property name="eclipselink.metadata-source" value="XML"/>
             <property name="eclipselink.weaving" value="%%server-weaving%%"/>

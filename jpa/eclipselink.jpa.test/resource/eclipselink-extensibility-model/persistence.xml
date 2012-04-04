@@ -4,6 +4,7 @@
             org.eclipse.persistence.jpa.PersistenceProvider
         </provider>
         <properties>
+            <property name="eclipselink.ddl-generation" value="create-or-extend-tables"/>
             <property name="eclipselink.metadata-source.xml.file" value="extension.xml"/>
             <property name="eclipselink.metadata-source" value="XML"/>
             <property name="eclipselink.cache.shared.default" value="false"/>
