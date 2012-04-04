@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2011 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -67,6 +67,8 @@
  *       - 251554: ExcludeDefaultMapping annotation needed
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     04/04/2012-2.3.3 Guy Pelletier 
+ *       - 362180: ConcurrentModificationException on predeploy for AttributeOverride
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -478,7 +480,24 @@ public abstract class ClassAccessor extends MetadataAccessor {
             if (embeddableAccessor != null) {
                 embeddableAccessor.addEmbeddingAccessor(embeddingAccessor);
                 embeddableAccessor.addOwningDescriptor(getDescriptor());
-                getProject().addRootEmbeddableAccessor(embeddableAccessor);
+                
+                if (getDescriptor().isMappedSuperclass() || getDescriptor().isEmbeddable()) {
+                    // If the embeddable is from a metamodel mapped superclass
+                    // descriptor or from an embeddable descriptor don't add it
+                    // to root embeddable, just continue to pre-process. We'll
+                    // hit this case when pre-processing a mapped superclass
+                    // that is inherited from an embeddable. 
+                   if (!embeddableAccessor.isPreProcessed()) {
+                       embeddableAccessor.preProcess();
+                   }
+                } else {
+                    // If it is for an entity, add it to the root list.
+                    // Pre-processing will kick off in the later part of stage 1 
+                    // when we have collected all our embeddable roots. We must 
+                    // process embeddable roots from the root down to handle 
+                    // attribute and association overrides correctly.
+                    getProject().addRootEmbeddableAccessor(embeddableAccessor);
+                }
             }
         }
     }
