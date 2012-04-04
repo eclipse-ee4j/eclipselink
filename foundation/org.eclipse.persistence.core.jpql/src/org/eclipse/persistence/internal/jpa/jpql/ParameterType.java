@@ -443,7 +443,9 @@ final class ParameterTypeVisitor extends AbstractEclipseLinkTraverseParentVisito
 	public void visit(InExpression expression) {
 
 		// BNF: ... IN collection_valued_input_parameter
-		if (expression.getInItems() == inputParameter) {
+		if (expression.isSingleInputParameter() &&
+		    expression.getInItems() == inputParameter) {
+
 			type = Collection.class;
 		}
 		else if (expression.getInItems().isAncestor(inputParameter)) {
