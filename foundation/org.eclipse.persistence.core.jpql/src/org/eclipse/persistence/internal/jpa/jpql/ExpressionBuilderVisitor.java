@@ -2013,14 +2013,12 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 		private boolean hasNot;
 		private boolean singleInputParameter;
 		private Expression stateFieldPathExpression;
-		private InItemExpressionVisitor visitor;
 
 		/**
 		 * Creates a new <code>InExpressionBuilder</code>.
 		 */
 		InExpressionBuilder() {
 			super();
-			visitor = new InItemExpressionVisitor();
 		}
 
 		/**
@@ -2030,7 +2028,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 		public void visit(CollectionExpression expression) {
 
 			Collection<Expression> expressions = new ArrayList<Expression>();
-			visitor.childrenCount = expression.childrenSize();
+			InItemExpressionVisitor visitor = new InItemExpressionVisitor();
 
 			for (org.eclipse.persistence.jpa.jpql.parser.Expression child : expression.children()) {
 				child.accept(visitor);
@@ -2116,8 +2114,6 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 
 		private class InItemExpressionVisitor extends AnonymousExpressionVisitor {
 
-			private int childrenCount;
-
 			/**
 			 * {@inheritDoc}
 			 */
@@ -2126,31 +2122,6 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 				ClassDescriptor descriptor = queryContext.getDescriptor(expression.getVariableName());
 				queryExpression = queryContext.getBaseExpression();
 				queryExpression = new ConstantExpression(descriptor.getJavaClass(), queryExpression);
-			}
-
-			/**
-			 * {@inheritDoc}
-			 */
-			@Override
-			public void visit(InputParameter expression) {
-
-				// Special case for a single encapsulated input parameter
-				if (childrenCount == 1) {
-					String parameterName = expression.getParameter();
-
-					// The type is by default Collection
-					Class<?> type = List.class;
-
-					// Create the expression
-					queryExpression = queryContext.getBaseExpression();
-					queryExpression = queryExpression.getParameter(parameterName.substring(1), type);
-
-					// Cache the input parameter type, which is by default Collection
-					queryContext.addInputParameter(parameterName, type);
-				}
-				else {
-					expression.accept(ExpressionBuilderVisitor.this);
-				}
 			}
 
 			/**

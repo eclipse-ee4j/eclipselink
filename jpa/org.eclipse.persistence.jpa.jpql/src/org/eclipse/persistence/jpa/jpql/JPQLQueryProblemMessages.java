@@ -40,7 +40,6 @@ public interface JPQLQueryProblemMessages {
 	String AbstractPathExpression_CannotEndWithComma = "ABSTRACT_PATH_EXPRESSION_CANNOT_END_WITH_COMMA";
 	String AbstractPathExpression_MissingIdentificationVariable = "ABSTRACT_PATH_EXPRESSION_MISSING_IDENTIFICATION_VARIABLE";
 	String AbstractSchemaName_Invalid = "ABSTRACT_SCHEMA_NAME_INVALID";
-	String AbstractSchemaName_NotResolvable = "ABSTRACT_SCHEMA_NAME_NOT_RESOLVABLE";
 	String AbstractSelectClause_InvalidSelectExpression = "ABSTRACT_SELECT_CLAUSE_INVALID_SELECT_EXPRESSION";
 	String AbstractSelectClause_MissingSelectExpression = "ABSTRACT_SELECT_CLAUSE_MISSING_SELECT_EXPRESSION";
 	String AbstractSelectClause_SelectExpressionEndsWithComma = "ABSTRACT_SELECT_CLAUSE_SELECT_EXPRESSION_ENDS_WITH_COMMA";

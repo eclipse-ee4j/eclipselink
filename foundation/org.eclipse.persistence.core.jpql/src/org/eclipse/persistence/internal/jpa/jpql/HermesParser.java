@@ -18,7 +18,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.ResourceBundle;
-
 import org.eclipse.persistence.config.ParserValidationType;
 import org.eclipse.persistence.exceptions.JPQLException;
 import org.eclipse.persistence.expressions.Expression;
@@ -67,8 +66,11 @@ public final class HermesParser implements JPAQueryBuilder {
 	 */
 	private boolean validateQueries;
 
-	protected String validationLevel;
-	
+	/**
+	 * The validation levels are defined in {@link ParserValidationType}.
+	 */
+	private String validationLevel;
+
 	/**
 	 * Creates a new <code>HermesParser</code>.
 	 */
@@ -87,16 +89,6 @@ public final class HermesParser implements JPAQueryBuilder {
 		this.validateQueries = validateQueries;
 	}
 
-        /**
-         * Allow the parser validation level to be set.
-         * 
-         * @param level
-         *            The validation levels are defined in ParserValidationType
-         */
-        public void setValidationLevel(String validationLevel) {
-            this.validationLevel = validationLevel;
-        }
-
 	/**
 	 * Registers the input parameters derived from the JPQL expression with the {@link DatabaseQuery}.
 	 *
@@ -110,10 +102,7 @@ public final class HermesParser implements JPAQueryBuilder {
 		if (inputParameters != null) {
 
 			for (String inputParameter : inputParameters.keySet()) {
-				databaseQuery.addArgument(
-					inputParameter.substring(1),
-					inputParameters.get(inputParameter)
-				);
+				databaseQuery.addArgument(inputParameter.substring(1), inputParameters.get(inputParameter));
 			}
 		}
 	}
@@ -155,17 +144,24 @@ public final class HermesParser implements JPAQueryBuilder {
 	}
 
 	private JPQLGrammar jpqlGrammar() {
-	        if (this.validationLevel == ParserValidationType.EclipseLink) {
-                    return DefaultEclipseLinkJPQLGrammar.instance();
-	        } else if (this.validationLevel == ParserValidationType.JPA10) {
-                    return JPQLGrammar1_0.instance();
-                } else if (this.validationLevel == ParserValidationType.JPA20) {
-                    return JPQLGrammar2_0.instance();
-                } else if (this.validationLevel == ParserValidationType.JPA21) {
-                    return JPQLGrammar2_1.instance();
-                } else {
-                    return DefaultEclipseLinkJPQLGrammar.instance();
-                }
+
+		if (validationLevel == ParserValidationType.EclipseLink) {
+			return DefaultEclipseLinkJPQLGrammar.instance();
+		}
+
+		if (validationLevel == ParserValidationType.JPA10) {
+			return JPQLGrammar1_0.instance();
+		}
+
+		if (validationLevel == ParserValidationType.JPA20) {
+			return JPQLGrammar2_0.instance();
+		}
+
+		if (validationLevel == ParserValidationType.JPA21) {
+			return JPQLGrammar2_1.instance();
+		}
+
+		return DefaultEclipseLinkJPQLGrammar.instance();
 	}
 
 	/**
@@ -183,7 +179,7 @@ public final class HermesParser implements JPAQueryBuilder {
 		ResourceBundle bundle = ResourceBundle.getBundle(JPQLQueryProblemResourceBundle.class.getName());
 		StringBuilder sb = new StringBuilder();
 
-		for (JPQLQueryProblem problem : problems)  {
+		for (JPQLQueryProblem problem : problems) {
 
 			// Retrieve the localized message
 			String message;
@@ -215,7 +211,6 @@ public final class HermesParser implements JPAQueryBuilder {
 
 		String errorMessage = bundle.getString(messageKey);
 		errorMessage = MessageFormat.format(errorMessage, queryContext.getJPQLQuery(), sb);
-
 		throw new JPQLException(errorMessage);
 	}
 
@@ -254,6 +249,15 @@ public final class HermesParser implements JPAQueryBuilder {
 		}
 
 		return query;
+	}
+
+	/**
+	 * Allows the parser validation level to be set.
+	 *
+	 * @param level The validation levels are defined in {@link ParserValidationType}
+	 */
+	public void setValidationLevel(String validationLevel) {
+		this.validationLevel = validationLevel;
 	}
 
 	/**
@@ -304,7 +308,7 @@ public final class HermesParser implements JPAQueryBuilder {
 
 		DatabaseQueryVisitor(JPQLQueryContext queryContext, CharSequence jpqlQuery) {
 			super();
-			this.jpqlQuery    = jpqlQuery.toString();
+			this.jpqlQuery = jpqlQuery.toString();
 			this.queryContext = queryContext;
 		}
 
@@ -315,11 +319,9 @@ public final class HermesParser implements JPAQueryBuilder {
 		}
 
 		private AbstractReadAllQueryVisitor buildVisitor(ObjectLevelReadQuery query) {
-
 			if (query.isReportQuery()) {
 				return new ReportQueryVisitor(queryContext, (ReportQuery) query);
 			}
-
 			return new ObjectLevelReadQueryVisitor(queryContext, query);
 		}
 

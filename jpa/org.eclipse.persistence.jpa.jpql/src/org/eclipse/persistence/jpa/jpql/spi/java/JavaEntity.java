@@ -70,10 +70,6 @@ public class JavaEntity extends JavaManagedType
 		visitor.visit(this);
 	}
 
-	protected void addQuery(NamedQuery namedQuery) {
-		queries.put(namedQuery.name(), new JavaQuery(getProvider(), namedQuery.query()));
-	}
-
 	protected String buildName() {
 
 		Class<?> type = getType().getType();
@@ -98,13 +94,15 @@ public class JavaEntity extends JavaManagedType
 
 			if (namedQueries != null) {
 				for (NamedQuery namedQuery : namedQueries.value()) {
-					addQuery(namedQuery);
+					IQuery query = buildQuery(namedQuery);
+					queries.put(namedQuery.name(), query);
 				}
 			}
 			else {
 				NamedQuery namedQuery = getAnnotation(annotations, NamedQuery.class);
 				if (namedQuery != null) {
-					addQuery(namedQuery);
+					IQuery query = buildQuery(namedQuery);
+					queries.put(namedQuery.name(), query);
 				}
 			}
 		}
@@ -113,6 +111,10 @@ public class JavaEntity extends JavaManagedType
 		}
 
 		return queries;
+	}
+
+	protected IQuery buildQuery(NamedQuery namedQuery) {
+		return new JavaQuery(getProvider(), namedQuery.query());
 	}
 
 	@SuppressWarnings("unchecked")

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -40,6 +40,7 @@ public final class AllHermesTests {
 	}
 
 	@SuiteClasses({
+		AllJPQLQueryHelperTests.class,
 		AllSemanticValidatorTests.class,
 		AllContentAssistTests.class,
 		AllStateObjectTests.class,
@@ -52,9 +53,4 @@ public final class AllHermesTests {
 			return new JavaJPQLQueryTestHelper();
 		}
 	}
-
-	// TODO
-//	ORMEntityJPQLQueryHelperTest.class,
-//	ORMJPQLQueryHelperTest.class,
-//	PersistenceUnitEntityJPQLQueryHelperTest.class,
 }

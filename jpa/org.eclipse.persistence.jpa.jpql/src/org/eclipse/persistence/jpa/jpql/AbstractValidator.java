@@ -439,6 +439,16 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 	}
 
 	/**
+	 * Returns the current number of problems that were registered during validation.
+	 *
+	 * @return The current number of problems
+	 * @since 2.4
+	 */
+	public final int problemsSize() {
+		return problems.size();
+	}
+
+	/**
 	 * Sets the collection that will be used to store {@link JPQLQueryProblem problems} this
 	 * validator will find in the JPQL query.
 	 *

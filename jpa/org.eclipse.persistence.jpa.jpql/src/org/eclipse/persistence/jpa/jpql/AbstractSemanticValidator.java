@@ -24,8 +24,8 @@ import org.eclipse.persistence.jpa.jpql.parser.AbsExpression;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractFromClause;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractSchemaName;
+import org.eclipse.persistence.jpa.jpql.parser.AbstractSingleEncapsulatedExpression;
 import org.eclipse.persistence.jpa.jpql.parser.AdditionExpression;
-import org.eclipse.persistence.jpa.jpql.parser.AggregateFunction;
 import org.eclipse.persistence.jpa.jpql.parser.AllOrAnyExpression;
 import org.eclipse.persistence.jpa.jpql.parser.AndExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ArithmeticExpression;
@@ -40,6 +40,7 @@ import org.eclipse.persistence.jpa.jpql.parser.CollectionMemberDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionMemberExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionValuedPathExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ComparisonExpression;
+import org.eclipse.persistence.jpa.jpql.parser.CompoundExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConcatExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConstructorExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CountFunction;
@@ -48,7 +49,6 @@ import org.eclipse.persistence.jpa.jpql.parser.DeleteClause;
 import org.eclipse.persistence.jpa.jpql.parser.DeleteStatement;
 import org.eclipse.persistence.jpa.jpql.parser.DivisionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.EmptyCollectionComparisonExpression;
-import org.eclipse.persistence.jpa.jpql.parser.EncapsulatedIdentificationVariableExpression;
 import org.eclipse.persistence.jpa.jpql.parser.EntityTypeLiteral;
 import org.eclipse.persistence.jpa.jpql.parser.EntryExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ExistsExpression;
@@ -348,7 +348,49 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 		return false;
 	}
 
-	protected void validateAbsExpression(AbsExpression expression) {
+	/**
+	 * Determines whether the expression at the given index is valid or not.
+	 *
+	 * @param result The integer value containing the bit used to determine the state of an expression
+	 * at a given position
+	 * @param index The index that is used to determine the state of the expression
+	 * @return <code>true</code> if the expression is valid at the given index
+	 */
+	protected final boolean isValid(int result, int index) {
+		return (result & (1 << index)) == 0;
+	}
+
+	/**
+	 * Updates the validation status of an expression at a specified position. The value is stored
+	 * in an integer value.
+	 *
+	 * @param result The integer value that is used to store the validation status of an expression
+	 * at the given position
+	 * @param index The position to store the validation status
+	 * @param valid The new validation status to store
+	 * @return The updated integer value
+	 */
+	protected final int updateStatus(int result, int index, boolean valid) {
+		return valid ? (result & (0 << index)) : (result | (1 << index));
+	}
+
+	/**
+	 * Validates the encapsulated expression of the given <code><b>ABS</b></code> expression. The
+	 * test to perform is:
+	 * <ul>
+	 * <li>If the encapsulated expression is a path expression, validation makes sure it is a basic
+	 * mapping, an association field is not allowed.</li>
+	 * <li>If the encapsulated expression is not a path expression, validation will be redirected to
+	 * that expression but the returned status will not be changed.</li>
+	 * </ul>
+	 *
+	 * @param expression The {@link AbsExpression} to validate by validating its encapsulated
+	 * expression
+	 * @return <code>false</code> if the encapsulated expression was validated and is invalid;
+	 * <code>true</code> otherwise
+	 */
+	protected boolean validateAbsExpression(AbsExpression expression) {
+		return validateFunctionPathExpression(expression);
 	}
 
 	protected void validateAbstractFromClause(AbstractFromClause expression) {
@@ -420,10 +462,17 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 		}
 	}
 
-	protected void validateAbstractSchemaName(AbstractSchemaName expression) {
+	/**
+	 * Validates the given {@link AbstractSchemaName}.
+	 *
+	 * @param expression The {@link AbstractSchemaName} to validate
+	 * @return <code>true</code> if the entity name was resolved; <code>false</code> otherwise
+	 */
+	protected boolean validateAbstractSchemaName(AbstractSchemaName expression) {
 
 		String abstractSchemaName = expression.getText();
 		Object managedType = helper.getEntityNamed(abstractSchemaName);
+		boolean valid = true;
 
 		// If a subquery is defined in a WHERE clause of an update query,
 		// then check for a path expression
@@ -441,65 +490,241 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 				// Does not resolve to a valid path
 				if (!helper.isTypeResolvable(type)) {
 					addProblem(expression, StateFieldPathExpression_NotResolvable, abstractSchemaName);
+					valid = false;
 				}
 				// Not a relationship mapping
 				else if (!helper.isRelationshipMapping(mapping)) {
 					addProblem(expression, PathExpression_NotRelationshipMapping, abstractSchemaName);
+					valid = false;
 				}
 			}
 			// The managed type does not exist
 			else {
 				addProblem(expression, AbstractSchemaName_Invalid, abstractSchemaName);
+				valid = false;
 			}
 		}
-		// The managed type cannot be resolved
-		// Note: I don't remember how this can happen, a managed type can
-		//       be retrieved but it's not resolvable
-//		else if (!helper.isManagedTypeResolvable(managedType)) {
-//			addProblem(expression, AbstractSchemaName_NotResolvable, abstractSchemaName);
-//		}
+
+		return valid;
 	}
 
-	protected void validateAggregateFunction(AggregateFunction expression) {
+	/**
+	 * Validates the encapsulated expression of the given addition expression. The test to perform is:
+	 * <ul>
+	 * <li>If the left or right expression is a path expression, validation makes sure it is a basic
+	 * mapping, an association field is not allowed.</li>
+	 * <li>If the left or right expression is not a path expression, validation will be redirected to
+	 * that expression but the returned status will not be updated.</li>
+	 * </ul>
+	 *
+	 * @param expression The {@link AdditionExpression} to validate by validating its encapsulated
+	 * expression
+	 * @return A number indicating the validation result:
+	 * <ul>
+	 * <li>0: Both expressions are valid or were not validated;</li>
+	 * <li>1: Only the left expression is invalid;</li>
+	 * <li>2: Only the right expression is invalid;</li>
+	 * <li>3: Both expressions are invalid.</li>
+	 * </ul>
+	 */
+	protected int validateAdditionExpression(AdditionExpression expression) {
+		return validateArithmeticExpression(
+			expression,
+			AdditionExpression_LeftExpression_WrongType,
+			AdditionExpression_RightExpression_WrongType
+		);
+	}
 
-		// Arguments to the functions MAX/MIN must correspond to orderable state field types (i.e.,
-		// numeric types, string types, character types, or date types)
-		StateFieldPathExpression pathExpression = getStateFieldPathExpression(expression.getExpression());
+	/**
+	 * Validates the given {@link AllOrAnyExpression}. The default behavior does not require to
+	 * semantically validate it.
+	 *
+	 * @param expression The {@link AllOrAnyExpression} to validate
+	 */
+	protected void validateAllOrAnyExpression(AllOrAnyExpression expression) {
+		super.visit(expression);
+	}
 
-		if (pathExpression != null) {
-			validateStateFieldPathExpression(pathExpression, false);
+	/**
+	 * Validates the given {@link AndExpression}. The default behavior does not require to
+	 * semantically validate it.
+	 *
+	 * @param expression The {@link AndExpression} to validate
+	 */
+	protected void validateAndExpression(AndExpression expression) {
+		super.visit(expression);
+	}
+
+	/**
+	 * Validates the type of the left and right expressions defined by the given {@link ArithmeticExpression}.
+	 * The test to perform is:
+	 * <ul>
+	 * <li>If the encapsulated expression is a path expression, validation makes sure it is a basic
+	 * mapping, an association field is not allowed.</li>
+	 * <li>If the encapsulated expression is not a path expression, validation will be redirected to
+	 * that expression but the returned status will not be changed.</li>
+	 * </ul>
+	 *
+	 * @param expression The {@link ArithmeticExpression} to validate
+	 * @param leftExpressionWrongTypeMessageKey The key used to describe the left expression does not
+	 * have a valid type
+	 * @param rightExpressionWrongTypeMessageKey The key used to describe the right expression does
+	 * not have a valid type
+	 * @return A number indicating the validation result:
+	 * <ul>
+	 * <li>0: Both expressions are valid or were not validated;</li>
+	 * <li>1: Only the left expression is invalid;</li>
+	 * <li>2: Only the right expression is invalid;</li>
+	 * <li>3: Both expressions are invalid.</li>
+	 * </ul>
+	 */
+	protected int validateArithmeticExpression(ArithmeticExpression expression,
+	                                           String leftExpressionWrongTypeMessageKey,
+	                                           String rightExpressionWrongTypeMessageKey) {
+
+		int result = validateFunctionPathExpression(expression);
+
+		if (isValid(result, 0)) {
+			expression.getLeftExpression().accept(this);
+		}
+
+		if (isValid(result, 1)) {
+			expression.getRightExpression().accept(this);
+		}
+
+		return result;
+	}
+
+	/**
+	 * Validates the arithmetic factor expression. The test to perform is:
+	 * <ul>
+	 * <li>If the arithmetic factor is a path expression, validation makes sure it is a basic
+	 * mapping, an association field is not allowed.</li>
+	 * </ul>
+	 *
+	 * @param expression The {@link ArithmeticFactor} to validate
+	 * @return <code>false</code> if the arithmetic factor expression was validated and is invalid;
+	 * <code>true</code> otherwise
+	 */
+	protected boolean validateArithmeticExpression(ArithmeticFactor expression) {
+
+		boolean valid = true;
+
+		if (expression.hasExpression()) {
+			Expression factor = expression.getExpression();
+
+			// Special case for state field path expression, association field is not allowed
+			StateFieldPathExpression pathExpression = getStateFieldPathExpression(factor);
+
+			if (pathExpression != null) {
+				valid = validateStateFieldPathExpression(pathExpression, false);
+			}
+			else {
+				factor.accept(this);
+			}
+		}
+
+		return valid;
+	}
+
+	/**
+	 * Validates the encapsulated expression of the given <code><b>AVG</b></code> expression. The
+	 * test to perform is:
+	 * <ul>
+	 * <li>If the encapsulated expression is a path expression, validation makes sure it is a basic
+	 * mapping, an association field is not allowed.</li>
+	 * <li>If the encapsulated expression is not a path expression, validation will be redirected to
+	 * that expression but the returned status will not be changed.</li>
+	 * </ul>
+	 *
+	 * @param expression The {@link AvgFunction} to validate by validating its encapsulated expression
+	 * @return <code>false</code> if the encapsulated expression was validated and is invalid;
+	 * <code>true</code> otherwise
+	 */
+	protected boolean validateAvgFunction(AvgFunction expression) {
+		return validateFunctionPathExpression(expression);
+	}
+
+	/**
+	 * Validates the given {@link BetweenExpression}. The default behavior does not require to
+	 * semantically validate it.
+	 *
+	 * @param expression The {@link BetweenExpression} to validate
+	 */
+	protected void validateBetweenRangeExpression(BetweenExpression expression) {
+		super.visit(expression);
+	}
+
+	/**
+	 * Validates the given {@link CaseExpression}. The default behavior does not require to
+	 * semantically validate it.
+	 *
+	 * @param expression The {@link CaseExpression} to validate
+	 */
+	protected void validateCaseExpression(CaseExpression expression) {
+		super.visit(expression);
+	}
+
+	/**
+	 * Validates the given {@link CoalesceExpression}. The default behavior does not require to
+	 * semantically validate it.
+	 *
+	 * @param expression The {@link CoalesceExpression} to validate
+	 */
+	protected void validateCoalesceExpression(CoalesceExpression expression) {
+		super.visit(expression);
+	}
+
+	/**
+	 * Validates the given {@link CollectionMemberDeclaration}.
+	 *
+	 * @param expression The {@link CollectionMemberDeclaration} to validate
+	 */
+	protected void validateCollectionMemberDeclaration(CollectionMemberDeclaration expression) {
+
+		validateCollectionValuedPathExpression(expression.getCollectionValuedPathExpression(), true);
+
+		try {
+			registerIdentificationVariable = false;
+			expression.getIdentificationVariable().accept(this);
+		}
+		finally {
+			registerIdentificationVariable = true;
 		}
 	}
 
 	/**
-	 * Validates the return type of the left and right expressions defined by the given {@link
-	 * ArithmeticExpression}.
+	 * Validates the given {@link CollectionMemberExpression}. Only the collection-valued path
+	 * expression is validated.
 	 *
-	 * @param expression
-	 * @param leftExpressionWrongTypeMessageKey
-	 * @param rightExpressionWrongTypeMessageKey
+	 * @param expression The {@link CollectionMemberExpression} to validate
+	 * @return TODO
 	 */
-	protected void validateArithmeticExpression(ArithmeticExpression expression,
-	                                            String leftExpressionWrongTypeMessageKey,
-	                                            String rightExpressionWrongTypeMessageKey) {
+	protected int validateCollectionMemberExpression(CollectionMemberExpression expression) {
 
-	}
+		int result = 0;
 
-	protected void validateAvgFunction(AvgFunction expression) {
-	}
+		// Validate the entity expression
+		if (expression.hasEntityExpression()) {
+			Expression entityExpression = expression.getEntityExpression();
 
-	protected void validateBetweenRangeExpression(BetweenExpression expression) {
-	}
+			// Special case for state field path expression, association field is allowed
+			StateFieldPathExpression pathExpression = getStateFieldPathExpression(entityExpression);
 
-	protected void validateCaseExpression(CaseExpression expression) {
-		// TODO: Anything to validate?
-	}
+			if (pathExpression != null) {
+				boolean valid = validateStateFieldPathExpression(pathExpression, true);
+				updateStatus(result, 0, valid);
+			}
+			else {
+				entityExpression.accept(this);
+			}
+		}
 
-	protected void validateCoalesceExpression(CoalesceExpression expression) {
-		// TODO: Anything to validate?
-	}
+		// Validate the collection-valued path expression
+		boolean valid = validateCollectionValuedPathExpression(expression.getCollectionValuedPathExpression(), true);
+		updateStatus(result, 1, valid);
 
-	protected void validateCollectionMemberEntityExpression(CollectionMemberExpression expression) {
+		return result;
 	}
 
 	/**
@@ -509,8 +734,10 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 * @param collectionTypeOnly <code>true</code> to make sure the path expression resolves to a
 	 * collection mapping only; <code>false</code> if it can simply resolves to a relationship mapping
 	 */
-	protected void validateCollectionValuedPathExpression(Expression expression,
-	                                                      boolean collectionTypeOnly) {
+	protected boolean validateCollectionValuedPathExpression(Expression expression,
+	                                                         boolean collectionTypeOnly) {
+
+		boolean valid = true;
 
 		// The path expression resolves to a collection-valued path expression
 		CollectionValuedPathExpression collectionValuedPathExpression = getCollectionValuedPathExpression(expression);
@@ -537,6 +764,8 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 					CollectionValuedPathExpression_NotResolvable,
 					expression.toParsedText()
 				);
+
+				valid = false;
 			}
 			else if (collectionTypeOnly && !helper.isCollectionMapping(mapping) ||
 			        !collectionTypeOnly && !helper.isRelationshipMapping(mapping)) {
@@ -551,34 +780,160 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 					CollectionValuedPathExpression_NotCollectionType,
 					expression.toParsedText()
 				);
+
+				valid = false;
 			}
 		}
+
+		return valid;
 	}
 
-	protected void validateComparisonExpression(ComparisonExpression expression) {
+	/**
+	 * Validates the left and right expressions of the given comparison expression. The test to
+	 * perform is:
+	 * <ul>
+	 * <li>If left or the right expressions are compared with [<, <=, >, >=] and it is a path
+	 * expression, validation makes sure it is a basic mapping, an association field is not allowed.</li>
+	 * </ul>
+	 *
+	 * @param expression The {@link ConcatExpression} to validate by validating its left and right
+	 * expressions
+	 * @return A number indicating the validation result:
+	 * <ul>
+	 * <li>0: Both expressions are valid or were not validated;</li>
+	 * <li>1: Only the left expression is invalid;</li>
+	 * <li>2: Only the right expression is invalid;</li>
+	 * <li>3: Both expressions are invalid.</li>
+	 * </ul>
+	 */
+	protected int validateComparisonExpression(ComparisonExpression expression) {
+
+		int result = 0;
+
+		if (expression.hasLeftExpression() &&
+		    expression.hasRightExpression()) {
+
+			String comparison = expression.getComparisonOperator();
+
+			if (comparison == Expression.LOWER_THAN          ||
+			    comparison == Expression.GREATER_THAN        ||
+			    comparison == Expression.LOWER_THAN_OR_EQUAL ||
+			    comparison == Expression.GREATER_THAN_OR_EQUAL) {
+
+				result = validateFunctionPathExpression(expression);
+			}
+		}
+
+		if (isValid(result, 0)) {
+			expression.getLeftExpression().accept(this);
+		}
+
+		if (isValid(result, 1)) {
+			expression.getRightExpression().accept(this);
+		}
+
+		return result;
 	}
 
-	protected void validateConcatExpression(ConcatExpression expression) {
+	/**
+	 * Validates the encapsulated expression of the given <code><b>CONCAT</b></code> expression. The
+	 * test to perform is:
+	 * <ul>
+	 * <li>If the encapsulated expression is a path expression, validation makes sure it is a basic
+	 * mapping, an association field is not allowed.</li>
+	 * <li>If the encapsulated expression is not a path expression, validation will be redirected to
+	 * that expression but the returned status will not be changed.</li>
+	 * </ul>
+	 *
+	 * @param expression The {@link ConcatExpression} to validate by validating its encapsulated expression
+	 * @return <code>false</code> if the first encapsulated expression was validated and is invalid;
+	 * <code>true</code> otherwise
+	 */
+	protected boolean validateConcatExpression(ConcatExpression expression) {
+		return validateFunctionPathExpression(expression);
 	}
 
+	/**
+	 * Validates the given {@link ConstructorExpression}. The default behavior does not require to
+	 * semantically validate it.
+	 *
+	 * @param expression The {@link ConstructorExpression} to validate
+	 */
 	protected void validateConstructorExpression(ConstructorExpression expression) {
+		super.visit(expression);
 	}
 
+	/**
+	 * Validates the given {@link CountFunction}. The default behavior does not require to
+	 * semantically validate it.
+	 *
+	 * @param expression The {@link CountFunction} to validate
+	 */
 	protected void validateCountFunction(CountFunction expression) {
+		super.visit(expression);
 	}
 
+	/**
+	 * Validates the given {@link DateTime}. The default behavior does not require to
+	 * semantically validate it.
+	 *
+	 * @param expression The {@link DateTime} to validate
+	 */
 	protected void validateDateTime(DateTime expression) {
+		super.visit(expression);
 	}
 
+	/**
+	 * Validates the given {@link DeleteClause}. The default behavior does not require to
+	 * semantically validate it.
+	 *
+	 * @param expression The {@link DeleteClause} to validate
+	 */
 	protected void validateDeleteClause(DeleteClause expression) {
+		super.visit(expression);
 	}
 
+	/**
+	 * Validates the given {@link DeleteStatement}. The default behavior does not require to
+	 * semantically validate it.
+	 *
+	 * @param expression The {@link DeleteStatement} to validate
+	 */
 	protected void validateDeleteStatement(DeleteStatement expression) {
+		super.visit(expression);
 	}
 
-	protected void validateEntityTypeLiteral(EntityTypeLiteral expression) {
+	/**
+	 * Validates the encapsulated expression of the given division expression. The test to perform is:
+	 * <ul>
+	 * <li>If the left or right expression is a path expression, validation makes sure it is a basic
+	 * mapping, an association field is not allowed.</li>
+	 * <li>If the left or right expression is not a path expression, validation will be redirected to
+	 * that expression but the returned status will not be updated.</li>
+	 * </ul>
+	 *
+	 * @param expression The {@link DivisionExpression} to validate by validating its encapsulated
+	 * expression
+	 * @return A number indicating the validation result:
+	 * <ul>
+	 * <li>0: Both expressions are valid or were not validated;</li>
+	 * <li>1: Only the left expression is invalid;</li>
+	 * <li>2: Only the right expression is invalid;</li>
+	 * <li>3: Both expressions are invalid.</li>
+	 * </ul>
+	 */
+	protected int validateDivisionExpression(DivisionExpression expression) {
+		return validateArithmeticExpression(
+			expression,
+			DivisionExpression_LeftExpression_WrongType,
+			DivisionExpression_RightExpression_WrongType
+		);
+	}
+
+	protected boolean validateEntityTypeLiteral(EntityTypeLiteral expression) {
 
 		String entityTypeName = expression.getEntityTypeName();
+		boolean valid = true;
 
 		if (ExpressionTools.stringIsNotEmpty(entityTypeName)) {
 			Object entity = helper.getEntityNamed(entityTypeName);
@@ -587,21 +942,139 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 				int startIndex = position(expression);
 				int endIndex   = startIndex + entityTypeName.length();
 				addProblem(expression, startIndex, endIndex, EntityTypeLiteral_NotResolvable, entityTypeName);
+				valid = false;
 			}
 		}
+
+		return valid;
 	}
 
+	/**
+	 * Validates the given {@link EntryExpression}. The default behavior does not require to
+	 * semantically validate it.
+	 *
+	 * @param expression The {@link EntryExpression} to validate
+	 */
+	protected void validateEntryExpression(EntryExpression expression) {
+		super.visit(expression);
+	}
+
+	/**
+	 * Validates the given {@link ExistsExpression}. The default behavior does not require to
+	 * semantically validate it.
+	 *
+	 * @param expression The {@link ExistsExpression} to validate
+	 */
 	protected void validateExistsExpression(ExistsExpression expression) {
+		super.visit(expression);
 	}
 
+	/**
+	 * Validates the given {@link FromClause}.
+	 *
+	 * @param expression The {@link FromClause} to validate
+	 */
 	protected void validateFromClause(FromClause expression) {
 		validateAbstractFromClause(expression);
+		super.visit(expression);
 	}
 
+	/**
+	 * Validates the given {@link AbstractSingleEncapsulatedExpression}'s encapsulated expression if
+	 * it is a state field path expression and makes sure it is mapping to a basic mapping. That
+	 * means relationship field mapping is not allowed.
+	 *
+	 * @param expression The {@link AbstractSingleEncapsulatedExpression} to validate its encapsulated
+	 * expression if it's a state field path expression, otherwise does nothing
+	 * @return <code>false</code> if the encapsulated expression was validated and is invalid;
+	 * <code>true</code> otherwise
+	 */
+	protected boolean validateFunctionPathExpression(AbstractSingleEncapsulatedExpression expression) {
+
+		boolean valid = true;
+
+		if (expression.hasEncapsulatedExpression()) {
+			Expression encapsulatedExpression = expression.getExpression();
+
+			// Special case for state field path expression, association field is not allowed
+			StateFieldPathExpression pathExpression = getStateFieldPathExpression(encapsulatedExpression);
+
+			if (pathExpression != null) {
+				valid = validateStateFieldPathExpression(pathExpression, false);
+			}
+			else {
+				encapsulatedExpression.accept(this);
+			}
+		}
+
+		return valid;
+	}
+
+	/**
+	 * Validates the left and right expressions of the given compound expression. The test to perform is:
+	 * <ul>
+	 * <li>If the left or the right expression is a path expression, validation makes sure it is a
+	 * basic mapping, an association field is not allowed.</li>
+	 * </ul>
+	 *
+	 * @param expression The {@link CompoundExpression} to validate by validating its left and right
+	 * expressions
+	 * @return A number indicating the validation result:
+	 * <ul>
+	 * <li>0: Both expressions are valid or were not validated;</li>
+	 * <li>1: Only the left expression is invalid;</li>
+	 * <li>2: Only the right expression is invalid;</li>
+	 * <li>3: Both expressions are invalid.</li>
+	 * </ul>
+	 */
+	protected int validateFunctionPathExpression(CompoundExpression expression) {
+
+		int result = 0;
+
+		// Left expression
+		if (expression.hasLeftExpression()) {
+			StateFieldPathExpression pathExpression = getStateFieldPathExpression(expression.getLeftExpression());
+			if (pathExpression != null) {
+				boolean valid = validateStateFieldPathExpression(pathExpression, false);
+				updateStatus(result, 0, valid);
+			}
+		}
+
+		// Right expression
+		if (expression.hasRightExpression()) {
+			StateFieldPathExpression pathExpression = getStateFieldPathExpression(expression.getRightExpression());
+			if (pathExpression != null) {
+				boolean valid = validateStateFieldPathExpression(pathExpression, false);
+				updateStatus(result, 1, valid);
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * Validates the given {@link GroupByClause}. The default behavior does not require to
+	 * semantically validate it.
+	 *
+	 * @param expression The {@link GroupByClause} to validate
+	 */
 	protected void validateGroupByClause(GroupByClause expression) {
+		super.visit(expression);
 	}
 
-	protected void validateIdentificationVariable(IdentificationVariable expression) {
+	/**
+	 * Validates the given {@link HavingClause}. The default behavior does not require to
+	 * semantically validate it.
+	 *
+	 * @param expression The {@link HavingClause} to validate
+	 */
+	protected void validateHavingClause(HavingClause expression) {
+		super.visit(expression);
+	}
+
+	protected boolean validateIdentificationVariable(IdentificationVariable expression) {
+
+		boolean valid = true;
 
 		// Only a non-virtual identification variable is validated
 		if (!expression.isVirtual()) {
@@ -626,7 +1099,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 				}
 
 				if (ExpressionTools.stringIsNotEmpty(variable)) {
-					validateIdentificationVariable(expression, variable);
+					valid = validateIdentificationVariable(expression, variable);
 				}
 			}
 		}
@@ -639,20 +1112,42 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 				pathExpression.accept(this);
 			}
 		}
+
+		return valid;
 	}
 
 	/**
-	 * Validates the given identification variable.
+	 * Validates the given identification variable. The default behavior is to not validate it.
 	 *
 	 * @param expression The {@link IdentificationVariable} that is being visited
 	 * @param variable The actual identification variable, which is never an empty string
+	 * @return <code>true</code> if the given identification variable is valid; <code>false</code>
+	 * otherwise
 	 */
-	protected void validateIdentificationVariable(IdentificationVariable expression, String variable) {
+	protected boolean validateIdentificationVariable(IdentificationVariable expression, String variable) {
+		return true;
 	}
 
+	/**
+	 * Validates the given {@link InExpression}. The default behavior does not require to
+	 * semantically validate it.
+	 *
+	 * @param expression The {@link InExpression} to validate
+	 */
 	protected void validateIdentificationVariableDeclaration(IdentificationVariableDeclaration expression) {
+		super.visit(expression);
 	}
 
+	/**
+	 * Validates the identification variables:
+	 * <ul>
+	 * <li>Assures those used throughout the query have been defined in the <code><b>FROM</b></code>
+	 * clause in the current subquery or in a superquery.</li>
+	 * <li>They have been defined only once.</li>
+	 * </ul>
+	 *
+	 * @param expression The {@link InExpression} to validate
+	 */
 	protected void validateIdentificationVariables() {
 
 		// Collect the identification variables from the Declarations
@@ -688,7 +1183,15 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 		}
 	}
 
-	protected void validateIndexExpression(IndexExpression expression) {
+	/**
+	 * Validates the given {@link IndexExpression}. It validates the identification variable and
+	 * makes sure is it defined in <code><b>IN</b></code> or <code><b>IN</b></code> expression.
+	 *
+	 * @param expression The {@link IndexExpression} to validate
+	 */
+	protected boolean validateIndexExpression(IndexExpression expression) {
+
+		boolean valid = true;
 
 		// The INDEX function can only be applied to identification variables denoting types for
 		// which an order column has been specified
@@ -702,61 +1205,485 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 		    !helper.isCollectionIdentificationVariable(variableName)) {
 
 			addProblem(expression.getExpression(), IndexExpression_WrongVariable, variableName);
+			valid = false;
+		}
+
+		return valid;
+	}
+
+	/**
+	 * Validates the given {@link InExpression}. The default behavior does not require to
+	 * semantically validate it.
+	 *
+	 * @param expression The {@link InExpression} to validate
+	 */
+	protected void validateInExpression(InExpression expression) {
+		super.visit(expression);
+	}
+
+	/**
+	 * Validates the given {@link Join}.
+	 *
+	 * @param expression The {@link ValueExpression} to validate
+	 */
+	protected void validateJoin(Join expression) {
+
+		if (expression.hasJoinAssociationPath()) {
+			Expression joinAssociationPath = expression.getJoinAssociationPath();
+			validateCollectionValuedPathExpression(joinAssociationPath, false);
+			joinAssociationPath.accept(this);
+		}
+
+		if (expression.hasIdentificationVariable()) {
+			try {
+				registerIdentificationVariable = false;
+				expression.getIdentificationVariable().accept(this);
+			}
+			finally {
+				registerIdentificationVariable = true;
+			}
 		}
 	}
 
-	protected void validateLengthExpression(LengthExpression expression) {
+	/**
+	 * Validates the given {@link KeyExpression}. The default behavior does not require to
+	 * semantically validate it.
+	 *
+	 * @param expression The {@link KeyExpression} to validate
+	 */
+	protected void validateKeyExpression(KeyExpression expression) {
+		super.visit(expression);
 	}
 
-	protected void validateLikeExpression(LikeExpression expression) {
+	/**
+	 * Validates the encapsulated expression of the given <code><b>LENGTH</b></code> expression. The
+	 * test to perform is:
+	 * <ul>
+	 * <li>If the encapsulated expression is a path expression, validation makes sure it is a basic
+	 * mapping, an association field is not allowed.</li>
+	 * <li>If the encapsulated expression is not a path expression, validation will be redirected to
+	 * that expression but the returned status will not be changed.</li>
+	 * </ul>
+	 *
+	 * @param expression The {@link LengthExpression} to validate by validating its encapsulated expression
+	 * @return <code>false</code> if the encapsulated expression was validated and is invalid;
+	 * <code>true</code> otherwise
+	 */
+	protected boolean validateLengthExpression(LengthExpression expression) {
+		return validateFunctionPathExpression(expression);
 	}
 
-	protected void validateLocateExpression(LocateExpression expression) {
+	/**
+	 * Validates the string expression of the given <code><b>LIKE</b></code> expression. The test to
+	 * perform is:
+	 * <ul>
+	 * <li>If the string expression is a path expression, validation makes sure it is a basic
+	 * mapping, an association field is not allowed.</li>
+	 * <li>If the encapsulated expression is not a path expression, validation will be redirected to
+	 * that expression but the returned status will not be changed.</li>
+	 * </ul>
+	 *
+	 * @param expression The {@link LengthExpression} to validate by validating its string expression
+	 * @return <code>false</code> if the encapsulated expression was validated and is invalid;
+	 * <code>true</code> otherwise
+	 */
+	protected int validateLikeExpression(LikeExpression expression) {
+
+		int result = 0;
+
+		// Validate the "first" expression
+		if (expression.hasStringExpression()) {
+			Expression stringExpression = expression.getStringExpression();
+
+			// Special case for state field path expression, association field is not allowed
+			StateFieldPathExpression pathExpression = getStateFieldPathExpression(stringExpression);
+
+			if (pathExpression != null) {
+				boolean valid = validateStateFieldPathExpression(pathExpression, false);
+				updateStatus(result, 0, valid);
+			}
+			else {
+				stringExpression.accept(this);
+			}
+		}
+
+		// Validate the pattern value
+		expression.getPatternValue().accept(this);
+
+		// Validate the escape character
+		expression.getEscapeCharacter().accept(this);
+
+		return result;
 	}
 
-	protected void validateLowerExpression(LowerExpression expression) {
+	/**
+	 * Validates the encapsulated expression of the given <code><b>LOCATE</b></code> expression. The
+	 * test to perform is:
+	 * <ul>
+	 * <li>If the encapsulated expression is a path expression, validation makes sure it is a basic
+	 * mapping, an association field is not allowed.</li>
+	 * <li>If the encapsulated expression is not a path expression, validation will be redirected to
+	 * that expression but the returned status will not be changed.</li>
+	 * </ul>
+	 *
+	 * @param expression The {@link LocateExpression} to validate by validating its encapsulated expression
+	 * @return TODO
+	 */
+	protected int validateLocateExpression(LocateExpression expression) {
+
+		int result = 0;
+
+		// Validate the first expression
+		if (expression.hasFirstExpression()) {
+			Expression firstExpression = expression.getFirstExpression();
+
+			// Special case for state field path expression, association field is not allowed
+			StateFieldPathExpression pathExpression = getStateFieldPathExpression(firstExpression);
+
+			if (pathExpression != null) {
+				boolean valid = validateStateFieldPathExpression(pathExpression, false);
+				updateStatus(result, 0, valid);
+			}
+			else {
+				firstExpression.accept(this);
+			}
+		}
+
+		// Validate the second expression
+		expression.getSecondExpression().accept(this);
+
+		// Validate the third expression
+		expression.getThirdExpression().accept(this);
+
+		return result;
 	}
 
-	protected void validateMapIdentificationVariable(EncapsulatedIdentificationVariableExpression expression) {
+	/**
+	 * Validates the encapsulated expression of the given <code><b>LOWER</b></code> expression. The
+	 * test to perform is:
+	 * <ul>
+	 * <li>If the encapsulated expression is a path expression, validation makes sure it is a basic
+	 * mapping, an association field is not allowed.</li>
+	 * <li>If the encapsulated expression is not a path expression, validation will be redirected to
+	 * that expression but the returned status will not be changed.</li>
+	 * </ul>
+	 *
+	 * @param expression The {@link LowerExpression} to validate by validating its encapsulated expression
+	 * @return <code>false</code> if the encapsulated expression was validated and is invalid;
+	 * <code>true</code> otherwise
+	 */
+	protected boolean validateLowerExpression(LowerExpression expression) {
+		return validateFunctionPathExpression(expression);
 	}
 
-	protected void validateModExpression(ModExpression expression) {
+	/**
+	 * Validates the encapsulated expression of the given <code><b>MAX</b></code> expression. The
+	 * test to perform is:
+	 * <ul>
+	 * <li>If the encapsulated expression is a path expression, validation makes sure it is a basic
+	 * mapping, an association field is not allowed.</li>
+	 * <li>If the encapsulated expression is not a path expression, validation will be redirected to
+	 * that expression but the returned status will not be changed.</li>
+	 * </ul>
+	 *
+	 * @param expression The {@link MaxFunction} to validate by validating its encapsulated expression
+	 * @return <code>false</code> if the encapsulated expression was validated and is not valid;
+	 * <code>true</code> otherwise
+	 */
+	protected boolean validateMaxFunction(MaxFunction expression) {
+		// Arguments to the functions MAX must correspond to orderable state field types (i.e.,
+		// numeric types, string types, character types, or date types)
+		return validateFunctionPathExpression(expression);
 	}
 
+	/**
+	 * Validates the encapsulated expression of the given <code><b>MIN</b></code> expression. The
+	 * test to perform is:
+	 * <ul>
+	 * <li>If the encapsulated expression is a path expression, validation makes sure it is a basic
+	 * mapping, an association field is not allowed.</li>
+	 * <li>If the encapsulated expression is not a path expression, validation will be redirected to
+	 * that expression but the returned status will not be changed.</li>
+	 * </ul>
+	 *
+	 * @param expression The {@link MinFunction} to validate by validating its encapsulated expression
+	 * @return <code>false</code> if the encapsulated expression was validated and is not valid;
+	 * <code>true</code> otherwise
+	 */
+	protected boolean validateMinFunction(MinFunction expression) {
+		// Arguments to the functions MIN must correspond to orderable state field types (i.e.,
+		// numeric types, string types, character types, or date types)
+		return validateFunctionPathExpression(expression);
+	}
+
+	/**
+	 * Validates the encapsulated expression of the given <code><b>MOD</b></code> expression. The
+	 * test to perform is:
+	 * <ul>
+	 * <li>If the encapsulated expression is a path expression, validation makes sure it is a basic
+	 * mapping, an association field is not allowed.</li>
+	 * <li>If the encapsulated expression is not a path expression, validation will be redirected to
+	 * that expression but the returned status will not be changed.</li>
+	 * </ul>
+	 *
+	 * @param expression The {@link ModExpression} to validate by validating its encapsulated expression
+	 * @return TODO
+	 */
+	protected int validateModExpression(ModExpression expression) {
+
+		int result = 0;
+
+		// Validate the first expression
+		if (expression.hasFirstExpression()) {
+			Expression firstExpression = expression.getFirstExpression();
+
+			// Special case for state field path expression, association field is not allowed
+			StateFieldPathExpression pathExpression = getStateFieldPathExpression(firstExpression);
+
+			if (pathExpression != null) {
+				boolean valid = validateStateFieldPathExpression(pathExpression, false);
+				updateStatus(result, 0, valid);
+			}
+			else {
+				firstExpression.accept(this);
+			}
+		}
+
+		// Validate the second expression
+		expression.getSecondExpression().accept(this);
+
+		return result;
+	}
+
+	/**
+	 * Validates the encapsulated expression of the given multiplication expression. The test to
+	 * perform is:
+	 * <ul>
+	 * <li>If the left or right expression is a path expression, validation makes sure it is a basic
+	 * mapping, an association field is not allowed.</li>
+	 * <li>If the left or right expression is not a path expression, validation will be redirected to
+	 * that expression but the returned status will not be updated.</li>
+	 * </ul>
+	 *
+	 * @param expression The {@link MultiplicationExpression} to validate by validating its encapsulated
+	 * expression
+	 * @return A number indicating the validation result:
+	 * <ul>
+	 * <li>0: Both expressions are valid or were not validated;</li>
+	 * <li>1: Only the left expression is invalid;</li>
+	 * <li>2: Only the right expression is invalid;</li>
+	 * <li>3: Both expressions are invalid.</li>
+	 * </ul>
+	 */
+	protected int validateMultiplicationExpression(MultiplicationExpression expression) {
+		return validateArithmeticExpression(
+			expression,
+			MultiplicationExpression_LeftExpression_WrongType,
+			MultiplicationExpression_RightExpression_WrongType
+		);
+	}
+
+	/**
+	 * Validates the given {@link NotExpression}. The default behavior does not require to
+	 * semantically validate it.
+	 *
+	 * @param expression The {@link NotExpression} to validate
+	 */
 	protected void validateNotExpression(NotExpression expression) {
+		super.visit(expression);
 	}
 
+	/**
+	 * Validates the given {@link NullComparisonExpression}. The default behavior does not require to
+	 * semantically validate it.
+	 *
+	 * @param expression The {@link NullComparisonExpression} to validate
+	 */
 	protected void validateNullComparisonExpression(NullComparisonExpression expression) {
+		super.visit(expression);
 	}
 
+	/**
+	 * Validates the given {@link NullIfExpression}. The default behavior does not require to
+	 * semantically validate it.
+	 *
+	 * @param expression The {@link NullIfExpression} to validate
+	 */
+	protected void validateNullIfExpression(NullIfExpression expression) {
+		super.visit(expression);
+	}
+
+	/**
+	 * Validates the given {@link ObjectExpression}. The default behavior does not require to
+	 * semantically validate it.
+	 *
+	 * @param expression The {@link ObjectExpression} to validate
+	 */
 	protected void validateObjectExpression(ObjectExpression expression) {
+		super.visit(expression);
 	}
 
+	/**
+	 * Validates the given {@link OnClause}. The default behavior does not require to semantically
+	 * validate it.
+	 *
+	 * @param expression The {@link OnClause} to validate
+	 */
 	protected void validateOnClause(OnClause expression) {
+		super.visit(expression);
 	}
 
+	/**
+	 * Validates the given {@link OrderByItem}. The default behavior does not require to
+	 * semantically validate it.
+	 *
+	 * @param expression The {@link OrderByItem} to validate
+	 */
 	protected void validateOrderByClause(OrderByClause expression) {
+		super.visit(expression);
 	}
 
+	/**
+	 * Validates the given {@link OrderByItem}. The default behavior does not require to
+	 * semantically validate it.
+	 *
+	 * @param expression The {@link OrderByItem} to validate
+	 */
+	protected void validateOrderByItem(OrderByItem expression) {
+		super.visit(expression);
+	}
+
+	/**
+	 * Validates the given {@link OrExpression}. The default behavior does not require to
+	 * semantically validate it.
+	 *
+	 * @param expression The {@link OrExpression} to validate
+	 */
+	protected void validateOrExpression(OrExpression expression) {
+		super.visit(expression);
+	}
+
+	/**
+	 * Validates the given {@link RangeVariableDeclaration}.
+	 *
+	 * @param expression The {@link RangeVariableDeclaration} to validate
+	 */
+	protected void validateRangeVariableDeclaration(RangeVariableDeclaration expression) {
+
+		expression.getAbstractSchemaName().accept(this);
+
+		try {
+			registerIdentificationVariable = false;
+			expression.getIdentificationVariable().accept(this);
+		}
+		finally {
+			registerIdentificationVariable = true;
+		}
+	}
+
+	/**
+	 * Validates the given {@link ResultVariable}. The default behavior does not require to
+	 * semantically validate it.
+	 *
+	 * @param expression The {@link ResultVariable} to validate
+	 */
 	protected void validateResultVariable(ResultVariable expression) {
 		// TODO: Validate identification to make sure it does not
 		//       collide with one defined in the FROM clause
+		super.visit(expression);
 	}
 
+	/**
+	 * Validates the given {@link validateSelectClause}. The default behavior does not require to
+	 * semantically validate it.
+	 *
+	 * @param expression The {@link validateSelectClause} to validate
+	 */
 	protected void validateSelectClause(SelectClause expression) {
+		super.visit(expression);
 	}
 
+	/**
+	 * Validates the given {@link SelectStatement}. The default behavior does not require to
+	 * semantically validate it.
+	 *
+	 * @param expression The {@link SelectStatement} to validate
+	 */
 	protected void validateSelectStatement(SelectStatement expression) {
+		super.visit(expression);
 	}
 
+	/**
+	 * Validates the given {@link SimpleFromClause}.
+	 *
+	 * @param expression The {@link SimpleFromClause} to validate
+	 */
 	protected void validateSimpleFromClause(SimpleFromClause expression) {
 		validateAbstractFromClause(expression);
+		super.visit(expression);
 	}
 
+	/**
+	 * Validates the given {@link SimpleSelectClause}. The default behavior does not require to
+	 * semantically validate it.
+	 *
+	 * @param expression The {@link SimpleSelectClause} to validate
+	 */
 	protected void validateSimpleSelectClause(SimpleSelectClause expression) {
+		super.visit(expression);
 	}
 
-	protected void validateSqrtExpression(SqrtExpression expression) {
+	protected void validateSimpleSelectStatement(SimpleSelectStatement expression) {
+
+		// Keep a copy of the identification variables that are used throughout the parent query
+		List<IdentificationVariable> oldUsedIdentificationVariables = new ArrayList<IdentificationVariable>(usedIdentificationVariables);
+
+		// Create a context for the subquery
+		helper.newSubqueryContext(expression);
+
+		try {
+			super.visit(expression);
+
+			// Validate the identification variables that are used within the subquery
+			validateIdentificationVariables();
+		}
+		finally {
+			// Revert back to the parent context
+			helper.disposeSubqueryContext();
+
+			// Revert the list to what it was
+			usedIdentificationVariables.retainAll(oldUsedIdentificationVariables);
+		}
+	}
+
+	/**
+	 * Validates the given {@link SizeExpression}.
+	 *
+	 * @param expression The {@link SizeExpression} to validate
+	 * @return <code>false</code> if the encapsulated expression is a collection-valued path expression
+	 * and it was found to be invalid; <code>true</code> otherwise
+	 */
+	protected boolean validateSizeExpression(SizeExpression expression) {
+		// The SIZE function returns an integer value, the number of elements of the collection
+		return validateCollectionValuedPathExpression(expression.getExpression(), true);
+	}
+
+	/**
+	 * Validates the encapsulated expression of the given <code><b>SQRT</b></code> expression. The
+	 * test to perform is:
+	 * <ul>
+	 * <li>If the encapsulated expression is a path expression, validation makes sure it is a basic
+	 * mapping, an association field is not allowed.</li>
+	 * <li>If the encapsulated expression is not a path expression, validation will be redirected to
+	 * that expression but the returned status will not be changed.</li>
+	 * </ul>
+	 *
+	 * @param expression The {@link SqrtExpression} to validate by validating its encapsulated expression
+	 * @return <code>false</code> if the encapsulated expression was validated and is invalid;
+	 * <code>true</code> otherwise
+	 */
+	protected boolean validateSqrtExpression(SqrtExpression expression) {
+		return validateFunctionPathExpression(expression);
 	}
 
 	/**
@@ -764,9 +1691,14 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 *
 	 * @param expression The {@link StateFieldPathExpression} the validate
 	 * @param associationFieldValid Determines whether an association field is a valid type
+	 * @return <code>true</code> if the given {@link StateFieldPathExpression} resolves to a valid
+	 * path; <code>false</code> otherwise
 	 */
-	protected void validateStateFieldPathExpression(StateFieldPathExpression expression,
-	                                                boolean associationFieldValid) {
+	protected boolean validateStateFieldPathExpression(StateFieldPathExpression expression,
+	                                                   boolean associationFieldValid) {
+
+		boolean valid = true;
+		expression.getIdentificationVariable().accept(this);
 
 		// A single_valued_object_field is designated by the name of an association field in a
 		// one-to-one or many-to-one relationship or a field of embeddable class type
@@ -782,14 +1714,17 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 				// that evaluates to a collection
 				if (helper.isCollectionMapping(mapping)) {
 					addProblem(expression, StateFieldPathExpression_CollectionType, expression.toParsedText());
+					valid = false;
 				}
-				// For instance, MAX and MIN don't evaluate to an association field
+				// Don't evaluate to an association field
 				else if (!associationFieldValid && helper.isRelationshipMapping(mapping)) {
 					addProblem(expression, StateFieldPathExpression_AssociationField, expression.toParsedText());
+					valid = false;
 				}
 				// A transient mapping is not allowed
 				else if (helper.isTransient(mapping)) {
 					addProblem(expression, StateFieldPathExpression_NoMapping, expression.toParsedText());
+					valid = false;
 				}
 			}
 			else {
@@ -799,6 +1734,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 				// Does not resolve to a valid path
 				if (!helper.isTypeResolvable(type)) {
 					addProblem(expression, StateFieldPathExpression_NotResolvable, expression.toParsedText());
+					valid = false;
 				}
 				// An enum constant could have been parsed as a state field path expression
 				else if (helper.isEnumType(type)) {
@@ -818,6 +1754,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 						int startIndex = position(expression) + helper.getTypeName(type).length() + 1;
 						int endIndex   = startIndex + enumConstant.length();
 						addProblem(expression, startIndex, endIndex, StateFieldPathExpression_InvalidEnumConstant, enumConstant);
+						valid = false;
 					}
 
 					// Remove the used identification variable since it's is the first
@@ -827,18 +1764,147 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 				// No mapping can be found for that path
 				else {
 					addProblem(expression, StateFieldPathExpression_NoMapping, expression.toParsedText());
+					valid = false;
 				}
 			}
 		}
+
+		return valid;
 	}
 
-	protected void validateSubstringExpression(SubstringExpression expression) {
+	/**
+	 * Validates the encapsulated expression of the given <code><b>SUBSTRING</b></code> expression. The
+	 * test to perform is:
+	 * <ul>
+	 * <li>If the encapsulated expression is a path expression, validation makes sure it is a basic
+	 * mapping, an association field is not allowed.</li>
+	 * <li>If the encapsulated expression is not a path expression, validation will be redirected to
+	 * that expression but the returned status will not be changed.</li>
+	 * </ul>
+	 *
+	 * @param expression The {@link SubstringExpression} to validate by validating its encapsulated expression
+	 * @return TODO
+	 */
+	protected int validateSubstringExpression(SubstringExpression expression) {
+
+		int result = 0;
+
+		// Validate the first expression
+		if (expression.hasFirstExpression()) {
+			Expression firstExpression = expression.getFirstExpression();
+
+			// Special case for state field path expression, association field is not allowed
+			StateFieldPathExpression pathExpression = getStateFieldPathExpression(firstExpression);
+
+			if (pathExpression != null) {
+				boolean valid = validateStateFieldPathExpression(pathExpression, false);
+				updateStatus(result, 0, valid);
+			}
+			else {
+				firstExpression.accept(this);
+			}
+		}
+
+		// Validate the second expression
+		expression.getSecondExpression().accept(this);
+
+		// Validate the third expression
+		expression.getThirdExpression().accept(this);
+
+		return result;
 	}
 
-	protected void validateSubtractionExpression(SubtractionExpression expression) {
+	/**
+	 * Validates the encapsulated expression of the given subtraction expression. The test to perform is:
+	 * <ul>
+	 * <li>If the left or right expression is a path expression, validation makes sure it is a basic
+	 * mapping, an association field is not allowed.</li>
+	 * <li>If the left or right expression is not a path expression, validation will be redirected to
+	 * that expression but the returned status will not be updated.</li>
+	 * </ul>
+	 *
+	 * @param expression The {@link SubtractionExpression} to validate by validating its encapsulated
+	 * expression
+	 * @return A number indicating the validation result:
+	 * <ul>
+	 * <li>0: Both expressions are valid or were not validated;</li>
+	 * <li>1: Only the left expression is invalid;</li>
+	 * <li>2: Only the right expression is invalid;</li>
+	 * <li>3: Both expressions are invalid.</li>
+	 * </ul>
+	 */
+	protected int validateSubtractionExpression(SubtractionExpression expression) {
+		return validateArithmeticExpression(
+			expression,
+			SubtractionExpression_LeftExpression_WrongType,
+			SubtractionExpression_RightExpression_WrongType
+		);
 	}
 
-	protected void validateSumFunction(SumFunction expression) {
+	/**
+	 * Validates the encapsulated expression of the given <code><b>MOD</b></code> expression. The
+	 * test to perform is:
+	 * <ul>
+	 * <li>If the encapsulated expression is a path expression, validation makes sure it is a basic
+	 * mapping, an association field is not allowed.</li>
+	 * <li>If the encapsulated expression is not a path expression, validation will be redirected to
+	 * that expression but the returned status will not be changed.</li>
+	 * </ul>
+	 *
+	 * @param expression The {@link ModExpression} to validate by validating its encapsulated expression
+	 * @return <code>false</code> if the encapsulated expression was validated and is invalid;
+	 * <code>true</code> otherwise
+	 */
+	protected boolean validateSumFunction(SumFunction expression) {
+		return validateFunctionPathExpression(expression);
+	}
+
+	/**
+	 * Validates the given {@link TreatExpression}. The default behavior does not require to
+	 * semantically validate it.
+	 *
+	 * @param expression The {@link TreatExpression} to validate
+	 */
+	protected void validateTreatExpression(TreatExpression expression) {
+		super.visit(expression);
+	}
+
+	/**
+	 * Validates the encapsulated expression of the given <code><b>TRIM</b></code> expression. The
+	 * test to perform is:
+	 * <ul>
+	 * <li>If the encapsulated expression is a path expression, validation makes sure it is a basic
+	 * mapping, an association field is not allowed.</li>
+	 * <li>If the encapsulated expression is not a path expression, validation will be redirected to
+	 * that expression but the returned status will not be changed.</li>
+	 * </ul>
+	 *
+	 * @param expression The {@link TrimExpression} to validate by validating its encapsulated expression
+	 * @return <code>false</code> if the encapsulated expression was validated and is invalid;
+	 * <code>true</code> otherwise
+	 */
+	protected boolean validateTrimExpression(TrimExpression expression) {
+		return validateFunctionPathExpression(expression);
+	}
+
+	/**
+	 * Validates the given {@link TypeExpression}. The default behavior does not require to
+	 * semantically validate it.
+	 *
+	 * @param expression The {@link TypeExpression} to validate
+	 */
+	protected void validateTypeExpression(TypeExpression expression) {
+		super.visit(expression);
+	}
+
+	/**
+	 * Validates the given {@link UpdateClause}. The default behavior does not require to
+	 * semantically validate it.
+	 *
+	 * @param expression The {@link UpdateClause} to validate
+	 */
+	protected void validateUpdateClause(UpdateClause expression) {
+		super.visit(expression);
 	}
 
 	/**
@@ -854,6 +1920,8 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 * @return <code>true</code> if the path expression is valid; <code>false</code> otherwise
 	 */
 	protected boolean validateUpdateItem(UpdateItem expression) {
+
+		boolean valid = true;
 
 		if (expression.hasStateFieldPathExpression()) {
 
@@ -879,7 +1947,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 						// A collection mapping cannot be traversed
 						if (helper.isCollectionMapping(mapping)) {
 							addProblem(pathExpression, UpdateItem_RelationshipPathExpression);
-							return false;
+							valid = false;
 						}
 						// Validate an intermediate path (n + 1, ..., n - 2)
 						else if (index + 1 < count) {
@@ -887,28 +1955,82 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 							// A relationship mapping cannot be traversed
 							if (helper.isRelationshipMapping(mapping)) {
 								addProblem(pathExpression, UpdateItem_RelationshipPathExpression);
-								return false;
+								valid = false;
 							}
 							// A basic mapping cannot be traversed
 							else if (helper.isPropertyMapping(mapping)) {
 								addProblem(pathExpression, UpdateItem_RelationshipPathExpression);
-								return false;
+								valid = false;
 							}
 						}
 					}
-
-					return true;
 				}
 				else {
 					addProblem(pathExpression, StateFieldPathExpression_NotResolvable, pathExpression.toParsedText());
+					valid = false;
 				}
 			}
 		}
 
-		return false;
+		return valid;
 	}
 
-	protected void validateUpperExpression(UpperExpression expression) {
+	/**
+	 * Validates the given {@link UpdateStatement}. The default behavior does not require to
+	 * semantically validate it.
+	 *
+	 * @param expression The {@link UpdateStatement} to validate
+	 */
+	protected void validateUpdateStatement(UpdateStatement expression) {
+		super.visit(expression);
+	}
+
+	/**
+	 * Validates the encapsulated expression of the given <code><b>UPPER</b></code> expression. The
+	 * test to perform is:
+	 * <ul>
+	 * <li>If the encapsulated expression is a path expression, validation makes sure it is a basic
+	 * mapping, an association field is not allowed.</li>
+	 * <li>If the encapsulated expression is not a path expression, validation will be redirected to
+	 * that expression but the returned status will not be changed.</li>
+	 * </ul>
+	 *
+	 * @param expression The {@link UpperExpression} to validate by validating its encapsulated expression
+	 * @return <code>false</code> if the encapsulated expression was validated and is invalid;
+	 * <code>true</code> otherwise
+	 */
+	protected boolean validateUpperExpression(UpperExpression expression) {
+		return validateFunctionPathExpression(expression);
+	}
+
+	/**
+	 * Validates the given {@link ValueExpression}. The default behavior does not require to
+	 * semantically validate it.
+	 *
+	 * @param expression The {@link ValueExpression} to validate
+	 */
+	protected void validateValueExpression(ValueExpression expression) {
+		super.visit(expression);
+	}
+
+	/**
+	 * Validates the given {@link WhenClause}. The default behavior does not require to semantically
+	 * validate it.
+	 *
+	 * @param expression The {@link WhenClause} to validate
+	 */
+	protected void validateWhenClause(WhenClause expression) {
+		super.visit(expression);
+	}
+
+	/**
+	 * Validates the given {@link WhereClause}. The default behavior does not require to semantically
+	 * validate it.
+	 *
+	 * @param expression The {@link WhereClause} to validate
+	 */
+	protected void validateWhereClause(WhereClause expression) {
+		super.visit(expression);
 	}
 
 	protected VirtualIdentificationVariableFinder virtualIdentificationVariableFinder() {
@@ -922,16 +2044,15 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(AbsExpression expression) {
+	public final void visit(AbsExpression expression) {
 		validateAbsExpression(expression);
-		super.visit(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(AbstractSchemaName expression) {
+	public final void visit(AbstractSchemaName expression) {
 		validateAbstractSchemaName(expression);
 	}
 
@@ -939,59 +2060,47 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(AdditionExpression expression) {
-
-		validateArithmeticExpression(
-			expression,
-			AdditionExpression_LeftExpression_WrongType,
-			AdditionExpression_RightExpression_WrongType
-		);
-
-		super.visit(expression);
+	public final void visit(AdditionExpression expression) {
+		validateAdditionExpression(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(AllOrAnyExpression expression) {
-		// The result of the subquery must be like that of the other argument to
-		// the comparison operator in type, which is done by visit(ComparisonExpression)
-		super.visit(expression);
+	public final void visit(AllOrAnyExpression expression) {
+		validateAllOrAnyExpression(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(AndExpression expression) {
-		// Nothing to validate, validating with the grammar is sufficient
-		super.visit(expression);
+	public final void visit(AndExpression expression) {
+		validateAndExpression(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(ArithmeticFactor expression) {
-		// Nothing to validate semantically
-		super.visit(expression);
+	public final void visit(ArithmeticFactor expression) {
+		validateArithmeticExpression(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(AvgFunction expression) {
+	public final void visit(AvgFunction expression) {
 		validateAvgFunction(expression);
-		super.visit(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(BadExpression expression) {
+	public final void visit(BadExpression expression) {
 		// Nothing to validate semantically
 	}
 
@@ -999,42 +2108,31 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(BetweenExpression expression) {
-
-		// Different types on each side
-		if (expression.hasExpression()           &&
-		    expression.hasLowerBoundExpression() &&
-		    expression.hasUpperBoundExpression()) {
-
-			validateBetweenRangeExpression(expression);
-		}
-
-		super.visit(expression);
+	public final void visit(BetweenExpression expression) {
+		validateBetweenRangeExpression(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(CaseExpression expression) {
+	public final void visit(CaseExpression expression) {
 		validateCaseExpression(expression);
-		super.visit(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(CoalesceExpression expression) {
+	public final void visit(CoalesceExpression expression) {
 		validateCoalesceExpression(expression);
-		super.visit(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(CollectionExpression expression) {
+	public final void visit(CollectionExpression expression) {
 		// Nothing to validate semantically
 		super.visit(expression);
 	}
@@ -1043,93 +2141,63 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(CollectionMemberDeclaration expression) {
-
-		validateCollectionValuedPathExpression(expression.getCollectionValuedPathExpression(), true);
-
-		try {
-			registerIdentificationVariable = false;
-			expression.getIdentificationVariable().accept(this);
-		}
-		finally {
-			registerIdentificationVariable = true;
-		}
+	public final void visit(CollectionMemberDeclaration expression) {
+		validateCollectionMemberDeclaration(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(CollectionMemberExpression expression) {
-
-		// Expressions that evaluate to embeddable types are not supported in
-		// collection member expressions
-		if (expression.hasEntityExpression()) {
-			validateCollectionMemberEntityExpression(expression);
-		}
-
-		// The collection-valued path expression designates a collection
-		validateCollectionValuedPathExpression(expression.getCollectionValuedPathExpression(), true);
-
-		super.visit(expression);
+	public final void visit(CollectionMemberExpression expression) {
+		validateCollectionMemberExpression(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(CollectionValuedPathExpression expression) {
+	public final void visit(CollectionValuedPathExpression expression) {
 		// Validated by the parent of the expression
-		super.visit(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(ComparisonExpression expression) {
-
-		if (expression.hasLeftExpression() &&
-		    expression.hasRightExpression()) {
-
-			validateComparisonExpression(expression);
-		}
-
-		super.visit(expression);
+	public final void visit(ComparisonExpression expression) {
+		validateComparisonExpression(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(ConcatExpression expression) {
+	public final void visit(ConcatExpression expression) {
 		validateConcatExpression(expression);
-		super.visit(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(ConstructorExpression expression) {
+	public final void visit(ConstructorExpression expression) {
 		validateConstructorExpression(expression);
-		super.visit(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(CountFunction expression) {
+	public final void visit(CountFunction expression) {
 		validateCountFunction(expression);
-		super.visit(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(DateTime expression) {
+	public final void visit(DateTime expression) {
 		validateDateTime(expression);
 	}
 
@@ -1137,49 +2205,39 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(DeleteClause expression) {
+	public final void visit(DeleteClause expression) {
 		validateDeleteClause(expression);
-		super.visit(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(DeleteStatement expression) {
+	public final void visit(DeleteStatement expression) {
 		validateDeleteStatement(expression);
-		super.visit(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(DivisionExpression expression) {
-
-		validateArithmeticExpression(
-			expression,
-			DivisionExpression_LeftExpression_WrongType,
-			DivisionExpression_RightExpression_WrongType
-		);
-
-		super.visit(expression);
+	public final void visit(DivisionExpression expression) {
+		validateDivisionExpression(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(EmptyCollectionComparisonExpression expression) {
+	public final void visit(EmptyCollectionComparisonExpression expression) {
 		validateCollectionValuedPathExpression(expression.getExpression(), true);
-		super.visit(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(EntityTypeLiteral expression) {
+	public final void visit(EntityTypeLiteral expression) {
 		validateEntityTypeLiteral(expression);
 	}
 
@@ -1187,60 +2245,47 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(EntryExpression expression) {
-		validateMapIdentificationVariable(expression);
-		super.visit(expression);
+	public final void visit(EntryExpression expression) {
+		validateEntryExpression(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(ExistsExpression expression) {
+	public final void visit(ExistsExpression expression) {
 		validateExistsExpression(expression);
-		super.visit(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(FromClause expression) {
+	public final void visit(FromClause expression) {
 		validateFromClause(expression);
-		super.visit(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(GroupByClause expression) {
-
-		// - The requirements for the SELECT clause when GROUP BY is used follow those of SQL: namely,
-		//   any item that appears in the SELECT clause (other than as an aggregate function or as an
-		//   argument to an aggregate function) must also appear in the GROUP BY clause.
-		// - Grouping by an entity is permitted. In this case, the entity must contain no serialized
-		//   state fields or lob-valued state fields that are eagerly fetched.
-		// - Grouping by embeddables is not supported.
-
+	public final void visit(GroupByClause expression) {
 		validateGroupByClause(expression);
-		super.visit(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(HavingClause expression) {
-		// Nothing to validate semantically
-		super.visit(expression);
+	public final void visit(HavingClause expression) {
+		validateHavingClause(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(IdentificationVariable expression) {
+	public final void visit(IdentificationVariable expression) {
 		validateIdentificationVariable(expression);
 	}
 
@@ -1248,88 +2293,31 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(IdentificationVariableDeclaration expression) {
+	public final void visit(IdentificationVariableDeclaration expression) {
 		validateIdentificationVariableDeclaration(expression);
-		super.visit(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(IndexExpression expression) {
+	public final void visit(IndexExpression expression) {
 		validateIndexExpression(expression);
-		super.visit(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(InExpression expression) {
-
-		// First make sure all the IN items are of the same type
-//		if (expression.hasInItems()) {
-//			Expression inItems = expression.getInItems();
-//
-//			InItemResolver inTypeResolver = new InItemResolver();
-//			inItems.accept(inTypeResolver);
-//
-//			if (!inTypeResolver.types.isEmpty()) {
-//				IType inItemType = inTypeResolver.types.get(0);
-//				boolean sameType = true;
-//
-//				for (int index = 1, count = inTypeResolver.types.size(); index < count; index++) {
-//					sameType = isEquivalentType(inItemType, inTypeResolver.types.get(index));
-//
-//					if (!sameType) {
-//						break;
-//					}
-//				}
-//
-//				if (!sameType) {
-//					int startIndex = position(inItems);
-//					int endIndex   = startIndex + length(inItems);
-//					addProblem(inItems, startIndex, endIndex, InExpression_InItem_WrongType);
-//				}
-//				else {
-//					// - The state_field_path_expression must have a string, numeric, date,
-//					//   time, timestamp, or enum value
-//					// - The literal and/or input parameter values must be like the same
-//					//   abstract schema type of the state_field_path_expression in type.
-//					//   See Section 4.12
-//					// - The results of the subquery must be like the same abstract schema
-//					//   type of the state_field_path_expression in type
-//					if (expression.hasExpression() &&
-//					    expression.hasInItems()) {
-//
-//						expression.getExpression().accept(typeResolver);
-//						IType stateFieldPathType = typeResolver.getType();
-//
-//						// Input parameter are an instance of Object or invalid queries as well,
-//						// only validate if the two types are not Object
-//						if (!isObjectType(stateFieldPathType) &&
-//						    !isObjectType(inItemType) &&
-//						    !isEquivalentType(stateFieldPathType, inItemType))
-//						{
-//							int startIndex = position(expression);
-//							int endIndex   = startIndex + length(expression);
-//
-//							addProblem(expression, startIndex, endIndex, InExpression_WrongType);
-//						}
-//					}
-//				}
-//			}
-//		}
-
-		super.visit(expression);
+	public final void visit(InExpression expression) {
+		validateInExpression(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(InputParameter expression) {
+	public final void visit(InputParameter expression) {
 		// Nothing to validate semantically
 	}
 
@@ -1337,30 +2325,15 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(Join expression) {
-
-		if (expression.hasJoinAssociationPath()) {
-			Expression joinAssociationPath = expression.getJoinAssociationPath();
-			validateCollectionValuedPathExpression(joinAssociationPath, false);
-			joinAssociationPath.accept(this);
-		}
-
-		if (expression.hasIdentificationVariable()) {
-			try {
-				registerIdentificationVariable = false;
-				expression.getIdentificationVariable().accept(this);
-			}
-			finally {
-				registerIdentificationVariable = true;
-			}
-		}
+	public final void visit(Join expression) {
+		validateJoin(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(JPQLExpression expression) {
+	public final void visit(JPQLExpression expression) {
 		if (expression.hasQueryStatement()) {
 			expression.getQueryStatement().accept(this);
 			validateIdentificationVariables();
@@ -1371,16 +2344,15 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(KeyExpression expression) {
-		validateMapIdentificationVariable(expression);
-		super.visit(expression);
+	public final void visit(KeyExpression expression) {
+		validateKeyExpression(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(KeywordExpression expression) {
+	public final void visit(KeywordExpression expression) {
 		// Nothing semantically to validate
 	}
 
@@ -1388,103 +2360,87 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(LengthExpression expression) {
+	public final void visit(LengthExpression expression) {
 		validateLengthExpression(expression);
-		super.visit(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(LikeExpression expression) {
+	public final void visit(LikeExpression expression) {
 		validateLikeExpression(expression);
-		super.visit(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(LocateExpression expression) {
+	public final void visit(LocateExpression expression) {
 		validateLocateExpression(expression);
-		super.visit(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(LowerExpression expression) {
+	public final void visit(LowerExpression expression) {
 		validateLowerExpression(expression);
-		super.visit(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(MaxFunction expression) {
-		validateAggregateFunction(expression);
-		super.visit(expression);
+	public final void visit(MaxFunction expression) {
+		validateMaxFunction(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(MinFunction expression) {
-		validateAggregateFunction(expression);
-		super.visit(expression);
+	public final void visit(MinFunction expression) {
+		validateMinFunction(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(ModExpression expression) {
+	public final void visit(ModExpression expression) {
 		validateModExpression(expression);
-		super.visit(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(MultiplicationExpression expression) {
-
-		validateArithmeticExpression(
-			expression,
-			MultiplicationExpression_LeftExpression_WrongType,
-			MultiplicationExpression_RightExpression_WrongType
-		);
-
-		super.visit(expression);
+	public final void visit(MultiplicationExpression expression) {
+		validateMultiplicationExpression(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(NotExpression expression) {
+	public final void visit(NotExpression expression) {
 		validateNotExpression(expression);
-		super.visit(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(NullComparisonExpression expression) {
+	public final void visit(NullComparisonExpression expression) {
 		validateNullComparisonExpression(expression);
-		super.visit(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(NullExpression expression) {
+	public final void visit(NullExpression expression) {
 		// Nothing semantically to validate
 	}
 
@@ -1492,16 +2448,15 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(NullIfExpression expression) {
-		// Nothing semantically to validate
-		super.visit(expression);
+	public final void visit(NullIfExpression expression) {
+		validateNullIfExpression(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(NumericLiteral expression) {
+	public final void visit(NumericLiteral expression) {
 		// Nothing semantically to validate
 	}
 
@@ -1509,88 +2464,59 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(ObjectExpression expression) {
+	public final void visit(ObjectExpression expression) {
 		validateObjectExpression(expression);
-		super.visit(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(OnClause expression) {
+	public final void visit(OnClause expression) {
 		validateOnClause(expression);
-		super.visit(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(OrderByClause expression) {
+	public final void visit(OrderByClause expression) {
 		validateOrderByClause(expression);
-		super.visit(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(OrderByItem expression) {
-
-		// An orderby_item must be one of the following:
-		// 1. A state_field_path_expression that evaluates to an orderable state
-		//    field of an entity or embeddable class abstract schema type
-		//    designated in the SELECT clause by one of the following:
-		//    • a general_identification_variable
-		//    • a single_valued_object_path_expression
-		// 2. A state_field_path_expression that evaluates to the same state field
-		//    of the same entity or embeddable abstract schema type as a
-		//    state_field_path_expression in the SELECT clause
-		// 3. A result_variable that refers to an orderable item in the SELECT
-		//    clause for which the same result_variable has been specified. This
-		//    may be the result of an aggregate_expression, a scalar_expression,
-		//    or a state_field_path_expression in the SELECT clause.
-
-		super.visit(expression);
+	public final void visit(OrderByItem expression) {
+		validateOrderByItem(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(OrExpression expression) {
-		// Nothing to validate, validating with the grammar is sufficient
-		super.visit(expression);
+	public final void visit(OrExpression expression) {
+		validateOrExpression(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(RangeVariableDeclaration expression) {
-
-		expression.getAbstractSchemaName().accept(this);
-
-		try {
-			registerIdentificationVariable = false;
-			expression.getIdentificationVariable().accept(this);
-		}
-		finally {
-			registerIdentificationVariable = true;
-		}
+	public final void visit(RangeVariableDeclaration expression) {
+		validateRangeVariableDeclaration(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(ResultVariable expression) {
+	public final void visit(ResultVariable expression) {
 
 		try {
 			registerIdentificationVariable = false;
 			validateResultVariable(expression);
-			super.visit(expression);
 		}
 		finally {
 			registerIdentificationVariable = true;
@@ -1601,90 +2527,63 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(SelectClause expression) {
+	public final void visit(SelectClause expression) {
 		validateSelectClause(expression);
-		super.visit(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(SelectStatement expression) {
+	public final void visit(SelectStatement expression) {
 		validateSelectStatement(expression);
-		super.visit(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(SimpleFromClause expression) {
+	public final void visit(SimpleFromClause expression) {
 		validateSimpleFromClause(expression);
-		super.visit(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(SimpleSelectClause expression) {
+	public final void visit(SimpleSelectClause expression) {
 		validateSimpleSelectClause(expression);
-		super.visit(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(SimpleSelectStatement expression) {
-
-		// Keep a copy of the identification variables that are used throughout the parent query
-		List<IdentificationVariable> oldUsedIdentificationVariables = new ArrayList<IdentificationVariable>(usedIdentificationVariables);
-
-		// Create a context for the subquery
-		helper.newSubqueryContext(expression);
-
-		try {
-			super.visit(expression);
-
-			// Validate the identification variables that are used within the subquery
-			validateIdentificationVariables();
-		}
-		finally {
-			// Revert back to the parent context
-			helper.disposeSubqueryContext();
-
-			// Revert the list to what it was
-			usedIdentificationVariables.retainAll(oldUsedIdentificationVariables);
-		}
+	public final void visit(SimpleSelectStatement expression) {
+		validateSimpleSelectStatement(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(SizeExpression expression) {
-		// The SIZE function returns an integer value, the number of elements of the collection
-		validateCollectionValuedPathExpression(expression.getExpression(), true);
-		super.visit(expression);
+	public final void visit(SizeExpression expression) {
+		validateSizeExpression(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(SqrtExpression expression) {
+	public final void visit(SqrtExpression expression) {
 		validateSqrtExpression(expression);
-		super.visit(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(StateFieldPathExpression expression) {
-		super.visit(expression);
+	public final void visit(StateFieldPathExpression expression) {
 		validateStateFieldPathExpression(expression, true);
 	}
 
@@ -1692,7 +2591,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(StringLiteral expression) {
+	public final void visit(StringLiteral expression) {
 		// Nothing semantically to validate
 	}
 
@@ -1700,7 +2599,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(SubExpression expression) {
+	public final void visit(SubExpression expression) {
 		// Nothing semantically to validate
 		super.visit(expression);
 	}
@@ -1709,61 +2608,55 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(SubstringExpression expression) {
+	public final void visit(SubstringExpression expression) {
 		validateSubstringExpression(expression);
-		super.visit(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(SubtractionExpression expression) {
+	public final void visit(SubtractionExpression expression) {
 		validateSubtractionExpression(expression);
-		super.visit(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(SumFunction expression) {
+	public final void visit(SumFunction expression) {
 		validateSumFunction(expression);
-		super.visit(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(TreatExpression expression) {
-		// Nothing semantically to validate
-		super.visit(expression);
+	public final void visit(TreatExpression expression) {
+		validateTreatExpression(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(TrimExpression expression) {
-		// Nothing semantically to validate
-		super.visit(expression);
+	public final void visit(TrimExpression expression) {
+		validateTrimExpression(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(TypeExpression expression) {
-		// TODO: Anything to validate?
-		super.visit(expression);
+	public final void visit(TypeExpression expression) {
+		validateTypeExpression(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(UnknownExpression expression) {
+	public final void visit(UnknownExpression expression) {
 		// Nothing semantically to validate
 	}
 
@@ -1771,16 +2664,15 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(UpdateClause expression) {
-		// Nothing semantically to validate
-		super.visit(expression);
+	public final void visit(UpdateClause expression) {
+		validateUpdateClause(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(UpdateItem expression) {
+	public final void visit(UpdateItem expression) {
  		validateUpdateItem(expression);
 	}
 
@@ -1788,50 +2680,45 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(UpdateStatement expression) {
-		// Nothing semantically to validate
-		super.visit(expression);
+	public final void visit(UpdateStatement expression) {
+		validateUpdateStatement(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(UpperExpression expression) {
+	public final void visit(UpperExpression expression) {
 		validateUpperExpression(expression);
-		super.visit(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(ValueExpression expression) {
-		validateMapIdentificationVariable(expression);
-		super.visit(expression);
+	public final void visit(ValueExpression expression) {
+		validateValueExpression(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(WhenClause expression) {
-		// Nothing semantically to validate
-		super.visit(expression);
+	public final void visit(WhenClause expression) {
+		validateWhenClause(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(WhereClause expression) {
-		// Nothing semantically to validate
-		super.visit(expression);
+	public final void visit(WhereClause expression) {
+		validateWhereClause(expression);
 	}
 
 	protected class ComparingEntityTypeLiteralVisitor extends AbstractExpressionVisitor {
 
-		IdentificationVariable expression;
+		protected IdentificationVariable expression;
 		public boolean result;
 
 		/**

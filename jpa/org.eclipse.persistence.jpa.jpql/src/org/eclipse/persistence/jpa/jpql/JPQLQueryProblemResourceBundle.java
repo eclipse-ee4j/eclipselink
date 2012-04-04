@@ -62,7 +62,6 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
 
 			// AbstractSchemaName - Grammar
 			{"ABSTRACT_SCHEMA_NAME_INVALID",             "The abstract schema type ''{0}'' is unknown."},
-			{"ABSTRACT_SCHEMA_NAME_NOT_RESOLVABLE",      "''{0}'' cannot be resolved to a type."},
 			// AbstractSchemaName - Semantic
 			{"PATH_EXPRESSION_NOT_RELATIONSHIP_MAPPING", "The derived path ''{0}'' does not represent an association field."},
 

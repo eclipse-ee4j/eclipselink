@@ -1628,7 +1628,7 @@ public class DefaultSemanticValidatorTest2_0 extends AbstractSemanticValidatorTe
 	}
 
 	@Test
-	public void test_StateFieldPathExpression_AssociationField_1() throws Exception {
+	public void test_StateFieldPathExpression_AssociationField_01() throws Exception {
 
 		String query = "SELECT MIN(e.managerEmployee) FROM Employee e";
 		int startPosition = "SELECT MIN(".length();
@@ -1645,7 +1645,7 @@ public class DefaultSemanticValidatorTest2_0 extends AbstractSemanticValidatorTe
 	}
 
 	@Test
-	public void test_StateFieldPathExpression_AssociationField_2() throws Exception {
+	public void test_StateFieldPathExpression_AssociationField_02() throws Exception {
 
 		String query = "SELECT e.managerEmployee FROM Employee e";
 		List<JPQLQueryProblem> problems = validate(query);
@@ -1653,6 +1653,181 @@ public class DefaultSemanticValidatorTest2_0 extends AbstractSemanticValidatorTe
 		testDoesNotHaveProblem(
 			problems,
 			JPQLQueryProblemMessages.StateFieldPathExpression_AssociationField
+		);
+	}
+
+	@Test
+	public void test_StateFieldPathExpression_AssociationField_03() throws Exception {
+
+		String query = "SELECT e FROM Employee e WHERE UPPER(e.address) = 'JPQL'";
+		int startPosition = "SELECT e FROM Employee e WHERE UPPER(".length();
+		int endPosition   = "SELECT e FROM Employee e WHERE UPPER(e.address".length();
+
+		List<JPQLQueryProblem> problems = validate(query);
+
+		testHasProblem(
+			problems,
+			JPQLQueryProblemMessages.StateFieldPathExpression_AssociationField,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public void test_StateFieldPathExpression_AssociationField_04() throws Exception {
+
+		String query = "SELECT e FROM Employee e WHERE LOWER(e.address) = 'JPQL'";
+		int startPosition = "SELECT e FROM Employee e WHERE LOWER(".length();
+		int endPosition   = "SELECT e FROM Employee e WHERE LOWER(e.address".length();
+
+		List<JPQLQueryProblem> problems = validate(query);
+
+		testHasProblem(
+			problems,
+			JPQLQueryProblemMessages.StateFieldPathExpression_AssociationField,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public void test_StateFieldPathExpression_AssociationField_05() throws Exception {
+
+		String query = "SELECT e FROM Employee e WHERE LENGTH(e.address) = 'JPQL'";
+		int startPosition = "SELECT e FROM Employee e WHERE LENGTH(".length();
+		int endPosition   = "SELECT e FROM Employee e WHERE LENGTH(e.address".length();
+
+		List<JPQLQueryProblem> problems = validate(query);
+
+		testHasProblem(
+			problems,
+			JPQLQueryProblemMessages.StateFieldPathExpression_AssociationField,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public void test_StateFieldPathExpression_AssociationField_06() throws Exception {
+
+		String query = "SELECT e FROM Employee e WHERE e.address + 2";
+		int startPosition = "SELECT e FROM Employee e WHERE ".length();
+		int endPosition   = "SELECT e FROM Employee e WHERE e.address".length();
+
+		List<JPQLQueryProblem> problems = validate(query);
+
+		testHasProblem(
+			problems,
+			JPQLQueryProblemMessages.StateFieldPathExpression_AssociationField,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public void test_StateFieldPathExpression_AssociationField_07() throws Exception {
+
+		String query = "SELECT e FROM Employee e WHERE MOD(e.address, 2) > 2";
+		int startPosition = "SELECT e FROM Employee e WHERE MOD(".length();
+		int endPosition   = "SELECT e FROM Employee e WHERE MOD(e.address".length();
+
+		List<JPQLQueryProblem> problems = validate(query);
+
+		testHasProblem(
+			problems,
+			JPQLQueryProblemMessages.StateFieldPathExpression_AssociationField,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public void test_StateFieldPathExpression_AssociationField_08() throws Exception {
+
+		String query = "SELECT e FROM Employee e WHERE TRIM(e.address, 'JPQL') = 'JPQL'";
+		int startPosition = "SELECT e FROM Employee e WHERE TRIM(".length();
+		int endPosition   = "SELECT e FROM Employee e WHERE TRIM(e.address".length();
+
+		List<JPQLQueryProblem> problems = validate(query);
+
+		testHasProblem(
+			problems,
+			JPQLQueryProblemMessages.StateFieldPathExpression_AssociationField,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public void test_StateFieldPathExpression_AssociationField_09() throws Exception {
+
+		String query = "SELECT e FROM Employee e WHERE TRIM(BOTH '_' FROM e.address) = 'JPQL'";
+		int startPosition = "SELECT e FROM Employee e WHERE TRIM(BOTH '_' FROM ".length();
+		int endPosition   = "SELECT e FROM Employee e WHERE TRIM(BOTH '_' FROM e.address".length();
+
+		List<JPQLQueryProblem> problems = validate(query);
+
+		testHasProblem(
+			problems,
+			JPQLQueryProblemMessages.StateFieldPathExpression_AssociationField,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public void test_StateFieldPathExpression_AssociationField_10() throws Exception {
+
+		String query = "SELECT e FROM Employee e WHERE TRIM(e.department, 'JPQL') = 'JPQL'";
+
+		List<JPQLQueryProblem> problems = validate(query);
+
+		testDoesNotHaveProblem(
+			problems,
+			JPQLQueryProblemMessages.StateFieldPathExpression_AssociationField
+		);
+	}
+
+	@Test
+	public void test_StateFieldPathExpression_AssociationField_11() throws Exception {
+
+		String query = "SELECT e FROM Employee e WHERE LENGTH(e.department) = 2";
+
+		List<JPQLQueryProblem> problems = validate(query);
+
+		testDoesNotHaveProblem(
+			problems,
+			JPQLQueryProblemMessages.StateFieldPathExpression_AssociationField
+		);
+	}
+
+	@Test
+	public void test_StateFieldPathExpression_AssociationField_12() throws Exception {
+
+		String query = "SELECT e FROM Employee e WHERE LOWER(e.department) = 2";
+
+		List<JPQLQueryProblem> problems = validate(query);
+
+		testDoesNotHaveProblem(
+			problems,
+			JPQLQueryProblemMessages.StateFieldPathExpression_AssociationField
+		);
+	}
+
+	@Test
+	public void test_StateFieldPathExpression_AssociationField_13() throws Exception {
+
+		String query = "SELECT e FROM Employee e WHERE LOWER(UPPER(e.address)) = 2";
+		int startPosition = "SELECT e FROM Employee e WHERE LOWER(UPPER(".length();
+		int endPosition   = "SELECT e FROM Employee e WHERE LOWER(UPPER(e.address".length();
+
+		List<JPQLQueryProblem> problems = validate(query);
+
+		testHasProblem(
+			problems,
+			JPQLQueryProblemMessages.StateFieldPathExpression_AssociationField,
+			startPosition,
+			endPosition
 		);
 	}
 

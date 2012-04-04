@@ -44,12 +44,14 @@ import org.eclipse.persistence.jpa.jpql.parser.DeleteStatement;
 import org.eclipse.persistence.jpa.jpql.parser.DivisionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.EmptyCollectionComparisonExpression;
 import org.eclipse.persistence.jpa.jpql.parser.EncapsulatedIdentificationVariableExpression;
+import org.eclipse.persistence.jpa.jpql.parser.EntryExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ExistsExpression;
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
 import org.eclipse.persistence.jpa.jpql.parser.IndexExpression;
 import org.eclipse.persistence.jpa.jpql.parser.InputParameter;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLQueryBNF;
+import org.eclipse.persistence.jpa.jpql.parser.KeyExpression;
 import org.eclipse.persistence.jpa.jpql.parser.KeywordExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LengthExpression;
 import org.eclipse.persistence.jpa.jpql.parser.LikeExpression;
@@ -84,6 +86,7 @@ import org.eclipse.persistence.jpa.jpql.parser.UpdateClause;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateItem;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateStatement;
 import org.eclipse.persistence.jpa.jpql.parser.UpperExpression;
+import org.eclipse.persistence.jpa.jpql.parser.ValueExpression;
 import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
 
 import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
@@ -401,30 +404,59 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void validateAbsExpression(AbsExpression expression) {
-		// The ABS function takes a numeric argument
-		validateNumericType(expression.getExpression(), AbsExpression_InvalidNumericExpression);
+	protected boolean validateAbsExpression(AbsExpression expression) {
+
+		boolean valid = super.validateAbsExpression(expression);
+
+		if (valid) {
+			// The ABS function takes a numeric argument
+			valid = validateNumericType(expression.getExpression(), AbsExpression_InvalidNumericExpression);
+		}
+
+		return valid;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void validateArithmeticExpression(ArithmeticExpression expression,
-	                                            String leftExpressionWrongTypeMessageKey,
-	                                            String rightExpressionWrongTypeMessageKey) {
+	protected int validateArithmeticExpression(ArithmeticExpression expression,
+	                                           String leftExpressionWrongTypeMessageKey,
+	                                           String rightExpressionWrongTypeMessageKey) {
 
-		validateNumericType(expression.getLeftExpression(),  leftExpressionWrongTypeMessageKey);
-		validateNumericType(expression.getRightExpression(), rightExpressionWrongTypeMessageKey);
+		int result = super.validateArithmeticExpression(
+			expression,
+			leftExpressionWrongTypeMessageKey,
+			rightExpressionWrongTypeMessageKey
+		);
+
+		// Only validate the left expression if it's still valid
+		if (isValid(result, 0)) {
+			boolean valid = validateNumericType(expression.getLeftExpression(), leftExpressionWrongTypeMessageKey);
+			updateStatus(result, 0, valid);
+		}
+
+		// Validate the right expression
+		boolean valid = validateNumericType(expression.getRightExpression(), rightExpressionWrongTypeMessageKey);
+		updateStatus(result, 1, valid);
+
+		return result;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void validateAvgFunction(AvgFunction expression) {
+	protected boolean validateAvgFunction(AvgFunction expression) {
+
 		// Arguments to the functions AVG must be numeric
-		validateNumericType(expression.getExpression(), AvgFunction_InvalidNumericExpression);
+		boolean valid = super.validateAvgFunction(expression);
+
+		if (valid) {
+			valid = validateNumericType(expression.getExpression(), AvgFunction_InvalidNumericExpression);
+		}
+
+		return valid;
 	}
 
 	/**
@@ -432,6 +464,8 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
 	 */
 	@Override
 	protected void validateBetweenRangeExpression(BetweenExpression expression) {
+
+		super.validateBetweenRangeExpression(expression);
 
 		if (!isEquivalentBetweenType(expression.getExpression(), expression.getLowerBoundExpression()) ||
 		    !isEquivalentBetweenType(expression.getExpression(), expression.getUpperBoundExpression())) {
@@ -450,56 +484,88 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
 	 * @param expression The {@link Expression} to validate
 	 * @param messageKey The key used to retrieve the localized message describing the problem
 	 */
-	protected void validateBooleanType(Expression expression, String messageKey) {
+	protected boolean validateBooleanType(Expression expression, String messageKey) {
 
 		if (isValid(expression, BooleanPrimaryBNF.ID) && !isBooleanType(expression)) {
 			addProblem(expression, messageKey);
+			return false;
 		}
+
+		return true;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void validateCollectionMemberEntityExpression(CollectionMemberExpression expression) {
+	protected int validateCollectionMemberExpression(CollectionMemberExpression expression) {
 
-		Expression entityExpression = expression.getEntityExpression();
+		int result = super.validateCollectionMemberExpression(expression);
 
-		// Check for embeddable type
-		Object type = helper.getType(entityExpression);
+		if (isValid(result, 0) && expression.hasEntityExpression()) {
+			Expression entityExpression = expression.getEntityExpression();
 
-		if (helper.getEmbeddable(type) != null) {
-			addProblem(entityExpression, CollectionMemberExpression_Embeddable);
+			// Check for embeddable type
+			Object type = helper.getType(entityExpression);
+
+			if (helper.getEmbeddable(type) != null) {
+				addProblem(entityExpression, CollectionMemberExpression_Embeddable);
+				updateStatus(result, 0, false);
+			}
 		}
+
+		return result;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void validateComparisonExpression(ComparisonExpression expression) {
+	protected int validateComparisonExpression(ComparisonExpression expression) {
 
-		// The result of the two expressions must be like that of the other argument
-		// Comparisons over instances of embeddable class or map entry types are not supported
-		if (!isComparisonEquivalentType(expression.getLeftExpression(),
-		                                expression.getRightExpression())) {
+		int result = super.validateComparisonExpression(expression);
 
-			addProblem(expression, ComparisonExpression_WrongComparisonType);
+		// Only validate the left and right if they are still valid
+		if (expression.hasLeftExpression()  &&
+		    expression.hasRightExpression() &&
+		    isValid(result, 0) &&
+		    isValid(result, 1)) {
+
+			// The result of the two expressions must be like that of the other argument
+			// Comparisons over instances of embeddable class or map entry types are not supported
+			if (!isComparisonEquivalentType(expression.getLeftExpression(),
+			                                expression.getRightExpression())) {
+
+				addProblem(expression, ComparisonExpression_WrongComparisonType);
+				updateStatus(result, 0, false);
+				updateStatus(result, 1, false);
+			}
 		}
+
+		return result;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void validateConcatExpression(ConcatExpression expression) {
+	protected boolean validateConcatExpression(ConcatExpression expression) {
+
+		boolean result = super.validateConcatExpression(expression);
 
 		// The CONCAT function returns a string that is a concatenation of its arguments
 		if (expression.hasExpression()) {
+			int index = 0;
 			for (Expression child : getChildren(expression.getExpression())) {
-				validateStringType(child, ConcatExpression_Expression_WrongType);
+				// Don't validate the first expression if it is not valid
+				if (index != 0 || result) {
+					result &= validateStringType(child, ConcatExpression_Expression_WrongType);
+				}
+				index++;
 			}
 		}
+
+		return result;
 	}
 
 	/**
@@ -508,6 +574,7 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
 	@Override
 	protected void validateConstructorExpression(ConstructorExpression expression) {
 
+		super.validateConstructorExpression(expression);
 		String className = expression.getClassName();
 
 		// Only test the constructor if it has been specified
@@ -577,6 +644,8 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
 	@Override
 	protected void validateCountFunction(CountFunction expression) {
 
+		super.validateCountFunction(expression);
+
 		// The use of DISTINCT with COUNT is not supported for arguments of
 		// embeddable types or map entry types (weird because map entry is not
 		// allowed in a COUNT expression)
@@ -601,51 +670,18 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void validateIdentificationVariable(IdentificationVariable expression) {
-
-		// Only a non-virtual identification variable is validated
-		if (!expression.isVirtual()) {
-
-			String variable = expression.getText();
-			boolean continueValidating = true;
-
-			// A entity literal type is parsed as an identification variable, check for that case
-			if (isComparingEntityTypeLiteral(expression)) {
-
-				// The identification variable (or entity type literal) does not
-				// correspond  to an entity name, then continue validation
-				Object entity = helper.getEntityNamed(variable);
-				continueValidating = (entity == null);
-			}
-
-			if (continueValidating) {
-
-				// Validate a real identification variable
-				if (registerIdentificationVariable) {
-					usedIdentificationVariables.add(expression);
-				}
-
-				if (ExpressionTools.stringIsNotEmpty(variable)) {
-					validateIdentificationVariable(expression, variable);
-				}
-			}
-		}
-		// The identification variable actually represents a state field path expression that has
-		// a virtual identification, validate that state field path expression instead
-		else {
-			StateFieldPathExpression pathExpression = expression.getStateFieldPathExpression();
-
-			if (pathExpression != null) {
-				pathExpression.accept(this);
-			}
-		}
+	protected void validateEntryExpression(EntryExpression expression) {
+		validateMapIdentificationVariable(expression);
+		super.validateEntryExpression(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void validateIdentificationVariable(IdentificationVariable expression, String variable) {
+	protected boolean validateIdentificationVariable(IdentificationVariable expression, String variable) {
+
+		boolean valid = super.validateIdentificationVariable(expression, variable);
 
 		for (String entityName : helper.entityNames()) {
 
@@ -659,10 +695,13 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
 					int startIndex = position(expression);
 					int endIndex   = startIndex + variable.length();
 					addProblem(expression, startIndex, endIndex, IdentificationVariable_EntityName);
+					valid = false;
 					break;
 				}
 			}
 		}
+
+		return valid;
 	}
 
 	/**
@@ -675,51 +714,87 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
 	 * @param expression The {@link Expression} to validate
 	 * @param queryBNF The unique identifier of the query BNF used to validate the type
 	 * @param messageKey The key used to retrieve the localized message describing the problem
+	 * @return <code>false</code> if the given expression was validated and is invalid;
+	 * <code>true</code> otherwise
 	 */
-	protected void validateIntegralType(Expression expression, String queryBNF, String messageKey) {
+	protected boolean validateIntegralType(Expression expression, String queryBNF, String messageKey) {
 
 		if (isValid(expression, queryBNF) && !isIntegralType(expression)) {
 			addProblem(expression, messageKey);
+			return false;
 		}
+
+		return true;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void validateLengthExpression(LengthExpression expression) {
-		validateStringType(expression.getExpression(), LengthExpression_WrongType);
+	protected void validateKeyExpression(KeyExpression expression) {
+		validateMapIdentificationVariable(expression);
+		super.validateKeyExpression(expression);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void validateLocateExpression(LocateExpression expression) {
+	protected boolean validateLengthExpression(LengthExpression expression) {
+
+		boolean valid = super.validateLengthExpression(expression);
+
+		if (valid) {
+			valid = validateStringType(expression.getExpression(), LengthExpression_WrongType);
+		}
+
+		return valid;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected int validateLocateExpression(LocateExpression expression) {
+
+		int result = super.validateLocateExpression(expression);
 
 		// The first argument is the string to be located; the second argument is the string to be
 		// searched; the optional third argument is an integer that represents the string position at
 		// which the search is started (by default, the beginning of the string to be searched)
-		validateStringType (expression.getFirstExpression(),  LocateExpression_FirstExpression_WrongType);
-		validateStringType (expression.getSecondExpression(), LocateExpression_SecondExpression_WrongType);
-		validateNumericType(expression.getThirdExpression(),  LocateExpression_ThirdExpression_WrongType);
+		if (isValid(result, 0)) {
+			boolean valid = validateStringType(expression.getFirstExpression(), LocateExpression_FirstExpression_WrongType);
+			updateStatus(result, 0, valid);
+		}
 
-		// Note that not all databases support the use of the third argument to LOCATE; use of this
-		// argument may result in queries that are not portable
+		if (isValid(result, 1)) {
+			boolean valid = validateStringType (expression.getSecondExpression(), LocateExpression_SecondExpression_WrongType);
+			updateStatus(result, 1, valid);
+		}
+
+		if (isValid(result, 2)) {
+			boolean valid = validateNumericType(expression.getThirdExpression(),  LocateExpression_ThirdExpression_WrongType);
+			updateStatus(result, 2, valid);
+		}
+
+		return result;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void validateLowerExpression(LowerExpression expression) {
-		validateStringType(expression.getExpression(), LowerExpression_WrongType);
+	protected boolean validateLowerExpression(LowerExpression expression) {
+
+		boolean valid = super.validateLowerExpression(expression);
+
+		if (valid) {
+			valid = validateStringType(expression.getExpression(), LowerExpression_WrongType);
+		}
+
+		return valid;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	protected void validateMapIdentificationVariable(EncapsulatedIdentificationVariableExpression expression) {
 
 		// The KEY, VALUE, and ENTRY operators may only be applied to
@@ -750,19 +825,35 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void validateModExpression(ModExpression expression) {
+	protected int validateModExpression(ModExpression expression) {
 
-		validateIntegralType(
-			expression.getFirstExpression(),
-			expression.parameterExpressionBNF(0),
-			ModExpression_FirstExpression_WrongType
-		);
+		int result = super.validateModExpression(expression);
 
-		validateIntegralType(
-			expression.getSecondExpression(),
-			expression.parameterExpressionBNF(1),
-			ModExpression_SecondExpression_WrongType
-		);
+		// Don't validate the first expression if it's not valid
+		if (isValid(result, 0)) {
+
+			boolean valid = validateIntegralType(
+				expression.getFirstExpression(),
+				expression.parameterExpressionBNF(0),
+				ModExpression_FirstExpression_WrongType
+			);
+
+			updateStatus(result, 0, valid);
+		}
+
+		// Don't validate the second expression if it's not valid
+		if (isValid(result, 1)) {
+
+			boolean valid = validateIntegralType(
+				expression.getSecondExpression(),
+				expression.parameterExpressionBNF(1),
+				ModExpression_SecondExpression_WrongType
+			);
+
+			updateStatus(result, 1, valid);
+		}
+
+		return result;
 	}
 
 	/**
@@ -770,6 +861,7 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
 	 */
 	@Override
 	protected void validateNotExpression(NotExpression expression) {
+		super.validateNotExpression(expression);
 		validateBooleanType(expression.getExpression(), NotExpression_WrongType);
 	}
 
@@ -779,6 +871,8 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
 	@Override
 	protected void validateNullComparisonExpression(NullComparisonExpression expression) {
 
+		super.validateNullComparisonExpression(expression);
+
 		// Null comparisons over instances of embeddable class types are not supported
 		StateFieldPathExpression pathExpression = getStateFieldPathExpression(expression.getExpression());
 
@@ -787,7 +881,6 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
 
 			if (helper.getEmbeddable(type) != null) {
 				addProblem(pathExpression, NullComparisonExpression_InvalidType, pathExpression.toParsedText());
-				return;
 			}
 		}
 	}
@@ -801,21 +894,33 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
 	 *
 	 * @param expression The {@link Expression} to validate
 	 * @param messageKey The key used to retrieve the localized message describing the problem
+	 * @return <code>false</code> if the given expression was validated and is invalid;
+	 * <code>true</code> otherwise
 	 */
-	protected void validateNumericType(Expression expression, String messageKey) {
+	protected boolean validateNumericType(Expression expression, String messageKey) {
 
 		if (isValid(expression, SimpleArithmeticExpressionBNF.ID) && !isNumericType(expression)) {
 			addProblem(expression, messageKey);
+			return false;
 		}
+
+		return true;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void validateSqrtExpression(SqrtExpression expression) {
-		// The SQRT function takes a numeric argument
-		validateNumericType(expression.getExpression(), SqrtExpression_WrongType);
+	protected boolean validateSqrtExpression(SqrtExpression expression) {
+
+		boolean valid = super.validateSqrtExpression(expression);
+
+		if (valid) {
+			// The SQRT function takes a numeric argument
+			valid = validateNumericType(expression.getExpression(), SqrtExpression_WrongType);
+		}
+
+		return valid;
 	}
 
 	/**
@@ -827,62 +932,77 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
 	 *
 	 * @param expression The {@link Expression} to validate
 	 * @param messageKey The key used to retrieve the localized message describing the problem
+	 * @return <code>false</code> if the given expression was validated and is invalid;
+	 * <code>true</code> otherwise
 	 */
-	protected void validateStringType(Expression expression, String messageKey) {
+	protected boolean validateStringType(Expression expression, String messageKey) {
 
 		if (isValid(expression, StringPrimaryBNF.ID) && !isStringType(expression)) {
 			addProblem(expression, messageKey, expression.toParsedText());
+			return false;
 		}
+
+		return true;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void validateSubstringExpression(SubstringExpression expression) {
+	protected int validateSubstringExpression(SubstringExpression expression) {
 
-		validateStringType(
-			expression.getFirstExpression(),
-			SubstringExpression_FirstExpression_WrongType
-		);
+		int result = super.validateSubstringExpression(expression);
+
+		if (isValid(result, 0)) {
+			boolean valid = validateStringType(
+				expression.getFirstExpression(),
+				SubstringExpression_FirstExpression_WrongType
+			);
+			updateStatus(result, 0, valid);
+		}
 
 		// The second and third arguments of the SUBSTRING function denote the starting position and
 		// length of the substring to be returned. These arguments are integers
-		validateIntegralType(
-			expression.getSecondExpression(),
-			expression.parameterExpressionBNF(1),
-			SubstringExpression_SecondExpression_WrongType
-		);
+		if (isValid(result, 1)) {
+
+			boolean valid = validateIntegralType(
+				expression.getSecondExpression(),
+				expression.parameterExpressionBNF(1),
+				SubstringExpression_SecondExpression_WrongType
+			);
+
+			updateStatus(result, 1, valid);
+		}
 
 		// The third argument is optional for JPA 2.0
-		if (getJPAVersion().isNewerThanOrEqual(JPAVersion.VERSION_2_0)) {
-			validateIntegralType(
+		if (isValid(result, 2) && getJPAVersion().isNewerThanOrEqual(JPAVersion.VERSION_2_0)) {
+
+			boolean valid = validateIntegralType(
 				expression.getThirdExpression(),
 				expression.parameterExpressionBNF(2),
 				SubstringExpression_ThirdExpression_WrongType
 			);
+
+			updateStatus(result, 2, valid);
 		}
+
+		return result;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void validateSubtractionExpression(SubtractionExpression expression) {
-		validateArithmeticExpression(
-			expression,
-			SubtractionExpression_LeftExpression_WrongType,
-			SubtractionExpression_RightExpression_WrongType
-		);
-	}
+	protected boolean validateSumFunction(SumFunction expression) {
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void validateSumFunction(SumFunction expression) {
-		// Arguments to the functions SUM must be numeric
-		validateNumericType(expression.getExpression(), SumFunction_WrongType);
+		boolean valid = super.validateSumFunction(expression);
+
+		if (valid) {
+			// Arguments to the functions SUM must be numeric
+			valid = validateNumericType(expression.getExpression(), SumFunction_WrongType);
+		}
+
+		return valid;
 	}
 
 	/**
@@ -986,11 +1106,26 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void validateUpperExpression(UpperExpression expression) {
+	protected boolean validateUpperExpression(UpperExpression expression) {
 
-		// The UPPER function convert a string to upper case,
-		// with regard to the locale of the database
-		validateStringType(expression.getExpression(), UpperExpression_WrongType);
+		boolean valid = super.validateUpperExpression(expression);
+
+		if (valid) {
+			// The UPPER function convert a string to upper case,
+			// with regard to the locale of the database
+			valid = validateStringType(expression.getExpression(), UpperExpression_WrongType);
+		}
+
+		return valid;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void validateValueExpression(ValueExpression expression) {
+		validateMapIdentificationVariable(expression);
+		super.validateValueExpression(expression);
 	}
 
 	/**

@@ -13,6 +13,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.tests.jpql;
 
+import org.eclipse.persistence.jpa.jpql.spi.java.JavaQuery;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Collection;
@@ -458,6 +460,24 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 
 		assertEquals(
 			"The wrong type for ?2 was retrieved",
+			getType(namedQuery, String.class),
+			type
+		);
+	}
+
+	@Test
+	public void test_ParameterType_InExpression() throws Exception {
+
+		String jpqlQuery = "SELECT c From Customer c where c.home.city IN(:city)";
+		IQuery namedQuery = new JavaQuery(getPersistenceUnit(), jpqlQuery);
+
+		AbstractJPQLQueryHelper helper = buildQueryHelper(namedQuery);
+		IType type = helper.getParameterType(":city");
+
+		assertNotNull("The type of :city should have been found", type);
+
+		assertEquals(
+			"The wrong type for :city was retrieved",
 			getType(namedQuery, String.class),
 			type
 		);
