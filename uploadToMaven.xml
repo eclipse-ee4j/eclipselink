@@ -191,7 +191,7 @@
         <!-- These use above, in order, to define a single library for an artifact dependency -->
         <property name="dep.antlr"         value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.antlr${dep.ver}${antlr.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.asm"           value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.asm${dep.ver}${asm.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
-        <property name="dep.hermes"        value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.jpa.jpql${dep.ver}${hermes.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
+        <property name="dep.hermes"        value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.jpa.jpql${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.dbws"          value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.dbws${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.core"          value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.core${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.core.parser"   value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.core.jpql${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
