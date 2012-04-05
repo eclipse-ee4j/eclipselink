@@ -135,6 +135,7 @@ public class QueryOptimizationTestSuite extends TestSuite {
         addTest(new OneToManyBatchReadingTest(batchType));
 
         addTest(new NestedBatchReadingTest(batchType));
+        addTest(new NestedBatchReadingNPETest(batchType));
         addTest(new AggregateBatchReadingTest(batchType));
         addTest(new BatchReadingBatchReadExpressionTest(batchType));
         addTest(new BatchReadingWithInvalidQueryKeyTest(batchType));
@@ -442,6 +443,16 @@ public class QueryOptimizationTestSuite extends TestSuite {
         query15.addPartialAttribute(new org.eclipse.persistence.expressions.ExpressionBuilder().get("address").get("id"));
         test15.setQuery(query15);
         addTest(test15);
+
+        ReadAllPartialReadingAddressTest test16 = new ReadAllPartialReadingAddressTest(26, "id");
+        test16.setName("ReadAllPartialReadingAddressTest - PhoneNumber - Employee - SelectAddressId");
+        ReadAllQuery query16 = new ReadAllQuery();
+        query16.setReferenceClass(PhoneNumber.class);
+        query16.dontMaintainCache();
+        query16.useDistinct();
+        query16.addPartialAttribute(new org.eclipse.persistence.expressions.ExpressionBuilder().get("owner").get("address").get("id"));
+        test16.setQuery(query16);
+        addTest(test16);
 
         addTest(new QueryValidationTest());
     }

@@ -414,7 +414,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
             ObjectExpression prevExpression = base;
             while (!base.getBaseExpression().isExpressionBuilder()&& !done) {
                 base = (ObjectExpression)base.getBaseExpression();
-                while (!base.isExpressionBuilder() && base.getMapping().isAggregateObjectMapping()){
+                while (!base.isExpressionBuilder() && (base.getMapping() != null && base.getMapping().isAggregateObjectMapping())) {
                     base = (ObjectExpression)base.getBaseExpression();
                 }
                 if (base.isExpressionBuilder()){
