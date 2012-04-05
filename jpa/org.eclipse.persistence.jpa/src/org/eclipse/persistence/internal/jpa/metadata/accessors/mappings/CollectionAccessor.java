@@ -115,6 +115,8 @@ import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JP
  * @since TopLink EJB 3.0 Reference Implementation
  */
 public abstract class CollectionAccessor extends RelationshipAccessor implements MappedKeyMapAccessor {
+    private Boolean m_deleteAll;
+    
     private ColumnMetadata m_mapKeyColumn;
     private EnumeratedMetadata m_mapKeyEnumerated;
     
@@ -131,8 +133,6 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
     private String m_mapKeyClassName;
     
     private TemporalMetadata m_mapKeyTemporal;
-    
-    private Boolean m_deleteAll;
 
     /**
      * INTERNAL:
@@ -249,7 +249,6 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
         m_mapKeyAssociationOverrides.add(associationOverride);
     }
     
-    
     /**
      * INTERNAL:
      * Add the attribute override to our map key attribute overrides list. If
@@ -348,6 +347,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
 
     /**
      * INTERNAL:
+     * Used for OX mapping.
      */
     public Boolean getDeleteAll() {
         return m_deleteAll;
@@ -559,13 +559,9 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
      * INTERNAL:
      * Used by our XML writing facility.
      * Returns false unless m_deleteAll is both set and true
-     * @return
      */
-    public boolean isDeleteAll(){
-        if (m_deleteAll != null && m_deleteAll){
-            return true;
-        }
-        return false;
+    public boolean isDeleteAll() {
+        return m_deleteAll != null && m_deleteAll;
     }
     
     /**
@@ -616,6 +612,16 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
             m_orderBy.process(mapping, getReferenceDescriptor(), getJavaClass());
         }
         
+        // Process the order column if specified.
+        if (m_orderColumn != null) {
+            m_orderColumn.process(mapping, getDescriptor());
+        }
+        
+        // Process the delete all setting
+        if (m_deleteAll != null && mapping.isPrivateOwned()) {
+            mapping.setMustDeleteReferenceObjectsOneByOne(! m_deleteAll);
+        }
+        
         // Set the correct indirection on the collection mapping. Process the 
         // map metadata for a map key value to set on the indirection policy.
         // ** Note the reference class or reference class name needs to be set 
@@ -624,15 +630,6 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
         
         // Process a @ReturnInsert and @ReturnUpdate (to log a warning message)
         processReturnInsertAndUpdate();
-        
-        // Process the order column if specified.
-        if (m_orderColumn != null) {
-            m_orderColumn.process(mapping, getDescriptor());
-        }
-        
-        if (m_deleteAll != null && mapping.isPrivateOwned()){
-            mapping.setMustDeleteReferenceObjectsOneByOne(!m_deleteAll);
-        }
     }            
         
     /**
@@ -682,8 +679,12 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
         }
     }
     
-    public void setDeleteAll(Boolean m_deleteAll) {
-        this.m_deleteAll = m_deleteAll;
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setDeleteAll(Boolean deleteAll) {
+        m_deleteAll = deleteAll;
     }
     
     /**
