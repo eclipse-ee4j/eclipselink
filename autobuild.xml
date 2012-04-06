@@ -137,7 +137,7 @@
         <property name="version.string" value="${release.version}.${version.qualifier}"/>
 
         <!-- For signed archive name need "version.string" defined first -->
-        <property name="p2.archive.presigned.zip" value="eclipselink-P2-${release.version}.zip"/>
+        <property name="p2.archive.presigned.zip" value="eclipselink-P2-${version.string}.zip"/>
         <property name="p2.archive.signed.zip"    value="eclipselink-P2signed-${version.string}.zip"/>
 
         <!-- Set download.dir appropriately depending upon build target          -->
