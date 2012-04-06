@@ -13,6 +13,7 @@
 package org.eclipse.persistence.internal.helper;
 
 import java.math.*;
+import java.net.URL;
 import java.util.*;
 import java.io.*;
 import java.security.AccessController;
@@ -139,6 +140,8 @@ public class ConversionManager implements Serializable, Cloneable {
                 return convertObjectToCharacterArray(sourceObject);
             } else if ((sourceObject.getClass() == ClassConstants.STRING) && (javaClass == ClassConstants.CLASS)) {
                 return convertObjectToClass(sourceObject);
+            } else if(javaClass == ClassConstants.URL_Class) {
+                return convertObjectToUrl(sourceObject);
             }
         } catch (ConversionException ce) {
             throw ce;
@@ -734,6 +737,25 @@ public class ConversionManager implements Serializable, Cloneable {
             throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.TIMESTAMP);
         }
         return timestamp;
+    }
+
+    /**
+     * INTERNAL:
+     * Build a valid instance of java.net.URL from the given source object.
+     * @param sourceObject    Valid instance of java.net.URL, or String
+     */
+    protected URL convertObjectToUrl(Object sourceObject) throws ConversionException {
+        if(sourceObject.getClass() == ClassConstants.URL_Class) {
+            return (URL) sourceObject;
+        } else if (sourceObject.getClass() == ClassConstants.STRING) {
+            try {
+                return new URL((String) sourceObject);
+            } catch(Exception e) {
+                throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.URL_Class, e);
+            }
+        } else {
+            throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.URL_Class);
+        }
     }
 
     /**

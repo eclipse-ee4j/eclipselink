@@ -28,6 +28,7 @@ public class XMLConversionManagerTestSuite extends TestCase {
         suite.addTestSuite(XMLGregorianCalendarTestCases.class);
         suite.addTestSuite(NumberTestCases.class);
         suite.addTestSuite(BooleanTestCases.class);
+        suite.addTestSuite(UrlTestCases.class);
         return suite;
     }
 
