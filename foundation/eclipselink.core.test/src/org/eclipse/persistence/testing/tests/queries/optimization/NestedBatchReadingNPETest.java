@@ -30,8 +30,14 @@ public class NestedBatchReadingNPETest extends TestCase {
         setName(getName() + batchType);
     }
 
-    public void setup() {
+    public void reset() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
+    }
+
+    public void setup() {
+        if ((batchType == BatchFetchType.IN) && !getSession().getPlatform().isOracle()) {
+            throwWarning("Nested arrays not supported on this database");
+        }
     }
 
     public void test() {
