@@ -45,6 +45,5 @@ public final class CastExpressionBNF extends JPQLQueryBNF {
 		super.initialize();
 
 		registerExpressionFactory(CastExpressionFactory.ID);
-                registerChild(ScalarExpressionBNF.ID);
 	}
 }

@@ -45,6 +45,5 @@ public final class ExtractExpressionBNF extends JPQLQueryBNF {
 		super.initialize();
 
 		registerExpressionFactory(ExtractExpressionFactory.ID);
-                registerChild(ScalarExpressionBNF.ID);
 	}
 }
