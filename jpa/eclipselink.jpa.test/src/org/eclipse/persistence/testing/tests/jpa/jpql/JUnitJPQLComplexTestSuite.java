@@ -3219,6 +3219,10 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
             warning("testNullOrdering only works with Hermes");
             return;
         }
+        if (!getDatabaseSession().getPlatform().isOracle()) {
+            warning("NULLS FIRST only supported on Oracle.");
+            return;
+        }
         EntityManager em = createEntityManager();
         try {
             Query query = em.createQuery("Select e from Employee e order by e.id desc");
