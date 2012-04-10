@@ -50,6 +50,7 @@ import org.eclipse.persistence.jpa.jpql.parser.AvgFunction;
 import org.eclipse.persistence.jpa.jpql.parser.BadExpression;
 import org.eclipse.persistence.jpa.jpql.parser.BetweenExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CaseExpression;
+import org.eclipse.persistence.jpa.jpql.parser.CastExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CoalesceExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionMemberDeclaration;
@@ -68,6 +69,7 @@ import org.eclipse.persistence.jpa.jpql.parser.EmptyCollectionComparisonExpressi
 import org.eclipse.persistence.jpa.jpql.parser.EntityTypeLiteral;
 import org.eclipse.persistence.jpa.jpql.parser.EntryExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ExistsExpression;
+import org.eclipse.persistence.jpa.jpql.parser.ExtractExpression;
 import org.eclipse.persistence.jpa.jpql.parser.FromClause;
 import org.eclipse.persistence.jpa.jpql.parser.FunctionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.GroupByClause;
@@ -1152,7 +1154,8 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	 * {@inheritDoc}
 	 */
 	public void visit(IdentificationVariableDeclaration expression) {
-		// Nothing to do
+		// Return the expression for the identification variable.
+	        (((RangeVariableDeclaration)expression.getRangeVariableDeclaration()).getIdentificationVariable()).accept(this);
 	}
 
 	/**
@@ -1879,6 +1882,36 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 		// Set the expression type
 		type[0] = String.class;
 	}
+
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(CastExpression expression) {
+
+                // First create the expression from the encapsulated expression
+                expression.getExpression().accept(this);
+
+                // Now create the CAST expression
+                queryExpression = queryExpression.cast(expression.getDatabaseType());
+
+                // Set the expression type
+                type[0] = Object.class;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(ExtractExpression expression) {
+
+                // First create the expression from the encapsulated expression
+                expression.getExpression().accept(this);
+
+                // Now create the EXTRACT expression
+                queryExpression = queryExpression.extract(expression.getPart());
+
+                // Set the expression type
+                type[0] = Object.class;
+        }
 
 	/**
 	 * {@inheritDoc}

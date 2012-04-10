@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2012 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2011 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -292,13 +292,24 @@ public final class RangeVariableDeclaration extends AbstractExpression {
 			if (wordParser.startsWithIdentifier(AS)) {
 				return null;
 			}
+                        if (wordParser.startsWithIdentifier(SELECT)) {
+                            return parse(
+                                    wordParser,
+                                    SubqueryBNF.ID,
+                                    tolerant
+                            );
+                        }
 
 			return parse(wordParser, AbstractSchemaNameBNF.ID, tolerant);
 		}
 
-		String word = wordParser.word();
-		AbstractExpression expression;
-
+		AbstractExpression expression;		
+                if (wordParser.startsWithIdentifier(SELECT)) {
+                    expression = new SimpleSelectStatement(this);
+                    expression.parse(wordParser, tolerant);
+                    return expression;
+                }
+                String word = wordParser.word();
 		if (word.indexOf('.') != -1) {
 			expression = new CollectionValuedPathExpression(this, word);
 		}

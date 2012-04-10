@@ -126,12 +126,10 @@ public class SQLSelectStatement extends SQLStatement {
      */
     protected void addOrderByExpressionToSelectForDistinct() {
         for (Expression orderExpression : getOrderByExpressions()) {
-            Expression fieldExpression = null;
+            Expression fieldExpression = orderExpression;
 
-            if (orderExpression.isFunctionExpression() && (orderExpression.getOperator().isOrderOperator())) {
-                fieldExpression = ((FunctionExpression)orderExpression).getBaseExpression();
-            } else {
-                fieldExpression = orderExpression;
+            while (fieldExpression.isFunctionExpression() && (fieldExpression.getOperator().isOrderOperator())) {
+                fieldExpression = ((FunctionExpression)fieldExpression).getBaseExpression();
             }
 
             // Changed to call a method to loop through the fields vector and check each element
@@ -1452,13 +1450,24 @@ public class SQLSelectStatement extends SQLStatement {
         for (Expression orderBy : this.orderByExpressions) {
             orderBy = rebuildExpression(orderBy, builder, clonedExpressions);
             Expression base = orderBy;
-            boolean asc = true;
+            Boolean asc = null;
+            Boolean nullsFirst = null;
             if (orderBy.isFunctionExpression()) {
-                if (orderBy.getOperator().getSelector() == ExpressionOperator.Ascending) {
-                    base = (Expression)((FunctionExpression)orderBy).getChildren().get(0);
-                } else if (orderBy.getOperator().getSelector() == ExpressionOperator.Descending) {
-                    asc = false;
-                    base = (Expression)((FunctionExpression)orderBy).getChildren().get(0);
+                if (base.getOperator().getSelector() == ExpressionOperator.NullsFirst) {
+                    nullsFirst = true;
+                    base = (Expression)((FunctionExpression)base).getChildren().get(0);
+                } else if (base.getOperator().getSelector() == ExpressionOperator.NullsLast) {
+                    nullsFirst = false;
+                    base = (Expression)((FunctionExpression)base).getChildren().get(0);
+                }
+                if (base.isFunctionExpression()) {
+                    if (base.getOperator().getSelector() == ExpressionOperator.Ascending) {
+                        asc = true;
+                        base = (Expression)((FunctionExpression)base).getChildren().get(0);
+                    } else if (base.getOperator().getSelector() == ExpressionOperator.Descending) {
+                        asc = false;
+                        base = (Expression)((FunctionExpression)base).getChildren().get(0);
+                    }
                 }
             }
             if (base.isQueryKeyExpression()) {
@@ -1468,10 +1477,19 @@ public class SQLSelectStatement extends SQLStatement {
                     List<Expression> orderBys = expression.getMapping().getOrderByNormalizedExpressions(expression);
                     if (orderBys != null) {
                         for (Expression mappingOrderBy : orderBys) {
-                            if (asc) {
-                                mappingOrderBy = mappingOrderBy.ascending();
-                            } else {
-                                mappingOrderBy = mappingOrderBy.descending();                                    
+                            if (asc != null) {
+                                if (asc) {
+                                    mappingOrderBy = mappingOrderBy.ascending();
+                                } else {
+                                    mappingOrderBy = mappingOrderBy.descending();                                    
+                                }
+                            }
+                            if (nullsFirst != null) {
+                                if (nullsFirst) {
+                                    mappingOrderBy = mappingOrderBy.nullsFirst();
+                                } else {
+                                    mappingOrderBy = mappingOrderBy.nullsLast();                                    
+                                }
                             }
                             newOrderBys.add(mappingOrderBy);
                             allExpressions.add(mappingOrderBy);

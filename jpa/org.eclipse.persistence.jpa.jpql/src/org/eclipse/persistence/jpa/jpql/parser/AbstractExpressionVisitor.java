@@ -478,6 +478,18 @@ public abstract class AbstractExpressionVisitor implements ExpressionVisitor {
 	public void visit(TrimExpression expression) {
 	}
 
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(CastExpression expression) {
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(ExtractExpression expression) {
+        }
+
 	/**
 	 * {@inheritDoc}
 	 */

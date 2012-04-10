@@ -138,7 +138,6 @@ import org.eclipse.persistence.jpa.jpql.parser.EntityTypeLiteral;
 import org.eclipse.persistence.jpa.jpql.parser.EntryExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ExistsExpression;
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
-import org.eclipse.persistence.jpa.jpql.parser.ExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.FromClause;
 import org.eclipse.persistence.jpa.jpql.parser.FunctionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.GroupByClause;
@@ -217,7 +216,7 @@ import org.eclipse.persistence.jpa.jpql.util.CollectionTools;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-public abstract class BasicStateObjectBuilder implements ExpressionVisitor {
+public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor {
 
 	/**
 	 *

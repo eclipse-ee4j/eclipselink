@@ -103,6 +103,8 @@ public class ExpressionOperator implements Serializable {
     /** Ordering operators */
     public static final int Ascending = 26;
     public static final int Descending = 27;
+    public static final int NullsFirst = 139;
+    public static final int NullsLast = 140;
 
     /** Function operators */
 
@@ -143,6 +145,8 @@ public class ExpressionOperator implements Serializable {
     public static final int Trim2 = 121;
     public static final int LeftTrim2 = 122;
     public static final int SubstringSingleArg = 133;
+    public static final int Cast = 137;
+    public static final int Extract = 138;
 
     // Date
     public static final int AddMonths = 47;
@@ -217,7 +221,7 @@ public class ExpressionOperator implements Serializable {
     public static final int Value = 85;
 
     //XML Specific
-    public static final int Extract = 106;
+    public static final int ExtractXml = 106;
     public static final int ExtractValue = 107;
     public static final int ExistsNode = 108;
     public static final int GetStringVal = 109;
@@ -442,6 +446,22 @@ public class ExpressionOperator implements Serializable {
      */
     public static ExpressionOperator ascending() {
         return simpleOrdering(Ascending, "ASC", "ascending");
+    }
+
+    /**
+     * INTERNAL:
+     * Create the NULLS FIRST ordering operator.
+     */
+    public static ExpressionOperator nullsFirst() {
+        return simpleOrdering(NullsFirst, "NULLS FIRST", "nullsFirst");
+    }
+
+    /**
+     * INTERNAL:
+     * Create the NULLS LAST ordering operator.
+     */
+    public static ExpressionOperator nullsLast() {
+        return simpleOrdering(NullsLast, "NULLS LAST", "nullsLast");
     }
 
     /**
@@ -1059,7 +1079,7 @@ public class ExpressionOperator implements Serializable {
      * INTERNAL:
      * Create the extract expression operator
      */
-    public static ExpressionOperator extract() {
+    public static ExpressionOperator extractXml() {
         ExpressionOperator result = new ExpressionOperator();
         Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
         v.add("extract(");
@@ -1067,7 +1087,7 @@ public class ExpressionOperator implements Serializable {
         v.add(")");
         result.printsAs(v);
         result.bePrefix();
-        result.setSelector(Extract);
+        result.setSelector(ExtractXml);
         result.setNodeClass(ClassConstants.FunctionExpression_Class);
         return result;
     }
@@ -1298,6 +1318,8 @@ public class ExpressionOperator implements Serializable {
         addOperator(notOperator());
         addOperator(ascending());
         addOperator(descending());
+        addOperator(nullsFirst());
+        addOperator(nullsLast());
         addOperator(any());
         addOperator(some());
         addOperator(all());
@@ -1400,6 +1422,8 @@ public class ExpressionOperator implements Serializable {
         platformOperatorNames.put(Integer.valueOf(DatePart), "DatePart");
         platformOperatorNames.put(Integer.valueOf(DateDifference), "DateDifference");
         platformOperatorNames.put(Integer.valueOf(TruncateDate), "TruncateDate");
+        platformOperatorNames.put(Integer.valueOf(Extract), "Extract");
+        platformOperatorNames.put(Integer.valueOf(Cast), "Cast");
         platformOperatorNames.put(Integer.valueOf(NewTime), "NewTime");
         platformOperatorNames.put(Integer.valueOf(Nvl), "Nvl");
         platformOperatorNames.put(Integer.valueOf(NewTime), "NewTime");
@@ -1436,7 +1460,7 @@ public class ExpressionOperator implements Serializable {
         platformOperatorNames.put(Integer.valueOf(Ref), "Ref");
         platformOperatorNames.put(Integer.valueOf(RefToHex), "RefToHex");
         platformOperatorNames.put(Integer.valueOf(Value), "Value");
-        platformOperatorNames.put(Integer.valueOf(Extract), "Extract");
+        platformOperatorNames.put(Integer.valueOf(ExtractXml), "ExtractXml");
         platformOperatorNames.put(Integer.valueOf(ExtractValue), "ExtractValue");
         platformOperatorNames.put(Integer.valueOf(ExistsNode), "ExistsNode");
         platformOperatorNames.put(Integer.valueOf(GetStringVal), "GetStringVal");
@@ -1529,7 +1553,9 @@ public class ExpressionOperator implements Serializable {
         platformOperatorNames.put("Ref", Integer.valueOf(Ref));
         platformOperatorNames.put("RefToHex", Integer.valueOf(RefToHex));
         platformOperatorNames.put("Value", Integer.valueOf(Value));
+        platformOperatorNames.put("Cast", Integer.valueOf(Cast));
         platformOperatorNames.put("Extract", Integer.valueOf(Extract));
+        platformOperatorNames.put("ExtractXml", Integer.valueOf(ExtractXml));
         platformOperatorNames.put("ExtractValue", Integer.valueOf(ExtractValue));
         platformOperatorNames.put("ExistsNode", Integer.valueOf(ExistsNode));
         platformOperatorNames.put("GetStringVal", Integer.valueOf(GetStringVal));
@@ -2968,6 +2994,48 @@ public class ExpressionOperator implements Serializable {
      */
     public static ExpressionOperator truncateDate() {
         return simpleTwoArgumentFunction(TruncateDate, "TRUNC");
+    }
+
+    /**
+     * INTERNAL:
+     * Build operator.
+     */
+    public static ExpressionOperator cast() {
+        ExpressionOperator exOperator = new ExpressionOperator();
+        exOperator.setType(FunctionOperator);
+        exOperator.setSelector(Cast);
+        exOperator.setName("CAST");
+        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(5);
+        v.add("CAST(");
+        v.add(" AS ");
+        v.add(")");
+        exOperator.printsAs(v);
+        exOperator.bePrefix();
+        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        return exOperator;
+    }
+
+    /**
+     * INTERNAL:
+     * Build operator.
+     */
+    public static ExpressionOperator extract() {
+        ExpressionOperator exOperator = new ExpressionOperator();
+        exOperator.setType(FunctionOperator);
+        exOperator.setSelector(Extract);
+        exOperator.setName("EXTRACT");
+        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(5);
+        v.add("EXTRACT(");
+        v.add(" FROM ");
+        v.add(")");
+        exOperator.printsAs(v);
+        int[] indices = new int[2];
+        indices[0] = 1;
+        indices[1] = 0;
+        exOperator.setArgumentIndices(indices);
+        exOperator.bePrefix();
+        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        return exOperator;
     }
 
     /**

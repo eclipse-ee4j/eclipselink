@@ -20,16 +20,16 @@ import org.eclipse.persistence.testing.models.employee.domain.*;
 /**
  * Test the ordering feature using multiple orderings with the same field name.
  */
-public class MultipleOrderByWithSameFieldNameTest extends AutoVerifyTestCase {
+public class MultipleOrderByWithSameFieldNameNullsFirstTest extends AutoVerifyTestCase {
 
-    public MultipleOrderByWithSameFieldNameTest() {
+    public MultipleOrderByWithSameFieldNameNullsFirstTest() {
         setDescription("This test verifies the ordering feature works properly with multiple orderings with the same field name.");
     }
 
     public void test() {
         ExpressionBuilder builder = new ExpressionBuilder();
-        Expression orderExpr1 = builder.get("address").get("street").ascending();
-        Expression orderExpr2 = builder.get("manager").get("address").get("street").ascending();
+        Expression orderExpr1 = builder.get("address").get("street").ascending().nullsFirst();
+        Expression orderExpr2 = builder.get("manager").get("address").get("street").ascending().nullsLast();
         Expression expr = builder.anyOf("projects").get("id").equal(2193);
 
         ReadAllQuery query = new ReadAllQuery(Employee.class, expr);

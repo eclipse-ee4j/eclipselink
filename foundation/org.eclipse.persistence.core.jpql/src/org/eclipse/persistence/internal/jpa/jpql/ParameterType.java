@@ -25,6 +25,7 @@ import org.eclipse.persistence.jpa.jpql.parser.ArithmeticFactor;
 import org.eclipse.persistence.jpa.jpql.parser.AvgFunction;
 import org.eclipse.persistence.jpa.jpql.parser.BetweenExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CaseExpression;
+import org.eclipse.persistence.jpa.jpql.parser.CastExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CoalesceExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionMemberExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionValuedPathExpression;
@@ -40,6 +41,7 @@ import org.eclipse.persistence.jpa.jpql.parser.EntityTypeLiteral;
 import org.eclipse.persistence.jpa.jpql.parser.EntryExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ExistsExpression;
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
+import org.eclipse.persistence.jpa.jpql.parser.ExtractExpression;
 import org.eclipse.persistence.jpa.jpql.parser.FunctionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
 import org.eclipse.persistence.jpa.jpql.parser.InExpression;
@@ -711,6 +713,22 @@ final class ParameterTypeVisitor extends AbstractEclipseLinkTraverseParentVisito
 			type = String.class;
 		}
 	}
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void visit(CastExpression expression) {
+                type = Object.class;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void visit(ExtractExpression expression) {
+                type = Object.class;
+        }
 
 	/**
 	 * {@inheritDoc}

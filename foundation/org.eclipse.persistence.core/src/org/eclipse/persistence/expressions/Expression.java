@@ -323,6 +323,32 @@ public abstract class Expression implements Serializable, Cloneable {
     public Expression ascending() {
         return getFunction(ExpressionOperator.Ascending);
     }
+    
+    /**
+     * PUBLIC:
+     * This can only be used within an ordering expression.
+     * Null results will be ordered first.
+     * Example:
+     * <blockquote><pre>
+     *  readAllQuery.addOrderBy(expBuilder.get("address").get("city").ascending().nullsFirst())
+     * </blockquote></pre>
+     */
+    public Expression nullsFirst() {
+        return getFunction(ExpressionOperator.NullsFirst);
+    }
+    
+    /**
+     * PUBLIC:
+     * This can only be used within an ordering expression.
+     * Null results will be ordered last.
+     * Example:
+     * <blockquote><pre>
+     *  readAllQuery.addOrderBy(expBuilder.get("address").get("city").ascending().nullsLast())
+     * </blockquote></pre>
+     */
+    public Expression nullsLast() {
+        return getFunction(ExpressionOperator.NullsLast);
+    }
 
     /**
      * PUBLIC:
@@ -4159,9 +4185,32 @@ public abstract class Expression implements Serializable, Cloneable {
      * XMLType Function, extracts a secton of XML from a larget XML document
      * @param xpath XPath expression representing the node to be returned
      */
-    public Expression extract(String xpath) {
-        ExpressionOperator anOperator = getOperator(ExpressionOperator.Extract);
+    public Expression extractXml(String xpath) {
+        ExpressionOperator anOperator = getOperator(ExpressionOperator.ExtractXml);
         return anOperator.expressionFor(this, xpath);
+    }
+
+    /**
+     * PUBLIC:
+     * Extract the date part from the date/time value.
+     * EXTRACT is part of the SQL standard, so should be supported by most databases.
+     * @param part is the date part to extract, "YEAR", "MONTH", "DAY", "HOUR", "MINUTE", "SECOND", "TIMEZONE_HOUR", "TIMEZONE_MINUTE".
+     */
+    public Expression extract(String part) {
+        ExpressionOperator anOperator = getOperator(ExpressionOperator.Extract);
+        return anOperator.expressionFor(this, literal(part));
+    }
+
+    /**
+     * PUBLIC:
+     * Cast the value to the database type.
+     * CAST is part of the SQL standard, so should be supported by most databases.
+     * @param type is the database type name, this is database specific but should include, "CHAR", "VARCHAR", "NUMERIC", "INTEGER", "DATE", "TIME", "TIMESTAMP",
+     * the type may include a size and scale.
+     */
+    public Expression cast(String type) {
+        ExpressionOperator anOperator = getOperator(ExpressionOperator.Cast);
+        return anOperator.expressionFor(this, literal(type));
     }
 
     /**

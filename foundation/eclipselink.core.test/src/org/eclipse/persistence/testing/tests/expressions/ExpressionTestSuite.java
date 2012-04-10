@@ -513,6 +513,8 @@ public class ExpressionTestSuite extends TestSuite {
         exp = exp.and(builder.get("firstName").toLowerCase().equal("bob"));
         exp = exp.and(builder.get("firstName").leftTrim().equal("Bob"));
         exp = exp.and(builder.get("firstName").rightTrim().equal("Bob"));
+        exp = exp.and(builder.get("firstName").cast("CHAR(3)").equal("Bob"));
+        exp = exp.and(builder.get("period").get("startDate").extract("YEAR").equal(1999));
         exp = exp.and(builder.get("firstName").concat(builder.get("lastName")).equal("BobSmith"));
         exp = exp.and(builder.get("firstName").substring(2).equal("ob"));
 

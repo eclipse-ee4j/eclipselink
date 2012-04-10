@@ -88,6 +88,11 @@ public interface Expression {
 	 */
 	String CASE = "CASE";
 
+        /**
+         * The constant for the identifier 'CAST'.
+         */
+        String CAST = "CAST";
+
 	/**
 	 * The constant for 'CHAR_LENGTH', which is an unused keyword.
 	 */
@@ -204,6 +209,11 @@ public interface Expression {
 	 * The constant for 'EXISTS'.
 	 */
 	String EXISTS = "EXISTS";
+
+        /**
+         * The constant for 'EXTRACT'.
+         */
+        String EXTRACT = "EXTRACT";
 
 	/**
 	 * The constant for 'FALSE'.
@@ -468,6 +478,16 @@ public interface Expression {
 	 * The constant for 'NULL'.
 	 */
 	String NULL = "NULL";
+	
+        /**
+         * The constant for 'NULLS FIRST'.
+         */
+        String NULLS_FIRST = "NULLS FIRST";
+        
+        /**
+         * The constant for 'NULLS LAST'.
+         */
+        String NULLS_LAST = "NULLS LAST";
 
 	/**
 	 * The constant for 'NULLIF'.

@@ -35,6 +35,20 @@ public interface ExpressionVisitor {
 	 */
 	void visit(AbsExpression expression);
 
+        /**
+         * Visits the {@link CastExpression} expression.
+         *
+         * @param expression The {@link Expression} to visit
+         */
+        void visit(CastExpression expression);
+
+        /**
+         * Visits the {@link ExtractExpression} expression.
+         *
+         * @param expression The {@link Expression} to visit
+         */
+        void visit(ExtractExpression expression);
+
 	/**
 	 * Visits the {@link AbstractSchemaName} expression.
 	 *

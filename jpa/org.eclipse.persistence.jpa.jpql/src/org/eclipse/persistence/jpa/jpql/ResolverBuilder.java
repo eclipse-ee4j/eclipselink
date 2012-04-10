@@ -33,6 +33,7 @@ import org.eclipse.persistence.jpa.jpql.parser.AvgFunction;
 import org.eclipse.persistence.jpa.jpql.parser.BadExpression;
 import org.eclipse.persistence.jpa.jpql.parser.BetweenExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CaseExpression;
+import org.eclipse.persistence.jpa.jpql.parser.CastExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CoalesceExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionMemberDeclaration;
@@ -52,6 +53,7 @@ import org.eclipse.persistence.jpa.jpql.parser.EntryExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ExistsExpression;
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.ExpressionVisitor;
+import org.eclipse.persistence.jpa.jpql.parser.ExtractExpression;
 import org.eclipse.persistence.jpa.jpql.parser.FromClause;
 import org.eclipse.persistence.jpa.jpql.parser.FunctionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.GroupByClause;
@@ -1129,6 +1131,20 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
 	public void visit(TrimExpression expression) {
 		resolver = buildClassResolver(String.class);
 	}
+
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(CastExpression expression) {
+                resolver = buildClassResolver(Object.class);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(ExtractExpression expression) {
+                resolver = buildClassResolver(Object.class);
+        }
 
 	/**
 	 * {@inheritDoc}

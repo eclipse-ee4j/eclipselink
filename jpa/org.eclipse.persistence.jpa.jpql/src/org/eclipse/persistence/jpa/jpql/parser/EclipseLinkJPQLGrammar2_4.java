@@ -95,6 +95,8 @@ public final class EclipseLinkJPQLGrammar2_4 extends AbstractJPQLGrammar {
 
 		registerBNF(new InternalColumnExpressionBNF());
 		registerBNF(new OnClauseBNF());
+                registerBNF(new CastExpressionBNF());
+                registerBNF(new ExtractExpressionBNF());
 
 		// Extend the query BNF to add support for ON
 		addChildBNF(JoinAssociationPathExpressionBNF.ID, OnClauseBNF.ID);
@@ -109,6 +111,16 @@ public final class EclipseLinkJPQLGrammar2_4 extends AbstractJPQLGrammar {
 
 		// Note: This should only support SQL expression
 		addChildBNF(SimpleConditionalExpressionBNF.ID, FunctionExpressionBNF.ID);
+		
+		// CAST
+                addChildBNF(FunctionsReturningDatetimeBNF.ID, CastExpressionBNF.ID);
+                addChildBNF(FunctionsReturningNumericsBNF.ID, CastExpressionBNF.ID);
+                addChildBNF(FunctionsReturningStringsBNF.ID, CastExpressionBNF.ID);
+
+                // EXTRACT
+                addChildBNF(FunctionsReturningDatetimeBNF.ID, ExtractExpressionBNF.ID);
+                addChildBNF(FunctionsReturningNumericsBNF.ID, ExtractExpressionBNF.ID);
+                addChildBNF(FunctionsReturningStringsBNF.ID, ExtractExpressionBNF.ID);
 	}
 
 	/**
@@ -127,6 +139,9 @@ public final class EclipseLinkJPQLGrammar2_4 extends AbstractJPQLGrammar {
 
 		// Add COLUMN ExpressionFactory to FunctionExpressionBNF
 		addChildFactory(FunctionExpressionBNF.ID, COLUMN);
+
+                registerFactory(new CastExpressionFactory());
+                registerFactory(new ExtractExpressionFactory());
 	}
 
 	/**
@@ -143,12 +158,14 @@ public final class EclipseLinkJPQLGrammar2_4 extends AbstractJPQLGrammar {
 		registerIdentifierRole(ON,       IdentifierRole.COMPOUND_FUNCTION); // ON x
 		registerIdentifierRole(OPERATOR, IdentifierRole.FUNCTION);          // FUNCTION(n, x1, ..., x2)
 		registerIdentifierRole(SQL,      IdentifierRole.FUNCTION);          // FUNCTION(n, x1, ..., x2)
+                registerIdentifierRole(CAST,     IdentifierRole.FUNCTION);          // FUNCTION(n, x1, ..., x2)
 
 		registerIdentifierVersion(COLUMN,   JPAVersion.VERSION_2_1);
 		registerIdentifierVersion(FUNCTION, JPAVersion.VERSION_2_1);
 		registerIdentifierVersion(ON,       JPAVersion.VERSION_2_1);
 		registerIdentifierVersion(OPERATOR, JPAVersion.VERSION_2_1);
 		registerIdentifierVersion(SQL,      JPAVersion.VERSION_2_1);
+                registerIdentifierVersion(CAST,      JPAVersion.VERSION_2_1);
 	}
 
 	/**

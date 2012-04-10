@@ -24,6 +24,7 @@ import org.eclipse.persistence.jpa.jpql.parser.AbstractSelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.AdditionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.AvgFunction;
 import org.eclipse.persistence.jpa.jpql.parser.CaseExpression;
+import org.eclipse.persistence.jpa.jpql.parser.CastExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CoalesceExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionValuedPathExpression;
@@ -34,6 +35,7 @@ import org.eclipse.persistence.jpa.jpql.parser.DateTime;
 import org.eclipse.persistence.jpa.jpql.parser.DivisionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkAnonymousExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.EntryExpression;
+import org.eclipse.persistence.jpa.jpql.parser.ExtractExpression;
 import org.eclipse.persistence.jpa.jpql.parser.FunctionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
 import org.eclipse.persistence.jpa.jpql.parser.IndexExpression;
@@ -619,6 +621,24 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
 		Expression queryExpression = queryContext.buildExpression(expression, type);
 		query.addAttribute(ExpressionTools.EMPTY_STRING, queryExpression, type[0]);
 	}
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void visit(CastExpression expression) {
+                Expression queryExpression = queryContext.buildExpression(expression, type);
+                query.addAttribute(ExpressionTools.EMPTY_STRING, queryExpression, type[0]);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void visit(ExtractExpression expression) {
+                Expression queryExpression = queryContext.buildExpression(expression, type);
+                query.addAttribute(ExpressionTools.EMPTY_STRING, queryExpression, type[0]);
+        }
 
 	/**
 	 * {@inheritDoc}

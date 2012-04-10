@@ -15,6 +15,7 @@ package org.eclipse.persistence.internal.expressions;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.internal.queries.ReportItem;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.ReportQuery;
 
 /**
@@ -46,11 +47,16 @@ public class FromAliasExpression extends QueryKeyExpression {
      */
     @Override
     public ClassDescriptor getContainingDescriptor() {
+        AbstractSession session = getBuilder().getSession();
         if (this.containingDescriptor == null ) {
             ReportQuery subQuery = ((FromSubSelectExpression)getBaseExpression()).getSubSelect().getSubQuery();
             for (ReportItem item : subQuery.getItems()) {
                 if (item.getName().equals(this.name)) {
                     if (item.getAttributeExpression().isQueryKeyExpression()) {
+                        // Need to ensure expression has a session before getting its descriptor.
+                        if (item.getAttributeExpression().getBuilder().getSession() == null) {
+                            item.getAttributeExpression().getBuilder().setSession(session);
+                        }
                         this.containingDescriptor = ((QueryKeyExpression)item.getAttributeExpression()).getContainingDescriptor();
                         return this.containingDescriptor;                        
                     }

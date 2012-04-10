@@ -109,7 +109,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
     //This method is run at the end of EVERY test case method
     @Override
-	public void tearDown()
+    public void tearDown()
     {
         clearCache();
     }
@@ -271,6 +271,11 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         tests.add("testSQLCast");
         tests.add("testOPERATOR");
         tests.add("testCOLUMN");
+        tests.add("testClassNameInFrom");
+        tests.add("testLeftParameters");
+        tests.add("testCast");
+        tests.add("testExtract");
+        tests.add("testNullOrdering");
 
         Collections.sort(tests);
         for (String test : tests) {
@@ -2943,14 +2948,11 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
     // Bug 303540 - JPQL: query fails to compile if variable found only in function parameters
     public void variableReferencedOnlyInParameterTest() {
-        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
-            getServerSession().logMessage("Test variableReferencedOnlyInParameterTest skipped for this platform, "
+        if (getDatabaseSession().getPlatform().isSymfoware()) {
+            warning("Test variableReferencedOnlyInParameterTest skipped for this platform, "
                     + "Symfoware doesn't support SQRT, COS, SIN, TAN functions.");
             return;
         }
-        // for debug
-        boolean shouldPrintJpql = false;
-        boolean shouldPrintStackTrace = false;
         EntityManager em = createEntityManager();
         String[] jpqlString = {
                 "SELECT (e.id + 1) FROM Employee e",
@@ -2974,45 +2976,25 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
                 "SELECT UPPER(e.firstName) FROM Employee e",
                 "SELECT LOWER(e.firstName) FROM Employee e",
         };
-
-        Set<String> jpqlStringExcluded = new HashSet();
-        if (getPlatform().isSQLServer() || getPlatform().isSybase()) {
-            jpqlStringExcluded.add("SELECT TRIM(LEADING 'A' FROM e.firstName) FROM Employee e");
-            jpqlStringExcluded.add("SELECT TRIM(TRAILING 'A' FROM e.firstName) FROM Employee e");
-        }
-
-        String errorMsg = "";
         String jpql = null;
         for(int i=0; i < jpqlString.length; i++) {
-            try {
-                jpql = jpqlString[i];
-                if(jpqlStringExcluded.contains(jpql)) {
-                    warning("'" + jpql + "' is not supported on this database platform");
-                } else {
-                    Query query = em.createQuery(jpql);
-                    query.getResultList();
+            jpql = jpqlString[i];
+            if (getDatabaseSession().getPlatform().isSybase() || getDatabaseSession().getPlatform().isSQLServer()) {
+                if (jpql == "SELECT TRIM(LEADING 'A' FROM e.firstName) FROM Employee e" ||
+                        jpql == "SELECT TRIM(TRAILING 'A' FROM e.firstName) FROM Employee e") {
+                    warning("Not supported on Sybase/SQL Server " + jpql);
+                    continue;
                 }
-            } catch (Exception ex) {
-                if(shouldPrintJpql) {
-                    System.out.println(jpql);
-                }
-                if(shouldPrintStackTrace) {
-                    ex.printStackTrace();
-                }
-                errorMsg += '\t' + jpql + '\n';
             }
+            Query query = em.createQuery(jpql);
+            query.getResultList();
         }
 
         closeEntityManager(em);
-
-        if(errorMsg.length() > 0) {
-            errorMsg = "Failed:\n" + errorMsg;
-            fail(errorMsg);
-        }
     }
 
-    // Bug 300512 - Add FUNCTION support to extended JPQL
-    // Bug 246598 - Unable to parse TRIM in JPA NamedQuery
+    // Bug 300512 - Add FUNCTION support to extended JPQL 
+    // Bug 246598 - Unable to parse TRIM in JPA NamedQuery 
     public void standardFunctionCreateQueryTest() {
         // for debug
         boolean shouldPrintJpql = false;
@@ -3211,6 +3193,69 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
             closeEntityManager(em);
         }
     }
+    
+    /* Test CAST function in JPQL. */
+    public void testCast() {
+        if (!isHermesParser()) {
+            warning("testCast only works with Hermes");
+            return;
+        }
+        EntityManager em = createEntityManager();
+        try {
+            // TODO type with size
+            //Query query = em.createQuery("Select cast(e.firstName as char(3)) from Employee e where cast(e.firstName as char(3)) = 'Bob'");
+            //query.getResultList();
+            Query query = em.createQuery("Select cast(e.firstName as char) from Employee e where cast(e.firstName as char) = 'Bob'");
+            query.getResultList();
+        } finally {
+            closeEntityManager(em);
+        }
+        
+    }
+    
+    /* Test NULLS FIRST function in JPQL. */
+    public void testNullOrdering() {
+        if (!isHermesParser()) {
+            warning("testNullOrdering only works with Hermes");
+            return;
+        }
+        EntityManager em = createEntityManager();
+        try {
+            Query query = em.createQuery("Select e from Employee e order by e.id desc");
+            query.getResultList();
+            query = em.createQuery("Select e from Employee e order by e.id asc");
+            query.getResultList();
+            query = em.createQuery("Select e from Employee e order by e.id");
+            query.getResultList();
+            query = em.createQuery("Select e from Employee e order by e.id asc nulls first");
+            query.getResultList();
+            query = em.createQuery("Select e from Employee e order by e.id desc nulls last");
+            query.getResultList();
+            query = em.createQuery("Select e from Employee e order by e.id nulls last");
+            query.getResultList();
+            query = em.createQuery("Select e from Employee e order by e.id nulls last, e.firstName nulls first");
+            query.getResultList();
+        } finally {
+            closeEntityManager(em);
+        }
+        
+    }
+    
+    /* Test EXTRACT function in JPQL. */
+    public void testExtract() {
+        if (!isHermesParser()) {
+            warning("testExtract only works with Hermes");
+            return;
+        }
+        EntityManager em = createEntityManager();
+        try {
+            Query query = em.createQuery("Select extract(year from e.period.startDate) from Employee e where extract(day from e.period.startDate) = 4");
+            query.getResultList();
+        } finally {
+            closeEntityManager(em);
+        }
+        
+    }
 
     /* Test SQL with CAST*/
     public void testCOLUMN() {
@@ -3383,11 +3428,59 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     // TODO Bug 350597
     // Test that subselects can be used in the from clause.
     public void testSubselectInFrom() {
-        return;
-        /*EntityManager em = createEntityManager();
-        Query query = em.createQuery("Select e.firstName, avg(e3.count) from Employee e, (Select count(e2), e2.firstName from Employee e2 group by e2.firstName) e3 where e.firstName = e3.firstName");
+        EntityManager em = createEntityManager();
+        //Query query = em.createQuery("Select e.firstName, avg(e3.count) from Employee e, (Select count(e2), e2.firstName from Employee e2 group by e2.firstName) e3 where e.firstName = e3.firstName");
+        //query.getResultList();
+        closeEntityManager(em);
+    }
+    
+    // Test using parameters on the left vs right.
+    public void testLeftParameters() {
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("Select e from Employee e where :id = 1");
+        query.setParameter("id", 1);
         query.getResultList();
-        closeEntityManager(em);*/
+        query = em.createQuery("Select e from Employee e where e = :e");
+        Employee e = new Employee();
+        e.setId(1234);
+        query.setParameter("e", e);
+        query.getResultList();
+        query = em.createQuery("Select e from Employee e where :e = e");
+        query.setParameter("e", e);
+        query.getResultList();
+        query = em.createQuery("Select e from Employee e where :a = e.address");
+        Address a = new Address();
+        a.setID(1234);
+        query.setParameter("a", a);
+        query.getResultList();
+        query = em.createQuery("Select e from Employee e where e.address = e.address");
+        query.getResultList();
+        query = em.createQuery("Select e from Employee e where (Select a from Address a where a = e.address) = e.address");
+        query.getResultList();
+        query = em.createQuery("Select e from Employee e where (Select a.ID from Address a where a = e.address) = (Select a2.ID from Address a2 where a2 = e.address)");
+        query.getResultList();
+        query = em.createQuery("Select e from Employee e where e.address is null");
+        query.getResultList();
+        query = em.createQuery("Select e from Employee e where e.address = null");
+        query.getResultList();
+        query = em.createQuery("Select e from Employee e where null = e.address");
+        query.getResultList();
+        query = em.createQuery("Select e from Employee e where null = e");
+        query.getResultList();
+        closeEntityManager(em);        
+    }
+
+    // TODO Bug 243698
+    // Test that a full class name can be used in the from clause.
+    public void testClassNameInFrom() {
+        if (!isHermesParser()) {
+            warning("testClassNameInFrom only works with Hermes");
+            return;
+        }
+        EntityManager em = createEntityManager();
+        //Query query = em.createQuery("Select e from org.eclipse.persistence.testing.models.jpa.advanced.Employee e where e.id > 0");
+        //query.getResultList();
+        closeEntityManager(em);
     }
 
     // Bug 350597 - fixed in Hermes.
@@ -3466,9 +3559,8 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         }
         query = em.createQuery("Select e from Employee e left join e.manager m on m.id > 0 join m.address a on a.city = 'Ottawa' where a.city <> 'Ottawa'");
         query.getResultList();
-        // TODO
-        //query = em.createQuery("Select e from Employee e left join Employee e2 on e.id = e2.id");
-        //query.getResultList();
+        query = em.createQuery("Select e from Employee e left join Employee e2 on e.id = e2.id");
+        query.getResultList();
         closeEntityManager(em);
     }
 
@@ -3741,11 +3833,11 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
     // Hermes bug where the input parameter type was not calculated correctly
     public void testSingleEncapsulatedInputParameter() {
-       EntityManager em = createEntityManager();
-   	 Query query = em.createQuery("Select e from Employee e where e.address.city in (:city)");
-   	 query.setParameter("city", "Ottawa");
-   	 query.getResultList();
-       closeEntityManager(em);
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("Select e from Employee e where e.address.city in (:city)");
+        query.setParameter("city", "Ottawa");
+        query.getResultList();
+        closeEntityManager(em);
     }
 
     // Bug 314025
@@ -3900,14 +3992,9 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         query.getResultList();
         closeEntityManager(em);
     }
-
+    
     public void testComplexLike() {
         if (!getServerSession().getPlatform().isOracle()) {
-            return;
-        }
-		if (isHermesParser()) {
-            // TODO: remove this
-            warning("TODO: remove this warning when fixed");
             return;
         }
         EntityManager em = createEntityManager();
@@ -3953,9 +4040,10 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         EntityManager em = createEntityManager();
         Query query = em.createQuery("Select e from Employee e where e.firstName in (UPPER('L'), LOWER('Z'))");
         query.getResultList();
+        // Derby does not support multiple sub-selects in an IN
         if (!(getDatabaseSession().getPlatform().isDerby() || getDatabaseSession().getPlatform().isH2())) {
-        query = em.createQuery("Select e from Employee e where e.firstName in ((Select e2.firstName from Employee e2 where e = e2), (Select e3.firstName from Employee e3 where e = e3))");
-        query.getResultList();
+            query = em.createQuery("Select e from Employee e where e.firstName in ((Select e2.firstName from Employee e2 where e = e2), (Select e3.firstName from Employee e3 where e = e3))");
+            query.getResultList();
         }
         query = em.createQuery("Select e from Employee e where e.firstName in :arg");
         query.setParameter("arg", Arrays.asList(new int[]{1,2}));

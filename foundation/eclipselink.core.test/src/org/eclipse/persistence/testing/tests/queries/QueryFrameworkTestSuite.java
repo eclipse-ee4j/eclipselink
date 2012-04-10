@@ -65,6 +65,8 @@ public class QueryFrameworkTestSuite extends TestSuite {
         addTest(new ConformResultsSubclassesTest()); // Bug 327900
         addTest(new ScrollableCursorJoinedAttributeTest()); // Bug 351509
         addTest(new ScrollableCursorJoiningVerificationTest()); // Bug 361860
+        addTest(new MultipleOrderByWithSameFieldNameNullsFirstTest());
+        addTest(new MultipleOrderByWithSameFieldNameTest());
     }
 
     //SRG test set is maintained by QA only, do NOT add any new test cases into it.

@@ -250,7 +250,7 @@ public class Oracle9Platform extends Oracle8Platform {
      */
     protected void initializePlatformOperators() {
         super.initializePlatformOperators();
-        addOperator(ExpressionOperator.extract());
+        addOperator(ExpressionOperator.extractXml());
         addOperator(ExpressionOperator.extractValue());
         addOperator(ExpressionOperator.existsNode());
         addOperator(ExpressionOperator.isFragment());

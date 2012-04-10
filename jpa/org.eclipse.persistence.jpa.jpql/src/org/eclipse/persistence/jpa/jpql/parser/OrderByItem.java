@@ -41,9 +41,15 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * the keyword <b>DESC</b> specifies that descending ordering be used. Ascending ordering is the
  * default.
  * <p>
+ * The keyword <b>NULLS FIRST</b> specifies that nulls first ordering be used for the associated orderby_item;
+ * the keyword <b>NULLS LAST</b> specifies that nulls last ordering be used. Ascending ordering is the
+ * default.
+ * <p>
  * JPA 1.0: <div nowrap><b>BNF:</b> <code>orderby_item ::= state_field_path_expression [ ASC | DESC ]</code>
  * <p>
  * JPA 2.0 <div nowrap><b>BNF:</b> <code>orderby_item ::= state_field_path_expression | result_variable [ ASC | DESC ]</code><p>
+ * <p>
+ * EclipseLink 2.4 <div nowrap><b>BNF:</b> <code>orderby_item ::= state_field_path_expression | result_variable [ ASC | DESC ] [ NULLS FIRST | NULLS LAST ]</code><p>
  *
  * @version 2.4
  * @since 2.3
@@ -67,10 +73,21 @@ public final class OrderByItem extends AbstractExpression {
 	 */
 	private Ordering ordering;
 
+        /**
+         * The keyword <b>NULLS FIRST</b> specifies ordering null first; the keyword <b>NULLS LAST</b>
+         * specifies ordering nulls last.
+         */
+        private NullOrdering nullOrdering;
+
 	/**
 	 * The actual ordering identifier found in the string representation of the JPQL query.
 	 */
 	private String orderingIdentifier;
+
+        /**
+         * The actual null ordering identifier found in the string representation of the JPQL query.
+         */
+        private String nullOrderingIdentifier;
 
 	/**
 	 * Creates a new <code>OrderByItem</code>.
@@ -122,6 +139,11 @@ public final class OrderByItem extends AbstractExpression {
 		if (ordering != Ordering.DEFAULT) {
 			children.add(buildStringExpression(ordering.toString()));
 		}
+
+                // Null ordering type
+                if (nullOrdering != NullOrdering.DEFAULT) {
+                        children.add(buildStringExpression(nullOrdering.toString()));
+                }
 	}
 
 	/**
@@ -156,6 +178,16 @@ public final class OrderByItem extends AbstractExpression {
 	public Ordering getOrdering() {
 		return ordering;
 	}
+
+        /**
+         * Returns the enum constant representing the null ordering type.
+         *
+         * @return The constant representing the null ordering, in the case the ordering was not parsed, then
+         * {@link NullOrdering#DEFAULT} is returned
+         */
+        public NullOrdering getNullOrdering() {
+                return nullOrdering;
+        }
 
 	/**
 	 * {@inheritDoc}
@@ -249,9 +281,23 @@ public final class OrderByItem extends AbstractExpression {
 			else {
 				ordering = Ordering.DEFAULT;
 			}
-		}
-		else {
+	                if (!wordParser.isTail()) {
+	                        wordParser.skipLeadingWhitespace();
+	                        if (wordParser.startsWithIgnoreCase(NULLS_FIRST)) {
+	                                nullOrdering = NullOrdering.NULLS_FIRST;
+	                                nullOrderingIdentifier = nullOrderingIdentifier + wordParser.moveForward(NULLS_FIRST.length());
+	                        } else if (wordParser.startsWithIgnoreCase(NULLS_LAST)) {
+	                                nullOrdering = NullOrdering.NULLS_LAST;
+	                                nullOrderingIdentifier = nullOrderingIdentifier + wordParser.moveForward(NULLS_LAST.length());
+                                } else {
+	                                nullOrdering = NullOrdering.DEFAULT;
+	                        }
+	                } else {
+	                        nullOrdering = NullOrdering.DEFAULT;
+	                }
+		} else {
 			ordering = Ordering.DEFAULT;
+                        nullOrdering = NullOrdering.DEFAULT;
 		}
 	}
 
@@ -274,6 +320,11 @@ public final class OrderByItem extends AbstractExpression {
 		if (ordering != Ordering.DEFAULT) {
 			writer.append(actual ? orderingIdentifier : ordering.name());
 		}
+
+                // Null ordering
+                if (nullOrdering != NullOrdering.DEFAULT) {
+                        writer.append(actual ? nullOrderingIdentifier : nullOrdering.name());
+                }
 	}
 
 	/**
@@ -296,4 +347,25 @@ public final class OrderByItem extends AbstractExpression {
 		 */
 		DESC
 	}
+
+        /**
+         * This enumeration lists all the possible choices for ordering nulls in an item.
+         */
+        public enum NullOrdering {
+
+                /**
+                 * The constant for 'NULLS FIRST', which tells to order nulls first.
+                 */
+                NULLS_FIRST,
+
+                /**
+                 * The constant used when the ordering is not specify.
+                 */
+                DEFAULT,
+
+                /**
+                 * The constant for 'NULLS LAST', which tells to order nulls last.
+                 */
+                NULLS_LAST
+        }
 }

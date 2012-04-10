@@ -502,6 +502,8 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
         addOperator(modOperator());
         addOperator(trimOperator());
         addOperator(trim2Operator());
+        // Sybase does not define REPLACE only STR_REPLACE
+        addOperator(ExpressionOperator.simpleThreeArgumentFunction(ExpressionOperator.Replace, "STR_REPLACE"));
     }
     
     /**

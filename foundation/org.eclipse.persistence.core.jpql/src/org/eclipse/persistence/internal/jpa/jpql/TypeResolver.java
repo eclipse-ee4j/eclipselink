@@ -45,6 +45,7 @@ import org.eclipse.persistence.jpa.jpql.parser.AvgFunction;
 import org.eclipse.persistence.jpa.jpql.parser.BadExpression;
 import org.eclipse.persistence.jpa.jpql.parser.BetweenExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CaseExpression;
+import org.eclipse.persistence.jpa.jpql.parser.CastExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CoalesceExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionMemberDeclaration;
@@ -64,6 +65,7 @@ import org.eclipse.persistence.jpa.jpql.parser.EntityTypeLiteral;
 import org.eclipse.persistence.jpa.jpql.parser.EntryExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ExistsExpression;
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
+import org.eclipse.persistence.jpa.jpql.parser.ExtractExpression;
 import org.eclipse.persistence.jpa.jpql.parser.FromClause;
 import org.eclipse.persistence.jpa.jpql.parser.FunctionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.GroupByClause;
@@ -1200,6 +1202,20 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
 		type = String.class;
 	}
 
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(CastExpression expression) {
+                type = Object.class;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(ExtractExpression expression) {
+                type = Object.class;
+        }
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -1419,6 +1435,14 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
 		public void visit(CollectionValuedPathExpression expression) {
 			visitPathExpression(expression);
 		}
+
+                /**
+                 * {@inheritDoc}
+                 */
+                @Override
+                public void visit(AbstractSchemaName expression) {
+                        descriptor = queryContext.getDescriptor(expression.getText());
+                }
 
 		/**
 		 * {@inheritDoc}

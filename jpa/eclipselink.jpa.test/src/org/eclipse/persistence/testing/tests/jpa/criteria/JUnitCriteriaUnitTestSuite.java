@@ -483,31 +483,23 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
      * Prior to the fix for GF 2333, the query in this test would a Null PK exception
      *
      */
-    public void testInvertedSelectionCriteriaNullPK(){
-        Exception exception = null;
-        try {
-            EntityManager em = createEntityManager();
-            beginTransaction(em);
-            try{
-                //"SELECT e, p FROM Employee e, PhoneNumber p WHERE p.id = e.id AND e.firstName = 'Bob'"
-                CriteriaBuilder qb = em.getCriteriaBuilder();
-                CriteriaQuery<Tuple> cq = qb.createTupleQuery();
-                Root<Employee> rootEmp = cq.from(Employee.class);
-                Root<PhoneNumber> rootPhone = cq.from(PhoneNumber.class);
-                cq.multiselect(rootEmp, rootPhone);
-                cq.where(qb.and( qb.equal(rootPhone.get("id"), rootEmp.get("id")), qb.equal(rootEmp.get("firstName"), "Bob")) );
-            
-                List result = em.createQuery(cq).getResultList();
-            } finally {
-                rollbackTransaction(em);
-                closeEntityManager(em);
-            }			
-        } catch (Exception e) {
-            logThrowable(exception);
-            exception = e;
-        }
+    public void testInvertedSelectionCriteriaNullPK() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try{
+            //"SELECT e, p FROM Employee e, PhoneNumber p WHERE p.id = e.id AND e.firstName = 'Bob'"
+            CriteriaBuilder qb = em.getCriteriaBuilder();
+            CriteriaQuery<Tuple> cq = qb.createTupleQuery();
+            Root<Employee> rootEmp = cq.from(Employee.class);
+            Root<PhoneNumber> rootPhone = cq.from(PhoneNumber.class);
+            cq.multiselect(rootEmp, rootPhone);
+            cq.where(qb.and( qb.equal(rootPhone.get("id"), rootEmp.get("id")), qb.equal(rootEmp.get("firstName"), "Bob")) );
         
-        Assert.assertNull("Exception was caught.", exception);
+            em.createQuery(cq).getResultList();
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
     }
     
     /**

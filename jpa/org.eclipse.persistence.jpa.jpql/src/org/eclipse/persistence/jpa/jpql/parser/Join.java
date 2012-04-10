@@ -407,7 +407,17 @@ public final class Join extends AbstractExpression {
 
 		// Parse the join association path expression
 		if (tolerant) {
-			joinAssociationPath = parse(wordParser, JoinAssociationPathExpressionBNF.ID, tolerant);
+                        String path = wordParser.word();
+                        if (path.indexOf(".") == -1 && (!wordParser.startsWithIdentifier(TREAT))) {
+                                joinAssociationPath = new AbstractSchemaName(this, path);
+                                joinAssociationPath.parse(wordParser, tolerant);
+                        } else {
+                                joinAssociationPath = parse(
+                                        wordParser,
+                                        JoinAssociationPathExpressionBNF.ID,
+                                        tolerant
+                                );
+                        }
 		}
 		// TREAT expression
 		else if (wordParser.startsWithIdentifier(TREAT)) {
@@ -416,8 +426,14 @@ public final class Join extends AbstractExpression {
 		}
 		// Collection-valued path expression or state field path expression
 		else {
-			joinAssociationPath = new CollectionValuedPathExpression(this, wordParser.word());
-			joinAssociationPath.parse(wordParser, tolerant);
+		        String path = wordParser.word();
+		        if (path.indexOf(".") == -1) {
+                                joinAssociationPath = new AbstractSchemaName(this, path);
+                                joinAssociationPath.parse(wordParser, tolerant);		                
+		        } else {
+        			joinAssociationPath = new CollectionValuedPathExpression(this, path);
+        			joinAssociationPath.parse(wordParser, tolerant);
+		        }
 		}
 
 		int count = wordParser.skipLeadingWhitespace();

@@ -94,7 +94,7 @@ public class RelationExpression extends CompoundExpression {
             // IN must be handled separately because right is always a vector of values, vector never means anyof.
             if ((this.operator.getSelector() == ExpressionOperator.In) || 
                 (this.operator.getSelector() == ExpressionOperator.NotIn)) {
-                if (isObjectComparison()) {
+                if (isObjectComparison(session)) {
                     // In object comparisons are not currently supported, in-memory or database.
                     throw QueryException.cannotConformExpression();
                 } else {
@@ -159,7 +159,7 @@ public class RelationExpression extends CompoundExpression {
      */
     protected boolean doValuesConform(Object leftValue, Object rightValue, AbstractSession session) {
         // Check for object comparison.
-        if (isObjectComparison()) {
+        if (isObjectComparison(session)) {
             return doesObjectConform(leftValue, rightValue, session);
         } else {
             return this.operator.doesRelationConform(leftValue, rightValue);
@@ -410,7 +410,7 @@ public class RelationExpression extends CompoundExpression {
      * Check if the expression is an equal null expression, these must be handle in a special way in SQL.
      */
     public boolean isEqualNull(ExpressionSQLPrinter printer) {
-        if (isObjectComparison()) {
+        if (isObjectComparison(printer.getSession())) {
             return false;
         } else if (this.operator.getSelector() != ExpressionOperator.Equal) {
             return false;
@@ -428,7 +428,7 @@ public class RelationExpression extends CompoundExpression {
      * Check if the expression is an equal null expression, these must be handle in a special way in SQL.
      */
     public boolean isNotEqualNull(ExpressionSQLPrinter printer) {
-        if (isObjectComparison()) {
+        if (isObjectComparison(printer.getSession())) {
             return false;
         } else if (this.operator.getSelector() != ExpressionOperator.NotEqual) {
             return false;
@@ -446,16 +446,35 @@ public class RelationExpression extends CompoundExpression {
      * INTERNAL:
      * Return if the represents an object comparison.
      */
-    protected boolean isObjectComparison() {
+    protected boolean isObjectComparison(AbstractSession session) {
         if (this.isObjectComparisonExpression == null) {
             // PERF: direct-access.
+            // Base must have a session set in its builder to call getMapping, isAttribute
+            if (this.firstChild.getBuilder().getSession() == null) {
+                this.firstChild.getBuilder().setSession(session.getRootSession(null));
+            }
+            if (this.secondChild.getBuilder().getSession() == null) {
+                this.secondChild.getBuilder().setSession(session.getRootSession(null));
+            }
             if ((!this.firstChild.isObjectExpression()) || ((ObjectExpression)this.firstChild).isAttribute()) {
-                this.isObjectComparisonExpression = Boolean.FALSE;
+                if ((this.secondChild.isObjectExpression()) && !((ObjectExpression)this.secondChild).isAttribute()) {
+                    DatabaseMapping mapping = ((ObjectExpression)this.secondChild).getMapping();
+                    if ((mapping != null) && (mapping.isDirectCollectionMapping()) && !(this.secondChild.isMapEntryExpression())) {
+                        this.isObjectComparisonExpression = Boolean.FALSE;
+                    } else {
+                        this.isObjectComparisonExpression = Boolean.valueOf(this.firstChild.isObjectExpression()
+                                || this.firstChild.isValueExpression()
+                                || this.firstChild.isSubSelectExpression()
+                                || (this.firstChild.isFunctionExpression() && ((FunctionExpression)this.firstChild).operator.isAnyOrAll()));
+                    }
+                } else {
+                    this.isObjectComparisonExpression = Boolean.FALSE;
+                }
             } else {
                 DatabaseMapping mapping = ((ObjectExpression)this.firstChild).getMapping();
                 if ((mapping != null) && (mapping.isDirectCollectionMapping()) && !(this.firstChild.isMapEntryExpression())) {
                     this.isObjectComparisonExpression = Boolean.FALSE;
-                } else {    
+                } else {
                     this.isObjectComparisonExpression = Boolean.valueOf(this.secondChild.isObjectExpression()
                             || this.secondChild.isValueExpression()
                             || this.secondChild.isSubSelectExpression()
@@ -520,7 +539,7 @@ public class RelationExpression extends CompoundExpression {
         if (optimizedExpression != null) {
             return optimizedExpression;
         }
-        if (!isObjectComparison()) {
+        if (!isObjectComparison(normalizer.getSession())) {
             return super.normalize(normalizer);
         } else {
             //bug # 2956674
@@ -632,10 +651,20 @@ public class RelationExpression extends CompoundExpression {
             }
             return super.normalize(normalizer);
         }
+        ObjectExpression first = null;
+        Expression second = null;
+        // One side must be an object expression.
+        if (this.firstChild.isObjectExpression()) {
+            first = (ObjectExpression)this.firstChild;
+            second = this.secondChild;
+        } else {
+            first = (ObjectExpression)this.secondChild;
+            second = this.firstChild;            
+        }
         
         // Check for sub-selects, "object = ALL(Select object...) or ANY(Select object...), or "object = (Select object..)"
-        if (this.secondChild.isFunctionExpression()) {
-            FunctionExpression funcExp = (FunctionExpression)this.secondChild;
+        if (second.isFunctionExpression()) {
+            FunctionExpression funcExp = (FunctionExpression)second;
             if (funcExp.operator.isAnyOrAll()) {
                 SubSelectExpression subSelectExp = (SubSelectExpression)funcExp.getChildren().get(1);
                 ReportQuery subQuery = subSelectExp.getSubQuery();
@@ -647,32 +676,32 @@ public class RelationExpression extends CompoundExpression {
                 Expression subSelectCriteria = subQuery.getSelectionCriteria();
                 ExpressionBuilder subBuilder = subQuery.getExpressionBuilder();
 
-                ExpressionBuilder builder = this.firstChild.getBuilder();
+                ExpressionBuilder builder = first.getBuilder();
 
                 Expression newExp;
                 if (funcExp.operator.isAny()) {
                     // Any or Some
                     if (this.operator.getSelector() == ExpressionOperator.Equal) {
-                        subSelectCriteria = subBuilder.equal(this.firstChild).and(subSelectCriteria);
+                        subSelectCriteria = subBuilder.equal(first).and(subSelectCriteria);
                     } else {
-                        subSelectCriteria = subBuilder.notEqual(this.firstChild).and(subSelectCriteria);
+                        subSelectCriteria = subBuilder.notEqual(first).and(subSelectCriteria);
                     }
                     subQuery.setSelectionCriteria(subSelectCriteria);
                     newExp = builder.exists(subQuery);
                 } else {
                     // All
                     if (this.operator.getSelector() == ExpressionOperator.Equal) {
-                        subSelectCriteria = subBuilder.notEqual(this.firstChild).and(subSelectCriteria);
+                        subSelectCriteria = subBuilder.notEqual(first).and(subSelectCriteria);
                     } else {
-                        subSelectCriteria = subBuilder.equal(this.firstChild).and(subSelectCriteria);
+                        subSelectCriteria = subBuilder.equal(first).and(subSelectCriteria);
                     }
                     subQuery.setSelectionCriteria(subSelectCriteria);
                     newExp = builder.notExists(subQuery);
                 }
                 return newExp.normalize(normalizer);
             }
-        } else if (this.secondChild.isSubSelectExpression()) {
-            SubSelectExpression subSelectExp = (SubSelectExpression)this.secondChild;
+        } else if (second.isSubSelectExpression()) {
+            SubSelectExpression subSelectExp = (SubSelectExpression)second;
             ReportQuery subQuery = subSelectExp.getSubQuery();
             
             // some db (derby) require that in EXIST(SELECT...) subquery returns a single column
@@ -682,14 +711,14 @@ public class RelationExpression extends CompoundExpression {
             Expression subSelectCriteria = subQuery.getSelectionCriteria();
             ExpressionBuilder subBuilder = subQuery.getExpressionBuilder();
 
-            ExpressionBuilder builder = this.firstChild.getBuilder();
+            ExpressionBuilder builder = first.getBuilder();
 
             Expression newExp;
             // Any or Some
             if (this.operator.getSelector() == ExpressionOperator.Equal) {
-                subSelectCriteria = subBuilder.equal(this.firstChild).and(subSelectCriteria);
+                subSelectCriteria = subBuilder.equal(first).and(subSelectCriteria);
             } else {
-                subSelectCriteria = subBuilder.notEqual(this.firstChild).and(subSelectCriteria);
+                subSelectCriteria = subBuilder.notEqual(first).and(subSelectCriteria);
             }
             subQuery.setSelectionCriteria(subSelectCriteria);
             newExp = builder.exists(subQuery);
@@ -702,7 +731,6 @@ public class RelationExpression extends CompoundExpression {
         // 1:1 must not join into the target but become the foreign key expression.
         // The value may be a constant or another expression.
         Expression foreignKeyJoin = null;
-        ObjectExpression first = (ObjectExpression)this.firstChild;
 
         // OPTIMIZATION 1: IDENTITY for CR#2456 / bug 2778339
         // Most exists subqueries have something like projBuilder.equal(empBuilder.anyOf("projects"))
@@ -719,30 +747,30 @@ public class RelationExpression extends CompoundExpression {
         //                                        AND (t0.MANAGER_ID = t1.EMP_ID))
         if // If setting two query keys to equal the user probably intends a proper join.
             //.equal(anyOf() or get())
-            (first.isExpressionBuilder() && this.secondChild.isQueryKeyExpression()
-                    &&  (!((QueryKeyExpression)this.secondChild).hasDerivedExpressions()) // The right side is not used for anything else.
+            (first.isExpressionBuilder() && second.isQueryKeyExpression()
+                    &&  (!((QueryKeyExpression)second).hasDerivedExpressions()) // The right side is not used for anything else.
                     && normalizer.getSession().getPlatform().shouldPrintInnerJoinInWhereClause()) {
             first = (ExpressionBuilder)first.normalize(normalizer);
 
             // If FK joins go in the WHERE clause, want to get hold of it and
             // not put it in normalizer.additionalExpressions.
             List<Expression> foreignKeyJoinPointer = new ArrayList(1);
-            QueryKeyExpression second = (QueryKeyExpression)this.secondChild;
+            QueryKeyExpression queryKey = (QueryKeyExpression)second;
 
             // If inside an OR the foreign key join must be on both sides.
-            if (second.hasBeenNormalized()) {
-                second.setHasBeenNormalized(false);
+            if (queryKey.hasBeenNormalized()) {
+                queryKey.setHasBeenNormalized(false);
             }
-            second = (QueryKeyExpression)second.normalize(normalizer, first, foreignKeyJoinPointer);
+            queryKey = (QueryKeyExpression)queryKey.normalize(normalizer, first, foreignKeyJoinPointer);
             if (!foreignKeyJoinPointer.isEmpty()) {
                 foreignKeyJoin = foreignKeyJoinPointer.get(0);
                 // Will make left and right identical in the SQL.
                 if (first.getTableAliases() == null) {
                     TableAliasLookup tableAliases = new TableAliasLookup();
                     first.setTableAliases(tableAliases);
-                    second.setTableAliases(tableAliases);
+                    queryKey.setTableAliases(tableAliases);
                 } else {
-                    second.setTableAliases(first.getTableAliases());
+                    queryKey.setTableAliases(first.getTableAliases());
                 }
             }
         }
@@ -766,11 +794,11 @@ public class RelationExpression extends CompoundExpression {
                 first.setBaseExpression(first.getBaseExpression().normalize(normalizer));
             }
 
-            if (this.secondChild.isConstantExpression()) {
-                Object targetObject = ((ConstantExpression)this.secondChild).getValue();
+            if (second.isConstantExpression()) {
+                Object targetObject = ((ConstantExpression)second).getValue();
                 foreignKeyJoin = first.getMapping().buildObjectJoinExpression(first, targetObject, getSession());
-            } else if (this.secondChild.isObjectExpression() || this.secondChild.isParameterExpression()) {
-                foreignKeyJoin = first.getMapping().buildObjectJoinExpression(first, this.secondChild, getSession());
+            } else if (second.isObjectExpression() || second.isParameterExpression()) {
+                foreignKeyJoin = first.getMapping().buildObjectJoinExpression(first, second, getSession());
             } else {
                 throw QueryException.invalidUseOfToManyQueryKeyInExpression(this);
             }
@@ -783,17 +811,18 @@ public class RelationExpression extends CompoundExpression {
 
             // A ConstantExpression stores a selection object.  Compare the primary
             // keys of the first expression and the selection object.
-            if (this.secondChild.isConstantExpression()) {
+            if (second.isConstantExpression()) {
+                Object value = ((ConstantExpression)second).getValue();
                 Expression keyExpression = 
-                    first.getDescriptor().getObjectBuilder().buildPrimaryKeyExpressionFromObject(((ConstantExpression)this.secondChild).getValue(), getSession());
+                    first.getDescriptor().getObjectBuilder().buildPrimaryKeyExpressionFromObject(value, getSession());
 
                 foreignKeyJoin = first.twist(keyExpression, first);
 
                 // Each expression will represent a separate table, so compare the primary
                 // keys of the first and second expressions.
-            } else if (this.secondChild.isObjectExpression() || this.secondChild.isParameterExpression()) {
+            } else if (second.isObjectExpression() || second.isParameterExpression()) {
                 foreignKeyJoin = 
-                        first.twist(first.getDescriptor().getObjectBuilder().getPrimaryKeyExpression(), this.secondChild);
+                        first.twist(first.getDescriptor().getObjectBuilder().getPrimaryKeyExpression(), second);
             } else {
                 throw QueryException.invalidUseOfToManyQueryKeyInExpression(this);
             }

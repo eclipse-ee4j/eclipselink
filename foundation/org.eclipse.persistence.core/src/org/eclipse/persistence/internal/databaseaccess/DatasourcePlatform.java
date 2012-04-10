@@ -359,6 +359,7 @@ public class DatasourcePlatform implements Platform {
         addOperator(ExpressionOperator.locate2());
         addOperator(ExpressionOperator.nullIf());
         addOperator(ExpressionOperator.ifNull());
+        addOperator(ExpressionOperator.cast());
 
         // Date
         addOperator(ExpressionOperator.addMonths());
@@ -371,6 +372,7 @@ public class DatasourcePlatform implements Platform {
         addOperator(ExpressionOperator.today());
         addOperator(ExpressionOperator.currentDate());
         addOperator(ExpressionOperator.currentTime());
+        addOperator(ExpressionOperator.extract());
 
         // Math
         addOperator(ExpressionOperator.simpleMath(ExpressionOperator.Add, "+"));

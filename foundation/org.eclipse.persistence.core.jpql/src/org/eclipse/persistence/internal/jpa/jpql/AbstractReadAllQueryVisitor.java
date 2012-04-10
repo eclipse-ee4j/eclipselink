@@ -15,6 +15,7 @@ package org.eclipse.persistence.internal.jpa.jpql;
 
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.internal.expressions.QueryKeyExpression;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractEclipseLinkExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractFromClause;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractSelectClause;
@@ -122,10 +123,19 @@ abstract class AbstractReadAllQueryVisitor extends AbstractEclipseLinkExpression
 
 		// Create the ordering item
 		switch (expression.getOrdering()) {
-			case ASC:  query.addOrdering(queryExpression.ascending());  break;
-			case DESC: query.addOrdering(queryExpression.descending()); break;
-			default:   query.addOrdering(queryExpression);
+			case ASC:  queryExpression = queryExpression.ascending();  break;
+			case DESC: queryExpression = queryExpression.descending(); break;
+			default:
 		}
+		
+                // Create the ordering item
+                switch (expression.getNullOrdering()) {
+                        case NULLS_FIRST:  queryExpression = queryExpression.nullsFirst();  break;
+                        case NULLS_LAST: queryExpression = queryExpression.nullsLast(); break;
+                        default:
+                }
+		
+		query.addOrdering(queryExpression);
 	}
 
 	/**
@@ -360,12 +370,21 @@ abstract class AbstractReadAllQueryVisitor extends AbstractEclipseLinkExpression
 				if (expression.hasOnClause()) {
 
 					Expression onClause = queryContext.buildExpression(expression.getOnClause());
+					// Need to get the base that the join was too.
+					Expression base = queryContext.buildExpression(expression.getParent());
+					if (base == null) {
+					    if (queryExpression instanceof QueryKeyExpression) {
+					        base = ((QueryKeyExpression)queryExpression).getBaseExpression();
+					    } else {
+					        base = queryExpression;
+					    }
+					}
 
 					if (expression.isLeftJoin()) {
-						queryExpression = queryExpression.leftJoin(queryExpression, onClause);
+						queryExpression = base.leftJoin(queryExpression, onClause);
 					}
 					else {
-						queryExpression = queryExpression.join(queryExpression, onClause);
+						queryExpression = base.join(queryExpression, onClause);
 					}
 				}
 

@@ -33,7 +33,7 @@ public class GetNumberValTest extends TestCase {
     }
 
     public void test() {
-        employee = (Employee_XML)getSession().readObject(Employee_XML.class, new ExpressionBuilder().get("resume").extract("/resume/age/text()").getNumberVal().equal(27));
+        employee = (Employee_XML)getSession().readObject(Employee_XML.class, new ExpressionBuilder().get("resume").extractXml("/resume/age/text()").getNumberVal().equal(27));
     }
 
     public void verify() {
