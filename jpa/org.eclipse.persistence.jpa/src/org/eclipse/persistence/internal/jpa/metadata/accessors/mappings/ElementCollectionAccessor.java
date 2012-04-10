@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2011 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -42,7 +42,9 @@
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
  *     06/03/2011-2.3.1 Guy Pelletier 
- *       - 347563: transient field/property in embeddable entity 
+ *       - 347563: transient field/property in embeddable entity
+ *     04/09/2012-2.4 Guy Pelletier 
+ *       - 374377: OrderBy with ElementCollection doesn't work
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -71,6 +73,7 @@ import org.eclipse.persistence.internal.jpa.metadata.columns.OrderColumnMetadata
 import org.eclipse.persistence.internal.jpa.metadata.converters.EnumeratedMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.TemporalMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.mappings.MapKeyMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.mappings.OrderByMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.tables.CollectionTableMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 import org.eclipse.persistence.mappings.AggregateCollectionMapping;
@@ -118,6 +121,8 @@ import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JP
  * @since EclipseLink 1.2
  */
 public class ElementCollectionAccessor extends DirectCollectionAccessor implements MappedKeyMapAccessor {
+    private Boolean m_deleteAll;
+    
     private ColumnMetadata m_column;
     private ColumnMetadata m_mapKeyColumn;
     
@@ -134,17 +139,15 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
     private MetadataClass m_mapKeyClass;
     private MetadataClass m_referenceClass;
     
+    private OrderByMetadata m_orderBy;
     private OrderColumnMetadata m_orderColumn;
     
     private String m_mapKeyConvert;
     private String m_mapKeyClassName;
     private String m_targetClassName;
-    private String m_orderBy;
     private String m_compositeMember;
     
     private TemporalMetadata m_mapKeyTemporal;
-
-    private Boolean m_deleteAll;
 
     /**
      * INTERNAL:
@@ -204,9 +207,9 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
             m_compositeMember = (String) getAnnotation(CompositeMember.class).getAttributeString("value");
         }
         
-        // Set the order if one is present.
+        // Set the order by if one is present.
         if (isAnnotationPresent(JPA_ORDER_BY)) {
-            m_orderBy = (String) getAnnotation(JPA_ORDER_BY).getAttributeString("value");
+            m_orderBy = new OrderByMetadata(getAnnotation(JPA_ORDER_BY), this);
         }
         
         // Set the map key if one is defined.
@@ -301,6 +304,10 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
         if (super.equals(objectToCompare) && objectToCompare instanceof ElementCollectionAccessor) {
             ElementCollectionAccessor elementCollectionAccessor = (ElementCollectionAccessor) objectToCompare;
             
+            if (! valuesMatch(m_deleteAll, elementCollectionAccessor.getDeleteAll())) {
+                return false;
+            }
+            
             if (! valuesMatch(m_column, elementCollectionAccessor.getColumn())) {
                 return false;
             }
@@ -341,6 +348,10 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
                 return false;
             }
             
+            if (! valuesMatch(m_orderBy, elementCollectionAccessor.getOrderBy())) {
+                return false;
+            }
+            
             if (! valuesMatch(m_orderColumn, elementCollectionAccessor.getOrderColumn())) {
                 return false;
             }
@@ -354,10 +365,6 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
             }
             
             if (! valuesMatch(m_targetClassName, elementCollectionAccessor.getTargetClassName())) {
-                return false;
-            }
-            
-            if (! valuesMatch(m_orderBy, elementCollectionAccessor.getOrderBy())) {
                 return false;
             }
             
@@ -542,7 +549,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
      * INTERNAL:
      * Used for OX mapping.
      */
-    public String getOrderBy() {
+    public OrderByMetadata getOrderBy() {
         return m_orderBy; 
     }
     
@@ -733,24 +740,20 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
     
     /**
      * INTERNAL:
+     * Used by our XML writing facility.
+     * Returns false unless m_deleteAll is both set and true
+     */
+    public boolean isDeleteAll(){
+        return m_deleteAll != null && m_deleteAll;
+    }
+    
+    /**
+     * INTERNAL:
      * Return true if this element collection contains embeddable objects.
      */
     @Override
     public boolean isDirectEmbeddableCollection() {
         return getEmbeddableAccessor() != null;
-    }
-    
-    /**
-     * INTERNAL:
-     * Used by our XML writing facility.
-     * Returns false unless m_deleteAll is both set and true
-     * @return
-     */
-    public boolean isDeleteAll(){
-        if (m_deleteAll != null && m_deleteAll){
-            return true;
-        }
-        return false;
     }
     
     /**
@@ -763,18 +766,26 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
             processDirectEmbeddableCollectionMapping(getReferenceDescriptor());
         } else if (isValidDirectCollectionType()) {
             processDirectCollectionMapping();
+            
             if (m_compositeMember != null) {
-                ((CollectionMapping)this.getMapping()).setSessionName(m_compositeMember);
+                ((CollectionMapping) getMapping()).setSessionName(m_compositeMember);
             }
         } else if (isValidDirectMapType()) {
             processDirectMapMapping();
+            
             if (m_compositeMember != null) {
-                ((CollectionMapping)this.getMapping()).setSessionName(m_compositeMember);
+                ((CollectionMapping) getMapping()).setSessionName(m_compositeMember);
             }
         } else {
             throw ValidationException.invalidTargetClass(getAttributeName(), getJavaClass());
         }
-        
+
+        // Process an order by if specified.
+        if (m_orderBy != null) {
+            m_orderBy.process((CollectionMapping) getMapping(), getReferenceDescriptor(), getJavaClass());
+        }
+            
+        // Process the order column if specified.
         if (m_orderColumn != null) {
             m_orderColumn.process((CollectionMapping) getMapping(), getDescriptor());
         }
@@ -808,8 +819,8 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
             }
         }
         
-        if (m_deleteAll != null && mapping.isPrivateOwned()){
-            mapping.setMustDeleteReferenceObjectsOneByOne(!m_deleteAll);
+        if (m_deleteAll != null && mapping.isPrivateOwned()) {
+            mapping.setMustDeleteReferenceObjectsOneByOne(! m_deleteAll);
         }
     }
     
@@ -1055,7 +1066,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setOrderBy(String orderBy) {
+    public void setOrderBy(OrderByMetadata orderBy) {
         m_orderBy = orderBy;
     }
     

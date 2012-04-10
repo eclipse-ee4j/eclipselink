@@ -71,6 +71,7 @@
                 </cascade>
             </many-to-many>
             <element-collection name="acclaims">
+                <order-by>DESC</order-by>
                 <column name="ACCLAIM"/>
             </element-collection>
             <element-collection name="awards">
@@ -82,7 +83,9 @@
                 <order-column/>
                 <column name="DESIGNATION"/>
             </element-collection>
-            <element-collection name="records"/>
+            <element-collection name="records">
+                <order-by>date ASC</order-by>
+            </element-collection>
             <embedded name="accredidation">
                 <!--
                     Expert beer consumer will use these overrides, whereas, novice beer 

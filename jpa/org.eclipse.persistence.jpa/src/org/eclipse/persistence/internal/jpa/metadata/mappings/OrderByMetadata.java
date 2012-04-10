@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Oracle. All rights reserved.
+ * Copyright (c) 2011, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -12,6 +12,8 @@
  *       - 333913: @OrderBy and <order-by/> without arguments should order by primary
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     04/09/2012-2.4 Guy Pelletier 
+ *       - 374377: OrderBy with ElementCollection doesn't work
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.mappings;
 
@@ -25,7 +27,9 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
+
 import org.eclipse.persistence.mappings.CollectionMapping;
+import org.eclipse.persistence.mappings.DirectCollectionMapping;
 
 /**
  * Object to hold onto order by metadata.
@@ -115,46 +119,68 @@ public class OrderByMetadata extends ORMetadata {
             while (commaTokenizer.hasMoreTokens()) {
                 StringTokenizer spaceTokenizer = new StringTokenizer(commaTokenizer.nextToken());
                 String propertyOrFieldName = spaceTokenizer.nextToken();
-                MappingAccessor referenceAccessor = referenceDescriptor.getMappingAccessor(propertyOrFieldName);
-            
-                if (referenceAccessor == null) {
-                    throw ValidationException.invalidOrderByValue(propertyOrFieldName, referenceDescriptor.getJavaClass(), getAccessibleObjectName(), javaClass);
-                }
-
-                String attributeName = referenceAccessor.getAttributeName();
-                String ordering = (spaceTokenizer.hasMoreTokens()) ? spaceTokenizer.nextToken() : ASCENDING;
-
-                if (referenceAccessor.isEmbedded()) {
-                    for (String orderByAttributeName : referenceDescriptor.getOrderByAttributeNames()) {
-                        mapping.addAggregateOrderBy(m_value, orderByAttributeName, ordering.equals(DESCENDING));
-                    }
-                } else if (referenceAccessor.getClassAccessor().isEmbeddableAccessor()) {
-                    // We have a specific order by from an embeddable, we need to rip off 
-                    // the last bit of a dot notation if specified and pass in the chained 
-                    // string names of the nested embeddables only.
-                    String embeddableChain = m_value;
-                    if (embeddableChain.contains(".")) {
-                        embeddableChain = embeddableChain.substring(0, embeddableChain.lastIndexOf("."));
-                    }
-                    
-                    mapping.addAggregateOrderBy(embeddableChain, attributeName, ordering.equals(DESCENDING)); 
+                String ordering;
+                
+                // If we don't have a property name to look up we need to default one.
+                if (propertyOrFieldName.equals(ASCENDING) || propertyOrFieldName.equals(DESCENDING)) {
+                    ordering = propertyOrFieldName;
+                    propertyOrFieldName = referenceDescriptor.getIdAttributeName();
                 } else {
-                    mapping.addOrderBy(attributeName, ordering.equals(DESCENDING));
+                    ordering = (spaceTokenizer.hasMoreTokens()) ? spaceTokenizer.nextToken() : ASCENDING;
+                }
+                
+                // A direct collection mapping does not need a query key name.
+                if (mapping.isDirectCollectionMapping()) {
+                    if (ordering.equals(DESCENDING)) {
+                        ((DirectCollectionMapping) mapping).addDescendingOrdering();
+                    } else {
+                        ((DirectCollectionMapping) mapping).addAscendingOrdering();
+                    }
+                } else {
+                    // Validate the order by reference.
+                    MappingAccessor referenceAccessor = referenceDescriptor.getMappingAccessor(propertyOrFieldName);
+                    if (referenceAccessor == null) {
+                        throw ValidationException.invalidOrderByValue(propertyOrFieldName, referenceDescriptor.getJavaClass(), getAccessibleObjectName(), javaClass);
+                    }
+
+                    String attributeName = referenceAccessor.getAttributeName();
+
+                    if (referenceAccessor.isEmbedded()) {
+                        for (String orderByAttributeName : referenceDescriptor.getOrderByAttributeNames()) {
+                            mapping.addAggregateOrderBy(propertyOrFieldName, orderByAttributeName, ordering.equals(DESCENDING));
+                        }
+                    } else if (referenceAccessor.getClassAccessor().isEmbeddableAccessor()) {
+                        // We have a specific order by from an embeddable, we need to rip off 
+                        // the last bit of a dot notation if specified and pass in the chained 
+                        // string names of the nested embeddables only.
+                        String embeddableChain = propertyOrFieldName;
+                        if (embeddableChain.contains(".")) {
+                            embeddableChain = embeddableChain.substring(0, embeddableChain.lastIndexOf("."));
+                        }
+                        
+                        mapping.addAggregateOrderBy(embeddableChain, attributeName, ordering.equals(DESCENDING)); 
+                    } else {
+                        mapping.addOrderBy(attributeName, ordering.equals(DESCENDING));
+                    }
                 }
             }
         } else {
-            // Default to the primary key field name(s).
-            List<String> orderByAttributes = referenceDescriptor.getIdOrderByAttributeNames();
-        
-            if (referenceDescriptor.hasEmbeddedId()) {
-                String embeddedIdAttributeName = referenceDescriptor.getEmbeddedIdAttributeName();
-        
-                for (String orderByAttribute : orderByAttributes) {
-                    mapping.addAggregateOrderBy(embeddedIdAttributeName, orderByAttribute, false);
-                }
+            if (mapping.isDirectCollectionMapping()) {
+                ((DirectCollectionMapping) mapping).addAscendingOrdering();
             } else {
-                for (String orderByAttribute : orderByAttributes) {
-                    mapping.addOrderBy(orderByAttribute, false);
+                // Default to the primary key field name(s).
+                List<String> orderByAttributes = referenceDescriptor.getIdOrderByAttributeNames();
+            
+                if (referenceDescriptor.hasEmbeddedId()) {
+                    String embeddedIdAttributeName = referenceDescriptor.getEmbeddedIdAttributeName();
+            
+                    for (String orderByAttribute : orderByAttributes) {
+                        mapping.addAggregateOrderBy(embeddedIdAttributeName, orderByAttribute, false);
+                    }
+                } else {
+                    for (String orderByAttribute : orderByAttributes) {
+                        mapping.addOrderBy(orderByAttribute, false);
+                    }
                 }
             }
         }

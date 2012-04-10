@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2011 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -20,6 +20,8 @@
  *       - 278768: JPA 2.0 Association Override Join Table
  *     06/09/2009-2.0 Guy Pelletier 
  *       - 249037: JPA 2.0 persisting list item index
+ *     04/09/2012-2.4 Guy Pelletier 
+ *       - 374377: OrderBy with ElementCollection doesn't work
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
@@ -42,6 +44,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.OrderBy;
 import javax.persistence.OrderColumn;
 import javax.persistence.Transient;
 
@@ -59,7 +62,9 @@ import static org.eclipse.persistence.annotations.OrderCorrectionType.EXCEPTION;
 @MappedSuperclass
 @Access(FIELD)
 public abstract class RatedBeerConsumer<X, Y, Z> extends BeerConsumer<String> {
-    @BasicCollection(valueColumn=@Column(name="ACCLAIM"))
+    @ElementCollection
+    @Column(name="ACCLAIM")
+    @OrderBy("ASC")
     private Collection<X> acclaims;
     
     // Let the key column default. Should default to AWARDS_KEY

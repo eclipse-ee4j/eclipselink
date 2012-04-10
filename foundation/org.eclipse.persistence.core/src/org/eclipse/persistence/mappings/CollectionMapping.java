@@ -17,6 +17,8 @@
  *                       instead of throwing NPE during deploy validation.
  *     07/19/2011-2.2.1 Guy Pelletier 
  *       - 338812: ManyToMany mapping in aggregate object violate integrity constraint on deletion
+ *     04/09/2012-2.4 Guy Pelletier 
+ *       - 374377: OrderBy with ElementCollection doesn't work
  ******************************************************************************/  
 package org.eclipse.persistence.mappings;
 
@@ -150,11 +152,9 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                     expression = expression.get(st.nextToken());
                 }
             }
-            
-            expression = expression.get(queryKeyName);
-        } else {
-            expression = builder.get(aggregateName).get(queryKeyName);
         }
+        
+        expression = builder.get(queryKeyName);
         
         if (isDescending) {
             readAllQuery.addOrdering(expression.descending());

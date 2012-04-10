@@ -41,6 +41,8 @@
  *       - 283028: Add support for letting an @Embeddable extend a @MappedSuperclass
  *     04/04/2012-2.3.3 Guy Pelletier 
  *       - 362180: ConcurrentModificationException on predeploy for AttributeOverride
+ *     04/09/2012-2.4 Guy Pelletier 
+ *       - 374377: OrderBy with ElementCollection doesn't work
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
@@ -1063,7 +1065,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         table.setName("EXPERT_CONSUMER_ACCLAIMS");
     
         FieldDefinition fieldID = new FieldDefinition();
-        fieldID.setName("ID");
+        fieldID.setName("EXPERT_CONSUMER_ID");
         fieldID.setTypeName("NUMERIC");
         fieldID.setSize(15);
         fieldID.setShouldAllowNull(false);
@@ -1082,7 +1084,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         field1.setIsIdentity(false);
         table.addField(field1);
         
-        table.addForeignKeyConstraint("FK_EC_ACC", "ID", "ID", "EXPERT_CONSUMER");
+        table.addForeignKeyConstraint("FK_EC_ACC", "EXPERT_CONSUMER_ID", "ID", "EXPERT_CONSUMER");
     
         return table;
     }
@@ -1542,7 +1544,7 @@ public class InheritedTableManager extends TogglingFastTableCreator {
         table.setName("NOVICE_CONSUMER_ACCLAIMS");
     
         FieldDefinition fieldID = new FieldDefinition();
-        fieldID.setName("ID");
+        fieldID.setName("NOVICE_CONSUMER_ID");
         fieldID.setTypeName("NUMERIC");
         fieldID.setSize(15);
         fieldID.setShouldAllowNull(false);

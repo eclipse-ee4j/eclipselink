@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2011 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     07/19/2011-2.2.1 Guy Pelletier 
  *       - 338812: ManyToMany mapping in aggregate object violate integrity constraint on deletion
+ *     04/09/2012-2.4 Guy Pelletier 
+ *       - 374377: OrderBy with ElementCollection doesn't work
  ******************************************************************************/  
 package org.eclipse.persistence.mappings;
 
@@ -73,11 +75,13 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
     protected static final String DeleteAll = "deleteAll";
     protected static final String DeleteAtIndex = "deleteAtIndex";
     protected static final String UpdateAtIndex = "updateAtIndex";
-
+    
     /** Allows user defined conversion between the object value and the database value. */
     protected Converter valueConverter;
     protected String valueConverterClassName;
 
+    protected List<Expression> orderByExpressions;
+    
     /** Stores the reference table*/
     protected transient DatabaseTable referenceTable;
 
@@ -123,6 +127,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      */
     public DirectCollectionMapping() {
         this.insertQuery = new DataModifyQuery();
+        this.orderByExpressions = new ArrayList<Expression>();
         this.sourceKeyFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
         this.referenceKeyFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
         this.selectionQuery = new DirectReadQuery();
@@ -131,6 +136,34 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         this.isListOrderFieldSupported = true;
     }
 
+    /**
+     * PUBLIC:
+     * Provide ascending order support for this direct collection mapping. 
+     */
+    public void addAscendingOrdering() {
+        this.hasOrderBy = true;
+        orderByExpressions.add(new ExpressionBuilder().getField(getDirectFieldName()).ascending());
+    }
+    
+    /**
+     * PUBLIC:
+     * Provide descending order support for this direct collection mapping.
+     */
+    public void addDescendingOrdering() {
+        this.hasOrderBy = true;
+        orderByExpressions.add(new ExpressionBuilder().getField(getDirectFieldName()).descending());
+    }
+    
+    /**
+     * ADVANCED:
+     * Used this method to add custom ordering expressions when fetching
+     * the collection. This could be things like expressions using a functions 
+     * like UPPER or NULLS LAST etc.
+     */
+    public void addOrdering(Expression expression) {
+        this.orderByExpressions.add(expression);
+    }
+    
     @Override
     public boolean isRelationalMapping() {
         return true;
@@ -163,7 +196,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
     public void setValueConverterClassName(String valueConverterClassName) {
         this.valueConverterClassName = valueConverterClassName;
     }
-
+    
     /**
      * PUBLIC:
      * Add the reference key field.
@@ -1200,6 +1233,14 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
     public Object getObjectCorrespondingTo(Object object, RemoteSession session, Map objectDescriptors, Map processedObjects, ObjectLevelReadQuery query) {
         return object;
     }
+    
+    /**
+     * PUBLIC:
+     * Return the order by expression.
+     */
+    public List<Expression> getOrderByExpressions() {
+        return orderByExpressions;
+    }
 
     /**
      * PUBLIC:
@@ -1722,6 +1763,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         statement.addTable(getReferenceTable());
         statement.addField(getDirectField().clone());
         statement.setWhereClause(getSelectionCriteria());
+        statement.setOrderByExpressions(orderByExpressions);
         getSelectionQuery().setSQLStatement(statement);
         getContainerPolicy().addAdditionalFieldsToQuery(selectionQuery, getAdditionalFieldsBaseExpression(getSelectionQuery()));
         statement.normalize(session, null);
