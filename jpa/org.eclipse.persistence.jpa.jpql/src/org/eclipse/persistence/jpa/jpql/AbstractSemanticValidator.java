@@ -590,17 +590,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	                                           String leftExpressionWrongTypeMessageKey,
 	                                           String rightExpressionWrongTypeMessageKey) {
 
-		int result = validateFunctionPathExpression(expression, PathType.BASIC_FIELD_ONLY);
-
-		if (isValid(result, 0)) {
-			expression.getLeftExpression().accept(this);
-		}
-
-		if (isValid(result, 1)) {
-			expression.getRightExpression().accept(this);
-		}
-
-		return result;
+		return validateFunctionPathExpression(expression, PathType.BASIC_FIELD_ONLY);
 	}
 
 	/**
@@ -816,31 +806,14 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 */
 	protected int validateComparisonExpression(ComparisonExpression expression) {
 
-		int result = 0;
-
-		if (expression.hasLeftExpression() &&
-		    expression.hasRightExpression()) {
-
-			String comparison = expression.getComparisonOperator();
-
-			if (comparison == Expression.LOWER_THAN          ||
-			    comparison == Expression.GREATER_THAN        ||
-			    comparison == Expression.LOWER_THAN_OR_EQUAL ||
-			    comparison == Expression.GREATER_THAN_OR_EQUAL) {
-
-				result = validateFunctionPathExpression(expression, PathType.ANY_FIELD);
-			}
+		if (expression.hasLeftExpression() && expression.hasRightExpression()) {
+			return validateFunctionPathExpression(expression, PathType.ANY_FIELD_INCLUDING_COLLECTION);
+		}
+		else {
+			super.visit(expression);
 		}
 
-		if (isValid(result, 0)) {
-			expression.getLeftExpression().accept(this);
-		}
-
-		if (isValid(result, 1)) {
-			expression.getRightExpression().accept(this);
-		}
-
-		return result;
+		return 0;
 	}
 
 	/**
@@ -1041,19 +1014,27 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 
 		// Left expression
 		if (expression.hasLeftExpression()) {
-			StateFieldPathExpression pathExpression = getStateFieldPathExpression(expression.getLeftExpression());
+			Expression leftExpression = expression.getLeftExpression();
+			StateFieldPathExpression pathExpression = getStateFieldPathExpression(leftExpression);
 			if (pathExpression != null) {
 				boolean valid = validateStateFieldPathExpression(pathExpression, pathType);
 				updateStatus(result, 0, valid);
+			}
+			else {
+				leftExpression.accept(this);
 			}
 		}
 
 		// Right expression
 		if (expression.hasRightExpression()) {
-			StateFieldPathExpression pathExpression = getStateFieldPathExpression(expression.getRightExpression());
+			Expression rightExpression = expression.getRightExpression();
+			StateFieldPathExpression pathExpression = getStateFieldPathExpression(rightExpression);
 			if (pathExpression != null) {
 				boolean valid = validateStateFieldPathExpression(pathExpression, pathType);
 				updateStatus(result, 1, valid);
+			}
+			else {
+				rightExpression.accept(this);
 			}
 		}
 

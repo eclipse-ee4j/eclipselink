@@ -96,6 +96,9 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
     suite.addTest(new JUnitJPQLUnitTestSuite("testMaxAndFirstResultsOnObjectQueryOnInheritanceRoot"));
     suite.addTest(new JUnitJPQLUnitTestSuite("testDistinctSelectForEmployeeWithNullAddress"));
     suite.addTest(new JUnitJPQLUnitTestSuite("testObjectNullComparisonWithoutForeignKey"));
+    suite.addTest(new JUnitJPQLUnitTestSuite("testCollectionMappingInSelectClause"));
+    suite.addTest(new JUnitJPQLUnitTestSuite("testCollectionMappingInWhereClause_1"));
+    suite.addTest(new JUnitJPQLUnitTestSuite("testCollectionMappingInWhereClause_2"));
     if (!isJPA10()) {
         // JPA 2.0 Tests
         suite.addTest(new JUnitJPQLUnitTestSuite("testResetFirstResultOnQuery"));
@@ -551,4 +554,61 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
             closeEntityManager(em);
         }
     }   
+
+    /**
+     * Testcase For ELBug#13942918 (Oracle BugBase)
+     * The state field path 'dn.jpsentry' cannot be resolved to a collection type
+     */
+    public void testCollectionMappingInSelectClause() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try {
+            Query query = em.createQuery("SELECT e.phoneNumbers FROM Employee e");
+            query.getResultList();
+        }
+        finally {
+            rollbackTransaction(em);
+        }
+    }
+
+    /**
+     * Testcase For ELBug#13942918 (Oracle BugBase)
+     * The state field path 'dn.jpsentry' cannot be resolved to a collection type
+     */
+    public void testCollectionMappingInWhereClause_1() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try {
+            Query query = em.createQuery("Select e.phoneNumbers from Employee e");
+            List result = query.getResultList();
+
+            query = em.createQuery("Select e from Employee e where e.phoneNumbers = :phone");
+            query.setParameter("phone", result.get(0));
+            query.getResultList();
+        }
+        finally {
+            rollbackTransaction(em);
+        }
+    }
+
+    /**
+     * Testcase For ELBug#13942918 (Oracle BugBase)
+     * The state field path 'dn.jpsentry' cannot be resolved to a collection type
+     */
+    public void testCollectionMappingInWhereClause_2() {
+   	 EntityManager em = createEntityManager();
+   	 beginTransaction(em);
+   	 try {
+   		 Query query = em.createQuery("Select e from Employee e where e.phoneNumbers.areaCode = '613'");
+   		 query.getResultList();
+   		 fail("Failed to throw expected IllegalArgumentException for a query " +
+   		      "navigating a collection valued association field in the SELECT clause.");
+   	 }
+   	 catch (Exception e) {
+   		 // That's what we want
+   	 }
+   	 finally {
+   		 rollbackTransaction(em);
+   	 }
+    }
 }
