@@ -64,7 +64,8 @@ public final class AllSemanticValidatorTests {
 		@JPQLGrammarTestHelper
 		static JPQLGrammar[] buildJPQLGrammars() {
 			return new JPQLGrammar[] {
-				JPQLGrammar2_0.instance()
+				JPQLGrammar2_0.instance(),
+				EclipseLinkJPQLGrammar2_4.instance()
 			};
 		}
 	}
@@ -86,7 +87,8 @@ public final class AllSemanticValidatorTests {
 		@JPQLGrammarTestHelper
 		static JPQLGrammar[] buildJPQLGrammars() {
 			return new JPQLGrammar[] {
-				JPQLGrammar2_1.instance()
+				JPQLGrammar2_1.instance(),
+				EclipseLinkJPQLGrammar2_4.instance()
 			};
 		}
 	}

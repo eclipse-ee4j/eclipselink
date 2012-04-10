@@ -71,4 +71,12 @@ public class EclipseLinkSemanticValidator extends AbstractSemanticValidator
 	protected LiteralVisitor buildLiteralVisitor() {
 		return new EclipseLinkLiteralVisitor();
 	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected PathType selectClausePathExpressionPathType() {
+		return PathType.ANY_FIELD_INCLUDING_COLLECTION;
+	}
 }

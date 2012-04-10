@@ -404,6 +404,14 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
 	 * {@inheritDoc}
 	 */
 	@Override
+	protected PathType selectClausePathExpressionPathType() {
+		return PathType.ANY_FIELD;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	protected boolean validateAbsExpression(AbsExpression expression) {
 
 		boolean valid = super.validateAbsExpression(expression);

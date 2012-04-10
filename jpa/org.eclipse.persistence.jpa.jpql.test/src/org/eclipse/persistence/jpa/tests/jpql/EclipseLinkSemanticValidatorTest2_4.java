@@ -13,8 +13,12 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.tests.jpql;
 
+import java.util.List;
+import org.eclipse.persistence.jpa.jpql.AbstractSemanticValidator;
 import org.eclipse.persistence.jpa.jpql.EclipseLinkJPQLQueryContext;
+import org.eclipse.persistence.jpa.jpql.EclipseLinkSemanticValidator;
 import org.eclipse.persistence.jpa.jpql.JPQLQueryContext;
+import org.eclipse.persistence.jpa.jpql.JPQLQueryProblem;
 import org.junit.Test;
 
 /**
@@ -25,6 +29,7 @@ import org.junit.Test;
  * @since 2.4
  * @author Pascal Filion
  */
+@SuppressWarnings("nls")
 public class EclipseLinkSemanticValidatorTest2_4 extends AbstractSemanticValidatorTest {
 
 	/**
@@ -35,7 +40,19 @@ public class EclipseLinkSemanticValidatorTest2_4 extends AbstractSemanticValidat
 		return new EclipseLinkJPQLQueryContext(jpqlGrammar);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected AbstractSemanticValidator buildValidator() {
+		return new EclipseLinkSemanticValidator(buildSemanticValidatorHelper());
+	}
+
 	@Test
-	public void emptyTest() {
+	public void test_StateFieldPathExpression_CollectionType() throws Exception {
+
+		String query = "SELECT a.customerList FROM Address a";
+		List<JPQLQueryProblem> problems = validate(query);
+		testHasNoProblems(problems);
 	}
 }

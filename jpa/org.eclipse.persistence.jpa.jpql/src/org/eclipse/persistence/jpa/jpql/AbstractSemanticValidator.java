@@ -361,6 +361,14 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	}
 
 	/**
+	 * Returns the type of path expression that is allowed in the <code><b>SELECT</b></code> clause.
+	 *
+	 * @return The type of path expressions allowed. The spec defines it as basic or object mapping
+	 * only, i.e. collection-valued path expression is not allowed
+	 */
+	protected abstract PathType selectClausePathExpressionPathType();
+
+	/**
 	 * Updates the validation status of an expression at a specified position. The value is stored
 	 * in an integer value.
 	 *
@@ -582,7 +590,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	                                           String leftExpressionWrongTypeMessageKey,
 	                                           String rightExpressionWrongTypeMessageKey) {
 
-		int result = validateFunctionPathExpression(expression);
+		int result = validateFunctionPathExpression(expression, PathType.BASIC_FIELD_ONLY);
 
 		if (isValid(result, 0)) {
 			expression.getLeftExpression().accept(this);
@@ -617,7 +625,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 			StateFieldPathExpression pathExpression = getStateFieldPathExpression(factor);
 
 			if (pathExpression != null) {
-				valid = validateStateFieldPathExpression(pathExpression, false);
+				valid = validateStateFieldPathExpression(pathExpression, PathType.BASIC_FIELD_ONLY);
 			}
 			else {
 				factor.accept(this);
@@ -712,7 +720,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 			StateFieldPathExpression pathExpression = getStateFieldPathExpression(entityExpression);
 
 			if (pathExpression != null) {
-				boolean valid = validateStateFieldPathExpression(pathExpression, true);
+				boolean valid = validateStateFieldPathExpression(pathExpression, PathType.ASSOCIATION_FIELD_ONLY);
 				updateStatus(result, 0, valid);
 			}
 			else {
@@ -820,7 +828,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 			    comparison == Expression.LOWER_THAN_OR_EQUAL ||
 			    comparison == Expression.GREATER_THAN_OR_EQUAL) {
 
-				result = validateFunctionPathExpression(expression);
+				result = validateFunctionPathExpression(expression, PathType.ANY_FIELD);
 			}
 		}
 
@@ -1000,7 +1008,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 			StateFieldPathExpression pathExpression = getStateFieldPathExpression(encapsulatedExpression);
 
 			if (pathExpression != null) {
-				valid = validateStateFieldPathExpression(pathExpression, false);
+				valid = validateStateFieldPathExpression(pathExpression, PathType.BASIC_FIELD_ONLY);
 			}
 			else {
 				encapsulatedExpression.accept(this);
@@ -1027,7 +1035,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 * <li>3: Both expressions are invalid.</li>
 	 * </ul>
 	 */
-	protected int validateFunctionPathExpression(CompoundExpression expression) {
+	protected int validateFunctionPathExpression(CompoundExpression expression, PathType pathType) {
 
 		int result = 0;
 
@@ -1035,7 +1043,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 		if (expression.hasLeftExpression()) {
 			StateFieldPathExpression pathExpression = getStateFieldPathExpression(expression.getLeftExpression());
 			if (pathExpression != null) {
-				boolean valid = validateStateFieldPathExpression(pathExpression, false);
+				boolean valid = validateStateFieldPathExpression(pathExpression, pathType);
 				updateStatus(result, 0, valid);
 			}
 		}
@@ -1044,7 +1052,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 		if (expression.hasRightExpression()) {
 			StateFieldPathExpression pathExpression = getStateFieldPathExpression(expression.getRightExpression());
 			if (pathExpression != null) {
-				boolean valid = validateStateFieldPathExpression(pathExpression, false);
+				boolean valid = validateStateFieldPathExpression(pathExpression, pathType);
 				updateStatus(result, 1, valid);
 			}
 		}
@@ -1299,7 +1307,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 			StateFieldPathExpression pathExpression = getStateFieldPathExpression(stringExpression);
 
 			if (pathExpression != null) {
-				boolean valid = validateStateFieldPathExpression(pathExpression, false);
+				boolean valid = validateStateFieldPathExpression(pathExpression, PathType.BASIC_FIELD_ONLY);
 				updateStatus(result, 0, valid);
 			}
 			else {
@@ -1341,7 +1349,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 			StateFieldPathExpression pathExpression = getStateFieldPathExpression(firstExpression);
 
 			if (pathExpression != null) {
-				boolean valid = validateStateFieldPathExpression(pathExpression, false);
+				boolean valid = validateStateFieldPathExpression(pathExpression, PathType.BASIC_FIELD_ONLY);
 				updateStatus(result, 0, valid);
 			}
 			else {
@@ -1441,7 +1449,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 			StateFieldPathExpression pathExpression = getStateFieldPathExpression(firstExpression);
 
 			if (pathExpression != null) {
-				boolean valid = validateStateFieldPathExpression(pathExpression, false);
+				boolean valid = validateStateFieldPathExpression(pathExpression, PathType.BASIC_FIELD_ONLY);
 				updateStatus(result, 0, valid);
 			}
 			else {
@@ -1600,7 +1608,18 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 * @param expression The {@link validateSelectClause} to validate
 	 */
 	protected void validateSelectClause(SelectClause expression) {
-		super.visit(expression);
+
+		Expression selectExpression = expression.getSelectExpression();
+
+		// Special case for state field path expression, all types are allowed
+		StateFieldPathExpression pathExpression = getStateFieldPathExpression(selectExpression);
+
+		if (pathExpression != null) {
+			validateStateFieldPathExpression(pathExpression, selectClausePathExpressionPathType());
+		}
+		else {
+			selectExpression.accept(this);
+		}
 	}
 
 	/**
@@ -1695,7 +1714,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 * path; <code>false</code> otherwise
 	 */
 	protected boolean validateStateFieldPathExpression(StateFieldPathExpression expression,
-	                                                   boolean associationFieldValid) {
+	                                                   PathType pathType) {
 
 		boolean valid = true;
 		expression.getIdentificationVariable().accept(this);
@@ -1713,19 +1732,30 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 				// It is syntactically illegal to compose a path expression from a path expression
 				// that evaluates to a collection
 				if (helper.isCollectionMapping(mapping)) {
-					addProblem(expression, StateFieldPathExpression_CollectionType, expression.toParsedText());
-					valid = false;
-				}
-				// Don't evaluate to an association field
-				else if (!associationFieldValid && helper.isRelationshipMapping(mapping)) {
-					addProblem(expression, StateFieldPathExpression_AssociationField, expression.toParsedText());
-					valid = false;
+					if (pathType != PathType.ANY_FIELD_INCLUDING_COLLECTION) {
+						addProblem(expression, StateFieldPathExpression_CollectionType, expression.toActualText());
+						valid = false;
+					}
 				}
 				// A transient mapping is not allowed
 				else if (helper.isTransient(mapping)) {
 					addProblem(expression, StateFieldPathExpression_NoMapping, expression.toParsedText());
 					valid = false;
 				}
+				// Only a basic field is allowed
+				else if ((pathType == PathType.BASIC_FIELD_ONLY) &&
+				         !helper.isPropertyMapping(mapping)) {
+
+					addProblem(expression, StateFieldPathExpression_AssociationField, expression.toActualText());
+					valid = false;
+				}
+				// Only an association field is allowed
+//				else if ((pathType == PathType.ASSOCIATION_FIELD_ONLY) &&
+//				         helper.isPropertyMapping(mapping)) {
+//
+//					addProblem(expression, StateFieldPathExpression_BasicField, expression.toActualText());
+//					valid = false;
+//				}
 			}
 			else {
 				// TODO: Test for an enum type in the wrong location
@@ -1797,7 +1827,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 			StateFieldPathExpression pathExpression = getStateFieldPathExpression(firstExpression);
 
 			if (pathExpression != null) {
-				boolean valid = validateStateFieldPathExpression(pathExpression, false);
+				boolean valid = validateStateFieldPathExpression(pathExpression, PathType.BASIC_FIELD_ONLY);
 				updateStatus(result, 0, valid);
 			}
 			else {
@@ -2584,7 +2614,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 */
 	@Override
 	public final void visit(StateFieldPathExpression expression) {
-		validateStateFieldPathExpression(expression, true);
+		validateStateFieldPathExpression(expression, PathType.ANY_FIELD);
 	}
 
 	/**
@@ -2747,5 +2777,33 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 			// Make sure to bypass any sub expression
 			expression.getParent().accept(this);
 		}
+	}
+
+	/**
+	 * This enumeration allows {@link AbstractSemanticValidator#validateStateFieldPathExpression(
+	 * StateFieldPathExpression, PathType)} to validate the type of the mapping and to make sure it
+	 * is allowed based on its location.
+	 */
+	protected enum PathType {
+
+		/**
+		 * This will allow basic, and association fields to be specified.
+		 */
+		ANY_FIELD,
+
+		/**
+		 * This will allow basic, and association fields to be specified.
+		 */
+		ANY_FIELD_INCLUDING_COLLECTION,
+
+		/**
+		 * This will allow association fields to be specified but basic mappings are not valid.
+		 */
+		ASSOCIATION_FIELD_ONLY,
+
+		/**
+		 * This will allow basic fields to be specified but association mappings are not valid.
+		 */
+		BASIC_FIELD_ONLY
 	}
 }

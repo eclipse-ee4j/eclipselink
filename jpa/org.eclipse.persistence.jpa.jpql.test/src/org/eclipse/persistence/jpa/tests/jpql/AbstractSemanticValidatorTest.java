@@ -15,7 +15,6 @@ package org.eclipse.persistence.jpa.tests.jpql;
 
 import java.util.List;
 import org.eclipse.persistence.jpa.jpql.AbstractSemanticValidator;
-import org.eclipse.persistence.jpa.jpql.DefaultSemanticValidator;
 import org.eclipse.persistence.jpa.jpql.GenericSemanticValidatorHelper;
 import org.eclipse.persistence.jpa.jpql.JPQLQueryContext;
 import org.eclipse.persistence.jpa.jpql.JPQLQueryProblem;
@@ -75,9 +74,7 @@ public abstract class AbstractSemanticValidatorTest extends AbstractValidatorTes
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected AbstractSemanticValidator buildValidator() {
-		return new DefaultSemanticValidator(buildSemanticValidatorHelper());
-	}
+	protected abstract AbstractSemanticValidator buildValidator();
 
 	/**
 	 * {@inheritDoc}
