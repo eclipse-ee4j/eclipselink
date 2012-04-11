@@ -271,6 +271,7 @@ public class TypeInfo {
                         // Existing property must be method property
                         // Remove it and use the new property
                         propertyList.remove(existingProperty);
+                        propertyNames.remove(name);
                     } else {
                         return;
                     }
@@ -279,13 +280,15 @@ public class TypeInfo {
                         // Existing property must be field property
                         // Remove it and use the new property
                         propertyList.remove(existingProperty);
+                        propertyNames.remove(name);
                     } else {
                         return;
                     }
                 }
-            } else if (existingProperty.isTransient()) {
+            } else if (existingProperty.isTransient() || existingProperty.isSuperClassProperty()) {
                 // Continue, and overwrite it
                 propertyList.remove(existingProperty);
+                propertyNames.remove(name);
             } else if (property.isTransient()) {
                 // Do nothing
                 return;

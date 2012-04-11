@@ -130,6 +130,7 @@ public class Property implements Cloneable {
     // XmlJoinNodes specific attributes
     private XmlJoinNodes xmlJoinNodes;
     private List<XmlJoinNodes> xmlJoinNodesList;
+    private boolean isSuperClassProperty;
 
     private static final String MARSHAL_METHOD_NAME = "marshal";
     
@@ -1245,6 +1246,14 @@ public class Property implements Cloneable {
      */
     void postInitialize() {
         this.element = null;
+    }
+
+    public boolean isSuperClassProperty() {
+        return this.isSuperClassProperty;
+    }
+
+    public void setIsSuperClassProperty(boolean b) {
+        this.isSuperClassProperty = b;
     }
 
 }
