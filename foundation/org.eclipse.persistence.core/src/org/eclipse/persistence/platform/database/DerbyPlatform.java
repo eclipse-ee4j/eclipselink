@@ -20,8 +20,10 @@ import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.queries.ValueReadQuery;
@@ -305,6 +307,30 @@ public class DerbyPlatform extends DB2Platform {
         super.initializePlatformOperators();
         // Derby does not support DECIMAL, but does have a DOUBLE function.
         addOperator(ExpressionOperator.simpleFunction(ExpressionOperator.ToNumber, "DOUBLE"));
+        addOperator(extractOperator());
+    }
+
+    /**
+     * INTERNAL:
+     * Derby does not support EXTRACT, but does have YEAR, MONTH, DAY, etc.
+     */
+    public static ExpressionOperator extractOperator() {
+        ExpressionOperator exOperator = new ExpressionOperator();
+        exOperator.setType(ExpressionOperator.FunctionOperator);
+        exOperator.setSelector(ExpressionOperator.Extract);
+        exOperator.setName("EXTRACT");
+        Vector v = NonSynchronizedVector.newInstance(5);
+        v.add("");
+        v.add("(");
+        v.add(")");
+        exOperator.printsAs(v);
+        int[] indices = new int[2];
+        indices[0] = 1;
+        indices[1] = 0;
+        exOperator.setArgumentIndices(indices);
+        exOperator.bePrefix();
+        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        return exOperator;
     }
     
     /**

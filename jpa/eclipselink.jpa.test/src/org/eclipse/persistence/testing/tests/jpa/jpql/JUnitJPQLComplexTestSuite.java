@@ -3205,8 +3205,11 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
             // TODO type with size
             //Query query = em.createQuery("Select cast(e.firstName as char(3)) from Employee e where cast(e.firstName as char(3)) = 'Bob'");
             //query.getResultList();
-            Query query = em.createQuery("Select cast(e.firstName as char) from Employee e where cast(e.firstName as char) = 'Bob'");
-            query.getResultList();
+            // Most databases require a size on char.
+            if (getDatabaseSession().getPlatform().isMySQL()) {
+                Query query = em.createQuery("Select cast(e.firstName as char) from Employee e where cast(e.firstName as char) = 'Bob'");
+                query.getResultList();
+            }
         } finally {
             closeEntityManager(em);
         }

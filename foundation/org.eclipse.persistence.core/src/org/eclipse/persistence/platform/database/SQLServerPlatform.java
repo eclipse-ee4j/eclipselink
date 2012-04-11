@@ -450,6 +450,30 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
         addOperator(ExpressionOperator.simpleAggregate(ExpressionOperator.StandardDeviation, "STDEV", "standardDeviation"));
         addOperator(trimOperator());
         addOperator(trim2Operator());
+        addOperator(extractOperator());
+    }
+
+    /**
+     * INTERNAL:
+     * Derby does not support EXTRACT, but does have DATEPART.
+     */
+    public static ExpressionOperator extractOperator() {
+        ExpressionOperator exOperator = new ExpressionOperator();
+        exOperator.setType(ExpressionOperator.FunctionOperator);
+        exOperator.setSelector(ExpressionOperator.Extract);
+        exOperator.setName("EXTRACT");
+        Vector v = NonSynchronizedVector.newInstance(5);
+        v.add("DATEPART(");
+        v.add(",");
+        v.add(")");
+        exOperator.printsAs(v);
+        int[] indices = new int[2];
+        indices[0] = 1;
+        indices[1] = 0;
+        exOperator.setArgumentIndices(indices);
+        exOperator.bePrefix();
+        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        return exOperator;
     }
     
     /**
