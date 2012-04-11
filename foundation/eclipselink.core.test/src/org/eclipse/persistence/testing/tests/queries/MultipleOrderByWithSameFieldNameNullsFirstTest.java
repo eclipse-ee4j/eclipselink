@@ -25,7 +25,15 @@ public class MultipleOrderByWithSameFieldNameNullsFirstTest extends AutoVerifyTe
     public MultipleOrderByWithSameFieldNameNullsFirstTest() {
         setDescription("This test verifies the ordering feature works properly with multiple orderings with the same field name.");
     }
+    
+    @Override
+    public void setup() {
+        if (!getSession().getPlatform().isOracle()) {
+            throwWarning("NULLS FIRST only supported on Oracle.");
+        }
+    }
 
+    @Override
     public void test() {
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression orderExpr1 = builder.get("address").get("street").ascending().nullsFirst();
