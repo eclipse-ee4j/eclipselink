@@ -146,7 +146,7 @@
             <fileset dir="${eclipselink.jpa.osgi.test}/${classes.dir}">
                 <include name="org/eclipse/persistence/testing/**"/>
             </fileset>
-            <fileset dir="${eclipselink.jpa.test}" includes="eclipselink-advanced-field-access-model.jar,${jpa.test.jar}"/>
+            <fileset dir="${eclipselink.jpa.test}" includes="eclipselink-advanced-field-access-model.jar,${jpa.test.jar},${jpatest.framework.jar}"/>
             <fileset file="${junit.lib}"/>
             <fileset file="${jdbc.driver.jar}"/>
         </copy>
