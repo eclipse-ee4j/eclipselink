@@ -153,9 +153,9 @@ public class OrderByMetadata extends ORMetadata {
                         // We have a specific order by from an embeddable, we need to rip off 
                         // the last bit of a dot notation if specified and pass in the chained 
                         // string names of the nested embeddables only.
-                        String embeddableChain = propertyOrFieldName;
-                        if (embeddableChain.contains(".")) {
-                            embeddableChain = embeddableChain.substring(0, embeddableChain.lastIndexOf("."));
+                        String embeddableChain = "";
+                        if (propertyOrFieldName.contains(".")) {
+                            embeddableChain = propertyOrFieldName.substring(0, propertyOrFieldName.lastIndexOf("."));
                         }
                         
                         mapping.addAggregateOrderBy(embeddableChain, attributeName, ordering.equals(DESCENDING)); 

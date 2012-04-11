@@ -152,9 +152,16 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
                     expression = expression.get(st.nextToken());
                 }
             }
+            
+            expression = expression.get(queryKeyName);
+        } else {
+            // Single level aggregate
+            if (aggregateName.equals("")) {
+                expression = builder.get(queryKeyName);
+            } else {
+                expression = builder.get(aggregateName).get(queryKeyName);
+            }
         }
-        
-        expression = builder.get(queryKeyName);
         
         if (isDescending) {
             readAllQuery.addOrdering(expression.descending());
