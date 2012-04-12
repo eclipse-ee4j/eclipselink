@@ -14,6 +14,7 @@ package org.eclipse.persistence.internal.helper;
 
 import java.util.*;
 import java.math.*;
+import java.net.URL;
 
 import javax.xml.datatype.Duration;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -42,6 +43,7 @@ public class ClassConstants {
     public static final Class Set_Class = Set.class;
     public static final Class Object_Class = Object.class;
     public static final Class SortedSet_Class = SortedSet.class;
+    public static final Class URL_Class = URL.class;
     public static final Class Vector_class = Vector.class;
     public static final Class ArrayList_class = ArrayList.class;
     public static final Class Void_Class = void.class;
