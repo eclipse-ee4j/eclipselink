@@ -620,7 +620,10 @@ public class JDBCHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHelp
             String catalogPattern = catalogPatterns.get(i);
             String schemaPattern = schemaPatterns.get(i);
             String tablePattern = procedureNamePatterns.get(i);
-            procedures.addAll(loadProcedures(catalogPattern, schemaPattern, tablePattern));
+            List<ProcedureType> procs = loadProcedures(catalogPattern, schemaPattern, tablePattern);
+            if (procs != null) {
+                procedures.addAll(loadProcedures(catalogPattern, schemaPattern, tablePattern));
+            }
         }
         return procedures;
     }
@@ -771,7 +774,10 @@ public class JDBCHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHelp
     }
 
     static DatabaseMetaData getDatabaseMetaData(Connection connection) {
-
+    	if (connection == null) {
+            // without a connection we cannot retrieve the metadata
+            throw new IllegalStateException("Connection is null - cannot retrieve JDBC metadata");
+    	}
         DatabaseMetaData databaseMetaData = null;
         try {
             databaseMetaData = connection.getMetaData();

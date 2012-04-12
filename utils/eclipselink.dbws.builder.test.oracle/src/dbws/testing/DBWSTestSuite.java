@@ -22,6 +22,10 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -118,7 +122,11 @@ public class DBWSTestSuite {
     public static ByteArrayOutputStream DBWS_OX_STREAM = null;
     public static ByteArrayOutputStream DBWS_WSDL_STREAM = null;
 
+    public static DBWSLogger dbwsLogger;
     public static void setUp(String stageDir) throws WSDLException {
+    	setUp(stageDir, false);
+    }
+    public static void setUp(String stageDir, boolean useLogger) throws WSDLException {
         if (builder == null) {
             builder = new DBWSBuilder();
         }
@@ -151,18 +159,22 @@ public class DBWSTestSuite {
         };
         xrPackager.setDBWSBuilder(builder);
         builder.setPackager(xrPackager);
+    	dbwsLogger = null;
+        if (useLogger) {
+        	dbwsLogger = new DBWSLogger("DBWSTestLogger", null);
+        }
         if (stageDir == null) {
             builder.getProperties().put(SESSIONS_FILENAME_KEY, NO_SESSIONS_FILENAME);
             builder.build(DBWS_SCHEMA_STREAM, __nullStream, DBWS_SERVICE_STREAM, DBWS_OR_STREAM,
                 DBWS_OX_STREAM, __nullStream, __nullStream, __nullStream, __nullStream,
-                __nullStream, __nullStream, __nullStream, null);
+                __nullStream, __nullStream, __nullStream, dbwsLogger);
         }
         else {
             xrPackager.setSessionsFileName(builder.getSessionsFileName());
             xrPackager.setStageDir(new File(stageDir));
             builder.build(DBWS_SCHEMA_STREAM, DBWS_SESSION_STREAM, DBWS_SERVICE_STREAM,
                 DBWS_OR_STREAM, DBWS_OX_STREAM, __nullStream, __nullStream, DBWS_WSDL_STREAM,
-                __nullStream, __nullStream,  __nullStream, __nullStream, null);
+                __nullStream, __nullStream,  __nullStream, __nullStream, dbwsLogger);
         }
         XRServiceFactory factory = new XRServiceFactory() {
             @Override
@@ -299,5 +311,55 @@ public class DBWSTestSuite {
                 e.printStackTrace();
             }
         }
+    }
+    
+    /**
+     * Logger to test that a given message was logged correctly.
+     *
+     */
+    public static class DBWSLogger extends Logger {
+    	List<String> messages;
+    	
+		protected DBWSLogger(String name, String resourceBundleName) {
+			super(name, resourceBundleName);
+			messages = new ArrayList<String>();
+		}
+		
+		public void log(Level level, String msg) {
+			//System.out.println(level.getName() + ": " + msg);
+			messages.add(level.getName() + ": " + msg);
+		}
+		
+		public boolean hasMessages() {
+			return messages != null && messages.size() > 0;
+		}
+
+		public boolean hasWarnings() {
+			if (messages != null || messages.size() > 0) {
+				for (String message : messages) {
+					if (message.startsWith("WARNING")) {
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+		
+		public List<String> getWarnings() {
+			List<String> warnings = null;
+			if (messages != null || messages.size() > 0) {
+				warnings = new ArrayList<String>();
+				for (String message : messages) {
+					if (message.startsWith("WARNING")) {
+						warnings.add(message);
+					}
+				}
+			}
+			return warnings;
+		}
+		
+		public List<String> getMessages() {
+			return messages;
+		}
     }
 }

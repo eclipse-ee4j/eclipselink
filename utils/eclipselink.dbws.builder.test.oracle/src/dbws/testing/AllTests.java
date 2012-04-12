@@ -28,6 +28,8 @@ import dbws.testing.advancedjdbcpackage.AdvancedJDBCPackageTestSuite;
 import dbws.testing.complexplsqlsf.ComplexPLSQLSFTestSuite;
 import dbws.testing.complexplsqlsp.ComplexPLSQLSPTestSuite;
 import dbws.testing.customsql.CustomSQLTestSuite;
+import dbws.testing.invalidinput.InvalidInputTestSuite;
+import dbws.testing.invalidpackage.InvalidPackageTestSuite;
 import dbws.testing.iottype.IOTTypeTestSuite;
 import dbws.testing.nonassociativeplsql.NonAssociativePLSQLCollectionTestSuite;
 import dbws.testing.objecttabletype.ObjectTableTypeTestSuite;
@@ -60,10 +62,13 @@ import static dbws.testing.DBWSTestSuite.buildConnection;
     ComplexPLSQLSFTestSuite.class,
     ComplexPLSQLSPTestSuite.class,
     CustomSQLTestSuite.class,
+	InvalidInputTestSuite.class,
+	InvalidPackageTestSuite.class,
     IOTTypeTestSuite.class,
     NonAssociativePLSQLCollectionTestSuite.class,
     ObjectTableTypeTestSuite.class,
     ObjectTypeTestSuite.class,
+	OptionalArgumentTestSuite.class,
     ORDescriptorTestSuite.class,
     OXDescriptorTestSuite.class,
     PLSQLCollectionTestSuite.class,
@@ -82,8 +87,7 @@ import static dbws.testing.DBWSTestSuite.buildConnection;
     TypesTestSuite.class,
     VArrayTestSuite.class,
     VeryLongIdentifierTestSuite.class,
-    WeakRefCursorTestSuite.class,
-	OptionalArgumentTestSuite.class
+    WeakRefCursorTestSuite.class
   }
 )
 public class AllTests {

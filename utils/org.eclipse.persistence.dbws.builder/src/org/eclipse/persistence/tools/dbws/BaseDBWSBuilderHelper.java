@@ -30,6 +30,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import static java.util.logging.Level.FINE;
 import static java.util.logging.Level.FINEST;
 import static java.util.logging.Level.SEVERE;
@@ -125,6 +126,7 @@ import static org.eclipse.persistence.tools.dbws.Util.NUMBER_STR;
 import static org.eclipse.persistence.tools.dbws.Util.CREATE_OPERATION_NAME;
 import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_CLASS_FILE;
 import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_SOURCE_FILE;
+import static org.eclipse.persistence.tools.dbws.Util.DOT;
 import static org.eclipse.persistence.tools.dbws.Util.FINDALL_QUERYNAME;
 import static org.eclipse.persistence.tools.dbws.Util.REMOVE_OPERATION_NAME;
 import static org.eclipse.persistence.tools.dbws.Util.THE_INSTANCE_NAME;
@@ -187,6 +189,12 @@ public abstract class BaseDBWSBuilderHelper {
     public static final String ITEMS_MAPPING_FIELD_NAME = "ITEMS";
     public static final String MTOM_STR = "MTOM";
     public static final String SWAREF_STR = "SWAREF";
+    public static final String NO_TABLE_MSG = "No tables were found matching the following: ";
+    public static final String NO_PROC_MSG = "No procedures were found matching the following: ";
+    public static final String OPENBRACKET = "[";
+    public static final String CLOSEBRACKET = "]";
+    public static final String CRLF = "\n";
+    public static final String SP = " ";
 
     protected List<TableType> dbTables = new ArrayList<TableType>();
     protected List<ProcedureType> dbStoredProcedures = new ArrayList<ProcedureType>();
@@ -403,31 +411,36 @@ public abstract class BaseDBWSBuilderHelper {
                 }
                 List<TableType> tables = loadTables(catalogPatterns, schemaPatterns,
                     tableNamePatterns);
-                //now assign tables to operations
-                for (TableType tableType : tables) {
-                    for (TableOperationModel tableOperation : tableOperations) {
-                        //figure out catalog(optional)/schema/tableName matching
-                        boolean tableNameMatch = sqlMatch(tableOperation.getTablePattern(),
-                            tableType.getTableName());
-                        boolean schemaNameMatch = sqlMatch(tableOperation.getSchemaPattern(),
-                            tableType.getSchema());
-                        if (tableNameMatch && schemaNameMatch) {
-                            String originalCatalogPattern = tableOperation.getCatalogPattern();
-                            if (tableType.isDbTableType() && originalCatalogPattern != null) {
-                                boolean catalogNameMatch = sqlMatch(originalCatalogPattern,
-                                    ((DbTable)tableType).getCatalog());
-                                if (catalogNameMatch) {
-                                    tableOperation.getDbTables().add(tableType);
-                                }
-                            }
-                            else {
-                                tableOperation.getDbTables().add(tableType);
-                            }
-                        }
-                    }
-                }
-                dbTables.addAll(tables);
-            }
+                // if we didn't find any tables log a WARNING
+                if (tables == null || tables.isEmpty()) {
+                	logNotFoundWarnings(NO_TABLE_MSG, schemaPatterns, catalogPatterns, tableNamePatterns);
+                } else {
+	                //now assign tables to operations
+	                for (TableType tableType : tables) {
+	                    for (TableOperationModel tableOperation : tableOperations) {
+	                        //figure out catalog(optional)/schema/tableName matching
+	                        boolean tableNameMatch = sqlMatch(tableOperation.getTablePattern(),
+	                            tableType.getTableName());
+	                        boolean schemaNameMatch = sqlMatch(tableOperation.getSchemaPattern(),
+	                            tableType.getSchema());
+	                        if (tableNameMatch && schemaNameMatch) {
+	                            String originalCatalogPattern = tableOperation.getCatalogPattern();
+	                            if (tableType.isDbTableType() && originalCatalogPattern != null) {
+	                                boolean catalogNameMatch = sqlMatch(originalCatalogPattern,
+	                                    ((DbTable)tableType).getCatalog());
+	                                if (catalogNameMatch) {
+	                                    tableOperation.getDbTables().add(tableType);
+	                                }
+	                            }
+	                            else {
+	                                tableOperation.getDbTables().add(tableType);
+	                            }
+	                        }
+	                    }
+	                }
+	                dbTables.addAll(tables);
+	            }
+	        }
         }
 
         // next do StoredProcedure operations
@@ -449,31 +462,36 @@ public abstract class BaseDBWSBuilderHelper {
                 }
                 List<ProcedureType> procedures = loadProcedures(catalogPatterns, schemaPatterns,
                     procedureNamePatterns);
-                //now assign procedures to operations
-                for (ProcedureType procedureType : procedures) {
-                    for (ProcedureOperationModel procedureOperation : procedureOperations) {
-                        boolean procedureNameMatch = sqlMatch(procedureOperation.getProcedurePattern(),
-                            procedureType.getProcedureName());
-                        boolean schemaNameMatch = true;
-                        boolean catalogNameMatch = true;
-                        if (procedureNameMatch) {
-                            String originalSchemaPattern = procedureOperation.getSchemaPattern();
-                            if (originalSchemaPattern != null) {
-                                schemaNameMatch = sqlMatch(originalSchemaPattern,
-                                    procedureType.getSchema());
-                            }
-                            String originalCatalogPattern = procedureOperation.getCatalogPattern();
-                            if (originalCatalogPattern != null) {
-                                catalogNameMatch = sqlMatch(originalCatalogPattern,
-                                    procedureType.getCatalogName());
-                            }
-                        }
-                        if (procedureNameMatch && schemaNameMatch && catalogNameMatch) {
-                            procedureOperation.getDbStoredProcedures().add(procedureType);
-                        }
-                    }
+                // if we didn't find any procs/funcs log a WARNING 
+                if (procedures == null || procedures.isEmpty()) {
+                	logNotFoundWarnings(NO_PROC_MSG, schemaPatterns, catalogPatterns, procedureNamePatterns);
+                } else {
+	                //now assign procedures to operations
+	                for (ProcedureType procedureType : procedures) {
+	                    for (ProcedureOperationModel procedureOperation : procedureOperations) {
+	                        boolean procedureNameMatch = sqlMatch(procedureOperation.getProcedurePattern(),
+	                            procedureType.getProcedureName());
+	                        boolean schemaNameMatch = true;
+	                        boolean catalogNameMatch = true;
+	                        if (procedureNameMatch) {
+	                            String originalSchemaPattern = procedureOperation.getSchemaPattern();
+	                            if (originalSchemaPattern != null) {
+	                                schemaNameMatch = sqlMatch(originalSchemaPattern,
+	                                    procedureType.getSchema());
+	                            }
+	                            String originalCatalogPattern = procedureOperation.getCatalogPattern();
+	                            if (originalCatalogPattern != null) {
+	                                catalogNameMatch = sqlMatch(originalCatalogPattern,
+	                                    procedureType.getCatalogName());
+	                            }
+	                        }
+	                        if (procedureNameMatch && schemaNameMatch && catalogNameMatch) {
+	                            procedureOperation.getDbStoredProcedures().add(procedureType);
+	                        }
+	                    }
+	                }
+	                dbStoredProcedures.addAll(procedures);
                 }
-                dbStoredProcedures.addAll(procedures);
             }
         }
     }
@@ -1359,5 +1377,72 @@ public abstract class BaseDBWSBuilderHelper {
         	//        to handle this with an EclipseLink exception
         }
 		return wrapperClass;
+    }
+    
+    /**
+     * Log a WARNING with the DBWSBuilder when a target (table, package, stored procedure/function, etc)
+     * cannot be found using the information given by the user.
+     * 
+     */
+    protected void logNotFoundWarnings(String message, List<String> schemaPatterns, List<String> catalogPatterns, List<String> targetPatterns) {
+    	StringBuffer sb = new StringBuffer();
+    	sb.append(message);
+    	for (int i=0; i < targetPatterns.size(); i++) {
+        	sb.append(SP);
+        	sb.append(OPENBRACKET);
+        	boolean prependDot = false;
+    		String schemaName = schemaPatterns.get(i);
+    		if (schemaName != null && schemaName.length() > 0) {
+            	sb.append(schemaName);
+            	prependDot = true;
+    		}
+    		String pkgName = catalogPatterns.get(i);
+    		if (pkgName != null && pkgName.length() > 0) {
+            	if (prependDot) {
+            		sb.append(DOT);
+            	}
+            	prependDot = true;
+            	sb.append(pkgName);
+    		}
+    		String tgtName = targetPatterns.get(i);
+    		if (tgtName != null && tgtName.length() > 0) {
+            	if (prependDot) {
+            		sb.append(DOT);
+            	}
+            	sb.append(tgtName);
+    		}
+        	sb.append(CLOSEBRACKET);
+    	}
+    	dbwsBuilder.logMessage(Level.WARNING, sb.toString());
+    }
+    
+    /**
+     * Log a WARNING with the DBWSBuilder when a package cannot be found 
+     * using the information given by the user.
+     * 
+     */
+    protected void logPackageNotFoundWarnings(String message, List<String> schemaPatterns, List<String> catalogPatterns) {
+    	StringBuffer sb = new StringBuffer();
+    	sb.append(message);
+    	for (int i=0; i < catalogPatterns.size(); i++) {
+        	sb.append(SP);
+        	sb.append(OPENBRACKET);
+        	boolean prependDot = false;
+    		String schemaName = schemaPatterns.get(i);
+    		if (schemaName != null && schemaName.length() > 0) {
+            	sb.append(schemaName);
+            	prependDot = true;
+    		}
+    		String pkgName = catalogPatterns.get(i);
+    		if (pkgName != null && pkgName.length() > 0) {
+            	if (prependDot) {
+            		sb.append(DOT);
+            	}
+            	prependDot = true;
+            	sb.append(pkgName);
+    		}
+        	sb.append(CLOSEBRACKET);
+    	}
+    	dbwsBuilder.logMessage(Level.WARNING, sb.toString());
     }
 }

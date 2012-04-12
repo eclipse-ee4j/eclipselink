@@ -30,6 +30,7 @@ import dbws.testing.bindingmodel.BindingModelTestSuite;
 import dbws.testing.crud.CRUDTestSuite;
 import dbws.testing.customsql.CustomSQLTestSuite;
 import dbws.testing.inlinebinary.InlineBinaryTestSuite;
+import dbws.testing.invalidinput.InvalidInputTestSuite;
 import dbws.testing.loglevelvalidation.LogLevelValidationTestSuite;
 import dbws.testing.mtom.MTOMTestSuite;
 import dbws.testing.optlock.OptLockTestSuite;
@@ -51,6 +52,7 @@ import static dbws.testing.DBWSTestSuite.buildConnection;
     CRUDTestSuite.class,
     CustomSQLTestSuite.class,
     InlineBinaryTestSuite.class,
+	InvalidInputTestSuite.class,
     LogLevelValidationTestSuite.class,
     MTOMTestSuite.class,
     OptLockTestSuite.class,

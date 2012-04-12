@@ -104,7 +104,6 @@ import org.eclipse.persistence.tools.oracleddl.util.DatabaseTypeBuilder;
 import static org.eclipse.persistence.internal.helper.ClassConstants.Object_Class;
 import static org.eclipse.persistence.internal.xr.Util.SXF_QNAME;
 import static org.eclipse.persistence.internal.xr.XRDynamicClassLoader.COLLECTION_WRAPPER_SUFFIX;
-import static org.eclipse.persistence.oxm.XMLConstants.ANY_QNAME;
 import static org.eclipse.persistence.oxm.XMLConstants.COLON;
 import static org.eclipse.persistence.oxm.XMLConstants.DATE_QNAME;
 import static org.eclipse.persistence.oxm.XMLConstants.DOT;
@@ -140,6 +139,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
 
     protected DatabaseTypeBuilder dtBuilder = new DatabaseTypeBuilder();
     protected boolean hasComplexProcedureArgs = false;
+    public static final String NO_PKG_MSG = "No packages were found matching the following: ";
 
     public OracleHelper(DBWSBuilder dbwsBuilder) {
         super(dbwsBuilder);
@@ -610,43 +610,47 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                 }
                 List<PLSQLPackageType> packages = dtBuilder.buildPackages(dbwsBuilder.getConnection(),
                     schemaPats, packagePats);
-                //check for overloading
-                for (PLSQLPackageType pakage : packages) {
-                    //check DDL generation
-                    ShadowDDLGenerator ddlGenerator = new ShadowDDLGenerator(pakage);
-                    dbwsBuilder.getTypeDDL().addAll(ddlGenerator.getAllCreateDDLs());
-                    dbwsBuilder.getTypeDropDDL().addAll(ddlGenerator.getAllDropDDLs());
-                    Map<String, List<ProcedureType>> overloadMap = new HashMap<String, List<ProcedureType>>();
-                    List<ProcedureType> procedures = pakage.getProcedures();
-                    for (ProcedureType procedure : procedures) {
-                        String procedureName = procedure.getProcedureName();
-                        List<ProcedureType> multipleProcedures = overloadMap.get(procedureName);
-                        if (multipleProcedures == null) {
-                            multipleProcedures = new ArrayList<ProcedureType>();
-                            overloadMap.put(procedureName, multipleProcedures);
-                        }
-                        multipleProcedures.add(procedure);
-                    }
-                    for (List<ProcedureType> procs : overloadMap.values()) {
-                        if (procs.size() >1) {
-                            for (int i = 0, len = procs.size(); i < len; i++) {
-                                procs.get(i).setOverload(i);
-                            }
-                        }
-                    }
-                    //check against procedureNamePatterns
-                    String tmp = "";
-                    for (int i = 0, len = procedureNamePatterns.size(); i < len; i++) {
-                        tmp += procedureNamePatterns.get(i);
-                        if (i < len -1) {
-                            tmp += "|";
-                        }
-                    }
-                    for (ProcedureType procedure : procedures) {
-                        if (sqlMatch(tmp, procedure.getProcedureName())) {
-                            allProcsAndFuncs.add(procedure);
-                        }
-                    }
+                if (packages == null || packages.isEmpty()) {
+                	logPackageNotFoundWarnings(NO_PKG_MSG, schemaPats, packagePats);
+                } else {
+	                for (PLSQLPackageType pakage : packages) {
+	                    //check DDL generation
+	                    ShadowDDLGenerator ddlGenerator = new ShadowDDLGenerator(pakage);
+	                    dbwsBuilder.getTypeDDL().addAll(ddlGenerator.getAllCreateDDLs());
+	                    dbwsBuilder.getTypeDropDDL().addAll(ddlGenerator.getAllDropDDLs());
+	                    //check for overloading
+	                    Map<String, List<ProcedureType>> overloadMap = new HashMap<String, List<ProcedureType>>();
+	                    List<ProcedureType> procedures = pakage.getProcedures();
+	                    for (ProcedureType procedure : procedures) {
+	                        String procedureName = procedure.getProcedureName();
+	                        List<ProcedureType> multipleProcedures = overloadMap.get(procedureName);
+	                        if (multipleProcedures == null) {
+	                            multipleProcedures = new ArrayList<ProcedureType>();
+	                            overloadMap.put(procedureName, multipleProcedures);
+	                        }
+	                        multipleProcedures.add(procedure);
+	                    }
+	                    for (List<ProcedureType> procs : overloadMap.values()) {
+	                        if (procs.size() >1) {
+	                            for (int i = 0, len = procs.size(); i < len; i++) {
+	                                procs.get(i).setOverload(i);
+	                            }
+	                        }
+	                    }
+	                    //check against procedureNamePatterns
+	                    String tmp = "";
+	                    for (int i = 0, len = procedureNamePatterns.size(); i < len; i++) {
+	                        tmp += procedureNamePatterns.get(i);
+	                        if (i < len -1) {
+	                            tmp += "|";
+	                        }
+	                    }
+	                    for (ProcedureType procedure : procedures) {
+	                        if (sqlMatch(tmp, procedure.getProcedureName())) {
+	                            allProcsAndFuncs.add(procedure);
+	                        }
+	                    }
+	                }
                 }
             }
             catch (ParseException e) {
