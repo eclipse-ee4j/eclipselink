@@ -13,19 +13,18 @@
 package org.eclipse.persistence.testing.jaxb.typemappinginfo;
 
 import java.io.InputStream;
-import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.XmlList;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
 
-public class ByteArrayTestCases extends TypeMappingInfoTestCases {
+public class ByteArrayTestCases extends TypeMappingInfoWithJSONTestCases {
     protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/BigByteArray.xml";
+    protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/BigByteArray.json";
 
     public Byte[] byteArrayField;
     
@@ -36,6 +35,7 @@ public class ByteArrayTestCases extends TypeMappingInfoTestCases {
     
     public void init() throws Exception {
         setControlDocument(XML_RESOURCE);   
+        setControlJSON(JSON_RESOURCE);
         setTypeMappingInfos(getTypeMappingInfos()); 
     }
     

@@ -23,15 +23,17 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
 
-public class MultipleMapTestCases extends TypeMappingInfoTestCases{
+public class MultipleMapTestCases extends TypeMappingInfoWithJSONTestCases{
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/multipleMaps.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/multipleMaps.json";
 	
 	public static Map<String, Integer> myMap = new HashMap<String, Integer>();
 
 	public MultipleMapTestCases(String name) throws Exception {
 		super(name);		
-		setControlDocument(XML_RESOURCE);	
+		setControlDocument(XML_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
 	}
 	
 	public void setUp() throws Exception{		

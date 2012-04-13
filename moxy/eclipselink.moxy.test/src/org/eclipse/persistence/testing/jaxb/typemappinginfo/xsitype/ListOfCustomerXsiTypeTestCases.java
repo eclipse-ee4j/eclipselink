@@ -14,7 +14,6 @@ package org.eclipse.persistence.testing.jaxb.typemappinginfo.xsitype;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,11 +24,12 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
-import org.eclipse.persistence.testing.jaxb.typemappinginfo.TypeMappingInfoTestCases;
+import org.eclipse.persistence.testing.jaxb.typemappinginfo.TypeMappingInfoWithJSONTestCases;
 import org.w3c.dom.Document;
 
-public class ListOfCustomerXsiTypeTestCases extends TypeMappingInfoTestCases {
+public class ListOfCustomerXsiTypeTestCases extends TypeMappingInfoWithJSONTestCases {
 	protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/xsitype/listOfCustomerXsiType.xml";
+	protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/xsitype/listOfCustomerXsiType.json";
 		
 	public ListOfCustomerXsiTypeTestCases(String name) throws Exception {
 		super(name);
@@ -38,6 +38,7 @@ public class ListOfCustomerXsiTypeTestCases extends TypeMappingInfoTestCases {
 	
 	public void init() throws Exception {
 		setControlDocument(XML_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
 	    setupParser();
 	
 		setTypeMappingInfos(getTypeMappingInfos());		

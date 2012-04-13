@@ -27,17 +27,17 @@ import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
 import org.w3c.dom.Document;
 
-public class EmployeeTestCases extends TypeMappingInfoTestCases{
+public class EmployeeTestCases extends TypeMappingInfoWithJSONTestCases{
 
 	protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/employee.xml";
-    
+	protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/employee.json";
 	
 	public EmployeeTestCases(String name) throws Exception {
 		super(name);
 		setControlDocument(XML_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
 	}
-	
-	
+		
 	public void setUp() throws Exception{
 		super.setUp();
 		setTypeMappingInfos(getTypeMappingInfos());		
@@ -84,7 +84,7 @@ public class EmployeeTestCases extends TypeMappingInfoTestCases{
 	
 
 	
-	  protected Map<String, Object> getProperties() throws Exception{
+	protected Map getProperties() {
 	        String pkg = "someUri";
 		        
 	        HashMap<String, Source> overrides = new HashMap<String, Source>();
@@ -94,7 +94,8 @@ public class EmployeeTestCases extends TypeMappingInfoTestCases{
 	        return properties;
 	    }
 		    
-	    private Source getXmlSchemaOxm(String defaultTns) throws Exception {
+	    private Source getXmlSchemaOxm(String defaultTns) {
+	    	
 	        String oxm = 
 	        "<xml-bindings xmlns='http://www.eclipse.org/eclipselink/xsds/persistence/oxm'>" +
 		        "<xml-schema namespace='" + defaultTns + "'/>" + 
@@ -103,7 +104,13 @@ public class EmployeeTestCases extends TypeMappingInfoTestCases{
 		        "</java-type>" +
 		        "</java-types>" + 
 	        "</xml-bindings>";
-		    Document doc = parser.parse(new ByteArrayInputStream(oxm.getBytes()));        
-		    return new DOMSource(doc.getDocumentElement());
+	        try{
+		       Document doc = parser.parse(new ByteArrayInputStream(oxm.getBytes()));        
+		       return new DOMSource(doc.getDocumentElement());
+	        }catch (Exception e){
+	        	e.printStackTrace();
+	        	fail("An error occurred during getProperties");
+	        }
+	        return null;
 		}
 }

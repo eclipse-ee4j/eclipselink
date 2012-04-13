@@ -21,12 +21,12 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
-import org.eclipse.persistence.testing.jaxb.typemappinginfo.TypeMappingInfoTestCases;
+import org.eclipse.persistence.testing.jaxb.typemappinginfo.TypeMappingInfoWithJSONTestCases;
 
-public class EmptyClassTestCases extends TypeMappingInfoTestCases{
+public class EmptyClassTestCases extends TypeMappingInfoWithJSONTestCases{
 
 	protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/simple/emptyclass.xml";
-	
+	protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/simple/emptyclass.json";	
 	public EmptyClassTestCases(String name) throws Exception {
 		super(name);
 		init();
@@ -34,6 +34,7 @@ public class EmptyClassTestCases extends TypeMappingInfoTestCases{
 	
 	public void init() throws Exception {
 		setControlDocument(XML_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
 	    setupParser();	
 		setTypeMappingInfos(getTypeMappingInfos());	
 	}

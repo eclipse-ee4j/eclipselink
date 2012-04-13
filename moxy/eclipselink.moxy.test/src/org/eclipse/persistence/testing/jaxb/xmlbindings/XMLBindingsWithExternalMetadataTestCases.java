@@ -27,7 +27,7 @@ public class XMLBindingsWithExternalMetadataTestCases extends XMLBindingsTestCas
 		super(name);
 	}
 
-	public Map getProperties() throws Exception{
+	protected Map getProperties() {
 		InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/xmlbindings/bindings-oxm.xml");
 
 		HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();

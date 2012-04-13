@@ -25,10 +25,11 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
-import org.eclipse.persistence.testing.jaxb.typemappinginfo.TypeMappingInfoTestCases;
+import org.eclipse.persistence.testing.jaxb.typemappinginfo.TypeMappingInfoWithJSONTestCases;
 
-public class ArrayWithAnnotationsTestCases extends TypeMappingInfoTestCases {
+public class ArrayWithAnnotationsTestCases extends TypeMappingInfoWithJSONTestCases {
 	protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/arraywithannotations/instance.xml";
+	protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/arraywithannotations/instance.json";
 	protected final static String XSD_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/arraywithannotations/schema.xsd";
 	protected final static QName XML_TAG_NAME = new QName("http://jaxb.dev.java.net/array", "FloatListType");
 	
@@ -38,6 +39,7 @@ public class ArrayWithAnnotationsTestCases extends TypeMappingInfoTestCases {
 	public ArrayWithAnnotationsTestCases(String name) throws Exception {
 		super(name);
 		setControlDocument(XML_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
 		setTypeMappingInfos(getTypeMappingInfos());
 	}
 	

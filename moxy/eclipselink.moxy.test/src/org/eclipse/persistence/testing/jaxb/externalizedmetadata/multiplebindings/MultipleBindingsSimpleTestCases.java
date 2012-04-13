@@ -124,7 +124,7 @@ public class MultipleBindingsSimpleTestCases extends JAXBWithJSONTestCases{
 	        return props;
 	    }	
 	    
-	    protected Map getProperties() throws Exception{
+	    protected Map getProperties() {
 	    	Map overrides = new HashMap();		
 		    
 	        InputStream iStream = classLoader.getResourceAsStream("./org/eclipse/persistence/testing/jaxb/externalizedmetadata/multiplebindings/simple-oxm1.xml");

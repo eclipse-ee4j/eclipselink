@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.List;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -27,11 +26,12 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
 import org.eclipse.persistence.testing.jaxb.typemappinginfo.ListToStringAdapter;
-import org.eclipse.persistence.testing.jaxb.typemappinginfo.TypeMappingInfoTestCases;
+import org.eclipse.persistence.testing.jaxb.typemappinginfo.TypeMappingInfoWithJSONTestCases;
 import org.w3c.dom.Element;
 
-public class ConflictingClassAndAdapterClassTestCases extends TypeMappingInfoTestCases{
+public class ConflictingClassAndAdapterClassTestCases extends TypeMappingInfoWithJSONTestCases{
 	protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/collisions/conflictingClassAndAdapterClass.xml";
+	protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/collisions/conflictingClassAndAdapterClass.json";
 	
 	@XmlJavaTypeAdapter(ListToStringAdapter.class)
 	public Object javaTypeAdapterField;
@@ -40,12 +40,13 @@ public class ConflictingClassAndAdapterClassTestCases extends TypeMappingInfoTes
 	public Object javaTypeAdapterField2;
 	
 	public ConflictingClassAndAdapterClassTestCases(String name) throws Exception {
-		super(name);		
-		init();		
+		super(name);
+        init();
 	}
 	
 	public void init() throws Exception {
 		setControlDocument(XML_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
 		setupParser();
 		setTypeMappingInfos(getTypeMappingInfos());	
 	}

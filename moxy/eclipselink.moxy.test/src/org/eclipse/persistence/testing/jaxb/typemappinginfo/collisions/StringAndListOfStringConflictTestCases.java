@@ -25,9 +25,11 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
 import org.eclipse.persistence.testing.jaxb.typemappinginfo.TypeMappingInfoTestCases;
+import org.eclipse.persistence.testing.jaxb.typemappinginfo.TypeMappingInfoWithJSONTestCases;
 
-public class StringAndListOfStringConflictTestCases extends TypeMappingInfoTestCases {
+public class StringAndListOfStringConflictTestCases extends TypeMappingInfoWithJSONTestCases {
     protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/collisions/nonConflictingLists.xml";
+    protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/collisions/nonConflictingLists.json";
     
     @XmlElement(type=String.class)
     public List testField;
@@ -38,7 +40,8 @@ public class StringAndListOfStringConflictTestCases extends TypeMappingInfoTestC
     }
     
     public void init() throws Exception {
-        setControlDocument(XML_RESOURCE);   
+        setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         setTypeMappingInfos(getTypeMappingInfos()); 
     }
     

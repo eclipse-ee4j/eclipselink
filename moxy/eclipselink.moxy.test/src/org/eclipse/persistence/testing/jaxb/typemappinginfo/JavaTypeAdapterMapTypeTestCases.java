@@ -24,8 +24,9 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
 
-public class JavaTypeAdapterMapTypeTestCases extends TypeMappingInfoTestCases {
+public class JavaTypeAdapterMapTypeTestCases extends TypeMappingInfoWithJSONTestCases {
     protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/maptypeoverride.xml";
+    protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/maptypeoverride.json";
     
     @XmlJavaTypeAdapter(StringStringToIntegerIntegerMapAdapter.class)
     public Object javaTypeAdapterField;
@@ -39,6 +40,7 @@ public class JavaTypeAdapterMapTypeTestCases extends TypeMappingInfoTestCases {
     
     public void init() throws Exception {
         setControlDocument(XML_RESOURCE);   
+        setControlJSON(JSON_RESOURCE);
         setTypeMappingInfos(getTypeMappingInfos()); 
     }
     

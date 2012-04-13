@@ -22,15 +22,14 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
-import org.eclipse.persistence.testing.jaxb.typemappinginfo.TypeMappingInfoTestCases;
+import org.eclipse.persistence.testing.jaxb.typemappinginfo.TypeMappingInfoWithJSONTestCases;
 
-public class RootFromAnnotationTestCases extends TypeMappingInfoTestCases {
+public class RootFromAnnotationTestCases extends TypeMappingInfoWithJSONTestCases {
 
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/rootelement/Annotation.xml";
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/rootelement/Annotation.json";
     private static final String XSD_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/rootelement/Annotation.xsd";
-
-    private static final String ADDRESS_NAMESPACE_URI = null;
-    private static final String ADDRESS_LOCAL_NAME = "address";
+    
     private static final String ANNOTATION_NAMESPACE_URI = null;
     private static final String ANNOTATION_LOCAL_NAME = "annotation-address";
     private static final String CONTROL_STREET = "123 A St.";
@@ -38,7 +37,8 @@ public class RootFromAnnotationTestCases extends TypeMappingInfoTestCases {
     public RootFromAnnotationTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
-
+        setControlJSON(JSON_RESOURCE);
+        
         TypeMappingInfo[] typeMappingInfos = new TypeMappingInfo[1];
         TypeMappingInfo addressTypeMappingInfo = new TypeMappingInfo(); 
         addressTypeMappingInfo.setType(Address.class); 

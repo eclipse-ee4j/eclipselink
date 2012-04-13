@@ -14,9 +14,7 @@ package org.eclipse.persistence.testing.jaxb.typemappinginfo;
 
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.activation.DataHandler;
@@ -30,9 +28,10 @@ import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlmimetype.MyAttachmentMarshaller;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlmimetype.MyAttachmentUnmarshaller;
 
-public class DatahandlerWithAnnotationsTestCases extends TypeMappingInfoTestCases{
+public class DatahandlerWithAnnotationsTestCases extends TypeMappingInfoWithJSONTestCases{
 
 	protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/dataHandlerAttachmentRefAndMimeType.xml";
+	protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/dataHandlerAttachmentRefAndMimeType.json";
 	
 	@XmlMimeType(value="image/jpeg")
 	public String xmlMimeTypeField;
@@ -47,6 +46,7 @@ public class DatahandlerWithAnnotationsTestCases extends TypeMappingInfoTestCase
 	
 	public void init() throws Exception {
 		setControlDocument(XML_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
 	    setupParser();
 	
 		setTypeMappingInfos(getTypeMappingInfos());

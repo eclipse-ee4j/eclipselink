@@ -17,10 +17,12 @@ import javax.xml.namespace.QName;
 
 public class EmployeeNillableTestCases extends EmployeeTestCases{
     protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/employee_nil.xml";
+    protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/employee_nil.json";
     
 	public EmployeeNillableTestCases(String name) throws Exception {
 		super(name);
 		setControlDocument(XML_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
 	}
 	
 	protected Object getControlObject() {

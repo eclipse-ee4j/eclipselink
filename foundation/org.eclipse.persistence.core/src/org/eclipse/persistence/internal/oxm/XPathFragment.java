@@ -156,7 +156,6 @@ public class XPathFragment {
     }
 
     private void setupNamespaceInformation(String xpathString) {
-        //int nsindex = xpathString.indexOf(XMLConstants.COLON);
     	int nsindex = xpathString.indexOf(namespaceSeparator);
         if (nsindex != -1) {
             hasNamespace = true;

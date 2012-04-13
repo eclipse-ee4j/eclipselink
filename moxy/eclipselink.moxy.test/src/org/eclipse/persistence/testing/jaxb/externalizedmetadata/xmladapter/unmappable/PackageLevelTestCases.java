@@ -20,7 +20,7 @@ import org.w3c.dom.Document;
 import junit.framework.TestCase;
 
 public class PackageLevelTestCases extends JAXBWithJSONTestCases {
-    protected Map getProperties() throws Exception{
+	protected Map getProperties() {
         
         InputStream inStream = getClass().getClassLoader().getResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmladapter/unmappable/package1/package-adapter.xml");
         Map<String, Source> metadata = new LinkedHashMap<String, Source>();

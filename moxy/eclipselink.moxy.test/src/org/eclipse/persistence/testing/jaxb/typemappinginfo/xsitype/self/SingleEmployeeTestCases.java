@@ -12,11 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.jaxb.typemappinginfo.xsitype.self;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
@@ -24,12 +21,12 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
-import org.eclipse.persistence.testing.jaxb.typemappinginfo.TypeMappingInfoTestCases;
-import org.w3c.dom.Document;
+import org.eclipse.persistence.testing.jaxb.typemappinginfo.TypeMappingInfoWithJSONTestCases;
 
-public class SingleEmployeeTestCases extends TypeMappingInfoTestCases {
-    protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/xsitype/self/request.xml";
-        
+public class SingleEmployeeTestCases extends TypeMappingInfoWithJSONTestCases {
+    protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/xsitype/self/request.xml";       
+    protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/xsitype/self/request.json";
+    
     public SingleEmployeeTestCases(String name) throws Exception {
         super(name);
         init();
@@ -37,6 +34,7 @@ public class SingleEmployeeTestCases extends TypeMappingInfoTestCases {
     
     public void init() throws Exception {
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         setupParser();
     
         setTypeMappingInfos(getTypeMappingInfos());     

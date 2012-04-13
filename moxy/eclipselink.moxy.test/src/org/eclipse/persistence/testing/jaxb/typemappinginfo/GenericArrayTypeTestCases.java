@@ -24,9 +24,10 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
 
-public class GenericArrayTypeTestCases extends TypeMappingInfoTestCases{
+public class GenericArrayTypeTestCases extends TypeMappingInfoWithJSONTestCases{
 
 	protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/genericArrayType.xml";
+	protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/genericArrayType.json";
 
 	public List<byte[]> testField;
 	public List<String> testStringField;
@@ -37,7 +38,8 @@ public class GenericArrayTypeTestCases extends TypeMappingInfoTestCases{
 	}
 	
 	public void init() throws Exception {
-		setControlDocument(XML_RESOURCE);	
+		setControlDocument(XML_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
 		setTypeMappingInfos(getTypeMappingInfos());	
 	}
 	

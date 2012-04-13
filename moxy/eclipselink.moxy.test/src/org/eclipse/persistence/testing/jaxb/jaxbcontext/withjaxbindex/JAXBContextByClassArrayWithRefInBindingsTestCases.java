@@ -65,8 +65,7 @@ public class JAXBContextByClassArrayWithRefInBindingsTestCases  extends JAXBWith
 			this.testSchemaGen(controlSchemas);
 		}
 		
-		 protected Map getProperties() throws Exception{
-				
+		protected Map getProperties() {				
 		     Map overrides = new HashMap();				
 		        String overridesString =
 		        	 "<?xml version='1.0' encoding='UTF-8'?>" +

@@ -63,7 +63,7 @@ public class XmlAdapterUnspecifiedClassTestCases extends JAXBWithJSONTestCases{
 		return emp;
 	}
 	
-	 protected Map getProperties() throws Exception{
+	protected Map getProperties() {
 			
 	        Map overrides = new HashMap();		
 	        String overridesString = 

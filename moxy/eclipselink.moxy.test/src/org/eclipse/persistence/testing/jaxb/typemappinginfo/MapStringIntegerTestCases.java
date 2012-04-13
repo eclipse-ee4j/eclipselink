@@ -13,24 +13,19 @@
 package org.eclipse.persistence.testing.jaxb.typemappinginfo;
 
 import java.io.InputStream;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import javax.activation.DataHandler;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
-import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlmimetype.MyAttachmentMarshaller;
-import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlmimetype.MyAttachmentUnmarshaller;
 
-public class MapStringIntegerTestCases extends TypeMappingInfoTestCases{
+public class MapStringIntegerTestCases extends TypeMappingInfoWithJSONTestCases{
 	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/stringIntegerHashMap.xml";
+	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/stringIntegerHashMap.json";
 	
 	public static Map<String, Integer> myMap = new HashMap<String, Integer>();
 	
@@ -41,6 +36,7 @@ public class MapStringIntegerTestCases extends TypeMappingInfoTestCases{
 	
 	public void init() throws Exception {
 		setControlDocument(XML_RESOURCE);	
+		setControlJSON(JSON_RESOURCE);
 		setTypeMappingInfos(getTypeMappingInfos());		
 	}
 	

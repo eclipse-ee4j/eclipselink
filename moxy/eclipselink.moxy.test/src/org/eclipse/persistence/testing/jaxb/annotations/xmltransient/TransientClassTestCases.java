@@ -24,7 +24,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 /**
  * <p>Tests the following:</p>
@@ -33,15 +33,17 @@ import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
  * <li>Ensure that a transient class will not throw a 'transient in propOrder' error.</li>
  * </ul>
  */
-public class TransientClassTestCases extends JAXBTestCases {
+public class TransientClassTestCases extends JAXBWithJSONTestCases {
 
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmltransient/transientclass.xml";
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmltransient/transientclass.json";
     private static final String TRANSIENT_CLASS_BINDINGS = "org/eclipse/persistence/testing/jaxb/annotations/xmltransient/transientclass-bindings.xml";
 
     public TransientClassTestCases(String name) throws Exception {
         super(name);
         setClasses(new Class[] { TransientClass.class });
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
     }
 
     @Override
@@ -54,8 +56,8 @@ public class TransientClassTestCases extends JAXBTestCases {
     }
 
     @Override
-    protected Map getProperties() throws Exception {
-        InputStream inputStream = ClassLoader.getSystemResourceAsStream(TRANSIENT_CLASS_BINDINGS);
+    protected Map getProperties() {
+    	InputStream inputStream = ClassLoader.getSystemResourceAsStream(TRANSIENT_CLASS_BINDINGS);
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.annotations.xmltransient", new StreamSource(inputStream));
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();

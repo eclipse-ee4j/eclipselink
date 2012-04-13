@@ -255,7 +255,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
         try {
             Object value = null;
             if(xmlUnmarshaller.getMediaType() == MediaType.APPLICATION_JSON) {
-                value = xmlUnmarshaller.unmarshal(new JSONReader(attributePrefix, namespaceResolver, namespaceResolver != null, includeRoot), inputSource);
+                value = xmlUnmarshaller.unmarshal(new JSONReader(attributePrefix, namespaceResolver, namespaceResolver != null, includeRoot, xmlUnmarshaller.getErrorHandler()), inputSource);
             } else {
                 value = xmlUnmarshaller.unmarshal(inputSource);
             }
@@ -271,7 +271,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
                 throw XMLMarshalException.nullArgumentException();
             }
             boolean namespaceAware = namespaceResolver != null;
-            return createJAXBElementOrUnwrapIfRequired(xmlUnmarshaller.unmarshal(new JSONReader(attributePrefix,namespaceResolver, namespaceAware, includeRoot), new InputSource(reader)));
+            return createJAXBElementOrUnwrapIfRequired(xmlUnmarshaller.unmarshal(new JSONReader(attributePrefix,namespaceResolver, namespaceAware, includeRoot, xmlUnmarshaller.getErrorHandler()), new InputSource(reader)));
         }
         try {
             XMLInputFactory xmlInputFactory = getXMLInputFactory();
@@ -388,6 +388,23 @@ public class JAXBUnmarshaller implements Unmarshaller {
 
     public Object unmarshal(Source source) throws JAXBException {
         try {
+            if(xmlUnmarshaller.getMediaType() == MediaType.APPLICATION_JSON) {
+                if (source instanceof StreamSource) {
+                    StreamSource streamSource = (StreamSource) source;
+                    boolean namespaceAware = namespaceResolver != null;
+                    if (null != streamSource.getReader()) {
+                    	 Object value = xmlUnmarshaller.unmarshal(new JSONReader(attributePrefix, namespaceResolver, namespaceAware, includeRoot, xmlUnmarshaller.getErrorHandler()), new InputSource(streamSource.getReader()));
+                         return createJAXBElementOrUnwrapIfRequired(value);
+                    } else if (null != streamSource.getInputStream()) {    
+                   	    Object value = xmlUnmarshaller.unmarshal(new JSONReader(attributePrefix, namespaceResolver, namespaceAware, includeRoot, xmlUnmarshaller.getErrorHandler()), new InputSource(streamSource.getInputStream()));
+                        return createJAXBElementOrUnwrapIfRequired(value);                        
+                    } else {                    	                   
+                   	    Object value = xmlUnmarshaller.unmarshal(new JSONReader(attributePrefix, namespaceResolver, namespaceAware, includeRoot, xmlUnmarshaller.getErrorHandler()), new InputSource(streamSource.getSystemId()));
+                        return createJAXBElementOrUnwrapIfRequired(value);                                            
+                    }
+                } 
+            }
+        	
             Object value = xmlUnmarshaller.unmarshal(source);
             return createJAXBElementOrUnwrapIfRequired(value);
         } catch (XMLMarshalException xmlMarshalException) {
@@ -400,18 +417,18 @@ public class JAXBUnmarshaller implements Unmarshaller {
             throw new IllegalArgumentException();
         }
         Class classToUnmarshalTo = getClassToUnmarshalTo(javaClass);
-
-        try {        	
+        
+        try {        	 
         	if(xmlUnmarshaller.getMediaType() == MediaType.APPLICATION_JSON) {
         		if (source instanceof StreamSource) {
                     StreamSource streamSource = (StreamSource) source;
                     boolean namespaceAware = namespaceResolver != null;
                     if (null != streamSource.getReader()) {
-                        return buildJAXBElementFromObject(xmlUnmarshaller.unmarshal(new JSONReader(attributePrefix, namespaceResolver, namespaceAware, includeRoot), new InputSource(streamSource.getReader()), classToUnmarshalTo), javaClass);
+                        return buildJAXBElementFromObject(xmlUnmarshaller.unmarshal(new JSONReader(attributePrefix, namespaceResolver, namespaceAware, includeRoot, xmlUnmarshaller.getErrorHandler()), new InputSource(streamSource.getReader()), classToUnmarshalTo), javaClass);
                     } else if (null != streamSource.getInputStream()) {                        
-                        return buildJAXBElementFromObject(xmlUnmarshaller.unmarshal(new JSONReader(attributePrefix, namespaceResolver, namespaceAware, includeRoot), new InputSource(streamSource.getInputStream()), classToUnmarshalTo), javaClass);
+                        return buildJAXBElementFromObject(xmlUnmarshaller.unmarshal(new JSONReader(attributePrefix, namespaceResolver, namespaceAware, includeRoot, xmlUnmarshaller.getErrorHandler()), new InputSource(streamSource.getInputStream()), classToUnmarshalTo), javaClass);
                     } else {                    	                    	
-                        return buildJAXBElementFromObject(xmlUnmarshaller.unmarshal(new JSONReader(attributePrefix, namespaceResolver, namespaceAware, includeRoot), new InputSource(streamSource.getSystemId()), classToUnmarshalTo), javaClass);                    	
+                        return buildJAXBElementFromObject(xmlUnmarshaller.unmarshal(new JSONReader(attributePrefix, namespaceResolver, namespaceAware, includeRoot, xmlUnmarshaller.getErrorHandler()), new InputSource(streamSource.getSystemId()), classToUnmarshalTo), javaClass);                    	
                     }
                 } 
         	}
@@ -429,6 +446,19 @@ public class JAXBUnmarshaller implements Unmarshaller {
                 classToUnmarshalTo = generatedClass;
             }
         }
+        if(xmlUnmarshaller.getMediaType() == MediaType.APPLICATION_JSON) {
+    		if (source instanceof StreamSource) {
+                StreamSource streamSource = (StreamSource) source;
+                boolean namespaceAware = namespaceResolver != null;
+                if (null != streamSource.getReader()) {
+                    return buildJAXBElementFromObject(xmlUnmarshaller.unmarshal(new JSONReader(attributePrefix, namespaceResolver, namespaceAware, includeRoot, xmlUnmarshaller.getErrorHandler()), new InputSource(streamSource.getReader()), classToUnmarshalTo), declaredType);
+                } else if (null != streamSource.getInputStream()) {                        
+                    return buildJAXBElementFromObject(xmlUnmarshaller.unmarshal(new JSONReader(attributePrefix, namespaceResolver, namespaceAware, includeRoot, xmlUnmarshaller.getErrorHandler()), new InputSource(streamSource.getInputStream()), classToUnmarshalTo), declaredType);
+                } else {                    	                    	
+                    return buildJAXBElementFromObject(xmlUnmarshaller.unmarshal(new JSONReader(attributePrefix, namespaceResolver, namespaceAware, includeRoot, xmlUnmarshaller.getErrorHandler()), new InputSource(streamSource.getSystemId()), classToUnmarshalTo), declaredType);                    	
+                }
+            } 
+    	}
         return buildJAXBElementFromObject(xmlUnmarshaller.unmarshal(source, classToUnmarshalTo), declaredType);
     }
 
@@ -488,7 +518,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
                         throw new JAXBException(XMLMarshalException.marshalException(ex));
                     }
                 }
-                JAXBElement returnVal = new JAXBElement(unmarshalled.getName(), declaredClass, unmarshalled.getScope(), unmarshalled.getValue());
+                JAXBElement returnVal = new JAXBElement(unmarshalled.getName(), declaredClass, unmarshalled.getScope(), value);
                 return returnVal;
             }else if(type.getType() instanceof Class){
                 if(adapter != null) {
@@ -832,6 +862,9 @@ public class JAXBUnmarshaller implements Unmarshaller {
         } else if (key.equals(JSON_INCLUDE_ROOT)) {
             return includeRoot;
         } else if (key.equals(JSON_NAMESPACE_PREFIX_MAPPER)) {
+        	if(namespaceResolver == null){
+        		return null;
+        	}
             if (namespaceResolver instanceof PrefixMapperNamespaceResolver) {
                 PrefixMapperNamespaceResolver wrapper = (PrefixMapperNamespaceResolver) namespaceResolver;
                 return wrapper.getPrefixMapper();

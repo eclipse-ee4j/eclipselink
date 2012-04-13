@@ -20,15 +20,15 @@ import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.XmlMimeType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
 
-public class JavaTypeAdapterListToStringTestCases extends TypeMappingInfoTestCases {
+public class JavaTypeAdapterListToStringTestCases extends TypeMappingInfoWithJSONTestCases {
     protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/listtostring.xml";
+    protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/listtostring.json";
     
     @XmlJavaTypeAdapter(ListToStringAdapter.class)
     public Object javaTypeAdapterField;
@@ -40,6 +40,7 @@ public class JavaTypeAdapterListToStringTestCases extends TypeMappingInfoTestCas
     
     public void init() throws Exception {
         setControlDocument(XML_RESOURCE);   
+        setControlJSON(JSON_RESOURCE);
         setTypeMappingInfos(getTypeMappingInfos()); 
     }
     

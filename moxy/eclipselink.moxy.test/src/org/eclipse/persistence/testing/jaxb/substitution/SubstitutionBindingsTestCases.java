@@ -54,8 +54,8 @@ public class SubstitutionBindingsTestCases extends JAXBWithJSONTestCases {
     }
 
     @Override
-    protected Map getProperties() throws Exception {
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+    protected Map getProperties() {
+    	ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         InputStream iStream = classLoader.getResourceAsStream(XML_BINDINGS);
 
         Map<String, Object> properties = new HashMap<String, Object>();

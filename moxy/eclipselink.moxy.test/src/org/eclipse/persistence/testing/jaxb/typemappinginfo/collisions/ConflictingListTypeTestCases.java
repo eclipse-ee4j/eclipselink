@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.List;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlList;
@@ -29,11 +28,13 @@ import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
 import org.eclipse.persistence.testing.jaxb.typemappinginfo.Employee;
 import org.eclipse.persistence.testing.jaxb.typemappinginfo.TypeMappingInfoTestCases;
+import org.eclipse.persistence.testing.jaxb.typemappinginfo.TypeMappingInfoWithJSONTestCases;
 import org.w3c.dom.Element;
 
-public class ConflictingListTypeTestCases extends TypeMappingInfoTestCases{
+public class ConflictingListTypeTestCases extends TypeMappingInfoWithJSONTestCases{
 
 	protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/collisions/conflictingListTypes.xml";
+	protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/collisions/conflictingListTypes.json";
     	
 	public List<Employee> testField;
 	public List<String> testSimpleField;
@@ -49,6 +50,7 @@ public class ConflictingListTypeTestCases extends TypeMappingInfoTestCases{
 	
 	public void init() throws Exception {
 		setControlDocument(XML_RESOURCE);	
+		setControlJSON(JSON_RESOURCE);
 		setTypeMappingInfos(getTypeMappingInfos());	
 	}
 	

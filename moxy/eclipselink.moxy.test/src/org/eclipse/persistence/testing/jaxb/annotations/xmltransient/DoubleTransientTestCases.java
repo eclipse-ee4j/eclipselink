@@ -20,7 +20,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 /**
  * <p>Tests the following:</p>
@@ -30,15 +30,17 @@ import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
  * <li>Ensure that the property that is maintained is the one that matches the XmlAccessType (in this case, the method).</li>
  * </ul>
  */
-public class DoubleTransientTestCases extends JAXBTestCases {
+public class DoubleTransientTestCases extends JAXBWithJSONTestCases {
 
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmltransient/doubletransient.xml";
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmltransient/doubletransient.json";
     private static final String BINDINGS = "org/eclipse/persistence/testing/jaxb/annotations/xmltransient/override-bindings.xml";
 
     public DoubleTransientTestCases(String name) throws Exception {
         super(name);
         setClasses(new Class[] { DoubleTransient.class });
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
     }
 
     @Override
@@ -47,8 +49,8 @@ public class DoubleTransientTestCases extends JAXBTestCases {
     }
 
     @Override
-    protected Map getProperties() throws Exception {
-        InputStream inputStream = ClassLoader.getSystemResourceAsStream(BINDINGS);
+    protected Map getProperties() {
+    	InputStream inputStream = ClassLoader.getSystemResourceAsStream(BINDINGS);
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.annotations.xmltransient", new StreamSource(inputStream));
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();

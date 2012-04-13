@@ -22,10 +22,11 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
-import org.eclipse.persistence.testing.jaxb.typemappinginfo.TypeMappingInfoTestCases;
+import org.eclipse.persistence.testing.jaxb.typemappinginfo.TypeMappingInfoWithJSONTestCases;
 
-public class ConflictingByteArrayTestCases extends TypeMappingInfoTestCases{
+public class ConflictingByteArrayTestCases extends TypeMappingInfoWithJSONTestCases{
 	protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/collisions/conflictingByteArrayClasses.xml";
+	protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/collisions/conflictingByteArrayClasses.json";
 	
 	public byte[] theByteArrayField;
 	
@@ -36,6 +37,7 @@ public class ConflictingByteArrayTestCases extends TypeMappingInfoTestCases{
 	
 	public void init() throws Exception {
 		setControlDocument(XML_RESOURCE);	
+		setControlJSON(JSON_RESOURCE);
 		setTypeMappingInfos(getTypeMappingInfos());	
 	}
 	

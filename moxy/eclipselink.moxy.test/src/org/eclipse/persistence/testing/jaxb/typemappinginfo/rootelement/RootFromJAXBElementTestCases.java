@@ -22,11 +22,12 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
-import org.eclipse.persistence.testing.jaxb.typemappinginfo.TypeMappingInfoTestCases;
+import org.eclipse.persistence.testing.jaxb.typemappinginfo.TypeMappingInfoWithJSONTestCases;
 
-public class RootFromJAXBElementTestCases extends TypeMappingInfoTestCases {
+public class RootFromJAXBElementTestCases extends TypeMappingInfoWithJSONTestCases {
 
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/rootelement/JAXBElement.xml";
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/rootelement/JAXBElement.json";
     private static final String XSD_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/rootelement/JAXBElement.xsd";
 
     private static final String ADDRESS_NAMESPACE_URI = null;
@@ -34,10 +35,11 @@ public class RootFromJAXBElementTestCases extends TypeMappingInfoTestCases {
     private static final String JAXB_ELEMENT_NAMESPACE_URI = null;
     private static final String JAXB_ELEMENT_LOCAL_NAME = "jaxb-element-address";
     private static final String CONTROL_STREET = "123 A St.";
-
-    public RootFromJAXBElementTestCases(String name) throws Exception {
+    
+    public RootFromJAXBElementTestCases(String name) throws Exception{
         super(name);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
 
         TypeMappingInfo[] typeMappingInfos = new TypeMappingInfo[1];
         TypeMappingInfo addressTypeMappingInfo = new TypeMappingInfo(); 

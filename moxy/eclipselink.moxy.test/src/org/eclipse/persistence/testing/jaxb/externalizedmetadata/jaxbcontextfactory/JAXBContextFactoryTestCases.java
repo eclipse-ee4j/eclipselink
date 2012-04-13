@@ -14,12 +14,11 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfac
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
-import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,7 +26,9 @@ import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.JAXBException;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Source;
+import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContext;
@@ -51,8 +52,8 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
     private static final String BEAN_NAMESPACE = "defaultTns";
     private static final String FOO_XML = "foo.xml";
     private static final String FOO_OXM_XML = "foo-oxm.xml";
+    private static final String FOO_OXM_JSON = "foo-oxm.json";
     private static final String NO_PKG_OXM_XML = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/jaxbcontextfactory/bindingformat/eclipselink-oxm-no-package.xml";
-    private static final String PKG_ONLY_OXM_XML = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/jaxbcontextfactory/bindingformat/eclipselink-oxm-package-only.xml";
 
     private static final String FILE_PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/jaxbcontextfactory/bindingformat/file/";
     private static final String INPUT_SRC_PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/jaxbcontextfactory/bindingformat/inputsource/";
@@ -60,14 +61,24 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
     private static final String READER_PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/jaxbcontextfactory/bindingformat/reader/";
     private static final String SOURCE_PATH = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/jaxbcontextfactory/bindingformat/source/";
     private static final String FILE_OXM_XML = FILE_PATH + FOO_OXM_XML;
+    private static final String FILE_OXM_JSON = FILE_PATH + FOO_OXM_JSON;
+    private static final String FILE_OXM_JSON_INVALID = FILE_PATH + "foo-oxm-invalid.json";
     private static final String INPUT_SRC_OXM_XML = INPUT_SRC_PATH + FOO_OXM_XML;
+    private static final String INPUT_SRC_OXM_JSON = INPUT_SRC_PATH + FOO_OXM_JSON;
     private static final String INPUT_STRM_OXM_XML = INPUT_STRM_PATH + FOO_OXM_XML;
+    private static final String INPUT_STRM_OXM_JSON = INPUT_STRM_PATH + FOO_OXM_JSON;
     private static final String READER_OXM_XML = READER_PATH + FOO_OXM_XML;
+    private static final String READER_EMPTY_OXM_XML = READER_PATH + "foo-oxm_empty.xml";
+    private static final String READER_EMPTY_OXM_JSON = READER_PATH + "foo-oxm_empty.json";
+    
+    private static final String READER_OXM_JSON = READER_PATH + FOO_OXM_JSON;
     private static final String SOURCE_OXM_XML = SOURCE_PATH + FOO_OXM_XML;
+    private static final String SOURCE_OXM_JSON = SOURCE_PATH + FOO_OXM_JSON;
     private static final String FILE_XML = FILE_PATH + FOO_XML;
     private static final String INPUT_SRC_XML = INPUT_SRC_PATH + FOO_XML;
-    private static final String INPUT_STRM_XML = INPUT_STRM_PATH + FOO_XML;
+    private static final String INPUT_STRM_XML = INPUT_STRM_PATH + FOO_XML;    
     private static final String READER_XML = READER_PATH + FOO_XML;
+    private static final String READER_NO_BINDINGS = READER_PATH + "foo_no_bindings.xml";  
     private static final String SOURCE_XML = SOURCE_PATH + FOO_XML;
     
     private static final String FILE = "File"; 
@@ -413,6 +424,28 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
         doTestInputStrm(jCtx);
     }
 
+    public void testBindingsEmptyXML() throws Exception {
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, new InputStreamReader(new FileInputStream(READER_EMPTY_OXM_XML)));
+        Class[] classes = new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.reader.FooWithRootElement.class };
+        JAXBContext jCtx = (JAXBContext) JAXBContextFactory.createContext(classes, null, loader);
+        
+        org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.reader.FooWithRootElement fooWithRoot = new org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.reader.FooWithRootElement("a123");
+        marshal(jCtx, READER, fooWithRoot, READER_NO_BINDINGS);
+        unmarshal(jCtx, READER, fooWithRoot, READER_NO_BINDINGS);
+    }
+    
+    public void testBindingsEmptyJSON() throws Exception {
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, new InputStreamReader(new FileInputStream(READER_EMPTY_OXM_JSON)));
+        Class[] classes = new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.reader.FooWithRootElement.class };
+        JAXBContext jCtx = (JAXBContext) JAXBContextFactory.createContext(classes, null, loader);
+        
+        org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.reader.FooWithRootElement fooWithRoot = new org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.reader.FooWithRootElement("a123");
+        marshal(jCtx, READER, fooWithRoot, READER_NO_BINDINGS);
+        unmarshal(jCtx, READER, fooWithRoot, READER_NO_BINDINGS);
+    }
+    
     public void testBindingFormatReader() throws Exception {
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, new InputStreamReader(new FileInputStream(READER_OXM_XML)));
@@ -437,6 +470,211 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
         inputFiles.add(new FileInputStream(INPUT_STRM_OXM_XML));
         inputFiles.add(new InputStreamReader(new FileInputStream(READER_OXM_XML)));
         inputFiles.add(new StreamSource(ClassLoader.getSystemResourceAsStream(SOURCE_OXM_XML)));
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, inputFiles);
+        Class[] listClasses = new Class[] { 
+                org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.file.Foo.class,
+                org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.inputsource.Foo.class,
+                org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.inputstream.Foo.class, 
+                org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.reader.Foo.class,
+                org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.source.Foo.class};
+        JAXBContext jCtx = (JAXBContext) JAXBContextFactory.createContext(listClasses, properties, loader);
+        doTestFile(jCtx);
+        doTestInputSrc(jCtx);
+        doTestInputStrm(jCtx);
+        doTestReader(jCtx);
+        doTestSource(jCtx);
+    }
+    
+    public void testBindingFormatList2() throws Exception {
+        List<Object> inputFiles = new ArrayList<Object>();
+        inputFiles.add(new File(FILE_OXM_XML));
+        inputFiles.add(new InputSource(new FileReader(INPUT_SRC_OXM_XML)));        
+        inputFiles.add(new FileInputStream(INPUT_STRM_OXM_XML));        
+        inputFiles.add(new InputStreamReader(new FileInputStream(READER_OXM_XML)));
+        DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+        builderFactory.setNamespaceAware(true);        
+        Document n = builderFactory.newDocumentBuilder().parse(ClassLoader.getSystemResourceAsStream(SOURCE_OXM_XML));
+        
+        DOMSource ds = new DOMSource(n);        
+        inputFiles.add(ds);
+
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, inputFiles);
+        Class[] listClasses = new Class[] { 
+                org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.file.Foo.class,
+                org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.inputsource.Foo.class,
+                org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.inputstream.Foo.class, 
+                org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.reader.Foo.class,
+                org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.source.Foo.class};
+        JAXBContext jCtx = (JAXBContext) JAXBContextFactory.createContext(listClasses, properties, loader);
+        doTestFile(jCtx);
+        doTestInputSrc(jCtx);
+        doTestInputStrm(jCtx);
+        doTestReader(jCtx);
+        doTestSource(jCtx);
+    }
+    
+    public void testBindingFormatXMLInvalid() throws Exception {
+        List<Object> inputFiles = new ArrayList<Object>();
+        inputFiles.add(new File(FILE_PATH + "foo-oxm-invalid.xml"));
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, inputFiles);
+        Class[] listClasses = new Class[] { 
+                org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.file.Foo.class};
+        
+        try{
+            JAXBContext jCtx = (JAXBContext) JAXBContextFactory.createContext(listClasses, properties, loader);
+        }catch(org.eclipse.persistence.exceptions.JAXBException ex){
+        	assertEquals(org.eclipse.persistence.exceptions.JAXBException.COULD_NOT_UNMARSHAL_METADATA, ex.getErrorCode());
+        	return;
+        }
+        fail("A JAXBException should have occured with error code " + org.eclipse.persistence.exceptions.JAXBException.COULD_NOT_UNMARSHAL_METADATA);
+ 
+        
+    }
+    
+    public void testBindingFormatJSONInvalid() throws Exception {
+        List<Object> inputFiles = new ArrayList<Object>();
+        inputFiles.add(new File(FILE_OXM_JSON_INVALID));
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, inputFiles);
+        Class[] listClasses = new Class[] { 
+                org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.file.Foo.class};
+        
+        try{
+            JAXBContext jCtx = (JAXBContext) JAXBContextFactory.createContext(listClasses, properties, loader);        
+        }catch(org.eclipse.persistence.exceptions.JAXBException ex){
+        	assertEquals(org.eclipse.persistence.exceptions.JAXBException.COULD_NOT_UNMARSHAL_METADATA, ex.getErrorCode());
+        	return;
+        }
+        fail("A JAXBException should have occured with error code " + org.eclipse.persistence.exceptions.JAXBException.COULD_NOT_UNMARSHAL_METADATA);
+    }
+    
+    public void testBindingFormatJSONInvalid2() throws Exception {
+        List<Object> inputFiles = new ArrayList<Object>();
+        inputFiles.add(new File(FILE_PATH + "foo-oxm-invalid2.json"));
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, inputFiles);
+        Class[] listClasses = new Class[] { 
+                org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.file.Foo.class};
+        try{
+            JAXBContext jCtx = (JAXBContext) JAXBContextFactory.createContext(listClasses, properties, loader);
+        }catch(org.eclipse.persistence.exceptions.JAXBException ex){
+        	assertEquals(org.eclipse.persistence.exceptions.JAXBException.COULD_NOT_UNMARSHAL_METADATA, ex.getErrorCode());
+        	return;
+        }
+        fail("A JAXBException should have occured with error code " + org.eclipse.persistence.exceptions.JAXBException.COULD_NOT_UNMARSHAL_METADATA);
+ 
+    }
+    
+    public void testBindingFormatListJSONWhitespace() throws Exception {
+    	 List<Object> inputFiles = new ArrayList<Object>();
+         inputFiles.add(new File(FILE_PATH + "foo-oxm-whitespace.json"));
+         inputFiles.add(new InputSource(new FileInputStream(INPUT_SRC_OXM_JSON)));
+         inputFiles.add(new FileInputStream(INPUT_STRM_OXM_JSON));
+         inputFiles.add(new InputStreamReader(new FileInputStream(READER_OXM_JSON)));
+         inputFiles.add(new StreamSource(ClassLoader.getSystemResourceAsStream(SOURCE_OXM_JSON)));
+         Map<String, Object> properties = new HashMap<String, Object>();
+         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, inputFiles);
+         Class[] listClasses = new Class[] { 
+                 org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.file.Foo.class,
+                 org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.inputsource.Foo.class,
+                 org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.inputstream.Foo.class, 
+                 org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.reader.Foo.class,
+                 org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.source.Foo.class};
+         try{
+            JAXBContext jCtx = (JAXBContext) JAXBContextFactory.createContext(listClasses, properties, loader);
+         }catch(org.eclipse.persistence.exceptions.JAXBException ex){
+        	assertEquals(org.eclipse.persistence.exceptions.JAXBException.COULD_NOT_UNMARSHAL_METADATA, ex.getErrorCode());
+        	return;
+        }
+        fail("A JAXBException should have occured with error code " + org.eclipse.persistence.exceptions.JAXBException.COULD_NOT_UNMARSHAL_METADATA);
+ 
+    }
+    
+    public void testBindingFormatListJSON() throws Exception {
+        List<Object> inputFiles = new ArrayList<Object>();
+        inputFiles.add(new File(FILE_OXM_JSON));
+        inputFiles.add(new InputSource(new FileInputStream(INPUT_SRC_OXM_JSON)));
+        inputFiles.add(new FileInputStream(INPUT_STRM_OXM_JSON));
+        inputFiles.add(new InputStreamReader(new FileInputStream(READER_OXM_JSON)));
+        inputFiles.add(new StreamSource(ClassLoader.getSystemResourceAsStream(SOURCE_OXM_JSON)));
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, inputFiles);
+        Class[] listClasses = new Class[] { 
+                org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.file.Foo.class,
+                org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.inputsource.Foo.class,
+                org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.inputstream.Foo.class, 
+                org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.reader.Foo.class,
+                org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.source.Foo.class};
+        JAXBContext jCtx = (JAXBContext) JAXBContextFactory.createContext(listClasses, properties, loader);
+        doTestFile(jCtx);
+        doTestInputSrc(jCtx);
+        doTestInputStrm(jCtx);
+        doTestReader(jCtx);
+        doTestSource(jCtx);
+    }
+    public void testBindingFormatListJSON2() throws Exception {
+        List<Object> inputFiles = new ArrayList<Object>();
+        inputFiles.add(new File(FILE_OXM_JSON));        
+        inputFiles.add(new InputSource(new FileReader(INPUT_SRC_OXM_JSON)));
+        inputFiles.add(new FileInputStream(INPUT_STRM_OXM_JSON));        
+        inputFiles.add(new InputStreamReader(new FileInputStream(READER_OXM_JSON)));
+        
+        DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+        builderFactory.setNamespaceAware(true);        
+        Document n = builderFactory.newDocumentBuilder().parse(ClassLoader.getSystemResourceAsStream(SOURCE_OXM_XML));
+        
+        DOMSource ds = new DOMSource(n);                
+        inputFiles.add(ds);
+        
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, inputFiles);
+        Class[] listClasses = new Class[] { 
+                org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.file.Foo.class,
+                org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.inputsource.Foo.class,
+                org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.inputstream.Foo.class, 
+                org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.reader.Foo.class,
+                org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.source.Foo.class};
+        JAXBContext jCtx = (JAXBContext) JAXBContextFactory.createContext(listClasses, properties, loader);
+        doTestFile(jCtx);
+        doTestInputSrc(jCtx);
+        doTestInputStrm(jCtx);
+        doTestReader(jCtx);
+        doTestSource(jCtx);
+    }
+    
+    public void testBindingFormatListXMLandJSON() throws Exception {
+        List<Object> inputFiles = new ArrayList<Object>();
+        inputFiles.add(new File(FILE_OXM_XML));
+     	inputFiles.add(new InputSource(new FileInputStream(INPUT_SRC_OXM_JSON)));
+        inputFiles.add(new FileInputStream(INPUT_STRM_OXM_XML));
+        inputFiles.add(new InputStreamReader(new FileInputStream(READER_OXM_JSON)));
+        inputFiles.add(new StreamSource(ClassLoader.getSystemResourceAsStream(SOURCE_OXM_XML)));
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, inputFiles);
+        Class[] listClasses = new Class[] { 
+                org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.file.Foo.class,
+                org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.inputsource.Foo.class,
+                org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.inputstream.Foo.class, 
+                org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.reader.Foo.class,
+                org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.source.Foo.class};
+        JAXBContext jCtx = (JAXBContext) JAXBContextFactory.createContext(listClasses, properties, loader);
+        doTestFile(jCtx);
+        doTestInputSrc(jCtx);
+        doTestInputStrm(jCtx);
+        doTestReader(jCtx);
+        doTestSource(jCtx);
+    }
+    
+    public void testBindingFormatListJSONandXML() throws Exception {
+        List<Object> inputFiles = new ArrayList<Object>();
+        inputFiles.add(new File(FILE_OXM_JSON));
+        inputFiles.add(new InputSource(new FileInputStream(INPUT_SRC_OXM_XML)));
+        inputFiles.add(new FileInputStream(INPUT_STRM_OXM_JSON));
+        inputFiles.add(new InputStreamReader(new FileInputStream(READER_OXM_XML)));
+        inputFiles.add(new StreamSource(ClassLoader.getSystemResourceAsStream(SOURCE_OXM_JSON)));
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, inputFiles);
         Class[] listClasses = new Class[] { 

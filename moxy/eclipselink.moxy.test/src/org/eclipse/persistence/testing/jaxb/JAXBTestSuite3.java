@@ -35,6 +35,7 @@ import org.eclipse.persistence.testing.jaxb.unmarshaller.RepeatedUnmarshalTestCa
 import org.eclipse.persistence.testing.jaxb.unmarshaller.space.UnmarshalWithSpaceEventTestCases;
 import org.eclipse.persistence.testing.jaxb.uri.ChildURITestCases;
 import org.eclipse.persistence.testing.jaxb.uri.URITestCases;
+import org.eclipse.persistence.testing.jaxb.xmlbindings.XMLBindingsPopulatedTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlbindings.XMLBindingsTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlbindings.XMLBindingsWithExternalMetadataTestCases;
 import org.eclipse.persistence.testing.jaxb.xmldecriptor.LazyInitTestCases;
@@ -97,6 +98,7 @@ public class JAXBTestSuite3 extends TestCase {
         suite.addTestSuite(DefaultValueTestCases.class);
         suite.addTestSuite(ReadAndWriteOnlyTestCases.class);
         suite.addTestSuite(XMLBindingsTestCases.class);
+        suite.addTestSuite(XMLBindingsPopulatedTestCases.class);
         suite.addTestSuite(XMLBindingsWithExternalMetadataTestCases.class);
         suite.addTestSuite(XMLSchemaModelTestCases.class);
         suite.addTestSuite(JAXBIntrospectorGetElementNameTestCases.class);

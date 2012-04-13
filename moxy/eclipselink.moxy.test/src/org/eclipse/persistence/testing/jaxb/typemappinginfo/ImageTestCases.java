@@ -26,9 +26,10 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
 
-public class ImageTestCases extends TypeMappingInfoTestCases{
+public class ImageTestCases extends TypeMappingInfoWithJSONTestCases {
 
 	protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/image.xml";
+	protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/image.json";
 	
 	@XmlMimeType(value="image/jpeg")
 	public String xmlMimeTypeField;
@@ -41,7 +42,8 @@ public class ImageTestCases extends TypeMappingInfoTestCases{
 	}
 	
 	public void init() throws Exception {
-		setControlDocument(XML_RESOURCE);	
+		setControlDocument(XML_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
 		setTypeMappingInfos(getTypeMappingInfos());	
 	}
 	

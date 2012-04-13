@@ -12,19 +12,15 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.typemappinginfo;
 
-import java.io.StringReader;
 import java.lang.annotation.Annotation;
 
 import javax.activation.DataHandler;
-import javax.xml.bind.annotation.XmlAttachmentRef;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlMimeType;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
-import org.w3c.dom.Element;
-import org.xml.sax.InputSource;
 
 public class DatahandlerWithXMLTestCases extends DatahandlerWithAnnotationsTestCases {
     @XmlMimeType(value="application/binary")

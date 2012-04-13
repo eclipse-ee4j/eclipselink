@@ -53,9 +53,10 @@ public abstract class JAXBListOfObjectsTestCases extends JAXBWithJSONTestCases{
 		classLoader = new JaxbClassLoader(Thread.currentThread()
 				.getContextClassLoader());
 		JAXBContextFactory factory = new JAXBContextFactory();
-		jaxbContext = factory.createContext(newClasses, null, classLoader);
+		jaxbContext = factory.createContext(newClasses, getProperties(), classLoader);
 		jaxbMarshaller = jaxbContext.createMarshaller();
 		jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+		this.classes = newClasses;
 	}
 
 	public void setTypes(Type[] newTypes) throws Exception {
@@ -79,6 +80,7 @@ public abstract class JAXBListOfObjectsTestCases extends JAXBWithJSONTestCases{
 		jaxbContext = factory.createContext(newTypes, props, classLoader);
 		jaxbMarshaller = jaxbContext.createMarshaller();
 		jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+		types = newTypes;
 	}
 
 	protected Object getControlObject() {

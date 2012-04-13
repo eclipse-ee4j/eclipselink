@@ -20,10 +20,12 @@ public final class DateAdapter extends XmlAdapter<CustomDateType, Calendar> {
     public DateAdapter() {}
     
     public CustomDateType marshal(Calendar arg0) throws Exception {
-        CustomDateType cType = new CustomDateType();
-        cType.day = arg0.get(Calendar.DATE);
-        cType.month = arg0.get(Calendar.MONTH);
-        cType.year = arg0.get(Calendar.YEAR);
+    	CustomDateType cType = new CustomDateType();
+        Calendar newCal = (Calendar) arg0.clone();
+        
+        cType.day = newCal.get(Calendar.DATE);
+        cType.month = newCal.get(Calendar.MONTH);
+        cType.year = newCal.get(Calendar.YEAR);
         return cType;
     }
     

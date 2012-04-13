@@ -24,7 +24,7 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
 
-public class ListOfByteObjectArrayTestCases extends TypeMappingInfoTestCases{
+public class ListOfByteObjectArrayTestCases extends TypeMappingInfoWithJSONTestCases{
 
 	protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/listOfByteObjectArray.xml";
 

@@ -30,7 +30,7 @@ public class PropOrderTestCases extends JAXBWithJSONTestCases {
     }
 
     @Override
-    public Map getProperties() throws Exception {
+    protected Map getProperties() {
         Map<String, Object> properties = new HashMap<String, Object>();
         Map<String, Object> overrides = new HashMap<String, Object>();
         overrides.put("org.eclipse.persistence.testing.jaxb.xmlvirtualaccessmethods.proporder", "org/eclipse/persistence/testing/jaxb/xmlvirtualaccessmethods/proporder/binding.xml");

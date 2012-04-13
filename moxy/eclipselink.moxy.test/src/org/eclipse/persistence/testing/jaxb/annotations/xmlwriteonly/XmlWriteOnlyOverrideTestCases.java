@@ -35,8 +35,7 @@ public class XmlWriteOnlyOverrideTestCases extends JAXBWithJSONTestCases  {
         return emp;
     }
     
-    protected Map getProperties() throws Exception{
-        
+    protected Map getProperties() {        
         String bindings = 
             "<xml-bindings xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence/oxm\"> " +
                 "<java-types>" + 

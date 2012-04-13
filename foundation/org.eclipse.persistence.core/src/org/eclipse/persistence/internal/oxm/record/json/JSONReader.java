@@ -28,6 +28,7 @@ import org.eclipse.persistence.internal.libraries.antlr.runtime.ANTLRReaderStrea
 import org.eclipse.persistence.internal.libraries.antlr.runtime.CharStream;
 import org.eclipse.persistence.internal.libraries.antlr.runtime.RecognitionException;
 import org.eclipse.persistence.internal.libraries.antlr.runtime.TokenRewriteStream;
+import org.eclipse.persistence.internal.libraries.antlr.runtime.TokenStream;
 import org.eclipse.persistence.internal.libraries.antlr.runtime.tree.CommonTree;
 import org.eclipse.persistence.internal.libraries.antlr.runtime.tree.Tree;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
@@ -38,6 +39,7 @@ import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
+import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -51,11 +53,11 @@ public class JSONReader extends XMLReaderAdapter {
     private NamespaceResolver namespaces = null;
     protected boolean includeRoot;
 
-    public JSONReader(String attrPrefix, NamespaceResolver nr, boolean namespaceAware, boolean includeRoot){
-        this(attrPrefix, nr, namespaceAware, includeRoot, XMLConstants.DOT);        
+    public JSONReader(String attrPrefix, NamespaceResolver nr, boolean namespaceAware, boolean includeRoot, ErrorHandler errorHandler){
+        this(attrPrefix, nr, namespaceAware, includeRoot, XMLConstants.DOT, errorHandler);        
     }
     
-    public JSONReader(String attrPrefix, NamespaceResolver nr, boolean namespaceAware, boolean includeRoot, char namespaceSeparator){
+    private JSONReader(String attrPrefix, NamespaceResolver nr, boolean namespaceAware, boolean includeRoot, char namespaceSeparator, ErrorHandler errorHandler){
         this.attributePrefix = attrPrefix;
     	if(attributePrefix == XMLConstants.EMPTY_STRING){
     	    attributePrefix = null;    	    	
@@ -64,6 +66,7 @@ public class JSONReader extends XMLReaderAdapter {
     	this.namespaceAware = namespaceAware;
     	this.namespaceSeparator = namespaceSeparator;
     	this.includeRoot = includeRoot;
+    	this.setErrorHandler(errorHandler);    	
     }
     
     private JSONAttributes attributes = new JSONAttributes();
@@ -84,16 +87,19 @@ public class JSONReader extends XMLReaderAdapter {
             }
             JSONLexer lexer = new JSONLexer(charStream);
             TokenRewriteStream tokens = new TokenRewriteStream(lexer);
-            JSONParser parser = new JSONParser(tokens);
+            ExtendedJSONParser parser = new ExtendedJSONParser(tokens, input, getErrorHandler());                 
             CommonTree commonTree = (CommonTree) parser.message().getTree();
             parseRoot(commonTree);
             if(null != inputStream) {
                 inputStream.close();
             }
         } catch(RecognitionException e) {
-            throw new SAXParseException(e.getLocalizedMessage(), input.getPublicId(), input.getSystemId(), e.line, e.index, e);
+            SAXParseException saxParseException = new SAXParseException(e.getLocalizedMessage(), input.getPublicId(), input.getSystemId(), e.line, e.index, e);
+            getErrorHandler().fatalError(saxParseException);
+        } catch(SAXExceptionWrapper e){
+    	   throw e.getCause();
+        }
        }
-    }
 
     private void parseRoot(Tree tree) throws SAXException {
     	
@@ -223,7 +229,7 @@ public class JSONReader extends XMLReaderAdapter {
         }
     }
     
-    private String string(String string) {
+    private static String string(String string) {
     	string = string.substring(1, string.length()-1);
     	String returnString = "";                
         int slashIndex = string.indexOf('\\');     
@@ -348,12 +354,11 @@ public class JSONReader extends XMLReaderAdapter {
             return this;
         }
                
-        
         private void addSimpleAttribute(List attributes, String uri, String attributeLocalName,Tree childValueTree){
         	 switch(childValueTree.getType()) {
-             case JSONLexer.STRING: {
-                 String stringValue = childValueTree.getChild(0).getText();
-                 attributes.add(new Attribute(uri, attributeLocalName, attributeLocalName, stringValue.substring(1, stringValue.length() - 1)));
+             case JSONLexer.STRING: {                 
+                 String stringValue = JSONReader.string(childValueTree.getChild(0).getText());
+            	 attributes.add(new Attribute(uri, attributeLocalName, attributeLocalName, stringValue));
                  break;
              }
              case JSONLexer.NUMBER: {
@@ -449,6 +454,45 @@ public class JSONReader extends XMLReaderAdapter {
             return attributes;
         }
 
+    }
+
+    /**
+     * JSONParser is a generated class and maybe regenerated.
+     * this is a subclass to throw errors that may occur instead of just logging them.
+     */
+    private static class ExtendedJSONParser extends JSONParser {
+       
+    	private InputSource inputSource;
+    	private ErrorHandler errorHandler;
+    	
+    	public ExtendedJSONParser(TokenStream input, InputSource inputSource, ErrorHandler errorHandler) {
+    		super(input);
+    		this.inputSource = inputSource;
+    		this.errorHandler = errorHandler;
+    	}
+    	
+    	public void displayRecognitionError(String[] tokenNames,RecognitionException re){    		
+    		super.displayRecognitionError(tokenNames, re);
+    		SAXParseException saxParseException = new SAXParseException(re.getLocalizedMessage(), inputSource.getPublicId(),inputSource.getSystemId(), re.line, re.index, re);
+    		try {
+                    errorHandler.fatalError(saxParseException);
+                } catch (SAXException e) {				
+                    throw new SAXExceptionWrapper(e);
+                }    		
+    	}    	
+    }
+    
+    //Runtime exception to wrap a SAXException
+    private static class SAXExceptionWrapper extends RuntimeException {
+    	
+    	SAXExceptionWrapper(SAXException e){
+    		super(e);
+    	}
+    	
+    	public SAXException getCause() {
+            return (SAXException)super.getCause();
+        }
+   
     }
 
 }

@@ -23,6 +23,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamSource;
 
+import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
@@ -75,7 +76,7 @@ public class XmlPathOverrideTestCases extends JAXBTestCases {
         return root;
     }
     
-    protected Map getProperties() throws Exception{
+    protected Map getProperties() throws JAXBException{
         
         String bindings = 
             "<xml-bindings xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence/oxm\"> " +

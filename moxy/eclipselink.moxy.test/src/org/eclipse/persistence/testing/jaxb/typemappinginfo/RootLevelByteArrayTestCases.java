@@ -13,11 +13,9 @@
 package org.eclipse.persistence.testing.jaxb.typemappinginfo;
 
 import java.io.InputStream;
-import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.activation.DataHandler;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
@@ -25,8 +23,9 @@ import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
 import org.w3c.dom.Document;
 
-public class RootLevelByteArrayTestCases extends TypeMappingInfoTestCases {
+public class RootLevelByteArrayTestCases extends TypeMappingInfoWithJSONTestCases {
     protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/byteArrayMtom.xml";
+    protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/byteArrayMtom.json";
     
     private MyAttachmentMarshaller attachmentMarshaller;
 
@@ -37,6 +36,7 @@ public class RootLevelByteArrayTestCases extends TypeMappingInfoTestCases {
     
     public void init() throws Exception {
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         setupParser();
     
         setTypeMappingInfos(getTypeMappingInfos());

@@ -22,8 +22,9 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
 
-public class PrimitiveIntTestCases extends TypeMappingInfoTestCases {
+public class PrimitiveIntTestCases extends TypeMappingInfoWithJSONTestCases {
 	 protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/int.xml";
+	 protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/int.json";
 
 	    public PrimitiveIntTestCases(String name) throws Exception {
 	        super(name);
@@ -31,7 +32,8 @@ public class PrimitiveIntTestCases extends TypeMappingInfoTestCases {
 	    }
 	    
 	    public void init() throws Exception {
-	        setControlDocument(XML_RESOURCE);   
+	        setControlDocument(XML_RESOURCE);
+	        setControlJSON(JSON_RESOURCE);
 	        setTypeMappingInfos(getTypeMappingInfos()); 
 	    }
 	    

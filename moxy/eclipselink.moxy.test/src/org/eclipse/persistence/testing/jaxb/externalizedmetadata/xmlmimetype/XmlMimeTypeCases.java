@@ -23,7 +23,6 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 /**
@@ -45,10 +44,10 @@ public class XmlMimeTypeCases extends JAXBWithJSONTestCases {
         setControlJSON(JSON_RESOURCE);
         setClasses(new Class[] { AttTypes.class });
         jaxbUnmarshaller.setAttachmentUnmarshaller(new MyAttachmentUnmarshaller());
-
+        
         DataHandler data = new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text");      
         MyAttachmentMarshaller.attachments.put(MyAttachmentUnmarshaller.ATTACHMENT_TEST_ID, data);
-        jaxbMarshaller.setAttachmentMarshaller(new MyAttachmentMarshaller());
+        jaxbMarshaller.setAttachmentMarshaller(new MyAttachmentMarshaller());        
 
     }
     

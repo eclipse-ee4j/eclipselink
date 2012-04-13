@@ -12,10 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.typemappinginfo;
 
-import java.awt.Image;
-import java.awt.image.BufferedImage;
 import java.io.InputStream;
-import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,9 +22,10 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
 
-public class IntegerArrayTestCases extends TypeMappingInfoTestCases{
+public class IntegerArrayTestCases extends TypeMappingInfoWithJSONTestCases{
 
 	protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/integerArray.xml";
+	protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/integerArray.json";
 
     public Integer[] integerArrayField;
 	
@@ -38,6 +36,7 @@ public class IntegerArrayTestCases extends TypeMappingInfoTestCases{
 	
 	public void init() throws Exception {
 		setControlDocument(XML_RESOURCE);	
+		setControlJSON(JSON_RESOURCE);
 		setTypeMappingInfos(getTypeMappingInfos());	
 	}
 	

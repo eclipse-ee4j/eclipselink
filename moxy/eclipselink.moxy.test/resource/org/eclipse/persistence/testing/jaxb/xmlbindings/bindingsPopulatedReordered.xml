@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm" package-name="test.model" xml-accessor-order="ALPHABETICAL" xml-accessor-type="PUBLIC_MEMBER" xml-mapping-metadata-complete="false" xml-name-transformer="test.someNameTransformer">
+   <xml-schema attribute-form-default="UNQUALIFIED" element-form-default="UNQUALIFIED" location="someLocation" namespace="testnamespace"/>
+   <xml-schema-types>
+      <xml-schema-type name="someSchemaType" namespace="someSchemaTypeNamespace" type="someSchemaType"/>
+      <xml-schema-type name="someSchemaType2" namespace="someSchemaTypeNamespace2" type="someSchemaType2"/>
+   </xml-schema-types>
+   <xml-java-type-adapters>
+      <xml-java-type-adapter java-attribute="someJavaAttribute" type="someAdapterType" value="someAdapterValue" value-type="somValueType"/>
+   </xml-java-type-adapters>
+   <xml-registries>
+      <xml-registry name="someRegistry"/>
+   </xml-registries>
+   <xml-enums>
+      <xml-enum java-enum="A" value="A_Value"/>
+      <xml-enum java-enum="B" value="B_Value"/>
+   </xml-enums>
+   <java-types>
+      <java-type name="myType" xml-accessor-order="ALPHABETICAL" xml-discriminator-node="descriminator node" xml-discriminator-value="discriminator value" xml-inline-binary-data="false" xml-transient="false">
+	     <xml-type factory-class="somepackage.someFactoryclass" factory-method="someMethod" name="someName" prop-order="p2 p1"/>
+         <xml-root-element name="someRoot" namespace="someNamespace"/>
+	     <xml-class-extractor class="a.b.c.someClass"/>
+	     <xml-properties>
+	        <xml-property name="prop1" value="propValue" value-type="propValueType"/>
+   	     </xml-properties>
+	     <java-attributes>
+	        <xml-element java-attribute="theJavaAttributeValue" name="elementName"/>
+			<xml-element java-attribute="theJavaAttributeValue2" name="elementName2"/>
+            <xml-attribute container-type="someContainerType" java-attribute="javaAttribute" name="attributename1" namespace="somenamespace" read-only="true" required="true"/>
+	     </java-attributes>
+	  </java-type>
+   </java-types>
+</xml-bindings>

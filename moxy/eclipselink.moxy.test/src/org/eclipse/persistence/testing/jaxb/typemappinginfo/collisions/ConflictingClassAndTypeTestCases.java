@@ -22,21 +22,22 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
 import org.eclipse.persistence.testing.jaxb.typemappinginfo.Employee;
-import org.eclipse.persistence.testing.jaxb.typemappinginfo.TypeMappingInfoTestCases;
+import org.eclipse.persistence.testing.jaxb.typemappinginfo.TypeMappingInfoWithJSONTestCases;
 
-public class ConflictingClassAndTypeTestCases extends TypeMappingInfoTestCases{
+public class ConflictingClassAndTypeTestCases extends TypeMappingInfoWithJSONTestCases{
 
 	protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/collisions/conflictingClasses.xml";
+	protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/collisions/conflictingClasses.json";
     	
 	public Employee testField;
 	
 	public ConflictingClassAndTypeTestCases(String name) throws Exception {
 		super(name);
 		init();
-	}
-	
+	}	
 	public void init() throws Exception {
-		setControlDocument(XML_RESOURCE);	
+		setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
 		setTypeMappingInfos(getTypeMappingInfos());	
 	}
 	

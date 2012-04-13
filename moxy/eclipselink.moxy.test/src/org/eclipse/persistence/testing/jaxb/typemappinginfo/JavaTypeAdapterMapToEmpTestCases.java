@@ -24,8 +24,9 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
 
-public class JavaTypeAdapterMapToEmpTestCases extends TypeMappingInfoTestCases {
+public class JavaTypeAdapterMapToEmpTestCases extends TypeMappingInfoWithJSONTestCases {
     protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/maptoemployee.xml";
+    protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/maptoemployee.json";
     
     @XmlJavaTypeAdapter(MapToEmployeeAdapter.class)
     public Object javaTypeAdapterField;
@@ -37,6 +38,7 @@ public class JavaTypeAdapterMapToEmpTestCases extends TypeMappingInfoTestCases {
     
     public void init() throws Exception {
         setControlDocument(XML_RESOURCE);   
+        setControlJSON(JSON_RESOURCE);
         setTypeMappingInfos(getTypeMappingInfos()); 
     }
     

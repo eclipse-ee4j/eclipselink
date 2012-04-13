@@ -23,9 +23,11 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
 import org.eclipse.persistence.testing.jaxb.typemappinginfo.TypeMappingInfoTestCases;
+import org.eclipse.persistence.testing.jaxb.typemappinginfo.TypeMappingInfoWithJSONTestCases;
 
-public class ConflictingStringArrayClassesTestCases extends TypeMappingInfoTestCases{
+public class ConflictingStringArrayClassesTestCases extends TypeMappingInfoWithJSONTestCases{
 	protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/collisions/conflictingStringArrayClasses.xml";
+	protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/collisions/conflictingStringArrayClasses.json";
 	
 	public String[] testField;
 	
@@ -36,6 +38,7 @@ public class ConflictingStringArrayClassesTestCases extends TypeMappingInfoTestC
 	
 	public void init() throws Exception {
 		setControlDocument(XML_RESOURCE);	
+		setControlJSON(JSON_RESOURCE);
 		setTypeMappingInfos(getTypeMappingInfos());	
 	}
 	

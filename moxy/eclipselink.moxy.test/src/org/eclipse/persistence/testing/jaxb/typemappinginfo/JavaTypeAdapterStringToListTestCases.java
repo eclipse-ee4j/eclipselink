@@ -14,22 +14,20 @@ package org.eclipse.persistence.testing.jaxb.typemappinginfo;
 
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlList;
-import javax.xml.bind.annotation.XmlMimeType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
 
-public class JavaTypeAdapterStringToListTestCases extends TypeMappingInfoTestCases {
+public class JavaTypeAdapterStringToListTestCases extends TypeMappingInfoWithJSONTestCases {
     protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/stringtolist.xml";
+    protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/stringtolist.json";
     
     @XmlJavaTypeAdapter(StringToListAdapter.class)
     @XmlList
@@ -42,6 +40,7 @@ public class JavaTypeAdapterStringToListTestCases extends TypeMappingInfoTestCas
     
     public void init() throws Exception {
         setControlDocument(XML_RESOURCE);   
+        setControlJSON(JSON_RESOURCE);
         setTypeMappingInfos(getTypeMappingInfos()); 
     }
     

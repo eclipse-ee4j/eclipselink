@@ -22,22 +22,20 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
-import org.eclipse.persistence.testing.jaxb.typemappinginfo.TypeMappingInfoTestCases;
+import org.eclipse.persistence.testing.jaxb.typemappinginfo.TypeMappingInfoWithJSONTestCases;
 
-public class RootFromNothingTestCases extends TypeMappingInfoTestCases {
+public class RootFromNothingTestCases extends TypeMappingInfoWithJSONTestCases {
 
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/rootelement/Nothing.xml";
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/rootelement/Nothing.json";
     private static final String XSD_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/rootelement/Nothing.xsd";
 
-    private static final String ADDRESS_NAMESPACE_URI = null;
-    private static final String ADDRESS_LOCAL_NAME = null;
-    private static final String ANNOTATION_NAMESPACE_URI = null;
-    private static final String ANNOTATION_LOCAL_NAME = null;
     private static final String CONTROL_NUMBER = "613-555-1234";
 
     public RootFromNothingTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
 
         TypeMappingInfo[] typeMappingInfos = new TypeMappingInfo[1];
         TypeMappingInfo phoneNumberTypeMappingInfo = new TypeMappingInfo(); 

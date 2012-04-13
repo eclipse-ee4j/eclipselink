@@ -42,5 +42,4 @@ public class JSONAttributePrefixEmptyStringTestCases extends JSONMarshalUnmarsha
 		return props;
 	}
 		
-
 }

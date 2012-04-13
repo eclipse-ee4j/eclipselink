@@ -99,7 +99,7 @@ public class ExceptionHandlingTestCases extends OXTestCase {
 
         try {
             JAXBContextFactory.createContext(CONTEXT_PATH, getClass().getClassLoader(), properties);
-        } catch (JAXBException e) {
+        } catch (JAXBException e) {        	
             return;
         } catch (Exception x) {
         }
@@ -194,6 +194,7 @@ public class ExceptionHandlingTestCases extends OXTestCase {
         } catch (JAXBException e) {
             return;
         } catch (Exception x) {
+        	x.printStackTrace();
         }
         fail("The expected JAXBException was not thrown.");
     }

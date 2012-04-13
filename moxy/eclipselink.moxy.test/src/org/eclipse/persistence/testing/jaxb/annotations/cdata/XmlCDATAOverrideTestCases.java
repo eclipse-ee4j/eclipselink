@@ -19,6 +19,7 @@ import java.util.Map;
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
 
+import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
@@ -52,8 +53,8 @@ public class XmlCDATAOverrideTestCases extends JAXBWithJSONTestCases {
         //CDATA sections don't work with content handlers
     }
     
-    protected Map getProperties() throws Exception{
-        
+    protected Map getProperties() {
+
         String bindings = 
             "<xml-bindings xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence/oxm\"> " +
                 "<java-types>" + 

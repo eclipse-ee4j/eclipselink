@@ -92,7 +92,7 @@ public class NameTransformerExceptionTestCases extends OXTestCase{
 		fail("A JAXBException should have occurred but didn't");
     }
     
-    protected Map getProperties() throws Exception{
+    protected Map getProperties() {
 		
         Map overrides = new HashMap();		
         String overridesString = 

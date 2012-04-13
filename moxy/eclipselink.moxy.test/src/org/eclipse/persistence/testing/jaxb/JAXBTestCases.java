@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -22,6 +23,8 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.reflect.Type;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -30,6 +33,7 @@ import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.SchemaOutputResolver;
 import javax.xml.bind.Unmarshaller;
@@ -56,8 +60,11 @@ import javax.xml.validation.Validator;
 import org.eclipse.persistence.internal.oxm.record.XMLStreamReaderInputSource;
 import org.eclipse.persistence.internal.oxm.record.XMLStreamReaderReader;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBMarshaller;
 import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
 import org.eclipse.persistence.jaxb.JAXBUnmarshallerHandler;
+import org.eclipse.persistence.jaxb.compiler.CompilerHelper;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
@@ -80,6 +87,10 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
     protected JAXBContext jaxbContext;
     protected Marshaller jaxbMarshaller;
     protected Unmarshaller jaxbUnmarshaller;
+    protected Class[] classes;
+    protected Type[] types;
+    protected String contextPath;
+    
     protected ClassLoader classLoader;
     protected Source bindingsFileXSDSource;
 
@@ -122,6 +133,8 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
 
         classLoader = Thread.currentThread().getContextClassLoader();
         jaxbContext = JAXBContextFactory.createContext(newClasses, getProperties(), classLoader);
+        classes = newClasses;
+  
         xmlContext = ((org.eclipse.persistence.jaxb.JAXBContext)jaxbContext).getXMLContext();
         setProject(xmlContext.getSession(0).getProject());
         jaxbMarshaller = jaxbContext.createMarshaller();
@@ -131,7 +144,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
 
     public void setContextPath(String contextPath) throws Exception {
     	 classLoader = Thread.currentThread().getContextClassLoader();
-
+    	 this.contextPath = contextPath;
          Map props = getProperties();
          if(props != null){
              Map overrides = (Map) props.get(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY);
@@ -154,6 +167,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
     
     public void setTypes(Type[] newTypes) throws Exception {
 
+    	types = newTypes;
         classLoader = Thread.currentThread().getContextClassLoader();
 
         Map props = getProperties();
@@ -169,17 +183,149 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         }
 
         jaxbContext = JAXBContextFactory.createContext(newTypes, getProperties(), classLoader);
-
+   
         xmlContext = ((org.eclipse.persistence.jaxb.JAXBContext)jaxbContext).getXMLContext();
         setProject(xmlContext.getSession(0).getProject());
         jaxbMarshaller = jaxbContext.createMarshaller();
         jaxbUnmarshaller = jaxbContext.createUnmarshaller();
     }
 
-    protected Map getProperties() throws Exception{
-        return null;
+    protected Map getProperties() throws JAXBException{    	
+        return null;        
     }
 
+    private Map getPropertiesFromJSON() throws JAXBException{    	    	
+    	Map props = new HashMap(getProperties());
+    	    	
+    	if(props !=null){
+    		
+    	    Object bindingFilesObject = props.get(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY);
+    	    if(bindingFilesObject != null){
+    			JAXBContext jaxbContext = CompilerHelper.getXmlBindingsModelContext();
+    			//unmarshal XML
+    	        Unmarshaller u =jaxbContext.createUnmarshaller();
+    	        Marshaller jsonMarshaller = jaxbContext.createMarshaller();
+    	        //Marshal bindings to JSON (with no root)
+    	        jsonMarshaller.setProperty(JAXBMarshaller.MEDIA_TYPE, "application/json");
+    	        jsonMarshaller.setProperty(JAXBMarshaller.JSON_INCLUDE_ROOT, false);
+    	    	if(bindingFilesObject instanceof Map){
+    	    		Map<String, Object> bindingFiles = (Map<String, Object>) bindingFilesObject;
+    	    	
+	    	    	Iterator<String> keyIter = bindingFiles.keySet().iterator();
+	    	    	while(keyIter.hasNext()){
+	    	    		String nextKey = keyIter.next();
+	    	    		Object nextBindings = bindingFiles.get(nextKey);;
+	    	    		if(nextBindings instanceof List){
+	    	    			List nextList = (List) bindingFiles.get(nextKey);
+	    	    			for(int i=0;i< nextList.size();i++){
+	    	    				Object o = nextList.get(i);
+	    	    				if(o instanceof Source){
+	    	    				    Source nextSource = (Source)o;
+	    	    				    if(nextSource instanceof StreamSource){
+	    	    				    	StreamSource ss= (StreamSource)nextSource;
+	    	    				    	StreamSource ss2= new StreamSource(ss.getInputStream());
+		    	    				    Object unmarshalledFromXML = u.unmarshal(ss2);
+		    	    	    			StringWriter sw = new StringWriter();
+		    		    	    	    StreamResult newResult = new StreamResult(sw);
+		    		    	    	    jsonMarshaller.marshal(unmarshalledFromXML, newResult);		    	    	        
+		    		    	    	    StreamSource newSource = new StreamSource(new StringReader(sw.toString()));		    	    	    				    		    	    	   
+		    	    	    			nextList.set(i, newSource);
+	    	    				    }
+	    	    				}
+	    	    			}
+	    	    		}else if(nextBindings instanceof Source){	    
+	    	    			Object unmarshalledFromXML = u.unmarshal((Source)nextBindings);
+		    	    	      
+	    	    			StringWriter sw = new StringWriter();
+		    	    	    StreamResult newResult = new StreamResult(sw);
+		    	    	    jsonMarshaller.marshal(unmarshalledFromXML, newResult);		    	    	        
+		    	    	    StreamSource newSource = new StreamSource(new StringReader(sw.toString()));
+	    	    			bindingFiles.put(nextKey, newSource);
+	    	    		}
+	    	    	}  
+    	    	}else if(bindingFilesObject instanceof List){
+    	    		List bindingFilesList = (List) bindingFilesObject;
+    	    		for(int i=0; i<bindingFilesList.size(); i++){
+    	    			Object next = bindingFilesList.get(i);
+    	    			Object unmarshalledFromXML = getXmlBindings(next);    	    		    	    
+        	    		StringWriter sw = new StringWriter();
+        	    	    StreamResult newResult = new StreamResult(sw);
+        	    	    jsonMarshaller.marshal(unmarshalledFromXML, newResult);		    	    	        
+        	    	    StreamSource newSource = new StreamSource(new StringReader(sw.toString()));
+        	    	    bindingFilesList.set(i, newSource);
+    	    		}
+    	    		props.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, bindingFilesList);
+    	    	}else{
+    	    		Object unmarshalledFromXML = getXmlBindings(bindingFilesObject);    	    		    	    
+    	    		StringWriter sw = new StringWriter();
+    	    	    StreamResult newResult = new StreamResult(sw);
+    	    	    jsonMarshaller.marshal(unmarshalledFromXML, newResult);		    	    	        
+    	    	    StreamSource newSource = new StreamSource(new StringReader(sw.toString()));
+    	    		props.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, newSource);
+    	    		
+    	    	}
+    	            	  
+    	    }
+    	}
+    	return props;
+
+    }
+    
+    private static XmlBindings getXmlBindings(Object metadata) {
+        XmlBindings xmlBindings = null;
+        Unmarshaller unmarshaller;
+        // only create the JAXBContext for our XmlModel once
+        JAXBContext jaxbContext = CompilerHelper.getXmlBindingsModelContext();
+        try {
+            unmarshaller = jaxbContext.createUnmarshaller();
+            if (metadata instanceof File) {
+                xmlBindings = (XmlBindings) unmarshaller.unmarshal((File) metadata);
+            } else if (metadata instanceof InputSource) {
+                xmlBindings = (XmlBindings) unmarshaller.unmarshal((InputSource) metadata);
+            } else if (metadata instanceof BufferedInputStream) {            	
+                   xmlBindings = (XmlBindings) unmarshaller.unmarshal((BufferedInputStream) metadata);
+            } else if (metadata instanceof InputStream) {            	
+                xmlBindings = (XmlBindings) unmarshaller.unmarshal((InputStream) metadata);
+            } else if (metadata instanceof Node) {
+                xmlBindings = (XmlBindings) unmarshaller.unmarshal((Node) metadata);
+            } else if (metadata instanceof Reader) {
+                xmlBindings = (XmlBindings) unmarshaller.unmarshal((Reader) metadata);
+            } else if (metadata instanceof Source) {
+                xmlBindings = (XmlBindings) unmarshaller.unmarshal((Source) metadata);
+            } else if (metadata instanceof URL) {
+                xmlBindings = (XmlBindings) unmarshaller.unmarshal((URL) metadata);
+            } else if (metadata instanceof XMLEventReader) {
+                xmlBindings = (XmlBindings) unmarshaller.unmarshal((XMLEventReader) metadata);
+            } else if (metadata instanceof XMLStreamReader) {
+                xmlBindings = (XmlBindings) unmarshaller.unmarshal((XMLStreamReader) metadata);
+            } else if (metadata instanceof String) {
+                if(((String)metadata).length() == 0) {
+                    throw org.eclipse.persistence.exceptions.JAXBException.unableToLoadMetadataFromLocation((String)metadata);
+                }
+                URL url = null;
+                try {
+                    url = new URL((String)metadata);
+                } catch(MalformedURLException ex) {
+                    url = Thread.currentThread().getContextClassLoader().getResource((String)metadata);
+                }
+                if(url != null) {
+                    xmlBindings = (XmlBindings)unmarshaller.unmarshal(url);
+                } else {
+                    //throw exception
+                    throw org.eclipse.persistence.exceptions.JAXBException.unableToLoadMetadataFromLocation((String)metadata);
+                }
+            } else {
+                throw org.eclipse.persistence.exceptions.JAXBException.incorrectValueParameterTypeForOxmXmlKey();
+            }
+        } catch (JAXBException jaxbEx) {
+            throw org.eclipse.persistence.exceptions.JAXBException.couldNotUnmarshalMetadata(jaxbEx);
+        }
+        return xmlBindings;
+    }
+ 
+    
+    
+    
     public JAXBContext getJAXBContext() {
         return jaxbContext;
     }
@@ -210,7 +356,35 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
             
             instream.close();
             xmlToObjectTest(testObject);
+            
+            if(getProperties() != null){
+            	JAXBContext jaxbContextFromJSONBindings = createJaxbContextFromJSONBindings();
+               	Unmarshaller jaxbUnmarshallerFromJSONBindings = jaxbContextFromJSONBindings.createUnmarshaller();
+               	jaxbUnmarshallerFromJSONBindings.setAttachmentUnmarshaller(jaxbUnmarshaller.getAttachmentUnmarshaller());
+               	jaxbUnmarshallerFromJSONBindings.setProperty(JAXBUnmarshaller.JSON_NAMESPACE_PREFIX_MAPPER, jaxbMarshaller.getProperty(JAXBUnmarshaller.JSON_NAMESPACE_PREFIX_MAPPER));
+            	Object testObject2 = null;
+           	     log("************test with JSON bindings*********");
+           	     InputStream instream2 = ClassLoader.getSystemResourceAsStream(resourceName);
+           	     if(getUnmarshalClass() != null){
+                     testObject2 = ((JAXBUnmarshaller)jaxbUnmarshallerFromJSONBindings).unmarshal(new StreamSource(instream2), getUnmarshalClass());	
+                 }else{
+                     testObject2 = jaxbUnmarshallerFromJSONBindings.unmarshal(instream2);
+                 }
+                 instream2.close();
+                 xmlToObjectTest(testObject2);
+            }
         }
+    }
+    
+    private JAXBContext createJaxbContextFromJSONBindings() throws JAXBException{
+    	if(classes != null){
+    		return JAXBContextFactory.createContext(classes, getPropertiesFromJSON(), classLoader);
+    	}else if (types != null){
+    		return JAXBContextFactory.createContext(types, getPropertiesFromJSON(), classLoader);
+    	}else if(contextPath != null){
+    		return JAXBContextFactory.createContext(contextPath, classLoader, getPropertiesFromJSON());
+    	}
+    	return null;
     }
     
     public void testRoundTrip() throws Exception{
@@ -259,7 +433,29 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         stream.close();
         is.close();
 
-        objectToXMLDocumentTest(testDocument);
+        objectToXMLDocumentTest(testDocument);     
+        
+        if(getProperties() != null){
+        	 log("************test with JSON bindings*********");
+        	 ByteArrayOutputStream stream2 = new ByteArrayOutputStream();
+        	 JAXBContext jaxbContextFromJSONBindings = createJaxbContextFromJSONBindings();
+        	 Marshaller jaxbMarshallerFromJSONBindings = jaxbContextFromJSONBindings.createMarshaller();
+        	 jaxbMarshallerFromJSONBindings.setAttachmentMarshaller(jaxbMarshaller.getAttachmentMarshaller());
+        	 
+        	 
+     		 jaxbMarshallerFromJSONBindings.setProperty(JAXBMarshaller.NAMESPACE_PREFIX_MAPPER, jaxbMarshaller.getProperty(JAXBMarshaller.NAMESPACE_PREFIX_MAPPER));
+    		 
+
+        	 
+             jaxbMarshallerFromJSONBindings.marshal(objectToWrite, stream2);        	         	 
+             InputStream is2 = new ByteArrayInputStream(stream2.toByteArray());
+             Document testDocument2 = parser.parse(is2);
+             stream2.close();
+             is2.close();
+
+             objectToXMLDocumentTest(testDocument2);     
+             
+        }
     }
 
     public void testObjectToOutputStreamASCIIEncoding() throws Exception {

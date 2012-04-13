@@ -129,7 +129,7 @@ public class JAXBMultipleMapsNamespaceTestCases extends JAXBListOfObjectsNoJSONT
 	    return XML_RESOURCE;
 	}
    
-    protected Map<String, Object> getProperties() throws Exception{
+    protected Map getProperties() {
     	String pkg = "java.util";
         
     	HashMap<String, Source> overrides = new HashMap<String, Source>();
@@ -139,14 +139,20 @@ public class JAXBMultipleMapsNamespaceTestCases extends JAXBListOfObjectsNoJSONT
     	return properties;
     }
     
-    private Source getXmlSchemaOxm(String defaultTns) throws Exception {
+    private Source getXmlSchemaOxm(String defaultTns) {
         String oxm = 
           "<xml-bindings xmlns='http://www.eclipse.org/eclipselink/xsds/persistence/oxm'>" +
             "<xml-schema namespace='" + defaultTns + "'/>" + 
             "<java-types></java-types>" + 
           "</xml-bindings>";
-        Document doc = parser.parse(new ByteArrayInputStream(oxm.getBytes()));        
-        return new DOMSource(doc.getDocumentElement());
+        try{
+           Document doc = parser.parse(new ByteArrayInputStream(oxm.getBytes()));        
+           return new DOMSource(doc.getDocumentElement());
+        }catch (Exception e){
+        	e.printStackTrace();
+        	fail("An error occurred during getProperties");
+        }
+        return null;
       }
     
 	public void testTypeToSchemaTypeMap(){

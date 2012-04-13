@@ -2,5 +2,6 @@
 <xml-bindingd xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm">
 	<java-types>
 		<invalid-tag name="foo.MyNonExistentClass"/>
+		<java-type name="123abc"/>
 	</java-types>
 </xml-bindingd>

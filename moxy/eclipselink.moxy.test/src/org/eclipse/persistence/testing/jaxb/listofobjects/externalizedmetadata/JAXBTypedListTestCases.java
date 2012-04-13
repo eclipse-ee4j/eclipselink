@@ -53,15 +53,11 @@ public class JAXBTypedListTestCases  extends JAXBListOfObjectsTestCases {
 		setWriteControlDocument(XML_RESOURCE_NO_XSI_TYPE);
 		Class[] classes = new Class[1];
 		classes[0] = Company.class;
-		
-		classLoader = new JaxbClassLoader(Thread.currentThread().getContextClassLoader());
-		JAXBContextFactory factory = new JAXBContextFactory();		
-		jaxbContext = factory.createContext(classes, getProperties(), classLoader);
-		jaxbMarshaller = jaxbContext.createMarshaller();
-		jaxbUnmarshaller = jaxbContext.createUnmarshaller();		
+
+		setClasses(classes);
 	}
 	
-	protected Map getProperties() throws Exception{
+	protected Map getProperties() {
 		String pkg = "org.eclipse.persistence.testing.jaxb.listofobjects.externalizedmetadata";
 	    HashMap<String, Source> overrides = new HashMap<String, Source>();
 	    overrides.put(pkg, generateXmlSchemaOxm());
@@ -70,7 +66,7 @@ public class JAXBTypedListTestCases  extends JAXBListOfObjectsTestCases {
 		return properties;	
 	}
 	
-	private Source generateXmlSchemaOxm() throws Exception {
+	private Source generateXmlSchemaOxm() {
 		String oxm =
 			"<xml-bindings xmlns='http://www.eclipse.org/eclipselink/xsds/persistence/oxm'>" +			  
 		       "<java-types>" +
@@ -103,11 +99,16 @@ public class JAXBTypedListTestCases  extends JAXBListOfObjectsTestCases {
 		      "</java-types>" +
 	       "</xml-bindings>";
 		
-		
-	    DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
-		docBuilderFactory.setNamespaceAware(true);
-	    Document doc = docBuilderFactory.newDocumentBuilder().parse(new ByteArrayInputStream(oxm.getBytes()));
-	    return new DOMSource(doc.getDocumentElement());
+		try{
+			DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
+			docBuilderFactory.setNamespaceAware(true);
+			Document doc = docBuilderFactory.newDocumentBuilder().parse(new ByteArrayInputStream(oxm.getBytes()));
+	    	return new DOMSource(doc.getDocumentElement());
+		}catch (Exception e){
+        	e.printStackTrace();
+        	fail("An error occurred during getProperties");
+        }
+        return null;
     }	
 
 	protected Object getControlObject() {

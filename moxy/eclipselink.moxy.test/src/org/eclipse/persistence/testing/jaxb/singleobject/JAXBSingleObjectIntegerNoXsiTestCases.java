@@ -54,7 +54,7 @@ public class JAXBSingleObjectIntegerNoXsiTestCases extends JAXBWithJSONTestCases
 		Map namespaces = new HashMap();
     	namespaces.put("rootNamespace","ns1");
 		jaxbMarshaller.setProperty(JAXBMarshaller.NAMESPACE_PREFIX_MAPPER, namespaces);
-		jaxbUnmarshaller.setProperty(JAXBUnmarshaller.JSON_NAMESPACE_PREFIX_MAPPER, namespaces);
+		jaxbUnmarshaller.setProperty(JAXBUnmarshaller.JSON_NAMESPACE_PREFIX_MAPPER, namespaces);		
 	}
 
    public Map getProperties(){
@@ -63,8 +63,6 @@ public class JAXBSingleObjectIntegerNoXsiTestCases extends JAXBWithJSONTestCases
     	Map namespaces = new HashMap();
     	namespaces.put("ns1", "rootNamespace");
 
-    	//props.put(JAXBContext.NAMESPACES, namespaces);
-    	//props.put(JAXBContext.NAMESPACES, namespaces);
     	props.put(JAXBContext.JSON_INCLUDE_ROOT, true);
 
 	    return props;

@@ -100,14 +100,19 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
         //try xsi:type
         if(atts != null){
             XMLContext xmlContext = unmarshalRecord.getUnmarshaller().getXMLContext();
-            String schemaType = atts.getValue(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
+            String schemaType = null;
+            if(unmarshalRecord.isNamespaceAware()){                
+            	schemaType = atts.getValue(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
+            }else{
+            	schemaType = atts.getValue(XMLConstants.EMPTY_STRING, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
+            }
+            
+            
             if(schemaType != null){
                 schemaType = schemaType.trim();
-                if(schemaType.length() > 0) {
-                    XPathFragment frag = new XPathFragment();
-                    frag.setNamespaceAware(unmarshalRecord.isNamespaceAware());
-                    frag.setXPath(schemaType);
-
+                if(schemaType.length() > 0) {                       
+                    XPathFragment frag = new XPathFragment(schemaType, unmarshalRecord.getNamespaceSeparator(), unmarshalRecord.isNamespaceAware());
+                    
                     QName qname = null;
                     if (frag.hasNamespace()) {
                         String prefix = frag.getPrefix();

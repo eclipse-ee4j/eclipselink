@@ -1,17 +1,3 @@
-package org.eclipse.persistence.testing.jaxb.typemappinginfo;
-
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.bind.JAXBElement;
-import javax.xml.namespace.QName;
-
-import org.eclipse.persistence.jaxb.TypeMappingInfo;
-import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
-
 /*******************************************************************************
  * Copyright (c) 2011 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
@@ -24,9 +10,23 @@ import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
  * Contributors:
  *     Matt MacIvor - 2.3 - initial implementation
  ******************************************************************************/
-public class NullStringTestCases extends TypeMappingInfoTestCases {
+package org.eclipse.persistence.testing.jaxb.typemappinginfo;
+
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.xml.bind.JAXBElement;
+import javax.xml.namespace.QName;
+
+import org.eclipse.persistence.jaxb.TypeMappingInfo;
+import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
+
+
+public class NullStringTestCases extends TypeMappingInfoWithJSONTestCases {
 
     protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/nullstring.xml";
+    protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/nullstring.json";
 
     public NullStringTestCases(String name) throws Exception {
         super(name);
@@ -34,7 +34,8 @@ public class NullStringTestCases extends TypeMappingInfoTestCases {
     }
     
     public void init() throws Exception {
-        setControlDocument(XML_RESOURCE);   
+        setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);  
         setTypeMappingInfos(getTypeMappingInfos()); 
     }
     

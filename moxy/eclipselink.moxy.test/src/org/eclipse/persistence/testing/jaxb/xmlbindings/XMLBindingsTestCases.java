@@ -12,6 +12,9 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.xmlbindings;
 
+import java.io.StringReader;
+import java.io.StringWriter;
+
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
@@ -21,6 +24,8 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.JavaTypes;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlElement;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
 
 public class XMLBindingsTestCases extends JAXBWithJSONTestCases{
 
@@ -51,7 +56,7 @@ public class XMLBindingsTestCases extends JAXBWithJSONTestCases{
 		xmlBindings.setJavaTypes(types);
 		return xmlBindings;
 	}
-		
+	
 	public void xmlToObjectTest(Object testObject) throws Exception {
         log("\n**xmlToObjectTest**");
         log("Expected:");
@@ -104,4 +109,29 @@ public class XMLBindingsTestCases extends JAXBWithJSONTestCases{
 	        assertEquals(expectedBindings.getJavaTypes().getJavaType().get(0).getJavaAttributes().getJavaAttribute().get(0).getValue().getJavaAttribute(), actualBindings.getJavaTypes().getJavaType().get(0).getJavaAttributes().getJavaAttribute().get(0).getValue().getJavaAttribute());
 
 	    }
+	   
+	   public void testMarshalTwiceForComparison() throws Exception{
+ 		    StringWriter writer = new StringWriter();
+
+ 		    //marshal control object to XML
+	        jaxbMarshaller.setProperty(org.eclipse.persistence.jaxb.JAXBContext.MEDIA_TYPE, "application/xml");
+	        jaxbMarshaller.marshal(getWriteControlObject(), writer);
+
+	        StringReader reader = new StringReader(writer.toString());        
+	        InputSource inputSource = new InputSource(reader);
+	        //unmarshal written XML to newobject
+	        Object newObject = jaxbUnmarshaller.unmarshal(inputSource);
+	        StringWriter writer2 = new StringWriter();
+	        
+	        //marhsal newobject to XML again
+	        jaxbMarshaller.marshal(newObject, writer2);
+
+	        //compare newly marshalled to original.
+	        StringReader reader2 = new StringReader(writer2.toString());        	        
+	        InputSource inputSource2 = new InputSource(reader2);
+	        Document testDocument = parser.parse(inputSource2);
+	        
+	        objectToXMLDocumentTest(testDocument);
+		   
+	   }
 }

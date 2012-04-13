@@ -73,7 +73,7 @@ public abstract class JAXBListOfObjectsNoJSONTestCases extends JAXBTestCases{
     		}
     	}
     	
-		
+		types = newTypes;
 		jaxbContext = factory.createContext(newTypes, props, classLoader);
 		jaxbMarshaller = jaxbContext.createMarshaller();
 		jaxbUnmarshaller = jaxbContext.createUnmarshaller();

@@ -13,14 +13,11 @@
 package org.eclipse.persistence.testing.jaxb.typemappinginfo;
 
 import java.awt.Image;
-import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -28,7 +25,6 @@ import javax.activation.DataHandler;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Marshaller;
-import javax.xml.bind.SchemaOutputResolver;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -36,7 +32,6 @@ import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
-import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
@@ -54,9 +49,7 @@ import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLRoot;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 import org.eclipse.persistence.testing.jaxb.JAXBXMLComparer;
-import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases.MyStreamSchemaOutputResolver;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
 import org.w3c.dom.Document;
@@ -130,7 +123,7 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
     	return typeMappingInfos[0];
     }
 	
-    protected Map getProperties() throws Exception{
+    protected Map getProperties() {
     	return null;
     }
     
@@ -155,7 +148,45 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
             Object controlObj = getReadControlObject();
             xmlToObjectTest(testObject, controlObj);          
         } 
-    } 
+    }        
+      
+    public void testXMLToObjectFromSourceWithTypeMappingInfoXML() throws Exception {         
+        InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);        
+        StreamSource ss = new StreamSource(instream);
+        Object testObject = ((JAXBUnmarshaller)jaxbUnmarshaller).unmarshal(ss, getTypeMappingInfo());
+        instream.close();
+ 
+        Object controlObj = getReadControlObject();
+        xmlToObjectTest(testObject, controlObj);                  
+    }     
+
+    public void testObjectToResultWithTypeMappingInfoXML() throws Exception {
+    
+        Object objectToWrite = getWriteControlObject();
+        XMLDescriptor desc = null;
+        if (objectToWrite instanceof XMLRoot) {            	
+            desc = (XMLDescriptor)((org.eclipse.persistence.jaxb.JAXBContext)jaxbContext).getXMLContext().getSession(0).getProject().getDescriptor(((XMLRoot)objectToWrite).getObject().getClass());
+        } else {
+            desc = (XMLDescriptor)((org.eclipse.persistence.jaxb.JAXBContext)jaxbContext).getXMLContext().getSession(0).getProject().getDescriptor(objectToWrite.getClass());
+        }
+
+        int sizeBefore = getNamespaceResolverSize(desc);
+        StringWriter stringWriter = new StringWriter();
+        StreamResult result = new StreamResult(stringWriter);
+	    jaxbMarshaller.setProperty(JAXBMarshaller.MEDIA_TYPE, "application/xml");
+
+        ((JAXBMarshaller)jaxbMarshaller).marshal(objectToWrite, result, getTypeMappingInfo());
+ 
+        int sizeAfter = getNamespaceResolverSize(desc);
+
+        assertEquals(sizeBefore, sizeAfter);
+        StringReader reader = new StringReader(stringWriter.toString());
+        InputSource inputSource = new InputSource(reader);
+        Document testDocument = parser.parse(inputSource);
+        stringWriter.close();
+        reader.close();
+        objectToXMLDocumentTest(testDocument);        
+    }       
     
     public void testObjectToXMLStreamWriterWithTypeMappingInfo() throws Exception {
         if(XML_OUTPUT_FACTORY != null) {

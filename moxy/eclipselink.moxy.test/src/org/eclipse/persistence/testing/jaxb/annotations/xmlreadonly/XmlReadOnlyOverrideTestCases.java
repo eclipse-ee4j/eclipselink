@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
 
+import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
@@ -35,7 +36,7 @@ public class XmlReadOnlyOverrideTestCases extends JAXBWithJSONTestCases {
         return emp;
     }
     
-    protected Map getProperties() throws Exception{
+    protected Map getProperties() {
         
         String bindings = 
             "<xml-bindings xmlns=\"http://www.eclipse.org/eclipselink/xsds/persistence/oxm\"> " +

@@ -25,11 +25,12 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
-import org.eclipse.persistence.testing.jaxb.typemappinginfo.TypeMappingInfoTestCases;
+import org.eclipse.persistence.testing.jaxb.typemappinginfo.TypeMappingInfoWithJSONTestCases;
 
-public class ClassLoaderTestCases extends TypeMappingInfoTestCases {
+public class ClassLoaderTestCases extends TypeMappingInfoWithJSONTestCases {
 
     protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/classloader/classloader.xml";
+    protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/classloader/classloader.json";
 
     public ClassLoaderTestCases(String name) throws Exception {
         super(name);
@@ -38,6 +39,7 @@ public class ClassLoaderTestCases extends TypeMappingInfoTestCases {
 
     public void init() throws Exception {
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         setupParser();
         setTypeMappingInfos(getTypeMappingInfos());
     }

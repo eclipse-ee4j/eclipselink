@@ -12,25 +12,21 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.jaxb.typemappinginfo;
 
-import java.awt.Image;
-import java.awt.image.BufferedImage;
 import java.io.InputStream;
-import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.XmlMimeType;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
 
-public class DefaultTargetNamespaceTestCases extends TypeMappingInfoTestCases{
+public class DefaultTargetNamespaceTestCases extends TypeMappingInfoWithJSONTestCases{
 
 	protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/customer_dtn.xml";
-	
+	protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/customer_dtn.json";	
 
 	public DefaultTargetNamespaceTestCases(String name) throws Exception {
 		super(name);
@@ -39,6 +35,7 @@ public class DefaultTargetNamespaceTestCases extends TypeMappingInfoTestCases{
 	
 	public void init() throws Exception {
 		setControlDocument(XML_RESOURCE);	
+		setControlJSON(JSON_RESOURCE);
 		setTypeMappingInfos(getTypeMappingInfos());	
 	}
 	
@@ -76,7 +73,7 @@ public class DefaultTargetNamespaceTestCases extends TypeMappingInfoTestCases{
 	protected String getNoXsiTypeControlResourceName() {
 		return XML_RESOURCE;
 	}
-    protected Map getProperties() throws Exception{
+	protected Map getProperties() {
     	HashMap props = new HashMap();
     	props.put(JAXBContextFactory.DEFAULT_TARGET_NAMESPACE_KEY, "overridden/namespace");
     	

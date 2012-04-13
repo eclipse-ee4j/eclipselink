@@ -23,7 +23,7 @@ public class AllTestCases extends JAXBWithJSONTestCases {
     }
 
     @Override
-    protected Map getProperties() throws Exception {
+    protected Map getProperties() {
         Map<String, Object> properties = new HashMap<String, Object>(1);
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, OXM_RESOURCE);
         return properties;

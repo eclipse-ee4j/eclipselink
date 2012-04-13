@@ -16,18 +16,20 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class XmlAttributeEmptyNamespaceTestCases extends JAXBTestCases{
+public class XmlAttributeEmptyNamespaceTestCases extends JAXBWithJSONTestCases{
 	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlattribute/empty_namespace.xml";
+	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlattribute/empty_namespace.json";
 	private final static String XSD_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlattribute/empty_namespace.xsd";
 	
 	public XmlAttributeEmptyNamespaceTestCases(String name) throws Exception {
 		super(name);
 		setControlDocument(XML_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
 		setClasses(new Class[]{EmptyNamespaceTestObject.class});
 	}
-
+	
 	protected Object getControlObject() {
 		EmptyNamespaceTestObject obj = new EmptyNamespaceTestObject();
 		obj.theTestString = "abc123\"&<";

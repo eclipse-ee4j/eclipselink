@@ -23,9 +23,10 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
 
-public class ConflictingQNamesTestCases extends TypeMappingInfoTestCases{
+public class ConflictingQNamesTestCases extends TypeMappingInfoWithJSONTestCases{
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/conflictingQNames.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/conflictingQNames.json";
 	public static Map<String, Integer> myMap = new HashMap<String, Integer>();
 	
 	public ConflictingQNamesTestCases(String name) throws Exception {
@@ -35,6 +36,7 @@ public class ConflictingQNamesTestCases extends TypeMappingInfoTestCases{
 	
 	public void init() throws Exception {
 		setControlDocument(XML_RESOURCE);	
+		setControlJSON(JSON_RESOURCE);
 		setTypeMappingInfos(getTypeMappingInfos());		
 	}
 	

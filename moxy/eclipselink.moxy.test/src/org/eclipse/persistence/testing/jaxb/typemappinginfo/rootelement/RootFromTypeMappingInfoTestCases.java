@@ -22,11 +22,12 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
-import org.eclipse.persistence.testing.jaxb.typemappinginfo.TypeMappingInfoTestCases;
+import org.eclipse.persistence.testing.jaxb.typemappinginfo.TypeMappingInfoWithJSONTestCases;
 
-public class RootFromTypeMappingInfoTestCases extends TypeMappingInfoTestCases {
+public class RootFromTypeMappingInfoTestCases extends TypeMappingInfoWithJSONTestCases {
 
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/rootelement/TypeMappingInfo.xml";
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/rootelement/TypeMappingInfo.json";
     private static final String XSD_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/rootelement/TypeMappingInfo.xsd";
 
     private static final String ADDRESS_NAMESPACE_URI = null;
@@ -38,6 +39,7 @@ public class RootFromTypeMappingInfoTestCases extends TypeMappingInfoTestCases {
     public RootFromTypeMappingInfoTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
 
         TypeMappingInfo[] typeMappingInfos = new TypeMappingInfo[1];
         TypeMappingInfo addressTypeMappingInfo = new TypeMappingInfo(); 

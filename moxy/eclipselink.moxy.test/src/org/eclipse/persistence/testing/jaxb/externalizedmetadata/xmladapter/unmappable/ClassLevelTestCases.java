@@ -15,7 +15,7 @@ import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.unma
 import org.w3c.dom.Document;
 
 public class ClassLevelTestCases extends JAXBWithJSONTestCases {
-    protected Map getProperties() throws Exception{
+	protected Map getProperties() {
 
         InputStream inStream1 = getClass().getClassLoader().getResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmladapter/unmappable/package1/no-adapter.xml");
         InputStream inStream2 = getClass().getClassLoader().getResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmladapter/unmappable/package2/class-adapter.xml");

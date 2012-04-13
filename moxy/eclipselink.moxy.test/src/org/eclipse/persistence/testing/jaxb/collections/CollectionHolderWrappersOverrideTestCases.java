@@ -56,8 +56,8 @@ public class CollectionHolderWrappersOverrideTestCases extends JAXBWithJSONTestC
     }
 
     @Override
-    protected Map getProperties() throws Exception {
-        InputStream inputStream = ClassLoader.getSystemResourceAsStream(BINDINGS);
+    protected Map getProperties() {
+    	InputStream inputStream = ClassLoader.getSystemResourceAsStream(BINDINGS);
         HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
         metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.collections", new StreamSource(inputStream));
         Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();

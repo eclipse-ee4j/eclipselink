@@ -29,7 +29,7 @@ import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlmimetype.MyAttachmentMarshaller;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlmimetype.MyAttachmentUnmarshaller;
 
-public class DuplicateListOfStringsTestCases extends TypeMappingInfoTestCases {
+public class DuplicateListOfStringsTestCases extends TypeMappingInfoWithJSONTestCases {
 	protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/duplicatelistofstrings.xml";
 		
 	@XmlList
@@ -115,5 +115,8 @@ public class DuplicateListOfStringsTestCases extends TypeMappingInfoTestCases {
 		return controlSchema;
 	}
 
+    //Not supported in JSON as there are xsi:type attributes written
+    public void testObjectToResultWithTypeMappingInfoJSON() throws Exception {}
+    public void testXMLToObjectFromSourceWithTypeMappingInfoJSON() throws Exception {}
 }
 

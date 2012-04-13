@@ -22,13 +22,15 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
 import org.eclipse.persistence.testing.jaxb.typemappinginfo.Employee;
-import org.eclipse.persistence.testing.jaxb.typemappinginfo.TypeMappingInfoTestCases;
+import org.eclipse.persistence.testing.jaxb.typemappinginfo.TypeMappingInfoWithJSONTestCases;
 
-public class ConflictingClassesTestCases extends TypeMappingInfoTestCases{
+public class ConflictingClassesTestCases extends TypeMappingInfoWithJSONTestCases{
 
 	protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/collisions/conflictingClasses.xml";
 	protected final static String XML_RESOURCE_NO_XSI_TYPE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/collisions/conflictingClassesNoXsiType.xml";
-    	
+	protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/collisions/conflictingClasses.json";
+	protected final static String JSON_RESOURCE_NO_XSI_TYPE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/collisions/conflictingClassesNoXsiType.json";
+	
 	public ConflictingClassesTestCases(String name) throws Exception {
 		super(name);
 		init();
@@ -37,6 +39,8 @@ public class ConflictingClassesTestCases extends TypeMappingInfoTestCases{
 	public void init() throws Exception {
 		setControlDocument(XML_RESOURCE);	
 		setWriteControlDocument(XML_RESOURCE_NO_XSI_TYPE);
+		setControlJSON(JSON_RESOURCE);
+		setWriteControlJSON(JSON_RESOURCE_NO_XSI_TYPE);
 		setTypeMappingInfos(getTypeMappingInfos());	
 	}
 	

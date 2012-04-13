@@ -16,7 +16,7 @@ import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.unma
 import org.w3c.dom.Document;
 
 public class PropertyLevelTestCases extends JAXBWithJSONTestCases {
-    protected Map getProperties() throws Exception{
+	protected Map getProperties() {
 
         InputStream inStream = getClass().getClassLoader().getResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmladapter/unmappable/package1/property-adapter.xml");
         Map<String, Source> metadata = new LinkedHashMap<String, Source>();

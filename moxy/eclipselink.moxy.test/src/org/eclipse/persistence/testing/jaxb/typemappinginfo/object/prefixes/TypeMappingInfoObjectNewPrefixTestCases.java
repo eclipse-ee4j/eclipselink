@@ -19,18 +19,31 @@ import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
+import org.eclipse.persistence.jaxb.JAXBMarshaller;
+import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
-import org.eclipse.persistence.testing.jaxb.typemappinginfo.TypeMappingInfoTestCases;
+import org.eclipse.persistence.oxm.XMLConstants;
+import org.eclipse.persistence.testing.jaxb.typemappinginfo.TypeMappingInfoWithJSONTestCases;
 
-public class TypeMappingInfoObjectNewPrefixTestCases extends TypeMappingInfoTestCases{
+public class TypeMappingInfoObjectNewPrefixTestCases extends TypeMappingInfoWithJSONTestCases{
 
 	protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/object/employeeNewPrefixes.xml";
+	protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/object/employeeNewPrefixes.json";
 	
 	public TypeMappingInfoObjectNewPrefixTestCases(String name) throws Exception {
 		super(name);
-		setControlDocument(XML_RESOURCE);	
-		setTypeMappingInfos(getTypeMappingInfos());	
+		setControlDocument(XML_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
+		
+		setTypeMappingInfos(getTypeMappingInfos());
+		Map<String, String> namespaces = new HashMap<String, String>();
+		namespaces.put("differentURI", "ns0");
+		namespaces.put("someuri", "ns1");
+		namespaces.put(XMLConstants.SCHEMA_INSTANCE_URL, "xsi");
+		jaxbMarshaller.setProperty(JAXBMarshaller.NAMESPACE_PREFIX_MAPPER, namespaces);
+		jaxbUnmarshaller.setProperty(JAXBUnmarshaller.JSON_NAMESPACE_PREFIX_MAPPER, namespaces);
+		
 	}
 
 	protected TypeMappingInfo[] getTypeMappingInfos()throws Exception {

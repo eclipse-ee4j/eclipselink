@@ -40,7 +40,7 @@ public class XMLTransformationNoArgCtorXMLBindingsTestCases extends JAXBWithJSON
         return emp;
     }
     
-    protected Map getProperties() throws Exception{
+    protected Map getProperties() {
 		
 	     Map overrides = new HashMap();				
 	        String overridesString =
