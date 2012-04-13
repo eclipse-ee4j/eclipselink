@@ -86,6 +86,7 @@ public class TypeMappingInfoTestSuite extends TestCase {
         suite.addTestSuite(TypeMappingInfoObjectNewPrefixTestCases.class);
         suite.addTestSuite(EmployeeNillableTestCases.class);
         suite.addTestSuite(PrimitiveIntTestCases.class);
+        suite.addTestSuite(UrlTestCases.class);
         return suite;
     }
 }
