@@ -420,10 +420,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
                 // The unit of works will have a copy or a new instance must be made
                 if (((UnitOfWorkImpl)mergeManager.getSession()).getLifecycle() == UnitOfWorkImpl.MergePending) {
                     // We are merging the unit of work into the original.
-                    CacheKey cacheKey = getObjectFromSharedCacheForMerge(mergeManager, targetSession, getId(), descriptor);
-                    if (cacheKey != null){
-                        attributeValue = cacheKey.getObject();
-                    }
+                    attributeValue = getObjectForMerge(mergeManager, targetSession, getId(), descriptor);
                     if (attributeValue == null){
                         attributeValue = ((UnitOfWorkImpl)mergeManager.getSession()).getOriginalVersionOfObjectOrNull(getUnitOfWorkClone(), this, descriptor, targetSession);
                     }
@@ -435,11 +432,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
                 }
             } else {
                 // It is not a unitOfWork so we must be merging into a distributed cache.
-                CacheKey cacheKey = getObjectFromSharedCacheForMerge(mergeManager, targetSession, getId(), descriptor);
-                this.activeCacheKey = cacheKey;
-                if (cacheKey != null){
-                    attributeValue = cacheKey.getObject();
-                }
+                attributeValue = getObjectForMerge(mergeManager, targetSession, getId(), descriptor);
             }
         
             if ((attributeValue == null) && (shouldRead)) {
@@ -462,9 +455,10 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
      * cache using a readlock.  If a readlock is unavailable then the merge manager will be 
      * transitioned to deferred locks and a deferred lock will be used.
      */
-    protected CacheKey getObjectFromSharedCacheForMerge(MergeManager mergeManager, AbstractSession session, Object primaryKey, ClassDescriptor descriptor){
+    protected Object getObjectForMerge(MergeManager mergeManager, AbstractSession session, Object primaryKey, ClassDescriptor descriptor) {
         Object domainObject = null;
         if (primaryKey == null) {
+            this.activeCacheKey = null;
             return null;
         }
         CacheKey cacheKey = session.getIdentityMapAccessorInstance().getCacheKeyForObject(primaryKey, descriptor.getJavaClass(), descriptor, true);
@@ -492,8 +486,15 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
                 }
                 cacheKey.releaseDeferredLock();
             }
+        } else {
+            domainObject = mergeManager.registerExistingObjectOfReadOnlyClassInNestedTransaction(getUnitOfWorkClone(), descriptor, session);
+            // There is no need to get the cache key in this case because UOW is performing
+            // a nested UOW merge, and no locking occurs.
         }
-        return cacheKey;
+        
+        // Set activeCacheKey.
+        this.activeCacheKey = cacheKey;
+        return domainObject;
     }
 
 

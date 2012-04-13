@@ -215,6 +215,8 @@ public class UnitOfWorkTestSuite extends TestSuite {
 
         //bug 4736360    
         addTest(new NestedUOWWithNewObjectRegisteredTwiceTest());
+        
+        addTest(new NestedUnitOfWorkReadOnlyClassTest());
     }
     
     /**

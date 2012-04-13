@@ -197,6 +197,12 @@ public class MergeManager {
             }
             if (original == null){
                 original = ((UnitOfWorkImpl) this.session).getOriginalVersionOfObjectOrNull(source, null, descriptor, targetSession);
+                if (original == source) {
+                    Object registeredObject = registerExistingObjectOfReadOnlyClassInNestedTransaction(source, descriptor, targetSession);
+                    if (registeredObject != null) {
+                        original = registeredObject;
+                    }
+                }
             }
             // If original does not exist then we must merge the entire object.
             if (original == null){
@@ -225,6 +231,22 @@ public class MergeManager {
         }
 
         throw ValidationException.invalidMergePolicy();
+    }
+    
+    /**
+     * INTERNAL:
+     * Used to register an existing object used in nested unit of work with 
+     * read-only class in root unit of work.
+     */
+    public Object registerExistingObjectOfReadOnlyClassInNestedTransaction(Object source, ClassDescriptor descriptor, AbstractSession targetSession) {
+        if (session.isUnitOfWork() && targetSession.isUnitOfWork()) {
+            UnitOfWorkImpl uow = (UnitOfWorkImpl) session;
+            if (uow.isNestedUnitOfWork && uow.isClassReadOnly(descriptor.getJavaClass(), descriptor)) {
+                return ((UnitOfWorkImpl)targetSession).registerExistingObject(source);
+            }
+        }
+        
+        return null;
     }
 
     /**

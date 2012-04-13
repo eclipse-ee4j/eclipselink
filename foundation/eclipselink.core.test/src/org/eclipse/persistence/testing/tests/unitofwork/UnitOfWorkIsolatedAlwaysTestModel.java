@@ -205,5 +205,7 @@ new UpdateDeepOwnershipTest((org.eclipse.persistence.testing.models.ownership.Ob
 
         //bug 4736360    
         addTest(new NestedUOWWithNewObjectRegisteredTwiceTest());
+        
+        addTest(new NestedUnitOfWorkReadOnlyClassTest());
     }
 }
