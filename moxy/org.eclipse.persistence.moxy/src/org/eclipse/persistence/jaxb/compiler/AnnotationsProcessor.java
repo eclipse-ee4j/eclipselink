@@ -1626,18 +1626,23 @@ public class AnnotationsProcessor {
             JavaClass superClass = cls.getSuperclass();
             if (null != superClass) {
                 TypeInfo superClassInfo = typeInfo.get(superClass.getQualifiedName());
+                ArrayList<Property> superClassProperties;
                 while (superClassInfo != null && superClassInfo.isTransient()) {
-                    if (info.getXmlAccessType() == XmlAccessType.FIELD) {                    	
-                        returnList.addAll(0, getFieldPropertiesForClass(superClass, superClassInfo, false));
+                    if (info.getXmlAccessType() == XmlAccessType.FIELD) {
+                        superClassProperties = getFieldPropertiesForClass(superClass, superClassInfo, false); 
                     } else if (info.getXmlAccessType() == XmlAccessType.PROPERTY) {
-                        returnList.addAll(0, getPropertyPropertiesForClass(superClass, superClassInfo, false));
+                        superClassProperties = getPropertyPropertiesForClass(superClass, superClassInfo, false);
                     } else if (info.getXmlAccessType() == XmlAccessType.PUBLIC_MEMBER) {
-                        returnList.addAll(0, getPublicMemberPropertiesForClass(superClass, superClassInfo));
+                        superClassProperties = getPublicMemberPropertiesForClass(superClass, superClassInfo);
                     } else {
-                        returnList.addAll(0, getNoAccessTypePropertiesForClass(superClass, superClassInfo));
+                        superClassProperties = getNoAccessTypePropertiesForClass(superClass, superClassInfo);
                     }
                     superClass = superClass.getSuperclass();
                     superClassInfo = typeInfo.get(superClass.getQualifiedName());
+                    for(Property next:superClassProperties) {
+                        next.setIsSuperClassProperty(true);
+                    }
+                    returnList.addAll(0, superClassProperties);
                 }
             }
         }

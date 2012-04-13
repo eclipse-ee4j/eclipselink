@@ -72,10 +72,7 @@ public class SchemaGenInheritanceTestCases extends TestCase {
             JAXBContext jaxbContext = JAXBContext.newInstance(TransientCar.class, Mazda.class);
         } catch(javax.xml.bind.JAXBException ex) {
             e = (JAXBException)ex.getCause();
-            assertTrue("Incorrect Exception thrown: " + ex.getMessage(), e.getErrorCode() == JAXBException.DUPLICATE_PROPERTY_NAME);
-        }
-        if(e == null) {
-            fail("Exception was not thrown as expected");
+            fail("Exception was thrown incorrectly.");
         }
     }
 
