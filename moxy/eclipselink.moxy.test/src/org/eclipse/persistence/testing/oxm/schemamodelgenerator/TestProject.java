@@ -174,6 +174,12 @@ public class TestProject extends Project {
         bytesMapping.setMimeType("text/plain");
         descriptor.addMapping(bytesMapping);
 
+        // create URL mapping
+        XMLDirectMapping urlMapping = new XMLDirectMapping();
+        urlMapping.setAttributeName("aUrl");
+        urlMapping.setXPath("aUrl/text()");
+        descriptor.addMapping(urlMapping);
+
         return descriptor;
     }
 

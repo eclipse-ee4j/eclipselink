@@ -12,6 +12,7 @@
 ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.schemamodelgenerator;
 
+import java.net.URL;
 import java.util.Collection;
 import java.util.List;
 import java.util.Vector;
@@ -29,6 +30,7 @@ public class Employee {
     public Collection<Object> choices;              // XMLChoiceCollectionMapping
     public DataHandler data;                        // XMLBinaryDataMapping
     public List<byte[]> bytes;                      // XMLBinaryDataCollectionMapping
-    
+    public URL aUrl;
+
     public Employee() {}
 }
