@@ -1910,6 +1910,8 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
         javaTypes.put(ClassConstants.DURATION, XMLConstants.DURATION_QNAME);
         javaTypes.put(XMLConstants.UUID, XMLConstants.STRING_QNAME);
         javaTypes.put(XMLConstants.URI, XMLConstants.STRING_QNAME);
+        javaTypes.put(ClassConstants.URL_Class, XMLConstants.ANY_URI_QNAME);
+
         return javaTypes;
     }
 

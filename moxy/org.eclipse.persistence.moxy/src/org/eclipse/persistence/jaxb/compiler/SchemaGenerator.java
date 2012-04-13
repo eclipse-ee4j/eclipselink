@@ -997,7 +997,7 @@ public class SchemaGenerator {
             }
             return getOrGeneratePrefixForNamespace(schemaType.getNamespaceURI(), theSchema) + COLON + schemaType.getLocalPart();
         }
-        return XMLConstants.SCHEMA_PREFIX + ":anySimpleType";
+        return XMLConstants.SCHEMA_PREFIX + XMLConstants.COLON + XMLConstants.ANY_SIMPLE_TYPE;
     }
     
     /**

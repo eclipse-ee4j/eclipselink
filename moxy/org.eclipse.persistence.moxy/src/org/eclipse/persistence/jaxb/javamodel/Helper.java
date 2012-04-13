@@ -85,6 +85,7 @@ public class Helper {
     public final static String DURATION = "javax.xml.datatype.Duration";
     public final static String XMLGREGORIANCALENDAR = "javax.xml.datatype.XMLGregorianCalendar";
     public final static String URI = "java.net.URI";
+    public final static String URL = "java.net.URL";
     protected final static String JAVA_PKG = "java.";
     protected final static String JAVAX_PKG = "javax.";
     protected final static String JAVAX_WS_PKG = "javax.xml.ws.";
@@ -146,6 +147,7 @@ public class Helper {
         javaTypes.put(DURATION, XMLConstants.DURATION_QNAME);
         javaTypes.put(UUID, XMLConstants.STRING_QNAME);
         javaTypes.put(URI, XMLConstants.STRING_QNAME);
+        javaTypes.put(URL, XMLConstants.ANY_URI_QNAME);
         return javaTypes;
     }
     
