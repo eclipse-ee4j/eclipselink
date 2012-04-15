@@ -194,6 +194,7 @@ public abstract class AbstractEncapsulatedExpression extends AbstractExpression 
 		setText(identifier);
 
 		int count = wordParser.skipLeadingWhitespace();
+		int whitespaceAfterLeftParenthesis = 0;
 
 		// Parse '('
 		hasLeftParenthesis = wordParser.startsWith(LEFT_PARENTHESIS);
@@ -201,10 +202,11 @@ public abstract class AbstractEncapsulatedExpression extends AbstractExpression 
 		if (hasLeftParenthesis) {
 			wordParser.moveForward(1);
 			count = wordParser.skipLeadingWhitespace();
+			whitespaceAfterLeftParenthesis = count;
 		}
 
 		// Parse the expression
-		parseEncapsulatedExpression(wordParser, tolerant);
+		parseEncapsulatedExpression(wordParser, whitespaceAfterLeftParenthesis, tolerant);
 
 		if (hasEncapsulatedExpression()) {
 			// When having incomplete query of this form: ABS 4 + 5),
@@ -214,13 +216,16 @@ public abstract class AbstractEncapsulatedExpression extends AbstractExpression 
 		}
 
 		// Parse ')'
-		hasRightParenthesis = wordParser.startsWith(RIGHT_PARENTHESIS);
+		if (shouldParseRightParenthesis(wordParser, tolerant)) {
 
-		if (hasRightParenthesis) {
-			wordParser.moveForward(1);
-		}
-		else {
-			wordParser.moveBackward(count);
+			hasRightParenthesis = wordParser.startsWith(RIGHT_PARENTHESIS);
+
+			if (hasRightParenthesis) {
+				wordParser.moveForward(1);
+			}
+			else {
+				wordParser.moveBackward(count);
+			}
 		}
 	}
 
@@ -229,10 +234,13 @@ public abstract class AbstractEncapsulatedExpression extends AbstractExpression 
 	 * given {@link WordParser}.
 	 *
 	 * @param wordParser The text to parse based on the current position of the cursor
+	 * @param whitespaceCount The number of whitespace characters that were parsed after '('
 	 * @param tolerant Determines whether the parsing system should be tolerant, meaning if it should
 	 * try to parse invalid or incomplete queries
 	 */
-	protected abstract void parseEncapsulatedExpression(WordParser wordParser, boolean tolerant);
+	protected abstract void parseEncapsulatedExpression(WordParser wordParser,
+	                                                    int whitespaceCount,
+	                                                    boolean tolerant);
 
 	/**
 	 * Parses the identifier of this expression.
@@ -241,6 +249,22 @@ public abstract class AbstractEncapsulatedExpression extends AbstractExpression 
 	 * @return The identifier for this expression
 	 */
 	protected abstract String parseIdentifier(WordParser wordParser);
+
+	/**
+	 * Determines whether the right parenthesis should be parsed or not by this expression. There is
+	 * a possible case where this expression should have optional left and right parenthesis. If
+	 * there is no left parenthesis, then it would most likely mean the right parenthesis does not
+	 * belong to this expression.
+	 *
+	 * @param wordParser The text to parse based on the current position of the cursor
+	 * @param tolerant Determines whether the parsing system should be tolerant, meaning if it should
+	 * try to parse invalid or incomplete queries
+	 * @return <code>true</code> if the right parenthesis should be owned by this expression if it
+	 * is the next character to scan; <code>false</code> otherwise
+	 */
+	protected boolean shouldParseRightParenthesis(WordParser wordParser, boolean tolerant) {
+		return true;
+	}
 
 	/**
 	 * {@inheritDoc}

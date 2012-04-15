@@ -15,8 +15,13 @@ package org.eclipse.persistence.jpa.jpql.parser;
 
 /**
  * The query BNF for a range variable declaration expression.
- *
- * <div nowrap><b>BNF:</b> <code>range_variable_declaration ::= entity_name [AS] identification_variable</code><p>
+ * <p>
+ * JPA:
+ * <div nowrap><b>BNF:</b> <code>range_variable_declaration ::= entity_name [AS] identification_variable</code>
+ * <p>
+ * EclipseLink 2.4:
+ * <div nowrap><b>BNF:</b> <code>range_variable_declaration ::= { range_variable_declaration | (subquery) } [AS] identification_variable</code>
+ * <p>
  *
  * @version 2.4
  * @since 2.3

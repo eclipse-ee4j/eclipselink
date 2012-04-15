@@ -566,8 +566,7 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 		@Override
 		public void visit(SubExpression expression) {
 			if (expression.hasExpression()) {
-				AbstractExpression childExpression = (AbstractExpression) expression.getExpression();
-				validate(childExpression.getQueryBNF());
+				expression.getExpression().accept(this);
 			}
 		}
 

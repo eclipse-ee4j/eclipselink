@@ -60,6 +60,7 @@ import org.eclipse.persistence.jpa.jpql.parser.ComparisonExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConcatExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConstructorExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CountFunction;
+import org.eclipse.persistence.jpa.jpql.parser.DatabaseType;
 import org.eclipse.persistence.jpa.jpql.parser.DateTime;
 import org.eclipse.persistence.jpa.jpql.parser.DeleteClause;
 import org.eclipse.persistence.jpa.jpql.parser.DeleteStatement;
@@ -636,6 +637,22 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	public void visit(CastExpression expression) {
+
+		// First create the expression from the encapsulated expression
+		expression.getExpression().accept(this);
+
+		// Now create the CAST expression
+		org.eclipse.persistence.jpa.jpql.parser.Expression databaseType = expression.getDatabaseType();
+		queryExpression = queryExpression.cast(databaseType.toParsedText());
+
+		// Set the expression type
+		type[0] = Object.class;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public void visit(CoalesceExpression expression) {
 
 		List<Expression> expressions = new ArrayList<Expression>();
@@ -732,8 +749,10 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 		if (comparaison == ComparisonExpression.EQUAL) {
 			queryExpression = leftExpression.equal(rightExpression);
 		}
-		// <>
-		else if (comparaison == ComparisonExpression.DIFFERENT) {
+		// <>, !=
+		else if (comparaison == ComparisonExpression.DIFFERENT ||
+		         comparaison == ComparisonExpression.NOT_EQUAL) {
+
 			queryExpression = leftExpression.notEqual(rightExpression);
 		}
 		// <
@@ -809,6 +828,13 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 
 		// Set the expression type
 		type[0] = Long.class;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(DatabaseType expression) {
+		// Nothing to do
 	}
 
 	/**
@@ -986,6 +1012,21 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	public void visit(ExtractExpression expression) {
+
+		// First create the expression from the encapsulated expression
+		expression.getExpression().accept(this);
+
+		// Now create the EXTRACT expression
+		queryExpression = queryExpression.extract(expression.getPart());
+
+		// Set the expression type
+		type[0] = Object.class;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public void visit(FromClause expression) {
 		// Nothing to do
 	}
@@ -1138,7 +1179,6 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 					if (queryExpression == null) {
 						declaration.getBaseExpression().accept(this);
 						queryContext.addQueryExpression(variableName, queryExpression);
-//						queryContext.addUsedIdentificationVariable(variableName);
 					}
 
 					// Retrieve the Entity type
@@ -1154,8 +1194,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	 * {@inheritDoc}
 	 */
 	public void visit(IdentificationVariableDeclaration expression) {
-		// Return the expression for the identification variable.
-	        (((RangeVariableDeclaration)expression.getRangeVariableDeclaration()).getIdentificationVariable()).accept(this);
+		// Nothing to do
 	}
 
 	/**
@@ -1569,7 +1608,23 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	 * {@inheritDoc}
 	 */
 	public void visit(RangeVariableDeclaration expression) {
-		expression.getAbstractSchemaName().accept(this);
+
+		IdentificationVariable variable = (IdentificationVariable) expression.getIdentificationVariable();
+		Declaration declaration = queryContext.getDeclaration(variable.getVariableName());
+
+		// If the Declaration is RangeDeclaration, then retrieve its Descriptor directly,
+		// this will support two cases automatically, the "root" object is
+		// 1) An abstract schema name (entity name) -> parsed as AbstractSchemaName
+		// 2) A fully qualified class name -> parsed as a CollectionValuedPathExpression
+		//    that cannot be visited
+		if (declaration.isRange()) {
+			type[0] = declaration.getDescriptor().getJavaClass();
+			queryExpression = new ExpressionBuilder(type[0]);
+		}
+		// This should be a derived path (CollectionValuedPathExpression)
+		else {
+			expression.getAbstractSchemaName().accept(this);
+		}
 	}
 
 	/**
@@ -1882,36 +1937,6 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 		// Set the expression type
 		type[0] = String.class;
 	}
-
-        /**
-         * {@inheritDoc}
-         */
-        public void visit(CastExpression expression) {
-
-                // First create the expression from the encapsulated expression
-                expression.getExpression().accept(this);
-
-                // Now create the CAST expression
-                queryExpression = queryExpression.cast(expression.getDatabaseType());
-
-                // Set the expression type
-                type[0] = Object.class;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public void visit(ExtractExpression expression) {
-
-                // First create the expression from the encapsulated expression
-                expression.getExpression().accept(this);
-
-                // Now create the EXTRACT expression
-                queryExpression = queryExpression.extract(expression.getPart());
-
-                // Set the expression type
-                type[0] = Object.class;
-        }
 
 	/**
 	 * {@inheritDoc}

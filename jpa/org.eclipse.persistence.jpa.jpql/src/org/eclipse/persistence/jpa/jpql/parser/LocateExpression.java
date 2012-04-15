@@ -21,10 +21,15 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * integer. The first argument is the string to be located; the second argument is the string to be
  * searched; the optional third argument is an integer that represents the string position at which
  * the search is started (by default, the beginning of the string to be searched). The first
- * position in a string is denoted by 1. If the string is not found, 0 is returned. The <b>LENGTH</b>
+ * position in a string is denoted by 1. If the string is not found, 0 is returned. The <b>LOCATE</b>
  * function returns the length of the string in characters as an integer.
  * <p>
- * <div nowrap><b>BNF:</b> <code>expression ::= LOCATE(string_primary, string_primary [, simple_arithmetic_expression])</code><p>
+ * JPA 1.0, 2.0:
+ * <div nowrap><b>BNF:</b> <code>expression ::= LOCATE(string_primary, string_primary [, simple_arithmetic_expression])</code>
+ * <p>
+ * JPA 2.1:
+ * <div nowrap><b>BNF:</b> <code>expression ::= LOCATE(string_expression, string_expression [, arithmetic_expression])</code>
+ * <p>
  *
  * @version 2.4
  * @since 2.3

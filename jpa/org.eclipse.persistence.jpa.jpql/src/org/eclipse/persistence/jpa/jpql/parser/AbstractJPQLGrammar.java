@@ -50,6 +50,17 @@ public abstract class AbstractJPQLGrammar implements JPQLGrammar {
 	}
 
 	/**
+	 * Creates a new <code>AbstractJPQLGrammar</code>.
+	 *
+	 * @param jpqlGrammar The {@link JPQLGrammar} to extend with the content of this one without
+	 * instantiating the base {@link JPQLGrammar}
+	 */
+	protected AbstractJPQLGrammar(AbstractJPQLGrammar jpqlGrammar) {
+		super();
+		initialize(jpqlGrammar);
+	}
+
+	/**
 	 * Adds to the given query BNF a child BNF.
 	 *
 	 * @param queryBNFId The unique identifier of the parent BNF to add a child BNF
@@ -155,6 +166,23 @@ public abstract class AbstractJPQLGrammar implements JPQLGrammar {
 	}
 
 	/**
+	 * This method simply retrieves the {@link ExpressionRegistry} from the given {@link JPQLGrammar}
+	 * and extend its grammar by calling the initialize methods from this one.
+	 *
+	 * @param jpqlGrammar The {@link JPQLGrammar} to extend with the content of this one without
+	 * instantiating the base {@link JPQLGrammar}
+	 */
+	private void initialize(AbstractJPQLGrammar jpqlGrammar) {
+
+		registry = jpqlGrammar.registry;
+
+		// Add the support provided by this grammar
+		initializeIdentifiers();
+		initializeBNFs();
+		initializeExpressionFactories();
+	}
+
+	/**
 	 * Registers the JPQL query BNFs defining the JPQL grammar.
 	 */
 	protected abstract void initializeBNFs();
@@ -220,6 +248,10 @@ public abstract class AbstractJPQLGrammar implements JPQLGrammar {
 	 */
 	public void setFallbackBNFId(String queryBNFId, String fallbackBNFId) {
 		registry.setFallbackBNFId(queryBNFId, fallbackBNFId);
+	}
+
+	public void setHandleSubExpression(String queryBNFId, boolean handleSubExpression) {
+		registry.setHandleSubExpression(queryBNFId, handleSubExpression);
 	}
 
 	/**

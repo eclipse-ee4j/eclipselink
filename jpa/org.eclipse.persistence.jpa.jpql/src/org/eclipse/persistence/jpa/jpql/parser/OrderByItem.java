@@ -45,16 +45,21 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * the keyword <b>NULLS LAST</b> specifies that nulls last ordering be used. Ascending ordering is the
  * default.
  * <p>
- * JPA 1.0: <div nowrap><b>BNF:</b> <code>orderby_item ::= state_field_path_expression [ ASC | DESC ]</code>
+ * JPA 1.0:
+ * <div nowrap><b>BNF:</b> <code>orderby_item ::= state_field_path_expression [ ASC | DESC ]</code>
  * <p>
- * JPA 2.0 <div nowrap><b>BNF:</b> <code>orderby_item ::= state_field_path_expression | result_variable [ ASC | DESC ]</code><p>
+ * JPA 2.0
+ * <div nowrap><b>BNF:</b> <code>orderby_item ::= state_field_path_expression | result_variable [ ASC | DESC ]</code>
  * <p>
- * EclipseLink 2.4 <div nowrap><b>BNF:</b> <code>orderby_item ::= state_field_path_expression | result_variable [ ASC | DESC ] [ NULLS FIRST | NULLS LAST ]</code><p>
+ * EclipseLink 2.4:
+ * <div nowrap><b>BNF:</b> <code>orderby_item ::= state_field_path_expression | result_variable [ ASC | DESC ] [ NULLS FIRST | NULLS LAST ]</code>
+ * <p>
  *
  * @version 2.4
  * @since 2.3
  * @author Pascal Filion
  */
+@SuppressWarnings("nls")
 public final class OrderByItem extends AbstractExpression {
 
 	/**
@@ -62,10 +67,38 @@ public final class OrderByItem extends AbstractExpression {
 	 */
 	private AbstractExpression expression;
 
+	private boolean hasNullsOnly;
+
+
+	public boolean hasNullsOnly() {
+		return hasNullsOnly;
+	}
+
 	/**
 	 * Determines whether a whitespace was parsed after the order by expression.
 	 */
 	private boolean hasSpaceAfterExpression;
+
+	/**
+	 *
+	 */
+	private boolean hasSpaceAfterNulls;
+
+	/**
+	 * Determines whether a whitespace was parsed after the ordering.
+	 */
+	private boolean hasSpaceAfterOrdering;
+
+	/**
+	 * The keyword <b>NULLS FIRST</b> specifies ordering null first; the keyword <b>NULLS LAST</b>
+	 * specifies ordering nulls last.
+	 */
+	private NullOrdering nullOrdering;
+
+	/**
+	 * The actual null ordering identifier found in the string representation of the JPQL query.
+	 */
+	private String nullOrderingIdentifier;
 
 	/**
 	 * The keyword <b>ASC</b> specifies that ascending ordering be used; the keyword <b>DESC</b>
@@ -73,21 +106,10 @@ public final class OrderByItem extends AbstractExpression {
 	 */
 	private Ordering ordering;
 
-        /**
-         * The keyword <b>NULLS FIRST</b> specifies ordering null first; the keyword <b>NULLS LAST</b>
-         * specifies ordering nulls last.
-         */
-        private NullOrdering nullOrdering;
-
 	/**
 	 * The actual ordering identifier found in the string representation of the JPQL query.
 	 */
 	private String orderingIdentifier;
-
-        /**
-         * The actual null ordering identifier found in the string representation of the JPQL query.
-         */
-        private String nullOrderingIdentifier;
 
 	/**
 	 * Creates a new <code>OrderByItem</code>.
@@ -140,10 +162,25 @@ public final class OrderByItem extends AbstractExpression {
 			children.add(buildStringExpression(ordering.toString()));
 		}
 
-                // Null ordering type
-                if (nullOrdering != NullOrdering.DEFAULT) {
-                        children.add(buildStringExpression(nullOrdering.toString()));
-                }
+		if (hasSpaceAfterOrdering) {
+			children.add(buildStringExpression(SPACE));
+		}
+
+		// Null ordering type
+		if (nullOrdering != NullOrdering.DEFAULT) {
+			children.add(buildStringExpression(nullOrdering.toString()));
+		}
+	}
+
+	/**
+	 * Returns the actual <code>null</code> ordering identifier found in the string representation of
+	 * the JPQL query, which has the actual case that was used.
+	 *
+	 * @return The <code>null</code> ordering identifier that was actually parsed, if one was present,
+	 * otherwise an empty string is returned
+	 */
+	public String getActualNullOrdering() {
+		return (nullOrderingIdentifier != null) ? nullOrderingIdentifier : ExpressionTools.EMPTY_STRING;
 	}
 
 	/**
@@ -170,6 +207,16 @@ public final class OrderByItem extends AbstractExpression {
 	}
 
 	/**
+	 * Returns the enum constant representing the null ordering type.
+	 *
+	 * @return The constant representing the null ordering, in the case the ordering was not parsed,
+	 * then {@link NullOrdering#DEFAULT} is returned
+	 */
+	public NullOrdering getNullOrdering() {
+		return nullOrdering;
+	}
+
+	/**
 	 * Returns the enum constant representing the ordering type.
 	 *
 	 * @return The constant representing the ordering, in the case the ordering was not parsed, then
@@ -178,16 +225,6 @@ public final class OrderByItem extends AbstractExpression {
 	public Ordering getOrdering() {
 		return ordering;
 	}
-
-        /**
-         * Returns the enum constant representing the null ordering type.
-         *
-         * @return The constant representing the null ordering, in the case the ordering was not parsed, then
-         * {@link NullOrdering#DEFAULT} is returned
-         */
-        public NullOrdering getNullOrdering() {
-                return nullOrdering;
-        }
 
 	/**
 	 * {@inheritDoc}
@@ -218,6 +255,29 @@ public final class OrderByItem extends AbstractExpression {
 	}
 
 	/**
+	 * Determines whether a whitespace was parsed after the <code>NULLS</code> identifier. If the
+	 * composite identifier was fully parsed - <code>NULLS FIRST</code> or <code>NULLS LAST</code> -
+	 * then this is always <code>true</code>, but if only <code>NULLS</code> was parsed, then this
+	 * can be useful to determine if there was a space after.
+	 *
+	 * @return <code>true</code> if there was a whitespace after the <code>NULLS</code> identifier;
+	 * <code>false</code> otherwise
+	 */
+	public boolean hasSpaceAfterNulls() {
+		return hasSpaceAfterNulls;
+	}
+
+	/**
+	 * Determines whether a whitespace was parsed after the ordering.
+	 *
+	 * @return <code>true</code> if there was a whitespace after the ordering;
+	 * <code>false</code> otherwise
+	 */
+	public boolean hasSpaceAfterOrdering() {
+		return hasSpaceAfterOrdering;
+	}
+
+	/**
 	 * Determines whether the ordering was specified as being ascendant.
 	 *
 	 * @return <code>true</code> if <b>ASC</b> was parsed; <code>false</code> otherwise
@@ -245,12 +305,31 @@ public final class OrderByItem extends AbstractExpression {
 	}
 
 	/**
+	 * Determines whether the ordering was specified as being nulls first.
+	 *
+	 * @return <code>true</code> if <b>NULLS FIRST</b> was parsed; <code>false</code> otherwise
+	 */
+	public boolean isNullsFirst() {
+		return nullOrdering == NullOrdering.NULLS_FIRST;
+	}
+
+	/**
+	 * Determines whether the ordering was specified as being nulls first.
+	 *
+	 * @return <code>true</code> if <b>NULLS LAST</b> was parsed; <code>false</code> otherwise
+	 */
+	public boolean isNullsLast() {
+		return nullOrdering == NullOrdering.NULLS_LAST;
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
-		return word.equalsIgnoreCase(ASC)  ||
-		       word.equalsIgnoreCase(DESC) ||
+		return word.equalsIgnoreCase(ASC)     ||
+		       word.equalsIgnoreCase(DESC)    ||
+		       word.equalsIgnoreCase("NULLS") ||
 		       super.isParsingComplete(wordParser, word, expression);
 	}
 
@@ -265,6 +344,7 @@ public final class OrderByItem extends AbstractExpression {
 
 		hasSpaceAfterExpression = wordParser.skipLeadingWhitespace() > 0;
 
+		// Parse ASC/DESC
 		if (!wordParser.isTail()) {
 			String word = wordParser.word();
 
@@ -281,23 +361,42 @@ public final class OrderByItem extends AbstractExpression {
 			else {
 				ordering = Ordering.DEFAULT;
 			}
-	                if (!wordParser.isTail()) {
-	                        wordParser.skipLeadingWhitespace();
-	                        if (wordParser.startsWithIgnoreCase(NULLS_FIRST)) {
-	                                nullOrdering = NullOrdering.NULLS_FIRST;
-	                                nullOrderingIdentifier = nullOrderingIdentifier + wordParser.moveForward(NULLS_FIRST.length());
-	                        } else if (wordParser.startsWithIgnoreCase(NULLS_LAST)) {
-	                                nullOrdering = NullOrdering.NULLS_LAST;
-	                                nullOrderingIdentifier = nullOrderingIdentifier + wordParser.moveForward(NULLS_LAST.length());
-                                } else {
-	                                nullOrdering = NullOrdering.DEFAULT;
-	                        }
-	                } else {
-	                        nullOrdering = NullOrdering.DEFAULT;
-	                }
-		} else {
+		}
+		else {
 			ordering = Ordering.DEFAULT;
-                        nullOrdering = NullOrdering.DEFAULT;
+		}
+
+		// Parse NULLS FIRST/NULLS LAST
+		if (!wordParser.isTail()) {
+			int count = wordParser.skipLeadingWhitespace();
+			hasSpaceAfterOrdering = (count > 0);
+
+			// Parse 'NULLS FIRT'
+			if (wordParser.startsWithIgnoreCase(NULLS_FIRST)) {
+				hasSpaceAfterNulls = true;
+				nullOrdering = NullOrdering.NULLS_FIRST;
+				nullOrderingIdentifier = wordParser.moveForward(NULLS_FIRST.length());
+			}
+			// Parse 'NULLS LAST'
+			else if (wordParser.startsWithIgnoreCase(NULLS_LAST)) {
+				hasSpaceAfterNulls = true;
+				nullOrdering = NullOrdering.NULLS_LAST;
+				nullOrderingIdentifier = wordParser.moveForward(NULLS_LAST.length());
+			}
+			// Parse 'NULLS' (incomplete)
+			else if (wordParser.startsWithIdentifier("NULLS")) {
+				hasNullsOnly = true;
+				nullOrderingIdentifier = wordParser.moveForward("NULLS");
+				hasSpaceAfterNulls = wordParser.skipLeadingWhitespace() > 0;
+			}
+			else {
+				nullOrdering = NullOrdering.DEFAULT;
+				wordParser.moveBackward(count);
+				hasSpaceAfterOrdering = false;
+			}
+		}
+		else {
+			nullOrdering = NullOrdering.DEFAULT;
 		}
 	}
 
@@ -321,10 +420,75 @@ public final class OrderByItem extends AbstractExpression {
 			writer.append(actual ? orderingIdentifier : ordering.name());
 		}
 
-                // Null ordering
-                if (nullOrdering != NullOrdering.DEFAULT) {
-                        writer.append(actual ? nullOrderingIdentifier : nullOrdering.name());
-                }
+		if (hasSpaceAfterOrdering) {
+			writer.append(SPACE);
+		}
+
+		// Null ordering
+		if (nullOrdering != NullOrdering.DEFAULT) {
+			if (hasNullsOnly) {
+				writer.append(actual? nullOrderingIdentifier : "NULLS");
+				if (hasSpaceAfterNulls) {
+					writer.append(SPACE);
+				}
+			}
+			else {
+				writer.append(actual? nullOrderingIdentifier :  nullOrdering.getIdentifier());
+			}
+		}
+	}
+
+	/**
+	 * This enumeration lists all the possible choices for ordering nulls in an item.
+	 */
+	public enum NullOrdering {
+
+		/**
+		 * The constant used when the ordering is not specify.
+		 */
+		DEFAULT(ExpressionTools.EMPTY_STRING),
+
+		/**
+		 * The constant for 'NULLS FIRST', which tells to order nulls first.
+		 */
+		NULLS_FIRST(Expression.NULLS_FIRST),
+
+		/**
+		 * The constant for 'NULLS LAST', which tells to order nulls last.
+		 */
+
+		NULLS_LAST(Expression.NULLS_LAST);
+
+		/**
+		 * The actual composite identifier.
+		 */
+		private String identifier;
+
+		/**
+		 * Creates a new <code>NullOrdering</code>.
+		 *
+		 * @param identifier The actual composite identifier
+		 */
+		private NullOrdering(String identifier) {
+			this.identifier = identifier;
+		}
+
+		/**
+		 * Returns the actual JPQL composite identifiers identified by this enum constant.
+		 *
+		 * @return The composite identifiers
+		 */
+		public String getIdentifier() {
+			return identifier;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public String toString() {
+			return identifier;
+		}
 	}
 
 	/**
@@ -347,25 +511,4 @@ public final class OrderByItem extends AbstractExpression {
 		 */
 		DESC
 	}
-
-        /**
-         * This enumeration lists all the possible choices for ordering nulls in an item.
-         */
-        public enum NullOrdering {
-
-                /**
-                 * The constant for 'NULLS FIRST', which tells to order nulls first.
-                 */
-                NULLS_FIRST,
-
-                /**
-                 * The constant used when the ordering is not specify.
-                 */
-                DEFAULT,
-
-                /**
-                 * The constant for 'NULLS LAST', which tells to order nulls last.
-                 */
-                NULLS_LAST
-        }
 }

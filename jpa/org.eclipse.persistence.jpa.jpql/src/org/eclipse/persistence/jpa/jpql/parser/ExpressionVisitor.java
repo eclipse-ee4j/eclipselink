@@ -35,20 +35,6 @@ public interface ExpressionVisitor {
 	 */
 	void visit(AbsExpression expression);
 
-        /**
-         * Visits the {@link CastExpression} expression.
-         *
-         * @param expression The {@link Expression} to visit
-         */
-        void visit(CastExpression expression);
-
-        /**
-         * Visits the {@link ExtractExpression} expression.
-         *
-         * @param expression The {@link Expression} to visit
-         */
-        void visit(ExtractExpression expression);
-
 	/**
 	 * Visits the {@link AbstractSchemaName} expression.
 	 *
@@ -577,56 +563,56 @@ public interface ExpressionVisitor {
 	/**
 	 * Visits the {@link UnknownExpression} expression.
 	 *
-	 * @param expression The {@link Expression} to visit
+	 * @param expression The {@link UnknownExpression} to visit
 	 */
 	void visit(UnknownExpression expression);
 
 	/**
 	 * Visits the {@link UpdateClause} expression.
 	 *
-	 * @param expression The {@link Expression} to visit
+	 * @param expression The {@link UpdateClause} to visit
 	 */
 	void visit(UpdateClause expression);
 
 	/**
 	 * Visits the {@link UpdateItem} expression.
 	 *
-	 * @param expression The {@link Expression} to visit
+	 * @param expression The {@link UpdateItem} to visit
 	 */
 	void visit(UpdateItem expression);
 
 	/**
 	 * Visits the {@link UpdateStatement} expression.
 	 *
-	 * @param expression The {@link Expression} to visit
+	 * @param expression The {@link UpdateStatement} to visit
 	 */
 	void visit(UpdateStatement expression);
 
 	/**
 	 * Visits the {@link UpperExpression} expression.
 	 *
-	 * @param expression The {@link Expression} to visit
+	 * @param expression The {@link UpperExpression} to visit
 	 */
 	void visit(UpperExpression expression);
 
 	/**
 	 * Visits the {@link ValueExpression} expression.
 	 *
-	 * @param expression The {@link Expression} to visit
+	 * @param expression The {@link ValueExpression} to visit
 	 */
 	void visit(ValueExpression expression);
 
 	/**
 	 * Visits the {@link WhenClause} expression.
 	 *
-	 * @param expression The {@link Expression} to visit
+	 * @param expression The {@link WhenClause} to visit
 	 */
 	void visit(WhenClause expression);
 
 	/**
 	 * Visits the {@link WhereClause} expression.
 	 *
-	 * @param expression The {@link Expression} to visit
+	 * @param expression The {@link WhereClause} to visit
 	 */
 	void visit(WhereClause expression);
 }

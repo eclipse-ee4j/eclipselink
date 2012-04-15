@@ -67,6 +67,13 @@ public final class PreLiteralExpressionFactory extends ExpressionFactory {
 		}
 
 		ExpressionFactory factory = registry.getExpressionFactory(LiteralExpressionFactory.ID);
-		return factory.buildExpression(parent, wordParser, word, queryBNF, expression, tolerant);
+
+		try {
+			factory.setFallBackExpressionFactory(getFallBackExpressionFactoryId());
+			return factory.buildExpression(parent, wordParser, word, queryBNF, expression, tolerant);
+		}
+		finally {
+			setFallBackExpressionFactory(null);
+		}
 	}
 }

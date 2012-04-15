@@ -20,13 +20,12 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * @since 2.3
  * @author Pascal Filion
  */
-@SuppressWarnings("nls")
 public final class ResultVariableBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
-	public static final String ID = "result_variable";
+	public static final String ID = InternalSelectExpressionBNF.ID;
 
 	/**
 	 * Creates a new <code>ResultVariableBNF</code>.
@@ -40,7 +39,16 @@ public final class ResultVariableBNF extends JPQLQueryBNF {
 	 */
 	@Override
 	protected void initialize() {
+
 		super.initialize();
-		registerExpressionFactory(ResultVariableFactory.ID);
+
+		setFallbackBNFId(ID);
+		setFallbackExpressionFactoryId(ResultVariableFactory.ID);
+		registerChild(SelectExpressionBNF.ID);
+
+		// The ResultVariable's BNF is this one so it needs to be registered as a child of itself.
+		// This is required for validation to work properly. Basically, when checking if the select
+		// expression is valid, it checks its BNF with the non-compound children of this one
+		registerChild(ResultVariableBNF.ID);
 	}
 }

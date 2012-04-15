@@ -15,9 +15,20 @@ package org.eclipse.persistence.jpa.jpql.parser;
 
 /**
  * The query BNF for an aggregate expression.
- *
+ * <p>
+ * JPA 1.0, 2.0:
  * <div nowrap><b>BNF:</b> <code>aggregate_expression ::= { AVG | MAX | MIN | SUM } ([DISTINCT] state_field_path_expression) |
- * COUNT ([DISTINCT] identification_variable | state_field_path_expression | single_valued_object_path_expression)</code><p>
+ *                                                        COUNT ([DISTINCT] identification_variable |
+ *                                                                          state_field_path_expression |
+ *                                                                          single_valued_object_path_expression)</code>
+ * <p>
+ * JPA 2.1:
+ * <div nowrap><b>BNF:</b> <code>aggregate_expression ::= { AVG | MAX | MIN | SUM } ([DISTINCT] state_field_path_expression) |
+ *                                                        COUNT ([DISTINCT] identification_variable |
+ *                                                                          state_field_path_expression |
+ *                                                                          single_valued_object_path_expression) |
+ *                                                        function_invocation</code>
+ * <p>
  *
  * @version 2.4
  * @since 2.3

@@ -330,6 +330,27 @@ public final class EclipseLinkSemanticValidatorHelper implements SemanticValidat
 	/**
 	 * {@inheritDoc}
 	 */
+	public boolean isIdentificationVariableValidInComparison(IdentificationVariable expression) {
+
+		Declaration declaration = queryContext.getDeclaration(expression.getVariableName());
+
+		if (declaration == null) {
+			return false;
+		}
+
+		DatabaseMapping mapping = declaration.getMapping();
+
+		if (mapping == null) {
+			return false;
+		}
+
+		// Direct collection is not an object so it's valid
+		return mapping.isDirectCollectionMapping();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public boolean isManagedTypeResolvable(Object managedType) {
 		return managedType != null;
 	}
@@ -363,13 +384,22 @@ public final class EclipseLinkSemanticValidatorHelper implements SemanticValidat
 		}
 
 		if (mapping instanceof DatabaseMapping) {
-		        DatabaseMapping databaseMapping = (DatabaseMapping) mapping;
-			return databaseMapping.isForeignReferenceMapping()
-			        || databaseMapping.isAbstractCompositeCollectionMapping()
-                                || databaseMapping.isAbstractCompositeDirectCollectionMapping();
-		} else {
-			return ((QueryKey) mapping).isForeignReferenceQueryKey();
+
+			DatabaseMapping databaseMapping = (DatabaseMapping) mapping;
+
+			return databaseMapping.isForeignReferenceMapping()            ||
+			       databaseMapping.isAbstractCompositeCollectionMapping() ||
+			       databaseMapping.isAbstractCompositeDirectCollectionMapping();
 		}
+
+		return ((QueryKey) mapping).isForeignReferenceQueryKey();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public boolean isResultVariable(String variableName) {
+		return queryContext.isResultVariable(variableName);
 	}
 
 	/**

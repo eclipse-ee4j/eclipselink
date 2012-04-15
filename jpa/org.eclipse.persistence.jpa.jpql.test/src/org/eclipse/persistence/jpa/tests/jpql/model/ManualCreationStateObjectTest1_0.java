@@ -51,7 +51,7 @@ import org.eclipse.persistence.jpa.jpql.parser.TrimExpression.Specification;
 import org.junit.Test;
 
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
-import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries.*;
+import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries1_0.*;
 
 /**
  * This tests the manual creation of a {@link StateObject} that can be parsed by the JPQL grammar
@@ -3487,6 +3487,29 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		test(stateObject_138(), jpqlStateObject, query_138());
 	}
 
+	@Test
+	public void test_Query_139() throws Exception {
+
+		// SELECT o
+		// FROM Customer c JOIN c.orders o JOIN c.address a
+		// WHERE a.state = 'CA'
+		// ORDER BY o.quantity DESC, o.totalcost
+
+		JPQLQueryStateObject jpqlStateObject = buildJPQLQueryStateObject();
+		SelectStatementStateObject select = jpqlStateObject.addSelectStatement();
+		select.addSelectItem("o");
+
+		IdentificationVariableDeclarationStateObject range = select.addRangeDeclaration("Customer", "c");
+		range.addJoin("c.orders",  "o");
+		range.addJoin("c.address", "a");
+
+		select.addWhereClause().getBuilder().path("a.state").equal("'CA'").commit();
+		select.addOrderByClause().addItemDesc("o.quantity");
+		select.getOrderByClause().addItem("o.totalcost");
+
+		test(stateObject_139(), jpqlStateObject, query_139());
+	}
+
 	public void test_Query_140() throws Exception {
 
 		// SELECT c
@@ -4624,30 +4647,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 	}
 
 	@Test
-	public void test_Query_215() throws Exception {
-
-		// SELECT o
-		// FROM Customer c JOIN c.orders o JOIN c.address a
-		// WHERE a.state = 'CA'
-		// ORDER BY o.quantity DESC, o.totalcost
-
-		JPQLQueryStateObject jpqlStateObject = buildJPQLQueryStateObject();
-		SelectStatementStateObject select = jpqlStateObject.addSelectStatement();
-		select.addSelectItem("o");
-
-		IdentificationVariableDeclarationStateObject range = select.addRangeDeclaration("Customer", "c");
-		range.addJoin("c.orders",  "o");
-		range.addJoin("c.address", "a");
-
-		select.addWhereClause().getBuilder().path("a.state").equal("'CA'").commit();
-		select.addOrderByClause().addItemDesc("o.quantity");
-		select.getOrderByClause().addItem("o.totalcost");
-
-		test(stateObject_215(), jpqlStateObject, query_215());
-	}
-
-	@Test
-	public void test_Query_216() throws Exception {
+	public void test_Query_205() throws Exception {
 
 		// SELECT o.quantity, a.zipcode
 		// FROM Customer c JOIN c.orders o JOIN c.address a
@@ -4669,7 +4669,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 			addItem("o.quantity").getParent().
 			addItem("a.zipcode");
 
-		test(stateObject_216(), jpqlStateObject, query_216());
+		test(stateObject_205(), jpqlStateObject, query_205());
 	}
 
 	@Test
@@ -4686,7 +4686,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		IConditionalExpressionStateObjectBuilder builder = delete.addWhereClause().getBuilder();
 		builder.path("c.status").equal("'inactive'").commit();
 
-		test(stateObject_219(), jpqlStateObject, query_219());
+		test(stateObject_219(), jpqlStateObject, query_206());
 	}
 
 	@Test
@@ -4710,7 +4710,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 			)
 		.commit();
 
-		test(stateObject_220(), jpqlStateObject, query_220());
+		test(stateObject_220(), jpqlStateObject, query_207());
 	}
 
 	@Test
@@ -4730,7 +4730,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		where.parse("c.status = 'inactive'");
 		where.andParse("c.orders IS EMPTY");
 
-		test(stateObject_220(), jpqlStateObject, query_220());
+		test(stateObject_220(), jpqlStateObject, query_207());
 	}
 
 	@Test
@@ -4749,7 +4749,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		IConditionalExpressionStateObjectBuilder builder = update.addWhereClause().getBuilder();
 		builder.path("c.balance").lowerThan(10000).commit();
 
-		test(stateObject_221(), jpqlStateObject, query_221());
+		test(stateObject_221(), jpqlStateObject, query_208());
 	}
 
 	@Test
@@ -4766,7 +4766,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		update.addItem("c.status", "'outstanding'");
 		update.addWhereClause().parse("c.balance < 10000");
 
-		test(stateObject_221(), jpqlStateObject, query_221());
+		test(stateObject_221(), jpqlStateObject, query_208());
 	}
 
 	@Test
@@ -4798,7 +4798,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 			)
 		.commit();
 
-		test(stateObject_228(), jpqlStateObject, query_228());
+		test(stateObject_228(), jpqlStateObject, query_209());
 	}
 
 	@Test
@@ -4819,7 +4819,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 			addJoin("e.phoneNumbers", "p");
 		select.addWhereClause("e.firstName = 'Bob' and e.lastName like 'Smith%' and e.address.city = 'Toronto' and p.areaCode <> '2'");
 
-		test(stateObject_228(), jpqlStateObject, query_228());
+		test(stateObject_228(), jpqlStateObject, query_209());
 	}
 
 	@Test
@@ -4840,7 +4840,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 			addJoin("e.phoneNumbers", "p");
 		select.addWhereClause().parse("e.firstName = 'Bob' and e.lastName like 'Smith%' and e.address.city = 'Toronto' and p.areaCode <> '2'");
 
-		test(stateObject_228(), jpqlStateObject, query_228());
+		test(stateObject_228(), jpqlStateObject, query_209());
 	}
 
 	@Test
@@ -4866,7 +4866,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		where.andParse("e.address.city = 'Toronto'");
 		where.andParse("p.areaCode <> '2'");
 
-		test(stateObject_228(), jpqlStateObject, query_228());
+		test(stateObject_228(), jpqlStateObject, query_209());
 	}
 
 	@Test
@@ -4890,7 +4890,7 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		IConditionalExpressionStateObjectBuilder builder = select.addWhereClause().getBuilder();
 		builder.exists(subquery).commit();
 
-		test(stateObject_229(), jpqlStateObject, query_229());
+		test(stateObject_229(), jpqlStateObject, query_210());
 	}
 
 	@Test
@@ -4914,6 +4914,6 @@ public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectT
 		IConditionalExpressionStateObjectBuilder builder = select.addWhereClause().getBuilder();
 		builder.exists(subquery).commit();
 
-		test(stateObject_230(), jpqlStateObject, query_230());
+		test(stateObject_230(), jpqlStateObject, query_211());
 	}
 }

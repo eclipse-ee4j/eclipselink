@@ -16,8 +16,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
 import org.eclipse.persistence.jpa.jpql.WordParser;
 
 /**
- * This {@link CollectionValuedPathExpressionFactory} creates a new
- * {@link CollectionValuedPathExpression}.
+ * This {@link CollectionValuedPathExpressionFactory} creates a new {@link CollectionValuedPathExpression}.
  *
  * @see CollectionValuedPathExpression
  *
@@ -26,7 +25,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-public final class CollectionValuedPathExpressionFactory extends ExpressionFactory {
+public final class CollectionValuedPathExpressionFactory extends AbstractCollectionValuedPathExpressionFactory {
 
 	/**
 	 * The unique identifier of this {@link CollectionValuedPathExpressionFactory}.
@@ -44,25 +43,14 @@ public final class CollectionValuedPathExpressionFactory extends ExpressionFacto
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected AbstractExpression buildExpression(AbstractExpression parent,
-	                                   WordParser wordParser,
-	                                   String word,
-	                                   JPQLQueryBNF queryBNF,
-	                                   AbstractExpression expression,
-	                                   boolean tolerant) {
+	protected AbstractExpression buildFallbackExpression(AbstractExpression parent,
+	                                                     WordParser wordParser,
+	                                                     String word,
+	                                                     JPQLQueryBNF queryBNF,
+	                                                     AbstractExpression expression,
+	                                                     boolean tolerant) {
 
-		if (expression != null) {
-			expression = new CollectionValuedPathExpression(parent, expression);
-		}
-		else if (tolerant && (word.indexOf(AbstractExpression.DOT) == -1)) {
-			ExpressionFactory factory = getExpressionRegistry().getExpressionFactory(PreLiteralExpressionFactory.ID);
-			return factory.buildExpression(parent, wordParser, word, queryBNF, expression, tolerant);
-		}
-		else {
-			expression = new CollectionValuedPathExpression(parent, word);
-		}
-
-		expression.parse(wordParser, tolerant);
-		return expression;
+		ExpressionFactory factory = getExpressionRegistry().getExpressionFactory(PreLiteralExpressionFactory.ID);
+		return factory.buildExpression(parent, wordParser, word, queryBNF, expression, tolerant);
 	}
 }

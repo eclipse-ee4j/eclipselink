@@ -26,21 +26,55 @@ public final class WordParserTest {
 	@Test
 	public void testCharacter_01() {
 
+		String query = "SELECT e FROM Employee e";
+		WordParser wordParser = new WordParser(query);
+
+		char character = wordParser.character();
+		assertEquals('S', character);
 	}
 
 	@Test
 	public void testCharacter_02() {
 
+		String query = "SELECT e FROM Employee e";
+		WordParser wordParser = new WordParser(query);
+		wordParser.setPosition("SELECT e FROM Employee ".length());
+
+		char character = wordParser.character();
+		assertEquals('e', character);
 	}
 
 	@Test
 	public void testCharacter_03() {
 
+		String query = "SELECT e FROM Employee e";
+		WordParser wordParser = new WordParser(query);
+		wordParser.setPosition(query.length());
+
+		char character = wordParser.character();
+		assertEquals('\0', character);
 	}
 
 	@Test
 	public void testCharacter_04() {
 
+		String query = "SELECT e FROM Employee e";
+		WordParser wordParser = new WordParser(query);
+		wordParser.setPosition(Integer.MAX_VALUE);
+
+		char character = wordParser.character();
+		assertEquals('\0', character);
+	}
+
+	@Test
+	public void testCharacter_05() {
+
+		String query = "SELECT e FROM Employee e";
+		WordParser wordParser = new WordParser(query);
+		wordParser.setPosition(-10);
+
+		char character = wordParser.character();
+		assertEquals('S', character);
 	}
 
 	@Test
@@ -785,7 +819,6 @@ public final class WordParserTest {
 		assertEquals(">=", word);
 	}
 
-
 	@Test
 	public void testWord_53() {
 
@@ -832,7 +865,7 @@ public final class WordParserTest {
 
 		CharSequence  word = wordParser.word();
 		assertEquals("4e4e", word);
-		assertSame(WordType.WORD, wordParser.getWordType());
+		assertSame(WordType.NUMERIC_LITERAL, wordParser.getWordType());
 	}
 
 	@Test
@@ -1170,6 +1203,136 @@ public final class WordParserTest {
 
 		CharSequence word = wordParser.word();
 		assertEquals("all.persistence.eclipse.jpa.jpql.TYPE.FULL_TIME", word);
+		assertSame(WordType.WORD, wordParser.getWordType());
+	}
+
+	@Test
+	public void testWord_83() {
+
+		String query = "SELECT +4.2e+2d FROM Employee e";
+
+		WordParser wordParser = new WordParser(query);
+		wordParser.moveForward("SELECT +");
+
+		CharSequence  word = wordParser.word();
+		assertEquals("4.2e+2d", word);
+		assertSame(WordType.NUMERIC_LITERAL, wordParser.getWordType());
+	}
+
+	@Test
+	public void testWord_84() {
+
+		String query = "SELECT +4.2e+2l FROM Employee e";
+
+		WordParser wordParser = new WordParser(query);
+		wordParser.moveForward("SELECT +");
+
+		CharSequence  word = wordParser.word();
+		assertEquals("4.2e+2l", word);
+		assertSame(WordType.NUMERIC_LITERAL, wordParser.getWordType());
+	}
+
+	@Test
+	public void testWord_85() {
+
+		String query = "SELECT 4e+2F FROM Employee e";
+
+		WordParser wordParser = new WordParser(query);
+		wordParser.moveForward("SELECT ");
+
+		CharSequence  word = wordParser.word();
+		assertEquals("4e+2F", word);
+		assertSame(WordType.NUMERIC_LITERAL, wordParser.getWordType());
+	}
+
+	@Test
+	public void testWord_86() {
+
+		String query = "SELECT 2L FROM Employee e";
+
+		WordParser wordParser = new WordParser(query);
+		wordParser.moveForward("SELECT ");
+
+		CharSequence  word = wordParser.word();
+		assertEquals("2L", word);
+		assertSame(WordType.NUMERIC_LITERAL, wordParser.getWordType());
+	}
+
+	@Test
+	public void testWord_87() {
+
+		String query = "SELECT 2l FROM Employee e";
+
+		WordParser wordParser = new WordParser(query);
+		wordParser.moveForward("SELECT ");
+
+		CharSequence  word = wordParser.word();
+		assertEquals("2l", word);
+		assertSame(WordType.NUMERIC_LITERAL, wordParser.getWordType());
+	}
+
+	@Test
+	public void testWord_88() {
+
+		String query = "SELECT 2l+2 FROM Employee e";
+
+		WordParser wordParser = new WordParser(query);
+		wordParser.moveForward("SELECT ");
+
+		CharSequence  word = wordParser.word();
+		assertEquals("2l", word);
+		assertSame(WordType.NUMERIC_LITERAL, wordParser.getWordType());
+	}
+
+	@Test
+	public void testWord_89() {
+
+		String query = "SELECT 0xA FROM Employee e";
+
+		WordParser wordParser = new WordParser(query);
+		wordParser.moveForward("SELECT ");
+
+		CharSequence  word = wordParser.word();
+		assertEquals("0xA", word);
+		assertSame(WordType.NUMERIC_LITERAL, wordParser.getWordType());
+	}
+
+	@Test
+	public void testWord_90() {
+
+		String query = "SELECT 0x1.02ADP+2 FROM Employee e";
+
+		WordParser wordParser = new WordParser(query);
+		wordParser.moveForward("SELECT ");
+
+		CharSequence  word = wordParser.word();
+		assertEquals("0x1.02ADP+2", word);
+		assertSame(WordType.NUMERIC_LITERAL, wordParser.getWordType());
+	}
+
+	@Test
+	public void testWord_91() {
+
+		String query = "SELECT TREAT(e.project AS LargeProject).name FROM Employee e";
+
+		WordParser wordParser = new WordParser(query);
+		wordParser.moveForward("SELECT TREAT(e.project AS LargeProject)");
+
+		CharSequence  word = wordParser.word();
+		assertEquals(".name", word);
+		assertSame(WordType.WORD, wordParser.getWordType());
+	}
+
+	@Test
+	public void testWord_92() {
+
+		String query = "SELECT TREAT(e.project AS LargeProject).endDate FROM Employee e";
+
+		WordParser wordParser = new WordParser(query);
+		wordParser.moveForward("SELECT TREAT(e.project AS LargeProject)");
+
+		CharSequence  word = wordParser.word();
+		assertEquals(".endDate", word);
 		assertSame(WordType.WORD, wordParser.getWordType());
 	}
 }

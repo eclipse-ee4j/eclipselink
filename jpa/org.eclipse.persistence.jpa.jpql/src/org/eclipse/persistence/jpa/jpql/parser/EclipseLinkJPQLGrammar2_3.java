@@ -16,8 +16,9 @@ package org.eclipse.persistence.jpa.jpql.parser;
 import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
 
 /**
- * This {@link JPQLGrammar} provides support for parsing JPQL queries defined in <a href="http://jcp.org/en/jsr/detail?id=317">JSR-337
- * - Java Persistence 2.0</a>. EclipseLink 2.3 did not add extended the grammar.
+ * This {@link JPQLGrammar} provides support for parsing JPQL queries defined in <a
+ * href="http://jcp.org/en/jsr/detail?id=317">JSR-337 - Java Persistence 2.0</a>. EclipseLink 2.3
+ * does not add any additional support over EclipseLink 2.2.
  *
  * @version 2.4
  * @since 2.4
@@ -41,6 +42,27 @@ public final class EclipseLinkJPQLGrammar2_3 extends AbstractJPQLGrammar {
 	 */
 	public EclipseLinkJPQLGrammar2_3() {
 		super();
+	}
+
+	/**
+	 * Creates a new <code>EclipseLinkJPQLGrammar2_3</code>.
+	 *
+	 * @param jpqlGrammar The {@link JPQLGrammar} to extend with the content of this one without
+	 * instantiating the base {@link JPQLGrammar}
+	 */
+	private EclipseLinkJPQLGrammar2_3(AbstractJPQLGrammar jpqlGrammar) {
+		super(jpqlGrammar);
+	}
+
+	/**
+	 * Extends the given {@link JPQLGrammar} with the information of this one without instantiating
+	 * the base {@link JPQLGrammar}.
+	 *
+	 * @param jpqlGrammar The {@link JPQLGrammar} to extend with the content of this one without
+	 * instantiating the base {@link JPQLGrammar}
+	 */
+	public static void extend(AbstractJPQLGrammar jpqlGrammar) {
+		new EclipseLinkJPQLGrammar2_3(jpqlGrammar);
 	}
 
 	/**

@@ -55,6 +55,7 @@ import org.eclipse.persistence.jpa.jpql.parser.ComparisonExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConcatExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConstructorExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CountFunction;
+import org.eclipse.persistence.jpa.jpql.parser.DatabaseType;
 import org.eclipse.persistence.jpa.jpql.parser.DateTime;
 import org.eclipse.persistence.jpa.jpql.parser.DeleteClause;
 import org.eclipse.persistence.jpa.jpql.parser.DeleteStatement;
@@ -618,6 +619,13 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	public void visit(CastExpression expression) {
+		type = Object.class;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public void visit(CoalesceExpression expression) {
 		visitCollectionEquivalentExpression(expression.getExpression(), null);
 	}
@@ -676,6 +684,13 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
 	 */
 	public void visit(CountFunction expression) {
 		type = Long.class;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(DatabaseType expression) {
+		// Nothing to do
 	}
 
 	/**
@@ -759,6 +774,13 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
 	 */
 	public void visit(ExistsExpression expression) {
 		type = Boolean.class;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(ExtractExpression expression) {
+		type = Object.class;
 	}
 
 	/**
@@ -1202,20 +1224,6 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
 		type = String.class;
 	}
 
-        /**
-         * {@inheritDoc}
-         */
-        public void visit(CastExpression expression) {
-                type = Object.class;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public void visit(ExtractExpression expression) {
-                type = Object.class;
-        }
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -1429,20 +1437,20 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
 		QueryKey queryKey;
 
 		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(AbstractSchemaName expression) {
+			descriptor = queryContext.getDescriptor(expression.getText());
+		}
+
+		/**
 		 * {@link InputParameter}
 		 */
 		@Override
 		public void visit(CollectionValuedPathExpression expression) {
 			visitPathExpression(expression);
 		}
-
-                /**
-                 * {@inheritDoc}
-                 */
-                @Override
-                public void visit(AbstractSchemaName expression) {
-                        descriptor = queryContext.getDescriptor(expression.getText());
-                }
 
 		/**
 		 * {@inheritDoc}

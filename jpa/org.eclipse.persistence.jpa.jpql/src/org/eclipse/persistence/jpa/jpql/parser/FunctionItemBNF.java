@@ -16,6 +16,11 @@ package org.eclipse.persistence.jpa.jpql.parser;
 /**
  * The query BNF for the parameters of a function expression.
  *
+ * <div nowrap><b>BNF:</b> <code>func_item ::= literal |
+ *                                             state_field_path_expression |
+ *                                             input_parameter |
+ *                                             scalar_expression</code><p>
+ *
  * @version 2.4
  * @since 2.4
  * @author James
@@ -29,7 +34,7 @@ public final class FunctionItemBNF extends JPQLQueryBNF {
 	public static final String ID = "function_item";
 
 	/**
-	 * Creates a new <code>FuncItemBNF</code>.
+	 * Creates a new <code>FunctionItemBNF</code>.
 	 */
 	public FunctionItemBNF() {
 		super(ID);
@@ -44,7 +49,9 @@ public final class FunctionItemBNF extends JPQLQueryBNF {
 		setHandleCollection(true);
 		setFallbackBNFId(ID);
 		setFallbackExpressionFactoryId(PreLiteralExpressionFactory.ID);
-		registerChild(IdentificationVariableBNF.ID);
+		registerChild(LiteralBNF.ID);
+		registerChild(StateFieldPathExpressionBNF.ID);
+		registerChild(InputParameterBNF.ID);
 		registerChild(ScalarExpressionBNF.ID);
 	}
 }

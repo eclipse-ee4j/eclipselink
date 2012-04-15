@@ -273,16 +273,21 @@ public final class JPQLQueryBuilder {
 
 						if ((length > 0) && registry.isIdentifier(identifier)) {
 
-							// The word "ORDER" is not the entity name by the identifier ORDER BY
+							// The word "ORDER"/"GROUP" is not the entity name but the identifier ORDER BY
 							if ((fromClause == Boolean.TRUE) &&
-							    identifier.equalsIgnoreCase("ORDER") &&
-							    wordParser.startsWithIgnoreCase(ORDER_BY, index - 5)) {
+							    (identifier.equalsIgnoreCase("ORDER") ||
+							     identifier.equalsIgnoreCase("GROUP")) &&
+							    (wordParser.startsWithIgnoreCase(ORDER_BY, index - 5) ||
+							     wordParser.startsWithIgnoreCase(GROUP_BY, index - 5))) {
 
 								fromClause = null;
 							}
 
-							// Special case where Order should not be capitalized when it's the entity name
-							if (!((fromClause == Boolean.TRUE) && identifier.equalsIgnoreCase("ORDER"))) {
+							// Special case where Order/Group should not be capitalized when it's the entity name
+							if (!((fromClause == Boolean.TRUE) &&
+							      (identifier.equalsIgnoreCase("ORDER") ||
+							       identifier.equalsIgnoreCase("GROUP")))) {
+
 								identifier = style.formatIdentifier(identifier);
 								int offset = sb.length();
 								sb.replace(offset - length, offset, identifier);
@@ -300,6 +305,7 @@ public final class JPQLQueryBuilder {
 							else if ((fromClause == Boolean.TRUE) &&
 							         (WHERE  .equalsIgnoreCase(identifier) ||
 							          HAVING .equalsIgnoreCase(identifier) ||
+							          "ORDER".equalsIgnoreCase(identifier) ||
 							          "GROUP".equalsIgnoreCase(identifier))) {
 
 								fromClause = null;

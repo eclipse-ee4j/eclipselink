@@ -40,7 +40,7 @@ public final class BadExpressionTest extends JPQLParserTest {
 //	}
 
 //	private Collection<String> queries() throws Exception {
-//		Method[] methods = JPQLQueries.class.getDeclaredMethods();
+//		Method[] methods = JPQLQueries1_0.class.getDeclaredMethods();
 //		Collection<String> queries = new ArrayList<String>(methods.length / 2);
 //
 //		for (Method method : methods) {

@@ -17,7 +17,7 @@ import org.eclipse.persistence.jpa.jpql.BasicRefactoringTool;
 import org.eclipse.persistence.jpa.jpql.DefaultBasicRefactoringTool;
 import org.junit.Test;
 
-import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries.*;
+import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries2_0.*;
 
 /**
  * The abstract definition of a unit-test that tests {@link org.eclipse.persistence.jpa.jpql.
@@ -38,7 +38,7 @@ public final class BasicRefactoringToolTest2_0 extends AbstractBasicRefactoringT
 	public void test_RenameEntityName_1() throws Exception {
 
 		// SELECT TYPE(employee) FROM Employee employee WHERE TYPE(employee) <> Exempt
-		String jpqlQuery = query_211();
+		String jpqlQuery = query_007();
 		BasicRefactoringTool refactoringTool = buildRefactoringTool(jpqlQuery);
 
 		int offset = "SELECT TYPE(employee) FROM Employee employee WHERE TYPE(employee) <> ".length();
@@ -62,7 +62,7 @@ public final class BasicRefactoringToolTest2_0 extends AbstractBasicRefactoringT
 		// FROM Employee e, Contractor c
 		// WHERE e.dept.name = 'Engineering'
 
-		String jpqlQuery = query_206();
+		String jpqlQuery = query_002();
 		BasicRefactoringTool refactoringTool = buildRefactoringTool(jpqlQuery);
 
 		int offset1 = jpqlQuery.indexOf("Contractor THEN");
@@ -104,7 +104,7 @@ public final class BasicRefactoringToolTest2_0 extends AbstractBasicRefactoringT
 	public void test_RenameEntityName_3() throws Exception {
 
 		// SELECT TYPE(employee) FROM Employee employee WHERE TYPE(employee) <> Exempt
-		String jpqlQuery = query_211();
+		String jpqlQuery = query_007();
 		BasicRefactoringTool refactoringTool = buildRefactoringTool(jpqlQuery);
 
 		int offset = "SELECT TYPE(employee) FROM ".length();

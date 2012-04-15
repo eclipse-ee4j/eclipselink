@@ -234,20 +234,16 @@ public final class TreatExpression extends AbstractEncapsulatedExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void parseEncapsulatedExpression(WordParser wordParser, boolean tolerant) {
+	protected void parseEncapsulatedExpression(WordParser wordParser,
+	                                           int whitespaceCount,
+	                                           boolean tolerant) {
 
 		// Collection-valued path expression
-		if (tolerant) {
-			collectionValuedPathExpression = parse(
-				wordParser,
-				CollectionValuedPathExpressionBNF.ID,
-				tolerant
-			);
-		}
-		else {
-			collectionValuedPathExpression = new CollectionValuedPathExpression(this, wordParser.word());
-			collectionValuedPathExpression.parse(wordParser, tolerant);
-		}
+		collectionValuedPathExpression = parse(
+			wordParser,
+			CollectionValuedPathExpressionBNF.ID,
+			tolerant
+		);
 
 		hasSpaceAfterCollectionValuedPathExpression = wordParser.skipLeadingWhitespace() > 0;
 

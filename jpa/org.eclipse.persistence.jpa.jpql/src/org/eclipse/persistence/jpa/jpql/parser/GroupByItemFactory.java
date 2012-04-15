@@ -56,6 +56,23 @@ public final class GroupByItemFactory extends ExpressionFactory {
 			return expression;
 		}
 
+		ExpressionRegistry registry = getExpressionRegistry();
+
+		// When the tolerant mode is turned on, parse the invalid portion of the query
+		if (tolerant && registry.isIdentifier(word)) {
+			ExpressionFactory factory = registry.expressionFactoryForIdentifier(word);
+
+			if (factory == null) {
+				return null;
+			}
+
+			expression = factory.buildExpression(parent, wordParser, word, queryBNF, expression, tolerant);
+
+			if (expression != null) {
+				return new BadExpression(parent, expression);
+			}
+		}
+
 		// IdentificationVariable or any text
 		expression = new IdentificationVariable(parent, word);
 		expression.parse(wordParser, tolerant);

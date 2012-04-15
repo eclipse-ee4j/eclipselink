@@ -21,9 +21,13 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * string is denoted by 1. The <b>SUBSTRING</b> function returns a string.
  * <p>
  * JPA 1.0:
- * <div nowrap><b>BNF</b> ::= SUBSTRING(string_primary, simple_arithmetic_expression, simple_arithmetic_expression)<p>
+ * <div nowrap><b>BNF</b> ::= <code>SUBSTRING(string_primary, simple_arithmetic_expression, simple_arithmetic_expression)</code>
+ * <p>
  * JPA 2.0:
- * <div nowrap><b>BNF</b> ::= SUBSTRING(string_primary, simple_arithmetic_expression [, simple_arithmetic_expression])<p>
+ * <div nowrap><b>BNF</b> ::= <code>SUBSTRING(string_primary, simple_arithmetic_expression [, simple_arithmetic_expression])</code>
+ * <p>
+ * JPA 2.1:
+ * <div nowrap><b>BNF</b> ::= <code>SUBSTRING(string_expression, arithmetic_expression [, arithmetic_expression])</code>
  * <p>
  * <div nowrap>Example: <b>UPDATE</b> Employee e <b>SET</b> e.firstName = <b>SUBSTRING</b>('TopLink Workbench', 1, 8)<p>
  *

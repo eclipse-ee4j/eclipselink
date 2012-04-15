@@ -22,7 +22,11 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * This is one of the JPQL arithmetic functions. The <b>ABS</b> function takes a numeric argument
  * and returns a number (integer, float, or double) of the same type as the argument to the function.
  * <p>
+ * JPA 1.0, 2.0:
  * <div nowrap><b>BNF:</b> <code>expression ::= ABS(simple_arithmetic_expression)</code>
+ * <p>
+ * JPA 2.1:
+ * <div nowrap><b>BNF:</b> <code>expression ::= ABS(arithmetic_expression)</code>
  * <p>
  * Example: <code>SELECT DISTINCT o FROM Order o WHERE o.totalPrice > ABS(:dbl)</code>
  *

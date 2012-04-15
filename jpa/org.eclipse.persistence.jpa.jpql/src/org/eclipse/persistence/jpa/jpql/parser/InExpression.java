@@ -182,7 +182,7 @@ public final class InExpression extends AbstractExpression {
 		}
 
 		if (inItems.isAncestor(expression)) {
-			return getQueryBNF(InItemBNF.ID);
+			return getQueryBNF(InExpressionItemBNF.ID);
 		}
 
 		return super.findQueryBNF(expression);
@@ -224,8 +224,17 @@ public final class InExpression extends AbstractExpression {
 	}
 
 	/**
-	 * Returns the unique identifier of the query BNF that describe the expression being tested by
+	 * Returns the unique identifier of the query BNF that describes the expression being tested by
 	 * the <code>IN</code> expression.
+	 *
+	 * @return {@link InExpressionExpressionBNF#ID}
+	 */
+	public String getExpressionExpressionBNF() {
+		return InExpressionExpressionBNF.ID;
+	}
+
+	/**
+	 * Returns the unique identifier of the query BNF that describes the items being tested against.
 	 *
 	 * @return {@link InExpressionItemBNF#ID}
 	 */
@@ -340,6 +349,8 @@ public final class InExpression extends AbstractExpression {
 	 * parameter:
 	 * <div nowrap><b>BNF:</b> <code>in_expression ::= {state_field_path_expression | type_discriminator} [NOT] IN collection_valued_input_parameter</code><p>
 	 *
+	 * @return <code>true</code> if what is following the <code>IN</code> identifier is a single
+	 * input parameter (without the left or right parenthesis); <code>false</code> otherwise
 	 * @since 2.4
 	 */
 	public boolean isSingleInputParameter() {
@@ -392,7 +403,7 @@ public final class InExpression extends AbstractExpression {
 		}
 
 		// Parse the in items or sub-query
-		inItems = parse(wordParser, InItemBNF.ID, tolerant);
+		inItems = parse(wordParser, InExpressionItemBNF.ID, tolerant);
 
 		if (hasInItems()) {
 			count = wordParser.skipLeadingWhitespace();

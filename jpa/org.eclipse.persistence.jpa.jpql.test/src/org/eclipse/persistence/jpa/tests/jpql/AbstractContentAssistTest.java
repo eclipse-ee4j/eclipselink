@@ -7074,10 +7074,10 @@ public abstract class AbstractContentAssistTest extends JPQLCoreTest {
 
 		if (contentAssistProposals.hasProposals() && !proposalsNotRemoved.isEmpty()) {
 			if (proposalsNotRemoved.size() == 1) {
-				fail(proposalsNotRemoved + " should be a proposal and " + proposals + " should be a proposal.");
+				fail(proposalsNotRemoved + " should be a proposal and " + contentAssistProposals + " should not be a proposal.");
 			}
 			else {
-				fail(proposalsNotRemoved + " should be proposals and " + proposals + " should be proposals.");
+				fail(proposalsNotRemoved + " should be proposals and " + contentAssistProposals + " should not be proposals.");
 			}
 		}
 		else if (contentAssistProposals.hasProposals() && proposalsNotRemoved.isEmpty()) {

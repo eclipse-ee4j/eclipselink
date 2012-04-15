@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -49,10 +49,25 @@ public final class StateFieldPathExpression extends AbstractPathExpression {
 	 * Creates a new <code>StateFieldPathExpression</code>.
 	 *
 	 * @param parent The parent of this expression
-	 * @param paths The path expression
+	 * @param paths The path expression that is following the identification variable
 	 */
 	public StateFieldPathExpression(AbstractExpression parent, String paths) {
 		super(parent, paths);
+	}
+
+	/**
+	 * Creates a new <code>StateFieldPathExpression</code>.
+	 *
+	 * @param parent The parent of this expression
+	 * @param expression The identification variable that was already parsed, which means the
+	 * beginning of the parsing should start with a dot
+	 * @param paths The path expression that is following the identification variable
+	 */
+	public StateFieldPathExpression(AbstractExpression parent,
+	                                AbstractExpression expression,
+	                                String paths) {
+
+		super(parent, expression, paths);
 	}
 
 	/**

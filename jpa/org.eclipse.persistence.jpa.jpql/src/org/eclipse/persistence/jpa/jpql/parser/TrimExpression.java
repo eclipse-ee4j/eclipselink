@@ -24,7 +24,13 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * Character). If a trim specification is not provided, <b>BOTH</b> is assumed. The <b>TRIM</b>
  * function returns the trimmed string.
  * <p>
- * <div nowrap><b>BNF:</b> <code>expression ::= TRIM([[trim_specification] [trim_character] FROM] string_primary)</code><p>
+ * JPA 1.0, 2.0:
+ * <div nowrap><b>BNF:</b> <code>expression ::= TRIM([[trim_specification] [trim_character] FROM] string_primary)</code>
+ * <p>
+ * <div nowrap><b>BNF:</b> <code>trim_character ::= string_literal | input_parameter</code>
+ * <p>
+ * JPA 2.1:
+ * <div nowrap><b>BNF:</b> <code>expression ::= TRIM([[trim_specification] [trim_character] FROM] string_expression)</code>
  * <p>
  * <div nowrap><b>BNF:</b> <code>trim_character ::= string_literal | input_parameter</code><p>
  * <p>
@@ -269,7 +275,9 @@ public final class TrimExpression extends AbstractSingleEncapsulatedExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void parseEncapsulatedExpression(WordParser wordParser, boolean tolerant) {
+	protected void parseEncapsulatedExpression(WordParser wordParser,
+	                                           int whitespaceCount,
+	                                           boolean tolerant) {
 
 		// Parse the trim specification
 		specification = parseTrimSpecification(wordParser);
@@ -299,7 +307,7 @@ public final class TrimExpression extends AbstractSingleEncapsulatedExpression {
 		}
 
 		// Parse the string primary
-		super.parseEncapsulatedExpression(wordParser, tolerant);
+		super.parseEncapsulatedExpression(wordParser, whitespaceCount, tolerant);
 
 		// The trim character is actually the string primary
 		if (!hasFrom         &&

@@ -43,6 +43,7 @@ import org.eclipse.persistence.jpa.jpql.parser.ComparisonExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConcatExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConstructorExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CountFunction;
+import org.eclipse.persistence.jpa.jpql.parser.DatabaseType;
 import org.eclipse.persistence.jpa.jpql.parser.DateTime;
 import org.eclipse.persistence.jpa.jpql.parser.DeleteClause;
 import org.eclipse.persistence.jpa.jpql.parser.DeleteStatement;
@@ -491,6 +492,13 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	public void visit(CastExpression expression) {
+		resolver = buildClassResolver(Object.class);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public void visit(CoalesceExpression expression) {
 		visitCollectionEquivalentExpression(expression.getExpression(), null);
 	}
@@ -590,6 +598,13 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	public void visit(DatabaseType expression) {
+		resolver = buildClassResolver(Object.class);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public void visit(DateTime expression) {
 
 		if (expression.isCurrentDate()) {
@@ -680,6 +695,13 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	public void visit(ExtractExpression expression) {
+		resolver = buildClassResolver(Object.class);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public void visit(FromClause expression) {
 		resolver = buildClassResolver(Object.class);
 	}
@@ -710,7 +732,7 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
 	 */
 	public void visit(IdentificationVariable expression) {
 		DeclarationResolver parent = getDeclarationResolver(expression);
-		resolver = parent.getResolver(expression.getText());
+		resolver = parent.getResolver(expression.getVariableName());
 	}
 
 	/**
@@ -1131,20 +1153,6 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
 	public void visit(TrimExpression expression) {
 		resolver = buildClassResolver(String.class);
 	}
-
-        /**
-         * {@inheritDoc}
-         */
-        public void visit(CastExpression expression) {
-                resolver = buildClassResolver(Object.class);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public void visit(ExtractExpression expression) {
-                resolver = buildClassResolver(Object.class);
-        }
 
 	/**
 	 * {@inheritDoc}

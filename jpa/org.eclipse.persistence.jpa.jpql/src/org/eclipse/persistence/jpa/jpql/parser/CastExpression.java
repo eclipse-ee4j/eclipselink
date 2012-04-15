@@ -17,10 +17,10 @@ import java.util.List;
 import org.eclipse.persistence.jpa.jpql.WordParser;
 
 /**
- * The <b>CAST</b> function cast value to a different type.
- * The database type is the 2nd parameter, and can be any valid database type including size and scale.
+ * The <b>CAST</b> function cast value to a different type. The database type is the 2nd parameter,
+ * and can be any valid database type including size and scale.
  * <p>
- * <div nowrap><b>BNF:</b> <code>expression ::= CAST(value AS type)</code><p>
+ * <div nowrap><b>BNF:</b> <code>expression ::= CAST(scalar_expression [AS] database_type)</code>
  * <p>
  *
  * @version 2.4
@@ -35,6 +35,11 @@ public final class CastExpression extends AbstractSingleEncapsulatedExpression {
 	private String asIdentifier;
 
 	/**
+	 * The {@link Expression} representing the database type to cast to.
+	 */
+	private AbstractExpression databaseType;
+
+	/**
 	 * Determines whether the identifier <b>AS</b> was part of the query.
 	 */
 	private boolean hasAs;
@@ -45,9 +50,16 @@ public final class CastExpression extends AbstractSingleEncapsulatedExpression {
 	private boolean hasSpaceAfterAs;
 
 	/**
-	 * The database type to cast to.
+	 * Determines whether a space was parsed after the expression.
 	 */
-	private String databaseType;
+	private boolean hasSpaceAfterExpression;
+
+	/**
+	 * This flag is used to prevent the parsing from using any {@link ExpressionFactory} before
+	 * going through the fallback procedure. This is necessary because only a {@link DatabaseType}
+	 * should be created, even if the database type is a JPQL identifier (eg: <code>TIMESTAMP</code>).
+	 */
+	private boolean shouldParseWithFactoryFirst;
 
 	/**
 	 * Creates a new <code>CastExpression</code>.
@@ -56,13 +68,14 @@ public final class CastExpression extends AbstractSingleEncapsulatedExpression {
 	 */
 	public CastExpression(AbstractExpression parent) {
 		super(parent);
+		shouldParseWithFactoryFirst = true;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public void accept(ExpressionVisitor visitor) {
-		visitor.visit(this);
+		acceptUnknownVisitor(visitor);
 	}
 
 	/**
@@ -70,8 +83,9 @@ public final class CastExpression extends AbstractSingleEncapsulatedExpression {
 	 */
 	@Override
 	protected void addOrderedEncapsulatedExpressionTo(List<Expression> children) {
-                // Value
-                super.addOrderedEncapsulatedExpressionTo(children);
+
+		// Value
+		super.addOrderedEncapsulatedExpressionTo(children);
 
 		// 'AS'
 		if (hasAs) {
@@ -82,9 +96,9 @@ public final class CastExpression extends AbstractSingleEncapsulatedExpression {
 			children.add(buildStringExpression(SPACE));
 		}
 
-                if (hasDatabaseType()) {
-                        children.add(buildStringExpression(databaseType));
-                }
+		if (hasDatabaseType()) {
+			children.add(databaseType);
+		}
 	}
 
 	/**
@@ -96,17 +110,11 @@ public final class CastExpression extends AbstractSingleEncapsulatedExpression {
 	}
 
 	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public JPQLQueryBNF getQueryBNF() {
-		return getQueryBNF(CastExpressionBNF.ID);
-	}
-
-	/**
 	 * Returns the database type to cast to.
+	 *
+	 * @return The {@link Expression} representing the database type
 	 */
-	public String getDatabaseType() {
+	public Expression getDatabaseType() {
 		return databaseType;
 	}
 
@@ -114,8 +122,8 @@ public final class CastExpression extends AbstractSingleEncapsulatedExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean hasEncapsulatedExpression() {
-		return hasDatabaseType() || hasAs || hasExpression();
+	public JPQLQueryBNF getQueryBNF() {
+		return getQueryBNF(CastExpressionBNF.ID);
 	}
 
 	/**
@@ -128,57 +136,101 @@ public final class CastExpression extends AbstractSingleEncapsulatedExpression {
 	}
 
 	/**
-	 * Determines whether a whitespace was found after <b>AS</b>.
+	 * Determines whether the database type was parsed or not.
 	 *
-	 * @return <code>true</code> if there was a whitespace after <b>AS</b>; <code>false</code> otherwise
+	 * @return <code>true</code> if the database type was parsed; <code>false</code> otherwise
+	 */
+	public boolean hasDatabaseType() {
+		return databaseType != null &&
+		      !databaseType.isNull();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean hasEncapsulatedExpression() {
+		return super.hasEncapsulatedExpression() || hasAs || hasDatabaseType();
+	}
+
+	/**
+	 * Determines whether a whitespace parsed after <b>AS</b>.
+	 *
+	 * @return <code>true</code> if there was a whitespace parsed after <b>AS</b>;
+	 * <code>false</code> otherwise
 	 */
 	public boolean hasSpaceAfterAs() {
 		return hasSpaceAfterAs;
 	}
 
 	/**
-	 * Return if a database type was parsed.
+	 * Determines whether a whitespace was parsed after the expression.
+	 *
+	 * @return <code>true</code> if there was a whitespace parsed after the expression;
+	 * <code>false</code> otherwise
 	 */
-	public boolean hasDatabaseType() {
-		return databaseType.length() > 0;
+	public boolean hasSpaceAfterExpression() {
+		return hasSpaceAfterAs;
 	}
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        protected String parseIdentifier(WordParser wordParser) {
-                return CAST;
-        }
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void parseEncapsulatedExpression(WordParser wordParser, boolean tolerant) {
+	protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
 
-                // Parse the value
-                super.parseEncapsulatedExpression(wordParser, tolerant);
-                
-                wordParser.skipLeadingWhitespace();
-                
-                // Parse 'AS'
-                hasAs = wordParser.startsWithIdentifier(AS);
+		ExpressionFactory factory = getQueryBNF(encapsulatedExpressionBNF()).getExpressionFactory(word);
 
-                if (hasAs) {
-                        asIdentifier = wordParser.moveForward(AS);
-                        hasSpaceAfterAs = wordParser.skipLeadingWhitespace() > 0;
-                }
+		return (factory == null && expression != null) ||
+		       word.equalsIgnoreCase(AS) ||
+		       super.isParsingComplete(wordParser, word, expression);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void parseEncapsulatedExpression(WordParser wordParser, int whitespaceCount, boolean tolerant) {
+
+		// Parse the value
+		super.parseEncapsulatedExpression(wordParser, whitespaceCount, tolerant);
+
+		hasSpaceAfterExpression = wordParser.skipLeadingWhitespace() > 0;
+
+		// Parse 'AS'
+		hasAs = wordParser.startsWithIdentifier(AS);
+
+		if (hasAs) {
+			asIdentifier = wordParser.moveForward(AS);
+			hasSpaceAfterAs = wordParser.skipLeadingWhitespace() > 0;
+		}
 
 		// Parse the database type
-		databaseType = wordParser.word();
-		wordParser.moveForward(databaseType);
-		if (wordParser.startsWith(LEFT_PARENTHESIS)) {
-		    while (!wordParser.isTail() && (wordParser.character() != RIGHT_PARENTHESIS)) {
-		        databaseType = databaseType + wordParser.moveForward(1);
-		    }
-                    databaseType = databaseType + wordParser.moveForward(1);
+		if (!wordParser.isTail()) {
+			if (tolerant) {
+				databaseType = parse(wordParser, DatabaseTypeQueryBNF.ID, tolerant);
+			}
+			else {
+				databaseType = new DatabaseType(this, wordParser.word());
+				databaseType.parse(wordParser, tolerant);
+			}
 		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected String parseIdentifier(WordParser wordParser) {
+		return CAST;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected boolean shouldParseWithFactoryFirst() {
+		return shouldParseWithFactoryFirst;
 	}
 
 	/**
@@ -186,19 +238,26 @@ public final class CastExpression extends AbstractSingleEncapsulatedExpression {
 	 */
 	@Override
 	protected void toParsedTextEncapsulatedExpression(StringBuilder writer, boolean actual) {
-                // Value
-                super.toParsedTextEncapsulatedExpression(writer, actual);
 
-		if (hasAs()) {
-			writer.append(asIdentifier);
+		// Value
+		super.toParsedTextEncapsulatedExpression(writer, actual);
+
+		if (hasSpaceAfterExpression) {
+			writer.append(SPACE);
+		}
+
+		// 'AS'
+		if (hasAs) {
+			writer.append(actual ? asIdentifier : AS);
 		}
 
 		if (hasSpaceAfterAs) {
 			writer.append(SPACE);
 		}
 
-		if (hasDatabaseType()) {
-		        writer.append(databaseType);
+		// Database type
+		if (databaseType != null) {
+			databaseType.toParsedText(writer, actual);
 		}
 	}
 }

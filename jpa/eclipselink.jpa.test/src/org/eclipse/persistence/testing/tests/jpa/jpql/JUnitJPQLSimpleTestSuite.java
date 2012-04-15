@@ -1,17 +1,16 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2011 Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * Copyright (c) 1998, 2012 Oracle. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.jpql;
-
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -25,35 +24,32 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
-
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-
 import junit.framework.Assert;
 import junit.framework.Test;
 import junit.framework.TestSuite;
-
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.expressions.ExpressionMath;
-import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.queries.ReportQuery;
+import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.UnitOfWork;
+import org.eclipse.persistence.sessions.server.Server;
+import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.advanced.Address;
+import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
 import org.eclipse.persistence.testing.models.jpa.advanced.LargeProject;
 import org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumber;
 import org.eclipse.persistence.testing.models.jpa.advanced.SmallProject;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
-import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.jpa.JpaEntityManager;
-import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
-import org.eclipse.persistence.sessions.server.Server;
 
 /**
  * <p>
@@ -83,7 +79,8 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
     //This method is run at the end of EVERY test case method
 
-    public void tearDown() {
+   @Override
+	public void tearDown() {
         clearCache();
     }
 
@@ -95,7 +92,6 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         suite.addTest(new JUnitJPQLSimpleTestSuite("testSetup"));
 
         suite.addTest(new JUnitJPQLSimpleTestSuite("simpleSingleArgSubstringTest"));
-        
         suite.addTest(new JUnitJPQLSimpleTestSuite("simpleJoinFetchTest"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("simpleJoinFetchTest2"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("baseTestCase"));
@@ -174,11 +170,11 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         suite.addTest(new JUnitJPQLSimpleTestSuite("elementCollectionIsNotEmptyTest"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("relationshipElementCollectionIsNotEmptyTest"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("enumWithToStringTest"));
+        suite.addTest(new JUnitJPQLSimpleTestSuite("selectFromClauseWithFullyQualifiedClassName"));
 
-        
         return suite;
     }
-    
+
     /**
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
@@ -186,65 +182,65 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         clearCache();
         //get session to start setup
         DatabaseSession session = JUnitTestCase.getServerSession();
-        
+
         //create a new EmployeePopulator
         EmployeePopulator employeePopulator = new EmployeePopulator();
-        
+
         new AdvancedTableCreator().replaceTables(session);
-        
+
         //initialize the global comparer object
         comparer = new JUnitDomainObjectComparer();
-        
+
         //set the session for the comparer to use
-        comparer.setSession((AbstractSession)session.getActiveSession());              
-        
+        comparer.setSession((AbstractSession)session.getActiveSession());
+
         //Populate the tables
         employeePopulator.buildExamples();
-        
+
         //Persist the examples in the database
         employeePopulator.persistExample(session);
     }
-    
+
     /**
      * Tests 1=1 returns correct result.
      */
     public void testParameterEqualsParameter() throws Exception {
-        DatabasePlatform databasePlatform = JUnitTestCase.getServerSession().getPlatform(); 
-        
+        DatabasePlatform databasePlatform = JUnitTestCase.getServerSession().getPlatform();
+
         if (databasePlatform.isSymfoware()) {
-            getServerSession().logMessage("Test testParameterEqualsParameter skipped for this platform, " 
+            getServerSession().logMessage("Test testParameterEqualsParameter skipped for this platform, "
                     + "Symfoware doesn't allow dynamic parameters on both sides of the equals operator at the same time. (bug 304897)");
             return;
         }
 
         if (databasePlatform.isMaxDB()) {
-            getServerSession().logMessage("Test testParameterEqualsParameter skipped for this platform, " 
+            getServerSession().logMessage("Test testParameterEqualsParameter skipped for this platform, "
                     + "MaxDB doesn't allow dynamic parameters on both sides of the equals operator at the same time. (bug 326962)");
             return;
         }
-        
+
     	EntityManager em = createEntityManager();
     	beginTransaction(em);
     	try {
             Query query = em.createQuery("SELECT e FROM Employee e");
             List<Employee> emps = query.getResultList();
-    
+
             Assert.assertNotNull(emps);
             int numRead = emps.size();
-	        
+
 	        query = em.createQuery("SELECT e FROM Employee e WHERE :arg1=:arg2");
 	        query.setParameter("arg1", 1);
 	        query.setParameter("arg2", 1);
 	        emps = query.getResultList();
-	
+
 	        Assert.assertNotNull(emps);
 	        Assert.assertEquals(numRead, emps.size());
     	} finally {
         	rollbackTransaction(em);
             closeEntityManager(em);
-    	}    
+    	}
     }
-    
+
     /**
      * Tests 1=1 returns correct result.
      */
@@ -259,31 +255,31 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         try {
             Query query = em.createQuery("SELECT e FROM Employee e");
             List<Employee> emps = query.getResultList();
-    
+
             Assert.assertNotNull(emps);
             int numRead = emps.size();
-    
+
             query = em.createQuery("SELECT e FROM Employee e WHERE 1=1");
             emps = query.getResultList();
-    
+
             Assert.assertNotNull(emps);
             Assert.assertEquals(numRead, emps.size());
-            
+
             ExpressionBuilder builder = new ExpressionBuilder();
             query = ((JpaEntityManager)em.getDelegate()).createQuery(builder.value(1).equal(builder.value(1)), Employee.class);
             emps = query.getResultList();
-    
+
             Assert.assertNotNull(emps);
             Assert.assertEquals(numRead, emps.size());
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
-        }    
+        }
     }
 
     //GF Bug#404
     //1.  Fetch join now works with LAZY.  The fix is to trigger the value holder during object registration.  The test is to serialize
-    //the results and deserialize it, then call getPhoneNumbers().size().  It used to throw an exception because the value holder 
+    //the results and deserialize it, then call getPhoneNumbers().size().  It used to throw an exception because the value holder
     //wasn't triggered and the data was in a transient attribute that was lost during serialization
     //2.  Test both scenarios of using the cache and bypassing the cache
     public void simpleJoinFetchTest() throws Exception {
@@ -294,9 +290,9 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         org.eclipse.persistence.jpa.JpaEntityManager em = (org.eclipse.persistence.jpa.JpaEntityManager)createEntityManager();
         simpleJoinFetchTest(em);
     }
-    
-    
-    //bug#6130550:  
+
+
+    //bug#6130550:
     // tests that Fetch join works when returning objects that may already have been loaded in the em/uow (without the joined relationships)
     // Builds on simpleJoinFetchTest
     public void simpleJoinFetchTest2() throws Exception {
@@ -333,7 +329,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
             Employee emp = (Employee)iterator.next();
             emp.getPhoneNumbers().size();
         }
-            
+
         ReportQuery reportQuery = new ReportQuery();
         reportQuery.setShouldReturnWithoutReportQueryResult(true);
         reportQuery.setReferenceClass(Employee.class);
@@ -367,7 +363,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
             Employee emp = (Employee)iterator.next();
             emp.getPhoneNumbers().size();
         }
-            
+
         clearCache();
 
         expectedResult = (Vector)em.getUnitOfWork().executeQuery(reportQuery);
@@ -819,7 +815,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         Assert.assertTrue("Simple In Test failed", comparer.compareObjects(result, expectedResult));
     }
-    
+
     public void simpleInListTest() {
         EntityManager em = createEntityManager();
 
@@ -827,7 +823,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         List expectedResultList = new ArrayList();
         expectedResultList.add(expectedResult.getId());
-        
+
         clearCache();
 
         String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.id IN :result";
@@ -850,26 +846,26 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
             expectedResult.setSalary(-12345);
             em.persist(expectedResult);
             em.flush();
-            
+
             clearCache();
-    
+
             String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.salary IN(-12345)";
-    
+
             Employee result = (Employee)em.createQuery(ejbqlString).getSingleResult();
-    
+
             Assert.assertTrue("Simple In Negative Test failed", comparer.compareObjects(result, expectedResult));
         } finally{
             rollbackTransaction(em);
             closeEntityManager(em);
         }
     }
-    
+
     public void simpleLengthTest() {
         if ((JUnitTestCase.getServerSession()).getPlatform().isSQLServer()) {
             getServerSession().logMessage("Warning SQL doesnot support LENGTH function");
             return;
         }
-        
+
         EntityManager em = createEntityManager();
 
         Employee expectedResult = (Employee)getServerSession().readAllObjects(Employee.class).elementAt(0);
@@ -1565,11 +1561,11 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         expectedResult = getServerSession().readAllObjects(Employee.class);
         clearCache();
-        
-        ejbqlString = "SELECT emp FROM Employee emp WHERE MOD(emp.salary, emp.salary) = 0";        
+
+        ejbqlString = "SELECT emp FROM Employee emp WHERE MOD(emp.salary, emp.salary) = 0";
         result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("Simple Mod test(2) failed", comparer.compareObjects(result, expectedResult));  
+        Assert.assertTrue("Simple Mod test(2) failed", comparer.compareObjects(result, expectedResult));
     }
 
     public void simpleIsEmptyTest() {
@@ -1826,9 +1822,9 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
                 phoneAnyOf.get("number").equal(employeeBuilder.all(subQuery)));
         query.setSelectionCriteria(selectionCriteria);
         query.setReferenceClass(Employee.class);
-		
+
         Vector expectedResult = (Vector)getServerSession().executeQuery(query);
-		
+
         clearCache();
 
         // Setup the EJBQL to do the same.
@@ -2048,7 +2044,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
 
         List expectedResult = getServerSession().readAllObjects(LargeProject.class);
-        
+
         clearCache();
 
         String ejbqlString = "SELECT OBJECT(proj) FROM Project proj WHERE TYPE(proj) = LargeProject";
@@ -2058,7 +2054,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         Assert.assertTrue("SimpleTypeTest", comparer.compareObjects(result, expectedResult));
 
     }
-    
+
     public void simpleAsOrderByTest(){
         EntityManager em = createEntityManager();
 
@@ -2068,9 +2064,9 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         query.returnSingleAttribute();
         query.dontRetrievePrimaryKeys();
         query.addOrdering(query.getExpressionBuilder().get("firstName").ascending());
-        
+
         Vector expectedResult = (Vector)getServerSession().executeQuery(query);
-        
+
         clearCache();
 
         String ejbqlString = "SELECT e.firstName as firstName FROM Employee e ORDER BY firstName";
@@ -2079,14 +2075,14 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         Assert.assertTrue("SimpleTypeTest", comparer.compareObjects(result, expectedResult));
     }
-    
+
     public void simpleLiteralDateTest(){
         EntityManager em = createEntityManager();
 
         Date date = Date.valueOf("1901-01-01");
         Expression exp = (new ExpressionBuilder()).get("period").get("startDate").greaterThan(date);
         List expectedResult = getServerSession().readAllObjects(Employee.class, exp);
-        
+
         clearCache();
 
         String ejbqlString = "SELECT e FROM Employee e where e.period.startDate > {d '1901-01-01'}";
@@ -2095,14 +2091,14 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         Assert.assertTrue("simpleLiteralDateTest", comparer.compareObjects(result, expectedResult));
     }
-    
+
     public void simpleSingleArgSubstringTest(){
         EntityManager em = createEntityManager();
 
         Expression exp = (new ExpressionBuilder()).get("firstName").equal("Bob");
         List expectedResult = getServerSession().readAllObjects(Employee.class, exp);
         expectedResult.size();
-        
+
         clearCache();
 
         String ejbqlString = "SELECT e FROM Employee e where substring(e.firstName, 2) = 'ob'";
@@ -2111,19 +2107,19 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         Assert.assertTrue("simpleSingleArgSubstringTest", comparer.compareObjects(result, expectedResult));
     }
-    
+
     // bug 318195
     public void elementCollectionIsNotEmptyTest(){
         EntityManager em = createEntityManager();
         Query query = em.createQuery("SELECT e FROM Employee e WHERE e.responsibilities IS NOT EMPTY");
-        List results  = query.getResultList(); 
+        List results  = query.getResultList();
         Iterator i = results.iterator();
         while (i.hasNext()){
             Employee emp = (Employee)i.next();
             assertTrue(emp.getResponsibilities() != null && !emp.getResponsibilities().isEmpty());
         }
     }
-    
+
     // bug 318195
     public void relationshipElementCollectionIsNotEmptyTest(){
         EntityManager em = createEntityManager();
@@ -2135,7 +2131,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
             assertTrue(emp.getResponsibilities() != null && !emp.getResponsibilities().isEmpty());
         }
     }
-    
+
     // Bug 332207
     public void enumWithToStringTest(){
         EntityManager em = createEntityManager();
@@ -2152,5 +2148,13 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         assertTrue("Enumeration not properly returned", emp.getPayScale() == Employee.SalaryRate.SENIOR);
         rollbackTransaction(em);
     }
-}
 
+    public void selectFromClauseWithFullyQualifiedClassName(){
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery(
+            "SELECT e FROM org.eclipse.persistence.testing.models.jpa.advanced.Employee e, " +
+            "org.eclipse.persistence.testing.models.jpa.advanced.Address a "+
+            "WHERE e.lastName = 'JPQL'");
+        query.getResultList();
+    }
+}

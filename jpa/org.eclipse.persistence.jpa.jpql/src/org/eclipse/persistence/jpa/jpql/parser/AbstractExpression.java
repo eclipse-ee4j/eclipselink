@@ -21,6 +21,7 @@ import java.util.LinkedList;
 import java.util.List;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.WordParser;
+import org.eclipse.persistence.jpa.jpql.WordParser.WordType;
 import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
 import org.eclipse.persistence.jpa.jpql.util.iterator.CloneListIterator;
 import org.eclipse.persistence.jpa.jpql.util.iterator.IterableListIterator;
@@ -712,8 +713,28 @@ public abstract class AbstractExpression implements Expression {
 			// Right away create a SubExpression and parse the encapsulated expression
 			if (character == LEFT_PARENTHESIS) {
 
-				expression = new SubExpression(this, queryBNF.getId());
-				expression.parse(wordParser, tolerant);
+				// If the JPQLQueryBNF handles parsing the sub-expression, then delegate the parsing
+				// to its fallback ExpressionFactory
+				// fallback Expression Factory
+				if (queryBNF.handlesSubExpression()) {
+					expression = buildExpressionFromFallingBack(
+						wordParser,
+						ExpressionTools.EMPTY_STRING,
+						queryBNF,
+						expression,
+						tolerant
+					);
+				}
+				else {
+					expression = new SubExpression(this, queryBNF.getId());
+					expression.parse(wordParser, tolerant);
+
+					// Make sure this is not the root and if the parent handles parsing the sub-
+					// expression, then the Expression needs to be returned without further parsing
+					if ((getParent() != null) && getParent().getQueryBNF().handlesSubExpression()) {
+						return expression;
+					}
+				}
 
 				// Something has been parsed, which means it's not the beginning anymore
 				beginning = false;
@@ -741,8 +762,7 @@ public abstract class AbstractExpression implements Expression {
 				}
 
 				// Parse using the ExpressionFactory that is mapped with a JPQL identifier (word)
-				if (wordParser.getWordType() == WordParser.WordType.WORD &&
-				    shouldParseWithFactoryFirst()) {
+				if (shouldParseWithFactoryFirst() && (wordParser.getWordType() == WordType.WORD)) {
 
 					ExpressionFactory factory = queryBNF.getExpressionFactory(word);
 

@@ -292,6 +292,14 @@ final class ParameterTypeVisitor extends AbstractEclipseLinkTraverseParentVisito
 	 * {@inheritDoc}
 	 */
 	@Override
+	public void visit(CastExpression expression) {
+		type = Object.class;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void visit(CoalesceExpression expression) {
 		super.visit(expression);
 	}
@@ -411,6 +419,14 @@ final class ParameterTypeVisitor extends AbstractEclipseLinkTraverseParentVisito
 	public void visit(ExistsExpression expression) {
 		// The exist function always have a return type
 		this.expression = expression;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void visit(ExtractExpression expression) {
+		type = Object.class;
 	}
 
 	/**
@@ -713,22 +729,6 @@ final class ParameterTypeVisitor extends AbstractEclipseLinkTraverseParentVisito
 			type = String.class;
 		}
 	}
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void visit(CastExpression expression) {
-                type = Object.class;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void visit(ExtractExpression expression) {
-                type = Object.class;
-        }
 
 	/**
 	 * {@inheritDoc}

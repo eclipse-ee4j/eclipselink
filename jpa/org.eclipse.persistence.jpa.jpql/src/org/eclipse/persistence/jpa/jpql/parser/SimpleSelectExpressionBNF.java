@@ -17,7 +17,10 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * The query BNF for a simple select expression.
  *
  * <div nowrap><b>BNF:</b> <code>simple_select_expression ::= single_valued_path_expression |
- * scalar_expression | aggregate_expression | identification_variable</code><p>
+ *                                                            scalar_expression |
+ *                                                            aggregate_expression |
+ *                                                            identification_variable</code>
+ * <p>
  *
  * @version 2.4
  * @since 2.3

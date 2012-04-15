@@ -23,6 +23,16 @@ package org.eclipse.persistence.jpa.tests.jpql.model;
 @SuppressWarnings("nls")
 public abstract class AbstractStateObjectTest2_0 extends AbstractStateObjectTest {
 
+	public static StateObjectTester stateObject_014() {
+
+		// SELECT ENTRY(addr) FROM Alias a JOIN a.addresses addr
+
+		return selectStatement(
+			select(entry("addr")),
+			from("Alias", "a", join("a.addresses", "addr"))
+		);
+	}
+
 	public static StateObjectTester stateObject_139() {
 
 		// SELECT p

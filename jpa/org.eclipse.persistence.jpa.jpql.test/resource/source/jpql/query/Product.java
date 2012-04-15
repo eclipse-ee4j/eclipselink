@@ -16,6 +16,7 @@ import javax.persistence.NamedQuery;
 	@NamedQuery(name="product.min",      query="SELECT MIN(p.quantity) FROM Product p"),
 	@NamedQuery(name="product.null",     query="UPDATE Product AS p SET p.partNumber = NULL"),
 	@NamedQuery(name="product.quantity", query="SELECT AVG(p.quantity) FROM Product p"),
+	@NamedQuery(name="product.treat",    query="SELECT TREAT(TREAT(p.project LargeProject).parent AS LargeProject).endDate FROM Product p"),
 	@NamedQuery(name="product.update1",  query="UPDATE Product SET shelfLife.soldDate = CURRENT_DATE WHERE shelfLife IS NOT NULL AND shelfLife.soldDate <> CURRENT_DATE"),
 	@NamedQuery(name="product.update2",  query="UPDATE Product SET partNumber = CASE enumType WHEN com.titan.domain.EnumType.FIRST_NAME THEN '1' WHEN com.titan.domain.EnumType.LAST_NAME THEN '2' ELSE '3' END"),
 	@NamedQuery(name="product.update3",  query="UPDATE Product SET partNumber = CASE TYPE(project) WHEN LargeProject THEN '2' WHEN SmallProject THEN '3' ELSE '4' END")

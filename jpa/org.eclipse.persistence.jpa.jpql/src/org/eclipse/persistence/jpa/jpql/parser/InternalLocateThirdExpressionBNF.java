@@ -16,7 +16,12 @@ package org.eclipse.persistence.jpa.jpql.parser;
 /**
  * The query BNF for the third parameter of the <code><b>LOCATE</b></code> expression.
  * <p>
- * <div nowrap><b>BNF:</b> <code>expression ::= LOCATE(string_primary, string_primary [, simple_arithmetic_expression])</code><p>
+ * JPA 1.0, 2.0:
+ * <div nowrap><b>BNF:</b> <code>expression ::= LOCATE(string_primary, string_primary [, simple_arithmetic_expression])</code>
+ * <p>
+ * JPA 2.1:
+ * <div nowrap><b>BNF:</b> <code>expression ::= LOCATE(string_expression, string_expression [, arithmetic_expression])</code>
+ * <p>
  *
  * @version 2.4
  * @since 2.4

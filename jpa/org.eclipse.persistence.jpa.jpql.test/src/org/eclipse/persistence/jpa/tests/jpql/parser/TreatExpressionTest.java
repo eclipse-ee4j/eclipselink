@@ -16,7 +16,7 @@ package org.eclipse.persistence.jpa.tests.jpql.parser;
 import org.eclipse.persistence.jpa.tests.jpql.UniqueSignature;
 import org.junit.Test;
 
-import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries.*;
+import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries2_1.*;
 
 @UniqueSignature
 @SuppressWarnings("nls")
@@ -35,7 +35,7 @@ public final class TreatExpressionTest extends JPQLParserTest {
 			where(path("lp.budget").equal(inputParameter(":value")))
 		);
 
-		testQuery(query_226(), selectStatement);
+		testQuery(query_001(), selectStatement);
 	}
 
 	@Test
@@ -49,6 +49,6 @@ public final class TreatExpressionTest extends JPQLParserTest {
 			from("Employee", "e", join(treat("e.projects", "LargeProject"), "lp"))
 		);
 
-		testQuery(query_227(), selectStatement);
+		testQuery(query_002(), selectStatement);
 	}
 }

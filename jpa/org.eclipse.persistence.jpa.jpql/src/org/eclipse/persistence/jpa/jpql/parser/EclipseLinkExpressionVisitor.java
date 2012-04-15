@@ -27,4 +27,25 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * @author Pascal Filion
  */
 public interface EclipseLinkExpressionVisitor extends ExpressionVisitor {
+
+	/**
+	 * Visits the {@link CastExpression} expression.
+	 *
+	 * @param expression The {@link Expression} to visit
+	 */
+	void visit(CastExpression expression);
+
+	/**
+	 * Visits the {@link DatabaseType} expression.
+	 *
+	 * @param expression The {@link DatabaseType} to visit
+	 */
+	void visit(DatabaseType expression);
+
+	/**
+	 * Visits the {@link ExtractExpression} expression.
+	 *
+	 * @param expression The {@link Expression} to visit
+	 */
+	void visit(ExtractExpression expression);
 }

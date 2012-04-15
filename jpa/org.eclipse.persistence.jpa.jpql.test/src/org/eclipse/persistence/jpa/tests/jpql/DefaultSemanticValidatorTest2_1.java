@@ -32,27 +32,26 @@ import org.junit.Test;
 @SuppressWarnings("nls")
 public class DefaultSemanticValidatorTest2_1 extends AbstractSemanticValidatorTest {
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected JPQLQueryContext buildQueryContext() {
 		return new DefaultJPQLQueryContext(jpqlGrammar);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected AbstractSemanticValidator buildValidator() {
 		return new DefaultSemanticValidator(buildSemanticValidatorHelper());
 	}
 
-	@Test
-	public void test_EntityTypeLiteral_NotResolvable_1() throws Exception {
+	@Override
+	protected boolean isPathExpressionToCollectionMappingAllowed() {
+		return false;
+	}
 
-		String query = "SELECT e FROM Employee e TREAT(e.phoneNumbers AS Phone) AS ee";
-		List<JPQLQueryProblem> problems = validate(query);
+	@Test
+	public final void test_EntityTypeLiteral_NotResolvable_1() throws Exception {
+
+		String jpqlQuery = "SELECT e FROM Employee e TREAT(e.phoneNumbers AS Phone) AS ee";
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
 
 		testDoesNotHaveProblem(
 			problems,
@@ -61,13 +60,13 @@ public class DefaultSemanticValidatorTest2_1 extends AbstractSemanticValidatorTe
 	}
 
 	@Test
-	public void test_EntityTypeLiteral_NotResolvable_2() throws Exception {
+	public final void test_EntityTypeLiteral_NotResolvable_2() throws Exception {
 
-		String query = "SELECT e FROM Employee e JOIN TREAT(e.phoneNumbers AS Phone2) AS ee";
+		String jpqlQuery = "SELECT e FROM Employee e JOIN TREAT(e.phoneNumbers AS Phone2) AS ee";
 		int startPosition = "SELECT e FROM Employee e JOIN TREAT(e.phoneNumbers AS ".length();
 		int endPosition   = "SELECT e FROM Employee e JOIN TREAT(e.phoneNumbers AS Phone2".length();
 
-		List<JPQLQueryProblem> problems = validate(query);
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
 
 		testHasProblem(
 			problems,
@@ -75,5 +74,21 @@ public class DefaultSemanticValidatorTest2_1 extends AbstractSemanticValidatorTe
 			startPosition,
 			endPosition
 		);
+	}
+
+	@Test
+	public final void test_ComplextPathExpression_01() throws Exception {
+
+		String jpqlQuery = "SELECT TREAT(p.project LargeProject) FROM Product p";
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+		testHasNoProblems(problems);
+	}
+
+	@Test
+	public final void test_ComplextPathExpression_02() throws Exception {
+
+		String jpqlQuery = "SELECT TREAT(TREAT(p.project LargeProject).parent AS LargeProject).endDate FROM Product p";
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+		testHasNoProblems(problems);
 	}
 }

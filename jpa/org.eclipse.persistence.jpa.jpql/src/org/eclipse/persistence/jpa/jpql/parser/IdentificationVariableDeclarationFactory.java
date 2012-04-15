@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -16,10 +16,11 @@ package org.eclipse.persistence.jpa.jpql.parser;
 import org.eclipse.persistence.jpa.jpql.WordParser;
 
 /**
- * This {@link IdentificationVariableDeclarationFactory} is meant to handle the parsing of a portion
- * of the query when it's expected to be an identification variable declaration.
+ * This <code>IdentificationVariableDeclarationFactory</code> handles parsing the JPQL fragment
+ * within the <code><b>FROM</b></code> clause.
  *
  * @see IdentificationVariableDeclaration
+ * @see CollectionMemberDeclaration
  *
  * @version 2.4
  * @since 2.3
@@ -50,10 +51,6 @@ public final class IdentificationVariableDeclarationFactory extends ExpressionFa
 	                                             JPQLQueryBNF queryBNF,
 	                                             AbstractExpression expression,
 	                                             boolean tolerant) {
-
-		if (word.length() == 0) {
-			return null;
-		}
 
 		if (word.equalsIgnoreCase(Expression.IN)) {
 			expression = new CollectionMemberDeclaration(parent);

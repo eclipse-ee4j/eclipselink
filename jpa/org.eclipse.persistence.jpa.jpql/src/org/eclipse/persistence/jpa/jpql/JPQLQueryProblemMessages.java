@@ -48,6 +48,7 @@ public interface JPQLQueryProblemMessages {
 	String AbstractSelectStatement_FromClauseMissing = "ABSTRACT_SELECT_STATEMENT_FROM_CLAUSE_MSSING";
 	String AdditionExpression_LeftExpression_WrongType = "ADDITION_EXPRESSION_LEFT_EXPRESSION_WRONG_TYPE";
 	String AdditionExpression_RightExpression_WrongType = "ADDITION_EXPRESSION_RIGHT_EXPRESSION_WRONG_TYPE";
+	String AggregateFunction_WrongClause = "AGGREGATE_FUNCTION_WRONG_CLAUSE";
 	String AllOrAnyExpression_All_ParentNotComparisonExpression = "ALL_OR_ANY_EXPRESSION_PARENT_NOT_COMPARISON_EXPRESSION";
 	String AllOrAnyExpression_Any_ParentNotComparisonExpression = "ALL_OR_ANY_EXPRESSION_PARENT_NOT_COMPARISON_EXPRESSION";
 	String AllOrAnyExpression_InvalidExpression = "ALL_OR_ANY_EXPRESSION_INVALID_EXPRESSION";
@@ -67,6 +68,7 @@ public interface JPQLQueryProblemMessages {
 	String AvgFunction_MissingExpression = "AVG_FUNCTION_MISSING_EXPRESSION";
 	String AvgFunction_MissingLeftParenthesis = "AVG_FUNCTION_MISSING_LEFT_PARENTHESIS";
 	String AvgFunction_MissingRightParenthesis = "AVG_FUNCTION_MISSING_RIGHT_PARENTHESIS";
+	String BadExpression_InvalidExpression = "BAD_EXPRESSION_INVALID_EXPRESSION";
 	String BetweenExpression_MissingAnd = "BETWEEN_EXPRESSION_MISSING_AND";
 	String BetweenExpression_MissingExpression = "BETWEEN_EXPRESSION_MISSING_EXPRESSION";
 	String BetweenExpression_MissingLowerBoundExpression = "BETWEEN_EXPRESSION_MISSING_LOWER_BOUND_EXPRESSION";
@@ -98,6 +100,9 @@ public interface JPQLQueryProblemMessages {
 	String ColumnExpression_MissingColumn = "COLUMN_EXPRESSION_MISSING_COLUMN";
 	String ColumnExpression_MissingLeftParenthesis = "COLUMN_EXPRESSION_MISSING_LEFT_PARENTHESIS";
 	String ColumnExpression_MissingRightParenthesis = "COLUMN_EXPRESSION_MISSING_RIGHT_PARENTHESIS";
+	String ComparisonExpression_AssociationField = "COMPARISON_EXPRESSION_ASSOCIATION_FIELD";
+	String ComparisonExpression_BasicField = "COMPARISON_EXPRESSION_BASIC_FIELD";
+	String ComparisonExpression_IdentificationVariable = "COMPARISON_EXPRESSION_IDENTIFICATION_VARIABLE";
 	String ComparisonExpression_MissingLeftExpression = "COMPARISON_EXPRESSION_MISSING_LEFT_EXPRESSION";
 	String ComparisonExpression_MissingRightExpression = "COMPARISON_EXPRESSION_MISSING_RIGHT_EXPRESSION";
 	String ComparisonExpression_WrongComparisonType = "COMPARISON_EXPRESSION_WRONG_COMPARISON_TYPE";
@@ -270,7 +275,6 @@ public interface JPQLQueryProblemMessages {
 	String OrderByClause_OrderByItemEndsWithComma = "ORDER_BY_CLAUSE_ORDER_BY_ITEM_ENDS_WITH_COMMA";
 	String OrderByClause_OrderByItemIsMissingComma = "ORDER_BY_CLAUSE_ORDER_BY_ITEM_IS_MISSING_COMMA";
 	String OrderByClause_OrderByItemMissing = "ORDER_BY_CLAUSE_ORDER_BY_ITEM_MISSING";
-	String OrderByItem_InvalidPath = "ORDER_BY_ITEM_INVALID_PATH";
 	String OrderByItem_MissingStateFieldPathExpression = "ORDER_BY_ITEM_MISSING_STATE_FIELD_PATH_EXPRESSION";
 	String PathExpression_NotRelationshipMapping = "PATH_EXPRESSION_NOT_RELATIONSHIP_MAPPING";
 	String RangeVariableDeclaration_MissingAbstractSchemaName = "RANGE_VARIABLE_DECLARATION_MISSING_ABSTRACT_SCHEMA_NAME";
@@ -290,6 +294,7 @@ public interface JPQLQueryProblemMessages {
 	String SqrtExpression_MissingRightParenthesis = "SQRT_EXPRESSION_MISSING_RIGHT_PARENTHESIS";
 	String SqrtExpression_WrongType = "SQRT_EXPRESSION_WRONG_TYPE";
 	String StateFieldPathExpression_AssociationField = "STATE_FIELD_PATH_EXPRESSION_ASSOCIATION_FIELD";
+	String StateFieldPathExpression_BasicField = "STATE_FIELD_PATH_EXPRESSION_BASIC_FIELD";
 	String StateFieldPathExpression_CollectionType = "STATE_FIELD_PATH_EXPRESSION_COLLECTION_TYPE";
 	String StateFieldPathExpression_InvalidEnumConstant = "STATE_FIELD_PATH_EXPRESSION_INVALID_ENUM_CONSTANT";
 	String StateFieldPathExpression_NoMapping = "STATE_FIELD_PATH_EXPRESSION_NO_MAPPING";

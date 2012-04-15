@@ -34,6 +34,7 @@ import org.eclipse.persistence.jpa.jpql.parser.AvgFunction;
 import org.eclipse.persistence.jpa.jpql.parser.BadExpression;
 import org.eclipse.persistence.jpa.jpql.parser.BetweenExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CaseExpression;
+import org.eclipse.persistence.jpa.jpql.parser.CastExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CoalesceExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionMemberDeclaration;
@@ -44,14 +45,22 @@ import org.eclipse.persistence.jpa.jpql.parser.CompoundExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConcatExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConstructorExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CountFunction;
+import org.eclipse.persistence.jpa.jpql.parser.DatabaseType;
 import org.eclipse.persistence.jpa.jpql.parser.DateTime;
 import org.eclipse.persistence.jpa.jpql.parser.DeleteClause;
 import org.eclipse.persistence.jpa.jpql.parser.DeleteStatement;
 import org.eclipse.persistence.jpa.jpql.parser.DivisionExpression;
+import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_0;
+import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_1;
+import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_2;
+import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_3;
+import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_4;
 import org.eclipse.persistence.jpa.jpql.parser.EmptyCollectionComparisonExpression;
 import org.eclipse.persistence.jpa.jpql.parser.EntityTypeLiteral;
+import org.eclipse.persistence.jpa.jpql.parser.EntryExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ExistsExpression;
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
+import org.eclipse.persistence.jpa.jpql.parser.ExtractExpression;
 import org.eclipse.persistence.jpa.jpql.parser.FromClause;
 import org.eclipse.persistence.jpa.jpql.parser.FunctionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.GroupByClause;
@@ -85,6 +94,7 @@ import org.eclipse.persistence.jpa.jpql.parser.OnClause;
 import org.eclipse.persistence.jpa.jpql.parser.OrExpression;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByClause;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByItem;
+import org.eclipse.persistence.jpa.jpql.parser.OrderByItem.NullOrdering;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByItem.Ordering;
 import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.ResultVariable;
@@ -112,10 +122,12 @@ import org.eclipse.persistence.jpa.jpql.parser.UpdateStatement;
 import org.eclipse.persistence.jpa.jpql.parser.UpperExpression;
 import org.eclipse.persistence.jpa.jpql.parser.WhenClause;
 import org.eclipse.persistence.jpa.jpql.parser.WhereClause;
+import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
 import org.eclipse.persistence.jpa.tests.jpql.JPQLBasicTest;
 
 import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
+import static org.eclipse.persistence.jpa.tests.jpql.parser.JPQLQueryBuilder.*;
 import static org.junit.Assert.*;
 
 /**
@@ -219,6 +231,119 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		return case_(nullExpression(), whenClauses, elseExpression);
 	}
 
+	private static CastExpressionTester cast(ExpressionTester expression,
+	                                         boolean hasAs,
+	                                         ExpressionTester databaseType) {
+
+		return new CastExpressionTester(expression, hasAs, databaseType);
+	}
+
+	protected static CastExpressionTester cast(ExpressionTester expression,
+	                                           ExpressionTester databaseType) {
+
+		return cast(expression, false, databaseType);
+	}
+
+	protected static CastExpressionTester cast(ExpressionTester expression, String databaseType) {
+		return cast(expression, databaseType, -1, -1);
+	}
+
+	protected static CastExpressionTester cast(ExpressionTester expression,
+	                                           String databaseType,
+	                                           int size) {
+
+		return cast(expression, databaseType, size, -1);
+	}
+
+	protected static CastExpressionTester cast(ExpressionTester expression,
+	                                           String databaseType,
+	                                           int size,
+	                                           int precision) {
+
+		return new CastExpressionTester(
+			expression,
+			false,
+			databaseType(databaseType, size, precision)
+		);
+	}
+
+	protected static CastExpressionTester cast(String pathExpression, ExpressionTester databaseType) {
+		return cast(path(pathExpression), databaseType);
+	}
+
+	protected static CastExpressionTester cast(String pathExpression, String databaseType) {
+		return cast(path(pathExpression), databaseType);
+	}
+
+	protected static CastExpressionTester cast(String pathExpression,
+	                                           String databaseType,
+	                                           int size) {
+
+		return cast(path(pathExpression), databaseType, size, -1);
+	}
+
+	protected static CastExpressionTester cast(String pathExpression,
+	                                           String databaseType,
+	                                           int size,
+	                                           int precision) {
+
+		return cast(path(pathExpression), databaseType, size, precision);
+	}
+
+	protected static CastExpressionTester castAs(ExpressionTester expression,
+	                                             ExpressionTester databaseType) {
+
+		return cast(expression, true, databaseType);
+	}
+
+	protected static CastExpressionTester castAs(ExpressionTester expression, String databaseType) {
+		return castAs(expression, databaseType, -1, -1);
+	}
+
+	protected static CastExpressionTester castAs(ExpressionTester pathExpression,
+	                                             String databaseType,
+	                                             int size) {
+
+		return castAs(pathExpression, databaseType, size, -1);
+	}
+
+	protected static CastExpressionTester castAs(ExpressionTester expression,
+	                                             String databaseType,
+	                                             int size,
+	                                             int precision) {
+
+		return new CastExpressionTester(
+			expression,
+			true,
+			databaseType(databaseType, size, precision)
+		);
+	}
+
+	protected static CastExpressionTester castAs(String pathExpression, ExpressionTester databaseType) {
+		return castAs(path(pathExpression), databaseType);
+	}
+
+	protected static CastExpressionTester castAs(String pathExpression,
+	                                             String databaseType) {
+
+		return castAs(path(pathExpression), databaseType, -1);
+	}
+
+	protected static CastExpressionTester castAs(String pathExpression,
+	                                             String databaseType,
+	                                             int size) {
+
+		return castAs(path(pathExpression), databaseType, size);
+	}
+
+	protected static CastExpressionTester castAs(String pathExpression,
+	                                             String databaseType,
+	                                             int size,
+	                                             int precision) {
+
+		return castAs(path(pathExpression), databaseType, size, precision);
+	}
+
 	protected static CoalesceExpressionTester coalesce(ExpressionTester expression) {
 		return new CoalesceExpressionTester(expression);
 	}
@@ -249,13 +374,32 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 	}
 
 	protected static CollectionValuedPathExpressionTester collectionPath(ExpressionTester identificationVariable,
+	                                                                     boolean startsWithDot,
 	                                                                     String collectionPath) {
 
-		return new CollectionValuedPathExpressionTester(identificationVariable, collectionPath);
+		return new CollectionValuedPathExpressionTester(
+			identificationVariable,
+			startsWithDot ? "." + collectionPath : collectionPath
+		);
+	}
+
+	protected static CollectionValuedPathExpressionTester collectionPath(ExpressionTester identificationVariable,
+	                                                                     String collectionPath) {
+
+		return collectionPath(identificationVariable, true, collectionPath);
 	}
 
 	protected static CollectionValuedPathExpressionTester collectionPath(String collectionPath) {
-		return collectionPath(nullExpression(), collectionPath);
+
+		int dotIndex = collectionPath.indexOf('.');
+
+		if (dotIndex == 0) {
+			return collectionPath(nullExpression(), false, collectionPath);
+		}
+
+		String variable = collectionPath.substring(0, dotIndex);
+		String path = collectionPath.substring(dotIndex);
+		return collectionPath(variable(variable), false, path);
 	}
 
 	private static ComparisonExpressionTester comparison(ExpressionTester leftExpression,
@@ -294,6 +438,30 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 
 	protected static DateTimeTester CURRENT_TIMESTAMP() {
 		return new DateTimeTester(CURRENT_TIMESTAMP);
+	}
+
+	protected static DatabaseTypeTester databaseType(String databaseType) {
+		return databaseType(databaseType, -1);
+	}
+
+	protected static DatabaseTypeTester databaseType(String databaseType, int length) {
+		return databaseType(databaseType, length, -1);
+	}
+
+	protected static DatabaseTypeTester databaseType(String databaseType, int size, int precision) {
+
+		DatabaseTypeTester expression = new DatabaseTypeTester(
+			databaseType,
+			(size == -1)       ? nullExpression() : numeric(size),
+			(precision  == -1) ? nullExpression() : numeric(precision)
+		);
+
+		expression.hasComma            = (precision != -1);
+		expression.hasSpaceAfterComma  = (precision != -1);
+		expression.hasLeftParenthesis  = (size != -1 || precision != -1);
+		expression.hasRightParenthesis = (size != -1 || precision != -1);
+
+		return expression;
 	}
 
 	protected static DateTimeTester dateTime(String jdbcEscapeFormat) {
@@ -361,6 +529,14 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		return new EntityTypeLiteralTester(entity);
 	}
 
+	protected static EntryExpressionTester entry(ExpressionTester identificationVariable) {
+		return new EntryExpressionTester(identificationVariable);
+	}
+
+	protected static EntryExpressionTester entry(String identificationVariable) {
+		return entry(variable(identificationVariable));
+	}
+
 	protected static ComparisonExpressionTester equal(ExpressionTester leftExpression,
 	                                                  ExpressionTester rightExpression) {
 
@@ -369,6 +545,14 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 
 	protected static ExistsExpressionTester exists(ExpressionTester subquery) {
 		return new ExistsExpressionTester(subquery, false);
+	}
+
+	protected static ExtractExpressionTester extract(String part, ExpressionTester expression) {
+		return new ExtractExpressionTester(part, false, expression);
+	}
+
+	protected static ExtractExpressionTester extractFrom(String part, ExpressionTester expression) {
+		return new ExtractExpressionTester(part, true, expression);
 	}
 
 	protected static KeywordExpressionTester FALSE() {
@@ -1139,6 +1323,20 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
+	protected static JoinTester joinAsTreat(String collectionPath,
+	                                        String entityTypeLiteral,
+	                                        String variable) {
+
+		return joinAs(treat(collectionPath, entityTypeLiteral), variable);
+	}
+
+	protected static JoinTester joinAsTreatAs(String collectionPath,
+	                                          String entityTypeLiteral,
+	                                          String variable) {
+
+		return joinAs(treatAs(collectionPath, entityTypeLiteral), variable);
+	}
+
 	protected static JoinTester joinFetch(ExpressionTester collectionPath) {
 		JoinTester join = joinFetch(
 			collectionPath,
@@ -1283,6 +1481,20 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
+	protected static JoinTester joinTreat(String collectionPath,
+	                                      String entityTypeLiteral,
+	                                      String variable) {
+
+		return join(treat(collectionPath, entityTypeLiteral), variable);
+	}
+
+	protected static JoinTester joinTreatAs(String collectionPath,
+	                                        String entityTypeLiteral,
+	                                        String variable) {
+
+		return join(treatAs(collectionPath, entityTypeLiteral), variable);
+	}
+
 	protected static JPQLExpressionTester jpqlExpression(ExpressionTester queryStatement) {
 		return jpqlExpression(queryStatement, nullExpression());
 	}
@@ -1312,7 +1524,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 			collectionPath,
 			false,
 			identificationVariable,
-			nullExpression()
+			joinCondition
 		);
 	}
 
@@ -2155,11 +2367,14 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 	}
 
 	protected static OrderByItemTester orderByItem(ExpressionTester orderByItem) {
-		return orderByItem(orderByItem, Ordering.DEFAULT);
+		return orderByItem(orderByItem, Ordering.DEFAULT, NullOrdering.DEFAULT);
 	}
 
-	private static OrderByItemTester orderByItem(ExpressionTester orderByItem, Ordering ordering) {
-		return new OrderByItemTester(orderByItem, ordering);
+	private static OrderByItemTester orderByItem(ExpressionTester orderByItem,
+	                                             Ordering ordering,
+	                                             NullOrdering nullOrdering) {
+
+		return new OrderByItemTester(orderByItem, ordering, nullOrdering);
 	}
 
 	protected static OrderByItemTester orderByItem(String stateFieldPathExpression) {
@@ -2167,29 +2382,96 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 	}
 
 	protected static OrderByItemTester orderByItemAsc(ExpressionTester orderByItem) {
-		return orderByItem(orderByItem, Ordering.ASC);
+		return orderByItem(orderByItem, Ordering.ASC, NullOrdering.DEFAULT);
 	}
 
 	protected static OrderByItemTester orderByItemAsc(String stateFieldPathExpression) {
 		return orderByItemAsc(path(stateFieldPathExpression));
 	}
 
+	protected static OrderByItemTester orderByItemAscNullsFirst(ExpressionTester orderByItem) {
+		return orderByItem(orderByItem, Ordering.ASC, NullOrdering.NULLS_FIRST);
+	}
+
+	protected static OrderByItemTester orderByItemAscNullsFirst(String pathExpression) {
+		return orderByItemAscNullsFirst(path(pathExpression));
+	}
+
+	protected static OrderByItemTester orderByItemAscNullsLast(ExpressionTester orderByItem) {
+		return orderByItem(orderByItem, Ordering.ASC, NullOrdering.NULLS_LAST);
+	}
+
+	protected static OrderByItemTester orderByItemAscNullsLast(String stateFieldPathExpression) {
+		return orderByItemAscNullsLast(path(stateFieldPathExpression));
+	}
+
 	protected static OrderByItemTester orderByItemDesc(ExpressionTester orderByItem) {
-		return orderByItem(orderByItem, Ordering.DESC);
+		return orderByItem(orderByItem, Ordering.DESC, NullOrdering.DEFAULT);
 	}
 
 	protected static OrderByItemTester orderByItemDesc(String stateFieldPathExpression) {
 		return orderByItemDesc(path(stateFieldPathExpression));
 	}
 
-	protected static StateFieldPathExpressionTester path(ExpressionTester identificationVariable,
-	                                                     String stateFieldPathExpression) {
-
-		return new StateFieldPathExpressionTester(identificationVariable, stateFieldPathExpression);
+	protected static OrderByItemTester orderByItemDescNullsFirst(ExpressionTester orderByItem) {
+		return orderByItem(orderByItem, Ordering.DESC, NullOrdering.NULLS_FIRST);
 	}
 
-	protected static StateFieldPathExpressionTester path(String stateFieldPathExpression) {
-		return path(nullExpression(), stateFieldPathExpression);
+	protected static OrderByItemTester orderByItemDescNullsFirst(String pathExpression) {
+		return orderByItemDescNullsFirst(path(pathExpression));
+	}
+
+	protected static OrderByItemTester orderByItemDescNullsLast(ExpressionTester orderByItem) {
+		return orderByItem(orderByItem, Ordering.DESC, NullOrdering.NULLS_LAST);
+	}
+
+	protected static OrderByItemTester orderByItemDescNullsLast(String pathExpression) {
+		return orderByItemAscNullsLast(path(pathExpression));
+	}
+
+	protected static OrderByItemTester orderByItemNullsFirst(ExpressionTester orderByItem) {
+		return orderByItem(orderByItem, Ordering.DEFAULT, NullOrdering.NULLS_FIRST);
+	}
+
+	protected static OrderByItemTester orderByItemNullsFirst(String pathExpression) {
+		return orderByItemNullsFirst(path(pathExpression));
+	}
+
+	protected static OrderByItemTester orderByItemNullsLast(ExpressionTester orderByItem) {
+		return orderByItem(orderByItem, Ordering.DEFAULT, NullOrdering.NULLS_LAST);
+	}
+
+	protected static OrderByItemTester orderByItemNullsLast(String pathExpression) {
+		return orderByItemNullsLast(path(pathExpression));
+	}
+
+	private static StateFieldPathExpressionTester path(ExpressionTester identificationVariable,
+	                                                   boolean startsWithDot,
+	                                                   String pathExpression) {
+
+		return new StateFieldPathExpressionTester(
+			identificationVariable,
+			startsWithDot ? "." + pathExpression : pathExpression
+		);
+	}
+
+	protected static StateFieldPathExpressionTester path(ExpressionTester identificationVariable,
+	                                                     String pathExpression) {
+
+		return path(identificationVariable, true, pathExpression);
+	}
+
+	protected static StateFieldPathExpressionTester path(String pathExpression) {
+
+		int dotIndex = pathExpression.indexOf('.');
+
+		if (dotIndex == 0) {
+			return path(nullExpression(), false, pathExpression);
+		}
+
+		String variable = pathExpression.substring(0, dotIndex);
+		String path = pathExpression.substring(dotIndex);
+		return path(variable(variable), false, path);
 	}
 
 	protected static ArithmeticFactorTester plus(ExpressionTester expression) {
@@ -2246,6 +2528,37 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
+	private static ResultVariableTester resultVariable(ExpressionTester selectExpression,
+	                                                   boolean hasAs,
+	                                                   ExpressionTester resultVariable) {
+
+		return new ResultVariableTester(selectExpression, hasAs, resultVariable);
+	}
+
+	protected static ResultVariableTester resultVariable(ExpressionTester selectExpression,
+	                                                     ExpressionTester resultVariable) {
+
+		return resultVariable(selectExpression, false, resultVariable);
+	}
+
+	protected static ResultVariableTester resultVariable(ExpressionTester selectExpression,
+	                                                     String resultVariable) {
+
+		return resultVariable(selectExpression, false, variable(resultVariable));
+	}
+
+	protected static ResultVariableTester resultVariableAs(ExpressionTester selectExpression,
+	                                                       ExpressionTester resultVariable) {
+
+		return resultVariable(selectExpression, true, resultVariable);
+	}
+
+	protected static ResultVariableTester resultVariableAs(ExpressionTester selectExpression,
+	                                                       String resultVariable) {
+
+		return resultVariableAs(selectExpression, variable(resultVariable));
+	}
+
 	protected static SelectClauseTester select(ExpressionTester selectExpression) {
 		return select(selectExpression, false);
 	}
@@ -2268,37 +2581,6 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 
 	protected static SelectClauseTester selectDisting(ExpressionTester selectExpression) {
 		return select(selectExpression, true);
-	}
-
-	private static ResultVariableTester selectItem(ExpressionTester selectExpression,
-	                                               boolean hasAs,
-	                                               ExpressionTester resultVariable) {
-
-		return new ResultVariableTester(selectExpression, hasAs, resultVariable);
-	}
-
-	protected static ResultVariableTester selectItem(ExpressionTester selectExpression,
-	                                                 ExpressionTester resultVariable) {
-
-		return selectItem(selectExpression, false, resultVariable);
-	}
-
-	protected static ResultVariableTester selectItem(ExpressionTester selectExpression,
-	                                                 String resultVariable) {
-
-		return selectItem(selectExpression, false, variable(resultVariable));
-	}
-
-	protected static ResultVariableTester selectItemAs(ExpressionTester selectExpression,
-	                                                   ExpressionTester resultVariable) {
-
-		return selectItem(selectExpression, true, resultVariable);
-	}
-
-	protected static ResultVariableTester selectItemAs(ExpressionTester selectExpression,
-	                                                   String resultVariable) {
-
-		return selectItemAs(selectExpression, variable(resultVariable));
 	}
 
 	protected static SelectStatementTester selectStatement(ExpressionTester selectClause,
@@ -2338,29 +2620,147 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
+	protected static SelectStatementTester selectStatement(ExpressionTester selectClause,
+	                                                       ExpressionTester fromClause,
+	                                                       GroupByClauseTester groupByClause) {
+
+		return selectStatement(
+			selectClause,
+			fromClause,
+			nullExpression(),
+			groupByClause,
+			nullExpression(),
+			nullExpression()
+		);
+	}
+
+	protected static SelectStatementTester selectStatement(ExpressionTester selectClause,
+	                                                       ExpressionTester fromClause,
+	                                                       GroupByClauseTester groupByClause,
+	                                                       HavingClauseTester havingClause) {
+
+		return selectStatement(
+			selectClause,
+			fromClause,
+			nullExpression(),
+			groupByClause,
+			havingClause,
+			nullExpression()
+		);
+	}
+
+	protected static SelectStatementTester selectStatement(ExpressionTester selectClause,
+	                                                       ExpressionTester fromClause,
+	                                                       HavingClauseTester havingClause) {
+
+		return selectStatement(
+			selectClause,
+			fromClause,
+			nullExpression(),
+			nullExpression(),
+			havingClause,
+			nullExpression()
+		);
+	}
+
+	protected static SelectStatementTester selectStatement(ExpressionTester selectClause,
+	                                                       ExpressionTester fromClause,
+	                                                       OrderByClauseTester orderByClause) {
+
+		return selectStatement(
+			selectClause,
+			fromClause,
+			nullExpression(),
+			nullExpression(),
+			nullExpression(),
+			orderByClause
+		);
+	}
+
+	protected static SelectStatementTester selectStatement(ExpressionTester selectClause,
+	                                                       ExpressionTester fromClause,
+	                                                       WhereClauseTester whereClause,
+	                                                       GroupByClauseTester groupByClause) {
+
+		return selectStatement(
+			selectClause,
+			fromClause,
+			whereClause,
+			groupByClause,
+			nullExpression(),
+			nullExpression()
+		);
+	}
+
+	protected static SelectStatementTester selectStatement(ExpressionTester selectClause,
+	                                                       ExpressionTester fromClause,
+	                                                       WhereClauseTester whereClause,
+	                                                       GroupByClauseTester groupByClause,
+	                                                       HavingClauseTester havingClause) {
+
+		return selectStatement(
+			selectClause,
+			fromClause,
+			whereClause,
+			groupByClause,
+			havingClause,
+			nullExpression()
+		);
+	}
+
+	protected static SelectStatementTester selectStatement(ExpressionTester selectClause,
+	                                                       ExpressionTester fromClause,
+	                                                       WhereClauseTester whereClause,
+	                                                       HavingClauseTester havingClause) {
+
+		return selectStatement(
+			selectClause,
+			fromClause,
+			whereClause,
+			nullExpression(),
+			havingClause,
+			nullExpression()
+		);
+	}
+
+	protected static SelectStatementTester selectStatement(ExpressionTester selectClause,
+	                                                       ExpressionTester fromClause,
+	                                                       WhereClauseTester whereClause,
+	                                                       OrderByClauseTester orderByClause) {
+
+		return selectStatement(
+			selectClause,
+			fromClause,
+			whereClause,
+			nullExpression(),
+			nullExpression(),
+			orderByClause
+		);
+	}
+
 	protected static UpdateItemTester set(ExpressionTester stateFieldPathExpression,
 	                                      ExpressionTester newValue) {
 
 		return new UpdateItemTester(stateFieldPathExpression, newValue);
 	}
 
-	protected static UpdateItemTester set(String stateFieldPathExpression,
-	                                      ExpressionTester newValue) {
+	protected static UpdateItemTester set(String pathExpression, ExpressionTester newValue) {
 
-		if (stateFieldPathExpression.startsWith("{")) {
+		if (pathExpression.startsWith("{")) {
 
-			int index = stateFieldPathExpression.indexOf(".");
+			int dotIndex = pathExpression.indexOf(".");
 
 			return set(
 				path(
-					virtualVariable(stateFieldPathExpression.substring(0, index)),
-					stateFieldPathExpression.substring(index + 1)
+					virtualVariable(pathExpression.substring(0, dotIndex)),
+					false,
+					pathExpression.substring(dotIndex + 1)
 				),
 				newValue
 			);
 		}
 		else {
-			return set(path(stateFieldPathExpression), newValue);
+			return set(path(pathExpression), newValue);
 		}
 	}
 
@@ -2506,6 +2906,18 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 	}
 
 	protected static SimpleSelectStatementTester subSelectStatement(ExpressionTester selectClause,
+	                                                                ExpressionTester fromClause) {
+
+		return subSelectStatement(
+			selectClause,
+			fromClause,
+			nullExpression(),
+			nullExpression(),
+			nullExpression()
+		);
+	}
+
+	protected static SimpleSelectStatementTester subSelectStatement(ExpressionTester selectClause,
 	                                                                ExpressionTester fromClause,
 	                                                                ExpressionTester whereClause) {
 
@@ -2530,6 +2942,45 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 			whereClause,
 			groupByClause,
 			havingClause
+		);
+	}
+
+	protected static SimpleSelectStatementTester subSelectStatement(ExpressionTester selectClause,
+	                                                                ExpressionTester fromClause,
+	                                                                GroupByClauseTester groupByClause) {
+
+		return subSelectStatement(
+			selectClause,
+			fromClause,
+			nullExpression(),
+			groupByClause,
+			nullExpression()
+		);
+	}
+
+	protected static SimpleSelectStatementTester subSelectStatement(ExpressionTester selectClause,
+	                                                                ExpressionTester fromClause,
+	                                                                HavingClauseTester havingClause) {
+
+		return subSelectStatement(
+			selectClause,
+			fromClause,
+			nullExpression(),
+			nullExpression(),
+			havingClause
+		);
+	}
+
+	protected static SimpleSelectStatementTester subSelectStatement(ExpressionTester selectClause,
+	                                                                ExpressionTester fromClause,
+	                                                                OrderByClauseTester orderByClause) {
+
+		return subSelectStatement(
+			selectClause,
+			fromClause,
+			nullExpression(),
+			nullExpression(),
+			orderByClause
 		);
 	}
 
@@ -2564,28 +3015,38 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		return new SumFunctionTester(path(statefieldPathExpression), true);
 	}
 
-	protected static TreatExpressionTester treat(ExpressionTester collectionValuedPathExpression,
+	protected static TreatExpressionTester treat(ExpressionTester pathExpression,
 	                                             ExpressionTester entityTypeName) {
 
-		return new TreatExpressionTester(collectionValuedPathExpression, false, entityTypeName);
+		return new TreatExpressionTester(pathExpression, false, entityTypeName);
 	}
 
-	protected static TreatExpressionTester treat(String collectionValuedPathExpression,
+	protected static TreatExpressionTester treat(ExpressionTester pathExpression,
 	                                             String entityTypeName) {
 
-		return treat(collectionPath(collectionValuedPathExpression), entity(entityTypeName));
+		return treat(pathExpression, entity(entityTypeName));
 	}
 
-	protected static TreatExpressionTester treatAs(ExpressionTester collectionValuedPathExpression,
+	protected static TreatExpressionTester treat(String pathExpression,
+	                                             String entityTypeName) {
+
+		return treat(collectionPath(pathExpression), entity(entityTypeName));
+	}
+
+	protected static TreatExpressionTester treatAs(ExpressionTester pathExpression,
 	                                               ExpressionTester entityTypeName) {
 
-		return new TreatExpressionTester(collectionValuedPathExpression, true, entityTypeName);
+		return new TreatExpressionTester(pathExpression, true, entityTypeName);
 	}
 
-	protected static TreatExpressionTester treatAs(String collectionValuedPathExpression,
+	protected static TreatExpressionTester treatAs(ExpressionTester pathExpression,
 	                                               String entityTypeName) {
 
-		return treatAs(collectionPath(collectionValuedPathExpression), entity(entityTypeName));
+		return treatAs(pathExpression, entity(entityTypeName));
+	}
+
+	protected static TreatExpressionTester treatAs(String pathExpression, String entityTypeName) {
+		return treatAs(collectionPath(pathExpression), entity(entityTypeName));
 	}
 
 	protected static TrimExpressionTester trim(char trimCharacter, ExpressionTester stringPrimary) {
@@ -2872,6 +3333,49 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		return jpqlGrammar;
 	}
 
+	protected final boolean isEclipseLink2_0() {
+		return jpqlGrammar.getProviderVersion() == EclipseLinkJPQLGrammar2_0.VERSION;
+	}
+
+	protected final boolean isEclipseLink2_1() {
+		return jpqlGrammar.getProviderVersion() == EclipseLinkJPQLGrammar2_1.VERSION;
+	}
+
+	protected boolean isEclipseLink2_1OrLater() {
+		return isEclipseLink2_1() ||
+		       isEclipseLink2_2() ||
+		       isEclipseLink2_3() ||
+		       isEclipseLink2_4();
+	}
+
+	protected final boolean isEclipseLink2_2() {
+		return jpqlGrammar.getProviderVersion() == EclipseLinkJPQLGrammar2_2.VERSION;
+	}
+
+	protected final boolean isEclipseLink2_3() {
+		return jpqlGrammar.getProviderVersion() == EclipseLinkJPQLGrammar2_3.VERSION;
+	}
+
+	protected final boolean isEclipseLink2_4() {
+		return jpqlGrammar.getProviderVersion() == EclipseLinkJPQLGrammar2_4.VERSION;
+	}
+
+	protected boolean isEclipseLink2_4OrLater() {
+		return isEclipseLink2_4();
+	}
+
+	protected final boolean isJPA1_0() {
+		return jpqlGrammar.getJPAVersion() == JPAVersion.VERSION_1_0;
+	}
+
+	protected final boolean isJPA2_0() {
+		return jpqlGrammar.getJPAVersion() == JPAVersion.VERSION_2_0;
+	}
+
+	protected final boolean isJPA2_1() {
+		return jpqlGrammar.getJPAVersion() == JPAVersion.VERSION_2_1;
+	}
+
 	/**
 	 * Tests the parsing of the given JPQL query by comparing the parsed tree ({@link JPQLExpression})
 	 * with the given tester, which is an equivalent representation of the parsed tree.
@@ -3056,7 +3560,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 	                         JPQLQueryStringFormatter formatter,
 	                         boolean tolerant) {
 
-		JPQLExpression jpqlExpression = JPQLQueryBuilder.buildQuery(jpqlQuery, jpqlGrammar, jpqlQueryBNFId, formatter, tolerant);
+		JPQLExpression jpqlExpression = buildQuery(jpqlQuery, jpqlGrammar, jpqlQueryBNFId, formatter, tolerant);
 
 		if (expressionTester.getClass() != JPQLExpressionTester.class) {
 			expressionTester = jpqlExpression(expressionTester);
@@ -3498,18 +4002,12 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		private String value;
 
 		protected AbstractPathExpressionTester(ExpressionTester identificationVariable, String value) {
+
 			super();
 
 			this.value                  = value;
 			this.identificationVariable = identificationVariable;
-
-			if (identificationVariable.isNull() && (value.indexOf(DOT) > -1)) {
-				this.identificationVariable = variable(value.substring(0, value.indexOf(DOT)));
-			}
-
-			if (value.length() > 0) {
-				startsWithDot = value.charAt(0) == DOT;
-			}
+			this.startsWithDot          = identificationVariable.isNull() && (value.indexOf(DOT) > -1);
 
 			if (value.length() > 1) {
 				endsWithDot = value.charAt(value.length() - 1) == DOT;
@@ -3521,7 +4019,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 			assertInstance(expression, AbstractPathExpression.class);
 
 			AbstractPathExpression abstractPathExpression = (AbstractPathExpression) expression;
-			assertEquals(value,                            abstractPathExpression.toParsedText());
+			assertEquals(toString(),                       abstractPathExpression.toParsedText());
 			assertEquals(!identificationVariable.isNull(), abstractPathExpression.hasIdentificationVariable());
 			assertEquals(endsWithDot,                      abstractPathExpression.endsWithDot());
 			assertEquals(startsWithDot,                    abstractPathExpression.startsWithDot());
@@ -3531,7 +4029,10 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 
 		@Override
 		public String toString() {
-			return value;
+			StringBuilder sb = new StringBuilder();
+			sb.append(identificationVariable);
+			sb.append(value);
+			return sb.toString();
 		}
 	}
 
@@ -4118,6 +4619,55 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
+	protected static class CastExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
+
+		private ExpressionTester databaseType;
+		private boolean hasAs;
+		public boolean hasSpaceAfterAs;
+		public boolean hasSpaceAfterExpression;
+
+		protected CastExpressionTester(ExpressionTester expression,
+		                               boolean hasAs,
+		                               ExpressionTester databaseType) {
+
+			super(expression);
+			this.hasAs                   = hasAs;
+			this.databaseType            = databaseType;
+			this.hasSpaceAfterAs         = hasAs && !databaseType.isNull();
+			this.hasSpaceAfterExpression = !expression.isNull() && (hasAs || !databaseType.isNull());
+		}
+
+		@Override
+		protected Class<CastExpression> expressionType() {
+			return CastExpression.class;
+		}
+
+		@Override
+		protected boolean hasEncapsulatedExpression() {
+			return super.hasEncapsulatedExpression() || hasAs || !databaseType.isNull();
+		}
+
+		@Override
+		protected String identifier() {
+			return CAST;
+		}
+
+		@Override
+		protected void toStringEncapsulatedExpression(StringBuilder sb) {
+			super.toStringEncapsulatedExpression(sb);
+			if (hasSpaceAfterExpression) {
+				sb.append(SPACE);
+			}
+			if (hasAs) {
+				sb.append(AS);
+			}
+			if (hasSpaceAfterAs) {
+				sb.append(SPACE);
+			}
+			sb.append(databaseType);
+		}
+	}
+
 	protected static class CoalesceExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
 
 		protected CoalesceExpressionTester(ExpressionTester expression) {
@@ -4186,6 +4736,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 
 		@Override
 		public String toString() {
+
 			StringBuilder sb = new StringBuilder();
 
 			for (int index = 0, count = expressionTesters.length; index < count; index++) {
@@ -4539,6 +5090,29 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
+	protected static class DatabaseTypeTester extends AbstractDoubleEncapsulatedExpressionTester {
+
+		private String databaseType;
+
+		protected DatabaseTypeTester(String databaseType,
+		                             ExpressionTester size,
+		                             ExpressionTester precision) {
+
+			super(size, precision);
+			this.databaseType = databaseType;
+		}
+
+		@Override
+		protected Class<DatabaseType> expressionType() {
+			return DatabaseType.class;
+		}
+
+		@Override
+		protected String identifier() {
+			return databaseType;
+		}
+	}
+
 	protected static final class DateTimeTester extends AbstractExpressionTester {
 
 		private String dateTime;
@@ -4737,6 +5311,23 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
+	protected static class EntryExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
+
+		protected EntryExpressionTester(ExpressionTester identificationVariable) {
+			super(identificationVariable);
+		}
+
+		@Override
+		protected Class<? extends AbstractSingleEncapsulatedExpression> expressionType() {
+			return EntryExpression.class;
+		}
+
+		@Override
+		protected String identifier() {
+			return ENTRY;
+		}
+	}
+
 	protected static final class ExistsExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
 
 		private boolean hasNot;
@@ -4816,6 +5407,68 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		 * Tests the given {@link Expression} internal data.
 		 */
 		void test(Expression expression);
+	}
+
+	protected static final class ExtractExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
+
+		private boolean hasFrom;
+		public boolean hasSpaceAfterFrom;
+		public boolean hasSpaceAfterPart;
+		private String part;
+
+		protected ExtractExpressionTester(String part, boolean hasFom, ExpressionTester expression) {
+			super(expression);
+			this.hasFrom           = hasFom;
+			this.part              = (part != null) ? part : ExpressionTools.EMPTY_STRING;
+			this.hasSpaceAfterPart = (part != null) && (hasFrom || !expression.isNull());
+			this.hasSpaceAfterFrom = hasFom && !expression.isNull();
+		}
+
+		@Override
+		protected Class<ExtractExpression> expressionType() {
+			return ExtractExpression.class;
+		}
+
+		@Override
+		protected boolean hasEncapsulatedExpression() {
+			return super.hasEncapsulatedExpression() || hasFrom || ExpressionTools.stringIsNotEmpty(part);
+		}
+
+		@Override
+		protected String identifier() {
+			return EXTRACT;
+		}
+
+		@Override
+		public void test(Expression expression) {
+			super.test(expression);
+
+			ExtractExpression extractExpression = (ExtractExpression) expression;
+			assertEquals(part,              extractExpression.getPart());
+			assertEquals(hasFrom,           extractExpression.hasFrom());
+			assertSame  (hasSpaceAfterFrom, extractExpression.hasSpaceAfterFrom());
+			assertSame  (hasSpaceAfterPart, extractExpression.hasSpaceAfterPart());
+		}
+
+		@Override
+		protected void toStringEncapsulatedExpression(StringBuilder sb) {
+
+			sb.append(part);
+
+			if (hasSpaceAfterPart) {
+				sb.append(SPACE);
+			}
+
+			if (hasFrom) {
+				sb.append(FROM);
+			}
+
+			if (hasSpaceAfterFrom) {
+				sb.append(SPACE);
+			}
+
+			super.toStringEncapsulatedExpression(sb);
+		}
 	}
 
 	protected static final class FromClauseTester extends AbstractFromClauseTester {
@@ -5653,38 +6306,68 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 
 	protected static final class OrderByItemTester extends AbstractExpressionTester {
 
+		public boolean hasSpaceAfterNulls;
+		private NullOrdering nullOrdering;
+		public String nulls;
 		private ExpressionTester orderByItem;
 		private Ordering ordering;
 
-		protected OrderByItemTester(ExpressionTester orderByItem, Ordering ordering) {
+		protected OrderByItemTester(ExpressionTester orderByItem,
+		                            Ordering ordering,
+		                            NullOrdering nullOrdering) {
+
 			super();
-			this.ordering    = ordering;
-			this.orderByItem = orderByItem;
+			this.ordering     = ordering;
+			this.orderByItem  = orderByItem;
+			this.nullOrdering = nullOrdering;
 		}
 
 		public void test(Expression expression) {
 			assertInstance(expression, OrderByItem.class);
 
 			OrderByItem orderByItem = (OrderByItem) expression;
+
+			boolean hasSpaceAfterExpression = ordering != Ordering.DEFAULT         ||
+			                                  nullOrdering != NullOrdering.DEFAULT ||
+			                                  orderByItem.hasNullsOnly();
+
 			assertEquals(toString(), orderByItem.toParsedText());
 			assertEquals(!this.orderByItem.isNull(), orderByItem.hasExpression());
-			assertEquals(!this.orderByItem.isNull() && ordering != Ordering.DEFAULT, orderByItem.hasSpaceAfterExpression());
+			assertEquals(!this.orderByItem.isNull() && hasSpaceAfterExpression, orderByItem.hasSpaceAfterExpression());
+			assertEquals(ordering != Ordering.DEFAULT && nullOrdering != NullOrdering.DEFAULT, orderByItem.hasSpaceAfterOrdering());
 			assertSame  (ordering, orderByItem.getOrdering());
+
+			if (nulls != null) {
+				assertEquals(nulls, orderByItem.getActualNullOrdering().toUpperCase());
+			}
+			else {
+				assertSame(nullOrdering, orderByItem.getNullOrdering());
+			}
 
 			this.orderByItem.test(orderByItem.getExpression());
 		}
 
 		@Override
 		public String toString() {
+
 			StringBuilder sb = new StringBuilder();
 			sb.append(orderByItem);
 
-			if (!orderByItem.isNull() && (ordering != Ordering.DEFAULT)) {
+			if (ordering != Ordering.DEFAULT) {
 				sb.append(SPACE);
+				sb.append(ordering.name());
 			}
 
-			if (ordering != Ordering.DEFAULT) {
-				sb.append(ordering.name());
+			if (nulls != null) {
+				sb.append(SPACE);
+				sb.append(nulls);
+				if (hasSpaceAfterNulls) {
+					sb.append(SPACE);
+				}
+			}
+			else if (nullOrdering != NullOrdering.DEFAULT) {
+				sb.append(SPACE);
+				sb.append(nullOrdering.getIdentifier());
 			}
 
 			return sb.toString();

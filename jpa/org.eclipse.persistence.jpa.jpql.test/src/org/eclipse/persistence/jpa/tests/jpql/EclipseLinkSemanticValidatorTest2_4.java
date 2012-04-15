@@ -32,26 +32,25 @@ import org.junit.Test;
 @SuppressWarnings("nls")
 public class EclipseLinkSemanticValidatorTest2_4 extends AbstractSemanticValidatorTest {
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected JPQLQueryContext buildQueryContext() {
 		return new EclipseLinkJPQLQueryContext(jpqlGrammar);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected AbstractSemanticValidator buildValidator() {
 		return new EclipseLinkSemanticValidator(buildSemanticValidatorHelper());
 	}
 
-	@Test
-	public void test_StateFieldPathExpression_CollectionType() throws Exception {
+	@Override
+	protected boolean isPathExpressionToCollectionMappingAllowed() {
+		return true;
+	}
 
-		String query = "SELECT a.customerList FROM Address a";
+	@Test
+	public void test_CollectionValuedPathExpression_NotResolvable() throws Exception {
+
+		String query = "SELECT a FROM jpql.query.Address a";
 		List<JPQLQueryProblem> problems = validate(query);
 		testHasNoProblems(problems);
 	}

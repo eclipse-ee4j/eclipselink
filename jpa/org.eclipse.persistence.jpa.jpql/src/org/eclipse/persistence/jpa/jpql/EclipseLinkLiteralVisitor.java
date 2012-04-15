@@ -13,7 +13,10 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql;
 
+import org.eclipse.persistence.jpa.jpql.parser.CastExpression;
+import org.eclipse.persistence.jpa.jpql.parser.DatabaseType;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkExpressionVisitor;
+import org.eclipse.persistence.jpa.jpql.parser.ExtractExpression;
 
 /**
  * This visitor traverses an {@link org.eclipse.persistence.jpa.jpql.parser.Expression Expression}
@@ -38,5 +41,26 @@ public class EclipseLinkLiteralVisitor extends LiteralVisitor
 	 */
 	public EclipseLinkLiteralVisitor() {
 		super();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(CastExpression expression) {
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(DatabaseType expression) {
+		if (type == LiteralType.STRING_LITERAL) {
+			literal = expression.getActualIdentifier();
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(ExtractExpression expression) {
 	}
 }

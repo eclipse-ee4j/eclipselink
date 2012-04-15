@@ -528,9 +528,20 @@ final class DeclarationResolver {
 			if (rootPath.indexOf('.') == -1) {
 				currentDeclaration = new RangeDeclaration(queryContext);
 			}
-			// Derived path expression (for subqueries)
 			else {
-				currentDeclaration = new DerivedDeclaration(queryContext);
+				// Check to see if the "root" path is a class name before assuming it's a derived path
+				Class<?> type = queryContext.getType(rootPath);
+
+				// Fully qualified class name
+				if (type != null) {
+					RangeDeclaration declaration = new RangeDeclaration(queryContext);
+					declaration.type = type;
+					currentDeclaration = declaration;
+				}
+				// Derived path expression (for subqueries)
+				else {
+					currentDeclaration = new DerivedDeclaration(queryContext);
+				}
 			}
 
 			currentDeclaration.identificationVariable = identificationVariable;

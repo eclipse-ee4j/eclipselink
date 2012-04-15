@@ -17,7 +17,7 @@ import org.eclipse.persistence.jpa.jpql.DefaultRefactoringTool;
 import org.eclipse.persistence.jpa.jpql.RefactoringTool;
 import org.junit.Test;
 
-import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries.*;
+import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries2_0.*;
 import static org.junit.Assert.*;
 
 /**
@@ -39,7 +39,7 @@ public final class RefactoringToolTest2_0 extends AbstractRefactoringToolTest {
 	public void test_RenameEntityName_1() throws Exception {
 
 		// SELECT TYPE(employee) FROM Employee employee WHERE TYPE(employee) <> Exempt
-		String jpqlQuery = query_211();
+		String jpqlQuery = query_007();
 		RefactoringTool refactoringTool = buildRefactoringTool(jpqlQuery);
 		refactoringTool.renameEntityName("Exempt", "Exemption");
 
@@ -59,7 +59,7 @@ public final class RefactoringToolTest2_0 extends AbstractRefactoringToolTest {
 		// FROM Employee e, Contractor c
 		// WHERE e.dept.name = 'Engineering'
 
-		String jpqlQuery = query_206();
+		String jpqlQuery = query_002();
 		RefactoringTool refactoringTool = buildRefactoringTool(jpqlQuery);
 
 		refactoringTool.renameEntityName("Exempt", "Exemption");

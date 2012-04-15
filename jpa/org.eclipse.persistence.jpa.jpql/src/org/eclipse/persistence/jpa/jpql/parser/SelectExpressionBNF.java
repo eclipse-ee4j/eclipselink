@@ -21,7 +21,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  *                                                     aggregate_expression |
  *                                                     identification_variable |
  *                                                     OBJECT(identification_variable) |
- *                                                     constructor_expression</code><p>
+ *                                                     constructor_expression</code>
  * <p>
  * JPA 2.0:
  * <div nowrap><b>BNF:</b> <code>select_expression ::= single_valued_path_expression |
@@ -29,7 +29,8 @@ package org.eclipse.persistence.jpa.jpql.parser;
  *                                                     aggregate_expression |
  *                                                     identification_variable |
  *                                                     OBJECT(identification_variable) |
- *                                                     constructor_expression</code><p>
+ *                                                     constructor_expression</code>
+ * <p>
  *
  * @version 2.4
  * @since 2.3
@@ -56,6 +57,7 @@ public final class SelectExpressionBNF extends JPQLQueryBNF {
 	@Override
 	protected void initialize() {
 		super.initialize();
+		setHandleCollection(true);
 		setFallbackBNFId(ID);
 		setFallbackExpressionFactoryId(PreLiteralExpressionFactory.ID);
 		registerChild(AggregateExpressionBNF.ID);

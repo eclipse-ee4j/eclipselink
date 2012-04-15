@@ -14,26 +14,25 @@
 package org.eclipse.persistence.jpa.jpql.parser;
 
 /**
- * The query BNF for the items of an <b>IN</b> expression.
+ * The query BNF for a select item expression.
  *
- * <div nowrap><b>BNF:</b> <code>in_item ::= ( in_item {, in_item}* ) | (subquery) | collection_valued_input_parameter</code><p>
+ * <div nowrap><b>BNF:</b> <code>select_item ::= select_expression [[AS] result_variable]</code><p>
  *
  * @version 2.4
  * @since 2.3
  * @author Pascal Filion
  */
-@SuppressWarnings("nls")
-public final class InItemBNF extends JPQLQueryBNF {
+public final class SimpleSelectItemBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
-	public static final String ID = "in_item";
+	public static final String ID = SimpleSelectExpressionBNF.ID;
 
 	/**
-	 * Creates a new <code>InItemBNF</code>.
+	 * Creates a new <code>SelectExpressionBNF2_0</code>.
 	 */
-	public InItemBNF() {
+	public SimpleSelectItemBNF() {
 		super(ID);
 	}
 
@@ -43,12 +42,15 @@ public final class InItemBNF extends JPQLQueryBNF {
 	@Override
 	protected void initialize() {
 		super.initialize();
-		setHandleAggregate(true); // To support invalid queries
+
+		// Technically, this BNF does not support collection but it's parent
+		// select_clause does. But this BNF is used by SelectClause directly
+		// to parse the query so the flag has to be turned on here
 		setHandleCollection(true);
+
 		setFallbackBNFId(ID);
-		setFallbackExpressionFactoryId(PreLiteralExpressionFactory.ID);
-		registerChild(LiteralBNF.ID);
-		registerChild(InputParameterBNF.ID);
-		registerChild(SubqueryBNF.ID);
+		setFallbackExpressionFactoryId(ResultVariableFactory.ID);
+		registerChild(ResultVariableBNF.ID);
+		registerChild(SimpleSelectExpressionBNF.ID);
 	}
 }

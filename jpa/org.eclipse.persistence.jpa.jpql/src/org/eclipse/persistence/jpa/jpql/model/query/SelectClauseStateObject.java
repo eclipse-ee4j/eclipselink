@@ -19,8 +19,8 @@ import java.util.Collection;
 import java.util.List;
 import org.eclipse.persistence.jpa.jpql.model.IListChangeListener;
 import org.eclipse.persistence.jpa.jpql.model.ISelectExpressionStateObjectBuilder;
+import org.eclipse.persistence.jpa.jpql.parser.InternalSelectExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.SelectClause;
-import org.eclipse.persistence.jpa.jpql.parser.SelectClauseInternalBNF;
 import org.eclipse.persistence.jpa.jpql.parser.SelectExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.util.iterator.CloneListIterator;
 import org.eclipse.persistence.jpa.jpql.util.iterator.IterableListIterator;
@@ -349,7 +349,7 @@ public class SelectClauseStateObject extends AbstractSelectClauseStateObject
 	 */
 	@Override
 	public void parse(String jpqlFragment) {
-		List<StateObject> stateObjects = buildStateObjects(jpqlFragment, SelectClauseInternalBNF.ID);
+		List<StateObject> stateObjects = buildStateObjects(jpqlFragment, InternalSelectExpressionBNF.ID);
 		addItems(stateObjects);
 	}
 

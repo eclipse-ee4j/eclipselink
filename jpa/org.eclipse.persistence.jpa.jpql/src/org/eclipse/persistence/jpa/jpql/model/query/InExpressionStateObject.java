@@ -16,7 +16,7 @@ package org.eclipse.persistence.jpa.jpql.model.query;
 import java.io.IOException;
 import java.util.List;
 import org.eclipse.persistence.jpa.jpql.parser.InExpression;
-import org.eclipse.persistence.jpa.jpql.parser.InItemBNF;
+import org.eclipse.persistence.jpa.jpql.parser.InExpressionItemBNF;
 
 import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
@@ -291,7 +291,7 @@ public class InExpressionStateObject extends AbstractListHolderStateObject<State
 	 * @param jpqlFragment The portion of the query to parse
 	 */
 	public void parse(String jpqlFragment) {
-		StateObject stateObject = buildStateObject(jpqlFragment, InItemBNF.ID);
+		StateObject stateObject = buildStateObject(jpqlFragment, InExpressionItemBNF.ID);
 		setStateObject(stateObject);
 	}
 

@@ -14,9 +14,9 @@
 package org.eclipse.persistence.jpa.jpql;
 
 /**
- * This "parser" holds onto the string version of the JPQL query that is parsed into a parsed tree.
- * It uses a cursor that lets the current {@link org.eclipse.persistence.jpa.jpql.parser.Expression
- * Expression} object to parse its fragment of the query.
+ * This "parser/scanner" holds onto the string version of the JPQL query that is parsed into a
+ * parsed tree. It uses a cursor that lets the current {@link org.eclipse.persistence.jpa.jpql.
+ * parser.Expression Expression} object to parse its fragment of the query.
  * <p>
  * Provisional API: This interface is part of an interim API that is still under development and
  * expected to change significantly before reaching stability. It is available at this early stage
@@ -44,18 +44,26 @@ public final class WordParser {
 	 */
 	private final CharSequence text;
 
+	/**
+	 * When {@link WordParser#word()}, {@link WordParser#wordEndPosition()}, or {@link
+	 * WordParser#wordEndPosition(int)} is called, this is updated to reflect the type of word that
+	 * is scanned.
+	 *
+	 * @since 2.4
+	 */
 	private WordType wordType;
 
 	/**
 	 * Creates a new <code>WordParser</code>.
 	 *
-	 * @param query The string representation of the JPQL query
+	 * @param text The string representation of the JPQL query
 	 */
-	public WordParser(CharSequence query) {
+	public WordParser(CharSequence text) {
 		super();
-		this.text   = query;
-		this.length = text.length();
-		this.cursor = 0;
+		this.cursor   = 0;
+		this.text     = text;
+		this.length   = text.length();
+		this.wordType = WordType.UNDEFINED;
 	}
 
 	/**
@@ -133,6 +141,12 @@ public final class WordParser {
 		return substring(startPosition, endPosition);
 	}
 
+	/**
+	 * Returns what the type of word {@link #word()} returns.
+	 *
+	 * @return The category of the word returned by {@link #word()}
+	 * @since 2.4
+	 */
 	public WordType getWordType() {
 		return wordType;
 	}
@@ -171,7 +185,8 @@ public final class WordParser {
 
 	/**
 	 * Determines whether the given character is a character that can be used in a number. This only
-	 * includes the numeric characters [0, 9] and the period character.
+	 * includes the numeric characters [0, 9] and the period character. This method should only be
+	 * used to determine if a word starts with a digit character.
 	 *
 	 * @param character The character to test if it's a digit
 	 * @return <code>true</code> if the given character is a digit; <code>false</code> otherwise
@@ -380,12 +395,32 @@ public final class WordParser {
 
 				dotParsed = true;
 			}
+			// Hexadecimal value
+			else if (character == 'x') {
+				boolean powerParsed = false;
+
+				for (; endIndex < length; endIndex++) {
+					character = text.charAt(endIndex);
+
+					if (character == 'p' || character == 'P') {
+						powerParsed = true;
+					}
+					else if (powerParsed && (character == '+' || character == '+')) {
+						continue;
+					}
+					else if (isWordSeparator(character)) {
+						break;
+					}
+				}
+
+				break;
+			}
 			// Parse the exponent
 			else if (character == 'e' || character == 'E') {
 
 				if (!digitParsed) {
 					wordType = WordType.WORD;
-					return endIndex;
+					break;
 				}
 
 				for (int index = ++endIndex; index < length; index++) {
@@ -399,13 +434,16 @@ public final class WordParser {
 						continue;
 					}
 
-					// If it is not a character like '(', then it's not a valid number
-					if (!isWordSeparator(character)) {
-						endIndex++;
+					if (character == '.') {
 						wordType = WordType.WORD;
 					}
 
-					break;
+					// If it is not a character like '(', then it's not a valid number
+					if (isWordSeparator(character)) {
+						break;
+					}
+
+					endIndex++;
 				}
 
 				break;
@@ -498,12 +536,13 @@ public final class WordParser {
 	}
 
 	/**
-	 * Manually sets the position of the cursor within the string.
+	 * Manually sets the position of the cursor within the string. If the position is a negative
+	 * number, the position will be 0.
 	 *
 	 * @param position The new position of the cursor
 	 */
 	public void setPosition(int position) {
-		this.cursor = position;
+		this.cursor = (position < 0) ? 0 : position;
 	}
 
 	/**
@@ -648,23 +687,43 @@ public final class WordParser {
 		return null;
 	}
 
-	public boolean startsWithIdentifier(CharSequence prefix) {
-		return startsWithIdentifier(prefix, cursor);
+	/**
+	 * Determines whether the text at the current position start with the following identifier.
+	 *
+	 * @param identifier The JPQL identifier to match with the text at the current position
+	 * @return <code>true</code> if the text starts with the given text (case is ignored) and the
+	 * cursor is at the end of the text or is following by a word separator character; <code>false</code>
+	 * otherwise
+	 */
+	public boolean startsWithIdentifier(CharSequence identifier) {
+		return startsWithIdentifier(identifier, cursor);
 	}
 
-	public boolean startsWithIdentifier(CharSequence prefix, int toffset) {
+	/**
+	 * Determines whether the text at the current position start with the following identifier.
+	 *
+	 * @param position The position to start matching the characters
+	 * @param identifier The JPQL identifier to match with the text at the current position
+	 * @return <code>true</code> if the text starts with the given text (case is ignored) and the
+	 * cursor is at the end of the text or is following by a word separator character; <code>false</code>
+	 * otherwise
+	 */
+	public boolean startsWithIdentifier(CharSequence identifier, int position) {
 
-		if (startsWithIgnoreCase(prefix, toffset)) {
-			int nextCharacterIndex = toffset + prefix.length();
+		// First check to see if the text matches the characters
+		if (startsWithIgnoreCase(identifier, position)) {
 
+			int nextCharacterIndex = position + identifier.length();
+
+			// End of the text
 			if (nextCharacterIndex == length) {
 				return true;
 			}
 
+			// Check to see if the next character is a word separator
 			char character = text.charAt(nextCharacterIndex);
 
-			if (Character.isWhitespace(character) ||
-			    isDelimiter(character)) {
+			if (isWordSeparator(character)) {
 				return true;
 			}
 		}
@@ -713,7 +772,7 @@ public final class WordParser {
 
 		int pc = prefix.length();
 
-		// Note: toffset might be near -1 >>> 1
+		// Note: offset might be near -1 >>> 1
 		if ((offset < 0) || (offset > length - pc)) {
 			return false;
 		}
@@ -789,8 +848,7 @@ public final class WordParser {
 	}
 
 	/**
-	 * Calculates the number of whitespace that are in the query. The check starts at the current
-	 * position.
+	 * Calculates the number of whitespace that are in the query. The check starts at the current position.
 	 *
 	 * @return The count of consecutive whitespace found from the current position
 	 */
@@ -799,8 +857,7 @@ public final class WordParser {
 	}
 
 	/**
-	 * Calculates the number of whitespace that are in the query. The check starts at the current
-	 * position.
+	 * Calculates the number of whitespace that are in the query. The check starts at the current position.
 	 *
 	 * @param position The position from where the scan starts
 	 * @return The count of consecutive whitespace found from the given position
@@ -821,8 +878,8 @@ public final class WordParser {
 	/**
 	 * Retrieves the first word starting at the current position.
 	 *
-	 * @return The first word contained in the text, if none could be found, then an empty string is
-	 * returned
+	 * @return The first word contained in the text, if none could be found,
+	 * then an empty string is returned
 	 */
 	public String word() {
 		return substring(cursor, wordEndPosition());
@@ -852,11 +909,13 @@ public final class WordParser {
 	public int wordEndPosition(int position) {
 
 		if (position >= length) {
+			wordType = WordType.UNDEFINED;
 			return position;
 		}
 
 		char character = text.charAt(position);
 		int endIndex = position + 1;
+		wordType = WordType.WORD;
 
 		// Parse a string literal
 		if (character == '\'' ||
@@ -901,14 +960,12 @@ public final class WordParser {
 		    character == '+' ||
 		    character == '-') {
 
-			wordType = WordType.WORD;
 			return endIndex;
 		}
 
 		// Parse JDBC date
 		if (character == '{') {
 			// TODO
-			wordType = WordType.WORD;
 			return endIndex;
 		}
 
@@ -927,14 +984,11 @@ public final class WordParser {
 
 		// '='
 		else if (character == '=') {
-			wordType = WordType.WORD;
 			return endIndex;
 		}
 
 		// <, <>, <=
 		else if (character == '<') {
-
-			wordType = WordType.WORD;
 
 			if (endIndex < length) {
 				character = text.charAt(endIndex);
@@ -953,8 +1007,6 @@ public final class WordParser {
 		else if (character == '>' ||
 		         character == '!') {
 
-			wordType = WordType.WORD;
-
 			// End of the text
 			if (endIndex == length) {
 				return endIndex;
@@ -972,7 +1024,7 @@ public final class WordParser {
 			}
 		}
 
-		//
+		// Done scanning
 		else if (isWordSeparator(character)) {
 			return --endIndex;
 		}
@@ -1010,14 +1062,39 @@ public final class WordParser {
 			endIndex++;
 		}
 
-		wordType = WordType.WORD;
 		return endIndex;
 	}
 
+	/**
+	 * This enumeration determines the type of word that was scanned. It will be set by {@link
+	 * WordParser#word()}, {@link WordParser#wordEndPosition()}, {@link WordParser#wordEndPosition(int)}.
+	 */
 	public enum WordType {
+
+		/**
+		 * The word being scanned is an input parameter, it starts with either ':' or '?'.
+		 */
 		INPUT_PARAMETER,
+
+		/**
+		 * The word being scanned is a numeric literal (decimal or hexadecimal number).
+		 */
 		NUMERIC_LITERAL,
+
+		/**
+		 * The word being scanned is a string literal, it starts with either ''' or '"'.
+		 */
 		STRING_LITERAL,
+
+		/**
+		 * No word was scanned, this is usually set when the cursor is at the end of the text.
+		 */
+		UNDEFINED,
+
+		/**
+		 * The word being scanned anything else other than an input parameter, numeric literal or
+		 * string literal.
+		 */
 		WORD
 	}
 }

@@ -15,6 +15,16 @@ package org.eclipse.persistence.jpa.jpql.parser;
 
 /**
  * The query BNF for the <b>COUNT</b> expression's encapsulated expressions.
+ * <p>
+ * JPA 1.0:
+ * <div nowrap><b>BNF:</b> <code>expression ::= CONCAT(string_primary, string_primary)</code>
+ * <p>
+ * JPA 2.0:
+ * <div nowrap><b>BNF:</b> <code>expression ::= CONCAT(string_primary, string_primary {, string_primary}*)</code>
+ * <p>
+ * JPA 2.1:
+ * <div nowrap><b>BNF:</b> <code>expression ::= CONCAT(string_expression, string_expression {, string_expression}*)</code>
+ * <p>
  *
  * @version 2.4
  * @since 2.3

@@ -30,23 +30,22 @@ import org.junit.Test;
  */
 public class EclipseLinkSemanticValidatorTest extends AbstractSemanticValidatorTest {
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected JPQLQueryContext buildQueryContext() {
 		return new EclipseLinkJPQLQueryContext(jpqlGrammar);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected AbstractSemanticValidator buildValidator() {
 		return new EclipseLinkSemanticValidator(buildSemanticValidatorHelper());
 	}
 
+	@Override
+	protected boolean isPathExpressionToCollectionMappingAllowed() {
+		return true;
+	}
+
 	@Test
-	public void testSomething() throws Exception {
+	public final void test_Something() throws Exception {
 	}
 }

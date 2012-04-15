@@ -56,6 +56,6 @@ public final class SimpleSelectClause extends AbstractSelectClause {
 	 */
 	@Override
 	public String selectItemBNF() {
-		return SimpleSelectExpressionBNF.ID;
+		return InternalSimpleSelectExpressionBNF.ID;
 	}
 }

@@ -38,6 +38,16 @@ public abstract class ExpressionFactory implements Comparable<ExpressionFactory>
 	private ExpressionRegistry expressionRegistry;
 
 	/**
+	 * The unique identifier of the {@link ExpressionFactory} to use when this one cannot create the
+	 * right {@link Expression} based on the JPQL fragment to parse. A good example is {@link
+	 * JoinCollectionValuedPathExpressionFactory} giving the fallback factory to {@link
+	 * PreLiteralExpressionFactory}, which in return gives it to {@link LiteralExpressionFactory}.
+	 * This allows parsing incomplete queries correctly but changes the object being created, rather
+	 * than creating an {@link IdentificationVariable}, an {@link AbstractSchemaName} is instead.
+	 */
+	private String fallBackExpressionFactoryId;
+
+	/**
 	 * The unique identifier of this {@link ExpressionFactory}.
 	 */
 	private final String id;
@@ -143,6 +153,25 @@ public abstract class ExpressionFactory implements Comparable<ExpressionFactory>
 	}
 
 	/**
+	 * Returns the unique identifier of the {@link ExpressionFactory} to use when this one cannot
+	 * create the right {@link Expression} based on the JPQL fragment to parse.
+	 * <p>
+	 * Note: Only {@link PreLiteralExpressionFactory} and {@link LiteralExpressionFactory} currently
+	 * support this feature.
+	 * <p>
+	 * A good example is {@link JoinCollectionValuedPathExpressionFactory} giving the fallback
+	 * factory to {@link PreLiteralExpressionFactory}, which in return gives it to {@link
+	 * LiteralExpressionFactory}. This allows parsing incomplete queries correctly but changes the
+	 * object being created, rather than creating an {@link IdentificationVariable}, an {@link
+	 * AbstractSchemaName} is instead.
+	 *
+	 * @return The unique identifier of the {@link ExpressionFactory}
+	 */
+	public String getFallBackExpressionFactoryId() {
+		return fallBackExpressionFactoryId;
+	}
+
+	/**
 	 * Returns the unique identifier of this <code>ExpressionFactory</code>.
 	 *
 	 * @return The identifier used to register this {@link ExpressionFactory} with {@link
@@ -177,6 +206,25 @@ public abstract class ExpressionFactory implements Comparable<ExpressionFactory>
 	 */
 	final void setExpressionRegistry(ExpressionRegistry expressionRegistry) {
 		this.expressionRegistry = expressionRegistry;
+	}
+
+	/**
+	 * Sets the unique identifier of the {@link ExpressionFactory} to use when this one cannot create
+	 * the right {@link Expression} based on the JPQL fragment to parse.
+	 * <p>
+	 * Note: Only {@link PreLiteralExpressionFactory} and {@link LiteralExpressionFactory} currently
+	 * support this feature.
+	 * <p>
+	 * A good example is {@link JoinCollectionValuedPathExpressionFactory} giving the fallback
+	 * factory to {@link PreLiteralExpressionFactory}, which in return gives it to {@link
+	 * LiteralExpressionFactory}. This allows parsing incomplete queries correctly but changes the
+	 * object being created, rather than creating an {@link IdentificationVariable}, an {@link
+	 * AbstractSchemaName} is instead.
+	 *
+	 * @param fallbackExpressionFactoryId The unique identifier of the {@link ExpressionFactory}
+	 */
+	public void setFallBackExpressionFactory(String expressionFactoryId) {
+		this.fallBackExpressionFactoryId = expressionFactoryId;
 	}
 
 	/**

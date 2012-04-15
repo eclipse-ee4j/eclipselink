@@ -19,13 +19,44 @@ import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
 /**
- * This {@link JPQLGrammar JPQL grammar} provides support for parsing JPQL queries defined in
- * <a href="http://jcp.org/en/jsr/detail?id=317">JSR-338 - Java Persistence 2.1</a> with EclipseLink
- * 2.4 additional support.
+ * This {@link JPQLGrammar} provides support for parsing JPQL queries defined in <a
+ * href="http://jcp.org/en/jsr/detail?id=317">JSR-338 - Java Persistence 2.1</a> and the additional
+ * support provided by EclipseLink 2.4.
  * <p>
- * The following BNFs is the EclipseLink 2.4 additional support added on top of EclipseLink 2.3.
+ * The BNFs of the additional support are the following:
  *
- * TODO
+ * <pre><code> range_variable_declaration ::= root_object [AS] identification_variable
+ *
+ * root_object ::= abstract_schema_name | (subquery) | fully_qualified_class_name
+ *
+ * join ::= join_spec { abstract_schema_name | join_association_path_expression } [AS] identification_variable [join_condition]
+ *
+ * functions_returning_datetime ::= cast_expression |
+ *                                  extract_expression |
+ *                                  ...
+ *
+ * functions_returning_string ::= cast_expression |
+ *                                extract_expression |
+ *                                ...
+ *
+ * functions_returning_numeric ::= cast_expression |
+ *                                 extract_expression |
+ *                                 ...
+ *
+ * function_expression ::= { FUNC | FUNCTION | OEPRATOR | SQL | COLUMN } (string_literal {, function_arg}*)
+ *
+ * extract_expression ::= EXTRACT(date_part_literal [FROM] scalar_expression)
+ *
+ * date_part_literal ::= { MICROSECOND | SECOND | MINUTE | HOUR | DAY | WEEK | MONTH | QUARTER |
+ *                         YEAR | SECOND_MICROSECOND | MINUTE_MICROSECOND | MINUTE_SECOND |
+ *                         HOUR_MICROSECOND | HOUR_SECOND | HOUR_MINUTE | DAY_MICROSECOND |
+ *                         DAY_SECOND | DAY_MINUTE | DAY_HOUR | YEAR_MONTH, etc }
+ *
+ * cast_expression ::= CAST(scalar_expression [AS] database_type)
+ *
+ * database_type ::= data_type_literal [( [numeric_literal [, numeric_literal]] )]
+ *
+ * data_type_literal ::= [CHAR, VARCHAR, NUMERIC, INTEGER, DATE, TIME, TIMESTAMP, etc]
  *
  * </code></pre>
  *
@@ -54,6 +85,27 @@ public final class EclipseLinkJPQLGrammar2_4 extends AbstractJPQLGrammar {
 	}
 
 	/**
+	 * Creates a new <code>EclipseLinkJPQLGrammar2_4</code>.
+	 *
+	 * @param jpqlGrammar The {@link JPQLGrammar} to extend with the content of this one without
+	 * instantiating the base {@link JPQLGrammar}
+	 */
+	private EclipseLinkJPQLGrammar2_4(AbstractJPQLGrammar jpqlGrammar) {
+		super(jpqlGrammar);
+	}
+
+	/**
+	 * Extends the given {@link JPQLGrammar} with the information of this one without instantiating
+	 * the base {@link JPQLGrammar}.
+	 *
+	 * @param jpqlGrammar The {@link JPQLGrammar} to extend with the content of this one without
+	 * instantiating the base {@link JPQLGrammar}
+	 */
+	public static void extend(AbstractJPQLGrammar jpqlGrammar) {
+		new EclipseLinkJPQLGrammar2_4(jpqlGrammar);
+	}
+
+	/**
 	 * Returns the singleton instance of this class.
 	 *
 	 * @return The singleton instance of {@link EclipseLinkJPQLGrammar2_4}
@@ -67,10 +119,17 @@ public final class EclipseLinkJPQLGrammar2_4 extends AbstractJPQLGrammar {
 	 */
 	@Override
 	protected JPQLGrammar buildBaseGrammar() {
-		// IMPORTANT: Because EclipseLink 2.2 and 2.3 did not added new functionality,
-		// we'll skip creating an instance of those grammars and go directly to 2.1
-		// since that one added functionality
-		return new EclipseLinkJPQLGrammar2_1();
+
+		// First build the JPQL 2.1 grammar
+		JPQLGrammar2_1 jpqlGrammar = new JPQLGrammar2_1();
+
+		// Extend it by adding the EclipseLink 2.0 additional support
+		EclipseLinkJPQLGrammar2_0.extend(jpqlGrammar);
+
+		// Extend it by adding the EclipseLink 2.1 additional support
+		EclipseLinkJPQLGrammar2_1.extend(jpqlGrammar);
+
+		return jpqlGrammar;
 	}
 
 	/**
@@ -93,34 +152,48 @@ public final class EclipseLinkJPQLGrammar2_4 extends AbstractJPQLGrammar {
 	@Override
 	protected void initializeBNFs() {
 
+		registerBNF(new CastExpressionBNF());
+		registerBNF(new DatabaseTypeQueryBNF());
+		registerBNF(new ExtractExpressionBNF());
 		registerBNF(new InternalColumnExpressionBNF());
-		registerBNF(new OnClauseBNF());
-                registerBNF(new CastExpressionBNF());
-                registerBNF(new ExtractExpressionBNF());
 
-		// Extend the query BNF to add support for ON
-		addChildBNF(JoinAssociationPathExpressionBNF.ID, OnClauseBNF.ID);
-
-		// Extend the query BNF
-		addChildBNF(ArithmeticPrimaryBNF.ID, SubqueryBNF.ID);
+		// Override (internal) simple_select_expression to add support for result variable
+		registerBNF(new SimpleResultVariableBNF());
 
 		// Extend the query BNF to add support for COLUMN
-		addChildBNF(FunctionsReturningDatetimeBNF.ID, FunctionExpressionBNF.ID);
-		addChildBNF(FunctionsReturningNumericsBNF.ID, FunctionExpressionBNF.ID);
-		addChildBNF(FunctionsReturningStringsBNF.ID,  FunctionExpressionBNF.ID);
+//		addChildBNF(FunctionsReturningDatetimeBNF.ID,  FunctionExpressionBNF.ID);
+//		addChildBNF(FunctionsReturningNumericsBNF.ID,  FunctionExpressionBNF.ID);
+//		addChildBNF(FunctionsReturningStringsBNF.ID,   FunctionExpressionBNF.ID);
 
 		// Note: This should only support SQL expression
 		addChildBNF(SimpleConditionalExpressionBNF.ID, FunctionExpressionBNF.ID);
-		
-		// CAST
-                addChildBNF(FunctionsReturningDatetimeBNF.ID, CastExpressionBNF.ID);
-                addChildBNF(FunctionsReturningNumericsBNF.ID, CastExpressionBNF.ID);
-                addChildBNF(FunctionsReturningStringsBNF.ID, CastExpressionBNF.ID);
 
-                // EXTRACT
-                addChildBNF(FunctionsReturningDatetimeBNF.ID, ExtractExpressionBNF.ID);
-                addChildBNF(FunctionsReturningNumericsBNF.ID, ExtractExpressionBNF.ID);
-                addChildBNF(FunctionsReturningStringsBNF.ID, ExtractExpressionBNF.ID);
+		// CAST
+		addChildBNF(FunctionsReturningDatetimeBNF.ID,  CastExpressionBNF.ID);
+		addChildBNF(FunctionsReturningNumericsBNF.ID,  CastExpressionBNF.ID);
+		addChildBNF(FunctionsReturningStringsBNF.ID,   CastExpressionBNF.ID);
+
+		// EXTRACT
+		addChildBNF(FunctionsReturningDatetimeBNF.ID,  ExtractExpressionBNF.ID);
+		addChildBNF(FunctionsReturningNumericsBNF.ID,  ExtractExpressionBNF.ID);
+		addChildBNF(FunctionsReturningStringsBNF.ID,   ExtractExpressionBNF.ID);
+
+		// Add subquery support to RangeDeclarationBNF
+		addChildBNF(RangeDeclarationBNF.ID,            SubqueryBNF.ID);
+
+		// Trickle down the handling of a sub expression (subquery) to RangeVariableDeclaration
+		// and in order to keep the hierarchy intact, otherwise the default behavior would be
+		// FromClause would parse the subquery immediately.
+		//
+		// FromClause
+		//  |- IdentificationVariableDeclaration
+		//      |- RangeVariableDeclaration [(subquery) AS identification_variable]
+		//          |- SubExpression
+		//              |- SimpleSelectStatement
+		setHandleSubExpression(InternalFromClauseBNF.ID,                true);
+		setHandleSubExpression(InternalSimpleFromClauseBNF.ID,          true);
+		setHandleSubExpression(IdentificationVariableDeclarationBNF.ID, true);
+		setHandleSubExpression(RangeVariableDeclarationBNF.ID,          true);
 	}
 
 	/**
@@ -129,6 +202,10 @@ public final class EclipseLinkJPQLGrammar2_4 extends AbstractJPQLGrammar {
 	@Override
 	protected void initializeExpressionFactories() {
 
+		registerFactory(new CastExpressionFactory());
+		registerFactory(new DatabaseTypeFactory());
+		registerFactory(new ExtractExpressionFactory());
+		registerFactory(new JoinCollectionValuedPathExpressionFactory());
 		registerFactory(new OnClauseFactory());
 
 		// Add a new FunctionExpression for 'COLUMN' since it has different rules
@@ -140,8 +217,9 @@ public final class EclipseLinkJPQLGrammar2_4 extends AbstractJPQLGrammar {
 		// Add COLUMN ExpressionFactory to FunctionExpressionBNF
 		addChildFactory(FunctionExpressionBNF.ID, COLUMN);
 
-                registerFactory(new CastExpressionFactory());
-                registerFactory(new ExtractExpressionFactory());
+		// Change the fallback ExpressionFactory to add support for an abstract schema name
+		// as a valid join association path expression
+		setFallbackExpressionFactoryId(JoinAssociationPathExpressionBNF.ID, JoinCollectionValuedPathExpressionFactory.ID);
 	}
 
 	/**
@@ -153,19 +231,30 @@ public final class EclipseLinkJPQLGrammar2_4 extends AbstractJPQLGrammar {
 		// Expand FunctionExpression to support 'FUNCTION', 'OPERATOR' and 'SQL'
 		addIdentifiers(FunctionExpressionFactory.ID, FUNCTION, OPERATOR, SQL);
 
-		registerIdentifierRole(COLUMN,   IdentifierRole.FUNCTION);          // FUNCTION(n, x1, ..., x2)
-		registerIdentifierRole(FUNCTION, IdentifierRole.FUNCTION);          // FUNCTION(n, x1, ..., x2)
-		registerIdentifierRole(ON,       IdentifierRole.COMPOUND_FUNCTION); // ON x
-		registerIdentifierRole(OPERATOR, IdentifierRole.FUNCTION);          // FUNCTION(n, x1, ..., x2)
-		registerIdentifierRole(SQL,      IdentifierRole.FUNCTION);          // FUNCTION(n, x1, ..., x2)
-                registerIdentifierRole(CAST,     IdentifierRole.FUNCTION);          // FUNCTION(n, x1, ..., x2)
+		registerIdentifierRole(CAST,           IdentifierRole.FUNCTION);          // FUNCTION(n, x1, ..., x2)
+		registerIdentifierRole(COLUMN,         IdentifierRole.FUNCTION);          // FUNCTION(n, x1, ..., x2)
+		registerIdentifierRole(EXTRACT,        IdentifierRole.FUNCTION);          // EXTRACT(x FROM y)
+		registerIdentifierRole(FUNCTION,       IdentifierRole.FUNCTION);          // FUNCTION(n, x1, ..., x2)
+		registerIdentifierRole(NULLS_FIRST,    IdentifierRole.COMPLETEMENT);
+		registerIdentifierRole(NULLS_LAST,     IdentifierRole.COMPLETEMENT);
+		registerIdentifierRole(ON,             IdentifierRole.COMPOUND_FUNCTION); // ON x
+		registerIdentifierRole(OPERATOR,       IdentifierRole.FUNCTION);          // FUNCTION(n, x1, ..., x2)
+		registerIdentifierRole(SQL,            IdentifierRole.FUNCTION);          // FUNCTION(n, x1, ..., x2)
 
-		registerIdentifierVersion(COLUMN,   JPAVersion.VERSION_2_1);
-		registerIdentifierVersion(FUNCTION, JPAVersion.VERSION_2_1);
-		registerIdentifierVersion(ON,       JPAVersion.VERSION_2_1);
-		registerIdentifierVersion(OPERATOR, JPAVersion.VERSION_2_1);
-		registerIdentifierVersion(SQL,      JPAVersion.VERSION_2_1);
-                registerIdentifierVersion(CAST,      JPAVersion.VERSION_2_1);
+		registerIdentifierVersion(CAST,        JPAVersion.VERSION_2_1);
+		registerIdentifierVersion(COLUMN,      JPAVersion.VERSION_2_1);
+		registerIdentifierVersion(EXTRACT,     JPAVersion.VERSION_2_1);
+		registerIdentifierVersion(FUNCTION,    JPAVersion.VERSION_2_1);
+		registerIdentifierVersion(NULLS_FIRST, JPAVersion.VERSION_2_1);
+		registerIdentifierVersion(NULLS_LAST,  JPAVersion.VERSION_2_1);
+		registerIdentifierVersion(ON,          JPAVersion.VERSION_2_1);
+		registerIdentifierVersion(OPERATOR,    JPAVersion.VERSION_2_1);
+		registerIdentifierVersion(SQL,         JPAVersion.VERSION_2_1);
+
+		// Partial identifiers
+		registerIdentifierRole("NULLS",        IdentifierRole.CLAUSE);       // Part of NULLS FIRST, NULLS LAST
+		registerIdentifierRole("FIRST",        IdentifierRole.CLAUSE);       // Part of NULLS FIRST
+		registerIdentifierRole("LAST",         IdentifierRole.CLAUSE);       // Part of NULLS LAST
 	}
 
 	/**

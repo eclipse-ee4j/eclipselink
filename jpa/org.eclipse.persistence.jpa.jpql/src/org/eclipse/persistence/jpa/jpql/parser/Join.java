@@ -22,12 +22,13 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * A <b>JOIN</b> enables the fetching of an association as a side effect of the execution of a query.
  * A <b>JOIN</b> is specified over an entity and its related entities.
  * <p>
- * <div nowrap><b>BNF:</b> <code>join ::= join_spec join_association_path_expression [AS] identification_variable</code><p>
+ * <div nowrap><b>BNF:</b> <code>join ::= join_spec join_association_path_expression [AS] identification_variable</code>
  * <p>
  * A <b>JOIN FETCH</b> enables the fetching of an association as a side effect of the execution of
  * a query. A <b>JOIN FETCH</b> is specified over an entity and its related entities.
  * <p>
- * <div nowrap><b>BNF:</b> <code>fetch_join ::= join_spec FETCH join_association_path_expression</code><p>
+ * <div nowrap><b>BNF:</b> <code>fetch_join ::= join_spec FETCH join_association_path_expression</code>
+ * <p>
  *
  * @version 2.4
  * @since 2.3
@@ -407,33 +408,25 @@ public final class Join extends AbstractExpression {
 
 		// Parse the join association path expression
 		if (tolerant) {
-                        String path = wordParser.word();
-                        if (path.indexOf(".") == -1 && (!wordParser.startsWithIdentifier(TREAT))) {
-                                joinAssociationPath = new AbstractSchemaName(this, path);
-                                joinAssociationPath.parse(wordParser, tolerant);
-                        } else {
-                                joinAssociationPath = parse(
-                                        wordParser,
-                                        JoinAssociationPathExpressionBNF.ID,
-                                        tolerant
-                                );
-                        }
+			joinAssociationPath = parse(wordParser, JoinAssociationPathExpressionBNF.ID, tolerant);
 		}
 		// TREAT expression
 		else if (wordParser.startsWithIdentifier(TREAT)) {
 			joinAssociationPath = new TreatExpression(this);
 			joinAssociationPath.parse(wordParser, tolerant);
 		}
-		// Collection-valued path expression or state field path expression
+		// Abstract schema name, Collection-valued path expression or state field path expression
 		else {
-		        String path = wordParser.word();
-		        if (path.indexOf(".") == -1) {
-                                joinAssociationPath = new AbstractSchemaName(this, path);
-                                joinAssociationPath.parse(wordParser, tolerant);		                
-		        } else {
-        			joinAssociationPath = new CollectionValuedPathExpression(this, path);
-        			joinAssociationPath.parse(wordParser, tolerant);
-		        }
+			String path = wordParser.word();
+
+			if (path.indexOf(".") == -1) {
+				joinAssociationPath = new AbstractSchemaName(this, path);
+				joinAssociationPath.parse(wordParser, tolerant);
+			}
+			else {
+				joinAssociationPath = new CollectionValuedPathExpression(this, path);
+				joinAssociationPath.parse(wordParser, tolerant);
+			}
 		}
 
 		int count = wordParser.skipLeadingWhitespace();
@@ -480,7 +473,7 @@ public final class Join extends AbstractExpression {
 			count = wordParser.skipLeadingWhitespace();
 		}
 
-		// Parse 'ON' clause
+		// Parse the ON clause
 		if (tolerant) {
 			onClause = parse(wordParser, OnClauseBNF.ID, tolerant);
 		}

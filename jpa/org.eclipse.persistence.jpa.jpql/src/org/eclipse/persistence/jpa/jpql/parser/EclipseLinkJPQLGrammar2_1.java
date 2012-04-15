@@ -18,33 +18,49 @@ import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
 /**
- * This {@link JPQLGrammar} provides support for parsing JPQL queries defined in <a href="http://jcp.org/en/jsr/detail?id=317">JSR-337
- * - Java Persistence 2.0</a>. EclipseLink 2.1 provides additional support for 2 additional JPQL
- * identifiers: <code><b>FUNC</b></code> and <code><b>TREAT</b></code>.
+ * This {@link JPQLGrammar} provides support for parsing JPQL queries defined in <a
+ * href="http://jcp.org/en/jsr/detail?id=317">JSR-337 - Java Persistence 2.0</a> and the additional
+ * support provided by EclipseLink 2.1.
  * <p>
- * The following BNFs is the EclipseLink 2.1 additional support added on top of EclipseLink 2.0.
+ * The BNFs of the additional support are the following:
  *
- * <pre><code>join ::= join_spec { join_association_path_expression | join_treat_association_path_expression } [AS] identification_variable
+ * <pre><code> join ::= join_spec { join_association_path_expression | join_treat_association_path_expression } [AS] identification_variable
  *
  * join_treat_association_path_expression ::= TREAT(join_association_path_expression AS entity_type_literal)
  *
- * functions_returning_strings ::= ... | func_expression
+ * func_expression ::= FUNC(string_literal {, func_item}*)
  *
- * functions_returning_numerics ::= ... | func_expression
+ * func_item ::= new_value
  *
- * functions_returning_datetime ::= ... | func_expression
+ * between_expression ::= scalarOrSubSelectExpression [NOT] BETWEEN scalarOrSubSelectExpression AND scalarOrSubSelectExpression
  *
- * func_expression ::= FUNC (func_name {, func_item}*)
+ * in_item ::= literal | single_valued_input_parameter | scalarOrSubSelectExpression
  *
- * func_item ::= scalar_expression (NOT SURE)
+ * scalarOrSubSelectExpression ::= arithmetic_expression | scalar_expression
+ *
+ * pattern_value ::= scalarOrSubSelectExpression
+ *
+ * escape_character ::= scalarExpression
+ *
+ * functions_returning_numerics ::= LENGTH(scalarExpression) |
+ *                                  LOCATE(scalarExpression, scalarExpression[, scalarExpression]) |
+ *                                  MOD(scalarExpression, scalarExpression) |
+ *                                  SQRT(scalarExpression)
+ *                                  func_expression |
+ *                                  ...
+ *
+ * functions_returning_strings ::= CONCAT(scalarExpression {, scalarExpression }+) |
+ *                                 SUBSTRING(scalarExpression, scalarExpression [, scalarExpression]) |
+ *                                 LOWER(scalarExpression) |
+ *                                 UPPER(scalarExpression) |
+ *                                 func_expression |
+ *                                 ...
  *
  * orderby_item ::= state_field_path_expression | result_variable | scalar_expression [ ASC | DESC ]
  *
  * groupby_item ::= single_valued_path_expression | identification_variable | scalar_expression
  *
  * aggregate_expression ::= { AVG | MAX | MIN | SUM | COUNT } ([DISTINCT] scalar_expression)
- *
- * in_item ::= literal | single_valued_input_parameter | scalar_expression
  *
  * </code></pre>
  *
@@ -73,6 +89,27 @@ public final class EclipseLinkJPQLGrammar2_1 extends AbstractJPQLGrammar {
 	}
 
 	/**
+	 * Creates a new <code>EclipseLinkJPQLGrammar2_1</code>.
+	 *
+	 * @param jpqlGrammar The {@link JPQLGrammar} to extend with the content of this one without
+	 * instantiating the base {@link JPQLGrammar}
+	 */
+	private EclipseLinkJPQLGrammar2_1(AbstractJPQLGrammar jpqlGrammar) {
+		super(jpqlGrammar);
+	}
+
+	/**
+	 * Extends the given {@link JPQLGrammar} with the information of this one without instantiating
+	 * the base {@link JPQLGrammar}.
+	 *
+	 * @param jpqlGrammar The {@link JPQLGrammar} to extend with the content of this one without
+	 * instantiating the base {@link JPQLGrammar}
+	 */
+	public static void extend(AbstractJPQLGrammar jpqlGrammar) {
+		new EclipseLinkJPQLGrammar2_1(jpqlGrammar);
+	}
+
+	/**
 	 * Returns the singleton instance of this class.
 	 *
 	 * @return The {@link EclipseLinkJPQLGrammar2_1}
@@ -86,7 +123,14 @@ public final class EclipseLinkJPQLGrammar2_1 extends AbstractJPQLGrammar {
 	 */
 	@Override
 	protected JPQLGrammar buildBaseGrammar() {
-		return new EclipseLinkJPQLGrammar2_0();
+
+		// First build the JPQL 2.0 grammar
+		JPQLGrammar2_0 jpqlGrammar = new JPQLGrammar2_0();
+
+		// Extend it by adding the EclipseLink 2.0 additional support
+		EclipseLinkJPQLGrammar2_0.extend(jpqlGrammar);
+
+		return jpqlGrammar;
 	}
 
 	/**
@@ -114,13 +158,13 @@ public final class EclipseLinkJPQLGrammar2_1 extends AbstractJPQLGrammar {
 		registerBNF(new FunctionItemBNF());
 		registerBNF(new TreatExpressionBNF());
 
-		// Extend the query BNF to add support for FUNC
-		addChildBNF(FunctionsReturningDatetimeBNF.ID, FunctionExpressionBNF.ID);
-		addChildBNF(FunctionsReturningNumericsBNF.ID, FunctionExpressionBNF.ID);
-		addChildBNF(FunctionsReturningStringsBNF.ID,  FunctionExpressionBNF.ID);
+		// Extend the query BNF to add support new JPQL identifiers
+		addChildBNF(FunctionsReturningNumericsBNF.ID,          FunctionExpressionBNF.ID);
+		addChildBNF(JoinAssociationPathExpressionBNF.ID,       TreatExpressionBNF.ID);
 
-		// Now supports scalar expression
-		addChildBNF(InItemBNF.ID,                              ScalarExpressionBNF.ID);
+		// Extend to support scalarExpression
+		addChildBNF(GroupByItemBNF.ID,                         ScalarExpressionBNF.ID);
+		addChildBNF(LikeExpressionEscapeCharacterBNF.ID,       ScalarExpressionBNF.ID);
 		addChildBNF(InternalAggregateFunctionBNF.ID,           ScalarExpressionBNF.ID);
 		addChildBNF(InternalConcatExpressionBNF.ID,            ScalarExpressionBNF.ID);
 		addChildBNF(InternalLengthExpressionBNF.ID,            ScalarExpressionBNF.ID);
@@ -128,15 +172,19 @@ public final class EclipseLinkJPQLGrammar2_1 extends AbstractJPQLGrammar {
 		addChildBNF(InternalLocateThirdExpressionBNF.ID,       ScalarExpressionBNF.ID);
 		addChildBNF(InternalLowerExpressionBNF.ID,             ScalarExpressionBNF.ID);
 		addChildBNF(InternalModExpressionBNF.ID,               ScalarExpressionBNF.ID);
+		addChildBNF(InternalOrderByItemBNF.ID,                 ScalarExpressionBNF.ID);
 		addChildBNF(InternalSqrtExpressionBNF.ID,              ScalarExpressionBNF.ID);
-		addChildBNF(InternalSubstringStringExpressionBNF.ID,   ScalarExpressionBNF.ID);
 		addChildBNF(InternalSubstringPositionExpressionBNF.ID, ScalarExpressionBNF.ID);
+		addChildBNF(InternalSubstringStringExpressionBNF.ID,   ScalarExpressionBNF.ID);
 		addChildBNF(InternalUpperExpressionBNF.ID,             ScalarExpressionBNF.ID);
-		addChildBNF(LikeExpressionEscapeCharacterBNF.ID,      ScalarExpressionBNF.ID);
-		addChildBNF(PatternValueBNF.ID,                        ScalarExpressionBNF.ID);
 
-		// Extend the query BNF to add support for TREAT
-		addChildBNF(JoinAssociationPathExpressionBNF.ID, TreatExpressionBNF.ID);
+		// Extend to support scalarOrSubSelectExpression
+		addChildBNF(InternalBetweenExpressionBNF.ID,           ScalarExpressionBNF.ID);
+		addChildBNF(InternalBetweenExpressionBNF.ID,           ArithmeticExpressionBNF.ID);
+		addChildBNF(InExpressionItemBNF.ID,                    ScalarExpressionBNF.ID);
+		addChildBNF(InExpressionItemBNF.ID,                    ArithmeticExpressionBNF.ID);
+		addChildBNF(PatternValueBNF.ID,                        ScalarExpressionBNF.ID);
+		addChildBNF(PatternValueBNF.ID,                        ArithmeticExpressionBNF.ID);
 	}
 
 	/**

@@ -17,10 +17,10 @@ import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
 
 /**
- * This {@link JPQLGrammar JPQL grammar} provides support for parsing JPQL queries defined in
- * <a href="http://jcp.org/en/jsr/detail?id=317">JSR-337 - Java Persistence 2.0</a>.
+ * This {@link JPQLGrammar} provides support for parsing JPQL queries defined in <a
+ * href="http://jcp.org/en/jsr/detail?id=317">JSR-337 - Java Persistence 2.0</a>.
  * <p>
- * The following is the BNF for the Java Persistence query language, version 2.0.
+ * The following is the BNF for the JPQL query version 2.0.
  *
  * <pre><code> QL_statement ::= select_statement | update_statement | delete_statement
  *
@@ -73,7 +73,9 @@ import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
  *
  * update_item ::= [identification_variable.]{state_field | single_valued_object_field} = new_value
  *
- * new_value ::= scalar_expression | simple_entity_expression | NULL
+ * new_value ::= scalar_expression |
+ *               simple_entity_expression |
+ *               NULL
  *
  * delete_clause ::= DELETE FROM entity_name [[AS] identification_variable]
  *
@@ -114,7 +116,8 @@ import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
  *
  * subquery ::= simple_select_clause subquery_from_clause [where_clause] [groupby_clause] [having_clause]
  *
- * subquery_from_clause ::= FROM subselect_identification_variable_declaration {, subselect_identification_variable_declaration | collection_member_declaration}*
+ * subquery_from_clause ::= FROM subselect_identification_variable_declaration
+ *                               {, subselect_identification_variable_declaration | collection_member_declaration}*
  *
  * subselect_identification_variable_declaration ::= identification_variable_declaration |
  *                                                   derived_path_expression [AS] identification_variable {join}* |
@@ -150,8 +153,8 @@ import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
  *
  * simple_cond_expression ::= comparison_expression |
  *                            between_expression |
- *                            in_expression |
  *                            like_expression |
+ *                            in_expression |
  *                            null_comparison_expression |
  *                            empty_collection_comparison_expression |
  *                            collection_member_expression |
@@ -166,6 +169,8 @@ import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
  * in_item ::= literal | single_valued_input_parameter
  *
  * like_expression ::= string_expression [NOT] LIKE pattern_value [ESCAPE escape_character]
+ *
+ * escape_character ::= single_character_string_literal | character_valued_input_parameter
  *
  * null_comparison_expression ::= {single_valued_path_expression | input_parameter} IS [NOT] NULL
  *
@@ -187,7 +192,7 @@ import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
  *
  * comparison_expression ::= string_expression comparison_operator {string_expression | all_or_any_expression} |
  *                           boolean_expression { = | <> } {boolean_expression | all_or_any_expression} |
- *                           enum_expression { =|<> } {enum_expression | all_or_any_expression} |
+ *                           enum_expression { = | <> } {enum_expression | all_or_any_expression} |
  *                           datetime_expression comparison_operator {datetime_expression | all_or_any_expression} |
  *                           entity_expression { = | <> } {entity_expression | all_or_any_expression} |
  *                           arithmetic_expression comparison_operator {arithmetic_expression | all_or_any_expression} |
@@ -262,7 +267,7 @@ import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
  *                                  SIZE(collection_valued_path_expression) |
  *                                  INDEX(identification_variable)
  *
- * functions_returning_datetime ::= CURRENT_DATE | CURRENT_TIME | CURRENT_TIMESTAMP | literalTemporal
+ * functions_returning_datetime ::= CURRENT_DATE | CURRENT_TIME | CURRENT_TIMESTAMP | literal_temporal
  *
  * functions_returning_strings ::= CONCAT(string_primary, string_primary {, string_primary}*) |
  *                                 SUBSTRING(string_primary, simple_arithmetic_expression [, simple_arithmetic_expression]) |
@@ -293,29 +298,32 @@ import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
  *
  * nullif_expression ::= NULLIF(scalar_expression, scalar_expression)
  *
+ * literal ::= boolean_literal |
+ *             enum_literal
+ *             numeric_literal |
+ *             string_literal |
+ *
  * boolean_literal ::= TRUE | FALSE
  *
- * string_literal ::= 'string'
+ * string_literal ::= '''{identifier}*'''
  *
- * enum_literal ::= {package_name.}*EnumType.CONSTANT
+ * enum_literal ::= {identifier'.'}+identifier
  *
- * literalTemporal ::= date_literal | TIME_LITERAL | TIMESTAMP_LITERAL
+ * identifier ::= Character.isJavaIdentifierStart(char){Character.isJavaIdentifierPart(char)}*
  *
- * integer_literal ::= [0-9]+
+ * literal_temporal ::= date_literal | time_literal | timestamp_literal
  *
- * float_literal ::= [0-9]+ '.' [0-9]* ('e' ('+' | '-')? [0-9]+)?
+ * input_parameter ::= ':'{identifier}+ | '?'{'1'-'9'}{'0'-'9'}*
  *
- * input_parameter ::= (':' [a-zA-Z]+) | ('?' [0-9]+);  // TODO: TO COMPLETE
+ * date_literal ::= '{' ''d'' (' ' | '\t')+ '\'' date_string '\'' (' ' | '\t')* '}'
  *
- * date_literal ::= "{" "'d'" (' ' | '\t')+ '\'' DATE_STRING '\'' (' ' | '\t')* "}"
+ * time_literal ::= '{' ''t'' (' ' | '\t')+ '\'' trim_string '\'' (' ' | '\t')* '}'
  *
- * TIME_LITERAL ::= "{" "'t'" (' ' | '\t')+ '\'' TIME_STRING '\'' (' ' | '\t')* "}"
+ * timestamp_literal ::= '{' ('ts') (' ' | '\t')+ '\'' date_string ' ' trim_string '\'' (' ' | '\t')* '}'
  *
- * TIMESTAMP_LITERAL ::= "{" ('ts') (' ' | '\t')+ '\'' DATE_STRING ' ' TIME_STRING '\'' (' ' | '\t')* "}"
+ * date_string ::= [0-9] [0-9] [0-9] [0-9] '-' [0-9] [0-9] '-' [0-9] [0-9]
  *
- * DATE_STRING ::= [0-9] [0-9] [0-9] [0-9] '-' [0-9] [0-9] '-' [0-9] [0-9]
- *
- * TIME_STRING ::= [0-9] ([0-9])? ':' [0-9] [0-9] ':' [0-9] [0-9] '.' [0-9]*
+ * trim_string ::= [0-9] ([0-9])? ':' [0-9] [0-9] ':' [0-9] [0-9] '.' [0-9]*
  * </pre></code>
  *
  * @version 2.4
@@ -335,6 +343,27 @@ public final class JPQLGrammar2_0 extends AbstractJPQLGrammar {
 	 */
 	public JPQLGrammar2_0() {
 		super();
+	}
+
+	/**
+	 * Creates a new <code>JPQLGrammar2_0</code>.
+	 *
+	 * @param jpqlGrammar The {@link JPQLGrammar} to extend with the content of this one without
+	 * instantiating the base {@link JPQLGrammar}
+	 */
+	private JPQLGrammar2_0(AbstractJPQLGrammar jpqlGrammar) {
+		super(jpqlGrammar);
+	}
+
+	/**
+	 * Extends the given {@link JPQLGrammar} with the information of this one without instantiating
+	 * the base {@link JPQLGrammar}.
+	 *
+	 * @param jpqlGrammar The {@link JPQLGrammar} to extend with the content of this one without
+	 * instantiating the base {@link JPQLGrammar}
+	 */
+	public static void extend(AbstractJPQLGrammar jpqlGrammar) {
+		new JPQLGrammar2_0(jpqlGrammar);
 	}
 
 	/**
@@ -401,23 +430,22 @@ public final class JPQLGrammar2_0 extends AbstractJPQLGrammar {
 		addChildBNF(DateTimePrimaryBNF.ID,                DateTimeTimestampLiteralBNF.ID);
 		addChildBNF(EntityExpressionBNF.ID,               SingleValuedObjectPathExpressionBNF.ID);
 		addChildBNF(EnumPrimaryBNF.ID,                    CaseExpressionBNF.ID);
-		addChildBNF(InExpressionItemBNF.ID,               TypeExpressionBNF.ID);
+		addChildBNF(InExpressionExpressionBNF.ID,         TypeExpressionBNF.ID);
 		addChildBNF(InternalCountBNF.ID,                  SingleValuedObjectPathExpressionBNF.ID);
-		addChildBNF(InternalOrderByItemBNF.ID,            ResultVariableBNF.ID);
 		addChildBNF(LiteralBNF.ID,                        EntityTypeLiteralBNF.ID);
-		addChildBNF(SelectExpressionBNF.ID,               ScalarExpressionBNF.ID);
 		addChildBNF(ScalarExpressionBNF.ID,               CaseExpressionBNF.ID);
 		addChildBNF(ScalarExpressionBNF.ID,               EntityTypeExpressionBNF.ID);
+		addChildBNF(SelectExpressionBNF.ID,               ScalarExpressionBNF.ID);
 		addChildBNF(SingleValuedPathExpressionBNF.ID,     QualifiedIdentificationVariableBNF.ID);
 		addChildBNF(SingleValuedPathExpressionBNF.ID,     SingleValuedObjectPathExpressionBNF.ID);
 		addChildBNF(StateFieldPathExpressionBNF.ID,       GeneralIdentificationVariableBNF.ID);
 		addChildBNF(StringPrimaryBNF.ID,                  CaseExpressionBNF.ID);
 
-		// Change the select_expression to support result variable
-		registerBNF(new SelectItemBNF());
+		// Override (internal) select_expression to add support for result variable
+		registerBNF(new ResultVariableBNF());
 
 		// Add support for entity type literal
-		setFallbackExpressionFactoryId(InItemBNF.ID, EntityTypeLiteralFactory.ID);
+		setFallbackExpressionFactoryId(InExpressionItemBNF.ID, EntityTypeLiteralFactory.ID);
 	}
 
 	/**
@@ -439,7 +467,7 @@ public final class JPQLGrammar2_0 extends AbstractJPQLGrammar {
 		registerFactory(new WhenClauseFactory());
 
 		addChildFactory(FunctionsReturningNumericsBNF.ID, IndexExpressionFactory.ID);
-		addChildFactory(InItemBNF.ID,                     EntityTypeLiteralFactory.ID);
+		addChildFactory(InExpressionItemBNF.ID,           EntityTypeLiteralFactory.ID);
 	}
 
 	/**

@@ -3427,7 +3427,7 @@ public abstract class AbstractStateObjectTest1_0 extends AbstractStateObjectTest
 		);
 	}
 
-	public static StateObjectTester stateObject_215() {
+	public static StateObjectTester stateObject_139() {
 
 		// SELECT o
 		// FROM Customer c JOIN c.orders o JOIN c.address a
@@ -3444,7 +3444,7 @@ public abstract class AbstractStateObjectTest1_0 extends AbstractStateObjectTest
 		);
 	}
 
-	public static StateObjectTester stateObject_216() {
+	public static StateObjectTester stateObject_205() {
 
 		// SELECT o.quantity, a.zipcode
 		// FROM Customer c JOIN c.orders o JOIN c.address a

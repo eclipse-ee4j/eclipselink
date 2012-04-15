@@ -517,6 +517,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(AbsExpression expression) {
 
 		expression.getExpression().accept(this);
@@ -529,6 +530,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(AbstractSchemaName expression) {
 
 		AbstractSchemaNameStateObject stateObject = new AbstractSchemaNameStateObject(
@@ -543,6 +545,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(AdditionExpression expression) {
 
 		expression.getLeftExpression().accept(this);
@@ -564,6 +567,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(AllOrAnyExpression expression) {
 
 		expression.getExpression().accept(this);
@@ -581,6 +585,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(AndExpression expression) {
 
 		expression.getLeftExpression().accept(this);
@@ -602,6 +607,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(ArithmeticFactor expression) {
 
 		expression.getExpression().accept(this);
@@ -619,6 +625,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(AvgFunction expression) {
 
 		expression.getExpression().accept(this);
@@ -636,6 +643,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(BadExpression expression) {
 
 		BadExpressionStateObject stateObject = new BadExpressionStateObject(
@@ -650,6 +658,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(BetweenExpression expression) {
 
 		expression.getExpression().accept(this);
@@ -676,6 +685,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(CaseExpression expression) {
 
 		expression.getCaseOperand().accept(this);
@@ -700,6 +710,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(CoalesceExpression expression) {
 
 		CoalesceExpressionStateObject stateObject = new CoalesceExpressionStateObject(
@@ -714,6 +725,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(CollectionExpression expression) {
 
 		List<StateObject> stateObjects = buildChildren(expression);
@@ -730,6 +742,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(CollectionMemberDeclaration expression) {
 		// Not done here
 		stateObject = null;
@@ -738,6 +751,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(CollectionMemberExpression expression) {
 
 		expression.getEntityExpression().accept(this);
@@ -758,6 +772,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(CollectionValuedPathExpression expression) {
 
 		CollectionValuedPathExpressionStateObject stateObject = new CollectionValuedPathExpressionStateObject(
@@ -772,6 +787,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(ComparisonExpression expression) {
 
 		expression.getLeftExpression().accept(this);
@@ -794,6 +810,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(ConcatExpression expression) {
 
 		ConcatExpressionStateObject stateObject = new ConcatExpressionStateObject(
@@ -808,6 +825,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(ConstructorExpression expression) {
 
 		ConstructorExpressionStateObject stateObject = new ConstructorExpressionStateObject(
@@ -823,6 +841,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(CountFunction expression) {
 
 		expression.getExpression().accept(this);
@@ -840,6 +859,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(DateTime expression) {
 		DateTimeStateObject stateObject = new DateTimeStateObject(parent, expression.getText());
 		stateObject.setExpression(expression);
@@ -849,6 +869,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(DeleteClause expression) {
 		// Done via DeleteStatementBuilder
 		stateObject = null;
@@ -857,6 +878,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(DeleteStatement expression) {
 		stateObject = getDeleteStatementBuilder().buildStateObject(parent, expression);
 	}
@@ -864,6 +886,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(DivisionExpression expression) {
 
 		expression.getLeftExpression().accept(this);
@@ -885,6 +908,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(EmptyCollectionComparisonExpression expression) {
 
 		EmptyCollectionComparisonExpressionStateObject stateObject = new EmptyCollectionComparisonExpressionStateObject(
@@ -900,6 +924,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(EntityTypeLiteral expression) {
 
 		EntityTypeLiteralStateObject stateObject = new EntityTypeLiteralStateObject(
@@ -914,6 +939,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(EntryExpression expression) {
 
 		EntryExpressionStateObject stateObject = new EntryExpressionStateObject(
@@ -928,6 +954,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(ExistsExpression expression) {
 
 		expression.getExpression().accept(this);
@@ -945,6 +972,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public final void visit(FromClause expression) {
 		// Not done here
 		stateObject = null;
@@ -953,6 +981,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(FunctionExpression expression) {
 
 		FunctionExpressionStateObject stateObject = new FunctionExpressionStateObject(
@@ -969,6 +998,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public final void visit(GroupByClause expression) {
 		// Not done here
 		stateObject = null;
@@ -977,6 +1007,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(HavingClause expression) {
 		expression.getConditionalExpression().accept(this);
 	}
@@ -984,6 +1015,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(IdentificationVariable expression) {
 
 		IdentificationVariableStateObject stateObject = new IdentificationVariableStateObject(
@@ -999,6 +1031,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public final void visit(final IdentificationVariableDeclaration expression) {
 
 		StateObjectVisitor visitor = new AbstractStateObjectVisitor() {
@@ -1018,6 +1051,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(IndexExpression expression) {
 
 		IndexExpressionStateObject stateObject = new IndexExpressionStateObject(
@@ -1032,6 +1066,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(InExpression expression) {
 
 		expression.getExpression().accept(this);
@@ -1051,6 +1086,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(InputParameter expression) {
 
 		InputParameterStateObject stateObject = new InputParameterStateObject(
@@ -1065,6 +1101,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public final void visit(Join expression) {
 		stateObject = getJoinBuilder().buildStateObject(
 			(IdentificationVariableDeclarationStateObject) stateObject,
@@ -1075,6 +1112,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(JPQLExpression expression) {
 
 		parent = new JPQLQueryStateObject(jpqlQueryBuilder, managedTypeProvider);
@@ -1087,6 +1125,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(KeyExpression expression) {
 
 		KeyExpressionStateObject stateObject = new KeyExpressionStateObject(
@@ -1101,6 +1140,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(KeywordExpression expression) {
 
 		KeywordExpressionStateObject stateObject = new KeywordExpressionStateObject(
@@ -1115,6 +1155,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(LengthExpression expression) {
 
 		expression.getExpression().accept(this);
@@ -1131,6 +1172,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(LikeExpression expression) {
 
 		expression.getStringExpression().accept(this);
@@ -1154,6 +1196,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(LocateExpression expression) {
 
 		expression.getFirstExpression().accept(this);
@@ -1179,6 +1222,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(LowerExpression expression) {
 
 		expression.getExpression().accept(this);
@@ -1195,6 +1239,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(MaxFunction expression) {
 
 		expression.getExpression().accept(this);
@@ -1212,6 +1257,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(MinFunction expression) {
 
 		expression.getExpression().accept(this);
@@ -1229,6 +1275,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(ModExpression expression) {
 
 		expression.getFirstExpression().accept(this);
@@ -1250,6 +1297,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(MultiplicationExpression expression) {
 
 		expression.getLeftExpression().accept(this);
@@ -1271,6 +1319,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(NotExpression expression) {
 
 		expression.getExpression().accept(this);
@@ -1287,6 +1336,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(NullComparisonExpression expression) {
 
 		expression.getExpression().accept(this);
@@ -1304,6 +1354,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(NullExpression expression) {
 		stateObject = null;
 	}
@@ -1311,6 +1362,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(NullIfExpression expression) {
 
 		expression.getFirstExpression().accept(this);
@@ -1332,6 +1384,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(NumericLiteral expression) {
 
 		NumericLiteralStateObject stateObject = new NumericLiteralStateObject(
@@ -1346,6 +1399,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(ObjectExpression expression) {
 
 		ObjectExpressionStateObject stateObject = new ObjectExpressionStateObject(
@@ -1360,6 +1414,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(OnClause expression) {
 		expression.getConditionalExpression().accept(this);
 	}
@@ -1367,6 +1422,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public final void visit(OrderByClause expression) {
 		// Not done here
 		stateObject = null;
@@ -1375,6 +1431,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public final void visit(OrderByItem expression) {
 
 		OrderByClauseStateObject orderByClause = (OrderByClauseStateObject) stateObject;
@@ -1389,6 +1446,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(OrExpression expression) {
 
 		expression.getLeftExpression().accept(this);
@@ -1410,6 +1468,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public final void visit(RangeVariableDeclaration expression) {
 		// Not done here
 		stateObject = null;
@@ -1418,6 +1477,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public final void visit(final ResultVariable expression) {
 
 		StateObjectVisitor visitor = new AbstractStateObjectVisitor() {
@@ -1436,6 +1496,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public final void visit(SelectClause expression) {
 		// Not done here
 		stateObject = null;
@@ -1444,6 +1505,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(SelectStatement expression) {
 		stateObject = getSelectStatementBuilder().buildStateObject(parent, expression);
 	}
@@ -1451,6 +1513,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public final void visit(SimpleFromClause expression) {
 		// Done via SimpleSelectStatementBuilder
 		stateObject = null;
@@ -1459,6 +1522,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public final void visit(SimpleSelectClause expression) {
 		// Done via SimpleSelectStatementBuilder
 		stateObject = null;
@@ -1467,6 +1531,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(SimpleSelectStatement expression) {
 		stateObject = getSimpleSelectStatementBuilder().buildStateObject(parent, expression);
 	}
@@ -1474,6 +1539,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(SizeExpression expression) {
 
 		expression.getExpression().accept(this);
@@ -1490,6 +1556,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(SqrtExpression expression) {
 
 		expression.getExpression().accept(this);
@@ -1506,6 +1573,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(StateFieldPathExpression expression) {
 
 		StateFieldPathExpressionStateObject stateObject = new StateFieldPathExpressionStateObject(
@@ -1520,6 +1588,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(StringLiteral expression) {
 
 		StringLiteralStateObject stateObject = new StringLiteralStateObject(
@@ -1534,6 +1603,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(SubExpression expression) {
 
 		expression.getExpression().accept(this);
@@ -1550,6 +1620,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(SubstringExpression expression) {
 
 		expression.getFirstExpression().accept(this);
@@ -1575,6 +1646,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(SubtractionExpression expression) {
 
 		expression.getLeftExpression().accept(this);
@@ -1596,6 +1668,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(SumFunction expression) {
 
 		expression.getExpression().accept(this);
@@ -1613,6 +1686,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(TreatExpression expression) {
 		// Done by JoinBuilder
 	}
@@ -1620,6 +1694,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(TrimExpression expression) {
 
 		expression.getExpression().accept(this);
@@ -1642,6 +1717,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(TypeExpression expression) {
 
 		expression.getExpression().accept(this);
@@ -1658,6 +1734,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(UnknownExpression expression) {
 
 		UnknownExpressionStateObject stateObject = new UnknownExpressionStateObject(
@@ -1672,6 +1749,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public final void visit(UpdateClause expression) {
 		// Done via UpdateStatementBuilder
 	}
@@ -1679,6 +1757,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public final void visit(UpdateItem expression) {
 		// Done via UpdateStatementBuilder
 	}
@@ -1686,6 +1765,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(UpdateStatement expression) {
 		stateObject = getUpdateStatementBuilder().buildStateObject(parent, expression);
 	}
@@ -1693,6 +1773,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(UpperExpression expression) {
 
 		expression.getExpression().accept(this);
@@ -1709,6 +1790,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(ValueExpression expression) {
 
 		ValueExpressionStateObject stateObject = new ValueExpressionStateObject(
@@ -1723,6 +1805,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public final void visit(WhenClause expression) {
 		// Done throw WhenClauseBuilder
 		stateObject = null;
@@ -1731,6 +1814,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(WhereClause expression) {
 		expression.getConditionalExpression().accept(this);
 	}

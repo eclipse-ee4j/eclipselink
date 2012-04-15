@@ -203,7 +203,9 @@ public final class FunctionExpression extends AbstractSingleEncapsulatedExpressi
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void parseEncapsulatedExpression(WordParser wordParser, boolean tolerant) {
+	protected void parseEncapsulatedExpression(WordParser wordParser,
+	                                           int whitespaceCount,
+	                                           boolean tolerant) {
 
 		int count = 0;
 
@@ -230,7 +232,7 @@ public final class FunctionExpression extends AbstractSingleEncapsulatedExpressi
 		if (!wordParser.isTail() &&
 		     wordParser.character() != RIGHT_PARENTHESIS) {
 
-			super.parseEncapsulatedExpression(wordParser, tolerant);
+			super.parseEncapsulatedExpression(wordParser, whitespaceCount, tolerant);
 		}
 
 		// A space was parsed but no expression, let the space belong to the parent

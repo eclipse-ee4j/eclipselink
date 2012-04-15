@@ -172,16 +172,20 @@ abstract class Declaration implements JPQLQueryDeclaration {
 	}
 
 	/**
-	 * Resolves
+	 * Resolves this {@link Declaration} and returns the associated {@link ClassDescriptor}. For a
+	 * {@link RangeVariableDeclaration}, this will return the actual descriptor for the entity. For
+	 * a mapping, this will return the reference descriptor.
 	 *
-	 * @return
+	 * @return The descriptor associated with this declaration
 	 */
 	abstract ClassDescriptor resolveDescriptor();
 
 	/**
-	 * Resolves
+	 * Resolves this {@link Declaration} and returns the associated {@link DatabaseMapping} if this
+	 * represents a path expression. In the case of a {@link RangeVariableDeclaration}, this will
+	 * return <code>null</code>.
 	 *
-	 * @return
+	 * @return The mapping associated with this declaration
 	 */
 	abstract DatabaseMapping resolveMapping();
 

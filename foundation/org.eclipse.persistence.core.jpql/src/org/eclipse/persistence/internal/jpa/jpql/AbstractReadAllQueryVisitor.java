@@ -15,7 +15,6 @@ package org.eclipse.persistence.internal.jpa.jpql;
 
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
-import org.eclipse.persistence.internal.expressions.QueryKeyExpression;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractEclipseLinkExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractFromClause;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractSelectClause;
@@ -125,16 +124,14 @@ abstract class AbstractReadAllQueryVisitor extends AbstractEclipseLinkExpression
 		switch (expression.getOrdering()) {
 			case ASC:  queryExpression = queryExpression.ascending();  break;
 			case DESC: queryExpression = queryExpression.descending(); break;
-			default:
 		}
-		
-                // Create the ordering item
-                switch (expression.getNullOrdering()) {
-                        case NULLS_FIRST:  queryExpression = queryExpression.nullsFirst();  break;
-                        case NULLS_LAST: queryExpression = queryExpression.nullsLast(); break;
-                        default:
-                }
-		
+
+		// Create the null ordering item
+		switch (expression.getNullOrdering()) {
+			case NULLS_FIRST: queryExpression = queryExpression.nullsFirst(); break;
+			case NULLS_LAST:  queryExpression = queryExpression.nullsLast();  break;
+		}
+
 		query.addOrdering(queryExpression);
 	}
 
@@ -293,6 +290,12 @@ abstract class AbstractReadAllQueryVisitor extends AbstractEclipseLinkExpression
 
 	private class JoinVisitor extends AbstractEclipseLinkExpressionVisitor {
 
+		/**
+		 * Cache the Expression associated with the identification variable so it can be used in the
+		 * visit(Join) in order to properly create the ON clause expression.
+		 */
+		private Expression baseExpression;
+
 		private Expression addNonFetchJoinedAttribute(org.eclipse.persistence.jpa.jpql.parser.Expression expression,
 		                                              IdentificationVariable identificationVariable) {
 
@@ -367,27 +370,20 @@ abstract class AbstractReadAllQueryVisitor extends AbstractEclipseLinkExpression
 				IdentificationVariable identificationVariable = (IdentificationVariable) expression.getIdentificationVariable();
 				Expression queryExpression = addNonFetchJoinedAttribute(expression, identificationVariable);
 
+				// Add the ON clause to the expression
 				if (expression.hasOnClause()) {
-
 					Expression onClause = queryContext.buildExpression(expression.getOnClause());
-					// Need to get the base that the join was too.
-					Expression base = queryContext.buildExpression(expression.getParent());
-					if (base == null) {
-					    if (queryExpression instanceof QueryKeyExpression) {
-					        base = ((QueryKeyExpression)queryExpression).getBaseExpression();
-					    } else {
-					        base = queryExpression;
-					    }
-					}
 
+					// Create the JOIN expression using the base Expression
 					if (expression.isLeftJoin()) {
-						queryExpression = base.leftJoin(queryExpression, onClause);
+						queryExpression = baseExpression.leftJoin(queryExpression, onClause);
 					}
 					else {
-						queryExpression = base.join(queryExpression, onClause);
+						queryExpression = baseExpression.join(queryExpression, onClause);
 					}
 				}
 
+				// Add the FETCH expression to the Expression
 				if (expression.hasFetch()) {
 
 					String variableName = identificationVariable.getVariableName();
@@ -406,7 +402,7 @@ abstract class AbstractReadAllQueryVisitor extends AbstractEclipseLinkExpression
 		 */
 		@Override
 		public void visit(RangeVariableDeclaration expression) {
-			addNonFetchJoinedAttribute(
+			baseExpression = addNonFetchJoinedAttribute(
 				expression,
 				(IdentificationVariable) expression.getIdentificationVariable()
 			);

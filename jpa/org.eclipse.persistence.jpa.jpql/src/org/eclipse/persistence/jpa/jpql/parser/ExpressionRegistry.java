@@ -299,6 +299,12 @@ public class ExpressionRegistry {
 		queryBNF.setFallbackBNFId(queryBNFId);
 	}
 
+	public void setHandleSubExpression(String queryBNFId, boolean handleSubExpression) {
+		JPQLQueryBNF queryBNF = queryBNFs.get(queryBNFId);
+		Assert.isNotNull(queryBNF, "The JPQLQueryBNF identified with '" + queryBNFId + "' does not exist.");
+		queryBNF.setHandleSubExpression(handleSubExpression);
+	}
+
 	/**
 	 * Sets the unique identifier of the {@link ExpressionFactory} to use when the fall back BNF
 	 * ID is not <code>null</code>. This will be used to parse a portion of the query when the

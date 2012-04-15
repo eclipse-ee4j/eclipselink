@@ -151,7 +151,7 @@ public abstract class AggregateFunction extends AbstractSingleEncapsulatedExpres
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected final void parseEncapsulatedExpression(WordParser wordParser, boolean tolerant) {
+	protected final void parseEncapsulatedExpression(WordParser wordParser, int whitespaceCount, boolean tolerant) {
 
 		// Parse 'DISTINCT'
 		hasDistinct = wordParser.startsWithIdentifier(DISTINCT);
@@ -162,7 +162,7 @@ public abstract class AggregateFunction extends AbstractSingleEncapsulatedExpres
 		}
 
 		// Parse the rest
-		super.parseEncapsulatedExpression(wordParser, tolerant);
+		super.parseEncapsulatedExpression(wordParser, whitespaceCount, tolerant);
 	}
 
 	/**

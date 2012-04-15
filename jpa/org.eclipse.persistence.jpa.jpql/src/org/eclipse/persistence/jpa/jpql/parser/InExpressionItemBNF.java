@@ -14,15 +14,18 @@
 package org.eclipse.persistence.jpa.jpql.parser;
 
 /**
- * The query BNF describes the expression being tested by the <code>IN</code> expression.
+ * The query BNF for the items of an <b>IN</b> expression.
  * <p>
  * JPA 1.0:
- * <div nowrap><b>BNF:</b> <code>in_expression ::= state_field_path_expression [NOT] IN(in_item {, in_item}* | subquery)</code><p>
- * JPA 2.0
- * <div nowrap><b>BNF:</b> <code>in_expression ::= {state_field_path_expression | type_discriminator} [NOT] IN { ( in_item {, in_item}* ) | (subquery) | collection_valued_input_parameter }</code><p>
+ * <div nowrap><b>BNF:</b> <code>in_item ::= ( actual_in_item {, actual_in_item}* | subquery)</code><p>
+ * <div nowrap><b>BNF:</b> <code>actual_in_item ::= literal | input_parameter
+ * <p>
+ * JPA 2.0:
+ * <div nowrap><b>BNF:</b> <code>in_item ::= ( actual_in_item {, actual_in_item}* ) | (subquery) | collection_valued_input_parameter</code><p>
+ * <div nowrap><b>BNF:</b> <code>actual_in_item ::= literal | input_parameter
  *
  * @version 2.4
- * @since 2.4
+ * @since 2.3
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
@@ -46,6 +49,12 @@ public final class InExpressionItemBNF extends JPQLQueryBNF {
 	@Override
 	protected void initialize() {
 		super.initialize();
-		registerChild(StateFieldPathExpressionBNF.ID);
+		setHandleAggregate(true); // To support invalid queries
+		setHandleCollection(true);
+		setFallbackBNFId(ID);
+		setFallbackExpressionFactoryId(PreLiteralExpressionFactory.ID);
+		registerChild(LiteralBNF.ID);
+		registerChild(InputParameterBNF.ID);
+		registerChild(SubqueryBNF.ID);
 	}
 }

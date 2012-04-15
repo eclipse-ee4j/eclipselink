@@ -15,8 +15,7 @@ package org.eclipse.persistence.jpa.tests.jpql.parser;
 
 import org.junit.Test;
 
-import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries.*;
-
+import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries2_0.*;
 
 /**
  * @version 2.4
@@ -27,28 +26,7 @@ import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries.*;
 public final class JPQLQueriesTest2_0 extends JPQLParserTest {
 
 	@Test
-	public void test_Query_139() {
-
-		// SELECT p
-		// FROM Employee e JOIN e.projects p
-		// WHERE e.id = :id AND INDEX(p) = 1
-
-		ExpressionTester selectStatement = selectStatement(
-			select(variable("p")),
-			from("Employee", "e", join("e.projects", "p")),
-			where(
-					path("e.id").equal(inputParameter(":id"))
-				.and(
-					index("p").equal(numeric(1))
-				)
-			)
-		);
-
-		testQuery(query_139(), selectStatement);
-	}
-
-	@Test
-	public void test_Query_205() {
+	public void test_Query_001() {
 
 		// UPDATE Employee e
 		// SET e.salary =
@@ -72,11 +50,11 @@ public final class JPQLQueriesTest2_0 extends JPQLParserTest {
 			))
 		);
 
-		testQuery(query_205(), updateStatement);
+		testQuery(query_001(), updateStatement);
 	}
 
 	@Test
-	public void test_Query_206() {
+	public void test_Query_002() {
 
 		// SELECT e.name,
 		//        CASE TYPE(e) WHEN Exempt THEN 'Exempt'
@@ -104,11 +82,11 @@ public final class JPQLQueriesTest2_0 extends JPQLParserTest {
 			where(path("e.dept.name").equal(string("'Engineering'")))
 		);
 
-		testQuery(query_206(), selectStatement);
+		testQuery(query_002(), selectStatement);
 	}
 
 	@Test
-	public void test_Query_207() {
+	public void test_Query_003() {
 
 		// SELECT e.name,
 		//        f.name,
@@ -137,11 +115,11 @@ public final class JPQLQueriesTest2_0 extends JPQLParserTest {
 			from("Employee", "e", join("e.frequentFlierPlan", "f"))
 		);
 
-		testQuery(query_207(), selectStatement);
+		testQuery(query_003(), selectStatement);
 	}
 
 	@Test
-	public void test_Query_208() {
+	public void test_Query_004() {
 
 		// SELECT e
 		// FROM Employee e
@@ -153,11 +131,11 @@ public final class JPQLQueriesTest2_0 extends JPQLParserTest {
 			where(type("e").in(entity("Exempt"), entity("Contractor")))
 		);
 
-		testQuery(query_208(), selectStatement);
+		testQuery(query_004(), selectStatement);
 	}
 
 	@Test
-	public void test_Query_209() {
+	public void test_Query_005() {
 
 		// SELECT e
 		// FROM Employee e
@@ -169,11 +147,11 @@ public final class JPQLQueriesTest2_0 extends JPQLParserTest {
 			where(type("e").in(inputParameter(":empType1"), inputParameter(":empType2")))
 		);
 
-		testQuery(query_209(), selectStatement);
+		testQuery(query_005(), selectStatement);
 	}
 
 	@Test
-	public void test_Query_210() {
+	public void test_Query_006() {
 
 		// SELECT e
 		// FROM Employee e
@@ -194,11 +172,11 @@ public final class JPQLQueriesTest2_0 extends JPQLParserTest {
 			where(inExpression)
 		);
 
-		testQuery(query_210(), selectStatement);
+		testQuery(query_006(), selectStatement);
 	}
 
 	@Test
-	public void test_Query_211() {
+	public void test_Query_007() {
 
 		// SELECT TYPE(employee)
 		// FROM Employee employee
@@ -210,11 +188,11 @@ public final class JPQLQueriesTest2_0 extends JPQLParserTest {
 			where(type("employee").different(variable("Exempt")))
 		);
 
-		testQuery(query_211(), selectStatement);
+		testQuery(query_007(), selectStatement);
 	}
 
 	@Test
-	public void test_Query_212() {
+	public void test_Query_008() {
 
 		// SELECT t
 		// FROM CreditCard c JOIN c.transactionHistory t
@@ -229,11 +207,11 @@ public final class JPQLQueriesTest2_0 extends JPQLParserTest {
 					index("t").between(numeric(0), numeric(9))))
 		);
 
-		testQuery(query_212(), selectStatement);
+		testQuery(query_008(), selectStatement);
 	}
 
 	@Test
-	public void test_Query_213() {
+	public void test_Query_009() {
 
 		// SELECT w.name
 		// FROM Course c JOIN c.studentWaitlist w
@@ -250,11 +228,11 @@ public final class JPQLQueriesTest2_0 extends JPQLParserTest {
 					index("w").equal(numeric(0))))
 		);
 
-		testQuery(query_213(), selectStatement);
+		testQuery(query_009(), selectStatement);
 	}
 
 	@Test
-	public void test_Query_214() {
+	public void test_Query_010() {
 
 		// UPDATE Employee e
 		// SET e.salary = CASE e.rating WHEN 1 THEN e.salary * 1.1
@@ -276,11 +254,11 @@ public final class JPQLQueriesTest2_0 extends JPQLParserTest {
 			)
 		);
 
-		testQuery(query_214(), updateStatement);
+		testQuery(query_010(), updateStatement);
 	}
 
 	@Test
-	public void test_Query_217() {
+	public void test_Query_011() {
 
 		// SELECT o.quantity, o.cost*1.08 AS taxedCost, a.zipcode
 		// FROM Customer c JOIN c.orders o JOIN c.address a
@@ -290,7 +268,7 @@ public final class JPQLQueriesTest2_0 extends JPQLParserTest {
 		ExpressionTester selectStatement = selectStatement(
 			select(
 				path("o.quantity"),
-				selectItemAs(path("o.cost").multiply(numeric(1.08)), "taxedCost"),
+				resultVariableAs(path("o.cost").multiply(numeric(1.08)), "taxedCost"),
 				path("a.zipcode")
 			),
 			from("Customer", "c", join("c.orders", "o"), join("c.address", "a")),
@@ -309,11 +287,11 @@ public final class JPQLQueriesTest2_0 extends JPQLParserTest {
 			)
 		);
 
-		testQuery(query_217(), selectStatement);
+		testQuery(query_011(), selectStatement);
 	}
 
 	@Test
-	public void test_Query_218() {
+	public void test_Query_012() {
 
 		// SELECT AVG(o.quantity) as q, a.zipcode
 		// FROM Customer c JOIN c.orders o JOIN c.address a
@@ -323,7 +301,7 @@ public final class JPQLQueriesTest2_0 extends JPQLParserTest {
 
 		ExpressionTester selectStatement = selectStatement(
 			select(
-				selectItemAs(avg("o.quantity"), "q"),
+				resultVariableAs(avg("o.quantity"), "q"),
 				path("a.zipcode")
 			),
 			from("Customer", "c", join("c.orders", "o"), join("c.address", "a")),
@@ -333,32 +311,32 @@ public final class JPQLQueriesTest2_0 extends JPQLParserTest {
 			orderBy(orderByItemDesc(variable("q")))
 		);
 
-		testQuery(query_218(), selectStatement);
+		testQuery(query_012(), selectStatement);
 	}
 
 	@Test
-	public void test_Query_222() {
+	public void test_Query_013() {
 
 		// SELECT e.salary / 1000D n
 		// From Employee e
 
 		ExpressionTester selectStatement = selectStatement(
-			select(selectItem(path("e.salary").divide(numeric("1000D")), "n")),
+			select(resultVariable(path("e.salary").divide(numeric("1000D")), "n")),
 			from("Employee", "e")
 		);
 
-		testQuery(query_222(), selectStatement);
+		testQuery(query_013(), selectStatement);
 	}
 
 	@Test
-	public void test_Query_223() {
+	public void test_Query_014() {
 
 		// SELECT MOD(a.id, 2) AS m
 		// FROM Address a JOIN FETCH a.customerList
 		// ORDER BY m, a.zipcode
 
 		ExpressionTester selectStatement = selectStatement(
-			select(selectItemAs(mod(path("a.id"), numeric(2)), "m")),
+			select(resultVariableAs(mod(path("a.id"), numeric(2)), "m")),
 			from("Address", "a", joinFetch("a.customerList")),
 			nullExpression(),
 			nullExpression(),
@@ -369,6 +347,40 @@ public final class JPQLQueriesTest2_0 extends JPQLParserTest {
 			)
 		);
 
-		testQuery(query_223(), selectStatement);
+		testQuery(query_014(), selectStatement);
+	}
+
+	@Test
+	public void test_Query_015() {
+
+		// SELECT ENTRY(addr) FROM Alias a JOIN a.addresses addr
+
+		ExpressionTester selectStatement = selectStatement(
+			select(entry("addr")),
+			from("Alias", "a", join("a.addresses", "addr"))
+		);
+
+		testQuery(query_015(), selectStatement);
+	}
+
+	@Test
+	public void test_Query_016() {
+
+		// SELECT p
+		// FROM Employee e JOIN e.projects p
+		// WHERE e.id = :id AND INDEX(p) = 1
+
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("p")),
+			from("Employee", "e", join("e.projects", "p")),
+			where(
+					path("e.id").equal(inputParameter(":id"))
+				.and(
+					index("p").equal(numeric(1))
+				)
+			)
+		);
+
+		testQuery(query_016(), selectStatement);
 	}
 }

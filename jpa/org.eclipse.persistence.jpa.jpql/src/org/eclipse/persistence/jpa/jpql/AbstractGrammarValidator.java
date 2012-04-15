@@ -18,7 +18,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 import org.eclipse.persistence.jpa.jpql.parser.AbsExpression;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractConditionalClause;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractDoubleEncapsulatedExpression;
@@ -32,6 +31,7 @@ import org.eclipse.persistence.jpa.jpql.parser.AbstractSelectStatement;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractSingleEncapsulatedExpression;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractTripleEncapsulatedExpression;
 import org.eclipse.persistence.jpa.jpql.parser.AdditionExpression;
+import org.eclipse.persistence.jpa.jpql.parser.AggregateFunction;
 import org.eclipse.persistence.jpa.jpql.parser.AllOrAnyExpression;
 import org.eclipse.persistence.jpa.jpql.parser.AndExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ArithmeticExpression;
@@ -74,7 +74,6 @@ import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariableDeclaration
 import org.eclipse.persistence.jpa.jpql.parser.InExpression;
 import org.eclipse.persistence.jpa.jpql.parser.IndexExpression;
 import org.eclipse.persistence.jpa.jpql.parser.InputParameter;
-import org.eclipse.persistence.jpa.jpql.parser.InternalOrderByItemBNF;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLExpression;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.parser.Join;
@@ -190,32 +189,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 	 * of the {@link Expression} being visited.
 	 */
 	private OwningClauseVisitor owningClauseVisitor;
-
-	/**
-	 * The compiled regular expression that validates numeric literals using {@link #REGULAR_EXPRESSION_NUMERIC_LITERAL}.
-	 */
-	private static Pattern numericalLiteralPattern;
-
-	/**
-	 * The regular expression of a numeric literal. The possible forms are:
-	 * <pre>
-	 *  2,   +2,  -2,  2.2,  +2.2,  -2.2
-	 *  02, +02, -02, 02.2, +02.2, -02.2
-	 *  2d,      2D,    2f,    2F
-	 * +2d,     +2D,   +2f,   +2F
-	 * -2d,     -2D,   -2f,   -2F
-	 *  2.2d,  2.2D,  2.2f,  2.2F
-	 * -2.2d, -2.2D, -2.2f, -2.2F
-	 * +2.2d, +2.2D, +2.2f, +2.2F
-	 *  2E10,     +2E10,    2E+10,   +2E+10
-	 * -2E10,     2E-10,   -2E-10
-	 *  2.2E10, +2.2E10,  2.2E+10, +2.2+E10
-	 *   -2E10,   2E-10,   -2E-10,
-	 * -2.2E10, 2.2-E10, -2.2E-10
-	 * </pre>
-	 */
-	public static final String REGULAR_EXPRESSION_NUMERIC_LITERAL =
-		"^[-+]?[0-9]*((\\.[0-9]+([fFdD]|([eE][-+]?[0-9]+))?)|([fFdDlL]|([eE][-+]?[0-9]+)))?$";
 
 	/**
 	 * Creates a new <code>AbstractGrammarValidator</code>.
@@ -1265,14 +1238,32 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 	}
 
 	/**
-	 * Determines whether the given sequence of characters is a numeric literal or not.
+	 * Determines whether the given sequence of characters is a numeric literal or not. There are
+	 * two types of numeric literal that is supported:
+	 * <ul>
+	 *    <li type=square>Decimal literal</li>
+	 *    <li type=square>Hexadecimal literal</li>
+	 * </ul>
 	 *
 	 * @param text The sequence of characters to validate
 	 * @return <code>true</code> if the given sequence of characters is a valid numeric literal;
 	 * <code>false</code> otherwise
 	 */
 	protected boolean isNumericLiteral(String text) {
-		return numericalLiteralPattern().matcher(text).matches();
+
+		// The ending 'l' or 'L' for a long number has to be removed, Java will not parse it
+		if (text.endsWith("l") || text.endsWith("L")) {
+			text = text.substring(0, text.length() - 1);
+		}
+
+		// Simply try to parse it as a double number (integer and hexadecimal are handled as well)
+		try {
+			Double.parseDouble(text);
+			return true;
+		}
+		catch (Exception e2) {
+			return false;
+		}
 	}
 
 	/**
@@ -1511,18 +1502,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 			registerHelper(NULLIF, helper);
 		}
 		return helper;
-	}
-
-	/**
-	 * Returns the {@link Pattern} that determines if a string represents a numeric literal or not.
-	 *
-	 * @return The compiled regular expression of a numeric literal
-	 */
-	protected Pattern numericalLiteralPattern() {
-		if (numericalLiteralPattern == null) {
-			numericalLiteralPattern = Pattern.compile(REGULAR_EXPRESSION_NUMERIC_LITERAL);
-		}
-		return numericalLiteralPattern;
 	}
 
 	protected AbstractSingleEncapsulatedExpressionHelper<ObjectExpression> objectExpressionHelper() {
@@ -2083,6 +2062,43 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 		}
 	}
 
+	protected <T extends AggregateFunction> void validateAggregateFunctionLocation(T expression,
+	                                                                               AbstractSingleEncapsulatedExpressionHelper<T> helper) {
+
+
+		// Check to see if the aggregate function is in the right clause
+		OwningClauseVisitor visitor = getOwningClauseVisitor();
+		boolean valid = true;
+		try {
+			expression.accept(visitor);
+			valid = visitor.selectClause       != null ||
+			        visitor.simpleSelectClause != null ||
+			        visitor.groupByClause      != null ||
+			        visitor.orderByClause      != null ||
+			        visitor.havingClause       != null;
+		}
+		finally {
+			visitor.dispose();
+		}
+
+		// The function is used in an invalid clause
+		if (!valid) {
+
+			int startPosition = position(expression);
+			int endPosition   = startPosition + length(expression);
+
+			addProblem(
+				expression,
+				startPosition,
+				endPosition,
+				AggregateFunction_WrongClause,
+				expression.getIdentifier());
+		}
+		else {
+			validateAbstractSingleEncapsulatedExpression(expression, helper);
+		}
+	}
+
 	protected void validateArithmeticExpression(ArithmeticExpression expression) {
 		validateCompoundExpression(
 			expression,
@@ -2410,15 +2426,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 		);
 	}
 
-	protected void validateOrderByItem(OrderByItem expression) {
-
-		if (!isValid(expression.getExpression(), InternalOrderByItemBNF.ID)) {
-			int startPosition = position(expression);
-			int endPosition   = startPosition + length(expression.getExpression());
-			addProblem(expression, startPosition, endPosition, OrderByItem_InvalidPath);
-		}
-	}
-
 	protected void validateOwningClause(InputParameter expression, String parameter) {
 
 		OwningClauseVisitor visitor = getOwningClauseVisitor();
@@ -2551,7 +2558,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(AvgFunction expression) {
-		validateAbstractSingleEncapsulatedExpression(expression, avgFunctionHelper());
+		validateAggregateFunctionLocation(expression, avgFunctionHelper());
 	}
 
 	/**
@@ -2559,8 +2566,9 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(BadExpression expression) {
-		// Nothing to validate and we don't want
-		// to validate its encapsulated expression
+		int startPosition = position(expression);
+		int endPosition   = startPosition + length(expression);
+		addProblem(expression, startPosition, endPosition, BadExpression_InvalidExpression);
 	}
 
 	/**
@@ -3021,7 +3029,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(CountFunction expression) {
-		validateAbstractSingleEncapsulatedExpression(expression, countFunctionHelper());
+		validateAggregateFunctionLocation(expression, countFunctionHelper());
 	}
 
 	/**
@@ -3356,7 +3364,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 		else {
 			Expression pathExpression = expression.getExpression();
 
-			if (!isValid(pathExpression, expression.getExpressionItemBNF())) {
+			if (!isValid(pathExpression, expression.getExpressionExpressionBNF())) {
 				int startPosition = position(expression);
 				int endPosition   = startPosition + length(pathExpression);
 				addProblem(expression, startPosition, endPosition, InExpression_InvalidExpression);
@@ -3559,7 +3567,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 		if (!expression.hasQueryStatement()) {
 			addProblem(expression, 0, length(expression), JPQLExpression_InvalidQuery);
 		}
-		// Has an unknown ending statement
+		// Should never have an unknown ending statement
 		else if (expression.hasUnknownEndingStatement()) {
 
 			String unknownStatement = expression.getUnknownEndingStatement().toActualText();
@@ -3571,12 +3579,14 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 				addProblem(expression, startPosition, endPosition, JPQLExpression_UnknownEnding);
 			}
 		}
+		else {
+			// Validate the statement
+			expression.getQueryStatement().accept(this);
 
-		super.visit(expression);
-
-		// Now that the entire tree was visited, we can validate the input parameters, which were
-		// automatically cached. Positional and named parameters must not be mixed in a single query
-		validateInputParameters(expression);
+			// Now that the entire tree was visited, we can validate the input parameters, which were
+			// automatically cached. Positional and named parameters must not be mixed in a single query
+			validateInputParameters(expression);
+		}
 	}
 
 	/**
@@ -3683,7 +3693,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(MaxFunction expression) {
-		validateAbstractSingleEncapsulatedExpression(expression, maxFunctionHelper());
+		validateAggregateFunctionLocation(expression, maxFunctionHelper());
 	}
 
 	/**
@@ -3691,7 +3701,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(MinFunction expression) {
-		validateAbstractSingleEncapsulatedExpression(expression, minFunctionHelper());
+		validateAggregateFunctionLocation(expression, minFunctionHelper());
 	}
 
 	/**
@@ -3869,7 +3879,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 			addProblem(expression, startPosition, OrderByItem_MissingStateFieldPathExpression);
 		}
 		else {
-			validateOrderByItem(expression);
 			super.visit(expression);
 		}
 	}
@@ -4089,7 +4098,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(SumFunction expression) {
-		validateAbstractSingleEncapsulatedExpression(expression, sumFunctionHelper());
+		validateAggregateFunctionLocation(expression, sumFunctionHelper());
 	}
 
 	/**

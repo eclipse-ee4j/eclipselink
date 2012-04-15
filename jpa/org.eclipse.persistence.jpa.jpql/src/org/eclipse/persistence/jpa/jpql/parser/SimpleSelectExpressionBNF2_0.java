@@ -22,17 +22,17 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * @since 2.3
  * @author Pascal Filion
  */
-public final class SelectItemBNF extends JPQLQueryBNF {
+public final class SimpleSelectExpressionBNF2_0 extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
-	public static final String ID = SelectClauseInternalBNF.ID;
+	public static final String ID = SimpleSelectExpressionBNF.ID;
 
 	/**
-	 * Creates a new <code>SelectItemBNF</code>.
+	 * Creates a new <code>SimpleSelectExpressionBNF2_0</code>.
 	 */
-	public SelectItemBNF() {
+	public SimpleSelectExpressionBNF2_0() {
 		super(ID);
 	}
 
@@ -42,15 +42,9 @@ public final class SelectItemBNF extends JPQLQueryBNF {
 	@Override
 	protected void initialize() {
 		super.initialize();
-
-		// Technically, this BNF does not support collection but it's parent
-		// select_clause does. But this BNF is used by SelectClause directly
-		// to parse the query so the flag has to be turned on here
-		setHandleCollection(true);
-
 		setFallbackBNFId(ID);
 		setFallbackExpressionFactoryId(ResultVariableFactory.ID);
 		registerChild(ResultVariableBNF.ID);
-		registerChild(SelectExpressionBNF.ID);
+		registerChild(SimpleSelectExpressionBNF.ID);
 	}
 }

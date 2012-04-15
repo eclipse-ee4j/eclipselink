@@ -21,15 +21,27 @@ package org.eclipse.persistence.jpa.jpql.parser;
  *                                                  string_literal |
  *                                                  input_parameter |
  *                                                  functions_returning_strings |
- *                                                  aggregate_expression</code><p>
- *
+ *                                                  aggregate_expression</code>
+ * <p>
  * JPA 2.0:
  * <div nowrap><b>BNF:</b> <code>string_primary ::= state_field_path_expression |
  *                                                  string_literal |
  *                                                  input_parameter |
  *                                                  functions_returning_strings |
  *                                                  aggregate_expression |
- *                                                  case_expression</code><p>
+ *                                                  case_expression</code>
+ * <p>
+ * JPA 2.1:
+ * string_primary becomes string_expression
+ * <div nowrap><b>BNF:</b> <code>string_primary ::= state_field_path_expression |
+ *                                                  string_literal |
+ *                                                  input_parameter |
+ *                                                  functions_returning_strings |
+ *                                                  aggregate_expression |
+ *                                                  case_expression |
+ *                                                  function_invocation |
+ *                                                  (subquery)</code>
+ * <p>
  *
  * @version 2.4
  * @since 2.3

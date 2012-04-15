@@ -64,6 +64,6 @@ public final class OnClause extends AbstractConditionalClause {
 		       word.equalsIgnoreCase(FETCH) ||
 		       word.equalsIgnoreCase(INNER) ||
 		       word.equalsIgnoreCase(JOIN)  ||
-             super.isParsingComplete(wordParser, word, expression);
+		       super.isParsingComplete(wordParser, word, expression);
 	}
 }

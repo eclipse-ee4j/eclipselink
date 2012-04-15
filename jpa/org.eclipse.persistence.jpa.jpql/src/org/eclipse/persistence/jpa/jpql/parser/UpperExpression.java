@@ -18,7 +18,12 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
 /**
  * The <b>UPPER</b> function converts a string to upper case and it returns a string.
  * <p>
- * <div nowrap><b>BNF:</b> <code>expression ::= UPPER(string_primary)</code><p>
+ * JPA 1.0, 2.0:
+ * <div nowrap><b>BNF:</b> <code>expression ::= UPPER(string_primary)</code>
+ * <p>
+ * JPA 2.1:
+ * <div nowrap><b>BNF:</b> <code>expression ::= UPPER(string_expression)</code>
+ * <p>
  *
  * @version 2.4
  * @since 2.3

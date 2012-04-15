@@ -13,26 +13,27 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.tests.jpql.model;
 
+import org.eclipse.persistence.jpa.tests.jpql.EclipseLinkJPQLQueries2_4;
+import org.eclipse.persistence.jpa.tests.jpql.JPQLQueries2_1;
 import org.junit.Test;
 
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
-import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries.*;
 
 @SuppressWarnings("nls")
-public final class EclipseLinkStateObjectTest2_1 extends EclipseLinkJPQLStateObjectTest {
+public final class EclipseLinkStateObjectTest2_4 extends EclipseLinkJPQLStateObjectTest {
 
 	@Test
-	public void test_Query_224() throws Exception {
+	public void test_Query_001() throws Exception {
 
 		// SELECT FUNC('NVL', e.firstName, 'NoFirstName'),
 		//        func('NVL', e.lastName,  'NoLastName')
 		// FROM Employee e
 
-		testQuery(query_224(), stateObject_224());
+		testQuery(EclipseLinkJPQLQueries2_4.query_001(), stateObject_224());
 	}
 
 	@Test
-	public void test_Query_225() throws Exception {
+	public void test_Query_002() throws Exception {
 
 		// SELECT a
 		// FROM Asset a, Geography selectedGeography
@@ -55,11 +56,11 @@ public final class EclipseLinkStateObjectTest2_1 extends EclipseLinkJPQLStateObj
 			)
 		);
 
-		testQuery(query_225(), selectStatement);
+		testQuery(EclipseLinkJPQLQueries2_4.query_002(), selectStatement);
 	}
 
 	@Test
-	public void test_Query_226() throws Exception {
+	public void test_Query_JPQL_2_1_001() throws Exception {
 
 		// Select e
 		// From Employee e Join TREAT(e.projects AS LargeProject) lp
@@ -71,11 +72,11 @@ public final class EclipseLinkStateObjectTest2_1 extends EclipseLinkJPQLStateObj
 			where(path("lp.budget").equal(inputParameter(":value")))
 		);
 
-		testQuery(query_226(), selectStatement);
+		testQuery(JPQLQueries2_1.query_001(), selectStatement);
 	}
 
 	@Test
-	public void test_Query_227() throws Exception {
+	public void test_Query_JPQL_2_1_002() throws Exception {
 
 		// Select e
 		// From Employee e Join TREAT(e.projects LargeProject) lp
@@ -85,6 +86,6 @@ public final class EclipseLinkStateObjectTest2_1 extends EclipseLinkJPQLStateObj
 			from("Employee", "e", join(treat("e.projects", "LargeProject"), "lp"))
 		);
 
-		testQuery(query_227(), selectStatement);
+		testQuery(JPQLQueries2_1.query_002(), selectStatement);
 	}
 }

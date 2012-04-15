@@ -24,7 +24,7 @@ public final class ResultVariableTest extends JPQLParserTest {
 		String query = "SELECT e AS n FROM Employee e";
 
 		ExpressionTester selectStatement = selectStatement(
-			select(selectItemAs(variable("e"), "n")),
+			select(resultVariableAs(variable("e"), "n")),
 			from("Employee", "e")
 		);
 
@@ -37,7 +37,7 @@ public final class ResultVariableTest extends JPQLParserTest {
 		String query = "SELECT e n FROM Employee e";
 
 		ExpressionTester selectStatement = selectStatement(
-			select(selectItem(variable("e"), "n")),
+			select(resultVariable(variable("e"), "n")),
 			from("Employee", "e")
 		);
 
@@ -50,7 +50,7 @@ public final class ResultVariableTest extends JPQLParserTest {
 		String query = "SELECT AVG(e.age) AS g FROM Employee e";
 
 		ExpressionTester selectStatement = selectStatement(
-			select(selectItemAs(avg("e.age"), "g")),
+			select(resultVariableAs(avg("e.age"), "g")),
 			from("Employee", "e")
 		);
 
@@ -63,7 +63,7 @@ public final class ResultVariableTest extends JPQLParserTest {
 		String query = "SELECT AVG(e.age) g FROM Employee e";
 
 		ExpressionTester selectStatement = selectStatement(
-			select(selectItem(avg("e.age"), "g")),
+			select(resultVariable(avg("e.age"), "g")),
 			from("Employee", "e")
 		);
 
@@ -76,7 +76,7 @@ public final class ResultVariableTest extends JPQLParserTest {
 		String query = "SELECT AVG(e.age) + 2 AS g FROM Employee e";
 
 		ExpressionTester selectStatement = selectStatement(
-			select(selectItemAs(avg("e.age").add(numeric(2)), "g")),
+			select(resultVariableAs(avg("e.age").add(numeric(2)), "g")),
 			from("Employee", "e")
 		);
 
@@ -89,7 +89,7 @@ public final class ResultVariableTest extends JPQLParserTest {
 		String query = "SELECT AVG(e.age) + 2 AS g FROM Employee e";
 
 		ExpressionTester selectStatement = selectStatement(
-			select(selectItemAs(avg("e.age").add(numeric(2)), "g")),
+			select(resultVariableAs(avg("e.age").add(numeric(2)), "g")),
 			from("Employee", "e")
 		);
 
@@ -103,8 +103,8 @@ public final class ResultVariableTest extends JPQLParserTest {
 
 		ExpressionTester selectStatement = selectStatement(
 			select(
-				selectItemAs(avg("e.age"), "g"),
-				selectItemAs(path("e.name"), "n")
+				resultVariableAs(avg("e.age"), "g"),
+				resultVariableAs(path("e.name"), "n")
 			),
 			from("Employee", "e")
 		);
@@ -119,8 +119,8 @@ public final class ResultVariableTest extends JPQLParserTest {
 
 		ExpressionTester selectStatement = selectStatement(
 			select(
-				selectItem(avg("e.age"), "g"),
-				selectItem(path("e.name"), "n")
+				resultVariable(avg("e.age"), "g"),
+				resultVariable(path("e.name"), "n")
 			),
 			from("Employee", "e")
 		);
@@ -133,7 +133,7 @@ public final class ResultVariableTest extends JPQLParserTest {
 
 		String query = "SELECT AVG(e.age) AS";
 
-		ResultVariableTester resultVariable = selectItemAs(avg(path("e.age")), nullExpression());
+		ResultVariableTester resultVariable = resultVariableAs(avg(path("e.age")), nullExpression());
 		resultVariable.hasSpaceAfterAs = false;
 
 		ExpressionTester selectStatement = selectStatement(
@@ -150,7 +150,7 @@ public final class ResultVariableTest extends JPQLParserTest {
 		String query = "SELECT AVG(e.age) AS ";
 
 		ExpressionTester selectStatement = selectStatement(
-			select(selectItemAs(avg(path("e.age")), nullExpression())),
+			select(resultVariableAs(avg(path("e.age")), nullExpression())),
 			nullExpression()
 		);
 
@@ -162,7 +162,7 @@ public final class ResultVariableTest extends JPQLParserTest {
 
 		String query = "SELECT AS";
 
-		ResultVariableTester resultVariable = selectItemAs(nullExpression(), nullExpression());
+		ResultVariableTester resultVariable = resultVariableAs(nullExpression(), nullExpression());
 		resultVariable.hasSpaceAfterAs = false;
 
 		ExpressionTester selectStatement = selectStatement(
@@ -179,7 +179,7 @@ public final class ResultVariableTest extends JPQLParserTest {
 		String query = "SELECT AS ";
 
 		ExpressionTester selectStatement = selectStatement(
-			select(selectItemAs(nullExpression(), nullExpression())),
+			select(resultVariableAs(nullExpression(), nullExpression())),
 			nullExpression()
 		);
 
@@ -192,7 +192,7 @@ public final class ResultVariableTest extends JPQLParserTest {
 		String query = "SELECT AS n";
 
 		ExpressionTester selectStatement = selectStatement(
-			select(selectItemAs(nullExpression(), "n")),
+			select(resultVariableAs(nullExpression(), "n")),
 			nullExpression()
 		);
 
@@ -205,7 +205,7 @@ public final class ResultVariableTest extends JPQLParserTest {
 		String query = "SELECT e AS emp FROM Employee e ORDER BY emp";
 
 		SelectStatementTester selectStatement = selectStatement(
-			select(selectItemAs(variable("e"), "emp")),
+			select(resultVariableAs(variable("e"), "emp")),
 			from("Employee", "e"),
 			nullExpression(),
 			nullExpression(),
@@ -222,7 +222,7 @@ public final class ResultVariableTest extends JPQLParserTest {
 		String query = "SELECT e.name, AVG(e.age) AS age FROM Employee e ORDER BY age";
 
 		SelectStatementTester selectStatement = selectStatement(
-			select(path("e.name"), selectItemAs(avg("e.age"), "age")),
+			select(path("e.name"), resultVariableAs(avg("e.age"), "age")),
 			from("Employee", "e"),
 			nullExpression(),
 			nullExpression(),

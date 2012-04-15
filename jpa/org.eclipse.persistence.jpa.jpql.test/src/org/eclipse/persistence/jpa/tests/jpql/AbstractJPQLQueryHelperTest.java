@@ -13,8 +13,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.tests.jpql;
 
-import org.eclipse.persistence.jpa.jpql.spi.java.JavaQuery;
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Collection;
@@ -28,6 +26,7 @@ import org.eclipse.persistence.jpa.jpql.spi.IManagedTypeProvider;
 import org.eclipse.persistence.jpa.jpql.spi.IQuery;
 import org.eclipse.persistence.jpa.jpql.spi.IType;
 import org.eclipse.persistence.jpa.jpql.spi.ITypeRepository;
+import org.eclipse.persistence.jpa.jpql.spi.java.JavaQuery;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

@@ -16,7 +16,9 @@ package org.eclipse.persistence.jpa.jpql;
 /**
  * A <code>TextEdit</code> contains the information of a change that can be made to the JPQL query
  * after performing a refactoring operation. {@link TextRange} objects are stored in a {@link
- * MultiTextEdit}.
+ * RefactoringDelta}.
+ *
+ * @see BasicRefactoringTool
  *
  * @version 2.4
  * @since 2.4

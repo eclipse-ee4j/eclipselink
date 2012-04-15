@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -23,19 +23,21 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * be reachable by navigation. In order to select values by comparing more than one instance of an
  * entity abstract schema type, more than one identification variable ranging over the abstract
  * schema type is needed in the <b>FROM</b> clause.
- *
- * <div nowrap><b>BNF:</b> <code>range_variable_declaration ::= abstract_schema_name [AS] identification_variable</code><p>
+ * <p>
+ * JPA:
+ * <div nowrap><b>BNF:</b> <code>range_variable_declaration ::= abstract_schema_name [AS] identification_variable</code>
+ * <p>
+ * EclipseLink 2.4:
+ * <div nowrap><b>BNF:</b> <code>range_variable_declaration ::= { root_object } [AS] identification_variable</code>
+ * <p<
+ * <div nowrap><b>BNF:</b> <code>root_object ::= abstract_schema_name | (subquery)</code>
+ * <p>
  *
  * @version 2.4
  * @since 2.3
  * @author Pascal Filion
  */
 public final class RangeVariableDeclaration extends AbstractExpression {
-
-	/**
-	 * The {@link Expression} representing the abstract schema name.
-	 */
-	private AbstractExpression abstractSchemaName;
 
 	/**
 	 * The actual <b>AS</b> identifier found in the string representation of the JPQL query.
@@ -53,14 +55,19 @@ public final class RangeVariableDeclaration extends AbstractExpression {
 	private boolean hasSpaceAfterAs;
 
 	/**
-	 * Determines whether a whitespace was parsed after the abstract schema name.
+	 * Determines whether a whitespace was parsed after the "root" object.
 	 */
-	private boolean hasSpaceAfterSchemaName;
+	private boolean hasSpaceAfterRootObject;
 
 	/**
 	 * The {@link Expression} representing the identification variable.
 	 */
 	private AbstractExpression identificationVariable;
+
+	/**
+	 * The {@link Expression} representing the "root" object.
+	 */
+	private AbstractExpression rootObject;
 
 	/**
 	 * Determines whether the identification variable is virtual, meaning it's not part of the query
@@ -85,7 +92,7 @@ public final class RangeVariableDeclaration extends AbstractExpression {
 	 */
 	public RangeVariableDeclaration(String entityName, String variableName) {
 		super(null);
-		abstractSchemaName     = new AbstractSchemaName(this, entityName);
+		rootObject             = new AbstractSchemaName(this, entityName);
 		identificationVariable = new IdentificationVariable(this, variableName);
 	}
 
@@ -119,13 +126,13 @@ public final class RangeVariableDeclaration extends AbstractExpression {
 	@Override
 	protected void addOrderedChildrenTo(List<Expression> children) {
 
-		// Abstract schema name
-		if (abstractSchemaName != null) {
-			children.add(abstractSchemaName);
+		// "Root" object
+		if (rootObject != null) {
+			children.add(rootObject);
 		}
 
 		// Space
-		if (hasSpaceAfterSchemaName) {
+		if (hasSpaceAfterRootObject) {
 			children.add(buildStringExpression(SPACE));
 		}
 
@@ -145,15 +152,15 @@ public final class RangeVariableDeclaration extends AbstractExpression {
 	}
 
 	/**
-	 * Returns the {@link Expression} that represents the abstract schema name.
+	 * Returns the {@link Expression} that represents the "root" object.
 	 *
-	 * @return The expression that was parsed representing the abstract schema name
+	 * @return The expression that was parsed representing the "root" object
 	 */
 	public Expression getAbstractSchemaName() {
-		if (abstractSchemaName == null) {
-			abstractSchemaName = buildNullExpression();
+		if (rootObject == null) {
+			rootObject = buildNullExpression();
 		}
-		return abstractSchemaName;
+		return rootObject;
 	}
 
 	/**
@@ -188,13 +195,13 @@ public final class RangeVariableDeclaration extends AbstractExpression {
 	}
 
 	/**
-	 * Determines whether the abstract schema name was parsed.
+	 * Determines whether the "root" object was parsed.
 	 *
-	 * @return <code>true</code> if the abstract schema name was parsed; <code>false</code> otherwise
+	 * @return <code>true</code> if the "root" object was parsed; <code>false</code> otherwise
 	 */
 	public boolean hasAbstractSchemaName() {
-		return abstractSchemaName != null &&
-		      !abstractSchemaName.isNull();
+		return rootObject != null &&
+		      !rootObject.isNull();
 	}
 
 	/**
@@ -218,13 +225,13 @@ public final class RangeVariableDeclaration extends AbstractExpression {
 	}
 
 	/**
-	 * Determines whether a whitespace was parsed after the abstract schema name.
+	 * Determines whether a whitespace was parsed after the "root" object.
 	 *
-	 * @return <code>true</code> if there was a whitespace after the abstract schema name;
+	 * @return <code>true</code> if there was a whitespace after "root" object;
 	 * <code>false</code> otherwise
 	 */
 	public boolean hasSpaceAfterAbstractSchemaName() {
-		return hasSpaceAfterSchemaName;
+		return hasSpaceAfterRootObject;
 	}
 
 	/**
@@ -252,11 +259,12 @@ public final class RangeVariableDeclaration extends AbstractExpression {
 	 */
 	@Override
 	protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
-		return word.equalsIgnoreCase(SET)   ||
+		return word.equalsIgnoreCase(AS)    ||
+		       word.equalsIgnoreCase(SET)   ||
 		       word.equalsIgnoreCase(INNER) ||
 		       word.equalsIgnoreCase(JOIN)  ||
 		       word.equalsIgnoreCase(LEFT)  ||
-		       super.isParsingComplete( wordParser, word, expression);
+		       super.isParsingComplete(wordParser, word, expression);
 	}
 
 	/**
@@ -265,10 +273,10 @@ public final class RangeVariableDeclaration extends AbstractExpression {
 	@Override
 	protected void parse(WordParser wordParser, boolean tolerant) {
 
-		// Parse the abstract schema name or the collection value path expression
-		abstractSchemaName = parseAbstractSchemaName(wordParser, tolerant);
+		// Parse the "root" object
+		rootObject = parse(wordParser, RangeDeclarationBNF.ID, tolerant);
 
-		hasSpaceAfterSchemaName = wordParser.skipLeadingWhitespace() > 0;
+		hasSpaceAfterRootObject = wordParser.skipLeadingWhitespace() > 0;
 
 		// Parse 'AS'
 		hasAs = wordParser.startsWithIdentifier(AS);
@@ -279,69 +287,37 @@ public final class RangeVariableDeclaration extends AbstractExpression {
 		}
 
 		// Parse the identification variable
-		// TODO: Refactor
-		if (!wordParser.startsWithIdentifier(SET)) {
-			identificationVariable = parseIdentificationVariable(wordParser, tolerant);
-		}
-	}
-
-	private AbstractExpression parseAbstractSchemaName(WordParser wordParser, boolean tolerant) {
-
-		if (tolerant) {
-
-			if (wordParser.startsWithIdentifier(AS)) {
-				return null;
-			}
-                        if (wordParser.startsWithIdentifier(SELECT)) {
-                            return parse(
-                                    wordParser,
-                                    SubqueryBNF.ID,
-                                    tolerant
-                            );
-                        }
-
-			return parse(wordParser, AbstractSchemaNameBNF.ID, tolerant);
-		}
-
-		AbstractExpression expression;		
-                if (wordParser.startsWithIdentifier(SELECT)) {
-                    expression = new SimpleSelectStatement(this);
-                    expression.parse(wordParser, tolerant);
-                    return expression;
-                }
-                String word = wordParser.word();
-		if (word.indexOf('.') != -1) {
-			expression = new CollectionValuedPathExpression(this, word);
-		}
-		else {
-			expression = new AbstractSchemaName(this, word);
-		}
-
-		expression.parse(wordParser, tolerant);
-		return expression;
+		identificationVariable = parseIdentificationVariable(wordParser, tolerant);
 	}
 
 	private AbstractExpression parseIdentificationVariable(WordParser wordParser, boolean tolerant) {
+
+		// Special case when parsing the range variable declaration of an UPDATE clause that does
+		// not have an identification variable, e.g. "UPDATE DateTime SET date = CURRENT_DATE"
+		if (wordParser.startsWithIdentifier(SET)) {
+			return null;
+		}
 
 		if (tolerant) {
 			return parse(wordParser, IdentificationVariableBNF.ID, tolerant);
 		}
 
-		AbstractExpression expression = new IdentificationVariable(
-			this,
-			wordParser.word()
-		);
-
+		AbstractExpression expression = new IdentificationVariable(this, wordParser.word());
 		expression.parse(wordParser, tolerant);
 		return expression;
 	}
 
 	/**
-	 * Sets a virtual identification variable because the abstract schema name was parsed without
-	 * one. This is valid in an <b>UPDATE</b> and <b>DELETE</b> queries.
+	 * Sets a virtual identification variable because the "root" object was parsed without one. This
+	 * is valid in an <b>UPDATE</b> and <b>DELETE</b> queries. Example:
+	 * <p>
+	 * <code>UPDATE DateTime SET date = CURRENT_DATE</code>
+	 * <p>
+	 * is equivalent to
+	 * <p>
+	 * <code>UPDATE DateTime d SET d.date = CURRENT_DATE</code>
 	 *
-	 * @param variableName The identification variable that was generated to identify the abstract
-	 * schema name
+	 * @param variableName A virtual identification variable that will identify the "root" object
 	 */
 	public void setVirtualIdentificationVariable(String variableName) {
 		virtualIdentificationVariable = true;
@@ -349,20 +325,22 @@ public final class RangeVariableDeclaration extends AbstractExpression {
 	}
 
 	/**
-	 * Sets a virtual identification variable because the abstract schema name was parsed without
-	 * one. This is valid in an <b>UPDATE</b> and <b>DELETE</b> queries.
+	 * Sets a virtual identification variable to qualify the "root" object. The "root" object is a
+	 * derived path that does not start with an identification variable. Example:
+	 * <p>
+	 * <code>UPDATE Employee SET firstName = 'MODIFIED'
+	 *       WHERE (SELECT COUNT(m) FROM managedEmployees m) > 0</code>
+	 * <p>
+	 * <i>'managedEmployees'</i> is a derived path and will become qualified with the given virtual
+	 * identification variable.
 	 *
-	 * @param variableName The identification variable that was generated to identify the abstract
-	 * schema name
-	 * @param path The path that was parsed as an abstract schema name
+	 * @param variableName The identification variable that was generated to qualify the "root" object
+	 * @param path The path that was parsed as a "root" object
 	 */
 	public void setVirtualIdentificationVariable(String variableName, String path) {
-
-		setVirtualIdentificationVariable(variableName);
-
 		CollectionValuedPathExpression expression = new CollectionValuedPathExpression(this, path);
 		expression.setVirtualIdentificationVariable(variableName);
-		abstractSchemaName = expression;
+		rootObject = expression;
 	}
 
 	/**
@@ -379,12 +357,12 @@ public final class RangeVariableDeclaration extends AbstractExpression {
 	@Override
 	protected void toParsedText(StringBuilder writer, boolean actual) {
 
-		// Abstract schema name
-		if (abstractSchemaName != null) {
-			abstractSchemaName.toParsedText(writer, actual);
+		// "Root" object
+		if (rootObject != null) {
+			rootObject.toParsedText(writer, actual);
 		}
 
-		if (hasSpaceAfterSchemaName) {
+		if (hasSpaceAfterRootObject) {
 			writer.append(SPACE);
 		}
 

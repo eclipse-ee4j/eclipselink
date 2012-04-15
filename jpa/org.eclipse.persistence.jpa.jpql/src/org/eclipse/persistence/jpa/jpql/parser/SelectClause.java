@@ -55,6 +55,6 @@ public final class SelectClause extends AbstractSelectClause {
 	 */
 	@Override
 	public String selectItemBNF() {
-		return SelectClauseInternalBNF.ID;
+		return InternalSelectExpressionBNF.ID;
 	}
 }

@@ -25,7 +25,7 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({
 
 	// Test the parser with hundreds of JPQL queries
-//	JPQLQueriesTest2_1.class,
+	JPQLQueriesTest2_1.class,
 
 	// Individual unit-tests
 	FunctionExpressionTest.class,

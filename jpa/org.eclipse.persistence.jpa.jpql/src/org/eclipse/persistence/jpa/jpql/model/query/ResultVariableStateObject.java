@@ -16,7 +16,7 @@ package org.eclipse.persistence.jpa.jpql.model.query;
 import java.io.IOException;
 import java.util.List;
 import org.eclipse.persistence.jpa.jpql.parser.ResultVariable;
-import org.eclipse.persistence.jpa.jpql.parser.SelectClauseInternalBNF;
+import org.eclipse.persistence.jpa.jpql.parser.SelectExpressionBNF;
 
 import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
@@ -238,7 +238,7 @@ public class ResultVariableStateObject extends AbstractStateObject {
 	 * @param jpqlFragment The portion of the query representing a single select expression
 	 */
 	public void parse(String jpqlFragment) {
-		StateObject stateObject = buildStateObject(jpqlFragment, SelectClauseInternalBNF.ID);
+		StateObject stateObject = buildStateObject(jpqlFragment, SelectExpressionBNF.ID);
 		setStateObject(stateObject);
 	}
 

@@ -15,7 +15,7 @@ package org.eclipse.persistence.jpa.tests.jpql.model;
 
 import org.junit.Test;
 
-import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries.*;
+import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries1_0.*;
 
 /**
  * This tests the automatic creation by the builder of a {@link StateObject} by converting the
@@ -1452,6 +1452,17 @@ public final class StateObjectTest1_0 extends AbstractStateObjectTest1_0 {
 	}
 
 	@Test
+	public void test_Query_139() throws Exception {
+
+		// SELECT o
+		// FROM Customer c JOIN c.orders o JOIN c.address a
+		// WHERE a.state = 'CA'
+		// ORDER BY o.quantity DESC, o.totalcost
+
+		testQuery(query_139(), stateObject_139());
+	}
+
+	@Test
 	public void test_Query_140() throws Exception {
 
 		// SELECT c
@@ -2109,17 +2120,6 @@ public final class StateObjectTest1_0 extends AbstractStateObjectTest1_0 {
 	}
 
 	@Test
-	public void test_Query_215() throws Exception {
-
-		// SELECT o
-		// FROM Customer c JOIN c.orders o JOIN c.address a
-		// WHERE a.state = 'CA'
-		// ORDER BY o.quantity DESC, o.totalcost
-
-		testQuery(query_215(), stateObject_215());
-	}
-
-	@Test
 	public void test_Query_216() throws Exception {
 
 		// SELECT o.quantity, a.zipcode
@@ -2127,7 +2127,7 @@ public final class StateObjectTest1_0 extends AbstractStateObjectTest1_0 {
 		// WHERE a.state = 'CA'
 		// ORDER BY o.quantity, a.zipcode
 
-		testQuery(query_216(), stateObject_216());
+		testQuery(query_205(), stateObject_205());
 	}
 
 	@Test
@@ -2137,7 +2137,7 @@ public final class StateObjectTest1_0 extends AbstractStateObjectTest1_0 {
 		// FROM Customer c
 		// WHERE c.status = 'inactive'
 
-		testQuery(query_219(), stateObject_219());
+		testQuery(query_206(), stateObject_219());
 	}
 
 	@Test
@@ -2149,7 +2149,7 @@ public final class StateObjectTest1_0 extends AbstractStateObjectTest1_0 {
 		//       AND
 		//       c.orders IS EMPTY
 
-		testQuery(query_220(), stateObject_220());
+		testQuery(query_207(), stateObject_220());
 	}
 
 	@Test
@@ -2159,7 +2159,7 @@ public final class StateObjectTest1_0 extends AbstractStateObjectTest1_0 {
 		// SET c.status = 'outstanding'
 		// WHERE c.balance < 10000
 
-		testQuery(query_221(), stateObject_221());
+		testQuery(query_208(), stateObject_221());
 	}
 
 	@Test
@@ -2172,7 +2172,7 @@ public final class StateObjectTest1_0 extends AbstractStateObjectTest1_0 {
 		//      and e.address.city = 'Toronto'
 		//      and p.areaCode <> '2'
 
-		testQuery(query_228(), stateObject_228());
+		testQuery(query_209(), stateObject_228());
 	}
 
 	@Test
@@ -2182,7 +2182,7 @@ public final class StateObjectTest1_0 extends AbstractStateObjectTest1_0 {
 		// From Employee e
 		// Where Exists(Select a From e.address a Where a.zipCode = 27519)
 
-		testQuery(query_229(), stateObject_229());
+		testQuery(query_210(), stateObject_229());
 	}
 
 	@Test
@@ -2192,6 +2192,6 @@ public final class StateObjectTest1_0 extends AbstractStateObjectTest1_0 {
 		// From Employee e
 		// Where Exists(Where Exists(Select e.name From In e.phoneNumbers Where e.zipCode = 27519))
 
-		testQuery(query_230(), stateObject_230());
+		testQuery(query_211(), stateObject_230());
 	}
 }

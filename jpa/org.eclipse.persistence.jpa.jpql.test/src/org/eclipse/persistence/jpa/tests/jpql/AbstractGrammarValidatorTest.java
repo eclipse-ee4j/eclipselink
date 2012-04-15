@@ -17,7 +17,6 @@ import java.util.List;
 import org.eclipse.persistence.jpa.jpql.AbstractGrammarValidator;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.JPQLQueryProblem;
-import org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_1;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_2;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_3;
@@ -26,6 +25,8 @@ import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLQueryStringFormatter;
 import org.junit.Test;
+
+import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
 
 /**
  * The unit-tests testing {@link AbstractGrammarValidator}.
@@ -114,7 +115,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 		if (isSubqueryAllowedAnywhere()) {
 			testDoesNotHaveProblem(
 				problems,
-				JPQLQueryProblemMessages.AbsExpression_InvalidExpression
+				AbsExpression_InvalidExpression
 			);
 		}
 		else {
@@ -123,7 +124,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 			testHasOnlyOneProblem(
 				problems,
-				JPQLQueryProblemMessages.AbsExpression_InvalidExpression,
+				AbsExpression_InvalidExpression,
 				startPosition,
 				endPosition
 			);
@@ -141,7 +142,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.AbsExpression_MissingExpression,
+			AbsExpression_MissingExpression,
 			startPosition,
 			endPosition
 		);
@@ -158,7 +159,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.AbsExpression_MissingLeftParenthesis,
+			AbsExpression_MissingLeftParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -175,7 +176,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.AbsExpression_MissingRightParenthesis,
+			AbsExpression_MissingRightParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -193,7 +194,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.AbstractFromClause_IdentificationVariableDeclarationEndsWithComma,
+			AbstractFromClause_IdentificationVariableDeclarationEndsWithComma,
 			startPosition,
 			endPosition
 		);
@@ -211,7 +212,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.AbstractFromClause_IdentificationVariableDeclarationEndsWithComma,
+			AbstractFromClause_IdentificationVariableDeclarationEndsWithComma,
 			startPosition,
 			endPosition
 		);
@@ -229,7 +230,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.AbstractFromClause_IdentificationVariableDeclarationIsMissingComma,
+			AbstractFromClause_IdentificationVariableDeclarationIsMissingComma,
 			startPosition,
 			endPosition
 		);
@@ -247,7 +248,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.AbstractFromClause_MissingIdentificationVariableDeclaration,
+			AbstractFromClause_MissingIdentificationVariableDeclaration,
 			startPosition,
 			endPosition
 		);
@@ -265,7 +266,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.AbstractFromClause_MissingIdentificationVariableDeclaration,
+			AbstractFromClause_MissingIdentificationVariableDeclaration,
 			startPosition,
 			endPosition
 		);
@@ -283,7 +284,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.AbstractFromClause_MissingIdentificationVariableDeclaration,
+			AbstractFromClause_MissingIdentificationVariableDeclaration,
 			startPosition,
 			endPosition
 		);
@@ -301,7 +302,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.AbstractFromClause_MissingIdentificationVariableDeclaration,
+			AbstractFromClause_MissingIdentificationVariableDeclaration,
 			startPosition,
 			endPosition
 		);
@@ -319,7 +320,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.AbstractFromClause_MissingIdentificationVariableDeclaration,
+			AbstractFromClause_MissingIdentificationVariableDeclaration,
 			startPosition,
 			endPosition
 		);
@@ -337,7 +338,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.AbstractPathExpression_CannotEndWithComma,
+			AbstractPathExpression_CannotEndWithComma,
 			startPosition,
 			endPosition
 		);
@@ -355,7 +356,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.AbstractPathExpression_MissingIdentificationVariable,
+			AbstractPathExpression_MissingIdentificationVariable,
 			startPosition,
 			endPosition
 		);
@@ -370,7 +371,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 		if (isSubqueryAllowedAnywhere()) {
 			testDoesNotHaveProblem(
 				problems,
-				JPQLQueryProblemMessages.AbstractSelectClause_InvalidSelectExpression
+				AbstractSelectClause_InvalidSelectExpression
 			);
 		}
 		else {
@@ -379,7 +380,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 			testHasOnlyOneProblem(
 				problems,
-				JPQLQueryProblemMessages.AbstractSelectClause_InvalidSelectExpression,
+				AbstractSelectClause_InvalidSelectExpression,
 				startPosition,
 				endPosition
 			);
@@ -395,7 +396,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 		if (isSubqueryAllowedAnywhere()) {
 			testDoesNotHaveProblem(
 				problems,
-				JPQLQueryProblemMessages.AbstractSelectClause_InvalidSelectExpression
+				AbstractSelectClause_InvalidSelectExpression
 			);
 		}
 		else {
@@ -404,7 +405,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 			testHasOnlyOneProblem(
 				problems,
-				JPQLQueryProblemMessages.AbstractSelectClause_InvalidSelectExpression,
+				AbstractSelectClause_InvalidSelectExpression,
 				startPosition,
 				endPosition
 			);
@@ -422,7 +423,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblem(
 			problems,
-			JPQLQueryProblemMessages.AbstractSelectClause_MissingSelectExpression,
+			AbstractSelectClause_MissingSelectExpression,
 			startPosition,
 			endPosition
 		);
@@ -439,7 +440,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblem(
 			problems,
-			JPQLQueryProblemMessages.AbstractSelectClause_MissingSelectExpression,
+			AbstractSelectClause_MissingSelectExpression,
 			startPosition,
 			endPosition
 		);
@@ -456,7 +457,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.AbstractSelectClause_MissingSelectExpression,
+			AbstractSelectClause_MissingSelectExpression,
 			startPosition,
 			endPosition
 		);
@@ -473,7 +474,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblem(
 			problems,
-			JPQLQueryProblemMessages.AbstractSelectClause_MissingSelectExpression,
+			AbstractSelectClause_MissingSelectExpression,
 			startPosition,
 			endPosition
 		);
@@ -490,7 +491,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.AbstractSelectClause_MissingSelectExpression,
+			AbstractSelectClause_MissingSelectExpression,
 			startPosition,
 			endPosition
 		);
@@ -507,7 +508,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.AbstractSelectClause_SelectExpressionEndsWithComma,
+			AbstractSelectClause_SelectExpressionEndsWithComma,
 			startPosition,
 			endPosition
 		);
@@ -524,7 +525,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.AbstractSelectClause_SelectExpressionIsMissingComma,
+			AbstractSelectClause_SelectExpressionIsMissingComma,
 			startPosition,
 			endPosition
 		);
@@ -541,7 +542,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.AbstractSelectClause_SelectExpressionIsMissingComma,
+			AbstractSelectClause_SelectExpressionIsMissingComma,
 			startPosition,
 			endPosition
 		);
@@ -558,7 +559,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.AbstractSelectStatement_FromClauseMissing,
+			AbstractSelectStatement_FromClauseMissing,
 			startPosition,
 			endPosition
 		);
@@ -575,7 +576,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.AbstractSelectStatement_FromClauseMissing,
+			AbstractSelectStatement_FromClauseMissing,
 			startPosition,
 			endPosition
 		);
@@ -592,10 +593,48 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.AbstractSelectStatement_FromClauseMissing,
+			AbstractSelectStatement_FromClauseMissing,
 			startPosition,
 			endPosition
 		);
+	}
+
+	@Test
+	public void test_AggregateFunction_WrongClause_1() throws Exception {
+
+		String query = "SELECT AVG(e.age) FROM Employee e";
+		List<JPQLQueryProblem> problems = validate(query);
+		testHasNoProblems(problems);
+	}
+
+	@Test
+	public void test_AggregateFunction_WrongClause_2() throws Exception {
+
+		String query = "SELECT e FROM Employee e HAVING AVG(e.age) > 2";
+		List<JPQLQueryProblem> problems = validate(query);
+		testHasNoProblems(problems);
+	}
+
+	@Test
+	public void test_AggregateFunction_WrongClause_3() throws Exception {
+
+		String query = "SELECT e FROM Employee e WHERE AVG(e.age) > 2";
+		int startPosition = "SELECT e FROM Employee e WHERE ".length();
+		int endPosition   = "SELECT e FROM Employee e WHERE AVG(e.age)".length();
+
+		List<JPQLQueryProblem> problems = validate(query);
+		testHasOnlyOneProblem(problems, AggregateFunction_WrongClause, startPosition, endPosition);
+	}
+
+	@Test
+	public void test_AggregateFunction_WrongClause_4() throws Exception {
+
+		String query = "SELECT e FROM Employee e WHERE AVG() > 2";
+		int startPosition = "SELECT e FROM Employee e WHERE ".length();
+		int endPosition   = "SELECT e FROM Employee e WHERE AVG()".length();
+
+		List<JPQLQueryProblem> problems = validate(query);
+		testHasOnlyOneProblem(problems, AggregateFunction_WrongClause, startPosition, endPosition);
 	}
 
 	@Test
@@ -609,7 +648,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.AllOrAnyExpression_InvalidExpression,
+			AllOrAnyExpression_InvalidExpression,
 			startPosition,
 			endPosition
 		);
@@ -626,7 +665,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.AllOrAnyExpression_MissingExpression,
+			AllOrAnyExpression_MissingExpression,
 			startPosition,
 			endPosition
 		);
@@ -643,7 +682,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.AllOrAnyExpression_MissingLeftParenthesis,
+			AllOrAnyExpression_MissingLeftParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -660,7 +699,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.AllOrAnyExpression_MissingRightParenthesis,
+			AllOrAnyExpression_MissingRightParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -678,7 +717,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblem(
 			problems,
-			JPQLQueryProblemMessages.AllOrAnyExpression_NotPartOfComparisonExpression,
+			AllOrAnyExpression_NotPartOfComparisonExpression,
 			startPosition,
 			endPosition
 		);
@@ -696,7 +735,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblem(
 			problems,
-			JPQLQueryProblemMessages.ArithmeticExpression_InvalidLeftExpression,
+			ArithmeticExpression_InvalidLeftExpression,
 			startPosition,
 			endPosition
 		);
@@ -714,7 +753,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblem(
 			problems,
-			JPQLQueryProblemMessages.ArithmeticExpression_InvalidRightExpression,
+			ArithmeticExpression_InvalidRightExpression,
 			startPosition,
 			endPosition
 		);
@@ -732,7 +771,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.ArithmeticExpression_MissingLeftExpression,
+			ArithmeticExpression_MissingLeftExpression,
 			startPosition,
 			endPosition
 		);
@@ -750,7 +789,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblem(
 			problems,
-			JPQLQueryProblemMessages.ArithmeticExpression_MissingRightExpression,
+			ArithmeticExpression_MissingRightExpression,
 			startPosition,
 			endPosition
 		);
@@ -767,7 +806,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblem(
 			problems,
-			JPQLQueryProblemMessages.ArithmeticFactor_MissingExpression,
+			ArithmeticFactor_MissingExpression,
 			startPosition,
 			endPosition
 		);
@@ -784,7 +823,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblem(
 			problems,
-			JPQLQueryProblemMessages.ArithmeticFactor_MissingExpression,
+			ArithmeticFactor_MissingExpression,
 			startPosition,
 			endPosition
 		);
@@ -801,7 +840,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.AvgFunction_InvalidExpression,
+			AvgFunction_InvalidExpression,
 			startPosition,
 			endPosition
 		);
@@ -818,7 +857,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.AvgFunction_MissingExpression,
+			AvgFunction_MissingExpression,
 			startPosition,
 			endPosition
 		);
@@ -835,7 +874,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.AvgFunction_MissingExpression,
+			AvgFunction_MissingExpression,
 			startPosition,
 			endPosition
 		);
@@ -852,7 +891,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.AvgFunction_MissingExpression,
+			AvgFunction_MissingExpression,
 			startPosition,
 			endPosition
 		);
@@ -869,7 +908,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.AvgFunction_MissingLeftParenthesis,
+			AvgFunction_MissingLeftParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -886,7 +925,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.AvgFunction_MissingLeftParenthesis,
+			AvgFunction_MissingLeftParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -904,7 +943,24 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.AvgFunction_MissingRightParenthesis,
+			AvgFunction_MissingRightParenthesis,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public final void test_BadExpression_InvalidExpression() throws Exception {
+
+		String query = "SELECT e FROM Employee e ORDER BY ALL(SELECT d FROM Dept d)";
+		int startPosition = "SELECT e FROM Employee e ORDER BY ".length();
+		int endPosition   = query.length();
+
+		List<JPQLQueryProblem> problems = validate(query);
+
+		testHasOnlyOneProblem(
+			problems,
+			BadExpression_InvalidExpression,
 			startPosition,
 			endPosition
 		);
@@ -922,7 +978,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.BetweenExpression_MissingAnd,
+			BetweenExpression_MissingAnd,
 			startPosition,
 			endPosition
 		);
@@ -940,7 +996,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.BetweenExpression_MissingAnd,
+			BetweenExpression_MissingAnd,
 			startPosition,
 			endPosition
 		);
@@ -958,7 +1014,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.BetweenExpression_MissingAnd,
+			BetweenExpression_MissingAnd,
 			startPosition,
 			endPosition
 		);
@@ -976,7 +1032,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.BetweenExpression_MissingExpression,
+			BetweenExpression_MissingExpression,
 			startPosition,
 			endPosition
 		);
@@ -994,7 +1050,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.BetweenExpression_MissingLowerBoundExpression,
+			BetweenExpression_MissingLowerBoundExpression,
 			startPosition,
 			endPosition
 		);
@@ -1012,7 +1068,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.BetweenExpression_MissingUpperBoundExpression,
+			BetweenExpression_MissingUpperBoundExpression,
 			startPosition,
 			endPosition
 		);
@@ -1030,7 +1086,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.BetweenExpression_MissingUpperBoundExpression,
+			BetweenExpression_MissingUpperBoundExpression,
 			startPosition,
 			endPosition
 		);
@@ -1055,7 +1111,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.CaseExpression_MissingElseExpression,
+			CaseExpression_MissingElseExpression,
 			startPosition,
 			endPosition
 		);
@@ -1081,7 +1137,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.CaseExpression_MissingElseExpression,
+			CaseExpression_MissingElseExpression,
 			startPosition,
 			endPosition
 		);
@@ -1105,7 +1161,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.CaseExpression_MissingElseIdentifier,
+			CaseExpression_MissingElseIdentifier,
 			startPosition,
 			endPosition
 		);
@@ -1129,7 +1185,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.CaseExpression_MissingElseIdentifier,
+			CaseExpression_MissingElseIdentifier,
 			startPosition,
 			endPosition
 		);
@@ -1153,7 +1209,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.CaseExpression_MissingEndIdentifier,
+			CaseExpression_MissingEndIdentifier,
 			startPosition,
 			endPosition
 		);
@@ -1177,7 +1233,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.CaseExpression_MissingWhenClause,
+			CaseExpression_MissingWhenClause,
 			startPosition,
 			endPosition
 		);
@@ -1192,7 +1248,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 		if (isSubqueryAllowedAnywhere()) {
 			testDoesNotHaveProblem(
 				problems,
-				JPQLQueryProblemMessages.CoalesceExpression_InvalidExpression
+				CoalesceExpression_InvalidExpression
 			);
 		}
 		else {
@@ -1201,7 +1257,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 			testHasOnlyOneProblem(
 				problems,
-				JPQLQueryProblemMessages.CoalesceExpression_InvalidExpression,
+				CoalesceExpression_InvalidExpression,
 				startPosition,
 				endPosition
 			);
@@ -1219,7 +1275,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.CoalesceExpression_MissingExpression,
+			CoalesceExpression_MissingExpression,
 			startPosition,
 			endPosition
 		);
@@ -1236,7 +1292,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.CoalesceExpression_MissingLeftParenthesis,
+			CoalesceExpression_MissingLeftParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -1253,7 +1309,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.CoalesceExpression_MissingRightParenthesis,
+			CoalesceExpression_MissingRightParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -1271,7 +1327,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.CollectionMemberDeclaration_MissingCollectionValuedPathExpression,
+			CollectionMemberDeclaration_MissingCollectionValuedPathExpression,
 			startPosition,
 			endPosition
 		);
@@ -1289,7 +1345,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.CollectionMemberDeclaration_MissingIdentificationVariable,
+			CollectionMemberDeclaration_MissingIdentificationVariable,
 			startPosition,
 			endPosition
 		);
@@ -1307,7 +1363,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.CollectionMemberDeclaration_MissingIdentificationVariable,
+			CollectionMemberDeclaration_MissingIdentificationVariable,
 			startPosition,
 			endPosition
 		);
@@ -1325,7 +1381,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.CollectionMemberDeclaration_MissingLeftParenthesis,
+			CollectionMemberDeclaration_MissingLeftParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -1343,7 +1399,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.CollectionMemberDeclaration_MissingRightParenthesis,
+			CollectionMemberDeclaration_MissingRightParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -1361,7 +1417,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.CollectionMemberExpression_MissingCollectionValuedPathExpression,
+			CollectionMemberExpression_MissingCollectionValuedPathExpression,
 			startPosition,
 			endPosition
 		);
@@ -1379,7 +1435,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.CollectionMemberExpression_MissingEntityExpression,
+			CollectionMemberExpression_MissingEntityExpression,
 			startPosition,
 			endPosition
 		);
@@ -1396,7 +1452,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.CollectionValuedPathExpression_NotCollectionType,
+			CollectionValuedPathExpression_NotCollectionType,
 			startPosition,
 			endPosition
 		);
@@ -1413,7 +1469,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.CollectionValuedPathExpression_NotCollectionType,
+			CollectionValuedPathExpression_NotCollectionType,
 			startPosition,
 			endPosition
 		);
@@ -1431,7 +1487,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.ComparisonExpression_MissingLeftExpression,
+			ComparisonExpression_MissingLeftExpression,
 			startPosition,
 			endPosition
 		);
@@ -1452,8 +1508,8 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblems(
 			problems,
-			new String [] { JPQLQueryProblemMessages.ComparisonExpression_MissingLeftExpression,
-			                JPQLQueryProblemMessages.ComparisonExpression_MissingRightExpression },
+			new String [] { ComparisonExpression_MissingLeftExpression,
+			                ComparisonExpression_MissingRightExpression },
 			new int[] { startPosition1, startPosition2 },
 			new int[] { endPosition1,   endPosition2   }
 		);
@@ -1471,7 +1527,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.ComparisonExpression_MissingRightExpression,
+			ComparisonExpression_MissingRightExpression,
 			startPosition,
 			endPosition
 		);
@@ -1489,7 +1545,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblem(
 			problems,
-			JPQLQueryProblemMessages.ConcatExpression_InvalidExpression,
+			ConcatExpression_InvalidExpression,
 			startPosition,
 			endPosition
 		);
@@ -1507,7 +1563,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblem(
 			problems,
-			JPQLQueryProblemMessages.ConcatExpression_InvalidExpression,
+			ConcatExpression_InvalidExpression,
 			startPosition,
 			endPosition
 		);
@@ -1525,7 +1581,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblem(
 			problems,
-			JPQLQueryProblemMessages.ConcatExpression_MissingLeftParenthesis,
+			ConcatExpression_MissingLeftParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -1543,7 +1599,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblem(
 			problems,
-			JPQLQueryProblemMessages.ConcatExpression_MissingRightParenthesis,
+			ConcatExpression_MissingRightParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -1561,7 +1617,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.ConstructorExpression_ConstructorItemEndsWithComma,
+			ConstructorExpression_ConstructorItemEndsWithComma,
 			startPosition,
 			endPosition
 		);
@@ -1579,7 +1635,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.ConstructorExpression_ConstructorItemIsMissingComma,
+			ConstructorExpression_ConstructorItemIsMissingComma,
 			startPosition,
 			endPosition
 		);
@@ -1597,7 +1653,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.ConstructorExpression_MissingConstructorItem,
+			ConstructorExpression_MissingConstructorItem,
 			startPosition,
 			endPosition
 		);
@@ -1615,7 +1671,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.ConstructorExpression_MissingConstructorName,
+			ConstructorExpression_MissingConstructorName,
 			startPosition,
 			endPosition
 		);
@@ -1633,7 +1689,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.ConstructorExpression_MissingLeftParenthesis,
+			ConstructorExpression_MissingLeftParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -1651,7 +1707,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.ConstructorExpression_MissingRightParenthesis,
+			ConstructorExpression_MissingRightParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -1668,7 +1724,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.CountFunction_InvalidExpression,
+			CountFunction_InvalidExpression,
 			startPosition,
 			endPosition
 		);
@@ -1685,7 +1741,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.CountFunction_MissingExpression,
+			CountFunction_MissingExpression,
 			startPosition,
 			endPosition
 		);
@@ -1702,7 +1758,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.CountFunction_MissingExpression,
+			CountFunction_MissingExpression,
 			startPosition,
 			endPosition
 		);
@@ -1719,7 +1775,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.CountFunction_MissingExpression,
+			CountFunction_MissingExpression,
 			startPosition,
 			endPosition
 		);
@@ -1736,7 +1792,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.CountFunction_MissingLeftParenthesis,
+			CountFunction_MissingLeftParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -1753,7 +1809,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.CountFunction_MissingLeftParenthesis,
+			CountFunction_MissingLeftParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -1770,7 +1826,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.CountFunction_MissingRightParenthesis,
+			CountFunction_MissingRightParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -1788,7 +1844,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.DateTime_JDBCEscapeFormat_InvalidSpecification,
+			DateTime_JDBCEscapeFormat_InvalidSpecification,
 			startPosition,
 			endPosition
 		);
@@ -1806,7 +1862,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.DateTime_JDBCEscapeFormat_MissingCloseQuote,
+			DateTime_JDBCEscapeFormat_MissingCloseQuote,
 			startPosition,
 			endPosition
 		);
@@ -1824,7 +1880,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.DateTime_JDBCEscapeFormat_MissingOpenQuote,
+			DateTime_JDBCEscapeFormat_MissingOpenQuote,
 			startPosition,
 			endPosition
 		);
@@ -1842,7 +1898,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.DateTime_JDBCEscapeFormat_MissingRightCurlyBrace,
+			DateTime_JDBCEscapeFormat_MissingRightCurlyBrace,
 			startPosition,
 			endPosition
 		);
@@ -1859,7 +1915,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.DeleteClause_FromMissing,
+			DeleteClause_FromMissing,
 			startPosition,
 			endPosition
 		);
@@ -1876,7 +1932,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.DeleteClause_FromMissing,
+			DeleteClause_FromMissing,
 			startPosition,
 			endPosition
 		);
@@ -1893,7 +1949,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.DeleteClause_FromMissing,
+			DeleteClause_FromMissing,
 			startPosition,
 			endPosition
 		);
@@ -1910,7 +1966,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.DeleteClause_MultipleRangeVariableDeclaration,
+			DeleteClause_MultipleRangeVariableDeclaration,
 			startPosition,
 			endPosition
 		);
@@ -1927,7 +1983,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.DeleteClause_RangeVariableDeclarationMalformed,
+			DeleteClause_RangeVariableDeclarationMalformed,
 			startPosition,
 			endPosition
 		);
@@ -1947,8 +2003,8 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 		testHasProblems(
 			problems,
 			new String[] {
-				JPQLQueryProblemMessages.DeleteClause_FromMissing,
-				JPQLQueryProblemMessages.DeleteClause_RangeVariableDeclarationMalformed,
+				DeleteClause_FromMissing,
+				DeleteClause_RangeVariableDeclarationMalformed,
 			},
 			new int[] { startPosition1, startPosition2 },
 			new int[] { endPosition1,   endPosition2   }
@@ -1963,7 +2019,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testDoesNotHaveProblem(
 			problems,
-			JPQLQueryProblemMessages.DeleteClause_RangeVariableDeclarationMissing
+			DeleteClause_RangeVariableDeclarationMissing
 		);
 	}
 
@@ -1978,7 +2034,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.DeleteClause_RangeVariableDeclarationMissing,
+			DeleteClause_RangeVariableDeclarationMissing,
 			startPosition,
 			endPosition
 		);
@@ -1995,7 +2051,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.DeleteClause_RangeVariableDeclarationMissing,
+			DeleteClause_RangeVariableDeclarationMissing,
 			startPosition,
 			endPosition
 		);
@@ -2012,7 +2068,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.DeleteClause_RangeVariableDeclarationMissing,
+			DeleteClause_RangeVariableDeclarationMissing,
 			startPosition,
 			endPosition
 		);
@@ -2030,7 +2086,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.EmptyCollectionComparisonExpression_MissingExpression,
+			EmptyCollectionComparisonExpression_MissingExpression,
 			startPosition,
 			endPosition
 		);
@@ -2047,7 +2103,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.EntryExpression_InvalidExpression,
+			EntryExpression_InvalidExpression,
 			startPosition,
 			endPosition
 		);
@@ -2064,7 +2120,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.EntryExpression_MissingExpression,
+			EntryExpression_MissingExpression,
 			startPosition,
 			endPosition
 		);
@@ -2081,7 +2137,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.EntryExpression_MissingLeftParenthesis,
+			EntryExpression_MissingLeftParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -2098,7 +2154,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.EntryExpression_MissingRightParenthesis,
+			EntryExpression_MissingRightParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -2115,7 +2171,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.ExistsExpression_InvalidExpression,
+			ExistsExpression_InvalidExpression,
 			startPosition,
 			endPosition
 		);
@@ -2132,7 +2188,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.ExistsExpression_MissingExpression,
+			ExistsExpression_MissingExpression,
 			startPosition,
 			endPosition
 		);
@@ -2149,7 +2205,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.ExistsExpression_MissingLeftParenthesis,
+			ExistsExpression_MissingLeftParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -2166,7 +2222,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.ExistsExpression_MissingRightParenthesis,
+			ExistsExpression_MissingRightParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -2183,7 +2239,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.GroupByClause_GroupByItemEndsWithComma,
+			GroupByClause_GroupByItemEndsWithComma,
 			startPosition,
 			endPosition
 		);
@@ -2200,7 +2256,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.GroupByClause_GroupByItemIsMissingComma,
+			GroupByClause_GroupByItemIsMissingComma,
 			startPosition,
 			endPosition
 		);
@@ -2217,7 +2273,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.GroupByClause_GroupByItemIsMissingComma,
+			GroupByClause_GroupByItemIsMissingComma,
 			startPosition,
 			endPosition
 		);
@@ -2234,7 +2290,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.GroupByClause_GroupByItemMissing,
+			GroupByClause_GroupByItemMissing,
 			startPosition,
 			endPosition
 		);
@@ -2251,7 +2307,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.HavingClause_MissingConditionalExpression,
+			HavingClause_MissingConditionalExpression,
 			startPosition,
 			endPosition
 		);
@@ -2268,7 +2324,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.HavingClause_MissingConditionalExpression,
+			HavingClause_MissingConditionalExpression,
 			startPosition,
 			endPosition
 		);
@@ -2285,7 +2341,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.HavingClause_InvalidConditionalExpression,
+			HavingClause_InvalidConditionalExpression,
 			startPosition,
 			endPosition
 		);
@@ -2306,8 +2362,8 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblems(
 			problems,
-			new String [] { JPQLQueryProblemMessages.IdentificationVariable_Invalid_Duplicate,
-			                JPQLQueryProblemMessages.IdentificationVariable_Invalid_Duplicate },
+			new String [] { IdentificationVariable_Invalid_Duplicate,
+			                IdentificationVariable_Invalid_Duplicate },
 			new int[] { startPosition1, startPosition2 },
 			new int[] { endPosition1,   endPosition2   }
 		);
@@ -2337,8 +2393,8 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblems(
 			problems,
-			new String [] { JPQLQueryProblemMessages.IdentificationVariable_Invalid_Duplicate,
-			                JPQLQueryProblemMessages.IdentificationVariable_Invalid_Duplicate },
+			new String [] { IdentificationVariable_Invalid_Duplicate,
+			                IdentificationVariable_Invalid_Duplicate },
 			new int[] { startPosition1, startPosition2 },
 			new int[] { endPosition1,   endPosition2   }
 		);
@@ -2368,8 +2424,8 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblems(
 			problems,
-			new String [] { JPQLQueryProblemMessages.IdentificationVariable_Invalid_Duplicate,
-			                JPQLQueryProblemMessages.IdentificationVariable_Invalid_Duplicate },
+			new String [] { IdentificationVariable_Invalid_Duplicate,
+			                IdentificationVariable_Invalid_Duplicate },
 			new int[] { startPosition1, startPosition2 },
 			new int[] { endPosition1,   endPosition2   }
 		);
@@ -2387,7 +2443,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblem(
 			problems,
-			JPQLQueryProblemMessages.IdentificationVariable_Invalid_JavaIdentifier,
+			IdentificationVariable_Invalid_JavaIdentifier,
 			startPosition,
 			endPosition
 		);
@@ -2405,7 +2461,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.IdentificationVariable_Invalid_JavaIdentifier,
+			IdentificationVariable_Invalid_JavaIdentifier,
 			startPosition,
 			endPosition
 		);
@@ -2423,7 +2479,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.IdentificationVariable_Invalid_ReservedWord,
+			IdentificationVariable_Invalid_ReservedWord,
 			startPosition,
 			endPosition
 		);
@@ -2437,7 +2493,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testDoesNotHaveProblem(
 			problems,
-			JPQLQueryProblemMessages.IdentificationVariableDeclaration_InvalidJoin
+			IdentificationVariableDeclaration_InvalidJoin
 		);
 	}
 
@@ -2449,7 +2505,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testDoesNotHaveProblem(
 			problems,
-			JPQLQueryProblemMessages.IdentificationVariableDeclaration_InvalidJoin
+			IdentificationVariableDeclaration_InvalidJoin
 		);
 	}
 
@@ -2461,7 +2517,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testDoesNotHaveProblem(
 			problems,
-			JPQLQueryProblemMessages.IdentificationVariableDeclaration_InvalidJoin
+			IdentificationVariableDeclaration_InvalidJoin
 		);
 	}
 
@@ -2473,7 +2529,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testDoesNotHaveProblem(
 			problems,
-			JPQLQueryProblemMessages.IdentificationVariableDeclaration_InvalidJoin
+			IdentificationVariableDeclaration_InvalidJoin
 		);
 	}
 
@@ -2489,7 +2545,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblem(
 			problems,
-			JPQLQueryProblemMessages.IdentificationVariableDeclaration_InvalidJoin,
+			IdentificationVariableDeclaration_InvalidJoin,
 			startPosition,
 			endPosition
 		);
@@ -2503,7 +2559,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testDoesNotHaveProblem(
 			problems,
-			JPQLQueryProblemMessages.IdentificationVariableDeclaration_JoinsEndWithComma
+			IdentificationVariableDeclaration_JoinsEndWithComma
 		);
 	}
 
@@ -2519,7 +2575,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblem(
 			problems,
-			JPQLQueryProblemMessages.IdentificationVariableDeclaration_MissingRangeVariableDeclaration,
+			IdentificationVariableDeclaration_MissingRangeVariableDeclaration,
 			startPosition,
 			endPosition
 		);
@@ -2537,7 +2593,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.IdentificationVariableDeclaration_MissingRangeVariableDeclaration,
+			IdentificationVariableDeclaration_MissingRangeVariableDeclaration,
 			startPosition,
 			endPosition
 		);
@@ -2554,7 +2610,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.IndexExpression_InvalidExpression,
+			IndexExpression_InvalidExpression,
 			startPosition,
 			endPosition
 		);
@@ -2571,7 +2627,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.IndexExpression_MissingExpression,
+			IndexExpression_MissingExpression,
 			startPosition,
 			endPosition
 		);
@@ -2588,7 +2644,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.IndexExpression_MissingLeftParenthesis,
+			IndexExpression_MissingLeftParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -2605,7 +2661,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.IndexExpression_MissingRightParenthesis,
+			IndexExpression_MissingRightParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -2622,7 +2678,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.InExpression_InItemIsMissingComma,
+			InExpression_InItemIsMissingComma,
 			startPosition,
 			endPosition
 		);
@@ -2639,7 +2695,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.InExpression_InItemEndsWithComma,
+			InExpression_InItemEndsWithComma,
 			startPosition,
 			endPosition
 		);
@@ -2656,7 +2712,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.InExpression_InvalidExpression,
+			InExpression_InvalidExpression,
 			startPosition,
 			endPosition
 		);
@@ -2673,7 +2729,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.InExpression_MissingExpression,
+			InExpression_MissingExpression,
 			startPosition,
 			endPosition
 		);
@@ -2690,7 +2746,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.InExpression_MissingInItems,
+			InExpression_MissingInItems,
 			startPosition,
 			endPosition
 		);
@@ -2707,7 +2763,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.InExpression_MissingLeftParenthesis,
+			InExpression_MissingLeftParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -2718,7 +2774,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		String query = "SELECT e FROM Employee e WHERE e.name IN :name";
 		List<JPQLQueryProblem> problems = validate(query);
-		testDoesNotHaveProblem(problems, JPQLQueryProblemMessages.InExpression_MissingLeftParenthesis);
+		testDoesNotHaveProblem(problems, InExpression_MissingLeftParenthesis);
 	}
 
 	@Test
@@ -2732,7 +2788,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.InExpression_MissingRightParenthesis,
+			InExpression_MissingRightParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -2743,7 +2799,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		String query = "SELECT e FROM Employee e WHERE e.name IN :name";
 		List<JPQLQueryProblem> problems = validate(query);
-		testDoesNotHaveProblem(problems, JPQLQueryProblemMessages.InExpression_MissingRightParenthesis);
+		testDoesNotHaveProblem(problems, InExpression_MissingRightParenthesis);
 	}
 
 	@Test
@@ -2758,7 +2814,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.InputParameter_JavaIdentifier,
+			InputParameter_JavaIdentifier,
 			startPosition,
 			endPosition
 		);
@@ -2776,7 +2832,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.InputParameter_JavaIdentifier,
+			InputParameter_JavaIdentifier,
 			startPosition,
 			endPosition
 		);
@@ -2794,7 +2850,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.InputParameter_MissingParameter,
+			InputParameter_MissingParameter,
 			startPosition,
 			endPosition
 		);
@@ -2812,7 +2868,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.InputParameter_MissingParameter,
+			InputParameter_MissingParameter,
 			startPosition,
 			endPosition
 		);
@@ -2833,8 +2889,8 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblems(
 			problems,
-			new String[] { JPQLQueryProblemMessages.InputParameter_SmallerThanOne,
-			               JPQLQueryProblemMessages.InputParameter_SmallerThanOne },
+			new String[] { InputParameter_SmallerThanOne,
+			               InputParameter_SmallerThanOne },
 			new int[] { startPosition1, startPosition2 },
 			new int[] { endPosition1,   endPosition2 }
 		);
@@ -2852,7 +2908,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.InputParameter_NotInteger,
+			InputParameter_NotInteger,
 			startPosition,
 			endPosition
 		);
@@ -2870,7 +2926,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.InputParameter_NotInteger,
+			InputParameter_NotInteger,
 			startPosition,
 			endPosition
 		);
@@ -2888,7 +2944,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.InputParameter_SmallerThanOne,
+			InputParameter_SmallerThanOne,
 			startPosition,
 			endPosition
 		);
@@ -2906,7 +2962,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.Join_MissingIdentificationVariable,
+			Join_MissingIdentificationVariable,
 			startPosition,
 			endPosition
 		);
@@ -2924,7 +2980,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.Join_MissingIdentificationVariable,
+			Join_MissingIdentificationVariable,
 			startPosition,
 			endPosition
 		);
@@ -2942,7 +2998,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.Join_MissingIdentificationVariable,
+			Join_MissingIdentificationVariable,
 			startPosition,
 			endPosition
 		);
@@ -2960,7 +3016,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.Join_MissingJoinAssociationPath,
+			Join_MissingJoinAssociationPath,
 			startPosition,
 			endPosition
 		);
@@ -2978,7 +3034,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.Join_MissingJoinAssociationPath,
+			Join_MissingJoinAssociationPath,
 			startPosition,
 			endPosition
 		);
@@ -2992,7 +3048,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testDoesNotHaveProblem(
 			problems,
-			JPQLQueryProblemMessages.JoinFetch_MissingIdentificationVariable
+			JoinFetch_MissingIdentificationVariable
 		);
 	}
 
@@ -3008,7 +3064,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 			testHasOnlyOneProblem(
 				problems,
-				JPQLQueryProblemMessages.JoinFetch_MissingIdentificationVariable,
+				JoinFetch_MissingIdentificationVariable,
 				startPosition,
 				endPosition
 			);
@@ -3019,7 +3075,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 			testHasOnlyOneProblem(
 				problems,
-				JPQLQueryProblemMessages.JoinFetch_InvalidIdentification,
+				JoinFetch_InvalidIdentification,
 				startPosition,
 				endPosition
 			);
@@ -3038,7 +3094,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 			testHasOnlyOneProblem(
 				problems,
-				JPQLQueryProblemMessages.JoinFetch_MissingIdentificationVariable,
+				JoinFetch_MissingIdentificationVariable,
 				startPosition,
 				endPosition
 			);
@@ -3049,7 +3105,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 			testHasOnlyOneProblem(
 				problems,
-				JPQLQueryProblemMessages.JoinFetch_InvalidIdentification,
+				JoinFetch_InvalidIdentification,
 				startPosition,
 				endPosition
 			);
@@ -3065,7 +3121,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 		if (isJoinFetchIdentifiable()) {
 			testDoesNotHaveProblem(
 				problems,
-				JPQLQueryProblemMessages.JoinFetch_MissingIdentificationVariable
+				JoinFetch_MissingIdentificationVariable
 			);
 		}
 		else {
@@ -3074,7 +3130,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 			testHasOnlyOneProblem(
 				problems,
-				JPQLQueryProblemMessages.JoinFetch_InvalidIdentification,
+				JoinFetch_InvalidIdentification,
 				startPosition,
 				endPosition
 			);
@@ -3093,7 +3149,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.JoinFetch_MissingJoinAssociationPath,
+			JoinFetch_MissingJoinAssociationPath,
 			startPosition,
 			endPosition
 		);
@@ -3111,7 +3167,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.JoinFetch_MissingJoinAssociationPath,
+			JoinFetch_MissingJoinAssociationPath,
 			startPosition,
 			endPosition
 		);
@@ -3129,7 +3185,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.JoinFetch_WrongClauseDeclaration,
+			JoinFetch_WrongClauseDeclaration,
 			startPosition,
 			endPosition
 		);
@@ -3146,7 +3202,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.JPQLExpression_InvalidQuery,
+			JPQLExpression_InvalidQuery,
 			startPosition,
 			endPosition
 		);
@@ -3163,7 +3219,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.JPQLExpression_InvalidQuery,
+			JPQLExpression_InvalidQuery,
 			startPosition,
 			endPosition
 		);
@@ -3180,7 +3236,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.JPQLExpression_InvalidQuery,
+			JPQLExpression_InvalidQuery,
 			startPosition,
 			endPosition
 		);
@@ -3229,7 +3285,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.JPQLExpression_UnknownEnding,
+			JPQLExpression_UnknownEnding,
 			startPosition,
 			endPosition
 		);
@@ -3246,7 +3302,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.KeyExpression_InvalidExpression,
+			KeyExpression_InvalidExpression,
 			startPosition,
 			endPosition
 		);
@@ -3263,7 +3319,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.KeyExpression_MissingExpression,
+			KeyExpression_MissingExpression,
 			startPosition,
 			endPosition
 		);
@@ -3280,7 +3336,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.KeyExpression_MissingLeftParenthesis,
+			KeyExpression_MissingLeftParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -3297,7 +3353,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.KeyExpression_MissingRightParenthesis,
+			KeyExpression_MissingRightParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -3314,7 +3370,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.LengthExpression_InvalidExpression,
+			LengthExpression_InvalidExpression,
 			startPosition,
 			endPosition
 		);
@@ -3331,7 +3387,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.LengthExpression_MissingExpression,
+			LengthExpression_MissingExpression,
 			startPosition,
 			endPosition
 		);
@@ -3348,7 +3404,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.LengthExpression_MissingLeftParenthesis,
+			LengthExpression_MissingLeftParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -3365,7 +3421,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.LengthExpression_MissingRightParenthesis,
+			LengthExpression_MissingRightParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -3379,7 +3435,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testDoesNotHaveProblem(
 			problems,
-			JPQLQueryProblemMessages.LikeExpression_InvalidEscapeCharacter
+			LikeExpression_InvalidEscapeCharacter
 		);
 	}
 
@@ -3391,7 +3447,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testDoesNotHaveProblem(
 			problems,
-			JPQLQueryProblemMessages.LikeExpression_InvalidEscapeCharacter
+			LikeExpression_InvalidEscapeCharacter
 		);
 	}
 
@@ -3406,7 +3462,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblem(
 			problems,
-			JPQLQueryProblemMessages.LikeExpression_InvalidEscapeCharacter,
+			LikeExpression_InvalidEscapeCharacter,
 			startPosition,
 			endPosition
 		);
@@ -3425,7 +3481,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 			testDoesNotHaveProblem(
 				problems,
-				JPQLQueryProblemMessages.LikeExpression_InvalidEscapeCharacter
+				LikeExpression_InvalidEscapeCharacter
 			);
 		}
 		else {
@@ -3434,7 +3490,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 			testHasProblem(
 				problems,
-				JPQLQueryProblemMessages.LikeExpression_InvalidEscapeCharacter,
+				LikeExpression_InvalidEscapeCharacter,
 				startPosition,
 				endPosition
 			);
@@ -3452,7 +3508,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.LikeExpression_MissingEscapeCharacter,
+			LikeExpression_MissingEscapeCharacter,
 			startPosition,
 			endPosition
 		);
@@ -3469,7 +3525,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.LikeExpression_MissingEscapeCharacter,
+			LikeExpression_MissingEscapeCharacter,
 			startPosition,
 			endPosition
 		);
@@ -3486,7 +3542,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.LikeExpression_MissingPatternValue,
+			LikeExpression_MissingPatternValue,
 			startPosition,
 			endPosition
 		);
@@ -3503,7 +3559,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.LikeExpression_MissingPatternValue,
+			LikeExpression_MissingPatternValue,
 			startPosition,
 			endPosition
 		);
@@ -3520,7 +3576,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.LikeExpression_MissingStringExpression,
+			LikeExpression_MissingStringExpression,
 			startPosition,
 			endPosition
 		);
@@ -3537,7 +3593,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblem(
 			problems,
-			JPQLQueryProblemMessages.LocateExpression_InvalidFirstExpression,
+			LocateExpression_InvalidFirstExpression,
 			startPosition,
 			endPosition
 		);
@@ -3555,7 +3611,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblem(
 			problems,
-			JPQLQueryProblemMessages.LocateExpression_InvalidSecondExpression,
+			LocateExpression_InvalidSecondExpression,
 			startPosition,
 			endPosition
 		);
@@ -3572,7 +3628,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblem(
 			problems,
-			JPQLQueryProblemMessages.LocateExpression_InvalidThirdExpression,
+			LocateExpression_InvalidThirdExpression,
 			startPosition,
 			endPosition
 		);
@@ -3590,7 +3646,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblem(
 			problems,
-			JPQLQueryProblemMessages.LocateExpression_MissingFirstComma,
+			LocateExpression_MissingFirstComma,
 			startPosition,
 			endPosition
 		);
@@ -3607,7 +3663,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblem(
 			problems,
-			JPQLQueryProblemMessages.LocateExpression_MissingFirstComma,
+			LocateExpression_MissingFirstComma,
 			startPosition,
 			endPosition
 		);
@@ -3624,7 +3680,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblem(
 			problems,
-			JPQLQueryProblemMessages.LocateExpression_MissingFirstExpression,
+			LocateExpression_MissingFirstExpression,
 			startPosition,
 			endPosition
 		);
@@ -3641,7 +3697,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblem(
 			problems,
-			JPQLQueryProblemMessages.LocateExpression_MissingFirstExpression,
+			LocateExpression_MissingFirstExpression,
 			startPosition,
 			endPosition
 		);
@@ -3662,8 +3718,8 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblems(
 			problems,
-			new String[] { JPQLQueryProblemMessages.LocateExpression_MissingFirstExpression,
-			               JPQLQueryProblemMessages.LocateExpression_MissingSecondExpression },
+			new String[] { LocateExpression_MissingFirstExpression,
+			               LocateExpression_MissingSecondExpression },
 			new int[] { startPosition1, startPosition2 },
 			new int[] { endPosition1,   endPosition2 }
 		);
@@ -3680,7 +3736,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblem(
 			problems,
-			JPQLQueryProblemMessages.LocateExpression_MissingLeftParenthesis,
+			LocateExpression_MissingLeftParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -3697,7 +3753,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblem(
 			problems,
-			JPQLQueryProblemMessages.LocateExpression_MissingRightParenthesis,
+			LocateExpression_MissingRightParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -3714,7 +3770,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblem(
 			problems,
-			JPQLQueryProblemMessages.LocateExpression_MissingSecondComma,
+			LocateExpression_MissingSecondComma,
 			startPosition,
 			endPosition
 		);
@@ -3731,7 +3787,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblem(
 			problems,
-			JPQLQueryProblemMessages.LocateExpression_MissingSecondExpression,
+			LocateExpression_MissingSecondExpression,
 			startPosition,
 			endPosition
 		);
@@ -3748,7 +3804,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblem(
 			problems,
-			JPQLQueryProblemMessages.LocateExpression_MissingSecondExpression,
+			LocateExpression_MissingSecondExpression,
 			startPosition,
 			endPosition
 		);
@@ -3765,7 +3821,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblem(
 			problems,
-			JPQLQueryProblemMessages.LocateExpression_MissingThirdExpression,
+			LocateExpression_MissingThirdExpression,
 			startPosition,
 			endPosition
 		);
@@ -3782,7 +3838,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblem(
 			problems,
-			JPQLQueryProblemMessages.LocateExpression_MissingThirdExpression,
+			LocateExpression_MissingThirdExpression,
 			startPosition,
 			endPosition
 		);
@@ -3799,7 +3855,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblem(
 			problems,
-			JPQLQueryProblemMessages.LocateExpression_MissingThirdExpression,
+			LocateExpression_MissingThirdExpression,
 			startPosition,
 			endPosition
 		);
@@ -3817,7 +3873,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.LogicalExpression_InvalidLeftExpression,
+			LogicalExpression_InvalidLeftExpression,
 			startPosition,
 			endPosition
 		);
@@ -3835,7 +3891,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.LogicalExpression_InvalidRightExpression,
+			LogicalExpression_InvalidRightExpression,
 			startPosition,
 			endPosition
 		);
@@ -3853,7 +3909,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.LogicalExpression_MissingLeftExpression,
+			LogicalExpression_MissingLeftExpression,
 			startPosition,
 			endPosition
 		);
@@ -3871,7 +3927,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.LogicalExpression_MissingRightExpression,
+			LogicalExpression_MissingRightExpression,
 			startPosition,
 			endPosition
 		);
@@ -3889,7 +3945,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.LogicalExpression_MissingRightExpression,
+			LogicalExpression_MissingRightExpression,
 			startPosition,
 			endPosition
 		);
@@ -3906,7 +3962,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.LowerExpression_InvalidExpression,
+			LowerExpression_InvalidExpression,
 			startPosition,
 			endPosition
 		);
@@ -3923,7 +3979,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.LowerExpression_MissingExpression,
+			LowerExpression_MissingExpression,
 			startPosition,
 			endPosition
 		);
@@ -3940,7 +3996,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.LowerExpression_MissingLeftParenthesis,
+			LowerExpression_MissingLeftParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -3957,7 +4013,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.LowerExpression_MissingRightParenthesis,
+			LowerExpression_MissingRightParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -3974,7 +4030,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.MaxFunction_InvalidExpression,
+			MaxFunction_InvalidExpression,
 			startPosition,
 			endPosition
 		);
@@ -3991,7 +4047,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.MaxFunction_MissingExpression,
+			MaxFunction_MissingExpression,
 			startPosition,
 			endPosition
 		);
@@ -4008,7 +4064,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.MaxFunction_MissingExpression,
+			MaxFunction_MissingExpression,
 			startPosition,
 			endPosition
 		);
@@ -4025,7 +4081,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.MaxFunction_MissingExpression,
+			MaxFunction_MissingExpression,
 			startPosition,
 			endPosition
 		);
@@ -4042,7 +4098,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.MaxFunction_MissingLeftParenthesis,
+			MaxFunction_MissingLeftParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -4059,7 +4115,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.MaxFunction_MissingLeftParenthesis,
+			MaxFunction_MissingLeftParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -4076,7 +4132,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.MaxFunction_MissingRightParenthesis,
+			MaxFunction_MissingRightParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -4093,7 +4149,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.MinFunction_InvalidExpression,
+			MinFunction_InvalidExpression,
 			startPosition,
 			endPosition
 		);
@@ -4110,7 +4166,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.MinFunction_MissingExpression,
+			MinFunction_MissingExpression,
 			startPosition,
 			endPosition
 		);
@@ -4128,7 +4184,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.MinFunction_MissingExpression,
+			MinFunction_MissingExpression,
 			startPosition,
 			endPosition
 		);
@@ -4145,7 +4201,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.MinFunction_MissingExpression,
+			MinFunction_MissingExpression,
 			startPosition,
 			endPosition
 		);
@@ -4162,7 +4218,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.MinFunction_MissingLeftParenthesis,
+			MinFunction_MissingLeftParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -4179,7 +4235,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.MinFunction_MissingLeftParenthesis,
+			MinFunction_MissingLeftParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -4196,7 +4252,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.MinFunction_MissingRightParenthesis,
+			MinFunction_MissingRightParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -4214,7 +4270,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblem(
 			problems,
-			JPQLQueryProblemMessages.ModExpression_InvalidFirstExpression,
+			ModExpression_InvalidFirstExpression,
 			startPosition,
 			endPosition
 		);
@@ -4232,7 +4288,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblem(
 			problems,
-			JPQLQueryProblemMessages.ModExpression_InvalidSecondParenthesis,
+			ModExpression_InvalidSecondParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -4250,7 +4306,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblem(
 			problems,
-			JPQLQueryProblemMessages.ModExpression_MissingComma,
+			ModExpression_MissingComma,
 			startPosition,
 			endPosition
 		);
@@ -4268,7 +4324,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblem(
 			problems,
-			JPQLQueryProblemMessages.ModExpression_MissingComma,
+			ModExpression_MissingComma,
 			startPosition,
 			endPosition
 		);
@@ -4286,7 +4342,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblem(
 			problems,
-			JPQLQueryProblemMessages.ModExpression_MissingFirstExpression,
+			ModExpression_MissingFirstExpression,
 			startPosition,
 			endPosition
 		);
@@ -4304,7 +4360,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblem(
 			problems,
-			JPQLQueryProblemMessages.ModExpression_MissingLeftParenthesis,
+			ModExpression_MissingLeftParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -4322,7 +4378,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblem(
 			problems,
-			JPQLQueryProblemMessages.ModExpression_MissingLeftParenthesis,
+			ModExpression_MissingLeftParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -4340,7 +4396,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblem(
 			problems,
-			JPQLQueryProblemMessages.ModExpression_MissingRightParenthesis,
+			ModExpression_MissingRightParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -4358,7 +4414,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblem(
 			problems,
-			JPQLQueryProblemMessages.ModExpression_MissingSecondExpression,
+			ModExpression_MissingSecondExpression,
 			startPosition,
 			endPosition
 		);
@@ -4376,7 +4432,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblem(
 			problems,
-			JPQLQueryProblemMessages.ModExpression_MissingSecondExpression,
+			ModExpression_MissingSecondExpression,
 			startPosition,
 			endPosition
 		);
@@ -4394,7 +4450,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblem(
 			problems,
-			JPQLQueryProblemMessages.ModExpression_MissingSecondExpression,
+			ModExpression_MissingSecondExpression,
 			startPosition,
 			endPosition
 		);
@@ -4411,7 +4467,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.NotExpression_MissingExpression,
+			NotExpression_MissingExpression,
 			startPosition,
 			endPosition
 		);
@@ -4428,7 +4484,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.NotExpression_MissingExpression,
+			NotExpression_MissingExpression,
 			startPosition,
 			endPosition
 		);
@@ -4446,7 +4502,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.NullIfExpression_InvalidFirstExpression,
+			NullIfExpression_InvalidFirstExpression,
 			startPosition,
 			endPosition
 		);
@@ -4464,7 +4520,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.NullIfExpression_InvalidSecondExpression,
+			NullIfExpression_InvalidSecondExpression,
 			startPosition,
 			endPosition
 		);
@@ -4482,7 +4538,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.NullIfExpression_MissingComma,
+			NullIfExpression_MissingComma,
 			startPosition,
 			endPosition
 		);
@@ -4500,7 +4556,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.NullIfExpression_MissingFirstExpression,
+			NullIfExpression_MissingFirstExpression,
 			startPosition,
 			endPosition
 		);
@@ -4518,7 +4574,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.NullIfExpression_MissingFirstExpression,
+			NullIfExpression_MissingFirstExpression,
 			startPosition,
 			endPosition
 		);
@@ -4536,7 +4592,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.NullIfExpression_MissingLeftParenthesis,
+			NullIfExpression_MissingLeftParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -4554,7 +4610,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.NullIfExpression_MissingRightParenthesis,
+			NullIfExpression_MissingRightParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -4572,7 +4628,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.NullIfExpression_MissingSecondExpression,
+			NullIfExpression_MissingSecondExpression,
 			startPosition,
 			endPosition
 		);
@@ -4590,7 +4646,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.NullIfExpression_MissingSecondExpression,
+			NullIfExpression_MissingSecondExpression,
 			startPosition,
 			endPosition
 		);
@@ -4608,14 +4664,14 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.NullIfExpression_MissingSecondExpression,
+			NullIfExpression_MissingSecondExpression,
 			startPosition,
 			endPosition
 		);
 	}
 
 	@Test
-	public final void test_NumericLiteral_Invalid_1() throws Exception {
+	public final void test_NumericLiteral_Invalid_01() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE e.age > 1.2FF";
 
@@ -4626,106 +4682,158 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.NumericLiteral_Invalid,
+			NumericLiteral_Invalid,
 			startPosition,
 			endPosition
 		);
 	}
 
 	@Test
-	public final void test_NumericLiteral_Invalid_2() throws Exception {
+	public final void test_NumericLiteral_Invalid_02() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE e.age > 2";
 		List<JPQLQueryProblem> problems = validate(query);
 
 		testDoesNotHaveProblem(
 			problems,
-			JPQLQueryProblemMessages.NumericLiteral_Invalid
+			NumericLiteral_Invalid
 		);
 	}
 
 	@Test
-	public final void test_NumericLiteral_Invalid_3() throws Exception {
+	public final void test_NumericLiteral_Invalid_03() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE e.age > 2.2";
 		List<JPQLQueryProblem> problems = validate(query);
 
 		testDoesNotHaveProblem(
 			problems,
-			JPQLQueryProblemMessages.NumericLiteral_Invalid
+			NumericLiteral_Invalid
 		);
 	}
 
 	@Test
-	public final void test_NumericLiteral_Invalid_4() throws Exception {
+	public final void test_NumericLiteral_Invalid_04() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE e.age > 2.2D";
 		List<JPQLQueryProblem> problems = validate(query);
 
 		testDoesNotHaveProblem(
 			problems,
-			JPQLQueryProblemMessages.NumericLiteral_Invalid
+			NumericLiteral_Invalid
 		);
 	}
 
 	@Test
-	public final void test_NumericLiteral_Invalid_5() throws Exception {
+	public final void test_NumericLiteral_Invalid_05() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE e.age > 2.2E10";
 		List<JPQLQueryProblem> problems = validate(query);
 
 		testDoesNotHaveProblem(
 			problems,
-			JPQLQueryProblemMessages.NumericLiteral_Invalid
+			NumericLiteral_Invalid
 		);
 	}
 
 	@Test
-	public final void test_NumericLiteral_Invalid_6() throws Exception {
+	public final void test_NumericLiteral_Invalid_06() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE e.age > 2.2E-10";
 		List<JPQLQueryProblem> problems = validate(query);
 
 		testDoesNotHaveProblem(
 			problems,
-			JPQLQueryProblemMessages.NumericLiteral_Invalid
+			NumericLiteral_Invalid
 		);
 	}
 
 	@Test
-	public final void test_NumericLiteral_Invalid_7() throws Exception {
+	public final void test_NumericLiteral_Invalid_07() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE e.age > 0.34999999999999997779553950749686919152736663818359375";
 		List<JPQLQueryProblem> problems = validate(query);
 
 		testDoesNotHaveProblem(
 			problems,
-			JPQLQueryProblemMessages.NumericLiteral_Invalid
+			NumericLiteral_Invalid
 		);
 	}
 
 	@Test
-	public final void test_NumericLiteral_Invalid_8() throws Exception {
+	public final void test_NumericLiteral_Invalid_08() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE e.age > 2.2F";
 		List<JPQLQueryProblem> problems = validate(query);
 
 		testDoesNotHaveProblem(
 			problems,
-			JPQLQueryProblemMessages.NumericLiteral_Invalid
+			NumericLiteral_Invalid
 		);
 	}
 
 	@Test
-	public final void test_NumericLiteral_Invalid_9() throws Exception {
+	public final void test_NumericLiteral_Invalid_09() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE e.age > 2L";
 		List<JPQLQueryProblem> problems = validate(query);
+		testDoesNotHaveProblem(problems, NumericLiteral_Invalid);
+	}
 
-		testDoesNotHaveProblem(
-			problems,
-			JPQLQueryProblemMessages.NumericLiteral_Invalid
-		);
+	@Test
+	public final void test_NumericLiteral_Invalid_10() throws Exception {
+
+		String query = "SELECT e FROM Employee e WHERE e.age > 2l";
+		List<JPQLQueryProblem> problems = validate(query);
+		testDoesNotHaveProblem(problems, NumericLiteral_Invalid);
+	}
+
+	@Test
+	public final void test_NumericLiteral_Invalid_11() throws Exception {
+
+		String query = "SELECT e FROM Employee e WHERE e.age > 2D";
+		List<JPQLQueryProblem> problems = validate(query);
+		testDoesNotHaveProblem(problems, NumericLiteral_Invalid);
+	}
+
+	@Test
+	public final void test_NumericLiteral_Invalid_12() throws Exception {
+
+		String query = "SELECT e FROM Employee e WHERE e.age > 2d";
+		List<JPQLQueryProblem> problems = validate(query);
+		testDoesNotHaveProblem(problems, NumericLiteral_Invalid);
+	}
+
+	@Test
+	public final void test_NumericLiteral_Invalid_13() throws Exception {
+
+		String query = "SELECT e FROM Employee e WHERE e.age > 2.2d";
+		List<JPQLQueryProblem> problems = validate(query);
+		testDoesNotHaveProblem(problems, NumericLiteral_Invalid);
+	}
+
+	@Test
+	public final void test_NumericLiteral_Invalid_14() throws Exception {
+
+		String query = "SELECT e FROM Employee e WHERE e.age > .2d";
+		List<JPQLQueryProblem> problems = validate(query);
+		testDoesNotHaveProblem(problems, NumericLiteral_Invalid);
+	}
+
+	@Test
+	public final void test_NumericLiteral_Invalid_15() throws Exception {
+
+		String query = "SELECT e FROM Employee e WHERE e.age > 0x1.02ADP+2";
+		List<JPQLQueryProblem> problems = validate(query);
+		testDoesNotHaveProblem(problems, NumericLiteral_Invalid);
+	}
+
+	@Test
+	public final void test_NumericLiteral_Invalid_16() throws Exception {
+
+		String query = "SELECT e FROM Employee e WHERE e.age > 0x1.02ADP+2d";
+		List<JPQLQueryProblem> problems = validate(query);
+		testDoesNotHaveProblem(problems, NumericLiteral_Invalid);
 	}
 
 	@Test
@@ -4739,7 +4847,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.ObjectExpression_InvalidExpression,
+			ObjectExpression_InvalidExpression,
 			startPosition,
 			endPosition
 		);
@@ -4756,7 +4864,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.ObjectExpression_MissingExpression,
+			ObjectExpression_MissingExpression,
 			startPosition,
 			endPosition
 		);
@@ -4773,7 +4881,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.ObjectExpression_MissingLeftParenthesis,
+			ObjectExpression_MissingLeftParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -4790,7 +4898,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.ObjectExpression_MissingRightParenthesis,
+			ObjectExpression_MissingRightParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -4807,7 +4915,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.OrderByClause_OrderByItemEndsWithComma,
+			OrderByClause_OrderByItemEndsWithComma,
 			startPosition,
 			endPosition
 		);
@@ -4824,7 +4932,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.OrderByClause_OrderByItemIsMissingComma,
+			OrderByClause_OrderByItemIsMissingComma,
 			startPosition,
 			endPosition
 		);
@@ -4841,7 +4949,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.OrderByClause_OrderByItemIsMissingComma,
+			OrderByClause_OrderByItemIsMissingComma,
 			startPosition,
 			endPosition
 		);
@@ -4858,24 +4966,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.OrderByClause_OrderByItemMissing,
-			startPosition,
-			endPosition
-		);
-	}
-
-	@Test
-	public final void test_OrderByItem_InvalidPath_1() throws Exception {
-
-		String query = "SELECT e FROM Employee e ORDER BY ALL(SELECT d FROM Dept d)";
-		int startPosition = "SELECT e FROM Employee e ORDER BY ".length();
-		int endPosition   = query.length();
-
-		List<JPQLQueryProblem> problems = validate(query);
-
-		testHasOnlyOneProblem(
-			problems,
-			JPQLQueryProblemMessages.OrderByItem_InvalidPath,
+			OrderByClause_OrderByItemMissing,
 			startPosition,
 			endPosition
 		);
@@ -4892,7 +4983,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.OrderByItem_MissingStateFieldPathExpression,
+			OrderByItem_MissingStateFieldPathExpression,
 			startPosition,
 			endPosition
 		);
@@ -4909,7 +5000,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.RangeVariableDeclaration_MissingAbstractSchemaName,
+			RangeVariableDeclaration_MissingAbstractSchemaName,
 			startPosition,
 			endPosition
 		);
@@ -4926,7 +5017,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.RangeVariableDeclaration_MissingIdentificationVariable,
+			RangeVariableDeclaration_MissingIdentificationVariable,
 			startPosition,
 			endPosition
 		);
@@ -4943,7 +5034,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.RangeVariableDeclaration_MissingIdentificationVariable,
+			RangeVariableDeclaration_MissingIdentificationVariable,
 			startPosition,
 			endPosition
 		);
@@ -4960,7 +5051,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.RangeVariableDeclaration_MissingIdentificationVariable,
+			RangeVariableDeclaration_MissingIdentificationVariable,
 			startPosition,
 			endPosition
 		);
@@ -4977,7 +5068,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.RangeVariableDeclaration_MissingIdentificationVariable,
+			RangeVariableDeclaration_MissingIdentificationVariable,
 			startPosition,
 			endPosition
 		);
@@ -4994,7 +5085,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.ResultVariable_MissingResultVariable,
+			ResultVariable_MissingResultVariable,
 			startPosition,
 			endPosition
 		);
@@ -5011,7 +5102,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.ResultVariable_MissingSelectExpression,
+			ResultVariable_MissingSelectExpression,
 			startPosition,
 			endPosition
 		);
@@ -5028,7 +5119,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.SimpleSelectClause_NotSingleExpression,
+			SimpleSelectClause_NotSingleExpression,
 			startPosition,
 			endPosition
 		);
@@ -5059,7 +5150,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 		if (isSubqueryAllowedAnywhere()) {
 			testDoesNotHaveProblem(
 				problems,
-				JPQLQueryProblemMessages.SimpleSelectStatement_InvalidLocation
+				SimpleSelectStatement_InvalidLocation
 			);
 		}
 		else {
@@ -5068,7 +5159,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 			testHasOnlyOneProblem(
 				problems,
-				JPQLQueryProblemMessages.SimpleSelectStatement_InvalidLocation,
+				SimpleSelectStatement_InvalidLocation,
 				startPosition,
 				endPosition
 			);
@@ -5084,7 +5175,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 		if (isSubqueryAllowedAnywhere()) {
 			testDoesNotHaveProblem(
 				problems,
-				JPQLQueryProblemMessages.SimpleSelectStatement_InvalidLocation
+				SimpleSelectStatement_InvalidLocation
 			);
 		}
 		else {
@@ -5093,7 +5184,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 			testHasOnlyOneProblem(
 				problems,
-				JPQLQueryProblemMessages.SimpleSelectStatement_InvalidLocation,
+				SimpleSelectStatement_InvalidLocation,
 				startPosition,
 				endPosition
 			);
@@ -5111,7 +5202,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.SizeExpression_InvalidExpression,
+			SizeExpression_InvalidExpression,
 			startPosition,
 			endPosition
 		);
@@ -5128,7 +5219,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.SizeExpression_MissingExpression,
+			SizeExpression_MissingExpression,
 			startPosition,
 			endPosition
 		);
@@ -5145,7 +5236,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.SizeExpression_MissingLeftParenthesis,
+			SizeExpression_MissingLeftParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -5162,7 +5253,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.SizeExpression_MissingRightParenthesis,
+			SizeExpression_MissingRightParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -5179,7 +5270,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblem(
 			problems,
-			JPQLQueryProblemMessages.SqrtExpression_InvalidExpression,
+			SqrtExpression_InvalidExpression,
 			startPosition,
 			endPosition
 		);
@@ -5196,7 +5287,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.SqrtExpression_MissingExpression,
+			SqrtExpression_MissingExpression,
 			startPosition,
 			endPosition
 		);
@@ -5213,7 +5304,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.SqrtExpression_MissingLeftParenthesis,
+			SqrtExpression_MissingLeftParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -5230,7 +5321,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.SqrtExpression_MissingRightParenthesis,
+			SqrtExpression_MissingRightParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -5248,7 +5339,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.SubExpression_MissingExpression,
+			SubExpression_MissingExpression,
 			startPosition,
 			endPosition
 		);
@@ -5266,7 +5357,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblem(
 			problems,
-			JPQLQueryProblemMessages.SubExpression_MissingRightParenthesis,
+			SubExpression_MissingRightParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -5284,7 +5375,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblem(
 			problems,
-			JPQLQueryProblemMessages.SubstringExpression_InvalidFirstExpression,
+			SubstringExpression_InvalidFirstExpression,
 			startPosition,
 			endPosition
 		);
@@ -5302,7 +5393,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblem(
 			problems,
-			JPQLQueryProblemMessages.SubstringExpression_InvalidSecondExpression,
+			SubstringExpression_InvalidSecondExpression,
 			startPosition,
 			endPosition
 		);
@@ -5320,7 +5411,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblem(
 			problems,
-			JPQLQueryProblemMessages.SubstringExpression_InvalidThirdExpression,
+			SubstringExpression_InvalidThirdExpression,
 			startPosition,
 			endPosition
 		);
@@ -5338,7 +5429,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblem(
 			problems,
-			JPQLQueryProblemMessages.SubstringExpression_MissingFirstComma,
+			SubstringExpression_MissingFirstComma,
 			startPosition,
 			endPosition
 		);
@@ -5356,7 +5447,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblem(
 			problems,
-			JPQLQueryProblemMessages.SubstringExpression_MissingFirstExpression,
+			SubstringExpression_MissingFirstExpression,
 			startPosition,
 			endPosition
 		);
@@ -5374,7 +5465,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblem(
 			problems,
-			JPQLQueryProblemMessages.SubstringExpression_MissingLeftParenthesis,
+			SubstringExpression_MissingLeftParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -5392,7 +5483,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblem(
 			problems,
-			JPQLQueryProblemMessages.SubstringExpression_MissingRightParenthesis,
+			SubstringExpression_MissingRightParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -5410,7 +5501,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblem(
 			problems,
-			JPQLQueryProblemMessages.SubstringExpression_MissingSecondComma,
+			SubstringExpression_MissingSecondComma,
 			startPosition,
 			endPosition
 		);
@@ -5428,7 +5519,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblem(
 			problems,
-			JPQLQueryProblemMessages.SubstringExpression_MissingSecondExpression,
+			SubstringExpression_MissingSecondExpression,
 			startPosition,
 			endPosition
 		);
@@ -5446,7 +5537,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 			testHasProblem(
 				problems,
-				JPQLQueryProblemMessages.SubstringExpression_MissingThirdExpression,
+				SubstringExpression_MissingThirdExpression,
 				startPosition,
 				endPosition
 			);
@@ -5454,7 +5545,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 		else {
 			testDoesNotHaveProblem(
 				problems,
-				JPQLQueryProblemMessages.SubstringExpression_MissingThirdExpression
+				SubstringExpression_MissingThirdExpression
 			);
 		}
 	}
@@ -5471,7 +5562,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 			testHasProblem(
 				problems,
-				JPQLQueryProblemMessages.SubstringExpression_MissingThirdExpression,
+				SubstringExpression_MissingThirdExpression,
 				startPosition,
 				endPosition
 			);
@@ -5479,7 +5570,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 		else {
 			testDoesNotHaveProblem(
 				problems,
-				JPQLQueryProblemMessages.SubstringExpression_MissingThirdExpression
+				SubstringExpression_MissingThirdExpression
 			);
 		}
 	}
@@ -5496,7 +5587,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 			testHasProblem(
 				problems,
-				JPQLQueryProblemMessages.SubstringExpression_MissingThirdExpression,
+				SubstringExpression_MissingThirdExpression,
 				startPosition,
 				endPosition
 			);
@@ -5504,7 +5595,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 		else {
 			testDoesNotHaveProblem(
 				problems,
-				JPQLQueryProblemMessages.SubstringExpression_MissingThirdExpression
+				SubstringExpression_MissingThirdExpression
 			);
 		}
 	}
@@ -5515,7 +5606,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 		String query = "SELECT e FROM Employee e WHERE SUBSTRING(e.name, 0)";
 
 		List<JPQLQueryProblem> problems = validate(query);
-		testDoesNotHaveProblem(problems, JPQLQueryProblemMessages.SubstringExpression_MissingThirdExpression);
+		testDoesNotHaveProblem(problems, SubstringExpression_MissingThirdExpression);
 	}
 
 	@Test
@@ -5529,7 +5620,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.SumFunction_InvalidExpression,
+			SumFunction_InvalidExpression,
 			startPosition,
 			endPosition
 		);
@@ -5546,7 +5637,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.SumFunction_MissingExpression,
+			SumFunction_MissingExpression,
 			startPosition,
 			endPosition
 		);
@@ -5563,7 +5654,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.SumFunction_MissingExpression,
+			SumFunction_MissingExpression,
 			startPosition,
 			endPosition
 		);
@@ -5580,7 +5671,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.SumFunction_MissingExpression,
+			SumFunction_MissingExpression,
 			startPosition,
 			endPosition
 		);
@@ -5597,7 +5688,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.SumFunction_MissingLeftParenthesis,
+			SumFunction_MissingLeftParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -5614,7 +5705,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.SumFunction_MissingLeftParenthesis,
+			SumFunction_MissingLeftParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -5631,7 +5722,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.SumFunction_MissingRightParenthesis,
+			SumFunction_MissingRightParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -5648,7 +5739,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.TrimExpression_InvalidExpression,
+			TrimExpression_InvalidExpression,
 			startPosition,
 			endPosition
 		);
@@ -5665,7 +5756,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.TrimExpression_InvalidTrimCharacter,
+			TrimExpression_InvalidTrimCharacter,
 			startPosition,
 			endPosition
 		);
@@ -5682,7 +5773,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.TrimExpression_MissingExpression,
+			TrimExpression_MissingExpression,
 			startPosition,
 			endPosition
 		);
@@ -5699,7 +5790,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.TrimExpression_MissingLeftParenthesis,
+			TrimExpression_MissingLeftParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -5716,7 +5807,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.TrimExpression_MissingRightParenthesis,
+			TrimExpression_MissingRightParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -5733,7 +5824,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.TrimExpression_NotSingleStringLiteral,
+			TrimExpression_NotSingleStringLiteral,
 			startPosition,
 			endPosition
 		);
@@ -5750,7 +5841,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.TypeExpression_InvalidExpression,
+			TypeExpression_InvalidExpression,
 			startPosition,
 			endPosition
 		);
@@ -5767,7 +5858,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.TypeExpression_MissingExpression,
+			TypeExpression_MissingExpression,
 			startPosition,
 			endPosition
 		);
@@ -5784,7 +5875,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.TypeExpression_MissingLeftParenthesis,
+			TypeExpression_MissingLeftParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -5820,7 +5911,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.TypeExpression_MissingRightParenthesis,
+			TypeExpression_MissingRightParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -5838,7 +5929,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.UpdateClause_MissingRangeVariableDeclaration,
+			UpdateClause_MissingRangeVariableDeclaration,
 			startPosition,
 			endPosition
 		);
@@ -5856,7 +5947,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.UpdateClause_MissingSet,
+			UpdateClause_MissingSet,
 			startPosition,
 			endPosition
 		);
@@ -5874,7 +5965,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.UpdateClause_MissingUpdateItems,
+			UpdateClause_MissingUpdateItems,
 			startPosition,
 			endPosition
 		);
@@ -5892,7 +5983,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.UpdateClause_MissingUpdateItems,
+			UpdateClause_MissingUpdateItems,
 			startPosition,
 			endPosition
 		);
@@ -5910,7 +6001,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.UpdateClause_UpdateItemEndsWithComma,
+			UpdateClause_UpdateItemEndsWithComma,
 			startPosition,
 			endPosition
 		);
@@ -5928,7 +6019,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.UpdateClause_UpdateItemEndsWithComma,
+			UpdateClause_UpdateItemEndsWithComma,
 			startPosition,
 			endPosition
 		);
@@ -5946,7 +6037,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.UpdateClause_UpdateItemIsMissingComma,
+			UpdateClause_UpdateItemIsMissingComma,
 			startPosition,
 			endPosition
 		);
@@ -5964,7 +6055,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.UpdateItem_MissingEqualSign,
+			UpdateItem_MissingEqualSign,
 			startPosition,
 			endPosition
 		);
@@ -5982,7 +6073,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.UpdateItem_MissingEqualSign,
+			UpdateItem_MissingEqualSign,
 			startPosition,
 			endPosition
 		);
@@ -6000,7 +6091,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.UpdateItem_MissingNewValue,
+			UpdateItem_MissingNewValue,
 			startPosition,
 			endPosition
 		);
@@ -6018,7 +6109,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.UpdateItem_MissingNewValue,
+			UpdateItem_MissingNewValue,
 			startPosition,
 			endPosition
 		);
@@ -6036,7 +6127,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.UpdateItem_MissingStateFieldPathExpression,
+			UpdateItem_MissingStateFieldPathExpression,
 			startPosition,
 			endPosition
 		);
@@ -6053,7 +6144,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.UpperExpression_InvalidExpression,
+			UpperExpression_InvalidExpression,
 			startPosition,
 			endPosition
 		);
@@ -6070,7 +6161,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.UpperExpression_MissingExpression,
+			UpperExpression_MissingExpression,
 			startPosition,
 			endPosition
 		);
@@ -6087,7 +6178,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.UpperExpression_MissingLeftParenthesis,
+			UpperExpression_MissingLeftParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -6104,7 +6195,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.UpperExpression_MissingRightParenthesis,
+			UpperExpression_MissingRightParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -6134,7 +6225,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.ValueExpression_InvalidExpression,
+			ValueExpression_InvalidExpression,
 			startPosition,
 			endPosition
 		);
@@ -6151,7 +6242,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.ValueExpression_MissingExpression,
+			ValueExpression_MissingExpression,
 			startPosition,
 			endPosition
 		);
@@ -6168,7 +6259,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.ValueExpression_MissingLeftParenthesis,
+			ValueExpression_MissingLeftParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -6185,7 +6276,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.ValueExpression_MissingRightParenthesis,
+			ValueExpression_MissingRightParenthesis,
 			startPosition,
 			endPosition
 		);
@@ -6207,7 +6298,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.WhenClause_MissingThenExpression,
+			WhenClause_MissingThenExpression,
 			startPosition,
 			endPosition
 		);
@@ -6231,7 +6322,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.WhenClause_MissingThenIdentifier,
+			WhenClause_MissingThenIdentifier,
 			startPosition,
 			endPosition
 		);
@@ -6255,7 +6346,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.WhenClause_MissingWhenExpression,
+			WhenClause_MissingWhenExpression,
 			startPosition,
 			endPosition
 		);
@@ -6272,7 +6363,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.WhereClause_MissingConditionalExpression,
+			WhereClause_MissingConditionalExpression,
 			startPosition,
 			endPosition
 		);
@@ -6289,7 +6380,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.WhereClause_MissingConditionalExpression,
+			WhereClause_MissingConditionalExpression,
 			startPosition,
 			endPosition
 		);
@@ -6303,7 +6394,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testDoesNotHaveProblem(
 			problems,
-			JPQLQueryProblemMessages.WhereClause_InvalidConditionalExpression
+			WhereClause_InvalidConditionalExpression
 		);
 	}
 
@@ -6318,7 +6409,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.WhereClause_InvalidConditionalExpression,
+			WhereClause_InvalidConditionalExpression,
 			startPosition,
 			endPosition
 		);
@@ -6335,7 +6426,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasOnlyOneProblem(
 			problems,
-			JPQLQueryProblemMessages.WhereClause_InvalidConditionalExpression,
+			WhereClause_InvalidConditionalExpression,
 			startPosition,
 			endPosition
 		);

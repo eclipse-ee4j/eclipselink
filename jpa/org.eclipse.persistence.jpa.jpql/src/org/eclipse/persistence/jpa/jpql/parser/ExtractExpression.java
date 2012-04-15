@@ -18,11 +18,16 @@ import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.WordParser;
 
 /**
- * The <b>EXTRACT</b> function extracts a date part from a date/time value.
- * The part can be YEAR, MONTH, DAY, HOUR, MINUTE, SECOND.
- * Some databases may support other parts.
+ * The <b>EXTRACT</b> function extracts a date part from a date/time value. The part can be
+ * <code>YEAR</code>, <code>MONTH</code>, <code>DAY</code>, <code>HOUR</code>, <code>MINUTE</code>,
+ * <code>SECOND</code>. Some databases may support other parts.
  * <p>
- * <div nowrap><b>BNF:</b> <code>expression ::= EXTRACT(part FROM value)</code><p>
+ * <div nowrap><b>BNF:</b> <code>extract_expression ::= EXTRACT(date_part_literal [FROM] scalar_expression)</code>
+ * <p>
+ * date_part_literal ::= { MICROSECOND | SECOND | MINUTE | HOUR | DAY | WEEK | MONTH | QUARTER |
+ *                         YEAR | SECOND_MICROSECOND | MINUTE_MICROSECOND | MINUTE_SECOND |
+ *                         HOUR_MICROSECOND | HOUR_SECOND | HOUR_MINUTE | DAY_MICROSECOND |
+ *                         DAY_SECOND | DAY_MINUTE | DAY_HOUR | YEAR_MONTH, etc }
  * <p>
  *
  * @version 2.4
@@ -47,6 +52,11 @@ public final class ExtractExpression extends AbstractSingleEncapsulatedExpressio
 	private boolean hasSpaceAfterFrom;
 
 	/**
+	 * Determines whether a space was parsed after the date part.
+	 */
+	private boolean hasSpaceAfterPart;
+
+	/**
 	 * The part to extract from the date/time.
 	 */
 	private String part;
@@ -64,7 +74,7 @@ public final class ExtractExpression extends AbstractSingleEncapsulatedExpressio
 	 * {@inheritDoc}
 	 */
 	public void accept(ExpressionVisitor visitor) {
-		visitor.visit(this);
+		acceptUnknownVisitor(visitor);
 	}
 
 	/**
@@ -72,9 +82,11 @@ public final class ExtractExpression extends AbstractSingleEncapsulatedExpressio
 	 */
 	@Override
 	protected void addOrderedEncapsulatedExpressionTo(List<Expression> children) {
-                if (hasPart()) {
-                        children.add(buildStringExpression(part));
-                }
+
+		if (hasPart()) {
+			children.add(buildStringExpression(part));
+		}
+
 		// 'FROM'
 		if (hasFrom) {
 			children.add(buildStringExpression(FROM));
@@ -83,9 +95,9 @@ public final class ExtractExpression extends AbstractSingleEncapsulatedExpressio
 		if (hasSpaceAfterFrom) {
 			children.add(buildStringExpression(SPACE));
 		}
-                // Value
-                super.addOrderedEncapsulatedExpressionTo(children);
 
+		// Value
+		super.addOrderedEncapsulatedExpressionTo(children);
 	}
 
 	/**
@@ -108,18 +120,21 @@ public final class ExtractExpression extends AbstractSingleEncapsulatedExpressio
 	}
 
 	/**
+	 * Returns the date part that was parsed, it is used to extract a single part of a date/time,
+	 * such as year, month, day, your, etc.
+	 *
+	 * @return The part of the date/time to retrieve
+	 */
+	public String getPart() {
+		return part;
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(ExtractExpressionBNF.ID);
-	}
-
-	/**
-	 * Returns the part to extract.
-	 */
-	public String getPart() {
-		return part;
 	}
 
 	/**
@@ -140,6 +155,15 @@ public final class ExtractExpression extends AbstractSingleEncapsulatedExpressio
 	}
 
 	/**
+	 * Determines whether the date part literal was parsed or not.
+	 *
+	 * @return <code>true</code> if the date part literal was parsed; <code>false</code> otherwise
+	 */
+	public boolean hasPart() {
+		return ExpressionTools.stringIsNotEmpty(part);
+	}
+
+	/**
 	 * Determines whether a whitespace was found after <b>FROM</b>.
 	 *
 	 * @return <code>true</code> if there was a whitespace after <b>FROM</b>; <code>false</code> otherwise
@@ -149,41 +173,53 @@ public final class ExtractExpression extends AbstractSingleEncapsulatedExpressio
 	}
 
 	/**
-	 * Return if a part was parsed.
+	 * Determines whether a whitespace was found after the date part literal.
+	 *
+	 * @return <code>true</code> if there was a whitespace after the database part literal;
+	 * <code>false</code> otherwise
 	 */
-	public boolean hasPart() {
-		return part.length() > 0;
+	public boolean hasSpaceAfterPart() {
+		return hasSpaceAfterPart;
 	}
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        protected String parseIdentifier(WordParser wordParser) {
-                return EXTRACT;
-        }
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void parseEncapsulatedExpression(WordParser wordParser, boolean tolerant) {
-                // Parse the database type
-                part = wordParser.word();
-                wordParser.moveForward(part);
-                
-                wordParser.skipLeadingWhitespace();
-                
-                // Parse 'FROM'
-                hasFrom = wordParser.startsWithIdentifier(FROM);
+	protected void parseEncapsulatedExpression(WordParser wordParser,
+	                                           int whitespaceCount,
+	                                           boolean tolerant) {
 
-                if (hasFrom) {
-                        fromIdentifier = wordParser.moveForward(FROM);
-                        hasSpaceAfterFrom = wordParser.skipLeadingWhitespace() > 0;
-                }
+		// Parse the database type
+		part = wordParser.word();
 
-                // Parse the value
-                super.parseEncapsulatedExpression(wordParser, tolerant);
+		if (isParsingComplete(wordParser, part, null)) {
+			part = ExpressionTools.EMPTY_STRING;
+			hasSpaceAfterPart = whitespaceCount > 0;
+		}
+		else {
+			wordParser.moveForward(part);
+			hasSpaceAfterPart = wordParser.skipLeadingWhitespace() > 0;
+		}
+
+		// Parse 'FROM'
+		hasFrom = wordParser.startsWithIdentifier(FROM);
+
+		if (hasFrom) {
+			fromIdentifier = wordParser.moveForward(FROM);
+			hasSpaceAfterFrom = wordParser.skipLeadingWhitespace() > 0;
+		}
+
+		// Parse the value
+		super.parseEncapsulatedExpression(wordParser, whitespaceCount, tolerant);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected String parseIdentifier(WordParser wordParser) {
+		return EXTRACT;
 	}
 
 	/**
@@ -191,16 +227,24 @@ public final class ExtractExpression extends AbstractSingleEncapsulatedExpressio
 	 */
 	@Override
 	protected void toParsedTextEncapsulatedExpression(StringBuilder writer, boolean actual) {
-                if (hasPart()) {
-                        writer.append(part);
-                }
-                if (hasFrom()) {
-                        writer.append(fromIdentifier);
-                }
-                if (hasSpaceAfterFrom) {
-                        writer.append(SPACE);
-                }
-                // Value
-                super.toParsedTextEncapsulatedExpression(writer, actual);
+
+		// Database part
+		writer.append(part);
+
+		if (hasSpaceAfterPart) {
+			writer.append(SPACE);
+		}
+
+		// FROM
+		if (hasFrom) {
+			writer.append(actual ? fromIdentifier : FROM);
+		}
+
+		if (hasSpaceAfterFrom) {
+			writer.append(SPACE);
+		}
+
+		// Value
+		super.toParsedTextEncapsulatedExpression(writer, actual);
 	}
 }

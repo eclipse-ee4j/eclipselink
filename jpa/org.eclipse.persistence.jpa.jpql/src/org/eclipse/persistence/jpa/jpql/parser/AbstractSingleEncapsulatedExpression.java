@@ -112,7 +112,10 @@ public abstract class AbstractSingleEncapsulatedExpression extends AbstractEncap
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void parseEncapsulatedExpression(WordParser wordParser, boolean tolerant) {
+	protected void parseEncapsulatedExpression(WordParser wordParser,
+	                                           int whitespaceCount,
+	                                           boolean tolerant) {
+
 		expression = parse(wordParser, encapsulatedExpressionBNF(), tolerant);
 	}
 

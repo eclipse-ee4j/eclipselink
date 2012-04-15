@@ -303,7 +303,9 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void parseEncapsulatedExpression(WordParser wordParser, boolean tolerant) {
+	protected void parseEncapsulatedExpression(WordParser wordParser,
+	                                           int whitespaceCount,
+	                                           boolean tolerant) {
 
 		int count = 0;
 

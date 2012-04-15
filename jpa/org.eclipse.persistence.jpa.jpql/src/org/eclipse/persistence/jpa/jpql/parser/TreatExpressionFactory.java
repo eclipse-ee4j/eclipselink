@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -18,7 +18,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
 /**
  * This {@link TreatExpressionFactory} creates a new {@link TreatExpression} when the portion of the
  * query to parse starts with <b>TREAT</b>.
-
+ *
  * @see TreatExpression
  *
  * @version 2.4
@@ -52,6 +52,12 @@ public final class TreatExpressionFactory extends ExpressionFactory {
 
 		expression = new TreatExpression(parent);
 		expression.parse(wordParser, tolerant);
+
+		if (wordParser.character() == AbstractExpression.DOT) {
+			ExpressionFactory factory = getExpressionRegistry().getExpressionFactory(StateFieldPathExpressionFactory.ID);
+			expression = factory.buildExpression(parent, wordParser, wordParser.word(), queryBNF, expression, tolerant);
+		}
+
 		return expression;
 	}
 }

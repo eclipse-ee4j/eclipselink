@@ -18,7 +18,12 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
 /**
  * The <b>SQRT</b> function takes a numeric argument and returns a double.
  * <p>
- * <div nowrap><b>BNF:</b> <code>expression ::= SQRT(simple_arithmetic_expression)</code><p>
+ * JPA 1.0, 2.0:
+ * <div nowrap><b>BNF:</b> <code>expression ::= SQRT(simple_arithmetic_expression)</code>
+ * <p>
+ * JPA 2.1:
+ * <div nowrap><b>BNF:</b> <code>expression ::= SQRT(arithmetic_expression)</code>
+ * <p>
  *
  * @version 2.4
  * @since 2.3

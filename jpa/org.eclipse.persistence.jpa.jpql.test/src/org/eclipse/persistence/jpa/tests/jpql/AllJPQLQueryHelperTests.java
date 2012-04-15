@@ -19,8 +19,12 @@ import org.eclipse.persistence.jpa.jpql.DefaultJPQLQueryHelper;
 import org.eclipse.persistence.jpa.jpql.EclipseLinkJPQLQueryContext;
 import org.eclipse.persistence.jpa.jpql.EclipseLinkJPQLQueryHelper;
 import org.eclipse.persistence.jpa.jpql.JPQLQueryContext;
-import org.eclipse.persistence.jpa.jpql.parser.DefaultEclipseLinkJPQLGrammar;
-import org.eclipse.persistence.jpa.jpql.parser.DefaultJPQLGrammar;
+import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_1;
+import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_2;
+import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_3;
+import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_4;
+import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar2_0;
+import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar2_1;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;
 
@@ -31,6 +35,7 @@ import org.junit.runners.Suite.SuiteClasses;
  */
 @SuiteClasses({
 	AllJPQLQueryHelperTests.AllDefaultJPQLQueryHelperTests.class,
+	AllJPQLQueryHelperTests.AllDefaultJPQLQueryHelperTests2_1.class,
 	AllJPQLQueryHelperTests.AllEclipseLinkJPQLQueryHelperTests.class,
 //	ORMEntityJPQLQueryHelperTest.class,
 //	ORMJPQLQueryHelperTest.class
@@ -52,14 +57,51 @@ public final class AllJPQLQueryHelperTests {
 			super();
 		}
 
-		private static JPQLQueryContext buildJPQLQueryContext() {
-			return new DefaultJPQLQueryContext(DefaultJPQLGrammar.instance());
+		private static JPQLQueryContext buildEclipseLinkJPQLQueryContext2_4() {
+			return new EclipseLinkJPQLQueryContext(EclipseLinkJPQLGrammar2_4.instance());
+		}
+
+		private static JPQLQueryContext buildJPQLQueryContext2_0() {
+			return new DefaultJPQLQueryContext(JPQLGrammar2_0.instance());
+		}
+
+		private static JPQLQueryContext buildJPQLQueryContext2_1() {
+			return new DefaultJPQLQueryContext(JPQLGrammar2_1.instance());
 		}
 
 		@JPQLQueryHelperTestHelper
 		static AbstractJPQLQueryHelper[] buildJPQLQueryHelpers() {
 			return new AbstractJPQLQueryHelper[] {
-				new DefaultJPQLQueryHelper(buildJPQLQueryContext())
+				new DefaultJPQLQueryHelper(buildJPQLQueryContext2_0()),
+				new DefaultJPQLQueryHelper(buildJPQLQueryContext2_1()),
+				new EclipseLinkJPQLQueryHelper(buildEclipseLinkJPQLQueryContext2_4())
+			};
+		}
+	}
+
+	@SuiteClasses({
+		DefaultJPQLQueryHelperTest2_1.class,
+	})
+	@RunWith(JPQLTestRunner.class)
+	public static class AllDefaultJPQLQueryHelperTests2_1 {
+
+		private AllDefaultJPQLQueryHelperTests2_1() {
+			super();
+		}
+
+		private static JPQLQueryContext buildEclipseLinkJPQLQueryContext2_4() {
+			return new EclipseLinkJPQLQueryContext(EclipseLinkJPQLGrammar2_4.instance());
+		}
+
+		private static JPQLQueryContext buildJPQLQueryContext2_1() {
+			return new DefaultJPQLQueryContext(JPQLGrammar2_1.instance());
+		}
+
+		@JPQLQueryHelperTestHelper
+		static AbstractJPQLQueryHelper[] buildJPQLQueryHelpers() {
+			return new AbstractJPQLQueryHelper[] {
+				new DefaultJPQLQueryHelper(buildJPQLQueryContext2_1()),
+				new EclipseLinkJPQLQueryHelper(buildEclipseLinkJPQLQueryContext2_4())
 			};
 		}
 	}
@@ -74,14 +116,29 @@ public final class AllJPQLQueryHelperTests {
 			super();
 		}
 
-		private static JPQLQueryContext buildJPQLQueryContext() {
-			return new EclipseLinkJPQLQueryContext(DefaultEclipseLinkJPQLGrammar.instance());
+		private static JPQLQueryContext buildJPQLQueryContext2_1() {
+			return new EclipseLinkJPQLQueryContext(EclipseLinkJPQLGrammar2_1.instance());
+		}
+
+		private static JPQLQueryContext buildJPQLQueryContext2_2() {
+			return new EclipseLinkJPQLQueryContext(EclipseLinkJPQLGrammar2_2.instance());
+		}
+
+		private static JPQLQueryContext buildJPQLQueryContext2_3() {
+			return new EclipseLinkJPQLQueryContext(EclipseLinkJPQLGrammar2_3.instance());
+		}
+
+		private static JPQLQueryContext buildJPQLQueryContext2_4() {
+			return new EclipseLinkJPQLQueryContext(EclipseLinkJPQLGrammar2_4.instance());
 		}
 
 		@JPQLQueryHelperTestHelper
 		static AbstractJPQLQueryHelper[] buildJPQLQueryHelpers() {
 			return new AbstractJPQLQueryHelper[] {
-				new EclipseLinkJPQLQueryHelper(buildJPQLQueryContext())
+				new EclipseLinkJPQLQueryHelper(buildJPQLQueryContext2_1()),
+				new EclipseLinkJPQLQueryHelper(buildJPQLQueryContext2_2()),
+				new EclipseLinkJPQLQueryHelper(buildJPQLQueryContext2_3()),
+				new EclipseLinkJPQLQueryHelper(buildJPQLQueryContext2_4())
 			};
 		}
 	}

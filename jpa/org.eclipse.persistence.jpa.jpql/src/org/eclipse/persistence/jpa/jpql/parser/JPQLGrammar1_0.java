@@ -17,10 +17,10 @@ import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
 
 /**
- * This {@link JPQLGrammar JPQL grammar} provides support for parsing JPQL queries defined in
- * <a href="http://jcp.org/en/jsr/detail?id=220">JSR-220 - Enterprise JavaBeans 3.0</a>.
+ * This {@link JPQLGrammar} provides support for parsing JPQL queries defined in <a
+ * href="http://jcp.org/en/jsr/detail?id=220">JSR-220 - Enterprise JavaBeans 3.0</a>.
  * <p>
- * The following is the BNF for the Java Persistence query language, version 1.0.
+ * The following is the BNF for the JPQL query version 1.0.
  *
  * <pre><code> QL_statement ::= select_statement | update_statement | delete_statement
  *
@@ -148,6 +148,8 @@ import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
  *
  * like_expression ::= string_expression [NOT] LIKE pattern_value [ESCAPE escape_character]
  *
+ * escape_character ::= single_character_string_literal | character_valued_input_parameter
+ *
  * null_comparison_expression ::= {single_valued_path_expression | input_parameter} IS [NOT] NULL
  *
  * empty_collection_comparison_expression ::= collection_valued_path_expression IS [NOT] EMPTY
@@ -233,10 +235,6 @@ import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
  * enum_literal ::= {package_name.}*EnumType.CONSTANT
  *
  * literalTemporal ::= date_literal | TIME_LITERAL | TIMESTAMP_LITERAL
- *
- * integer_literal ::= [0-9]+
- *
- * float_literal ::= [0-9]+ '.' [0-9]* ('e' ('+' | '-')? [0-9]+)?
  *
  * input_parameter ::= (':' [a-zA-Z]+) | ('?' [0-9]+);  // TODO: TO COMPLETE
  *
@@ -357,7 +355,6 @@ public final class JPQLGrammar1_0 extends AbstractJPQLGrammar {
 		registerBNF(new InExpressionBNF());
 		registerBNF(new InExpressionExpressionBNF());
 		registerBNF(new InExpressionItemBNF());
-		registerBNF(new InItemBNF());
 		registerBNF(new InputParameterBNF());
 		registerBNF(new InternalAggregateFunctionBNF());
 		registerBNF(new InternalBetweenExpressionBNF());
@@ -372,7 +369,9 @@ public final class JPQLGrammar1_0 extends AbstractJPQLGrammar {
 		registerBNF(new InternalModExpressionBNF());
 		registerBNF(new InternalOrderByClauseBNF());
 		registerBNF(new InternalOrderByItemBNF());
+		registerBNF(new InternalSelectExpressionBNF());
 		registerBNF(new InternalSimpleFromClauseBNF());
+		registerBNF(new InternalSimpleSelectExpressionBNF());
 		registerBNF(new InternalSqrtExpressionBNF());
 		registerBNF(new InternalSubstringPositionExpressionBNF());
 		registerBNF(new InternalSubstringStringExpressionBNF());
@@ -393,10 +392,10 @@ public final class JPQLGrammar1_0 extends AbstractJPQLGrammar {
 		registerBNF(new OrderByItemBNF());
 		registerBNF(new PatternValueBNF());
 		registerBNF(new PreLiteralExpressionBNF());
+		registerBNF(new RangeDeclarationBNF());
 		registerBNF(new RangeVariableDeclarationBNF());
 		registerBNF(new ScalarExpressionBNF());
 		registerBNF(new SelectClauseBNF());
-		registerBNF(new SelectClauseInternalBNF());
 		registerBNF(new SelectExpressionBNF());
 		registerBNF(new SelectStatementBNF());
 		registerBNF(new SimpleArithmeticExpressionBNF());
@@ -473,6 +472,7 @@ public final class JPQLGrammar1_0 extends AbstractJPQLGrammar {
 		registerFactory(new OrderByItemFactory());
 		registerFactory(new OrExpressionFactory());
 		registerFactory(new PreLiteralExpressionFactory());
+		registerFactory(new RangeDeclarationFactory());
 		registerFactory(new RangeVariableDeclarationFactory());
 		registerFactory(new SelectClauseFactory());
 		registerFactory(new SelectStatementFactory());

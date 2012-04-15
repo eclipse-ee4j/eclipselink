@@ -16,20 +16,9 @@ package org.eclipse.persistence.jpa.jpql.parser;
 import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
 
 /**
- * This {@link JPQLGrammar} provides support for parsing JPQL queries defined in <a href="http://jcp.org/en/jsr/detail?id=317">JSR-337
- * - Java Persistence 2.0</a>. EclipseLink 2.0 extended support to some BNFs.
- * <p>
- * The following BNFs is the EclipseLink's extension over the standard JPQL BNF.
- *
- * <pre><code>orderby_item ::= state_field_path_expression | result_variable | scalar_expression [ ASC | DESC ]
- *
- * groupby_item ::= single_valued_path_expression | identification_variable | scalar_expression
- *
- * aggregate_expression ::= { AVG | MAX | MIN | SUM | COUNT } ([DISTINCT] scalar_expression)
- *
- * in_item ::= literal | single_valued_input_parameter | scalar_expression
- *
- * </code></pre>
+ * This {@link JPQLGrammar} provides support for parsing JPQL queries defined in <a
+ * href="http://jcp.org/en/jsr/detail?id=317">JSR-337 - Java Persistence 2.0</a>. EclipseLink 2.0
+ * does not add any additional support.
  *
  * @version 2.4
  * @since 2.4
@@ -53,6 +42,27 @@ public final class EclipseLinkJPQLGrammar2_0 extends AbstractJPQLGrammar {
 	 */
 	public EclipseLinkJPQLGrammar2_0() {
 		super();
+	}
+
+	/**
+	 * Creates a new <code>EclipseLinkJPQLGrammar2_0</code>.
+	 *
+	 * @param jpqlGrammar The {@link JPQLGrammar} to extend with the content of this one without
+	 * instantiating the base {@link JPQLGrammar}
+	 */
+	private EclipseLinkJPQLGrammar2_0(AbstractJPQLGrammar jpqlGrammar) {
+		super(jpqlGrammar);
+	}
+
+	/**
+	 * Extends the given {@link JPQLGrammar} with the information of this one without instantiating
+	 * the base {@link JPQLGrammar}.
+	 *
+	 * @param jpqlGrammar The {@link JPQLGrammar} to extend with the content of this one without
+	 * instantiating the base {@link JPQLGrammar}
+	 */
+	public static void extend(AbstractJPQLGrammar jpqlGrammar) {
+		new EclipseLinkJPQLGrammar2_0(jpqlGrammar);
 	}
 
 	/**
@@ -91,11 +101,10 @@ public final class EclipseLinkJPQLGrammar2_0 extends AbstractJPQLGrammar {
 	 */
 	@Override
 	protected void initializeBNFs() {
-		addChildBNF(InternalOrderByItemBNF.ID, ScalarExpressionBNF.ID);
-		addChildBNF(GroupByItemBNF.ID,         ScalarExpressionBNF.ID);
-		addChildBNF(InExpressionItemBNF.ID,    IdentificationVariableBNF.ID);
-		addChildBNF(InExpressionItemBNF.ID,    InputParameterBNF.ID);
-		addChildBNF(InItemBNF.ID,              ScalarExpressionBNF.ID);
+
+		// The expression left to IN can be an identification variable or input parameter
+		addChildBNF(InExpressionExpressionBNF.ID, IdentificationVariableBNF.ID);
+		addChildBNF(InExpressionExpressionBNF.ID, InputParameterBNF.ID);
 	}
 
 	/**

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -78,6 +78,24 @@ public abstract class AbstractPathExpression extends AbstractExpression {
 	 */
 	protected AbstractPathExpression(AbstractExpression parent, AbstractExpression expression) {
 		super(parent);
+		this.pathSize = -1;
+		this.identificationVariable = expression;
+		this.identificationVariable.setParent(this);
+	}
+
+	/**
+	 * Creates a new <code>AbstractPathExpression</code>.
+	 *
+	 * @param parent The parent of this expression
+	 * @param expression The identification variable that was already parsed, which means the
+	 * beginning of the parsing should start with a dot
+	 * @param paths The path expression that is following the identification variable
+	 */
+	public AbstractPathExpression(AbstractExpression parent,
+	                              AbstractExpression expression,
+	                              String paths) {
+
+		super(parent, paths);
 		this.pathSize = -1;
 		this.identificationVariable = expression;
 		this.identificationVariable.setParent(this);
@@ -242,23 +260,16 @@ public abstract class AbstractPathExpression extends AbstractExpression {
 	@Override
 	protected final void parse(WordParser wordParser, boolean tolerant) {
 
-		String word;
+		String word = getText();
 
-		// Parse the state field path expression after the identification variable
-		if (identificationVariable != null) {
-			word = wordParser.word();
-			setText(word);
+		if (!hasIdentificationVariable()) {
+			startsWithDot = word.startsWith(".");
 		}
-		else {
-			word = getText();
-		}
-
-		startsWithDot = word.startsWith(".");
 
 		// A null WordParser happens in a unique case
-		if (wordParser != null) {
+//		if (wordParser != null) {
 			wordParser.moveForward(word);
-		}
+//		}
 	}
 
 	/**

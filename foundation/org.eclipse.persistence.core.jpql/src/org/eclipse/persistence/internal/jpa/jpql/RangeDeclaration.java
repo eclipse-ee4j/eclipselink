@@ -42,6 +42,11 @@ final class RangeDeclaration extends AbstractRangeDeclaration {
 	private List<Join> joinFetches;
 
 	/**
+	 * If the "root" path is the fully qualified class name, then this will be set.
+	 */
+	public Class<?> type;
+
+	/**
 	 * Creates a new <code>RangeDeclaration</code>.
 	 *
 	 * @param queryContext The context used to query information about the application metadata and
@@ -132,6 +137,17 @@ final class RangeDeclaration extends AbstractRangeDeclaration {
 	}
 
 	/**
+	 * Determines whether the "root" path is either the abstract schema name (entity name) or the
+	 * abstract schema name.
+	 *
+	 * @return <code>true</code> if it is the fully qualified class name; <code>false</code> if it
+	 * is the entity name
+	 */
+	public boolean isFullyQualifiedClassName() {
+		return type != null;
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	public boolean isRange() {
@@ -143,6 +159,11 @@ final class RangeDeclaration extends AbstractRangeDeclaration {
 	 */
 	@Override
 	ClassDescriptor resolveDescriptor() {
+
+		if (type != null) {
+			return queryContext.getDescriptor(type);
+		}
+
 		return queryContext.getDescriptor(rootPath);
 	}
 

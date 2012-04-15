@@ -17,12 +17,13 @@ import org.junit.Test;
 
 @SuppressWarnings("nls")
 public final class NumericLiteralTest extends JPQLParserTest {
+
 	@Test
 	public void testBuildExpression_01() {
+
 		String query = "SELECT e FROM Employee e WHERE e.salary = 45000";
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("e")),
 			from("Employee", "e"),
 			where(path("e.salary").equal(numeric(45000)))
@@ -33,10 +34,10 @@ public final class NumericLiteralTest extends JPQLParserTest {
 
 	@Test
 	public void testBuildExpression_02() {
+
 		String query = "SELECT e FROM Employee e WHERE e.salary = 45000.45";
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("e")),
 			from("Employee", "e"),
 			where(path("e.salary").equal(numeric(45000.45)))
@@ -47,10 +48,10 @@ public final class NumericLiteralTest extends JPQLParserTest {
 
 	@Test
 	public void testBuildExpression_03() {
+
 		String query = "SELECT e FROM Employee e WHERE e.salary = 4E5";
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("e")),
 			from("Employee", "e"),
 			where(path("e.salary").equal(numeric("4E5")))
@@ -61,10 +62,10 @@ public final class NumericLiteralTest extends JPQLParserTest {
 
 	@Test
 	public void testBuildExpression_04() {
+
 		String query = "SELECT e FROM Employee e WHERE e.salary = +123";
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("e")),
 			from("Employee", "e"),
 			where(path("e.salary").equal(numeric("+123")))
@@ -75,10 +76,10 @@ public final class NumericLiteralTest extends JPQLParserTest {
 
 	@Test
 	public void testBuildExpression_05() {
+
 		String query = "SELECT e FROM Employee e WHERE e.salary = -8.932E5";
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("e")),
 			from("Employee", "e"),
 			where(path("e.salary").equal(numeric("-8.932E5")))
@@ -89,10 +90,10 @@ public final class NumericLiteralTest extends JPQLParserTest {
 
 	@Test
 	public void testBuildExpression_06() {
+
 		String query = "SELECT e FROM Employee e WHERE e.salary = 0.123e-1";
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("e")),
 			from("Employee", "e"),
 			where(path("e.salary").equal(numeric("0.123e-1")))
@@ -103,10 +104,10 @@ public final class NumericLiteralTest extends JPQLParserTest {
 
 	@Test
 	public void testBuildExpression_07() {
+
 		String query = "SELECT e FROM Employee e WHERE e.salary = 5.3f";
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("e")),
 			from("Employee", "e"),
 			where(path("e.salary").equal(numeric("5.3f")))
@@ -117,10 +118,10 @@ public final class NumericLiteralTest extends JPQLParserTest {
 
 	@Test
 	public void testBuildExpression_08() {
+
 		String query = "SELECT e FROM Employee e WHERE e.salary = 5.3F";
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("e")),
 			from("Employee", "e"),
 			where(path("e.salary").equal(numeric("5.3F")))
@@ -131,10 +132,10 @@ public final class NumericLiteralTest extends JPQLParserTest {
 
 	@Test
 	public void testBuildExpression_09() {
+
 		String query = "SELECT e FROM Employee e WHERE e.salary = 5L";
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("e")),
 			from("Employee", "e"),
 			where(path("e.salary").equal(numeric("5L")))
@@ -145,10 +146,10 @@ public final class NumericLiteralTest extends JPQLParserTest {
 
 	@Test
 	public void testBuildExpression_10() {
+
 		String query = "SELECT e FROM Employee e WHERE e.salary = 5.3d";
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("e")),
 			from("Employee", "e"),
 			where(path("e.salary").equal(numeric("5.3d")))
@@ -159,13 +160,60 @@ public final class NumericLiteralTest extends JPQLParserTest {
 
 	@Test
 	public void testBuildExpression_11() {
+
 		String query = "SELECT e FROM Employee e WHERE e.salary = 5.3D";
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("e")),
 			from("Employee", "e"),
 			where(path("e.salary").equal(numeric("5.3D")))
+		);
+
+		testQuery(query, selectStatement);
+	}
+
+	@Test
+	public void testBuildExpression_14() {
+
+		String query = "SELECT e FROM Employee e WHERE e.salary = 0xFF";
+
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(path("e.salary").equal(numeric("0xFF")))
+		);
+
+		testQuery(query, selectStatement);
+	}
+
+	@Test
+	public void testBuildExpression_15() {
+
+		String query = "SELECT e FROM Employee e WHERE e.salary = .2F";
+
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(path("e.salary").equal(numeric(".2F")))
+		);
+
+		testQuery(query, selectStatement);
+	}
+
+	@Test
+	public void testBuildExpression_16() {
+
+		String query = "SELECT e FROM Employee e WHERE e.salary = 2.2e-2d AND e.name = 'JPQL'";
+
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(
+					path("e.salary").equal(numeric("2.2e-2d"))
+				.and(
+					path("e.name").equal(string("'JPQL'"))
+				)
+			)
 		);
 
 		testQuery(query, selectStatement);

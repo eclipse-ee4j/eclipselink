@@ -33,7 +33,7 @@ import org.junit.runners.Suite.SuiteClasses;
  * @author Pascal Filion
  */
 @SuiteClasses({
-	EclipseLinkStateObjectTest2_1.class
+	EclipseLinkStateObjectTest2_4.class
 })
 @RunWith(JPQLTestRunner.class)
 public final class AllEclipseLinkStateObjectTest2_1 {

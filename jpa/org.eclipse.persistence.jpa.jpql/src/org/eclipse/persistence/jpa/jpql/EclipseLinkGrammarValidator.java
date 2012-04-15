@@ -13,8 +13,11 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql;
 
+import org.eclipse.persistence.jpa.jpql.parser.CastExpression;
+import org.eclipse.persistence.jpa.jpql.parser.DatabaseType;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_4;
+import org.eclipse.persistence.jpa.jpql.parser.ExtractExpression;
 import org.eclipse.persistence.jpa.jpql.parser.InputParameter;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 
@@ -85,5 +88,23 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
 	@Override
 	protected boolean isSubqueryAllowedAnywhere() {
 		return getProviderVersion() == EclipseLinkJPQLGrammar2_4.VERSION;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(CastExpression expression) {
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(DatabaseType expression) {
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(ExtractExpression expression) {
 	}
 }

@@ -16,8 +16,8 @@ package org.eclipse.persistence.jpa.jpql.parser;
 import org.eclipse.persistence.jpa.jpql.WordParser;
 
 /**
- * This {@link ExtractExpressionFactory} creates a new {@link ExtractExpression} when the portion of the
- * query to parse starts with <b>EXTRACT</b>.
+ * This {@link ExtractExpressionFactory} creates a new {@link ExtractExpression} when the portion of
+ * the query to parse starts with <b>EXTRACT</b>.
  *
  * @see CastExpression
  *

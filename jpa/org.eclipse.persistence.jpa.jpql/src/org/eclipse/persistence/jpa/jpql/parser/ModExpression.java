@@ -20,7 +20,12 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <p>
  * It takes two integer arguments and returns an integer.
  * <p>
- * <div nowrap><b>BNF:</b> <code>expression ::= MOD(simple_arithmetic_expression, simple_arithmetic_expression)</code><p>
+ * JPA 1.0, 2.0:
+ * <div nowrap><b>BNF:</b> <code>expression ::= MOD(simple_arithmetic_expression, simple_arithmetic_expression)</code>
+ * <p>
+ * JPA 2.1:
+ * <div nowrap><b>BNF:</b> <code>expression ::= MOD(arithmetic_expression, arithmetic_expression)</code>
+ * <p>
  *
  * @version 2.4
  * @since 2.3

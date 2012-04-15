@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -13,10 +13,17 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.tests.jpql;
 
+/**
+ * This class provides a list of queries that are written against the JPQL 1.0 grammar.
+ *
+ * @version 2.4
+ * @since 2.4
+ * @author Pascal Filion
+ */
 @SuppressWarnings("nls")
-public final class JPQLQueries {
+public final class JPQLQueries1_0 {
 
-	private JPQLQueries() {
+	private JPQLQueries1_0() {
 		super();
 	}
 
@@ -874,9 +881,10 @@ public final class JPQLQueries {
 	}
 
 	public static String query_139() {
-		return "SELECT p " +
-		       "FROM Employee e JOIN e.projects p " +
-		       "WHERE e.id = :id AND INDEX(p) = 1";
+		return "SELECT o " +
+		        "FROM Customer c JOIN c.orders o JOIN c.address a " +
+		        "WHERE a.state = 'CA' " +
+		        "ORDER BY o.quantity DESC, o.totalcost";
 	}
 
 	public static String query_140() {
@@ -1282,118 +1290,19 @@ public final class JPQLQueries {
 	}
 
 	public static String query_205() {
-		return "UPDATE Employee e " +
-		       "SET e.salary = " +
-		       "    CASE WHEN e.rating = 1 THEN e.salary * 1.1 " +
-		       "         WHEN e.rating = 2 THEN e.salary * 1.05 " +
-		       "         ELSE e.salary * 1.01" +
-		       "    END";
-	}
-
-	public static String query_206() {
-		return "SELECT e.name, " +
-		       "       CASE TYPE(e) WHEN Exempt THEN 'Exempt' " +
-		       "                    WHEN Contractor THEN 'Contractor' " +
-		       "                    WHEN Intern THEN 'Intern' " +
-		       "                    ELSE 'NonExempt' " +
-		       "       END " +
-		       "FROM Employee e, Contractor c " +
-		       "WHERE e.dept.name = 'Engineering'";
-	}
-
-	public static String query_207() {
-		return "SELECT e.name, " +
-		       "       f.name, " +
-		       "       CONCAT(CASE WHEN f.annualMiles > 50000 THEN 'Platinum '" +
-		       "                   WHEN f.annualMiles > 25000 THEN 'Gold ' " +
-		       "                   ELSE '' " +
-		       "              END, " +
-		       "              'Frequent Flyer') " +
-		       "FROM Employee e JOIN e.frequentFlierPlan f";
-	}
-
-	public static String query_208() {
-		return "SELECT e " +
-		       "FROM Employee e " +
-		       "WHERE TYPE(e) IN (Exempt, Contractor)";
-	}
-
-	public static String query_209() {
-		return "SELECT e " +
-		       "FROM Employee e " +
-		       "WHERE TYPE(e) IN (:empType1, :empType2)";
-	}
-
-	public static String query_210() {
-		return "SELECT e " +
-		       "FROM Employee e " +
-		       "WHERE TYPE(e) IN :empTypes";
-	}
-
-	public static String query_211() {
-		return "SELECT TYPE(employee) " +
-		       "FROM Employee employee " +
-		       "WHERE TYPE(employee) <> Exempt";
-	}
-
-	public static String query_212() {
-		return "SELECT t " +
-		       "FROM CreditCard c JOIN c.transactionHistory t " +
-		       "WHERE c.holder.name = 'John Doe' AND INDEX(t) BETWEEN 0 AND 9";
-	}
-
-	public static String query_213() {
-		return "SELECT w.name " +
-		       "FROM Course c JOIN c.studentWaitlist w " +
-		       "WHERE c.name = 'Calculus' " +
-		       "      AND " +
-		       "      INDEX(w) = 0";
-	}
-
-	public static String query_214() {
-		return "UPDATE Employee e " +
-		       "SET e.salary = CASE e.rating WHEN 1 THEN e.salary * 1.1 " +
-		       "                             WHEN 2 THEN e.salary * 1.05 " +
-		       "                             ELSE e.salary * 1.01 " +
-		       "               END";
-	}
-
-	public static String query_215() {
-		return "SELECT o " +
-		        "FROM Customer c JOIN c.orders o JOIN c.address a " +
-		        "WHERE a.state = 'CA' " +
-		        "ORDER BY o.quantity DESC, o.totalcost";
-	}
-
-	public static String query_216() {
 		return "SELECT o.quantity, a.zipcode " +
 		       "FROM Customer c JOIN c.orders o JOIN c.address a " +
 		       "WHERE a.state = 'CA' " +
 		       "ORDER BY o.quantity, a.zipcode";
 	}
 
-	public static String query_217() {
-		return "SELECT o.quantity, o.cost*1.08 AS taxedCost, a.zipcode " +
-		       "FROM Customer c JOIN c.orders o JOIN c.address a " +
-		       "WHERE a.state = 'CA' AND a.county = 'Santa Clara' " +
-		       "ORDER BY o.quantity, taxedCost, a.zipcode";
-	}
-
-	public static String query_218() {
-		return "SELECT AVG(o.quantity) as q, a.zipcode " +
-		       "FROM Customer c JOIN c.orders o JOIN c.address a " +
-		       "WHERE a.state = 'CA' " +
-		       "GROUP BY a.zipcode " +
-		       "ORDER BY q DESC";
-	}
-
-	public static String query_219() {
+	public static String query_206() {
 		return "DELETE " +
 		       "FROM Customer c " +
 		       "WHERE c.status = 'inactive'";
 	}
 
-	public static String query_220() {
+	public static String query_207() {
 		return "DELETE " +
 		       "FROM Customer c " +
 		       "WHERE c.status = 'inactive' " +
@@ -1401,49 +1310,13 @@ public final class JPQLQueries {
 		       "      c.orders IS EMPTY";
 	}
 
-	public static String query_221() {
+	public static String query_208() {
 		return "UPDATE customer c " +
 		       "SET c.status = 'outstanding' " +
 		       "WHERE c.balance < 10000";
 	}
 
-	public static String query_222() {
-		return "SELECT e.salary / 1000D n " +
-		       "From Employee e";
-	}
-
-	public static String query_223() {
-		return "SELECT MOD(a.id, 2) AS m " +
-		       "FROM Address a JOIN FETCH a.customerList " +
-		       "ORDER BY m, a.zipcode";
-	}
-
-	public static String query_224() {
-		return "SELECT FUNC('NVL', e.firstName, 'NoFirstName'), " +
-		       "       func('NVL', e.lastName, 'NoLastName')    " +
-		       "FROM Employee e";
-	}
-
-	public static String query_225() {
-		return "SELECT a " +
-		       "FROM Asset a, Geography selectedGeography " +
-		       "WHERE selectedGeography.id = :id AND " +
-		       "      a.id IN (:id_list) AND " +
-		       "      FUNC('ST_Intersects', a.geometry, selectedGeography.geometry) = 'TRUE'";
-	}
-
-	public static String query_226() {
-		return "Select e " +
-		       "From Employee e Join TREAT(e.projects AS LargeProject) lp " +
-		       "Where lp.budget = :value";
-	}
-
-	public static String query_227() {
-		return "Select e " +
-		       "From Employee e Join TREAT(e.projects LargeProject) lp";
-	}
-
-	public static String query_228() {
+	public static String query_209() {
 		return "Select e " +
 		       "from Employee e join e.phoneNumbers p " +
 		       "where     e.firstName = 'Bob' " +
@@ -1452,19 +1325,19 @@ public final class JPQLQueries {
 		       "      and p.areaCode <> '2'";
 	}
 
-	public static String query_229() {
+	public static String query_210() {
 		return "Select e " +
 		       "From Employee e " +
 		       "Where Exists(Select a From e.address a Where a.zipCode = 27519)";
 	}
 
-	public static String query_230() {
+	public static String query_211() {
 		return "Select e " +
 		       "From Employee e " +
 		       "Where Exists(Select e.name From In e.phoneNumbers Where e.zipCode = 27519)";
 	}
 
-	public static String query_231() {
+	public static String query_212() {
 		return "UPDATE Employee e SET e.salary = e.salary*(1+(:percent/100)) " +
 		       "WHERE EXISTS (SELECT p " +
 		       "              FROM e.projects p " +

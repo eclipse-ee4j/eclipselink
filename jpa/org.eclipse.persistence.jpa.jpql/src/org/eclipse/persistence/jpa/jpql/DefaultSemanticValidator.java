@@ -471,15 +471,22 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void validateBetweenRangeExpression(BetweenExpression expression) {
+	protected int validateBetweenExpression(BetweenExpression expression) {
 
-		super.validateBetweenRangeExpression(expression);
+		int result = super.validateBetweenExpression(expression);
 
-		if (!isEquivalentBetweenType(expression.getExpression(), expression.getLowerBoundExpression()) ||
+		// Only add extra validation if the lower and upper expressions are still valid
+		if (isValid(result, 1) &&
+		    isValid(result, 2) &&
+		    !isEquivalentBetweenType(expression.getExpression(), expression.getLowerBoundExpression()) ||
 		    !isEquivalentBetweenType(expression.getExpression(), expression.getUpperBoundExpression())) {
 
 			addProblem(expression, BetweenExpression_WrongType);
+			updateStatus(result, 1, false);
+			updateStatus(result, 2, false);
 		}
+
+		return result;
 	}
 
 	/**
@@ -529,15 +536,12 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected int validateComparisonExpression(ComparisonExpression expression) {
+	protected boolean validateComparisonExpression(ComparisonExpression expression) {
 
-		int result = super.validateComparisonExpression(expression);
+		boolean valid = super.validateComparisonExpression(expression);
 
 		// Only validate the left and right if they are still valid
-		if (expression.hasLeftExpression()  &&
-		    expression.hasRightExpression() &&
-		    isValid(result, 0) &&
-		    isValid(result, 1)) {
+		if (valid && expression.hasLeftExpression() && expression.hasRightExpression()) {
 
 			// The result of the two expressions must be like that of the other argument
 			// Comparisons over instances of embeddable class or map entry types are not supported
@@ -545,12 +549,11 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
 			                                expression.getRightExpression())) {
 
 				addProblem(expression, ComparisonExpression_WrongComparisonType);
-				updateStatus(result, 0, false);
-				updateStatus(result, 1, false);
+				valid = false;
 			}
 		}
 
-		return result;
+		return valid;
 	}
 
 	/**

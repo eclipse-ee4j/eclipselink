@@ -26,11 +26,18 @@ import org.eclipse.persistence.jpa.jpql.util.filter.NullFilter;
 
 /**
  * This defines a single Backus-Naur Form (BNF) of the JPQL grammar. The Java Persistence functional
- * specification has two versions released to date:
+ * specification are:
  * <p>
  * {@link JPQLGrammar1_0}: <a href="http://jcp.org/en/jsr/detail?id=220">JSR 220: Enterprise JavaBeans&trade; version 3.0</a>
  * <br>
  * {@link JPQLGrammar2_0}: <a href="http://jcp.org/en/jsr/detail?id=317">JSR 317: Java&trade; Persistence 2.0</a>
+ * <p>
+ * {@link JPQLGrammar2_1}: <a href="http://jcp.org/en/jsr/detail?id=338">JSR 338: Java&trade; Persistence 2.1</a>
+ * <p>
+ * Provisional API: This interface is part of an interim API that is still under development and
+ * expected to change significantly before reaching stability. It is available at this early stage
+ * to solicit feedback from pioneering adopters on the understanding that any code that uses this
+ * API will almost certainly be broken (repeatedly) as the API evolves.
  *
  * @version 2.4
  * @since 2.3
@@ -104,6 +111,13 @@ public abstract class JPQLQueryBNF {
 	 * Caches the property since any BNF rule is static.
 	 */
 	private Boolean handleCollection;
+
+	/**
+	 * This flag can be used to determine if this BNF handles parsing a sub-expression, i.e. an
+	 * expression encapsulated by parenthesis. See {@link #setHandleSubExpression(boolean)} for more
+	 * details.
+	 */
+	private boolean handleSubExpression;
 
 	/**
 	 * The unique identifier of this BNF rule.
@@ -355,6 +369,17 @@ public abstract class JPQLQueryBNF {
 	}
 
 	/**
+	 * Determines whether this BNF handles parsing a sub-expression, i.e. parsing an expression
+	 * encapsulated by parenthesis. See {@link #setHandleSubExpression(boolean)} for more details.
+	 *
+	 * @return <code>true</code> if this BNF handles parsing a sub-expression; <code>false</code>
+	 * otherwise
+	 */
+	public boolean handlesSubExpression() {
+		return handleSubExpression;
+	}
+
+	/**
 	 * Determines if this query BNF support the given word, which can be an identifier.
 	 *
 	 * @param word A word that could be a JPQL identifier or anything else
@@ -491,6 +516,8 @@ public abstract class JPQLQueryBNF {
 	 * registered {@link ExpressionFactory expression factories} cannot parse it.
 	 * <p>
 	 * Note: This method is only called if {@link #getFallbackBNFId()} does not return <code>null</code>.
+	 *
+	 * @param fallbackExpressionFactoryId The unique identifier of the {@link ExpressionFactory}
 	 */
 	public void setFallbackExpressionFactoryId(String fallbackExpressionFactoryId) {
 		this.fallbackExpressionFactoryId = fallbackExpressionFactoryId;
@@ -516,6 +543,51 @@ public abstract class JPQLQueryBNF {
 	 */
 	public void setHandleCollection(boolean handleCollection) {
 		this.handleCollection = handleCollection;
+	}
+
+	/**
+	 * Sets whether this BNF handles parsing a sub-expression, i.e. parsing an expression
+	 * encapsulated by parenthesis. Which in fact would be handled by the fallback {@link
+	 * ExpressionFactory}. The default behavior is to not handle it.
+	 * <p>
+	 * A good example for using this option is when an {@link Expression} cannot use any {@link
+	 * ExpressionFactory} for creating a child object, parsing will use the fallback {@link
+	 * ExpressionFactory}, if one was specified. So when this is set to <code>true</code>, the
+	 * fallback {@link ExpressionFactory} will be immediately invoked.
+	 * <p>
+	 * Let's say we want to parse "SELECT e FROM (SELECT a FROM Address a) e", {@link FromClause}
+	 * cannot use a factory for parsing the entity name (that's what usually the <code>FROM</code>
+	 * clause has) so it uses the fallback factory to create {@link IdentificationVariableDeclaration}.
+	 * Then <code>IdentificationVariableDeclaration</code> also cannot use any factory to create its
+	 * child object so it uses the fallback factory to create {@link RangeVariableDeclaration}.
+	 * By changing the status of for handling the sub-expression for the BNFs for those objects, then
+	 * a subquery can be created by <code>RangeVariableDeclaration</code>.
+	 *
+	 * <pre><code>FromClause
+	 *  |- IdentificationVariableDeclaration
+	 *       |- RangeVariableDeclaration
+	 *            |- SubExpression(subquery)</code></pre>
+	 *
+	 * In order to get this working, the following would have to be done into the grammar:
+	 *
+	 * <pre><code> public class MyJPQLGrammar extends AbstractJPQLGrammar {
+	 *   &#64;Override
+	 *   protected void initializeBNFs() {
+	 *      setHandleSubExpression(InternalFromClauseBNF.ID,                true);
+	 *      setHandleSubExpression(InternalSimpleFromClauseBNF.ID,          true);
+	 *      setHandleSubExpression(IdentificationVariableDeclarationBNF.ID, true);
+	 *      setHandleSubExpression(RangeVariableDeclarationBNF.ID,          true);
+	 *   }
+	 * }</code></pre>
+	 *
+	 * @param handleSubExpression <code>true</code> to let the creation of a sub-expression be
+	 * created by the fallback {@link ExpressionFactory} registered with this BNF; <code>false</code>
+	 * otherwise (which is the default value)
+	 * @return <code>true</code> if the fallback {@link ExpressionFactory} registered with this BNF
+	 * handles parsing a sub-expression; <code>false</code> otherwise
+	 */
+	public void setHandleSubExpression(boolean handleSubExpression) {
+		this.handleSubExpression = handleSubExpression;
 	}
 
 	/**

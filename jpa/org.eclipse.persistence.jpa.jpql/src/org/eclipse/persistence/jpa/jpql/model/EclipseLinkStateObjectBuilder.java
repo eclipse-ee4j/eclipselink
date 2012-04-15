@@ -15,7 +15,10 @@ package org.eclipse.persistence.jpa.jpql.model;
 
 import org.eclipse.persistence.jpa.jpql.EclipseLinkLiteralVisitor;
 import org.eclipse.persistence.jpa.jpql.LiteralVisitor;
+import org.eclipse.persistence.jpa.jpql.parser.CastExpression;
+import org.eclipse.persistence.jpa.jpql.parser.DatabaseType;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkExpressionVisitor;
+import org.eclipse.persistence.jpa.jpql.parser.ExtractExpression;
 
 /**
  * The default implementation of {@link BasicStateObjectBuilder}, which provides support based on
@@ -47,5 +50,23 @@ public class EclipseLinkStateObjectBuilder extends BasicStateObjectBuilder
 	@Override
 	protected LiteralVisitor buildLiteralVisitor() {
 		return new EclipseLinkLiteralVisitor();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(CastExpression expression) {
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(DatabaseType expression) {
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(ExtractExpression expression) {
 	}
 }

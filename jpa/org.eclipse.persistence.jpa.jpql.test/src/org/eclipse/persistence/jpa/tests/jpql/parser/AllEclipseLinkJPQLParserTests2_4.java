@@ -28,7 +28,16 @@ import org.junit.runners.Suite.SuiteClasses;
  * @author Pascal Filion
  */
 @SuiteClasses({
-	EclipseLinkJPQLParserTests2_4.class
+
+	EclipseLinkJPQLParserTests2_4.class,
+
+	CastExpressionTest.class,
+	ExtractExpressionTest.class,
+	ColumnExpressionTest.class,
+	FunctionExpressionTest.class,
+	OperatorExpressionTest.class,
+	SQLExpressionTest.class,
+	OrderByItemTest.class
 })
 @RunWith(JPQLTestRunner.class)
 public final class AllEclipseLinkJPQLParserTests2_4 {

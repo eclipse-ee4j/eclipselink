@@ -13,8 +13,15 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql;
 
+import org.eclipse.persistence.jpa.jpql.parser.CastExpression;
+import org.eclipse.persistence.jpa.jpql.parser.DatabaseType;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_4;
+import org.eclipse.persistence.jpa.jpql.parser.ExtractExpression;
+import org.eclipse.persistence.jpa.jpql.parser.OrderByItem;
+import org.eclipse.persistence.jpa.jpql.parser.OrderByItem.Ordering;
+
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
 /**
  * This extension over the default content assist visitor adds the additional support EclipseLink
@@ -48,5 +55,75 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 	@Override
 	protected boolean isJoinFetchIdentifiable() {
 		return getGrammar().getProviderVersion() == EclipseLinkJPQLGrammar2_4.VERSION;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(CastExpression expression) {
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(DatabaseType expression) {
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(ExtractExpression expression) {
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void visit(OrderByItem expression) {
+		super.visit(expression);
+		int position = getPosition(expression) - corrections.peek();
+
+		// After the order by item
+		if (expression.hasExpression()) {
+			int length = length(expression.getExpression());
+
+			if (expression.hasSpaceAfterExpression()) {
+				length++;
+
+				// Right after the order by item
+				if (position == length) {
+
+					// Only add "NULLS FIRST" and "NULLS LAST" if the ordering is not specified
+					if (expression.getOrdering() == Ordering.DEFAULT) {
+						proposals.addIdentifier(NULLS_FIRST);
+						proposals.addIdentifier(NULLS_LAST);
+					}
+				}
+				else {
+					length += expression.getActualOrdering().length();
+
+					if (position > length) {
+						if (expression.hasSpaceAfterOrdering()) {
+							length++;
+
+							// Right before "NULLS FIRST" or "NULLS LAST"
+							if (position == length) {
+								proposals.addIdentifier(NULLS_FIRST);
+								proposals.addIdentifier(NULLS_LAST);
+							}
+							else {
+								String nullOrdering = expression.getActualNullOrdering();
+
+								// Within "NULLS FIRST" or "NULLS LAST"
+								if (isPositionWithin(position, length, nullOrdering)) {
+									proposals.addIdentifier(NULLS_FIRST);
+									proposals.addIdentifier(NULLS_LAST);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 }

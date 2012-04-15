@@ -13,7 +13,9 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
-import org.junit.runners.Suite.SuiteClasses;
+import org.junit.Test;
+
+import static org.eclipse.persistence.jpa.tests.jpql.EclipseLinkJPQLQueries2_4.*;
 
 /**
  * This test suite contains a series of unit-tests that test parsing JPQL queries that follows the
@@ -23,15 +25,112 @@ import org.junit.runners.Suite.SuiteClasses;
  * @since 2.4
  * @author Pascal Filion
  */
-@SuiteClasses({
-	ColumnExpressionTest.class,
-	FunctionExpressionTest.class,
-	OperatorExpressionTest.class,
-	SQLExpressionTest.class
-})
-public final class EclipseLinkJPQLParserTests2_4 {
+@SuppressWarnings("nls")
+public final class EclipseLinkJPQLParserTests2_4 extends JPQLParserTest {
 
-	private EclipseLinkJPQLParserTests2_4() {
-		super();
+	@Test
+	public void test_Query_009() {
+
+		// Select e, e2 from Employee e left join Employee e2 on e.address = e2.address
+
+		SelectStatementTester selectStatement = selectStatement(
+			select(variable("e"), variable("e2")),
+			from("Employee", "e",
+				leftJoin(
+					abstractSchemaName("Employee"),
+					variable("e2"),
+					on(path("e.address").equal(path("e2.address")))
+				)
+			)
+		);
+
+		testQuery(query_009(), selectStatement);
+	}
+
+	@Test
+	public void test_Query_010() {
+
+		// Select avg(sal.salary)
+      // from ( Select max(e.salary) salary, e.address.city city
+      //        from Employee e
+      //        group by e.address.city )
+      //      sal
+
+		SelectStatementTester selectStatement = selectStatement(
+			select(avg("sal.salary")),
+			from(
+				identificationVariableDeclaration(
+					rangeVariableDeclaration(
+						sub(
+							subSelectStatement(
+								subSelect(
+									resultVariable(max("e.salary"), "salary"),
+									resultVariable(path("e.address.city"), "city")
+								),
+								subFrom("Employee", "e"),
+								groupBy(path("e.address.city"))
+							)
+						),
+						variable("sal")
+					)
+				)
+			)
+		);
+
+		testQuery(query_010(), selectStatement);
+	}
+
+	@Test
+	public void test_Query_011() {
+
+		// Select addr
+      // from (Select e from Employee e) a JOIN a.address addr
+
+		SelectStatementTester selectStatement = selectStatement(
+			select(variable("addr")),
+			from(
+				identificationVariableDeclaration(
+					rangeVariableDeclaration(
+						sub(
+							subSelectStatement(
+								subSelect(variable("e")),
+								subFrom("Employee", "e")
+							)
+						),
+						variable("a")
+					),
+					join("a.address", "addr")
+				)
+			)
+		);
+
+		testQuery(query_011(), selectStatement);
+	}
+
+	@Test
+	public void test_Query_012() {
+
+		// Select addr
+      // from (Select e from Employee e) as a JOIN a.address addr
+
+		SelectStatementTester selectStatement = selectStatement(
+			select(variable("addr")),
+			from(
+				identificationVariableDeclaration(
+					rangeVariableDeclarationAs(
+						sub(
+							subSelectStatement(
+								subSelect(variable("e")),
+								subFrom("Employee", "e")
+							)
+						),
+						variable("a")
+					),
+					join("a.address", "addr")
+				)
+			)
+		);
+
+		testQuery(query_012(), selectStatement);
 	}
 }

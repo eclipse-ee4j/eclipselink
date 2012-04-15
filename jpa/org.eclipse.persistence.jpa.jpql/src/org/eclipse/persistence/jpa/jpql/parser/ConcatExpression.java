@@ -19,9 +19,13 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * The <b>CONCAT</b> function returns a string that is a concatenation of its arguments.
  * <p>
  * JPA 1.0:
- * <div nowrap><b>BNF:</b> <code>expression ::= CONCAT(string_primary, string_primary)</code><p>
- * JPA 2.0
- * <div nowrap><b>BNF:</b> <code>expression ::= CONCAT(string_primary, string_primary {, string_primary}*)</code><p>
+ * <div nowrap><b>BNF:</b> <code>expression ::= CONCAT(string_primary, string_primary)</code>
+ * <p>
+ * JPA 2.0:
+ * <div nowrap><b>BNF:</b> <code>expression ::= CONCAT(string_primary, string_primary {, string_primary}*)</code>
+ * <p>
+ * JPA 2.1:
+ * <div nowrap><b>BNF:</b> <code>expression ::= CONCAT(string_expression, string_expression {, string_expression}*)</code>
  * <p>
  * <div nowrap>Example: <b>SELECT</b> c.firstName <b>FROM</b> Customer c <b>HAVING</b> c.firstName = <b>CONCAT</b>(:fname, :lname)</p>
  *

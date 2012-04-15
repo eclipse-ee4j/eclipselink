@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Oracle. All rights reserved.
+ * Copyright (c) 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -19,17 +19,17 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-public final class SelectClauseInternalBNF extends JPQLQueryBNF {
+public final class RangeDeclarationBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
-	public static final String ID = "select_clause_select_expression";
+	public static final String ID = "range_declaration";
 
 	/**
-	 * Creates a new <code>SelectClauseInternalBNF</code>.
+	 * Creates a new <code>RangeDeclarationBNF</code>.
 	 */
-	public SelectClauseInternalBNF() {
+	public RangeDeclarationBNF() {
 		super(ID);
 	}
 
@@ -39,13 +39,7 @@ public final class SelectClauseInternalBNF extends JPQLQueryBNF {
 	@Override
 	protected void initialize() {
 		super.initialize();
-
-		// Technically, this BNF does not support collection but it's parent
-		// select_clause does. But this BNF is used by SelectClause directly
-		// to parse the query so the flag has to be turned on here
-		setHandleCollection(true);
-
-		setFallbackBNFId(SelectExpressionBNF.ID);
-		registerChild(SelectExpressionBNF.ID);
+		setFallbackBNFId(ID);
+		setFallbackExpressionFactoryId(RangeDeclarationFactory.ID);
 	}
 }

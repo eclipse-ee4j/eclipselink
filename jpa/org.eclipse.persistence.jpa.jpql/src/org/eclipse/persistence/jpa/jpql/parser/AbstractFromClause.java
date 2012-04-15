@@ -41,20 +41,12 @@ public abstract class AbstractFromClause extends AbstractExpression {
 
 	@Override
 	protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
-	        if (word.length() == 0) {
-	            return true;
-	        }
-		char character = word.charAt(0);
+
+		char character = wordParser.character();
 
 		// TODO: Add parameter tolerant and check for these 4 signs if tolerant is turned on only
 		//       this could happen while parsing an invalid query
-		return character == '+' ||
-		       character == '-' ||
-		       character == '*' ||
-		       character == '/' ||
-		       character == '=' ||
-		       character == '<' ||
-		       character == '>' ||
+		return wordParser.isArithmeticSymbol(character) ||
 		       super.isParsingComplete(wordParser, word, expression);
 	}
 

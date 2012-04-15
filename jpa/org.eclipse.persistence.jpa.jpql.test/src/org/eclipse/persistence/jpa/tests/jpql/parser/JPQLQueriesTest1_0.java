@@ -15,7 +15,7 @@ package org.eclipse.persistence.jpa.tests.jpql.parser;
 
 import org.junit.Test;
 
-import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries.*;
+import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries1_0.*;
 
 /**
  * This unit-tests tests the parsed tree representation of a JPQL query.
@@ -2821,6 +2821,26 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
+	public void test_Query_139() {
+
+		// SELECT o
+		// FROM Customer c JOIN c.orders o JOIN c.address a
+		// WHERE a.state = 'CA'
+		// ORDER BY o.quantity DESC, o.totalcost
+
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("o")),
+			from("Customer", "c", join("c.orders", "o"), join("c.address", "a")),
+			where(path("a.state").equal(string("'CA'"))),
+			nullExpression(),
+			nullExpression(),
+			orderBy(orderByItemDesc("o.quantity"), orderByItem("o.totalcost"))
+		);
+
+		testQuery(query_139(), selectStatement);
+	}
+
+	@Test
 	public void test_Query_140() {
 
 		// SELECT c
@@ -3863,9 +3883,6 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 		ExpressionTester selectStatement = selectStatement(
 			select(variable("c")),
 			fromAs("Customer", "C"),
-			nullExpression(),
-			nullExpression(),
-			nullExpression(),
 			orderBy("c.lastName")
 		);
 
@@ -3889,8 +3906,6 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 					path("c.address.state").equal(string("'MA'"))
 				)
 			),
-			nullExpression(),
-			nullExpression(),
 			orderBy(orderByItemDesc("c.lastName"))
 		);
 
@@ -3907,10 +3922,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 		ExpressionTester selectStatement = selectStatement(
 			select(path("cr.name"), count(variable("res"))),
 			from("Cruise", "cr", leftJoin("cr.reservations", "res")),
-			nullExpression(),
-			groupBy(path("cr.name")),
-			nullExpression(),
-			nullExpression()
+			groupBy(path("cr.name"))
 		);
 
 		testQuery(query_199(), selectStatement);
@@ -3927,10 +3939,8 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 		ExpressionTester selectStatement = selectStatement(
 			select(path("cr.name"), count(variable("res"))),
 			from("Cruise", "cr", leftJoin("cr.reservations", "res")),
-			nullExpression(),
 			groupBy(path("cr.name")),
-			having(count(variable("res")).greaterThan(numeric(10))),
-			nullExpression()
+			having(count(variable("res")).greaterThan(numeric(10)))
 		);
 
 		testQuery(query_200(), selectStatement);
@@ -4052,27 +4062,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_215() {
-
-		// SELECT o
-		// FROM Customer c JOIN c.orders o JOIN c.address a
-		// WHERE a.state = 'CA'
-		// ORDER BY o.quantity DESC, o.totalcost
-
-		ExpressionTester selectStatement = selectStatement(
-			select(variable("o")),
-			from("Customer", "c", join("c.orders", "o"), join("c.address", "a")),
-			where(path("a.state").equal(string("'CA'"))),
-			nullExpression(),
-			nullExpression(),
-			orderBy(orderByItemDesc("o.quantity"), orderByItem("o.totalcost"))
-		);
-
-		testQuery(query_215(), selectStatement);
-	}
-
-	@Test
-	public void test_Query_216() {
+	public void test_Query_205() {
 
 		// SELECT o.quantity, a.zipcode
 		// FROM Customer c JOIN c.orders o JOIN c.address a
@@ -4083,19 +4073,17 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			select(path("o.quantity"), path("a.zipcode")),
 			from("Customer", "c", join("c.orders", "o"), join("c.address", "a")),
 			where(path("a.state").equal(string("'CA'"))),
-			nullExpression(),
-			nullExpression(),
 			orderBy(
 				orderByItem("o.quantity"),
 				orderByItem("a.zipcode")
 			)
 		);
 
-		testQuery(query_216(), selectStatement);
+		testQuery(query_205(), selectStatement);
 	}
 
 	@Test
-	public void test_Query_219() {
+	public void test_Query_206() {
 
 		// DELETE
 		// FROM Customer c
@@ -4106,11 +4094,11 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(path("c.status").equal(string("'inactive'")))
 		);
 
-		testQuery(query_219(), deleteStatement);
+		testQuery(query_206(), deleteStatement);
 	}
 
 	@Test
-	public void test_Query_220() {
+	public void test_Query_207() {
 
 		// DELETE
 		// FROM Customer c
@@ -4127,11 +4115,11 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			)
 		);
 
-		testQuery(query_220(), deleteStatement);
+		testQuery(query_207(), deleteStatement);
 	}
 
 	@Test
-	public void test_Query_221() {
+	public void test_Query_208() {
 
 		// UPDATE customer c
 		// SET c.status = 'outstanding'
@@ -4142,11 +4130,11 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(path("c.balance").lowerThan(numeric(10000)))
 		);
 
-		testQuery(query_221(), updateStatement);
+		testQuery(query_208(), updateStatement);
 	}
 
 	@Test
-	public void test_Query_228() {
+	public void test_Query_209() {
 
 		// Select e
 		// from Employee e join e.phoneNumbers p
@@ -4172,11 +4160,11 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			)
 		);
 
-		testQuery(query_228(), selectStatement);
+		testQuery(query_209(), selectStatement);
 	}
 
 	@Test
-	public void test_Query_229() {
+	public void test_Query_210() {
 
 		// Select e
 		// From Employee e
@@ -4197,11 +4185,11 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			))
 		);
 
-		testQuery(query_229(), selectStatement);
+		testQuery(query_210(), selectStatement);
 	}
 
 	@Test
-	public void test_Query_230() {
+	public void test_Query_211() {
 
 		// Select e
 		// From Employee e
@@ -4219,11 +4207,11 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			))
 		);
 
-		testQuery(query_230(), selectStatement);
+		testQuery(query_211(), selectStatement);
 	}
 
 	@Test
-	public void test_Query_231() {
+	public void test_Query_212() {
 
 		// UPDATE Employee e SET e.salary = e.salary*(1+(:percent/100))
 		// WHERE EXISTS (SELECT p
@@ -4260,6 +4248,6 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			))
 		);
 
-		testQuery(query_231(), updateStatement, buildQueryFormatter_1());
+		testQuery(query_212(), updateStatement, buildQueryFormatter_1());
 	}
 }

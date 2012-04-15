@@ -95,7 +95,7 @@ public abstract class AbstractLiteralExpressionFactory extends ExpressionFactory
 		if (word.indexOf(AbstractExpression.DOT) > -1) {
 
 			if ((expression != null) && (character == AbstractExpression.DOT)) {
-				expression = new StateFieldPathExpression(parent, expression);
+				expression = new StateFieldPathExpression(parent, expression, word);
 			}
 			else {
 				expression = new StateFieldPathExpression(parent, word);
@@ -103,6 +103,21 @@ public abstract class AbstractLiteralExpressionFactory extends ExpressionFactory
 
 			expression.parse(wordParser, tolerant);
 			return expression;
+		}
+
+		// Check for a temporary fallback ExpressionFactory
+		String fallBackExpressionFactoryId = getFallBackExpressionFactoryId();
+
+		if (fallBackExpressionFactoryId != null) {
+
+			ExpressionFactory factory = getExpressionRegistry().getExpressionFactory(fallBackExpressionFactoryId);
+			expression = factory.buildExpression(parent, wordParser, word, null, expression, tolerant);
+
+			setFallBackExpressionFactory(null);
+
+			if (expression != null) {
+				return expression;
+			}
 		}
 
 		return buildExpression(parent, wordParser, word, expression, tolerant);

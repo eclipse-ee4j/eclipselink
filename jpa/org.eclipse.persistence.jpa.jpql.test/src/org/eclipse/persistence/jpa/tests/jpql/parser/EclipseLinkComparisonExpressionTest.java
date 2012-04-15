@@ -13,15 +13,10 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
-import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_1;
 import org.junit.Test;
 
 @SuppressWarnings("nls")
 public final class EclipseLinkComparisonExpressionTest extends JPQLParserTest {
-
-	private boolean isEclipseLink2_0() {
-		return getGrammar().getProviderVersion() == EclipseLinkJPQLGrammar2_1.VERSION;
-	}
 
 	@Test
 	public void test_BuildExpression_01() throws Exception {

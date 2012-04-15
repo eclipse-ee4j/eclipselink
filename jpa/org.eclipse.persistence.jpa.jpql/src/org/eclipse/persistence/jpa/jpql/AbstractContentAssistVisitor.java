@@ -82,7 +82,7 @@ import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.IdentifierRole;
 import org.eclipse.persistence.jpa.jpql.parser.InExpression;
-import org.eclipse.persistence.jpa.jpql.parser.InItemBNF;
+import org.eclipse.persistence.jpa.jpql.parser.InExpressionItemBNF;
 import org.eclipse.persistence.jpa.jpql.parser.IndexExpression;
 import org.eclipse.persistence.jpa.jpql.parser.InputParameter;
 import org.eclipse.persistence.jpa.jpql.parser.InternalBetweenExpressionBNF;
@@ -121,7 +121,6 @@ import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.ResultVariable;
 import org.eclipse.persistence.jpa.jpql.parser.ScalarExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.SelectClause;
-import org.eclipse.persistence.jpa.jpql.parser.SelectItemBNF;
 import org.eclipse.persistence.jpa.jpql.parser.SelectStatement;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleFromClause;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectClause;
@@ -817,11 +816,17 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 				// At the beginning of the child expression
 				if (position == length) {
 					addAllIdentificationVariables();
-					addAllFunctions(SelectItemBNF.ID);
+					addAllFunctions(expression.selectItemBNF());
 					break;
 				}
 				else {
-					boolean withinChild = addSelectExpressionProposals(child, length, index, index + 1 == count);
+					boolean withinChild = addSelectExpressionProposals(
+						child,
+						expression.selectItemBNF(),
+						length,
+						index,
+						index + 1 == count
+					);
 
 					if (withinChild) {
 						break;
@@ -842,7 +847,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 				// After ',', the proposals can be added
 				if (position == length) {
 					addAllIdentificationVariables();
-					addAllFunctions(SelectItemBNF.ID);
+					addAllFunctions(expression.selectItemBNF());
 					break;
 				}
 
@@ -852,11 +857,18 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 			}
 		}
 		else {
-			addSelectExpressionProposals(expression.getSelectExpression(), length, 0, true);
+			addSelectExpressionProposals(
+				expression.getSelectExpression(),
+				expression.selectItemBNF(),
+				length,
+				0,
+				true
+			);
 		}
 	}
 
 	protected boolean addSelectExpressionProposals(Expression expression,
+	                                               String queryBNFId,
 	                                               int length,
 	                                               int index,
 	                                               boolean last) {
@@ -871,7 +883,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 					addIdentifier(DISTINCT);
 				}
 				addAllIdentificationVariables();
-				addAllFunctions(SelectItemBNF.ID);
+				addAllFunctions(queryBNFId);
 			}
 			else {
 				int childLength = length(expression);
@@ -890,7 +902,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 							proposals.addIdentifier(AS);
 						}
 
-						addAllAggregates(SelectItemBNF.ID);
+						addAllAggregates(queryBNFId);
 					}
 
 					return true;
@@ -2935,7 +2947,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 
 			// Right after "IN("
 			if (position == length) {
-				addAllFunctions(InItemBNF.ID);
+				addAllFunctions(InExpressionItemBNF.ID);
 				proposals.addIdentifier(SELECT);
 			}
 		}
@@ -4487,7 +4499,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 						addIdentifier(DISTINCT);
 					}
 					addAllIdentificationVariables();
-					addAllFunctions(SelectItemBNF.ID);
+					addAllFunctions(expression.selectItemBNF());
 				}
 				// Somewhere in the clause's expression
 				else {

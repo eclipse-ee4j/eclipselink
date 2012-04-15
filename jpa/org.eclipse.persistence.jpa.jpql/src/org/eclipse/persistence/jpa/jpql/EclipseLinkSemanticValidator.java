@@ -13,7 +13,13 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql;
 
+import org.eclipse.persistence.jpa.jpql.parser.CastExpression;
+import org.eclipse.persistence.jpa.jpql.parser.CollectionValuedPathExpression;
+import org.eclipse.persistence.jpa.jpql.parser.DatabaseType;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkExpressionVisitor;
+import org.eclipse.persistence.jpa.jpql.parser.Expression;
+import org.eclipse.persistence.jpa.jpql.parser.ExtractExpression;
+import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
 
 /**
  * This validator is responsible to gather the problems found in a JPQL query by validating the
@@ -78,5 +84,48 @@ public class EclipseLinkSemanticValidator extends AbstractSemanticValidator
 	@Override
 	protected PathType selectClausePathExpressionPathType() {
 		return PathType.ANY_FIELD_INCLUDING_COLLECTION;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void validateRangeVariableDeclarationRootObject(RangeVariableDeclaration expression) {
+
+		Expression rootObject = expression.getAbstractSchemaName();
+
+		// Special case, the path expression could be a fully qualified class name,
+		// make sure to not validate it as collection-valued path expression
+		CollectionValuedPathExpression pathExpression = getCollectionValuedPathExpression(rootObject);
+
+		if (pathExpression != null) {
+			String path = pathExpression.toActualText();
+
+			// The path expression is not a fully qualified class name
+			if (helper.getType(path) == null) {
+				pathExpression.accept(this);
+			}
+		}
+		else {
+			rootObject.accept(this);
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(CastExpression expression) {
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(DatabaseType expression) {
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(ExtractExpression expression) {
 	}
 }

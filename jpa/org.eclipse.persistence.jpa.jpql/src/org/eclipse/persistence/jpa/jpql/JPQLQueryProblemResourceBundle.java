@@ -79,6 +79,9 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
 			{"ADDITION_EXPRESSION_LEFT_EXPRESSION_WRONG_TYPE",  "The left side of the addition is not a valid arithmetic expression."},
 			{"ADDITION_EXPRESSION_RIGHT_EXPRESSION_WRONG_TYPE", "The right side of the addition is not a valid arithmetic expression."},
 
+			// AggregateFunction - Grammar
+			{"AGGREGATE_FUNCTION_WRONG_CLAUSE", "The {0} function is only allowed in the SELECT, GROUP BY, ORDER BY and HAVING clauses."},
+
 			// AllOrAnyExpression - Grammar
 			{"ALL_OR_ANY_EXPRESSION_INVALID_EXPRESSION",                "The encapsulated expression is not a valid expression."},
 			{"ALL_OR_ANY_EXPRESSION_MISSING_EXPRESSION",                "The subquery must be provided for an {0} expression."},
@@ -104,6 +107,9 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
 			{"AVG_FUNCTION_MISSING_RIGHT_PARENTHESIS",  "The right parenthesis is missing from the AVG expression."},
 			// AvgFunction - Semantic
 			{"AVG_FUNCTION_INVALID_NUMERIC_EXPRESSION", "The encapsulated expression is not a valid numeric expression."},
+
+			// BadExpression
+			{"BAD_EXPRESSION_INVALID_EXPRESSION", " The expression is invalid, which means it does not follow the JPQL grammar."},
 
 			// BetweenExpression - Grammar
 			{"BETWEEN_EXPRESSION_MISSING_EXPRESSION",             "The result expression is missing from the BETWEEN expression."},
@@ -158,6 +164,9 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
 			{"COMPARISON_EXPRESSION_MISSING_LEFT_EXPRESSION",  "A comparison expression must define the left side of the comparison."},
 			{"COMPARISON_EXPRESSION_MISSING_RIGHT_EXPRESSION", "A comparison expression must define the right side of the comparison."},
 			// ComparisonExpression - Semantic
+			{"COMPARISON_EXPRESSION_ASSOCIATION_FIELD",        "The relationship mapping ''{0}'' cannot be used in conjunction with the {1} operator."},
+			{"COMPARISON_EXPRESSION_BASIC_FIELD",              "The basic mapping ''{0}'' cannot be used in conjunction with the {1} operator."},
+			{"COMPARISON_EXPRESSION_IDENTIFICATION_VARIABLE",  "The identification variable ''{0}'' cannot be used in conjunction with the {1} operator."},
 			{"COMPARISON_EXPRESSION_WRONG_COMPARISON_TYPE",    "The left and right expressions' type must be of the same type."},
 
 			// ConcatExpression - Grammar
@@ -274,7 +283,7 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
 			// InExpression - Grammar
 			{"IN_EXPRESSION_IN_ITEM_ENDS_WITH_COMMA",   "The items cannot end with a comma."},
 			{"IN_EXPRESSION_IN_ITEM_IS_MISSING_COMMA",  "The IN expression has ''{0}'' and ''{1}'' that are not separated by a comma."},
-			{"IN_EXPRESSION_MALFORMED_EXPRESSION",      "The IN expression does not have a valid state field path expression or TYPE expression."},
+			{"IN_EXPRESSION_MALFORMED_EXPRESSION",      "The IN expression does not have a valid expression."},
 			{"IN_EXPRESSION_MISSING_IN_ITEMS",          "A least one item must be defined for the IN expression."},
 			{"IN_EXPRESSION_MISSING_LEFT_PARENTHESIS",  "The left parenthesis is missing from the IN expression."},
 			{"IN_EXPRESSION_MISSING_RIGHT_PARENTHESIS", "The right parenthesis is missing from the IN expression."},
@@ -404,7 +413,6 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
 			{"NUMERIC_LITERAL_INVALID", "''{0}'' is not a valid numeric value."},
 
 			// ObjectByItem - Grammar
-			{"ORDER_BY_ITEM_INVALID_PATH",                        "''{0}'' is not a valid state field path expression."},
 			{"ORDER_BY_ITEM_MISSING_STATE_FIELD_PATH_EXPRESSION", "A state field path expression must be specified."},
 
 			// ObjectExpression - Grammar
@@ -453,6 +461,7 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
 
 			// StateFieldPathExpression - Semantic
 			{"STATE_FIELD_PATH_EXPRESSION_ASSOCIATION_FIELD",     "The association field ''{0}'' cannot be used as a state field path."},
+			{"STATE_FIELD_PATH_EXPRESSION_BASIC_FIELD",           "The basic field ''{0}'' cannot be used as a state field path."},
 			{"STATE_FIELD_PATH_EXPRESSION_COLLECTION_TYPE",       "The state field path ''{0}'' cannot be resolved to a collection type."},
 			{"STATE_FIELD_PATH_EXPRESSION_INVALID_ENUM_CONSTANT", "''{0}'' cannot be resolved to an Enum constant."},
 			{"STATE_FIELD_PATH_EXPRESSION_NO_MAPPING",            "No mapping is associated with the state field path ''{0}''."},

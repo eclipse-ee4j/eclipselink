@@ -40,7 +40,7 @@ import org.eclipse.persistence.jpa.jpql.model.query.WhereClauseStateObject;
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.junit.Test;
 
-import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries.*;
+import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries2_0.*;
 
 /**
  * This tests the manual creation of a {@link StateObject} that can be parsed by the JPQL grammar
@@ -71,7 +71,7 @@ public final class ManualCreationStateObjectTest2_0 extends AbstractStateObjectT
 		select.addSelectItem("p");
 		select.addWhereClause("e.id = :id AND INDEX(p) = 1");
 
-		test(stateObject_139(), jpqlStateObject, query_139());
+		test(stateObject_139(), jpqlStateObject, query_016());
 	}
 
 	@Test
@@ -93,7 +93,7 @@ public final class ManualCreationStateObjectTest2_0 extends AbstractStateObjectT
 				builder.index("p").equal(builder.numeric(1))
 		).commit();
 
-		test(stateObject_139(), jpqlStateObject, query_139());
+		test(stateObject_139(), jpqlStateObject, query_016());
 	}
 
 	@Test
@@ -113,7 +113,7 @@ public final class ManualCreationStateObjectTest2_0 extends AbstractStateObjectT
 		where.parse("e.id = :id");
 		where.andParse("INDEX(p) = 1");
 
-		test(stateObject_139(), jpqlStateObject, query_139());
+		test(stateObject_139(), jpqlStateObject, query_016());
 	}
 
 	@Test
@@ -157,7 +157,7 @@ public final class ManualCreationStateObjectTest2_0 extends AbstractStateObjectT
 			new NumericLiteralStateObject(and, 1)
 		));
 
-		test(stateObject_139(), jpqlStateObject, query_139());
+		test(stateObject_139(), jpqlStateObject, query_016());
 	}
 
 	@Test
@@ -187,7 +187,7 @@ public final class ManualCreationStateObjectTest2_0 extends AbstractStateObjectT
 		update.setDeclaration("Employee", "e");
 		update.addItem("e.salary", case_);
 
-		test(stateObject_205(), jpqlStateObject, query_205());
+		test(stateObject_205(), jpqlStateObject, query_001());
 	}
 
 	@Test
@@ -206,7 +206,7 @@ public final class ManualCreationStateObjectTest2_0 extends AbstractStateObjectT
 		update.setDeclaration("Employee", "e");
 		update.addItem("e.salary", "CASE WHEN e.rating = 1 THEN e.salary * 1.1 WHEN e.rating = 2 THEN e.salary * 1.05 ELSE e.salary * 1.01 END");
 
-		test(stateObject_205(), jpqlStateObject, query_205());
+		test(stateObject_205(), jpqlStateObject, query_001());
 	}
 
 	@Test
@@ -246,7 +246,7 @@ public final class ManualCreationStateObjectTest2_0 extends AbstractStateObjectT
 		select.addSelectItem(case_);
 		select.addWhereClause().getBuilder().path("e.dept.name").equal("'Engineering'").commit();
 
-		test(stateObject_206(), jpqlStateObject, query_206());
+		test(stateObject_206(), jpqlStateObject, query_002());
 	}
 
 	@Test
@@ -270,7 +270,7 @@ public final class ManualCreationStateObjectTest2_0 extends AbstractStateObjectT
 		select.getSelectClause().parse("CASE TYPE(e) WHEN Exempt THEN 'Exempt' WHEN Contractor THEN 'Contractor' WHEN Intern THEN 'Intern' ELSE 'NonExempt' END");
 		select.addWhereClause("e.dept.name = 'Engineering'");
 
-		test(stateObject_206(), jpqlStateObject, query_206());
+		test(stateObject_206(), jpqlStateObject, query_002());
 	}
 
 	@Test
@@ -309,7 +309,7 @@ public final class ManualCreationStateObjectTest2_0 extends AbstractStateObjectT
 			new StringLiteralStateObject(select, "'Frequent Flyer'")
 		));
 
-		test(stateObject_207(), jpqlStateObject, query_207());
+		test(stateObject_207(), jpqlStateObject, query_003());
 	}
 
 	@Test
@@ -364,7 +364,7 @@ public final class ManualCreationStateObjectTest2_0 extends AbstractStateObjectT
 			)
 		.commit();
 
-		test(stateObject_207(), jpqlStateObject, query_207());
+		test(stateObject_207(), jpqlStateObject, query_003());
 	}
 
 	@Test
@@ -386,7 +386,7 @@ public final class ManualCreationStateObjectTest2_0 extends AbstractStateObjectT
 			builder.entityType("Contractor")
 		).commit();
 
-		test(stateObject_208(), jpqlStateObject, query_208());
+		test(stateObject_208(), jpqlStateObject, query_004());
 	}
 
 	@Test
@@ -403,7 +403,7 @@ public final class ManualCreationStateObjectTest2_0 extends AbstractStateObjectT
 		select.addSelectItem("e");
 		select.addWhereClause("TYPE(e) IN (Exempt, Contractor)");
 
-		test(stateObject_208(), jpqlStateObject, query_208());
+		test(stateObject_208(), jpqlStateObject, query_004());
 	}
 
 	@Test
@@ -422,7 +422,7 @@ public final class ManualCreationStateObjectTest2_0 extends AbstractStateObjectT
 		IConditionalExpressionStateObjectBuilder builder = select.addWhereClause().getBuilder();
 		builder.type("e").in(builder.parameter(":empType1"), builder.parameter(":empType2")).commit();
 
-		test(stateObject_209(), jpqlStateObject, query_209());
+		test(stateObject_209(), jpqlStateObject, query_005());
 	}
 
 	@Test
@@ -439,7 +439,7 @@ public final class ManualCreationStateObjectTest2_0 extends AbstractStateObjectT
 		select.addRangeDeclaration("Employee", "e");
 		select.addWhereClause("TYPE(e) IN (:empType1, :empType2)");
 
-		test(stateObject_209(), jpqlStateObject, query_209());
+		test(stateObject_209(), jpqlStateObject, query_005());
 	}
 
 	@Test
@@ -458,7 +458,7 @@ public final class ManualCreationStateObjectTest2_0 extends AbstractStateObjectT
 		IConditionalExpressionStateObjectBuilder builder = select.addWhereClause().getBuilder();
 		builder.type("e").in(builder.parameter(":empTypes")).commit();
 
-		test(stateObject_210(), jpqlStateObject, query_210());
+		test(stateObject_210(), jpqlStateObject, query_006());
 	}
 
 	@Test
@@ -475,7 +475,7 @@ public final class ManualCreationStateObjectTest2_0 extends AbstractStateObjectT
 		select.addRangeDeclaration("Employee", "e");
 		select.addWhereClause("TYPE(e) IN :empTypes");
 
-		test(stateObject_210(), jpqlStateObject, query_210());
+		test(stateObject_210(), jpqlStateObject, query_006());
 	}
 
 	@Test
@@ -494,7 +494,7 @@ public final class ManualCreationStateObjectTest2_0 extends AbstractStateObjectT
 		IConditionalExpressionStateObjectBuilder builder = select.addWhereClause().getBuilder();
 		builder.type("employee").different(builder.variable("Exempt")).commit();
 
-		test(stateObject_211(), jpqlStateObject, query_211());
+		test(stateObject_211(), jpqlStateObject, query_007());
 	}
 
 	@Test
@@ -511,7 +511,7 @@ public final class ManualCreationStateObjectTest2_0 extends AbstractStateObjectT
 		select.addRangeDeclaration("Employee", "employee");
 		select.addWhereClause("TYPE(employee) <> Exempt");
 
-		test(stateObject_211(), jpqlStateObject, query_211());
+		test(stateObject_211(), jpqlStateObject, query_007());
 	}
 
 	@Test
@@ -537,7 +537,7 @@ public final class ManualCreationStateObjectTest2_0 extends AbstractStateObjectT
 			)
 		.commit();
 
-		test(stateObject_212(), jpqlStateObject, query_212());
+		test(stateObject_212(), jpqlStateObject, query_008());
 	}
 
 	@Test
@@ -554,7 +554,7 @@ public final class ManualCreationStateObjectTest2_0 extends AbstractStateObjectT
 		select.addRangeDeclaration("CreditCard", "c").addJoin("c.transactionHistory", "t");
 		select.addWhereClause("c.holder.name = 'John Doe' AND INDEX(t) BETWEEN 0 AND 9");
 
-		test(stateObject_212(), jpqlStateObject, query_212());
+		test(stateObject_212(), jpqlStateObject, query_008());
 	}
 
 	@Test
@@ -582,7 +582,7 @@ public final class ManualCreationStateObjectTest2_0 extends AbstractStateObjectT
 			)
 		.commit();
 
-		test(stateObject_213(), jpqlStateObject, query_213());
+		test(stateObject_213(), jpqlStateObject, query_009());
 	}
 
 	@Test
@@ -602,7 +602,7 @@ public final class ManualCreationStateObjectTest2_0 extends AbstractStateObjectT
 			addJoin("c.studentWaitlist", "w");
 		select.addWhereClause("c.name = 'Calculus' AND INDEX(w) = 0");
 
-		test(stateObject_213(), jpqlStateObject, query_213());
+		test(stateObject_213(), jpqlStateObject, query_009());
 	}
 
 	@Test
@@ -626,7 +626,7 @@ public final class ManualCreationStateObjectTest2_0 extends AbstractStateObjectT
 		update.setDeclaration("Employee", "e");
 		update.addItem("e.salary", case_);
 
-		test(stateObject_214(), jpqlStateObject, query_214());
+		test(stateObject_214(), jpqlStateObject, query_010());
 	}
 
 	@Test
@@ -660,7 +660,7 @@ public final class ManualCreationStateObjectTest2_0 extends AbstractStateObjectT
 		)
 		.commit();
 
-		test(stateObject_214(), jpqlStateObject, query_214());
+		test(stateObject_214(), jpqlStateObject, query_010());
 	}
 
 	@Test
@@ -693,7 +693,7 @@ public final class ManualCreationStateObjectTest2_0 extends AbstractStateObjectT
 			)
 		.commit();
 
-		test(stateObject_217(), jpqlStateObject, query_217());
+		test(stateObject_217(), jpqlStateObject, query_011());
 	}
 
 	@Test
@@ -712,7 +712,7 @@ public final class ManualCreationStateObjectTest2_0 extends AbstractStateObjectT
 		select.addWhereClause("a.state = 'CA' AND a.county = 'Santa Clara'");
 		select.addOrderByClause("o.quantity, taxedCost, a.zipcode");
 
-		test(stateObject_217(), jpqlStateObject, query_217());
+		test(stateObject_217(), jpqlStateObject, query_011());
 	}
 
 	@Test
@@ -738,7 +738,7 @@ public final class ManualCreationStateObjectTest2_0 extends AbstractStateObjectT
 		IConditionalExpressionStateObjectBuilder builder = select.addWhereClause().getBuilder();
 		builder.path("a.state").equal(builder.string("'CA'")).commit();
 
-		test(stateObject_218(), jpqlStateObject, query_218());
+		test(stateObject_218(), jpqlStateObject, query_012());
 	}
 
 	@Test
@@ -767,7 +767,7 @@ public final class ManualCreationStateObjectTest2_0 extends AbstractStateObjectT
 		select.addGroupByClause("a.zipcode");
 		select.addOrderByClause().addItemDesc("q");
 
-		test(stateObject_218(), jpqlStateObject, query_218());
+		test(stateObject_218(), jpqlStateObject, query_012());
 	}
 
 	@Test
@@ -782,7 +782,7 @@ public final class ManualCreationStateObjectTest2_0 extends AbstractStateObjectT
 		select.addRangeDeclaration("Employee", "e");
 		select.addSelectItem("e.salary / 1000D", "n");
 
-		test(stateObject_222(), jpqlStateObject, query_222());
+		test(stateObject_222(), jpqlStateObject, query_013());
 	}
 
 	@Test
@@ -799,7 +799,7 @@ public final class ManualCreationStateObjectTest2_0 extends AbstractStateObjectT
 		ISelectExpressionStateObjectBuilder builder = select.getSelectBuilder();
 		builder.path("e.salary").divide(builder.numeric("1000D")).resultVariable("n").commit();
 
-		test(stateObject_222(), jpqlStateObject, query_222());
+		test(stateObject_222(), jpqlStateObject, query_013());
 	}
 
 	@Test
@@ -817,7 +817,7 @@ public final class ManualCreationStateObjectTest2_0 extends AbstractStateObjectT
 			addJoinFetch("a.customerList");
 		select.addOrderByClause("m, a.zipcode");
 
-		test(stateObject_223(), jpqlStateObject, query_223());
+		test(stateObject_223(), jpqlStateObject, query_014());
 	}
 
 	@Test
@@ -837,6 +837,6 @@ public final class ManualCreationStateObjectTest2_0 extends AbstractStateObjectT
 		ISelectExpressionStateObjectBuilder builder = select.getSelectBuilder();
 		builder.mod(builder.path("a.id"), builder.numeric(2)).resultVariableAs("m").commit();
 
-		test(stateObject_223(), jpqlStateObject, query_223());
+		test(stateObject_223(), jpqlStateObject, query_014());
 	}
 }

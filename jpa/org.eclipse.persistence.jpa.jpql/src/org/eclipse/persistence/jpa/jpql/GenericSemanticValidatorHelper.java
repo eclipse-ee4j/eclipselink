@@ -290,6 +290,13 @@ public class GenericSemanticValidatorHelper implements SemanticValidatorHelper {
 	/**
 	 * {@inheritDoc}
 	 */
+	public boolean isIdentificationVariableValidInComparison(IdentificationVariable expression) {
+		return false;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public boolean isManagedTypeResolvable(Object managedType) {
 		return ((IManagedType) managedType).getType().isResolvable();
 	}
@@ -306,6 +313,13 @@ public class GenericSemanticValidatorHelper implements SemanticValidatorHelper {
 	 */
 	public boolean isRelationshipMapping(Object mapping) {
 		return (mapping != null) && ((IMapping) mapping).isRelationship();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public boolean isResultVariable(String variableName) {
+		return queryContext.isResultVariable(variableName);
 	}
 
 	/**

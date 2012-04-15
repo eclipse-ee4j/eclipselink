@@ -278,6 +278,17 @@ public interface SemanticValidatorHelper {
 	boolean isEnumType(Object type);
 
 	/**
+	 * Determines whether an identification variable can be used in a comparison expression when the
+	 * operator is either '<', '<=', '>', '>='.
+	 *
+	 * @param expression The {@link IdentificationVariable} that is mapped to either an entity, a
+	 * singled-object value field, a collection-valued object field
+	 * @return <code>true</code> if it can be used in a ordering comparison expression; <code>false</code>
+	 * if it can't
+	 */
+	boolean isIdentificationVariableValidInComparison(IdentificationVariable expression);
+
+	/**
 	 * Determines whether the given managed type actually exists.
 	 * <p>
 	 * If it was going through Hermes SPI, the type of the argument would be {@link org.eclipse.
@@ -309,6 +320,15 @@ public interface SemanticValidatorHelper {
 	 * @return <code>true</code> if the given mapping is a relationship mapping; <code>false</code> otherwise
 	 */
 	boolean isRelationshipMapping(Object mapping);
+
+	/**
+	 * Determines if the given variable is a result variable.
+	 *
+	 * @param variableName The variable to check if it's a result variable
+	 * @return <code>true</code> if the given variable is defined as a result variable;
+	 * <code>false</code> otherwise
+	 */
+	boolean isResultVariable(String variableName);
 
 	/**
 	 * Determines whether the given mapping is a transient attribute.
