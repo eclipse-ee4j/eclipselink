@@ -103,6 +103,7 @@ import org.eclipse.persistence.jpa.jpql.parser.OrExpression;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByClause;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByItem;
 import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
+import org.eclipse.persistence.jpa.jpql.parser.RegexpExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ResultVariable;
 import org.eclipse.persistence.jpa.jpql.parser.SelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.SelectStatement;
@@ -120,6 +121,7 @@ import org.eclipse.persistence.jpa.jpql.parser.SumFunction;
 import org.eclipse.persistence.jpa.jpql.parser.TreatExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TrimExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TypeExpression;
+import org.eclipse.persistence.jpa.jpql.parser.UnionClause;
 import org.eclipse.persistence.jpa.jpql.parser.UnknownExpression;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateClause;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateItem;
@@ -351,7 +353,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 		}
 	}
 
-	private ReportQuery buildSubquery(SimpleSelectStatement expression) {
+	public ReportQuery buildSubquery(SimpleSelectStatement expression) {
 
 		// First create the subquery
 		ReportQuery subquery = new ReportQuery();
@@ -1350,6 +1352,26 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 		type[0] = Boolean.class;
 	}
 
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(RegexpExpression expression) {
+
+                // Create the first expression
+                expression.getStringExpression().accept(this);
+                Expression firstExpression = queryExpression;
+
+                // Create the expression for the pattern value
+                expression.getPatternValue().accept(this);
+                Expression patternValue = queryExpression;
+
+                // Create the REGEXP expression
+                queryExpression = firstExpression.regexp(patternValue);
+
+                // Set the expression type
+                type[0] = Boolean.class;
+        }
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -1576,6 +1598,13 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	public void visit(OrderByClause expression) {
 		// Nothing to do
 	}
+
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(UnionClause expression) {
+                // Nothing to do
+        }
 
 	/**
 	 * {@inheritDoc}

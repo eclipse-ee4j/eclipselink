@@ -322,6 +322,13 @@ public interface ExpressionVisitor {
 	 */
 	void visit(LikeExpression expression);
 
+        /**
+         * Visits the {@link RegexpExpression} expression.
+         *
+         * @param expression The {@link Expression} to visit
+         */
+        void visit(RegexpExpression expression);
+
 	/**
 	 * Visits the {@link LocateExpression} expression.
 	 *
@@ -419,6 +426,13 @@ public interface ExpressionVisitor {
 	 * @param expression The {@link Expression} to visit
 	 */
 	void visit(OrderByClause expression);
+
+        /**
+         * Visits the {@link UnionClause} expression.
+         *
+         * @param expression The {@link Expression} to visit
+         */
+        void visit(UnionClause expression);
 
 	/**
 	 * Visits the {@link OrderByItem} expression.

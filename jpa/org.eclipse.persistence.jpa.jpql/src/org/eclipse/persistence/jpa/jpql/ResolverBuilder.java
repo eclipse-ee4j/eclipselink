@@ -87,6 +87,7 @@ import org.eclipse.persistence.jpa.jpql.parser.OrExpression;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByClause;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByItem;
 import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
+import org.eclipse.persistence.jpa.jpql.parser.RegexpExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ResultVariable;
 import org.eclipse.persistence.jpa.jpql.parser.SelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.SelectStatement;
@@ -104,6 +105,7 @@ import org.eclipse.persistence.jpa.jpql.parser.SumFunction;
 import org.eclipse.persistence.jpa.jpql.parser.TreatExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TrimExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TypeExpression;
+import org.eclipse.persistence.jpa.jpql.parser.UnionClause;
 import org.eclipse.persistence.jpa.jpql.parser.UnknownExpression;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateClause;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateItem;
@@ -822,6 +824,13 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
 		resolver = buildClassResolver(Boolean.class);
 	}
 
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(RegexpExpression expression) {
+                resolver = buildClassResolver(Boolean.class);
+        }
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -962,6 +971,13 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
 	public void visit(OrderByClause expression) {
 		resolver = buildClassResolver(Object.class);
 	}
+
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(UnionClause expression) {
+                resolver = buildClassResolver(Object.class);
+        }
 
 	/**
 	 * {@inheritDoc}

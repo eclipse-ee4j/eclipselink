@@ -280,6 +280,12 @@ public abstract class AbstractExpressionVisitor implements ExpressionVisitor {
 	public void visit(LikeExpression expression) {
 	}
 
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(RegexpExpression expression) {
+        }
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -363,6 +369,12 @@ public abstract class AbstractExpressionVisitor implements ExpressionVisitor {
 	 */
 	public void visit(OrderByClause expression) {
 	}
+
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(UnionClause expression) {
+        }
 
 	/**
 	 * {@inheritDoc}

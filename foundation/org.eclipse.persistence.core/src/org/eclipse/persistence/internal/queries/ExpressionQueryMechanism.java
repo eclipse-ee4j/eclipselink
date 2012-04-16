@@ -210,6 +210,9 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         if (query.hasOrderByExpressions()) {
             selectStatement.setOrderByExpressions(cloneExpressions(query.getOrderByExpressions(), clonedExpressions));
         }
+        if (query.hasUnionExpressions()) {
+            selectStatement.setUnionExpressions(cloneExpressions(query.getUnionExpressions(), clonedExpressions));
+        }
         if (getQuery().isReadAllQuery() && ((ReadAllQuery)getQuery()).hasHierarchicalExpressions()) {
             ReadAllQuery readAllquery = (ReadAllQuery)query;
             Expression startsWith = readAllquery.getStartWithExpression();

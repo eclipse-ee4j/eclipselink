@@ -2845,6 +2845,41 @@ public abstract class Expression implements Serializable, Cloneable {
 
     /**
      * PUBLIC:
+     * Return an expression that compares if the receivers value matches the regular expression.
+     * This uses the databases support for regular expression.
+     * Regular expressions are similar to LIKE except support a much larger scope of comparisons.
+     * i.e. "^B.*" == "Bob", "^B.B$" == "BOB"
+     * <p>Example:
+     * <pre><blockquote>
+     *     EclipseLink: employee.get("firstName").regexp("^B.*")
+     *     Java: Pattern.compile("^B.*").matcher(employee.getFirstName()).matches()
+     *     SQL: F_NAME REGEXP '^B.*'
+     * </blockquote></pre>
+     */
+    public Expression regexp(String regexp) {
+        return regexp(new ConstantExpression(regexp, this));
+    }
+
+    /**
+     * PUBLIC:
+     * Return an expression that compares if the receivers value matches the regular expression.
+     * This uses the databases support for regular expression.
+     * Regular expressions are similar to LIKE except support a much larger scope of comparisons.
+     * i.e. "^B.*" == "Bob", "^B.B$" == "BOB"
+     * <p>Example:
+     * <pre><blockquote>
+     *     EclipseLink: employee.get("firstName").regexp("^B.*")
+     *     Java: Pattern.compile("^B.*").matcher(employee.getFirstName()).matches()
+     *     SQL: F_NAME REGEXP '^B.*'
+     * </blockquote></pre>
+     */
+    public Expression regexp(Expression regexp) {
+        ExpressionOperator anOperator = getOperator(ExpressionOperator.Regexp);
+        return anOperator.expressionFor(this, regexp);
+    }
+
+    /**
+     * PUBLIC:
      * Return an expression that compares if the receivers value is like other value.
      * This is equivalent to the SQL "LIKE ESCAPE" operator that except wildcards.
      * The character "%" means any sequence of characters and the character "_" mean any character.
@@ -4740,12 +4775,113 @@ public abstract class Expression implements Serializable, Cloneable {
         return anOperator.expressionFor(this, arguments);
     }
 
+    /**
+     * PUBLIC:
+     * Return a union expression with the subquery.
+     */
+    public Expression union(Expression arguments) {
+        ExpressionOperator anOperator = getOperator(ExpressionOperator.Union);
+        return anOperator.expressionFor(this, arguments);
+    }
+
+    /**
+     * PUBLIC:
+     * Return a intersect expression with the subquery.
+     */
+    public Expression intersect(ReportQuery query) {
+        return intersect(subQuery(query));
+    }
+
+    /**
+     * PUBLIC:
+     * Return a intersect all expression with the subquery.
+     */
+    public Expression intersectAll(ReportQuery query) {
+        return intersectAll(subQuery(query));
+    }
+
+    /**
+     * PUBLIC:
+     * Return a intersect expression with the subquery.
+     */
+    public Expression intersect(Expression arguments) {
+        ExpressionOperator anOperator = getOperator(ExpressionOperator.Intersect);
+        return anOperator.expressionFor(this, arguments);
+    }
+
+    /**
+     * PUBLIC:
+     * Return a except expression with the subquery.
+     */
+    public Expression except(ReportQuery query) {
+        return except(subQuery(query));
+    }
+
+    /**
+     * PUBLIC:
+     * Return a except all expression with the subquery.
+     */
+    public Expression exceptAll(ReportQuery query) {
+        return exceptAll(subQuery(query));
+    }
+
+    /**
+     * PUBLIC:
+     * Return a except expression with the subquery.
+     */
+    public Expression except(Expression arguments) {
+        ExpressionOperator anOperator = getOperator(ExpressionOperator.Except);
+        return anOperator.expressionFor(this, arguments);
+    }
+
+    /**
+     * PUBLIC:
+     * Return a union expression with the subquery.
+     */
+    public Expression union(ReportQuery query) {
+        return union(subQuery(query));
+    }
+
+    /**
+     * PUBLIC:
+     * Return a union all expression with the subquery.
+     */
+    public Expression unionAll(ReportQuery query) {
+        return unionAll(subQuery(query));
+    }
+
+    /**
+     * PUBLIC:
+     * Return a union all expression with the subquery.
+     */
+    public Expression unionAll(Expression arguments) {
+        ExpressionOperator anOperator = getOperator(ExpressionOperator.UnionAll);
+        return anOperator.expressionFor(this, arguments);
+    }
+
+    /**
+     * PUBLIC:
+     * Return a intersect all expression with the subquery.
+     */
+    public Expression intersectAll(Expression arguments) {
+        ExpressionOperator anOperator = getOperator(ExpressionOperator.IntersectAll);
+        return anOperator.expressionFor(this, arguments);
+    }
+
+    /**
+     * PUBLIC:
+     * Return a except all expression with the subquery.
+     */
+    public Expression exceptAll(Expression arguments) {
+        ExpressionOperator anOperator = getOperator(ExpressionOperator.ExceptAll);
+        return anOperator.expressionFor(this, arguments);
+    }
+
     public Expression any(ReportQuery subQuery) {
         return any(subQuery(subQuery));
     }
 
     /**
-     *
      * PUBLIC:
      * Return an expression that is used with a comparison expression.
      * The SOME keyword denotes that the search condition is TRUE if the comparison is TRUE

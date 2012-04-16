@@ -622,7 +622,10 @@ public abstract class AbstractExpression implements Expression {
 		       word.equalsIgnoreCase(WHERE)              ||
 		       word.equalsIgnoreCase(HAVING)             ||
 		       wordParser.startsWithIdentifier(GROUP_BY) ||
-		       wordParser.startsWithIdentifier(ORDER_BY);
+		       wordParser.startsWithIdentifier(ORDER_BY) ||
+                       wordParser.startsWithIdentifier(UNION)    ||
+                       wordParser.startsWithIdentifier(INTERSECT)||
+                       wordParser.startsWithIdentifier(EXCEPT);
 	}
 
 	/**

@@ -67,6 +67,7 @@ public class QueryFrameworkTestSuite extends TestSuite {
         addTest(new ScrollableCursorJoiningVerificationTest()); // Bug 361860
         addTest(new MultipleOrderByWithSameFieldNameNullsFirstTest());
         addTest(new MultipleOrderByWithSameFieldNameTest());
+        addTest(buildUnionTest());
     }
 
     //SRG test set is maintained by QA only, do NOT add any new test cases into it.
@@ -322,6 +323,70 @@ public class QueryFrameworkTestSuite extends TestSuite {
             }
         };
         test.setName("ReadOnlyQueryTest");
+        return test;
+    }
+
+    /**
+     * Test unions.
+     */
+    public TestCase buildUnionTest() {
+        TestCase test = new TestCase() {
+            @Override
+            public void setup() {
+                if (getSession().getPlatform().isMySQL()) {
+                    throwWarning("MySQL does not support INTERSECT");
+                }
+            }
+            
+            @Override
+            public void test() {
+                ExpressionBuilder e = new ExpressionBuilder();
+                ReadAllQuery query = new ReadAllQuery(Employee.class, e);
+                query.setSelectionCriteria(e.get("firstName").equal("Bob"));
+
+                ExpressionBuilder e2 = new ExpressionBuilder();
+                ReportQuery union = new ReportQuery(Employee.class, e2);
+                union.addItem("employee", e2);
+                union.setSelectionCriteria(e2.get("firstName").equal("Sarah"));
+                query.union(union);
+
+                ExpressionBuilder e3 = new ExpressionBuilder();
+                ReportQuery unionAll = new ReportQuery(Employee.class, e3);
+                unionAll.addItem("employee", e3);
+                unionAll.setSelectionCriteria(e3.get("firstName").equal("Sarah"));
+                query.addUnionExpression(e.unionAll(e.subQuery(unionAll)));
+
+                ExpressionBuilder e4 = new ExpressionBuilder();
+                ReportQuery intersect = new ReportQuery(Employee.class, e4);
+                intersect.addItem("employee", e4);
+                intersect.setSelectionCriteria(e4.get("firstName").equal("Sarah"));
+                query.intersect(intersect);
+
+                /*ExpressionBuilder e5 = new ExpressionBuilder();
+                ReportQuery intersectAll = new ReportQuery(Employee.class, e5);
+                intersectAll.addItem("employee", e5);
+                intersectAll.setSelectionCriteria(e5.get("firstName").equal("Sarah"));
+                query.addUnionExpression(e.intersectAll(e.subQuery(intersectAll)));*/
+
+                ExpressionBuilder e6 = new ExpressionBuilder();
+                ReportQuery except = new ReportQuery(Employee.class, e6);
+                except.addItem("employee", e6);
+                except.setSelectionCriteria(e6.get("firstName").equal("Sarah"));
+                query.except(except);
+
+                /*ExpressionBuilder e7 = new ExpressionBuilder();
+                ReportQuery exceptAll = new ReportQuery(Employee.class, e7);
+                exceptAll.addItem("employee", e7);
+                exceptAll.setSelectionCriteria(e7.get("firstName").equal("Sarah"));
+                query.addUnionExpression(e.exceptAll(e.subQuery(exceptAll)));*/
+                
+                List result = (List)getSession().executeQuery(query);
+                if (result.size() > 0) {
+                    throwError("Expected o elements: " + result);
+                }
+            }
+        };
+        test.setName("UnionTest");
         return test;
     }
 

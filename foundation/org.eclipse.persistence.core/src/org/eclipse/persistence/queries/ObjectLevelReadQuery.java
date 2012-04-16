@@ -209,6 +209,11 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     protected boolean shouldExtendPessimisticLockScope;
 
     /**
+     * Allow a query's results to be unioned (UNION, INTERSECT, EXCEPT) with another query results.
+     */
+    protected List<Expression> unionExpressions;
+
+    /**
      * INTERNAL:
      * Initialize the state of the query
      */
@@ -218,6 +223,59 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         this.cacheUsage = UseDescriptorSetting;
         this.shouldIncludeData = false;
         this.inMemoryQueryIndirectionPolicy = InMemoryQueryIndirectionPolicy.SHOULD_THROW_INDIRECTION_EXCEPTION;
+    }
+    
+    /**
+     * PUBLIC:
+     * Union the query results with the other query.
+     */
+    public void union(ReportQuery query) {
+        addUnionExpression(getExpressionBuilder().union(query));
+    }
+    
+    /**
+     * PUBLIC:
+     * Intersect the query results with the other query.
+     */
+    public void intersect(ReportQuery query) {
+        addUnionExpression(getExpressionBuilder().intersect(query));
+    }
+    
+    /**
+     * PUBLIC:
+     * Except the query results with the other query.
+     */
+    public void except(ReportQuery query) {
+        addUnionExpression(getExpressionBuilder().except(query));
+    }
+    
+    /**
+     * PUBLIC:
+     * Add the union expression to the query.
+     * A union expression must be created with the query's expression builder
+     * and one of union/unionAll/intersect/intersectAll/except/exceptAll with a subquery expression.
+     */
+    public void addUnionExpression(Expression union) {
+        setIsPrepared(false);
+        getUnionExpressions().add(union);
+    }
+    
+    /**
+     * Return any union expressions.
+     */
+    public List<Expression> getUnionExpressions() {
+        if (unionExpressions == null) {
+            unionExpressions = new ArrayList<Expression>();
+        }
+        return unionExpressions;
+    }
+    
+    /**
+     * INTERNAL:
+     * Set any union expressions.
+     */
+    public void setUnionExpressions(List<Expression> unionExpressions) {
+        this.unionExpressions = unionExpressions;
     }
     
     /**
@@ -1350,6 +1408,14 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     }
 
     /**
+     * INTERNAL:
+     * The unions are lazy initialized to conserve space.
+     */
+    public boolean hasUnionExpressions() {
+        return (unionExpressions != null) && (!unionExpressions.isEmpty());
+    }
+
+    /**
      * PUBLIC:
      * Return if duplicate rows should be filter when using 1-m joining.
      */
@@ -1917,6 +1983,9 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             this.partialAttributeExpressions = objectQuery.partialAttributeExpressions;
             if (objectQuery.hasOrderByExpressions()) {
                 this.orderByExpressions = objectQuery.orderByExpressions;
+            }
+            if (objectQuery.hasUnionExpressions()) {
+                this.unionExpressions = objectQuery.unionExpressions;
             }
         }
     }
@@ -2638,6 +2707,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             && (!isDistinctComputed())
             && (!hasAdditionalFields())
             && (!hasPartialAttributeExpressions())
+            && (!hasUnionExpressions())
             && (!hasNonFetchJoinedAttributeExpressions())
             && (this.fetchGroup == null)
             && (this.fetchGroupName == null)

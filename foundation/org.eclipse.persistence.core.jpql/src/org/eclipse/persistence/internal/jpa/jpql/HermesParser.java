@@ -258,6 +258,11 @@ public final class HermesParser implements JPAQueryBuilder {
 	 */
 	public void setValidationLevel(String validationLevel) {
 		this.validationLevel = validationLevel;
+		if (validationLevel == ParserValidationType.None) {
+		    this.validateQueries = false;
+		} else {
+                    this.validateQueries = true;
+		}
 	}
 
 	/**

@@ -561,6 +561,11 @@ public interface Expression {
 	 */
 	String QUOTE = "'";
 
+        /**
+         * The constant for 'REGEXP'.
+         */
+        String REGEXP = "REGEXP";
+
 	/**
 	 * The constant for 'SELECT'.
 	 */
@@ -637,6 +642,21 @@ public interface Expression {
 	 * The constant for 'UNKNOWN', which is an unused keyword.
 	 */
 	String UNKNOWN = "UNKNOWN";
+
+        /**
+         * The constant for 'UNION'.
+         */
+        String UNION = "UNION";
+
+        /**
+         * The constant for 'INTERSECT'.
+         */
+        String INTERSECT = "INTERSECT";
+
+        /**
+         * The constant for 'EXCEPT'.
+         */
+        String EXCEPT = "EXCEPT";
 
 	/**
 	 * The constant for 'UPDATE'.

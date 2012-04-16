@@ -101,7 +101,6 @@ import org.eclipse.persistence.config.CacheCoordinationProtocol;
 import org.eclipse.persistence.config.DescriptorCustomizer;
 import org.eclipse.persistence.config.ExclusiveConnectionMode;
 import org.eclipse.persistence.config.LoggerType;
-import org.eclipse.persistence.config.ParserType;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.ProfilerType;
 import org.eclipse.persistence.config.SessionCustomizer;
@@ -1651,7 +1650,13 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         if (connectorValue instanceof Connector) {
             login.setConnector((Connector)connectorValue);
         } else if (connectorValue instanceof String) {
-            Class cls = findClassForProperty((String)connectorValue, connectorProperty, this.persistenceUnitInfo.getClassLoader());
+            Class cls = null;
+            // Try both class loaders.
+            try {
+                cls = findClassForProperty((String)connectorValue, connectorProperty, this.persistenceUnitInfo.getClassLoader());
+            } catch (Throwable failed) {
+                cls = findClassForProperty((String)connectorValue, connectorProperty, getClass().getClassLoader());                
+            }
             Connector connector = null;
             try {
                 Constructor constructor = cls.getConstructor();

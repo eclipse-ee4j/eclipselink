@@ -345,7 +345,7 @@ public final class EclipseLinkSemanticValidatorHelper implements SemanticValidat
 		}
 
 		// Direct collection is not an object so it's valid
-		return mapping.isDirectCollectionMapping();
+		return mapping.isDirectCollectionMapping() || mapping.isAbstractCompositeDirectCollectionMapping();
 	}
 
 	/**

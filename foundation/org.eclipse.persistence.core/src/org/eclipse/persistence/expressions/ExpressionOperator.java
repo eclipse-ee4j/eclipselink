@@ -89,6 +89,7 @@ public class ExpressionOperator implements Serializable {
     public static final int NullIf = 131;
     public static final int Coalesce = 132;
     public static final int CaseCondition = 136;
+    public static final int Regexp = 141;
 
     /** Aggregate operators */
     public static final int Count = 19;
@@ -100,6 +101,14 @@ public class ExpressionOperator implements Serializable {
     public static final int Variance = 25;
     public static final int Distinct = 87;
 
+    /** Union operators */
+    public static final int Union = 142;
+    public static final int UnionAll = 143;
+    public static final int Intersect = 144;
+    public static final int IntersectAll = 145;
+    public static final int Except = 146;
+    public static final int ExceptAll = 147;
+    
     /** Ordering operators */
     public static final int Ascending = 26;
     public static final int Descending = 27;
@@ -992,6 +1001,13 @@ public class ExpressionOperator implements Serializable {
                 }
             }
         }
+        // Regexp
+        else if ((this.selector == Regexp) && (right instanceof Vector) && (((Vector)right).size() == 1)) {
+            Boolean doesConform = JavaPlatform.conformRegexp(left, ((Vector)right).get(0));
+            if (doesConform != null) {
+                return doesConform.booleanValue();
+            }
+        }
 
         throw QueryException.cannotConformExpression();
     }
@@ -1471,6 +1487,13 @@ public class ExpressionOperator implements Serializable {
         platformOperatorNames.put(Integer.valueOf(SDO_FILTER), "MDSYS.SDO_FILTER");
         platformOperatorNames.put(Integer.valueOf(SDO_NN), "MDSYS.SDO_NN");
         platformOperatorNames.put(Integer.valueOf(NullIf), "NullIf");
+        platformOperatorNames.put(Integer.valueOf(Regexp), "REGEXP");
+        platformOperatorNames.put(Integer.valueOf(Union), "UNION");
+        platformOperatorNames.put(Integer.valueOf(UnionAll), "UNION ALL");
+        platformOperatorNames.put(Integer.valueOf(Intersect), "INTERSECT");
+        platformOperatorNames.put(Integer.valueOf(IntersectAll), "INTERSECT ALL");
+        platformOperatorNames.put(Integer.valueOf(Except), "EXCEPT");
+        platformOperatorNames.put(Integer.valueOf(ExceptAll), "EXCEPT ALL");
         return platformOperatorNames;
     }
     
@@ -1734,6 +1757,30 @@ public class ExpressionOperator implements Serializable {
         result.setNodeClass(ClassConstants.FunctionExpression_Class);
         v = NonSynchronizedVector.newInstance(2);
         v.add(".like(");
+        v.add(")");
+        result.printsJavaAs(v);
+        return result;
+    }
+
+    /**
+     * INTERNAL:
+     * Create the REGEXP operator.
+     * REGEXP allows for comparison through regular expression,
+     * this is supported by many databases and with be part of the next SQL standard.
+     */
+    public static ExpressionOperator regexp() {
+        ExpressionOperator result = new ExpressionOperator();
+        result.setSelector(Regexp);
+        result.setType(FunctionOperator);
+        Vector v = NonSynchronizedVector.newInstance(3);
+        v.add("");
+        v.add(" REGEXP ");
+        v.add("");
+        result.printsAs(v);
+        result.bePrefix();
+        result.setNodeClass(ClassConstants.FunctionExpression_Class);
+        v = NonSynchronizedVector.newInstance(2);
+        v.add(".regexp(");
         v.add(")");
         result.printsJavaAs(v);
         return result;
@@ -3091,6 +3138,90 @@ public class ExpressionOperator implements Serializable {
         exOperator.setType(FunctionOperator);
         exOperator.setSelector(All);
         exOperator.printsAs("ALL");
+        exOperator.bePostfix();
+        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        return exOperator;
+    }
+    
+    /**
+     * INTERNAL:
+     * Create the UNION operator.
+     */
+    public static ExpressionOperator union() {
+        ExpressionOperator exOperator = new ExpressionOperator();
+        exOperator.setType(FunctionOperator);
+        exOperator.setSelector(Union);
+        exOperator.printsAs("UNION ");
+        exOperator.bePostfix();
+        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        return exOperator;
+    }
+    
+    /**
+     * INTERNAL:
+     * Create the UNION ALL operator.
+     */
+    public static ExpressionOperator unionAll() {
+        ExpressionOperator exOperator = new ExpressionOperator();
+        exOperator.setType(FunctionOperator);
+        exOperator.setSelector(UnionAll);
+        exOperator.printsAs("UNION ALL ");
+        exOperator.bePostfix();
+        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        return exOperator;
+    }
+    
+    /**
+     * INTERNAL:
+     * Create the INTERSECT operator.
+     */
+    public static ExpressionOperator intersect() {
+        ExpressionOperator exOperator = new ExpressionOperator();
+        exOperator.setType(FunctionOperator);
+        exOperator.setSelector(Intersect);
+        exOperator.printsAs("INTERSECT ");
+        exOperator.bePostfix();
+        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        return exOperator;
+    }
+    
+    /**
+     * INTERNAL:
+     * Create the INTERSECT ALL operator.
+     */
+    public static ExpressionOperator intersectAll() {
+        ExpressionOperator exOperator = new ExpressionOperator();
+        exOperator.setType(FunctionOperator);
+        exOperator.setSelector(IntersectAll);
+        exOperator.printsAs("INTERSECT ALL ");
+        exOperator.bePostfix();
+        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        return exOperator;
+    }
+    
+    /**
+     * INTERNAL:
+     * Create the EXCEPT operator.
+     */
+    public static ExpressionOperator except() {
+        ExpressionOperator exOperator = new ExpressionOperator();
+        exOperator.setType(FunctionOperator);
+        exOperator.setSelector(Except);
+        exOperator.printsAs("EXCEPT ");
+        exOperator.bePostfix();
+        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        return exOperator;
+    }
+    
+    /**
+     * INTERNAL:
+     * Create the EXCEPT ALL operator.
+     */
+    public static ExpressionOperator exceptAll() {
+        ExpressionOperator exOperator = new ExpressionOperator();
+        exOperator.setType(FunctionOperator);
+        exOperator.setSelector(ExceptAll);
+        exOperator.printsAs("EXCEPT ALL ");
         exOperator.bePostfix();
         exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
         return exOperator;

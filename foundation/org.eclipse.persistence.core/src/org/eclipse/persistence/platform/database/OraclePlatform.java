@@ -37,6 +37,7 @@ import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
 import org.eclipse.persistence.internal.expressions.FunctionExpression;
 import org.eclipse.persistence.internal.expressions.RelationExpression;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
+import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
@@ -481,6 +482,44 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
         addOperator(ExpressionOperator.oracleDateName());
         addOperator(operatorLocate());
         addOperator(operatorLocate2());
+        addOperator(regexpOperator());
+        addOperator(exceptOperator());
+    }
+    
+    /**
+     * INTERNAL:
+     * Create the EXCEPT operator, MINUS in Oracle.
+     */
+    public static ExpressionOperator exceptOperator() {
+        ExpressionOperator exOperator = new ExpressionOperator();
+        exOperator.setType(ExpressionOperator.FunctionOperator);
+        exOperator.setSelector(ExpressionOperator.Except);
+        exOperator.printsAs("MINUS ");
+        exOperator.bePostfix();
+        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        return exOperator;
+    }
+
+    /**
+     * INTERNAL:
+     * Create the REGEXP_LIKE operator.
+     */
+    public static ExpressionOperator regexpOperator() {
+        ExpressionOperator result = new ExpressionOperator();
+        result.setSelector(ExpressionOperator.Regexp);
+        result.setType(ExpressionOperator.FunctionOperator);
+        Vector v = NonSynchronizedVector.newInstance(3);
+        v.add("REGEXP_LIKE(");
+        v.add(", ");
+        v.add(")");
+        result.printsAs(v);
+        result.bePrefix();
+        result.setNodeClass(ClassConstants.FunctionExpression_Class);
+        v = NonSynchronizedVector.newInstance(2);
+        v.add(".regexp(");
+        v.add(")");
+        result.printsJavaAs(v);
+        return result;
     }
 
     /**

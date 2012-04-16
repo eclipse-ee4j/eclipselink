@@ -30,7 +30,12 @@ public interface JDKPlatform {
      * Conforming queries with LIKE will act differently in different JDKs.
      */
     Boolean conformLike(Object left, Object right);
-    
+
+    /**
+     * Conforming queries with REGEXP will act differently in different JDKs.
+     */
+    Boolean conformRegexp(Object left, Object right);
+
     /**
      * Indicates whether the passed object implements java.sql.SQLXML introduced in jdk 1.6
      */

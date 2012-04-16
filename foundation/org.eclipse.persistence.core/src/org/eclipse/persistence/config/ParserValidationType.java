@@ -29,6 +29,7 @@ public class ParserValidationType {
     public static final String JPA10 = "JPA 1.0";
     public static final String JPA20 = "JPA 2.0";
     public static final String JPA21 = "JPA 2.1";
+    public static final String None = "None";
 
     public static final String DEFAULT = EclipseLink;
 }

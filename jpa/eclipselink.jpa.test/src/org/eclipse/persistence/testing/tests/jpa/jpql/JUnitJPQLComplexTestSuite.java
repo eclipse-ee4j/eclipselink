@@ -19,11 +19,9 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Vector;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -276,6 +274,8 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         tests.add("testCast");
         tests.add("testExtract");
         tests.add("testNullOrdering");
+        tests.add("testRegexp");
+        tests.add("testUnion");
 
         Collections.sort(tests);
         for (String test : tests) {
@@ -3216,6 +3216,26 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         
     }
     
+    /* Test REGEXP function in JPQL. */
+    public void testRegexp() {
+        if (!isHermesParser()) {
+            warning("testRegexp only works with Hermes");
+            return;
+        }
+        if (!getDatabaseSession().getPlatform().isOracle() && !getDatabaseSession().getPlatform().isMySQL()) {
+            warning("REGEXP only supported on Oracle, MySQL.");
+            return;
+        }
+        EntityManager em = createEntityManager();
+        try {
+            Query query = em.createQuery("Select e from Employee e where e.firstName regexp '^B.*'");
+            query.getResultList();
+        } finally {
+            closeEntityManager(em);
+        }
+        
+    }
+    
     /* Test NULLS FIRST function in JPQL. */
     public void testNullOrdering() {
         if (!isHermesParser()) {
@@ -3258,6 +3278,33 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         try {
             Query query = em.createQuery("Select extract(year from e.period.startDate) from Employee e where extract(day from e.period.startDate) = 4");
             query.getResultList();
+        } finally {
+            closeEntityManager(em);
+        }
+        
+    }
+    
+    /* Test UNION function in JPQL. */
+    public void testUnion() {
+        if (!isHermesParser()) {
+            warning("testUnion only works with Hermes");
+            return;
+        }
+        if (getDatabaseSession().getPlatform().isMySQL()) {
+            warning("INTERSECT not supported on MySQL.");
+            return;
+        }
+        EntityManager em = createEntityManager();
+        try {
+            Query query = em.createQuery("Select a from Address a where a.city = 'Ottawa'"
+            		+ " union Select a2 from Address a2"
+                        + " union all Select a2 from Address a2"
+            		+ " intersect Select a from Address a where a.city = 'Ottawa'"
+                        + " except Select a from Address a where a.city = 'Ottawa'");
+            List result = query.getResultList();
+            if (result.size() > 0) {
+                fail("Expected no results: " + result);
+            }
         } finally {
             closeEntityManager(em);
         }

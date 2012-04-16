@@ -84,6 +84,20 @@ public class ExpressionTestSuite extends TestSuite {
         addTest(test);
     }
 
+    private void addRegexpTest() {
+        ExpressionBuilder builder = new ExpressionBuilder();
+        Expression exp = builder.get("firstName").regexp("^B.*");
+
+        ReadAllExpressionTest test = new ReadAllExpressionTest(Employee.class, 2);
+        test.setExpression(exp);
+        test.setName("RegexpTest");
+        test.setDescription("Regexp test");
+        test.addSupportedPlatform(OraclePlatform.class);
+        test.addSupportedPlatform(MySQLPlatform.class);
+        test.addSupportedPlatform(PostgreSQLPlatform.class);
+        addTest(test);
+    }
+
     /**
      * TODO:
      * This tests seems to have been removed?  Should be added back, for DB2 platform.
@@ -1684,6 +1698,8 @@ public class ExpressionTestSuite extends TestSuite {
         addTest(new LiteralSQLExpressionWithQuestionMarkTest("' 123?123 '", false));
         addTest(new LiteralSQLExpressionWithQuestionMarkTest("' 123 ? 123 '", true));
         addTest(new LiteralSQLExpressionWithQuestionMarkTest("' 123 ? 123 '", false));
+        
+        addRegexpTest();
     }
 
     //SRG test set is maintained by QA only, do NOT add any new tests into it.

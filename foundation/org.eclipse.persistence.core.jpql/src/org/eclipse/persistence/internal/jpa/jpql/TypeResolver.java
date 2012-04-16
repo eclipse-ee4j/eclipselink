@@ -99,6 +99,7 @@ import org.eclipse.persistence.jpa.jpql.parser.OrExpression;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByClause;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByItem;
 import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
+import org.eclipse.persistence.jpa.jpql.parser.RegexpExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ResultVariable;
 import org.eclipse.persistence.jpa.jpql.parser.SelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.SelectStatement;
@@ -116,6 +117,7 @@ import org.eclipse.persistence.jpa.jpql.parser.SumFunction;
 import org.eclipse.persistence.jpa.jpql.parser.TreatExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TrimExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TypeExpression;
+import org.eclipse.persistence.jpa.jpql.parser.UnionClause;
 import org.eclipse.persistence.jpa.jpql.parser.UnknownExpression;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateClause;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateItem;
@@ -924,6 +926,13 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
 		type = Boolean.class;
 	}
 
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(RegexpExpression expression) {
+                type = Boolean.class;
+        }
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -1066,6 +1075,13 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
 	public void visit(OrderByClause expression) {
 		type = Object.class;
 	}
+
+        /**
+         * {@inheritDoc}
+         */
+        public void visit(UnionClause expression) {
+                type = Object.class;
+        }
 
 	/**
 	 * {@inheritDoc}

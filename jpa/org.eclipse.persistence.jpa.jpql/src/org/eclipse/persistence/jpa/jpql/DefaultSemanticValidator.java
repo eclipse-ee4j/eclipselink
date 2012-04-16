@@ -71,6 +71,7 @@ import org.eclipse.persistence.jpa.jpql.parser.OrExpression;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByClause;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByItem;
 import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
+import org.eclipse.persistence.jpa.jpql.parser.RegexpExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleArithmeticExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.SizeExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SqrtExpression;
@@ -1223,6 +1224,15 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
 			// LIKE always returns a boolean value
 			valid = true;
 		}
+
+                /**
+                 * {@inheritDoc}
+                 */
+                @Override
+                public void visit(RegexpExpression expression) {
+                        // REGEXP always returns a boolean value
+                        valid = true;
+                }
 
 		/**
 		 * {@inheritDoc}

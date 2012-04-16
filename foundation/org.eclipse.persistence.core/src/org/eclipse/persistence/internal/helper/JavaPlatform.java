@@ -79,6 +79,15 @@ public class JavaPlatform {
     }
 
     /**
+     *  INTERNAL:
+     *  Conform an expression which uses the operator "regexp" for an in-memory query
+     *  @return Boolean (TRUE, FALSE, null == unknown)
+     */
+    public static Boolean conformRegexp(Object left, Object right) {
+        return getPlatform().conformRegexp(left, right);
+    }
+
+    /**
      * INTERNAL:
      * Indicates whether the passed object implements java.sql.SQLXML introduced in jdk 1.6
      */

@@ -403,7 +403,7 @@ final class JPQLQueryContext {
 		currentContext = currentContext.parent;
 	}
 
-	private ExpressionBuilderVisitor expressionBuilder() {
+	public ExpressionBuilderVisitor expressionBuilder() {
 
 		if (parent != null) {
 			return parent.expressionBuilder();

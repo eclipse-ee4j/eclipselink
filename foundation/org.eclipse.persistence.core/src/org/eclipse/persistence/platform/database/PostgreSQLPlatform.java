@@ -123,6 +123,30 @@ public class PostgreSQLPlatform extends DatabasePlatform {
         addOperator(operatorLocate());
         addOperator(operatorLocate2());
         addOperator(toNumberOperator());
+        addOperator(regexpOperator());
+    }
+
+    /**
+     * INTERNAL:
+     * Create the ~ operator.
+     * REGEXP allows for comparison through regular expression.
+     */
+    public static ExpressionOperator regexpOperator() {
+        ExpressionOperator result = new ExpressionOperator();
+        result.setSelector(ExpressionOperator.Regexp);
+        result.setType(ExpressionOperator.FunctionOperator);
+        Vector v = NonSynchronizedVector.newInstance(3);
+        v.add("");
+        v.add(" ~ ");
+        v.add("");
+        result.printsAs(v);
+        result.bePrefix();
+        result.setNodeClass(ClassConstants.FunctionExpression_Class);
+        v = NonSynchronizedVector.newInstance(2);
+        v.add(".regexp(");
+        v.add(")");
+        result.printsJavaAs(v);
+        return result;
     }
 
     /**

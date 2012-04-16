@@ -16,6 +16,7 @@ package org.eclipse.persistence.internal.jpa.jpql;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractEclipseLinkExpressionVisitor;
+import org.eclipse.persistence.jpa.jpql.parser.AbstractExpression;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractFromClause;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractSelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractSelectStatement;
@@ -44,10 +45,12 @@ import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectStatement;
 import org.eclipse.persistence.jpa.jpql.parser.StateFieldPathExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SumFunction;
+import org.eclipse.persistence.jpa.jpql.parser.UnionClause;
 import org.eclipse.persistence.jpa.jpql.parser.ValueExpression;
 import org.eclipse.persistence.jpa.jpql.parser.WhereClause;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.ReportQuery;
 
 /**
  * This visitor is responsible to populate an {@link ObjectLevelReadQuery} by traversing a {@link
@@ -111,6 +114,35 @@ abstract class AbstractReadAllQueryVisitor extends AbstractEclipseLinkExpression
 		expression.getOrderByItems().accept(this);
 	}
 
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void visit(UnionClause expression) {
+                ReportQuery subquery = queryContext.expressionBuilder().buildSubquery((SimpleSelectStatement)expression.getQuery());
+                Expression union = null;
+                if (expression.isUnion()) {
+                    if (expression.hasAll()) {
+                        union = query.getExpressionBuilder().unionAll(subquery);                        
+                    } else {
+                        union = query.getExpressionBuilder().union(subquery);
+                    }
+                } else if (expression.isIntersect()) {
+                    if (expression.hasAll()) {
+                        union = query.getExpressionBuilder().intersectAll(subquery);                        
+                    } else {
+                        union = query.getExpressionBuilder().intersect(subquery);
+                    }
+                } else if (expression.isExcept()) {
+                    if (expression.hasAll()) {
+                        union = query.getExpressionBuilder().exceptAll(subquery);                        
+                    } else {
+                        union = query.getExpressionBuilder().except(subquery);
+                    }
+                }
+                query.addUnionExpression(union);
+        }
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -157,6 +189,13 @@ abstract class AbstractReadAllQueryVisitor extends AbstractEclipseLinkExpression
 		if (expression.hasOrderByClause()) {
 			expression.getOrderByClause().accept(this);
 		}
+
+                // UNION
+                if (expression.hasUnionClause()) {
+                        for (AbstractExpression union : expression.getUnionClauses()) {
+                            union.accept(this);
+                        }
+                }
 	}
 
 	/**

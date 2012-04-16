@@ -360,6 +360,13 @@ public class DatasourcePlatform implements Platform {
         addOperator(ExpressionOperator.nullIf());
         addOperator(ExpressionOperator.ifNull());
         addOperator(ExpressionOperator.cast());
+        addOperator(ExpressionOperator.regexp());
+        addOperator(ExpressionOperator.union());
+        addOperator(ExpressionOperator.unionAll());
+        addOperator(ExpressionOperator.intersect());
+        addOperator(ExpressionOperator.intersectAll());
+        addOperator(ExpressionOperator.except());
+        addOperator(ExpressionOperator.exceptAll());
 
         // Date
         addOperator(ExpressionOperator.addMonths());

@@ -210,7 +210,8 @@ public class FunctionExpression extends BaseExpression {
         // Conform between or in function.
         if ((selector == ExpressionOperator.Between) || (selector == ExpressionOperator.NotBetween)
                 || (selector == ExpressionOperator.In) || (selector == ExpressionOperator.NotIn) 
-                || (selector == ExpressionOperator.Like) || (selector == ExpressionOperator.NotLike)) {
+                || (selector == ExpressionOperator.Like) || (selector == ExpressionOperator.Regexp)
+                || (selector == ExpressionOperator.NotLike)) {
             // Extract the value from the left side.
             Object leftValue = getBaseExpression().valueFromObject(object, session, translationRow, valueHolderPolicy, isObjectUnregistered);
 

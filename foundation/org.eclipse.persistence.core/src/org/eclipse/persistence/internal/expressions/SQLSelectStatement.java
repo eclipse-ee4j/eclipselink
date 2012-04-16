@@ -60,6 +60,9 @@ public class SQLSelectStatement extends SQLStatement {
 
     /** Group by clause for report queries. */
     protected List<Expression> groupByExpressions;
+    
+    /** Union clause. */
+    protected List<Expression> unionExpressions;
 
     /** Having clause for report queries. */
     protected Expression havingExpression;
@@ -718,6 +721,22 @@ public class SQLSelectStatement extends SQLStatement {
     }
 
     /**
+     * This method will append the union clause to the end of the
+     * select statement.
+     */
+    public void appendUnionClauseToWriter(ExpressionSQLPrinter printer) throws IOException {
+        if (!hasUnionExpressions()) {
+            return;
+        }
+
+        for (Iterator expressionsEnum = getUnionExpressions().iterator(); expressionsEnum.hasNext();) {
+            Expression expression = (Expression)expressionsEnum.next();
+            printer.getWriter().write(" ");
+            expression.printSQL(printer);
+        }
+    }
+
+    /**
      * INTERNAL: Alias the tables in all of our nodes.
      */
     public void assignAliases(Vector allExpressions) {
@@ -1047,6 +1066,17 @@ public class SQLSelectStatement extends SQLStatement {
         return orderByExpressions;
     }
 
+    public List<Expression> getUnionExpressions() {
+        if (unionExpressions == null) {
+            unionExpressions = new ArrayList(4);
+        }
+        return unionExpressions;
+    }
+
+    public void setUnionExpressions(List<Expression> unionExpressions) {
+        this.unionExpressions = unionExpressions;
+    }
+
     /**
      * INTERNAL:
      * Each Vector's element is a map of tables join expressions keyed by the tables
@@ -1150,6 +1180,10 @@ public class SQLSelectStatement extends SQLStatement {
 
     public boolean hasOrderByExpressions() {
         return (orderByExpressions != null) && (!orderByExpressions.isEmpty());
+    }
+
+    public boolean hasUnionExpressions() {
+        return (unionExpressions != null) && (!unionExpressions.isEmpty());
     }
     
     public boolean hasNonSelectFields() {
@@ -1260,6 +1294,11 @@ public class SQLSelectStatement extends SQLStatement {
         // Process group by expressions.
         if (hasGroupByExpressions()) {
             rebuildAndAddExpressions(getGroupByExpressions(), allExpressions, builder, clonedExpressions);
+        }
+        
+        // Process union expressions.
+        if (hasUnionExpressions()) {
+            rebuildAndAddExpressions(getUnionExpressions(), allExpressions, builder, clonedExpressions);
         }
 
         if (hasHavingExpression()) {
@@ -1555,6 +1594,10 @@ public class SQLSelectStatement extends SQLStatement {
                 if (getForUpdateClause() != null) {
                     getForUpdateClause().printSQL(printer, this);
                 }
+            }
+
+            if (hasUnionExpressions()) {
+                appendUnionClauseToWriter(printer);
             }
 
             return selectFields;

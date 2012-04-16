@@ -43,6 +43,7 @@ import org.eclipse.persistence.jpa.jpql.parser.MultiplicationExpression;
 import org.eclipse.persistence.jpa.jpql.parser.NullComparisonExpression;
 import org.eclipse.persistence.jpa.jpql.parser.NumericLiteral;
 import org.eclipse.persistence.jpa.jpql.parser.OrExpression;
+import org.eclipse.persistence.jpa.jpql.parser.RegexpExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SizeExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SqrtExpression;
 import org.eclipse.persistence.jpa.jpql.parser.StateFieldPathExpression;
@@ -333,6 +334,23 @@ public class ParameterTypeVisitor extends AbstractTraverseParentVisitor {
 			this.expression = expression;
 		}
 	}
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void visit(RegexpExpression expression) {
+
+                Expression patternValue     = expression.getPatternValue();
+                Expression stringExpression = expression.getStringExpression();
+
+                if (patternValue.isAncestor(inputParameter)) {
+                        this.expression = expression.getStringExpression();
+                }
+                else if (stringExpression.isAncestor(inputParameter)) {
+                        this.expression = expression;
+                }
+        }
 
 	/**
 	 * {@inheritDoc}

@@ -318,6 +318,16 @@ public class SubSelectExpression extends BaseExpression {
             reportQuery.setOrderByExpressions(orderByExpressions);
         }
         
+        // Twist union expressions
+        if (reportQuery.hasUnionExpressions()) {
+            List<Expression> unionExpressions = new ArrayList<Expression>(reportQuery.getUnionExpressions().size());
+            for (Expression unionExpression : reportQuery.getUnionExpressions()) {
+                unionExpressions.add(unionExpression.twistedForBaseAndContext(newBase, getBuilder(), getBaseExpression()));
+            }
+            
+            reportQuery.setUnionExpressions(unionExpressions);
+        }
+        
         // Twist selection criteria
         if (reportQuery.getSelectionCriteria() != null) {
             reportQuery.setSelectionCriteria(reportQuery.getSelectionCriteria().twistedForBaseAndContext(newBase, getBuilder(), getBaseExpression()));
@@ -388,6 +398,16 @@ public class SubSelectExpression extends BaseExpression {
             }
             
             reportQuery.setOrderByExpressions(orderByExpressions);
+        }
+        
+        // Twist union expressions
+        if (getSubQuery().hasUnionExpressions()) {
+            List<Expression> unionByExpressions = new ArrayList<Expression>(getSubQuery().getUnionExpressions().size());
+            for (Expression unionExpression : getSubQuery().getUnionExpressions()) {
+                unionByExpressions.add(unionExpression.twistedForBaseAndContext(newBase, context, getBaseExpression()));
+            }
+            
+            reportQuery.setUnionExpressions(unionByExpressions);
         }
         
         // Twist selection criteria

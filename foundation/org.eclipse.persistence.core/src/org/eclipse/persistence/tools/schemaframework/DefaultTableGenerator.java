@@ -791,7 +791,7 @@ public class DefaultTableGenerator {
 
                 if ((fieldType == null) || (!fieldType.isPrimitive() && (fieldTypeDef  == null))) {
                     //TODO: log a warning for inaccessible type or not convertable type.
-                    AbstractSessionLog.getLog().log(SessionLog.CONFIG, "field_type_set_to_java_lang_string", dbField.getQualifiedName(), fieldType);
+                    AbstractSessionLog.getLog().log(SessionLog.CONFIG, SessionLog.EJB_OR_METADATA, "field_type_set_to_java_lang_string", dbField.getQualifiedName(), fieldType);
 
                     //set the default type (lang.String) to all un-resolved java type, like null, Number, util.Date, NChar/NType, Calendar
                     //sql.Blob/Clob, Object, or unknown type). Please refer to bug 4352820.

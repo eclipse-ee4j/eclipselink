@@ -23,14 +23,20 @@ import java.util.concurrent.ConcurrentHashMap;
 public class JDK15Platform implements JDKPlatform {
 
     /**
-     * PERF: The regular expression compiled Pattern objects are cached
+     * PERF: The like expression compiled Pattern objects are cached
      * to avoid re-compilation on every usage.
      */
     protected static ConcurrentHashMap patternCache = new ConcurrentHashMap();
 
     /**
+     * PERF: The regular expression compiled Pattern objects are cached
+     * to avoid re-compilation on every usage.
+     */
+    protected static ConcurrentHashMap regexpPatternCache = new ConcurrentHashMap();
+
+    /**
      * INTERNAL:
-     * An implementation of in memory queries with Like which uses the JDK 1.4
+     * An implementation of in memory queries with Like which uses the
      * regular expression framework.
      */
     public Boolean conformLike(Object left, Object right) {
@@ -55,6 +61,38 @@ public class JDK15Platform implements JDKPlatform {
                 patternCache.remove(patternCache.keySet().iterator().next());
             }
             patternCache.put(right, pattern);
+        }
+        boolean match = pattern.matcher((String)left).matches();
+        if (match) {
+            return Boolean.TRUE;
+        } else {
+            return Boolean.FALSE;
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * An implementation of in memory queries with Regexp which uses the
+     * regular expression framework.
+     */
+    public Boolean conformRegexp(Object left, Object right) {
+        if ((left == null) && (right == null)) {
+            return Boolean.TRUE;
+        } else if ((left == null) || (right == null)) {
+            return Boolean.FALSE;
+        }
+        left = String.valueOf(left);
+        right = String.valueOf(right);
+        // PERF: First check the pattern cache for the pattern.
+        // Note that the original string is the key, to avoid having to translate it first.
+        Pattern pattern = (Pattern)regexpPatternCache.get(right);
+        if (pattern == null) {
+            pattern = Pattern.compile((String)right);
+            // Ensure cache does not grow beyond 100.
+            if (regexpPatternCache.size() > 100) {
+                regexpPatternCache.remove(regexpPatternCache.keySet().iterator().next());
+            }
+            regexpPatternCache.put(right, pattern);
         }
         boolean match = pattern.matcher((String)left).matches();
         if (match) {
