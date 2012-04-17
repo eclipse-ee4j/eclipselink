@@ -733,6 +733,7 @@ public class SQLSelectStatement extends SQLStatement {
             Expression expression = (Expression)expressionsEnum.next();
             printer.getWriter().write(" ");
             expression.printSQL(printer);
+            printer.printString(")");
         }
     }
 
@@ -1550,6 +1551,14 @@ public class SQLSelectStatement extends SQLStatement {
         try {
             Vector selectFields = null;
             printer.setRequiresDistinct(shouldDistinctBeUsed());
+
+            if (hasUnionExpressions()) {
+                // Ensure union order using brackets.
+                int size = getUnionExpressions().size();
+                for (int index = 0; index < size; index++) {
+                    printer.printString("(");                    
+                }
+            }
             printer.printString("SELECT ");
 
             if (getHintString() != null) {

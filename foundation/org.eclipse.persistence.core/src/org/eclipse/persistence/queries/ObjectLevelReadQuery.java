@@ -319,6 +319,9 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         if (!getExpressionBuilder().equals(query.getExpressionBuilder())) {
             return false;
         }
+        if (this.distinctState != query.distinctState) {
+            return false;
+        }
         if (hasJoining()) {
             if (!query.hasJoining()) {
                 return false;
@@ -1940,6 +1943,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             this.inMemoryQueryIndirectionPolicy = readQuery.inMemoryQueryIndirectionPolicy;
             this.lockModeType = readQuery.lockModeType;
             this.defaultBuilder = readQuery.defaultBuilder;
+            this.distinctState = readQuery.distinctState;
         }
     }
     
@@ -2704,7 +2708,6 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         return super.isDefaultPropertiesQuery()
             && (!this.isResultSetOptimizedQuery)
             && (isDefaultLock())
-            && (!isDistinctComputed())
             && (!hasAdditionalFields())
             && (!hasPartialAttributeExpressions())
             && (!hasUnionExpressions())

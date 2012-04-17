@@ -382,7 +382,7 @@ public class QueryFrameworkTestSuite extends TestSuite {
                 
                 List result = (List)getSession().executeQuery(query);
                 if (result.size() > 0) {
-                    throwError("Expected o elements: " + result);
+                    throwError("Expected 0 elements: " + result);
                 }
             }
         };
