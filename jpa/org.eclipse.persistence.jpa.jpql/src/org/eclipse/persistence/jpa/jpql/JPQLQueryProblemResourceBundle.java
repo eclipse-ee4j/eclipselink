@@ -254,8 +254,9 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
 			{"HAVING_CLAUSE_MISSING_CONDITIONAL_EXPRESSION", "The conditional expression is missing from the HAVING clause."},
 
 			// HermesParser - Validation
-			{"HERMES_PARSER_GRAMMAR_VALIDATOR_ERROR_MESSAGE",  "Syntax error parsing the query [{0}]. {1}"},
-			{"HERMES_PARSER_SEMANTIC_VALIDATOR_ERROR_MESSAGE", "Problem compiling the query [{0}]. {1}"},
+			{"HERMES_PARSER_GRAMMAR_VALIDATOR_ERROR_MESSAGE",    "Syntax error parsing [{0}]. {1}"},
+			{"HERMES_PARSER_SEMANTIC_VALIDATOR_ERROR_MESSAGE",   "Problem compiling [{0}]. {1}"},
+			{"HERMES_PARSER_UNEXPECTED_EXCEPTION_ERROR_MESSAGE", "Internal problem encountered while compiling [{0}]."},
 
 			// IdentificationVariable - Grammar
 			{"IDENTIFICATION_VARIABLE_INVALID_DUPLICATE",           "The identification variable ''{0}'' cannot be declared more than once."},

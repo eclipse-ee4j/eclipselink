@@ -108,73 +108,17 @@ public final class HermesParser implements JPAQueryBuilder {
 	}
 
 	/**
-	 * {@inheritDoc}
-	 */
-	public DatabaseQuery buildQuery(CharSequence jpqlQuery, AbstractSession session) {
-		return populateQueryImp(jpqlQuery, null, session);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public Expression buildSelectionCriteria(String entityName,
-	                                         String selectionCriteria,
-	                                         AbstractSession session) {
-
-		JPQLGrammar jpqlGrammar = jpqlGrammar();
-
-		// Create the parsed tree representation of the selection criteria
-		JPQLExpression jpqlExpression = new JPQLExpression(
-			selectionCriteria,
-			jpqlGrammar,
-			ConditionalExpressionBNF.ID,
-			validateQueries
-		);
-
-		// Caches the info and add a virtual range variable declaration
-		JPQLQueryContext queryContext = new JPQLQueryContext(jpqlGrammar);
-		queryContext.cache(session, null, jpqlExpression, selectionCriteria);
-		queryContext.addRangeVariableDeclaration(entityName, "this");
-
-		// Validate the query
-		validate(queryContext, jpqlExpression.getQueryStatement());
-
-		// Create the Expression representing the selection criteria
-		return queryContext.buildExpression(jpqlExpression.getQueryStatement());
-	}
-
-	private JPQLGrammar jpqlGrammar() {
-
-		if (validationLevel == ParserValidationType.EclipseLink) {
-			return DefaultEclipseLinkJPQLGrammar.instance();
-		}
-
-		if (validationLevel == ParserValidationType.JPA10) {
-			return JPQLGrammar1_0.instance();
-		}
-
-		if (validationLevel == ParserValidationType.JPA20) {
-			return JPQLGrammar2_0.instance();
-		}
-
-		if (validationLevel == ParserValidationType.JPA21) {
-			return JPQLGrammar2_1.instance();
-		}
-
-		return DefaultEclipseLinkJPQLGrammar.instance();
-	}
-
-	/**
-	 * Creates and throws a {@link JPQLException} indicating the problems with the JPQL query.
+	 * Creates a {@link JPQLException} indicating the problems with the JPQL query.
 	 *
 	 * @param queryContext The {@link JPQLQueryContext} containing the information about the JPQL query
 	 * @param problems The {@link JPQLQueryProblem problems} found in the JPQL query that are
 	 * translated into an exception
 	 * @param messageKey The key used to retrieve the localized message
+	 * @return The {@link JPQLException} indicating the problems with the JPQL query
 	 */
-	private void logProblems(JPQLQueryContext queryContext,
-	                         Collection<JPQLQueryProblem> problems,
-	                         String messageKey) {
+	private JPQLException buildException(JPQLQueryContext queryContext,
+	                                     Collection<JPQLQueryProblem> problems,
+	                                     String messageKey) {
 
 		ResourceBundle bundle = ResourceBundle.getBundle(JPQLQueryProblemResourceBundle.class.getName());
 		StringBuilder sb = new StringBuilder();
@@ -211,7 +155,79 @@ public final class HermesParser implements JPAQueryBuilder {
 
 		String errorMessage = bundle.getString(messageKey);
 		errorMessage = MessageFormat.format(errorMessage, queryContext.getJPQLQuery(), sb);
-		throw new JPQLException(errorMessage);
+		return new JPQLException(errorMessage);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public DatabaseQuery buildQuery(CharSequence jpqlQuery, AbstractSession session) {
+		return populateQueryImp(jpqlQuery, null, session);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public Expression buildSelectionCriteria(String entityName,
+	                                         String selectionCriteria,
+	                                         AbstractSession session) {
+
+		try {
+			JPQLGrammar jpqlGrammar = jpqlGrammar();
+
+			// Create the parsed tree representation of the selection criteria
+			JPQLExpression jpqlExpression = new JPQLExpression(
+				selectionCriteria,
+				jpqlGrammar,
+				ConditionalExpressionBNF.ID,
+				validateQueries
+			);
+
+			// Caches the info and add a virtual range variable declaration
+			JPQLQueryContext queryContext = new JPQLQueryContext(jpqlGrammar);
+			queryContext.cache(session, null, jpqlExpression, selectionCriteria);
+			queryContext.addRangeVariableDeclaration(entityName, "this");
+
+			// Validate the query
+			validate(queryContext, jpqlExpression.getQueryStatement());
+
+			// Create the Expression representing the selection criteria
+			return queryContext.buildExpression(jpqlExpression.getQueryStatement());
+		}
+		catch (Exception exception) {
+			if (exception instanceof JPQLException) {
+				throw (JPQLException) exception;
+			}
+			throw buildUnexpectedException(selectionCriteria, exception);
+		}
+	}
+
+	private JPQLException buildUnexpectedException(CharSequence jpqlQuery, Exception exception) {
+		ResourceBundle bundle = ResourceBundle.getBundle(JPQLQueryProblemResourceBundle.class.getName());
+		String errorMessage = bundle.getString(JPQLQueryProblemMessages.HermesParser_UnexpectedException_ErrorMessage);
+		errorMessage = MessageFormat.format(errorMessage, jpqlQuery);
+		return new JPQLException(errorMessage, exception);
+	}
+
+	private JPQLGrammar jpqlGrammar() {
+
+		if (validationLevel == ParserValidationType.EclipseLink) {
+			return DefaultEclipseLinkJPQLGrammar.instance();
+		}
+
+		if (validationLevel == ParserValidationType.JPA10) {
+			return JPQLGrammar1_0.instance();
+		}
+
+		if (validationLevel == ParserValidationType.JPA20) {
+			return JPQLGrammar2_0.instance();
+		}
+
+		if (validationLevel == ParserValidationType.JPA21) {
+			return JPQLGrammar2_1.instance();
+		}
+
+		return DefaultEclipseLinkJPQLGrammar.instance();
 	}
 
 	/**
@@ -225,30 +241,38 @@ public final class HermesParser implements JPAQueryBuilder {
 	                                       DatabaseQuery query,
 	                                       AbstractSession session) {
 
-		JPQLGrammar jpqlGrammar = jpqlGrammar();
+		try {
+			JPQLGrammar jpqlGrammar = jpqlGrammar();
 
-		// Parse the JPQL query
-		JPQLExpression jpqlExpression = new JPQLExpression(jpqlQuery, jpqlGrammar(), validateQueries);
+			// Parse the JPQL query
+			JPQLExpression jpqlExpression = new JPQLExpression(jpqlQuery, jpqlGrammar, validateQueries);
 
-		// Create a context that caches the information contained in the JPQL query
-		// (especially from the FROM clause)
-		JPQLQueryContext queryContext = new JPQLQueryContext(jpqlGrammar);
-		queryContext.cache(session, query, jpqlExpression, jpqlQuery);
+			// Create a context that caches the information contained in the JPQL query
+			// (especially from the FROM clause)
+			JPQLQueryContext queryContext = new JPQLQueryContext(jpqlGrammar);
+			queryContext.cache(session, query, jpqlExpression, jpqlQuery);
 
-		// Validate the JPQL query
-		validate(queryContext, jpqlExpression);
+			// Validate the JPQL query
+			validate(queryContext, jpqlExpression);
 
-		// Create the DatabaseQuery by visiting the parsed tree
-		DatabaseQueryVisitor visitor = new DatabaseQueryVisitor(queryContext, jpqlQuery);
-		jpqlExpression.accept(visitor);
+			// Create the DatabaseQuery by visiting the parsed tree
+			DatabaseQueryVisitor visitor = new DatabaseQueryVisitor(queryContext, jpqlQuery);
+			jpqlExpression.accept(visitor);
 
-		// Add the input parameter types to the DatabaseQuery
-		if (query == null) {
-			query = queryContext.getDatabaseQuery();
-			addArguments(queryContext, query);
+			// Add the input parameter types to the DatabaseQuery
+			if (query == null) {
+				query = queryContext.getDatabaseQuery();
+				addArguments(queryContext, query);
+			}
+
+			return query;
 		}
-
-		return query;
+		catch (Exception exception) {
+			if (exception instanceof JPQLException) {
+				throw (JPQLException) exception;
+			}
+			throw buildUnexpectedException(jpqlQuery, exception);
+		}
 	}
 
 	/**
@@ -258,11 +282,7 @@ public final class HermesParser implements JPAQueryBuilder {
 	 */
 	public void setValidationLevel(String validationLevel) {
 		this.validationLevel = validationLevel;
-		if (validationLevel == ParserValidationType.None) {
-		    this.validateQueries = false;
-		} else {
-                    this.validateQueries = true;
-		}
+		this.validateQueries = (validationLevel != ParserValidationType.None);
 	}
 
 	/**
@@ -287,8 +307,11 @@ public final class HermesParser implements JPAQueryBuilder {
 			expression.accept(grammar);
 
 			if (!problems.isEmpty()) {
-				logProblems(queryContext, problems, JPQLQueryProblemMessages.HermesParser_GrammarValidator_ErrorMessage);
-				problems = new LinkedList<JPQLQueryProblem>();
+				throw buildException(
+					queryContext,
+					problems,
+					JPQLQueryProblemMessages.HermesParser_GrammarValidator_ErrorMessage
+				);
 			}
 
 			// Validate the JPQL query semantically
@@ -298,7 +321,11 @@ public final class HermesParser implements JPAQueryBuilder {
 			expression.accept(semantic);
 
 			if (!problems.isEmpty()) {
-				logProblems(queryContext, problems, JPQLQueryProblemMessages.HermesParser_SemanticValidator_ErrorMessage);
+				throw buildException(
+					queryContext,
+					problems,
+					JPQLQueryProblemMessages.HermesParser_SemanticValidator_ErrorMessage
+				);
 			}
 		}
 	}

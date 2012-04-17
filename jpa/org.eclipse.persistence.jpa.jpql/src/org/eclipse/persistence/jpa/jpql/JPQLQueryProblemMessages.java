@@ -161,6 +161,7 @@ public interface JPQLQueryProblemMessages {
 	String HavingClause_MissingConditionalExpression = "HAVING_CLAUSE_MISSING_CONDITIONAL_EXPRESSION";
 	String HermesParser_GrammarValidator_ErrorMessage = "HERMES_PARSER_GRAMMAR_VALIDATOR_ERROR_MESSAGE";
 	String HermesParser_SemanticValidator_ErrorMessage = "HERMES_PARSER_SEMANTIC_VALIDATOR_ERROR_MESSAGE";
+	String HermesParser_UnexpectedException_ErrorMessage = "HERMES_PARSER_UNEXPECTED_EXCEPTION_ERROR_MESSAGE";
 	String IdentificationVariable_EntityName = "IDENTIFICATION_VARIABLE_ENTITY_NAME";
 	String IdentificationVariable_Invalid_Duplicate = "IDENTIFICATION_VARIABLE_INVALID_DUPLICATE";
 	String IdentificationVariable_Invalid_JavaIdentifier = "IDENTIFICATION_VARIABLE_INVALID_JAVA_IDENTIFIER";

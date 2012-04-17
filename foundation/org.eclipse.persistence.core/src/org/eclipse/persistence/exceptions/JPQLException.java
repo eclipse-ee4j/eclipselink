@@ -89,7 +89,7 @@ public class JPQLException extends EclipseLinkException {
     * INTERNAL
     * Only TopLink can throw and create these excpetions
     */
-    protected JPQLException(String message, Exception internalException) {
+    public JPQLException(String message, Exception internalException) {
         super(message, internalException);
     }
 
