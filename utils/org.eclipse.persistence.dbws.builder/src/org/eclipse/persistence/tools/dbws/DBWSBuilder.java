@@ -64,6 +64,7 @@ import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse;
 import org.eclipse.persistence.tools.dbws.jdbc.JDBCHelper;
 import org.eclipse.persistence.tools.dbws.oracle.OracleHelper;
+
 import static org.eclipse.persistence.internal.xr.Util.DBWS_OR_XML;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_OX_XML;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_SCHEMA_XML;
@@ -388,7 +389,8 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         packager.start();
         DBWSBuilderHelper helper = getBuilderHelper();
         helper.buildDbArtifacts();
-        helper.buildOROXProjects(topTransformer);  // don't write out projects yet; buildDBWSModel may add additional mappings
+        // don't write out projects yet; buildDBWSModel may add additional mappings
+        helper.buildOROXProjects(topTransformer, helper.buildTypesList(operations));
         // don't write out schema yet; buildDBWSModel/buildWSDL may add additional schema elements
         helper.buildSchema(topTransformer);
         helper.buildSessionsXML(dbwsSessionsStream);

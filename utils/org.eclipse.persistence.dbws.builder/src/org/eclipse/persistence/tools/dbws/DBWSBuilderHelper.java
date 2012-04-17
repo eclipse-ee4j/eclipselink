@@ -14,16 +14,25 @@ package org.eclipse.persistence.tools.dbws;
 
 //javase imports
 import java.io.OutputStream;
+import java.util.List;
 
 //Java extension library imports
 import javax.wsdl.WSDLException;
+
+import org.eclipse.persistence.tools.oracleddl.metadata.CompositeDatabaseType;
 
 public interface DBWSBuilderHelper {
 
     public void buildDbArtifacts();
 
     public void buildOROXProjects(NamingConventionTransformer nct);
+    public void buildOROXProjects(NamingConventionTransformer nct, List<CompositeDatabaseType> types);
 
+    /**
+     * Builds a list of type instances based on procedure/function arguments.
+     */
+    public List<CompositeDatabaseType> buildTypesList(List<OperationModel> operations);
+    
     public void buildSchema(NamingConventionTransformer nct);
 
     public void buildSessionsXML(OutputStream dbwsSessionsStream);

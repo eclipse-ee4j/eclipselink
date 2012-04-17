@@ -71,6 +71,7 @@ import static org.eclipse.persistence.tools.dbws.Util.qNameFromString;
 //DDL parser imports
 import org.eclipse.persistence.tools.oracleddl.metadata.ArgumentType;
 import org.eclipse.persistence.tools.oracleddl.metadata.ArgumentTypeDirection;
+import org.eclipse.persistence.tools.oracleddl.metadata.CompositeDatabaseType;
 import org.eclipse.persistence.tools.oracleddl.metadata.DatabaseType;
 import org.eclipse.persistence.tools.oracleddl.metadata.FunctionType;
 import org.eclipse.persistence.tools.oracleddl.metadata.ProcedureType;
@@ -816,8 +817,8 @@ public class JDBCHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHelp
     }
 
     @Override
-    protected void addToOROXProjectsForComplexArgs(List<ArgumentType> arguments, Project orProject, Project oxProject, ProcedureOperationModel opModel) {
-        // TODO - handle complex arguments
+    public void addToOROXProjectsForComplexTypes(List<CompositeDatabaseType> types, Project orProject, Project oxProject) {
+        // TODO - handle complex types
     }
     @Override
     protected void buildQueryForProcedureType(ProcedureType procType, Project orProject, Project oxProject, ProcedureOperationModel opModel, boolean hasComplexArgs) {

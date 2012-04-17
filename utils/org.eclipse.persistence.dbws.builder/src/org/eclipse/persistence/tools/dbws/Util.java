@@ -605,17 +605,25 @@ public class Util {
     }
 
     /**
+     * Indicates if a given DatabaseType is considered 'complex', i.e.
+     * is one of PLSQLRecordType, PLSQLCollectionType, VArrayType, 
+     * ObjectType, or NestedTableType
+     */
+    public static boolean isTypeComplex(DatabaseType dbType) {
+        return dbType.isPLSQLType()
+                || (dbType.isPLSQLCursorType() && !((PLSQLCursorType)dbType).isWeaklyTyped())
+                || dbType.isVArrayType()
+                || dbType.isObjectType()
+                || dbType.isObjectTableType();
+    }
+    
+    /**
      * Indicates if a given ArgumentType is considered 'complex', i.e. it has
      * a data type that is one of PLSQLRecordType, PLSQLCollectionType,
      * VArrayType, ObjectType, or NestedTableType
      */
     public static boolean isArgComplex(ArgumentType argument) {
-        DatabaseType argType = argument.getEnclosedType();
-        return argType.isPLSQLType()
-                || (argType.isPLSQLCursorType() && !((PLSQLCursorType)argType).isWeaklyTyped())
-                || argType.isVArrayType()
-                || argType.isObjectType()
-                || argType.isObjectTableType();
+        return isTypeComplex(argument.getEnclosedType());
     }
 
     /**

@@ -84,6 +84,7 @@ import org.eclipse.persistence.tools.dbws.ProcedureOperationModel;
 import org.eclipse.persistence.tools.dbws.Util;
 import org.eclipse.persistence.tools.oracleddl.metadata.ArgumentType;
 import org.eclipse.persistence.tools.oracleddl.metadata.ArgumentTypeDirection;
+import org.eclipse.persistence.tools.oracleddl.metadata.CompositeDatabaseType;
 import org.eclipse.persistence.tools.oracleddl.metadata.DatabaseType;
 import org.eclipse.persistence.tools.oracleddl.metadata.FieldType;
 import org.eclipse.persistence.tools.oracleddl.metadata.FunctionType;
@@ -661,32 +662,28 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
         return allProcsAndFuncs.isEmpty() ? null : allProcsAndFuncs;
     }
 
-    /**
-     * Create descriptors for complex arguments.  The newly created
-     * descriptors will be added to the given OR/OX projects.
-     */
-    protected void addToOROXProjectsForComplexArgs(List<ArgumentType> arguments, Project orProject, Project oxProject, ProcedureOperationModel opModel) {
-        for (ArgumentType arg : arguments) {
-            DatabaseType dbType = arg.getEnclosedType();
+    public void addToOROXProjectsForComplexTypes(List<CompositeDatabaseType> types, Project orProject, Project oxProject) {
+        for (DatabaseType dbType : types) {
             String name;
             String alias;
             if (dbType.isPLSQLType()) {
-                name = opModel.getCatalogPattern() + DOT + dbType.getTypeName();
-                String targetTypeName = opModel.getCatalogPattern() + UNDERSCORE + dbType.getTypeName();
+            	String catalogPattern = ((PLSQLType) dbType).getParentType().getPackageName();
+                name = catalogPattern + DOT + dbType.getTypeName();
+                String targetTypeName = catalogPattern + UNDERSCORE + dbType.getTypeName();
                 alias = targetTypeName.toLowerCase();
                 // handle PL/SQL record type
                 if (dbType.isPLSQLRecordType()) {
-                    addToOXProjectForPLSQLRecordArg(dbType, oxProject, name, alias, targetTypeName, opModel.getCatalogPattern());
-                    addToORProjectForPLSQLRecordArg(dbType, orProject, name, alias, targetTypeName, opModel.getCatalogPattern());
+                    addToOXProjectForPLSQLRecordArg(dbType, oxProject, name, alias, targetTypeName, catalogPattern);
+                    addToORProjectForPLSQLRecordArg(dbType, orProject, name, alias, targetTypeName, catalogPattern);
                 }  // handle PL/SQL collection type
                 else {
-                    addToOXProjectForPLSQLTableArg(dbType, oxProject, name, alias, targetTypeName, opModel.getCatalogPattern());
-                    addToORProjectForPLSQLTableArg(dbType, orProject, name, alias, targetTypeName, opModel.getCatalogPattern());
+                    addToOXProjectForPLSQLTableArg(dbType, oxProject, name, alias, targetTypeName, catalogPattern);
+                    addToORProjectForPLSQLTableArg(dbType, orProject, name, alias, targetTypeName, catalogPattern);
                 }
             }
             else {
             	// Advanced JDBC types need the (Java) package name prepended to the type name
-            	if (Util.isArgComplex(arg)) {
+            	if (Util.isTypeComplex(dbType)) {
             		name = getGeneratedJavaClassName(dbType.getTypeName().toLowerCase(), dbwsBuilder.getProjectName());
             	} else {
             		name = dbType.getTypeName();
@@ -708,7 +705,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             }
         }
     }
-
+    
     /**
      * Build descriptor and mappings for a PL/SQL record argument.  The newly
      * created descriptor will be added to the given OX project.

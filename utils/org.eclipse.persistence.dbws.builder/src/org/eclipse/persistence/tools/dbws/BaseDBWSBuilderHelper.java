@@ -156,6 +156,7 @@ import org.eclipse.persistence.tools.oracleddl.metadata.BinaryType;
 import org.eclipse.persistence.tools.oracleddl.metadata.BlobType;
 import org.eclipse.persistence.tools.oracleddl.metadata.CharType;
 import org.eclipse.persistence.tools.oracleddl.metadata.ClobType;
+import org.eclipse.persistence.tools.oracleddl.metadata.CompositeDatabaseType;
 import org.eclipse.persistence.tools.oracleddl.metadata.DatabaseType;
 import org.eclipse.persistence.tools.oracleddl.metadata.DecimalType;
 import org.eclipse.persistence.tools.oracleddl.metadata.DoubleType;
@@ -181,6 +182,7 @@ import org.eclipse.persistence.tools.oracleddl.metadata.TableType;
 import org.eclipse.persistence.tools.oracleddl.metadata.TimeStampType;
 import org.eclipse.persistence.tools.oracleddl.metadata.VArrayType;
 import org.eclipse.persistence.tools.oracleddl.metadata.VarChar2Type;
+import org.eclipse.persistence.tools.oracleddl.metadata.visit.EnclosedTypeVisitor;
 
 public abstract class BaseDBWSBuilderHelper {
 
@@ -226,9 +228,8 @@ public abstract class BaseDBWSBuilderHelper {
         List<String> schemaPatterns, List<String> tableNamePatterns);
     protected abstract List<ProcedureType> loadProcedures(List<String> catalogPatterns,
         List<String> schemaPatterns, List<String> procedureNamePatterns);
-
-    protected abstract void addToOROXProjectsForComplexArgs(List<ArgumentType> arguments,
-        Project orProject, Project oxProject, ProcedureOperationModel opModel);
+    protected abstract void addToOROXProjectsForComplexTypes(List<CompositeDatabaseType> types, 
+    		Project orProject, Project oxProject);
     protected abstract void buildQueryForProcedureType(ProcedureType procType, Project orProject,
         Project oxProject, ProcedureOperationModel opModel, boolean hasComplexArgs);
 
@@ -268,8 +269,55 @@ public abstract class BaseDBWSBuilderHelper {
             }
         }
     }
-
+    
+    /**
+     * Uses a custom visitor to traverse each procedure/function argument and build
+     * a list of required Types.  Only on instance of a given type will exist in
+     * the list.
+     *  
+     */
+    public List<CompositeDatabaseType> buildTypesList(List<OperationModel> operations) {
+        EnclosedTypeVisitor etVisitor = new EnclosedTypeVisitor();
+        for (OperationModel opModel : operations) {
+            if (opModel.isProcedureOperation()) {
+                ProcedureOperationModel procedureOperation = (ProcedureOperationModel)opModel;
+                if (procedureOperation.isPLSQLProcedureOperation() || procedureOperation.isAdvancedJDBCProcedureOperation()) {
+                    for (ProcedureType procType : procedureOperation.getDbStoredProcedures()) {
+                        // build list of arguments to process (i.e. build descriptors for)
+                        List<ArgumentType> args = new ArrayList<ArgumentType>();
+                        // return argument
+                        if (procType.isFunctionType()) {
+                            // assumes that a function MUST have a return type
+                            args.add(((FunctionType)procType).getReturnArgument());
+                        }
+                        args.addAll(procType.getArguments());
+                        // now visit each argument
+                        for (DatabaseType dType : args) {
+                        	if (dType.isComposite()) {
+                            	etVisitor.visit((CompositeDatabaseType) dType);
+                        	}
+                        }
+                    }
+                }
+            }
+        }
+        return etVisitor.getCompositeDatabaseTypes();
+    }
+    
+    /**
+     * Builds OR/OX projects, descriptors & mappings.  This method can be
+     * used when no complex types exist, and only table(s) and secondary
+     * SQL will be used when building.  
+     */
     public void buildOROXProjects(NamingConventionTransformer nct) {
+    	buildOROXProjects(nct, new ArrayList<CompositeDatabaseType>());
+    }
+    
+    /**
+     * Builds OR/OX projects, descriptors & mappings, based on a given list
+     * of types, as well as table(s) and secondary SQL.
+     */
+    public void buildOROXProjects(NamingConventionTransformer nct, List<CompositeDatabaseType> types) {
         this.nct = nct; // save for later
         String projectName = dbwsBuilder.getProjectName();
         Project orProject = new Project();
@@ -311,7 +359,7 @@ public abstract class BaseDBWSBuilderHelper {
           }
           setUpFindQueries(tableName, desc);
         }
-        finishUpProjects(orProject, oxProject);
+        finishUpProjects(orProject, oxProject, types);
     }
 
     protected DirectToFieldMapping buildORFieldMappingFromColumn(FieldType dbColumn,
@@ -985,7 +1033,7 @@ public abstract class BaseDBWSBuilderHelper {
      * Complete project configuration.  Build descriptors for secondary SQL and
      * complex arguments.  Set the projects on the DBWSBuilder instance.
      */
-    protected void finishUpProjects(Project orProject, Project oxProject) {
+    protected void finishUpProjects(Project orProject, Project oxProject, List<CompositeDatabaseType> typeList) {
         // handle build SQL
         for (OperationModel opModel : dbwsBuilder.operations) {
             if (opModel.hasBuildSql()) {
@@ -993,7 +1041,9 @@ public abstract class BaseDBWSBuilderHelper {
                     nct);
             }
         }
-        // handle complex procedure arguments
+        // create OR/OX projects, descriptors/mappings for the types
+        addToOROXProjectsForComplexTypes(typeList, orProject, oxProject);
+        // build queries for procedures with complex arguments
         for (OperationModel opModel : dbwsBuilder.operations) {
             if (opModel.isProcedureOperation()) {
                 ProcedureOperationModel procedureOperation = (ProcedureOperationModel)opModel;
@@ -1013,8 +1063,6 @@ public abstract class BaseDBWSBuilderHelper {
                             procedureOperation.setHasComplexArguments(hasComplexArgs);
                         }
                         if (hasComplexArgs || hasPLSQLScalarArgs) {
-                            // subclasses are responsible for processing complex arguments
-                            addToOROXProjectsForComplexArgs(args, orProject, oxProject, procedureOperation);
                             // build a query for this ProcedureType as it has one or more complex arguments
                             buildQueryForProcedureType(procType, orProject, oxProject, procedureOperation,
                                 hasPLSQLArgs);
@@ -1023,7 +1071,7 @@ public abstract class BaseDBWSBuilderHelper {
                 }
             }
         }
-
+        
         DatabaseLogin databaseLogin = new DatabaseLogin();
         databaseLogin.removeProperty("user");
         databaseLogin.removeProperty("password");
