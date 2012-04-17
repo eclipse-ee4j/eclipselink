@@ -26,20 +26,28 @@ public class NestedUnitOfWorkReadOnlyClassTest extends AutoVerifyTestCase {
     }
 
     private String postalCode;
+    private Employee originalEmployee;
+    private Address originalAddress;
 
     public void setup() {
         getAbstractSession().beginTransaction();
         postalCode = "AB7J98";
         UnitOfWork uow = getSession().acquireUnitOfWork();
         Address address = (Address) uow.registerObject(new Address());
+        uow.assignSequenceNumber(address);
         address.setPostalCode(postalCode);
         address.setCity("Toronto");
         address.setCountry("CANADA");
         uow.commit();
         getAbstractSession().commitTransaction();
+        originalAddress = address;
     }
 
     public void reset() {
+        UnitOfWork deleteUOW = getSession().acquireUnitOfWork();
+        deleteUOW.deleteObject(deleteUOW.readObject(originalAddress));
+        deleteUOW.deleteObject(deleteUOW.readObject(originalEmployee));
+        deleteUOW.commit();
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
@@ -58,10 +66,14 @@ public class NestedUnitOfWorkReadOnlyClassTest extends AutoVerifyTestCase {
         nestedUOW.addReadOnlyClass(Address.class);
         
         Employee emp = (Employee)nestedUOW.registerObject(new Employee());
+        nestedUOW.assignSequenceNumber(emp);
         emp.setFirstName("John");
         emp.setAddress(addressRO);
+        
         nestedUOW.commit();
         rootUOW.commit();
+        
+        originalEmployee = emp;
     }
 
     protected void verify() {
