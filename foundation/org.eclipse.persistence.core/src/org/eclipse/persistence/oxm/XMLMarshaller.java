@@ -1005,14 +1005,15 @@ public class XMLMarshaller implements Cloneable {
             if(isIncludeRoot()){            	
                 marshalRecord.closeStartElement();
             }
+        }else{
+        	//no rootfragment
+
+        	marshalRecord.marshalWithoutRootElement(treeObjectBuilder,object, descriptor,root, isXMLRoot);
         }
         if (treeObjectBuilder != null && !isNil) {
             treeObjectBuilder.buildRow(marshalRecord, object, session, this, rootFragment, WriteType.UNDEFINED);
         } else if (isXMLRoot) {
-            //if(null == object) {
-                //marshalRecord.attribute(XMLConstants.XMLNS_URL, XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.XMLNS + XMLConstants.COLON + XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL);
-                //marshalRecord.attribute(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_NIL_ATTRIBUTE, XMLConstants.SCHEMA_INSTANCE_PREFIX + XMLConstants.COLON + XMLConstants.SCHEMA_NIL_ATTRIBUTE, "true");
-            if(object != null && !isNil) {
+             if(object != null && !isNil) {
             	 if(root.getDeclaredType() != null && root.getObject() != null && root.getDeclaredType() != root.getObject().getClass()) {
         	        	
             		  QName type = (QName)XMLConversionManager.getDefaultJavaTypes().get(object.getClass());

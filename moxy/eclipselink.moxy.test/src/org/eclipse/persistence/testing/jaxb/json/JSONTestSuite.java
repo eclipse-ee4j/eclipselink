@@ -12,6 +12,10 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.json;
 
+import org.eclipse.persistence.testing.jaxb.json.attribute.JSONAttributeNoXmlRootElementIncludeRootFalseTestCases;
+import org.eclipse.persistence.testing.jaxb.json.attribute.JSONAttributeNoXmlRootElementInheritanceTestCases;
+import org.eclipse.persistence.testing.jaxb.json.attribute.JSONAttributeNoXmlRootElementJAXBElementTestCases;
+import org.eclipse.persistence.testing.jaxb.json.attribute.JSONAttributeNoXmlRootElementTestCases;
 import org.eclipse.persistence.testing.jaxb.json.attribute.JSONAttributePrefixEmptyStringTestCases;
 import org.eclipse.persistence.testing.jaxb.json.attribute.JSONAttributePrefixOnContextTestCases;
 import org.eclipse.persistence.testing.jaxb.json.attribute.JSONAttributePrefixOnMarshallerTestCases;
@@ -39,6 +43,10 @@ public class JSONTestSuite extends TestSuite {
           suite.addTestSuite(JSONAttributePrefixOnContextTestCases.class);
           suite.addTestSuite(JSONAttributePrefixEmptyStringTestCases.class);
           suite.addTestSuite(JSONAttributePrefixOnMarshallerTestCases.class);
+          suite.addTestSuite(JSONAttributeNoXmlRootElementTestCases.class);
+          suite.addTestSuite(JSONAttributeNoXmlRootElementIncludeRootFalseTestCases.class);
+          suite.addTestSuite(JSONAttributeNoXmlRootElementInheritanceTestCases.class);
+          suite.addTestSuite(JSONAttributeNoXmlRootElementJAXBElementTestCases.class);
           suite.addTestSuite(DifferentNamespacesTestCases.class);
           suite.addTestSuite(NamespacesOnContextTestCases.class);
           suite.addTestSuite(NamespacesOnUnmarshalOnlyTestCases.class);

@@ -22,6 +22,7 @@ import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.descriptors.Namespace;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.oxm.TreeObjectBuilder;
 import org.eclipse.persistence.internal.oxm.XMLBinaryDataHelper;
 import org.eclipse.persistence.internal.oxm.XPathPredicate;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
@@ -29,9 +30,11 @@ import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.XPathNode;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
+import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLMarshalListener;
 import org.eclipse.persistence.oxm.XMLMarshaller;
+import org.eclipse.persistence.oxm.XMLRoot;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -198,6 +201,9 @@ public abstract class MarshalRecord extends XMLRecord {
      */
     public abstract void endDocument();
 
+    public void marshalWithoutRootElement(TreeObjectBuilder treeObjectBuilder, Object object, XMLDescriptor descriptor, XMLRoot root, boolean isXMLRoot){    
+    }
+    
     /**
      * Receive notification that a namespace has been declared.
      * @param prefix The namespace prefix.
