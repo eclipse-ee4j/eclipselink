@@ -3,11 +3,12 @@ Bundle-ManifestVersion: 2
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Bundle-Name: EJB
 Bundle-SymbolicName: javax.ejb
-Bundle-Version: 3.0.0.v200906010428
+Bundle-Version: 3.1.0.v201205171433
 Bundle-Vendor: Eclipse.org - EclipseLink
-Export-Package: javax.ejb;version="3.0.0",
- javax.ejb.spi;version="3.0.0",
- javax.interceptor;version="3.0.0"
+Export-Package: javax.ejb;version="3.1.0",
+ javax.ejb.embeddable;version="3.1.0",
+ javax.ejb.spi;version="3.1.0",
+ javax.interceptor;version="3.1.0"
 Require-Bundle: javax.mail,
  javax.xml.rpc;visibility:=reexport,
  javax.transaction

@@ -1,40 +1,62 @@
 /*
- * The contents of this file are subject to the terms 
- * of the Common Development and Distribution License 
- * (the License).  You may not use this file except in
- * compliance with the License.
- * 
- * You can obtain a copy of the license at 
- * https://glassfish.dev.java.net/public/CDDLv1.0.html or
- * glassfish/bootstrap/legal/CDDLv1.0.txt.
- * See the License for the specific language governing 
- * permissions and limitations under the License.
- * 
- * When distributing Covered Code, include this CDDL 
- * Header Notice in each file and include the License file 
- * at glassfish/bootstrap/legal/CDDLv1.0.txt.  
- * If applicable, add the following below the CDDL Header, 
- * with the fields enclosed by brackets [] replaced by
- * you own identifying information: 
- * "Portions Copyrighted [year] [name of copyright owner]"
- * 
- * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ *
+ * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ *
+ * The contents of this file are subject to the terms of either the GNU
+ * General Public License Version 2 only ("GPL") or the Common Development
+ * and Distribution License("CDDL") (collectively, the "License").  You
+ * may not use this file except in compliance with the License.  You can
+ * obtain a copy of the License at
+ * https://glassfish.dev.java.net/public/CDDL+GPL_1_1.html
+ * or packager/legal/LICENSE.txt.  See the License for the specific
+ * language governing permissions and limitations under the License.
+ *
+ * When distributing the software, include this License Header Notice in each
+ * file and include the License file at packager/legal/LICENSE.txt.
+ *
+ * GPL Classpath Exception:
+ * Oracle designates this particular file as subject to the "Classpath"
+ * exception as provided by Oracle in the GPL Version 2 section of the License
+ * file that accompanied this code.
+ *
+ * Modifications:
+ * If applicable, add the following below the License Header, with the fields
+ * enclosed by brackets [] replaced by your own identifying information:
+ * "Portions Copyright [year] [name of copyright owner]"
+ *
+ * Contributor(s):
+ * If you wish your version of this file to be governed by only the CDDL or
+ * only the GPL Version 2, indicate your decision by adding "[Contributor]
+ * elects to include this software in this distribution under the [CDDL or GPL
+ * Version 2] license."  If you don't indicate a single choice of license, a
+ * recipient has the option to distribute your version of this file under
+ * either the CDDL, the GPL Version 2 or to extend the choice of license to
+ * its licensees as provided above.  However, if you add GPL Version 2 code
+ * and therefore, elected the GPL Version 2 license, then the option applies
+ * only if the new code is made subject to such option by the copyright
+ * holder.
  */
+
 package javax.ejb;
 
 import java.rmi.RemoteException;
 
 /**
- * The SessionBean interface is implemented by every session enterprise Bean 
- * class. The container uses the SessionBean methods to notify the enterprise
- * Bean instances of the instance's life cycle events.
+ * The SessionBean interface defines methods that the EJB container uses
+ * to notify a session bean instance of the instance's life cycle events.
+ * <p>
+ * As of EJB 3.0 it is no longer required that a session bean class
+ * implement this interface.
+ *
+ * @since EJB 1.0
  */
 public interface SessionBean extends EnterpriseBean {
     /**
      * Set the associated session context. The container calls this method
      * after the instance creation.
      *
-     * <p> The enterprise Bean instance should store the reference to the
+     * <p> The session bean instance should store the reference to the
      * context object in an instance variable.
      *
      * <p> This method is called with no transaction context.
@@ -77,9 +99,9 @@ public interface SessionBean extends EnterpriseBean {
      void ejbRemove() throws EJBException, RemoteException;    
 
     /**
-     * The activate method is called when the instance is activated
+     * The activate method is called when a stateful session bean instance is activated
      * from its "passive" state. The instance should acquire any resource
-     * that it has released earlier in the ejbPassivate() method.
+     * that it has released earlier in the <code>ejbPassivate</code> method.
      *
      * <p> This method is called with no transaction context.
      *
@@ -97,9 +119,9 @@ public interface SessionBean extends EnterpriseBean {
     void ejbActivate() throws EJBException, RemoteException;
 
     /**
-     * The passivate method is called before the instance enters
+     * The passivate method is called before a stateful session bean instance enters
      * the "passive" state. The instance should release any resources that
-     * it can re-acquire later in the ejbActivate() method.
+     * it can re-acquire later in the <code>ejbActivate</code> method.
      *
      * <p> After the passivate method completes, the instance must be
      * in a state that allows the container to use the Java Serialization
