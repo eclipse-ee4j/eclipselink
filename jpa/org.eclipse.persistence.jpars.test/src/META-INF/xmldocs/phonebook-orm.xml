@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings version="2.3"
+    xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/orm"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+ 
+    <package>jpars.app.phonebook.model</package>
+  
+    <named-query name="Person.all">
+        <query>SELECT p FROM Person p</query>
+    </named-query>
+    
+    <named-query name="Person.likeName">
+        <query>SELECT p FROM Person p WHERE p.lastName LIKE :lastName</query>
+    </named-query>
+ 
+    <entity class="Person" access="VIRTUAL">
+        <table name="PHONEBOOK_PERSON" />
+        <attributes>
+            <id name="id" attribute-type="Integer">
+                <column name="ID" />
+                <generated-value/>
+            </id>
+            <basic name="firstName" attribute-type="String" />
+            <basic name="lastName" attribute-type="String" />
+            <basic name="phoneNumber" attribute-type="String" />
+        </attributes>
+    </entity>
+        
+</entity-mappings>

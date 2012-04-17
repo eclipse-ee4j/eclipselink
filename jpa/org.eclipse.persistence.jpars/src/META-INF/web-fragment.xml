@@ -1,0 +1,41 @@
+<web-fragment>
+  <servlet>
+    <servlet-name>JPA-RS Service</servlet-name>
+    <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
+    <init-param>
+      <param-name>com.sun.jersey.config.property.packages</param-name>
+      <param-value>org.eclipse.persistence.jpa.rs</param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>JPA-RS Service</servlet-name>
+    <url-pattern>/jpa-rs/*</url-pattern>
+  </servlet-mapping>
+  <!-- 
+  <security-constraint>
+      <display-name>Avatar User</display-name>
+        <web-resource-collection>
+            <web-resource-name>AvatarPermissions</web-resource-name>
+            <url-pattern>/jpa-rs/*</url-pattern>
+            <http-method>GET</http-method>
+            <http-method>PUT</http-method>
+            <http-method>POST</http-method>
+            <http-method>DELETE</http-method>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>Avatar</role-name>
+        </auth-constraint>
+        <user-data-constraint>
+            <transport-guarantee>NONE</transport-guarantee>
+        </user-data-constraint>
+    </security-constraint>
+    <login-config>
+       <auth-method>BASIC</auth-method>
+       <realm-name>file</realm-name>
+    </login-config>
+    <security-role>
+       <role-name>Avatar</role-name>
+    </security-role>
+    -->
+</web-fragment>
