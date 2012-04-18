@@ -81,7 +81,7 @@
     <target name="test-against-jar"      depends="clean-test, init_against_jar, init_runtime,  test-lrg"    description="run JPA WDF tests"/>
     <target name="test-against-classes"  depends="clean-test, init_against_classes, init_runtime, test-lrg" description="run JPA WDF tests"/>
     <target name="test-against-bundles"  depends="clean-test, init_against_bundles, init_runtime, test-lrg" description="run JPA WDF tests"/>
-    <target name="server-test"           depends="server-test-internal" description="run JPA WDF tests on server configured by property server.name"/>
+    <target name="server-test"           depends="clean-test, server-test-internal" description="run JPA WDF tests on server configured by property server.name"/>
     <!-- convienience targets -->
     <target name="build"     depends="build-against-jar"/>
     <target name="test"      depends="test-against-jar"/>
