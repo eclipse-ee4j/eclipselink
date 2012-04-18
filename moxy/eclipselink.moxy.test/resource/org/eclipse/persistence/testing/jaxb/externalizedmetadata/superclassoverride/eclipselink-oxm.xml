@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm"
+	package-name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.superclassoverride">
+	<java-types>
+		<java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.superclassoverride.SubClass" xml-accessor-type="NONE" super-type="java.lang.Object">
+			<xml-root-element name="subclass" />
+        </java-type>
+	</java-types>
+</xml-bindings>

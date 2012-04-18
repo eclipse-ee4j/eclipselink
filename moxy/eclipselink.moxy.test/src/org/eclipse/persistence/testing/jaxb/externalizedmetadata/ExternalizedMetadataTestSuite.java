@@ -18,6 +18,7 @@ import org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfact
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.MappingsTestSuite;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.multiplebindings.MultipleBindingsFourFilesTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.multiplebindings.MultipleBindingsSimpleTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.superclassoverride.SuperClassOverrideTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessororder.XmlAccessorOrderTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessororder.packagelevel.XMLAccessorOrderPackageInfoTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessororder.packagelevel.classoverride.XMLAccessorOrderClassOverrideTestCases;
@@ -188,6 +189,7 @@ public class ExternalizedMetadataTestSuite extends TestSuite {
         suite.addTestSuite(SplitPackageTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.externalizedmetadata.namespace.NamespaceTestCases.class);
         suite.addTestSuite(FactoryTestCases.class);
+        suite.addTestSuite(SuperClassOverrideTestCases.class);
         suite.addTest(PropOrderTestSuite.suite());
         return suite;
     }

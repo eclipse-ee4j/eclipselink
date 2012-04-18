@@ -13,6 +13,7 @@
 package org.eclipse.persistence.jaxb.javamodel.reflection;
 
 import java.lang.annotation.Annotation;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.persistence.exceptions.JAXBException;
@@ -41,6 +42,7 @@ public class JavaModelImpl implements JavaModel {
     protected ClassLoader classLoader;
     private AnnotationHelper annotationHelper;
     private Map<String, Boolean> metadataCompletePackages;
+    private Map<String, JavaClassImpl> cachedJavaClasses;
     
     public JavaModelImpl(ClassLoader classLoader) {
         this.classLoader = classLoader;
@@ -54,7 +56,11 @@ public class JavaModelImpl implements JavaModel {
 
     public JavaClass getClass(Class<?> jClass) {
         try {
-            JavaClassImpl javaClass = new JavaClassImpl(jClass, this);
+            JavaClassImpl javaClass = getCachedJavaClasses().get(jClass.getName());
+            if(javaClass == null) {
+                javaClass = new JavaClassImpl(jClass, this);
+                getCachedJavaClasses().put(jClass.getName(), javaClass);
+            }
             // may need to set metadata complete indicator on the class
             if (metadataCompletePackages != null && metadataCompletePackages.containsKey(javaClass.getPackageName())) {
                 javaClass.setIsMetadataComplete(metadataCompletePackages.get(javaClass.getPackageName()));
@@ -104,5 +110,12 @@ public class JavaModelImpl implements JavaModel {
      */
     public void setMetadataCompletePackageMap(Map<String, Boolean> metadataCompletePackageMap) {
         this.metadataCompletePackages = metadataCompletePackageMap;
+    }
+    
+    public Map<String, JavaClassImpl> getCachedJavaClasses() {
+        if(this.cachedJavaClasses == null) {
+            this.cachedJavaClasses = new HashMap<String, JavaClassImpl>();
+        }
+        return this.cachedJavaClasses;
     }
 }

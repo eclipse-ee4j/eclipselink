@@ -55,6 +55,8 @@ public class JavaClassImpl implements JavaClass {
     protected Class jClass;
     protected JavaModelImpl javaModelImpl;
     protected Boolean isMetadataComplete;
+    protected JavaClass superClassOverride;
+
     protected static String XML_REGISTRY_CLASS_NAME = "javax.xml.bind.annotation.XmlRegistry";
 
     public JavaClassImpl(Class javaClass, JavaModelImpl javaModelImpl) {
@@ -335,6 +337,9 @@ public class JavaClassImpl implements JavaClass {
     }
 
     public JavaClass getSuperclass() {
+        if(this.superClassOverride != null) {
+            return this.superClassOverride;
+        }
         return javaModelImpl.getClass(jClass.getSuperclass());
     }
 
@@ -376,7 +381,54 @@ public class JavaClassImpl implements JavaClass {
         if (!(arg0 instanceof JavaClassImpl)) {
             return false;
         }
+        if(hasCustomSuperClass(arg0)) {
+            return this.customIsAssignableFrom(arg0);
+        }
         return jClass.isAssignableFrom(((JavaClassImpl) arg0).getJavaClass());
+    }
+
+    private boolean customIsAssignableFrom(JavaClass arg0) {
+        JavaClassImpl jClass = (JavaClassImpl)arg0;
+        Class cls = jClass.getJavaClass();
+        
+        if(cls == this.jClass) {
+            return true;
+        }
+        Class[] interfaces = cls.getInterfaces();
+        for(Class nextInterface:interfaces) {
+            if(nextInterface == this.jClass) {
+                return true;
+            }
+            if(customIsAssignableFrom(javaModelImpl.getClass(nextInterface))) {
+                return true;
+            }
+        }
+        
+        if(!(jClass.isInterface())) {
+            JavaClassImpl superJavaClass = (JavaClassImpl)jClass.getSuperclass();
+            if(superJavaClass.getName().equals("java.lang.Object")) {
+                return this.jClass == superJavaClass.getJavaClass(); 
+            }
+            return customIsAssignableFrom(superJavaClass);
+        } 
+        return false;
+    }
+
+    private boolean hasCustomSuperClass(JavaClass arg0) {
+        if(arg0 == null) {
+            return false;
+        }
+        if(!(arg0.getClass() == this.getClass())) { 
+            return false;
+        }
+        if(arg0.getName().equals("java.lang.Object")) {
+            return false;
+        }
+        JavaClassImpl jClass = (JavaClassImpl)arg0;
+        if(jClass.getSuperClassOverride() != null) {
+            return true;
+        }
+        return hasCustomSuperClass(jClass.getSuperclass());
     }
 
     public boolean isEnum() {
@@ -434,6 +486,13 @@ public class JavaClassImpl implements JavaClass {
         return javaModelImpl.getClass(this.jClass.getComponentType());
     }
 
+    public JavaClass getSuperClassOverride() {
+        return superClassOverride;
+    }
+
+    public void setSuperClassOverride(JavaClass superClassOverride) {
+        this.superClassOverride = superClassOverride;
+    }
     /**
      * Set the indicator for XML metadata complete - if true, 
      * annotations will be ignored.

@@ -29,6 +29,7 @@ import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.javamodel.Helper;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.JavaModelInput;
+import org.eclipse.persistence.jaxb.javamodel.reflection.JavaClassImpl;
 import org.eclipse.persistence.jaxb.xmlmodel.JavaAttribute;
 import org.eclipse.persistence.jaxb.xmlmodel.JavaType;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlAbstractNullPolicy;
@@ -155,7 +156,20 @@ public class XMLProcessor {
                     xmlEnumMap.put(xmlEnum.getJavaEnum(), xmlEnum);
                 }
             }
-
+            
+            //handle superclass override
+            if(xmlBindings.getJavaTypes() != null) {
+                List<JavaType> types = xmlBindings.getJavaTypes().getJavaType();
+                for(JavaType next:types) {
+                    JavaClass typeClass = jModelInput.getJavaModel().getClass(next.getName());
+                    if(typeClass != null && typeClass.getClass() == JavaClassImpl.class) {
+                        if(next.getSuperType() != null && !(next.getSuperType().equals("##default"))) {
+                            JavaClass newSuperClass = jModelInput.getJavaModel().getClass(next.getSuperType());
+                            ((JavaClassImpl)typeClass).setSuperClassOverride(newSuperClass);
+                        }
+                    }
+                }
+            }
             // pre-build the TypeInfo objects
             Map<String, TypeInfo> typeInfoMap = annotationsProcessor.preBuildTypeInfo(javaClasses);
 

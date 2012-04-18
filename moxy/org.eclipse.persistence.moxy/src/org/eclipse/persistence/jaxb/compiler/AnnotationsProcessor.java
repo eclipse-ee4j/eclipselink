@@ -202,7 +202,7 @@ public class AnnotationsProcessor {
     private Map<java.lang.reflect.Type, Class> collectionClassesToGeneratedClasses;
     private Map<Class, java.lang.reflect.Type> generatedClassesToCollectionClasses;
 
-    private Map<JavaClass, TypeMappingInfo> javaClassToTypeMappingInfos;
+    private Map<JavaClass, List<TypeMappingInfo>> javaClassToTypeMappingInfos;
     private Map<TypeMappingInfo, Class> typeMappingInfoToGeneratedClasses;
     private Map<TypeMappingInfo, Class> typeMappingInfoToAdapterClasses;
     private Map<TypeMappingInfo, QName> typeMappingInfoToSchemaType;
@@ -270,110 +270,112 @@ public class AnnotationsProcessor {
         if (this.javaClassToTypeMappingInfos != null && !this.javaClassToTypeMappingInfos.isEmpty()) {
             Set<JavaClass> classes = this.javaClassToTypeMappingInfos.keySet();
             for (JavaClass nextClass : classes) {
-                TypeMappingInfo nextInfo = this.javaClassToTypeMappingInfos.get(nextClass);
-                if (nextInfo != null) {
-                    boolean xmlAttachmentRef = false;
-                    String xmlMimeType = null;
-                    java.lang.annotation.Annotation[] annotations = getAnnotations(nextInfo);
-                    Class adapterClass = this.typeMappingInfoToAdapterClasses.get(nextInfo);
-                    Class declJavaType = null;
-                    if (adapterClass != null) {
-                        declJavaType = CompilerHelper.getTypeFromAdapterClass(adapterClass);
-                    }
-                    if (annotations != null) {
-                        for (int j = 0; j < annotations.length; j++) {
-                            java.lang.annotation.Annotation nextAnnotation = annotations[j];
-                            if (nextAnnotation != null) {
-                                if (nextAnnotation instanceof XmlMimeType) {
-                                    XmlMimeType javaAnnotation = (XmlMimeType) nextAnnotation;
-                                    xmlMimeType = javaAnnotation.value();
-                                } else if (nextAnnotation instanceof XmlAttachmentRef) {
-                                    xmlAttachmentRef = true;
-                                    if (!this.hasSwaRef) {
-                                        this.hasSwaRef = true;
+                List<TypeMappingInfo> nextInfos = this.javaClassToTypeMappingInfos.get(nextClass);
+                for(TypeMappingInfo nextInfo:nextInfos) {
+                    if (nextInfo != null) {
+                        boolean xmlAttachmentRef = false;
+                        String xmlMimeType = null;
+                        java.lang.annotation.Annotation[] annotations = getAnnotations(nextInfo);
+                        Class adapterClass = this.typeMappingInfoToAdapterClasses.get(nextInfo);
+                        Class declJavaType = null;
+                        if (adapterClass != null) {
+                            declJavaType = CompilerHelper.getTypeFromAdapterClass(adapterClass);
+                        }
+                        if (annotations != null) {
+                            for (int j = 0; j < annotations.length; j++) {
+                                java.lang.annotation.Annotation nextAnnotation = annotations[j];
+                                if (nextAnnotation != null) {
+                                    if (nextAnnotation instanceof XmlMimeType) {
+                                        XmlMimeType javaAnnotation = (XmlMimeType) nextAnnotation;
+                                        xmlMimeType = javaAnnotation.value();
+                                    } else if (nextAnnotation instanceof XmlAttachmentRef) {
+                                        xmlAttachmentRef = true;
+                                        if (!this.hasSwaRef) {
+                                            this.hasSwaRef = true;
+                                        }
                                     }
                                 }
                             }
                         }
-                    }
 
-                    QName qname = null;
+                        QName qname = null;
 
-                    String nextClassName = nextClass.getQualifiedName();
-
-                    if (declJavaType != null) {
-                        nextClassName = declJavaType.getCanonicalName();
-                    }
-
-                    if (typeMappingInfoToGeneratedClasses != null) {
-                        Class generatedClass = typeMappingInfoToGeneratedClasses.get(nextInfo);
-                        if (generatedClass != null) {
-                            nextClassName = generatedClass.getCanonicalName();
-                        }
-                    }
-
-                    TypeInfo nextTypeInfo = typeInfo.get(nextClassName);
-                    if (nextTypeInfo != null) {
-                        qname = new QName(nextTypeInfo.getClassNamespace(), nextTypeInfo.getSchemaTypeName());
-                    } else {
-                        qname = getUserDefinedSchemaTypes().get(nextClassName);
-                        if (qname == null) {
-                            if (nextClassName.equals(ClassConstants.APBYTE.getName()) || nextClassName.equals(Image.class.getName()) || nextClassName.equals(Source.class.getName()) || nextClassName.equals("javax.activation.DataHandler")) {
-                                if (xmlAttachmentRef) {
-                                    qname = XMLConstants.SWA_REF_QNAME;
-                                } else {
-                                    qname = XMLConstants.BASE_64_BINARY_QNAME;
-                                }
-                            } else if (nextClassName.equals(ClassConstants.OBJECT.getName())) {
-                                qname = XMLConstants.ANY_TYPE_QNAME;
-                            } else if (nextClassName.equals(ClassConstants.XML_GREGORIAN_CALENDAR.getName())) {
-                                qname = XMLConstants.ANY_SIMPLE_TYPE_QNAME;
-                            } else {
-                                Class theClass = helper.getClassForJavaClass(nextClass);
-                                qname = (QName) XMLConversionManager.getDefaultJavaTypes().get(theClass);
-                            }
-                        }
-                    }
-
-                    if (qname != null) {
-                        typeMappingInfoToSchemaType.put(nextInfo, qname);
-                    }
-
-                    if (nextInfo.getXmlTagName() != null) {
-                        ElementDeclaration element = new ElementDeclaration(nextInfo.getXmlTagName(), nextClass, nextClass.getQualifiedName(), false);
-                        element.setTypeMappingInfo(nextInfo);
-                        element.setXmlMimeType(xmlMimeType);
-                        element.setXmlAttachmentRef(xmlAttachmentRef);
-                        element.setNillable(nextInfo.isNillable());
+                        String nextClassName = nextClass.getQualifiedName();
 
                         if (declJavaType != null) {
-                            element.setJavaType(helper.getJavaClass(declJavaType));
+                            nextClassName = declJavaType.getCanonicalName();
                         }
-                        Class generatedClass = typeMappingInfoToGeneratedClasses.get(nextInfo);
-                        if (generatedClass != null) {
-                            element.setJavaType(helper.getJavaClass(generatedClass));
-                        }
-                        if (nextInfo.getElementScope() == TypeMappingInfo.ElementScope.Global) {
-                            ElementDeclaration currentElement = this.getGlobalElements().get(element.getElementName());
-                            if (currentElement == null) {
-                            	addGlobalElement(element.getElementName(), element);
-                            } else {
-                                //if(currentElement.getTypeMappingInfo() == null) {
-                                    //the global element that exists came from an annotation
-                                    
-                                //} else {
-                                    this.localElements.add(element);
-                                //}
+
+                        if (typeMappingInfoToGeneratedClasses != null) {
+                            Class generatedClass = typeMappingInfoToGeneratedClasses.get(nextInfo);
+                            if (generatedClass != null) {
+                                nextClassName = generatedClass.getCanonicalName();
                             }
+                        }
+
+                        TypeInfo nextTypeInfo = typeInfo.get(nextClassName);
+                        if (nextTypeInfo != null) {
+                            qname = new QName(nextTypeInfo.getClassNamespace(), nextTypeInfo.getSchemaTypeName());
                         } else {
-                            this.localElements.add(element);
+                            qname = getUserDefinedSchemaTypes().get(nextClassName);
+                            if (qname == null) {
+                                if (nextClassName.equals(ClassConstants.APBYTE.getName()) || nextClassName.equals(Image.class.getName()) || nextClassName.equals(Source.class.getName()) || nextClassName.equals("javax.activation.DataHandler")) {
+                                    if (xmlAttachmentRef) {
+                                        qname = XMLConstants.SWA_REF_QNAME;
+                                    } else {
+                                        qname = XMLConstants.BASE_64_BINARY_QNAME;
+                                    }
+                                } else if (nextClassName.equals(ClassConstants.OBJECT.getName())) {
+                                    qname = XMLConstants.ANY_TYPE_QNAME;
+                                } else if (nextClassName.equals(ClassConstants.XML_GREGORIAN_CALENDAR.getName())) {
+                                    qname = XMLConstants.ANY_SIMPLE_TYPE_QNAME;
+                                } else {
+                                    Class theClass = helper.getClassForJavaClass(nextClass);
+                                    qname = (QName) XMLConversionManager.getDefaultJavaTypes().get(theClass);
+                                }
+                            }
                         }
-                        String rootNamespace = element.getElementName().getNamespaceURI();
-                        if (rootNamespace == null) {
-                            rootNamespace = XMLConstants.EMPTY_STRING;
+
+                        if (qname != null) {
+                            typeMappingInfoToSchemaType.put(nextInfo, qname);
                         }
-                        if (rootNamespace.equals(XMLConstants.EMPTY_STRING)) {
-                            isDefaultNamespaceAllowed = false;
+
+                        if (nextInfo.getXmlTagName() != null) {
+                            ElementDeclaration element = new ElementDeclaration(nextInfo.getXmlTagName(), nextClass, nextClass.getQualifiedName(), false);
+                            element.setTypeMappingInfo(nextInfo);
+                            element.setXmlMimeType(xmlMimeType);
+                            element.setXmlAttachmentRef(xmlAttachmentRef);
+                            element.setNillable(nextInfo.isNillable());
+
+                            if (declJavaType != null) {
+                                element.setJavaType(helper.getJavaClass(declJavaType));
+                            }
+                            Class generatedClass = typeMappingInfoToGeneratedClasses.get(nextInfo);
+                            if (generatedClass != null) {
+                                element.setJavaType(helper.getJavaClass(generatedClass));
+                            }
+                            if (nextInfo.getElementScope() == TypeMappingInfo.ElementScope.Global) {
+                                ElementDeclaration currentElement = this.getGlobalElements().get(element.getElementName());
+                                if (currentElement == null) {
+                                    addGlobalElement(element.getElementName(), element);
+                                } else {
+                                    //  if(currentElement.getTypeMappingInfo() == null) {
+                                    //  the global element that exists came from an annotation
+                                    
+                                    //} else {
+                                    this.localElements.add(element);
+                                    //}
+                                }
+                            } else {
+                                this.localElements.add(element);
+                            }
+                            String rootNamespace = element.getElementName().getNamespaceURI();
+                            if (rootNamespace == null) {
+                                rootNamespace = XMLConstants.EMPTY_STRING;
+                            }
+                            if (rootNamespace.equals(XMLConstants.EMPTY_STRING)) {
+                                isDefaultNamespaceAllowed = false;
+                            }
                         }
                     }
                 }
@@ -471,10 +473,15 @@ public class AnnotationsProcessor {
         elementDeclarations.put(XmlElementDecl.GLOBAL.class.getName(), globalElements);
         localElements = new ArrayList<ElementDeclaration>();
 
-        javaClassToTypeMappingInfos = new HashMap<JavaClass, TypeMappingInfo>();
+        javaClassToTypeMappingInfos = new HashMap<JavaClass, List<TypeMappingInfo>>();
         if (typeMappingInfos != null) {
             for (int i = 0; i < typeMappingInfos.length; i++) {
-                javaClassToTypeMappingInfos.put(classes[i], typeMappingInfos[i]);
+                List<TypeMappingInfo> infos = javaClassToTypeMappingInfos.get(classes[i]);
+                if(infos == null) {
+                    infos = new ArrayList<TypeMappingInfo>();
+                    javaClassToTypeMappingInfos.put(classes[i], infos);
+                }
+                infos.add(typeMappingInfos[i]);
             }
         }
         typeMappingInfoToAdapterClasses = new HashMap<TypeMappingInfo, Class>();
@@ -977,112 +984,13 @@ public class AnnotationsProcessor {
         ArrayList<JavaClass> extraClasses = new ArrayList<JavaClass>();
         ArrayList<JavaClass> classesToProcess = new ArrayList<JavaClass>();
         for (JavaClass jClass : classes) {
-            Class xmlElementType = null;
-            JavaClass javaClass = jClass;
-            TypeMappingInfo tmi = javaClassToTypeMappingInfos.get(javaClass);
-            if (tmi != null) {
-                Class adapterClass = this.typeMappingInfoToAdapterClasses.get(tmi);
-                if (adapterClass != null) {
-                    JavaClass adapterJavaClass = helper.getJavaClass(adapterClass);
-                    JavaClass newType = helper.getJavaClass(Object.class);
-
-                    // look for marshal method
-                    for (Object nextMethod : adapterJavaClass.getDeclaredMethods()) {
-                        JavaMethod method = (JavaMethod) nextMethod;
-                        if (method.getName().equals("marshal")) {
-                            JavaClass returnType = method.getReturnType();
-                            if (!returnType.getQualifiedName().equals(newType.getQualifiedName())) {
-                                newType = (JavaClass) returnType;
-                                break;
-                            }
-                        }
-                    }
-                    javaClass = newType;
+            List<TypeMappingInfo> infos = this.javaClassToTypeMappingInfos.get(jClass);
+            if(infos != null && infos.size() > 0) {
+                for(TypeMappingInfo next:infos) {
+                    processAdditionalClasses(jClass, next, extraClasses, classesToProcess);
                 }
-                java.lang.annotation.Annotation[] annotations = getAnnotations(tmi);
-                if (annotations != null) {
-                    for (int j = 0; j < annotations.length; j++) {
-                        java.lang.annotation.Annotation nextAnnotation = annotations[j];
-
-                        if (nextAnnotation != null) {
-                            if (nextAnnotation instanceof XmlElement) {
-                                XmlElement javaAnnotation = (XmlElement) nextAnnotation;
-                                if (javaAnnotation.type() != XmlElement.DEFAULT.class) {
-                                    xmlElementType = javaAnnotation.type();
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (areEquals(javaClass, byte[].class) || areEquals(javaClass, JAVAX_ACTIVATION_DATAHANDLER) || areEquals(javaClass, Source.class) || areEquals(javaClass, Image.class) || areEquals(javaClass, JAVAX_MAIL_INTERNET_MIMEMULTIPART)) {
-                if (tmi == null || tmi.getXmlTagName() == null) {
-                    ElementDeclaration declaration = new ElementDeclaration(null, javaClass, javaClass.getQualifiedName(), false, XmlElementDecl.GLOBAL.class);
-                    declaration.setTypeMappingInfo(tmi);
-                    this.localElements.add(declaration);
-                }
-            } else if (javaClass.isArray()) {
-                if (!helper.isBuiltInJavaType(javaClass.getComponentType())) {
-                    extraClasses.add(javaClass.getComponentType());
-                }
-                Class generatedClass;
-                if (null == tmi) {
-                    generatedClass = arrayClassesToGeneratedClasses.get(javaClass.getName());
-                } else {
-                    generatedClass = CompilerHelper.getExisitingGeneratedClass(tmi, typeMappingInfoToGeneratedClasses, typeMappingInfoToAdapterClasses, helper.getClassLoader());
-                }
-                if (generatedClass == null) {
-                    generatedClass = generateWrapperForArrayClass(javaClass, tmi, xmlElementType, extraClasses);
-                    extraClasses.add(helper.getJavaClass(generatedClass));
-                    arrayClassesToGeneratedClasses.put(javaClass.getName(), generatedClass);
-                }
-                generatedClassesToArrayClasses.put(generatedClass, javaClass);
-                typeMappingInfoToGeneratedClasses.put(tmi, generatedClass);
-
-            } else if (isCollectionType(javaClass)) {
-                JavaClass componentClass;
-                if (javaClass.hasActualTypeArguments()) {
-                    componentClass = (JavaClass) javaClass.getActualTypeArguments().toArray()[0];
-                    if (!componentClass.isPrimitive()) {
-                        extraClasses.add(componentClass);
-                    }
-                } else {
-                    componentClass = helper.getJavaClass(Object.class);
-                }
-
-                Class generatedClass = CompilerHelper.getExisitingGeneratedClass(tmi, typeMappingInfoToGeneratedClasses, typeMappingInfoToAdapterClasses, helper.getClassLoader());
-                if (generatedClass == null) {
-                    generatedClass = generateCollectionValue(javaClass, tmi, xmlElementType);
-                    extraClasses.add(helper.getJavaClass(generatedClass));
-                }
-                typeMappingInfoToGeneratedClasses.put(tmi, generatedClass);
-            } else if (isMapType(javaClass)) {
-                JavaClass keyClass;
-                JavaClass valueClass;
-                if (javaClass.hasActualTypeArguments()) {
-                    keyClass = (JavaClass) javaClass.getActualTypeArguments().toArray()[0];
-                    if (!helper.isBuiltInJavaType(keyClass)) {
-                        extraClasses.add(keyClass);
-                    }
-                    valueClass = (JavaClass) javaClass.getActualTypeArguments().toArray()[1];
-                    if (!helper.isBuiltInJavaType(valueClass)) {
-                        extraClasses.add(valueClass);
-                    }
-                } else {
-                    keyClass = helper.getJavaClass(Object.class);
-                    valueClass = helper.getJavaClass(Object.class);
-                }
-
-                Class generatedClass = CompilerHelper.getExisitingGeneratedClass(tmi, typeMappingInfoToGeneratedClasses, typeMappingInfoToAdapterClasses, helper.getClassLoader());
-                if (generatedClass == null) {
-                    generatedClass = generateWrapperForMapClass(javaClass, keyClass, valueClass, tmi);
-                    extraClasses.add(helper.getJavaClass(generatedClass));
-                }
-                typeMappingInfoToGeneratedClasses.put(tmi, generatedClass);
             } else {
-                // process @XmlRegistry, @XmlSeeAlso and inner classes
-                processClass(javaClass, classesToProcess);
+                processAdditionalClasses(jClass, null, extraClasses, classesToProcess);
             }
         }
         // process @XmlRegistry, @XmlSeeAlso and inner classes
@@ -1092,6 +1000,117 @@ public class AnnotationsProcessor {
 
         return classesToProcess.toArray(new JavaClass[classesToProcess.size()]);
     }
+    
+    
+    private void processAdditionalClasses(JavaClass cls, TypeMappingInfo tmi, ArrayList<JavaClass> extraClasses, ArrayList<JavaClass> classesToProcess) {
+        Class xmlElementType = null;
+        JavaClass javaClass = cls;
+        if (tmi != null) {
+            Class adapterClass = this.typeMappingInfoToAdapterClasses.get(tmi);
+            if (adapterClass != null) {
+                JavaClass adapterJavaClass = helper.getJavaClass(adapterClass);
+                JavaClass newType = helper.getJavaClass(Object.class);
+
+                // look for marshal method
+                for (Object nextMethod : adapterJavaClass.getDeclaredMethods()) {
+                    JavaMethod method = (JavaMethod) nextMethod;
+                    if (method.getName().equals("marshal")) {
+                        JavaClass returnType = method.getReturnType();
+                        if (!returnType.getQualifiedName().equals(newType.getQualifiedName())) {
+                            newType = (JavaClass) returnType;
+                            break;
+                        }
+                    }
+                }
+                javaClass = newType;
+            }
+            java.lang.annotation.Annotation[] annotations = getAnnotations(tmi);
+            if (annotations != null) {
+                for (int j = 0; j < annotations.length; j++) {
+                    java.lang.annotation.Annotation nextAnnotation = annotations[j];
+
+                    if (nextAnnotation != null) {
+                        if (nextAnnotation instanceof XmlElement) {
+                            XmlElement javaAnnotation = (XmlElement) nextAnnotation;
+                            if (javaAnnotation.type() != XmlElement.DEFAULT.class) {
+                                xmlElementType = javaAnnotation.type();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if (areEquals(javaClass, byte[].class) || areEquals(javaClass, JAVAX_ACTIVATION_DATAHANDLER) || areEquals(javaClass, Source.class) || areEquals(javaClass, Image.class) || areEquals(javaClass, JAVAX_MAIL_INTERNET_MIMEMULTIPART)) {
+            if (tmi == null || tmi.getXmlTagName() == null) {
+                ElementDeclaration declaration = new ElementDeclaration(null, javaClass, javaClass.getQualifiedName(), false, XmlElementDecl.GLOBAL.class);
+                declaration.setTypeMappingInfo(tmi);
+                this.localElements.add(declaration);
+            }
+        } else if (javaClass.isArray()) {
+            if (!helper.isBuiltInJavaType(javaClass.getComponentType())) {
+                extraClasses.add(javaClass.getComponentType());
+            }
+            Class generatedClass;
+            if (null == tmi) {
+                generatedClass = arrayClassesToGeneratedClasses.get(javaClass.getName());
+            } else {
+                generatedClass = CompilerHelper.getExisitingGeneratedClass(tmi, typeMappingInfoToGeneratedClasses, typeMappingInfoToAdapterClasses, helper.getClassLoader());
+            }
+            if (generatedClass == null) {
+                generatedClass = generateWrapperForArrayClass(javaClass, tmi, xmlElementType, extraClasses);
+                extraClasses.add(helper.getJavaClass(generatedClass));
+                arrayClassesToGeneratedClasses.put(javaClass.getName(), generatedClass);
+            }
+            generatedClassesToArrayClasses.put(generatedClass, javaClass);
+            typeMappingInfoToGeneratedClasses.put(tmi, generatedClass);
+
+        } else if (isCollectionType(javaClass)) {
+            JavaClass componentClass;
+            if (javaClass.hasActualTypeArguments()) {
+                componentClass = (JavaClass) javaClass.getActualTypeArguments().toArray()[0];
+                if (!componentClass.isPrimitive()) {
+                    extraClasses.add(componentClass);
+                }
+            } else {
+                componentClass = helper.getJavaClass(Object.class);
+            }
+
+            Class generatedClass = CompilerHelper.getExisitingGeneratedClass(tmi, typeMappingInfoToGeneratedClasses, typeMappingInfoToAdapterClasses, helper.getClassLoader());
+            if (generatedClass == null) {
+                generatedClass = generateCollectionValue(javaClass, tmi, xmlElementType);
+                extraClasses.add(helper.getJavaClass(generatedClass));
+            }
+            typeMappingInfoToGeneratedClasses.put(tmi, generatedClass);
+        } else if (isMapType(javaClass)) {
+            JavaClass keyClass;
+            JavaClass valueClass;
+            if (javaClass.hasActualTypeArguments()) {
+                keyClass = (JavaClass) javaClass.getActualTypeArguments().toArray()[0];
+                if (!helper.isBuiltInJavaType(keyClass)) {
+                    extraClasses.add(keyClass);
+                }
+                valueClass = (JavaClass) javaClass.getActualTypeArguments().toArray()[1];
+                if (!helper.isBuiltInJavaType(valueClass)) {
+                    extraClasses.add(valueClass);
+                }
+            } else {
+                keyClass = helper.getJavaClass(Object.class);
+                valueClass = helper.getJavaClass(Object.class);
+            }
+
+            Class generatedClass = CompilerHelper.getExisitingGeneratedClass(tmi, typeMappingInfoToGeneratedClasses, typeMappingInfoToAdapterClasses, helper.getClassLoader());
+            if (generatedClass == null) {
+                generatedClass = generateWrapperForMapClass(javaClass, keyClass, valueClass, tmi);
+                extraClasses.add(helper.getJavaClass(generatedClass));
+            }
+            typeMappingInfoToGeneratedClasses.put(tmi, generatedClass);
+        } else {
+            // process @XmlRegistry, @XmlSeeAlso and inner classes
+            processClass(javaClass, classesToProcess);
+        }
+    }
+        
 
     /**
      * Adds additional classes to the given List, from inner classes,
