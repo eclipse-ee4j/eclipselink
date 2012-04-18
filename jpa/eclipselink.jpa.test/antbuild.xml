@@ -2902,6 +2902,8 @@
             <sysproperty key="server.testrunner4" value="${SERVER.TESTRUNNER4}"/>
             <sysproperty key="server.testrunner5" value="${SERVER.TESTRUNNER5}"/>
             <sysproperty key="server.run" value="TRUE"/>
+            <sysproperty key="com.ibm.SSL.ConfigURL" value="${com.ibm.SSL.ConfigURL}"/>
+            <sysproperty key="com.ibm.CORBA.ConfigURL" value="${com.ibm.CORBA.ConfigURL}"/>
             <classpath refid="run.path"/>
             <formatter type="xml"/>
             <test name="${TEST_SUITE}" haltonfailure="no" outfile="${report.dir}/${TEST_SUITE}-test-results"/>
