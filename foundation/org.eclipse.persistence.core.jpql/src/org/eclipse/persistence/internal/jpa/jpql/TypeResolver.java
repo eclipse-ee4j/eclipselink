@@ -1482,11 +1482,21 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
 		@Override
 		public void visit(IdentificationVariable expression) {
 
-			Declaration declaration = queryContext.findDeclaration(expression.getVariableName());
+			// Check to see if the identification variable is "virtual" and internally
+			// changed to a state field path expression. If so, it means it's an unqualified
+			// path found in an UPDATE or DELETE query
+			StateFieldPathExpression pathExpression = expression.isVirtual() ? expression.getStateFieldPathExpression() : null;
 
-			// A null declaration Expression would mean it's the first package of an enum type
-			if (declaration != null) {
-				descriptor = declaration.getDescriptor();
+			if (pathExpression != null) {
+				pathExpression.accept(this);
+			}
+			else {
+				Declaration declaration = queryContext.findDeclaration(expression.getVariableName());
+
+				// A null declaration Expression would mean it's the first package of an enum type
+				if (declaration != null) {
+					descriptor = declaration.getDescriptor();
+				}
 			}
 		}
 

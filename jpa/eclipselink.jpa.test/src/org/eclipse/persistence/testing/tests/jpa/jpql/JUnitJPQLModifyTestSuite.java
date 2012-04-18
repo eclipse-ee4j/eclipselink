@@ -96,6 +96,7 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
         suite.addTest(new JUnitJPQLModifyTestSuite("updateEmbeddedFieldTest"));
         suite.addTest(new JUnitJPQLModifyTestSuite("updateUnqualifiedAttributeInSet"));
         suite.addTest(new JUnitJPQLModifyTestSuite("updateUnqualifiedAttributeInWhere"));
+        suite.addTest(new JUnitJPQLModifyTestSuite("updateUnqualifiedAttributeInWhereWithInputParameter"));
         suite.addTest(new JUnitJPQLModifyTestSuite("updateDateTimeFields"));
         suite.addTest(new JUnitJPQLModifyTestSuite("simpleDelete"));
         
@@ -363,6 +364,24 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
                 rollbackTransaction(em);
             }
         }
+    }
+
+    // Bug 13972866: Test for a NPE found in Hermes in regards to unqualified path
+    // expression in the where clause mixed with input parameters
+    public void updateUnqualifiedAttributeInWhereWithInputParameter() {
+
+   	 EntityManager em = createEntityManager();
+
+        try {
+           Query query = em.createQuery("update Employee set salary = :salary where version = :version");
+           query.setParameter("salary",  1);
+           query.setParameter("version", 2);
+        }
+        finally {
+           if (isTransactionActive(em)){
+               rollbackTransaction(em);
+           }
+       }
     }
 
     public void updateDateTimeFields()
