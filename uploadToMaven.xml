@@ -217,17 +217,18 @@
         <!--   canonical modelgen processor during compilation. It has no real dependencies, nor is anything really       -->
         <!--   dependant upon it, but it is needed for this compiler functionality to work. (think of it as a compiler    -->
         <!--   add-on). It will need to be downloaded independently for this feature (modelgen) to work.                  -->
-        <property name="jpql.dependencies"     value="${deps.head}${dep.hermes}${deps.foot}"/>
-        <property name="core.dependencies"     value="${deps.head}${dep.asm}${dep.antlr}${dep.hermes}${dep.core.parser}${deps.foot}"/>
-        <property name="oracle.dependencies"   value="${deps.head}${dep.asm}${dep.core}${deps.foot}"/>
-        <property name="jpa.dependencies"      value="${deps.head}${dep.asm}${dep.core}${deps.foot}"/>
-        <property name="modelgen.dependencies" value="${deps.head}${dep.core}${dep.jpa}${dep.jpa.processor}${deps.foot}"/>
-        <property name="osgi.dependencies"     value="${deps.head}${dep.jpa}${deps.foot}"/>
-        <property name="weaving.dependencies"  value="${deps.head}${dep.jpa}${deps.foot}"/>
-        <property name="equinox.dependencies"  value="${deps.head}${dep.jpa.weaving}${dep.jpa}${deps.foot}"/>
-        <property name="dbws.dependencies"     value="${deps.head}${dep.core}${deps.foot}"/>
-        <property name="moxy.dependencies"     value="${deps.head}${dep.core}${deps.foot}"/>
-        <property name="sdo.dependencies"      value="${deps.head}${dep.sdoapi}${dep.moxy}${dep.core}${deps.foot}"/>
+        <property name="eclipselink.dependencies" value="${deps.head}${dep.persistence2}${dep.sdoapi}${deps.foot}"/>
+        <property name="jpql.dependencies"        value="${deps.head}${dep.hermes}${deps.foot}"/>
+        <property name="core.dependencies"        value="${deps.head}${dep.asm}${deps.foot}"/>
+        <property name="oracle.dependencies"      value="${deps.head}${dep.persistence2}${dep.asm}${dep.core}${deps.foot}"/>
+        <property name="jpa.dependencies"         value="${deps.head}${dep.persistence2}${dep.asm}${dep.antlr}${dep.hermes}${dep.core.parser}${dep.core}${deps.foot}"/>
+        <property name="modelgen.dependencies"    value="${deps.head}${dep.core}${dep.jpa}${dep.jpa.processor}${deps.foot}"/>
+        <property name="osgi.dependencies"        value="${deps.head}${dep.jpa}${deps.foot}"/>
+        <property name="weaving.dependencies"     value="${deps.head}${dep.jpa}${deps.foot}"/>
+        <property name="equinox.dependencies"     value="${deps.head}${dep.jpa.weaving}${dep.jpa}${deps.foot}"/>
+        <property name="dbws.dependencies"        value="${deps.head}${dep.core}${deps.foot}"/>
+        <property name="moxy.dependencies"        value="${deps.head}${dep.core}${deps.foot}"/>
+        <property name="sdo.dependencies"         value="${deps.head}${dep.sdoapi}${dep.moxy}${dep.core}${deps.foot}"/>
     </target>
 
     <target name="upload-static-built-jars" depends="discover-static-built-info">
@@ -291,7 +292,7 @@
             <param name="artifact" value="${eclipselink.jar}"/>
             <param name="artifactSrc" value="${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"/>
             <param name="artifactName" value="EclipseLink (non-OSGi)"/>
-            <param name="dependencies" value=""/>
+            <param name="dependencies" value="${eclipselink.dependencies}"/>
         </antcall>
         <antcall target="upload-artifact">
             <param name="groupId" value="org.eclipse.persistence"/>
