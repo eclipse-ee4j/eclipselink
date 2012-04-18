@@ -35,6 +35,7 @@
         <module>../../jpa/org.eclipse.persistence.jpa.osgi</module>
         <module>../../jpa/org.eclipse.persistence.jpa.equinox.weaving</module>
         <module>../../jpa/org.eclipse.persistence.jpa.equinox</module>
+        <module>../../jpa/org.eclipse.persistence.jpars</module>
         <module>../../moxy/org.eclipse.persistence.moxy</module>
         <module>../../sdo/org.eclipse.persistence.sdo</module>
         <module>../../dbws/org.eclipse.persistence.dbws</module>
