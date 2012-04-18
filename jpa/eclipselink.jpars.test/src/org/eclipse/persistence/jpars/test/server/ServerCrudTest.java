@@ -51,7 +51,7 @@ import com.sun.jersey.api.client.WebResource;
 
 public class ServerCrudTest {
     
-    public static final String SERVER_URI = "http://localhost:8080/org.eclipse.persistence.jpars.test.server/jpa-rs/";
+    public static final String SERVER_URI = "http://localhost:8080/eclipselink.jpars.test/jpa-rs/";
     public static final String DEFAULT_PU = "auction-static";
     protected static Client client = null;
     protected static Unmarshaller unmarshaller = null;
