@@ -10,7 +10,7 @@ Export-Package: org.eclipse.persistence.jpa.rs;version="2.4.0",
 Require-Bundle: org.eclipse.persistence.core;bundle-version="2.4.0",
  org.eclipse.persistence.jpa;bundle-version="2.4.0",
  org.eclipse.persistence.moxy;bundle-version="2.4.0"
-Import-Package: javax.ejb;version="3.0.0",
+Import-Package: javax.ejb;version="3.1.0",
  javax.persistence,
  javax.persistence.metamodel,
  javax.persistence.spi,
