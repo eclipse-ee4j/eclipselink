@@ -1373,13 +1373,13 @@ public class DynamicJAXBFromOXMTestCases extends TestCase {
         Source domSource = new DOMSource(xsdDocument);
         
         XMLDescriptor dummy = new XMLDescriptor();
-        dummy.setJavaClass(javax.swing.JLabel.class);
+        dummy.setJavaClass(org.eclipse.persistence.testing.jaxb.employee.Employee.class);
         jc.getXMLContext().getSession(0).addDescriptor(dummy);
 
-        Object o = unmarshaller.unmarshal(domSource, javax.swing.JLabel.class);
+        Object o = unmarshaller.unmarshal(domSource, org.eclipse.persistence.testing.jaxb.employee.Employee.class);
         JAXBElement jelem = (JAXBElement) o;
 
-        assertEquals(javax.swing.JLabel.class, jelem.getValue().getClass());
+        assertEquals(org.eclipse.persistence.testing.jaxb.employee.Employee.class, jelem.getValue().getClass());
     }
 
     // Utility methods
