@@ -50,6 +50,8 @@
 
     <property file="${user.home}/build.properties"/>
     <property file="${jparstest.build.location}/antbuild.properties"/>
+    <property file="${eclipselink.jpars.test}/${test.properties}"/>
+    <property file="${eclipselink.jpars.test}/test.properties"/>
 
     <!-- versioning -->
     <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
@@ -74,9 +76,13 @@
             includes="
                org.eclipse.persistence.core_${version.string}.jar,
                org.eclipse.persistence.moxy_${version.string}.jar,
-               org.eclipse.persistence.jpa_${version.string}.jar
-               org.eclipse.persistence.jpars_${version.string}.jar
+               org.eclipse.persistence.jpa_${version.string}.jar,
+               org.eclipse.persistence.jpars_${version.string}.jar,
+               org.eclipse.persistence.jpars_${version.string}.jar,
+               org.eclipse.persistence.core.jpql_${version.string}.jar,
+               org.eclipse.persistence.jpa.jpql_${hermes.version.string}.jar
             "/>
+            <pathelement path="${jparstest.2.common.plugins.dir}/${antlr}"/>
     </path>
     <!-- compile path without product components -->
     <path id="jparstest.thirdparty.compile.path">
@@ -91,6 +97,7 @@
         <pathelement path="${persistence20.lib}"/>
         <pathelement path="${jersey.lib}"/>
         <pathelement path="${javax.ws.rs.lib}"/>
+        <pathelement path="${jdbc.driver.jar}"/>
     </path>
     <!-- Run path without product components -->
     <path id="jparstest.thirdparty.run.path">
@@ -149,124 +156,54 @@
     <!-- Run targets -->
     <target name="test" depends="compile-jpars-tests" description="run jpars tests">
         <mkdir dir="${resource.dir}/${tmp.dir}"/>
-        <run_jpars_tests customcontext="true" runpathref="jparstest.run.path"/>
+        <run_jpars_tests runpathref="jparstest.run.path"/>
         <delete dir="${resource.dir}/${tmp.dir}"/>
     </target>
     <target name="test-against-jar" depends="compile-jpars-tests-against-jar" description="run jpars tests against eclipselink.jar">
         <mkdir dir="${resource.dir}/${tmp.dir}"/>
-        <run_jpars_tests customcontext="true" runpathref="jparstest.run.against.jar.path"/>
+        <run_jpars_tests runpathref="jparstest.run.against.jar.path"/>
         <delete dir="${resource.dir}/${tmp.dir}"/>
     </target>
-    <target name="test-srg-against-jar" depends="compile-jpars-tests-against-jar" description="run jpars srg tests against eclipselink.jar">
-        <mkdir dir="${resource.dir}/${tmp.dir}"/>
-        <run_jpars_srg_tests customcontext="true" runpathref="jparstest.run.against.jar.path"/>
-        <delete dir="${resource.dir}/${tmp.dir}"/>
-    </target>
-
 
     <!-- Test run macros -->
     <macrodef name="run_jpars_tests">
-        <attribute name="customcontext"/>
         <attribute name="runpathref"/>
         <sequential>
-            <delete dir="${report.dir}/@{customcontext}"/>
-            <mkdir dir="${report.dir}/@{customcontext}"/>
-            <echo message="customContext=@{customcontext}"/>
+            <delete dir="${report.dir}"/>
+            <mkdir dir="${report.dir}"/>
+            <mkdir dir="${jparstest.build.location}/${classes.dir}/META-INF"/>
+            <copy todir="${jparstest.build.location}/${classes.dir}/META-INF">
+                <fileset dir="${jparstest.build.location}/${src.dir}/META-INF" includes="**"/>
+            </copy>
             <!-- Fix for 290177 below removed temporarily to avoid out-of-memeory issues with LRG run -->
             <!-- junit printsummary="withOutAndErr" fork="yes" forkmode="once" dir="${resource.dir}" maxmemory="512m" showoutput="yes" -->
-            <junit printsummary="withOutAndErr" fork="yes" dir="${resource.dir}" maxmemory="512m" showoutput="yes">
+            <junit printsummary="withOutAndErr" fork="yes" dir="${classes.dir}" maxmemory="512m" showoutput="yes">
                 <jvmarg value="-XX:MaxPermSize=256m"/>
                 <sysproperty key="loggingLevelFinest" value="false"/>
-                <sysproperty key="customContext" value="@{customcontext}"/>
-                <sysproperty key="eclipselink.xml.platform" value="${xml.platform}"/>
                 <sysproperty key="tempFileDir" value="${tmp.dir}"/>
                 <sysproperty key="ignoreCRLF" value="true"/>
                 <sysproperty key="useLogging" value="false"/>
                 <sysproperty key="useSAXParsing" value="true"/>
                 <sysproperty key="useDeploymentXML" value="false"/>
-                <batchtest todir="${report.dir}/@{customcontext}">
+                <sysproperty key="test.properties" value="${jparstest.build.location}/test.properties"/>
+                <sysproperty key="jpars.xmlfile.directory" value="META-INF/xmldocs/"/>
+
+                <batchtest todir="${report.dir}">
                     <fileset dir="${src.dir}">
-                        <include name="**/*TestSuite.java"/>
-                        <exclude name="org/eclipse/persistence/testing/sdo/SDOTestSuite.java"/>
-                        <exclude name="org/eclipse/persistence/testing/sdo/SDOSRGTestSuite.java"/>
-                        <exclude name="org/eclipse/persistence/testing/sdo/helper/SDOHelperTestSuite.java"/>
-                        <exclude name="org/eclipse/persistence/testing/sdo/helper/xmlhelper/SDOXMLHelperTestSuite.java"/>
-                        <exclude name="org/eclipse/persistence/testing/sdo/helper/typehelper/define/SDOTypeHelperDefineTestSuite.java"/>
-                        <exclude name="org/eclipse/persistence/testing/sdo/helper/xsdhelper/define/XSDHelperDefineTestSuite.java"/>
-                        <exclude name="org/eclipse/persistence/testing/sdo/model/SDOModelTestSuite.java"/>
-                        <exclude name="org/eclipse/persistence/testing/sdo/performance/*TestSuite.java"/>
+                        <include name="org/eclipse/persistence/jpars/test/AllJavaSETests.java"/>
                     </fileset>
                     <formatter type="xml"/>
                 </batchtest>
                 <classpath refid="@{runpathref}"/>
             </junit>
             <!-- Create JUnit report -->
-            <mkdir dir="${report.dir}/@{customcontext}"/>
-            <junitreport todir="${report.dir}/@{customcontext}">
-                <fileset dir="${report.dir}/@{customcontext}">
+            <mkdir dir="${report.dir}"/>
+            <junitreport todir="${report.dir}">
+                <fileset dir="${report.dir}">
                     <include name="**/*.xml"/>
                 </fileset>
-                <report format="noframes" todir="${report.dir}/@{customcontext}"/>
+                <report format="noframes" todir="${report.dir}"/>
             </junitreport>
-            <!-- Clean up generated files -->
-            <clean_up_generated_files/>
-        </sequential>
-    </macrodef>
-
-    <!-- Test run macros -->
-    <macrodef name="run_jpars_srg_tests">
-        <attribute name="customcontext"/>
-        <attribute name="runpathref"/>
-        <sequential>
-            <delete dir="${report.dir}/srg/@{customcontext}"/>
-            <mkdir dir="${report.dir}/srg/@{customcontext}"/>
-            <echo message="customContext=@{customcontext}"/>
-            <junit printsummary="withOutAndErr" fork="yes" forkmode="once" dir="${resource.dir}" maxmemory="512m" showoutput="yes">
-                <jvmarg value="-XX:MaxPermSize=256m"/>
-                <sysproperty key="loggingLevelFinest" value="false"/>
-                <sysproperty key="customContext" value="@{customcontext}"/>
-                <sysproperty key="eclipselink.xml.platform" value="${xml.platform}"/>
-                <sysproperty key="tempFileDir" value="${tmp.dir}"/>
-                <sysproperty key="ignoreCRLF" value="true"/>
-                <sysproperty key="useLogging" value="false"/>
-                  <sysproperty key="useSAXParsing" value="true"/>
-                <sysproperty key="useDeploymentXML" value="false"/>
-                <batchtest todir="${report.dir}/srg/@{customcontext}">
-                    <fileset dir="${src.dir}">
-                        <include name="org/eclipse/persistence/testing/sdo/SDOSRGTestSuite.java"/>
-                    </fileset>
-                    <formatter type="xml"/>
-                </batchtest>
-                <classpath refid="@{runpathref}"/>
-            </junit>
-            <!-- Create JUnit report -->
-            <junitreport todir="${report.dir}/srg/@{customcontext}">
-                <fileset dir="${report.dir}/srg/@{customcontext}">
-                    <include name="**/*.xml"/>
-                </fileset>
-                <report format="noframes" todir="${report.dir}/srg/@{customcontext}"/>
-            </junitreport>
-            <!-- Clean up generated files -->
-            <clean_up_generated_files/>
-        </sequential>
-    </macrodef>
-
-    <macrodef name="clean_up_generated_files">
-        <sequential>
-            <delete dir="${resource.dir}/baseTypes"/>
-            <delete dir="${resource.dir}/complextypes"/>
-            <delete dir="${resource.dir}/elements"/>
-            <delete dir="${resource.dir}/invalidtypename"/>
-            <delete dir="${resource.dir}/list"/>
-            <delete dir="${resource.dir}/nestedBaseTypes"/>
-            <delete dir="${resource.dir}/poJavaDocs"/>
-            <delete dir="${resource.dir}/poJavaDocsListener"/>
-            <delete dir="${resource.dir}/schemaTypes"/>
-            <delete dir="${resource.dir}/srcImports"/>
-            <delete dir="${resource.dir}/srcImportsDontProcess"/>
-            <delete dir="${resource.dir}/srcPO"/>
-            <delete dir="${resource.dir}/srcPOAnnotations"/>
-            <delete dir="${resource.dir}/union"/>
         </sequential>
     </macrodef>
 

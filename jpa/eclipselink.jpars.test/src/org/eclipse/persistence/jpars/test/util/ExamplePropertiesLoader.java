@@ -33,7 +33,11 @@ public class ExamplePropertiesLoader {
      * @param properties
      */
     public static void loadProperties(Map<String, Object> properties) {
-        loadProperties(properties, DEFAULT_FILENAME);
+        String fileName = System.getProperty(DEFAULT_FILENAME);
+        if (fileName == null){
+            fileName = DEFAULT_FILENAME;
+        }
+        loadProperties(properties, fileName);
     }
 
     /**

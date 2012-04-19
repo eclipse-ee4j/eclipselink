@@ -48,6 +48,7 @@ import org.eclipse.persistence.jpars.test.model.StaticUser;
 import org.eclipse.persistence.jpars.test.util.ExamplePropertiesLoader;
 import org.eclipse.persistence.jpars.test.util.TestHttpHeaders;
 import org.eclipse.persistence.jpars.test.util.TestURIInfo;
+import org.eclipse.persistence.jpars.test.util.XMLFilePathBuilder;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -73,12 +74,12 @@ public class TestService {
             factory.setMetadataStore(new DatabaseMetadataStore());
             factory.getMetadataStore().setProperties(properties);
             factory.getMetadataStore().clearMetadata();
-            FileInputStream xmlStream = new FileInputStream("classes/META-INF/xmldocs/auction-persistence.xml");
+            FileInputStream xmlStream = new FileInputStream(XMLFilePathBuilder.getXMLFileName("auction-persistence.xml"));
 
             PersistenceContext context = factory.bootstrapPersistenceContext("auction", xmlStream, properties, true);
             context.setBaseURI(new URI("http://localhost:8080/JPA-RS/"));
             
-            xmlStream = new FileInputStream("classes/META-INF/xmldocs/phonebook-persistence.xml");
+            xmlStream = new FileInputStream(XMLFilePathBuilder.getXMLFileName("/phonebook-persistence.xml"));
             context = factory.bootstrapPersistenceContext("phonebook", xmlStream, properties, true);
             context.setBaseURI(new URI("http://localhost:8080/JPA-RS/"));
             

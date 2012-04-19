@@ -24,6 +24,7 @@ import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.PersistenceFactory;
 import org.eclipse.persistence.jpars.test.util.ExamplePropertiesLoader;
+import org.eclipse.persistence.jpars.test.util.XMLFilePathBuilder;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.server.ServerSession;
@@ -43,7 +44,7 @@ public class TestBootstrap {
 		PersistenceFactory factory = null;
 		try{
 		    factory = new PersistenceFactory();
-		    FileInputStream xmlStream = new FileInputStream("classes/META-INF/xmldocs/auction-persistence.xml");
+		    FileInputStream xmlStream = new FileInputStream(XMLFilePathBuilder.getXMLFileName("auction-persistence.xml"));
 			factory.bootstrapPersistenceContext("auction", xmlStream, properties, true);
 		} catch (Exception e){
 			fail(e.toString());
