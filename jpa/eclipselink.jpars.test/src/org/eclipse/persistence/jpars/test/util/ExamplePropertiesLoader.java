@@ -27,7 +27,8 @@ import java.util.Properties;
 public class ExamplePropertiesLoader {
 
     public static final String DEFAULT_FILENAME = "test.properties";
-
+    public static final String ECLIPSELINK_TEST_DB_PROP_PREFIX = "db.";
+    public static final String JPA_DB_PROP_PREFIX = "javax.persistence.jdbc";
     /**
      * 
      * @param properties
@@ -74,7 +75,11 @@ public class ExamplePropertiesLoader {
                 in.close();
 
                 for (Map.Entry<Object, Object> entry : exampleProps.entrySet()) {
-                    properties.put((String) entry.getKey(), entry.getValue());
+                    if (((String)entry.getKey()).startsWith(ECLIPSELINK_TEST_DB_PROP_PREFIX)){
+                        properties.put(((String) entry.getKey()).replace(ECLIPSELINK_TEST_DB_PROP_PREFIX, JPA_DB_PROP_PREFIX), entry.getValue());
+                    } else {
+                        properties.put((String) entry.getKey(), entry.getValue());
+                    }
                 }
             }
         } catch (Exception e) {
