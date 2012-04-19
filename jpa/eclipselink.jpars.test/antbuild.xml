@@ -1,0 +1,294 @@
+<?xml version="1.0"?>
+<!--/*******************************************************************************
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+* which accompanies this distribution.
+* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+* and the Eclipse Distribution License is available at
+* http://www.eclipse.org/org/documents/edl-v10.php.
+*
+*   Ant naming conventions:
+*   - regardless of the actual OS platform,'/' is the directory separator
+*     (Ant will convert as appropriate).
+*   - multi-word properties use periods '.'
+*     - properties ending in .jar define jarfile names only (no path)
+*     - properties ending in .lib are fully qualified jars (path and filename)
+*     - properties ending in .dir are directory paths
+*     - properties ending in .path are path refid names (classpath fragments)
+*   - multi-word targets use hyphens '-'
+*     - targets beginning with test- are reserved for high level test targets,
+*       and are used in test results parsing
+*     - targets typically use the form <action>-<object>-<type> (ie. package-bundle-zip)
+*   - multi-word macros use underscores '_'
+*   - multi-word macro attributes are concatinated
+*     e.g. 'runpathref'
+*   - multi-word tasks (taskdef) names are concatinated
+*     e.g. 'validateconnection'
+*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
+*     e.g. ${env.XXX}.
+*   - Ant properties are lower case.
+*
+* Contributors:
+*     bdoughan, dtwelves, egwin - initial API and implementation from SDO test project
+*     tware - modified for jpa rs tests
+#******************************************************************************/-->
+<project name="eclipselink.jpars.test" default="test" basedir=".">
+    <available file="../${ant.project.name}" type="dir" property="jparstest.is.local"/>
+    <!-- Test to make sure that the calling script doesn't inherit the variable -->
+    <!-- (should be set locally, and be destroyed upon return) -->
+    <fail message="Not running from '${ant.project.name}' directory" unless="jparstest.is.local"/>
+
+    <dirname  property="jparstest.build.location" file="${ant.file.eclipselink.jpars.test}"/>
+    <echo message="jparstest.build.location = '${jparstest.build.location}'"/>
+
+    <condition property="jparstest.2.base.dir" value="../.." else="..">
+        <contains string="${jparstest.build.location}" substring="jpars"/>
+    </condition>
+    <echo message="jparstest.2.base.dir = '${jparstest.2.base.dir}'"/>
+    <property name="jparstest.2.common.plugins.dir" value="${jparstest.2.base.dir}/plugins"/>
+    <property name="jparstest.2.jpa.plugins.dir" value="${jparstest.2.base.dir}/jpa/plugins"/>
+
+    <property file="${user.home}/build.properties"/>
+    <property file="${jparstest.build.location}/antbuild.properties"/>
+
+    <!-- versioning -->
+    <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
+    <tstamp>
+       <format property="build.date" pattern="yyyyMMdd"/>
+       <format property="build.time" pattern="HHmm"/>
+    </tstamp>
+    <property name="build.type" value="SNAPSHOT"/>
+    <property name="svn.revision" value="NA"/>
+    <property name="version.string" value="${release.version}.qualifier"/>
+    <property name="release.designation"  value="EclipseLink DeveloperBuild"/>
+
+    <property name="jaxb-api.lib"   value="${jparstest.2.common.plugins.dir}/${jaxb-api.jar}"/>
+    <property name="persistence20.lib"   value="${jparstest.2.jpa.plugins.dir}/${persistence20.jar}"/>
+    <property name="jersey.lib"   value="${jparstest.2.common.plugins.dir}/${jersey.jar}"/>
+    <property name="javax.ws.rs.lib"   value="${jparstest.2.common.plugins.dir}/${javax.ws.rs.jar}"/>
+
+    <!-- path to OSGi Bundle compile dependencies -->
+    <path id="jparstest.bundle.compile.path">
+        <fileset
+            dir="${jparstest.2.common.plugins.dir}"
+            includes="
+               org.eclipse.persistence.core_${version.string}.jar,
+               org.eclipse.persistence.moxy_${version.string}.jar,
+               org.eclipse.persistence.jpa_${version.string}.jar
+               org.eclipse.persistence.jpars_${version.string}.jar
+            "/>
+    </path>
+    <!-- compile path without product components -->
+    <path id="jparstest.thirdparty.compile.path">
+
+        <fileset
+            dir="${jparstest.2.common.plugins.dir}"
+            includes="
+               ${eclipselink.core.depend}
+            "/>
+        <pathelement path="${junit.lib}"/>
+        <pathelement path="${jaxb-api.lib}"/>
+        <pathelement path="${persistence20.lib}"/>
+        <pathelement path="${jersey.lib}"/>
+        <pathelement path="${javax.ws.rs.lib}"/>
+    </path>
+    <!-- Run path without product components -->
+    <path id="jparstest.thirdparty.run.path">
+        <pathelement path="${resource.dir}"/>
+        <pathelement path="${classes.dir}"/>
+        <pathelement path="${jparstest.2.common.plugins.dir}/${asm}"/>
+    </path>
+
+    <!-- Set Compile/Run Paths using product OSGi bundles -->
+    <path id="jparstest.compile.path">
+        <path refid="jparstest.bundle.compile.path"/>
+        <path refid="jparstest.thirdparty.compile.path"/>
+    </path>
+    <path id="jparstest.run.path">
+        <path refid="jparstest.compile.path"/>
+        <path refid="jparstest.thirdparty.run.path"/>
+    </path>
+
+    <!-- The following compile/run paths reference eclipselink.jar for non-test classes and resources -->
+    <path id="jparstest.compile.against.jar.path">
+        <pathelement path="${jparstest.2.base.dir}/${eclipselink.jar}"/>
+        <path refid="jparstest.thirdparty.compile.path"/>
+    </path>
+    <path id="jparstest.run.against.jar.path">
+        <path refid="jparstest.compile.against.jar.path"/>
+        <path refid="jparstest.thirdparty.run.path"/>
+    </path>
+
+    <available file="${jparstest.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar" property="core.bundle.exist"/>
+    <available file="${jparstest.2.common.plugins.dir}/org.eclipse.persistence.moxy_${version.string}.jar" property="moxy.bundle.exist"/>
+    <available file="${jparstest.2.common.plugins.dir}/org.eclipse.persistence.jpa_${version.string}.jar" property="jpa.bundle.exist"/>
+    <available file="${jparstest.2.common.plugins.dir}/org.eclipse.persistence.jpars_${version.string}.jar" property="jpars.bundle.exist"/>
+    <available file="${jparstest.2.base.dir}/${eclipselink.jar}" property="eclipselink.jar.exist"/>
+
+    <!-- Clean targets -->
+    <target name="clean" description="clean the build">
+        <delete includeEmptyDirs="true" failonerror="false">
+            <fileset dir="${classes.dir}"/>
+        </delete>
+        <mkdir dir="${classes.dir}"/>
+    </target>
+
+    <!-- Build targets -->
+    <target name="compile-jpars-tests-against-jar" depends="clean" description="build jpars test classes against eclipselink.jar">
+        <fail message="Cannot find EclipseLink: '${jparstest.2.base.dir}/${eclipselink.jar}'." unless="eclipselink.jar.exist"/>
+        <compile_jpars_tests compilepathref="jparstest.compile.against.jar.path"/>
+    </target>
+    <target name="compile-jpars-tests" depends="clean" description="build jpars test classes">
+        <fail message="Cannot find CORE: '${jparstest.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar'." unless="core.bundle.exist"/>
+        <fail message="Cannot find MOXY: '${jparstest.2.common.plugins.dir}/org.eclipse.persistence.moxy_${version.string}.jar'." unless="moxy.bundle.exist"/>
+        <fail message="Cannot find JPA: '${jparstest.2.common.plugins.dir}/org.eclipse.persistence.jpa_${version.string}.jar'." unless="jpa.bundle.exist"/>
+        <fail message="Cannot find JPARS: '${jparstest.2.common.plugins.dir}/org.eclipse.persistence.jpars_${version.string}.jar'." unless="jpars.bundle.exist"/>
+        <compile_jpars_tests compilepathref="jparstest.compile.path"/>
+    </target>
+
+    <!-- Run targets -->
+    <target name="test" depends="compile-jpars-tests" description="run jpars tests">
+        <mkdir dir="${resource.dir}/${tmp.dir}"/>
+        <run_jpars_tests customcontext="true" runpathref="jparstest.run.path"/>
+        <delete dir="${resource.dir}/${tmp.dir}"/>
+    </target>
+    <target name="test-against-jar" depends="compile-jpars-tests-against-jar" description="run jpars tests against eclipselink.jar">
+        <mkdir dir="${resource.dir}/${tmp.dir}"/>
+        <run_jpars_tests customcontext="true" runpathref="jparstest.run.against.jar.path"/>
+        <delete dir="${resource.dir}/${tmp.dir}"/>
+    </target>
+    <target name="test-srg-against-jar" depends="compile-jpars-tests-against-jar" description="run jpars srg tests against eclipselink.jar">
+        <mkdir dir="${resource.dir}/${tmp.dir}"/>
+        <run_jpars_srg_tests customcontext="true" runpathref="jparstest.run.against.jar.path"/>
+        <delete dir="${resource.dir}/${tmp.dir}"/>
+    </target>
+
+
+    <!-- Test run macros -->
+    <macrodef name="run_jpars_tests">
+        <attribute name="customcontext"/>
+        <attribute name="runpathref"/>
+        <sequential>
+            <delete dir="${report.dir}/@{customcontext}"/>
+            <mkdir dir="${report.dir}/@{customcontext}"/>
+            <echo message="customContext=@{customcontext}"/>
+            <!-- Fix for 290177 below removed temporarily to avoid out-of-memeory issues with LRG run -->
+            <!-- junit printsummary="withOutAndErr" fork="yes" forkmode="once" dir="${resource.dir}" maxmemory="512m" showoutput="yes" -->
+            <junit printsummary="withOutAndErr" fork="yes" dir="${resource.dir}" maxmemory="512m" showoutput="yes">
+                <jvmarg value="-XX:MaxPermSize=256m"/>
+                <sysproperty key="loggingLevelFinest" value="false"/>
+                <sysproperty key="customContext" value="@{customcontext}"/>
+                <sysproperty key="eclipselink.xml.platform" value="${xml.platform}"/>
+                <sysproperty key="tempFileDir" value="${tmp.dir}"/>
+                <sysproperty key="ignoreCRLF" value="true"/>
+                <sysproperty key="useLogging" value="false"/>
+                <sysproperty key="useSAXParsing" value="true"/>
+                <sysproperty key="useDeploymentXML" value="false"/>
+                <batchtest todir="${report.dir}/@{customcontext}">
+                    <fileset dir="${src.dir}">
+                        <include name="**/*TestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/sdo/SDOTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/sdo/SDOSRGTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/sdo/helper/SDOHelperTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/sdo/helper/xmlhelper/SDOXMLHelperTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/sdo/helper/typehelper/define/SDOTypeHelperDefineTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/sdo/helper/xsdhelper/define/XSDHelperDefineTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/sdo/model/SDOModelTestSuite.java"/>
+                        <exclude name="org/eclipse/persistence/testing/sdo/performance/*TestSuite.java"/>
+                    </fileset>
+                    <formatter type="xml"/>
+                </batchtest>
+                <classpath refid="@{runpathref}"/>
+            </junit>
+            <!-- Create JUnit report -->
+            <mkdir dir="${report.dir}/@{customcontext}"/>
+            <junitreport todir="${report.dir}/@{customcontext}">
+                <fileset dir="${report.dir}/@{customcontext}">
+                    <include name="**/*.xml"/>
+                </fileset>
+                <report format="noframes" todir="${report.dir}/@{customcontext}"/>
+            </junitreport>
+            <!-- Clean up generated files -->
+            <clean_up_generated_files/>
+        </sequential>
+    </macrodef>
+
+    <!-- Test run macros -->
+    <macrodef name="run_jpars_srg_tests">
+        <attribute name="customcontext"/>
+        <attribute name="runpathref"/>
+        <sequential>
+            <delete dir="${report.dir}/srg/@{customcontext}"/>
+            <mkdir dir="${report.dir}/srg/@{customcontext}"/>
+            <echo message="customContext=@{customcontext}"/>
+            <junit printsummary="withOutAndErr" fork="yes" forkmode="once" dir="${resource.dir}" maxmemory="512m" showoutput="yes">
+                <jvmarg value="-XX:MaxPermSize=256m"/>
+                <sysproperty key="loggingLevelFinest" value="false"/>
+                <sysproperty key="customContext" value="@{customcontext}"/>
+                <sysproperty key="eclipselink.xml.platform" value="${xml.platform}"/>
+                <sysproperty key="tempFileDir" value="${tmp.dir}"/>
+                <sysproperty key="ignoreCRLF" value="true"/>
+                <sysproperty key="useLogging" value="false"/>
+                  <sysproperty key="useSAXParsing" value="true"/>
+                <sysproperty key="useDeploymentXML" value="false"/>
+                <batchtest todir="${report.dir}/srg/@{customcontext}">
+                    <fileset dir="${src.dir}">
+                        <include name="org/eclipse/persistence/testing/sdo/SDOSRGTestSuite.java"/>
+                    </fileset>
+                    <formatter type="xml"/>
+                </batchtest>
+                <classpath refid="@{runpathref}"/>
+            </junit>
+            <!-- Create JUnit report -->
+            <junitreport todir="${report.dir}/srg/@{customcontext}">
+                <fileset dir="${report.dir}/srg/@{customcontext}">
+                    <include name="**/*.xml"/>
+                </fileset>
+                <report format="noframes" todir="${report.dir}/srg/@{customcontext}"/>
+            </junitreport>
+            <!-- Clean up generated files -->
+            <clean_up_generated_files/>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="clean_up_generated_files">
+        <sequential>
+            <delete dir="${resource.dir}/baseTypes"/>
+            <delete dir="${resource.dir}/complextypes"/>
+            <delete dir="${resource.dir}/elements"/>
+            <delete dir="${resource.dir}/invalidtypename"/>
+            <delete dir="${resource.dir}/list"/>
+            <delete dir="${resource.dir}/nestedBaseTypes"/>
+            <delete dir="${resource.dir}/poJavaDocs"/>
+            <delete dir="${resource.dir}/poJavaDocsListener"/>
+            <delete dir="${resource.dir}/schemaTypes"/>
+            <delete dir="${resource.dir}/srcImports"/>
+            <delete dir="${resource.dir}/srcImportsDontProcess"/>
+            <delete dir="${resource.dir}/srcPO"/>
+            <delete dir="${resource.dir}/srcPOAnnotations"/>
+            <delete dir="${resource.dir}/union"/>
+        </sequential>
+    </macrodef>
+
+    <!-- Compile macros -->
+    <macrodef name="compile_jpars_tests">
+        <attribute name="compilepathref"/>
+        <sequential>
+            <javac
+                srcdir="${src.dir}"
+                destdir="${classes.dir}"
+                debug="${javac.debug}"
+                debuglevel="${javac.debuglevel}"
+                optimize="${javac.optimize}"
+                source="${javac.version}"
+                target="${javac.version}"
+                deprecation="${javac.deprecation}"
+                failonerror="true"
+                includes="org/eclipse/persistence/jpars/test/**/*.java">
+                <classpath>
+                    <path refid="@{compilepathref}"/>
+                </classpath>
+            </javac>
+        </sequential>
+    </macrodef>
+</project>

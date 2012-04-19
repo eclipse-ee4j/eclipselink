@@ -26,7 +26,7 @@ import java.util.Properties;
  */
 public class ExamplePropertiesLoader {
 
-    public static final String DEFAULT_FILENAME = "eclipselink.jpa-rs.properties";
+    public static final String DEFAULT_FILENAME = "test.properties";
 
     /**
      * 

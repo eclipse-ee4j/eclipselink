@@ -15,7 +15,6 @@ package org.eclipse.persistence.jpars.test.bootstrap;
 import static org.junit.Assert.*;
 
 import java.io.FileInputStream;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 

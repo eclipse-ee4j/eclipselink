@@ -15,13 +15,11 @@ package org.eclipse.persistence.jpars.test.crud;
 import static org.junit.Assert.*;
 
 import java.io.FileInputStream;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.persistence.EntityManager;
-
 
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
