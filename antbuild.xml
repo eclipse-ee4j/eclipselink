@@ -390,10 +390,14 @@
     <target name="build-all-core-except-dbws-test">
         <ant antfile="antbuild.xml" dir="${eclipselink.core.test}"             target="build"/>
         <ant antfile="${eclipselink.jpa.test}/antbuild.xml"                    target="all"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.extension.nosql.test}"  target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.jpa.wdf.test}"          target="build-against-jar"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.jpars.test}"            target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.moxy.test}"             target="compile-tests-against-jar"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.sdo.test}"              target="compile-sdo-tests-against-jar"/>
+    </target>
+
+    <target name="build-nosql-test">
+        <ant antfile="antbuild.xml" dir="${eclipselink.extension.nosql.test}"  target="build"/>
     </target>
 
     <target name="build-dbws-test" unless="java_is_v5">
@@ -923,7 +927,7 @@
             depends="test-core-srg, test-jpa-srg, test-moxy-srg, test-sdo-srg, test-dbws-srg, test-dbws-builder-srg"
             />
     <target name="test-lrg" description="run all the LRG test suites"
-            depends="test-core, test-jpa, test-nosql, test-wdf, test-moxy, test-sdo, test-dbws, test-dbws-builder"
+            depends="test-core, test-jpa, test-wdf, test-jpars, test-moxy, test-sdo, test-dbws, test-dbws-builder"
             />
 
     <!-- Run core LRG. -->
@@ -965,6 +969,10 @@
     <!-- Run JPA Spring. -->
     <target name="test-jpa-spring" description="run the jpa Spring tests">
         <ant antfile="antbuild.xml" dir="${eclipselink.jpa.spring.test}" inheritAll="false" target="test-jpa-spring"/>
+    </target>
+    <!-- Run JPA RS tests. -->
+    <target name="test-jpars" description="run the sdo tests">
+        <ant antfile="antbuild.xml" dir="${eclipselink.jpars.test}" target="test"/>
     </target>
     <!-- Run SDO & MOXY tests. -->
     <target name="test-sdo" description="run the sdo tests">

@@ -64,9 +64,9 @@
     <property name="version.string" value="${release.version}.qualifier"/>
     <property name="release.designation"  value="EclipseLink DeveloperBuild"/>
 
-    <property name="jaxb-api.lib"   value="${jparstest.2.common.plugins.dir}/${jaxb-api.jar}"/>
-    <property name="persistence20.lib"   value="${jparstest.2.jpa.plugins.dir}/${persistence20.jar}"/>
-    <property name="jersey.lib"   value="${jparstest.2.common.plugins.dir}/${jersey.jar}"/>
+    <property name="jaxb-api.lib"      value="${jparstest.2.common.plugins.dir}/${jaxb-api.jar}"/>
+    <property name="persistence20.lib" value="${jparstest.2.jpa.plugins.dir}/${persistence20.jar}"/>
+    <property name="jersey.lib"        value="${jparstest.2.common.plugins.dir}/${jersey.jar}"/>
     <property name="javax.ws.rs.lib"   value="${jparstest.2.common.plugins.dir}/${javax.ws.rs.jar}"/>
 
     <!-- path to OSGi Bundle compile dependencies -->
@@ -78,7 +78,6 @@
                org.eclipse.persistence.moxy_${version.string}.jar,
                org.eclipse.persistence.jpa_${version.string}.jar,
                org.eclipse.persistence.jpars_${version.string}.jar,
-               org.eclipse.persistence.jpars_${version.string}.jar,
                org.eclipse.persistence.core.jpql_${version.string}.jar,
                org.eclipse.persistence.jpa.jpql_${hermes.version.string}.jar
             "/>
@@ -86,7 +85,6 @@
     </path>
     <!-- compile path without product components -->
     <path id="jparstest.thirdparty.compile.path">
-
         <fileset
             dir="${jparstest.2.common.plugins.dir}"
             includes="
@@ -119,6 +117,7 @@
     <!-- The following compile/run paths reference eclipselink.jar for non-test classes and resources -->
     <path id="jparstest.compile.against.jar.path">
         <pathelement path="${jparstest.2.base.dir}/${eclipselink.jar}"/>
+        <pathelement path="${jparstest.2.common.plugins.dir}/org.eclipse.persistence.jpars_${version.string}.jar"/>
         <path refid="jparstest.thirdparty.compile.path"/>
     </path>
     <path id="jparstest.run.against.jar.path">
@@ -126,6 +125,13 @@
         <path refid="jparstest.thirdparty.run.path"/>
     </path>
 
+    <!-- Test for Third-party dependencies -->
+    <available file="${jaxb-api.lib}"      property="jaxb-api.lib.exist"/>
+    <available file="${persistence20.lib}" property="persistence20.lib.exist"/>
+    <available file="${jersey.lib}"        property="jersey.lib.exist"/>
+    <available file="${javax.ws.rs.lib}"   property="javax.ws.rs.lib.exist"/>
+
+    <!-- Test for Eclipselink dependencies -->
     <available file="${jparstest.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar" property="core.bundle.exist"/>
     <available file="${jparstest.2.common.plugins.dir}/org.eclipse.persistence.moxy_${version.string}.jar" property="moxy.bundle.exist"/>
     <available file="${jparstest.2.common.plugins.dir}/org.eclipse.persistence.jpa_${version.string}.jar" property="jpa.bundle.exist"/>
@@ -142,13 +148,24 @@
 
     <!-- Build targets -->
     <target name="compile-jpars-tests-against-jar" depends="clean" description="build jpars test classes against eclipselink.jar">
+        <fail message="Cannot find JAXB-API: '${jaxb-api.lib}'."                unless="jaxb-api.lib.exist"/>
+        <fail message="Cannot find javax.persistence: '${persistence20.lib}'."  unless="persistence20.lib.exist"/>
+        <fail message="Cannot find Jersey: '${jersey.lib}'."                    unless="jersey.lib.exist"/>
+        <fail message="Cannot find javax.ws.rs: '${javax.ws.rs.lib}'."          unless="javax.ws.rs.lib.exist"/>
+
         <fail message="Cannot find EclipseLink: '${jparstest.2.base.dir}/${eclipselink.jar}'." unless="eclipselink.jar.exist"/>
+        <fail message="Cannot find JPARS: '${jparstest.2.common.plugins.dir}/org.eclipse.persistence.jpars_${version.string}.jar'." unless="jpars.bundle.exist"/>
         <compile_jpars_tests compilepathref="jparstest.compile.against.jar.path"/>
     </target>
     <target name="compile-jpars-tests" depends="clean" description="build jpars test classes">
-        <fail message="Cannot find CORE: '${jparstest.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar'." unless="core.bundle.exist"/>
-        <fail message="Cannot find MOXY: '${jparstest.2.common.plugins.dir}/org.eclipse.persistence.moxy_${version.string}.jar'." unless="moxy.bundle.exist"/>
-        <fail message="Cannot find JPA: '${jparstest.2.common.plugins.dir}/org.eclipse.persistence.jpa_${version.string}.jar'." unless="jpa.bundle.exist"/>
+        <fail message="Cannot find JAXB-API: '${jaxb-api.lib}'."                unless="jaxb-api.lib.exist"/>
+        <fail message="Cannot find javax.persistence: '${persistence20.lib}'."  unless="persistence20.lib.exist"/>
+        <fail message="Cannot find Jersey: '${jersey.lib}'."                    unless="jersey.lib.exist"/>
+        <fail message="Cannot find javax.ws.rs: '${javax.ws.rs.lib}'."          unless="javax.ws.rs.lib.exist"/>
+
+        <fail message="Cannot find CORE: '${jparstest.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar'."   unless="core.bundle.exist"/>
+        <fail message="Cannot find MOXY: '${jparstest.2.common.plugins.dir}/org.eclipse.persistence.moxy_${version.string}.jar'."   unless="moxy.bundle.exist"/>
+        <fail message="Cannot find JPA: '${jparstest.2.common.plugins.dir}/org.eclipse.persistence.jpa_${version.string}.jar'."     unless="jpa.bundle.exist"/>
         <fail message="Cannot find JPARS: '${jparstest.2.common.plugins.dir}/org.eclipse.persistence.jpars_${version.string}.jar'." unless="jpars.bundle.exist"/>
         <compile_jpars_tests compilepathref="jparstest.compile.path"/>
     </target>
