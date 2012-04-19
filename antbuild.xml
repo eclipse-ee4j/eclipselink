@@ -391,7 +391,7 @@
         <ant antfile="antbuild.xml" dir="${eclipselink.core.test}"             target="build"/>
         <ant antfile="${eclipselink.jpa.test}/antbuild.xml"                    target="all"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.jpa.wdf.test}"          target="build-against-jar"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.jpars.test}"            target="build"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.jpars.test}"            target="compile-jpars-tests"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.moxy.test}"             target="compile-tests-against-jar"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.sdo.test}"              target="compile-sdo-tests-against-jar"/>
     </target>
