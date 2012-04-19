@@ -15,6 +15,8 @@ package org.eclipse.persistence.testing.tests.jpa.ddlgeneration;
 import junit.framework.TestSuite;
 import junit.framework.Test;
 
+import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+
 /**
  * <p><b>Purpose</b>: To collect the tests that will run against Application Server only.
  * DDLGenerationJUnitTestSuite contains several persistence units, we have to split this suite to several test suites based on persistence unit in server env
@@ -28,7 +30,9 @@ public class DDLGenerationServerTestSuite extends TestSuite {
         suite.addTest(DDLGenerationTestSuite.suite());
         suite.addTest(DDLTablePerClassTestSuite.suite());
         suite.addTest(DDLTableSuffixTestSuite.suite());
-        suite.addTest(DDLGenerationExtendTablesJUnitTestSuite.suite());
+        if (! JUnitTestCase.isJPA10()) {
+            suite.addTest(DDLGenerationExtendTablesJUnitTestSuite.suite());
+        }
         return suite;
     }
 }
