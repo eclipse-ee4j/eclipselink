@@ -488,6 +488,7 @@
                 <exclude name="*source*.jar"/>
                 <exclude name="*equinox*.jar"/>
                 <exclude name="*builder*.jar"/>
+                <exclude name="*jpars*.jar"/>
             </zipgroupfileset>
             <!-- JPA 1.1/2.0 concurrent dev solution: New classes from javax.persistence 2.0 -->
             <fileset
@@ -677,6 +678,8 @@
                 <include name="${antlr}.source_${version.string}.jar"/>
                 <include name="org.eclipse.persistence*.source*.jar"/>
                 <exclude name="*equinox*.jar"/>
+                <exclude name="*builder*.jar"/>
+                <exclude name="*jpars*.jar"/>
             </zipgroupfileset>
         </jar>
     </target>
@@ -884,6 +887,8 @@
             <zipfileset dir="${build.dir}/" includes="javax.persistence_1.0.0.jar" prefix="eclipselink/jlib/jpa"/>
             <!-- jpa persistence 2.0 jars -->
             <zipfileset dir="${eclipselink.jpa.plugins}/" includes="javax.persistence_2.*.jar" excludes="*preview*" prefix="eclipselink/jlib/jpa"/>
+            <!-- JPA RS jar -->
+            <zipfileset dir="${eclipselink.jpa.plugins}/" includes="org.eclipse.persistence.jpars*.jar" prefix="eclipselink/jlib/jpa"/>
             <!-- moxy jar's and zips -->
             <zipfileset dir="${eclipselink.plugins}/" prefix="eclipselink/jlib/moxy">
                 <include name="${activation.jar}"/>
