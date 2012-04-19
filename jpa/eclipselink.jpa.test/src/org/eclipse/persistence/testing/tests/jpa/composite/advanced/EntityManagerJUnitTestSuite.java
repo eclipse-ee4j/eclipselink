@@ -4614,7 +4614,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             ArrayList expectedExceptions = new ArrayList();
             expectedExceptions.add(48);
             expectedExceptions.add(48);
-            IntegrityException integrityException = (IntegrityException)e.getCause();
+            IntegrityException integrityException = (IntegrityException)e.getCause().getCause();
             Iterator i = integrityException.getIntegrityChecker().getCaughtExceptions().iterator();
             while (i.hasNext()){
                 expectedExceptions.remove((Object)((EclipseLinkException)i.next()).getErrorCode());

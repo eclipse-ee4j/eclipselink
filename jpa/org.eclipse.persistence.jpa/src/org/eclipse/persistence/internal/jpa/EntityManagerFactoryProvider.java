@@ -208,13 +208,11 @@ public class EntityManagerFactoryProvider {
      */
     protected static void login(DatabaseSessionImpl session, Map properties) {
         String eclipselinkPlatform = (String)properties.get(PersistenceUnitProperties.TARGET_DATABASE);
-        if (!session.isConnected()) {
-            if (eclipselinkPlatform == null || eclipselinkPlatform.equals(TargetDatabase.Auto) || session.isBroker()) {
-                // if user has not specified a database platform, try to detect
-                session.loginAndDetectDatasource();
-            } else {
-                session.login();
-            }
+        if (eclipselinkPlatform == null || eclipselinkPlatform.equals(TargetDatabase.Auto) || session.isBroker()) {
+            // if user has not specified a database platform, try to detect
+            session.loginAndDetectDatasource();
+        } else {
+            session.login();
         }
     }
     

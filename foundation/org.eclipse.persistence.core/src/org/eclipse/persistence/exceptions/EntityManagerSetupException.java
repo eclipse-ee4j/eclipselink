@@ -175,10 +175,10 @@ public class EntityManagerSetupException extends EclipseLinkException {
         return setupException;
     }
     
-    public static EntityManagerSetupException cannotDeployWithoutPredeploy(String persistenceUnitName, String state) {
+    public static EntityManagerSetupException cannotDeployWithoutPredeploy(String persistenceUnitName, String state, Exception exception) {
         Object[] args = { persistenceUnitName, state };
 
-        EntityManagerSetupException setupException = new EntityManagerSetupException(ExceptionMessageGenerator.buildMessage(EntityManagerSetupException.class, CANNOT_DEPLOY_WITHOUT_PREDEPLOY, args));
+        EntityManagerSetupException setupException = new EntityManagerSetupException(ExceptionMessageGenerator.buildMessage(EntityManagerSetupException.class, CANNOT_DEPLOY_WITHOUT_PREDEPLOY, args), exception);
         setupException.setErrorCode(CANNOT_DEPLOY_WITHOUT_PREDEPLOY);
         return setupException;
     }
@@ -207,15 +207,15 @@ public class EntityManagerSetupException extends EclipseLinkException {
         return setupException;
     }
 
-    public static EntityManagerSetupException cannotPredeploy(String persistenceUnitName, String state) {
+    public static EntityManagerSetupException cannotPredeploy(String persistenceUnitName, String state, Exception exception) {
         Object[] args = { persistenceUnitName, state };
 
-        EntityManagerSetupException setupException = new EntityManagerSetupException(ExceptionMessageGenerator.buildMessage(EntityManagerSetupException.class, CANNOT_PREDEPLOY, args));
+        EntityManagerSetupException setupException = new EntityManagerSetupException(ExceptionMessageGenerator.buildMessage(EntityManagerSetupException.class, CANNOT_PREDEPLOY, args), exception);
         setupException.setErrorCode(CANNOT_PREDEPLOY);
         return setupException;
     }
 
-    public static EntityManagerSetupException predeployFailed(String persistenceUnitName, RuntimeException exception) {
+    public static EntityManagerSetupException predeployFailed(String persistenceUnitName, Throwable exception) {
         Object[] args = { persistenceUnitName };
 
         EntityManagerSetupException setupException = new EntityManagerSetupException(ExceptionMessageGenerator.buildMessage(EntityManagerSetupException.class, PREDEPLOY_FAILED, args), exception);
@@ -223,7 +223,7 @@ public class EntityManagerSetupException extends EclipseLinkException {
         return setupException;
     }
 
-    public static EntityManagerSetupException deployFailed(String persistenceUnitName, RuntimeException exception) {
+    public static EntityManagerSetupException deployFailed(String persistenceUnitName, Throwable exception) {
         Object[] args = { persistenceUnitName };
 
         EntityManagerSetupException setupException = new EntityManagerSetupException(ExceptionMessageGenerator.buildMessage(EntityManagerSetupException.class, DEPLOY_FAILED, args), exception);
