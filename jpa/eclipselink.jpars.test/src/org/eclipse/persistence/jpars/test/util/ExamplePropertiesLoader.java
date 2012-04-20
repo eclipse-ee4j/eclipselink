@@ -18,6 +18,8 @@ import java.io.InputStream;
 import java.util.Map;
 import java.util.Properties;
 
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+
 /**
  * Helper class that will load persistence unit overrides from a properties file
  * in both the current running folder and the current user's home folder. The
@@ -29,6 +31,13 @@ public class ExamplePropertiesLoader {
     public static final String DEFAULT_FILENAME = "test.properties";
     public static final String ECLIPSELINK_TEST_DB_PROP_PREFIX = "db.";
     public static final String JPA_DB_PROP_PREFIX = "javax.persistence.jdbc";
+    public static final String DB_DRIVER_KEY = "db.driver";
+    public static final String DB_URL_KEY = "db.url";
+    public static final String DB_USER_KEY = "db.user";
+    public static final String DB_PWD_KEY = "db.pwd";
+    public static final String DB_PLATFORM_KEY = "db.platform";
+    public static final String LOGGING_LEVEL_KEY = "eclipselink.logging.level";
+    
     /**
      * 
      * @param properties
@@ -81,6 +90,31 @@ public class ExamplePropertiesLoader {
                         properties.put((String) entry.getKey(), entry.getValue());
                     }
                 }
+            }
+            String dbDriver = System.getProperty(DB_DRIVER_KEY);
+            String dbUrl = System.getProperty(DB_URL_KEY);
+            String dbUser = System.getProperty(DB_USER_KEY);
+            String dbPwd = System.getProperty(DB_PWD_KEY);
+            String platform = System.getProperty(DB_PLATFORM_KEY);
+            String logLevel = System.getProperty(LOGGING_LEVEL_KEY);
+
+            if (dbDriver != null) {
+                properties.put(PersistenceUnitProperties.JDBC_DRIVER, dbDriver);
+            }
+            if (dbUrl != null) {
+                properties.put(PersistenceUnitProperties.JDBC_URL, dbUrl);
+            }
+            if (dbUser != null) {
+                properties.put(PersistenceUnitProperties.JDBC_USER, dbUser);
+            }
+            if (dbPwd != null) {
+                properties.put(PersistenceUnitProperties.JDBC_PASSWORD, dbPwd);
+            }
+            if (platform != null) {
+                properties.put(PersistenceUnitProperties.TARGET_DATABASE, platform);
+            }
+            if (logLevel != null) {
+                properties.put(PersistenceUnitProperties.LOGGING_LEVEL, logLevel);
             }
         } catch (Exception e) {
             // ignore
