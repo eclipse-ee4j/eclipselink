@@ -16,6 +16,7 @@ import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.framework.TestWarningException;
 import org.eclipse.persistence.testing.models.employee.domain.Address;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
 
@@ -30,6 +31,9 @@ public class NestedUnitOfWorkReadOnlyClassTest extends AutoVerifyTestCase {
     private Address originalAddress;
 
     public void setup() {
+        if (!isSequenceNumberEnabled()) {
+            throw new TestWarningException("This test uses sequence numbers.");
+        }
         getAbstractSession().beginTransaction();
         postalCode = "AB7J98";
         UnitOfWork uow = getSession().acquireUnitOfWork();
@@ -44,6 +48,9 @@ public class NestedUnitOfWorkReadOnlyClassTest extends AutoVerifyTestCase {
     }
 
     public void reset() {
+        if (!isSequenceNumberEnabled()) {
+            return;
+        }
         UnitOfWork deleteUOW = getSession().acquireUnitOfWork();
         deleteUOW.deleteObject(deleteUOW.readObject(originalAddress));
         deleteUOW.deleteObject(deleteUOW.readObject(originalEmployee));
@@ -77,5 +84,9 @@ public class NestedUnitOfWorkReadOnlyClassTest extends AutoVerifyTestCase {
     }
 
     protected void verify() {
+    }
+    
+    protected boolean isSequenceNumberEnabled() {
+        return getAbstractSession().getDescriptor(Employee.class).usesSequenceNumbers();
     }
 }
