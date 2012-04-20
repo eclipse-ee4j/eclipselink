@@ -4186,39 +4186,75 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     }
 
     //Bug 347592
-    public void testPessimisticLock(){
+    /*
+     * The test should assert that the following phenomenon does not occur after
+     * a row has been locked by T1:
+     * 
+     * - P2 (Non-repeatable read): Transaction T1 reads a row. Another
+     * transaction T2 then modifies or deletes that row, before T1 has committed
+     * or rolled back.
+     */
+    public void testPessimisticLock() throws InterruptedException {
         // test uses entity managers in a way that is disallowed in our server framework
         if (isOnServer() || !isSelectForUpateSupported()){
             return;
         }
         EntityManager em = createEntityManager();
-        Query query = em.createQuery("select e from Employee e where e.firstName=:name");
-        query.setParameter("name", "Bob");
-        Employee bob = (Employee)query.getSingleResult();
-        clearCache();
-        em.clear();
+        try {
+            Query query = em.createQuery("select e from Employee e where e.firstName=:name");
+            query.setParameter("name", "Bob");
+            Employee bob = (Employee) query.getSingleResult();
+            final int bobId = bob.getId();
+            clearCache();
+            em.clear();
 
-        query = em.createQuery("select e from Employee e where e.id=:id");
-        query.setParameter("id", bob.getId());
-        query.setHint(QueryHints.PESSIMISTIC_LOCK, PessimisticLock.Lock);
-        Exception caughtException = null;
-        beginTransaction(em);
-        bob = (Employee)query.getSingleResult();
+            query = em.createQuery("select e from Employee e where e.id=:id");
+            query.setParameter("id", bobId);
+            query.setHint(QueryHints.PESSIMISTIC_LOCK, PessimisticLock.Lock);
+            Exception caughtException = null;
+            beginTransaction(em);
+            bob = (Employee) query.getSingleResult();
 
-        EntityManager em2 = createEntityManager();
-        beginTransaction(em2);
-        Query query2 = em2.createQuery("select e from Employee e where e.id = :id");
-        query2.setParameter("id", bob.getId());
-        query2.setHint(QueryHints.JDBC_TIMEOUT, 1000);
-        bob = (Employee)query2.getSingleResult();
-        bob.setFirstName("Robert");
-        try{
-            commitTransaction(em2);
-        } catch (Exception e){
-            caughtException = e;
+            final EntityManager em2 = createEntityManager();
+            try {
+                // P2 (Non-repeatable read)
+                Runnable runnable = new Runnable() {
+                    public void run() {
+                        try {
+                            beginTransaction(em2);
+                            Query query2 = em2.createQuery("select e from Employee e where e.id = :id");
+                            query2.setParameter("id", bobId);
+                            query2.setHint(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 10);
+                            Employee emp = (Employee) query2.getSingleResult(); // might wait for lock to be released
+                            emp.setFirstName("Robert");
+                            commitTransaction(em2); // might wait for lock to be released
+                        } catch (javax.persistence.RollbackException ex) {
+                            if (ex.getMessage().indexOf("org.eclipse.persistence.exceptions.DatabaseException") == -1) {
+                                ex.printStackTrace();
+                                fail("it's not the right exception");
+                            }
+                        }
+                    }
+                };
+
+                Thread t2 = new Thread(runnable);
+                t2.start();
+                Thread.sleep(1000); // allow t2 to attempt update
+                em.refresh(bob);
+                assertTrue("pessimistic lock failed: parallel transaction modified locked entity (non-repeatable read)", "Bob".equals(bob.getFirstName()));
+                rollbackTransaction(em); // release lock
+                t2.join(); // wait until t2 finished
+            } finally {
+                if (isTransactionActive(em2)) {
+                    rollbackTransaction(em2);
+                }
+                closeEntityManager(em2);
+            }
         } finally {
-            rollbackTransaction(em);
-            assertNotNull("A lock was not applied using a locking hint.", caughtException);
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
         }
     }
 
