@@ -15,11 +15,17 @@ package org.eclipse.persistence.testing.jaxb.xmlschema.attributeformdefault.unqu
 import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import java.util.Map;
 
-public class AttributeFormDefaultUnqualifiedTestCases extends JAXBTestCases{
+import org.eclipse.persistence.jaxb.JAXBMarshaller;
+import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
+
+public class AttributeFormDefaultUnqualifiedTestCases extends JAXBWithJSONTestCases{
     protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlschema/attributeformdefault/unqualifiedaddress.xml";
+    protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlschema/attributeformdefault/unqualifiedaddress.json";
 
 	public AttributeFormDefaultUnqualifiedTestCases(String name) throws Exception {
 		super(name);
@@ -27,11 +33,18 @@ public class AttributeFormDefaultUnqualifiedTestCases extends JAXBTestCases{
 	
 	public void setUp() throws Exception {
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
 
 	    super.setUp();
 	    Type[] types = new Type[1];
 	    types[0] = Address.class;	        
 	    setTypes(types);
+	    
+	    Map namespaces = new HashMap<String, String>();
+	    namespaces.put("myns","ns0");
+	    jaxbMarshaller.setProperty(JAXBMarshaller.NAMESPACE_PREFIX_MAPPER, namespaces);
+	    jaxbUnmarshaller.setProperty(JAXBUnmarshaller.JSON_NAMESPACE_PREFIX_MAPPER, namespaces);
+
 	}
 
 

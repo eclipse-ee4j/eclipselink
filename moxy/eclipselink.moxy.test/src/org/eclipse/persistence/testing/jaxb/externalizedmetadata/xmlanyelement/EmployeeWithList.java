@@ -12,6 +12,9 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement;
 
+import org.eclipse.persistence.platform.xml.XMLComparer;
+import org.w3c.dom.Node;
+
 @javax.xml.bind.annotation.XmlRootElement
 public class EmployeeWithList {
     public int a;
@@ -31,9 +34,18 @@ public class EmployeeWithList {
         
         if (empObj.stuff.size() != this.stuff.size()) { return false; }
         // assumes size of list is 2, and order is not relevant
+		XMLComparer comparer = new XMLComparer();
+
         for (int i=0; i<2; i++) {
             Object stuffStr = empObj.stuff.get(i);
-            if (!(stuff.get(0).equals(stuffStr) || stuff.get(1).equals(stuffStr))) {
+            if(stuff.get(i) instanceof Node){
+            	if(!(stuffStr instanceof Node)){
+            		return false;
+            	}
+            	if(!comparer.isNodeEqual((Node)stuff.get(i), (Node)stuffStr)){
+            		return false;
+            	}
+            }else if (!(stuff.get(0).equals(stuffStr) || stuff.get(1).equals(stuffStr))) {
                 return false;
             }
         }

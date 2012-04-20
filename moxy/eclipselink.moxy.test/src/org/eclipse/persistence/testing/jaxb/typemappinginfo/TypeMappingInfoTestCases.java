@@ -13,11 +13,13 @@
 package org.eclipse.persistence.testing.jaxb.typemappinginfo;
 
 import java.awt.Image;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -25,6 +27,7 @@ import javax.activation.DataHandler;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.SchemaOutputResolver;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -32,6 +35,7 @@ import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
+import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
@@ -50,7 +54,6 @@ import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.testing.jaxb.JAXBXMLComparer;
-import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases.MyStreamSchemaOutputResolver;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -551,6 +554,28 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
          }
          assertTrue("Schema validation failed unxepectedly: " + result, result == null);
      }
+    
+    public static class MyStreamSchemaOutputResolver extends SchemaOutputResolver {
+        // keep a list of processed schemas for the validation phase of the test(s)
+        public Map<String, Writer> schemaFiles;
+        
+        public MyStreamSchemaOutputResolver() {
+            schemaFiles = new HashMap<String, Writer>();
+        }
+        
+        public Result createOutput(String namespaceURI, String suggestedFileName) throws IOException {
+            //return new StreamResult(System.out);
+            if (namespaceURI == null) {
+                namespaceURI = "";
+            }
+            
+            StringWriter sw = new StringWriter();
+            schemaFiles.put(namespaceURI, sw);
+            Result res = new StreamResult(sw);
+            res.setSystemId(suggestedFileName);
+            return res;
+        }
+    }
 }
 
 

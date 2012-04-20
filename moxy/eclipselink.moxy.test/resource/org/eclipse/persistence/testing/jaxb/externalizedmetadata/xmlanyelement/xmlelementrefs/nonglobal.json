@@ -1,0 +1,31 @@
+{"customer":{
+   "@id":1221,
+   "name":"Dan Savage",
+   "p":[
+	{
+	   "@id":771,
+	   "number":"5552328828"
+	},
+	{
+	   "@id":772,
+	   "number":"5552322112"
+	},
+	{
+	   "@id":773,
+	   "number":"5552329919"
+	}
+
+   ],
+   "value":["Mixed Content 1","Mixed Content 2"],
+   "e":[
+{
+	   "@id":552,
+	   "address":"dan@xpress.ca"
+	},
+	{
+	   "@id":553,
+	   "address":"d.savage@hotmail.com"
+	}
+   
+   ]
+ }}

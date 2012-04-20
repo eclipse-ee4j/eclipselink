@@ -1,0 +1,5 @@
+{"child":{
+    "@parent-attribute":"PARENT",
+    "@anyAttr":"something",
+    "value":"CHILD"
+}}

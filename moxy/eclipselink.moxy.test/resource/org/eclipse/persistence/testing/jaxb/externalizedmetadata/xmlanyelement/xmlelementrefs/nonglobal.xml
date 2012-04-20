@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<customer id="1221">
+<customer xmlns:ns0="otherns" id="1221">
    <name>Dan Savage</name>
    <p id="771">
       <number>5552328828</number>

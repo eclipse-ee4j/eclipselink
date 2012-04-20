@@ -648,7 +648,8 @@ public class JSONWriterRecord extends MarshalRecord {
             nonStringCharacters(node.getNodeValue());
         } else {
             try {
-                WriterRecordContentHandler wrcHandler = new WriterRecordContentHandler();
+            	JSONWriterRecordContentHandler wrcHandler = new JSONWriterRecordContentHandler();
+            	
                 XMLFragmentReader xfragReader = new XMLFragmentReader(namespaceResolver);
                 xfragReader.setContentHandler(wrcHandler);
                 xfragReader.setProperty("http://xml.org/sax/properties/lexical-handler", wrcHandler);
@@ -667,9 +668,9 @@ public class JSONWriterRecord extends MarshalRecord {
      *
      * @see org.eclipse.persistence.internal.oxm.record.XMLFragmentReader
      */
-    protected class WriterRecordContentHandler implements ExtendedContentHandler, LexicalHandler {
+    protected class JSONWriterRecordContentHandler implements ExtendedContentHandler, LexicalHandler {
 
-        WriterRecordContentHandler() {
+    	JSONWriterRecordContentHandler() {
         }
 
         // --------------------- CONTENTHANDLER METHODS --------------------- //

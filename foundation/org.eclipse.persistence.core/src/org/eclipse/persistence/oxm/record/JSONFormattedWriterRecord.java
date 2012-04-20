@@ -262,7 +262,7 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
             nonStringCharacters(node.getNodeValue());
         } else {
             try {
-                FormattedWriterRecordContentHandler wrcHandler = new FormattedWriterRecordContentHandler();
+            	JSONFormattedWriterRecordContentHandler wrcHandler = new JSONFormattedWriterRecordContentHandler();
                 XMLFragmentReader xfragReader = new XMLFragmentReader(namespaceResolver);
                 xfragReader.setContentHandler(wrcHandler);
                 xfragReader.setProperty("http://xml.org/sax/properties/lexical-handler", wrcHandler);
@@ -292,7 +292,7 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
      * @see org.eclipse.persistence.internal.oxm.record.XMLFragmentReader
      * @see org.eclipse.persistence.oxm.record.WriterRecord.WriterRecordContentHandler
      */
-    private class FormattedWriterRecordContentHandler extends WriterRecordContentHandler {
+    private class JSONFormattedWriterRecordContentHandler extends JSONWriterRecordContentHandler {
         // --------------------- CONTENTHANDLER METHODS --------------------- //
         public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
         	XPathFragment xPathFragment = new XPathFragment(localName);

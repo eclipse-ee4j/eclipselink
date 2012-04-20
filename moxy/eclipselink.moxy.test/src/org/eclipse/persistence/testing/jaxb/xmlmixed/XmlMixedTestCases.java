@@ -12,25 +12,23 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.xmlmixed;
 
-import java.io.StringReader;
 import java.util.ArrayList;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.stream.StreamSource;
+import org.eclipse.persistence.jaxb.JAXBMarshaller;
+import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
-
-import junit.framework.TestCase;
-
-public class XmlMixedTestCases extends JAXBTestCases {
+public class XmlMixedTestCases extends JAXBWithJSONTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlmixed/root.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlmixed/root.json";
 
     public XmlMixedTestCases(String name) throws Exception {
         super(name);
         setClasses(new Class[] {Root.class});
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
+        jaxbMarshaller.setProperty(JAXBMarshaller.JSON_ATTRIBUTE_PREFIX, "@");
+        jaxbUnmarshaller.setProperty(JAXBUnmarshaller.JSON_ATTRIBUTE_PREFIX, "@");
     }
 
     protected Object getControlObject() {
@@ -39,6 +37,24 @@ public class XmlMixedTestCases extends JAXBTestCases {
         root.setElem("element value");
         root.setObjects(new ArrayList<Object>());
         root.getObjects().add("Text Value");
+        
+        root.getObjects().add("Text Value2");
         return root;
+    }
+    
+    public Object getReadControlObject() {
+        Root root = new Root();
+        root.setAttr("attribute value");
+        root.setElem("element value");
+        root.setObjects(new ArrayList<Object>());
+        root.getObjects().add("Text ValueText Value2");        
+        return root;
+    }
+    
+    protected Object getJSONReadControlObject() {
+       return getControlObject();
+    }
+    
+    public void testObjectToXMLDocument() throws Exception {    	
     }
 }

@@ -13,16 +13,18 @@
 package org.eclipse.persistence.testing.jaxb.xmlschema;
 
 import org.eclipse.persistence.testing.jaxb.xmlschema.model.*;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 
-public class XMLSchemaModelTestCases extends JAXBTestCases{
+public class XMLSchemaModelTestCases extends JAXBWithJSONTestCases{
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlschema/xmlschemadoc.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlschema/xmlschemadoc.json";
 
 	public XMLSchemaModelTestCases(String name) throws Exception {
 		super(name);
 		setClasses(new Class[]{ObjectFactory.class});
 		setControlDocument(XML_RESOURCE); 
+		setControlJSON(JSON_RESOURCE);
 	}
 
 	protected Object getControlObject() {
@@ -38,6 +40,23 @@ public class XMLSchemaModelTestCases extends JAXBTestCases{
 	}
 
 	public void xmlToObjectTest(Object testObject) throws Exception {
+        log("\n**xmlToObjectTest**");
+        log("Expected:");
+        log(getReadControlObject().toString());
+        log("Actual:");     
+        log(testObject.toString());
+        
+        assertTrue(testObject instanceof Schema);
+        assertTrue(((Schema)testObject).getAttributeFormDefault().equals(FormChoice.QUALIFIED));
+        assertEquals("someTargetNamespace", ((Schema)testObject).getTargetNamespace());
+        assertNotNull(((Schema)testObject).getSimpleTypeOrComplexTypeOrGroup());
+        assertEquals(1, ((Schema)testObject).getSimpleTypeOrComplexTypeOrGroup().size());
+        OpenAttrs item =((Schema)testObject).getSimpleTypeOrComplexTypeOrGroup().get(0);
+        assertTrue(item instanceof TopLevelComplexType);
+        assertEquals("testComplexType", ((TopLevelComplexType)item).getName());
+	}
+	
+	public void jsonToObjectTest(Object testObject) throws Exception {		
         log("\n**xmlToObjectTest**");
         log("Expected:");
         log(getReadControlObject().toString());

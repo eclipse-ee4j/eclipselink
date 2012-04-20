@@ -12,7 +12,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.xmlschema.attributeformdefault.qualified;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -20,16 +19,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.dom.DOMSource;
+import org.eclipse.persistence.jaxb.JAXBMarshaller;
+import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
-import org.w3c.dom.Document;
-
-public class AttributeFormDefaultQualifiedTestCases extends JAXBTestCases{
+public class AttributeFormDefaultQualifiedTestCases extends JAXBWithJSONTestCases{
     protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlschema/attributeformdefault/qualifiedaddress.xml";
+    protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlschema/attributeformdefault/qualifiedaddress.json";
 
 	public AttributeFormDefaultQualifiedTestCases(String name) throws Exception {
 		super(name);
@@ -37,11 +33,17 @@ public class AttributeFormDefaultQualifiedTestCases extends JAXBTestCases{
 	
 	public void setUp() throws Exception {
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
 
 	    super.setUp();
 	    Type[] types = new Type[1];
 	    types[0] = Address.class;	        
 	    setTypes(types);
+	    
+	    Map namespaces = new HashMap<String, String>();
+	    namespaces.put("myns","ns0");
+	    jaxbMarshaller.setProperty(JAXBMarshaller.NAMESPACE_PREFIX_MAPPER, namespaces);
+	    jaxbUnmarshaller.setProperty(JAXBUnmarshaller.JSON_NAMESPACE_PREFIX_MAPPER, namespaces);
 	}
 
 	protected Object getControlObject() {

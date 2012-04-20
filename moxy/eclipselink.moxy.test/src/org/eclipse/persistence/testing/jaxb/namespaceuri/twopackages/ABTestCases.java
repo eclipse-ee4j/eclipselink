@@ -12,17 +12,19 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.namespaceuri.twopackages;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.eclipse.persistence.testing.jaxb.namespaceuri.twopackages.a.A;
 import org.eclipse.persistence.testing.jaxb.namespaceuri.twopackages.b.B;
 
-public class ABTestCases extends JAXBTestCases {
+public class ABTestCases extends JAXBWithJSONTestCases{
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/namespaceuri/twopackages/ab.xml";
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/namespaceuri/twopackages/ab.json";
 
     public ABTestCases(String name) throws Exception {
         super(name);
         setClasses(new Class[] {A.class, B.class});
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
     }
 
     @Override

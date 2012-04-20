@@ -17,27 +17,43 @@ import java.util.ArrayList;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.jaxb.JAXBMarshaller;
+import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
+import org.eclipse.persistence.oxm.XMLConstants;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-public class XmlAnyElementLaxTestCases extends JAXBTestCases {
+public class XmlAnyElementLaxTestCases extends JAXBWithJSONTestCases {
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlanyelement/employee.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlanyelement/employee.json";
     private final static String XML_CHILD_ELEMENTS = "org/eclipse/persistence/testing/jaxb/xmlanyelement/child_elements_unknown.xml";
 
     public XmlAnyElementLaxTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         Class[] classes = new Class[2];
         classes[0] = EmployeeLax.class;
         classes[1] = Address.class;
         setClasses(classes);
+        jaxbMarshaller.setProperty(JAXBMarshaller.JSON_ATTRIBUTE_PREFIX, "@");
+        jaxbUnmarshaller.setProperty(JAXBUnmarshaller.JSON_ATTRIBUTE_PREFIX, "@");
+    }
+
+    protected Object getJSONReadControlObject() {
+    	EmployeeLax emp = (EmployeeLax)getControlObject();
+    	Object objectRemoved = ((ArrayList)emp.elements).remove(emp.elements.size()-1);    	
+    	((ArrayList)emp.elements).add(0, objectRemoved);
+    	//remove namespace declaration
+    	((Element)((ArrayList)emp.elements).get(3)).removeAttributeNS(XMLConstants.XMLNS_URL, "myns");
+    	return emp;    
     }
 
     protected Object getControlObject() {
-        EmployeeLax employee = new EmployeeLax();
+    	EmployeeLax employee = new EmployeeLax();
         employee.name = "John Doe";
         employee.homeAddress  = new Address();
         employee.homeAddress.street = "123 Fake Street";
@@ -53,17 +69,20 @@ public class XmlAnyElementLaxTestCases extends JAXBTestCases {
             Document doc = builder.parse(getClass().getClassLoader().getResourceAsStream(XML_CHILD_ELEMENTS));
             Element rootElem = doc.getDocumentElement();
             NodeList children = rootElem.getChildNodes();
-            for(int i = 0; i < children.getLength(); i++) {
+            int i =0;
+            for(i = 0; i < children.getLength(); i++) {
                 if(children.item(i).getNodeType() == Element.ELEMENT_NODE) {
                     employee.elements.add(children.item(i));
                 }
             }
+            Address addr = new Address();
+            addr.street = "222 Fake Street";
+            addr.city = "Toronto";
+            addr.country = "Canada";
+            ((ArrayList)employee.elements).add(0, addr);
+            employee.elements.add(addr);
+             
         } catch(Exception ex) {}
-        Address addr = new Address();
-        addr.street = "222 Fake Street";
-        addr.city = "Toronto";
-        addr.country = "Canada";
-        employee.elements.add(addr);
 
         return employee;
     }

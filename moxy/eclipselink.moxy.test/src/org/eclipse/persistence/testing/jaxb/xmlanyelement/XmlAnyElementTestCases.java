@@ -13,7 +13,6 @@
 package org.eclipse.persistence.testing.jaxb.xmlanyelement;
 
 import java.io.InputStream;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,23 +23,39 @@ import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.sax.SAXSource;
 
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.jaxb.JAXBMarshaller;
+import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
+import org.eclipse.persistence.oxm.XMLConstants;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
-public class XmlAnyElementTestCases extends JAXBTestCases {
+public class XmlAnyElementTestCases extends JAXBWithJSONTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlanyelement/employee.xml";
     private final static String XML_CHILD_ELEMENTS = "org/eclipse/persistence/testing/jaxb/xmlanyelement/child_elements_all.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlanyelement/employee.json";
 
     public XmlAnyElementTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         Class[] classes = new Class[2];
         classes[0] = Employee.class;
         classes[1] = Address.class;
         setClasses(classes);
+        jaxbMarshaller.setProperty(JAXBMarshaller.JSON_ATTRIBUTE_PREFIX, "@");
+        jaxbUnmarshaller.setProperty(JAXBUnmarshaller.JSON_ATTRIBUTE_PREFIX, "@");
+    }
+    
+    protected Object getJSONReadControlObject() {
+    	Employee emp = (Employee)getControlObject();
+    	Object objectRemoved = ((ArrayList)emp.elements).remove(emp.elements.size()-1);    	
+    	((ArrayList)emp.elements).add(0, objectRemoved);
+    	//remove namespace declaration
+    	((Element)((ArrayList)emp.elements).get(3)).removeAttributeNS(XMLConstants.XMLNS_URL, "myns");
+    	return emp;    
     }
 
     protected Object getControlObject() {
@@ -60,13 +75,15 @@ public class XmlAnyElementTestCases extends JAXBTestCases {
             Document doc = builder.parse(getClass().getClassLoader().getResourceAsStream(XML_CHILD_ELEMENTS));
             Element rootElem = doc.getDocumentElement();
             NodeList children = rootElem.getChildNodes();
-            for(int i = 0; i < children.getLength(); i++) {
+            int i =0;
+            for(i = 0; i < children.getLength(); i++) {
                 if(children.item(i).getNodeType() == Element.ELEMENT_NODE) {
                     employee.elements.add(children.item(i));
                 }
             }
+            ((ArrayList)employee.elements).add(0,((ArrayList)employee.elements).get(employee.elements.size()-1));
+             
         } catch(Exception ex) {}
-
 
         return employee;
     }

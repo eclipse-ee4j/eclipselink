@@ -231,8 +231,11 @@ public class JSONReader extends XMLReaderAdapter {
     
     private static String string(String string) {
     	string = string.substring(1, string.length()-1);
+    	string = string.replace("\r\n", "\n");
     	String returnString = "";                
-        int slashIndex = string.indexOf('\\');     
+        
+    	int slashIndex = string.indexOf('\\');
+             
         if(slashIndex == -1){
             return string;
         }

@@ -142,13 +142,22 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implem
             	NodeValue associatedNodeValue = nodeValues.get(i);            	
             	List listValue = values.get(i);            	
             	
-            	XPathFragment frag = associatedNodeValue.getXPathNode().getXPathFragment();
+            	XPathFragment frag = null;
+                if(associatedNodeValue == this){
+                	frag = marshalRecord.getTextWrapperFragment();
+                }else{            	
+            	   frag = associatedNodeValue.getXPathNode().getXPathFragment();
+            	   if(frag != null){
+            		   frag = getOwningFragment(associatedNodeValue, frag);
+            		   associatedNodeValue = ((XMLChoiceCollectionMappingUnmarshalNodeValue)associatedNodeValue).getChoiceElementMarshalNodeValue(); 
+            	   }
+                }
                 if(frag != null){
-                    frag = getOwningFragment(associatedNodeValue, frag);
-                    NodeValue unwrappedNodeValue = ((XMLChoiceCollectionMappingUnmarshalNodeValue)associatedNodeValue).getChoiceElementMarshalNodeValue();
+                	
                     marshalRecord.startCollection(); 
+                    
                     for(int j=0;j<listValue.size(); j++){              	          
-                        unwrappedNodeValue.marshalSingleValue(frag, marshalRecord, object, listValue.get(j), session, namespaceResolver, ObjectMarshalContext.getInstance());
+                    	associatedNodeValue.marshalSingleValue(frag, marshalRecord, object, listValue.get(j), session, namespaceResolver, ObjectMarshalContext.getInstance());
                     }
                     marshalRecord.endCollection();     
                 }            
@@ -223,6 +232,10 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implem
     	}
     	if(associatedField != null){
     		return fieldToNodeValues.get(associatedField);
+    	}
+    	if (xmlChoiceCollectionMapping.isMixedContent() && value instanceof String){
+    		//use this as a placeholder for the nodevalue for mixedcontent
+    		return this;
     	}
     	return null;
     }

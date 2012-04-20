@@ -22,18 +22,18 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.w3c.dom.Element;
 
 /**
  * Tests XmlMixed via eclipselink-oxm.xml
  *
  */
-public class XmlMixedTestCases extends JAXBTestCases {
+public class XmlMixedTestCases extends JAXBWithJSONTestCases {
 
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlmixed/employee.xml";
     private static final String XML_WRITE_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlmixed/employee_write.xml";
-    
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlmixed/employee.json";
     /**
      * This is the preferred (and only) constructor.
      * 
@@ -45,6 +45,7 @@ public class XmlMixedTestCases extends JAXBTestCases {
         setClasses(new Class[] { Employee.class });
         setControlDocument(XML_RESOURCE);
         setWriteControlDocument(XML_WRITE_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
     }
 
 	 public Map getProperties(){
@@ -72,6 +73,8 @@ public class XmlMixedTestCases extends JAXBTestCases {
 		return emp;
 	}
     
+   
+    
     public void xmlToObjectTest(Object testObject) throws Exception {
     	assertTrue(testObject instanceof Employee);
     	Employee emp = (Employee)testObject;
@@ -80,6 +83,18 @@ public class XmlMixedTestCases extends JAXBTestCases {
         assertTrue("The Employee did not umnmarshal correctly: expected 'stuff.0' to be instanceof [String] but was [" + emp.stuff.get(0) + "]", emp.stuff.get(0) instanceof String);
         assertTrue("The Employee did not umnmarshal correctly: expected 'stuff.1' to be instanceof [Element] but was [" + emp.stuff.get(1) + "]", emp.stuff.get(1) instanceof Element);
         assertTrue("The Employee did not umnmarshal correctly: expected 'stuff.2' to be instanceof [String] but was [" + emp.stuff.get(2) + "]", emp.stuff.get(2) instanceof String);
+
+    }
+    
+    
+    public void jsonToObjectTest(Object testObject) throws Exception {
+    	assertTrue(testObject instanceof Employee);
+    	Employee emp = (Employee)testObject;
+    	assertNotNull("The Employee did not umnmarshal correctly: 'stuff' is null.", emp.stuff);
+        assertTrue("The Employee did not umnmarshal correctly: expected 'stuff' size of [3] but was [" + emp.stuff.size() + "]", emp.stuff.size() == 3);
+        assertTrue("The Employee did not umnmarshal correctly: expected 'stuff.0' to be instanceof [String] but was [" + emp.stuff.get(0) + "]", emp.stuff.get(0) instanceof String);        
+        assertTrue("The Employee did not umnmarshal correctly: expected 'stuff.2' to be instanceof [String] but was [" + emp.stuff.get(1) + "]", emp.stuff.get(1) instanceof String);
+        assertTrue("The Employee did not umnmarshal correctly: expected 'stuff.1' to be instanceof [Element] but was [" + emp.stuff.get(2) + "]", emp.stuff.get(2) instanceof Element);
 
     }
     public void testSchemaGen() throws Exception{

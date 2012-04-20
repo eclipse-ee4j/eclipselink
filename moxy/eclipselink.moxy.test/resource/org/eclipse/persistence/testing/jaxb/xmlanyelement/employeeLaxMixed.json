@@ -1,0 +1,29 @@
+{"employee":{
+   "@name":"John Doe",
+   "home-address":{
+       "street":"123 Fake Street",
+       "city":"Ottawa",
+       "country":"Canada"
+       },
+     "jb1":["jb1String","jb3String"],
+     "value":["new string1", 10, "new string2"],
+     "address":[{
+          "street":"222 Fake Street",
+	  "city":"Toronto",
+	  "country":"Canada"
+     },
+     {
+          "street":"second address",
+	  "city":"Ottawa",
+	  "country":"Canada"
+     }
+     ],
+     "jb2":[15],
+     "jb4":[{
+           "@type":"address",
+	    "street":"222 Fake Street",
+            "city":"Toronto",
+           "country":"Canada"
+        }
+     ]  
+ }}

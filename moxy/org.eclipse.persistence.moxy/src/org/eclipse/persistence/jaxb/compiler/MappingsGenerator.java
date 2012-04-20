@@ -36,7 +36,6 @@ import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 
 import org.eclipse.persistence.config.DescriptorCustomizer;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.JAXBException;

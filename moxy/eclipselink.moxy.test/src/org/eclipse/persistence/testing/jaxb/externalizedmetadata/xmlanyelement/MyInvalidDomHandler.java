@@ -38,7 +38,7 @@ public class MyInvalidDomHandler implements DomHandler {
     }
 
     public Object getElement(Result rt) {
-        return XmlAnyElementTestCases.RETURN_STRING;
+        return "Giggity";
     }
 
     public Source marshal(Object n, ValidationEventHandler errorHandler) {

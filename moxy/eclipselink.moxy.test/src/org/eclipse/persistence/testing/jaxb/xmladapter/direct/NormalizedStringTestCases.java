@@ -12,22 +12,29 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.xmladapter.direct;
 
-import java.io.InputStream;
+import org.eclipse.persistence.jaxb.JAXBMarshaller;
+import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
-import org.w3c.dom.Document;
-
-public class NormalizedStringTestCases extends JAXBTestCases {
+public class NormalizedStringTestCases extends JAXBWithJSONTestCases {
 
     private static final String XML_RESOURCE_READ = "org/eclipse/persistence/testing/jaxb/xmladapter/normalizedstring_read.xml"; 
     private static final String XML_RESOURCE_WRITE = "org/eclipse/persistence/testing/jaxb/xmladapter/normalizedstring_write.xml"; 
+    private static final String JSON_RESOURCE_READ = "org/eclipse/persistence/testing/jaxb/xmladapter/normalizedstring_read.json"; 
+    private static final String JSON_RESOURCE_WRITE = "org/eclipse/persistence/testing/jaxb/xmladapter/normalizedstring_write.json"; 
 
+    
     public NormalizedStringTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE_READ);
+        setControlJSON(JSON_RESOURCE_READ);
+        setWriteControlDocument(XML_RESOURCE_WRITE);
+        setWriteControlJSON(JSON_RESOURCE_WRITE);
         setClasses(new Class[] {NormalizedStringRoot.class});
+        jaxbMarshaller.setProperty(JAXBMarshaller.JSON_ATTRIBUTE_PREFIX, "@");
+        jaxbUnmarshaller.setProperty(JAXBUnmarshaller.JSON_ATTRIBUTE_PREFIX, "@");
     }
-
+   
     @Override
     protected Object getControlObject() {
         NormalizedStringRoot root = new NormalizedStringRoot();
@@ -37,13 +44,4 @@ public class NormalizedStringTestCases extends JAXBTestCases {
         root.setElementProperty("   D   d   ");
         return root;
     }
-
-    @Override
-    protected Document getWriteControlDocument() throws Exception {
-        InputStream inputStream = ClassLoader.getSystemResourceAsStream(XML_RESOURCE_WRITE);
-        Document writeDocument = parser.parse(inputStream);
-        inputStream.close();
-        return writeDocument;
-    }
-
 }

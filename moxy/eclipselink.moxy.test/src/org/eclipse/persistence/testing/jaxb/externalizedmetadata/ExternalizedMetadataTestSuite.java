@@ -13,7 +13,6 @@
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata;
 
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.exceptions.ExceptionHandlingTestSuite;
-import org.eclipse.persistence.testing.jaxb.externalizedmetadata.exceptions.contextfactory.ExceptionHandlingTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.JAXBContextFactoryTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.MappingsTestSuite;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.multiplebindings.MultipleBindingsFourFilesTestCases;
@@ -45,7 +44,16 @@ import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.unma
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.unmappable.PackageLevelTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.unmappable.PropertyLevelTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyattribute.XmlAnyAttributeTestCases;
-import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement.XmlAnyElementTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement.XmlAnyElementAdapterListTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement.XmlAnyElementAdapterTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement.XmlAnyElementBaseLAXFalseTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement.XmlAnyElementBaseLAXTrueTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement.XmlAnyElementBaseTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement.XmlAnyElementDomHandlerTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement.XmlAnyElementListTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement.xmlelementrefs.XmlAnyElementWithEltRefsNonGlobalTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement.xmlelementrefs.XmlAnyElementWithEltRefsTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement.xmlelementrefs.XmlAnyElementWithEltRefsViaAnnotationTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlattachmentref.XmlAttachmentRefCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlattribute.XmlAttributeTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlclassextractor.XmlClassExtractorTestCases;
@@ -96,6 +104,7 @@ import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlvalue.XmlVal
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlvalue.XmlValueInternationalPriceTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlvalue.XmlValueInternationalPricesTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlvalue.XmlValueTestCases;
+import org.eclipse.persistence.testing.jaxb.xmlanyelement.XmlAnyElementArrayTestCases;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -161,7 +170,17 @@ public class ExternalizedMetadataTestSuite extends TestSuite {
         suite.addTestSuite(XmlListTestCases.class);
         suite.addTestSuite(XmlListNoStringTestCases.class);
         suite.addTestSuite(XmlListOnXmlAttributeTestCases.class);
-        suite.addTestSuite(XmlAnyElementTestCases.class);
+        suite.addTestSuite(XmlAnyElementBaseTestCases.class);
+        suite.addTestSuite(XmlAnyElementBaseLAXFalseTestCases.class);
+        suite.addTestSuite(XmlAnyElementBaseLAXTrueTestCases.class);
+        suite.addTestSuite(XmlAnyElementAdapterListTestCases.class);
+        suite.addTestSuite(XmlAnyElementAdapterTestCases.class);
+        suite.addTestSuite(XmlAnyElementArrayTestCases.class);
+        suite.addTestSuite(XmlAnyElementDomHandlerTestCases.class);
+        suite.addTestSuite(XmlAnyElementListTestCases.class);
+        suite.addTestSuite(XmlAnyElementWithEltRefsTestCases.class);
+        suite.addTestSuite(XmlAnyElementWithEltRefsNonGlobalTestCases.class);
+        suite.addTestSuite(XmlAnyElementWithEltRefsViaAnnotationTestCases.class);
         suite.addTestSuite(XmlIdRefTestCases.class);
         suite.addTestSuite(XmlIdRefExceptionTestCases.class);
         suite.addTestSuite(XmlMixedTestCases.class);

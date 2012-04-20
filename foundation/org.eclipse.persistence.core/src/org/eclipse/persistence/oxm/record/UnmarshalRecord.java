@@ -50,6 +50,7 @@ import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
+import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
@@ -1336,6 +1337,13 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
      */
     public void setXmlLocation(Locator xmlLocation) {
         this.xmlLocation = xmlLocation;
+    }
+    
+    public XPathFragment getTextWrapperFragment() {
+    	if(unmarshaller.getMediaType() == MediaType.APPLICATION_JSON){    
+            return textWrapperFragment;
+    	}
+    	return null;
     }
 
 }
