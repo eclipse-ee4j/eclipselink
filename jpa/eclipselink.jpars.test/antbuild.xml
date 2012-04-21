@@ -51,7 +51,7 @@
     </condition>
     <echo message="jparstest.2.base.dir     = '${jparstest.2.base.dir}'"/>
     <property name="jparstest.2.common.plugins.dir" value="${jparstest.2.base.dir}/plugins"/>
-    <property name="jparstest.2.jpa.plugins.dir" value="${jparstest.2.base.dir}/jpa/plugins"/>
+    <property name="jparstest.2.jpa.plugins.dir"    value="${jparstest.2.base.dir}/jpa/plugins"/>
     <property name="jparstest.2.buildsys.dir"       value="${jparstest.2.base.dir}/buildsystem"/>
 
     <property file="${user.home}/build.properties"/>
@@ -80,23 +80,46 @@
         <echo message="test.properties       ='${test.properties}'"/>
         <echo message="extensions.depend.dir ='${extensions.depend.dir}'"/>
         <echo message="junit.lib             ='${junit.lib}'"/>
-    <!-- versioning -->
-    <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
-    <tstamp>
-       <format property="build.date" pattern="yyyyMMdd"/>
-       <format property="build.time" pattern="HHmm"/>
-    </tstamp>
-    <property name="build.type" value="SNAPSHOT"/>
-    <property name="svn.revision" value="NA"/>
+        <!-- versioning -->
+        <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
+        <tstamp>
+           <format property="build.date" pattern="yyyyMMdd"/>
+           <format property="build.time" pattern="HHmm"/>
+        </tstamp>
+        <property name="build.type" value="SNAPSHOT"/>
+        <property name="svn.revision" value="NA"/>
         <property name="version.qualifier" value="qualifier"/>
         <property name="version.string" value="${release.version}.${version.qualifier}"/>
         <property name="release.designation"  value="EclipseLink ${release.version} Build"/>
 
-        <!-- test for hermes -->
+        <!-- task for Dynamic Dependency checks -->
         <property name="custom.tasks.lib" value="${jparstest.2.buildsys.dir}/ant_customizations.jar"/>
         <property name="custom.selectbundle.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.SelectBundle"/>
         <taskdef name="selectbundle" classname="${custom.selectbundle.task.class}" classpath="${custom.tasks.lib}"/>
 
+        <!-- Test for Third-party dependencies -->
+        <selectbundle basename="javax.xml.bind" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
+            criterion="[2.0.0,3.0.0)" property="jaxb-api.lib" includepath="true"
+        />
+        <selectbundle basename="javax.persistence" directory="${jparstest.build.location}/${jparstest.2.jpa.plugins.dir}" separator="_"
+            criterion="[2.0.0,3.0.0)" property="persistence20.lib" includepath="true"
+        />
+        <selectbundle basename="com.sun.jersey" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
+            criterion="[1.0.0,2.0.0)" property="jersey.lib" includepath="true"
+        />
+        <selectbundle basename="javax.ws.rs" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
+            criterion="[1.0.0,2.0.0)" property="javax.ws.rs.lib" includepath="true"
+        />
+        <available file="${jaxb-api.lib}"      property="jaxb-api.lib.exist"/>
+        <available file="${persistence20.lib}" property="persistence20.lib.exist"/>
+        <available file="${jersey.lib}"        property="jersey.lib.exist"/>
+        <available file="${javax.ws.rs.lib}"   property="javax.ws.rs.lib.exist"/>
+        <echo message="jaxb-api.lib          ='${jaxb-api.lib}'"/>
+        <echo message="persistence20.lib     ='${persistence20.lib}'"/>
+        <echo message="jersey.lib            ='${jersey.lib}'"/>
+        <echo message="javax.ws.rs.lib       ='${javax.ws.rs.lib}'"/>
+
+        <!-- Test for Eclipselink dependencies -->
         <selectbundle basename="org.eclipse.persistence.antlr" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
             criterion="[2.0.0,4.0.0)" property="antlr.lib" includepath="true"
         />
@@ -106,86 +129,90 @@
         <selectbundle basename="org.eclipse.persistence.jpa.jpql" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
             criterion="[2.0.0,3.0.0)" property="hermes.lib" includepath="true"
         />
-        <echo message="antlr.lib             ='${antlr.lib}'"/>
-        <echo message="hermes.lib            ='${hermes.lib}'"/>
-        <echo message="asm.lib               ='${asm.lib}'"/>
-
-        <!-- Define Third-party dependencies -->
-    <property name="jaxb-api.lib"      value="${jparstest.2.common.plugins.dir}/${jaxb-api.jar}"/>
-    <property name="persistence20.lib" value="${jparstest.2.jpa.plugins.dir}/${persistence20.jar}"/>
-    <property name="jersey.lib"        value="${jparstest.2.common.plugins.dir}/${jersey.jar}"/>
-    <property name="javax.ws.rs.lib"   value="${jparstest.2.common.plugins.dir}/${javax.ws.rs.jar}"/>
-
-        <!-- Test for Third-party dependencies -->
-        <available file="${jaxb-api.lib}"      property="jaxb-api.lib.exist"/>
-        <available file="${persistence20.lib}" property="persistence20.lib.exist"/>
-        <available file="${jersey.lib}"        property="jersey.lib.exist"/>
-        <available file="${javax.ws.rs.lib}"   property="javax.ws.rs.lib.exist"/>
-
-        <!-- Test for Eclipselink dependencies -->
-        <available file="${jparstest.2.common.plugins.dir}/${antlr.jar}"  property="antlr.bundle.exist"/>
-        <available file="${jparstest.2.common.plugins.dir}/${hermes.jar}" property="hermes.bundle.exist"/>
+        <selectbundle basename="org.eclipse.persistence.core" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
+            criterion="[2.0.0,3.0.0)" property="core.lib" includepath="true"
+        />
+        <selectbundle basename="org.eclipse.persistence.moxy" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
+            criterion="[2.0.0,3.0.0)" property="moxy.lib" includepath="true"
+        />
+        <selectbundle basename="org.eclipse.persistence.jpa" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
+            criterion="[2.0.0,3.0.0)" property="jpa.lib" includepath="true"
+        />
+        <selectbundle basename="org.eclipse.persistence.jpars" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
+            criterion="[2.0.0,3.0.0)" property="jpars.lib" includepath="true"
+        />
+        <selectbundle basename="org.eclipse.persistence.core.jpql" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
+            criterion="[2.0.0,3.0.0)" property="hermesimpl.lib" includepath="true"
+        />
+        <available file="${antlr.lib}"        property="antlr.bundle.exist"/>
+        <available file="${asm.lib}"          property="asm.bundle.exist"/>
+        <available file="${hermes.lib}"       property="hermes.bundle.exist"/>
+        <available file="${core.lib}"         property="core.bundle.exist"/>
+        <available file="${moxy.lib}"         property="moxy.bundle.exist"/>
+        <available file="${jpa.lib}"          property="jpa.bundle.exist"/>
+        <available file="${jpars.lib}"        property="jpars.bundle.exist"/>
+        <available file="${hermesimple.lib}"  property="hermesimpl.bundle.exist"/>
         <available file="${jparstest.2.base.dir}/${eclipselink.jar}"      property="eclipselink.jar.exist"/>
-        <available file="${jparstest.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"  property="core.bundle.exist"/>
-        <available file="${jparstest.2.common.plugins.dir}/org.eclipse.persistence.moxy_${version.string}.jar"  property="moxy.bundle.exist"/>
-        <available file="${jparstest.2.common.plugins.dir}/org.eclipse.persistence.jpa_${version.string}.jar"   property="jpa.bundle.exist"/>
-        <available file="${jparstest.2.common.plugins.dir}/org.eclipse.persistence.jpars_${version.string}.jar" property="jpars.bundle.exist"/>
+        <echo message="antlr.lib             ='${antlr.lib}'"/>
+        <echo message="asm.lib               ='${asm.lib}'"/>
+        <echo message="hermes.lib            ='${hermes.lib}'"/>
+        <echo message="core.lib              ='${core.lib}'"/>
+        <echo message="moxy.lib              ='${moxy.lib}'"/>
+        <echo message="jpa.lib               ='${jpa.lib}'"/>
+        <echo message="jpars.lib             ='${jpars.lib}'"/>
+        <echo message="hermesImpl.lib        ='${hermesimpl.lib}'"/>
 
-    <!-- path to OSGi Bundle compile dependencies -->
-    <path id="jparstest.bundle.compile.path">
-        <fileset
-            dir="${jparstest.2.common.plugins.dir}"
-            includes="
-               org.eclipse.persistence.core_${version.string}.jar,
-               org.eclipse.persistence.moxy_${version.string}.jar,
-               org.eclipse.persistence.jpa_${version.string}.jar,
-               org.eclipse.persistence.jpars_${version.string}.jar,
-                   org.eclipse.persistence.core.jpql_${version.string}.jar
-            "/>
-    </path>
-    <!-- compile path without product components -->
-    <path id="jparstest.thirdparty.compile.path">
-        <pathelement path="${junit.lib}"/>
-        <pathelement path="${jaxb-api.lib}"/>
-        <pathelement path="${persistence20.lib}"/>
-        <pathelement path="${jersey.lib}"/>
-        <pathelement path="${javax.ws.rs.lib}"/>
-        <pathelement path="${jdbc.driver.jar}"/>
-    </path>
-    <!-- Run path without product components -->
-    <path id="jparstest.thirdparty.run.path">
-        <pathelement path="${resource.dir}"/>
-        <pathelement path="${classes.dir}"/>
+        <!-- path to OSGi Bundle compile dependencies -->
+        <path id="jparstest.bundle.compile.path">
+             <pathelement path="${core.lib}"/>
+             <pathelement path="${moxy.lib}"/>
+             <pathelement path="${jpa.lib}"/>
+             <pathelement path="${jpars.lib}"/>
+        </path>
+        <!-- compile path without product components -->
+        <path id="jparstest.thirdparty.compile.path">
+            <pathelement path="${junit.lib}"/>
+            <pathelement path="${jaxb-api.lib}"/>
+            <pathelement path="${persistence20.lib}"/>
+            <pathelement path="${jersey.lib}"/>
+            <pathelement path="${javax.ws.rs.lib}"/>
+            <pathelement path="${jdbc.driver.jar}"/>
+        </path>
+        <!-- Run path without product components -->
+        <path id="jparstest.thirdparty.run.path">
+            <pathelement path="${resource.dir}"/>
+            <pathelement path="${classes.dir}"/>
+            <pathelement path="${antlr.lib}"/>
             <pathelement path="${asm.lib}"/>
             <pathelement path="${hermes.lib}"/>
-            <pathelement path="${antlr.lib}"/>
+            <pathelement path="${hermesimpl.lib}"/>
             <fileset
                 dir="${jparstest.2.common.plugins.dir}"
                 includes="
                    ${eclipselink.core.depend}
                 "/>
-    </path>
+        </path>
 
-    <!-- Set Compile/Run Paths using product OSGi bundles -->
-    <path id="jparstest.compile.path">
-        <path refid="jparstest.bundle.compile.path"/>
-        <path refid="jparstest.thirdparty.compile.path"/>
-    </path>
-    <path id="jparstest.run.path">
-        <path refid="jparstest.compile.path"/>
-        <path refid="jparstest.thirdparty.run.path"/>
-    </path>
+        <!-- Set Compile/Run Paths using product OSGi bundles -->
+        <path id="jparstest.compile.path">
+            <path refid="jparstest.bundle.compile.path"/>
+            <path refid="jparstest.thirdparty.compile.path"/>
+        </path>
+        <path id="jparstest.run.path">
+            <path refid="jparstest.compile.path"/>
+            <path refid="jparstest.thirdparty.run.path"/>
+        </path>
 
-    <!-- The following compile/run paths reference eclipselink.jar for non-test classes and resources -->
-    <path id="jparstest.compile.against.jar.path">
-        <pathelement path="${jparstest.2.base.dir}/${eclipselink.jar}"/>
-        <pathelement path="${jparstest.2.common.plugins.dir}/org.eclipse.persistence.jpars_${version.string}.jar"/>
-        <path refid="jparstest.thirdparty.compile.path"/>
-    </path>
-    <path id="jparstest.run.against.jar.path">
-        <path refid="jparstest.compile.against.jar.path"/>
-        <path refid="jparstest.thirdparty.run.path"/>
-    </path>
+        <!-- The following compile/run paths reference eclipselink.jar for non-test classes and resources -->
+        <path id="jparstest.compile.against.jar.path">
+            <pathelement path="${jparstest.2.base.dir}/${eclipselink.jar}"/>
+            <pathelement path="${jparstest.2.common.plugins.dir}/org.eclipse.persistence.jpars_${version.string}.jar"/>
+            <path refid="jparstest.thirdparty.compile.path"/>
+        </path>
+        <path id="jparstest.run.against.jar.path">
+            <path refid="jparstest.compile.against.jar.path"/>
+            <path refid="jparstest.thirdparty.run.path"/>
+        </path>
     </target>
 
     <!-- Build targets -->
