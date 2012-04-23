@@ -3202,12 +3202,11 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         }
         EntityManager em = createEntityManager();
         try {
-            // TODO type with size
-            //Query query = em.createQuery("Select cast(e.firstName as char(3)) from Employee e where cast(e.firstName as char(3)) = 'Bob'");
-            //query.getResultList();
+            Query query = em.createQuery("Select cast(e.firstName as char(3)) from Employee e where cast(e.firstName as char(3)) = 'Bob'");
+            query.getResultList();
             // Most databases require a size on char.
             if (getDatabaseSession().getPlatform().isMySQL()) {
-                Query query = em.createQuery("Select cast(e.firstName as char) from Employee e where cast(e.firstName as char) = 'Bob'");
+                query = em.createQuery("Select cast(e.firstName as char) from Employee e where cast(e.firstName as char) = 'Bob'");
                 query.getResultList();
             }
         } finally {
@@ -3290,8 +3289,8 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
             warning("testUnion only works with Hermes");
             return;
         }
-        if (getDatabaseSession().getPlatform().isMySQL()) {
-            warning("INTERSECT not supported on MySQL.");
+        if (getDatabaseSession().getPlatform().isMySQL() || getDatabaseSession().getPlatform().isSybase()) {
+            warning("INTERSECT not supported on this database.");
             return;
         }
         EntityManager em = createEntityManager();
@@ -3311,10 +3310,10 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         
     }
 
-    /* Test SQL with CAST*/
+    /* Test COLUMN */
     public void testCOLUMN() {
         if (!isHermesParser()) {
-            warning("CAST only works with Hermes");
+            warning("testCOLUMN only works with Hermes");
             return;
         }
         EntityManager em = createEntityManager();
@@ -3326,7 +3325,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         }
     }
 
-    /* Test OPERATOR with CAST*/
+    /* Test OPERATOR with CAST */
     public void testOPERATOR() {
         if (!isHermesParser()) {
             warning("testOPERATOR only works with Hermes");
@@ -3524,7 +3523,6 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         closeEntityManager(em);        
     }
 
-    // TODO Bug 243698
     // Test that a full class name can be used in the from clause.
     public void testClassNameInFrom() {
         if (!isHermesParser()) {
@@ -3532,8 +3530,8 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
             return;
         }
         EntityManager em = createEntityManager();
-        //Query query = em.createQuery("Select e from org.eclipse.persistence.testing.models.jpa.advanced.Employee e where e.id > 0");
-        //query.getResultList();
+        Query query = em.createQuery("Select e from org.eclipse.persistence.testing.models.jpa.advanced.Employee e where e.id > 0");
+        query.getResultList();
         closeEntityManager(em);
     }
 

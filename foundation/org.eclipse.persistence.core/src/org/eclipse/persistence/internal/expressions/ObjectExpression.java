@@ -64,7 +64,7 @@ public abstract class ObjectExpression extends DataExpression {
      * </blockquote></pre>
      */
     @Override
-    public Expression as(Class castClass){
+    public Expression treat(Class castClass){
         setCastClass(castClass);
         return this;
     }

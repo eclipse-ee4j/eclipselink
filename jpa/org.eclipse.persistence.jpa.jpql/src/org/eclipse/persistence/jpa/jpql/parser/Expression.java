@@ -608,6 +608,11 @@ public interface Expression {
 	 */
 	String SUM = "SUM";
 
+        /**
+         * The constant for 'TABLE'.
+         */
+        String TABLE = "TABLE";
+
 	/**
 	 * The constant for 'THEN'.
 	 */

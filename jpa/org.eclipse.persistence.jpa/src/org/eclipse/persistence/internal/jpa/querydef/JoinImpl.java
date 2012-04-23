@@ -90,7 +90,7 @@ public class JoinImpl<Z, X> extends FromImpl<Z, X> implements Join<Z, X>, Fetch<
     
     protected <T> Expression<T> buildExpressionForAs(Class<T> type) {
         managedType = metamodel.managedType(type);
-        currentNode = currentNode.as(type);
+        currentNode = currentNode.treat(type);
         return (Expression<T>)this;
     }
     

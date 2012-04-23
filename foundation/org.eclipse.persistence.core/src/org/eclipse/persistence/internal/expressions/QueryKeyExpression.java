@@ -237,7 +237,7 @@ public class QueryKeyExpression extends ObjectExpression {
      * </blockquote></pre>
      */
     @Override
-    public Expression as(Class castClass){
+    public Expression treat(Class castClass){
         QueryKeyExpression clonedExpression = new QueryKeyExpression(getName(), this.baseExpression);
         clonedExpression.shouldQueryToManyRelationship = this.shouldQueryToManyRelationship;
         clonedExpression.shouldUseOuterJoin = this.shouldUseOuterJoin;
@@ -325,8 +325,15 @@ public class QueryKeyExpression extends ObjectExpression {
         if (!isAttribute()) {
             return null;
         }
-
-        return getContainingDescriptor().getObjectBuilder().getFieldForQueryKeyName(getName());
+        QueryKey key = getQueryKeyOrNull();
+        if ((key != null) && key.isDirectQueryKey()) {
+            return ((DirectQueryKey)key).getField();
+        }
+        DatabaseMapping mapping = getMapping();
+        if ((mapping == null) || mapping.getFields().isEmpty()) {
+            return null;
+        }
+        return mapping.getFields().get(0);
     }
 
     /**

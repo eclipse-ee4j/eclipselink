@@ -192,8 +192,8 @@ public class PersistenceUnitProperties {
      * JPQL parser to be configured.
      * Two JPQL parsers are provided:
      * <ul>
-     * <li>"Hermes" (DEFAULT) - new parser as of EclipseLink 2.4, provides extended JPQL support.
-     * <li>"ANTLR" - old parser used previous to EclipseLink 2.4, can be used for backward compatibility.
+     * <li>"org.eclipse.persistence.internal.jpa.jpql.HermesParser" (DEFAULT) - new parser as of EclipseLink 2.4, provides extended JPQL support.
+     * <li>"org.eclipse.persistence.queries.ANTLRQueryBuilder" - old parser used previous to EclipseLink 2.4, can be used for backward compatibility.
      * </ul>
      * 
      * @see ParserType

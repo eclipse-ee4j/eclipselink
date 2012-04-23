@@ -716,11 +716,13 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
             if ((jpql == null) || (jpql.length() == 0)) {
                 return;
             }
-            ReportQuery query = new ReportQuery();
-            query.setCall(new JPQLCall(jpql));
-
-            setResultReports((Vector) getSession().executeQuery(query));
-            getLogBook().setSelectedComponent(getResultPage());
+            DatabaseQuery query = ((AbstractSession)getSession()).getQueryBuilder().buildQuery(jpql, (AbstractSession)getSession());
+            if (query.isReadQuery()) {
+                setResultReports((Vector) getSession().executeQuery(query));
+                getLogBook().setSelectedComponent(getResultPage());
+            } else {
+                getSession().executeQuery(query);
+            }
         } finally {
             showNormalCursor();
         }

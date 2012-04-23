@@ -100,6 +100,8 @@ public class ExpressionOperator implements Serializable {
     public static final int StandardDeviation = 24;
     public static final int Variance = 25;
     public static final int Distinct = 87;
+    
+    public static final int As = 148;
 
     /** Union operators */
     public static final int Union = 142;
@@ -455,6 +457,20 @@ public class ExpressionOperator implements Serializable {
      */
     public static ExpressionOperator ascending() {
         return simpleOrdering(Ascending, "ASC", "ascending");
+    }
+
+    /**
+     * INTERNAL:
+     * Create the AS operator.
+     */
+    public static ExpressionOperator as() {
+        ExpressionOperator exOperator = new ExpressionOperator();
+        exOperator.setType(FunctionOperator);
+        exOperator.setSelector(As);
+        exOperator.printsAs(" AS ");
+        exOperator.bePostfix();
+        exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
+        return exOperator;
     }
 
     /**
@@ -1334,6 +1350,7 @@ public class ExpressionOperator implements Serializable {
         addOperator(notOperator());
         addOperator(ascending());
         addOperator(descending());
+        addOperator(as());
         addOperator(nullsFirst());
         addOperator(nullsLast());
         addOperator(any());

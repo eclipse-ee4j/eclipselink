@@ -1856,7 +1856,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 		// Now downcast the Expression
 		EntityTypeLiteral entityTypeLiteral = (EntityTypeLiteral) expression.getEntityType();
 		ClassDescriptor entityType = queryContext.getDescriptor(entityTypeLiteral.getEntityTypeName());
-		queryExpression = queryExpression.as(entityType.getJavaClass());
+		queryExpression = queryExpression.treat(entityType.getJavaClass());
 	}
 
 	/**

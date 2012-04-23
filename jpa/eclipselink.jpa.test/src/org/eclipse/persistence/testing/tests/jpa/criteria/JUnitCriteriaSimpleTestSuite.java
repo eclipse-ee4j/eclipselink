@@ -2678,7 +2678,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
 
         ReadAllQuery query = new ReadAllQuery();
-        Expression selectionCriteria = new ExpressionBuilder().anyOf("projects").as(LargeProject.class).get("budget").equal(5000);
+        Expression selectionCriteria = new ExpressionBuilder().anyOf("projects").treat(LargeProject.class).get("budget").equal(5000);
         query.setSelectionCriteria(selectionCriteria);
         query.setReferenceClass(Employee.class);
         query.dontUseDistinct(); //gf 1395 changed jpql to not use distinct on joins
@@ -2733,7 +2733,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         clearCache();
         
         ReadAllQuery query = new ReadAllQuery();
-        Expression selectionCriteria = new ExpressionBuilder().anyOf("blueBeersToConsume").as(BlueLight.class).get("discount").equal(10);
+        Expression selectionCriteria = new ExpressionBuilder().anyOf("blueBeersToConsume").treat(BlueLight.class).get("discount").equal(10);
         query.setSelectionCriteria(selectionCriteria);
         query.setReferenceClass(BeerConsumer.class);
         query.dontUseDistinct();
@@ -2798,7 +2798,7 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
         clearCache();
         
         ReadAllQuery query = new ReadAllQuery();
-        Expression selectionCriteria = new ExpressionBuilder().get("car").as(SportsCar.class).get("maxSpeed").equal(200);
+        Expression selectionCriteria = new ExpressionBuilder().get("car").treat(SportsCar.class).get("maxSpeed").equal(200);
         query.setSelectionCriteria(selectionCriteria);
         query.setReferenceClass(Person.class);
         query.dontUseDistinct();

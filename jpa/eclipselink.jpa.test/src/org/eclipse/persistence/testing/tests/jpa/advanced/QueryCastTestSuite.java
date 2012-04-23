@@ -257,7 +257,7 @@ public class QueryCastTestSuite extends JUnitTestCase {
         ReadAllQuery raq = new ReadAllQuery(Vehicle.class);
         query.setDatabaseQuery(raq);
         Expression exp = raq.getExpressionBuilder();
-        Expression  criteria = exp.as(Boat.class).get("model").equal("speed");
+        Expression  criteria = exp.treat(Boat.class).get("model").equal("speed");
         raq.setSelectionCriteria(criteria);
         List resultList = query.getResultList();
         
@@ -309,7 +309,7 @@ public class QueryCastTestSuite extends JUnitTestCase {
         ReadAllQuery raq = new ReadAllQuery(Vehicle.class);
         query.setDatabaseQuery(raq);
         Expression exp = raq.getExpressionBuilder();
-        Expression  criteria = exp.as(NonFueledVehicle.class).get("color").equal("Blue");
+        Expression  criteria = exp.treat(NonFueledVehicle.class).get("color").equal("Blue");
         raq.setSelectionCriteria(criteria);
         List resultList = query.getResultList();
         
@@ -357,7 +357,7 @@ public class QueryCastTestSuite extends JUnitTestCase {
         ReadAllQuery raq = new ReadAllQuery(Project.class);
         query.setDatabaseQuery(raq);
         Expression exp = raq.getExpressionBuilder();
-        Expression criteria = exp.as(LargeProject.class).get("budget").greaterThan(100);
+        Expression criteria = exp.treat(LargeProject.class).get("budget").greaterThan(100);
         raq.setSelectionCriteria(criteria);
         List resultList = query.getResultList();
         
@@ -382,7 +382,7 @@ public class QueryCastTestSuite extends JUnitTestCase {
         em.clear();
         ExpressionBuilder builder = new ExpressionBuilder(Project.class);
         ReportQuery rq = new ReportQuery(Project.class, builder);
-        rq.addAttribute("project", builder.as(LargeProject.class).get("budget"));
+        rq.addAttribute("project", builder.treat(LargeProject.class).get("budget"));
         rq.setSelectionCriteria(builder.type().equal(LargeProject.class));
         List resultList = (List)((JpaEntityManager)em.getDelegate()).getActiveSession().executeQuery(rq);
         assertTrue("Incorrect results returned", resultList.size() == 1);
@@ -509,7 +509,7 @@ public class QueryCastTestSuite extends JUnitTestCase {
         clearCache();
         em.clear();
         
-        Query query = (Query)em.createQuery("Select distinct c from Company c left join treat(c.vehicles as Boat) b left join treat(c.vehicles as FueledVehicle) f where b.model = 'fishing' or f.fuelType = 'unleaded'");
+        Query query = em.createQuery("Select distinct c from Company c left join treat(c.vehicles as Boat) b left join treat(c.vehicles as FueledVehicle) f where b.model = 'fishing' or f.fuelType = 'unleaded'");
         List resultList = query.getResultList();
         
         assertTrue("Incorrect results returned", resultList.size() == 2);
@@ -597,7 +597,7 @@ public class QueryCastTestSuite extends JUnitTestCase {
             // The following query casts across a 1-1
             // as a result of our 1-1 optimization, the same expression is used twice
             // causing an exception
-            Query query = (JpaQuery)em.createQuery("Select distinct p from Person p left join treat(p.car as SportsCar) s left join treat(p.car as Jalopy) j where s.maxSpeed = 200 or j.percentRust = 20");
+            Query query = em.createQuery("Select distinct p from Person p left join treat(p.car as SportsCar) s left join treat(p.car as Jalopy) j where s.maxSpeed = 200 or j.percentRust = 20");
             List resultList = query.getResultList();
             assertTrue("Incorrect results returned", resultList.size() == 2);
         } finally {
@@ -717,7 +717,7 @@ public class QueryCastTestSuite extends JUnitTestCase {
         clearCache();
         em.clear();
         try {
-            Query query = (JpaQuery)em.createQuery("Select p from Person p join fetch p.car join treat(p.car as SportsCar) s where s.maxSpeed = 200");
+            Query query = em.createQuery("Select p from Person p join fetch p.car join treat(p.car as SportsCar) s where s.maxSpeed = 200");
             List resultList = query.getResultList();
             Person person = (Person)resultList.get(0);
             assertTrue("Incorrect result size returned", resultList.size() == 1);

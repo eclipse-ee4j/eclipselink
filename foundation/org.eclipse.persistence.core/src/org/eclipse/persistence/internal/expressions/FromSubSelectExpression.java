@@ -17,6 +17,7 @@ import java.util.*;
 
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.queries.ReportItem;
 
 /**
  * Allow a table expression to be created on a sub-select to define a sub-select in the from clause.
@@ -81,6 +82,12 @@ public class FromSubSelectExpression extends TableExpression {
     @Override
     public Expression normalize(ExpressionNormalizer normalizer) {
         if (this.subSelect != null) {
+            // Each item that is a function must have an alias defined for it.
+            for (ReportItem item : this.subSelect.getSubQuery().getItems()) {
+                if (!item.getAttributeExpression().isQueryKeyExpression()) {
+                    item.setAttributeExpression(item.getAttributeExpression().as(item.getName()));
+                }
+            }
             // Need to force the sub-slect to normalize instead of deferring.
             this.subSelect.normalizeSubSelect(normalizer, normalizer.getClonedExpressions());
         }

@@ -294,6 +294,25 @@ public abstract class Expression implements Serializable, Cloneable {
     
     /**
      * ADVANCED:
+     * Return an expression that allows you to treat its base as if it were a subclass of the class returned by the base.
+     * @deprecated replaced by {@link #treat(Class)}
+     */
+    @Deprecated
+    public Expression as(Class castClass) {
+        return treat(castClass);
+    }
+    
+    /**
+     * ADVANCED:
+     * Assign an alias to the expression in the select clause.
+     */
+    public Expression as(String alias) {
+        ExpressionOperator operator = getOperator(ExpressionOperator.As);
+        return operator.expressionFor(this, literal(alias));
+    }
+    
+    /**
+     * ADVANCED:
      * Return an expression that allows you to treat its base as if it were a subclass of the class returned by the base
      * This can only be called on an ExpressionBuilder, the result of expression.get(String), expression.getAllowingNull(String),
      * the result of expression.anyOf("String") or the result of expression.anyOfAllowingNull("String")
@@ -307,8 +326,8 @@ public abstract class Expression implements Serializable, Cloneable {
      *     SQL: LPROJ.PROJ_ID (+)= PROJ.PROJ_ID AND L_PROJ.BUDGET = 1000
      * </blockquote></pre>
      */
-    public Expression as(Class castClass){
-        return null;
+    public Expression treat(Class castClass) {
+        return treat(castClass);
     }
     
     /**
@@ -4488,6 +4507,15 @@ public abstract class Expression implements Serializable, Cloneable {
      */
     public Expression literal(String literal) {
         return new LiteralExpression(literal, this);
+    }
+
+    /**
+     * ADVANCED:
+     * Return an expression for the alias.
+     * This allows an alias used in the select clause to be used in other clauses.
+     */
+    public Expression alias(String alias) {
+        return literal(alias);
     }
 
     /**

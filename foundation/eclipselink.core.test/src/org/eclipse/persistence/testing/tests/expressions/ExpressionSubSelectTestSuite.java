@@ -715,6 +715,7 @@ public class ExpressionSubSelectTestSuite extends TestSuite {
         addSubSelectSelectClauseTest();
         addSubSelectSelectClauseTest2();
         addSubSelectFromClauseTest();
+        addSubSelectFromClauseTest2();
         addSubSelectObjectEqualsTest();
     }
 
@@ -838,6 +839,25 @@ public class ExpressionSubSelectTestSuite extends TestSuite {
         ReadAllExpressionTest test = new ReadAllExpressionTest(Employee.class, 0);
         test.setQuery(query);
         test.setName("SubSelectFromClauseTest");
+        test.setDescription("Test subselects in the from clause");
+        addTest(test);
+    }
+
+    private void addSubSelectFromClauseTest2() {
+        ExpressionBuilder builder = new ExpressionBuilder(Employee.class);
+        ReportQuery subQuery = new ReportQuery(LargeProject.class, new ExpressionBuilder(LargeProject.class));
+        subQuery.addItem("id", subQuery.getExpressionBuilder().get("id").average());
+        subQuery.addItem("id2", subQuery.getExpressionBuilder().get("id").maximum());
+        
+        ReportQuery query = new ReportQuery(Employee.class, builder);
+        query.addItem("e", builder);
+        Expression alias = builder.getAlias(builder.subQuery(subQuery));
+        query.addNonFetchJoin(alias);
+        query.setSelectionCriteria(builder.get("id").equal(alias.get("id")).and(builder.get("id").notEqual(alias.get("id2"))));
+
+        ReadAllExpressionTest test = new ReadAllExpressionTest(Employee.class, 0);
+        test.setQuery(query);
+        test.setName("SubSelectFromClauseTest2");
         test.setDescription("Test subselects in the from clause");
         addTest(test);
     }

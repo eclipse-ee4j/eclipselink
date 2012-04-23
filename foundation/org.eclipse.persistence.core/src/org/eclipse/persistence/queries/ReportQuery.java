@@ -935,6 +935,19 @@ public class ReportQuery extends ReadAllQuery {
     public List<ReportItem> getItems() {
         return items;
     }
+
+    /**
+     * INTERNAL:
+     * @return ReportItems with the name
+     */
+    public ReportItem getItem(String name) {
+        for (ReportItem item : this.items) {
+            if (item.getName().equals(name)) {
+                return item;
+            }
+        }
+        return null;
+    }
     
     /**
      * INTERNAL:

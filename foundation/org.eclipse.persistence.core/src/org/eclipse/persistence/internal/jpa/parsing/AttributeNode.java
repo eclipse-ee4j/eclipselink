@@ -84,7 +84,7 @@ public class AttributeNode extends Node {
         }
         TypeHelper typeHelper = context.getParseTreeContext().getTypeHelper();
         Class cast = (Class)typeHelper.resolveSchema(castClassName);
-        return exp.as(cast);
+        return exp.treat(cast);
     }
     
     public Object computeActualType(Object initialType, TypeHelper typeHelper){
