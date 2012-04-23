@@ -331,11 +331,7 @@ for version in `ls -dr [0-9]*` ; do
             if [ -f "${BaseDownloadNFSDir}/nightly/${version}/${contentdir}/${hostdir}/TestConfiguration.html" ] ; then
                 echo "              <a href=\"${BaseDisplayURL}/${version}/${contentdir}/${hostdir}/TestConfiguration.html\"> ${hostdir} </a>" >> $tmp/index.xml
             else
-                if [ "${hostdir}" = "Eclipse" ] ; then
-                    echo "              <a href=\"${BaseDisplayURL}/${version}/TestConfiguration.html\"> ${hostdir} </a>" >> $tmp/index.xml
-                else
-                    echo "              ${hostdir}" >> $tmp/index.xml
-                fi
+                echo "              ${hostdir}" >> $tmp/index.xml
             fi
             echo "            </td>" >> $tmp/index.xml
             #   Generate the image links
@@ -362,6 +358,17 @@ for version in `ls -dr [0-9]*` ; do
 done
 
 # Dump the static footer into place
+echo "    </description>                                                                        " >> $tmp/index.xml
+echo "  </section>                                                                              " >> $tmp/index.xml
+echo "  <section class=\"main\" name=\"EclipseLink Licenses\">                                  " >> $tmp/index.xml
+echo "    <description>                                                                         " >> $tmp/index.xml
+echo "      <p>                                                                                 " >> $tmp/index.xml
+echo "        The EclipseLink Project produced contents are dual licensed under the terms of the" >> $tmp/index.xml
+echo "        <a href=\"http://www.eclipse.org/legal/epl-v10.html\">Eclipse Public License v1.0</a>" >> $tmp/index.xml
+echo "      and <a href=\"http://www.eclipse.org/org/documents/edl-v10.php\">Eclipse Distribution License v1.0</a>." >> $tmp/index.xml
+echo "      </p><p>                                                                             " >> $tmp/index.xml
+echo "        For the license of dependent libraries included within a distribution please refer to the about.html file within each distribution." >> $tmp/index.xml
+echo "      </p>                                                                                " >> $tmp/index.xml
 echo "    </description>                                                                        " >> $tmp/index.xml
 echo "  </section>                                                                              " >> $tmp/index.xml
 echo "  <section class=\"main\" name=\" \">                                                     " >> $tmp/index.xml

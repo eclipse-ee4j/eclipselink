@@ -7,14 +7,14 @@ GeneratedDownloadPage=milestone.xml
 BaseDownloadURL="http://www.eclipse.org/downloads/download.php?file=/rt/eclipselink/milestones"
 BaseDisplayURL="http://download.eclipse.org/rt/eclipselink/milestones"
 BaseDownloadNFSDir="/home/data/httpd/download.eclipse.org/rt/eclipselink"
-pattern_list="eclipselink-core-[l,s]rg-[0-9] eclipselink-jpa-[l,s]rg-[0-9] eclipselink-jpa-wdf-[l,s]rg-[0-9] eclipselink-jaxb-[l,s]rg-[0-9] eclipselink-oxm-[l,s]rg-[0-9] eclipselink-sdo-[l,s]rg-[0-9] eclipselink-dbws-[l,s]rg-[0-9] eclipselink-dbws-util-[l,s]rg-[0-9]"
+pattern_list="eclipselink-core-[l,s]rg-[0-9] eclipselink-jpa-[l,s]rg-[0-9] eclipselink-jpa-wdf-[l,s]rg-[0-9] eclipselink-jaxb-[l,s]rg-[0-9] eclipselink-oxm-[l,s]rg-[0-9] eclipselink-jpars-[l,s]rg-[0-9] eclipselink-sdo-[l,s]rg-[0-9] eclipselink-dbws-[l,s]rg-[0-9] eclipselink-dbws-util-[l,s]rg-[0-9]"
 summaryfile=ResultSummary.dat
 
-WarningImg="<img src=\"http://download.eclipse.org/rt/eclipselink/img/warning.gif\" align=\"middle\" border=\"0\" alt=\"warn\"/>"
-PassImg="<img src=\"http://download.eclipse.org/rt/eclipselink/img/pass.gif\" align=\"middle\" border=\"0\" alt=\"pass\"/>"
-FailImg="<img src=\"http://download.eclipse.org/rt/eclipselink/img/fail.gif\" align=\"middle\" border=\"0\" alt=\"fail\"/>"
-NewImg="<img src=\"http://download.eclipse.org/rt/eclipselink/img/new.gif\" align=\"middle\" border=\"0\" alt=\"new\"/>"
-NaImg="<img src=\"http://download.eclipse.org/rt/eclipselink/img/na.gif\" align=\"middle\" border=\"0\" alt=\"na\"/>"
+WarningImg="<img src=\"http://download.eclipse.org/rt/eclipselink/img/warning.gif\" style=\"text-align:center;\" border=\"0\" alt=\"warn\"/>"
+PassImg="<img src=\"http://download.eclipse.org/rt/eclipselink/img/pass.gif\" style=\"text-align:center;\" border=\"0\" alt=\"pass\"/>"
+FailImg="<img src=\"http://download.eclipse.org/rt/eclipselink/img/fail.gif\" style=\"text-align:center;\" border=\"0\" alt=\"fail\"/>"
+NewImg="<img src=\"http://download.eclipse.org/rt/eclipselink/img/new.gif\" style=\"text-align:center;\" border=\"0\" alt=\"new\"/>"
+NaImg="<img src=\"http://download.eclipse.org/rt/eclipselink/img/na.gif\" style=\"text-align:center;\" border=\"0\" alt=\"na\"/>"
 
 #   Generate the results summary file (is a hack just to allow script to generate properly)
 #      Results summare in form of: <result filename>:<expected tests>:<tests run>:<errors+failures>
@@ -70,14 +70,14 @@ genResultSummary() {
 }
 
 #   Generate the HTML for appropriate image links based upon results summary file
-#      Results summare in form of: <result filename>:<expected tests>:<tests run>:<errors+failures>
+#      Results summary in form of: <result filename>:<expected tests>:<tests run>:<errors+failures>
 unset genResultEntry
 genResultEntry() {
     pattern=$1
 
     Image=${NaImg}
     file=`ls | sort -r | grep -m1 ${pattern}`
-    echo "            <td ${borderstyle} align=\"middle\">" >> $tmp/index.xml
+    echo "            <td ${borderstyle}>" >> $tmp/index.xml
     if [ "${file}" != "" ] ; then
         summary=`cat ${BaseDownloadNFSDir}/milestones/${version}/${contentdir}/${hostdir}/ResultSummary.dat | grep ${pattern}`
         expected=`echo ${summary} | cut -d: -f2`
@@ -157,22 +157,22 @@ echo "      <p><a href=\"http://download.eclipse.org/rt/eclipselink/milestone-up
 echo "      <p>                                                                    " >> $tmp/index.xml
 echo "        <table border=\"1\">                                                 " >> $tmp/index.xml
 echo "          <tr>                                                               " >> $tmp/index.xml
-echo "            <th colspan=\"5\" align=\"middle\"> Symbol Key </th>            " >> $tmp/index.xml
+echo "            <th colspan=\"5\" style=\"text-align:left;\"> Symbol Key </th>            " >> $tmp/index.xml
 echo "          </tr>                                                              " >> $tmp/index.xml
 echo "          <tr>                                                               " >> $tmp/index.xml
-echo "            <td align=\"middle\">                                            " >> $tmp/index.xml
+echo "            <td style=\"text-align:center;\">                                            " >> $tmp/index.xml
 echo "              ${PassImg} = clean, as expected     " >> $tmp/index.xml
 echo "            </td>                                                                                                                            " >> $tmp/index.xml
-echo "            <td align=\"middle\">                                                                                                            " >> $tmp/index.xml
+echo "            <td style=\"text-align:center;\">                                                                                                            " >> $tmp/index.xml
 echo "              ${NewImg} = clean, new tests added  " >> $tmp/index.xml
 echo "            </td>                                                                                                                            " >> $tmp/index.xml
-echo "            <td align=\"middle\">                                                                                                            " >> $tmp/index.xml
+echo "            <td style=\"text-align:center;\">                                                                                                            " >> $tmp/index.xml
 echo "              ${WarningImg} = clean, fewer tests run" >> $tmp/index.xml
 echo "            </td>                                                                                                                            " >> $tmp/index.xml
-echo "            <td align=\"middle\">                                                                                                            " >> $tmp/index.xml
+echo "            <td style=\"text-align:center;\">                                                                                                            " >> $tmp/index.xml
 echo "              ${FailImg} = test failures or errors" >> $tmp/index.xml
 echo "            </td>                                                                                                                            " >> $tmp/index.xml
-echo "            <td align=\"middle\">                                                                                                            " >> $tmp/index.xml
+echo "            <td style=\"text-align:center;\">                                                                                                            " >> $tmp/index.xml
 echo "              ${NaImg} = no results                 " >> $tmp/index.xml
 echo "            </td>" >> $tmp/index.xml
 echo "          </tr>" >> $tmp/index.xml
@@ -186,30 +186,32 @@ for version in `ls -dr [0-9]*` ; do
     echo "      <a name=\"${version}\"> </a>                                                     " >> $tmp/index.xml
     echo "        <table border=\"1\">                                                           " >> $tmp/index.xml
     echo "          <tr>                                                                         " >> $tmp/index.xml
-    echo "            <th colspan=\"13\" align=\"middle\"><b>${version} Milestone Build Results</b></th>" >> $tmp/index.xml
+    echo "            <th colspan=\"14\"  style=\"text-align:left;\"><b>${version} Milestone Build Results</b></th>" >> $tmp/index.xml
     echo "          </tr>                                                                        " >> $tmp/index.xml
     echo "          <tr>                                                                         " >> $tmp/index.xml
-    echo "            <th rowspan=\"3\" style=\"border-top: 2px solid #444;\" align=\"middle\"> Milestone ID </th>                         " >> $tmp/index.xml
-    echo "            <th rowspan=\"3\" style=\"border-top: 2px solid #444;\" align=\"middle\"> Date Released </th>                         " >> $tmp/index.xml
-    echo "            <th rowspan=\"3\" style=\"border-top: 2px solid #444;\" align=\"middle\"> Downloadable Archives </th>                         " >> $tmp/index.xml
-    echo "            <th rowspan=\"3\" align=\"middle\"> </th>                                  " >> $tmp/index.xml
-    echo "            <th colspan=\"9\" style=\"border-top: 2px solid #444;\" align=\"middle\"> Milestone Testing Results </th>          " >> $tmp/index.xml
+    echo "            <th rowspan=\"3\" style=\"text-align:center;border-top: 2px solid #444;\"> Milestone ID </th>                      " >> $tmp/index.xml
+    echo "            <th rowspan=\"3\" style=\"text-align:center;border-top: 2px solid #444;\"> Date Released </th>                     " >> $tmp/index.xml
+    echo "            <th rowspan=\"3\" style=\"text-align:center;border-top: 2px solid #444;\"> Downloadable Archives </th>             " >> $tmp/index.xml
+    echo "            <th rowspan=\"3\" style=\"text-align:center;\"> </th>                                  " >> $tmp/index.xml
+    echo "            <th colspan=\"10\" style=\"text-align:center;border-top: 2px solid #444;\"> Nightly Testing Results </th>          " >> $tmp/index.xml
     echo "          </tr>                                                                        " >> $tmp/index.xml
     echo "          <tr>                                                                         " >> $tmp/index.xml
-    echo "            <th rowspan=\"2\" align=\"middle\"> Host </th>                             " >> $tmp/index.xml
-    echo "            <th rowspan=\"2\" align=\"middle\"> Core </th>                             " >> $tmp/index.xml
-    echo "            <th colspan=\"2\" align=\"middle\"> JPA </th>                              " >> $tmp/index.xml
-    echo "            <th colspan=\"2\" align=\"middle\"> MOXy </th>                             " >> $tmp/index.xml
-    echo "            <th rowspan=\"2\" align=\"middle\"> SDO </th>                              " >> $tmp/index.xml
-    echo "            <th colspan=\"2\" align=\"middle\"> DBWS </th>                             " >> $tmp/index.xml
+    echo "            <th rowspan=\"2\" style=\"text-align:center;\"> Host </th>                 " >> $tmp/index.xml
+    echo "            <th rowspan=\"2\" style=\"text-align:center;\"> Core </th>                 " >> $tmp/index.xml
+    echo "            <th colspan=\"2\" style=\"text-align:center;\"> JPA </th>                  " >> $tmp/index.xml
+    echo "            <th colspan=\"2\" style=\"text-align:center;\"> MOXy </th>                 " >> $tmp/index.xml
+    echo "            <th rowspan=\"1\" style=\"text-align:center;\"> JPA </th>                  " >> $tmp/index.xml
+    echo "            <th rowspan=\"2\" style=\"text-align:center;\"> SDO </th>                  " >> $tmp/index.xml
+    echo "            <th colspan=\"2\" style=\"text-align:center;\"> DBWS </th>                 " >> $tmp/index.xml
     echo "          </tr>                                                                        " >> $tmp/index.xml
     echo "          <tr>                                                                         " >> $tmp/index.xml
-    echo "            <th align=\"middle\"> OTT </th>                                            " >> $tmp/index.xml
-    echo "            <th align=\"middle\"> WDF </th>                                            " >> $tmp/index.xml
-    echo "            <th align=\"middle\"> JAXB </th>                                           " >> $tmp/index.xml
-    echo "            <th align=\"middle\"> OXM </th>                                            " >> $tmp/index.xml
-    echo "            <th align=\"middle\"> RT </th>                                             " >> $tmp/index.xml
-    echo "            <th align=\"middle\"> Util </th>                                           " >> $tmp/index.xml
+    echo "            <th style=\"text-align:center;\"> OTT </th>                                            " >> $tmp/index.xml
+    echo "            <th style=\"text-align:center;\"> WDF </th>                                            " >> $tmp/index.xml
+    echo "            <th style=\"text-align:center;\"> JAXB </th>                                           " >> $tmp/index.xml
+    echo "            <th style=\"text-align:center;\"> OXM </th>                                            " >> $tmp/index.xml
+    echo "            <th style=\"text-align:center;\"> RS </th>                                             " >> $tmp/index.xml
+    echo "            <th style=\"text-align:center;\"> RT </th>                                             " >> $tmp/index.xml
+    echo "            <th style=\"text-align:center;\"> Util </th>                                           " >> $tmp/index.xml
     echo "          </tr>                                                                        " >> $tmp/index.xml
 
     #    Generate each table row depending upon available content
@@ -228,9 +230,9 @@ for version in `ls -dr [0-9]*` ; do
         fi
 
         echo "          <tr>"  >> $tmp/index.xml
-        echo "            <td rowspan=\"${num_hosts}\" style=\"border-top: 2px solid #444;\" align=\"middle\"> ${contentdir} </td>" >> $tmp/index.xml
-        echo "            <td rowspan=\"${num_hosts}\" style=\"border-top: 2px solid #444;\" align=\"middle\"> ${milestone_date} </td>" >> $tmp/index.xml
-        echo "            <td rowspan=\"${num_hosts}\" style=\"border-top: 2px solid #444;\" align=\"middle\">" >> $tmp/index.xml
+        echo "            <td rowspan=\"${num_hosts}\" style=\"text-align:center;border-top: 2px solid #444;\"> ${contentdir} </td>" >> $tmp/index.xml
+        echo "            <td rowspan=\"${num_hosts}\" style=\"text-align:center;border-top: 2px solid #444;\"> ${milestone_date} </td>" >> $tmp/index.xml
+        echo "            <td rowspan=\"${num_hosts}\" style=\"text-align:center;border-top: 2px solid #444;\">" >> $tmp/index.xml
 
         #    List all files in dir, reverse sort to put newer on top
         #    and look for the first matching filename to generate html link
@@ -256,24 +258,29 @@ for version in `ls -dr [0-9]*` ; do
             echo "              B" >> $tmp/index.xml
         fi
         echo "            </td>" >> $tmp/index.xml
-        echo "            <td rowspan=\"${num_hosts}\" align=\"middle\"> </td>" >> $tmp/index.xml
+        echo "            <td rowspan=\"${num_hosts}\" style=\"text-align:center;\"> </td>" >> $tmp/index.xml
 
         #   Set a counter to track the number of times through the "hosts" loop
         count=0
-        borderstyle="style=\"border-top: 2px solid #444;\""
+        borderstyle="style=\"text-align:center;border-top: 2px solid #444;\""
         #parse through host dir's ResultSummary.dat to generate "host results" table entries
         for hostdir in `ls -Fd * | grep / | cut -d"/" -f1` ; do
             #    Need to be in dir to generate proper strings
             cd ${BaseDownloadNFSDir}/milestones/${version}/${contentdir}/${hostdir}
+            #    increment count for number of times through (which host is this)
             count=`expr $count + 1`
             #    Set border to none, and Add row if this is after the first time through
             if [ ${count} -gt 1 ] ; then
-                borderstyle=
+                borderstyle="style=\"text-align:center;\""
                 echo "            <tr>" >> $tmp/index.xml
             fi
             #   Add "Host" entry
-            echo "            <td ${borderstyle} align=\"middle\">" >> $tmp/index.xml
-            echo "              <a href=\"http://wiki.eclipse.org/EclipseLink/Build/NightlyTestEnvAndResults#${hostdir}\"> ${hostdir} </a>" >> $tmp/index.xml
+            echo "            <td ${borderstyle}>" >> $tmp/index.xml
+            if [ -f "${BaseDownloadNFSDir}/nightly/${version}/${contentdir}/${hostdir}/TestConfiguration.html" ] ; then
+                echo "              <a href=\"${BaseDisplayURL}/${version}/${contentdir}/${hostdir}/TestConfiguration.html\"> ${hostdir} </a>" >> $tmp/index.xml
+            else
+                echo "              ${hostdir}" >> $tmp/index.xml
+            fi
             echo "            </td>" >> $tmp/index.xml
             #   Generate the image links
             genResultEntry eclipselink-core-[l,s]rg-[0-9]
@@ -281,6 +288,7 @@ for version in `ls -dr [0-9]*` ; do
             genResultEntry eclipselink-jpa-wdf-[l,s]rg-[0-9]
             genResultEntry eclipselink-jaxb-[l,s]rg-[0-9]
             genResultEntry eclipselink-oxm-[l,s]rg-[0-9]
+            genResultEntry eclipselink-jpars-[l,s]rg-[0-9]
             genResultEntry eclipselink-sdo-[l,s]rg-[0-9]
             genResultEntry eclipselink-dbws-[l,s]rg-[0-9]
             genResultEntry eclipselink-dbws-util-[l,s]rg-[0-9]
