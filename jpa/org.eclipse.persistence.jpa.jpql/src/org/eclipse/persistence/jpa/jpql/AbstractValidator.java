@@ -13,7 +13,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -475,14 +474,9 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 	protected static class BNFValidator extends AnonymousExpressionVisitor {
 
 		/**
-		 * The query BNF used to determine if the expression's BNF is valid.
+		 * The {@link JPQLQueryBNF} used to determine if the expression's BNF is valid.
 		 */
 		private JPQLQueryBNF queryBNF;
-
-		/**
-		 * The list of query BNFs used to determine if the expression's BNF is valid.
-		 */
-		private JPQLQueryBNF[] queryBNFs;
 
 		/**
 		 * Determines whether the visited {@link Expression}'s BNF is valid based on the BNF that was
@@ -493,31 +487,27 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 		/**
 		 * Creates a new <code>ExpressionValidator</code>.
 		 *
-		 * @param queryBNF The query BNF used to determine if the expression's BNF is valid
+		 * @param queryBNF The {@link JPQLQueryBNF} used to determine if the expression's BNF is valid
 		 */
 		protected BNFValidator(JPQLQueryBNF queryBNF) {
 			super();
 			this.queryBNF = queryBNF;
 		}
 
-		/**
-		 * Creates a new <code>ExpressionValidator</code>.
-		 *
-		 * @param queryBNFs The query BNF used to determine if the expression's BNF is valid
-		 */
-		protected BNFValidator(JPQLQueryBNF... queryBNFs) {
-			super();
-			this.queryBNFs = queryBNFs;
-		}
-
-		private void allJPQLQueryBNFs(Set<JPQLQueryBNF> queryBNFs, JPQLQueryBNF queryBNF) {
-			if (queryBNFs.add(queryBNF) && !queryBNF.isCompound()) {
+		private void allJPQLQueryBNFs(Set<String> queryBNFIds, JPQLQueryBNF queryBNF) {
+			if (queryBNFIds.add(queryBNF.getId()) && !queryBNF.isCompound()) {
 				for (JPQLQueryBNF childQueryBNF : queryBNF.nonCompoundChildren()) {
-					allJPQLQueryBNFs(queryBNFs, childQueryBNF);
+					allJPQLQueryBNFs(queryBNFIds, childQueryBNF);
 				}
 			}
 		}
 
+		/**
+		 * Validates the given {@link JPQLQueryBNF} by making sure it is the one expected or one of
+		 * the children from the "root" BNF passed to this validator's constructor.
+		 *
+		 * @param queryBNF The {@link JPQLQueryBNF} to validate
+		 */
 		public void validate(JPQLQueryBNF queryBNF) {
 
 			// By setting the flag to false will assure that if this validator is used for
@@ -525,13 +515,16 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 			// valid, then the last expression will set the flag to true
 			valid = false;
 
-			if (queryBNFs != null) {
-				valid = Arrays.asList(queryBNFs).contains(queryBNF);
+			// Quick check
+			if (queryBNF.getId() == this.queryBNF.getId()) {
+				valid = true;
 			}
+			// Retrieve all the children from the "root" JPQLQueryBNF and
+			// check if the BNF to validate is one of those children
 			else {
-				Set<JPQLQueryBNF> allQueryBNFs = new HashSet<JPQLQueryBNF>();
-				allJPQLQueryBNFs(allQueryBNFs, this.queryBNF);
-				valid = allQueryBNFs.contains(queryBNF);
+				Set<String> allQueryBNFIds = new HashSet<String>();
+				allJPQLQueryBNFs(allQueryBNFIds, this.queryBNF);
+				valid = allQueryBNFIds.contains(queryBNF.getId());
 			}
 		}
 
@@ -701,7 +694,7 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 	/**
 	 * This visitor retrieves the clause owning the visited {@link Expression}.
 	 */
-	protected static final class OwningClauseVisitor extends AbstractTraverseParentVisitor {
+	protected static class OwningClauseVisitor extends AbstractTraverseParentVisitor {
 
 		public DeleteClause deleteClause;
 		public FromClause fromClause;

@@ -112,7 +112,7 @@ public final class JPQLQueryBuilder {
 	                                        JPQLQueryStringFormatter formatter,
 	                                        boolean tolerant) {
 
-		// Remove any extra whitespace and make all identifiers upper case
+		// Format the JPQL query to reflect how the parsed tree outputs the query back as a string
 		String parsedJPQLQuery = toParsedText(jpqlQuery, jpqlGrammar);
 		String actualJPQLQuery = toActualText(jpqlQuery, jpqlGrammar);
 
@@ -123,8 +123,8 @@ public final class JPQLQueryBuilder {
 		// Parse the JPQL query
 		JPQLExpression jpqlExpression = new JPQLExpression(jpqlQuery, jpqlGrammar, jpqlQueryBNFId, tolerant);
 
-		// Make sure the JPQL query was correctly parsed and the generation
-		// of the string representation matches the original JPQL query
+		// Make sure the JPQL query was correctly parsed and the
+		// generated string matches the original JPQL query
 		assertEquals(parsedJPQLQuery, jpqlExpression.toParsedText());
 		assertEquals(actualJPQLQuery, jpqlExpression.toActualText());
 

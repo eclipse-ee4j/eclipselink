@@ -50,4 +50,18 @@ public abstract class AbstractEclipseLinkTraverseParentVisitor extends AbstractT
 	public void visit(ExtractExpression expression) {
 		visit((Expression) expression);
 	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(RegexpExpression expression) {
+		visit((Expression) expression);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(UnionClause expression) {
+		visit((Expression) expression);
+	}
 }

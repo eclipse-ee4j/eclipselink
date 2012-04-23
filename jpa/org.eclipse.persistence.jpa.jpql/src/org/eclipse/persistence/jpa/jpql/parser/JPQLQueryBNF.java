@@ -453,7 +453,7 @@ public abstract class JPQLQueryBNF {
 	/**
 	 * Registers the unique identifier of the BNF rule as a child of this BNF rule.
 	 *
-	 * @param queryBNFId The unique identifier of the BNF rule
+	 * @param queryBNFId The unique identifier of the BNF rule to add as a child
 	 * @exception NullPointerException The <code>queryBNFId</code> cannot be <code>null</code>
 	 */
 	protected final void registerChild(String queryBNFId) {

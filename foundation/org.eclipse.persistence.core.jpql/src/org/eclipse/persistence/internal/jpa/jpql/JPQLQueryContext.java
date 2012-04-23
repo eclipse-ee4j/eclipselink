@@ -40,6 +40,7 @@ import org.eclipse.persistence.jpa.jpql.parser.InputParameter;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLExpression;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.parser.Join;
+import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectStatement;
 import org.eclipse.persistence.jpa.jpql.parser.StateFieldPathExpression;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.querykeys.QueryKey;
@@ -354,6 +355,16 @@ final class JPQLQueryContext {
 	}
 
 	/**
+	 * Creates a new {@link ReportQuery} by visiting the given {@link SimpleSelectStatement}.
+	 *
+	 * @param expression The {@link SimpleSelectStatement} to convert into a {@link ReportQuery}
+	 * @return A fully initialized {@link ReportQuery}
+	 */
+	ReportQuery buildSubquery(SimpleSelectStatement expression) {
+		return expressionBuilder().buildSubquery(expression);
+	}
+
+	/**
 	 * Sets the given named query and string representation of the JPQL query.
 	 *
 	 * @param session The EclipseLink {@link AbstractSession} this context will use
@@ -403,7 +414,7 @@ final class JPQLQueryContext {
 		currentContext = currentContext.parent;
 	}
 
-	public ExpressionBuilderVisitor expressionBuilder() {
+	private ExpressionBuilderVisitor expressionBuilder() {
 
 		if (parent != null) {
 			return parent.expressionBuilder();

@@ -155,12 +155,11 @@ public final class RangeVariableDeclaration extends AbstractExpression {
 	 * Returns the {@link Expression} that represents the "root" object.
 	 *
 	 * @return The expression that was parsed representing the "root" object
+	 * @deprecated Use {@link #getRootObject()}
 	 */
+	@Deprecated
 	public Expression getAbstractSchemaName() {
-		if (rootObject == null) {
-			rootObject = buildNullExpression();
-		}
-		return rootObject;
+		return getRootObject();
 	}
 
 	/**
@@ -195,13 +194,26 @@ public final class RangeVariableDeclaration extends AbstractExpression {
 	}
 
 	/**
+	 * Returns the {@link Expression} that represents the "root" object.
+	 *
+	 * @return The expression that was parsed representing the "root" object
+	 */
+	public Expression getRootObject() {
+		if (rootObject == null) {
+			rootObject = buildNullExpression();
+		}
+		return rootObject;
+	}
+
+	/**
 	 * Determines whether the "root" object was parsed.
 	 *
 	 * @return <code>true</code> if the "root" object was parsed; <code>false</code> otherwise
+	 * @deprecated Use {@link #hasRootObject()}
 	 */
+	@Deprecated
 	public boolean hasAbstractSchemaName() {
-		return rootObject != null &&
-		      !rootObject.isNull();
+		return hasRootObject();
 	}
 
 	/**
@@ -225,11 +237,23 @@ public final class RangeVariableDeclaration extends AbstractExpression {
 	}
 
 	/**
+	 * Determines whether the "root" object was parsed.
+	 *
+	 * @return <code>true</code> if the "root" object was parsed; <code>false</code> otherwise
+	 */
+	public boolean hasRootObject() {
+		return rootObject != null &&
+		      !rootObject.isNull();
+	}
+
+	/**
 	 * Determines whether a whitespace was parsed after the "root" object.
 	 *
 	 * @return <code>true</code> if there was a whitespace after "root" object;
 	 * <code>false</code> otherwise
+	 * @deprecated Use {@link #hasSpaceAfterRootObject()}
 	 */
+	@Deprecated
 	public boolean hasSpaceAfterAbstractSchemaName() {
 		return hasSpaceAfterRootObject;
 	}
@@ -241,6 +265,16 @@ public final class RangeVariableDeclaration extends AbstractExpression {
 	 */
 	public boolean hasSpaceAfterAs() {
 		return hasSpaceAfterAs;
+	}
+
+	/**
+	 * Determines whether a whitespace was parsed after the "root" object.
+	 *
+	 * @return <code>true</code> if there was a whitespace after "root" object;
+	 * <code>false</code> otherwise
+	 */
+	public boolean hasSpaceAfterRootObject() {
+		return hasSpaceAfterRootObject;
 	}
 
 	/**

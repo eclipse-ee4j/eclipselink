@@ -50,6 +50,30 @@ public final class RangeVariableDeclarationFactory extends ExpressionFactory {
 	                                             AbstractExpression expression,
 	                                             boolean tolerant) {
 
+		ExpressionRegistry registry = getExpressionRegistry();
+
+		// When the tolerant mode is turned on, parse the invalid portion of the query,
+		// Order/Group are two exceptions to this rule
+		// (expression != null) skip this check when parsing the first range variable declaration
+		if (tolerant &&
+		     expression != null             &&
+		    !word.equalsIgnoreCase("order") &&
+		    !word.equalsIgnoreCase("group") &&
+		    registry.isIdentifier(word)) {
+
+			ExpressionFactory factory = registry.expressionFactoryForIdentifier(word);
+
+			if (factory == null) {
+				return null;
+			}
+
+			expression = factory.buildExpression(parent, wordParser, word, queryBNF, expression, tolerant);
+
+			if (expression != null) {
+				return new BadExpression(parent, expression);
+			}
+		}
+
 		expression = new RangeVariableDeclaration(parent);
 		expression.parse(wordParser, tolerant);
 		return expression;

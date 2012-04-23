@@ -19,6 +19,7 @@ import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectStatement;
+import org.eclipse.persistence.jpa.jpql.parser.StateFieldPathExpression;
 
 /**
  * This helper is used by {@link AbstractSemanticValidator} in order to retrieve JPA information.
@@ -364,6 +365,15 @@ public interface SemanticValidatorHelper {
 	 * @return <code>true</code> if the actual class exists; <code>false</code> otherwise
 	 */
 	boolean isTypeResolvable(Object type);
+
+	/**
+	 * Determines whether a path expression should be validated or not. This can happen in some very
+	 * specific cases.
+	 *
+	 * @param expression The {@link StateFieldPathExpression} that might not need to be validated
+	 * @return <code>true</code> to validate the given path expression; <code>false</code> otherwise
+	 */
+	boolean isValidatingPathExpressionAllowed(StateFieldPathExpression expression);
 
 	/**
 	 * Changes the state of this helper to use the given subquery.

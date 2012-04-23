@@ -17,11 +17,14 @@ import java.util.List;
 import org.eclipse.persistence.jpa.jpql.AbstractGrammarValidator;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.JPQLQueryProblem;
+import org.eclipse.persistence.jpa.jpql.parser.AvgFunctionFactory;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_1;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_2;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_3;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_4;
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
+import org.eclipse.persistence.jpa.jpql.parser.InternalCountBNF;
+import org.eclipse.persistence.jpa.jpql.parser.JPQLQueryBNF;
 import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLQueryStringFormatter;
 import org.junit.Test;
@@ -950,7 +953,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public final void test_BadExpression_InvalidExpression() throws Exception {
+	public final void test_BadExpression_InvalidExpression_1() throws Exception {
 
 		String query = "SELECT e FROM Employee e ORDER BY ALL(SELECT d FROM Dept d)";
 		int startPosition = "SELECT e FROM Employee e ORDER BY ".length();
@@ -1408,9 +1411,9 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	@Test
 	public final void test_CollectionMemberExpression_MissingCollectionValuedPathExpression() throws Exception {
 
-		String query = "SELECT e, f FROM Employee e, e.employees f WHERE e.name MEMBER OF ";
+		String query = "SELECT e, f FROM Employee e WHERE e.name MEMBER OF ";
 
-		int startPosition = "SELECT e, f FROM Employee e, e.employees f WHERE e.name MEMBER OF ".length();
+		int startPosition = "SELECT e, f FROM Employee e WHERE e.name MEMBER OF ".length();
 		int endPosition   = startPosition;
 
 		List<JPQLQueryProblem> problems = validate(query);
@@ -1426,9 +1429,9 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	@Test
 	public final void test_CollectionMemberExpression_MissingEntityExpression() throws Exception {
 
-		String query = "SELECT e, f FROM Employee e, e.employees f WHERE MEMBER f.offices";
+		String query = "SELECT e, f FROM Employee e WHERE MEMBER f.offices";
 
-		int startPosition = "SELECT e, f FROM Employee e, e.employees f WHERE ".length();
+		int startPosition = "SELECT e, f FROM Employee e WHERE ".length();
 		int endPosition   = startPosition;
 
 		List<JPQLQueryProblem> problems = validate(query);
@@ -1442,7 +1445,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public final void test_CollectionValuedPathExpression_NotCollectionType_01() throws Exception {
+	public final void test_CollectionValuedPathExpression_NotCollectionType_1() throws Exception {
 
 		String query = "SELECT c FROM Customer c WHERE c.lastName MEMBER 6";
 		int startPosition = "SELECT c FROM Customer c WHERE c.lastName MEMBER ".length();
@@ -1459,7 +1462,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public final void test_CollectionValuedPathExpression_NotCollectionType_02() throws Exception {
+	public final void test_CollectionValuedPathExpression_NotCollectionType_2() throws Exception {
 
 		String query = "SELECT c FROM Customer c WHERE 6 IS EMPTY";
 		int startPosition = "SELECT c FROM Customer c WHERE ".length();
@@ -1717,17 +1720,25 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	public final void test_CountFunction_InvalidExpression() throws Exception {
 
 		String query = "SELECT COUNT(AVG(e.age)) FROM Employee e";
-		int startPosition = "SELECT COUNT(".length();
-		int endPosition   = "SELECT COUNT(AVG(e.age)".length();
 
 		List<JPQLQueryProblem> problems = validate(query);
+		JPQLQueryBNF queryBNF = getQueryBNF(InternalCountBNF.ID);
 
-		testHasOnlyOneProblem(
-			problems,
-			CountFunction_InvalidExpression,
-			startPosition,
-			endPosition
-		);
+		if (queryBNF.getExpressionFactory(AvgFunctionFactory.ID) == null) {
+
+			int startPosition = "SELECT COUNT(".length();
+			int endPosition   = "SELECT COUNT(AVG(e.age)".length();
+
+			testHasOnlyOneProblem(
+				problems,
+				CountFunction_InvalidExpression,
+				startPosition,
+				endPosition
+			);
+		}
+		else {
+			testHasNoProblems(problems);
+		}
 	}
 
 	@Test
@@ -1973,11 +1984,28 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public final void test_DeleteClause_RangeVariableDeclarationMalformed() throws Exception {
+	public final void test_DeleteClause_RangeVariableDeclarationMalformed_1() throws Exception {
 
 		String query = "DELETE FROM Employee e a WHERE e.name = 'Pascal'";
 		int startPosition = "DELETE FROM Employee e".length();
 		int endPosition   = "DELETE FROM Employee e a".length();
+
+		List<JPQLQueryProblem> problems = validate(query);
+
+		testHasOnlyOneProblem(
+			problems,
+			DeleteClause_RangeVariableDeclarationMalformed,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public final void test_DeleteClause_RangeVariableDeclarationMalformed_2() throws Exception {
+
+		String query = "Delete from Employee e join e.address a where e.id < 0";
+		int startPosition = "Delete from Employee e".length();
+		int endPosition   = "Delete from Employee e join e.address a".length();
 
 		List<JPQLQueryProblem> problems = validate(query);
 
@@ -4277,7 +4305,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public final void test_ModExpression_InvalidSecondParenthesis() throws Exception {
+	public final void test_ModExpression_InvalidSecondExpression() throws Exception {
 
 		String query = "SELECT e FROM Employee e WHERE MOD(e.name, ALL(SELECT d FROM Dept d))";
 
@@ -4288,7 +4316,7 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 
 		testHasProblem(
 			problems,
-			ModExpression_InvalidSecondParenthesis,
+			ModExpression_InvalidSecondExpression,
 			startPosition,
 			endPosition
 		);
@@ -4990,23 +5018,6 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
-	public final void test_RangeVariableDeclaration_MissingAbstractSchemaName() throws Exception {
-
-		String query = "SELECT e FROM AS e";
-		int startPosition = "SELECT e FROM ".length();
-		int endPosition   = startPosition;
-
-		List<JPQLQueryProblem> problems = validate(query);
-
-		testHasOnlyOneProblem(
-			problems,
-			RangeVariableDeclaration_MissingAbstractSchemaName,
-			startPosition,
-			endPosition
-		);
-	}
-
-	@Test
 	public final void test_RangeVariableDeclaration_MissingIdentificationVariable_1() throws Exception {
 
 		String query = "SELECT o FROM Order o, Employee";
@@ -5072,6 +5083,48 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 			startPosition,
 			endPosition
 		);
+	}
+
+	@Test
+	public final void test_RangeVariableDeclaration_MissingRootObject_1() throws Exception {
+
+		String query = "SELECT e FROM AS e";
+		int startPosition = "SELECT e FROM ".length();
+		int endPosition   = startPosition;
+
+		List<JPQLQueryProblem> problems = validate(query);
+
+		testHasOnlyOneProblem(
+			problems,
+			RangeVariableDeclaration_MissingRootObject,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public final void test_RangeVariableDeclaration_MissingRootObject_2() throws Exception {
+
+		String query = "SELECT e FROM Employee AS e, AS d";
+		int startPosition = "SELECT e FROM Employee AS e, ".length();
+		int endPosition   = startPosition;
+
+		List<JPQLQueryProblem> problems = validate(query);
+
+		testHasOnlyOneProblem(
+			problems,
+			RangeVariableDeclaration_MissingRootObject,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public final void test_RangeVariableDeclaration_MissingRootObject_3() throws Exception {
+
+		String query = "UPDATE Employee e SET e.salary = e.salary * (1 / 100) WHERE EXISTS (SELECT p FROM e.projects p WHERE p.name LIKE :projectName)";
+		List<JPQLQueryProblem> problems = validate(query);
+		testHasNoProblems(problems);
 	}
 
 	@Test

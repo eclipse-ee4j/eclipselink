@@ -18,8 +18,11 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.LiteralType;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractEclipseLinkExpressionVisitor;
+import org.eclipse.persistence.jpa.jpql.parser.AbstractSchemaName;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionMemberDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionValuedPathExpression;
@@ -38,6 +41,7 @@ import org.eclipse.persistence.jpa.jpql.parser.SelectStatement;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleFromClause;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectStatement;
+import org.eclipse.persistence.jpa.jpql.parser.SubExpression;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateClause;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateStatement;
 
@@ -247,9 +251,9 @@ final class DeclarationResolver {
 		}
 
 		if (resultVariables == null) {
-			resultVariables = new HashSet<IdentificationVariable>();
 			ResultVariableVisitor visitor = new ResultVariableVisitor();
 			queryContext.getJPQLExpression().accept(visitor);
+			resultVariables = visitor.resultVariables;
 		}
 
 		return resultVariables;
@@ -395,6 +399,11 @@ final class DeclarationResolver {
 		private Declaration baseDeclaration;
 
 		/**
+		 * This flag is used to determine what to do in {@link #visit(SimpleSelectStatement)}.
+		 */
+		private boolean buildingDeclaration;
+
+		/**
 		 * The {@link Declaration} being populated.
 		 */
 		private Declaration currentDeclaration;
@@ -410,6 +419,38 @@ final class DeclarationResolver {
 		 * cached information.
 		 */
 		JPQLQueryContext queryContext;
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(AbstractSchemaName expression) {
+
+			String rootPath = expression.getText();
+
+			// Abstract schema name (entity name)
+			if (rootPath.indexOf('.') == -1) {
+				currentDeclaration = new RangeDeclaration(queryContext);
+			}
+			else {
+
+				// Check to see if the "root" path is a class name before assuming it's a derived path
+				Class<?> type = queryContext.getType(rootPath);
+
+				// Fully qualified class name
+				if (type != null) {
+					RangeDeclaration declaration = new RangeDeclaration(queryContext);
+					declaration.type = type;
+					currentDeclaration = declaration;
+				}
+				// Derived path expression (for subqueries)
+				else {
+					currentDeclaration = new DerivedDeclaration(queryContext);
+				}
+			}
+
+			currentDeclaration.rootPath = rootPath;
+		}
 
 		/**
 		 * {@inheritDoc}
@@ -436,9 +477,36 @@ final class DeclarationResolver {
 				declaration.identificationVariable = identificationVariable;
 			}
 
+			// This collection member declaration is the first defined,
+			// it is then the base Declaration
 			if (baseDeclaration == null) {
 				baseDeclaration = declaration;
 			}
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(CollectionValuedPathExpression expression) {
+
+			String rootPath = expression.toParsedText();
+
+			// Check to see if the "root" path is a class name before assuming it's a derived path
+			Class<?> type = queryContext.getType(rootPath);
+
+			// Fully qualified class name
+			if (type != null) {
+				RangeDeclaration declaration = new RangeDeclaration(queryContext);
+				declaration.type = type;
+				currentDeclaration = declaration;
+			}
+			// Derived path expression (for subqueries)
+			else {
+				currentDeclaration = new DerivedDeclaration(queryContext);
+			}
+
+			currentDeclaration.rootPath = rootPath;
 		}
 
 		/**
@@ -477,12 +545,12 @@ final class DeclarationResolver {
 		public void visit(IdentificationVariableDeclaration expression) {
 
 			try {
+				// Visit the RangeVariableDeclaration, it will create the right Declaration
 				expression.getRangeVariableDeclaration().accept(this);
 				currentDeclaration.declarationExpression = expression;
 
-				if (expression.hasJoins()) {
-					expression.getJoins().accept(this);
-				}
+				// Now visit the JOIN expressions
+				expression.getJoins().accept(this);
 			}
 			finally {
 				currentDeclaration = null;
@@ -521,34 +589,18 @@ final class DeclarationResolver {
 		@Override
 		public void visit(RangeVariableDeclaration expression) {
 
-			IdentificationVariable identificationVariable = (IdentificationVariable) expression.getIdentificationVariable();
-			String rootPath = expression.getAbstractSchemaName().toParsedText();
+			// Traverse the "root" object, it will create the right Declaration
+			buildingDeclaration = true;
+			expression.getRootObject().accept(this);
+			buildingDeclaration = false;
 
-			// Abstract schema name
-			if (rootPath.indexOf('.') == -1) {
-				currentDeclaration = new RangeDeclaration(queryContext);
-			}
-			else {
-				// Check to see if the "root" path is a class name before assuming it's a derived path
-				Class<?> type = queryContext.getType(rootPath);
-
-				// Fully qualified class name
-				if (type != null) {
-					RangeDeclaration declaration = new RangeDeclaration(queryContext);
-					declaration.type = type;
-					currentDeclaration = declaration;
-				}
-				// Derived path expression (for subqueries)
-				else {
-					currentDeclaration = new DerivedDeclaration(queryContext);
-				}
-			}
-
-			currentDeclaration.identificationVariable = identificationVariable;
+			// Cache more information
+			currentDeclaration.identificationVariable = (IdentificationVariable) expression.getIdentificationVariable();
 			currentDeclaration.baseExpression = expression;
-			currentDeclaration.rootPath = rootPath;
 			declarations.add(currentDeclaration);
 
+			// This range variable declaration is the first defined,
+			// it is then the base Declaration
 			if (baseDeclaration == null) {
 				baseDeclaration = currentDeclaration;
 			}
@@ -583,7 +635,24 @@ final class DeclarationResolver {
 		 */
 		@Override
 		public void visit(SimpleSelectStatement expression) {
-			expression.getFromClause().accept(this);
+
+			// The parent query is using a subquery in the FROM clause
+			if (buildingDeclaration) {
+				currentDeclaration = new SubqueryDeclaration(queryContext);
+				currentDeclaration.rootPath = ExpressionTools.EMPTY_STRING;
+			}
+			// Simply traversing the tree to create the declarations
+			else {
+				expression.getFromClause().accept(this);
+			}
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(SubExpression expression) {
+			expression.getExpression().accept(this);
 		}
 
 		/**
@@ -663,14 +732,24 @@ final class DeclarationResolver {
 			declaration = derivedDeclaration;
 
 			expression.setVirtualIdentificationVariable(outerVariableName, declaration.rootPath);
-			expression.getAbstractSchemaName().accept(this);
+			expression.getRootObject().accept(this);
 		}
 	}
 
 	/**
 	 * This visitor traverses the <code><b>SELECT</b></code> clause and retrieves the result variables.
 	 */
-	private class ResultVariableVisitor extends AbstractEclipseLinkExpressionVisitor {
+	private static class ResultVariableVisitor extends AbstractEclipseLinkExpressionVisitor {
+
+		Set<IdentificationVariable> resultVariables;
+
+		/**
+		 * Creates a new <code>ResultVariableVisitor</code>.
+		 */
+		public ResultVariableVisitor() {
+			super();
+			resultVariables = new HashSet<IdentificationVariable>();
+		}
 
 		/**
 		 * {@inheritDoc}

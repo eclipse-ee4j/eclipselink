@@ -36,8 +36,10 @@ import org.junit.runners.Suite.SuiteClasses;
 	ColumnExpressionTest.class,
 	FunctionExpressionTest.class,
 	OperatorExpressionTest.class,
+	OrderByItemTest.class,
+	RegexpExpressionTest.class,
 	SQLExpressionTest.class,
-	OrderByItemTest.class
+	UnionClauseTest.class
 })
 @RunWith(JPQLTestRunner.class)
 public final class AllEclipseLinkJPQLParserTests2_4 {

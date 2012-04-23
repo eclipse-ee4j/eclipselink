@@ -105,7 +105,7 @@ final class DerivedDeclaration extends AbstractRangeDeclaration {
 	 */
 	@Override
 	ClassDescriptor resolveDescriptor() {
-		return queryContext.resolveDescriptor(getBaseExpression().getAbstractSchemaName());
+		return queryContext.resolveDescriptor(getBaseExpression().getRootObject());
 	}
 
 	/**
@@ -113,6 +113,6 @@ final class DerivedDeclaration extends AbstractRangeDeclaration {
 	 */
 	@Override
 	DatabaseMapping resolveMapping() {
-		return queryContext.resolveMapping(getBaseExpression().getAbstractSchemaName());
+		return queryContext.resolveMapping(getBaseExpression().getRootObject());
 	}
 }

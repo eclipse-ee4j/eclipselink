@@ -172,6 +172,15 @@ abstract class Declaration implements JPQLQueryDeclaration {
 	}
 
 	/**
+	 * Determines whether this {@link Declaration} represents a subquery.
+	 *
+	 * @return <code>true</code> if the "root" object is a subquery; <code>false</code> otherwise
+	 */
+	boolean isSubquery() {
+		return false;
+	}
+
+	/**
 	 * Resolves this {@link Declaration} and returns the associated {@link ClassDescriptor}. For a
 	 * {@link RangeVariableDeclaration}, this will return the actual descriptor for the entity. For
 	 * a mapping, this will return the reference descriptor.

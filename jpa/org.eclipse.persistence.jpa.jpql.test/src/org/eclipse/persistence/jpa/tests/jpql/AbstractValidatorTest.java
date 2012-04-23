@@ -22,6 +22,7 @@ import org.eclipse.persistence.jpa.jpql.JPQLQueryProblem;
 import org.eclipse.persistence.jpa.jpql.JPQLQueryProblemResourceBundle;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLExpression;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
+import org.eclipse.persistence.jpa.jpql.parser.JPQLQueryBNF;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLGrammarTestHelper;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLQueryBuilder;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLQueryStringFormatter;
@@ -73,6 +74,16 @@ public abstract class AbstractValidatorTest extends JPQLCoreTest {
 
 	protected abstract AbstractValidator buildValidator();
 
+	/**
+	 * Retrieves the BNF object that was registered for the given unique identifier.
+	 *
+	 * @param queryBNFId The unique identifier of the {@link JPQLQueryBNF} to retrieve
+	 * @return The {@link JPQLQueryBNF} representing a section of the grammar
+	 */
+	protected JPQLQueryBNF getQueryBNF(String queryBNFId) {
+		return jpqlGrammar.getExpressionRegistry().getQueryBNF(queryBNFId);
+	}
+
 	protected AbstractValidator getValidator() {
 		return validator;
 	}
@@ -105,7 +116,9 @@ public abstract class AbstractValidatorTest extends JPQLCoreTest {
 	 */
 	@Override
 	protected void tearDown() throws Exception {
-		validator.dispose();
+		if (validator != null) {
+			validator.dispose();
+		}
 		super.tearDown();
 	}
 

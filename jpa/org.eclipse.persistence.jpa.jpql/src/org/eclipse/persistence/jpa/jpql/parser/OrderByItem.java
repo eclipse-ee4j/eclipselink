@@ -67,12 +67,25 @@ public final class OrderByItem extends AbstractExpression {
 	 */
 	private AbstractExpression expression;
 
-	private boolean hasNullsOnly;
+	/**
+	 * The actual 'FIRST' identifier found in the string representation of the JPQL query.
+	 */
+	private String firstIdentifier;
 
+	/**
+	 * Determines whether 'FIRST' is present in the query or not.
+	 */
+	private boolean hasFirst;
 
-	public boolean hasNullsOnly() {
-		return hasNullsOnly;
-	}
+	/**
+	 * Determines whether 'FIRST' is present in the query or not.
+	 */
+	private boolean hasLast;
+
+	/**
+	 * Determines whether 'NULLS' is present in the query or not.
+	 */
+	private boolean hasNulls;
 
 	/**
 	 * Determines whether a whitespace was parsed after the order by expression.
@@ -80,7 +93,7 @@ public final class OrderByItem extends AbstractExpression {
 	private boolean hasSpaceAfterExpression;
 
 	/**
-	 *
+	 * Determines whether a whitespace was parsed after <code><b>NULLS</b></code>.
 	 */
 	private boolean hasSpaceAfterNulls;
 
@@ -90,15 +103,20 @@ public final class OrderByItem extends AbstractExpression {
 	private boolean hasSpaceAfterOrdering;
 
 	/**
+	 * The actual 'LAST' identifier found in the string representation of the JPQL query.
+	 */
+	private String lastIdentifier;
+
+	/**
 	 * The keyword <b>NULLS FIRST</b> specifies ordering null first; the keyword <b>NULLS LAST</b>
 	 * specifies ordering nulls last.
 	 */
 	private NullOrdering nullOrdering;
 
 	/**
-	 * The actual null ordering identifier found in the string representation of the JPQL query.
+	 * The actual 'NULLS' identifier found in the string representation of the JPQL query.
 	 */
-	private String nullOrderingIdentifier;
+	private String nullsIdentifier;
 
 	/**
 	 * The keyword <b>ASC</b> specifies that ascending ordering be used; the keyword <b>DESC</b>
@@ -166,9 +184,22 @@ public final class OrderByItem extends AbstractExpression {
 			children.add(buildStringExpression(SPACE));
 		}
 
-		// Null ordering type
-		if (nullOrdering != NullOrdering.DEFAULT) {
-			children.add(buildStringExpression(nullOrdering.toString()));
+		// 'NULLS'
+		if (hasNulls) {
+			children.add(buildStringExpression("NULLS"));
+		}
+
+		if (hasSpaceAfterNulls) {
+			children.add(buildStringExpression(SPACE));
+		}
+
+		// 'FIRST'
+		if (hasFirst) {
+			children.add(buildStringExpression("FIRST"));
+		}
+		// 'LAST'
+		else if (hasLast) {
+			children.add(buildStringExpression("LAST"));
 		}
 	}
 
@@ -180,7 +211,29 @@ public final class OrderByItem extends AbstractExpression {
 	 * otherwise an empty string is returned
 	 */
 	public String getActualNullOrdering() {
-		return (nullOrderingIdentifier != null) ? nullOrderingIdentifier : ExpressionTools.EMPTY_STRING;
+
+		// NULLS FIRST
+		if (hasNulls && hasFirst) {
+			return nullsIdentifier + SPACE + firstIdentifier;
+		}
+
+		// NULLS LAST
+		if (hasNulls && hasLast) {
+			return nullsIdentifier + SPACE + lastIdentifier;
+		}
+
+		if (hasNulls) {
+			return nullsIdentifier;
+		}
+
+		if (hasFirst) {
+			return firstIdentifier;
+		}
+		else if (hasLast) {
+			return lastIdentifier;
+		}
+
+		return ExpressionTools.EMPTY_STRING;
 	}
 
 	/**
@@ -242,6 +295,16 @@ public final class OrderByItem extends AbstractExpression {
 	public boolean hasExpression() {
 		return expression != null &&
 		      !expression.isNull();
+	}
+
+	/**
+	 * Determines whether the <code><b>NULLS</b></code> identifier was parsed.
+	 *
+	 * @return <code>true</code> if the <code><b>NULLS</b></code> identifier was parsed;
+	 *  <code>false</code> otherwise
+	 */
+	public boolean hasNulls() {
+		return hasNulls;
 	}
 
 	/**
@@ -371,28 +434,32 @@ public final class OrderByItem extends AbstractExpression {
 			int count = wordParser.skipLeadingWhitespace();
 			hasSpaceAfterOrdering = (count > 0);
 
-			// Parse 'NULLS FIRT'
-			if (wordParser.startsWithIgnoreCase(NULLS_FIRST)) {
-				hasSpaceAfterNulls = true;
-				nullOrdering = NullOrdering.NULLS_FIRST;
-				nullOrderingIdentifier = wordParser.moveForward(NULLS_FIRST.length());
-			}
-			// Parse 'NULLS LAST'
-			else if (wordParser.startsWithIgnoreCase(NULLS_LAST)) {
-				hasSpaceAfterNulls = true;
-				nullOrdering = NullOrdering.NULLS_LAST;
-				nullOrderingIdentifier = wordParser.moveForward(NULLS_LAST.length());
-			}
-			// Parse 'NULLS' (incomplete)
-			else if (wordParser.startsWithIdentifier("NULLS")) {
-				hasNullsOnly = true;
-				nullOrderingIdentifier = wordParser.moveForward("NULLS");
+			// Parse 'NULLS'
+			if (wordParser.startsWithIdentifier("NULLS")) {
+				hasNulls = true;
+				nullsIdentifier = wordParser.moveForward("NULLS");
 				hasSpaceAfterNulls = wordParser.skipLeadingWhitespace() > 0;
+			}
+
+			// Parse 'FIRT'
+			if (wordParser.startsWithIdentifier("FIRST")) {
+				hasFirst = true;
+				firstIdentifier = wordParser.moveForward("FIRST");
+			}
+			// Parse 'LAST'
+			else if (wordParser.startsWithIdentifier("LAST")) {
+				hasLast = true;
+				lastIdentifier = wordParser.moveForward("LAST");
+			}
+
+			if (hasNulls && hasFirst) {
+				nullOrdering = NullOrdering.NULLS_FIRST;
+			}
+			else if (hasNulls && hasLast) {
+				nullOrdering = NullOrdering.NULLS_LAST;
 			}
 			else {
 				nullOrdering = NullOrdering.DEFAULT;
-				wordParser.moveBackward(count);
-				hasSpaceAfterOrdering = false;
 			}
 		}
 		else {
@@ -424,17 +491,22 @@ public final class OrderByItem extends AbstractExpression {
 			writer.append(SPACE);
 		}
 
-		// Null ordering
-		if (nullOrdering != NullOrdering.DEFAULT) {
-			if (hasNullsOnly) {
-				writer.append(actual? nullOrderingIdentifier : "NULLS");
-				if (hasSpaceAfterNulls) {
-					writer.append(SPACE);
-				}
-			}
-			else {
-				writer.append(actual? nullOrderingIdentifier :  nullOrdering.getIdentifier());
-			}
+		// 'NULLS'
+		if (hasNulls) {
+			writer.append(actual? nullsIdentifier : "NULLS");
+		}
+
+		if (hasSpaceAfterNulls) {
+			writer.append(SPACE);
+		}
+
+		// 'FIRST'
+		if (hasFirst) {
+			writer.append(actual? firstIdentifier : "FIRST");
+		}
+		// 'LAST'
+		else if (hasLast) {
+			writer.append(actual? lastIdentifier : "LAST");
 		}
 	}
 
@@ -456,7 +528,6 @@ public final class OrderByItem extends AbstractExpression {
 		/**
 		 * The constant for 'NULLS LAST', which tells to order nulls last.
 		 */
-
 		NULLS_LAST(Expression.NULLS_LAST);
 
 		/**

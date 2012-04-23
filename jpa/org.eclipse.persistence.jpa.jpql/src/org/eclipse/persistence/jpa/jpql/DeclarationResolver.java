@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractExpression;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractExpressionVisitor;
+import org.eclipse.persistence.jpa.jpql.parser.AnonymousExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionMemberDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionValuedPathExpression;
@@ -43,6 +44,7 @@ import org.eclipse.persistence.jpa.jpql.parser.SelectStatement;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleFromClause;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectStatement;
+import org.eclipse.persistence.jpa.jpql.parser.SubExpression;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateClause;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateStatement;
 import org.eclipse.persistence.jpa.jpql.spi.IMapping;
@@ -96,6 +98,8 @@ public class DeclarationResolver extends Resolver {
 	 */
 	private Map<IdentificationVariable, String> resultVariables;
 
+	private RootObjectExpressionVisitor rootObjectExpressionVisitor;
+
 	/**
 	 * Creates a new <code>DeclarationResolver</code>.
 	 *
@@ -147,6 +151,10 @@ public class DeclarationResolver extends Resolver {
 
 	protected DeclarationVisitor buildDeclarationVisitor() {
 		return new DeclarationVisitor();
+	}
+
+	protected RootObjectExpressionVisitor buildRootObjectExpressionVisitor() {
+		return new RootObjectExpressionVisitor();
 	}
 
 	/**
@@ -322,6 +330,13 @@ public class DeclarationResolver extends Resolver {
 		return resultVariables;
 	}
 
+	protected RootObjectExpressionVisitor getRootObjectExpressionVisitor() {
+		if (rootObjectExpressionVisitor == null) {
+			rootObjectExpressionVisitor = buildRootObjectExpressionVisitor();
+		}
+		return rootObjectExpressionVisitor;
+	}
+
 	/**
 	 * Determines whether the JPQL expression has <b>JOIN</b> expressions.
 	 *
@@ -453,6 +468,24 @@ public class DeclarationResolver extends Resolver {
 		return qualifyRangeDeclarationVisitor;
 	}
 
+	/**
+	 * Resolves the "root" object represented by the given {@link Expression}. This will also handle
+	 * using a subquery in the <code><b>FROM</b></code> clause. This is only support for EclipseLink.
+	 *
+	 * @param expression
+	 * @return
+	 */
+	protected Resolver resolveRootObject(Expression expression) {
+		RootObjectExpressionVisitor visitor = getRootObjectExpressionVisitor();
+		try {
+			expression.accept(visitor);
+			return visitor.resolver;
+		}
+		finally {
+			visitor.resolver = null;
+		}
+	}
+
 	protected String visitDeclaration(Expression expression, Expression identificationVariable) {
 
 		// Visit the identification variable expression and retrieve the identification variable name
@@ -473,7 +506,7 @@ public class DeclarationResolver extends Resolver {
 			if (!resolvers.containsKey(internalVariableName)) {
 
 				// Resolve the expression and map it with the identification variable
-				Resolver resolver = queryContext.getResolver(expression);
+				Resolver resolver = resolveRootObject(expression);
 				resolver = new IdentificationVariableResolver(resolver, variableName);
 				resolvers.put(internalVariableName, resolver);
 			}
@@ -882,7 +915,7 @@ public class DeclarationResolver extends Resolver {
 		@Override
 		public void visit(RangeVariableDeclaration expression) {
 
-			Expression abstractSchemaName     = expression.getAbstractSchemaName();
+			Expression abstractSchemaName     = expression.getRootObject();
 			Expression identificationVariable = expression.getIdentificationVariable();
 
 			// Identification variable
@@ -1032,7 +1065,46 @@ public class DeclarationResolver extends Resolver {
 			declaration.rangeDeclaration = false;
 
 			expression.setVirtualIdentificationVariable(outerVariableName, declaration.rootPath);
-			expression.getAbstractSchemaName().accept(this);
+			expression.getRootObject().accept(this);
+		}
+	}
+
+	/**
+	 * This visitor takes care to support a subquery defined as a "root" object.
+	 */
+	protected class RootObjectExpressionVisitor extends AnonymousExpressionVisitor {
+
+		/**
+		 * The {@link Resolver} of the "root" object.
+		 */
+		protected Resolver resolver;
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		protected void visit(Expression expression) {
+			resolver = queryContext.getResolver(expression);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(SimpleSelectStatement expression) {
+			resolver = new FromSubqueryResolver(
+				DeclarationResolver.this,
+				DeclarationResolver.this.queryContext,
+				expression
+			);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(SubExpression expression) {
+			expression.getExpression().accept(this);
 		}
 	}
 

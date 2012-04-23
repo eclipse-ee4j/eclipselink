@@ -31,18 +31,30 @@ public abstract class AbstractEclipseLinkExpressionVisitor extends AbstractExpre
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(DatabaseType expression) {
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
 	public void visit(CastExpression expression) {
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
+	public void visit(DatabaseType expression) {
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public void visit(ExtractExpression expression) {
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(RegexpExpression expression) {
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(UnionClause expression) {
 	}
 }

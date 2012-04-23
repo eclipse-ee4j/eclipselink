@@ -26,6 +26,7 @@ import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectStatement;
+import org.eclipse.persistence.jpa.jpql.parser.StateFieldPathExpression;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.querykeys.QueryKey;
 
@@ -345,7 +346,8 @@ public final class EclipseLinkSemanticValidatorHelper implements SemanticValidat
 		}
 
 		// Direct collection is not an object so it's valid
-		return mapping.isDirectCollectionMapping() || mapping.isAbstractCompositeDirectCollectionMapping();
+		return mapping.isDirectCollectionMapping() ||
+		       mapping.isAbstractCompositeDirectCollectionMapping();
 	}
 
 	/**
@@ -422,6 +424,14 @@ public final class EclipseLinkSemanticValidatorHelper implements SemanticValidat
 	 */
 	public boolean isTypeResolvable(Object type) {
 		return type != null;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public boolean isValidatingPathExpressionAllowed(StateFieldPathExpression expression) {
+		Declaration declaration = queryContext.getDeclaration(expression.getIdentificationVariable().toActualText());
+		return (declaration == null) || !declaration.isSubquery();
 	}
 
 	/**

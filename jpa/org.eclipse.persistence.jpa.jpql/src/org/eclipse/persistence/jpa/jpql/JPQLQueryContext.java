@@ -181,6 +181,7 @@ public abstract class JPQLQueryContext {
 	protected abstract LiteralVisitor buildLiteralVisitor();
 
 	protected ParameterTypeVisitor buildParameterTypeVisitor() {
+		// Oops!!! to fix, this needs to become abstract
 		return new ParameterTypeVisitor(this);
 	}
 

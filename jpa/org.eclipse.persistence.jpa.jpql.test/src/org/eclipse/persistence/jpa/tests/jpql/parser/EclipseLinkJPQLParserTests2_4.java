@@ -133,4 +133,43 @@ public final class EclipseLinkJPQLParserTests2_4 extends JPQLParserTest {
 
 		testQuery(query_012(), selectStatement);
 	}
+
+	@Test
+	public void test_Query_013() {
+
+		// Select a from Address a where a.city = 'Ottawa'
+		// union Select a2 from Address a2
+		// union all Select a2 from Address a2
+		// intersect Select a from Address a where a.city = 'Ottawa'
+		// except Select a from Address a where a.city = 'Ottawa'
+
+		SelectStatementTester selectStatement = selectStatement(
+			select(variable("a")),
+			from("Address", "a"),
+			where(path("a.city").equal(string("'Ottawa'"))),
+			nullExpression(),
+			nullExpression(),
+			nullExpression(),
+			union(
+				subSelect(variable("a2")),
+				subFrom("Address", "a2")
+			),
+			unionAll(
+				subSelect(variable("a2")),
+				subFrom("Address", "a2")
+			),
+			intersect(
+				subSelect(variable("a")),
+				subFrom("Address", "a"),
+				where(path("a.city").equal(string("'Ottawa'")))
+			),
+			except(
+				subSelect(variable("a")),
+				subFrom("Address", "a"),
+				where(path("a.city").equal(string("'Ottawa'")))
+			)
+		);
+
+		testQuery(query_013(), selectStatement);
+	}
 }

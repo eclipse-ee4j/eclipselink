@@ -3402,10 +3402,10 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		int position = getPosition(expression) - corrections.peek();
 
 		// After "<abstract schema name> "
-		if (expression.hasAbstractSchemaName() &&
-		    expression.hasSpaceAfterAbstractSchemaName()) {
+		if (expression.hasRootObject() &&
+		    expression.hasSpaceAfterRootObject()) {
 
-			int length = length(expression.getAbstractSchemaName()) + SPACE_LENGTH;
+			int length = length(expression.getRootObject()) + SPACE_LENGTH;
 
 			// Right after "<abstract schema name> "
 			if (isPositionWithin(position, length, AS)) {
@@ -3572,7 +3572,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		// Within "TREAT"
 		if (isPositionWithin(position, TREAT)) {
 			if (isValidVersion(TREAT)) {
-				getProposals().addIdentifier(TREAT);
+				proposals.addIdentifier(TREAT);
 			}
 		}
 		// After "TREAT("
@@ -3790,10 +3790,10 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 				RangeVariableDeclaration rangeVariableDeclaration = findRangeVariableDeclaration(expression);
 
 				if ((rangeVariableDeclaration != null) &&
-				     rangeVariableDeclaration.hasAbstractSchemaName() &&
-				     rangeVariableDeclaration.hasSpaceAfterAbstractSchemaName()) {
+				     rangeVariableDeclaration.hasRootObject() &&
+				     rangeVariableDeclaration.hasSpaceAfterRootObject()) {
 
-					length += length(rangeVariableDeclaration.getAbstractSchemaName()) + SPACE_LENGTH;
+					length += length(rangeVariableDeclaration.getRootObject()) + SPACE_LENGTH;
 
 					// Example: "UPDATE System s"
 					if (!expression.hasSet()        &&
@@ -5370,7 +5370,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		@Override
 		public void visit(RangeVariableDeclaration expression) {
 			// Only the abstract schema name is parsed
-			appendable = !expression.hasSpaceAfterAbstractSchemaName() &&
+			appendable = !expression.hasSpaceAfterRootObject() &&
 			             !expression.hasAs() &&
 			             !expression.hasIdentificationVariable();
 		}
@@ -6677,8 +6677,13 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 * {@inheritDoc}
 		 */
 		public void addAtTheEndOfChild(OrderByClause expression, Expression child, int index) {
-			addIdentifier(ASC);
-			addIdentifier(DESC);
+
+			OrderByItem item = (OrderByItem) child;
+
+			if (item.getOrdering() == Ordering.DEFAULT) {
+				addIdentifier(ASC);
+				addIdentifier(DESC);
+			}
 		}
 
 		/**

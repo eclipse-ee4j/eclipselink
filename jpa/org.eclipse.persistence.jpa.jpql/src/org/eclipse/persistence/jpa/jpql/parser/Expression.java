@@ -208,6 +208,13 @@ public interface Expression {
 	String ESCAPE = "ESCAPE";
 
 	/**
+	 * The constant for 'EXCEPT'.
+	 *
+	 * @since 2.4
+	 */
+	String EXCEPT = "EXCEPT";
+
+	/**
 	 * The constant for 'EXISTS'.
 	 */
 	String EXISTS = "EXISTS";
@@ -290,6 +297,13 @@ public interface Expression {
 	 * The constant for 'INNER JOIN FETCH'.
 	 */
 	String INNER_JOIN_FETCH = "INNER JOIN FETCH";
+
+	/**
+	 * The constant for 'INTERSECT'.
+	 *
+	 * @since 2.4
+	 */
+	String INTERSECT = "INTERSECT";
 
 	/**
 	 * The constant for 'IS'.
@@ -561,10 +575,12 @@ public interface Expression {
 	 */
 	String QUOTE = "'";
 
-        /**
-         * The constant for 'REGEXP'.
-         */
-        String REGEXP = "REGEXP";
+	/**
+	 * The constant for 'REGEXP'.
+	 *
+	 * @since 2.4
+	 */
+	String REGEXP = "REGEXP";
 
 	/**
 	 * The constant for 'SELECT'.
@@ -608,12 +624,14 @@ public interface Expression {
 	 */
 	String SUM = "SUM";
 
-        /**
-         * The constant for 'TABLE'.
-         */
-        String TABLE = "TABLE";
-
 	/**
+    * The constant for 'TABLE'.
+    *
+    * @since 2.4
+    */
+	String TABLE = "TABLE";
+
+   /**
 	 * The constant for 'THEN'.
 	 */
 	String THEN = "THEN";
@@ -644,24 +662,16 @@ public interface Expression {
 	String TYPE = "TYPE";
 
 	/**
+	 * The constant for 'UNION'.
+	 *
+	 * @since 2.4
+	 */
+	String UNION = "UNION";
+
+	/**
 	 * The constant for 'UNKNOWN', which is an unused keyword.
 	 */
 	String UNKNOWN = "UNKNOWN";
-
-        /**
-         * The constant for 'UNION'.
-         */
-        String UNION = "UNION";
-
-        /**
-         * The constant for 'INTERSECT'.
-         */
-        String INTERSECT = "INTERSECT";
-
-        /**
-         * The constant for 'EXCEPT'.
-         */
-        String EXCEPT = "EXCEPT";
 
 	/**
 	 * The constant for 'UPDATE'.

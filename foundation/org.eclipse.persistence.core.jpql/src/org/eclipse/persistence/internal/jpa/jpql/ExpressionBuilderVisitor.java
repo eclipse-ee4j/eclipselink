@@ -353,7 +353,13 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 		}
 	}
 
-	public ReportQuery buildSubquery(SimpleSelectStatement expression) {
+	/**
+	 * Creates a new {@link ReportQuery} by visiting the given {@link SimpleSelectStatement}.
+	 *
+	 * @param expression The {@link SimpleSelectStatement} to convert into a {@link ReportQuery}
+	 * @return A fully initialized {@link ReportQuery}
+	 */
+	ReportQuery buildSubquery(SimpleSelectStatement expression) {
 
 		// First create the subquery
 		ReportQuery subquery = new ReportQuery();
@@ -1020,7 +1026,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 		expression.getExpression().accept(this);
 
 		// Now create the EXTRACT expression
-		queryExpression = queryExpression.extract(expression.getPart());
+		queryExpression = queryExpression.extract(expression.getDatePart());
 
 		// Set the expression type
 		type[0] = Object.class;
@@ -1353,53 +1359,33 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	}
 
         /**
-         * {@inheritDoc}
-         */
-        public void visit(RegexpExpression expression) {
+		 * {@inheritDoc}
+		 */
+		public void visit(LocateExpression expression) {
 
-                // Create the first expression
-                expression.getStringExpression().accept(this);
-                Expression firstExpression = queryExpression;
+			// Create the string to find in the find in expression
+			expression.getFirstExpression().accept(this);
+			Expression findExpression = queryExpression;
 
-                // Create the expression for the pattern value
-                expression.getPatternValue().accept(this);
-                Expression patternValue = queryExpression;
+			// Create the find in string expression
+			expression.getSecondExpression().accept(this);
+			Expression findInExpression = queryExpression;
 
-                // Create the REGEXP expression
-                queryExpression = firstExpression.regexp(patternValue);
+			// Create the expression for the start position
+			expression.getThirdExpression().accept(this);
+			Expression startPositionExpression = queryExpression;
 
-                // Set the expression type
-                type[0] = Boolean.class;
-        }
+			// Create the LOCATE expression
+			if (startPositionExpression != null) {
+				queryExpression = findInExpression.locate(findExpression, startPositionExpression);
+			}
+			else {
+				queryExpression = findInExpression.locate(findExpression);
+			}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(LocateExpression expression) {
-
-		// Create the string to find in the find in expression
-		expression.getFirstExpression().accept(this);
-		Expression findExpression = queryExpression;
-
-		// Create the find in string expression
-		expression.getSecondExpression().accept(this);
-		Expression findInExpression = queryExpression;
-
-		// Create the expression for the start position
-		expression.getThirdExpression().accept(this);
-		Expression startPositionExpression = queryExpression;
-
-		// Create the LOCATE expression
-		if (startPositionExpression != null) {
-			queryExpression = findInExpression.locate(findExpression, startPositionExpression);
+			// Set the expression type
+			type[0] = Integer.class;
 		}
-		else {
-			queryExpression = findInExpression.locate(findExpression);
-		}
-
-		// Set the expression type
-		type[0] = Integer.class;
-	}
 
 	/**
 	 * {@inheritDoc}
@@ -1599,13 +1585,6 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 		// Nothing to do
 	}
 
-        /**
-         * {@inheritDoc}
-         */
-        public void visit(UnionClause expression) {
-                // Nothing to do
-        }
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -1613,25 +1592,25 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 		// Nothing to do
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(OrExpression expression) {
+        /**
+		 * {@inheritDoc}
+		 */
+		public void visit(OrExpression expression) {
 
-		// Create the left side of the logical expression
-		expression.getLeftExpression().accept(this);
-		Expression leftExpression = queryExpression;
+			// Create the left side of the logical expression
+			expression.getLeftExpression().accept(this);
+			Expression leftExpression = queryExpression;
 
-		// Create the right side of the logical expression
-		expression.getRightExpression().accept(this);
-		Expression rightExpression = queryExpression;
+			// Create the right side of the logical expression
+			expression.getRightExpression().accept(this);
+			Expression rightExpression = queryExpression;
 
-		// Now create the OR expression
-		queryExpression = leftExpression.or(rightExpression);
+			// Now create the OR expression
+			queryExpression = leftExpression.or(rightExpression);
 
-		// Set the expression type
-		type[0] = Boolean.class;
-	}
+			// Set the expression type
+			type[0] = Boolean.class;
+		}
 
 	/**
 	 * {@inheritDoc}
@@ -1650,10 +1629,35 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 			type[0] = declaration.getDescriptor().getJavaClass();
 			queryExpression = new ExpressionBuilder(type[0]);
 		}
-		// This should be a derived path (CollectionValuedPathExpression)
-		else {
-			expression.getAbstractSchemaName().accept(this);
+		// The FROM subquery needs to be created differently than a regular subquery
+		else if (declaration.isSubquery()) {
+			type[0] = null;
+			queryExpression = declaration.getQueryExpression();
 		}
+		// This should be a derived path (CollectionValuedPathExpression) or a subquery
+		else {
+			expression.getRootObject().accept(this);
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(RegexpExpression expression) {
+
+		// Create the first expression
+		expression.getStringExpression().accept(this);
+		Expression firstExpression = queryExpression;
+
+		// Create the expression for the pattern value
+		expression.getPatternValue().accept(this);
+		Expression patternValue = queryExpression;
+
+		// Create the REGEXP expression
+		queryExpression = firstExpression.regexp(patternValue);
+
+		// Set the expression type
+		type[0] = Boolean.class;
 	}
 
 	/**
@@ -1922,6 +1926,13 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 		typeExpression = true;
 
 		// Note: The type will be calculated when traversing the select expression
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(UnionClause expression) {
+		// Nothing to do
 	}
 
 	/**
@@ -2294,6 +2305,8 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 		 */
 		boolean nullAllowed;
 
+		private boolean virtualPath;
+
 		/**
 		 * Retrieves the actual {@link Enum} constant with the given name.
 		 *
@@ -2353,7 +2366,8 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 			// constant. If so, then no need to retrieve the descriptor
 			if (localExpression != null) {
 				Declaration declaration = queryContext.findDeclaration(expression.getVariableName());
-				descriptor = declaration.getDescriptor();
+				descriptor  = declaration.getDescriptor();
+				virtualPath = declaration.isSubquery();
 			}
 		}
 
@@ -2400,14 +2414,20 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 
 		private void visitPathExpression(AbstractPathExpression expression) {
 
-			String fullPath = expression.toParsedText();
-
 			// First resolve the identification variable
 			expression.getIdentificationVariable().accept(this);
+
+			// The path expression is composed with an identification
+			// variable that is mapped to a subquery as the "root" object
+			if (virtualPath) {
+				visitVirtualPathExpression(expression);
+				return; // Skip the rest
+			}
 
 			// A null value would most likely mean it's coming from a
 			// state field path expression that represents an enum constant
 			if (localExpression == null) {
+				String fullPath = expression.toParsedText();
 				Class<?> enumType = queryContext.getEnumType(fullPath);
 
 				if (enumType != null) {
@@ -2496,6 +2516,11 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 					}
 				}
 			}
+		}
+
+		private void visitVirtualPathExpression(AbstractPathExpression expression) {
+			String path = expression.getPath(1);
+			localExpression = localExpression.get(path);
 		}
 	}
 

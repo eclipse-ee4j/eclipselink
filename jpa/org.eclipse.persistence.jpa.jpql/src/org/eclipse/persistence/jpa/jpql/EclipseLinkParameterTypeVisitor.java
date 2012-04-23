@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle. All rights reserved.
+ * Copyright (c) 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -16,65 +16,70 @@ package org.eclipse.persistence.jpa.jpql;
 import org.eclipse.persistence.jpa.jpql.parser.CastExpression;
 import org.eclipse.persistence.jpa.jpql.parser.DatabaseType;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkExpressionVisitor;
+import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.ExtractExpression;
 import org.eclipse.persistence.jpa.jpql.parser.RegexpExpression;
 import org.eclipse.persistence.jpa.jpql.parser.UnionClause;
 
 /**
- * This visitor traverses an {@link org.eclipse.persistence.jpa.jpql.parser.Expression Expression}
- * and retrieves the "literal" value. The literal to retrieve depends on the {@link LiteralType type}.
- * The literal is basically a string value like an identification variable name, an input parameter,
- * a path expression, an abstract schema name, etc.
- * <p>
- * Provisional API: This interface is part of an interim API that is still under development and
- * expected to change significantly before reaching stability. It is available at this early stage
- * to solicit feedback from pioneering adopters on the understanding that any code that uses this
- * API will almost certainly be broken (repeatedly) as the API evolves.
- *
  * @version 2.4
  * @since 2.4
  * @author Pascal Filion
  */
-public class EclipseLinkLiteralVisitor extends LiteralVisitor
-                                       implements EclipseLinkExpressionVisitor {
+public class EclipseLinkParameterTypeVisitor extends ParameterTypeVisitor
+                                             implements EclipseLinkExpressionVisitor {
 
 	/**
-	 * Creates a new <code>EclipseLinkLiteralVisitor</code>.
+	 * Creates a new <code>EclipseLinkParameterTypeVisitor</code>.
+	 *
+	 * @param queryContext The context used to query information about the application metadata and
+	 * cached information
 	 */
-	public EclipseLinkLiteralVisitor() {
-		super();
+	public EclipseLinkParameterTypeVisitor(JPQLQueryContext queryContext) {
+		super(queryContext);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public void visit(CastExpression expression) {
+		type = Object.class;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public void visit(DatabaseType expression) {
-		if (type == LiteralType.STRING_LITERAL) {
-			literal = expression.getActualIdentifier();
-		}
+		type = Object.class;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public void visit(ExtractExpression expression) {
+		type = Object.class;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public void visit(RegexpExpression expression) {
+
+		Expression patternValue = expression.getPatternValue();
+		Expression stringExpression = expression.getStringExpression();
+
+		if (patternValue.isAncestor(inputParameter)) {
+			this.expression = expression.getStringExpression();
+		}
+		else if (stringExpression.isAncestor(inputParameter)) {
+			this.expression = expression;
+		}
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public void visit(UnionClause expression) {
+		type = Object.class;
 	}
 }

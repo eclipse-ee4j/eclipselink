@@ -162,6 +162,24 @@ public final class JoinTest extends JPQLParserTest {
 	}
 
 	@Test
+	public void testBuildExpression_Join_10() {
+
+		String jpqlQuery = "Delete from Employee e join e.address a where e.id < 0";
+
+		DeleteStatementTester deleteStatement = deleteStatement(
+			delete(
+				spacedCollection(
+					rangeVariableDeclaration("Employee", "e"),
+					bad(join("e.address", "a"))
+				)
+			),
+			where(path("e.id").lowerThan(numeric(0)))
+		);
+
+		testInvalidQuery(jpqlQuery, deleteStatement);
+	}
+
+	@Test
 	public void testBuildExpression_JoinFetch_01() {
 
 		String jpqlQuery = "SELECT pub FROM Publisher pub JOIN FETCH pub.magazines mag WHERE pub.revenue > 1000000";

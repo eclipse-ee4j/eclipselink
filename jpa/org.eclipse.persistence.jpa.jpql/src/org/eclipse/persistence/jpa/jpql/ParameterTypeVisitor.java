@@ -43,7 +43,6 @@ import org.eclipse.persistence.jpa.jpql.parser.MultiplicationExpression;
 import org.eclipse.persistence.jpa.jpql.parser.NullComparisonExpression;
 import org.eclipse.persistence.jpa.jpql.parser.NumericLiteral;
 import org.eclipse.persistence.jpa.jpql.parser.OrExpression;
-import org.eclipse.persistence.jpa.jpql.parser.RegexpExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SizeExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SqrtExpression;
 import org.eclipse.persistence.jpa.jpql.parser.StateFieldPathExpression;
@@ -71,34 +70,34 @@ public class ParameterTypeVisitor extends AbstractTraverseParentVisitor {
 	/**
 	 * This is used to prevent an infinite loop between input parameters. Example: ":arg1 = :arg2".
 	 */
-	private Expression currentExpression;
+	protected Expression currentExpression;
 
 	/**
 	 * The {@link Expression} that will help to determine the type of the input parameter.
 	 */
-	private Expression expression;
+	protected Expression expression;
 
 	/**
 	 * Used to ignore the type when calculating it. If <b>Object.class</b> was used, then it could
 	 * incorrectly calculate the type. Example: ":arg = 'JPQL' AND :arg IS NULL", the second :arg
 	 * should be ignored.
 	 */
-	private boolean ignoreType;
+	protected boolean ignoreType;
 
 	/**
 	 * The {@link InputParameter} for which its type will be searched by visiting the query.
 	 */
-	private InputParameter inputParameter;
+	protected InputParameter inputParameter;
 
 	/**
 	 * The context used to query information about the query.
 	 */
-	private final JPQLQueryContext queryContext;
+	protected final JPQLQueryContext queryContext;
 
 	/**
 	 * The well defined type, which does not have to be calculated.
 	 */
-	private Class<?> type;
+	protected Class<?> type;
 
 	/**
 	 * Creates a new <code>ParameterTypeVisitor</code>.
@@ -334,23 +333,6 @@ public class ParameterTypeVisitor extends AbstractTraverseParentVisitor {
 			this.expression = expression;
 		}
 	}
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void visit(RegexpExpression expression) {
-
-                Expression patternValue     = expression.getPatternValue();
-                Expression stringExpression = expression.getStringExpression();
-
-                if (patternValue.isAncestor(inputParameter)) {
-                        this.expression = expression.getStringExpression();
-                }
-                else if (stringExpression.isAncestor(inputParameter)) {
-                        this.expression = expression;
-                }
-        }
 
 	/**
 	 * {@inheritDoc}

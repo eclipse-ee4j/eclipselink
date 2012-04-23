@@ -46,5 +46,6 @@ public final class JoinAssociationPathExpressionBNF extends JPQLQueryBNF {
 		super.initialize();
 		setFallbackBNFId(ID);
 		setFallbackExpressionFactoryId(CollectionValuedPathExpressionFactory.ID);
+		registerChild(CollectionValuedPathExpressionBNF.ID);
 	}
 }

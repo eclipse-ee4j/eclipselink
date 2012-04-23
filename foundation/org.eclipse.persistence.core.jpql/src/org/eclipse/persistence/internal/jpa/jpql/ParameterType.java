@@ -535,23 +535,6 @@ final class ParameterTypeVisitor extends AbstractEclipseLinkTraverseParentVisito
 		}
 	}
 
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void visit(RegexpExpression expression) {
-
-                Expression patternValue     = expression.getPatternValue();
-                Expression stringExpression = expression.getStringExpression();
-                
-                if (patternValue.isAncestor(inputParameter)) {
-                        this.expression = expression.getStringExpression();
-                }
-                else if (stringExpression.isAncestor(inputParameter)) {
-                        this.expression = expression;
-                }
-        }
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -658,6 +641,23 @@ final class ParameterTypeVisitor extends AbstractEclipseLinkTraverseParentVisito
 	@Override
 	public void visit(OrExpression expression) {
 		visitCompoundExpression(expression);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void visit(RegexpExpression expression) {
+
+		Expression patternValue = expression.getPatternValue();
+		Expression stringExpression = expression.getStringExpression();
+
+		if (patternValue.isAncestor(inputParameter)) {
+			this.expression = expression.getStringExpression();
+		}
+		else if (stringExpression.isAncestor(inputParameter)) {
+			this.expression = expression;
+		}
 	}
 
 	/**

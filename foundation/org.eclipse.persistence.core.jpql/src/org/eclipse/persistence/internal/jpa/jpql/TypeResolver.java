@@ -926,13 +926,6 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
 		type = Boolean.class;
 	}
 
-        /**
-         * {@inheritDoc}
-         */
-        public void visit(RegexpExpression expression) {
-                type = Boolean.class;
-        }
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -1076,13 +1069,6 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
 		type = Object.class;
 	}
 
-        /**
-         * {@inheritDoc}
-         */
-        public void visit(UnionClause expression) {
-                type = Object.class;
-        }
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -1102,6 +1088,13 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
 	 */
 	public void visit(RangeVariableDeclaration expression) {
 		type = Object.class;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(RegexpExpression expression) {
+		type = Boolean.class;
 	}
 
 	/**
@@ -1247,6 +1240,12 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
 		expression.getExpression().accept(this);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(UnionClause expression) {
+		type = Object.class;
+	}
 
 	/**
 	 * {@inheritDoc}

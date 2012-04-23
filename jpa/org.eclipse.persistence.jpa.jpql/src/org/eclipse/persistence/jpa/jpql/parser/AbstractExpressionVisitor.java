@@ -281,16 +281,10 @@ public abstract class AbstractExpressionVisitor implements ExpressionVisitor {
 	}
 
         /**
-         * {@inheritDoc}
-         */
-        public void visit(RegexpExpression expression) {
-        }
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(LocateExpression expression) {
-	}
+		 * {@inheritDoc}
+		 */
+		public void visit(LocateExpression expression) {
+		}
 
 	/**
 	 * {@inheritDoc}
@@ -369,12 +363,6 @@ public abstract class AbstractExpressionVisitor implements ExpressionVisitor {
 	 */
 	public void visit(OrderByClause expression) {
 	}
-
-        /**
-         * {@inheritDoc}
-         */
-        public void visit(UnionClause expression) {
-        }
 
 	/**
 	 * {@inheritDoc}

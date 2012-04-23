@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -87,7 +87,28 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ParameterType_Alias_param1_String() throws Exception {
+	public final void test_ParameterType_01() throws Exception {
+
+		// select ds from Employee ds, Product ci where ds.empId = :conversationId AND ds.state = 0 AND ds.cikey = ci.cikey AND  ci.state <> 2
+		IQuery namedQuery = namedQuery("Employee", "employee.empId");
+
+		AbstractJPQLQueryHelper helper = buildQueryHelper(namedQuery);
+		IType type = helper.getParameterType(":conversationId");
+
+		assertNotNull(
+			"The type of :conversationId should have been found",
+			type
+		);
+
+		assertEquals(
+			"The wrong type for :conversationId was retrieved",
+			getType(namedQuery, Long.class),
+			type
+		);
+	}
+
+	@Test
+	public final void test_ParameterType_02() throws Exception {
 
 		// SELECT a.alias FROM Alias AS a WHERE (a.alias IS NULL AND :param1 IS NULL) OR a.alias = :param1
 		IQuery namedQuery = namedQuery("Alias", "alias.param1");
@@ -108,7 +129,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ParameterType_Customer_area_String() throws Exception {
+	public final void test_ParameterType_03() throws Exception {
 
 		// SELECT Distinct Object(c) From Customer c, IN(c.home.phones) p where p.area LIKE :area
 		IQuery namedQuery = namedQuery("Customer", "customer.area");
@@ -129,7 +150,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ParameterType_Customer_fname_String() throws Exception {
+	public final void test_ParameterType_04() throws Exception {
 
 		// select c.firstName FROM Customer c Group By c.firstName HAVING c.firstName = concat(:fname, :lname)
 		IQuery namedQuery = namedQuery("Customer", "customer.name");
@@ -150,7 +171,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ParameterType_Customer_int1_String() throws Exception {
+	public final void test_ParameterType_05() throws Exception {
 
 		// select count(c) FROM Customer c JOIN c.aliases a GROUP BY a.alias HAVING a.alias = SUBSTRING(:string1, :int1, :int2)
 		IQuery namedQuery = namedQuery("Customer", "customer.substring");
@@ -171,7 +192,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ParameterType_Customer_int2_String() throws Exception {
+	public final void test_ParameterType_06() throws Exception {
 
 		// select count(c) FROM Customer c JOIN c.aliases a GROUP BY a.alias HAVING a.alias = SUBSTRING(:string1, :int1, :int2)
 		IQuery namedQuery = namedQuery("Customer", "customer.substring");
@@ -192,7 +213,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ParameterType_Customer_lname_String() throws Exception {
+	public final void test_ParameterType_07() throws Exception {
 
 		// select c.firstName FROM Customer c Group By c.firstName HAVING c.firstName = concat(:fname, :lname)
 		IQuery namedQuery = namedQuery("Customer", "customer.name");
@@ -213,7 +234,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ParameterType_Customer_string1_String() throws Exception {
+	public final void test_ParameterType_08() throws Exception {
 
 		// select count(c) FROM Customer c JOIN c.aliases a GROUP BY a.alias HAVING a.alias = SUBSTRING(:string1, :int1, :int2)
 		IQuery namedQuery = namedQuery("Customer", "customer.substring");
@@ -234,7 +255,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ParameterType_Dept_dname1_String() throws Exception {
+	public final void test_ParameterType_09() throws Exception {
 
 		// select o from Dept o where o.dname in (:dname1, :dname2, :dname3)
 		IQuery namedQuery = namedQuery("Dept", "dept.dname");
@@ -255,7 +276,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ParameterType_Dept_dname2_String() throws Exception {
+	public final void test_ParameterType_10() throws Exception {
 
 		// select o from Dept o where o.dname in (:dname1, :dname2, :dname3)
 		IQuery namedQuery = namedQuery("Dept", "dept.dname");
@@ -276,7 +297,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ParameterType_Dept_dname3_String() throws Exception {
+	public final void test_ParameterType_11() throws Exception {
 
 		// select o from Dept o where o.dname in (:dname1, :dname2, :dname3)
 		IQuery namedQuery = namedQuery("Dept", "dept.dname");
@@ -297,7 +318,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ParameterType_Employee_Base_Long() throws Exception {
+	public final void test_ParameterType_12() throws Exception {
 
 		// SELECT e FROM Employee e WHERE e.department = :dept AND e.salary > :base
 		IQuery namedQuery = namedQuery("Employee", "employee.deptBase");
@@ -318,7 +339,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ParameterType_Employee_Delete_dept() throws Exception {
+	public final void test_ParameterType_13() throws Exception {
 
 		// DELETE FROM Employee e WHERE e.department = :dept
 		IQuery namedQuery = namedQuery("Employee", "employee.delete.dept");
@@ -339,7 +360,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ParameterType_Employee_Dept_String() throws Exception {
+	public final void test_ParameterType_14() throws Exception {
 
 		// SELECT e FROM Employee e WHERE e.department = :dept AND e.salary > :base
 		IQuery namedQuery = namedQuery("Employee", "employee.deptBase");
@@ -360,7 +381,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ParameterType_Employee_In_Collection() throws Exception {
+	public final void test_ParameterType_15() throws Exception {
 
 		// SELECT e FROM Employee e WHERE e.name IN :type
 		IQuery namedQuery = namedQuery("Employee", "employee.in");
@@ -381,7 +402,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ParameterType_Employee_positional1_String() throws Exception {
+	public final void test_ParameterType_16() throws Exception {
 
 		// SELECT e FROM Employee e WHERE e.name = ?1 ORDER BY e.name
 		IQuery namedQuery = namedQuery("Employee", "employee.?1");
@@ -402,7 +423,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ParameterType_Employee_SubQuery_Dept_String() throws Exception {
+	public final void test_ParameterType_17() throws Exception {
 
 		// SELECT e FROM Employee e WHERE e.salary = (SELECT MAX(e.salary) FROM Employee a WHERE a.department = :dept)
 		IQuery namedQuery = namedQuery("Employee", "employee.dept");
@@ -423,7 +444,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ParameterType_Employee_Update_positional_1() throws Exception {
+	public final void test_ParameterType_18() throws Exception {
 
 		// UPDATE Employee e SET e.manager = ?1 WHERE e.department = ?2
 		IQuery namedQuery = namedQuery("Employee", "employee.update.positional");
@@ -444,7 +465,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ParameterType_Employee_Update_positional_2() throws Exception {
+	public final void test_ParameterType_19() throws Exception {
 
 		// UPDATE Employee e SET e.manager = ?1 WHERE e.department = ?2
 		IQuery namedQuery = namedQuery("Employee", "employee.update.positional");
@@ -465,7 +486,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ParameterType_InExpression() throws Exception {
+	public final void test_ParameterType_20() throws Exception {
 
 		String jpqlQuery = "SELECT c From Customer c where c.home.city IN(:city)";
 		IQuery namedQuery = new JavaQuery(getPersistenceUnit(), jpqlQuery);
@@ -483,7 +504,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ParameterType_Order_doubleValue_Double() throws Exception {
+	public final void test_ParameterType_21() throws Exception {
 
 		// select object(o) FROM Order o Where SQRT(o.totalPrice) > :doubleValue
 		IQuery namedQuery = namedQuery("Order", "order.doubleValue");
@@ -504,7 +525,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ParameterType_Product_date1_Date() throws Exception {
+	public final void test_ParameterType_22() throws Exception {
 
 		// SELECT DISTINCT p From Product p where p.shelfLife.soldDate NOT BETWEEN :date1 AND :newdate
 		IQuery namedQuery = namedQuery("Product", "product.date");
@@ -525,7 +546,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ParameterType_Product_int1_int() throws Exception {
+	public final void test_ParameterType_23() throws Exception {
 
 		// Select Distinct Object(p) from Product p where (p.quantity > (500 + :int1)) AND (p.partNumber IS NULL))
 		IQuery namedQuery = namedQuery("Product", "product.int1");
@@ -546,7 +567,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ParameterType_Product_newDate_Date() throws Exception {
+	public final void test_ParameterType_24() throws Exception {
 
 		// SELECT DISTINCT p From Product p where p.shelfLife.soldDate NOT BETWEEN :date1 AND :newdate
 		IQuery namedQuery = namedQuery("Product", "product.date");
@@ -567,7 +588,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ParameterType_Subquery_String() throws Exception {
+	public final void test_ParameterType_25() throws Exception {
 
 		// SELECT e FROM Employee e WHERE EXISTS (SELECT p FROM Project p JOIN p.employees emp WHERE emp = e AND p.name = :name)
 		IQuery namedQuery = namedQuery("Employee", "employee.subquery1");
@@ -588,7 +609,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ParameterType_Subquery_Subquery() throws Exception {
+	public final void test_ParameterType_26() throws Exception {
 
 		// SELECT e FROM Employee e WHERE 2 < ALL(SELECT a FROM Address a WHERE 2 < ANY(SELECT d FROM Dept WHERE a.city = ?1)
 		IQuery namedQuery = namedQuery("Address", "address.subquery.subquery");
@@ -609,7 +630,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Abs_1() throws Exception {
+	public final void test_ResultType_01() throws Exception {
 
 		// SELECT ABS(p.quantity) FROM Product p
 		IQuery namedQuery = namedQuery("Product", "product.abs");
@@ -630,7 +651,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Abs_2() throws Exception {
+	public final void test_ResultType_02() throws Exception {
 
 		// SELECT ABS(o.totalPrice) FROM Order o
 		IQuery namedQuery = namedQuery("Order", "order.abs");
@@ -651,7 +672,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Abs_3() throws Exception {
+	public final void test_ResultType_03() throws Exception {
 
 		// SELECT ABS(p.id) FROM Project p
 		IQuery namedQuery = namedQuery("Project", "project.abs");
@@ -672,7 +693,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Addition_1() throws Exception {
+	public final void test_ResultType_04() throws Exception {
 
 		// SELECT 2 + 2.2F FROM Employee e
 		IQuery namedQuery = namedQuery("Employee", "employee.addition1");
@@ -693,7 +714,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Addition_2() throws Exception {
+	public final void test_ResultType_05() throws Exception {
 
 		// SELECT AVG(e.salary) + 2E2 FROM Employee e
 		IQuery namedQuery = namedQuery("Employee", "employee.addition2");
@@ -714,7 +735,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Addition_3() throws Exception {
+	public final void test_ResultType_06() throws Exception {
 
 		// SELECT e.salary + 2 FROM Employee e
 		IQuery namedQuery = namedQuery("Employee", "employee.addition3");
@@ -734,48 +755,8 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 		);
 	}
 
-//	@Test
-//	public void test_ResultType_Bad_1() throws Exception {
-//		// SELECT FROM Home h
-//		IQuery namedQuery = namedQuery("Home", "home.bad1");
-//
-//		AbstractJPQLQueryHelper helper = buildQueryHelper(namedQuery);
-//		IType type = helper.getResultType();
-//
-//		assertNotNull(
-//			"The type of (nothing) should have been found",
-//			type
-//		);
-//
-//		assertEquals(
-//			"The wrong type for (nothing) was retrieved",
-//			getType(namedQuery, Object.class),
-//			type
-//		);
-//	}
-
-//	@Test
-//	public void test_ResultType_Bad_2() throws Exception {
-//		// SELEC
-//		IQuery namedQuery = namedQuery("Home", "home.bad2");
-//
-//		AbstractJPQLQueryHelper helper = buildQueryHelper(namedQuery);
-//		IType type = helper.getResultType();
-//
-//		assertNotNull(
-//			"The type of (nothing) should have been found",
-//			type
-//		);
-//
-//		assertEquals(
-//			"The wrong type for (nothing) was retrieved",
-//			getType(namedQuery, Object.class),
-//			type
-//		);
-//	}
-
 	@Test
-	public void test_ResultType_Addition_4() throws Exception {
+	public final void test_ResultType_07() throws Exception {
 
 		// SELECT e.name + 2 FROM Employee e
 		IQuery namedQuery = namedQuery("Employee", "employee.addition4");
@@ -796,7 +777,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Avg_1() throws Exception {
+	public final void test_ResultType_08() throws Exception {
 
 		// SELECT AVG(p.quantity) FROM Product p
 		IQuery namedQuery = namedQuery("Product", "product.quantity");
@@ -817,7 +798,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Case_1() throws Exception {
+	public final void test_ResultType_09() throws Exception {
 
 		// SELECT CASE WHEN e.name = 'Java Persistence Query Language' THEN 'Java Persistence Query Language'
 		//             WHEN 1 + 2 THEN SUBSTRING(e.name, 0, 2)
@@ -842,7 +823,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Case_2() throws Exception {
+	public final void test_ResultType_10() throws Exception {
 
 		// SELECT CASE WHEN e.name = 'JPQL' THEN e.working
 		//             WHEN 1 + 2 THEN TRUE
@@ -867,7 +848,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Case_3() throws Exception {
+	public final void test_ResultType_11() throws Exception {
 
 		// SELECT CASE WHEN e.name = 'JPQL' THEN e.working
 		//             WHEN 1 + 2 THEN SUBSTRING(e.name, 0, 2)
@@ -892,7 +873,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_CaseInsensitive() throws Exception {
+	public final void test_ResultType_12() throws Exception {
 
 		// SELECT e FROM Employee E
 		IQuery namedQuery = namedQuery("Employee", "employee.caseInsensitive");
@@ -913,7 +894,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Coalesce_1() throws Exception {
+	public final void test_ResultType_13() throws Exception {
 
 		// SELECT COALESCE(o.price, o.price) FROM Order o
 		IQuery namedQuery = namedQuery("Order", "order.coalesce1");
@@ -934,7 +915,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Coalesce_2() throws Exception {
+	public final void test_ResultType_14() throws Exception {
 
 		// SELECT COALESCE(o.totalPrice, SQRT(o.realPrice)) FROM Order o
 		IQuery namedQuery = namedQuery("Order", "order.coalesce2");
@@ -955,7 +936,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Coalesce_3() throws Exception {
+	public final void test_ResultType_15() throws Exception {
 
 		// SELECT COALESCE(o.number, e.name) FROM Order o, Employee e
 		IQuery namedQuery = namedQuery("Order", "order.coalesce3");
@@ -976,7 +957,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Coalesce_4() throws Exception {
+	public final void test_ResultType_16() throws Exception {
 
 		// SELECT COALESCE(o.price, o.number) FROM Order o
 		IQuery namedQuery = namedQuery("Order", "order.coalesce4");
@@ -997,7 +978,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Collection_1() throws Exception {
+	public final void test_ResultType_17() throws Exception {
 
 		// SELECT e.name, d.dname FROM Employee e, Dept d
 		IQuery namedQuery = namedQuery("Employee", "employee.collection");
@@ -1018,7 +999,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_CollectionType_1() throws Exception {
+	public final void test_ResultType_18() throws Exception {
 
 		// SELECT c FROM Address a JOIN a.customerList c
 		IQuery namedQuery = namedQuery("Address", "address.collection");
@@ -1039,7 +1020,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Concat_1() throws Exception {
+	public final void test_ResultType_19() throws Exception {
 
 		// SELECT CONCAT(a.street, a.city) FROM Address a
 		IQuery namedQuery = namedQuery("Address", "address.concat");
@@ -1060,7 +1041,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Count_1() throws Exception {
+	public final void test_ResultType_20() throws Exception {
 
 		// select count(c) FROM Customer c JOIN c.aliases a GROUP BY a.alias HAVING a.alias = SUBSTRING(:string1, :int1, :int2)
 		IQuery namedQuery = namedQuery("Customer", "customer.substring");
@@ -1081,7 +1062,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Count_2() throws Exception {
+	public final void test_ResultType_21() throws Exception {
 
 		// select count(c) FROM Customer c JOIN c.aliases a GROUP BY a.alias HAVING a.alias = SUBSTRING(:string1, :int1, :int2)
 		IQuery namedQuery = namedQuery("Customer", "customer.substring");
@@ -1102,7 +1083,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Date_1() throws Exception {
+	public final void test_ResultType_22() throws Exception {
 
 		// SELECT CURRENT_DATE FROM Employee e
 		IQuery namedQuery = namedQuery("Employee", "employee.date1");
@@ -1123,7 +1104,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Date_2() throws Exception {
+	public final void test_ResultType_23() throws Exception {
 
 		// SELECT {d '2008-12-31'} FROM Employee e
 		IQuery namedQuery = namedQuery("Employee", "employee.date2");
@@ -1144,7 +1125,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Delete_1() throws Exception {
+	public final void test_ResultType_24() throws Exception {
 
 		// DELETE FROM Employee e WHERE e.department = :dept
 		IQuery namedQuery = namedQuery("Employee", "employee.delete.dept");
@@ -1165,7 +1146,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Division_1() throws Exception {
+	public final void test_ResultType_25() throws Exception {
 
 		// SELECT 2 / 2.2F FROM Employee e
 		IQuery namedQuery = namedQuery("Employee", "employee.division1");
@@ -1186,7 +1167,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Division_2() throws Exception {
+	public final void test_ResultType_26() throws Exception {
 
 		// SELECT AVG(e.salary) / 2E2 FROM Employee e
 		IQuery namedQuery = namedQuery("Employee", "employee.division2");
@@ -1207,7 +1188,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Division_3() throws Exception {
+	public final void test_ResultType_27() throws Exception {
 
 		// SELECT e.salary / 2 FROM Employee e
 		IQuery namedQuery = namedQuery("Employee", "employee.division3");
@@ -1228,7 +1209,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Division_4() throws Exception {
+	public final void test_ResultType_28() throws Exception {
 
 		// SELECT e.name / 2 FROM Employee e
 		IQuery namedQuery = namedQuery("Employee", "employee.division4");
@@ -1249,7 +1230,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Entry_1() throws Exception {
+	public final void test_ResultType_29() throws Exception {
 
 		// SELECT ENTRY(e) FROM Alias a JOIN a.ids e
 		IQuery namedQuery = namedQuery("Alias", "alias.entry");
@@ -1270,7 +1251,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Enum() throws Exception {
+	public final void test_ResultType_30() throws Exception {
 
 		// SELECT CASE WHEN e.name = 'Pascal' THEN jpql.query.EnumType.FIRST_NAME
 		//             WHEN e.name = 'JPQL'   THEN jpql.query.EnumType.LAST_NAME
@@ -1295,7 +1276,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Index_1() throws Exception {
+	public final void test_ResultType_31() throws Exception {
 
 		// SELECT INDEX(c) FROM Address a JOIN a.customerList c
 		IQuery namedQuery = namedQuery("Address", "address.index");
@@ -1316,7 +1297,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Join_1() throws Exception {
+	public final void test_ResultType_32() throws Exception {
 
 		// SELECT c.lastName FROM Address a JOIN a.customerList AS c
 		IQuery namedQuery = namedQuery("Address", "address.stateField");
@@ -1337,7 +1318,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Key_1() throws Exception {
+	public final void test_ResultType_33() throws Exception {
 
 		// SELECT KEY(k) FROM Alias a JOIN a.ids k
 		IQuery namedQuery = namedQuery("Alias", "alias.key1");
@@ -1358,7 +1339,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Keyword_1() throws Exception {
+	public final void test_ResultType_34() throws Exception {
 
 		// SELECT TRUE FROM Employee e
 		IQuery namedQuery = namedQuery("Employee", "employee.true");
@@ -1379,7 +1360,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Keyword_2() throws Exception {
+	public final void test_ResultType_35() throws Exception {
 
 		// SELECT FALSE FROM Employee e
 		IQuery namedQuery = namedQuery("Employee", "employee.false");
@@ -1400,7 +1381,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Length_1() throws Exception {
+	public final void test_ResultType_36() throws Exception {
 
 		// SELECT LENGTH(a.street) FROM Address a
 		IQuery namedQuery = namedQuery("Address", "address.length");
@@ -1421,7 +1402,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Locate_1() throws Exception {
+	public final void test_ResultType_37() throws Exception {
 
 		// SELECT LOCATE(a.street, 'Arco Drive') FROM Address a
 		IQuery namedQuery = namedQuery("Address", "address.locate");
@@ -1442,7 +1423,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Lower_1() throws Exception {
+	public final void test_ResultType_38() throws Exception {
 
 		// SELECT LOWER(e.name) FROM Employee e
 		IQuery namedQuery = namedQuery("Employee", "employee.lower");
@@ -1463,7 +1444,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Max_1() throws Exception {
+	public final void test_ResultType_39() throws Exception {
 
 		// SELECT MAX(p.quantity) FROM Product p
 		IQuery namedQuery = namedQuery("Product", "product.max");
@@ -1484,7 +1465,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Max_2() throws Exception {
+	public final void test_ResultType_40() throws Exception {
 
 		// SELECT MAX(e.salary) FROM Employee e
 		IQuery namedQuery = namedQuery("Employee", "employee.max");
@@ -1505,7 +1486,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Min_1() throws Exception {
+	public final void test_ResultType_41() throws Exception {
 
 		// SELECT MIN(p.quantity) FROM Product p
 		IQuery namedQuery = namedQuery("Product", "product.min");
@@ -1526,7 +1507,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Min_2() throws Exception {
+	public final void test_ResultType_42() throws Exception {
 
 		// SELECT MIN(e.salary) FROM Employee e
 		IQuery namedQuery = namedQuery("Employee", "employee.min");
@@ -1547,7 +1528,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Mod_1() throws Exception {
+	public final void test_ResultType_43() throws Exception {
 
 		// SELECT MOD(e.salary, e.empId) FROM Employee e
 		IQuery namedQuery = namedQuery("Employee", "employee.mod");
@@ -1568,7 +1549,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Multiplication_1() throws Exception {
+	public final void test_ResultType_44() throws Exception {
 
 		// SELECT 2 * 2.2F FROM Employee e
 		IQuery namedQuery = namedQuery("Employee", "employee.multiplication1");
@@ -1589,7 +1570,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Multiplication_2() throws Exception {
+	public final void test_ResultType_45() throws Exception {
 
 		// SELECT AVG(e.salary) * 2E2 FROM Employee e
 		IQuery namedQuery = namedQuery("Employee", "employee.multiplication2");
@@ -1610,7 +1591,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Multiplication_3() throws Exception {
+	public final void test_ResultType_46() throws Exception {
 
 		// SELECT e.salary * 2 FROM Employee e
 		IQuery namedQuery = namedQuery("Employee", "employee.multiplication3");
@@ -1631,7 +1612,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Multiplication_4() throws Exception {
+	public final void test_ResultType_47() throws Exception {
 
 		// SELECT e.name * 2 FROM Employee e
 		IQuery namedQuery = namedQuery("Employee", "employee.multiplication4");
@@ -1652,7 +1633,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_New_1() throws Exception {
+	public final void test_ResultType_48() throws Exception {
 
 		// SELECT NEW java.lang.Vector(d.empList) FROM Dept d
 		IQuery namedQuery = namedQuery("Dept", "dept.new1");
@@ -1673,7 +1654,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_NullIf_1() throws Exception {
+	public final void test_ResultType_49() throws Exception {
 
 		// SELECT NULLIF(e.name, 'JPQL') FROM Employee e
 		IQuery namedQuery = namedQuery("Employee", "employee.nullif1");
@@ -1694,7 +1675,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_NullIf_2() throws Exception {
+	public final void test_ResultType_50() throws Exception {
 
 		// SELECT NULLIF(2 + 2, 'JPQL') FROM Employee e
 		IQuery namedQuery = namedQuery("Employee", "employee.nullif2");
@@ -1715,7 +1696,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Object_1() throws Exception {
+	public final void test_ResultType_51() throws Exception {
 
 		// SELECT Distinct Object(c) From Customer c, IN(c.home.phones) p where p.area LIKE :area
 		IQuery namedQuery = namedQuery("Customer", "customer.area");
@@ -1736,7 +1717,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Object_2() throws Exception {
+	public final void test_ResultType_52() throws Exception {
 
 		// select object(o) FROM Order o Where SQRT(o.totalPrice) > :doubleValue
 		IQuery namedQuery = namedQuery("Order", "order.doubleValue");
@@ -1757,7 +1738,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Object_3() throws Exception {
+	public final void test_ResultType_53() throws Exception {
 
 		// Select Distinct Object(p) from Product p where (p.quantity > (500 + :int1)) AND (p.partNumber IS NULL))
 		IQuery namedQuery = namedQuery("Product", "product.int1");
@@ -1778,7 +1759,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Path_1() throws Exception {
+	public final void test_ResultType_54() throws Exception {
 
 		// SELECT a.alias FROM Alias AS a WHERE (a.alias IS NULL AND :param1 IS NULL) OR a.alias = :param1
 		IQuery namedQuery = namedQuery("Alias", "alias.param1");
@@ -1799,7 +1780,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Path_2() throws Exception {
+	public final void test_ResultType_55() throws Exception {
 
 		// select c.firstName FROM Customer c Group By c.firstName HAVING c.firstName = concat(:fname, :lname)
 		IQuery namedQuery = namedQuery("Customer", "customer.name");
@@ -1820,7 +1801,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Path_3() throws Exception {
+	public final void test_ResultType_56() throws Exception {
 
 		// select Dept.floorNumber from Dept Dept
 		IQuery namedQuery = namedQuery("Dept", "dept.floorNumber");
@@ -1841,7 +1822,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Schema_1() throws Exception {
+	public final void test_ResultType_57() throws Exception {
 
 		// SELECT c from Customer c where c.home.city IN :city
 		IQuery namedQuery = namedQuery("Customer", "customer.city");
@@ -1862,7 +1843,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Schema_2() throws Exception {
+	public final void test_ResultType_58() throws Exception {
 
 		// SELECT DISTINCT p From Product p where p.shelfLife.soldDate NOT BETWEEN :date1 AND :newdate
 		IQuery namedQuery = namedQuery("Product", "product.date");
@@ -1883,7 +1864,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_SelectWithResultVariable_1() throws Exception {
+	public final void test_ResultType_59() throws Exception {
 
 		// SELECT e.name AS n From Employee e
 		IQuery namedQuery = namedQuery("Employee", "employee.resultVariable1");
@@ -1904,7 +1885,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_SelectWithResultVariable_2() throws Exception {
+	public final void test_ResultType_60() throws Exception {
 
 		// SELECT e.name n From Employee e
 		IQuery namedQuery = namedQuery("Employee", "employee.resultVariable2");
@@ -1925,7 +1906,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_SelectWithResultVariable_3() throws Exception {
+	public final void test_ResultType_61() throws Exception {
 
 		// SELECT e.salary / 1000D n From Employee e
 		IQuery namedQuery = namedQuery("Employee", "employee.resultVariable3");
@@ -1946,7 +1927,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Size_1() throws Exception {
+	public final void test_ResultType_62() throws Exception {
 
 		// SELECT SIZE(c) FROM Address a JOIN a.customerList c
 		IQuery namedQuery = namedQuery("Address", "address.size");
@@ -1967,7 +1948,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Sqrt_1() throws Exception {
+	public final void test_ResultType_63() throws Exception {
 
 		// SELECT SQRT(o.totalPrice) FROM Order o
 		IQuery namedQuery = namedQuery("Order", "order.sqrt");
@@ -1988,7 +1969,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Substraction_1() throws Exception {
+	public final void test_ResultType_64() throws Exception {
 
 		// SELECT 2 / 2.2F FROM Employee e
 		IQuery namedQuery = namedQuery("Employee", "employee.substraction1");
@@ -2009,7 +1990,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Substraction_2() throws Exception {
+	public final void test_ResultType_65() throws Exception {
 
 		// SELECT AVG(e.salary) - 2E2 FROM Employee e
 		IQuery namedQuery = namedQuery("Employee", "employee.substraction2");
@@ -2030,7 +2011,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Substraction_3() throws Exception {
+	public final void test_ResultType_66() throws Exception {
 
 		// SELECT e.name - 2 FROM Employee e
 		IQuery namedQuery = namedQuery("Employee", "employee.substraction3");
@@ -2051,7 +2032,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Substraction_4() throws Exception {
+	public final void test_ResultType_67() throws Exception {
 
 		// SELECT e.salary - 2 FROM Employee e
 		IQuery namedQuery = namedQuery("Employee", "employee.substraction4");
@@ -2072,7 +2053,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Substring_1() throws Exception {
+	public final void test_ResultType_68() throws Exception {
 
 		// SELECT SUBSTRING(a.state, 0, 1) FROM Address a
 		IQuery namedQuery = namedQuery("Address", "address.length");
@@ -2093,7 +2074,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Sum_1() throws Exception {
+	public final void test_ResultType_69() throws Exception {
 
 		// SELECT SUM(e.salary) FROM Employee e
 		IQuery namedQuery = namedQuery("Employee", "employee.sum");
@@ -2114,7 +2095,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Sum_2() throws Exception {
+	public final void test_ResultType_70() throws Exception {
 
 		// SELECT SUM(o.totalPrice) FROM Order o
 		IQuery namedQuery = namedQuery("Order", "order.sum1");
@@ -2135,7 +2116,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Sum_4() throws Exception {
+	public final void test_ResultType_71() throws Exception {
 
 		// SELECT SUM(o.totalPrice) FROM Order o
 		IQuery namedQuery = namedQuery("Order", "order.sum2");
@@ -2156,7 +2137,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Sum_5() throws Exception {
+	public final void test_ResultType_72() throws Exception {
 
 		// SELECT SUM(o.realPrice) FROM Order o
 		IQuery namedQuery = namedQuery("Order", "order.sum3");
@@ -2177,7 +2158,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Trim_1() throws Exception {
+	public final void test_ResultType_73() throws Exception {
 
 		// SELECT TRIM(e.name) FROM Employee e
 		IQuery namedQuery = namedQuery("Employee", "employee.trim");
@@ -2198,7 +2179,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Update_1() throws Exception {
+	public final void test_ResultType_74() throws Exception {
 
 		// UPDATE Employee e SET e.manager = ?1 WHERE e.department = ?2
 		IQuery namedQuery = namedQuery("Employee", "employee.update.positional");
@@ -2219,7 +2200,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Upper_1() throws Exception {
+	public final void test_ResultType_75() throws Exception {
 
 		// SELECT UPPER(e.name) FROM Employee e
 		IQuery namedQuery = namedQuery("Employee", "employee.upper");
@@ -2240,7 +2221,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Value_1() throws Exception {
+	public final void test_ResultType_76() throws Exception {
 
 		// SELECT VALUE(v) FROM Alias a JOIN a.ids v
 		IQuery namedQuery = namedQuery("Alias", "alias.value1");
@@ -2261,7 +2242,7 @@ public abstract class AbstractJPQLQueryHelperTest extends JPQLCoreTest {
 	}
 
 	@Test
-	public void test_ResultType_Value_2() throws Exception {
+	public final void test_ResultType_77() throws Exception {
 
 		// SELECT v FROM Alias a JOIN a.ids v
 		IQuery namedQuery = namedQuery("Alias", "alias.value2");

@@ -13,6 +13,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.tests.jpql;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_4;
 import org.junit.Test;
 
@@ -116,7 +118,7 @@ public class EclipseLinkContentAssistTest extends AbstractContentAssistTest {
 
 		String jpqlQuery = "SELECT e FROM Employee e ORDER BY e ASC ";
 		int position = jpqlQuery.length();
-		testHasNoProposals(jpqlQuery, position);
+		testHasOnlyTheseProposals(jpqlQuery, position, NULLS_FIRST, NULLS_LAST);
 	}
 
 	@Test
@@ -309,5 +311,163 @@ public class EclipseLinkContentAssistTest extends AbstractContentAssistTest {
 		String jpqlQuery = "SELECT e FROM Employee e ORDER BY e ASC NULLS LAST, e.name";
 		int position = "SELECT e FROM Employee e ORDER BY e ASC NULLS LAS".length();
 		testHasOnlyTheseProposals(jpqlQuery, position, NULLS_FIRST, NULLS_LAST);
+	}
+
+	@Test
+	public void test_CastExpression_01() {
+		String jpqlQuery = "Select ";
+		int position = "Select ".length();
+		testHasTheseProposals(jpqlQuery, position, CAST);
+	}
+
+	@Test
+	public void test_CastExpression_02() {
+		String jpqlQuery = "Select c";
+		int position = "Select ".length();
+		testHasTheseProposals(jpqlQuery, position, CAST);
+	}
+
+	@Test
+	public void test_CastExpression_03() {
+		String jpqlQuery = "Select ca";
+		int position = "Select ".length();
+		testHasTheseProposals(jpqlQuery, position, CAST);
+	}
+
+	@Test
+	public void test_CastExpression_04() {
+		String jpqlQuery = "Select cas";
+		int position = "Select ".length();
+		testHasTheseProposals(jpqlQuery, position, CAST);
+	}
+
+	@Test
+	public void test_CastExpression_05() {
+		String jpqlQuery = "Select cast";
+		int position = "Select ".length();
+		testHasTheseProposals(jpqlQuery, position, CAST);
+	}
+
+	@Test
+	public void test_CastExpression_06() {
+		String jpqlQuery = "Select cast(e.firstName as char) From Employee e";
+		int position = "Select c".length();
+		testHasTheseProposals(jpqlQuery, position, CAST);
+	}
+
+	@Test
+	public void test_CastExpression_07() {
+		String jpqlQuery = "Select cast(e.firstName as char) From Employee e";
+		int position = "Select ca".length();
+		testHasTheseProposals(jpqlQuery, position, CAST);
+	}
+
+	@Test
+	public void test_CastExpression_08() {
+		String jpqlQuery = "Select cast(e.firstName as char) From Employee e";
+		int position = "Select cas".length();
+		testHasTheseProposals(jpqlQuery, position, CAST);
+	}
+
+	@Test
+	public void test_CastExpression_09() {
+		String jpqlQuery = "Select cast(e.firstName as char) From Employee e";
+		int position = "Select cas".length();
+		testHasTheseProposals(jpqlQuery, position, CAST);
+	}
+
+	@Test
+	public void test_CastExpression_10() {
+		String jpqlQuery = "Select cast(e.firstName as char) From Employee e";
+		int position = "Select cast".length();
+		testHasTheseProposals(jpqlQuery, position, CAST);
+	}
+
+	@Test
+	public void test_CastExpression_11() {
+		String jpqlQuery = "Select c";
+		int position = "Select c".length();
+		testHasTheseProposals(jpqlQuery, position, CAST);
+	}
+
+	@Test
+	public void test_CastExpression_12() {
+		String jpqlQuery = "Select ca";
+		int position = "Select ca".length();
+		testHasTheseProposals(jpqlQuery, position, CAST);
+	}
+
+	@Test
+	public void test_CastExpression_13() {
+		String jpqlQuery = "Select cas";
+		int position = "Select cas".length();
+		testHasTheseProposals(jpqlQuery, position, CAST);
+	}
+
+	@Test
+	public void test_CastExpression_14() {
+		String jpqlQuery = "Select cast";
+		int position = "Select cast".length();
+		testHasTheseProposals(jpqlQuery, position, CAST);
+	}
+
+	@Test
+	public void test_CastExpression_22() {
+
+		String jpqlQuery = "Select cast(e.firstName as char(3)) from Employee e where cast(e.firstName as char(3)) = 'Bob'";
+		int position = "Select cast(".length();
+
+		List<String> proposals = new ArrayList<String>();
+		proposals.add("e");
+		addAll(proposals, bnfAccessor.scalarExpressionFunctions());
+
+		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
+	}
+
+	@Test
+	public void test_CastExpression_23() {
+
+		String jpqlQuery = "Select cast(e.firstName as char(3)) from Employee e where cast(e.firstName as char(3)) = 'Bob'";
+		int position = "Select cast(e.firstName ".length();
+
+		List<String> proposals = new ArrayList<String>();
+		proposals.add(AS);
+		addAll(proposals, bnfAccessor.scalarExpressionAggregates());
+
+		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
+	}
+
+	@Test
+	public void test_CastExpression_24() {
+
+		String jpqlQuery = "Select cast(e.firstName as char(3)) from Employee e where cast(e.firstName as char(3)) = 'Bob'";
+		int position = "Select cast(e.firstName a".length();
+
+		List<String> proposals = new ArrayList<String>();
+		proposals.add(AS);
+		addAll(proposals, filter(bnfAccessor.scalarExpressionAggregates(), "a"));
+
+		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
+	}
+
+	@Test
+	public void test_CastExpression_25() {
+
+		String jpqlQuery = "Select cast(e.firstName as char(3)) from Employee e where cast(e.firstName as char(3)) = 'Bob'";
+		int position = "Select cast(e.firstName as".length();
+
+		List<String> proposals = new ArrayList<String>();
+		proposals.add(AS);
+		addAll(proposals, filter(bnfAccessor.scalarExpressionAggregates(), "as"));
+
+		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
+	}
+
+	@Test
+	public void test_CastExpression_26() {
+
+		String jpqlQuery = "Select cast(e.firstName + as char(3)) from Employee e where cast(e.firstName as char(3)) = 'Bob'";
+		int position = "Select cast(e.firstName + ".length();
+		testDoesNotHaveTheseProposals(jpqlQuery, position, AS);
 	}
 }

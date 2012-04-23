@@ -23,6 +23,8 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <div nowrap><b>BNF:</b> <code>expression ::= CAST(scalar_expression [AS] database_type)</code>
  * <p>
  *
+ * @see DatabaseType
+ *
  * @version 2.4
  * @since 2.4
  * @author James Sutherland
@@ -86,6 +88,10 @@ public final class CastExpression extends AbstractSingleEncapsulatedExpression {
 
 		// Value
 		super.addOrderedEncapsulatedExpressionTo(children);
+
+		if (hasSpaceAfterExpression) {
+			children.add(buildStringExpression(SPACE));
+		}
 
 		// 'AS'
 		if (hasAs) {
@@ -170,7 +176,7 @@ public final class CastExpression extends AbstractSingleEncapsulatedExpression {
 	 * <code>false</code> otherwise
 	 */
 	public boolean hasSpaceAfterExpression() {
-		return hasSpaceAfterAs;
+		return hasSpaceAfterExpression;
 	}
 
 	/**
@@ -181,6 +187,11 @@ public final class CastExpression extends AbstractSingleEncapsulatedExpression {
 
 		ExpressionFactory factory = getQueryBNF(encapsulatedExpressionBNF()).getExpressionFactory(word);
 
+		// The first check is used to stop parsing the scalar expression,
+		// example: CAST(e.firstName NUMERIC(2, 3)) and "NUMERIC" is the current word,
+		// it cannot be part of the scalar expression but will be the database type
+		// TODO: Add support for tolerance and the scalar expression is invalid, like
+		//       having 'x AND y', it probably should be parsed in its entirety
 		return (factory == null && expression != null) ||
 		       word.equalsIgnoreCase(AS) ||
 		       super.isParsingComplete(wordParser, word, expression);
@@ -190,7 +201,9 @@ public final class CastExpression extends AbstractSingleEncapsulatedExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void parseEncapsulatedExpression(WordParser wordParser, int whitespaceCount, boolean tolerant) {
+	protected void parseEncapsulatedExpression(WordParser wordParser,
+	                                           int whitespaceCount,
+	                                           boolean tolerant) {
 
 		// Parse the value
 		super.parseEncapsulatedExpression(wordParser, whitespaceCount, tolerant);

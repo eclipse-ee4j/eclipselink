@@ -18,7 +18,7 @@ import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.WordParser;
 
 /**
- * The <b>EXTRACT</b> function extracts a date part from a date/time value. The part can be
+ * The <b>EXTRACT</b> function extracts a date part from a date/time value. The date part can be
  * <code>YEAR</code>, <code>MONTH</code>, <code>DAY</code>, <code>HOUR</code>, <code>MINUTE</code>,
  * <code>SECOND</code>. Some databases may support other parts.
  * <p>
@@ -37,6 +37,11 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
 public final class ExtractExpression extends AbstractSingleEncapsulatedExpression {
 
 	/**
+	 * The date part to extract from the date/time.
+	 */
+	private String datePart;
+
+	/**
 	 * The actual <b>FROM</b> identifier found in the string representation of the JPQL query.
 	 */
 	private String fromIdentifier;
@@ -47,19 +52,14 @@ public final class ExtractExpression extends AbstractSingleEncapsulatedExpressio
 	private boolean hasFrom;
 
 	/**
+	 * Determines whether a space was parsed after the date part.
+	 */
+	private boolean hasSpaceAfterDatePart;
+
+	/**
 	 * Determines whether a space was parsed after the identifier <b>FROM</b>.
 	 */
 	private boolean hasSpaceAfterFrom;
-
-	/**
-	 * Determines whether a space was parsed after the date part.
-	 */
-	private boolean hasSpaceAfterPart;
-
-	/**
-	 * The part to extract from the date/time.
-	 */
-	private String part;
 
 	/**
 	 * Creates a new <code>ExtractExpression</code>.
@@ -83,8 +83,8 @@ public final class ExtractExpression extends AbstractSingleEncapsulatedExpressio
 	@Override
 	protected void addOrderedEncapsulatedExpressionTo(List<Expression> children) {
 
-		if (hasPart()) {
-			children.add(buildStringExpression(part));
+		if (hasDatePart()) {
+			children.add(buildStringExpression(datePart));
 		}
 
 		// 'FROM'
@@ -125,8 +125,8 @@ public final class ExtractExpression extends AbstractSingleEncapsulatedExpressio
 	 *
 	 * @return The part of the date/time to retrieve
 	 */
-	public String getPart() {
-		return part;
+	public String getDatePart() {
+		return datePart;
 	}
 
 	/**
@@ -138,11 +138,20 @@ public final class ExtractExpression extends AbstractSingleEncapsulatedExpressio
 	}
 
 	/**
+	 * Determines whether the date part literal was parsed or not.
+	 *
+	 * @return <code>true</code> if the date part literal was parsed; <code>false</code> otherwise
+	 */
+	public boolean hasDatePart() {
+		return ExpressionTools.stringIsNotEmpty(datePart);
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public boolean hasEncapsulatedExpression() {
-		return hasPart() || hasFrom || hasExpression();
+		return hasDatePart() || hasFrom || hasExpression();
 	}
 
 	/**
@@ -155,12 +164,13 @@ public final class ExtractExpression extends AbstractSingleEncapsulatedExpressio
 	}
 
 	/**
-	 * Determines whether the date part literal was parsed or not.
+	 * Determines whether a whitespace was found after the date part literal.
 	 *
-	 * @return <code>true</code> if the date part literal was parsed; <code>false</code> otherwise
+	 * @return <code>true</code> if there was a whitespace after the date part literal;
+	 * <code>false</code> otherwise
 	 */
-	public boolean hasPart() {
-		return ExpressionTools.stringIsNotEmpty(part);
+	public boolean hasSpaceAfterDatePart() {
+		return hasSpaceAfterDatePart;
 	}
 
 	/**
@@ -173,13 +183,12 @@ public final class ExtractExpression extends AbstractSingleEncapsulatedExpressio
 	}
 
 	/**
-	 * Determines whether a whitespace was found after the date part literal.
-	 *
-	 * @return <code>true</code> if there was a whitespace after the database part literal;
-	 * <code>false</code> otherwise
+	 * {@inheritDoc}
 	 */
-	public boolean hasSpaceAfterPart() {
-		return hasSpaceAfterPart;
+	@Override
+	protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
+		return word.equalsIgnoreCase(FROM) ||
+		       super.isParsingComplete(wordParser, word, expression);
 	}
 
 	/**
@@ -190,21 +199,34 @@ public final class ExtractExpression extends AbstractSingleEncapsulatedExpressio
 	                                           int whitespaceCount,
 	                                           boolean tolerant) {
 
-		// Parse the database type
-		part = wordParser.word();
+		if (wordParser.isTail()) {
+			datePart = ExpressionTools.EMPTY_STRING;
+			return;
+		}
 
-		if (isParsingComplete(wordParser, part, null)) {
-			part = ExpressionTools.EMPTY_STRING;
-			hasSpaceAfterPart = whitespaceCount > 0;
+		// Parse the date part
+		datePart = wordParser.word();
+
+		// Invalid date part, parse it as the scalar expression
+		if (tolerant &&
+		    (isParsingComplete(wordParser, datePart, null) ||
+		     datePart.indexOf(DOT) > -1 ||
+		     datePart.charAt(0) == SINGLE_QUOTE ||
+		     datePart.charAt(0) == DOUBLE_QUOTE ||
+		     Character.isDigit(datePart.charAt(0)))) {
+
+			datePart = ExpressionTools.EMPTY_STRING;
+			hasSpaceAfterDatePart = whitespaceCount > 0;
 		}
 		else {
-			wordParser.moveForward(part);
-			hasSpaceAfterPart = wordParser.skipLeadingWhitespace() > 0;
+			wordParser.moveForward(datePart);
+			hasSpaceAfterDatePart = wordParser.skipLeadingWhitespace() > 0;
 		}
 
 		// Parse 'FROM'
 		hasFrom = wordParser.startsWithIdentifier(FROM);
 
+		// Parse 'FROM'
 		if (hasFrom) {
 			fromIdentifier = wordParser.moveForward(FROM);
 			hasSpaceAfterFrom = wordParser.skipLeadingWhitespace() > 0;
@@ -228,10 +250,10 @@ public final class ExtractExpression extends AbstractSingleEncapsulatedExpressio
 	@Override
 	protected void toParsedTextEncapsulatedExpression(StringBuilder writer, boolean actual) {
 
-		// Database part
-		writer.append(part);
+		// Date part
+		writer.append(datePart);
 
-		if (hasSpaceAfterPart) {
+		if (hasSpaceAfterDatePart) {
 			writer.append(SPACE);
 		}
 

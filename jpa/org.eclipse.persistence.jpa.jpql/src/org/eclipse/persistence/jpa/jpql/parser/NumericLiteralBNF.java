@@ -41,6 +41,7 @@ public final class NumericLiteralBNF extends JPQLQueryBNF {
 	@Override
 	protected void initialize() {
 		super.initialize();
-		registerExpressionFactory(LiteralExpressionFactory.ID);
+		setFallbackBNFId(ID);
+		setFallbackExpressionFactoryId(NumericLiteralFactory.ID);
 	}
 }

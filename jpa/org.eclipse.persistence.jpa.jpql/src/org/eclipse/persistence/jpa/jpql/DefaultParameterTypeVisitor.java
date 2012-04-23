@@ -11,38 +11,22 @@
  *     Oracle - initial API and implementation
  *
  ******************************************************************************/
-package org.eclipse.persistence.jpa.jpql.parser;
+package org.eclipse.persistence.jpa.jpql;
 
 /**
  * @version 2.4
  * @since 2.4
  * @author Pascal Filion
  */
-@SuppressWarnings("nls")
-public final class RangeDeclarationBNF extends JPQLQueryBNF {
+public class DefaultParameterTypeVisitor extends ParameterTypeVisitor {
 
 	/**
-	 * The unique identifier of this BNF rule.
+	 * Creates a new <code>DefaultParameterTypeVisitor</code>.
+	 *
+	 * @param queryContext The context used to query information about the application metadata and
+	 * cached information
 	 */
-	public static final String ID = "range_declaration";
-
-	/**
-	 * Creates a new <code>RangeDeclarationBNF</code>.
-	 */
-	public RangeDeclarationBNF() {
-		super(ID);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void initialize() {
-		super.initialize();
-		setFallbackBNFId(ID);
-		setFallbackExpressionFactoryId(RangeDeclarationFactory.ID);
-		registerChild(AbstractSchemaNameBNF.ID);
-		// TODO: Split this into top-level BNF and subquery BNF
-		registerChild(CollectionValuedPathExpressionBNF.ID);
+	public DefaultParameterTypeVisitor(JPQLQueryContext queryContext) {
+		super(queryContext);
 	}
 }

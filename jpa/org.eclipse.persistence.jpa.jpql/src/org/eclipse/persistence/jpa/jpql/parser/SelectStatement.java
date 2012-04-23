@@ -13,7 +13,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.parser;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import org.eclipse.persistence.jpa.jpql.WordParser;
@@ -21,7 +20,12 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
 /**
  * A select statement must always have a <b>SELECT</b> and a <b>FROM</b> clause.
  * <p>
- * <div nowrap><b>BNF:</b> <code>select_statement ::= select_clause from_clause [where_clause] [groupby_clause] [having_clause] [orderby_clause]</code><p>
+ * JPA:
+ * <div nowrap><b>BNF:</b> <code>select_statement ::= select_clause from_clause [where_clause] [groupby_clause] [having_clause] [orderby_clause]</code>
+ * <p>
+ * EclipseLink 2.4:
+ * <div nowrap><b>BNF:</b> <code>select_statement ::= select_clause from_clause [where_clause] [groupby_clause] [having_clause] [orderby_clause] {union_clause}*</code>
+ * <p>
  *
  * @see SelectClause
  *
@@ -37,21 +41,21 @@ public final class SelectStatement extends AbstractSelectStatement {
 	 */
 	private boolean hasSpaceBeforeOrderBy;
 
-        /**
-         * Determines whether there is a whitespace after the select statement parsed by the superclass
-         * and the <b>UNION</b> identifier.
-         */
-        private boolean hasSpaceBeforeUnion;
+	/**
+	 * Determines whether there is a whitespace after the select statement parsed by the superclass
+	 * and the <b>UNION</b> identifier.
+	 */
+	private boolean hasSpaceBeforeUnion;
 
 	/**
 	 * The <b>ORDER BY</b> expression.
 	 */
 	private AbstractExpression orderByClause;
 
-        /**
-         * The <b>UNION</b> expression.
-         */
-        private List<AbstractExpression> unionClauses;
+	/**
+	 * The <b>UNION</b> expression.
+	 */
+	private AbstractExpression unionClauses;
 
 	/**
 	 * Creates a new <code>SelectStatement</code>.
@@ -76,6 +80,7 @@ public final class SelectStatement extends AbstractSelectStatement {
 	public void acceptChildren(ExpressionVisitor visitor) {
 		super.acceptChildren(visitor);
 		getOrderByClause().accept(visitor);
+		getUnionClauses().accept(visitor);
 	}
 
 	/**
@@ -83,16 +88,9 @@ public final class SelectStatement extends AbstractSelectStatement {
 	 */
 	@Override
 	protected void addChildrenTo(Collection<Expression> children) {
-
 		super.addChildrenTo(children);
-
-		if (orderByClause != null) {
-			children.add(orderByClause);
-		}
-
-                if (unionClauses != null) {
-                        children.addAll(unionClauses);
-                }
+		children.add(getOrderByClause());
+		children.add(getUnionClauses());
 	}
 
 	/**
@@ -112,10 +110,10 @@ public final class SelectStatement extends AbstractSelectStatement {
 			children.add(orderByClause);
 		}
 
-                // 'UNION' clause
-                if (unionClauses != null) {
-                        children.addAll(unionClauses);
-                }
+		// 'UNION' clauses
+		if (unionClauses != null) {
+			children.add(unionClauses);
+		}
 	}
 
 	/**
@@ -146,18 +144,6 @@ public final class SelectStatement extends AbstractSelectStatement {
 		return orderByClause;
 	}
 
-        /**
-         * Returns the list of {@link Expression} representing the <b>UNION</b> clauses.
-         *
-         * @return The list of expression representing the <b>UNION</b> clauses
-         */
-        public List<AbstractExpression> getUnionClauses() {
-                if (unionClauses == null) {
-                    unionClauses = new ArrayList<AbstractExpression>();
-                }
-                return unionClauses;
-        }
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -175,6 +161,18 @@ public final class SelectStatement extends AbstractSelectStatement {
 	}
 
 	/**
+	 * Returns the {@link Expression} representing the <b>UNION</b> clauses.
+	 *
+	 * @return The {@link Expression} representing the <b>UNION</b> clauses
+	 */
+	public Expression getUnionClauses() {
+		if (unionClauses == null) {
+			unionClauses = buildNullExpression();
+		}
+		return unionClauses;
+	}
+
+	/**
 	 * Determines whether the <b>ORDER BY</b> clause is defined.
 	 *
 	 * @return <code>true</code> if the query that got parsed had the <b>ORDER BY</b> clause
@@ -183,16 +181,6 @@ public final class SelectStatement extends AbstractSelectStatement {
 		return orderByClause != null &&
 		      !orderByClause.isNull();
 	}
-
-        /**
-         * Determines whether the <b>UNION</b> clause is defined.
-         *
-         * @return <code>true</code> if the query that got parsed had the <b>UNION</b> clause
-         */
-        public boolean hasUnionClause() {
-                return unionClauses != null &&
-                      !unionClauses.isEmpty();
-        }
 
 	/**
 	 * Determines whether a whitespace was parsed before the <b>ORDER BY</b> clause. In some cases,
@@ -205,16 +193,42 @@ public final class SelectStatement extends AbstractSelectStatement {
 		return hasSpaceBeforeOrderBy;
 	}
 
-        /**
-         * Determines whether a whitespace was parsed before the <b>UNION</b> clause. In some cases,
-         * the space could be owned by a child of the previous clause.
-         *
-         * @return <code>true</code> if there was a whitespace before the <b>UNION</b>; <code>false</code>
-         * otherwise
-         */
-        public boolean hasSpaceBeforeUnion() {
-                return hasSpaceBeforeUnion;
-        }
+	/**
+	 * Determines whether a whitespace was parsed before the <b>UNION</b> clause. In some cases,
+	 * the space could be owned by a child of the previous clause.
+	 *
+	 * @return <code>true</code> if there was a whitespace before the <b>UNION</b>;
+	 * <code>false</code> otherwise
+	 */
+	public boolean hasSpaceBeforeUnion() {
+		return hasSpaceBeforeUnion;
+	}
+
+	/**
+	 * Determines whether at least one <b>UNION</b> clause was defined.
+	 *
+	 * @return <code>true</code> if the query that got parsed had the <b>UNION</b> clauses
+	 */
+	public boolean hasUnionClauses() {
+		return unionClauses != null &&
+		      !unionClauses.isNull();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
+
+		if (word.equalsIgnoreCase(UNION)     ||
+          word.equalsIgnoreCase(INTERSECT) ||
+          word.equalsIgnoreCase(EXCEPT)) {
+
+			return false;
+		}
+
+		return super.isParsingComplete(wordParser, word, expression);
+	}
 
 	/**
 	 * {@inheritDoc}
@@ -232,16 +246,11 @@ public final class SelectStatement extends AbstractSelectStatement {
 			orderByClause.parse(wordParser, tolerant);
 		}
 
-                hasSpaceBeforeUnion = wordParser.skipLeadingWhitespace() > 0;
-                
-                // Parse 'UNION'
-                while (wordParser.startsWithIdentifier(UNION) || wordParser.startsWithIdentifier(INTERSECT)
-                            || wordParser.startsWithIdentifier(EXCEPT)) {
-                        UnionClause unionClause = new UnionClause(this);
-                        unionClause.parse(wordParser, tolerant);
-                        getUnionClauses().add(unionClause);
-                        wordParser.skipLeadingWhitespace();
-                }
+		// Parse the union clauses and make sure the grammar supports it
+		if (getQueryBNF(UnionClauseBNF.ID) != null) {
+			hasSpaceBeforeUnion = wordParser.skipLeadingWhitespace() > 0;
+			unionClauses = parse(wordParser, UnionClauseBNF.ID, tolerant);
+		}
 	}
 
 	/**
@@ -261,11 +270,13 @@ public final class SelectStatement extends AbstractSelectStatement {
 			orderByClause.toParsedText(writer, actual);
 		}
 
-                // 'UNION' clause
-                if (hasUnionClause()) {
-                        for (AbstractExpression union : this.unionClauses) {
-                            union.toParsedText(writer, actual);
-                        }
-                }
+		if (hasSpaceBeforeUnion) {
+			writer.append(SPACE);
+		}
+
+		// 'UNION' clauses
+		if (hasUnionClauses()) {
+			unionClauses.toParsedText(writer, actual);
+		}
 	}
 }

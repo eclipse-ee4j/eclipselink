@@ -17,9 +17,12 @@ import org.eclipse.persistence.jpa.jpql.parser.CastExpression;
 import org.eclipse.persistence.jpa.jpql.parser.DatabaseType;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_4;
+import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.ExtractExpression;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByItem;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByItem.Ordering;
+import org.eclipse.persistence.jpa.jpql.parser.RegexpExpression;
+import org.eclipse.persistence.jpa.jpql.parser.UnionClause;
 
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
@@ -61,12 +64,52 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 	 * {@inheritDoc}
 	 */
 	public void visit(CastExpression expression) {
+		super.visit(expression);
+		int position = getPosition(expression) - corrections.peek();
+		String identifier = expression.getIdentifier();
+
+		// Within CAST
+		if (isPositionWithin(position, identifier)) {
+			proposals.addIdentifier(identifier);
+		}
+		// After "CAST("
+		else if (expression.hasLeftParenthesis()) {
+			int length = identifier.length() + 1 /* '(' */;
+
+			// Right after "CAST("
+			if (position == length) {
+				addAllIdentificationVariables();
+				addAllFunctions(expression.encapsulatedExpressionBNF());
+			}
+			else if (expression.hasExpression()) {
+				Expression scalarExpression = expression.getExpression();
+
+				if (isComplete(scalarExpression)) {
+					length += length(scalarExpression);
+
+					if (expression.hasSpaceAfterExpression()) {
+						length++;
+
+						// Right before "AS" or database type
+						if (position == length) {
+							addAllAggregates(expression.encapsulatedExpressionBNF());
+							proposals.addIdentifier(AS);
+						}
+						// Within "AS"
+						else if (isPositionWithin(position, length, AS)) {
+							proposals.addIdentifier(AS);
+						}
+					}
+				}
+			}
+		}
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public void visit(DatabaseType expression) {
+		// Nothing to do
 	}
 
 	/**
@@ -125,5 +168,17 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 				}
 			}
 		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(RegexpExpression expression) {
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(UnionClause expression) {
 	}
 }

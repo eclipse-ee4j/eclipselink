@@ -80,6 +80,14 @@ public class EclipseLinkJPQLQueryContext extends JPQLQueryContext {
 	 * {@inheritDoc}
 	 */
 	@Override
+	protected EclipseLinkParameterTypeVisitor buildParameterTypeVisitor() {
+		return new EclipseLinkParameterTypeVisitor(this);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	protected ResolverBuilder buildResolverBuilder() {
 		return new EclipseLinkResolverBuilder(this);
 	}

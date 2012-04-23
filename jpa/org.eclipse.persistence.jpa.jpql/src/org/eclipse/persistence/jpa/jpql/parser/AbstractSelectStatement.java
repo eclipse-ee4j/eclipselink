@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -18,7 +18,11 @@ import java.util.List;
 import org.eclipse.persistence.jpa.jpql.WordParser;
 
 /**
- * A select statement must always have a <b>SELECT</b> and a <b>FROM</b> clause.
+ * A select statement must always have a <code><b>SELECT</b></code> and a <code><b>FROM</b></code>
+ * clause. The other clauses are optional.
+ * <p>
+ * <div nowrap><b>BNF:</b> <code>select_statement ::= select_clause from_clause [where_clause] [groupby_clause] [having_clause] [orderby_clause]</code>
+ * <p>
  *
  * @see SelectStatement
  * @see SimpleSelectStatement
@@ -30,47 +34,47 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
 public abstract class AbstractSelectStatement extends AbstractExpression {
 
 	/**
-	 * The <b>FROM</b> clause of this select statement.
+	 * The <code><b>FROM</b></code> clause of this select statement.
 	 */
 	private AbstractExpression fromClause;
 
 	/**
-	 * The <b>GROUP BY</b> clause of this select statement.
+	 * The <code><b>GROUP BY</b></code> clause of this select statement.
 	 */
 	private AbstractExpression groupByClause;
 
 	/**
-	 * Determines whether there is a whitespace after the identifier <b>FROM</b>.
+	 * Determines whether there is a whitespace after the identifier <code><b>FROM</b></code>.
 	 */
 	private boolean hasSpaceAfterFrom;
 
 	/**
-	 * Determines whether there is a whitespace after the identifier <b>GROUP BY</b>.
+	 * Determines whether there is a whitespace after the identifier <code><b>GROUP BY</b></code>.
 	 */
 	private boolean hasSpaceAfterGroupBy;
 
 	/**
-	 * Determines whether there is a whitespace after the identifier <b>SELECT</b>.
+	 * Determines whether there is a whitespace after the identifier <code><b>SELECT</b></code>.
 	 */
 	private boolean hasSpaceAfterSelect;
 
 	/**
-	 * Determines whether there is a whitespace after the identifier <b>WHERE</b>.
+	 * Determines whether there is a whitespace after the identifier <code><b>WHERE</b></code>.
 	 */
 	private boolean hasSpaceAfterWhere;
 
 	/**
-	 * The <b>HAVING</b> clause of this select statement.
+	 * The <code><b>HAVING</b></code> clause of this select statement.
 	 */
 	private AbstractExpression havingClause;
 
 	/**
-	 * The <b>SELECT</b> clause of this select statement.
+	 * The <code><b>SELECT</b></code> clause of this select statement.
 	 */
 	private AbstractSelectClause selectClause;
 
 	/**
-	 * The <b>WHERE</b> clause of this select statement.
+	 * The <code><b>WHERE</b></code> clause of this select statement.
 	 */
 	private AbstractExpression whereClause;
 
@@ -105,17 +109,6 @@ public abstract class AbstractSelectStatement extends AbstractExpression {
 		children.add(getGroupByClause());
 		children.add(getHavingClause());
 	}
-
-	/**
-	 * Manually adds the <b>FROM</b> clause to this <b>SELECT</b> statement.
-	 *
-	 * @return The new {@link AbstractFromClause <b>FROM</b> clause}
-	 */
-//	public AbstractFromClause addFromClause() {
-//		AbstractFromClause fromClause = buildFromClause();
-//		this.fromClause = fromClause;
-//		return fromClause;
-//	}
 
 	/**
 	 * {@inheritDoc}
@@ -178,18 +171,6 @@ public abstract class AbstractSelectStatement extends AbstractExpression {
 		selectClause = buildSelectClause();
 		return (SelectClause) selectClause;
 	}
-
-	/**
-	 * Manually adds an empty <b>WHERE</b> clause.
-	 *
-	 * @return The {@link WhereClause}
-	 */
-//	protected final WhereClause addWhereClause() {
-//		WhereClause whereClause = new WhereClause(this);
-//		this.whereClause = whereClause;
-//		this.hasSpaceAfterFrom = true;
-//		return whereClause;
-//	}
 
 	/**
 	 * Creates the expression representing the from clause of this select statement.
@@ -355,13 +336,13 @@ public abstract class AbstractSelectStatement extends AbstractExpression {
 	@Override
 	protected void parse(WordParser wordParser, boolean tolerant) {
 
-		// Parse 'SELECT'
+		// Parse 'SELECT' clause
 		selectClause = buildSelectClause();
 		selectClause.parse(wordParser, tolerant);
 
 		hasSpaceAfterSelect = wordParser.skipLeadingWhitespace() > 0;
 
-		// Parse 'FROM'
+		// Parse 'FROM' clause
 		if (wordParser.startsWithIdentifier(FROM)) {
 			fromClause = buildFromClause();
 			fromClause.parse(wordParser, tolerant);
@@ -369,7 +350,7 @@ public abstract class AbstractSelectStatement extends AbstractExpression {
 
 		hasSpaceAfterFrom = wordParser.skipLeadingWhitespace() > 0;
 
-		// Parse 'WHERE'
+		// Parse 'WHERE' clause
 		if (wordParser.startsWithIdentifier(WHERE)) {
 			whereClause = new WhereClause(this);
 			whereClause.parse(wordParser, tolerant);
@@ -377,7 +358,7 @@ public abstract class AbstractSelectStatement extends AbstractExpression {
 
 		hasSpaceAfterWhere = wordParser.skipLeadingWhitespace() > 0;
 
-		// Parse 'GROUP BY'
+		// Parse 'GROUP BY' clause
 		if (wordParser.startsWithIdentifier(GROUP_BY)) {
 			groupByClause = new GroupByClause(this);
 			groupByClause.parse(wordParser, tolerant);
@@ -385,34 +366,32 @@ public abstract class AbstractSelectStatement extends AbstractExpression {
 
 		hasSpaceAfterGroupBy = wordParser.skipLeadingWhitespace() > 0;
 
-		// Parse 'HAVING'
+		// Parse 'HAVING' clause
 		if (wordParser.startsWithIdentifier(HAVING)) {
 			havingClause = new HavingClause(this);
 			havingClause.parse(wordParser, tolerant);
 		}
 
-		if (tolerant &&
-		    !wordParser.isTail() &&
-		    !shouldManageSpaceAfterClause())
-		{
+		if (!wordParser.isTail() && !shouldManageSpaceAfterClause()) {
+
 			if (hasSpaceAfterFrom     &&
 			    whereClause   == null &&
 			    groupByClause == null &&
-			    havingClause  == null)
-			{
+			    havingClause  == null) {
+
 				hasSpaceAfterFrom = false;
 				wordParser.moveBackward(1);
 			}
 			else if (hasSpaceAfterWhere    &&
 			         groupByClause == null &&
-			         havingClause  == null)
-			{
+			         havingClause  == null) {
+
 				hasSpaceAfterWhere = false;
 				wordParser.moveBackward(1);
 			}
 			else if (hasSpaceAfterGroupBy &&
-			         havingClause  == null)
-			{
+			         havingClause  == null) {
+
 				hasSpaceAfterGroupBy = false;
 				wordParser.moveBackward(1);
 			}

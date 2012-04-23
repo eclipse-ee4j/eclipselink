@@ -1843,7 +1843,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 * to be validated
 	 */
 	protected void validateRangeVariableDeclarationRootObject(RangeVariableDeclaration expression) {
-		expression.getAbstractSchemaName().accept(this);
+		expression.getRootObject().accept(this);
 	}
 
 	/**
@@ -1972,6 +1972,12 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 */
 	protected boolean validateStateFieldPathExpression(StateFieldPathExpression expression,
 	                                                   PathType pathType) {
+
+		// Special case for EclipseLink, path expression formed with the identification
+		// variable mapped to a subquery cannot be resolved, thus cannot be validated
+		if (!helper.isValidatingPathExpressionAllowed(expression)) {
+			return true;
+		}
 
 		boolean valid = true;
 		expression.getIdentificationVariable().accept(this);

@@ -19,12 +19,14 @@ import org.eclipse.persistence.jpa.jpql.DefaultJPQLQueryHelper;
 import org.eclipse.persistence.jpa.jpql.EclipseLinkJPQLQueryContext;
 import org.eclipse.persistence.jpa.jpql.EclipseLinkJPQLQueryHelper;
 import org.eclipse.persistence.jpa.jpql.JPQLQueryContext;
-import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_3;
-import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar2_0;
+import org.eclipse.persistence.jpa.jpql.parser.DefaultEclipseLinkJPQLGrammar;
+import org.eclipse.persistence.jpa.jpql.parser.DefaultJPQLGrammar;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;
 
 /**
+ * The suite related to testing content assist.
+ *
  * @version 2.4
  * @since 2.4
  * @author Pascal Filion
@@ -51,7 +53,7 @@ public final class AllContentAssistTests {
 		}
 
 		private static JPQLQueryContext buildJPQLQueryContext() {
-			return new DefaultJPQLQueryContext(JPQLGrammar2_0.instance());
+			return new DefaultJPQLQueryContext(DefaultJPQLGrammar.instance());
 		}
 
 		@JPQLQueryHelperTestHelper
@@ -73,7 +75,7 @@ public final class AllContentAssistTests {
 		}
 
 		private static JPQLQueryContext buildJPQLQueryContext() {
-			return new EclipseLinkJPQLQueryContext(EclipseLinkJPQLGrammar2_3.instance());
+			return new EclipseLinkJPQLQueryContext(DefaultEclipseLinkJPQLGrammar.instance());
 		}
 
 		@JPQLQueryHelperTestHelper

@@ -17,14 +17,18 @@ import java.util.List;
 import org.eclipse.persistence.jpa.jpql.WordParser;
 
 /**
- * Define a table expression.  This allow a non-mapped table to be used in a query.
+ * Define a table expression. This allow a non-mapped table to be used in a query.
  *
  * @version 2.4
  * @since 2.4
  * @author James Sutherland
  */
 public final class TableExpression extends AbstractExpression {
-        private String table;
+
+	/**
+	 *
+	 */
+	private String table;
 
 	/**
 	 * Creates a new <code>TableExpression</code>.
@@ -39,7 +43,7 @@ public final class TableExpression extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	public void accept(ExpressionVisitor visitor) {
-		//visitor.visit(this);
+		acceptUnknownVisitor(visitor);
 	}
 
 	/**
@@ -61,7 +65,7 @@ public final class TableExpression extends AbstractExpression {
 	 */
 	@Override
 	public JPQLQueryBNF getQueryBNF() {
-		return getQueryBNF(AbstractSchemaNameBNF.ID);
+		return getQueryBNF(TableExpressionBNF.ID);
 	}
 
 	/**
@@ -69,13 +73,13 @@ public final class TableExpression extends AbstractExpression {
 	 */
 	@Override
 	protected void parse(WordParser wordParser, boolean tolerant) {
-                wordParser.moveForward(TABLE);
-                wordParser.skipLeadingWhitespace();
-                wordParser.moveForward(LEFT_PARENTHESIS);
-                table = wordParser.word();
+		wordParser.moveForward(TABLE);
+		wordParser.skipLeadingWhitespace();
+		wordParser.moveForward(LEFT_PARENTHESIS);
+		table = wordParser.word();
 		wordParser.moveForward(table);
-                wordParser.skipLeadingWhitespace();
-                wordParser.moveForward(RIGHT_PARENTHESIS);
+		wordParser.skipLeadingWhitespace();
+		wordParser.moveForward(RIGHT_PARENTHESIS);
 	}
 
 	/**
@@ -84,9 +88,9 @@ public final class TableExpression extends AbstractExpression {
 	@Override
 	protected void toParsedText(StringBuilder writer, boolean actual) {
 		writer.append(TABLE);
-                writer.append(SPACE);
-                writer.append(LEFT_PARENTHESIS);
-                writer.append(table);
-                writer.append(RIGHT_PARENTHESIS);
+		writer.append(SPACE);
+		writer.append(LEFT_PARENTHESIS);
+		writer.append(table);
+		writer.append(RIGHT_PARENTHESIS);
 	}
 }

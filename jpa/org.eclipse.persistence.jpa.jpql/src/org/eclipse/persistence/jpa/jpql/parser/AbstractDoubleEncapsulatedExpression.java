@@ -217,6 +217,16 @@ public abstract class AbstractDoubleEncapsulatedExpression extends AbstractEncap
 	}
 
 	/**
+	 * Determines whether the second expression is optional or not.
+	 *
+	 * @return <code>true</code> if the second expression is optional; <code>false</code> if it is
+	 * required
+	 */
+	protected boolean isSecondExpressionOptional() {
+		return false;
+	}
+
+	/**
 	 * Returns the BNF to be used to parse one of the encapsulated expression.
 	 *
 	 * @param index The position of the encapsulated {@link Expression} that needs to be parsed
@@ -252,13 +262,15 @@ public abstract class AbstractDoubleEncapsulatedExpression extends AbstractEncap
 		}
 		else if (hasFirstExpression()) {
 			hasSpaceAfterComma = (count > 0);
-			count = 0;
 		}
 
 		// Parse the second expression
 		secondExpression = parse(wordParser, parameterExpressionBNF(1), tolerant);
 
 		if (!hasSecondExpression()) {
+			if (!hasComma && isSecondExpressionOptional()) {
+				hasSpaceAfterComma = false;
+			}
 			wordParser.moveBackward(count);
 		}
 	}

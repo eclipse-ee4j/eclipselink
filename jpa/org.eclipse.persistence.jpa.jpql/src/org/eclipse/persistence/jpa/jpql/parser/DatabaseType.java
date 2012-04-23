@@ -56,9 +56,20 @@ public final class DatabaseType extends AbstractDoubleEncapsulatedExpression {
 		return getQueryBNF(DatabaseTypeQueryBNF.ID);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected boolean isSecondExpressionOptional() {
+		return true;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String parameterExpressionBNF(int index) {
-		return PreLiteralExpressionBNF.ID;
+		return NumericLiteralBNF.ID;
 	}
 
 	/**
@@ -76,6 +87,6 @@ public final class DatabaseType extends AbstractDoubleEncapsulatedExpression {
 	protected boolean shouldParseRightParenthesis(WordParser wordParser, boolean tolerant) {
 		// If the database type uses parenthesis, then this expression will own the right
 		// parenthesis,otherwise its parent expression should own it
-		return hasLeftParenthesis();
+		return hasLeftParenthesis() || hasFirstExpression() || hasComma() || hasSecondExpression();
 	}
 }

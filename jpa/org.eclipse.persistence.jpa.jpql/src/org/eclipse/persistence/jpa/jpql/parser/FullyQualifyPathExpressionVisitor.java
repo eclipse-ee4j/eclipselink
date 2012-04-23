@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -65,6 +65,14 @@ public final class FullyQualifyPathExpressionVisitor extends AbstractTraverseChi
 	 * {@inheritDoc}
 	 */
 	@Override
+	public void visit(CollectionMemberDeclaration expression) {
+		// Do nothing, prevent to do anything for invalid queries
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void visit(CollectionValuedPathExpression expression) {
 		// A null check is required because the query could be invalid/incomplete
 		if (variableName != null) {
@@ -92,13 +100,21 @@ public final class FullyQualifyPathExpressionVisitor extends AbstractTraverseChi
 	 * {@inheritDoc}
 	 */
 	@Override
+	public void visit(Join expression) {
+		// Do nothing, prevent to do anything for invalid queries
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void visit(RangeVariableDeclaration expression) {
 
 		if (expression.hasIdentificationVariable()) {
 			variableName = expression.getIdentificationVariable().toParsedText().toLowerCase();
 		}
 		else {
-			variableName = expression.getAbstractSchemaName().toParsedText().toLowerCase();
+			variableName = expression.getRootObject().toParsedText().toLowerCase();
 			expression.setVirtualIdentificationVariable(variableName);
 		}
 	}

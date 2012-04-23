@@ -15,7 +15,6 @@ package org.eclipse.persistence.jpa.jpql.parser;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -618,14 +617,14 @@ public abstract class AbstractExpression implements Expression {
 	 * <code>false</code> if more can be parsed
 	 */
 	protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
-		return word.equalsIgnoreCase(FROM)               ||
-		       word.equalsIgnoreCase(WHERE)              ||
-		       word.equalsIgnoreCase(HAVING)             ||
-		       wordParser.startsWithIdentifier(GROUP_BY) ||
-		       wordParser.startsWithIdentifier(ORDER_BY) ||
-                       wordParser.startsWithIdentifier(UNION)    ||
-                       wordParser.startsWithIdentifier(INTERSECT)||
-                       wordParser.startsWithIdentifier(EXCEPT);
+		return word.equalsIgnoreCase(FROM)                ||
+		       word.equalsIgnoreCase(WHERE)               ||
+		       word.equalsIgnoreCase(HAVING)              ||
+		       wordParser.startsWithIdentifier(GROUP_BY)  ||
+		       wordParser.startsWithIdentifier(ORDER_BY)  ||
+		       word.equalsIgnoreCase(UNION)               ||
+		       word.equalsIgnoreCase(INTERSECT)           ||
+		       word.equalsIgnoreCase(EXCEPT);
 	}
 
 	/**
@@ -664,7 +663,7 @@ public abstract class AbstractExpression implements Expression {
 	 */
 	public final IterableListIterator<Expression> orderedChildren() {
 		if (orderedChildren == null) {
-			orderedChildren = new ArrayList<Expression>();
+			orderedChildren = new LinkedList<Expression>();
 			addOrderedChildrenTo(orderedChildren);
 		}
 		return new CloneListIterator<Expression>(orderedChildren);

@@ -22,16 +22,17 @@ package org.eclipse.persistence.jpa.jpql.parser;
  *                                                         enum_expression { = | <> } {enum_expression | all_or_any_expression} |
  *                                                         datetime_expression comparison_operator {datetime_expression | all_or_any_expression} |
  *                                                         entity_expression { = | <> } {entity_expression | all_or_any_expression} |
- *                                                         arithmetic_expression comparison_operator {arithmetic_expression | all_or_any_expression}</code><p>
- *
- * JPA 2.0:
+ *                                                         arithmetic_expression comparison_operator {arithmetic_expression | all_or_any_expression}</code>
+ * <p>
+ * JPA 2.0, 2.1:
  * <div nowrap><b>BNF:</b> <code>comparison_expression ::= string_expression comparison_operator {string_expression | all_or_any_expression} |
  *                                                         boolean_expression { = | <> } {boolean_expression | all_or_any_expression} |
  *                                                         enum_expression { = | <> } {enum_expression | all_or_any_expression} |
  *                                                         datetime_expression comparison_operator {datetime_expression | all_or_any_expression} |
  *                                                         entity_expression { = | <> } {entity_expression | all_or_any_expression} |
  *                                                         arithmetic_expression comparison_operator {arithmetic_expression | all_or_any_expression} |
- *                                                         entity_type_expression { = | <> } entity_type_expression}</code><p>
+ *                                                         entity_type_expression { = | <> } entity_type_expression}</code>
+ * <p>
  *
  * @version 2.4
  * @since 2.3

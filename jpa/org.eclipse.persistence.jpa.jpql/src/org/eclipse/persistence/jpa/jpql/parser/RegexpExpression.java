@@ -18,14 +18,15 @@ import java.util.List;
 import org.eclipse.persistence.jpa.jpql.WordParser;
 
 /**
- * The <b>REGEXP</b> condition is used to specify a search for a pattern.
- * It is not part of JPA 2.0/2.1, only EclipseLink.
- * It is supported by many databases (Oracle, MySQL, PostgreSQL), I think part of SQL 2008, replacing SIMILAR TO
+ * The <b>REGEXP</b> condition is used to specify a search for a pattern. It is not part of JPA
+ * 2.0/2.1, only EclipseLink. It is supported by many databases (Oracle, MySQL, PostgreSQL), I
+ * think part of SQL 2008, replacing <b>SIMILAR TO</b>.
  * <p>
  * The <code>string_expression</code> must have a string value. The <code>pattern_value</code> is a
  * string literal or a string-valued input parameter that is a regular expression.
  * <p>
- * <div nowrap><b>BNF:</b> <code>regexp_expression ::= string_expression REGEXP pattern_value</code><p>
+ * <div nowrap><b>BNF:</b> <code>regexp_expression ::= string_expression REGEXP pattern_value</code>
+ * <p>
  *
  * @version 2.4
  * @since 2.4
@@ -36,17 +37,17 @@ public final class RegexpExpression extends AbstractExpression {
 	/**
 	 * Determines whether a whitespace was parsed after <b>REGEXP</b>.
 	 */
-	private boolean hasSpaceAfterRegexp;
-
-	/**
-	 * The actual <b>REGEXP</b> identifier found in the string representation of the JPQL query.
-	 */
-	private String regexpIdentifier;
+	private boolean hasSpaceAfterIdentifier;
 
 	/**
 	 * The {@link Expression} representing the pattern value.
 	 */
 	private AbstractExpression patternValue;
+
+	/**
+	 * The actual <b>REGEXP</b> identifier found in the string representation of the JPQL query.
+	 */
+	private String regexpIdentifier;
 
 	/**
 	 * The {@link Expression} representing the string expression.
@@ -72,7 +73,7 @@ public final class RegexpExpression extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	public void accept(ExpressionVisitor visitor) {
-		visitor.visit(this);
+		acceptUnknownVisitor(visitor);
 	}
 
 	/**
@@ -108,7 +109,7 @@ public final class RegexpExpression extends AbstractExpression {
 		// 'REGEXP'
 		children.add(buildStringExpression(REGEXP));
 
-		if (hasSpaceAfterRegexp) {
+		if (hasSpaceAfterIdentifier) {
 			children.add(buildStringExpression(SPACE));
 		}
 
@@ -124,17 +125,8 @@ public final class RegexpExpression extends AbstractExpression {
 	 *
 	 * @return The <b>REGEXP</b> identifier that was actually parsed
 	 */
-	public String getActualEgexpIdentifier() {
+	public String getActualRegexpIdentifier() {
 		return regexpIdentifier;
-	}
-
-	/**
-	 * Returns the enum constant that represents the identifier.
-	 *
-	 * @return <b>REGEXP</b>
-	 */
-	public String getIdentifier() {
-		return REGEXP;
 	}
 
 	/**
@@ -185,8 +177,8 @@ public final class RegexpExpression extends AbstractExpression {
 	 * @return <code>true</code> if there was a whitespace after <b>REGEXP</b>; <code>false</code>
 	 * otherwise
 	 */
-	public boolean hasSpaceAfterRegexp() {
-		return hasSpaceAfterRegexp;
+	public boolean hasSpaceAfterIdentifier() {
+		return hasSpaceAfterIdentifier;
 	}
 
 	/**
@@ -224,8 +216,8 @@ public final class RegexpExpression extends AbstractExpression {
 		}
 
 		return super.isParsingComplete(wordParser, word, expression) ||
-		       word.equalsIgnoreCase(AND)    ||
-		       word.equalsIgnoreCase(OR)     ||
+		       word.equalsIgnoreCase(AND) ||
+		       word.equalsIgnoreCase(OR)  ||
 		       expression != null;
 	}
 
@@ -238,7 +230,7 @@ public final class RegexpExpression extends AbstractExpression {
 		// Parse 'REGEXP'
 		regexpIdentifier = wordParser.moveForward(REGEXP);
 
-		hasSpaceAfterRegexp = wordParser.skipLeadingWhitespace() > 0;
+		hasSpaceAfterIdentifier = wordParser.skipLeadingWhitespace() > 0;
 
 		// Parse the pattern value
 		patternValue = parse(wordParser, PatternValueBNF.ID, tolerant);
@@ -257,14 +249,9 @@ public final class RegexpExpression extends AbstractExpression {
 		}
 
 		// 'REGEXP'
-		if (actual) {
-			writer.append(regexpIdentifier);
-		}
-		else {
-			writer.append(REGEXP);
-		}
+		writer.append(actual ? regexpIdentifier : REGEXP);
 
-		if (hasSpaceAfterRegexp) {
+		if (hasSpaceAfterIdentifier) {
 			writer.append(SPACE);
 		}
 

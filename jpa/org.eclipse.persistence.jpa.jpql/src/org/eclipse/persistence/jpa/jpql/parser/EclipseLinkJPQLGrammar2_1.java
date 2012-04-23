@@ -32,15 +32,16 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  *
  * func_item ::= new_value
  *
- * between_expression ::= scalarOrSubSelectExpression [NOT] BETWEEN scalarOrSubSelectExpression AND scalarOrSubSelectExpression
+ * between_expression ::= scalar_expression [NOT] BETWEEN scalar_expression AND scalar_expression
  *
- * in_item ::= literal | single_valued_input_parameter | scalarOrSubSelectExpression
+ * in_item ::= literal | single_valued_input_parameter | scalar_expression
  *
- * scalarOrSubSelectExpression ::= arithmetic_expression | scalar_expression
+ * scalar_expression ::= arithmetic_expression |
+ *                       ...
  *
- * pattern_value ::= scalarOrSubSelectExpression
+ * pattern_value ::= scalar_expression | arithmetic_expression
  *
- * escape_character ::= scalarExpression
+ * escape_character ::= scalar_expression
  *
  * functions_returning_numerics ::= LENGTH(scalarExpression) |
  *                                  LOCATE(scalarExpression, scalarExpression[, scalarExpression]) |
@@ -49,10 +50,10 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  *                                  func_expression |
  *                                  ...
  *
- * functions_returning_strings ::= CONCAT(scalarExpression {, scalarExpression }+) |
- *                                 SUBSTRING(scalarExpression, scalarExpression [, scalarExpression]) |
- *                                 LOWER(scalarExpression) |
- *                                 UPPER(scalarExpression) |
+ * functions_returning_strings ::= CONCAT(scalar_expression {, scalar_expression }+) |
+ *                                 SUBSTRING(scalar_expression, scalar_expression [, scalar_expression]) |
+ *                                 LOWER(scalar_expression) |
+ *                                 UPPER(scalar_expression) |
  *                                 func_expression |
  *                                 ...
  *
@@ -167,6 +168,7 @@ public final class EclipseLinkJPQLGrammar2_1 extends AbstractJPQLGrammar {
 		addChildBNF(LikeExpressionEscapeCharacterBNF.ID,       ScalarExpressionBNF.ID);
 		addChildBNF(InternalAggregateFunctionBNF.ID,           ScalarExpressionBNF.ID);
 		addChildBNF(InternalConcatExpressionBNF.ID,            ScalarExpressionBNF.ID);
+		addChildBNF(InternalCountBNF.ID,                       ScalarExpressionBNF.ID);
 		addChildBNF(InternalLengthExpressionBNF.ID,            ScalarExpressionBNF.ID);
 		addChildBNF(InternalLocateStringExpressionBNF.ID,      ScalarExpressionBNF.ID);
 		addChildBNF(InternalLocateThirdExpressionBNF.ID,       ScalarExpressionBNF.ID);

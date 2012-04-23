@@ -69,7 +69,7 @@ public class DefaultJPQLQueryContext extends JPQLQueryContext {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected LiteralVisitor buildLiteralVisitor() {
+	protected DefaultLiteralVisitor buildLiteralVisitor() {
 		return new DefaultLiteralVisitor();
 	}
 
@@ -77,7 +77,15 @@ public class DefaultJPQLQueryContext extends JPQLQueryContext {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected ResolverBuilder buildResolverBuilder() {
+	protected DefaultParameterTypeVisitor buildParameterTypeVisitor() {
+		return new DefaultParameterTypeVisitor(this);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected DefaultResolverBuilder buildResolverBuilder() {
 		return new DefaultResolverBuilder(this);
 	}
 

@@ -29,6 +29,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;
 
 /**
+ * The test suite testing {@link AbstractJPQLQueryHelper} and its concrete classes.
+ *
  * @version 2.4
  * @since 2.4
  * @author Pascal Filion
@@ -37,6 +39,7 @@ import org.junit.runners.Suite.SuiteClasses;
 	AllJPQLQueryHelperTests.AllDefaultJPQLQueryHelperTests.class,
 	AllJPQLQueryHelperTests.AllDefaultJPQLQueryHelperTests2_1.class,
 	AllJPQLQueryHelperTests.AllEclipseLinkJPQLQueryHelperTests.class,
+	AllJPQLQueryHelperTests.AllEclipseLinkJPQLQueryHelperTests2_4.class,
 //	ORMEntityJPQLQueryHelperTest.class,
 //	ORMJPQLQueryHelperTest.class
 })
@@ -138,6 +141,28 @@ public final class AllJPQLQueryHelperTests {
 				new EclipseLinkJPQLQueryHelper(buildJPQLQueryContext2_1()),
 				new EclipseLinkJPQLQueryHelper(buildJPQLQueryContext2_2()),
 				new EclipseLinkJPQLQueryHelper(buildJPQLQueryContext2_3()),
+				new EclipseLinkJPQLQueryHelper(buildJPQLQueryContext2_4())
+			};
+		}
+	}
+
+	@SuiteClasses({
+		EclipseLinkJPQLQueryHelperTest2_4.class,
+	})
+	@RunWith(JPQLTestRunner.class)
+	public static class AllEclipseLinkJPQLQueryHelperTests2_4 {
+
+		private AllEclipseLinkJPQLQueryHelperTests2_4() {
+			super();
+		}
+
+		private static JPQLQueryContext buildJPQLQueryContext2_4() {
+			return new EclipseLinkJPQLQueryContext(EclipseLinkJPQLGrammar2_4.instance());
+		}
+
+		@JPQLQueryHelperTestHelper
+		static AbstractJPQLQueryHelper[] buildJPQLQueryHelpers() {
+			return new AbstractJPQLQueryHelper[] {
 				new EclipseLinkJPQLQueryHelper(buildJPQLQueryContext2_4())
 			};
 		}

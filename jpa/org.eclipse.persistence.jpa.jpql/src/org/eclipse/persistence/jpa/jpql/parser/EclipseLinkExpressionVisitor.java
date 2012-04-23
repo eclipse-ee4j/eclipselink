@@ -48,4 +48,16 @@ public interface EclipseLinkExpressionVisitor extends ExpressionVisitor {
 	 * @param expression The {@link Expression} to visit
 	 */
 	void visit(ExtractExpression expression);
+
+	/**
+	 * {@inheritDoc}
+	 */
+	void visit(RegexpExpression expression);
+
+	/**
+	 * Visits the {@link UnionClause} expression.
+	 *
+	 * @param expression The {@link Expression} to visit
+	 */
+	void visit(UnionClause expression);
 }

@@ -20,7 +20,8 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
 /**
  * The <b>UNION</b> clause allows the results of two queries to be combined.
  * <p>
- * <div nowrap><b>BNF:</b> <code>union_clause ::= <b>UNION|INTERSECT|EXCEPT</b> [ALL] query</code><p>
+ * <div nowrap><b>BNF:</b> <code>union_clause ::= <b>{ UNION | INTERSECT | EXCEPT }</b> [ALL] subquery</code>
+ * <p>
  *
  * @version 2.4
  * @since 2.4
@@ -29,37 +30,32 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
 public final class UnionClause extends AbstractExpression {
 
 	/**
+	 * The actual identifier found in the string representation of the JPQL query.
+	 */
+	private String actualIdentifier;
+
+	/**
+	 * The actual <b>All</b> identifier found in the string representation of the JPQL query.
+	 */
+	private String allIdentifier;
+
+	/**
+	 * Determines if <code><b>ALL</b></code> keyword is used.
+	 */
+	private boolean hasAll;
+
+	/**
+	 * Determines whether a whitespace was parsed after <b>ALL</b>.
+	 */
+	private boolean hasSpaceAfterAll;
+
+	/**
 	 * Determines whether a whitespace was parsed after <b>UNION</b>.
 	 */
-	private boolean hasSpaceAfterUnion;
-
-        /**
-         * Determines whether a whitespace was parsed after <b>ALL</b>.
-         */
-        private boolean hasSpaceAfterAll;
+	private boolean hasSpaceAfterIdentifier;
 
 	/**
-	 * The actual <b></b> identifier found in the string representation of the JPQL query.
-	 */
-	private String identifier;
-
-        /**
-         * The actual <b></b> identifier found in the string representation of the JPQL query.
-         */
-        private String actualIdentifier;
-
-        /**
-         * Determines if ALL keyword is used.
-         */
-        private boolean hasAll;
-
-        /**
-         * The actual <b></b> identifier found in the string representation of the JPQL query.
-         */
-        private String allIdentifier;
-
-	/**
-	 * The unioned query.
+	 * The {@link Expression} representing the unioned query.
 	 */
 	private AbstractExpression query;
 
@@ -67,16 +63,18 @@ public final class UnionClause extends AbstractExpression {
 	 * Creates a new <code>UnionClause</code>.
 	 *
 	 * @param parent The parent of this expression
+	 * @param identifier Either <code><b>UNION</b></code>, <code><b>INTERSECT</b></code> or
+	 * <code><b>EXCEPT</b></code>
 	 */
-	public UnionClause(AbstractExpression parent) {
-		super(parent, UNION);
+	public UnionClause(AbstractExpression parent, String identifier) {
+		super(parent, identifier);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public void accept(ExpressionVisitor visitor) {
-		visitor.visit(this);
+		acceptUnknownVisitor(visitor);
 	}
 
 	/**
@@ -100,46 +98,61 @@ public final class UnionClause extends AbstractExpression {
 	@Override
 	protected void addOrderedChildrenTo(List<Expression> children) {
 
-		children.add(buildStringExpression(identifier));
+		// 'UNION' or 'INTERSECT' or 'EXCEPT'
+		children.add(buildStringExpression(getText()));
 
-		if (hasSpaceAfterUnion) {
+		if (hasSpaceAfterIdentifier) {
 			children.add(buildStringExpression(SPACE));
 		}
-		
-                if (hasAll) {
-                    children.add(buildStringExpression(ALL));
-                    if (hasSpaceAfterAll) {
-                        children.add(buildStringExpression(SPACE));
-                    }
-                }
 
+		// 'ALL'
+		if (hasAll) {
+			children.add(buildStringExpression(ALL));
+
+			if (hasSpaceAfterAll) {
+				children.add(buildStringExpression(SPACE));
+			}
+		}
+
+		// Subquery
 		if (query != null) {
 			children.add(query);
 		}
 	}
 
-        /**
-         * Returns the union identifier.
-         * This is one of "UNION", "INTERSECT", "EXCEPT".
-         */
-        public String getIdentifier() {
-                return identifier;
-        }
+	/**
+	 * Returns the actual <code><b>ALL</b></code>< found in the string representation of the JPQL
+	 * query, which has the actual case that was used.
+	 *
+	 * @return The <code><b>ALL</b></code> identifier that was actually parsed
+	 */
+	public String getActualAll() {
+		return allIdentifier;
+	}
 
 	/**
-	 * Returns the actual union found in the string representation of the JPQL query, which
+	 * Returns the actual identifier found in the string representation of the JPQL query, which
 	 * has the actual case that was used.
 	 *
-	 * @return The union identifier that was actually parsed
+	 * @return The identifier that was actually parsed
 	 */
 	public String getActualIdentifier() {
 		return actualIdentifier;
 	}
 
 	/**
+	 * Returns the union identifier.
+	 *
+	 * @return Either "UNION", "INTERSECT", "EXCEPT"
+	 */
+	public String getIdentifier() {
+		return getText();
+	}
+
+	/**
 	 * Returns the {@link Expression} representing the unioned query.
 	 *
-	 * @return The expression representing the query
+	 * @return The {@link expression} representing the subquery
 	 */
 	public Expression getQuery() {
 		if (query == null) {
@@ -157,6 +170,15 @@ public final class UnionClause extends AbstractExpression {
 	}
 
 	/**
+	 * Determines whether <code><b>ALL</b></code> was parsed.
+	 *
+	 * @return <code>true</code> if <code><b>ALL</b></code> was parsed; <code>false</code> otherwise
+	 */
+	public boolean hasAll() {
+		return hasAll;
+	}
+
+	/**
 	 * Determines whether the query  was parsed.
 	 *
 	 * @return <code>true</code> the query was parsed; <code>false</code> otherwise
@@ -166,23 +188,65 @@ public final class UnionClause extends AbstractExpression {
 		      !query.isNull();
 	}
 
-        /**
-         * Determines whether ALL was parsed.
-         *
-         * @return <code>true</code> if ALL was parsed; <code>false</code> otherwise
-         */
-        public boolean hasAll() {
-                return hasAll;
-        }
+	/**
+	 * Determines whether a whitespace was parsed after <code><b>ALL</b></code>.
+	 *
+	 * @return <code>true</code> if a whitespace was parsed after <code><b>ALL</b></code>;
+	 * <code>false</code> otherwise
+	 */
+	public boolean hasSpaceAfterAll() {
+		return hasSpaceAfterAll;
+	}
 
 	/**
-	 * Determines whether a whitespace was parsed after <b>UNION</b>.
+	 * Determines whether a whitespace was parsed after the identifier.
 	 *
-	 * @return <code>true</code> if a whitespace was parsed after <b>UNION</b>; <code>false</code>
+	 * @return <code>true</code> if a whitespace was parsed after the identifier; <code>false</code>
 	 * otherwise
 	 */
-	public boolean hasSpaceAfterUnion() {
-		return hasSpaceAfterUnion;
+	public boolean hasSpaceAfterIdentifier() {
+		return hasSpaceAfterIdentifier;
+	}
+
+	/**
+	 * Determines whether this {@link UnionClause} uses the <code><b>EXCEPT</b></code> identifier.
+	 *
+	 * @return <code>true</code> if the identifier is <code><b>EXCEPT</b></code>; <code>false</code>
+	 * otherwise
+	 */
+	public boolean isExcept() {
+		return getText() == EXCEPT;
+	}
+
+	/**
+	 * Determines whether this {@link UnionClause} uses the <code><b>INTERSECT</b></code> identifier.
+	 *
+	 * @return <code>true</code> if the identifier is <code><b>INTERSECT</b></code>; <code>false</code>
+	 * otherwise
+	 */
+	public boolean isIntersect() {
+		return getText() == INTERSECT;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
+		return word.equalsIgnoreCase(UNION)     ||
+		       word.equalsIgnoreCase(INTERSECT) ||
+		       word.equalsIgnoreCase(EXCEPT)    ||
+		       super.isParsingComplete(wordParser, word, expression);
+	}
+
+	/**
+	 * Determines whether this {@link UnionClause} uses the <code><b>UNION</b></code> identifier.
+	 *
+	 * @return <code>true</code> if the identifier is <code><b>UNION</b></code>; <code>false</code>
+	 * otherwise
+	 */
+	public boolean isUnion() {
+		return getText() == UNION;
 	}
 
 	/**
@@ -191,27 +255,38 @@ public final class UnionClause extends AbstractExpression {
 	@Override
 	protected void parse(WordParser wordParser, boolean tolerant) {
 
-		if (wordParser.startsWithIdentifier(UNION)) {
-		    identifier = UNION;
-		    actualIdentifier = wordParser.moveForward(UNION);
-		} else if (wordParser.startsWithIdentifier(INTERSECT)) {
-                    identifier = INTERSECT;
-                    actualIdentifier = wordParser.moveForward(INTERSECT);
-                } else if (wordParser.startsWithIdentifier(EXCEPT)) {
-                    identifier = EXCEPT;
-                    actualIdentifier = wordParser.moveForward(EXCEPT);
-                }
+		// Parse the identifier
+		String identifier = parseIdentifier();
+		actualIdentifier = wordParser.moveForward(identifier);
+		setText(identifier);
 
-		hasSpaceAfterUnion = wordParser.skipLeadingWhitespace() > 0;
-		
+		hasSpaceAfterIdentifier = wordParser.skipLeadingWhitespace() > 0;
+
+		// Parse 'ALL'
 		hasAll = wordParser.startsWithIdentifier(ALL);
+
 		if (hasAll) {
-	                allIdentifier = wordParser.moveForward(ALL);
-	                hasSpaceAfterAll = wordParser.skipLeadingWhitespace() > 0;		    
+			allIdentifier = wordParser.moveForward(ALL);
+			hasSpaceAfterAll = wordParser.skipLeadingWhitespace() > 0;
 		}
 
 		// Query
-		query = parse(wordParser, SubqueryBNF.ID, tolerant);
+		if (tolerant) {
+			query = parse(wordParser, SubqueryBNF.ID, tolerant);
+		}
+		else {
+			query = new SimpleSelectStatement(this);
+			query.parse(wordParser, tolerant);
+		}
+	}
+
+	private String parseIdentifier() {
+		switch (getText().charAt(0)) {
+			case 'U': case 'u': return UNION;
+			case 'I': case 'i': return INTERSECT;
+			case 'E': case 'e': return EXCEPT;
+			default:            return null; // Never happens
+		}
 	}
 
 	/**
@@ -220,35 +295,25 @@ public final class UnionClause extends AbstractExpression {
 	@Override
 	protected void toParsedText(StringBuilder writer, boolean actual) {
 
-		// 'UNION'
-		writer.append(actual ? actualIdentifier : identifier);
+		// 'UNION', 'INTERSECT' or 'EXCEPT'
+		writer.append(actual ? actualIdentifier : getText());
 
-		if (hasSpaceAfterUnion) {
+		if (hasSpaceAfterIdentifier) {
 			writer.append(SPACE);
 		}
-		
+
+		// 'ALL'
 		if (hasAll) {
-	            writer.append(actual ? allIdentifier : ALL);
-                    if (hasSpaceAfterAll) {
-                            writer.append(SPACE);
-                    }
-                }
+			writer.append(actual ? allIdentifier : ALL);
+
+			if (hasSpaceAfterAll) {
+				writer.append(SPACE);
+			}
+		}
 
 		// Query
 		if (query != null) {
 			query.toParsedText(writer, actual);
 		}
 	}
-	
-	public boolean isUnion() {
-	    return identifier == UNION;
-	}
-        
-        public boolean isIntersect() {
-            return identifier == INTERSECT;
-        }
-        
-        public boolean isExcept() {
-            return identifier == EXCEPT;
-        }
 }

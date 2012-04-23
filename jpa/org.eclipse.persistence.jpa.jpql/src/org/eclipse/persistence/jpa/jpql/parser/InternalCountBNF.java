@@ -41,8 +41,7 @@ public final class InternalCountBNF extends JPQLQueryBNF {
 	@Override
 	protected void initialize() {
 		super.initialize();
-		setFallbackBNFId(ID);
-		setFallbackExpressionFactoryId(PreLiteralExpressionFactory.ID);
+		setFallbackBNFId(PreLiteralExpressionBNF.ID);
 		registerChild(IdentificationVariableBNF.ID);
 		registerChild(StateFieldPathExpressionBNF.ID);
 	}

@@ -330,13 +330,6 @@ public abstract class AnonymousExpressionVisitor implements ExpressionVisitor {
 		visit((Expression) expression);
 	}
 
-        /**
-         * {@inheritDoc}
-         */
-        public void visit(RegexpExpression expression) {
-                visit((Expression) expression);
-        }
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -434,13 +427,6 @@ public abstract class AnonymousExpressionVisitor implements ExpressionVisitor {
 	public void visit(OrderByClause expression) {
 		visit((Expression) expression);
 	}
-
-        /**
-         * {@inheritDoc}
-         */
-        public void visit(UnionClause expression) {
-                visit((Expression) expression);
-        }
 
 	/**
 	 * {@inheritDoc}

@@ -484,7 +484,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 			// "Root" object (abstract schema name or derived declaration)
 			stateObject.getRootStateObject().accept(this);
 
-			if (exactMatch && (expression != null) && expression.hasSpaceAfterAbstractSchemaName()) {
+			if (exactMatch && (expression != null) && expression.hasSpaceAfterRootObject()) {
 				writer.append(SPACE);
 			}
 

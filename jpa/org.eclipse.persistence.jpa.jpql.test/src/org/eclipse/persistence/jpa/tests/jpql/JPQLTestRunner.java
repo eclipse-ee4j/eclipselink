@@ -482,10 +482,13 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
 		}
 
 		private String buildDisplayString() {
-			StringBuilder writer = new StringBuilder();
-			writer.append(getName());
-			suiteHelper.addAdditionalInfo(writer);
-			return writer.toString();
+			if (suiteHelper != null) {
+				StringBuilder writer = new StringBuilder();
+				writer.append(getName());
+				suiteHelper.addAdditionalInfo(writer);
+				return writer.toString();
+			}
+			return getName();
 		}
 
 		private Comparator<FrameworkMethod> buildMethodComparator() {
@@ -542,7 +545,9 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
 			test = (JPQLBasicTest) constructor.newInstance();
 
 			// Inject the SuiteHelper' values into the test
-			suiteHelper.injectValues(test);
+			if (suiteHelper != null) {
+				suiteHelper.injectValues(test);
+			}
 		}
 
 		/**
@@ -574,7 +579,10 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
 			// Create the signature of the method, which will have the helpers' additional information
 			StringBuilder writer = new StringBuilder();
 			writer.append(method.getName());
-			suiteHelper.addAdditionalInfo(writer);
+
+			if (suiteHelper != null) {
+				suiteHelper.addAdditionalInfo(writer);
+			}
 
 			// It is possible two signatures maybe be identical, add something unique
 			if (uniquenessRequired) {
@@ -674,7 +682,9 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
 					statement.evaluate();
 				}
 				finally {
-					test.tearDownClass();
+					if (test != null) {
+						test.tearDownClass();
+					}
 				}
 			}
 		}
@@ -701,7 +711,9 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
 					statement.evaluate();
 				}
 				finally {
-					test.tearDown();
+					if (test != null) {
+						test.tearDown();
+					}
 				}
 			}
 		}

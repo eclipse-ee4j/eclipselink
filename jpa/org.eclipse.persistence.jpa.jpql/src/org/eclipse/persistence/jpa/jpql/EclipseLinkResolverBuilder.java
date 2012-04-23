@@ -13,7 +13,12 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql;
 
+import org.eclipse.persistence.jpa.jpql.parser.CastExpression;
+import org.eclipse.persistence.jpa.jpql.parser.DatabaseType;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkExpressionVisitor;
+import org.eclipse.persistence.jpa.jpql.parser.ExtractExpression;
+import org.eclipse.persistence.jpa.jpql.parser.RegexpExpression;
+import org.eclipse.persistence.jpa.jpql.parser.UnionClause;
 
 /**
  * An implementation of a {@link ResolverBuilder} that adds support for EclipseLink extension.
@@ -37,5 +42,40 @@ public class EclipseLinkResolverBuilder extends ResolverBuilder
 	 */
 	public EclipseLinkResolverBuilder(EclipseLinkJPQLQueryContext queryContext) {
 		super(queryContext);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(CastExpression expression) {
+		resolver = buildClassResolver(Object.class);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(DatabaseType expression) {
+		resolver = buildClassResolver(Object.class);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(ExtractExpression expression) {
+		resolver = buildClassResolver(Object.class);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(RegexpExpression expression) {
+		resolver = buildClassResolver(Object.class);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(UnionClause expression) {
+		resolver = buildClassResolver(Object.class);
 	}
 }

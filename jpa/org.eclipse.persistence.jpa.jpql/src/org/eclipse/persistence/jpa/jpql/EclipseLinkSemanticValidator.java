@@ -20,6 +20,8 @@ import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.ExtractExpression;
 import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
+import org.eclipse.persistence.jpa.jpql.parser.RegexpExpression;
+import org.eclipse.persistence.jpa.jpql.parser.UnionClause;
 
 /**
  * This validator is responsible to gather the problems found in a JPQL query by validating the
@@ -92,7 +94,7 @@ public class EclipseLinkSemanticValidator extends AbstractSemanticValidator
 	@Override
 	protected void validateRangeVariableDeclarationRootObject(RangeVariableDeclaration expression) {
 
-		Expression rootObject = expression.getAbstractSchemaName();
+		Expression rootObject = expression.getRootObject();
 
 		// Special case, the path expression could be a fully qualified class name,
 		// make sure to not validate it as collection-valued path expression
@@ -127,5 +129,17 @@ public class EclipseLinkSemanticValidator extends AbstractSemanticValidator
 	 * {@inheritDoc}
 	 */
 	public void visit(ExtractExpression expression) {
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(RegexpExpression expression) {
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(UnionClause expression) {
 	}
 }

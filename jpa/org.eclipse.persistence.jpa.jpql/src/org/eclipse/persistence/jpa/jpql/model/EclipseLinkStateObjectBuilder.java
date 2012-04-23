@@ -19,6 +19,8 @@ import org.eclipse.persistence.jpa.jpql.parser.CastExpression;
 import org.eclipse.persistence.jpa.jpql.parser.DatabaseType;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.ExtractExpression;
+import org.eclipse.persistence.jpa.jpql.parser.RegexpExpression;
+import org.eclipse.persistence.jpa.jpql.parser.UnionClause;
 
 /**
  * The default implementation of {@link BasicStateObjectBuilder}, which provides support based on
@@ -68,5 +70,17 @@ public class EclipseLinkStateObjectBuilder extends BasicStateObjectBuilder
 	 * {@inheritDoc}
 	 */
 	public void visit(ExtractExpression expression) {
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(RegexpExpression expression) {
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(UnionClause expression) {
 	}
 }

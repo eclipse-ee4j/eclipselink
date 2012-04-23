@@ -227,6 +227,9 @@ public abstract class AbstractEncapsulatedExpression extends AbstractExpression 
 				wordParser.moveBackward(count);
 			}
 		}
+		else if ((count > 0) && !hasEncapsulatedExpression()) {
+			wordParser.moveBackward(count);
+		}
 	}
 
 	/**

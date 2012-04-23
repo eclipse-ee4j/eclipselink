@@ -25,7 +25,6 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.jpql.EclipseLinkGrammarValidator;
 import org.eclipse.persistence.jpa.jpql.EclipseLinkSemanticValidator;
 import org.eclipse.persistence.jpa.jpql.JPQLQueryProblem;
-import org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages;
 import org.eclipse.persistence.jpa.jpql.JPQLQueryProblemResourceBundle;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.ConditionalExpressionBNF;
@@ -46,11 +45,18 @@ import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.queries.UpdateAllQuery;
 
+import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
+
 /**
- * The default implementation used to parse a JPQL query into a {@link DatabaseQuery}. It uses
- * {@link JPQLExpression} to parse the JPQL query.
+ * This class compiles a JPQL query into a {@link DatabaseQuery}. If validation is not turned off,
+ * then the JPQL query will be validated based on the grammar related to the validation level and
+ * will also be validated based on the semantic (context).
+ * <p>
+ * The validation level determines how to validate the JPQL query. It checks if any specific feature
+ * is allowed. For instance, if the JPQL query has functions defined for EclipseLink grammar but
+ * the validation level is set for generic JPA, then an exception will be thrown indicating the
+ * function cannot be used.
  *
- * @see EclipseLinkJPQLQueryHelper
  * @see JPQLExpression
  *
  * @version 2.4
@@ -62,12 +68,7 @@ import org.eclipse.persistence.queries.UpdateAllQuery;
 public final class HermesParser implements JPAQueryBuilder {
 
 	/**
-	 * Indicates whether this query builder should have validation mode on for JPQL queries.
-	 */
-	private boolean validateQueries;
-
-	/**
-	 * The validation levels are defined in {@link ParserValidationType}.
+	 * Determines how to validate the JPQL query grammatically.
 	 */
 	private String validationLevel;
 
@@ -75,18 +76,8 @@ public final class HermesParser implements JPAQueryBuilder {
 	 * Creates a new <code>HermesParser</code>.
 	 */
 	public HermesParser() {
-		this(true);
-	}
-
-	/**
-	 * Creates a new {@link HermesParser}.
-	 *
-	 * @param validateQueries Determines whether JPQL queries should be validated before creating the
-	 * {@link Expression Expression}
-	 */
-	public HermesParser(boolean validateQueries) {
 		super();
-		this.validateQueries = validateQueries;
+		validationLevel = ParserValidationType.DEFAULT;
 	}
 
 	/**
@@ -120,7 +111,7 @@ public final class HermesParser implements JPAQueryBuilder {
 	                                     Collection<JPQLQueryProblem> problems,
 	                                     String messageKey) {
 
-		ResourceBundle bundle = ResourceBundle.getBundle(JPQLQueryProblemResourceBundle.class.getName());
+		ResourceBundle bundle = resourceBundle();
 		StringBuilder sb = new StringBuilder();
 
 		for (JPQLQueryProblem problem : problems) {
@@ -173,42 +164,62 @@ public final class HermesParser implements JPAQueryBuilder {
 	                                         AbstractSession session) {
 
 		try {
-			JPQLGrammar jpqlGrammar = jpqlGrammar();
-
 			// Create the parsed tree representation of the selection criteria
 			JPQLExpression jpqlExpression = new JPQLExpression(
 				selectionCriteria,
-				jpqlGrammar,
+				DefaultEclipseLinkJPQLGrammar.instance(),
 				ConditionalExpressionBNF.ID,
-				validateQueries
+				isTolerant()
 			);
 
 			// Caches the info and add a virtual range variable declaration
-			JPQLQueryContext queryContext = new JPQLQueryContext(jpqlGrammar);
+			JPQLQueryContext queryContext = new JPQLQueryContext(jpqlGrammar());
 			queryContext.cache(session, null, jpqlExpression, selectionCriteria);
 			queryContext.addRangeVariableDeclaration(entityName, "this");
 
-			// Validate the query
+			// Validate the JPQL query, which will use the JPQL grammar matching the validation
+			// level, for now, only validate the query statement because there could be an unknown
+			// ending that is an order by clause
 			validate(queryContext, jpqlExpression.getQueryStatement());
 
 			// Create the Expression representing the selection criteria
 			return queryContext.buildExpression(jpqlExpression.getQueryStatement());
 		}
+		catch (JPQLException exception) {
+			throw exception;
+		}
 		catch (Exception exception) {
-			if (exception instanceof JPQLException) {
-				throw (JPQLException) exception;
-			}
 			throw buildUnexpectedException(selectionCriteria, exception);
 		}
 	}
 
 	private JPQLException buildUnexpectedException(CharSequence jpqlQuery, Exception exception) {
-		ResourceBundle bundle = ResourceBundle.getBundle(JPQLQueryProblemResourceBundle.class.getName());
-		String errorMessage = bundle.getString(JPQLQueryProblemMessages.HermesParser_UnexpectedException_ErrorMessage);
+		String errorMessage = resourceBundle().getString(HermesParser_UnexpectedException_ErrorMessage);
 		errorMessage = MessageFormat.format(errorMessage, jpqlQuery);
 		return new JPQLException(errorMessage, exception);
 	}
 
+	/**
+	 * Determines whether the JPQL query should be parsed with tolerance turned on or off, i.e. if
+	 * validation is turned off, then it's assumed the JPQL query is grammatically valid and complete.
+	 * In this case, it will be parsed with tolerance turned off resulting in better performance.
+	 *
+	 * @return <code>true</code> if the query might be incomplete or invalid; <code>false</code> if
+	 * the query is complete and grammatically valid
+	 */
+	private boolean isTolerant() {
+		return validationLevel != ParserValidationType.None;
+	}
+
+	/**
+	 * Returns the {@link JPQLGrammar} that will help to validate the JPQL query grammatically and
+	 * semantically (contextually). It will also checks if any specific feature added to that grammar
+	 * is allowed. For instance, if the JPQL query has functions defined for EclipseLink grammar but
+	 * the validation level is set for generic JPA, then an exception will be thrown.
+	 *
+	 * @return The {@link JPQLGrammar} written for a specific JPA version or for the current version
+	 * of EclipseLink
+	 */
 	private JPQLGrammar jpqlGrammar() {
 
 		if (validationLevel == ParserValidationType.EclipseLink) {
@@ -242,17 +253,19 @@ public final class HermesParser implements JPAQueryBuilder {
 	                                       AbstractSession session) {
 
 		try {
-			JPQLGrammar jpqlGrammar = jpqlGrammar();
-
-			// Parse the JPQL query
-			JPQLExpression jpqlExpression = new JPQLExpression(jpqlQuery, jpqlGrammar, validateQueries);
+			// Parse the JPQL query with the most recent JPQL grammar
+			JPQLExpression jpqlExpression = new JPQLExpression(
+				jpqlQuery,
+				DefaultEclipseLinkJPQLGrammar.instance(),
+				isTolerant()
+			);
 
 			// Create a context that caches the information contained in the JPQL query
 			// (especially from the FROM clause)
-			JPQLQueryContext queryContext = new JPQLQueryContext(jpqlGrammar);
+			JPQLQueryContext queryContext = new JPQLQueryContext(jpqlGrammar());
 			queryContext.cache(session, query, jpqlExpression, jpqlQuery);
 
-			// Validate the JPQL query
+			// Validate the JPQL query, which will use the JPQL grammar matching the validation level
 			validate(queryContext, jpqlExpression);
 
 			// Create the DatabaseQuery by visiting the parsed tree
@@ -267,12 +280,16 @@ public final class HermesParser implements JPAQueryBuilder {
 
 			return query;
 		}
+		catch (JPQLException exception) {
+			throw exception;
+		}
 		catch (Exception exception) {
-			if (exception instanceof JPQLException) {
-				throw (JPQLException) exception;
-			}
 			throw buildUnexpectedException(jpqlQuery, exception);
 		}
+	}
+
+	private ResourceBundle resourceBundle() {
+		return ResourceBundle.getBundle(JPQLQueryProblemResourceBundle.class.getName());
 	}
 
 	/**
@@ -282,7 +299,6 @@ public final class HermesParser implements JPAQueryBuilder {
 	 */
 	public void setValidationLevel(String validationLevel) {
 		this.validationLevel = validationLevel;
-		this.validateQueries = (validationLevel != ParserValidationType.None);
 	}
 
 	/**
@@ -297,11 +313,11 @@ public final class HermesParser implements JPAQueryBuilder {
 	private void validate(JPQLQueryContext queryContext,
 	                      org.eclipse.persistence.jpa.jpql.parser.Expression expression) {
 
-		if (validateQueries) {
+		if (validationLevel != ParserValidationType.None) {
 
 			Collection<JPQLQueryProblem> problems = new LinkedList<JPQLQueryProblem>();
 
-			// Validate the JPQL query grammatically
+			// Validate the JPQL query grammatically (based on the JPQL grammar)
 			EclipseLinkGrammarValidator grammar = new EclipseLinkGrammarValidator(jpqlGrammar());
 			grammar.setProblems(problems);
 			expression.accept(grammar);
@@ -310,11 +326,11 @@ public final class HermesParser implements JPAQueryBuilder {
 				throw buildException(
 					queryContext,
 					problems,
-					JPQLQueryProblemMessages.HermesParser_GrammarValidator_ErrorMessage
+					HermesParser_GrammarValidator_ErrorMessage
 				);
 			}
 
-			// Validate the JPQL query semantically
+			// Validate the JPQL query semantically (contextually)
 			EclipseLinkSemanticValidatorHelper helper = new EclipseLinkSemanticValidatorHelper(queryContext);
 			EclipseLinkSemanticValidator semantic = new EclipseLinkSemanticValidator(helper);
 			semantic.setProblems(problems);
@@ -324,7 +340,7 @@ public final class HermesParser implements JPAQueryBuilder {
 				throw buildException(
 					queryContext,
 					problems,
-					JPQLQueryProblemMessages.HermesParser_SemanticValidator_ErrorMessage
+					HermesParser_SemanticValidator_ErrorMessage
 				);
 			}
 		}

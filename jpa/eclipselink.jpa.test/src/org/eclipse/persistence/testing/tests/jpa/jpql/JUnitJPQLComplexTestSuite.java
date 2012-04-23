@@ -2993,8 +2993,8 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         closeEntityManager(em);
     }
 
-    // Bug 300512 - Add FUNCTION support to extended JPQL 
-    // Bug 246598 - Unable to parse TRIM in JPA NamedQuery 
+    // Bug 300512 - Add FUNCTION support to extended JPQL
+    // Bug 246598 - Unable to parse TRIM in JPA NamedQuery
     public void standardFunctionCreateQueryTest() {
         // for debug
         boolean shouldPrintJpql = false;
@@ -3193,7 +3193,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
             closeEntityManager(em);
         }
     }
-    
+
     /* Test CAST function in JPQL. */
     public void testCast() {
         if (!isHermesParser()) {
@@ -3202,19 +3202,18 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         }
         EntityManager em = createEntityManager();
         try {
-            Query query = em.createQuery("Select cast(e.firstName as char(3)) from Employee e where cast(e.firstName as char(3)) = 'Bob'");
-            query.getResultList();
-            // Most databases require a size on char.
-            if (getDatabaseSession().getPlatform().isMySQL()) {
-                query = em.createQuery("Select cast(e.firstName as char) from Employee e where cast(e.firstName as char) = 'Bob'");
-                query.getResultList();
-            }
-        } finally {
-            closeEntityManager(em);
-        }
-        
+           Query query = em.createQuery("Select cast(e.firstName as char(3)) from Employee e where cast(e.firstName as char(3)) = 'Bob'");
+           query.getResultList();
+           // Most databases require a size on char.
+           if (getDatabaseSession().getPlatform().isMySQL()) {
+               query = em.createQuery("Select cast(e.firstName as char) from Employee e where cast(e.firstName as char) = 'Bob'");
+               query.getResultList();
+           }
+       } finally {
+           closeEntityManager(em);
+       }
     }
-    
+
     /* Test REGEXP function in JPQL. */
     public void testRegexp() {
         if (!isHermesParser()) {
@@ -3232,9 +3231,8 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         } finally {
             closeEntityManager(em);
         }
-        
     }
-    
+
     /* Test NULLS FIRST function in JPQL. */
     public void testNullOrdering() {
         if (!isHermesParser()) {
@@ -3264,9 +3262,8 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         } finally {
             closeEntityManager(em);
         }
-        
     }
-    
+
     /* Test EXTRACT function in JPQL. */
     public void testExtract() {
         if (!isHermesParser()) {
@@ -3280,9 +3277,8 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         } finally {
             closeEntityManager(em);
         }
-        
     }
-    
+
     /* Test UNION function in JPQL. */
     public void testUnion() {
         if (!isHermesParser()) {
@@ -3307,10 +3303,10 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         } finally {
             closeEntityManager(em);
         }
-        
+
     }
 
-    /* Test COLUMN */
+    /* Test SQL with CAST*/
     public void testCOLUMN() {
         if (!isHermesParser()) {
             warning("testCOLUMN only works with Hermes");
@@ -3325,7 +3321,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         }
     }
 
-    /* Test OPERATOR with CAST */
+    /* Test OPERATOR with CAST*/
     public void testOPERATOR() {
         if (!isHermesParser()) {
             warning("testOPERATOR only works with Hermes");
@@ -3478,15 +3474,16 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         closeEntityManager(em);
     }
 
-    // TODO Bug 350597
+    // Bug 350597
     // Test that subselects can be used in the from clause.
     public void testSubselectInFrom() {
         EntityManager em = createEntityManager();
-        //Query query = em.createQuery("Select e.firstName, avg(e3.count) from Employee e, (Select count(e2), e2.firstName from Employee e2 group by e2.firstName) e3 where e.firstName = e3.firstName");
-        //query.getResultList();
+//        Query query = em.createQuery("Select e.firstName, avg(e3.count) from Employee e, (Select count(e2), e2.firstName from Employee e2 group by e2.firstName) e3 where e.firstName = e3.firstName");
+        Query query = em.createQuery("Select e.firstName from Employee e, (Select e2.firstName from Employee e2 group by e2.firstName) e3 where e.firstName = e3.firstName");
+        query.getResultList();
         closeEntityManager(em);
     }
-    
+
     // Test using parameters on the left vs right.
     public void testLeftParameters() {
         EntityManager em = createEntityManager();
@@ -3520,9 +3517,10 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         query.getResultList();
         query = em.createQuery("Select e from Employee e where null = e");
         query.getResultList();
-        closeEntityManager(em);        
+        closeEntityManager(em);
     }
 
+    // Bug 243698
     // Test that a full class name can be used in the from clause.
     public void testClassNameInFrom() {
         if (!isHermesParser()) {
@@ -4044,7 +4042,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         query.getResultList();
         closeEntityManager(em);
     }
-    
+
     public void testComplexLike() {
         if (!getServerSession().getPlatform().isOracle()) {
             return;
@@ -4187,7 +4185,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     /*
      * The test should assert that the following phenomenon does not occur after
      * a row has been locked by T1:
-     * 
+     *
      * - P2 (Non-repeatable read): Transaction T1 reads a row. Another
      * transaction T2 then modifies or deletes that row, before T1 has committed
      * or rolled back.

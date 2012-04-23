@@ -467,6 +467,7 @@ public final class JPQLGrammar1_0 extends AbstractJPQLGrammar {
 		registerFactory(new ModExpressionFactory());
 		registerFactory(new NotExpressionFactory());
 		registerFactory(new NullComparisonExpressionFactory());
+		registerFactory(new NumericLiteralFactory());
 		registerFactory(new ObjectExpressionFactory());
 		registerFactory(new OrderByClauseFactory());
 		registerFactory(new OrderByItemFactory());

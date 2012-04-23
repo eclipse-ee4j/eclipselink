@@ -17,10 +17,9 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
 
 /**
  * This {@link UnionClauseFactory} creates a new {@link UnionClause} when the portion of the
- * query to parse starts with <b>UNION</b>.
+ * query to parse starts with <b>UNION</b>, <code>INTERSECT</code> or <code>EXCEPT</code>.
  *
  * @see UnionClause
- *
  * @version 2.4
  * @since 2.4
  * @author James Sutherland
@@ -36,9 +35,9 @@ public final class UnionClauseFactory extends ExpressionFactory {
 	 * Creates a new <code>UnionClauseFactory</code>.
 	 */
 	public UnionClauseFactory() {
-		super(ID, Expression.UNION);
-		addIdentifier(Expression.INTERSECT);
-                addIdentifier(Expression.EXCEPT);
+		super(ID, Expression.UNION,
+		          Expression.INTERSECT,
+		          Expression.EXCEPT);
 	}
 
 	/**
@@ -52,7 +51,7 @@ public final class UnionClauseFactory extends ExpressionFactory {
 	                                             AbstractExpression expression,
 	                                             boolean tolerant) {
 
-		expression = new UnionClause(parent);
+		expression = new UnionClause(parent, word);
 		expression.parse(wordParser, tolerant);
 		return expression;
 	}

@@ -14,11 +14,15 @@
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionValuedPathExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.ComparisonExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.ConditionalExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.ConstructorItemBNF;
+import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.ExpressionRegistry;
 import org.eclipse.persistence.jpa.jpql.parser.IdentifierRole;
 import org.eclipse.persistence.jpa.jpql.parser.InternalAggregateFunctionBNF;
@@ -50,6 +54,12 @@ public class JPQLQueryBNFAccessor {
 		this.registry = registry;
 	}
 
+	private void addAll(Collection<String> list, Iterable<String> items) {
+		for (String item : items) {
+			list.add(item);
+		}
+	}
+
 	public Iterable<String> aggregates(Iterable<String> identifiers) {
 		return filter(identifiers, IdentifierRole.AGGREGATE);
 	}
@@ -74,6 +84,27 @@ public class JPQLQueryBNFAccessor {
 		return getIdentifiers(ComparisonExpressionBNF.ID);
 	}
 
+	private Iterable<String> conditionalExpressions(IdentifierRole role) {
+
+		Set<String> identifiers = new HashSet<String>();
+		JPQLQueryBNF queryBNF = getQueryBNF(ConditionalExpressionBNF.ID);
+
+		for (JPQLQueryBNF child : queryBNF.children()) {
+			addAll(identifiers, filter(child.getIdentifiers(), role));
+		}
+
+		identifiers.remove(Expression.IS);
+		return identifiers;
+	}
+
+	public Iterable<String> conditionalExpressionsAggregates() {
+		return conditionalExpressions(IdentifierRole.AGGREGATE);
+	}
+
+	public Iterable<String> conditionalExpressionsCompoundFunctions() {
+		return conditionalExpressions(IdentifierRole.COMPOUND_FUNCTION);
+	}
+
 	public Iterable<String> constructorItemFunctions() {
 		return functions(constructorItemIdentifiers());
 	}
@@ -90,8 +121,7 @@ public class JPQLQueryBNFAccessor {
 		return getIdentifiers(InternalCountBNF.ID);
 	}
 
-	public Iterable<String> filter(Iterable<String> identifiers,
-	                                       IdentifierRole identifierRole) {
+	public Iterable<String> filter(Iterable<String> identifiers, IdentifierRole identifierRole) {
 
 		List<String> items = new ArrayList<String>();
 
@@ -130,6 +160,10 @@ public class JPQLQueryBNFAccessor {
 
 	public Iterable<String> internalAggregateFunctionIdentifiers() {
 		return getIdentifiers(InternalAggregateFunctionBNF.ID);
+	}
+
+	public Iterable<String> scalarExpressionAggregates() {
+		return aggregates(scalarExpressionIdentifiers());
 	}
 
 	public Iterable<String> scalarExpressionFunctions() {

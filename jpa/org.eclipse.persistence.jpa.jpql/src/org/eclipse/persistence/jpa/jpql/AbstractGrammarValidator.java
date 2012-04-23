@@ -76,7 +76,9 @@ import org.eclipse.persistence.jpa.jpql.parser.IndexExpression;
 import org.eclipse.persistence.jpa.jpql.parser.InputParameter;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLExpression;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
+import org.eclipse.persistence.jpa.jpql.parser.JPQLQueryBNF;
 import org.eclipse.persistence.jpa.jpql.parser.Join;
+import org.eclipse.persistence.jpa.jpql.parser.JoinAssociationPathExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.JoinBNF;
 import org.eclipse.persistence.jpa.jpql.parser.KeyExpression;
 import org.eclipse.persistence.jpa.jpql.parser.KeywordExpression;
@@ -100,6 +102,7 @@ import org.eclipse.persistence.jpa.jpql.parser.OnClause;
 import org.eclipse.persistence.jpa.jpql.parser.OrExpression;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByClause;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByItem;
+import org.eclipse.persistence.jpa.jpql.parser.RangeDeclarationBNF;
 import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.ResultVariable;
 import org.eclipse.persistence.jpa.jpql.parser.SelectClause;
@@ -694,9 +697,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 			protected String firstExpressionMissingKey() {
 				return ModExpression_MissingFirstExpression;
 			}
-			public String identifier(ModExpression expression) {
-				return MOD;
-			}
 			public String leftParenthesisMissingKey(ModExpression expression) {
 				return ModExpression_MissingLeftParenthesis;
 			}
@@ -709,7 +709,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 			}
 			@Override
 			protected String secondExpressionInvalidKey() {
-				return ModExpression_InvalidSecondParenthesis;
+				return ModExpression_InvalidSecondExpression;
 			}
 			@Override
 			protected String secondExpressionMissingKey() {
@@ -736,9 +736,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 			@Override
 			public String firstExpressionMissingKey() {
 				return NullIfExpression_MissingFirstExpression;
-			}
-			public String identifier(NullIfExpression expression) {
-				return NULLIF;
 			}
 			public String leftParenthesisMissingKey(NullIfExpression expression) {
 				return NullIfExpression_MissingLeftParenthesis;
@@ -1211,6 +1208,26 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 	}
 
 	/**
+	 * Determines whether the JPA version defined by the JPQL grammar is 2.0.
+	 *
+	 * @return <code>true</code> if the JPQL grammar was defined for JPA 2.0; <code>false</code> if
+	 * it was defined for a more recent version
+	 */
+	protected boolean isJPA2_0() {
+		return getJPAVersion() == JPAVersion.VERSION_2_0;
+	}
+
+	/**
+	 * Determines whether the JPA version defined by the JPQL grammar is 2.1.
+	 *
+	 * @return <code>true</code> if the JPQL grammar was defined for JPA 2.1; <code>false</code> if
+	 * it was defined for a more recent version
+	 */
+	protected boolean isJPA2_1() {
+		return getJPAVersion() == JPAVersion.VERSION_2_1;
+	}
+
+	/**
 	 * Determines whether the JPA version for which the JPQL grammar was defined represents a version
 	 * that is newer than the given version.
 	 *
@@ -1351,50 +1368,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 		finally {
 			visitor.dispose();
 		}
-	}
-
-	/**
-	 * Determines whether the right parenthesis is missing from the given expression.
-	 *
-	 * @param expression The {@link Expression} to verify for the existence of the right parenthesis
-	 * by determining if the encapsulated information has been parsed or not
-	 * @return <code>true</code> if the encapsulated information was parsed and the right parenthesis
-	 * is missing; <code>false</code> in any other case
-	 */
-	protected boolean isRightParenthesisMissing(AbstractTripleEncapsulatedExpression expression) {
-
-		if (!expression.hasLeftParenthesis() ||
-		    !expression.hasFirstExpression() ||
-		     expression.hasRightParenthesis()) {
-
-			return false;
-		}
-
-		if (expression.hasFirstExpression()  &&
-		   !expression.hasFirstComma()       &&
-		   !expression.hasSecondExpression() &&
-		   !expression.hasSecondComma()      &&
-		   !expression.hasThirdExpression()) {
-
-			return false;
-		}
-
-		if (expression.hasFirstComma()       &&
-		   !expression.hasSecondExpression() &&
-		   !expression.hasSecondComma()      &&
-		   !expression.hasThirdExpression()) {
-
-			return false;
-		}
-
-		if (expression.hasSecondExpression() &&
-		    expression.hasSecondComma()      &&
-		   !expression.hasThirdExpression()) {
-
-			return false;
-		}
-
-		return true;
 	}
 
 	/**
@@ -1632,6 +1605,14 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 		}
 	}
 
+	/**
+	 * Validates the content of an {@link AbstractDoubleEncapsulatedExpression}, which encapsulates
+	 * two expressions separated by a comma.
+	 *
+	 * @param expression The {@link AbstractDoubleEncapsulatedExpression} to validate
+	 * @param helper This helper is used to retrieve specific information related to the {@link
+	 * AbstractDoubleEncapsulatedExpression expression} being validated
+	 */
 	protected <T extends AbstractDoubleEncapsulatedExpression>
 	          void validateAbstractDoubleEncapsulatedExpression
 	          (T expression, AbstractDoubleEncapsulatedExpressionHelper<T> helper) {
@@ -1639,32 +1620,19 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 		String identifier = helper.identifier(expression);
 
 		// Missing '('
-		if (!expression.hasLeftParenthesis()) {
+		if (!helper.hasLeftParenthesis(expression)) {
 			int startPosition = position(expression) + identifier.length();
 			addProblem(expression, startPosition, helper.leftParenthesisMissingKey(expression));
 		}
-
-		// Missing ')'
-		if (expression.hasLeftParenthesis() &&
-		    helper.hasSecondExpression(expression) &&
-		   !expression.hasRightParenthesis()) {
-
-			int startPosition = position(expression) +
-			                    identifier.length() +
-			                    1 /* ( */ +
-			                    helper.firstExpressionLength(expression) +
-			                    (expression.hasComma() ? 1 : 0) +
-			                    (expression.hasSpaceAfterComma() ? 1 : 0) +
-			                    length(expression.getSecondExpression());
-
-			addProblem(expression, startPosition, helper.rightParenthesisMissingKey(expression));
-		}
-
-		if (expression.hasLeftParenthesis()) {
+		else {
 
 			// Missing first expression
 			if (!helper.hasFirstExpression(expression)) {
-				int startPosition = position(expression) + identifier.length() + 1 /* '(' */;
+
+				int startPosition = position(expression) +
+				                    identifier.length() +
+				                    1 /* '(' */;
+
 				addProblem(expression, startPosition, helper.firstExpressionMissingKey());
 			}
 			// Invalid first expression
@@ -1674,7 +1642,8 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 				                    identifier.length() +
 				                    1 /* ( */;
 
-				int endPosition = startPosition + helper.firstExpressionLength(expression);
+				int endPosition = startPosition +
+				                  helper.firstExpressionLength(expression);
 
 				addProblem(expression, startPosition, endPosition, helper.firstExpressionInvalidKey());
 			}
@@ -1683,8 +1652,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 			}
 
 			// Missing comma
-			if (helper.hasFirstExpression(expression) &&
-			    !expression.hasComma()) {
+			if (!helper.hasComma(expression)) {
 
 				int startPosition = position(expression) +
 				                    identifier.length() +
@@ -1693,9 +1661,8 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 
 				addProblem(expression, startPosition, helper.missingCommaKey());
 			}
-
-			// After 2nd ','
-			if (expression.hasComma()) {
+			// After ','
+			else {
 
 				// Missing second expression
 				if (!helper.hasSecondExpression(expression)) {
@@ -1728,6 +1695,20 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 				}
 			}
 		}
+
+		// Missing ')'
+		if (!helper.hasRightParenthesis(expression)) {
+
+			int startPosition = position(expression) +
+			                    identifier.length() +
+			                    1 /* ( */ +
+			                    helper.firstExpressionLength(expression) +
+			                    (expression.hasComma() ? 1 : 0) +
+			                    (expression.hasSpaceAfterComma() ? 1 : 0) +
+			                    length(expression.getSecondExpression());
+
+			addProblem(expression, startPosition, helper.rightParenthesisMissingKey(expression));
+		}
 	}
 
 	protected void validateAbstractFromClause(AbstractFromClause expression) {
@@ -1756,10 +1737,11 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 	 * will only be visited if its JPQL query BNF is part of the select item BNF.
 	 *
 	 * @param expression The {@link AbstractSelectClause} to validate
-	 * @param collectionExpressionSupported
+	 * @param multipleSelectItemsAllowed Determines whether the <code><b>SELECT</b></code> can have
+	 * one or more select expression or not
 	 */
 	protected void validateAbstractSelectClause(AbstractSelectClause expression,
-	                                            boolean collectionExpressionSupported) {
+	                                            boolean multipleSelectItemsAllowed) {
 
 		// Missing select expression
 		if (!expression.hasSelectExpression()) {
@@ -1779,7 +1761,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 			if (isCollectionExpression(selectExpression)) {
 
 				// The SELECT clause does not support a collection of select expressions
-				if (!collectionExpressionSupported) {
+				if (!multipleSelectItemsAllowed) {
 
 					int startPosition = position(expression) +
 					                    6 /* SELECT */ +
@@ -1836,7 +1818,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 		String identifier = helper.identifier(expression);
 
 		// Missing '('
-		if (!expression.hasLeftParenthesis()) {
+		if (!helper.hasLeftParenthesis(expression)) {
 			int startPosition = position(expression) + identifier.length();
 
 			addProblem(
@@ -1887,7 +1869,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 		}
 
 		// Missing ')'
-		if (!expression.hasRightParenthesis()) {
+		if (!helper.hasRightParenthesis(expression)) {
 
 			int startPosition = position(expression) + length(expression);
 
@@ -1907,32 +1889,11 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 		String identifier = helper.identifier(expression);
 
 		// Missing '('
-		if (!expression.hasLeftParenthesis()) {
+		if (!helper.hasLeftParenthesis(expression)) {
 			int startPosition = position(expression) + identifier.length();
 			addProblem(expression, startPosition, helper.leftParenthesisMissingKey(expression));
 		}
-
-		// Missing ')'
-		if (expression.hasLeftParenthesis() &&
-		    helper.hasFirstExpression(expression) &&
-		   !expression.hasRightParenthesis() &&
-		    isRightParenthesisMissing(expression)) {
-
-			int startPosition = position(expression) +
-			                    identifier.length() +
-			                    1 /* ( */ +
-			                    helper.firstExpressionLength(expression) +
-			                    (expression.hasFirstComma() ? 1 : 0) +
-			                    (expression.hasSpaceAfterFirstComma() ? 1 : 0) +
-			                    helper.secondExpressionLength(expression) +
-			                    (expression.hasSecondComma() ? 1 : 0) +
-			                    (expression.hasSpaceAfterSecondComma() ? 1 : 0) +
-			                    helper.thirdExpressionLength(expression);
-
-			addProblem(expression, startPosition, helper.rightParenthesisMissingKey(expression));
-		}
-
-		if (expression.hasLeftParenthesis()) {
+		else {
 
 			// Missing first expression
 			if (!helper.hasFirstExpression(expression)) {
@@ -2060,11 +2021,27 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 				}
 			}
 		}
+
+		// Missing ')'
+		if (!helper.hasRightParenthesis(expression)) {
+
+			int startPosition = position(expression) +
+			                    identifier.length() +
+			                    1 /* ( */ +
+			                    helper.firstExpressionLength(expression) +
+			                    (expression.hasFirstComma() ? 1 : 0) +
+			                    (expression.hasSpaceAfterFirstComma() ? 1 : 0) +
+			                    helper.secondExpressionLength(expression) +
+			                    (expression.hasSecondComma() ? 1 : 0) +
+			                    (expression.hasSpaceAfterSecondComma() ? 1 : 0) +
+			                    helper.thirdExpressionLength(expression);
+
+			addProblem(expression, startPosition, helper.rightParenthesisMissingKey(expression));
+		}
 	}
 
-	protected <T extends AggregateFunction> void validateAggregateFunctionLocation(T expression,
-	                                                                               AbstractSingleEncapsulatedExpressionHelper<T> helper) {
-
+	protected <T extends AggregateFunction> void validateAggregateFunctionLocation
+		(T expression, AbstractSingleEncapsulatedExpressionHelper<T> helper) {
 
 		// Check to see if the aggregate function is in the right clause
 		OwningClauseVisitor visitor = getOwningClauseVisitor();
@@ -2238,43 +2215,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 			expression.getRangeVariableDeclaration().accept(this);
 		}
 
-		// Validate the JOIN expressions
-		if (expression.hasJoins()) {
-
-			Expression joins = expression.getJoins();
-			List<Expression> children = getChildren(joins);
-
-			// Validate multiple JOIN expression
-			if (children.size() > 1) {
-				validateCollectionSeparatedBySpace(
-					joins,
-					IdentificationVariableDeclaration_JoinsEndWithComma,
-					IdentificationVariableDeclaration_JoinsHaveComma
-				);
-
-				// Make sure each child is a JOIN expression
-				for (int index = children.size(); --index >= 0; ) {
-					Expression child = children.get(index);
-
-					// The child expression is not a JOIN expression
-					if (!isValid(child, JoinBNF.ID)) {
-						addProblem(child, IdentificationVariableDeclaration_InvalidJoin, child.toActualText());
-					}
-					// Validate the JOIN expression
-					else {
-						child.accept(this);
-					}
-				}
-			}
-			// Make sure the single expression is a JOIN expression
-			else if (!isValid(joins, JoinBNF.ID)) {
-				addProblem(joins, IdentificationVariableDeclaration_InvalidJoin, joins.toActualText());
-			}
-			// Validate the JOIN expression
-			else {
-				joins.accept(this);
-			}
-		}
+		validateJoins(expression);
 	}
 
 	/**
@@ -2337,6 +2278,47 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 		if ((positionalCount > 0) && (namedCount > 0)) {
 			for (InputParameter parameter : inputParameters) {
 				addProblem(parameter, InputParameter_Mixture);
+			}
+		}
+	}
+
+	protected void validateJoins(IdentificationVariableDeclaration expression) {
+
+		// Validate the JOIN expressions
+		if (expression.hasJoins()) {
+
+			Expression joins = expression.getJoins();
+			List<Expression> children = getChildren(joins);
+
+			// Validate multiple JOIN expression
+			if (children.size() > 1) {
+				validateCollectionSeparatedBySpace(
+					joins,
+					IdentificationVariableDeclaration_JoinsEndWithComma,
+					IdentificationVariableDeclaration_JoinsHaveComma
+				);
+
+				// Make sure each child is a JOIN expression
+				for (int index = children.size(); --index >= 0; ) {
+					Expression child = children.get(index);
+
+					// The child expression is not a JOIN expression
+					if (!isValid(child, JoinBNF.ID)) {
+						addProblem(child, IdentificationVariableDeclaration_InvalidJoin, child.toActualText());
+					}
+					// Validate the JOIN expression
+					else {
+						child.accept(this);
+					}
+				}
+			}
+			// Make sure the single expression is a JOIN expression
+			else if (!isValid(joins, JoinBNF.ID)) {
+				addProblem(joins, IdentificationVariableDeclaration_InvalidJoin, joins.toActualText());
+			}
+			// Validate the JOIN expression
+			else {
+				joins.accept(this);
 			}
 		}
 	}
@@ -2428,18 +2410,10 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 
 	protected void validateOwningClause(InputParameter expression, String parameter) {
 
-		OwningClauseVisitor visitor = getOwningClauseVisitor();
-		expression.accept(visitor);
-
-		try {
-			if (!isInputParameterInValidLocation(expression)) {
-				int startPosition = position(expression);
-				int endPosition   = startPosition + parameter.length();
-				addProblem(expression, startPosition, endPosition, InputParameter_WrongClauseDeclaration);
-			}
-		}
-		finally {
-			visitor.dispose();
+		if (!isInputParameterInValidLocation(expression)) {
+			int startPosition = position(expression);
+			int endPosition   = startPosition + parameter.length();
+			addProblem(expression, startPosition, endPosition, InputParameter_WrongClauseDeclaration);
 		}
 	}
 
@@ -3145,8 +3119,9 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 					            DeleteClause_MultipleRangeVariableDeclaration
 				);
 			}
-
-			super.visit(expression);
+			else {
+				super.visit(expression);
+			}
 		}
 	}
 
@@ -3206,7 +3181,10 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 	 */
 	@Override
 	public void visit(EntityTypeLiteral expression) {
-		// Nothing to validate
+
+		if (isJPA1_0()) {
+			addProblem(expression, EntityTypeLiteral_InvalidJPAVersion);
+		}
 	}
 
 	/**
@@ -3247,9 +3225,12 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 	@Override
 	public void visit(FunctionExpression expression) {
 
-		// JPA 1.0 does not support the function expression
-		if (isJPA1_0()) {
-			addProblem(expression, InvalidJPAPlatform);
+		JPQLQueryBNF queryBNF = getQueryBNF(expression.getQueryBNF().getId());
+		boolean validFunction = (queryBNF != null) && queryBNF.getIdentifiers().contains(expression.getIdentifier());
+
+		// JPA 1.0/2.0 does not support the function expression
+		if (!isJPA2_1() || !validFunction) {
+			addProblem(expression, FunctionExpression_InvalidJPAVersion);
 		}
 		else {
 			validateAbstractSingleEncapsulatedExpression(expression, functionExpressionHelper());
@@ -3506,6 +3487,22 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 				joinFetch ? JoinFetch_MissingJoinAssociationPath : Join_MissingJoinAssociationPath
 			);
 		}
+		else {
+
+			Expression joinAssociationPath = expression.getJoinAssociationPath();
+
+			// Invalid join association path
+			if (!isValid(joinAssociationPath, JoinAssociationPathExpressionBNF.ID)) {
+
+				int startPosition = position(joinAssociationPath);
+				int endPosition   = startPosition + length(joinAssociationPath);
+				addProblem(expression, startPosition, endPosition, Join_InvalidJoinAssociationPath);
+			}
+			// Validate join association path
+			else {
+				joinAssociationPath.accept(this);
+			}
+		}
 
 		// Missing identification variable
 		// A JOIN expression always needs an identification variable
@@ -3546,6 +3543,9 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 
 			addProblem(expression, startPosition, endPosition, JoinFetch_InvalidIdentification);
 		}
+		else {
+			expression.getIdentificationVariable().accept(this);
+		}
 
 		// A JOIN FETCH expression can only be defined in the top-level query
 		if (joinFetch && isOwnedBySubFromClause(expression)) {
@@ -3554,7 +3554,8 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 			addProblem(expression, startPosition, endPosition, JoinFetch_WrongClauseDeclaration);
 		}
 
-		super.visit(expression);
+		// Traverse the ON clause
+		expression.getOnClause().accept(this);
 	}
 
 	/**
@@ -3902,9 +3903,24 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 	public void visit(RangeVariableDeclaration expression) {
 
 		// Missing abstract schema name
-		if (!expression.hasAbstractSchemaName()) {
+		if (!expression.hasRootObject()) {
 			int startPosition = position(expression);
-			addProblem(expression, startPosition, RangeVariableDeclaration_MissingAbstractSchemaName);
+			addProblem(expression, startPosition, RangeVariableDeclaration_MissingRootObject);
+		}
+		else {
+
+			Expression rootObject = expression.getRootObject();
+
+			if (!isValid(rootObject, RangeDeclarationBNF.ID)) {
+
+				int startPosition = position(rootObject);
+				int endPosition   = startPosition + length(rootObject);
+
+				addProblem(expression, startPosition, endPosition, RangeVariableDeclaration_InvalidRootObject);
+			}
+			else {
+				rootObject.accept(this);
+			}
 		}
 
 		// Missing identification variable
@@ -3912,15 +3928,16 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 		    !expression.hasVirtualIdentificationVariable()) {
 
 			int startPosition = position(expression) +
-			                    length(expression.getAbstractSchemaName()) +
-			                    (expression.hasSpaceAfterAbstractSchemaName() ? 1 : 0) +
+			                    length(expression.getRootObject()) +
+			                    (expression.hasSpaceAfterRootObject() ? 1 : 0) +
 			                    (expression.hasAs() ? 2 : 0) +
 			                    (expression.hasSpaceAfterAs() ? 1 : 0);
 
 			addProblem(expression, startPosition, RangeVariableDeclaration_MissingIdentificationVariable);
 		}
-
-		super.visit(expression);
+		else {
+			expression.getIdentificationVariable().accept(this);
+		}
 	}
 
 	/**
@@ -3931,9 +3948,19 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 
 		// JPA 1.0 does not support a result variable expression
 		if (isJPA1_0()) {
-			addProblem(expression, ResultVariable_InvalidJPAVersion);
+			int startPosition = position(expression) +
+			                    length(expression.getSelectExpression()) +
+			                    (expression.hasSelectExpression() ? 1 : 0);
+
+			int endPosition = startPosition +
+			                  (expression.hasAs() ? 2 : 0) +
+			                  (expression.hasSpaceAfterAs() ? 1 : 0) +
+			                  length(expression.getResultVariable());
+
+			addProblem(expression, startPosition, endPosition, ResultVariable_InvalidJPAVersion);
 		}
 		else {
+
 			// Missing select expression
 			if (!expression.hasSelectExpression()) {
 				int startPosition = position(expression);
@@ -4515,12 +4542,43 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 
 		protected abstract String firstExpressionMissingKey();
 
+		protected boolean hasComma(T expression) {
+			return !hasFirstExpression(expression) ||
+			       expression.hasComma();
+		}
+
 		protected boolean hasFirstExpression(T expression) {
 			return expression.hasFirstExpression();
 		}
 
+		/**
+		 * {@inheritDoc}
+		 */
+		public boolean hasLeftParenthesis(T expression) {
+			return expression.hasLeftParenthesis();
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public boolean hasRightParenthesis(T expression) {
+			// If the second encapsulated expression is missing, then no need
+			// to add a problem for a missing ')' because the second encapsulated
+			// expression needs to be specified first
+			return !expression.hasSecondExpression() ||
+			        expression.hasRightParenthesis();
+		}
+
 		protected boolean hasSecondExpression(T expression) {
-			return expression.hasSecondExpression();
+			return !expression.hasComma() ||
+			        expression.hasSecondExpression();
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public String identifier(T expression) {
+			return expression.getIdentifier();
 		}
 
 		protected final boolean isFirstExpressionValid(T expression) {
@@ -4558,6 +4616,22 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 		 * @return The list of arguments used to complete the localized problem
 		 */
 		String[] arguments(T expression);
+
+		/**
+		 * Determines whether the given {@link AbstractEncapsulatedExpression} has the left parenthesis.
+		 *
+		 * @param expression The {@link AbstractEncapsulatedExpression} being validated
+		 * @return <code>true</code> if the left parenthesis was parsed
+		 */
+		boolean hasLeftParenthesis(T expression);
+
+		/**
+		 * Determines whether the given {@link AbstractEncapsulatedExpression} has the right parenthesis.
+		 *
+		 * @param expression The {@link AbstractEncapsulatedExpression} being validated
+		 * @return <code>true</code> if the right parenthesis was parsed
+		 */
+		boolean hasRightParenthesis(T expression);
 
 		/**
 		 * Returns the JPQL identifier of the given {@link AbstractEncapsulatedExpression}.
@@ -4599,8 +4673,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 		}
 
 		/**
-		 * Returns the message key for the problem describing that the encapsulated expression is
-		 * invalid.
+		 * Returns the message key for the problem describing that the encapsulated expression is invalid.
 		 *
 		 * @param expression The {@link AbstractSingleEncapsulatedExpression} being validated
 		 * @return The key used to retrieve the localized message
@@ -4625,6 +4698,24 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 		 * @return The key used to retrieve the localized message
 		 */
 		protected abstract String encapsulatedExpressionMissingKey(T expression);
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public boolean hasLeftParenthesis(T expression) {
+			return expression.hasLeftParenthesis();
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public boolean hasRightParenthesis(T expression) {
+			// If the encapsulated expression is missing, then no need to
+			// add a problem for a missing ')' because the encapsulated
+			// expression needs to be specified first
+			return !expression.hasEncapsulatedExpression() ||
+			        expression.hasRightParenthesis();
+		}
 
 		/**
 		 * {@inheritDoc}
@@ -4692,6 +4783,20 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 			return expression.hasFirstExpression();
 		}
 
+		/**
+		 * {@inheritDoc}
+		 */
+		public boolean hasLeftParenthesis(T expression) {
+			return expression.hasLeftParenthesis();
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public boolean hasRightParenthesis(T expression) {
+			return !isRightParenthesisMissing(expression);
+		}
+
 		protected boolean hasSecondExpression(T expression) {
 			return expression.hasSecondExpression();
 		}
@@ -4702,6 +4807,50 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 
 		protected boolean isFirstExpressionValid(T expression) {
 			return isValid(expression.getFirstExpression(), expression.parameterExpressionBNF(0));
+		}
+
+		/**
+		 * Determines whether the right parenthesis is missing from the given expression.
+		 *
+		 * @param expression The {@link Expression} to verify for the existence of the right parenthesis
+		 * by determining if the encapsulated information has been parsed or not
+		 * @return <code>true</code> if the encapsulated information was parsed and the right parenthesis
+		 * is missing; <code>false</code> in any other case
+		 */
+		protected boolean isRightParenthesisMissing(T expression) {
+
+			if (!expression.hasLeftParenthesis() ||
+			    !expression.hasFirstExpression() ||
+			     expression.hasRightParenthesis()) {
+
+				return false;
+			}
+
+			if (expression.hasFirstExpression()  &&
+			   !expression.hasFirstComma()       &&
+			   !expression.hasSecondExpression() &&
+			   !expression.hasSecondComma()      &&
+			   !expression.hasThirdExpression()) {
+
+				return false;
+			}
+
+			if (expression.hasFirstComma()       &&
+			   !expression.hasSecondExpression() &&
+			   !expression.hasSecondComma()      &&
+			   !expression.hasThirdExpression()) {
+
+				return false;
+			}
+
+			if (expression.hasSecondExpression() &&
+			    expression.hasSecondComma()      &&
+			   !expression.hasThirdExpression()) {
+
+				return false;
+			}
+
+			return true;
 		}
 
 		protected boolean isSecondExpressionValid(T expression) {

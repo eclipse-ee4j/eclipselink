@@ -17,9 +17,14 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * The query BNF for a simple conditional expression.
  *
  * <div nowrap><b>BNF:</b> <code>simple_cond_expression ::= comparison_expression |
- * between_expression | in_expression | like_expression | null_comparison_expression |
- * empty_collection_comparison_expression | collection_member_expression |
- * exists_expression</code><p>
+ *                                                          between_expression |
+ *                                                          in_expression |
+ *                                                          like_expression |
+ *                                                          null_comparison_expression |
+ *                                                          empty_collection_comparison_expression |
+ *                                                          collection_member_expression |
+ *                                                          exists_expression</code>
+ * <p>
  *
  * @version 2.4
  * @since 2.3

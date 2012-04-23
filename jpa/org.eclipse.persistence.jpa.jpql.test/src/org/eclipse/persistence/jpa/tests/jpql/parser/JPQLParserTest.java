@@ -97,6 +97,7 @@ import org.eclipse.persistence.jpa.jpql.parser.OrderByItem;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByItem.NullOrdering;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByItem.Ordering;
 import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
+import org.eclipse.persistence.jpa.jpql.parser.RegexpExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ResultVariable;
 import org.eclipse.persistence.jpa.jpql.parser.SelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.SelectStatement;
@@ -115,6 +116,7 @@ import org.eclipse.persistence.jpa.jpql.parser.TreatExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TrimExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TrimExpression.Specification;
 import org.eclipse.persistence.jpa.jpql.parser.TypeExpression;
+import org.eclipse.persistence.jpa.jpql.parser.UnionClause;
 import org.eclipse.persistence.jpa.jpql.parser.UnknownExpression;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateClause;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateItem;
@@ -541,6 +543,58 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 	                                                  ExpressionTester rightExpression) {
 
 		return comparison(leftExpression, Expression.EQUAL, rightExpression);
+	}
+
+	protected static UnionClauseTester except(ExpressionTester subquery) {
+		return union(EXCEPT, false, subquery);
+	}
+
+	protected static UnionClauseTester except(ExpressionTester selectClause,
+	                                          ExpressionTester fromClause) {
+
+		return except(subquery(selectClause, fromClause));
+	}
+
+	protected static UnionClauseTester except(ExpressionTester selectClause,
+	                                          ExpressionTester fromClause,
+		                                       ExpressionTester whereClause) {
+
+		return except(subquery(selectClause, fromClause, whereClause));
+	}
+
+	protected static UnionClauseTester except(ExpressionTester selectClause,
+	                                          ExpressionTester fromClause,
+		                                       ExpressionTester whereClause,
+		                                       ExpressionTester groupByClause,
+		                                       ExpressionTester havingClause) {
+
+		return except(subquery(selectClause, fromClause, whereClause, groupByClause, havingClause));
+	}
+
+	protected static UnionClauseTester exceptAll(ExpressionTester subquery) {
+		return union(EXCEPT, true, subquery);
+	}
+
+	protected static UnionClauseTester exceptAll(ExpressionTester selectClause,
+	                                             ExpressionTester fromClause) {
+
+		return exceptAll(subquery(selectClause, fromClause));
+	}
+
+	protected static UnionClauseTester exceptAll(ExpressionTester selectClause,
+	                                             ExpressionTester fromClause,
+	 	                                          ExpressionTester whereClause) {
+
+		return exceptAll(subquery(selectClause, fromClause, whereClause));
+	}
+
+	protected static UnionClauseTester exceptAll(ExpressionTester selectClause,
+	                                             ExpressionTester fromClause,
+	 	                                          ExpressionTester whereClause,
+	 	                                          ExpressionTester groupByClause,
+		                                          ExpressionTester havingClause) {
+
+		return exceptAll(subquery(selectClause, fromClause, whereClause, groupByClause, havingClause));
 	}
 
 	protected static ExistsExpressionTester exists(ExpressionTester subquery) {
@@ -1152,6 +1206,58 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 
 	protected static InputParameterTester inputParameter(String inputParameter) {
 		return new InputParameterTester(inputParameter);
+	}
+
+	protected static UnionClauseTester intersect(ExpressionTester subquery) {
+		return union(INTERSECT, false, subquery);
+	}
+
+	protected static UnionClauseTester intersect(ExpressionTester selectClause,
+	                                             ExpressionTester fromClause) {
+
+		return intersect(subquery(selectClause, fromClause));
+	}
+
+	protected static UnionClauseTester intersect(ExpressionTester selectClause,
+	                                             ExpressionTester fromClause,
+	 	                                          ExpressionTester whereClause) {
+
+		return intersect(subquery(selectClause, fromClause, whereClause));
+	}
+
+	protected static UnionClauseTester intersect(ExpressionTester selectClause,
+	                                             ExpressionTester fromClause,
+	 	                                          ExpressionTester whereClause,
+	 	                                          ExpressionTester groupByClause,
+		                                          ExpressionTester havingClause) {
+
+		return intersect(subquery(selectClause, fromClause, whereClause, groupByClause, havingClause));
+	}
+
+	protected static UnionClauseTester intersectAll(ExpressionTester subquery) {
+		return union(INTERSECT, true, subquery);
+	}
+
+	protected static UnionClauseTester intersectAll(ExpressionTester selectClause,
+	                                                ExpressionTester fromClause) {
+
+		return intersectAll(subquery(selectClause, fromClause));
+	}
+
+	protected static UnionClauseTester intersectAll(ExpressionTester selectClause,
+	                                                ExpressionTester fromClause,
+	    	                                          ExpressionTester whereClause) {
+
+		return intersectAll(subquery(selectClause, fromClause, whereClause));
+	}
+
+	protected static UnionClauseTester intersectAll(ExpressionTester selectClause,
+	                                                ExpressionTester fromClause,
+	    	                                          ExpressionTester whereClause,
+	    	                                          ExpressionTester groupByClause,
+	   	                                          ExpressionTester havingClause) {
+
+		return intersectAll(subquery(selectClause, fromClause, whereClause, groupByClause, havingClause));
 	}
 
 	protected static EmptyCollectionComparisonExpressionTester isEmpty(ExpressionTester collectionPath) {
@@ -2528,6 +2634,18 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		);
 	}
 
+	protected static RegexpExpressionTester regexp(ExpressionTester stringExpression,
+	                                               ExpressionTester patternValue) {
+
+		return new RegexpExpressionTester(stringExpression, patternValue);
+	}
+
+	protected static RegexpExpressionTester regexp(ExpressionTester stringExpression,
+	                                               String patternValue) {
+
+		return regexp(stringExpression, string(patternValue));
+	}
+
 	private static ResultVariableTester resultVariable(ExpressionTester selectExpression,
 	                                                   boolean hasAs,
 	                                                   ExpressionTester resultVariable) {
@@ -2610,13 +2728,68 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 	                                                       ExpressionTester havingClause,
 	                                                       ExpressionTester orderByClause) {
 
+		return selectStatement(
+			selectClause,
+			fromClause,
+			whereClause,
+			groupByClause,
+			havingClause,
+			orderByClause,
+			nullExpression()
+		);
+	}
+
+	protected static SelectStatementTester selectStatement(ExpressionTester selectClause,
+	                                                       ExpressionTester fromClause,
+	                                                       ExpressionTester whereClause,
+	                                                       ExpressionTester groupByClause,
+	                                                       ExpressionTester havingClause,
+	                                                       ExpressionTester orderByClause,
+	                                                       ExpressionTester... unionClauses) {
+
 		return new SelectStatementTester(
 			selectClause,
 			fromClause,
 			whereClause,
 			groupByClause,
 			havingClause,
-			orderByClause
+			orderByClause,
+			spacedCollection(unionClauses)
+		);
+	}
+
+	protected static SelectStatementTester selectStatement(ExpressionTester selectClause,
+	                                                       ExpressionTester fromClause,
+	                                                       ExpressionTester whereClause,
+	                                                       ExpressionTester groupByClause,
+	                                                       ExpressionTester havingClause,
+	                                                       ExpressionTester orderByClause,
+	                                                       ExpressionTester unionClause) {
+
+		return new SelectStatementTester(
+			selectClause,
+			fromClause,
+			whereClause,
+			groupByClause,
+			havingClause,
+			orderByClause,
+			unionClause
+		);
+	}
+
+	protected static SelectStatementTester selectStatement(ExpressionTester selectClause,
+	                                                       ExpressionTester fromClause,
+	                                                       ExpressionTester whereClause,
+	                                                       UnionClauseTester... unionClauses) {
+
+		return selectStatement(
+			selectClause,
+			fromClause,
+			whereClause,
+			nullExpression(),
+			nullExpression(),
+			nullExpression(),
+			unionClauses
 		);
 	}
 
@@ -2674,6 +2847,36 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 			nullExpression(),
 			nullExpression(),
 			orderByClause
+		);
+	}
+
+	protected static SelectStatementTester selectStatement(ExpressionTester selectClause,
+	                                                       ExpressionTester fromClause,
+	                                                       UnionClauseTester... unionClauses) {
+
+		return selectStatement(
+			selectClause,
+			fromClause,
+			nullExpression(),
+			nullExpression(),
+			nullExpression(),
+			nullExpression(),
+			unionClauses
+		);
+	}
+
+	protected static SelectStatementTester selectStatement(ExpressionTester selectClause,
+	                                                       ExpressionTester fromClause,
+	                                                       UnionClauseTester unionClause) {
+
+		return selectStatement(
+			selectClause,
+			fromClause,
+			nullExpression(),
+			nullExpression(),
+			nullExpression(),
+			nullExpression(),
+			unionClause
 		);
 	}
 
@@ -2776,7 +2979,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		return new AllOrAnyExpressionTester(SOME, subquery);
 	}
 
-	protected static ExpressionTester spacedCollection(ExpressionTester... expressions) {
+	protected static CollectionExpressionTester spacedCollection(ExpressionTester... expressions) {
 
 		Boolean[] spaces = new Boolean[expressions.length];
 		Boolean[] commas = new Boolean[expressions.length];
@@ -3181,6 +3384,65 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		return type(variable(identificationVariable));
 	}
 
+	protected static UnionClauseTester union(ExpressionTester subquery) {
+		return union(UNION, false, subquery);
+	}
+
+	protected static UnionClauseTester union(ExpressionTester selectClause,
+	                                         ExpressionTester fromClause) {
+
+		return union(subquery(selectClause, fromClause));
+	}
+
+	protected static UnionClauseTester union(ExpressionTester selectClause,
+	                                         ExpressionTester fromClause,
+	                                         ExpressionTester whereClause) {
+
+		return union(subquery(selectClause, fromClause, whereClause));
+	}
+
+	protected static UnionClauseTester union(ExpressionTester selectClause,
+	                                         ExpressionTester fromClause,
+	                                         ExpressionTester whereClause,
+	                                         ExpressionTester groupByClause,
+	                                         ExpressionTester havingClause) {
+
+		return union(subquery(selectClause, fromClause, whereClause, groupByClause, havingClause));
+	}
+
+	protected static UnionClauseTester union(String identifier,
+	                                         boolean hasAll,
+	                                         ExpressionTester subquery) {
+
+		return new UnionClauseTester(identifier, hasAll, subquery);
+	}
+
+	protected static UnionClauseTester unionAll(ExpressionTester subquery) {
+		return union(UNION, true, subquery);
+	}
+
+	protected static UnionClauseTester unionAll(ExpressionTester selectClause,
+	                                            ExpressionTester fromClause) {
+
+		return unionAll(subquery(selectClause, fromClause));
+	}
+
+	protected static UnionClauseTester unionAll(ExpressionTester selectClause,
+	                                            ExpressionTester fromClause,
+		                                         ExpressionTester whereClause) {
+
+		return unionAll(subquery(selectClause, fromClause, whereClause));
+	}
+
+	protected static UnionClauseTester unionAll(ExpressionTester selectClause,
+	                                            ExpressionTester fromClause,
+		                                         ExpressionTester whereClause,
+		                                         ExpressionTester groupByClause,
+		                                         ExpressionTester havingClause) {
+
+		return unionAll(subquery(selectClause, fromClause, whereClause, groupByClause, havingClause));
+	}
+
 	protected static UnknownExpressionTester unknown(String unknown) {
 		return new UnknownExpressionTester(unknown);
 	}
@@ -3451,8 +3713,8 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 	}
 
 	/**
-	 * Tests the parsing of the given JPQL query by comparing the parsed tree ({@link JPQLExpression})
-	 * with the given tester, which is an equivalent representation of the parsed tree.
+	 * Tests parsing the given JPQL query by comparing the parsed tree ({@link JPQLExpression}) with
+	 * the given tester, which is an equivalent representation of the parsed tree.
 	 * <p>
 	 * This method test both parsing modes: tolerant and non-tolerant. When the tolerant mode is
 	 * turned on, it means it will parse valid/complete and invalid/incomplete JPQL queries. When the
@@ -3952,6 +4214,10 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 
 		public final OrExpressionTester or(ExpressionTester expression) {
 			return JPQLParserTest.or(this, expression);
+		}
+
+		public RegexpExpressionTester regexp(StringLiteralTester patternValue) {
+			return JPQLParserTest.regexp(this, patternValue);
 		}
 
 		public final SubtractionExpressionTester subtract(ExpressionTester expression) {
@@ -4687,9 +4953,9 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 
 	protected static final class CollectionExpressionTester extends AbstractExpressionTester {
 
-		private Boolean[] commas;
+		public Boolean[] commas;
 		private ExpressionTester[] expressionTesters;
-		private Boolean[] spaces;
+		public Boolean[] spaces;
 
 		protected CollectionExpressionTester(ExpressionTester[] expressionTesters,
 		                                     Boolean[] commas,
@@ -5401,6 +5667,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		ExpressionTester notMember(ExpressionTester collectionPath);
 		ExpressionTester notMemberOf(ExpressionTester collectionPath);
 		OrExpressionTester or(ExpressionTester expression);
+		RegexpExpressionTester regexp(StringLiteralTester patternValue);
 		SubtractionExpressionTester subtract(ExpressionTester expression);
 
 		/**
@@ -5444,10 +5711,10 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 			super.test(expression);
 
 			ExtractExpression extractExpression = (ExtractExpression) expression;
-			assertEquals(part,              extractExpression.getPart());
+			assertEquals(part,              extractExpression.getDatePart());
 			assertEquals(hasFrom,           extractExpression.hasFrom());
 			assertSame  (hasSpaceAfterFrom, extractExpression.hasSpaceAfterFrom());
-			assertSame  (hasSpaceAfterPart, extractExpression.hasSpaceAfterPart());
+			assertSame  (hasSpaceAfterPart, extractExpression.hasSpaceAfterDatePart());
 		}
 
 		@Override
@@ -6329,7 +6596,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 
 			boolean hasSpaceAfterExpression = ordering != Ordering.DEFAULT         ||
 			                                  nullOrdering != NullOrdering.DEFAULT ||
-			                                  orderByItem.hasNullsOnly();
+			                                  orderByItem.hasNulls();
 
 			assertEquals(toString(), orderByItem.toParsedText());
 			assertEquals(!this.orderByItem.isNull(), orderByItem.hasExpression());
@@ -6421,9 +6688,9 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 			assertEquals(hasAs,                            rangeVariableDeclaration.hasAs());
 			assertEquals(hasSpaceAfterAs,                  rangeVariableDeclaration.hasSpaceAfterAs());
 			assertEquals(!identificationVariable.isNull(), rangeVariableDeclaration.hasIdentificationVariable());
-			assertEquals(hasSpaceAfterAbstractSchemaName,  rangeVariableDeclaration.hasSpaceAfterAbstractSchemaName());
+			assertEquals(hasSpaceAfterAbstractSchemaName,  rangeVariableDeclaration.hasSpaceAfterRootObject());
 
-			abstractSchemaName.test(rangeVariableDeclaration.getAbstractSchemaName());
+			abstractSchemaName.test(rangeVariableDeclaration.getRootObject());
 			identificationVariable.test(rangeVariableDeclaration.getIdentificationVariable());
 		}
 
@@ -6441,6 +6708,51 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 				sb.append(SPACE);
 			}
 			sb.append(identificationVariable);
+			return sb.toString();
+		}
+	}
+
+	protected static class RegexpExpressionTester extends AbstractExpressionTester {
+
+		public boolean hasSpaceAfterIdentifier;
+		private ExpressionTester patternValue;
+		private ExpressionTester stringExpression;
+
+		protected RegexpExpressionTester(ExpressionTester stringExpression,
+		                                 ExpressionTester patternValue) {
+
+			super();
+			this.stringExpression        = stringExpression;
+			this.patternValue            = patternValue;
+			this.hasSpaceAfterIdentifier = !patternValue.isNull();
+		}
+
+		public void test(Expression expression) {
+			assertInstance(expression, RegexpExpression.class);
+
+			RegexpExpression regexpExpression = (RegexpExpression) expression;
+			assertEquals(toString(),                 regexpExpression.toParsedText());
+			assertEquals(!patternValue.isNull(),     regexpExpression.hasPatternValue());
+			assertEquals(hasSpaceAfterIdentifier,    regexpExpression.hasSpaceAfterIdentifier());
+			assertEquals(!stringExpression.isNull(), regexpExpression.hasSpaceAfterStringExpression());
+			assertEquals(!stringExpression.isNull(), regexpExpression.hasStringExpression());
+
+			stringExpression.test(regexpExpression.getStringExpression());
+			patternValue    .test(regexpExpression.getPatternValue());
+		}
+
+		@Override
+		public String toString() {
+			StringBuilder sb = new StringBuilder();
+			sb.append(stringExpression);
+			if (!stringExpression.isNull()) {
+				sb.append(SPACE);
+			}
+			sb.append(REGEXP);
+			if (hasSpaceAfterIdentifier) {
+				sb.append(SPACE);
+			}
+			sb.append(patternValue);
 			return sb.toString();
 		}
 	}
@@ -6511,24 +6823,30 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 
 	protected static final class SelectStatementTester extends AbstractSelectStatementTester {
 
-		public boolean hasSpaceBeforeOrderBy;
+		public boolean hasSpaceBeforeOrderByClause;
+		public boolean hasSpaceBeforeUnionClauses;
 		private ExpressionTester orderByClause;
+		private ExpressionTester unionClauses;
 
 		protected SelectStatementTester(ExpressionTester selectClause,
 		                                ExpressionTester fromClause,
 		                                ExpressionTester whereClause,
 		                                ExpressionTester groupByClause,
 		                                ExpressionTester havingClause,
-		                                ExpressionTester orderByClause) {
+		                                ExpressionTester orderByClause,
+		                                ExpressionTester unionClauses) {
 
 			super(selectClause, fromClause, whereClause, groupByClause, havingClause);
 
 			this.orderByClause = orderByClause;
-			this.hasSpaceBeforeOrderBy = !orderByClause.isNull();
+			this.unionClauses  = unionClauses;
 
-			hasSpaceAfterFrom    |= (!fromClause   .isNull() && whereClause  .isNull() &&  groupByClause.isNull() &&  havingClause .isNull() && !orderByClause.isNull());
-			hasSpaceAfterWhere   |= (!whereClause  .isNull() && groupByClause.isNull() &&  havingClause .isNull() && !orderByClause.isNull());
-			hasSpaceAfterGroupBy |= (!groupByClause.isNull() && havingClause .isNull() && !orderByClause.isNull());
+			this.hasSpaceBeforeOrderByClause = !orderByClause.isNull();
+			this.hasSpaceBeforeUnionClauses  = !unionClauses .isNull();
+
+			hasSpaceAfterFrom    |= (!fromClause   .isNull() && whereClause  .isNull() &&  groupByClause.isNull() &&  havingClause .isNull() && !orderByClause.isNull() && !unionClauses.isNull());
+			hasSpaceAfterWhere   |= (!whereClause  .isNull() && groupByClause.isNull() &&  havingClause .isNull() && !orderByClause.isNull() && !unionClauses.isNull());
+			hasSpaceAfterGroupBy |= (!groupByClause.isNull() && havingClause .isNull() && !orderByClause.isNull() && !unionClauses.isNull());
 		}
 
 		@Override
@@ -6542,9 +6860,10 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 
 			SelectStatement selectStatement = (SelectStatement) expression;
 			assertEquals(!orderByClause.isNull(), selectStatement.hasOrderByClause());
-//			assertEquals(hasSpaceBeforeOrderBy, selectStatement.hasSpaceBeforeOrderBy());
+//			assertEquals(hasSpaceBeforeOrderByClause, selectStatement.hasSpaceBeforeOrderBy());
 
 			orderByClause.test(selectStatement.getOrderByClause());
+			unionClauses .test(selectStatement.getUnionClauses());
 		}
 
 		@Override
@@ -6552,12 +6871,14 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 
 			StringBuilder sb = new StringBuilder();
 			sb.append(super.toString());
-
-			if (hasSpaceBeforeOrderBy && sb.charAt(sb.length() - 1) != ' ') {
+			if (hasSpaceBeforeOrderByClause && sb.charAt(sb.length() - 1) != ' ') {
 				sb.append(SPACE);
 			}
-
 			sb.append(orderByClause);
+			if (hasSpaceBeforeUnionClauses && sb.charAt(sb.length() - 1) != ' ') {
+				sb.append(SPACE);
+			}
+			sb.append(unionClauses);
 			return sb.toString();
 		}
 	}
@@ -6891,6 +7212,55 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		@Override
 		protected String identifier() {
 			return TYPE;
+		}
+	}
+
+	protected static final class UnionClauseTester extends AbstractExpressionTester {
+
+		private boolean hasAll;
+		public boolean hasSpaceAfterAll;
+		public boolean hasSpaceAfterIdentifier;
+		private String identifier;
+		private ExpressionTester subquery;
+
+		protected UnionClauseTester(String identifier, boolean hasAll, ExpressionTester subquery) {
+			super();
+			this.identifier = identifier;
+			this.hasAll     = hasAll;
+			this.subquery   = subquery;
+			this.hasSpaceAfterIdentifier = hasAll || !subquery.isNull();
+			this.hasSpaceAfterAll        = hasAll && !subquery.isNull();
+		}
+
+		public void test(Expression expression) {
+			assertInstance(expression, UnionClause.class);
+
+			UnionClause unionClause = (UnionClause) expression;
+			assertEquals(toString(),              unionClause.toParsedText());
+			assertEquals(identifier,              unionClause.getIdentifier());
+			assertEquals(hasSpaceAfterIdentifier, unionClause.hasSpaceAfterIdentifier());
+			assertEquals(hasAll,                  unionClause.hasAll());
+			assertEquals(!subquery.isNull(),      unionClause.hasQuery());
+			assertEquals(hasSpaceAfterAll,        unionClause.hasSpaceAfterAll());
+
+			subquery.test(unionClause.getQuery());
+		}
+
+		@Override
+		public String toString() {
+			StringBuilder sb = new StringBuilder();
+			sb.append(identifier);
+			if (hasSpaceAfterIdentifier) {
+				sb.append(SPACE);
+			}
+			if (hasAll) {
+				sb.append(ALL);
+			}
+			if (hasSpaceAfterAll) {
+				sb.append(SPACE);
+			}
+			sb.append(subquery);
+			return sb.toString();
 		}
 	}
 

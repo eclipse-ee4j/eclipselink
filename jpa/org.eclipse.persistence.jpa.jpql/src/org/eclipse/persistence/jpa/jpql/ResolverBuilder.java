@@ -33,7 +33,6 @@ import org.eclipse.persistence.jpa.jpql.parser.AvgFunction;
 import org.eclipse.persistence.jpa.jpql.parser.BadExpression;
 import org.eclipse.persistence.jpa.jpql.parser.BetweenExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CaseExpression;
-import org.eclipse.persistence.jpa.jpql.parser.CastExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CoalesceExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionMemberDeclaration;
@@ -43,7 +42,6 @@ import org.eclipse.persistence.jpa.jpql.parser.ComparisonExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConcatExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConstructorExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CountFunction;
-import org.eclipse.persistence.jpa.jpql.parser.DatabaseType;
 import org.eclipse.persistence.jpa.jpql.parser.DateTime;
 import org.eclipse.persistence.jpa.jpql.parser.DeleteClause;
 import org.eclipse.persistence.jpa.jpql.parser.DeleteStatement;
@@ -54,7 +52,6 @@ import org.eclipse.persistence.jpa.jpql.parser.EntryExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ExistsExpression;
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.ExpressionVisitor;
-import org.eclipse.persistence.jpa.jpql.parser.ExtractExpression;
 import org.eclipse.persistence.jpa.jpql.parser.FromClause;
 import org.eclipse.persistence.jpa.jpql.parser.FunctionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.GroupByClause;
@@ -87,7 +84,6 @@ import org.eclipse.persistence.jpa.jpql.parser.OrExpression;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByClause;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByItem;
 import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
-import org.eclipse.persistence.jpa.jpql.parser.RegexpExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ResultVariable;
 import org.eclipse.persistence.jpa.jpql.parser.SelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.SelectStatement;
@@ -105,7 +101,6 @@ import org.eclipse.persistence.jpa.jpql.parser.SumFunction;
 import org.eclipse.persistence.jpa.jpql.parser.TreatExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TrimExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TypeExpression;
-import org.eclipse.persistence.jpa.jpql.parser.UnionClause;
 import org.eclipse.persistence.jpa.jpql.parser.UnknownExpression;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateClause;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateItem;
@@ -494,13 +489,6 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(CastExpression expression) {
-		resolver = buildClassResolver(Object.class);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
 	public void visit(CoalesceExpression expression) {
 		visitCollectionEquivalentExpression(expression.getExpression(), null);
 	}
@@ -600,13 +588,6 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(DatabaseType expression) {
-		resolver = buildClassResolver(Object.class);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
 	public void visit(DateTime expression) {
 
 		if (expression.isCurrentDate()) {
@@ -692,13 +673,6 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
 	 */
 	public void visit(ExistsExpression expression) {
 		resolver = buildClassResolver(Boolean.class);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void visit(ExtractExpression expression) {
-		resolver = buildClassResolver(Object.class);
 	}
 
 	/**
@@ -823,13 +797,6 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
 	public void visit(LikeExpression expression) {
 		resolver = buildClassResolver(Boolean.class);
 	}
-
-        /**
-         * {@inheritDoc}
-         */
-        public void visit(RegexpExpression expression) {
-                resolver = buildClassResolver(Boolean.class);
-        }
 
 	/**
 	 * {@inheritDoc}
@@ -971,13 +938,6 @@ public abstract class ResolverBuilder implements ExpressionVisitor {
 	public void visit(OrderByClause expression) {
 		resolver = buildClassResolver(Object.class);
 	}
-
-        /**
-         * {@inheritDoc}
-         */
-        public void visit(UnionClause expression) {
-                resolver = buildClassResolver(Object.class);
-        }
 
 	/**
 	 * {@inheritDoc}

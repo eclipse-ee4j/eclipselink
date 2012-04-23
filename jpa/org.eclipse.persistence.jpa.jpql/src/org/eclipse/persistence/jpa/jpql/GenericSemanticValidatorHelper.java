@@ -21,6 +21,7 @@ import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectStatement;
+import org.eclipse.persistence.jpa.jpql.parser.StateFieldPathExpression;
 import org.eclipse.persistence.jpa.jpql.spi.IConstructor;
 import org.eclipse.persistence.jpa.jpql.spi.IEntity;
 import org.eclipse.persistence.jpa.jpql.spi.IManagedType;
@@ -357,6 +358,13 @@ public class GenericSemanticValidatorHelper implements SemanticValidatorHelper {
 	 */
 	public boolean isTypeResolvable(Object type) {
 		return ((IType) type).isResolvable();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public boolean isValidatingPathExpressionAllowed(StateFieldPathExpression expression) {
+		return true;
 	}
 
 	/**

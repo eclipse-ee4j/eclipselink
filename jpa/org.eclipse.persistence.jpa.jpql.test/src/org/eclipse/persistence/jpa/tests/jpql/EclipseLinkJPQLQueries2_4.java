@@ -90,4 +90,16 @@ public final class EclipseLinkJPQLQueries2_4 {
 		return "Select addr " +
 		       "from (Select e from Employee e) as a JOIN a.address addr";
 	}
+
+	public static String query_013() {
+		return "Select a from Address a where a.city = 'Ottawa' " +
+		       "union Select a2 from Address a2 " +
+		       "union all Select a2 from Address a2 " +
+		       "intersect Select a from Address a where a.city = 'Ottawa' " +
+		       "except Select a from Address a where a.city = 'Ottawa'";
+	}
+
+	public static String query_014() {
+		return "Select e from Employee e where e.firstName regexp '^B.*'";
+	}
 }

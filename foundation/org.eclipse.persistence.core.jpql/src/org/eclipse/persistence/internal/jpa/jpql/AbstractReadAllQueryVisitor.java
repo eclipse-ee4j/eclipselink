@@ -16,7 +16,6 @@ package org.eclipse.persistence.internal.jpa.jpql;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractEclipseLinkExpressionVisitor;
-import org.eclipse.persistence.jpa.jpql.parser.AbstractExpression;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractFromClause;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractSelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractSelectStatement;
@@ -114,35 +113,6 @@ abstract class AbstractReadAllQueryVisitor extends AbstractEclipseLinkExpression
 		expression.getOrderByItems().accept(this);
 	}
 
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void visit(UnionClause expression) {
-                ReportQuery subquery = queryContext.expressionBuilder().buildSubquery((SimpleSelectStatement)expression.getQuery());
-                Expression union = null;
-                if (expression.isUnion()) {
-                    if (expression.hasAll()) {
-                        union = query.getExpressionBuilder().unionAll(subquery);                        
-                    } else {
-                        union = query.getExpressionBuilder().union(subquery);
-                    }
-                } else if (expression.isIntersect()) {
-                    if (expression.hasAll()) {
-                        union = query.getExpressionBuilder().intersectAll(subquery);                        
-                    } else {
-                        union = query.getExpressionBuilder().intersect(subquery);
-                    }
-                } else if (expression.isExcept()) {
-                    if (expression.hasAll()) {
-                        union = query.getExpressionBuilder().exceptAll(subquery);                        
-                    } else {
-                        union = query.getExpressionBuilder().except(subquery);
-                    }
-                }
-                query.addUnionExpression(union);
-        }
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -182,20 +152,18 @@ abstract class AbstractReadAllQueryVisitor extends AbstractEclipseLinkExpression
 	@Override
 	public void visit(SelectStatement expression) {
 
-		// Handle SELECT/FROM/WHERE
+		// Handle SELECT/FROM/WHERE clauses
 		visitAbstractSelectStatement(expression);
 
-		// ORDER BY
+		// ORDER BY clause
 		if (expression.hasOrderByClause()) {
 			expression.getOrderByClause().accept(this);
 		}
 
-                // UNION
-                if (expression.hasUnionClause()) {
-                        for (AbstractExpression union : expression.getUnionClauses()) {
-                            union.accept(this);
-                        }
-                }
+		// UNION clauses
+		if (expression.hasUnionClauses()) {
+			expression.getUnionClauses().accept(this);
+		}
 	}
 
 	/**
@@ -222,6 +190,43 @@ abstract class AbstractReadAllQueryVisitor extends AbstractEclipseLinkExpression
 	public void visit(SimpleSelectStatement expression) {
 		// Handle SELECT/FROM/WHERE
 		visitAbstractSelectStatement(expression);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void visit(UnionClause expression) {
+
+		ReportQuery subquery = queryContext.buildSubquery((SimpleSelectStatement) expression.getQuery());
+		Expression union = null;
+
+		if (expression.isUnion()) {
+			if (expression.hasAll()) {
+				union = query.getExpressionBuilder().unionAll(subquery);
+			}
+			else {
+				union = query.getExpressionBuilder().union(subquery);
+			}
+		}
+		else if (expression.isIntersect()) {
+			if (expression.hasAll()) {
+				union = query.getExpressionBuilder().intersectAll(subquery);
+			}
+			else {
+				union = query.getExpressionBuilder().intersect(subquery);
+			}
+		}
+		else if (expression.isExcept()) {
+			if (expression.hasAll()) {
+				union = query.getExpressionBuilder().exceptAll(subquery);
+			}
+			else {
+				union = query.getExpressionBuilder().except(subquery);
+			}
+		}
+
+		query.addUnionExpression(union);
 	}
 
 	/**
