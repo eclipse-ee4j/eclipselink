@@ -14,75 +14,44 @@ package org.eclipse.persistence.internal.jaxb.many;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.eclipse.persistence.exceptions.XMLMarshalException;
-import org.eclipse.persistence.internal.jaxb.many.ManyValue;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 
 @XmlTransient
-public abstract class MultiDimensionalArrayValue extends ManyValue<Object> {
-
-    protected List<ManyValue<Object>> adaptedValue;
-
-    public MultiDimensionalArrayValue() {
-        adaptedValue = new ArrayList<ManyValue<Object>>();
-    }
-
-    public abstract Class<?> componentClass();
-
-    public abstract Class<? extends ManyValue<Object>> adaptedClass();
+public abstract class MultiDimensionalArrayValue<T extends ManyValue<?, Object>> extends MultiDimensionalManyValue<T> {
 
     @Override
-    @XmlTransient
-    public Object getItem() {
-        Object nestedArray = adaptedValue.get(0).getItem();
-        List<Integer> dimensionsList = new ArrayList<Integer>();
-        dimensionsList.add(adaptedValue.size());
-        getDimensions(dimensionsList, nestedArray);
-        int[] dimensions = new int[dimensionsList.size()];
-        for(int x=0; x<dimensions.length; x++) {
-            dimensions[x] = dimensionsList.get(x);
-        }
-        Object array = Array.newInstance(componentClass(), dimensions);
-        Array.set(array, 0, nestedArray);
-        for(int x=1,size=adaptedValue.size(); x<size; x++) {
-            Array.set(array, x, ((ManyValue<Object>)adaptedValue.get(x)).getItem());
-        }
-        return array;
-    }
-
-    @Override
-    @XmlTransient
     public boolean isArray() {
         return true;
     }
 
     @Override
-    @XmlTransient
-    public void setItem(Object array) {
-        try {
-            int size = Array.getLength(array);
-            adaptedValue = new ArrayList<ManyValue<Object>>(size);
-            for(int x=0; x<size; x++) {
-                ManyValue<Object> nestedItem = (ManyValue<Object>) PrivilegedAccessHelper.newInstanceFromClass(adaptedClass());
-                nestedItem.setItem(Array.get(array, x));
-                adaptedValue.add(nestedItem);
-            }
-        } catch(Exception e) {
-            XMLMarshalException.unmarshalException(e);
+    public Object getItem() {
+        Object array = Array.newInstance(containerClass(), adaptedValue.size());
+        int x=0;
+        for(ManyValue<?, Object> value : adaptedValue) {
+            Object item = value.getItem();
+            Array.set(array, x, value.getItem());
+            x++;
         }
+        return array;
     }
 
-    private List<Integer> getDimensions(List<Integer> dimensions, Object array) {
-        dimensions.add(Array.getLength(array));
-        Object nestedArray = Array.get(array, 0);
-        if(nestedArray.getClass().isArray()) {
-            return getDimensions(dimensions, nestedArray);
+    @Override
+    public void setItem(Object array) {
+        try {
+            int arraySize = Array.getLength(array);
+            adaptedValue = new ArrayList<T>(arraySize);
+            for(int x=0; x<arraySize; x++) {
+                ManyValue<?, Object> manyValue = (ManyValue<?, Object>) PrivilegedAccessHelper.newInstanceFromClass(componentClass());
+                manyValue.setItem(Array.get(array, x));
+                adaptedValue.add((T) manyValue);
+            }
+        } catch(Exception e) {
+            throw new RuntimeException(e);
         }
-        return dimensions;
     }
 
 }

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<root xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="listOfstringArray">
+    <item>
+        <item>foo</item>
+        <item>bar</item>
+    </item>
+    <item>
+        <item>A</item>
+        <item>B</item>
+        <item>C</item>
+    </item>
+</root>

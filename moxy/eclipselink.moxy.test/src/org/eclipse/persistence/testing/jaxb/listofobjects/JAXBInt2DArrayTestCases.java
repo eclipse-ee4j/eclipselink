@@ -52,15 +52,9 @@ public class JAXBInt2DArrayTestCases extends JAXBListOfObjectsTestCases {
     }
 
     protected Object getControlObject() {
-        int level1Size = 2;
-        int level2Size = 3;
-        int counter = 0;
-        int[][] my2DArray = new int[level1Size][level2Size];
-        for(int x=0; x<level1Size; x++) {
-            for(int y=0; y<level2Size; y++) {
-                my2DArray[x][y] = counter++;
-            }
-        }
+        int[][] my2DArray = new int[2][];
+        my2DArray[0] = new int[] {1,2,3};
+        my2DArray[1] = new int[] {4,5,6,7,8,9};
         QName qname = new QName("examplenamespace", "root");
         JAXBElement jaxbElement = new JAXBElement(qname, Object.class, my2DArray);
 

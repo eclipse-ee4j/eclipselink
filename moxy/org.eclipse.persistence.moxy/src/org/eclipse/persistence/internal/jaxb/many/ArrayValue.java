@@ -14,44 +14,37 @@ package org.eclipse.persistence.internal.jaxb.many;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.List;
+
 import javax.xml.bind.annotation.XmlTransient;
-import org.eclipse.persistence.internal.jaxb.many.ManyValue;
 
 @XmlTransient
-public abstract class ArrayValue extends ManyValue<Object> {
-
-    protected List<Object> adaptedValue;
-
-    public ArrayValue() {
-        adaptedValue = new ArrayList<Object>();
-    }
-
-    protected abstract Class<?> componentClass();
+public abstract class ArrayValue<T> extends ManyValue<T, Object> {
 
     @Override
-    @XmlTransient
     public Object getItem() {
-        int size = adaptedValue.size();
-        Object array = Array.newInstance(componentClass(), size);
-        for(int x=0; x<size; x++) {
-            Array.set(array, x, adaptedValue.get(x));
+        if(null == adaptedValue) {
+            return null;
+        }
+        Object array = Array.newInstance(containerClass(), adaptedValue.size());
+        int x = 0;
+        for(Object value : adaptedValue) {
+            Array.set(array, x, value);
+            x++;
         }
         return array;
     }
 
     @Override
-    @XmlTransient
     public boolean isArray() {
         return true;
     }
 
     @Override
     public void setItem(Object array) {
-        int size = Array.getLength(array);
-        adaptedValue = new ArrayList<Object>(size);
-        for(int x=0; x<size; x++) {
-            adaptedValue.add(Array.get(array, x));
+        int arraySize = Array.getLength(array);
+        adaptedValue = new ArrayList<T>(arraySize);
+        for(int x=0; x<arraySize; x++) {
+            adaptedValue.add((T) Array.get(array, x));
         }
     }
 

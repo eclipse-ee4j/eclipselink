@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.XmlTransient;
  * Classes which extend this class will be dynamically generated when a Map class is given to JAXBContext  
  */
 @XmlTransient
-public abstract class MapValue<T> extends ManyValue<T> {
+public abstract class MapValue<T> extends ManyValue<Object, T> {
 
 	@XmlTransient
 	public boolean isArray(){

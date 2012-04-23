@@ -67,4 +67,10 @@ public class DuplicateListOfStringsTestCasesWithXML extends DuplicateListOfStrin
         
         return typeMappingInfos;
     }
+
+    @Override
+    public TypeMappingInfo getTypeMappingInfo() {
+        return typeMappingInfos[1];
+    }
+
 }

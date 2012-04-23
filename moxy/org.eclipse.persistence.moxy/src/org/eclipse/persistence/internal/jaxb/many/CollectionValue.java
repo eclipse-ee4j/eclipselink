@@ -12,6 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jaxb.many;
 
+import java.util.Collection;
+
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
@@ -21,11 +23,21 @@ import javax.xml.bind.annotation.XmlTransient;
  */
 
 @XmlTransient
-public abstract class CollectionValue<T> extends ManyValue<T> {
-	
-	@XmlTransient
-	public boolean isArray(){
-		return false;
-	}
-		
+public abstract class CollectionValue<T> extends ManyValue<T, Object> {
+
+    @Override
+    public boolean isArray() {
+        return false;
+    }
+
+    @Override
+    public Object getItem() {
+        return adaptedValue;
+    }
+
+    @Override
+    public void setItem(Object collection) {
+        adaptedValue = (Collection<T>) collection;
+    }
+
 }

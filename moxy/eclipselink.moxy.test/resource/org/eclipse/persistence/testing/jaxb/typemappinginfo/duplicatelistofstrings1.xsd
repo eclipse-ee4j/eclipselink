@@ -5,15 +5,9 @@
          <xsd:element nillable="true" maxOccurs="unbounded" minOccurs="0" name="item" type="xsd:anyType"/>
       </xsd:sequence>
    </xsd:complexType>
-   <xsd:complexType name="listOfObject">
-      <xsd:sequence>
-         <xsd:element minOccurs="0" name="item">
-            <xsd:simpleType>
-               <xsd:list itemType="xsd:anyType"/>
-            </xsd:simpleType>
-         </xsd:element>
-      </xsd:sequence>
-   </xsd:complexType>
+   <xsd:simpleType name="listOfObject">
+      <xsd:list itemType="xsd:anyType"/>
+   </xsd:simpleType>
    <xsd:complexType name="listOfString">
       <xsd:sequence>
          <xsd:element nillable="true" name="item" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>

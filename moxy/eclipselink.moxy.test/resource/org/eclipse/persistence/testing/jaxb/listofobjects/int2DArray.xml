@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ns0:root xmlns:ns0="examplenamespace" xmlns:ns1="http://jaxb.dev.java.net/array" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns1:intArrayArray">
     <item>
-        <item>0</item>
         <item>1</item>
         <item>2</item>
+        <item>3</item>
     </item>
     <item>
-        <item>3</item>
         <item>4</item>
         <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
     </item>
 </ns0:root>

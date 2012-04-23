@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns0="http://jaxb.dev.java.net/array">
+   <xsd:import namespace="http://jaxb.dev.java.net/array" schemaLocation="schema2.xsd"/>
+   <xsd:complexType name="listOfstringArray">
+      <xsd:sequence>
+         <xsd:element maxOccurs="unbounded" minOccurs="0" name="item" nillable="true" type="ns0:stringArray"/>
+      </xsd:sequence>
+   </xsd:complexType>
+</xsd:schema>

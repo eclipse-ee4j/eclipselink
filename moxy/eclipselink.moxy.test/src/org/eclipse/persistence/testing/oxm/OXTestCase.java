@@ -385,25 +385,6 @@ public abstract class OXTestCase extends XMLTestCase {
     }
   
 
-    protected void compareArrays(Object controlValue, Object testValue) {
-        assertTrue("Test array is not an Array", testValue.getClass().isArray());
-        int controlSize = Array.getLength(controlValue);
-        assertTrue("Control and test arrays are not the same length", controlSize == Array.getLength(testValue));
-        for(int x=0; x<controlSize; x++) {
-            Object controlItem = Array.get(controlValue, x);
-            Object testItem = Array.get(testValue, x);
-            if(null == controlItem) {
-                assertEquals(null, testItem);
-                Class controlItemClass = controlItem.getClass();
-                if(controlItemClass.isArray()) {
-                    compareArrays(controlItem, testItem);
-                } else {
-                    assertEquals(controlItem, testItem);
-                }
-            }
-        }
-    }
-    
     protected String loadFileToString(String fileName){
         StringBuffer sb = new StringBuffer();
         String lineSep = System.getProperty("line.separator");

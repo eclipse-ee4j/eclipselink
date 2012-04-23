@@ -118,5 +118,10 @@ public class DuplicateListOfStringsTestCases extends TypeMappingInfoWithJSONTest
     //Not supported in JSON as there are xsi:type attributes written
     public void testObjectToResultWithTypeMappingInfoJSON() throws Exception {}
     public void testXMLToObjectFromSourceWithTypeMappingInfoJSON() throws Exception {}
-}
 
+    @Override
+    public TypeMappingInfo getTypeMappingInfo() {
+        return typeMappingInfos[1];
+    }
+
+}

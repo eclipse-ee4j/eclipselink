@@ -1,4 +1,4 @@
 {"testTagName":{
     "type":"listOfString",
-    "item":"string1 string2"
+    "value":"string1 string2"
     }}

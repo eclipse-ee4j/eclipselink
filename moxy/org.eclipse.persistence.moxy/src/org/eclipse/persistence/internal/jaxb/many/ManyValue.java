@@ -12,6 +12,10 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jaxb.many;
 
+import java.util.Collection;
+
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
@@ -21,14 +25,25 @@ import javax.xml.bind.annotation.XmlTransient;
  * Subclasses are CollectionValue, ObjectArrayValue and PrimitiveArrayValue
  */
 @XmlTransient
-public abstract class ManyValue<T> {
-		
-	@XmlTransient
-	public abstract boolean isArray();
-	
-	@XmlTransient
-	public abstract T getItem();
-	
-	@XmlTransient
-	public abstract void setItem(T object);	
+@XmlAccessorType(XmlAccessType.NONE)
+public abstract class ManyValue<T, ITEM> {
+
+    protected Collection<T> adaptedValue;
+
+    public abstract boolean isArray();
+
+    public abstract ITEM getItem();
+
+    public abstract void setItem(ITEM item);
+
+    public Collection<T> getAdaptedValue() {
+        return adaptedValue;
+    }
+
+    public void setAdaptedValue(Collection<T> adaptedValue) {
+        this.adaptedValue = adaptedValue;
+    }
+
+    public abstract Class<?> containerClass();
+
 }

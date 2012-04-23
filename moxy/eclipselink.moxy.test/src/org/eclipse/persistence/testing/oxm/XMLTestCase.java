@@ -12,6 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.oxm;
 
+import java.lang.reflect.Array;
+
 import org.eclipse.persistence.platform.xml.XMLComparer;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -46,9 +48,30 @@ public class XMLTestCase extends junit.framework.TestCase {
         assertTrue("Documents are not equal.\nCONTROL:\n" + controlString + "\nTEST:\n" + testString, isEqual);
     }
     
+    protected void compareArrays(Object controlValue, Object testValue) {
+        assertTrue("Test array is not an Array", testValue.getClass().isArray());
+        int controlSize = Array.getLength(controlValue);
+        assertTrue("Control and test arrays are not the same length", controlSize == Array.getLength(testValue));
+        for(int x=0; x<controlSize; x++) {
+            Object controlItem = Array.get(controlValue, x);
+            Object testItem = Array.get(testValue, x);
+            if(null == controlItem) {
+                assertEquals(null, testItem);
+                Class controlItemClass = controlItem.getClass();
+                if(controlItemClass.isArray()) {
+                    compareArrays(controlItem, testItem);
+                } else {
+                    assertEquals(controlItem, testItem);
+                }
+            }
+        }
+    }
+
     protected void compareValues(Object controlValue, Object testValue){
         if(controlValue instanceof Node && testValue instanceof Node) {
             assertXMLIdentical(((Node)controlValue).getOwnerDocument(), ((Node)testValue).getOwnerDocument());
+        } else if(controlValue.getClass().isArray()){
+            compareArrays(controlValue, testValue);
         } else {
             assertEquals(controlValue, testValue);
         }

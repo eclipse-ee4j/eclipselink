@@ -68,6 +68,7 @@ public class JAXBListOfObjectsSuite extends TestCase {
 		suite.addTestSuite(NullIteratorListTestCases.class);
 		suite.addTestSuite(NullSetsMapTestCases.class);
 		suite.addTestSuite(NullContainerTestCases.class);
+		suite.addTestSuite(ListOfStringArrayTestCases.class);
 		return suite;
 	}
 }
