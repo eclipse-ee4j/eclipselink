@@ -58,6 +58,7 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
         numberOfTabs = 1;
         complexType = true;
         isLastEventText = false;
+        space = " ";
     }
 
     private String tab() {

@@ -73,9 +73,11 @@ public class JSONWriterRecord extends MarshalRecord {
     protected String attributePrefix;
     protected boolean charactersAllowed = false;
     protected CharsetEncoder encoder;
+    protected String space;
 
     public JSONWriterRecord(){
         super();
+        space = XMLConstants.EMPTY_STRING;
         namespaceSeparator = XMLConstants.DOT;
     }
 
@@ -120,7 +122,8 @@ public class JSONWriterRecord extends MarshalRecord {
                  if(level.isFirst()) {
                      level.setFirst(false);
                  } else {
-                     writer.write(", ");
+                     writer.write(",");
+                     writer.write(space);
                  }
              }
              levels.push(new Level(true, false));
@@ -166,8 +169,7 @@ public class JSONWriterRecord extends MarshalRecord {
                 if(position.isFirst()) {
                     position.setFirst(false);
                 } else {
-                    writer.write(',');
-                    writer.write(' ');
+                    writer.write(',');                    
                 }
             }
             
@@ -544,7 +546,10 @@ public class JSONWriterRecord extends MarshalRecord {
         }
 
         writer.write(xPathFragment.getLocalName());
-        writer.write("\" : ");
+        writer.write("\"");
+        writer.write(space);
+        writer.write(XMLConstants.COLON);
+        writer.write(space);        
     }
 
     /**
