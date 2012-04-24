@@ -43,7 +43,7 @@ import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 public class ContainerIndirectionPolicy extends BasicIndirectionPolicy {
     private Class containerClass;
     private String containerClassName;
-    private Constructor containerConstructor;
+    private transient Constructor containerConstructor;
 
     /**
      * INTERNAL:
