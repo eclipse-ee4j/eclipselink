@@ -285,7 +285,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         batchQuery.setSQLStatement(batchStatement);
         this.containerPolicy.addAdditionalFieldsToQuery(batchQuery, getAdditionalFieldsBaseExpression(batchQuery));
 
-        batchStatement.normalize(query.getSession(), this.descriptor, clonedExpressions);
+        batchStatement.normalize(query.getSession(), descriptorToUse, clonedExpressions);
 
         return batchQuery;
     }

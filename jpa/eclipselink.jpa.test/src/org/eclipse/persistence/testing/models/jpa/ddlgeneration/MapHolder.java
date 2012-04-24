@@ -18,6 +18,8 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.persistence.*;
 
+import org.eclipse.persistence.annotations.BatchFetch;
+import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.annotations.CascadeOnDelete;
 
 @Entity
@@ -30,6 +32,8 @@ public class MapHolder {
     private Map<AggregateMapKey, EntityMapValueWithBackPointer> oneToManyMap;
     private Map<Integer, EntityMapValue> unidirectionalOneToManyMap;
     private Map<EntityMapKey, MMEntityMapValue> manyToManyMap;
+    private MapHolderEmbeddable mapHolderEmbedded;
+    private Map<String, String> stringMap;
     
     public MapHolder(){
         directCollectionMap = new HashMap<EntityMapKey, String>();
@@ -37,6 +41,8 @@ public class MapHolder {
         oneToManyMap = new HashMap<AggregateMapKey, EntityMapValueWithBackPointer>();
         unidirectionalOneToManyMap = new HashMap<Integer, EntityMapValue>();
         manyToManyMap = new HashMap<EntityMapKey, MMEntityMapValue>();
+        mapHolderEmbedded = new MapHolderEmbeddable();
+        stringMap = new HashMap<String, String>();
     }
     
     @Id
@@ -93,5 +99,22 @@ public class MapHolder {
         this.manyToManyMap = manyToManyMap;
     }
     
+    public MapHolderEmbeddable getMapHolderEmbedded() {
+        return this.mapHolderEmbedded;
+    }
+    public void setMapHolderEmbedded(MapHolderEmbeddable mapHolderEmbedded) {
+        this.mapHolderEmbedded = mapHolderEmbedded;
+    }   
+    
+    @BatchFetch(BatchFetchType.JOIN)
+    @ElementCollection(fetch=FetchType.EAGER)
+    @CollectionTable(name="DDL_MAP_HOLDER_STRING_MAP")
+    public Map<String, String> getStringMap() {
+        return stringMap;
+    }
+
+    public void setStringMap(Map<String, String> stringMap) {
+        this.stringMap = stringMap;
+    }
 }
 

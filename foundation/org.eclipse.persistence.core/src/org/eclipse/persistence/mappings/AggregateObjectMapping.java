@@ -1298,6 +1298,13 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
             clonedDescriptor.setDefaultTable(getDescriptor().getDefaultTable());
             clonedDescriptor.setTables(getDescriptor().getTables());
             clonedDescriptor.setPrimaryKeyFields(getDescriptor().getPrimaryKeyFields());
+            for (DatabaseField pkField : getDescriptor().getPrimaryKeyFields()) {
+                if (!getAggregateToSourceFields().containsKey(pkField.getName())) {
+                    // pk field from the source descriptor will have its type set by source descriptor
+                    // this only could be done if there is no aggregate field with the same name as pk field.
+                    clonedDescriptor.getObjectBuilder().getFieldsMap().put(pkField, pkField);
+                }
+            }
         }
  
     }
