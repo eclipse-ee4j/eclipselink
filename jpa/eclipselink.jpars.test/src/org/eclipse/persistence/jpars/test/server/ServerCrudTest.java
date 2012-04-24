@@ -50,8 +50,9 @@ import com.sun.jersey.api.client.WebResource;
 
 public class ServerCrudTest {
     
-    public static final String SERVER_URI = "http://localhost:7001/eclipselink.jpars.test/jpa-rs/";
-    //public static final String SERVER_URI = "http://localhost:8080/eclipselink.jpars.test/jpa-rs/";
+    public static final String SERVER_URI_BASE = "server.uri.base";
+    public static final String DEFAULT_SERVER_URI_BASE = "http://localhost:8080";
+   public static final String APPLICATION_LOCATION = "/eclipselink.jpars.test/jpa-rs/";
     public static final String DEFAULT_PU = "auction-static";
     protected static Client client = null;
     protected static Unmarshaller unmarshaller = null;
@@ -265,7 +266,7 @@ public class ServerCrudTest {
     @Test
     public void testCreateGarbage(){
         
-        WebResource webResource = client.resource(SERVER_URI + DEFAULT_PU + "/entity/" + "StaticUser");
+        WebResource webResource = client.resource(getServerURI() + DEFAULT_PU + "/entity/" + "StaticUser");
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         byte[] b = "Garbage".getBytes();
         try{
@@ -336,7 +337,7 @@ public class ServerCrudTest {
     
     @Test
     public void testUpdateGarbage(){
-        WebResource webResource = client.resource(SERVER_URI + DEFAULT_PU + "/entity/" + "StaticUser");
+        WebResource webResource = client.resource(getServerURI() + DEFAULT_PU + "/entity/" + "StaticUser");
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         byte[] b = "Garbage".getBytes();
         try{
@@ -575,7 +576,7 @@ public class ServerCrudTest {
     }
     
     public static <T> T restCreate(Object object, String type, Class<T> resultClass, String persistenceUnit, MediaType inputMediaType, MediaType outputMediaType) throws RestCallFailedException {
-        WebResource webResource = client.resource(SERVER_URI + persistenceUnit + "/entity/" + type);
+        WebResource webResource = client.resource(getServerURI() + persistenceUnit + "/entity/" + type);
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         try{
             context.marshallEntity(object, inputMediaType, os);       
@@ -601,7 +602,7 @@ public class ServerCrudTest {
     }
     
     public static <T> void restDelete(Object id, String type, Class<T> resultClass, String persistenceUnit) throws RestCallFailedException {
-        WebResource webResource = client.resource(SERVER_URI + persistenceUnit + "/entity/" + type + "/" + id);
+        WebResource webResource = client.resource(getServerURI() + persistenceUnit + "/entity/" + type + "/" + id);
         ClientResponse response = webResource.type(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).delete(ClientResponse.class);
         Status status = response.getClientResponseStatus();
         if (status != Status.OK){
@@ -615,7 +616,7 @@ public class ServerCrudTest {
     
     public static Object restNamedQuery(String queryName, String returnType, String persistenceUnit, Map<String, Object> parameters, Map<String, String> hints, MediaType outputMediaType){
         StringBuffer resourceURL = new StringBuffer();
-        resourceURL.append(SERVER_URI + persistenceUnit + "/query/" + queryName);
+        resourceURL.append(getServerURI() + persistenceUnit + "/query/" + queryName);
         appendParametersAndHints(resourceURL, parameters, hints);
         WebResource webResource = client.resource(resourceURL.toString());
         ClientResponse response = webResource.accept(outputMediaType).get(ClientResponse.class);
@@ -634,7 +635,7 @@ public class ServerCrudTest {
     
     public static Object restNamedSingleResultQuery(String queryName, String returnType, String persistenceUnit, Map<String, Object> parameters, Map<String, String> hints, MediaType outputMediaType){
         StringBuffer resourceURL = new StringBuffer();
-        resourceURL.append(SERVER_URI + persistenceUnit + "/singleResultQuery/" + queryName);
+        resourceURL.append(getServerURI() + persistenceUnit + "/singleResultQuery/" + queryName);
         appendParametersAndHints(resourceURL, parameters, hints);
         
         WebResource webResource = client.resource(resourceURL.toString());
@@ -654,7 +655,7 @@ public class ServerCrudTest {
     
     public static Object restUpdateQuery(String queryName, String returnType, String persistenceUnit, Map<String, Object> parameters, Map<String, String> hints){
         StringBuffer resourceURL = new StringBuffer();
-        resourceURL.append(SERVER_URI + persistenceUnit + "/query/" + queryName);
+        resourceURL.append(getServerURI() + persistenceUnit + "/query/" + queryName);
         appendParametersAndHints(resourceURL, parameters, hints);
         
         WebResource webResource = client.resource(resourceURL.toString());
@@ -691,7 +692,7 @@ public class ServerCrudTest {
     }
     
     public static <T> T restRead(Object id, String type, Class<T> resultClass, String persistenceUnit, MediaType outputMediaType) throws RestCallFailedException {
-        WebResource webResource = client.resource(SERVER_URI + persistenceUnit + "/entity/" + type + "/" + id);
+        WebResource webResource = client.resource(getServerURI() + persistenceUnit + "/entity/" + type + "/" + id);
         ClientResponse response = webResource.accept(outputMediaType).get(ClientResponse.class);
         Status status = response.getClientResponseStatus();
         if (status != Status.OK){
@@ -714,7 +715,7 @@ public class ServerCrudTest {
     
     public static <T> T restUpdate(Object object, String type, Class<T> resultClass, String persistenceUnit, MediaType inputMediaType, MediaType outputMediaType) throws RestCallFailedException {
 
-        WebResource webResource = client.resource(SERVER_URI + persistenceUnit + "/entity/" + type);
+        WebResource webResource = client.resource(getServerURI() + persistenceUnit + "/entity/" + type);
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         try{
             context.marshallEntity(object, inputMediaType, os);
@@ -862,6 +863,11 @@ public class ServerCrudTest {
         auction.setName("A3");
         auction.setStartPrice(1010);
         return auction;
+    }
+    
+    public static String getServerURI(){
+        String serverURIBase = System.getProperty(SERVER_URI_BASE, DEFAULT_SERVER_URI_BASE);
+        return serverURIBase + APPLICATION_LOCATION;
     }
 
 }

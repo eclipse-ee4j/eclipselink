@@ -222,6 +222,7 @@
         <fail message="Cannot find JPA: '${jparstest.2.common.plugins.dir}/org.eclipse.persistence.jpa_${version.string}.jar'."     unless="jpa.bundle.exist"/>
         <compile_jpars_tests compilepathref="jparstest.compile.path"/>
     </target>
+
     <target name="compile-jpars-tests-against-jar" unless="clean, init" description="build jpars test classes against eclipselink.jar">
         <fail message="Cannot find EclipseLink: '${jparstest.2.base.dir}/${eclipselink.jar}'." unless="eclipselink.jar.exist"/>
         <compile_jpars_tests compilepathref="jparstest.compile.against.jar.path"/>
@@ -229,14 +230,40 @@
 
     <!-- Run targets -->
     <target name="test" depends="compile-jpars-tests" description="run jpars tests">
-        <mkdir dir="${resource.dir}/${tmp.dir}"/>
         <run_jpars_tests runpathref="jparstest.run.path"/>
-        <delete dir="${resource.dir}/${tmp.dir}"/>
     </target>
     <target name="test-against-jar" depends="compile-jpars-tests-against-jar" description="run jpars tests against eclipselink.jar">
-        <mkdir dir="${resource.dir}/${tmp.dir}"/>
         <run_jpars_tests runpathref="jparstest.run.against.jar.path"/>
-        <delete dir="${resource.dir}/${tmp.dir}"/>
+    </target>
+
+    <!-- Build war file for JAX-RS -->
+    <target name="create-jpars-war-file" depends="compile-jpars-tests">
+        <mkdir dir="${eclipselink.jpars.test}/stage/META-INF"/>
+        <mkdir dir="${eclipselink.jpars.test}/stage/WEB-INF"/>
+        <mkdir dir="${eclipselink.jpars.test}/stage/WEB-INF/lib"/>
+        <mkdir dir="${eclipselink.jpars.test}/stage/WEB-INF/classes/org/eclipse/persistence/jpars/test/model"/>
+        <mkdir dir="${eclipselink.jpars.test}/stage/WEB-INF/classes/org/eclipse/persistence/jpars/test/model/dynamic"/>
+        <mkdir dir="${eclipselink.jpars.test}/stage/WEB-INF/classes/META-INF"/>
+        <mkdir dir="${eclipselink.jpars.test}/stage/WEB-INF/classes/META-INF/xmldocs"/>
+
+        <copy todir="${eclipselink.jpars.test}/stage/WEB-INF/classes/org/eclipse/persistence/jpars/test/model">
+            <fileset dir="${eclipselink.jpars.test}/classes/org/eclipse/persistence/jpars/test/model/" includes="*.class"/>
+        </copy>
+        <copy todir="${eclipselink.jpars.test}/stage/WEB-INF/classes/org/eclipse/persistence/jpars/test/model/dynamic">
+            <fileset dir="${eclipselink.jpars.test}/classes/org/eclipse/persistence/jpars/test/model/dynamic" includes="*.class"/>
+        </copy>
+        <copy todir="${eclipselink.jpars.test}/stage/WEB-INF/classes/META-INF">
+            <fileset dir="${eclipselink.jpars.test}/src/META-INF" includes="*.xml"/>
+        </copy>
+        <copy todir="${eclipselink.jpars.test}/stage/WEB-INF/classes/META-INF/xmldocs">
+            <fileset dir="${eclipselink.jpars.test}/src/META-INF/xmldocs" includes="*.xml"/>
+        </copy>
+        <copy todir="${eclipselink.jpars.test}/stage/WEB-INF/">
+            <fileset dir="${eclipselink.jpars.test}/WebContent/WEB-INF" includes="*.xml"/>
+        </copy>
+        <copy file="${jpars.lib}" todir="${eclipselink.jpars.test}/stage/WEB-INF/lib"/>
+        <jar destfile="${eclipselink.jpars.test}/${ant.project.name}.war" basedir="${eclipselink.jpars.test}/stage"/>
+        <delete dir="stage"/>
     </target>
 
     <!-- Test run macros -->
@@ -310,6 +337,9 @@
                     <path refid="@{compilepathref}"/>
                 </classpath>
             </javac>
+            <copy todir="${eclipselink.jpars.test}/classes/META-INF">
+                <fileset dir="${eclipselink.jpars.test}/src/META-INF" includes="**/*.xml"/>
+            </copy>
         </sequential>
     </macrodef>
 </project>
