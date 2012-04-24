@@ -115,8 +115,11 @@ public class DDLGenerationExtendTablesJUnitTestSuite extends
         tests.add("testManyToManyMapping");
         tests.add("testManyToManyWithMultipleJoinColumns");
         tests.add("testEmbeddedManyToMany");
+        tests.add("testEmbeddedOneToOne");
         tests.add("testAssociationOverrideToEmbeddedManyToMany");
+        tests.add("testDeleteObjectWithEmbeddedManyToMany");
         tests.add("testLAZYLOBWithEmbeddedId");
+        tests.add("testElementMapOnEmbedded");
         if (! JUnitTestCase.isJPA10()) {
             tests.add("testCreateMafiaFamily707");
             tests.add("testCreateMafiaFamily007");

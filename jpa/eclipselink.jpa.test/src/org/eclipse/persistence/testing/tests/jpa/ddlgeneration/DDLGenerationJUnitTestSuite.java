@@ -55,10 +55,13 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.eclipse.persistence.config.EntityManagerProperties;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryDelegate;
+import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.server.ServerSession;
@@ -894,9 +897,8 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             em.remove(key);
 
             em.flush();
-
-            rollbackTransaction(em);
         } finally {
+            rollbackTransaction(em);
             closeEntityManager(em);
         }
     }
@@ -927,9 +929,8 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             em.remove(key);
 
             em.flush();
-
-            rollbackTransaction(em);
         } finally {
+            rollbackTransaction(em);
             closeEntityManager(em);
         }
     }
@@ -963,9 +964,8 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             em.remove(value);
 
             em.flush();
-
-            rollbackTransaction(em);
         } finally {
+            rollbackTransaction(em);
             closeEntityManager(em);
         }
     }
@@ -994,9 +994,8 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             em.remove(value);
 
             em.flush();
-
-            rollbackTransaction(em);
         } finally {
+            rollbackTransaction(em);
             closeEntityManager(em);
         }
     }
@@ -1036,9 +1035,8 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
                 e.printStackTrace();
                 fail("Caught Exception while trying to remove a new ddl-generated OneToManyMapping." + e);
             }
-
-            rollbackTransaction(em);
         } finally {
+            rollbackTransaction(em);
             closeEntityManager(em);
         }
     }
@@ -2005,6 +2003,71 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
         em.createQuery("Select f from Foo f").getResultList();
     }
 
+    // Bug 373295
+    public void testElementMapOnEmbedded() {
+        // setup
+        EntityManager em = createEntityManager(DDL_PU);
+        MapHolder holder1 = new MapHolder();
+        holder1.setId(1);
+        MapHolderEmbeddable embeddable1 = new MapHolderEmbeddable();
+        embeddable1.getStringMap().put("key 1 1", "value 1 1");
+        embeddable1.getStringMap().put("key 1 2", "value 1 2");
+        holder1.setMapHolderEmbedded(embeddable1);
+        holder1.getStringMap().put("key 1 1", "value 1 1");
+        holder1.getStringMap().put("key 1 2", "value 1 2");
+        
+        MapHolder holder2 = new MapHolder();
+        holder2.setId(2);
+        MapHolderEmbeddable embeddable2 = new MapHolderEmbeddable();
+        embeddable2.getStringMap().put("key 2 1", "value 2 1");
+        embeddable2.getStringMap().put("key 2 2", "value 2 2");
+        embeddable2.getStringMap().put("key 2 3", "value 2 3");
+        holder2.setMapHolderEmbedded(embeddable2);
+        holder2.getStringMap().put("key 2 1", "value 2 1");
+        holder2.getStringMap().put("key 2 2", "value 2 2");
+        holder2.getStringMap().put("key 2 3", "value 2 3");
+        
+        beginTransaction(em);
+        em.persist(holder1);
+        em.persist(holder2);
+        commitTransaction(em);
+        closeEntityManager(em);
+        
+        // test
+        String errorMsg = "";
+        try {
+            clearCache(DDL_PU);
+            em = createEntityManager(DDL_PU);
+            Query query = em.createQuery("SELECT mh FROM MapHolder mh WHERE mh.id = 1 OR mh.id = 2");
+            List<MapHolder> mapHolders = query.getResultList();
+            
+            // verify
+            if (mapHolders.size() == 2) {
+                for (MapHolder mh : mapHolders) {
+                    if (mh.getMapHolderEmbedded().getStringMap().size() != mh.getId() + 1) {
+                        errorMsg += "Wrong getMapHolderEmbedded().getStringMap().size() " + mh.getMapHolderEmbedded().getStringMap().size() + "; expected " + Integer.toString(mh.getId() + 1) + "\n";
+                    }
+                    if (mh.getStringMap().size() != mh.getId() + 1) {
+                        errorMsg += "Wrong getStringMap().size() " + mh.getStringMap().size() + "; expected " + Integer.toString(mh.getId() + 1) + "\n";
+                    }
+                }
+            } else {
+                errorMsg += "Wrong mapHolders size";
+            }
+        } finally {
+            // clean-up
+            beginTransaction(em);
+            em.remove(em.find(MapHolder.class, 1));
+            em.remove(em.find(MapHolder.class, 2));
+            commitTransaction(em);
+            closeEntityManager(em);
+        }
+        
+        if (errorMsg.length() > 0) {
+            fail("\n" + errorMsg);
+        }
+    }
+    
     public static void main(String[] args) {
         junit.textui.TestRunner.run(suite());
     }
