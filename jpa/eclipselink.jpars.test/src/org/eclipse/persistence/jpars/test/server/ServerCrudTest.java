@@ -50,7 +50,8 @@ import com.sun.jersey.api.client.WebResource;
 
 public class ServerCrudTest {
     
-    public static final String SERVER_URI = "http://localhost:8080/eclipselink.jpars.test/jpa-rs/";
+    public static final String SERVER_URI = "http://localhost:7001/eclipselink.jpars.test/jpa-rs/";
+    //public static final String SERVER_URI = "http://localhost:8080/eclipselink.jpars.test/jpa-rs/";
     public static final String DEFAULT_PU = "auction-static";
     protected static Client client = null;
     protected static Unmarshaller unmarshaller = null;
@@ -73,6 +74,7 @@ public class ServerCrudTest {
         Map<String, Object> properties = new HashMap<String, Object>();
         ExamplePropertiesLoader.loadProperties(properties); 
         properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
+        properties.put(PersistenceUnitProperties.JTA_DATASOURCE, null);
         properties.put(PersistenceUnitProperties.DDL_GENERATION, PersistenceUnitProperties.DROP_AND_CREATE);
 
         PersistenceFactory factory = new PersistenceFactory();
@@ -273,7 +275,7 @@ public class ServerCrudTest {
         }
         ClientResponse response = webResource.type(MediaType.APPLICATION_JSON_TYPE).accept(MediaType.APPLICATION_JSON_TYPE).put(ClientResponse.class, os.toString());
         Status status = response.getClientResponseStatus();
-        assertTrue("Wrong exception garbage write. " + status, status.equals(Status.INTERNAL_SERVER_ERROR));
+        assertTrue("Wrong exception garbage write. " + status, status.equals(Status.BAD_REQUEST));
     }
     
     @Test

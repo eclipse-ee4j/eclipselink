@@ -30,7 +30,7 @@ public class ExamplePropertiesLoader {
 
     public static final String DEFAULT_FILENAME = "test.properties";
     public static final String ECLIPSELINK_TEST_DB_PROP_PREFIX = "db.";
-    public static final String JPA_DB_PROP_PREFIX = "javax.persistence.jdbc";
+    public static final String JPA_DB_PROP_PREFIX = "javax.persistence.jdbc.";
     public static final String DB_DRIVER_KEY = "db.driver";
     public static final String DB_URL_KEY = "db.url";
     public static final String DB_USER_KEY = "db.user";

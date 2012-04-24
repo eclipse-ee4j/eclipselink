@@ -304,8 +304,8 @@ public class TestService {
         }
         String resultString = outputStream.toString();
         
-        assertTrue("Computer was not in results.", resultString.contains("\"name\" : \"Computer\""));
-        assertTrue("Word Processor was not in restuls.", resultString.contains("\"name\" : \"Word Processor\""));
+        assertTrue("Computer was not in results.", resultString.contains("\"name\":\"Computer\""));
+        assertTrue("Word Processor was not in restuls.", resultString.contains("\"name\":\"Word Processor\""));
         clearData();
     }
     
@@ -333,8 +333,8 @@ public class TestService {
         
         String resultString = stringifyResults(output);
         
-        assertTrue("Computer was not in results.", resultString.contains("\"name\" : \"Computer\""));
-        assertFalse("Word Processor was in results.", resultString.contains("\"name\" : \"Word Processor\""));
+        assertTrue("Computer was not in results.", resultString.contains("\"name\":\"Computer\""));
+        assertFalse("Word Processor was in results.", resultString.contains("\"name\":\"Word Processor\""));
         
         clearData();
     }
@@ -357,8 +357,8 @@ public class TestService {
 
         String resultString = stringifyResults(output);
         
-        assertTrue("Laptop was not in results.", resultString.contains("\"name\" : \"Laptop\""));
-        assertTrue("Laptop was not in results.", resultString.contains("\"description\" : \"Speedy\""));
+        assertTrue("Laptop was not in results.", resultString.contains("\"name\":\"Laptop\""));
+        assertTrue("Laptop was not in results.", resultString.contains("\"description\":\"Speedy\""));
     }
     
     @Test 
