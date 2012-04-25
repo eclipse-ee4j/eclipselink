@@ -6,27 +6,27 @@
    <data3>84376328476324XXXXXXX</data3>
    <subData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="detailDataNT">
       <info>name|rbarkhouse</info>
-      <locator>
-         <columnNumber>91</columnNumber>
-         <lineNumber>7</lineNumber>
-      </locator>
+      <locator/>
+
+
+
    </subData>
    <subData>
       <info>phone|6132832684</info>
-      <locator>
-         <columnNumber>13</columnNumber>
-         <lineNumber>14</lineNumber>
-      </locator>
+      <locator/>
+
+
+
    </subData>
    <subData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="leafDataNT">
       <info>id|8827</info>
-      <locator>
-         <columnNumber>89</columnNumber>
-         <lineNumber>21</lineNumber>
-      </locator>
+      <locator/>
+
+
+
    </subData>
-   <locator>
-      <columnNumber>7</columnNumber>
-      <lineNumber>2</lineNumber>
-   </locator>
+   <locator/>
+
+
+
 </data>

@@ -14,6 +14,7 @@ package org.eclipse.persistence.testing.jaxb.annotations;
 
 import org.eclipse.persistence.testing.jaxb.annotations.xmlaccessmethods.XmlAccessMethodsTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlclassextractor.XmlClassExtractorTestCases;
+import org.eclipse.persistence.testing.jaxb.annotations.xmllocation.XmlLocationTestSuite;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlnametransformer.JAXBDefaultNameTransformerTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlnametransformer.upper.JAXBUpperNameTransformerTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlnullpolicy.XmlNullPolicyTestCases;
@@ -74,9 +75,7 @@ public class AnnotationsTestSuite extends TestSuite {
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmlelementdecl.qualified.QualfiedTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmlelementdecl.emptystringns.EmptyStringNSTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmlelementdecl.unqualified.UnqualfiedTestCases.class);
-        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmllocation.XmlLocationTestCases.class);
-        //suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmllocation.XmlLocationNonTransientTestCases.class);
-        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmllocation.XmlLocationErrorTestCases.class);
+        suite.addTest(XmlLocationTestSuite.suite());
         suite.addTest(org.eclipse.persistence.testing.jaxb.annotations.xmlvalue.XmlValueTestSuite.suite());
 
         return suite;

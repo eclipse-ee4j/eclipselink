@@ -40,14 +40,14 @@ public class XmlLocationNonTransientTestCases extends JAXBTestCases {
         d.data1 = "sdjfhdsaoiufhosaidufh";
         d.data2 = "kjdfgkjdsfg8374934874";
         d.data3 = "84376328476324XXXXXXX";
-        d.locator = new TestLocator(2, 7, includeSysId);
+        d.locator = new TestLocator(2, 7, 1, includeSysId);
 
-        SubDataNT sd1 = new DetailDataNT(); sd1.info = "name|rbarkhouse"; sd1.locator = new TestLocator(7, 91, includeSysId); d.subData.add(sd1);
-        SubDataNT sd2 = new SubDataNT(); sd2.info = "phone|6132832684";  sd2.locator = new TestLocator(14, 13, includeSysId); d.subData.add(sd2);
-        SubDataNT sd3 = new LeafDataNT(); sd3.info = "id|8827"; sd3.locator = new TestLocator(21, 89, includeSysId); d.subData.add(sd3);
+        SubDataNT sd1 = new DetailDataNT(); sd1.info = "name|rbarkhouse"; sd1.locator = new TestLocator(7, 91, 4, includeSysId); d.subData.add(sd1);
+        SubDataNT sd2 = new SubDataNT(); sd2.info = "phone|6132832684";  sd2.locator = new TestLocator(14, 13, 4, includeSysId); d.subData.add(sd2);
+        SubDataNT sd3 = new LeafDataNT(); sd3.info = "id|8827"; sd3.locator = new TestLocator(21, 89, 4, includeSysId); d.subData.add(sd3);
 
         if (this.getName().endsWith("Node") || this.getName().endsWith("UnmarshallerHandler")) {
-            TestLocator noLoc = new TestLocator(0, 0, false);
+            TestLocator noLoc = new TestLocator(0, 0, 0, false);
 
             d.locator = noLoc;
             sd1.locator = noLoc;
@@ -67,9 +67,16 @@ public class XmlLocationNonTransientTestCases extends JAXBTestCases {
         private boolean includeSysId = false;
         private String controlSysId = null;
 
-        int line, column;
+        /**
+         * Different parsers take different approaches when returning the 
+         * XML Location of a given element.  The default XML parser
+         * considers the end of the opening tag as the beginning of the element
+         * (eg L15 C89), whereas Woodstox and XDK use the beginning of the opening
+         * tag (eg. L15 C29).
+         */
+        int line, column, alternateColumn;
 
-        public TestLocator(int l, int c, boolean sysId) {
+        public TestLocator(int l, int c, int alt, boolean sysId) {
             this.includeSysId = sysId;
 
             URL url = ClassLoader.getSystemClassLoader().getResource(XML_RESOURCE);
@@ -77,6 +84,7 @@ public class XmlLocationNonTransientTestCases extends JAXBTestCases {
 
             this.line = l;
             this.column = c;
+            this.alternateColumn = alt;
         }
 
         public String getPublicId() {
@@ -97,6 +105,22 @@ public class XmlLocationNonTransientTestCases extends JAXBTestCases {
 
         public int getColumnNumber() {
             return column;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) return false;
+            if (obj instanceof Locator) {
+                Locator aLocator = (Locator) obj;
+                if (includeSysId) {
+                    if (!(this.getSystemId().equals(aLocator.getSystemId()))) return false;
+                }
+                if (this.line != aLocator.getLineNumber()) return false;
+                if ((this.column != aLocator.getColumnNumber()) && (this.alternateColumn != aLocator.getColumnNumber())) return false;
+
+                return true;
+            }
+            return false;
         }
     }
 

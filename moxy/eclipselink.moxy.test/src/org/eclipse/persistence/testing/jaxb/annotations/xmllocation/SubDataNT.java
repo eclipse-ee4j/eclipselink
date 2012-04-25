@@ -57,18 +57,12 @@ public class SubDataNT {
         }
 
         if (this.locator != null && d.locator != null) {
-            boolean lines = this.locator.getLineNumber() == d.locator.getLineNumber();
-            boolean columns = this.locator.getColumnNumber() == d.locator.getColumnNumber();
-
-            String sysId1 = this.locator.getSystemId() == null ? "" : this.locator.getSystemId();
-            String sysId2 = d.locator.getSystemId() == null ? "" : d.locator.getSystemId();
-
-            boolean sysIds = sysId1.equals(sysId2);
-
-            return (lines && columns && sysIds);
+            if (!(this.locator.equals(d.locator))) {
+                return false;
+            }
         }
 
-        return false;
+        return true;
     }
 
 }
