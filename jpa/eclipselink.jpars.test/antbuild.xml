@@ -46,6 +46,8 @@
     </pathconvert>
     <echo message="jparstest.build.location = '${jparstest.build.location}'"/>
 
+    <property name="eclipselink.jpars.test" value="."/>
+    <echo message="eclipselink.jpars.test     = '${eclipselink.jpars.test}'"/>
     <condition property="jparstest.2.base.dir" value="../.." else="..">
         <contains string="${jparstest.build.location}" substring="/jpa/"/>
     </condition>
@@ -337,8 +339,8 @@
                     <path refid="@{compilepathref}"/>
                 </classpath>
             </javac>
-            <copy todir="${eclipselink.jpars.test}/classes/META-INF">
-                <fileset dir="${eclipselink.jpars.test}/src/META-INF" includes="**/*.xml"/>
+            <copy todir="classes/META-INF">
+                <fileset dir="src/META-INF" includes="**/*.xml"/>
             </copy>
         </sequential>
     </macrodef>
