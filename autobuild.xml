@@ -470,13 +470,14 @@
         <!-- New Publish Architecture -->
         <property name="host.dir" value="${download.dir}/${host}"/>
         <mkdir dir="${host.dir}"/>
-        <copy file="${build.root.dir}/${eclipselink.core.test}/${report.dir}/junit-noframes.html"      tofile="${host.dir}/eclipselink-core-lrg-${version.string}.html"      failonerror="false"/>
-        <copy file="${build.root.dir}/${eclipselink.jpa.test}/${report.dir}/junit-noframes.html"       tofile="${host.dir}/eclipselink-jpa-lrg-${version.string}.html"       failonerror="false"/>
-        <copy file="${build.root.dir}/${eclipselink.jpa.wdf.test}/${report.dir}/junit-noframes.html"   tofile="${host.dir}/eclipselink-jpa-wdf-lrg-${version.string}.html"   failonerror="false"/>
-        <copy file="${build.root.dir}/${eclipselink.moxy.test}/${report.dir}/jaxb/junit-noframes.html" tofile="${host.dir}/eclipselink-jaxb-lrg-${version.string}.html"      failonerror="false"/>
-        <copy file="${build.root.dir}/${eclipselink.moxy.test}/${report.dir}/oxm/junit-noframes.html"  tofile="${host.dir}/eclipselink-oxm-lrg-${version.string}.html"       failonerror="false"/>
-        <copy file="${build.root.dir}/${eclipselink.sdo.test}/${report.dir}/true/junit-noframes.html"  tofile="${host.dir}/eclipselink-sdo-lrg-${version.string}.html"       failonerror="false"/>
-        <copy file="${build.root.dir}/${eclipselink.dbws.test}/${report.dir}/junit-noframes.html"      tofile="${host.dir}/eclipselink-dbws-lrg-${version.string}.html"      failonerror="false"/>
+        <copy file="${build.root.dir}/${eclipselink.core.test}/${report.dir}/junit-noframes.html"         tofile="${host.dir}/eclipselink-core-lrg-${version.string}.html"      failonerror="false"/>
+        <copy file="${build.root.dir}/${eclipselink.jpa.test}/${report.dir}/junit-noframes.html"          tofile="${host.dir}/eclipselink-jpa-lrg-${version.string}.html"       failonerror="false"/>
+        <copy file="${build.root.dir}/${eclipselink.jpa.wdf.test}/${report.dir}/junit-noframes.html"      tofile="${host.dir}/eclipselink-jpa-wdf-lrg-${version.string}.html"   failonerror="false"/>
+        <copy file="${build.root.dir}/${eclipselink.jpars.test}/${report.dir}/junit-noframes.html"        tofile="${host.dir}/eclipselink-jpars-lrg-${version.string}.html"     failonerror="false"/>
+        <copy file="${build.root.dir}/${eclipselink.moxy.test}/${report.dir}/jaxb/junit-noframes.html"    tofile="${host.dir}/eclipselink-jaxb-lrg-${version.string}.html"      failonerror="false"/>
+        <copy file="${build.root.dir}/${eclipselink.moxy.test}/${report.dir}/oxm/junit-noframes.html"     tofile="${host.dir}/eclipselink-oxm-lrg-${version.string}.html"       failonerror="false"/>
+        <copy file="${build.root.dir}/${eclipselink.sdo.test}/${report.dir}/true/junit-noframes.html"     tofile="${host.dir}/eclipselink-sdo-lrg-${version.string}.html"       failonerror="false"/>
+        <copy file="${build.root.dir}/${eclipselink.dbws.test}/${report.dir}/junit-noframes.html"         tofile="${host.dir}/eclipselink-dbws-lrg-${version.string}.html"      failonerror="false"/>
         <copy file="${build.root.dir}/${eclipselink.dbws.builder.test}/${report.dir}/junit-noframes.html" tofile="${host.dir}/eclipselink-dbws-util-lrg-${version.string}.html" failonerror="false"/>
         <!-- Remove any old results summary file, if it exists -->
         <delete file="${host.dir}/ResultsSummary.dat" failonerror="false"/>
