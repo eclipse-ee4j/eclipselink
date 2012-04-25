@@ -14,17 +14,18 @@
 package org.eclipse.persistence.testing.tests.jpa.jpql;
 
 import java.util.Calendar;
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
-
-import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
+import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
+import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
 import org.eclipse.persistence.testing.models.jpa.datetime.DateTimePopulator;
 import org.eclipse.persistence.testing.models.jpa.datetime.DateTimeTableCreator;
-import javax.persistence.*;
 
 /**
  * <p>
@@ -99,7 +100,8 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
         suite.addTest(new JUnitJPQLModifyTestSuite("updateUnqualifiedAttributeInWhereWithInputParameter"));
         suite.addTest(new JUnitJPQLModifyTestSuite("updateDateTimeFields"));
         suite.addTest(new JUnitJPQLModifyTestSuite("simpleDelete"));
-        
+        suite.addTest(new JUnitJPQLModifyTestSuite("simpleUpdateWithInputParameters"));
+
         return suite;
     }
     
@@ -525,5 +527,24 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
         Query q = em.createQuery(jpql);
         Object result = q.getSingleResult();
         return ((Number)result).intValue();
+    }
+
+    public void simpleUpdateWithInputParameters() {
+   	 EntityManager em = createEntityManager();
+       beginTransaction(em);
+       try {
+      	 String jpql = "Update Employee a SET a.payScale = :acctStatus WHERE LOCATE(:acctName, a.lastName)> 0";
+          Query query = em.createQuery(jpql);
+          query.setParameter("acctStatus", Employee.SalaryRate.EXECUTIVE);
+          query.setParameter("acctName",   "Jones");
+          int updated = query.executeUpdate();
+          assertEquals("simpleUpdateWithInputParameters: did not update correclty", 2, updated);
+          commitTransaction(em);
+       }
+       finally {
+      	 if (isTransactionActive(em)){
+      		 rollbackTransaction(em);
+      	 }
+       }
     }
 }

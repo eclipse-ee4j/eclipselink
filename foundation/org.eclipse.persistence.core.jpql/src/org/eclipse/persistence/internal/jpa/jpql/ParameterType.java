@@ -540,7 +540,20 @@ final class ParameterTypeVisitor extends AbstractEclipseLinkTraverseParentVisito
 	 */
 	@Override
 	public void visit(LocateExpression expression) {
-		super.visit(expression);
+
+		Expression firstExpression  = expression.getFirstExpression();
+		Expression secondExpression = expression.getSecondExpression();
+
+		// The first two expressions should be a string
+		if (firstExpression .isAncestor(inputParameter) ||
+		    secondExpression.isAncestor(inputParameter)) {
+
+			this.type = String.class;
+		}
+		// It either returns an integer or the third argument is an integer
+		else {
+			this.type = Integer.class;
+		}
 	}
 
 	/**

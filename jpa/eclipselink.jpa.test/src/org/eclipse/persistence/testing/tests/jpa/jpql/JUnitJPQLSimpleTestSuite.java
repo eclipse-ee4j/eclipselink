@@ -171,6 +171,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         suite.addTest(new JUnitJPQLSimpleTestSuite("relationshipElementCollectionIsNotEmptyTest"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("enumWithToStringTest"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("selectFromClauseWithFullyQualifiedClassName"));
+        suite.addTest(new JUnitJPQLSimpleTestSuite("selectFromClauseWithJoin"));
 
         return suite;
     }
@@ -2156,5 +2157,12 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
             "org.eclipse.persistence.testing.models.jpa.advanced.Address a "+
             "WHERE e.lastName = 'JPQL'");
         query.getResultList();
+    }
+
+    public void selectFromClauseWithJoin(){
+   	 EntityManager em = createEntityManager();
+   	 Query query = em.createQuery("SELECT Object(c) from Employee c JOIN FETCH c.address ");
+   	 query.getResultList();
+		 // TODO: Actually check the result
     }
 }

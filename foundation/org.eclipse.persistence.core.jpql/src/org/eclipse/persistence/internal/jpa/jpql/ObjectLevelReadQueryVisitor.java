@@ -17,6 +17,7 @@ import java.util.Collection;
 import org.eclipse.persistence.jpa.jpql.LiteralType;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
 import org.eclipse.persistence.jpa.jpql.parser.Join;
+import org.eclipse.persistence.jpa.jpql.parser.ObjectExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SelectClause;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 
@@ -74,6 +75,14 @@ final class ObjectLevelReadQueryVisitor extends AbstractReadAllQueryVisitor {
 				}
 			}
 		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void visit(ObjectExpression expression) {
+		expression.getExpression().accept(this);
 	}
 
 	/**
