@@ -197,9 +197,11 @@ public class PersistenceFactory {
         return properties;
     }
     
-    public synchronized PersistenceContext getPersistenceContext(String name){
-        initialize();
-        return persistenceContexts.get(name);
+    public PersistenceContext getPersistenceContext(String name){
+        synchronized (this) {
+            initialize();
+            return persistenceContexts.get(name);
+        }
     }
     
     public Set<String> getPersistenceContextNames(){

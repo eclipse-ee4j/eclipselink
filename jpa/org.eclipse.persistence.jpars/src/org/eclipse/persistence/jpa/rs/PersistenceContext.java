@@ -169,6 +169,7 @@ public class PersistenceContext {
         } catch (Exception e){
             throw new RuntimeException("JAXB Creation Exception", e);
         }
+        setBaseURI(defaultURI);
     }
  
     /**

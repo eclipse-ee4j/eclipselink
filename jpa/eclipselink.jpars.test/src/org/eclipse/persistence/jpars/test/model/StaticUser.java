@@ -18,6 +18,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinColumns;
+import javax.persistence.NamedNativeQueries;
+import javax.persistence.NamedNativeQuery;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
@@ -39,11 +41,25 @@ import javax.persistence.Table;
     @NamedQuery(
         name="User.byNameOrId", 
         query="SELECT u FROM StaticUser u where u.name = :name or u.id = :id"
-    )
-    ,
+    ),
     @NamedQuery(
         name="User.updateName", 
         query="UPDATE StaticUser u SET u.name = :name where u.id = :id"
+    ),
+    @NamedQuery(
+            name="User.nameAndId", 
+            query="SELECT u.name, u.id FROM StaticUser u"
+    ),
+    @NamedQuery(
+            name="User.count", 
+            query="SELECT count(u) FROM StaticUser u"
+    )
+})
+
+@NamedNativeQueries({
+    @NamedNativeQuery(
+        name="User.nativeName",
+        query="SELECT ID, NAME, ADDRESS_ID, ADDRESS_TYPE FROM ST_AUC_USER"
     )
 })
 

@@ -506,7 +506,7 @@ public class TestService {
 
         result = service.getDescriptorMetadata("auction", "Bid", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo());
     
-        result = service.getQueryMetadata("auction", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo());
+        result = service.getQueriesMetadata("auction", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo());
     }
     
     public static String stringifyResults(StreamingOutput output){

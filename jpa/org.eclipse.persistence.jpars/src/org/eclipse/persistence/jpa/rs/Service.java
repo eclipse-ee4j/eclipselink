@@ -64,8 +64,13 @@ import javax.xml.transform.stream.StreamSource;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
+import org.eclipse.persistence.internal.expressions.ConstantExpression;
+import org.eclipse.persistence.internal.expressions.MapEntryExpression;
+import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.queries.MapContainerPolicy;
+import org.eclipse.persistence.internal.queries.ReportItem;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jpa.JpaHelper;
@@ -85,6 +90,8 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.ReportQuery;
+import org.eclipse.persistence.sessions.DatabaseRecord;
 
 /**
  * JAX-RS application interface JPA-RS
@@ -287,18 +294,42 @@ public class Service {
     
     @GET
     @Path("{context}/metadata/query/")
-    public Response getQueryMetadata(@PathParam("context") String persistenceUnit, @Context HttpHeaders hh, @Context UriInfo uriInfo) {
+    public Response getQueriesMetadata(@PathParam("context") String persistenceUnit, @Context HttpHeaders hh, @Context UriInfo uriInfo) {
         PersistenceContext app = get(persistenceUnit, uriInfo.getBaseUri());
         if (app == null){
             return Response.status(Status.NOT_FOUND).build();
         } else {
-            StringBuffer buffer = new StringBuffer();
             List<Query> queries = new ArrayList<Query>();
             addQueries(queries, app, null);
             String mediaType = StreamingOutputMarshaller.mediaType(hh.getAcceptableMediaTypes()).toString();
             String result = null;
             try {
                 result = marshallMetadata(queries, mediaType);
+            } catch (JAXBException e){
+                return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+            }
+            return Response.ok(new StreamingOutputMarshaller(null , result, hh.getAcceptableMediaTypes())).build();
+        }
+    }
+    
+    @GET
+    @Path("{context}/metadata/query/{queryName}")
+    public Response getQueryMetadata(@PathParam("context") String persistenceUnit, @PathParam("queryName") String queryName, @Context HttpHeaders hh, @Context UriInfo uriInfo) {
+        PersistenceContext app = get(persistenceUnit, uriInfo.getBaseUri());
+        if (app == null){
+            return Response.status(Status.NOT_FOUND).build();
+        } else {
+            List<Query> returnQueries = new ArrayList<Query>();
+            Map<String, List<DatabaseQuery>> queries = JpaHelper.getServerSession(app.getEmf()).getQueries();
+            if (queries.get(queryName) != null){
+                for (DatabaseQuery query :queries.get(queryName)){
+                    returnQueries.add(getQuery(query, app));
+                }
+            }
+            String mediaType = StreamingOutputMarshaller.mediaType(hh.getAcceptableMediaTypes()).toString();
+            String result = null;
+            try {
+                result = marshallMetadata(returnQueries, mediaType);
             } catch (JAXBException e){
                 return Response.status(Status.INTERNAL_SERVER_ERROR).build();
             }
@@ -336,7 +367,7 @@ public class Service {
         try{
             entity = app.unmarshalEntity(type, getTenantId(hh), mediaType(hh.getAcceptableMediaTypes()), in);
         } catch (JAXBException e){
-            throw e;
+            return Response.status(Status.BAD_REQUEST).build();
         }
 
         // maintain itempotence on PUT by disallowing sequencing and cascade persist.
@@ -378,7 +409,7 @@ public class Service {
         try {
             entity = app.unmarshalEntity(type, tenantId, contentType, in);
         } catch (JAXBException e){
-            throw new WebApplicationException(e);
+            return Response.status(Status.BAD_REQUEST).build();
         }
         entity = app.merge(tenantId, entity);
         return Response.ok(new StreamingOutputMarshaller(app, entity, hh.getAcceptableMediaTypes())).build();
@@ -479,21 +510,58 @@ public class Service {
             Iterator<DatabaseQuery> queryIterator = keyQueries.iterator();
             while (queryIterator.hasNext()){
                 DatabaseQuery query= queryIterator.next();
-                if (javaClassName == null || query.getReferenceClassName().equals(javaClassName)){
+                if (javaClassName == null || (query.getReferenceClassName() != null && query.getReferenceClassName().equals(javaClassName))){
                     returnQueries.add(query);
                 }
             }
          }
         Iterator<DatabaseQuery> queryIterator = returnQueries.iterator();
         while(queryIterator.hasNext()){
-            DatabaseQuery query= queryIterator.next();
-            String method = query.isReadQuery() ? "get" : "post";
-            String referenceClass = query.getReferenceClassName() == null ? "" : query.getReferenceClassName();
-            String jpql = query.getJPQLString() == null? "" : query.getJPQLString();
-            queryList.add(new Query(query.getName(), referenceClass, jpql, new LinkTemplate("execute", method, app.getBaseURI() + app.getName() + "/query/" + query.getName() + "/{parameters}")));
-            
+            queryList.add(getQuery(queryIterator.next(), app));            
         }
     }
+    
+    protected Query getQuery(DatabaseQuery query, PersistenceContext app){
+        String method = query.isReadQuery() ? "get" : "post";
+        String jpql = query.getJPQLString() == null? "" : query.getJPQLString();
+        StringBuffer parameterString = new StringBuffer();
+        Iterator<String> argumentsIterator = query.getArguments().iterator();
+        while (argumentsIterator.hasNext()){
+            String argument = argumentsIterator.next();
+            parameterString.append(";");
+            parameterString.append(argument + "={" + argument + "}");
+        }
+        Query returnQuery = new Query(query.getName(), jpql, new LinkTemplate("execute", method, app.getBaseURI() + app.getName() + "/query/" + query.getName() + parameterString));
+        if (query.isReportQuery()){
+            query.checkPrepare(((AbstractSession)JpaHelper.getServerSession(app.getEmf())), new DatabaseRecord());
+            for (ReportItem item: ((ReportQuery)query).getItems()){
+                if (item.getMapping() != null) {
+                     if (item.getAttributeExpression() != null && item.getAttributeExpression().isMapEntryExpression()){
+                        if (((MapEntryExpression)item.getAttributeExpression()).shouldReturnMapEntry()){
+                            returnQuery.getReturnTypes().add(Map.Entry.class.getName());
+                        } else {
+                            returnQuery.getReturnTypes().add(((Class)((CollectionMapping)item.getMapping()).getContainerPolicy().getKeyType()).getName());
+                        }
+                    } else {
+                       returnQuery.getReturnTypes().add(item.getMapping().getAttributeClassification().getName());
+                    }
+                } else if (item.getResultType() != null) {
+                    returnQuery.getReturnTypes().add(item.getResultType().getName());
+                } else if (item.getDescriptor() != null) {
+                    returnQuery.getReturnTypes().add(item.getDescriptor().getJavaClass().getName());
+                } else if (item.getAttributeExpression() != null && item.getAttributeExpression().isConstantExpression()){
+                    returnQuery.getReturnTypes().add(((ConstantExpression)item.getAttributeExpression()).getValue().getClass().getName());
+                } else {
+                    // Use Object.class by default.
+                    returnQuery.getReturnTypes().add(ClassConstants.OBJECT.getName());
+                }
+            }
+        } else {
+            returnQuery.getReturnTypes().add(query.getReferenceClassName() == null ? "" : query.getReferenceClassName());
+        }
+        return  returnQuery;
+    }
+
     
     @PreDestroy
     public void close() {
@@ -513,6 +581,10 @@ public class Service {
                     app = getPersistenceFactory().bootstrapPersistenceContext(persistenceUnit, factory, defaultURI, true);
                 }
             } catch (Exception e){}
+        } else {
+            if (app.getBaseURI() == null){
+                app.setBaseURI(defaultURI);
+            }
         }
         
         if (app == null) {

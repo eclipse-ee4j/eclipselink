@@ -1,5 +1,8 @@
 package org.eclipse.persistence.jpa.rs.metadata.model;
 
+import javax.xml.bind.annotation.XmlType;
+
+@XmlType(propOrder={"name", "type"})
 public class Attribute {
 
     protected String name;

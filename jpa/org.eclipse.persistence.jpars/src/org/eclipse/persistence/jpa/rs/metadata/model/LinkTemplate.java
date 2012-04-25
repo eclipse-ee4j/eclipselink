@@ -1,8 +1,10 @@
 package org.eclipse.persistence.jpa.rs.metadata.model;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 @XmlRootElement
+@XmlType(propOrder={"type", "href", "rel"})
 public class LinkTemplate {
     
     private String rel;

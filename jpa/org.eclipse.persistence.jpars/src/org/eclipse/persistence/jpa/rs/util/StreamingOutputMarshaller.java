@@ -58,7 +58,6 @@ public class StreamingOutputMarshaller implements StreamingOutput {
     }
 
     public void write(OutputStream output) throws IOException, WebApplicationException {
-        long millis = System.currentTimeMillis();
         if (result instanceof byte[]){
             output.write((byte[])result);
         } else if (result instanceof String){
@@ -70,7 +69,6 @@ public class StreamingOutputMarshaller implements StreamingOutput {
             if (this.context != null && this.context.getJAXBContext() != null && this.result != null ) {
                 try {
                     context.marshallEntity(result, mediaType, output);
-                    System.out.println("SteamingOutputMarshaller done write. time: " + (System.currentTimeMillis() - millis));
                     return;
                 } catch (JAXBException e) {
                     // TODO: proper warning message
@@ -86,8 +84,6 @@ public class StreamingOutputMarshaller implements StreamingOutput {
             oos.close();
             output.write(baos.toByteArray());
         }
-        System.out.println("SteamingOutputMarshaller done write. time: " + (System.currentTimeMillis() - millis));
-
     }
     
     /**
