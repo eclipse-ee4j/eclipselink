@@ -73,7 +73,7 @@ import static dbws.testing.DBWSTestSuite.buildConnection;
     OXDescriptorTestSuite.class,
     PLSQLCollectionTestSuite.class,
     PLSQLRecordTestSuite.class,
-    //RowTypeTestSuite.class,
+    RowTypeTestSuite.class,
     SecondarySQLTestSuite.class,
     ShadowDDLGenerationTestSuite.class,
     SimplePLSQLSFTestSuite.class,

@@ -165,6 +165,7 @@ public class Util {
     public static final String OTHER_STR = "OTHER";
     public static final String RAW_STR = "RAW";
     public static final String REAL_STR = "REAL";
+    public static final String ROWTYPE_STR = "%ROWTYPE";
     public static final String SMALLINT_STR = "SMALLINT";
     public static final String STRUCT_STR = "STRUCT";
     public static final String TIME_STR = "TIME";

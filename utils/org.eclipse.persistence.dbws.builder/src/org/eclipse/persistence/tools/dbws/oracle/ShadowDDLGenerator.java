@@ -44,6 +44,7 @@ import static org.eclipse.persistence.tools.dbws.Util.FLOAT_STR;
 import static org.eclipse.persistence.tools.dbws.Util.INTEGER_STR;
 import static org.eclipse.persistence.tools.dbws.Util.NUMERIC_STR;
 import static org.eclipse.persistence.tools.dbws.Util.OTHER_STR;
+import static org.eclipse.persistence.tools.dbws.Util.PERCENT;
 import static org.eclipse.persistence.tools.dbws.Util.SEMICOLON;
 import static org.eclipse.persistence.tools.dbws.Util.SINGLE_SPACE;
 import static org.eclipse.persistence.tools.dbws.Util.UNDERSCORE;
@@ -95,10 +96,21 @@ public class ShadowDDLGenerator {
     }
     
     protected String getShadowROWTYPETypeName(ROWTYPEType rowTYPEType) {
+    	// TODO: not sure how to sync up a given ROWTYPEType instance with the correct
+    	//       DDL (pkgname_ROWTYPE_SQL0, pkgname_ROWTYPE_SQL1, etc.) in the builder
+    	// TODO: we shouldn't prepend the package name
+    	// TODO: keep the commented out code for now, in case we need to use it
+
+    	/*
         StringBuilder sb = new StringBuilder(rowTYPEType.getPackageType().getPackageName().toUpperCase());
         sb.append(ROWTYPE_PREFIX);
         sb.append(rowTYPETypeCounts.get(rowTYPEType.getTypeName()));
         return sb.toString();
+        */
+    	
+    	// we should just use the ROWTYPEType's type name, with '%' being 
+    	// replaced with '_' to match what we're doing in the builder
+    	return rowTYPEType.getTypeName().replace(PERCENT, UNDERSCORE);
     }
     
     class CountROWTYPETypesVisitor extends BaseDatabaseTypeVisitor {

@@ -124,10 +124,12 @@ import static org.eclipse.persistence.tools.dbws.Util.qNameFromString;
 import static org.eclipse.persistence.tools.dbws.Util.sqlMatch;
 import static org.eclipse.persistence.tools.dbws.Util.APP_OCTET_STREAM;
 import static org.eclipse.persistence.tools.dbws.Util.BUILDING_QUERYOP_FOR;
+import static org.eclipse.persistence.tools.dbws.Util.CLOSE_PAREN;
 import static org.eclipse.persistence.tools.dbws.Util.CURSOR_STR;
 import static org.eclipse.persistence.tools.dbws.Util.CURSOR_OF_STR;
 import static org.eclipse.persistence.tools.dbws.Util.OPEN_PAREN;
-import static org.eclipse.persistence.tools.dbws.Util.CLOSE_PAREN;
+import static org.eclipse.persistence.tools.dbws.Util.PERCENT;
+import static org.eclipse.persistence.tools.dbws.Util.UNDERSCORE;
 import static org.eclipse.persistence.tools.dbws.Util.SLASH;
 import static org.eclipse.persistence.tools.dbws.Util.TOPLEVEL;
 import static org.eclipse.persistence.tools.dbws.Util.TYPE_STR;
@@ -284,7 +286,9 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
 	                    // handle PL/SQL records and collections
 	                    if (arg.getEnclosedType().isPLSQLType()) {
 	                        hasComplexProcedureArgs = true;
-	                        String typeString = storedProcedure.getCatalogName() + "_" + arg.getTypeName();
+	                        String packageName = ((PLSQLType) arg.getEnclosedType()).getParentType().getPackageName();
+	                        String typeString = (packageName != null && packageName.length() > 0) ?
+	                                packageName + UNDERSCORE + arg.getTypeName() : arg.getTypeName();
 	                        xmlType = buildCustomQName(typeString, dbwsBuilder);
 	                    } else if (arg.getEnclosedType().isVArrayType() ||
 	                        arg.getEnclosedType().isObjectType() ||
@@ -431,7 +435,11 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                     if (returnType == null || returnType.length() == 0) {
                         returnType = rargDataType.getTypeName();
                     }
-                    String packageName = storedProcedure.getCatalogName();
+                    // packages only apply to PL/SQL types
+                    String packageName = null;
+                    if (rargDataType.isPLSQLType()) {
+                    	packageName = ((PLSQLType) rargDataType).getParentType().getPackageName();
+                    }
                     String returnTypeName = (packageName != null && packageName.length() > 0) ?
                             packageName + UNDERSCORE + returnType : returnType;
                     result.setType(buildCustomQName(returnTypeName, dbwsBuilder));
@@ -668,8 +676,15 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             String alias;
             if (dbType.isPLSQLType()) {
             	String catalogPattern = ((PLSQLType) dbType).getParentType().getPackageName();
-                name = catalogPattern + DOT + dbType.getTypeName();
-                String targetTypeName = catalogPattern + UNDERSCORE + dbType.getTypeName();
+                String targetTypeName;
+                // for types enclosed in a ROWTYPEType, package doesn't apply
+            	if (catalogPattern == null) {
+                    name = dbType.getTypeName();
+                    targetTypeName = dbType.getTypeName();
+            	} else {
+                    name = catalogPattern + DOT + dbType.getTypeName();
+                    targetTypeName = catalogPattern + UNDERSCORE + dbType.getTypeName();
+            	}
                 alias = targetTypeName.toLowerCase();
                 // handle PL/SQL record type
                 if (dbType.isPLSQLRecordType()) {
@@ -1595,7 +1610,12 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
         NamespaceResolver nr = new NamespaceResolver();
         nr.setDefaultNamespaceURI(targetNamespace);
         xdesc.setNamespaceResolver(nr);
-        xdesc.setDefaultRootElement(userType);
+        // default root element cannot have '%' (as in the case of %ROWTYPE), so replace with '_'
+        if (userType.contains(PERCENT)) {
+            xdesc.setDefaultRootElement(userType.replace(PERCENT, UNDERSCORE));
+        } else {
+            xdesc.setDefaultRootElement(userType);
+        }
         return xdesc;
     }
 

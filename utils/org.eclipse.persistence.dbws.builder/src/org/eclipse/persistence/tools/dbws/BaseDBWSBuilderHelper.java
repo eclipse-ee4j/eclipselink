@@ -128,8 +128,11 @@ import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_CLASS_FILE;
 import static org.eclipse.persistence.tools.dbws.Util.DBWS_PROVIDER_SOURCE_FILE;
 import static org.eclipse.persistence.tools.dbws.Util.DOT;
 import static org.eclipse.persistence.tools.dbws.Util.FINDALL_QUERYNAME;
+import static org.eclipse.persistence.tools.dbws.Util.PERCENT;
 import static org.eclipse.persistence.tools.dbws.Util.REMOVE_OPERATION_NAME;
+import static org.eclipse.persistence.tools.dbws.Util.ROWTYPE_STR;
 import static org.eclipse.persistence.tools.dbws.Util.THE_INSTANCE_NAME;
+import static org.eclipse.persistence.tools.dbws.Util.UNDERSCORE;
 import static org.eclipse.persistence.tools.dbws.Util.UPDATE_OPERATION_NAME;
 import static org.eclipse.persistence.tools.dbws.Util.WSI_SWAREF_PREFIX;
 import static org.eclipse.persistence.tools.dbws.Util.WSI_SWAREF_URI;
@@ -170,9 +173,11 @@ import org.eclipse.persistence.tools.oracleddl.metadata.NumericType;
 import org.eclipse.persistence.tools.oracleddl.metadata.ObjectTableType;
 import org.eclipse.persistence.tools.oracleddl.metadata.ObjectType;
 import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLCollectionType;
+import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLPackageType;
 import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLRecordType;
 import org.eclipse.persistence.tools.oracleddl.metadata.PrecisionType;
 import org.eclipse.persistence.tools.oracleddl.metadata.ProcedureType;
+import org.eclipse.persistence.tools.oracleddl.metadata.ROWTYPEType;
 import org.eclipse.persistence.tools.oracleddl.metadata.RawType;
 import org.eclipse.persistence.tools.oracleddl.metadata.RealType;
 import org.eclipse.persistence.tools.oracleddl.metadata.ScalarDatabaseType;
@@ -292,10 +297,24 @@ public abstract class BaseDBWSBuilderHelper {
                         }
                         args.addAll(procType.getArguments());
                         // now visit each argument
-                        for (DatabaseType dType : args) {
-                        	if (dType.isComposite()) {
-                            	etVisitor.visit((CompositeDatabaseType) dType);
-                        	}
+                        for (ArgumentType arg : args) {
+                            // handle ROWTYPETypes
+                            if (arg.getEnclosedType().isROWTYPEType()) {
+                                ROWTYPEType rType = (ROWTYPEType) arg.getEnclosedType();
+                                TableType tableType = (TableType) rType.getEnclosedType();
+                                PLSQLRecordType plsqlRec = new PLSQLRecordType(rType.getTypeName());
+                                plsqlRec.setParentType(new PLSQLPackageType());
+                                for (FieldType col : tableType.getColumns()) {
+                                    FieldType ft = new FieldType(col.getFieldName());
+                                    ft.setEnclosedType(col.getEnclosedType());
+                                    plsqlRec.addField(ft);
+                                }
+                                arg.setEnclosedType(plsqlRec);
+                            }
+                            // now visit each, adding types (only one instance of each) to the list 
+                            if (arg.isComposite()) {
+                                etVisitor.visit((CompositeDatabaseType) arg);
+                            }
                         }
                     }
                 }
@@ -360,6 +379,63 @@ public abstract class BaseDBWSBuilderHelper {
           setUpFindQueries(tableName, desc);
         }
         finishUpProjects(orProject, oxProject, types);
+    }
+
+    /**
+     * Complete project configuration.  Build descriptors for secondary SQL and
+     * complex arguments.  Set the projects on the DBWSBuilder instance.
+     */
+    protected void finishUpProjects(Project orProject, Project oxProject, List<CompositeDatabaseType> typeList) {
+        // handle build SQL
+        for (OperationModel opModel : dbwsBuilder.operations) {
+            if (opModel.hasBuildSql()) {
+                addToOROXProjectsForBuildSql((ModelWithBuildSql)opModel, orProject, oxProject, nct);
+            }
+        }
+        // create OR/OX projects, descriptors/mappings for the types
+        addToOROXProjectsForComplexTypes(typeList, orProject, oxProject);
+        // build queries for procedures with complex arguments
+        for (OperationModel opModel : dbwsBuilder.operations) {
+            if (opModel.isProcedureOperation()) {
+                ProcedureOperationModel procedureOperation = (ProcedureOperationModel)opModel;
+                if (procedureOperation.isPLSQLProcedureOperation() ||
+                    procedureOperation.isAdvancedJDBCProcedureOperation()) {
+                    for (ProcedureType procType : procedureOperation.getDbStoredProcedures()) {
+                        // build list of arguments to process (i.e. build descriptors for)
+                        List<ArgumentType> args = getArgumentListForProcedureType(procType);
+                        boolean hasComplexArgs = hasComplexArgs(args);
+                        boolean hasPLSQLArgs = hasPLSQLArgs(args);
+                        boolean hasPLSQLScalarArgs = hasPLSQLScalarArgs(args);
+                        // set 'complex' flag on model to indicate complex arg processing is required
+                        // TODO: don't overwrite previously set to TRUE, as not all proc/funcs in the
+                        //       model necessarily have complex args, but we will need to know to
+                        //       process the ones that do
+                        if (!procedureOperation.hasComplexArguments) {
+                            procedureOperation.setHasComplexArguments(hasComplexArgs);
+                        }
+                        if (hasComplexArgs || hasPLSQLScalarArgs) {
+                            // build a query for this ProcedureType as it has one or more complex arguments
+                            buildQueryForProcedureType(procType, orProject, oxProject, procedureOperation,
+                                hasPLSQLArgs);
+                        }
+                    }
+                }
+            }
+        }
+        
+        DatabaseLogin databaseLogin = new DatabaseLogin();
+        databaseLogin.removeProperty("user");
+        databaseLogin.removeProperty("password");
+        databaseLogin.setDriverClassName(null);
+        databaseLogin.setConnectionString(null);
+        orProject.setLogin(databaseLogin);
+        XMLLogin xmlLogin = new XMLLogin();
+        xmlLogin.setDatasourcePlatform(new DOMPlatform());
+        xmlLogin.getProperties().remove("user");
+        xmlLogin.getProperties().remove("password");
+        oxProject.setLogin(xmlLogin);
+        dbwsBuilder.setOrProject(orProject);
+        dbwsBuilder.setOxProject(oxProject);
     }
 
     protected DirectToFieldMapping buildORFieldMappingFromColumn(FieldType dbColumn,
@@ -1029,64 +1105,6 @@ public abstract class BaseDBWSBuilderHelper {
         desc.getQueryManager().addQuery(FINDALL_QUERYNAME, raq);
     }
 
-    /**
-     * Complete project configuration.  Build descriptors for secondary SQL and
-     * complex arguments.  Set the projects on the DBWSBuilder instance.
-     */
-    protected void finishUpProjects(Project orProject, Project oxProject, List<CompositeDatabaseType> typeList) {
-        // handle build SQL
-        for (OperationModel opModel : dbwsBuilder.operations) {
-            if (opModel.hasBuildSql()) {
-                addToOROXProjectsForBuildSql((ModelWithBuildSql)opModel, orProject, oxProject,
-                    nct);
-            }
-        }
-        // create OR/OX projects, descriptors/mappings for the types
-        addToOROXProjectsForComplexTypes(typeList, orProject, oxProject);
-        // build queries for procedures with complex arguments
-        for (OperationModel opModel : dbwsBuilder.operations) {
-            if (opModel.isProcedureOperation()) {
-                ProcedureOperationModel procedureOperation = (ProcedureOperationModel)opModel;
-                if (procedureOperation.isPLSQLProcedureOperation() ||
-                    procedureOperation.isAdvancedJDBCProcedureOperation()) {
-                    for (ProcedureType procType : procedureOperation.getDbStoredProcedures()) {
-                        // build list of arguments to process (i.e. build descriptors for)
-                        List<ArgumentType> args = getArgumentListForProcedureType(procType);
-                        boolean hasComplexArgs = hasComplexArgs(args);
-                        boolean hasPLSQLArgs = hasPLSQLArgs(args);
-                        boolean hasPLSQLScalarArgs = hasPLSQLScalarArgs(args);
-                        // set 'complex' flag on model to indicate complex arg processing is required
-                        // TODO: don't overwrite previously set to TRUE, as not all proc/funcs in the
-                        //       model necessarily have complex args, but we will need to know to
-                        //       process the ones that do
-                        if (!procedureOperation.hasComplexArguments) {
-                            procedureOperation.setHasComplexArguments(hasComplexArgs);
-                        }
-                        if (hasComplexArgs || hasPLSQLScalarArgs) {
-                            // build a query for this ProcedureType as it has one or more complex arguments
-                            buildQueryForProcedureType(procType, orProject, oxProject, procedureOperation,
-                                hasPLSQLArgs);
-                        }
-                    }
-                }
-            }
-        }
-        
-        DatabaseLogin databaseLogin = new DatabaseLogin();
-        databaseLogin.removeProperty("user");
-        databaseLogin.removeProperty("password");
-        databaseLogin.setDriverClassName(null);
-        databaseLogin.setConnectionString(null);
-        orProject.setLogin(databaseLogin);
-        XMLLogin xmlLogin = new XMLLogin();
-        xmlLogin.setDatasourcePlatform(new DOMPlatform());
-        xmlLogin.getProperties().remove("user");
-        xmlLogin.getProperties().remove("password");
-        oxProject.setLogin(xmlLogin);
-        dbwsBuilder.setOrProject(orProject);
-        dbwsBuilder.setOxProject(oxProject);
-    }
-
     protected static List<DbColumn> buildDbColumns(Connection connection, String secondarySql) {
         List<DbColumn> columns = null;
         ResultSetMetaData rsMetaData = getResultSetMetadataForSecondarySQL(connection, secondarySql);
@@ -1229,12 +1247,14 @@ public abstract class BaseDBWSBuilderHelper {
         // composite types
         if (dType.isComposite()) {
             String typeName = dType.getTypeName();
-            String compatibleType = dType.getTypeName();
+            // for %ROWTYPE, the compatible JDBC type name cannot contain '%'
+            String compatibleType = typeName.contains(PERCENT) ? typeName.replace(PERCENT, UNDERSCORE) : typeName;
             String javaTypeName = (dType.getTypeName()).toLowerCase();
 
             // handle PL/SQL types
             if (dType.isPLSQLType()) {
-                if (catalog != null) {
+            	// for %ROWTYPE we don't want the catalog name prepended even if non-null
+                if (catalog != null && !typeName.contains(ROWTYPE_STR)) {
                     typeName = (catalog + ".").concat(typeName);
                     compatibleType = (catalog + "_").concat(compatibleType);
                     javaTypeName = (catalog.toLowerCase() + ".").concat(javaTypeName);
@@ -1307,7 +1327,10 @@ public abstract class BaseDBWSBuilderHelper {
             // TODO - return what here?
             return null;
         } else if (dType.isScalar()) {
-            return OraclePLSQLTypes.getDatabaseTypeForCode(((ScalarDatabaseType)dType).getTypeName());
+            org.eclipse.persistence.internal.helper.DatabaseType theType = OraclePLSQLTypes.getDatabaseTypeForCode(((ScalarDatabaseType)dType).getTypeName());
+            if (theType != null) {
+                return theType;
+            }
         }
         // scalar types
         return JDBCTypes.getDatabaseTypeForCode(org.eclipse.persistence.tools.dbws.Util.getJDBCTypeFromTypeName(dType.getTypeName()));

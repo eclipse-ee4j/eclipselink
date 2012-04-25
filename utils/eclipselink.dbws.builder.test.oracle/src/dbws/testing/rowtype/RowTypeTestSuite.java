@@ -37,12 +37,15 @@ import org.eclipse.persistence.oxm.XMLMarshaller;
 import dbws.testing.DBWSTestSuite;
 
 /**
- * Tests PL/SQL procedures with simple arguments.
+ * Tests %ROWTYPE support. If, in a PL/SQL package, you want a record 
+ * with fields (names & types, but not constraints) that mirror a
+ * JDBC table, without defining the record in the package, %ROWTYPE
+ * can be used, i.e. "PARAM1 OUT MYTABLE%ROWTYPE".  
  *
  */
 public class RowTypeTestSuite extends DBWSTestSuite {
 
-    static final String ROWTYPE_TEST_TABLE = "ROWTYPE_TEST_TABLE";
+    static final String ROWTYPE_TEST_TABLE = "RTYPE_TABLE";
     static final String CREATE_ROWTYPE_TEST_TABLE = "CREATE TABLE " + ROWTYPE_TEST_TABLE + " (" +
         "\nID NUMBER NOT NULL," +
         "\nNAME VARCHAR(25)," +
@@ -50,47 +53,45 @@ public class RowTypeTestSuite extends DBWSTestSuite {
         "\nPRIMARY KEY (ID)" +
     "\n)";
     static final String[] POPULATE_ROWTYPE_TEST_TABLE = new String[] {
-        "INSERT INTO " + ROWTYPE_TEST_TABLE + " (ID, NAME, SINCE) VALUES (1, 'mike', " +
+        "INSERT INTO " + ROWTYPE_TEST_TABLE + " (ID, NAME, SINCE) VALUES (1, 'Conky', " +
             "TO_DATE('2001-12-25 00:00:00','YYYY-MM-DD HH24:MI:SS'))",
-        "INSERT INTO " + ROWTYPE_TEST_TABLE + " (ID, NAME, SINCE) VALUES (2, 'blaise', " +
+        "INSERT INTO " + ROWTYPE_TEST_TABLE + " (ID, NAME, SINCE) VALUES (2, 'Ricky', " +
             "TO_DATE('2002-02-12 00:00:00','YYYY-MM-DD HH24:MI:SS'))",
-        "INSERT INTO " + ROWTYPE_TEST_TABLE + " (ID, NAME, SINCE) VALUES (3, 'rick'," +
+        "INSERT INTO " + ROWTYPE_TEST_TABLE + " (ID, NAME, SINCE) VALUES (3, 'Bubbles'," +
             "TO_DATE('2001-10-30 00:00:00','YYYY-MM-DD HH24:MI:SS'))",
-        "INSERT INTO " + ROWTYPE_TEST_TABLE + " (ID, NAME, SINCE) VALUES (4, 'mikey', " +
+        "INSERT INTO " + ROWTYPE_TEST_TABLE + " (ID, NAME, SINCE) VALUES (4, 'Julian', " +
             "TO_DATE('2010-01-01 00:00:00','YYYY-MM-DD HH24:MI:SS'))"
     };
-    static final String ROWTYPE_TEST_PACKAGE = "ROWTYPE_TEST_PACKAGE";
-    static final String CREATE_ROWTYPE_SHADOWTYPE =
-        "CREATE OR REPLACE TYPE " + ROWTYPE_TEST_PACKAGE + "_FOO AS OBJECT (" +
-            "\nID NUMBER," +
-            "\nNAME VARCHAR(25)," +
-            "\nSINCE DATE" +
-        "\n)";
+    static final String ROWTYPE_TEST_PACKAGE = "RTYPE_PKG";
     static final String CREATE_ROWTYPE_TEST_PACKAGE =
         "CREATE OR REPLACE PACKAGE " + ROWTYPE_TEST_PACKAGE + " AS" +
+            "\nPROCEDURE testProc(PARAM1 IN INTEGER, PARAM2 OUT " + ROWTYPE_TEST_TABLE + "%ROWTYPE);" +
             "\nFUNCTION test(PARAM1 IN INTEGER) RETURN " + ROWTYPE_TEST_TABLE + "%ROWTYPE;" +
         "\nEND " + ROWTYPE_TEST_PACKAGE + ";";
     
     static final String CREATE_ROWTYPE_TEST_PACKAGE_BODY =
         "CREATE OR REPLACE PACKAGE BODY " + ROWTYPE_TEST_PACKAGE + " AS" +
+            "\nPROCEDURE testProc(PARAM1 IN INTEGER, PARAM2 OUT " + ROWTYPE_TEST_TABLE + "%ROWTYPE) AS" +
+            "\nBEGIN" +
+              "\nPARAM2 := test(PARAM1);" +
+            "\nEND testProc;" +
             "\nFUNCTION test(PARAM1 IN INTEGER) RETURN " + ROWTYPE_TEST_TABLE + "%ROWTYPE AS" +        
-                "\nL_DATA1 WTRC_TABLE%ROWTYPE;" +
+                "\nL_DATA1 " + ROWTYPE_TEST_TABLE + "%ROWTYPE;" +
                 "\nCURSOR C_EMP(PARAMTEMP IN INTEGER) IS SELECT * FROM " + ROWTYPE_TEST_TABLE + 
                     " WHERE " + ROWTYPE_TEST_TABLE + ".ID=PARAMTEMP;" +
-                "\nBEGIN" +
+            "\nBEGIN" +
                 "\nOPEN C_EMP(PARAM1);" +
                 "\nLOOP" +
                 "\nFETCH C_EMP INTO L_DATA1;" +
+                "\nEXIT WHEN C_EMP%NOTFOUND;" +
                 "\nEND LOOP;" +
                 "\nRETURN L_DATA1;" +
             "\nEND test;" +
         "\nEND " + ROWTYPE_TEST_PACKAGE + ";";
-    static final String DROP_ROWTYPE_TEST_TABLE =
-        "DROP TABLE " + ROWTYPE_TEST_TABLE;
-    static final String DROP_ROWTYPE_SHADOWTYPE =
-        "DROP TYPE " + ROWTYPE_TEST_PACKAGE + "_FOO";
-    static final String DROP_ROWTYPE_TEST_PACKAGE =
-        "DROP PACKAGE " + ROWTYPE_TEST_PACKAGE;
+    
+    static final String DROP_ROWTYPE_TEST_TABLE = "DROP TABLE " + ROWTYPE_TEST_TABLE;
+    static final String DROP_ROWTYPE_SHADOWTYPE = "DROP TYPE " + ROWTYPE_TEST_TABLE + "_ROWTYPE";
+    static final String DROP_ROWTYPE_TEST_PACKAGE = "DROP PACKAGE " + ROWTYPE_TEST_PACKAGE;
 
     static boolean ddlCreate = false;
     static boolean ddlDrop = false;
@@ -130,7 +131,6 @@ public class RowTypeTestSuite extends DBWSTestSuite {
             catch (SQLException e) {
                 //e.printStackTrace();
             }
-            runDdl(conn, CREATE_ROWTYPE_SHADOWTYPE, ddlDebug);
             runDdl(conn, CREATE_ROWTYPE_TEST_PACKAGE, ddlDebug);
             runDdl(conn, CREATE_ROWTYPE_TEST_PACKAGE_BODY, ddlDebug);
         }
@@ -152,7 +152,12 @@ public class RowTypeTestSuite extends DBWSTestSuite {
           DBWS_BUILDER_XML_MAIN =
                   "</property>" +
               "</properties>" +
-              "<procedure " +
+              "<plsql-procedure " +
+	              "name=\"rowtypeTest2\" " +
+	              "catalogPattern=\"" + ROWTYPE_TEST_PACKAGE + "\" " +
+	              "procedurePattern=\"testProc\" " +
+	           "/>" +
+              "<plsql-procedure " +
                   "name=\"rowtypeTest\" " +
                   "catalogPattern=\"" + ROWTYPE_TEST_PACKAGE + "\" " +
                   "procedurePattern=\"test\" " +
@@ -160,6 +165,11 @@ public class RowTypeTestSuite extends DBWSTestSuite {
             "</dbws-builder>";
           builder = null;
           DBWSTestSuite.setUp(".");
+          
+          // execute shadow type ddl to generate JDBC equivalents of PL/SQL types 
+          for (String ddl : builder.getTypeDDL()) {
+        	  runDdl(conn, ddl, ddlDebug);
+          }
     }
 
     @AfterClass
@@ -167,8 +177,11 @@ public class RowTypeTestSuite extends DBWSTestSuite {
         String ddlDrop = System.getProperty(DATABASE_DDL_DROP_KEY, DEFAULT_DATABASE_DDL_DROP);
         if ("true".equalsIgnoreCase(ddlDrop)) {
             runDdl(conn, DROP_ROWTYPE_TEST_PACKAGE, ddlDebug);
-            runDdl(conn, DROP_ROWTYPE_SHADOWTYPE, ddlDebug);
             runDdl(conn, DROP_ROWTYPE_TEST_TABLE, ddlDebug);
+        }
+        // drop shadow type ddl 
+        for (String ddl : builder.getTypeDropDDL()) {
+      	  	runDdl(conn, ddl, ddlDebug);
         }
     }
 
@@ -185,12 +198,24 @@ public class RowTypeTestSuite extends DBWSTestSuite {
         Document controlDoc = xmlParser.parse(new StringReader(RECORD_XML));
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
+    @Test
+    public void rowTypeTest2() {
+        Invocation invocation = new Invocation("rowtypeTest2");
+        Operation op = xrService.getOperation(invocation.getName());
+        invocation.setParameter("PARAM1", Integer.valueOf(1));
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(RECORD_XML));
+        assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+    }
     public static final String RECORD_XML =
         STANDALONE_XML_HEADER +
-        "<PACKAGE1_NRECORD xmlns=\"urn:PLSQLRecord\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
-          "<n1>new record</n1>" +
-          "<n2>100.11</n2>" +
-        "</PACKAGE1_NRECORD>";
-
- 
+        "<RTYPE_TABLE_ROWTYPE xmlns=\"urn:rowtype\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+            "<id>1</id>" +
+            "<name>Conky</name>" +
+            "<since>2001-12-25</since>" +
+        "</RTYPE_TABLE_ROWTYPE>";
 }
