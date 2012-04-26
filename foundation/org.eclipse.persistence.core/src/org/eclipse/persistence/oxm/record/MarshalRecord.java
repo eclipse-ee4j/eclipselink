@@ -13,6 +13,7 @@
 package org.eclipse.persistence.oxm.record;
 
 import java.io.UnsupportedEncodingException;
+import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -57,7 +58,9 @@ public abstract class MarshalRecord extends XMLRecord {
     private HashMap positionalNodes;
 
     protected XPathFragment textWrapperFragment;
-    
+
+    private CycleDetectionStack<Object> cycleDetectionStack = new CycleDetectionStack<Object>();
+
     protected static final String COLON_W_SCHEMA_NIL_ATTRIBUTE = XMLConstants.COLON + XMLConstants.SCHEMA_NIL_ATTRIBUTE;
     protected static final String TRUE = "true";
     
@@ -682,6 +685,64 @@ public abstract class MarshalRecord extends XMLRecord {
         return xPathFragment.getPrefix();
     }
 
-    
+    /**
+     * INTERNAL
+     */
+    public CycleDetectionStack<Object> getCycleDetectionStack() {
+        return this.cycleDetectionStack;
+    }
 
+    // === Inner Classes ======================================================
+    
+    /**
+     * A Stack-like List, used to detect object cycles during marshal operations.
+     */
+    public class CycleDetectionStack<E> extends AbstractList<E> {
+
+        private ArrayList<E> data = new ArrayList<E>(16);
+
+        public void push(E item) {
+            data.add(item);
+        }
+
+        public E pop() {
+            return data.remove(data.size() - 1);
+        }
+
+        public boolean contains(Object item) {
+            for (E e : data) {
+                if (e == item) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public String getCycleString() {
+            StringBuilder sb = new StringBuilder();
+            int i = size() - 1;
+            E obj = get(i);
+            sb.append(obj);
+            E x;
+            do {
+                sb.append(" -> ");
+                x = get(--i);
+                sb.append(x);
+            } while(obj != x);
+
+            return sb.toString();
+        }
+
+        @Override
+        public E get(int index) {
+            return data.get(index);
+        }
+
+        @Override
+        public int size() {
+            return data.size();
+        }
+
+    }
+    
 }

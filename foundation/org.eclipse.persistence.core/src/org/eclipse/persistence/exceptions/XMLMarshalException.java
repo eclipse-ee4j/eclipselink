@@ -58,6 +58,7 @@ public class XMLMarshalException extends ValidationException {
     public static final int ERROR_INVOKING_ID_RESOLVER = 25034;
     public static final int ERROR_PROCESSING_ID_RESOLVER = 25035;
     public static final int WRAPPED_ID_RESOLVER_WITH_MULTI_ID = 25036;
+    public static final int OBJECT_CYCLE_DETECTED = 25037;
 
     // ==========================================================================================
     protected XMLMarshalException(String message) {
@@ -364,6 +365,13 @@ public class XMLMarshalException extends ValidationException {
         Object[] args = {keyString, resolver};
         XMLMarshalException exception = new XMLMarshalException(ExceptionMessageGenerator.buildMessage(XMLMarshalException.class, WRAPPED_ID_RESOLVER_WITH_MULTI_ID, args));
         exception.setErrorCode(WRAPPED_ID_RESOLVER_WITH_MULTI_ID);
+        return exception;
+    }
+
+    public static XMLMarshalException objectCycleDetected(String objectCycleString) {
+        Object[] args = { objectCycleString };
+        XMLMarshalException exception = new XMLMarshalException(ExceptionMessageGenerator.buildMessage(XMLMarshalException.class, OBJECT_CYCLE_DETECTED, args));
+        exception.setErrorCode(OBJECT_CYCLE_DETECTED);
         return exception;
     }
 

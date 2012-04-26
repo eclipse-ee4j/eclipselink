@@ -17,6 +17,7 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.eclipse.persistence.testing.jaxb.collections.CollectionsTestSuite;
+import org.eclipse.persistence.testing.jaxb.cycle.CycleRecoverableTestCases;
 import org.eclipse.persistence.testing.jaxb.defaultvalue.DefaultValueTestSuite;
 import org.eclipse.persistence.testing.jaxb.jaxbcontext.withjaxbindex.JAXBContextByClassArrayWithIndexTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbcontext.withjaxbindex.JAXBContextByClassArrayWithRefInBindingsTestCases;
@@ -105,7 +106,7 @@ public class JAXBTestSuite3 extends TestCase {
         suite.addTest(CollectionsTestSuite.suite());
         suite.addTest(DefaultValueTestSuite.suite());
         suite.addTestSuite(UnmarshalWithSpaceEventTestCases.class);
-        
+        suite.addTestSuite(CycleRecoverableTestCases.class);
         suite.addTestSuite(PrefixMapperTestCases.class);
         suite.addTestSuite(PrefixMapperMapTestCases.class);
         suite.addTestSuite(NonELPrefixMapperTestCases.class);

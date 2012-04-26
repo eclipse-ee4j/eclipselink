@@ -480,27 +480,35 @@ public class XMLObjectBuilder extends ObjectBuilder {
     }
 
    protected void writeXsiTypeAttribute(XMLDescriptor xmlDescriptor, XMLRecord row, QName typeValueQName, boolean addToNamespaceResolver) {
-        if(typeValueQName == null){
+       if (typeValueQName == null){
            return;
-        }
+       }
        String typeValue = typeValueQName.getLocalPart();
        String uri = typeValueQName.getNamespaceURI();
        if(row.isNamespaceAware() && uri != null && !uri.equals(XMLConstants.EMPTY_STRING) && !uri.equals(row.getNamespaceResolver().getDefaultNamespaceURI())){
-    	   String prefix = row.getNamespaceResolver().resolveNamespaceURI(uri);
-    	   if(prefix != null && !prefix.equals(XMLConstants.EMPTY_STRING)){
-    		   typeValue = prefix + row.getNamespaceSeparator() + typeValue;
-    	   }else if (typeValueQName.getPrefix() != null && !typeValueQName.getPrefix().equals(XMLConstants.EMPTY_STRING)){
-    		   typeValue = typeValueQName.getPrefix() + row.getNamespaceSeparator() + typeValue;
-    		   writeNamespace(row, typeValueQName.getPrefix(), uri, addToNamespaceResolver);
-    	   }
+           String prefix = row.getNamespaceResolver().resolveNamespaceURI(uri);
+           if(prefix != null && !prefix.equals(XMLConstants.EMPTY_STRING)){
+               typeValue = prefix + row.getNamespaceSeparator() + typeValue;
+           } else if (uri.equals(XMLConstants.SCHEMA_URL)) {
+               prefix = row.getNamespaceResolver().generatePrefix(XMLConstants.SCHEMA_PREFIX);
+               typeValue = prefix + row.getNamespaceSeparator() + typeValue;
+               writeNamespace(row, prefix, uri, addToNamespaceResolver);
+           }else if (typeValueQName.getPrefix() != null && !typeValueQName.getPrefix().equals(XMLConstants.EMPTY_STRING)){
+               typeValue = typeValueQName.getPrefix() + row.getNamespaceSeparator() + typeValue;
+               writeNamespace(row, typeValueQName.getPrefix(), uri, addToNamespaceResolver);
+           }
        }
        writeXsiTypeAttribute(xmlDescriptor, row, typeValue, addToNamespaceResolver);
    }
 
     protected void writeXsiTypeAttribute(XMLDescriptor xmlDescriptor, XMLRecord row, String typeValue, boolean addToNamespaceResolver) {
+        if (xmlDescriptor == null) {
+            writeXsiTypeAttribute(row, typeValue, addToNamespaceResolver);
+            return;
+        }
         XMLField xmlField = null;
-    	if(row.isNamespaceAware()){
-    	    String xsiPrefix = null;
+        if(row.isNamespaceAware()){
+            String xsiPrefix = null;
             boolean generated = false;
 
             xsiPrefix = row.getNamespaceResolver().resolveNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
@@ -514,14 +522,37 @@ public class XMLObjectBuilder extends ObjectBuilder {
                 xmlField.getLastXPathFragment().setGeneratedPrefix(true);
             }
         }else{
-        	xmlField = (XMLField)xmlDescriptor.buildField(XMLConstants.ATTRIBUTE + XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
+            xmlField = (XMLField)xmlDescriptor.buildField(XMLConstants.ATTRIBUTE + XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
         }
-       
+
         xmlField.getLastXPathFragment().setNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
         row.add(xmlField, typeValue);
-     
-        
     }
+
+    protected void writeXsiTypeAttribute(XMLRecord row, String typeValue, boolean addToNamespaceResolver) {
+        XMLField xmlField = null;
+        if (row.isNamespaceAware()){
+            String xsiPrefix = null;
+            boolean generated = false;
+
+            xsiPrefix = row.getNamespaceResolver().resolveNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
+            if (xsiPrefix == null) {
+                xsiPrefix = XMLConstants.SCHEMA_INSTANCE_PREFIX;
+                generated = true;
+                writeNamespace(row, xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL, addToNamespaceResolver);
+            }
+            xmlField = new XMLField(XMLConstants.ATTRIBUTE + xsiPrefix + XMLConstants.COLON + XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
+            if (generated) {
+                xmlField.getLastXPathFragment().setGeneratedPrefix(true);
+            }
+        } else {
+            xmlField = new XMLField(XMLConstants.ATTRIBUTE + XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
+        }
+
+        xmlField.getLastXPathFragment().setNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
+        row.add(xmlField, typeValue);
+    }
+
     protected XMLField writeNamespace(XMLRecord nestedRecord, String prefix, String url, boolean addToNamespaceResolver) {
     	
     	String existingPrefix = nestedRecord.getNamespaceResolver().resolveNamespaceURI(url);

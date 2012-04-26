@@ -135,7 +135,6 @@ public class XMLConstants {
     public static final QName UNSIGNED_INT_QNAME = new QName(SCHEMA_URL, UNSIGNED_INT);
     public static final QName UNSIGNED_SHORT_QNAME = new QName(SCHEMA_URL, UNSIGNED_SHORT);
     public static final QName SWA_REF_QNAME = new QName(REF_URL, SWA_REF);
-    public static final String JAXB_FRAGMENT = "jaxb.fragment";
     public static final QName EXPECTED_CONTENT_TYPES_QNAME = new QName(XML_MIME_URL, EXPECTED_CONTENT_TYPES);
 
     public static final char[] EMPTY_CHAR_ARRAY = new char[0];
@@ -157,5 +156,9 @@ public class XMLConstants {
     public static final Class LOCATOR_CLASS = org.xml.sax.Locator.class;
     public static final String LOCATOR_CLASS_NAME = "org.xml.sax.Locator";
 
-    static final String VALUE_WRAPPER= "value";
+    public static final String VALUE_WRAPPER = "value";
+
+    public static final String JAXB_FRAGMENT = "jaxb.fragment";
+    public static final String JAXB_MARSHALLER = "jaxb.marshaller";
+
 }

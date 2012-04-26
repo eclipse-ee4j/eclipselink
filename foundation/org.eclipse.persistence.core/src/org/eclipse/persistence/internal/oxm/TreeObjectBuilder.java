@@ -12,16 +12,21 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.oxm;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.xml.namespace.QName;
+
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.InheritancePolicy;
+import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.SequencedMarshalContext;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -53,6 +58,7 @@ import org.eclipse.persistence.oxm.mappings.XMLObjectReferenceMapping;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.NodeRecord;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
+import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.oxm.sequenced.SequencedObject;
 import org.w3c.dom.Node;
 
@@ -73,7 +79,14 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
     private List nullCapableValues;
     private volatile boolean initialized = false;
     private int counter = 0;
-    
+
+    // Used for CycleRecoverable support
+    Class cycleRecoverableClass = null;
+    Class cycleRecoverableContextClass = null;
+    public static final String CYCLE_RECOVERABLE = "com.sun.xml.bind.CycleRecoverable";
+    public static final String CYCLE_RECOVERABLE_CONTEXT = "com.sun.xml.bind.CycleRecoverable$Context";    
+    public static final String ON_CYCLE_DETECTED = "onCycleDetected";
+
     public TreeObjectBuilder(ClassDescriptor descriptor) {
         super(descriptor);
     }
@@ -368,24 +381,99 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
         if (null == textNode && null == nonAttributeChildren) {
             return record;
         }
+
         XMLDescriptor xmlDescriptor = (XMLDescriptor) descriptor;
-        NamespaceResolver namespaceResolver = xmlDescriptor.getNamespaceResolver();
+        XPathNode node = rootXPathNode;
+        MarshalRecord marshalRecord = (MarshalRecord) record;
+        QName schemaType = null;
+
+        if (marshalRecord.getCycleDetectionStack().contains(object)) {
+            if (cycleRecoverableClass == null) {
+                initCycleRecoverableClasses();
+            }
+            if (cycleRecoverableClass.isAssignableFrom(object.getClass())) {
+                try {
+                    Object jaxbMarshaller = marshaller.getProperty(XMLConstants.JAXB_MARSHALLER);
+                    // Create a proxy instance of CycleRecoverable$Context, a parameter to
+                    // the onCycleDetected method
+                    Object contextProxy = CycleRecoverableContextProxy.getProxy(cycleRecoverableContextClass, jaxbMarshaller);
+                    // Invoke onCycleDetected method, passing in proxy, and reset
+                    // 'object' to the returned value
+                    Method onCycleDetectedMethod = object.getClass().getMethod(ON_CYCLE_DETECTED, new Class[] { cycleRecoverableContextClass });
+                    object = PrivilegedAccessHelper.invokeMethod(onCycleDetectedMethod, object, new Object[] { contextProxy });
+                } catch (Exception e) {
+                    throw XMLMarshalException.marshalException(e);
+                }
+
+                // Returned object might have a different descriptor
+                xmlDescriptor = (XMLDescriptor) session.getDescriptor(object.getClass());
+                if (xmlDescriptor != null) {
+                    node = ((TreeObjectBuilder) xmlDescriptor.getObjectBuilder()).getRootXPathNode();
+                } else {
+                    node = null;
+                }
+
+                // Push new object
+                marshalRecord.getCycleDetectionStack().push(object);
+
+                // Write xsi:type if onCycleDetected returned an object of a type different than the one mapped
+                if (xmlDescriptor != descriptor) {
+                    if (xmlDescriptor == null) {
+                        schemaType = (QName) XMLConversionManager.getDefaultJavaTypes().get(object.getClass());
+                    } else {
+                        schemaType = xmlDescriptor.getSchemaReference().getSchemaContextAsQName();
+                    }
+                    writeXsiTypeAttribute(xmlDescriptor, (XMLRecord) record, schemaType, false);
+                }
+            } else {
+                // Push the duplicate object anyway, so that we can get the complete cycle string
+                marshalRecord.getCycleDetectionStack().push(object);
+                throw XMLMarshalException.objectCycleDetected(marshalRecord.getCycleDetectionStack().getCycleString());
+            }
+        } else {
+            marshalRecord.getCycleDetectionStack().push(object);
+        }
+
+        NamespaceResolver namespaceResolver = null;
+        if (xmlDescriptor != null) {
+            namespaceResolver = xmlDescriptor.getNamespaceResolver();
+        }
         MarshalContext marshalContext = null;
-        if(xmlDescriptor.isSequencedObject()) {
+        if (xmlDescriptor != null && xmlDescriptor.isSequencedObject()) {
             SequencedObject sequencedObject = (SequencedObject) object;
             marshalContext = new SequencedMarshalContext(sequencedObject.getSettings());
         } else {
             marshalContext = ObjectMarshalContext.getInstance();
         }
-        if(null == nonAttributeChildren) {
-            textNode.marshal((MarshalRecord)record, object, session, namespaceResolver, marshaller, marshalContext, rootFragment);
+        if (null == nonAttributeChildren) {
+            textNode.marshal((MarshalRecord) record, object, session, namespaceResolver, marshaller, marshalContext, rootFragment);
         } else {
-            for (int x = 0, size = marshalContext.getNonAttributeChildrenSize(rootXPathNode); x < size; x++) {
-                XPathNode xPathNode = (XPathNode)marshalContext.getNonAttributeChild(x, rootXPathNode);
-                xPathNode.marshal((MarshalRecord)record, object, session, namespaceResolver, marshaller, marshalContext.getMarshalContext(x), rootFragment);
+            if (node == null) {
+                // No descriptor for this object, so manually create a MappingNodeValue and marshal it
+                XPathNode n = new XPathNode();
+                XMLCompositeObjectMapping m = new XMLCompositeObjectMapping();
+                m.setXPath(".");
+                XMLCompositeObjectMappingNodeValue nv = new XMLCompositeObjectMappingNodeValue(m);
+                n.setMarshalNodeValue(nv);
+                nv.marshalSingleValue(new XPathFragment("."), marshalRecord, null, object, session, namespaceResolver, marshalContext);
+            } else {
+                for (int x = 0, size = marshalContext.getNonAttributeChildrenSize(node); x < size; x++) {
+                    XPathNode xPathNode = (XPathNode) marshalContext.getNonAttributeChild(x, node);
+                    xPathNode.marshal((MarshalRecord) record, object, session, namespaceResolver, marshaller, marshalContext.getMarshalContext(x), rootFragment);
+                }
             }
         }
+        marshalRecord.getCycleDetectionStack().pop();
         return record;
+    }
+
+    private void initCycleRecoverableClasses() {
+        try {
+            this.cycleRecoverableClass = PrivilegedAccessHelper.getClassForName(CYCLE_RECOVERABLE);
+            this.cycleRecoverableContextClass = PrivilegedAccessHelper.getClassForName(CYCLE_RECOVERABLE_CONTEXT);
+        } catch (Exception e) {
+            throw XMLMarshalException.marshalException(e);
+        }
     }
 
     public boolean marshalAttributes(MarshalRecord marshalRecord, Object object, AbstractSession session) {

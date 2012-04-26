@@ -58,7 +58,8 @@ public class XMLMarshalExceptionResource extends ListResourceBundle {
                                            { "25033", "An error occured while processing the CharacterEscapeHandler: {1}. The method {0} was not found."},
                                            { "25034", "An error occured while invoking the {0} method on the custom IDResolver: {1}."},
                                            { "25035", "An error occured while processing the IDResolver: {1}. The method {0} was not found."},
-                                           { "25036", "The custom IDResolver {1} does not support multiple XML IDs {0}.  Custom IDResolvers must be subclasses org.eclipse.persistence.jaxb.IDResolver if multiple IDs are used."}
+                                           { "25036", "The custom IDResolver {1} does not support multiple XML IDs {0}.  Custom IDResolvers must be subclasses org.eclipse.persistence.jaxb.IDResolver if multiple IDs are used."},
+                                           { "25037", "A cycle is detected in the object graph.  This will cause an infinite loop: {0}"}
     };
 
     /**

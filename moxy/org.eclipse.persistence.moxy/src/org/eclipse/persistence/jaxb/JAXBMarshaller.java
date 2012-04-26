@@ -173,6 +173,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         xmlMarshaller.setFormattedOutput(false);
         JAXBMarshalListener listener = new JAXBMarshalListener(this);
         xmlMarshaller.setMarshalListener(listener);
+        xmlMarshaller.getProperties().put(XMLConstants.JAXB_MARSHALLER, this);
     }
 
     /**
