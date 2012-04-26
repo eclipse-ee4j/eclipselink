@@ -265,14 +265,14 @@
         </copy>
         <copy file="${jpars.lib}" todir="${eclipselink.jpars.test}/stage/WEB-INF/lib"/>
         <jar destfile="${eclipselink.jpars.test}/${ant.project.name}.war" basedir="${eclipselink.jpars.test}/stage"/>
-        <delete dir="stage"/>
+        <delete dir="stage" includeEmptyDirs="true" failonerror="false"/>
     </target>
 
     <!-- Test run macros -->
     <macrodef name="run_jpars_tests">
         <attribute name="runpathref"/>
         <sequential>
-            <delete dir="${report.dir}"/>
+            <delete dir="${report.dir}" includeEmptyDirs="true" failonerror="false"/>
             <mkdir dir="${report.dir}"/>
             <mkdir dir="${jparstest.build.location}/${classes.dir}/META-INF"/>
             <copy todir="${jparstest.build.location}/${classes.dir}/META-INF">
