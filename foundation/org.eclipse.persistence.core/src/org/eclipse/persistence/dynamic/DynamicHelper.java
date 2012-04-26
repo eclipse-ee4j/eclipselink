@@ -122,6 +122,7 @@ public class DynamicHelper {
             fqClassnameToDescriptor.remove(descriptor.getJavaClassName());
             getSession().getProject().getOrderedDescriptors().remove(descriptor);
             getSession().getProject().getDescriptors().remove(type.getJavaClass());
+            ((AbstractSession)getSession()).getCommitManager().getCommitOrder().remove(type.getJavaClass());
         }
     }
 
