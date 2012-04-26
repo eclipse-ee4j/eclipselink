@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Export-Package: org.eclipse.persistence.internal.jpa.jpql;version="2.4.0"
 Bundle-Name: EclipseLink JPQL Extension for Hermes Parser
 Created-By: 1.6.0_21 (Sun Microsystems Inc.)
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.core.
  jpql
 Bundle-Vendor: Eclipse.org - EclipseLink Project
