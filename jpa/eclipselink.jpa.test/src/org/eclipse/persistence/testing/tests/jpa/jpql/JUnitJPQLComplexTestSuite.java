@@ -276,6 +276,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         tests.add("testNullOrdering");
         tests.add("testRegexp");
         tests.add("testUnion");
+        tests.add("testComplexPathExpression");
 
         Collections.sort(tests);
         for (String test : tests) {
@@ -4270,5 +4271,12 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         assertTrue("incorrect results returned for Type", result.size() == 5);
 
         closeEntityManager(em);
+    }
+
+    public void testComplexPathExpression() {
+       EntityManager em = createEntityManager();
+       Query query = em.createQuery("select e from Employee e join e.projects p where treat(p as LargeProject).budget > 10000");
+       List result = query.getResultList();
+       closeEntityManager(em);
     }
 }

@@ -193,6 +193,7 @@ public abstract class AbstractEncapsulatedExpression extends AbstractExpression 
 		this.identifier = wordParser.moveForward(identifier);
 		setText(identifier);
 
+		int position = wordParser.position();
 		int count = wordParser.skipLeadingWhitespace();
 		int whitespaceAfterLeftParenthesis = 0;
 
@@ -224,7 +225,16 @@ public abstract class AbstractEncapsulatedExpression extends AbstractExpression 
 				wordParser.moveForward(1);
 			}
 			else {
-				wordParser.moveBackward(count);
+				// Neither '(' and ') were parsed, then it makes no sense
+				// the parsed expression is part of this expression
+				if (!hasLeftParenthesis && hasEncapsulatedExpression()) {
+					hasSpaceAfterIdentifier = false;
+					removeEncapsulatedExpression();
+					wordParser.setPosition(position);
+				}
+				else {
+					wordParser.moveBackward(count);
+				}
 			}
 		}
 		else if ((count > 0) && !hasEncapsulatedExpression()) {
@@ -252,6 +262,8 @@ public abstract class AbstractEncapsulatedExpression extends AbstractExpression 
 	 * @return The identifier for this expression
 	 */
 	protected abstract String parseIdentifier(WordParser wordParser);
+
+	protected abstract void removeEncapsulatedExpression();
 
 	/**
 	 * Determines whether the right parenthesis should be parsed or not by this expression. There is

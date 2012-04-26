@@ -83,8 +83,13 @@ public final class ExtractExpression extends AbstractSingleEncapsulatedExpressio
 	@Override
 	protected void addOrderedEncapsulatedExpressionTo(List<Expression> children) {
 
+		// Date part
 		if (hasDatePart()) {
 			children.add(buildStringExpression(datePart));
+		}
+
+		if (hasSpaceAfterDatePart) {
+			children.add(buildStringExpression(SPACE));
 		}
 
 		// 'FROM'
@@ -242,6 +247,19 @@ public final class ExtractExpression extends AbstractSingleEncapsulatedExpressio
 	@Override
 	protected String parseIdentifier(WordParser wordParser) {
 		return EXTRACT;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void removeEncapsulatedExpression() {
+		super.removeEncapsulatedExpression();
+		hasFrom               = false;
+		datePart              = ExpressionTools.EMPTY_STRING;
+		fromIdentifier        = null;
+		hasSpaceAfterFrom     = false;
+		hasSpaceAfterDatePart = false;
 	}
 
 	/**

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -14,24 +14,24 @@
 package org.eclipse.persistence.jpa.jpql.parser;
 
 /**
- * The query BNF for a string literal.
+ * The query BNF for a table declaration.
  *
  * @version 2.4
- * @since 2.3
+ * @since 2.4
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-public final class StringLiteralBNF extends JPQLQueryBNF {
+public final class TableVariableDeclarationBNF extends JPQLQueryBNF {
 
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
-	public static final String ID = "string_literal";
+	public static final String ID = "table_declaration";
 
 	/**
-	 * Creates a new <code>StringLiteralBNF</code>.
+	 * Creates a new <code>TableExpressionBNF</code>.
 	 */
-	public StringLiteralBNF() {
+	public TableVariableDeclarationBNF() {
 		super(ID);
 	}
 
@@ -41,7 +41,6 @@ public final class StringLiteralBNF extends JPQLQueryBNF {
 	@Override
 	protected void initialize() {
 		super.initialize();
-		setFallbackBNFId(ID);
-		setFallbackExpressionFactoryId(LiteralExpressionFactory.ID);
+		registerExpressionFactory(TableVariableDeclarationFactory.ID);
 	}
 }

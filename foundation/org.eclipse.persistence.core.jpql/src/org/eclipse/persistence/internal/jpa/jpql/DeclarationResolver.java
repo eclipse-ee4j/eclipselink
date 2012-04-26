@@ -42,6 +42,7 @@ import org.eclipse.persistence.jpa.jpql.parser.SimpleFromClause;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectStatement;
 import org.eclipse.persistence.jpa.jpql.parser.SubExpression;
+import org.eclipse.persistence.jpa.jpql.parser.TableVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateClause;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateStatement;
 
@@ -536,6 +537,20 @@ final class DeclarationResolver {
 		@Override
 		public void visit(FromClause expression) {
 			expression.getDeclaration().accept(this);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(TableVariableDeclaration expression) {
+
+			TableDeclaration declaration = new TableDeclaration(queryContext);
+			declaration.declarationExpression  = expression;
+			declaration.baseExpression         = expression.getTableExpression();
+			declaration.rootPath               = declaration.baseExpression.toParsedText();
+			declaration.identificationVariable = (IdentificationVariable) expression.getIdentificationVariable();
+			declarations.add(declaration);
 		}
 
 		/**

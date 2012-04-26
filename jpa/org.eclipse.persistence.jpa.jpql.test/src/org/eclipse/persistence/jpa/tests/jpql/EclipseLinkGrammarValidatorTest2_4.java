@@ -19,6 +19,7 @@ import org.eclipse.persistence.jpa.jpql.EclipseLinkGrammarValidator;
 import org.eclipse.persistence.jpa.jpql.JPQLQueryProblem;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_4;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLQueryStringFormatter;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
@@ -1019,6 +1020,7 @@ public class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarValidator
 	}
 
 	@Test
+	@Ignore("TODO: This is partially parsed, find a better way to parse it.")
 	public final void test_ExtractExpression_MissingLeftParenthesis_4() throws Exception {
 
 		String jpqlQuery = "Select extract from from Employee e";
@@ -1414,6 +1416,224 @@ public class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarValidator
 	}
 
 	@Test
+	public final void test_TableExpression_InvalidExpression_1() throws Exception {
+
+		String jpqlQuery = "select e from Employee e, table(\"EMP\") EMP where EMP.EMP_ID <> 0";
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+		testHasNoProblems(problems);
+	}
+
+	@Test
+	public final void test_TableExpression_InvalidExpression_2() throws Exception {
+
+		String jpqlQuery = "select e from Employee e, table('EMP') EMP where EMP.EMP_ID <> 0";
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+		testHasNoProblems(problems);
+	}
+
+	@Test
+	public final void test_TableExpression_InvalidExpression_3() throws Exception {
+
+		String jpqlQuery = "select e from Employee e, table(2.2) EMP where EMP.EMP_ID <> 0";
+		int startPosition = "select e from Employee e, table(".length();
+		int endPosition   = "select e from Employee e, table(2.2".length();
+
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		testHasOnlyOneProblem(
+			problems,
+			TableExpression_InvalidExpression,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public final void test_TableExpression_MissingExpression_1() throws Exception {
+
+		String jpqlQuery = "select e from Employee e, table('EMP') EMP where EMP.EMP_ID <> 0";
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+		testHasNoProblems(problems);
+	}
+
+	@Test
+	public final void test_TableExpression_MissingExpression_2() throws Exception {
+
+		String jpqlQuery = "select e from Employee e, table() EMP where EMP.EMP_ID <> 0";
+		int startPosition = "select e from Employee e, table(".length();
+		int endPosition   = startPosition;
+
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		testHasOnlyOneProblem(
+			problems,
+			TableExpression_MissingExpression,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public final void test_TableExpression_MissingLeftParenthesis_1() throws Exception {
+
+		String jpqlQuery = "select e from Employee e, table('EMP') EMP where EMP.EMP_ID <> 0";
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+		testHasNoProblems(problems);
+	}
+
+	@Test
+	public final void test_TableExpression_MissingLeftParenthesis_2() throws Exception {
+
+		String jpqlQuery = "select e from Employee e, table 'EMP') EMP where EMP.EMP_ID <> 0";
+		int startPosition = "select e from Employee e, table".length();
+		int endPosition   = startPosition;
+
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		testHasOnlyOneProblem(
+			problems,
+			TableExpression_MissingLeftParenthesis,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public final void test_TableExpression_MissingRightParenthesis_1() throws Exception {
+
+		String jpqlQuery = "select e from Employee e, table('EMP') EMP where EMP.EMP_ID <> 0";
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+		testHasNoProblems(problems);
+	}
+
+	@Test
+	public final void test_TableExpression_MissingRightParenthesis_2() throws Exception {
+
+		String jpqlQuery = "select e from Employee e, table('EMP' EMP where EMP.EMP_ID <> 0";
+		int startPosition = "select e from Employee e, table('EMP'".length();
+		int endPosition   = startPosition;
+
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		testHasOnlyOneProblem(
+			problems,
+			TableExpression_MissingRightParenthesis,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public final void test_TableVariableDeclaration_MissingIdentificationVariable_1() throws Exception {
+
+		String jpqlQuery = "select e from Employee e, table('EMP') EMP where EMP.EMP_ID <> 0";
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+		testHasNoProblems(problems);
+	}
+
+	@Test
+	public final void test_TableVariableDeclaration_MissingIdentificationVariable_2() throws Exception {
+
+		String jpqlQuery  = "select e from Employee e, table('EMP') where EMP.EMP_ID <> 0";
+		int startPosition = "select e from Employee e, table('EMP') ".length();
+		int endPosition   = startPosition;
+
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		testHasOnlyOneProblem(
+			problems,
+			TableVariableDeclaration_MissingIdentificationVariable,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public final void test_TableVariableDeclaration_MissingIdentificationVariable_3() throws Exception {
+
+		String jpqlQuery  = "select e from Employee e, table('EMP') as where EMP.EMP_ID <> 0";
+		int startPosition = "select e from Employee e, table('EMP') as ".length();
+		int endPosition   = startPosition;
+
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		testHasOnlyOneProblem(
+			problems,
+			TableVariableDeclaration_MissingIdentificationVariable,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public final void test_TableVariableDeclaration_MissingIdentificationVariable_4() throws Exception {
+
+		String jpqlQuery  = "select e from Employee e, table('EMP')";
+		int startPosition = "select e from Employee e, table('EMP')".length();
+		int endPosition   = startPosition;
+
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		testHasOnlyOneProblem(
+			problems,
+			TableVariableDeclaration_MissingIdentificationVariable,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public final void test_TableVariableDeclaration_MissingIdentificationVariable_5() throws Exception {
+
+		String jpqlQuery  = "select e from Employee e, table('EMP') ";
+		int startPosition = "select e from Employee e, table('EMP') ".length();
+		int endPosition   = startPosition;
+
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		testHasOnlyOneProblem(
+			problems,
+			TableVariableDeclaration_MissingIdentificationVariable,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public final void test_TableVariableDeclaration_MissingIdentificationVariable_6() throws Exception {
+
+		String jpqlQuery  = "select e from Employee e, table('EMP') as";
+		int startPosition = "select e from Employee e, table('EMP') as".length();
+		int endPosition   = startPosition;
+
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		testHasOnlyOneProblem(
+			problems,
+			TableVariableDeclaration_MissingIdentificationVariable,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public final void test_TableVariableDeclaration_MissingIdentificationVariable_7() throws Exception {
+
+		String jpqlQuery  = "select e from Employee e, table('EMP') as ";
+		int startPosition = "select e from Employee e, table('EMP') as ".length();
+		int endPosition   = startPosition;
+
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		testHasOnlyOneProblem(
+			problems,
+			TableVariableDeclaration_MissingIdentificationVariable,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
 	public final void test_UnionClause_MissingExpression_1() throws Exception {
 
 		String jpqlQuery = "select e from Employee e intersect all select p from Product p where p.id <> 2";
@@ -1424,7 +1644,7 @@ public class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarValidator
 	@Test
 	public final void test_UnionClause_MissingExpression_2() throws Exception {
 
-		String jpqlQuery = "select e from Employee e intersect";
+		String jpqlQuery  = "select e from Employee e intersect";
 		int startPosition = "select e from Employee e intersect".length();
 		int endPosition   = jpqlQuery.length();
 
@@ -1441,7 +1661,7 @@ public class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarValidator
 	@Test
 	public final void test_UnionClause_MissingExpression_3() throws Exception {
 
-		String jpqlQuery = "select e from Employee e intersect ";
+		String jpqlQuery  = "select e from Employee e intersect ";
 		int startPosition = "select e from Employee e intersect ".length();
 		int endPosition   = jpqlQuery.length();
 
@@ -1458,7 +1678,7 @@ public class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarValidator
 	@Test
 	public final void test_UnionClause_MissingExpression_4() throws Exception {
 
-		String jpqlQuery = "select e from Employee e intersect all";
+		String jpqlQuery  = "select e from Employee e intersect all";
 		int startPosition = "select e from Employee e intersect all".length();
 		int endPosition   = jpqlQuery.length();
 
@@ -1475,7 +1695,7 @@ public class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarValidator
 	@Test
 	public final void test_UnionClause_MissingExpression_5() throws Exception {
 
-		String jpqlQuery = "select e from Employee e intersect all ";
+		String jpqlQuery  = "select e from Employee e intersect all ";
 		int startPosition = "select e from Employee e intersect all ".length();
 		int endPosition   = jpqlQuery.length();
 

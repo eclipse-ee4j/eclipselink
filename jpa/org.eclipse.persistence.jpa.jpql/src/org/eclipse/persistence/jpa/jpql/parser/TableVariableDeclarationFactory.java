@@ -16,26 +16,26 @@ package org.eclipse.persistence.jpa.jpql.parser;
 import org.eclipse.persistence.jpa.jpql.WordParser;
 
 /**
- * This {@link TableExpressionFactory} creates a new {@link TableExpression}.
+ * This {@link TableVariableDeclarationFactory} creates a new {@link TableVariableDeclaration}.
  *
- * @see TableExpression
+ * @see TableVariableDeclaration
  *
  * @version 2.4
  * @since 2.4
- * @author James Sutherland
+ * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-public final class TableExpressionFactory extends ExpressionFactory {
+public final class TableVariableDeclarationFactory extends ExpressionFactory {
 
 	/**
 	 * The unique identifier of this {@link TableExpressionFactory}.
 	 */
-	public static final String ID = "table_expression";
+	public static final String ID = "table_variable_declaration";
 
 	/**
-	 * Creates a new <code>TableExpressionFactory</code>.
+	 * Creates a new <code>TableVariableDeclarationFactory</code>.
 	 */
-	public TableExpressionFactory() {
+	public TableVariableDeclarationFactory() {
 		super(ID, Expression.TABLE);
 	}
 
@@ -50,7 +50,7 @@ public final class TableExpressionFactory extends ExpressionFactory {
 	                                             AbstractExpression expression,
 	                                             boolean tolerant) {
 
-		expression = new TableExpression(parent);
+		expression = new TableVariableDeclaration(parent);
 		expression.parse(wordParser, tolerant);
 		return expression;
 	}

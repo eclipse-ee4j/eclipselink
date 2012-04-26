@@ -21,6 +21,8 @@ import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.ExtractExpression;
 import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.RegexpExpression;
+import org.eclipse.persistence.jpa.jpql.parser.TableExpression;
+import org.eclipse.persistence.jpa.jpql.parser.TableVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.UnionClause;
 
 /**
@@ -117,29 +119,48 @@ public class EclipseLinkSemanticValidator extends AbstractSemanticValidator
 	 * {@inheritDoc}
 	 */
 	public void visit(CastExpression expression) {
+		// Nothing to validate semantically
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public void visit(DatabaseType expression) {
+		// Nothing to validate semantically
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public void visit(ExtractExpression expression) {
+		// Nothing to validate semantically
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public void visit(RegexpExpression expression) {
+		// Nothing to validate semantically
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(TableExpression expression) {
+		// Nothing to validate semantically
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(TableVariableDeclaration expression) {
+		// Nothing to validate semantically
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public void visit(UnionClause expression) {
+		// Nothing to validate semantically
 	}
 }

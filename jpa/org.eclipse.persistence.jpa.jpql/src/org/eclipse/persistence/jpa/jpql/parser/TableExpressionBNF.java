@@ -26,7 +26,7 @@ public final class TableExpressionBNF extends JPQLQueryBNF {
 	/**
 	 * The unique identifier of this BNF rule.
 	 */
-	public static final String ID = "table";
+	public static final String ID = "table_expression";
 
 	/**
 	 * Creates a new <code>TableExpressionBNF</code>.
@@ -41,7 +41,6 @@ public final class TableExpressionBNF extends JPQLQueryBNF {
 	@Override
 	protected void initialize() {
 		super.initialize();
-		setFallbackBNFId(ID);
-		setFallbackExpressionFactoryId(TableExpressionFactory.ID);
+		registerExpressionFactory(TableExpressionFactory.ID);
 	}
 }

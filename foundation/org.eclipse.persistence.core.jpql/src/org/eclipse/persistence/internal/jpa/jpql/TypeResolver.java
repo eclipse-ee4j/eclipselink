@@ -114,6 +114,8 @@ import org.eclipse.persistence.jpa.jpql.parser.SubExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SubstringExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SubtractionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SumFunction;
+import org.eclipse.persistence.jpa.jpql.parser.TableExpression;
+import org.eclipse.persistence.jpa.jpql.parser.TableVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.TreatExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TrimExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TypeExpression;
@@ -1222,6 +1224,20 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	public void visit(TableExpression expression) {
+		type = Object.class;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(TableVariableDeclaration expression) {
+		type = Object.class;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public void visit(TreatExpression expression) {
 		expression.getEntityType().accept(this);
 	}
@@ -1512,9 +1528,11 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
 		 */
 		@Override
 		public void visit(KeyExpression expression) {
+
 			IdentificationVariable identificationVariable = (IdentificationVariable) expression.getExpression();
 			Declaration declaration = queryContext.getDeclaration(identificationVariable.getVariableName());
 			DatabaseMapping mapping = declaration.getMapping();
+
 			ContainerPolicy containerPolicy = mapping.getContainerPolicy();
 			MappedKeyMapContainerPolicy mapPolicy = (MappedKeyMapContainerPolicy) containerPolicy;
 			descriptor = mapPolicy.getKeyMapping().getReferenceDescriptor();

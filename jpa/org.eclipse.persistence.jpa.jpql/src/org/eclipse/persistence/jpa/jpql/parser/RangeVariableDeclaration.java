@@ -107,7 +107,7 @@ public final class RangeVariableDeclaration extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	public void acceptChildren(ExpressionVisitor visitor) {
-		getAbstractSchemaName().accept(visitor);
+		getRootObject().accept(visitor);
 		getIdentificationVariable().accept(visitor);
 	}
 
@@ -116,7 +116,7 @@ public final class RangeVariableDeclaration extends AbstractExpression {
 	 */
 	@Override
 	protected void addChildrenTo(Collection<Expression> children) {
-		children.add(getAbstractSchemaName());
+		children.add(getRootObject());
 		children.add(getIdentificationVariable());
 	}
 

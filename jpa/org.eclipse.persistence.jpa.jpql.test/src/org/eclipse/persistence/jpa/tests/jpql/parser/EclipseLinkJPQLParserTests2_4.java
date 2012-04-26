@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Oracle. All rights reserved.
+ * Copyright (c) 2011, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -171,5 +171,27 @@ public final class EclipseLinkJPQLParserTests2_4 extends JPQLParserTest {
 		);
 
 		testQuery(query_013(), selectStatement);
+	}
+
+	@Test
+	public void test_Query_015() {
+
+		// Select e from Employee e, TABLE('TENANTS') t where e.tenant = t.TENANT and t.ACTIVE = true
+
+		SelectStatementTester selectStatement = selectStatement(
+			select(variable("e")),
+			from(
+				identificationVariableDeclaration("Employee", "e"),
+				tableVariableDeclaration("'TENANTS'", "t")
+			),
+			where(
+					path("e.tenant").equal(path("t.TENANT"))
+				.and(
+					path("t.ACTIVE").equal(TRUE())
+				)
+			)
+		);
+
+		testQuery(query_015(), selectStatement);
 	}
 }

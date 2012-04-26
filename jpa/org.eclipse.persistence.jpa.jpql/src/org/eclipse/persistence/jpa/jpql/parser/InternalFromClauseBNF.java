@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2011 Oracle. All rights reserved.
+ * Copyright (c) 2006, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -19,6 +19,12 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * <p>
  * JPA:
  * <div nowrap><b>BNF:</b> <code>from_clause ::= FROM identification_variable_declaration {, {identification_variable_declaration | collection_member_declaration}}*</code>
+ * <p>
+ * EclipseLink 2.4:
+ * <div nowrap><b>BNF:</b> <code>from_clause ::= FROM identification_variable_declaration {, {identification_variable_declaration |
+ *                                                                                            collection_member_declaration |
+ *                                                                                            (subquery) |
+ *                                                                                            table_declaration }}*</code>
  * <p>
  *
  * @version 2.4

@@ -32,8 +32,7 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 abstract class Declaration implements JPQLQueryDeclaration {
 
 	/**
-	 * The base {@link Expression} is the  Either the range variable declaration if this is a range declaration otherwise the
-	 * collection-valued path expression when this is a collection member declaration.
+	 * TODO.
 	 */
 	Expression baseExpression;
 
@@ -177,6 +176,15 @@ abstract class Declaration implements JPQLQueryDeclaration {
 	 * @return <code>true</code> if the "root" object is a subquery; <code>false</code> otherwise
 	 */
 	boolean isSubquery() {
+		return false;
+	}
+
+	/**
+	 * Determines whether this {@link Declaration} maps directly to a database table.
+	 *
+	 * @return <code>true</code> if the "root" object is a database table; <code>false</code> otherwise
+	 */
+	boolean isTable() {
 		return false;
 	}
 

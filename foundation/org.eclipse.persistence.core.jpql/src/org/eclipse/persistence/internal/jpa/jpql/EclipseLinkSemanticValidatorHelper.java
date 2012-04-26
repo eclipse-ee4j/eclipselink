@@ -431,7 +431,7 @@ public final class EclipseLinkSemanticValidatorHelper implements SemanticValidat
 	 */
 	public boolean isValidatingPathExpressionAllowed(StateFieldPathExpression expression) {
 		Declaration declaration = queryContext.getDeclaration(expression.getIdentificationVariable().toActualText());
-		return (declaration == null) || !declaration.isSubquery();
+		return (declaration == null) || !declaration.isSubquery() && !declaration.isTable();
 	}
 
 	/**

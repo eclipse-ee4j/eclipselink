@@ -28,6 +28,7 @@ import org.eclipse.persistence.jpa.jpql.parser.IdentifierRole;
 import org.eclipse.persistence.jpa.jpql.parser.InternalAggregateFunctionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.InternalCountBNF;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLQueryBNF;
+import org.eclipse.persistence.jpa.jpql.parser.PatternValueBNF;
 import org.eclipse.persistence.jpa.jpql.parser.ScalarExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.SelectExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectExpressionBNF;
@@ -160,6 +161,14 @@ public class JPQLQueryBNFAccessor {
 
 	public Iterable<String> internalAggregateFunctionIdentifiers() {
 		return getIdentifiers(InternalAggregateFunctionBNF.ID);
+	}
+
+	public Iterable<String> patternValueFunctions() {
+		return functions(patternValueIdentifiers());
+	}
+
+	private Iterable<String> patternValueIdentifiers() {
+		return getIdentifiers(PatternValueBNF.ID);
 	}
 
 	public Iterable<String> scalarExpressionAggregates() {

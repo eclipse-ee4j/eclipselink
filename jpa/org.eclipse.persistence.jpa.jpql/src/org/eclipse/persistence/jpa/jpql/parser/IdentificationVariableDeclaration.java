@@ -200,10 +200,6 @@ public final class IdentificationVariableDeclaration extends AbstractExpression 
 		// Parsing the join expressions
 		if (parsingJoinExpression) {
 
-//			if (/* tolerant && */ word.length() == 0 || !isIdentifier(word)) {
-//				return true;
-//			}
-
 			return !word.equalsIgnoreCase(INNER) &&
 			       !word.equalsIgnoreCase(JOIN)  &&
 			       !word.equalsIgnoreCase(OUTER) &&

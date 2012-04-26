@@ -13,22 +13,20 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.parser;
 
-import java.util.List;
 import org.eclipse.persistence.jpa.jpql.WordParser;
 
 /**
- * Define a table expression. This allow a non-mapped table to be used in a query.
+ * Defines a table expression. This allow a non-mapped table to be used in a query. This is not part
+ * of the JPA functional specification but is EclipseLink specific support.
+ * <p>
+ * <div nowrap><b>BNF:</b> <code>table_expression ::= TABLE(string_literal)</code>
+ * <p>
  *
  * @version 2.4
  * @since 2.4
  * @author James Sutherland
  */
-public final class TableExpression extends AbstractExpression {
-
-	/**
-	 *
-	 */
-	private String table;
+public final class TableExpression extends AbstractSingleEncapsulatedExpression {
 
 	/**
 	 * Creates a new <code>TableExpression</code>.
@@ -49,15 +47,9 @@ public final class TableExpression extends AbstractExpression {
 	/**
 	 * {@inheritDoc}
 	 */
-	public void acceptChildren(ExpressionVisitor visitor) {
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
-	protected void addOrderedChildrenTo(List<Expression> children) {
-		children.add(buildStringExpression(table));
+	public String encapsulatedExpressionBNF() {
+		return StringLiteralBNF.ID;
 	}
 
 	/**
@@ -72,25 +64,7 @@ public final class TableExpression extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void parse(WordParser wordParser, boolean tolerant) {
-		wordParser.moveForward(TABLE);
-		wordParser.skipLeadingWhitespace();
-		wordParser.moveForward(LEFT_PARENTHESIS);
-		table = wordParser.word();
-		wordParser.moveForward(table);
-		wordParser.skipLeadingWhitespace();
-		wordParser.moveForward(RIGHT_PARENTHESIS);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void toParsedText(StringBuilder writer, boolean actual) {
-		writer.append(TABLE);
-		writer.append(SPACE);
-		writer.append(LEFT_PARENTHESIS);
-		writer.append(table);
-		writer.append(RIGHT_PARENTHESIS);
+	protected String parseIdentifier(WordParser wordParser) {
+		return TABLE;
 	}
 }

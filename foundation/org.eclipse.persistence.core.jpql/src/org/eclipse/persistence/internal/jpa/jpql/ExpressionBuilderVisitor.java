@@ -36,6 +36,8 @@ import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.internal.expressions.DateConstantExpression;
 import org.eclipse.persistence.internal.expressions.MapEntryExpression;
 import org.eclipse.persistence.internal.queries.ReportItem;
+import org.eclipse.persistence.jpa.jpql.ExpressionTools;
+import org.eclipse.persistence.jpa.jpql.LiteralType;
 import org.eclipse.persistence.jpa.jpql.parser.AbsExpression;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractEclipseLinkExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractExpressionVisitor;
@@ -118,6 +120,8 @@ import org.eclipse.persistence.jpa.jpql.parser.SubExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SubstringExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SubtractionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SumFunction;
+import org.eclipse.persistence.jpa.jpql.parser.TableExpression;
+import org.eclipse.persistence.jpa.jpql.parser.TableVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.TreatExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TrimExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TypeExpression;
@@ -1358,49 +1362,49 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 		type[0] = Boolean.class;
 	}
 
-        /**
-		 * {@inheritDoc}
-		 */
-		public void visit(LocateExpression expression) {
-
-			// Create the string to find in the find in expression
-			expression.getFirstExpression().accept(this);
-			Expression findExpression = queryExpression;
-
-			// Create the find in string expression
-			expression.getSecondExpression().accept(this);
-			Expression findInExpression = queryExpression;
-
-			// Create the expression for the start position
-			expression.getThirdExpression().accept(this);
-			Expression startPositionExpression = queryExpression;
-
-			// Create the LOCATE expression
-			if (startPositionExpression != null) {
-				queryExpression = findInExpression.locate(findExpression, startPositionExpression);
-			}
-			else {
-				queryExpression = findInExpression.locate(findExpression);
-			}
-
-			// Set the expression type
-			type[0] = Integer.class;
-		}
-
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(LowerExpression expression) {
+	public void visit(LocateExpression expression) {
 
-		// Create the expression from the encapsulated expression
-		expression.getExpression().accept(this);
+		// Create the string to find in the find in expression
+		expression.getFirstExpression().accept(this);
+		Expression findExpression = queryExpression;
 
-		// Now create the LOWER expression
-		queryExpression = queryExpression.toLowerCase();
+		// Create the find in string expression
+		expression.getSecondExpression().accept(this);
+		Expression findInExpression = queryExpression;
+
+		// Create the expression for the start position
+		expression.getThirdExpression().accept(this);
+		Expression startPositionExpression = queryExpression;
+
+		// Create the LOCATE expression
+		if (startPositionExpression != null) {
+			queryExpression = findInExpression.locate(findExpression, startPositionExpression);
+		}
+		else {
+			queryExpression = findInExpression.locate(findExpression);
+		}
 
 		// Set the expression type
-		type[0] = String.class;
+		type[0] = Integer.class;
 	}
+
+        /**
+		 * {@inheritDoc}
+		 */
+		public void visit(LowerExpression expression) {
+
+			// Create the expression from the encapsulated expression
+			expression.getExpression().accept(this);
+
+			// Now create the LOWER expression
+			queryExpression = queryExpression.toLowerCase();
+
+			// Set the expression type
+			type[0] = String.class;
+		}
 
 	/**
 	 * {@inheritDoc}
@@ -1592,53 +1596,53 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 		// Nothing to do
 	}
 
-        /**
-		 * {@inheritDoc}
-		 */
-		public void visit(OrExpression expression) {
-
-			// Create the left side of the logical expression
-			expression.getLeftExpression().accept(this);
-			Expression leftExpression = queryExpression;
-
-			// Create the right side of the logical expression
-			expression.getRightExpression().accept(this);
-			Expression rightExpression = queryExpression;
-
-			// Now create the OR expression
-			queryExpression = leftExpression.or(rightExpression);
-
-			// Set the expression type
-			type[0] = Boolean.class;
-		}
-
 	/**
 	 * {@inheritDoc}
 	 */
-	public void visit(RangeVariableDeclaration expression) {
+	public void visit(OrExpression expression) {
 
-		IdentificationVariable variable = (IdentificationVariable) expression.getIdentificationVariable();
-		Declaration declaration = queryContext.getDeclaration(variable.getVariableName());
+		// Create the left side of the logical expression
+		expression.getLeftExpression().accept(this);
+		Expression leftExpression = queryExpression;
 
-		// If the Declaration is RangeDeclaration, then retrieve its Descriptor directly,
-		// this will support two cases automatically, the "root" object is
-		// 1) An abstract schema name (entity name) -> parsed as AbstractSchemaName
-		// 2) A fully qualified class name -> parsed as a CollectionValuedPathExpression
-		//    that cannot be visited
-		if (declaration.isRange()) {
-			type[0] = declaration.getDescriptor().getJavaClass();
-			queryExpression = new ExpressionBuilder(type[0]);
-		}
-		// The FROM subquery needs to be created differently than a regular subquery
-		else if (declaration.isSubquery()) {
-			type[0] = null;
-			queryExpression = declaration.getQueryExpression();
-		}
-		// This should be a derived path (CollectionValuedPathExpression) or a subquery
-		else {
-			expression.getRootObject().accept(this);
-		}
+		// Create the right side of the logical expression
+		expression.getRightExpression().accept(this);
+		Expression rightExpression = queryExpression;
+
+		// Now create the OR expression
+		queryExpression = leftExpression.or(rightExpression);
+
+		// Set the expression type
+		type[0] = Boolean.class;
 	}
+
+        /**
+		 * {@inheritDoc}
+		 */
+		public void visit(RangeVariableDeclaration expression) {
+
+			IdentificationVariable variable = (IdentificationVariable) expression.getIdentificationVariable();
+			Declaration declaration = queryContext.getDeclaration(variable.getVariableName());
+
+			// If the Declaration is RangeDeclaration, then retrieve its Descriptor directly,
+			// this will support two cases automatically, the "root" object is
+			// 1) An abstract schema name (entity name) -> parsed as AbstractSchemaName
+			// 2) A fully qualified class name -> parsed as a CollectionValuedPathExpression
+			//    that cannot be visited
+			if (declaration.isRange()) {
+				type[0] = declaration.getDescriptor().getJavaClass();
+				queryExpression = new ExpressionBuilder(type[0]);
+			}
+			// The FROM subquery needs to be created differently than a regular subquery
+			else if (declaration.isSubquery()) {
+				type[0] = null;
+				queryExpression = declaration.getQueryExpression();
+			}
+			// This should be a derived path (CollectionValuedPathExpression) or a subquery
+			else {
+				expression.getRootObject().accept(this);
+			}
+		}
 
 	/**
 	 * {@inheritDoc}
@@ -1847,6 +1851,22 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 
 		// Set the expression type
 		type[0] = queryContext.typeResolver().convertSumFunctionType(type[0]);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(TableExpression expression) {
+		String tableName = queryContext.literal(expression.getExpression(), LiteralType.STRING_LITERAL);
+		tableName = ExpressionTools.unquote(tableName);
+		queryExpression = queryContext.getBaseExpression().getTable(tableName);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(TableVariableDeclaration expression) {
+		// Nothing to do
 	}
 
 	/**
@@ -2284,6 +2304,12 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 		boolean checkMappingType;
 
 		/**
+		 * Keeps track of the {@link Declaration} when the identification variable maps to a "root"
+		 * object defined in the <code><b>FROM</b></code> clause.
+		 */
+		private Declaration declaration;
+
+		/**
 		 * Keeps track of the descriptor while traversing the path expression.
 		 */
 		private ClassDescriptor descriptor;
@@ -2305,149 +2331,51 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 		 */
 		boolean nullAllowed;
 
-		private boolean virtualPath;
-
 		/**
-		 * Retrieves the actual {@link Enum} constant with the given name.
+		 * Resolves a database column.
 		 *
-		 * @param type The {@link Enum} class used to retrieve the given name
-		 * @param name The name of the constant to retrieve
-		 * @return The {@link Enum} constant
+		 * @param expression The path expression representing an identification variable mapping to a
+		 * database table followed by the column name
 		 */
-		private Enum<?> retrieveEnumConstant(Class<?> type, String name) {
+		private void resolveColumn(AbstractPathExpression expression) {
+			String path = expression.getPath(1);
+			localExpression = localExpression.getField(path);
+		}
 
-			for (Enum<?> enumConstant : (Enum<?>[]) type.getEnumConstants()) {
-				if (name.equals(enumConstant.name())) {
-					return enumConstant;
-				}
+		/**
+		 * Attempts to resolve the path expression as a fully qualified enum constant.
+		 *
+		 * @param expression The {@link AbstractPathExpression} that might represent an enum constant
+		 * @return <code>true</code> if the path was a fully qualified enum constant; <code>false</code>
+		 * if it's an actual path expression
+		 */
+		protected boolean resolveEnumConstant(AbstractPathExpression expression) {
+
+			String fullPath = expression.toParsedText();
+			Class<?> enumType = queryContext.getEnumType(fullPath);
+
+			if (enumType != null) {
+
+				// Make sure we keep track of the enum type
+				type[0] = enumType;
+
+				// Retrieve the enum constant
+				String path = expression.getPath(expression.pathSize() - 1);
+				Enum<?> enumConstant = retrieveEnumConstant(enumType, path);
+
+				// Create the Expression
+				localExpression = new ConstantExpression(enumConstant, new ExpressionBuilder());
+
+				return true;
 			}
 
-			return null;
+			return false;
 		}
 
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(CollectionValuedPathExpression expression) {
-			visitPathExpression(expression);
-		}
+		private void resolvePath(AbstractPathExpression expression) {
 
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(EntryExpression expression) {
-
-			IdentificationVariable identificationVariable = (IdentificationVariable) expression.getExpression();
-			String variableName = identificationVariable.getVariableName();
-
-			// Retrieve the Expression for the identification variable
-			Declaration declaration = queryContext.findDeclaration(variableName);
-			declaration.getBaseExpression().accept(ExpressionBuilderVisitor.this);
-			localExpression = queryExpression;
-
-			// Create the Map.Entry expression
-			MapEntryExpression entryExpression = new MapEntryExpression(localExpression);
-			entryExpression.returnMapEntry();
-			localExpression = entryExpression;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(IdentificationVariable expression) {
-
-			expression.accept(ExpressionBuilderVisitor.this);
-			localExpression = queryExpression;
-
-			// It is possible the Expression is null, it happens when the path expression is an enum
-			// constant. If so, then no need to retrieve the descriptor
-			if (localExpression != null) {
-				Declaration declaration = queryContext.findDeclaration(expression.getVariableName());
-				descriptor  = declaration.getDescriptor();
-				virtualPath = declaration.isSubquery();
-			}
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(KeyExpression expression) {
-
-			IdentificationVariable identificationVariable = (IdentificationVariable) expression.getExpression();
-
-			// Create the Expression for the identification variable
-			identificationVariable.accept(ExpressionBuilderVisitor.this);
-			localExpression = new MapEntryExpression(queryExpression);
-
-			// Retrieve the mapping's key mapping's descriptor
-			descriptor = queryContext.resolveDescriptor(expression);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(StateFieldPathExpression expression) {
-			visitPathExpression(expression);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(ValueExpression expression) {
-
-			IdentificationVariable identificationVariable = (IdentificationVariable) expression.getExpression();
-
-			// Create the Expression for the identification variable
-			identificationVariable.accept(ExpressionBuilderVisitor.this);
-			localExpression = queryExpression;
-
-			// Retrieve the mapping's reference descriptor
-			Declaration declaration = queryContext.findDeclaration(identificationVariable.getVariableName());
-			descriptor = declaration.getDescriptor();
-		}
-
-		private void visitPathExpression(AbstractPathExpression expression) {
-
-			// First resolve the identification variable
-			expression.getIdentificationVariable().accept(this);
-
-			// The path expression is composed with an identification
-			// variable that is mapped to a subquery as the "root" object
-			if (virtualPath) {
-				visitVirtualPathExpression(expression);
-				return; // Skip the rest
-			}
-
-			// A null value would most likely mean it's coming from a
-			// state field path expression that represents an enum constant
-			if (localExpression == null) {
-				String fullPath = expression.toParsedText();
-				Class<?> enumType = queryContext.getEnumType(fullPath);
-
-				if (enumType != null) {
-					// Make sure we keep track of the enum type
-					type[0] = enumType;
-
-					// Retrieve the enum constant
-					String path = expression.getPath(expression.pathSize() - 1);
-					Enum<?> enumConstant = retrieveEnumConstant(enumType, path);
-
-					// Create the Expression
-					localExpression = new ConstantExpression(enumConstant, new ExpressionBuilder());
-
-					// Skip the rest
-					return;
-				}
-			}
-
-			// Now traverse the rest of the path expression
 			for (int index = expression.hasVirtualIdentificationVariable() ? 0 : 1, count = length; index < count; index++) {
+
 				String path = expression.getPath(index);
 				DatabaseMapping mapping = descriptor.getObjectBuilder().getMappingForAttributeName(path);
 				boolean last = (index + 1 == count);
@@ -2518,9 +2446,157 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 			}
 		}
 
-		private void visitVirtualPathExpression(AbstractPathExpression expression) {
+		private void resolveVirtualPath(AbstractPathExpression expression) {
 			String path = expression.getPath(1);
 			localExpression = localExpression.get(path);
+		}
+
+		/**
+		 * Retrieves the actual {@link Enum} constant with the given name.
+		 *
+		 * @param type The {@link Enum} class used to retrieve the given name
+		 * @param name The name of the constant to retrieve
+		 * @return The {@link Enum} constant
+		 */
+		private Enum<?> retrieveEnumConstant(Class<?> type, String name) {
+
+			for (Enum<?> enumConstant : (Enum<?>[]) type.getEnumConstants()) {
+				if (name.equals(enumConstant.name())) {
+					return enumConstant;
+				}
+			}
+
+			return null;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(CollectionValuedPathExpression expression) {
+			visitPathExpression(expression);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(EntryExpression expression) {
+
+			IdentificationVariable identificationVariable = (IdentificationVariable) expression.getExpression();
+			String variableName = identificationVariable.getVariableName();
+
+			// Retrieve the Expression for the identification variable
+			declaration = queryContext.findDeclaration(variableName);
+			declaration.getBaseExpression().accept(ExpressionBuilderVisitor.this);
+			localExpression = queryExpression;
+
+			// Create the Map.Entry expression
+			MapEntryExpression entryExpression = new MapEntryExpression(localExpression);
+			entryExpression.returnMapEntry();
+			localExpression = entryExpression;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(IdentificationVariable expression) {
+
+			expression.accept(ExpressionBuilderVisitor.this);
+			localExpression = queryExpression;
+
+			// It is possible the Expression is null, it happens when the path expression is an enum
+			// constant. If so, then no need to retrieve the descriptor
+			if (localExpression != null) {
+				declaration = queryContext.findDeclaration(expression.getVariableName());
+				descriptor = declaration.getDescriptor();
+			}
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(KeyExpression expression) {
+
+			IdentificationVariable identificationVariable = (IdentificationVariable) expression.getExpression();
+
+			// Create the Expression for the identification variable
+			identificationVariable.accept(ExpressionBuilderVisitor.this);
+			localExpression = new MapEntryExpression(queryExpression);
+
+			// Retrieve the mapping's key mapping's descriptor
+			descriptor = queryContext.resolveDescriptor(expression);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(StateFieldPathExpression expression) {
+			visitPathExpression(expression);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(TreatExpression expression) {
+
+			expression.accept(ExpressionBuilderVisitor.this);
+			localExpression = queryExpression;
+
+			// Retrieve the mapping's key mapping's descriptor
+			descriptor = queryContext.resolveDescriptor(expression);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(ValueExpression expression) {
+
+			IdentificationVariable identificationVariable = (IdentificationVariable) expression.getExpression();
+
+			// Create the Expression for the identification variable
+			identificationVariable.accept(ExpressionBuilderVisitor.this);
+			localExpression = queryExpression;
+
+			// Retrieve the mapping's reference descriptor
+			declaration = queryContext.findDeclaration(identificationVariable.getVariableName());
+			descriptor = declaration.getDescriptor();
+		}
+
+		private void visitPathExpression(AbstractPathExpression expression) {
+
+			// First resolve the identification variable
+			expression.getIdentificationVariable().accept(this);
+
+			// The path expression is composed with an identification
+			// variable that is mapped to a subquery as the "root" object
+			if ((declaration != null) && declaration.isSubquery()) {
+				resolveVirtualPath(expression);
+				return;
+			}
+
+			// A null value would most likely mean it's coming from a
+			// state field path expression that represents an enum constant
+			if (localExpression == null) {
+				boolean result = resolveEnumConstant(expression);
+				if (result) {
+					return;
+				}
+			}
+
+			// The path expression is mapping to a database table
+			if ((declaration != null) && declaration.isTable()) {
+				resolveColumn(expression);
+				return;
+			}
+
+			// Traverse the rest of the path expression
+			resolvePath(expression);
 		}
 	}
 

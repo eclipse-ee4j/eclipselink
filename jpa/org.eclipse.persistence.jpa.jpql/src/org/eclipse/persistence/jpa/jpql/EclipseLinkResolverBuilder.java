@@ -18,6 +18,8 @@ import org.eclipse.persistence.jpa.jpql.parser.DatabaseType;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.ExtractExpression;
 import org.eclipse.persistence.jpa.jpql.parser.RegexpExpression;
+import org.eclipse.persistence.jpa.jpql.parser.TableExpression;
+import org.eclipse.persistence.jpa.jpql.parser.TableVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.UnionClause;
 
 /**
@@ -69,6 +71,20 @@ public class EclipseLinkResolverBuilder extends ResolverBuilder
 	 * {@inheritDoc}
 	 */
 	public void visit(RegexpExpression expression) {
+		resolver = buildClassResolver(Object.class);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(TableExpression expression) {
+		resolver = buildClassResolver(Object.class);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(TableVariableDeclaration expression) {
 		resolver = buildClassResolver(Object.class);
 	}
 

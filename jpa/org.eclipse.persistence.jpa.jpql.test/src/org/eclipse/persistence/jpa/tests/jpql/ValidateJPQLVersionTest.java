@@ -845,6 +845,57 @@ public class ValidateJPQLVersionTest extends AbstractValidatorTest {
 	}
 
 	@Test
+	public void test_TableVariableDeclaration_1() {
+
+		String jpqlQuery  = "select e from Employee e, table('EMP') EMP where e.empId = EMP.EMP_ID";
+ 		int startPosition = "select e from Employee e, ".length();
+ 		int endPosition   = "select e from Employee e, table('EMP') EMP".length();
+
+ 		testHasOnlyOneProblem(
+ 			jpqlQuery,
+ 			EclipseLinkJPQLGrammar2_4.instance(),
+ 			JPQLGrammar1_0.instance(),
+ 			TableVariableDeclaration_InvalidJPAVersion,
+ 			startPosition,
+ 			endPosition
+ 		);
+	}
+
+	@Test
+	public void test_TableVariableDeclaration_2() {
+
+		String jpqlQuery  = "select e from Employee e, table('EMP') EMP where e.empId = EMP.EMP_ID";
+		int startPosition = "select e from Employee e, ".length();
+		int endPosition   = "select e from Employee e, table('EMP') EMP".length();
+
+		testHasOnlyOneProblem(
+			jpqlQuery,
+			EclipseLinkJPQLGrammar2_4.instance(),
+			JPQLGrammar2_0.instance(),
+			TableVariableDeclaration_InvalidJPAVersion,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public void test_TableVariableDeclaration_3() {
+
+		String jpqlQuery  = "select e from Employee e, table('EMP') EMP where e.empId = EMP.EMP_ID";
+		int startPosition = "select e from Employee e, ".length();
+		int endPosition   = "select e from Employee e, table('EMP') EMP".length();
+
+		testHasOnlyOneProblem(
+			jpqlQuery,
+			EclipseLinkJPQLGrammar2_4.instance(),
+			JPQLGrammar2_1.instance(),
+			TableVariableDeclaration_InvalidJPAVersion,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
 	public void test_TypeExpression_1() {
 
 		String jpqlQuery  = "SELECT e FROM Employee e WHERE TYPE(e) <> e.name";

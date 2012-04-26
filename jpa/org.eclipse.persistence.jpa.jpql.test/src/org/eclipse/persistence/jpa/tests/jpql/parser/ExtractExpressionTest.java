@@ -54,13 +54,13 @@ public final class ExtractExpressionTest extends JPQLParserTest {
 
 		String jpqlQuery = "Select extract from Employee e";
 
-		ExtractExpressionTester extract = extractFrom(null, variable("Employee"));
+		ExtractExpressionTester extract = extract(null, nullExpression());
 		extract.hasLeftParenthesis  = false;
 		extract.hasRightParenthesis = false;
 
 		ExpressionTester selectStatement = selectStatement(
-			select(resultVariable(extract, "e")),
-			nullExpression()
+			select(extract),
+			from("Employee", "e")
 		);
 
 		testInvalidQuery(jpqlQuery, selectStatement);
@@ -191,7 +191,7 @@ public final class ExtractExpressionTest extends JPQLParserTest {
 			from("Employee", "e")
 		);
 
-		testQuery(jpqlQuery, selectStatement);
+		testInvalidQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
@@ -236,13 +236,13 @@ public final class ExtractExpressionTest extends JPQLParserTest {
 			from("Employee", "e")
 		);
 
-		testQuery(jpqlQuery, selectStatement);
+		testInvalidQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
 	public void test_BuildExpression_14() throws Exception {
 
-		String jpqlQuery = "Select extract MONTH e.name + 2 " +
+		String jpqlQuery = "Select extract MONTH e.name + 2) " +
 		                   "from Employee e";
 
 		ExtractExpressionTester extract = extract(
@@ -251,13 +251,35 @@ public final class ExtractExpressionTest extends JPQLParserTest {
 		);
 
 		extract.hasLeftParenthesis  = false;
-		extract.hasRightParenthesis = false;
+		extract.hasRightParenthesis = true;
 
 		ExpressionTester selectStatement = selectStatement(
 			select(extract),
 			from("Employee", "e")
 		);
 
-		testQuery(jpqlQuery, selectStatement);
+		testInvalidQuery(jpqlQuery, selectStatement);
+	}
+
+	@Test
+	public void test_BuildExpression_15() throws Exception {
+
+		String jpqlQuery = "Select extract MONTH e.name + 2) " +
+		                   "from Employee e";
+
+		ExtractExpressionTester extract = extract(
+			"MONTH",
+			path("e.name").add(numeric(2))
+		);
+
+		extract.hasLeftParenthesis  = false;
+		extract.hasRightParenthesis = true;
+
+		ExpressionTester selectStatement = selectStatement(
+			select(extract),
+			from("Employee", "e")
+		);
+
+		testInvalidQuery(jpqlQuery, selectStatement);
 	}
 }

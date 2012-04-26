@@ -277,6 +277,14 @@ public final class TreatExpression extends AbstractEncapsulatedExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
+	protected void removeEncapsulatedExpression() {
+		// TODO
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	protected void toParsedTextEncapsulatedExpression(StringBuilder writer, boolean actual) {
 
 		// Collection-valued path expression

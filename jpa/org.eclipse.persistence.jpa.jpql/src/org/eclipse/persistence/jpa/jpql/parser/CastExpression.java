@@ -242,6 +242,19 @@ public final class CastExpression extends AbstractSingleEncapsulatedExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
+	protected void removeEncapsulatedExpression() {
+		super.removeEncapsulatedExpression();
+		hasAs = false;
+		asIdentifier = null;
+		databaseType = null;
+		hasSpaceAfterAs         = false;
+		hasSpaceAfterExpression = false;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	protected boolean shouldParseWithFactoryFirst() {
 		return shouldParseWithFactoryFirst;
 	}

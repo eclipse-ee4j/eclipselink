@@ -350,6 +350,12 @@ public interface JPQLQueryProblemMessages {
 	String SumFunction_MissingLeftParenthesis = "SUM_FUNCTION_MISSING_LEFT_PARENTHESIS";
 	String SumFunction_MissingRightParenthesis = "SUM_FUNCTION_MISSING_RIGHT_PARENTHESIS";
 	String SumFunction_WrongType = "SUM_FUNCTION_WRONG_TYPE";
+	String TableExpression_InvalidExpression = "TABLE_EXPRESSION_INVALID_EXPRESSION";
+	String TableExpression_MissingExpression = "TABLE_EXPRESSION_MISSING_EXPRESSION";
+	String TableExpression_MissingLeftParenthesis = "TABLE_EXPRESSION_MISSING_LEFT_PARENTHESIS";
+	String TableExpression_MissingRightParenthesis = "TABLE_EXPRESSION_MISSING_RIGHT_PARENTHESIS";
+	String TableVariableDeclaration_InvalidJPAVersion = "TABLE_VARIABLE_DECLARATION_INVALID_JPA_VERSION";
+	String TableVariableDeclaration_MissingIdentificationVariable = "TABLE_VARIABLE_DECLARATION_MISSING_IDENTIFICATION_VARIABLE";
 	String TreatExpression_InvalidJPAPlatform = "TREAT_EXPRESSION_INVALID_JPA_PLATFORM";
 	String TrimExpression_InvalidExpression = "TRIM_EXPRESSION_INVALID_EXPRESSION";
 	String TrimExpression_InvalidTrimCharacter = "TRIM_EXPRESSION_INVALID_TRIM_CHARACTER";

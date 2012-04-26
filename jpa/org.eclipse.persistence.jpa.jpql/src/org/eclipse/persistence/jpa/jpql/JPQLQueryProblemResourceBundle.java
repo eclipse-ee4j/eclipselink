@@ -459,7 +459,7 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
 			// RangeVariableDeclaration - Grammar
 			{"RANGE_VARIABLE_DECLARATION_MISSING_ROOT_OBJECT",             "A \"root object\" must be specified."},
 			{"RANGE_VARIABLE_DECLARATION_INVALID_ROOT_OBJECT",             "A \"root object\" must be specified."},
-			{"RANGE_VARIABLE_DECLARATION_MISSING_IDENTIFICATION_VARIABLE", "An identification variable must be provider for a range variable declaration."},
+			{"RANGE_VARIABLE_DECLARATION_MISSING_IDENTIFICATION_VARIABLE", "An identification variable must be provided for a range variable declaration."},
 
 			// RegexpExpression - Grammar
 			{"REGEXP_EXPRESSION_INVALID_JPA_VERSION",       "A REGEXP expression is only supported by EclipseLink."},
@@ -536,6 +536,16 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
 			// SumFunction - Semantic
 			{"SUM_FUNCTION_WRONG_TYPE",                "The argument must be numeric."},
 
+			// TableExpression - Grammar
+			{"TABLE_EXPRESSION_INVALID_EXPRESSION",         "The encapsulated expression is not a valid table name."},
+			{"TABLE_EXPRESSION_MISSING_EXPRESSION",         "The table name must be provided for an TABLE expression."},
+			{"TABLE_EXPRESSION_MISSING_LEFT_PARENTHESIS",   "The left parenthesis is missing from the TABLE expression."},
+			{"TABLE_EXPRESSION_MISSING_RIGHT_PARENTHESIS",  "The right parenthesis is missing from the TABLE expression."},
+
+			// TableVariableDeclaration
+			{"TABLE_VARIABLE_DECLARATION_INVALID_JPA_VERSION",             "A table variable declaration can only be used when the platform is EclipseLink."},
+			{"TABLE_VARIABLE_DECLARATION_MISSING_IDENTIFICATION_VARIABLE", "An identification variable must be provided for a table variable declaration."},
+
 			// TreatExpression - Grammar
 			{"TREAT_EXPRESSION_INVALID_JPA_PLATFORM", "A TREAT expression can only be used when the platform is EclipseLink."},
 
@@ -591,7 +601,7 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
 			{"VALUE_EXPRESSION_MISSING_RIGHT_PARENTHESIS", "The right parenthesis is missing from the VALUE expression."},
 
 			// WhenClause - Grammar
-			{"WHEN_CLAUSE_MISSING_THEN_EXPRESSION", "A conditional expression must be provider for a WHEN clause."},
+			{"WHEN_CLAUSE_MISSING_THEN_EXPRESSION", "A conditional expression must be provided for a WHEN clause."},
 			{"WHEN_CLAUSE_MISSING_THEN_IDENTIFIER", "The identifier THEN is missing from the WHEN clause."},
 			{"WHEN_CLAUSE_MISSING_WHEN_EXPRESSION", "A WHEN expression must be provided for a WHEN clause."},
 

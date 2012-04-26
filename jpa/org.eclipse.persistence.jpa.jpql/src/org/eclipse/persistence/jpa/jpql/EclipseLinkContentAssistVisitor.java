@@ -13,16 +13,25 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql;
 
+import org.eclipse.persistence.jpa.jpql.parser.AbstractSelectStatement;
 import org.eclipse.persistence.jpa.jpql.parser.CastExpression;
 import org.eclipse.persistence.jpa.jpql.parser.DatabaseType;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_4;
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.ExtractExpression;
+import org.eclipse.persistence.jpa.jpql.parser.GroupByClause;
+import org.eclipse.persistence.jpa.jpql.parser.HavingClause;
+import org.eclipse.persistence.jpa.jpql.parser.OrderByClause;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByItem;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByItem.Ordering;
+import org.eclipse.persistence.jpa.jpql.parser.PatternValueBNF;
 import org.eclipse.persistence.jpa.jpql.parser.RegexpExpression;
+import org.eclipse.persistence.jpa.jpql.parser.SelectStatement;
+import org.eclipse.persistence.jpa.jpql.parser.TableExpression;
+import org.eclipse.persistence.jpa.jpql.parser.TableVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.UnionClause;
+import org.eclipse.persistence.jpa.jpql.parser.WhereClause;
 
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
@@ -50,6 +59,59 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 	 */
 	public EclipseLinkContentAssistVisitor(JPQLQueryContext queryContext) {
 		super(queryContext);
+	}
+
+//	/**
+//	 * {@inheritDoc}
+//	 */
+//	@Override
+//	protected FromClauseSelectStatementHelper buildFromClauseSelectStatementHelper() {
+//		return new FromClauseSelectStatementHelper();
+//	}
+//
+//	/**
+//	 * {@inheritDoc}
+//	 */
+//	@Override
+//	protected GroupByClauseSelectStatementHelper buildGroupByClauseSelectStatementHelper() {
+//		return new GroupByClauseSelectStatementHelper();
+//	}
+//
+//	/**
+//	 * {@inheritDoc}
+//	 */
+//	@Override
+//	protected HavingClauseSelectStatementHelper buildHavingClauseSelectStatementHelper() {
+//		return new HavingClauseSelectStatementHelper();
+//	}
+//
+//	/**
+//	 * {@inheritDoc}
+//	 */
+//	@Override
+//	protected OrderByClauseSelectStatementHelper buildOrderByClauseSelectStatementHelper() {
+//		return new OrderByClauseSelectStatementHelper();
+//	}
+
+	protected UnionClauseSelectStatementHelper buildUnionClauseSelectStatementHelper() {
+		return new UnionClauseSelectStatementHelper();
+	}
+
+//	/**
+//	 * {@inheritDoc}
+//	 */
+//	@Override
+//	protected WhereClauseSelectStatementHelper buildWhereClauseSelectStatementHelper() {
+//		return new WhereClauseSelectStatementHelper();
+//	}
+
+	protected UnionClauseSelectStatementHelper getUnionClauseSelectStatementHelper() {
+		UnionClauseSelectStatementHelper helper = getHelper(UnionClauseSelectStatementHelper.class);
+		if (helper == null) {
+			helper = buildUnionClauseSelectStatementHelper();
+			registerHelper(UnionClauseSelectStatementHelper.class, helper);
+		}
+		return helper;
 	}
 
 	/**
@@ -109,13 +171,84 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 	 * {@inheritDoc}
 	 */
 	public void visit(DatabaseType expression) {
-		// Nothing to do
+		// Nothing to do, this is database specific
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public void visit(ExtractExpression expression) {
+		super.visit(expression);
+		int position = getPosition(expression) - corrections.peek();
+		String identifier = expression.getIdentifier();
+
+		// Within "EXTRACT"
+		if (isPositionWithin(position, identifier)) {
+			proposals.addIdentifier(identifier);
+		}
+		// After "EXTRACT("
+		else if (expression.hasLeftParenthesis()) {
+			int length = identifier.length() + 1 /* '(' */;
+
+			// Right after "EXTRACT("
+			if (position == length) {
+				// Nothing to do, unless we show basic date parts
+			}
+
+			if (expression.hasDatePart()) {
+				String datePart = expression.getDatePart();
+
+				// Within "<date part>"
+				if (isPositionWithin(position, length, datePart)) {
+					// Nothing to do, unless we show basic date parts
+				}
+
+				length += datePart.length();
+
+				// After "<date part> "
+				if (expression.hasSpaceAfterDatePart()) {
+					length++;
+
+					// Right before "FROM"
+					if (position == length) {
+						addIdentifier(FROM);
+
+						// Only add the scalar expression's functions if it is not specified
+						// or the FROM identifier is not present
+						if (!expression.hasExpression() || !expression.hasFrom()) {
+							addAllIdentificationVariables();
+							addAllFunctions(expression.encapsulatedExpressionBNF());
+						}
+					}
+				}
+			}
+
+			if (expression.hasFrom()) {
+
+				// Within "FROM"
+				if (isPositionWithin(position, length, FROM)) {
+					proposals.addIdentifier(FROM);
+
+					// Only add the scalar expression's functions if it is not specified
+					if (!expression.hasExpression()) {
+						addAllIdentificationVariables();
+						addAllFunctions(expression.encapsulatedExpressionBNF());
+					}
+				}
+
+				length += 4 /* FROM */;
+
+				if (expression.hasSpaceAfterFrom()) {
+					length++;
+				}
+
+				// Right after "FROM "
+				if (position == length) {
+					addAllIdentificationVariables();
+					addAllFunctions(expression.encapsulatedExpressionBNF());
+				}
+			}
+		}
 	}
 
 	/**
@@ -147,7 +280,7 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 
 					if (position > length) {
 						if (expression.hasSpaceAfterOrdering()) {
-							length++;
+							length += SPACE_LENGTH;
 
 							// Right before "NULLS FIRST" or "NULLS LAST"
 							if (position == length) {
@@ -174,11 +307,328 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 	 * {@inheritDoc}
 	 */
 	public void visit(RegexpExpression expression) {
+		int position = getPosition(expression) - corrections.peek();
+		int length = 0;
+
+		if (expression.hasStringExpression()) {
+			length += length(expression.getStringExpression());
+
+			if (expression.hasSpaceAfterStringExpression()) {
+				length += SPACE_LENGTH;
+			}
+		}
+
+		// Within "REGEXP"
+		if (isPositionWithin(position, length, REGEXP)) {
+			proposals.addIdentifier(REGEXP);
+		}
+		// After "REGEXP"
+		else {
+			length += 6 /* REGEXP */;
+
+			// After "REGEXP "
+			if (expression.hasSpaceAfterIdentifier()) {
+				length += SPACE_LENGTH;
+
+				// Right after "REGEXP "
+				addAllIdentificationVariables();
+				addAllFunctions(PatternValueBNF.ID);
+			}
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(TableExpression expression) {
+		int position = getPosition(expression) - corrections.peek();
+
+		// Within "TABLE"
+		if (isPositionWithin(position, TABLE)) {
+			proposals.addIdentifier(TABLE);
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(TableVariableDeclaration expression) {
+		int position = getPosition(expression) - corrections.peek();
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public void visit(UnionClause expression) {
+
+		int position = getPosition(expression) - corrections.peek();
+		String identifier = expression.getIdentifier();
+
+		// Within <identifier>
+		if (isPositionWithin(position, identifier)) {
+			proposals.addIdentifier(EXCEPT);
+			proposals.addIdentifier(INTERSECT);
+			proposals.addIdentifier(UNION);
+		}
+		// After "<identifier> "
+		else if (expression.hasSpaceAfterIdentifier()) {
+			int length = identifier.length() + SPACE_LENGTH;
+
+			// Right after "<identifier> "
+			if (position == length) {
+				proposals.addIdentifier(ALL);
+
+				if (!expression.hasAll()) {
+					proposals.addIdentifier(SELECT);
+				}
+			}
+			// Within "ALL"
+			else if (isPositionWithin(position, length, ALL)) {
+				proposals.addIdentifier(ALL);
+			}
+			// After "ALL"
+			else {
+				position += 3 /* ALL */;
+
+				// After "ALL "
+				if (expression.hasSpaceAfterAll()) {
+					position += SPACE_LENGTH;
+
+					// Right after "ALL "
+					if (position == length) {
+						proposals.addIdentifier(SELECT);
+					}
+				}
+			}
+		}
+	}
+
+	protected class FromClauseSelectStatementHelper extends AbstractContentAssistVisitor.FromClauseSelectStatementHelper {
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		protected void addClauseIdentifierProposals(SelectStatement expression) {
+
+			super.addClauseIdentifierProposals(expression);
+
+			if (!expression.hasWhereClause()) {
+				if (!expression.hasGroupByClause()) {
+					if (!expression.hasHavingClause()) {
+						if (!expression.hasOrderByClause()) {
+							addIdentifier(UNION);
+							addIdentifier(EXCEPT);
+							addIdentifier(INTERSECT);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	protected class GroupByClauseSelectStatementHelper extends AbstractContentAssistVisitor.GroupByClauseSelectStatementHelper {
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void appendNextClauseProposals(SelectStatement expression,
+		                                      GroupByClause clause,
+		                                      int position,
+		                                      boolean complete) {
+
+			super.appendNextClauseProposals(expression, clause, position, complete);
+
+			if (complete || isAppendable(clause)) {
+				if (!expression.hasGroupByClause()) {
+					if (!expression.hasHavingClause()) {
+						if (!expression.hasOrderByClause()) {
+							addIdentifier(EXCEPT);
+							addIdentifier(INTERSECT);
+							addIdentifier(UNION);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	protected class HavingClauseSelectStatementHelper extends AbstractContentAssistVisitor.HavingClauseSelectStatementHelper {
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void appendNextClauseProposals(SelectStatement expression,
+		                                      HavingClause clause,
+		                                      int position,
+		                                      boolean complete) {
+
+			super.appendNextClauseProposals(expression, clause, position, complete);
+
+			if (complete || isAppendable(clause)) {
+				if (!expression.hasOrderByClause()) {
+					addIdentifier(EXCEPT);
+					addIdentifier(INTERSECT);
+					addIdentifier(UNION);
+				}
+			}
+		}
+	}
+
+	protected class OrderByClauseSelectStatementHelper extends AbstractContentAssistVisitor.OrderByClauseSelectStatementHelper {
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void appendNextClauseProposals(SelectStatement expression,
+		                                      OrderByClause clause,
+		                                      int position,
+		                                      boolean complete) {
+
+			super.appendNextClauseProposals(expression, clause, position, complete);
+
+			if (complete || isAppendable(clause)) {
+				if (!expression.hasOrderByClause()) {
+					addIdentifier(EXCEPT);
+					addIdentifier(INTERSECT);
+					addIdentifier(UNION);
+				}
+			}
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public UnionClauseSelectStatementHelper getNextHelper() {
+			return getUnionClauseSelectStatementHelper();
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public boolean hasSpaceAfterClause(SelectStatement expression) {
+			return expression.hasSpaceBeforeUnion();
+		}
+	}
+
+	protected class UnionClauseSelectStatementHelper implements SelectStatementHelper<SelectStatement, UnionClause> {
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public void addClauseProposal() {
+			addIdentifier(EXCEPT);
+			addIdentifier(INTERSECT);
+			addIdentifier(UNION);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public void appendNextClauseProposals(SelectStatement expression,
+		                                      UnionClause clause,
+		                                      int position,
+		                                      boolean complete) {
+
+			addIdentifier(EXCEPT);
+			addIdentifier(INTERSECT);
+			addIdentifier(UNION);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public UnionClause getClause(SelectStatement expression) {
+			return (UnionClause) expression.getUnionClauses();
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public Expression getClauseExpression(UnionClause clause) {
+			return clause.getQuery();
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public SelectStatementHelper<? extends AbstractSelectStatement, ? extends Expression> getNextHelper() {
+			return null;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public AbstractContentAssistVisitor.OrderByClauseSelectStatementHelper getPreviousHelper() {
+			return getOrderByClauseSelectStatementHelper();
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public boolean hasClause(SelectStatement expression) {
+			return expression.hasUnionClauses();
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public boolean hasClauseExpression(UnionClause clause) {
+			return clause.hasQuery();
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public boolean hasSpaceAfterClause(SelectStatement expression) {
+			return false;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public boolean hasSpaceBeforeClause(SelectStatement expression) {
+			return expression.hasSpaceBeforeUnion();
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public boolean isClauseExpressionComplete(Expression expression) {
+			return false;
+		}
+	}
+
+	protected class WhereClauseSelectStatementHelper extends AbstractContentAssistVisitor.WhereClauseSelectStatementHelper {
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void appendNextClauseProposals(SelectStatement expression,
+		                                      WhereClause clause,
+		                                      int position,
+		                                      boolean complete) {
+
+
+			super.appendNextClauseProposals(expression, clause, position, complete);
+
+			if (complete || isAppendable(clause)) {
+				if (!expression.hasGroupByClause()) {
+					if (!expression.hasHavingClause()) {
+						if (!expression.hasOrderByClause()) {
+							addIdentifier(EXCEPT);
+							addIdentifier(INTERSECT);
+							addIdentifier(UNION);
+						}
+					}
+				}
+			}
+		}
 	}
 }

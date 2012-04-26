@@ -102,9 +102,8 @@ public final class RegexpExpression extends AbstractExpression {
 		// String expression
 		if (stringExpression != null) {
 			children.add(stringExpression);
+			children.add(buildStringExpression(SPACE));
 		}
-
-		children.add(buildStringExpression(SPACE));
 
 		// 'REGEXP'
 		children.add(buildStringExpression(REGEXP));

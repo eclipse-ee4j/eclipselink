@@ -1973,8 +1973,8 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	protected boolean validateStateFieldPathExpression(StateFieldPathExpression expression,
 	                                                   PathType pathType) {
 
-		// Special case for EclipseLink, path expression formed with the identification
-		// variable mapped to a subquery cannot be resolved, thus cannot be validated
+		// Special case for EclipseLink, path expression formed with the identification variable
+		// mapped to a subquery or database table cannot be resolved, thus cannot be validated
 		if (!helper.isValidatingPathExpressionAllowed(expression)) {
 			return true;
 		}

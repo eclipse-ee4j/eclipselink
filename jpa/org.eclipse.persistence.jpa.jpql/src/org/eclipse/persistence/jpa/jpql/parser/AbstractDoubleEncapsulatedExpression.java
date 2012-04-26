@@ -279,6 +279,14 @@ public abstract class AbstractDoubleEncapsulatedExpression extends AbstractEncap
 	 * {@inheritDoc}
 	 */
 	@Override
+	protected void removeEncapsulatedExpression() {
+		// TODO
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	protected void toParsedTextEncapsulatedExpression(StringBuilder writer, boolean actual) {
 
 		// First expression

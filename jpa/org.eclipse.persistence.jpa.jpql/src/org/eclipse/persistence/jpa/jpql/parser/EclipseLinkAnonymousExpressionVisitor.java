@@ -29,7 +29,6 @@ package org.eclipse.persistence.jpa.jpql.parser;
 public abstract class EclipseLinkAnonymousExpressionVisitor extends AnonymousExpressionVisitor
                                                             implements EclipseLinkExpressionVisitor {
 
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -55,6 +54,20 @@ public abstract class EclipseLinkAnonymousExpressionVisitor extends AnonymousExp
 	 * {@inheritDoc}
 	 */
 	public void visit(RegexpExpression expression) {
+		visit((Expression) expression);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(TableExpression expression) {
+		visit((Expression) expression);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(TableVariableDeclaration expression) {
 		visit((Expression) expression);
 	}
 

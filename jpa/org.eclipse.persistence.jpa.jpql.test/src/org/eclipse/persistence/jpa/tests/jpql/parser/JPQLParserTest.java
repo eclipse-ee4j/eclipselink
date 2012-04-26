@@ -112,6 +112,8 @@ import org.eclipse.persistence.jpa.jpql.parser.SubExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SubstringExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SubtractionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SumFunction;
+import org.eclipse.persistence.jpa.jpql.parser.TableExpression;
+import org.eclipse.persistence.jpa.jpql.parser.TableVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.TreatExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TrimExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TrimExpression.Specification;
@@ -3218,6 +3220,50 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		return new SumFunctionTester(path(statefieldPathExpression), true);
 	}
 
+	protected static TableExpressionTester table(ExpressionTester tableName) {
+		return new TableExpressionTester(tableName);
+	}
+
+	protected static TableExpressionTester table(String tableName) {
+		return table(string(tableName));
+	}
+
+	protected static TableVariableDeclarationTester tableVariableDeclaration(String tableName,
+	                                                                         String variable) {
+
+		return tableVariableDeclaration(table(tableName), variable(variable));
+	}
+
+	protected static TableVariableDeclarationTester tableVariableDeclaration(TableExpressionTester tableName,
+	                                                                         ExpressionTester variable) {
+
+		return new TableVariableDeclarationTester(tableName, false, variable);
+	}
+
+	protected static TableVariableDeclarationTester tableVariableDeclaration(TableExpressionTester tableName,
+	                                                                         String variable) {
+
+		return tableVariableDeclaration(tableName, variable(variable));
+	}
+
+	protected static TableVariableDeclarationTester tableVariableDeclarationAs(String tableName,
+	                                                                           String variable) {
+
+		return tableVariableDeclarationAs(table(tableName), variable(variable));
+	}
+
+	protected static TableVariableDeclarationTester tableVariableDeclarationAs(TableExpressionTester tableName,
+	                                                                           ExpressionTester variable) {
+
+		return new TableVariableDeclarationTester(tableName, true, variable);
+	}
+
+	protected static TableVariableDeclarationTester tableVariableDeclarationAs(TableExpressionTester tableName,
+	                                                                           String variable) {
+
+		return tableVariableDeclarationAs(tableName, variable(variable));
+	}
+
 	protected static TreatExpressionTester treat(ExpressionTester pathExpression,
 	                                             ExpressionTester entityTypeName) {
 
@@ -4127,7 +4173,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 			return JPQLParserTest.in(this, inItems);
 		}
 
-		public InExpressionTester in(String inputParameter) {
+		public final InExpressionTester in(String inputParameter) {
 			return JPQLParserTest.in(this, inputParameter);
 		}
 
@@ -4216,7 +4262,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 			return JPQLParserTest.or(this, expression);
 		}
 
-		public RegexpExpressionTester regexp(StringLiteralTester patternValue) {
+		public final RegexpExpressionTester regexp(StringLiteralTester patternValue) {
 			return JPQLParserTest.regexp(this, patternValue);
 		}
 
@@ -7075,6 +7121,75 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		@Override
 		protected String identifier() {
 			return SUM;
+		}
+	}
+
+	protected static class TableExpressionTester extends AbstractSingleEncapsulatedExpressionTester {
+
+		protected TableExpressionTester(ExpressionTester expression) {
+			super(expression);
+		}
+
+		@Override
+		protected Class<TableExpression> expressionType() {
+			return TableExpression.class;
+		}
+
+		@Override
+		protected String identifier() {
+			return TABLE;
+		}
+	}
+
+	protected static class TableVariableDeclarationTester extends AbstractExpressionTester {
+
+
+		private boolean hasAs;
+		public boolean hasSpaceAfterAs;
+		public boolean hasSpaceAfterTableExpression;
+		private ExpressionTester identificationVariable;
+		private TableExpressionTester tableExpression;
+
+		protected TableVariableDeclarationTester(TableExpressionTester tableExpression,
+		                                         boolean hasAs,
+		                                         ExpressionTester identificationVariable) {
+			super();
+			this.tableExpression              = tableExpression;
+			this.hasAs                        = hasAs;
+			this.identificationVariable       = identificationVariable;
+			this.hasSpaceAfterTableExpression = hasAs || !identificationVariable.isNull();
+			this.hasSpaceAfterAs              = hasAs && !identificationVariable.isNull();
+		}
+
+		public void test(Expression expression) {
+			assertInstance(expression, Expression.class);
+
+			TableVariableDeclaration tableVariableDeclaration = (TableVariableDeclaration) expression;
+			assertEquals(toString(), tableVariableDeclaration.toParsedText());
+			assertEquals(!identificationVariable.isNull(), tableVariableDeclaration.hasIdentificationVariable());
+			assertEquals(hasAs,                            tableVariableDeclaration.hasAs());
+			assertEquals(hasSpaceAfterAs,                  tableVariableDeclaration.hasSpaceAfterAs());
+			assertEquals(hasSpaceAfterTableExpression,     tableVariableDeclaration.hasSpaceAfterTableExpression());
+
+			tableExpression       .test(tableVariableDeclaration.getTableExpression());
+			identificationVariable.test(tableVariableDeclaration.getIdentificationVariable());
+		}
+
+		@Override
+		public String toString() {
+			StringBuilder sb = new StringBuilder();
+			sb.append(tableExpression);
+			if (hasSpaceAfterTableExpression) {
+				sb.append(SPACE);
+			}
+			if (hasAs) {
+				sb.append(AS);
+			}
+			if (hasSpaceAfterAs) {
+				sb.append(SPACE);
+			}
+			sb.append(identificationVariable);
+			return sb.toString();
 		}
 	}
 

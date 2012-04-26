@@ -355,6 +355,14 @@ public abstract class AbstractTripleEncapsulatedExpression extends AbstractEncap
 	 * {@inheritDoc}
 	 */
 	@Override
+	protected void removeEncapsulatedExpression() {
+		// TODO
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	protected final void toParsedTextEncapsulatedExpression(StringBuilder writer, boolean actual) {
 
 		// First expression

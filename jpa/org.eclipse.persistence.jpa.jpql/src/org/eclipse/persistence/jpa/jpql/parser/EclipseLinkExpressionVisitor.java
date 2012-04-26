@@ -55,6 +55,20 @@ public interface EclipseLinkExpressionVisitor extends ExpressionVisitor {
 	void visit(RegexpExpression expression);
 
 	/**
+	 * Visits the {@link TableExpression} expression.
+	 *
+	 * @param expression The {@link Expression} to visit
+	 */
+	void visit(TableExpression expression);
+
+	/**
+	 * Visits the {@link TableVariableDeclaration} expression.
+	 *
+	 * @param expression The {@link Expression} to visit
+	 */
+	void visit(TableVariableDeclaration expression);
+
+	/**
 	 * Visits the {@link UnionClause} expression.
 	 *
 	 * @param expression The {@link Expression} to visit

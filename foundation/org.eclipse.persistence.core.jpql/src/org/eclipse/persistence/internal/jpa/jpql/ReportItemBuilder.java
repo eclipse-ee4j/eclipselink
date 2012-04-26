@@ -535,9 +535,6 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
 		expression.getSelectExpression().accept(this);
 
 		resultVariable = null;
-//		List<ReportItem> items = query.getItems();
-//		ReportItem lastItem = items.get(items.size() - 1);
-//		queryContext.addQueryExpression(variableName, lastItem.getAttributeExpression());
 	}
 
 	/**

@@ -120,6 +120,14 @@ public abstract class AbstractSingleEncapsulatedExpression extends AbstractEncap
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void removeEncapsulatedExpression() {
+		expression = null;
+	}
+
+	/**
 	 * Manually sets the encapsulated {@link Expression} to become the given one.
 	 *
 	 * @param expression The new encapsulated {@link Expression}, which cannot be <code>null</code>

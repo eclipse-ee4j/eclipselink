@@ -71,6 +71,7 @@ import org.eclipse.persistence.jpa.jpql.parser.StringLiteral;
 import org.eclipse.persistence.jpa.jpql.parser.SubstringExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SubtractionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SumFunction;
+import org.eclipse.persistence.jpa.jpql.parser.TableExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TrimExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TypeExpression;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateItem;
@@ -286,7 +287,7 @@ final class ParameterTypeVisitor extends AbstractEclipseLinkTraverseParentVisito
 	 */
 	@Override
 	public void visit(CaseExpression expression) {
-		super.visit(expression);
+		type = Object.class;
 	}
 
 	/**
@@ -302,7 +303,7 @@ final class ParameterTypeVisitor extends AbstractEclipseLinkTraverseParentVisito
 	 */
 	@Override
 	public void visit(CoalesceExpression expression) {
-		super.visit(expression);
+		type = Object.class;
 	}
 
 	/**
@@ -533,6 +534,10 @@ final class ParameterTypeVisitor extends AbstractEclipseLinkTraverseParentVisito
 		else if (stringExpression.isAncestor(inputParameter)) {
 			this.expression = expression;
 		}
+		// LIKE returns an integer value
+		else {
+			this.type = boolean.class;
+		}
 	}
 
 	/**
@@ -745,6 +750,14 @@ final class ParameterTypeVisitor extends AbstractEclipseLinkTraverseParentVisito
 	public void visit(SumFunction expression) {
 		// The sum function always have a return type
 		this.expression = expression;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void visit(TableExpression expression) {
+		type = Object.class;
 	}
 
 	/**

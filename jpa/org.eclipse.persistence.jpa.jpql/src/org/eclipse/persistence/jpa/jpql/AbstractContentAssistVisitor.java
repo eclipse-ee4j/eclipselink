@@ -249,7 +249,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	protected static final int SPACE_LENGTH = 1;
 
 	/**
-	 * Creates a new <code>AbstractVisitor</code>.
+	 * Creates a new <code>AbstractContentAssistVisitor</code>.
 	 *
 	 * @param context The context used to query information about the JPQL query
 	 * @exception NullPointerException The {@link JPQLQueryContext} cannot be <code>null</code>
@@ -1019,7 +1019,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	}
 
 	protected Filter<IMapping> buildMappingFilter(AbstractPathExpression expression,
-	                                            Filter<IMapping> filter) {
+	                                              Filter<IMapping> filter) {
 
 		// Wrap the filter with another Filter that will make sure only the
 		// mappings with the right type will be accepted, for instance, AVG(e.|

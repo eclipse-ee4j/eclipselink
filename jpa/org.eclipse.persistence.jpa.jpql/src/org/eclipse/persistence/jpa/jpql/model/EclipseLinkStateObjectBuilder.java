@@ -20,6 +20,8 @@ import org.eclipse.persistence.jpa.jpql.parser.DatabaseType;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.ExtractExpression;
 import org.eclipse.persistence.jpa.jpql.parser.RegexpExpression;
+import org.eclipse.persistence.jpa.jpql.parser.TableExpression;
+import org.eclipse.persistence.jpa.jpql.parser.TableVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.UnionClause;
 
 /**
@@ -58,29 +60,48 @@ public class EclipseLinkStateObjectBuilder extends BasicStateObjectBuilder
 	 * {@inheritDoc}
 	 */
 	public void visit(CastExpression expression) {
+		// TODO
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public void visit(DatabaseType expression) {
+		// TODO
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public void visit(ExtractExpression expression) {
+		// TODO
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public void visit(RegexpExpression expression) {
+		// TODO
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(TableExpression expression) {
+		// TODO
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(TableVariableDeclaration expression) {
+		// TODO
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public void visit(UnionClause expression) {
+		// TODO
 	}
 }

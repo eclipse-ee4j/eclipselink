@@ -28,6 +28,8 @@ import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.parser.PatternValueBNF;
 import org.eclipse.persistence.jpa.jpql.parser.RegexpExpression;
 import org.eclipse.persistence.jpa.jpql.parser.StringExpressionBNF;
+import org.eclipse.persistence.jpa.jpql.parser.TableExpression;
+import org.eclipse.persistence.jpa.jpql.parser.TableVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.UnionClause;
 
 import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
@@ -208,6 +210,25 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
 		return new EclipseLinkOwningClauseVisitor();
 	}
 
+	protected AbstractSingleEncapsulatedExpressionHelper<TableExpression> buildTableExpressionHelper() {
+		return new AbstractSingleEncapsulatedExpressionHelper<TableExpression>() {
+			@Override
+			protected String encapsulatedExpressionInvalidKey(TableExpression expression) {
+				return TableExpression_InvalidExpression;
+			}
+			@Override
+			protected String encapsulatedExpressionMissingKey(TableExpression expression) {
+				return TableExpression_MissingExpression;
+			}
+			public String leftParenthesisMissingKey(TableExpression expression) {
+				return TableExpression_MissingLeftParenthesis;
+			}
+			public String rightParenthesisMissingKey(TableExpression expression) {
+				return TableExpression_MissingRightParenthesis;
+			}
+		};
+	}
+
 	protected AbstractSingleEncapsulatedExpressionHelper<CastExpression> castExpressionHelper() {
 		AbstractSingleEncapsulatedExpressionHelper<CastExpression> helper = getHelper(CAST);
 		if (helper == null) {
@@ -300,6 +321,15 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
 	@Override
 	protected boolean isSubqueryAllowedAnywhere() {
 		return getProviderVersion() == EclipseLinkJPQLGrammar2_4.VERSION;
+	}
+
+	protected AbstractSingleEncapsulatedExpressionHelper<TableExpression> tableExpressionHelper() {
+		AbstractSingleEncapsulatedExpressionHelper<TableExpression> helper = getHelper(TABLE);
+		if (helper == null) {
+			helper = buildTableExpressionHelper();
+			registerHelper(TABLE, helper);
+		}
+		return helper;
 	}
 
 	/**
@@ -484,6 +514,47 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
 	/**
 	 * {@inheritDoc}
 	 */
+	public void visit(TableExpression expression) {
+		validateAbstractSingleEncapsulatedExpression(expression, tableExpressionHelper());
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(TableVariableDeclaration expression) {
+
+		// Wrong JPA version
+		if (!isEclipseLink()) {
+			addProblem(expression, TableVariableDeclaration_InvalidJPAVersion);
+		}
+		else {
+
+			TableExpression tableExpression = expression.getTableExpression();
+
+			// Validate the table expression
+			tableExpression.accept(this);
+
+			// The identification variable is missing
+			if (!expression.hasIdentificationVariable()) {
+
+				int startPosition = position(expression) +
+				                    length(tableExpression) +
+				                    (expression.hasSpaceAfterTableExpression() ? 1 : 0) +
+				                    (expression.hasAs() ? 2 : 0) +
+				                    (expression.hasSpaceAfterAs() ? 1 : 0);
+
+				addProblem(expression, startPosition, TableVariableDeclaration_MissingIdentificationVariable);
+			}
+			// Validate the identification variable
+			else {
+				expression.getIdentificationVariable().accept(this);
+			}
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public void visit(UnionClause expression) {
 
 		// Wrong JPA version
@@ -500,6 +571,10 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
 			                    (expression.hasSpaceAfterAll() ? 1 : 0);
 
 			addProblem(expression, startPosition, UnionClause_MissingExpression);
+		}
+		// Validate the subquery
+		else {
+			expression.getQuery().accept(this);
 		}
 	}
 

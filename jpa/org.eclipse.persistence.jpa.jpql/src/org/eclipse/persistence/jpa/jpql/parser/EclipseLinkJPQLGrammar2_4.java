@@ -29,9 +29,16 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  *
  * union_clause ::= { UNION | INTERSECT | EXCEPT} [ALL] subquery
  *
+ * from_clause ::= FROM identification_variable_declaration {, {identification_variable_declaration |
+ *                                                              collection_member_declaration |
+ *                                                              (subquery) |
+ *                                                              table_variable_declaration }}*
+ *
  * range_variable_declaration ::= root_object [AS] identification_variable
  *
- * root_object ::= abstract_schema_name | (subquery) | fully_qualified_class_name | table_expression
+ * root_object ::= abstract_schema_name | fully_qualified_class_name
+ *
+ * table_variable_declaration ::= table_expression [AS] identification_variable
  *
  * join ::= join_spec { abstract_schema_name | join_association_path_expression } [AS] identification_variable [join_condition]
  *
@@ -168,6 +175,8 @@ public final class EclipseLinkJPQLGrammar2_4 extends AbstractJPQLGrammar {
 		registerBNF(new ExtractExpressionBNF());
 		registerBNF(new InternalColumnExpressionBNF());
 		registerBNF(new RegexpExpressionBNF());
+		registerBNF(new TableExpressionBNF());
+		registerBNF(new TableVariableDeclarationBNF());
 		registerBNF(new UnionClauseBNF());
 
 		// This is required to properly validate an entity name used as a join association path
@@ -177,23 +186,27 @@ public final class EclipseLinkJPQLGrammar2_4 extends AbstractJPQLGrammar {
 		registerBNF(new SimpleResultVariableBNF());
 
 		// Note: This should only support SQL expression
-		addChildBNF(SimpleConditionalExpressionBNF.ID, FunctionExpressionBNF.ID);
+		addChildBNF(SimpleConditionalExpressionBNF.ID,   FunctionExpressionBNF.ID);
 
 		// CAST
-		addChildBNF(FunctionsReturningDatetimeBNF.ID,  CastExpressionBNF.ID);
-		addChildBNF(FunctionsReturningNumericsBNF.ID,  CastExpressionBNF.ID);
-		addChildBNF(FunctionsReturningStringsBNF.ID,   CastExpressionBNF.ID);
+		addChildBNF(FunctionsReturningDatetimeBNF.ID,    CastExpressionBNF.ID);
+		addChildBNF(FunctionsReturningNumericsBNF.ID,    CastExpressionBNF.ID);
+		addChildBNF(FunctionsReturningStringsBNF.ID,     CastExpressionBNF.ID);
 
 		// EXTRACT
-		addChildBNF(FunctionsReturningDatetimeBNF.ID,  ExtractExpressionBNF.ID);
-		addChildBNF(FunctionsReturningNumericsBNF.ID,  ExtractExpressionBNF.ID);
-		addChildBNF(FunctionsReturningStringsBNF.ID,   ExtractExpressionBNF.ID);
+		addChildBNF(FunctionsReturningDatetimeBNF.ID,    ExtractExpressionBNF.ID);
+		addChildBNF(FunctionsReturningNumericsBNF.ID,    ExtractExpressionBNF.ID);
+		addChildBNF(FunctionsReturningStringsBNF.ID,     ExtractExpressionBNF.ID);
 
 		// REGEXP
-		addChildBNF(SimpleConditionalExpressionBNF.ID, RegexpExpressionBNF.ID);
+		addChildBNF(SimpleConditionalExpressionBNF.ID,   RegexpExpressionBNF.ID);
 
 		// Add subquery support to RangeDeclarationBNF
-		addChildBNF(RangeDeclarationBNF.ID,            SubqueryBNF.ID);
+		addChildBNF(RangeDeclarationBNF.ID,              SubqueryBNF.ID);
+
+		// Add table declaration to the FROM clause's declaration
+		addChildBNF(InternalFromClauseBNF.ID,            TableVariableDeclarationBNF.ID);
+		addChildBNF(InternalSimpleFromClauseBNF.ID,      TableVariableDeclarationBNF.ID);
 
 		// Trickle down the handling of a sub expression (subquery) to RangeVariableDeclaration
 		// and in order to keep the hierarchy intact, otherwise the default behavior would be
@@ -222,6 +235,8 @@ public final class EclipseLinkJPQLGrammar2_4 extends AbstractJPQLGrammar {
 		registerFactory(new JoinCollectionValuedPathExpressionFactory());
 		registerFactory(new OnClauseFactory());
 		registerFactory(new RegexpExpressionFactory());
+		registerFactory(new TableExpressionFactory());
+		registerFactory(new TableVariableDeclarationFactory());
 		registerFactory(new UnionClauseFactory());
 
 		// Add a new FunctionExpression for 'COLUMN' since it has different rules
@@ -259,6 +274,7 @@ public final class EclipseLinkJPQLGrammar2_4 extends AbstractJPQLGrammar {
 		registerIdentifierRole(OPERATOR,       IdentifierRole.FUNCTION);          // FUNCTION(n, x1, ..., x2)
 		registerIdentifierRole(REGEXP,         IdentifierRole.COMPOUND_FUNCTION); // x REGEXP y
 		registerIdentifierRole(SQL,            IdentifierRole.FUNCTION);          // FUNCTION(n, x1, ..., x2)
+		registerIdentifierRole(TABLE,          IdentifierRole.FUNCTION);          // TABLE('TABLE_NAME')
 		registerIdentifierRole(UNION,          IdentifierRole.CLAUSE);
 
 		registerIdentifierVersion(CAST,        JPAVersion.VERSION_2_1);
@@ -273,6 +289,7 @@ public final class EclipseLinkJPQLGrammar2_4 extends AbstractJPQLGrammar {
 		registerIdentifierVersion(OPERATOR,    JPAVersion.VERSION_2_1);
 		registerIdentifierVersion(REGEXP,      JPAVersion.VERSION_2_1);
 		registerIdentifierVersion(SQL,         JPAVersion.VERSION_2_1);
+		registerIdentifierVersion(TABLE,       JPAVersion.VERSION_2_1);
 		registerIdentifierVersion(UNION,       JPAVersion.VERSION_2_1);
 
 		// Partial identifiers

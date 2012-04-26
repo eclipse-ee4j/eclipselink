@@ -39,17 +39,6 @@ public abstract class AbstractFromClause extends AbstractExpression {
 	 */
 	private AbstractExpression declaration;
 
-	@Override
-	protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
-
-		char character = wordParser.character();
-
-		// TODO: Add parameter tolerant and check for these 4 signs if tolerant is turned on only
-		//       this could happen while parsing an invalid query
-		return wordParser.isArithmeticSymbol(character) ||
-		       super.isParsingComplete(wordParser, word, expression);
-	}
-
 	/**
 	 * Determines whether a whitespace was parsed after the identifier <b>FROM</b>.
 	 */
@@ -177,6 +166,20 @@ public abstract class AbstractFromClause extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
+	protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
+
+		char character = wordParser.character();
+
+		// TODO: Add parameter tolerance and check for these 4 signs if tolerant is turned on only
+		//       this could happen while parsing an invalid query
+		return wordParser.isArithmeticSymbol(character) ||
+		       super.isParsingComplete(wordParser, word, expression);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	protected final void parse(WordParser wordParser, boolean tolerant) {
 
 		// Parse 'FROM'
@@ -185,108 +188,7 @@ public abstract class AbstractFromClause extends AbstractExpression {
 		hasSpace = wordParser.skipLeadingWhitespace() > 0;
 
 		// Parse the declaration
-		if (tolerant) {
-			declaration = parse(wordParser, declarationBNF(), tolerant);
-		}
-		else {
-			declaration = parseDeclaration(wordParser);
-		}
-	}
-
-	/**
-	 * Parses the declaration in the most optimized way possible.
-	 *
-	 * @param wordParser The text to parse based on the current position of the cursor
-	 */
-	protected AbstractExpression parseDeclaration(WordParser wordParser) {
-
-		AbstractExpression declaration = null;
-		List<AbstractExpression> children = null;
-		String word = null;
-		boolean firstPass = true;
-		int count = 0;
-
-		while (firstPass || !wordParser.isTail() && !isParsingComplete(wordParser, word, null)) {
-
-			firstPass = false;
-
-			// Identification variable declaration
-			if (!wordParser.startsWithIdentifier(IN)) {
-
-				IdentificationVariableDeclaration expression = new IdentificationVariableDeclaration(this);
-				expression.parse(wordParser, false);
-
-				// Example: ... FROM Employee e => Parsing the first identification variable
-				if ((declaration == null) && (children == null)) {
-					declaration = expression;
-				}
-				// Example: ... FROM Employee e => Parsing the first identification variable
-				else {
-					if (children == null) {
-						children = new ArrayList<AbstractExpression>();
-						children.add(declaration);
-						declaration = null;
-					}
-
-					children.add(expression);
-				}
-			}
-			// The word is IN, which means it's a collection member declaration
-			else {
-				CollectionMemberDeclaration expression = new CollectionMemberDeclaration(this);
-				expression.parse(wordParser, false);
-
-				// Example: ... FROM IN e.phoneNumbers ... => Parsing a derived collection-valued path
-				if ((declaration == null) && (children == null)) {
-					declaration = expression;
-				}
-				else {
-					if (children == null) {
-						children = new ArrayList<AbstractExpression>();
-						children.add(declaration);
-						declaration = null;
-					}
-
-					children.add(expression);
-				}
-			}
-
-			char character = wordParser.character();
-
-			// Example: FROM Employee e, Address a
-			if (character == COMMA) {
-				wordParser.moveForward(1);
-			}
-			// Example: subquery = ... FROM ... Address a)
-			else if (character == RIGHT_PARENTHESIS) {
-				count = 0;
-				break;
-			}
-
-			count = wordParser.skipLeadingWhitespace();
-			word  = wordParser.word();
-		}
-
-		if (children != null) {
-			List<Boolean> spaces = new ArrayList<Boolean>(children.size());
-			List<Boolean> commas = new ArrayList<Boolean>(children.size());
-
-			for (int index = 0, size = children.size() - 1; index < size; index++) {
-				spaces.add(Boolean.TRUE);
-				commas.add(Boolean.TRUE);
-			}
-
-			spaces.add(Boolean.FALSE);
-			commas.add(Boolean.FALSE);
-
-			declaration = new CollectionExpression(this, children, commas, spaces);
-		}
-
-		if (count > 0) {
-			wordParser.moveBackward(count);
-		}
-
-		return declaration;
+		declaration = parse(wordParser, declarationBNF(), tolerant);
 	}
 
 	/**
@@ -294,7 +196,7 @@ public abstract class AbstractFromClause extends AbstractExpression {
 	 */
 	@Override
 	protected boolean shouldParseWithFactoryFirst() {
-		return false;
+		return true;
 	}
 
 	/**

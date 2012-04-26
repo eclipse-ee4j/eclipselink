@@ -102,4 +102,8 @@ public final class EclipseLinkJPQLQueries2_4 {
 	public static String query_014() {
 		return "Select e from Employee e where e.firstName regexp '^B.*'";
 	}
+
+	public static String query_015() {
+		return "Select e from Employee e, table('TENANTS') t where e.tenant = t.TENANT and t.ACTIVE = true";
+	}
 }
