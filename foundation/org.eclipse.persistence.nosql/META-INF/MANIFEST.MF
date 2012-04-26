@@ -3,7 +3,7 @@ Export-Package: org.eclipse.persistence.internal.nosql.adapters.mongo;version="2
  org.eclipse.persistence.nosql.adapters.mongo;version="2.4.0"
 Bundle-Name: EclipseLink NoSQL Extensions
 Created-By: 1.6.0_26 (Sun Microsystems Inc.)
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.nosql
 Bundle-Vendor: Eclipse.org - EclipseLink Project
 Fragment-Host: org.eclipse.persistence.core;bundle-version="2.4.0"
@@ -11,9 +11,6 @@ Bundle-Version: 2.4.0.qualifier
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.eclipse.persistence.nosql
 Import-Package: com.mongodb,
- javax.naming;resolution:=optional,
- javax.resource;version="1.5.0";resolution:=optional,
- javax.resource.cci;version="1.5.0";resolution:=optional,
  org.bson,
  org.bson.types,
  org.eclipse.persistence;version="2.4.0",
