@@ -15,10 +15,7 @@ package org.eclipse.persistence.testing.jaxb.listofobjects;
 import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
@@ -28,9 +25,10 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-public class JAXBObjectCollectionsTestCases extends JAXBListOfObjectsNoJSONTestCases {
+public class JAXBObjectCollectionsTestCases extends JAXBListOfObjectsTestCases {
 
 	protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/objectCollections.xml";
+	protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/objectCollections.json";
 	protected final static String XML_WRITE_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/objectCollectionsWrite.xml";
 	private final static String XML_RESOURCE_NO_XSI_TYPE = "org/eclipse/persistence/testing/jaxb/listofobjects/objectCollectionsNoXsiType.xml";	
 
@@ -45,6 +43,7 @@ public class JAXBObjectCollectionsTestCases extends JAXBListOfObjectsNoJSONTestC
 	public void init() throws Exception {
 		setControlDocument(XML_RESOURCE);
 		setWriteControlDocument(XML_WRITE_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
 		Type[] types = new Type[3];
 		types[0] = Object[].class;
 		types[1] = getClass().getField("objectMap").getType();

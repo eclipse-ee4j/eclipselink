@@ -29,14 +29,15 @@ import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 /**
  * Tests XmlElement via eclipselink-oxm.xml
  *
  */
-public class XmlElementTestCases extends JAXBTestCases {
+public class XmlElementTestCases extends JAXBWithJSONTestCases {
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelement/employee.xml";
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelement/employee.json";
     private static final String XML_RESOURCE_INVALID = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlelement/employee-invalid.xml";
     
     /**
@@ -48,6 +49,7 @@ public class XmlElementTestCases extends JAXBTestCases {
     public XmlElementTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         setClasses(new Class[] { Employee.class});
     }
     

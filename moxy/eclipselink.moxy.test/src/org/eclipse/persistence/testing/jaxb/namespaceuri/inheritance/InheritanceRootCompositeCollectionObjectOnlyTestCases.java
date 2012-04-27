@@ -15,17 +15,19 @@ package org.eclipse.persistence.testing.jaxb.namespaceuri.inheritance;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 import org.eclipse.persistence.testing.jaxb.namespaceuri.inheritance.package2.AnotherPackageSubType;
 
-public class InheritanceRootCompositeCollectionObjectOnlyTestCases extends JAXBTestCases {
+public class InheritanceRootCompositeCollectionObjectOnlyTestCases extends JAXBWithJSONTestCases {
     private static final String  XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/namespaceuri/inheritance/compositecollectionobject.xml";
+    private static final String  JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/namespaceuri/inheritance/compositecollectionobject.json";
 
     public InheritanceRootCompositeCollectionObjectOnlyTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
-        setClasses(new Class[] {RootCompositeCollectionObjectOnly.class, BaseType.class});
+        setControlJSON(JSON_RESOURCE);
+        setClasses(new Class[] {RootCompositeCollectionObjectOnly.class, BaseType.class});  
     }
 
     protected Object getControlObject() {

@@ -164,8 +164,14 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
                 }
                 xmlDescriptor = xmlContext.getDescriptorByGlobalType(typeFragment);
                 if(xmlDescriptor == null) {
+                	QName lookupQName = null;
+                	if(typeFragment.getNamespaceURI() == null){
+                		lookupQName= new QName(XMLConstants.SCHEMA_URL, typeFragment.getLocalName());
+                	}else{
+                		lookupQName= new QName(typeFragment.getNamespaceURI(), typeFragment.getLocalName());
+                	}
                     //check to see if type attribute represents simple type
-                    primitiveWrapperClass = (Class)XMLConversionManager.getDefaultXMLTypes().get(new QName(typeFragment.getNamespaceURI(), typeFragment.getLocalName()));
+                    primitiveWrapperClass = (Class)XMLConversionManager.getDefaultXMLTypes().get(lookupQName);
                 }
             }
             

@@ -1,0 +1,9 @@
+{"testTagName":{
+    "type":"listOfObject",
+    "item":[
+       {    "type":"employee",
+            "firstName":"theFirstName",
+            "lastName":"theLastName"
+       }        
+    ]
+}}

@@ -120,24 +120,42 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implem
         if(marshalRecord.getMarshaller().getMediaType() == MediaType.APPLICATION_JSON){
         	List<NodeValue> nodeValues = new ArrayList();
             List<List> values = new ArrayList<List>();
+            
+            NodeValue mixedNodeValue = null;
+            List mixedValues = null;
+            
             //sort the elements. Results will be a list of nodevalues and a corresponding list of 
             //collections associated with those nodevalues
             while(cp.hasNext(iterator)) {        	    
         	    Object nextValue = getConvertedValue(cp.next(iterator, session), marshalRecord, session);
-		        NodeValue nodeValue = getNodeValueForValue(nextValue);	     
-		        if(nodeValue != null){        	  
-		            int index = nodeValues.indexOf(nodeValue);
-        	        if(index > -1){
-        	    	    values.get(index).add(nextValue);
-        	        }else{
-        	    	    nodeValues.add(nodeValue);
-        	    	    List valuesList = new ArrayList();
-        	    	    valuesList.add(nextValue);
-        	    	    values.add(valuesList);
-        	        }
+		        NodeValue nodeValue = getNodeValueForValue(nextValue);
+		        
+		        if(nodeValue != null){
+		        	if(nodeValue == this){
+		        		mixedNodeValue = this;
+		        		if(mixedValues == null){
+		        			mixedValues = new ArrayList();
+		        		}
+		        		mixedValues.add(nextValue);
+		        	}else{
+			            int index = nodeValues.indexOf(nodeValue);
+	        	        if(index > -1){
+	        	    	    values.get(index).add(nextValue);
+	        	        }else{        	        	
+		        	    	nodeValues.add(nodeValue);
+		        	    	List valuesList = new ArrayList();
+		        	    	valuesList.add(nextValue);
+		        	    	values.add(valuesList);        	        	
+	        	        }
+		        	}
 		        }        	  
             }
-  
+            //always write out mixed values last so we can determine if the textWrapper key needs to be written.
+            if(mixedNodeValue != null){
+            	nodeValues.add(mixedNodeValue);
+            	values.add(mixedValues);
+            }
+            
             for(int i =0;i < nodeValues.size(); i++){
             	NodeValue associatedNodeValue = nodeValues.get(i);            	
             	List listValue = values.get(i);            	
@@ -161,7 +179,7 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implem
                     }
                     marshalRecord.endCollection();     
                 }            
-            }            
+            }                   
         }        
         else{        
             while(cp.hasNext(iterator)) {

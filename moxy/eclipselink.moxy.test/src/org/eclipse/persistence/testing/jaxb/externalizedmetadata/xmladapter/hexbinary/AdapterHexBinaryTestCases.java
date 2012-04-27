@@ -22,17 +22,19 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class AdapterHexBinaryTestCases extends JAXBTestCases{
+public class AdapterHexBinaryTestCases extends JAXBWithJSONTestCases{
 
 	private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmladapter/hexbinary/hexbinary.xml";
+	private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmladapter/hexbinary/hexbinary.json";
         	 
 	
 	public AdapterHexBinaryTestCases(String name) throws Exception {
 		super(name);
 		setClasses(new Class[]{Customer.class});
 		setControlDocument(XML_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
 	}
 
 	protected Object getControlObject() {

@@ -12,21 +12,23 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.xmladapter.compositedirectcollection;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
-import org.w3c.dom.Document;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class NormalizedStringListTestCases extends JAXBTestCases {
+public class NormalizedStringListTestCases extends JAXBWithJSONTestCases {
 
     private static final String XML_RESOURCE_READ = "org/eclipse/persistence/testing/jaxb/xmladapter/normalizedstring_read_list.xml"; 
     private static final String XML_RESOURCE_WRITE = "org/eclipse/persistence/testing/jaxb/xmladapter/normalizedstring_write_list.xml"; 
-
+    private static final String JSON_RESOURCE_READ = "org/eclipse/persistence/testing/jaxb/xmladapter/normalizedstring_read_list.json"; 
+    private static final String JSON_RESOURCE_WRITE = "org/eclipse/persistence/testing/jaxb/xmladapter/normalizedstring_write_list.json";
     public NormalizedStringListTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE_READ);
+        setControlJSON(JSON_RESOURCE_READ);
+        setWriteControlDocument(XML_RESOURCE_WRITE);
+        setWriteControlJSON(JSON_RESOURCE_WRITE);
         setClasses(new Class[] {NormalizedStringListRoot.class});
     }
 
@@ -43,14 +45,6 @@ public class NormalizedStringListTestCases extends JAXBTestCases {
         root.setElementProperty(elementPropertyList);
 
         return root;
-    }
-
-    @Override
-    protected Document getWriteControlDocument() throws Exception {
-        InputStream inputStream = ClassLoader.getSystemResourceAsStream(XML_RESOURCE_WRITE);
-        Document writeDocument = parser.parse(inputStream);
-        inputStream.close();
-        return writeDocument;
     }
 
 }

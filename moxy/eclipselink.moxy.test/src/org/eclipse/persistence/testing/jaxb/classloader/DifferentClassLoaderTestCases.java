@@ -19,6 +19,7 @@ import java.net.URLClassLoader;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
+import org.eclipse.persistence.testing.jaxb.jaxbcontext.withjaxbindex.ClassA;
 
 public class DifferentClassLoaderTestCases extends JAXBWithJSONTestCases {
 

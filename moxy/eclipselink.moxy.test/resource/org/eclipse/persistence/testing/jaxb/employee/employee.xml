@@ -7,6 +7,7 @@
       <responsibility xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema' xsi:type="xsd:string">Fix Bugs</responsibility>
       <responsibility xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema' xsi:type="xsd:string">Write JAXB2.0 Prototype</responsibility>
       <responsibility xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema' xsi:type="xsd:string">Write Design Spec</responsibility>
+      <responsibility xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema' xsi:type="xsd:int">10</responsibility>
    </responsibilities>
 </x:employee-data>
 

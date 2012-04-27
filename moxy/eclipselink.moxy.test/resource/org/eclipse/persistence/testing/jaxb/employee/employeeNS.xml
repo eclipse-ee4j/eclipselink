@@ -1,0 +1,12 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<x:employee-data xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema' id="10" xmlns:x="examplenamespace">
+   <firstName>Bob</firstName>
+   <lastName>Smith</lastName>
+   <birthday>2005-05-24T16:06:53.0</birthday>
+   <responsibilities>
+      <responsibility xsi:type="xsd:string">Fix Bugs</responsibility>
+      <responsibility xsi:type="xsd:string">Write JAXB2.0 Prototype</responsibility>
+      <responsibility xsi:type="xsd:string">Write Design Spec</responsibility>
+   </responsibilities>
+</x:employee-data>
+

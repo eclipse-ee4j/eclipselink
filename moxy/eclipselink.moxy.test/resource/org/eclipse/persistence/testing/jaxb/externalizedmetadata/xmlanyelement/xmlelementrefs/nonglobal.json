@@ -15,8 +15,7 @@
 	   "number":"5552329919"
 	}
 
-   ],
-   "value":["Mixed Content 1","Mixed Content 2"],
+   ],  
    "e":[
 {
 	   "@id":552,
@@ -27,5 +26,6 @@
 	   "address":"d.savage@hotmail.com"
 	}
    
-   ]
+   ],
+    "value":["Mixed Content 1","Mixed Content 2"]
  }}

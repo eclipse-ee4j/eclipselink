@@ -1,0 +1,38 @@
+{"root":{
+  "type":"listOfEmployee",
+  "item":[
+     {
+	"id":10,
+	"firstName":"Bob",
+	"lastName":"Smith",
+	"responsibilities":{
+	     "responsibility":[
+	         {
+		     "type":"string",
+		     "value":"Fix Bugs"
+		 },{
+		     "type":"string",
+		     "value":"Write JAXB2.0 Prototype"
+		 },{
+		     "type":"string",
+		     "value":"Write Design Spec"
+		 }
+
+	     ]
+	}
+     },{
+         "id":100,
+	"firstName":"Bob2",
+	"lastName":"Smith2",
+	"responsibilities":{
+	     "responsibility":[
+	         {
+		     "type":"string",
+		     "value":"Fix Bugs"
+		 }
+	    ]
+	}
+     }
+
+  ]
+}}

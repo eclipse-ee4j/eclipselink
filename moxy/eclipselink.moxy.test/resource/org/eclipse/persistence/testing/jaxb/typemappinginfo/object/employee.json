@@ -1,5 +1,5 @@
-{"ns0.response":{
-    "type":"ns0.employee",
+{"response":{
+    "type":"employee",
     "name":"aaa",
     "id":"123"
 }}

@@ -76,7 +76,7 @@ public abstract class XMLWithJSONMappingTestCases extends XMLMappingTestCases{
             	nr = new PrefixMapperNamespaceResolver(mapper, null);
             }
 			
-            Object testObject = xmlUnmarshaller.unmarshal(new JSONReader(getAttributePrefix(), nr, nr != null, true, xmlUnmarshaller.getErrorHandler()), inputSource);
+            Object testObject = xmlUnmarshaller.unmarshal(new JSONReader(getAttributePrefix(), nr, nr != null, true, xmlUnmarshaller.getErrorHandler(), "value"), inputSource);
             
     	    inputStream.close();
     	    

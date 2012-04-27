@@ -73,12 +73,11 @@ public class XmlAnyElementWithEltRefsNonGlobalTestCases extends JAXBWithJSONTest
         ObjectFactory2 factory = new ObjectFactory2();
         c.contacts.add(factory.createPhone(new Phone(771, "5552328828")));
         c.contacts.add(factory.createPhone(new Phone(772, "5552322112")));
-        c.contacts.add(factory.createPhone(new Phone(773, "5552329919")));
-        c.contacts.add("Mixed Content 1");
-        c.contacts.add("Mixed Content 2");
+        c.contacts.add(factory.createPhone(new Phone(773, "5552329919")));        
         c.contacts.add(factory.createEmail(new Email(552, "dan@xpress.ca")));        
         c.contacts.add(factory.createEmail(new Email(553, "d.savage@hotmail.com")));
-       
+        c.contacts.add("Mixed Content 1");
+        c.contacts.add("Mixed Content 2");
 	    return c;
 	}
 }

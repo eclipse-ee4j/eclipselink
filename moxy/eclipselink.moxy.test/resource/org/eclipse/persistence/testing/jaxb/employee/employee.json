@@ -1,0 +1,14 @@
+{"employee-data":{
+   "id":10,
+   "firstName":"Bob",
+   "lastName":"Smith",
+   "birthday":"2005-05-24T16:06:53.0",
+   "responsibilities":{
+      "responsibility":[{"type":"string","value":"Fix Bugs"}, 
+			{"type":"string","value":"Write JAXB2.0 Prototype"}, 
+			{"type":"string","value":"Write Design Spec"},
+			{"type":"int","value":10}
+			]    
+    }
+}}
+

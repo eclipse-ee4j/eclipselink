@@ -16,17 +16,17 @@ import java.util.Date;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
-
-public class SchemaTypeTestCases extends JAXBTestCases {
+public class SchemaTypeTestCases extends JAXBWithJSONTestCases {
 
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlpath/schematype.xml";
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlpath/schematype.json";
 
     public SchemaTypeTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         setTypes(new Class[] {Root.class});
     }
 

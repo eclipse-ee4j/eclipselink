@@ -23,9 +23,10 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
 
-public class UrlTestCases extends TypeMappingInfoTestCases {
+public class UrlTestCases extends TypeMappingInfoWithJSONTestCases {
 
     private String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/url.xml";
+    private String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/url.json";
     private String XSD_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/url.xsd";
 
     private URL CONTROL_URL;
@@ -37,6 +38,7 @@ public class UrlTestCases extends TypeMappingInfoTestCases {
 
      public void init() throws Exception {
          setControlDocument(XML_RESOURCE);
+         setControlJSON(JSON_RESOURCE);
          setTypeMappingInfos(getTypeMappingInfos());
          CONTROL_URL = new URL("http://www.amazon.com");
      }

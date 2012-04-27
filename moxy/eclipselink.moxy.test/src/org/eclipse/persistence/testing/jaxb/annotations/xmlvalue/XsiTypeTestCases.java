@@ -12,16 +12,18 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.annotations.xmlvalue;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class XsiTypeTestCases extends JAXBTestCases {
+public class XsiTypeTestCases extends JAXBWithJSONTestCases {
 
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlvalue/XsiType.xml";
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlvalue/XsiType.json";
 
     public XsiTypeTestCases(String name) throws Exception {
         super(name);
         setClasses(new Class[] {XsiTypeRoot.class});
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
     }
 
     @Override

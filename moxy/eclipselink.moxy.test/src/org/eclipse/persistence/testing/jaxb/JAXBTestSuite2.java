@@ -110,8 +110,10 @@ public class JAXBTestSuite2 extends TestCase {
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.binder.jaxbelement.BinderWithJAXBElementTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.namespaceuri.inheritance.InheritanceRootChoiceOnlyTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.namespaceuri.inheritance.InheritanceRootCompositeCollectionObjectOnlyTestCases.class);
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.namespaceuri.inheritance.InheritanceRootCompositeCollectionObjectOnlyNSTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.namespaceuri.inheritance.InheritanceRootCompositeCollectionOnlyTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.namespaceuri.inheritance.InheritanceWithMultiplePackagesTestCases.class);
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.namespaceuri.inheritance.InheritanceWithMultiplePackagesNSTestCases.class);
 
         return suite;
     }

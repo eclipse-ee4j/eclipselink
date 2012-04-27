@@ -12,17 +12,17 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.xmladapter.generics;
 
-import java.util.ArrayList;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
-
-public class AdapterWithGenericsTestCases extends JAXBTestCases {
+public class AdapterWithGenericsTestCases extends JAXBWithJSONTestCases {
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmladapter/generic.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmladapter/generic.json";
 
     public AdapterWithGenericsTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         Class[] classes = new Class[] {Root.class, B.class};
         setClasses(classes);
     }

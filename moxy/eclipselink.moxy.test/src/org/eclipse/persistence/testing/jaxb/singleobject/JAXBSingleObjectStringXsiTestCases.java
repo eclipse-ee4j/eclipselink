@@ -12,17 +12,10 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.jaxb.singleobject;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Type;
-import java.net.URI;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
@@ -34,9 +27,7 @@ import javax.xml.transform.stream.StreamSource;
 import org.eclipse.persistence.internal.oxm.record.SAXUnmarshallerHandler;
 import org.eclipse.persistence.internal.oxm.record.XMLStreamReaderReader;
 import org.eclipse.persistence.internal.oxm.record.namespaces.UnmarshalNamespaceContext;
-import org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
-import org.eclipse.persistence.testing.jaxb.listofobjects.JAXBListOfObjectsTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.DTDHandler;
 import org.xml.sax.EntityResolver;
@@ -47,9 +38,10 @@ import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.XMLReader;
 
-public class JAXBSingleObjectStringXsiTestCases extends JAXBTestCases {
+public class JAXBSingleObjectStringXsiTestCases extends JAXBWithJSONTestCases {
 
 	protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/singleobject/singleObjectStringXsiType.xml";
+	protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/singleobject/singleObjectStringXsiType.json";
 
 	public JAXBSingleObjectStringXsiTestCases(String name) throws Exception {
 		super(name);
@@ -58,6 +50,7 @@ public class JAXBSingleObjectStringXsiTestCases extends JAXBTestCases {
 
 	public void init() throws Exception {
 		setControlDocument(XML_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
 		Class[] classes = new Class[1];
 		classes[0] = Object.class;
 		setClasses(classes);

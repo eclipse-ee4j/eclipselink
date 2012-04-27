@@ -12,23 +12,19 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.xmlelementref.mixed;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.namespace.QName;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
-import org.eclipse.persistence.testing.jaxb.xmlelementref.ComplexType;
-import org.eclipse.persistence.testing.jaxb.xmlelementref.ComplexTypeObjectFactory;
-
-public class XmlElementRefMixedContentTestCases extends JAXBTestCases {
+public class XmlElementRefMixedContentTestCases extends JAXBWithJSONTestCases {
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelementref/mixed/mixed.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelementref/mixed/mixed.json";
 
     public XmlElementRefMixedContentTestCases(String name) throws Exception {
         super(name);
-        setControlDocument(XML_RESOURCE);        
+        setControlDocument(XML_RESOURCE);  
+        setControlJSON(JSON_RESOURCE);
         Class[] classes = new Class[2];
         classes[0] = Employee.class;
         classes[1] = Task.class;
@@ -46,6 +42,19 @@ public class XmlElementRefMixedContentTestCases extends JAXBTestCases {
         task.theTask = "Task 2";
         emp.tasks.add(task);
         
+        return emp;
+     }
+    
+    protected Object getJSONReadControlObject() {
+        Employee emp = new Employee();
+        emp.tasks = new ArrayList<Object>();       
+        Task task = new Task();
+        task.theTask = "Task 1";
+        emp.tasks.add(task);
+        task = new Task();
+        task.theTask = "Task 2";
+        emp.tasks.add(task);
+        emp.tasks.add("This is Mixed Content");
         return emp;
      }
 }

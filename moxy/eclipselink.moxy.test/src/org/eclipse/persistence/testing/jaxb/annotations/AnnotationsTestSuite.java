@@ -16,6 +16,7 @@ import org.eclipse.persistence.testing.jaxb.annotations.xmlaccessmethods.XmlAcce
 import org.eclipse.persistence.testing.jaxb.annotations.xmlclassextractor.XmlClassExtractorTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmllocation.XmlLocationTestSuite;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlnametransformer.JAXBDefaultNameTransformerTestCases;
+import org.eclipse.persistence.testing.jaxb.annotations.xmlnametransformer.classlevel.upper.JAXBClassLevelUpperNameTransformerTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlnametransformer.upper.JAXBUpperNameTransformerTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlnullpolicy.XmlNullPolicyTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlpath.predicate.PredicateTestSuite;
@@ -54,6 +55,7 @@ public class AnnotationsTestSuite extends TestSuite {
         suite.addTestSuite(XmlNullPolicyTestCases.class);
         suite.addTestSuite(JAXBDefaultNameTransformerTestCases.class);
         suite.addTestSuite(JAXBUpperNameTransformerTestCases.class);
+        suite.addTestSuite(JAXBClassLevelUpperNameTransformerTestCases.class);
         suite.addTestSuite(XmlAccessMethodsTestCases.class);
         suite.addTestSuite(XmlClassExtractorTestCases.class);
         suite.addTestSuite(XmlPropertyTestCases.class);

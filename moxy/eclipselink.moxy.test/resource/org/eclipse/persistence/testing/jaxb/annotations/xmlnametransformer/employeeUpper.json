@@ -1,0 +1,23 @@
+{"employee-data":{
+   "id":10,
+   "BIRTHDAY":"2005-05-24T16:06:53.0",
+   "FIRSTNAME":"Bob",
+   "lastname":"Smith",
+   "ADDRESS":{
+       "ID":10,
+       "CITYNAME":"Ottawa"
+     },
+   "responsibilities":{
+	   "responsibility":[{"type":"string","value":"Fix Bugs"},
+	                     {"type":"string","value":"Write JAXB2.0 Prototype"},
+			     {"type":"string","value":"Write Design Spec"}]
+      },
+   "RESPONSIBILITIES2":[
+			     {"type":"string","value":"Fix Bugs"},
+	                     {"type":"string","value":"Write JAXB2.0 Prototype"},
+			     {"type":"string","value":"Write Design Spec"}
+   ],
+   "SOMENUMBER":10
+
+   }
+}

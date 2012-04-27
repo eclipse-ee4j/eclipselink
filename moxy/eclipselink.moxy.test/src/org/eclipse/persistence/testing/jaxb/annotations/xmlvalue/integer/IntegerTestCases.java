@@ -13,10 +13,9 @@
 package org.eclipse.persistence.testing.jaxb.annotations.xmlvalue.integer;
 
 import org.eclipse.persistence.jaxb.JAXBContext;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class IntegerTestCases extends JAXBTestCases { //JAXBWithJSONTestCases {
+public class IntegerTestCases extends JAXBWithJSONTestCases {
 
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlvalue/integer.xml";
     private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlvalue/integer.json";
@@ -25,7 +24,7 @@ public class IntegerTestCases extends JAXBTestCases { //JAXBWithJSONTestCases {
         super(name);
         setClasses(new Class[] {Top.class});
         setControlDocument(XML_RESOURCE);
-        // setControlJSON(JSON_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
     }
 
     @Override

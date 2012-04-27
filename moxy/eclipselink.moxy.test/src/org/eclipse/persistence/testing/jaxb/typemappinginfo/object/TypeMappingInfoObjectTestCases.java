@@ -21,15 +21,17 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
-import org.eclipse.persistence.testing.jaxb.typemappinginfo.TypeMappingInfoTestCases;
+import org.eclipse.persistence.testing.jaxb.typemappinginfo.TypeMappingInfoWithJSONTestCases;
 
-public class TypeMappingInfoObjectTestCases extends TypeMappingInfoTestCases{
+public class TypeMappingInfoObjectTestCases extends TypeMappingInfoWithJSONTestCases{
 
 	protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/object/employee.xml";
+	protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/object/employee.json";
 	
 	public TypeMappingInfoObjectTestCases(String name) throws Exception {
 		super(name);
 		setControlDocument(XML_RESOURCE);	
+		setControlJSON(JSON_RESOURCE);
 		setTypeMappingInfos(getTypeMappingInfos());	
 	}
 

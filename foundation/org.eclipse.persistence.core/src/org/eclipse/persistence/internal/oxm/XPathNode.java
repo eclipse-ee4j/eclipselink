@@ -21,6 +21,7 @@ import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
+import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 
@@ -58,8 +59,10 @@ public class XPathNode {
     private XPathNode anyAttributeNode;
     private XPathNode textNode;
     private XPathNode anyNode;
+    private boolean hasTypeChild;
 
-    public XPathFragment getXPathFragment() {
+
+	public XPathFragment getXPathFragment() {
         return xPathFragment;
     }
 
@@ -157,6 +160,10 @@ public class XPathNode {
         this.textNode = xPathNode;
     }
 
+    public boolean hasTypeChild() {
+        return hasTypeChild;
+    }
+
     public boolean equals(Object object) {
         try {
             XPathFragment perfNodeXPathFragment = ((XPathNode)object).getXPathFragment();
@@ -241,6 +248,9 @@ public class XPathNode {
             }
             if (null == nonAttributeChildrenMap) {
                 nonAttributeChildrenMap = new HashMap();
+            }
+            if(anXPathFragment !=null && XMLConstants.SCHEMA_TYPE_ATTRIBUTE.equals(anXPathFragment.getLocalName())){
+            	hasTypeChild = true;
             }
             children = nonAttributeChildren;
             childrenMap = nonAttributeChildrenMap;

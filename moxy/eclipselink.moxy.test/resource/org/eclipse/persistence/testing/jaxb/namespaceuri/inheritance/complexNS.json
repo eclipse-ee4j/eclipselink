@@ -1,0 +1,61 @@
+{"ns0.root":{
+    "baseTypeThing":{
+        "xsi.type":"ns1.subType",
+	"ns5.subTypeProp":10
+    },
+   "baseTypeList":[
+       {
+          "xsi.type":"ns1.subType",
+ 	  "ns5.subTypeProp":10
+       },
+       {
+          "xsi.type":"ns2.anotherSubType"
+       },
+       {
+          "xsi.type":"ns3.subTypeLevel2",
+ 	  "ns5.baseProp":"boo",
+ 	  "ns5.subTypeProp":0
+       },
+       {
+          "xsi.type":"ns1.subType",
+ 	  "ns5.subTypeProp":10
+       },
+       {
+          "xsi.type":"ns4.anotherPackageSubType",
+ 	  "ns5.subTypeProp":0
+       }
+
+     ],
+      "objectList":[
+            {"xsi.type":"ns1.subType",
+	      "ns5.subTypeProp":10
+	    },
+	     {"xsi.type":"ns2.anotherSubType"},
+	     {
+	     "xsi.type":"ns3.subTypeLevel2",
+	      "ns5.baseProp":"boo",
+	      "ns5.subTypeProp":0
+	     },
+            {"xsi.type":"ns1.subType",
+	      "ns5.subTypeProp":10
+	    },
+	    {"xsi.type":"ns4.anotherPackageSubType",
+	      "ns5.subTypeProp":0
+	    },
+	    	    {"xsi.type":"xsd.string",
+	      "value":"string test"
+	    },
+	    {"xsi.type":"xsd.int",
+	      "value":500
+	    }
+      ],
+      "choice":{
+           "another-package-subtype-choice":[{"ns5.subTypeProp":0}],
+           "subtype-level2-choice":[{
+	       "ns5.baseProp":"boo",
+               "ns5.subTypeProp":0
+	   }],
+	   "string-choice":["choice string test"],
+	   "integer-choice":[500]
+       }
+}}

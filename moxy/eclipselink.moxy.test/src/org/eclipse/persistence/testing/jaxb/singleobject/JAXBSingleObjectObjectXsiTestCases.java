@@ -13,22 +13,17 @@
 package org.eclipse.persistence.testing.jaxb.singleobject;
 
 import java.io.InputStream;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
-import org.eclipse.persistence.testing.jaxb.listofobjects.JAXBListOfObjectsTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class JAXBSingleObjectObjectXsiTestCases extends JAXBTestCases {
+public class JAXBSingleObjectObjectXsiTestCases extends JAXBWithJSONTestCases {
 
 	protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/singleobject/singleObjectXsiType.xml";
+	protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/singleobject/singleObjectXsiType.json";
 
 	public JAXBSingleObjectObjectXsiTestCases(String name) throws Exception {
 		super(name);
@@ -37,6 +32,7 @@ public class JAXBSingleObjectObjectXsiTestCases extends JAXBTestCases {
 
 	public void init() throws Exception {
 		setControlDocument(XML_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
 		Class[] classes = new Class[1];
 		classes[0] = Object.class;
 		setClasses(classes);

@@ -22,13 +22,14 @@ import javax.xml.parsers.SAXParserFactory;
 import javax.xml.stream.XMLStreamReader;
 
 import org.eclipse.persistence.jaxb.JAXBUnmarshallerHandler;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
-public class JAXBSingleObjectIntegerXsiTestCases extends JAXBTestCases {
+public class JAXBSingleObjectIntegerXsiTestCases extends JAXBWithJSONTestCases {
 
 	protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/singleobject/singleObjectXsiType.xml";
+	protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/singleobject/singleObjectXsiType.json";
 
 	public JAXBSingleObjectIntegerXsiTestCases(String name) throws Exception {
 		super(name);
@@ -37,7 +38,8 @@ public class JAXBSingleObjectIntegerXsiTestCases extends JAXBTestCases {
 
 	public void init() throws Exception {
 		setControlDocument(XML_RESOURCE);
-		setWriteControlDocument(XML_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
+	
 		Class[] classes = new Class[1];
 		classes[0] = Object.class;
 		setClasses(classes);

@@ -13,10 +13,9 @@
 package org.eclipse.persistence.testing.jaxb.annotations.xmlvalue;
 
 import org.eclipse.persistence.jaxb.JAXBContext;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class ObjectValueTestCases extends JAXBTestCases { //JAXBWithJSONTestCases {
+public class ObjectValueTestCases extends JAXBWithJSONTestCases {
 
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlvalue/objectValue.xml";
     private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlvalue/objectValue.json";
@@ -25,7 +24,7 @@ public class ObjectValueTestCases extends JAXBTestCases { //JAXBWithJSONTestCase
         super(name);
         setClasses(new Class[] {Top.class});
         setControlDocument(XML_RESOURCE);
-        //setControlJSON(JSON_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
     }
 
     @Override

@@ -19,11 +19,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class XmlMappingDefaultNameTestCases extends JAXBTestCases {
+public class XmlMappingDefaultNameTestCases extends JAXBWithJSONTestCases {
 
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlnametransformer/XmlMappingDefaulName.xml";
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlnametransformer/XmlMappingDefaulName.json";
     private static final String OXM_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlnametransformer/XmlMappingDefaulName.oxm";
     private static final String XSD_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlnametransformer/XmlMappingDefaulName.xsd";
 
@@ -31,6 +32,7 @@ public class XmlMappingDefaultNameTestCases extends JAXBTestCases {
         super(name);
         setClasses(new Class[] {XmlMappingDefaultNameRoot.class});
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
     }
 
     @Override

@@ -13,27 +13,28 @@
 package org.eclipse.persistence.testing.jaxb.jaxbcontext.withjaxbindex;
 
 import java.io.InputStream;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 /*
  * For a context created by class[] with a jaxb.index in the package we should process all classes in the array
  * However we should not automatically process the ObjectFactory (in this case don't process ClassB) unless they are necessary
  * We should also NOT process those listed in the jaxb.index (in this case ClassC)
  */
-public class JAXBContextByClassArrayWithIndexTestCases extends JAXBTestCases{
+public class JAXBContextByClassArrayWithIndexTestCases extends JAXBWithJSONTestCases{
 	 protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/jaxbcontext/withjaxbindex/jaxbcontextwithjaxbindex.xml";
+	 protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/jaxbcontext/withjaxbindex/jaxbcontextwithjaxbindex.json";
 
 		public JAXBContextByClassArrayWithIndexTestCases(String name) throws Exception {
 			super(name);
 		}
 		
 		public void setUp() throws Exception {
-	        setControlDocument(XML_RESOURCE);
-		    super.setUp();
+			setControlDocument(XML_RESOURCE);
+	        setControlJSON(JSON_RESOURCE);
+		    super.setUp();		    
 		    Class[] classes = new Class[]{ClassA.class};
 		    setTypes(classes);	    
 		}

@@ -15,18 +15,16 @@ package org.eclipse.persistence.testing.jaxb.xmladapter.list;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.JAXBContext;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
-
-import junit.framework.TestCase;
-
-public class XmlAdapterListMultipleBarTestCases extends JAXBTestCases {
+public class XmlAdapterListMultipleBarTestCases extends JAXBWithJSONTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmladapter/list/multiplebar.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmladapter/list/multiplebar.json";
 
     public XmlAdapterListMultipleBarTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         Class[] classes = new Class[2];
         classes[0] = FooWithBars.class;
         classes[1] = Bar.class;

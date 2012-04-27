@@ -12,32 +12,19 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.listofobjects;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
-import javax.xml.bind.SchemaOutputResolver;
 import javax.xml.namespace.QName;
-import javax.xml.transform.Result;
-import javax.xml.transform.stream.StreamResult;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
-import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
-
-public class JAXBEmployeeArrayTestCases extends JAXBListOfObjectsNoJSONTestCases {
+public class JAXBEmployeeArrayTestCases extends JAXBListOfObjectsTestCases{
 
 	protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/employeeArray.xml";
+	protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/employeeArray.json";
 	private final static String XML_RESOURCE_NO_XSI_TYPE = "org/eclipse/persistence/testing/jaxb/listofobjects/employeeArrayNoXsiType.xml";
 	protected final static String CONTROL_RESPONSIBILITY1 = "Fix Bugs";
 	protected final static String CONTROL_RESPONSIBILITY2 = "Write JAXB2.0 Prototype";
@@ -53,6 +40,7 @@ public class JAXBEmployeeArrayTestCases extends JAXBListOfObjectsNoJSONTestCases
 
 	public void init() throws Exception {
 		setControlDocument(XML_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
 		Class[] classes = new Class[1];
 		classes[0] = Employee[].class;
 		setClasses(classes);

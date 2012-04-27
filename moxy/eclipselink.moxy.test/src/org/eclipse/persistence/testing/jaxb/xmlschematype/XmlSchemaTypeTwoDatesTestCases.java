@@ -12,17 +12,18 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.jaxb.xmlschematype;
 
-import java.util.ArrayList;
 import java.util.Calendar;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class XmlSchemaTypeTwoDatesTestCases extends JAXBTestCases {
+public class XmlSchemaTypeTwoDatesTestCases extends JAXBWithJSONTestCases {
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlschematype/employee_two_dates.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlschematype/employee_two_dates.json";
 
     public XmlSchemaTypeTwoDatesTestCases(String name) throws Exception {
         super(name);
-        setControlDocument(XML_RESOURCE);        
+        setControlDocument(XML_RESOURCE);  
+        setControlJSON(JSON_RESOURCE);
         Class[] classes = new Class[1];
         classes[0] = EmployeeTwoDates.class;
         setClasses(classes);

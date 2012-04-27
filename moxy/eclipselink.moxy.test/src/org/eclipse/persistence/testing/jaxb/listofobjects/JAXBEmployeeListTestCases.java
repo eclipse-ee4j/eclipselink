@@ -12,27 +12,20 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.listofobjects;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
-import javax.xml.bind.SchemaOutputResolver;
 import javax.xml.namespace.QName;
-import javax.xml.transform.Result;
-import javax.xml.transform.stream.StreamResult;
 
-import org.eclipse.persistence.jaxb.JAXBTypeElement;
 
 public class JAXBEmployeeListTestCases extends JAXBEmployeeArrayTestCases {
 	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/employeeList.xml";
+	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/listofobjects/employeeList.json";
 	private final static String XML_RESOURCE_NO_XSI_TYPE = "org/eclipse/persistence/testing/jaxb/listofobjects/employeeListNoXsiType.xml";
 
 	public JAXBEmployeeListTestCases(String name) throws Exception {
@@ -41,6 +34,7 @@ public class JAXBEmployeeListTestCases extends JAXBEmployeeArrayTestCases {
 
 	public void init() throws Exception {
 		setControlDocument(XML_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
 
 		Type[] types = new Type[1];
 		types[0] = getTypeToUnmarshalTo();

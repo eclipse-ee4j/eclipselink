@@ -73,19 +73,28 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
 	   return jaxbUnmarshaller;
     }
     
-    public void jsonToObjectTest(Object testObject) throws Exception {
+   public void jsonToObjectTest(Object testObject) throws Exception {
+   	   jsonToObjectTest(testObject, getJSONReadControlObject());
+   }
+   
+    public void jsonToObjectTest(Object testObject, Object controlObject) throws Exception {
+    	if(controlObject == null){
+    		assertNull(testObject);
+    		return;
+    	}
+    	
         log("\n**xmlToObjectTest**");
         log("Expected:");
-        log(getJSONReadControlObject().toString());
+        log(controlObject.toString());
         log("Actual:");
         log(testObject.toString());
 
-        if ((getJSONReadControlObject() instanceof JAXBElement) && (testObject instanceof JAXBElement)) {
-            JAXBElement controlObj = (JAXBElement)getJSONReadControlObject();
+        if ((controlObject instanceof JAXBElement) && (testObject instanceof JAXBElement)) {
+            JAXBElement controlObj = (JAXBElement)controlObject;
             JAXBElement testObj = (JAXBElement)testObject;
             compareJAXBElementObjects(controlObj, testObj, false);
         } else {
-        	assertEquals(getJSONReadControlObject(), testObject);
+        	assertEquals(controlObject, testObject);
         }
     }
     
@@ -184,6 +193,7 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
 
         StringWriter sw = new StringWriter();
         getJSONMarshaller().marshal(getWriteControlObject(), sw);
+        log(sw.toString());
         compareStrings("**testJSONMarshalToStringWriter**", sw.toString());
     }
 
@@ -192,7 +202,8 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
     	getJSONMarshaller().setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
         StringWriter sw = new StringWriter();
-        getJSONMarshaller().marshal(getWriteControlObject(), sw);        
+        getJSONMarshaller().marshal(getWriteControlObject(), sw);
+        log(sw.toString());
         compareStrings("testJSONMarshalToStringWriter_FORMATTED", sw.toString(), getWriteControlJSONFormatted());
     }
 

@@ -20,6 +20,7 @@ public class Address {
        
 	@XmlValue
     private List<String> addressInfo;
+
       
     public List<String> getAddressInfo() {
 		return addressInfo;

@@ -413,13 +413,17 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
 
                 String xsiType = null;
                 if(null != element) {
-                    xsiType = element.getAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
+                	if(unmarshalRecord.isNamespaceAware()){
+                            xsiType = element.getAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
+                	}else{
+               		    xsiType = element.getAttribute(XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
+                	}
                 }
                 if(null != xsiType) {
                     xsiType = xsiType.trim();
                     Object value = element;
                     String namespace = null;
-                    int colonIndex = xsiType.indexOf(XMLConstants.COLON);
+                    int colonIndex = xsiType.indexOf(unmarshalRecord.getNamespaceSeparator());
                     if (colonIndex > -1) {
                         String prefix = xsiType.substring(0, colonIndex);
                         namespace = unmarshalRecord.resolveNamespacePrefix(prefix);
@@ -432,6 +436,15 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
                         if (theClass != null) {
                             value = ((XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager()).convertObject(element.getTextContent(), theClass, qName);
                         }
+                    }else{
+                    	if(!unmarshalRecord.isNamespaceAware()){
+                            QName qName = new QName(XMLConstants.SCHEMA_URL, xsiType);
+
+                    		Class theClass = (Class) XMLConversionManager.getDefaultXMLTypes().get(qName);
+                            if (theClass != null) {
+                                value = ((XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager()).convertObject(element.getTextContent(), theClass, qName);
+                            }
+                    	}
                     }
                     xmlCompositeObjectMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), value);
                 } else {

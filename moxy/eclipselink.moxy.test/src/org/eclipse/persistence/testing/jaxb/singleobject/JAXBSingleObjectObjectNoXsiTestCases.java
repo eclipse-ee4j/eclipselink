@@ -25,16 +25,17 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.internal.oxm.record.XMLStreamReaderInputSource;
 import org.eclipse.persistence.oxm.XMLConstants;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.Text;
 import org.xml.sax.InputSource;
 
-public class JAXBSingleObjectObjectNoXsiTestCases extends JAXBTestCases {
+public class JAXBSingleObjectObjectNoXsiTestCases extends JAXBWithJSONTestCases {
 
 	protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/singleobject/singleObject.xml";
+	protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/singleobject/singleObject.json";
 
 	public JAXBSingleObjectObjectNoXsiTestCases(String name) throws Exception {
 		super(name);
@@ -43,6 +44,7 @@ public class JAXBSingleObjectObjectNoXsiTestCases extends JAXBTestCases {
 
 	public void init() throws Exception {
 		setControlDocument(XML_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
 		Class[] classes = new Class[1];
 		classes[0] = Object.class;
 		setClasses(classes);
@@ -80,10 +82,33 @@ public class JAXBSingleObjectObjectNoXsiTestCases extends JAXBTestCases {
 		JAXBElement jaxbElement = new JAXBElement(qname, Object.class, testNode);		
 		return jaxbElement;
 	}
+	
+	protected Object getJSONReadControlObject() {
+		DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+        Document doc = null;
+		try {
+			doc = builderFactory.newDocumentBuilder().newDocument();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+        Element elem = doc.createElement("root");        
+        elem.setTextContent("25");
+        doc.appendChild(elem);
+        
+        Node testNode = doc.getDocumentElement();
+		
+		QName qname = new QName("root");				
+		JAXBElement jaxbElement = new JAXBElement(qname, Object.class, testNode);		
+		return jaxbElement;
+	}
 
 	protected Type getTypeToUnmarshalTo() throws Exception {
 		return Object.class;
 	}
+	public Class getUnmarshalClass(){		
+		return Object.class;
+	}
+	
     public Object getWriteControlObject() {
         return getControlObject();
     }

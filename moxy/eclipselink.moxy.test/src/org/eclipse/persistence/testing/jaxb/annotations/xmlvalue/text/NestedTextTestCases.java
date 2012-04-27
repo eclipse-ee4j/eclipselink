@@ -13,10 +13,9 @@
 package org.eclipse.persistence.testing.jaxb.annotations.xmlvalue.text;
 
 import org.eclipse.persistence.jaxb.JAXBContext;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class NestedTextTestCases extends JAXBTestCases { //JAXBWithJSONTestCases {
+public class NestedTextTestCases extends JAXBWithJSONTestCases {
 
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlvalue/nestedText.xml";
     private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlvalue/nestedText.json";
@@ -25,7 +24,7 @@ public class NestedTextTestCases extends JAXBTestCases { //JAXBWithJSONTestCases
         super(name);
         setClasses(new Class[] {Top.class});
         setControlDocument(XML_RESOURCE);
-        // setControlJSON(JSON_RESOURCE);
+         setControlJSON(JSON_RESOURCE);
     }
 
     @Override

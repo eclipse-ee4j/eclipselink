@@ -101,7 +101,12 @@ public abstract class MappingNodeValue extends NodeValue {
                 }
             	marshalRecord.namespaceDeclaration(prefix, qname.getNamespaceURI());
             }
-            String typeValue = prefix + XMLConstants.COLON + qname.getLocalPart();
+            String typeValue = null;
+            if(marshalRecord.isNamespaceAware()){
+                typeValue = prefix + marshalRecord.getNamespaceSeparator() + qname.getLocalPart();
+            }else{
+            	typeValue = qname.getLocalPart();
+            }
 
             addTypeAttribute(marshalRecord, typeValue);
         }

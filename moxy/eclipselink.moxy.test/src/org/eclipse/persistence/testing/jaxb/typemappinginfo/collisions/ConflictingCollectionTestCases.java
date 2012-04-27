@@ -24,11 +24,12 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
-import org.eclipse.persistence.testing.jaxb.typemappinginfo.TypeMappingInfoTestCases;
+import org.eclipse.persistence.testing.jaxb.typemappinginfo.TypeMappingInfoWithJSONTestCases;
 
-public class ConflictingCollectionTestCases  extends TypeMappingInfoTestCases{
+public class ConflictingCollectionTestCases  extends TypeMappingInfoWithJSONTestCases{
 
 	protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/collisions/conflictingCollections.xml";
+	protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/collisions/conflictingCollections.json";
     public Collection collection1;
     public Collection collection2;
     public Collection<Object> collection3;
@@ -44,6 +45,7 @@ public class ConflictingCollectionTestCases  extends TypeMappingInfoTestCases{
 	
 	public void init() throws Exception {
 		setControlDocument(XML_RESOURCE);	
+		setControlJSON(JSON_RESOURCE);
 		setTypeMappingInfos(getTypeMappingInfos());	
 	}
 	

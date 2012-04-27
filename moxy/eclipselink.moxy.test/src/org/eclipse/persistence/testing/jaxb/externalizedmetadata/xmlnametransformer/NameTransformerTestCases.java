@@ -24,11 +24,12 @@ import java.util.Map;
 import javax.xml.transform.dom.DOMSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.w3c.dom.Document;
 
-public class NameTransformerTestCases extends JAXBTestCases{
+public class NameTransformerTestCases extends JAXBWithJSONTestCases{
     protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlnametransformer/nametransformerupper.xml";
+    protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/xmlnametransformer/nametransformerupper.json";
     
 	private final static String CONTROL_RESPONSIBILITY1 = "Fix Bugs";
 	private final static String CONTROL_RESPONSIBILITY2 = "Write JAXB2.0 Prototype";
@@ -43,6 +44,7 @@ public class NameTransformerTestCases extends JAXBTestCases{
 	
     public void setUp() throws Exception {
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         super.setUp();
         Type[] types = new Type[3];
         types[0] = Employee.class;

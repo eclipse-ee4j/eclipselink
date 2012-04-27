@@ -1024,7 +1024,11 @@ public class XMLMarshaller implements Cloneable {
                         	  marshalRecord.namespaceDeclaration(xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
                           }                    	  
                     	  marshalRecord.namespaceDeclaration(XMLConstants.SCHEMA_PREFIX, XMLConstants.SCHEMA_URL);
-                          marshalRecord.attribute(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE, xsiPrefix + XMLConstants.COLON + XMLConstants.SCHEMA_TYPE_ATTRIBUTE, "xsd:" + type.getLocalPart());
+                    	  String typeValue = type.getLocalPart();
+                    	  if(marshalRecord.isNamespaceAware()){
+                    		  typeValue = XMLConstants.SCHEMA_PREFIX + marshalRecord.getNamespaceSeparator() + typeValue;
+                    	  }
+                          marshalRecord.attribute(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE, xsiPrefix + XMLConstants.COLON + XMLConstants.SCHEMA_TYPE_ATTRIBUTE, typeValue);
                       }
             	 }
             	
@@ -1048,8 +1052,8 @@ public class XMLMarshaller implements Cloneable {
         if (isXMLRoot) {
             String xmlRootUri = ((XMLRoot) object).getNamespaceURI();
             String xmlRootLocalName = ((XMLRoot) object).getLocalName();
-            rootFragment = new XPathFragment();
-            rootFragment.setLocalName(xmlRootLocalName);
+            rootFragment = new XPathFragment(xmlRootLocalName, marshalRecord.getNamespaceSeparator(),marshalRecord.isNamespaceAware());
+           
             rootFragment.setNamespaceURI(xmlRootUri);
             
             if (xmlRootUri != null) {
@@ -1065,9 +1069,13 @@ public class XMLMarshaller implements Cloneable {
                     	 rootFragment.setPrefix(xmlRootPrefix);
                     }
                 } else {
-                    String xmlRootPrefix = "ns0";
-                    marshalRecord.getNamespaceResolver().put(xmlRootPrefix, xmlRootUri);
-                    rootFragment.setXPath(xmlRootPrefix + XMLConstants.COLON + xmlRootLocalName);
+                	if(marshalRecord.isNamespaceAware()){
+                        String xmlRootPrefix = "ns0";
+                        marshalRecord.getNamespaceResolver().put(xmlRootPrefix, xmlRootUri);
+                        rootFragment.setXPath(xmlRootPrefix + marshalRecord.getNamespaceSeparator() + xmlRootLocalName);
+                	}else{
+                		rootFragment.setXPath(xmlRootLocalName);
+                	}
                 }
             }
         } else {

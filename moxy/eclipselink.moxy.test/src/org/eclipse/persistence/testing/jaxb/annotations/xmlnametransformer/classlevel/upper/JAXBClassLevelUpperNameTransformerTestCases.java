@@ -12,32 +12,21 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.jaxb.annotations.xmlnametransformer.classlevel.upper;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.io.Writer;
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import javax.xml.stream.XMLStreamWriter;
-import javax.xml.transform.Result;
-
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.oxm.XMLDescriptor;
-import org.eclipse.persistence.oxm.XMLRoot;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
-import org.eclipse.persistence.testing.jaxb.JAXBXMLComparer;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases.MyStreamSchemaOutputResolver;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
-public class JAXBClassLevelUpperNameTransformerTestCases extends JAXBTestCases {
+public class JAXBClassLevelUpperNameTransformerTestCases extends JAXBWithJSONTestCases {
 
 	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlnametransformer/classlevel/employeeUpper.xml";
+	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmlnametransformer/classlevel/employeeUpper.json";
 	private final static String CONTROL_RESPONSIBILITY1 = "Fix Bugs";
 	private final static String CONTROL_RESPONSIBILITY2 = "Write JAXB2.0 Prototype";
 	private final static String CONTROL_RESPONSIBILITY3 = "Write Design Spec";
@@ -47,7 +36,8 @@ public class JAXBClassLevelUpperNameTransformerTestCases extends JAXBTestCases {
 
     public JAXBClassLevelUpperNameTransformerTestCases(String name) throws Exception {
         super(name);
-        setControlDocument(XML_RESOURCE);        
+        setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         Class[] classes = new Class[1];
         classes[0] = Employee.class;
         setClasses(classes);

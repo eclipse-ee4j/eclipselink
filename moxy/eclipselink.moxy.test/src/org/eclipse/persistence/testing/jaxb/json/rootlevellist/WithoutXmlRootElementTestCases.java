@@ -75,5 +75,4 @@ public class WithoutXmlRootElementTestCases extends JSONMarshalUnmarshalTestCase
         List<WithoutXmlRootElementRoot>  test = (List<WithoutXmlRootElementRoot>) jsonUnmarshaller.unmarshal(new StreamSource(new StringReader("[]")), WithoutXmlRootElementRoot.class).getValue();
         assertEquals(0, test.size());
     }
-
 }

@@ -19,6 +19,9 @@ import junit.framework.TestSuite;
 import org.eclipse.persistence.testing.jaxb.collections.CollectionsTestSuite;
 import org.eclipse.persistence.testing.jaxb.cycle.CycleRecoverableTestCases;
 import org.eclipse.persistence.testing.jaxb.defaultvalue.DefaultValueTestSuite;
+import org.eclipse.persistence.testing.jaxb.employee.JAXBEmployeeNSTestCases;
+import org.eclipse.persistence.testing.jaxb.employee.JAXBEmployeeNoWrapperTestCases;
+import org.eclipse.persistence.testing.jaxb.employee.JAXBEmployeeTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbcontext.withjaxbindex.JAXBContextByClassArrayWithIndexTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbcontext.withjaxbindex.JAXBContextByClassArrayWithRefInBindingsTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbcontext.withjaxbindex.JAXBContextByClassArrayWithRefTestCases;
@@ -112,7 +115,11 @@ public class JAXBTestSuite3 extends TestCase {
         suite.addTestSuite(NonELPrefixMapperTestCases.class);
         suite.addTestSuite(ChildURITestCases.class);
         suite.addTestSuite(URITestCases.class);
-        suite.addTestSuite(PropertyTestCases.class);
+        suite.addTestSuite(PropertyTestCases.class);        
+        
+        suite.addTestSuite(JAXBEmployeeTestCases.class);
+        suite.addTestSuite(JAXBEmployeeNoWrapperTestCases.class);
+        suite.addTestSuite(JAXBEmployeeNSTestCases.class);
         
         return suite;
     }
