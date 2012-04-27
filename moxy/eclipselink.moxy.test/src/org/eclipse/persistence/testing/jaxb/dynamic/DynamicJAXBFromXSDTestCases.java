@@ -63,6 +63,15 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
         return "Dynamic JAXB: XSD: " + super.getName();
     }
 
+    public void testEclipseLinkSchema() throws Exception {
+        // Bootstrapping from eclipselink_oxm_2_4.xsd will trigger a JAXB 2.2 API (javax.xml.bind.annotation.XmlElementRef.required())
+        // so only run this test in Java 7
+        if (System.getProperty("java.version").contains("1.7")) {
+            InputStream inputStream = ClassLoader.getSystemResourceAsStream(ECLIPSELINK_SCHEMA);
+            jaxbContext = DynamicJAXBContextFactory.createContextFromXSD(inputStream, null, null, null);
+        }
+    }
+
     // ====================================================================
 
     public void testXmlSchemaQualified() throws Exception {
@@ -939,6 +948,8 @@ public class DynamicJAXBFromXSDTestCases extends TestCase {
     private static final String BINARY = RESOURCE_DIR + "binary.xsd";
     private static final String BINARY2 = RESOURCE_DIR + "binary2.xsd";
     private static final String XMLSCHEMASCHEMA = RESOURCE_DIR + "XMLSchema.xsd";
+
+    private static final String ECLIPSELINK_SCHEMA = "org/eclipse/persistence/jaxb/eclipselink_oxm_2_4.xsd";
 
     // Test Instance Docs
     private static final String PERSON_XML = RESOURCE_DIR + "sub-person-en.xml";
