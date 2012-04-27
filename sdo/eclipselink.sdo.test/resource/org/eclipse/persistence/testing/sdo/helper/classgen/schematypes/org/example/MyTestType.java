@@ -202,13 +202,37 @@ public interface MyTestType extends java.io.Serializable {
 
    public void setMyUnsignedShortTest(int value);
 
+   public java.lang.Boolean isMyBooleanWrapperTest();
+
+   public void setMyBooleanWrapperTest(java.lang.Boolean value);
+
+   public java.lang.Byte getMyByteWrapperTest();
+
+   public void setMyByteWrapperTest(java.lang.Byte value);
+
+   public java.lang.Character getMyCharacterWrapperTest();
+
+   public void setMyCharacterWrapperTest(java.lang.Character value);
+
+   public java.lang.Double getMyDoubleWrapperTest();
+
+   public void setMyDoubleWrapperTest(java.lang.Double value);
+
+   public java.lang.Float getMyFloatWrapperTest();
+
+   public void setMyFloatWrapperTest(java.lang.Float value);
+
+   public java.lang.Integer getMyIntegerWrapperTest();
+
+   public void setMyIntegerWrapperTest(java.lang.Integer value);
+
    public java.lang.Long getMyLongWrapperTest();
 
    public void setMyLongWrapperTest(java.lang.Long value);
 
-   public java.lang.Boolean isMyBooleanWrapperTest();
+   public java.lang.Short getMyShortWrapperTest();
 
-   public void setMyBooleanWrapperTest(java.lang.Boolean value);
+   public void setMyShortWrapperTest(java.lang.Short value);
 
 
 }

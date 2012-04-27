@@ -6,7 +6,7 @@ public class MyTestTypeImpl extends SDODataObject implements MyTestType {
 
    public static final int START_PROPERTY_INDEX = 0;
 
-   public static final int END_PROPERTY_INDEX = START_PROPERTY_INDEX + 51;
+   public static final int END_PROPERTY_INDEX = START_PROPERTY_INDEX + 57;
 
    public MyTestTypeImpl() {}
 
@@ -410,20 +410,68 @@ public class MyTestTypeImpl extends SDODataObject implements MyTestType {
       set(START_PROPERTY_INDEX + 49 , value);
    }
 
-   public java.lang.Long getMyLongWrapperTest() {
-      return getLong(START_PROPERTY_INDEX + 50);
-   }
-
-   public void setMyLongWrapperTest(java.lang.Long value) {
-      set(START_PROPERTY_INDEX + 50 , value);
-   }
-
    public java.lang.Boolean isMyBooleanWrapperTest() {
-      return new Boolean(getBoolean(START_PROPERTY_INDEX + 51));
+      return getBoolean(START_PROPERTY_INDEX + 50);
    }
 
    public void setMyBooleanWrapperTest(java.lang.Boolean value) {
+      set(START_PROPERTY_INDEX + 50 , value);
+   }
+
+   public java.lang.Byte getMyByteWrapperTest() {
+      return getByte(START_PROPERTY_INDEX + 51);
+   }
+
+   public void setMyByteWrapperTest(java.lang.Byte value) {
       set(START_PROPERTY_INDEX + 51 , value);
+   }
+
+   public java.lang.Character getMyCharacterWrapperTest() {
+      return getChar(START_PROPERTY_INDEX + 52);
+   }
+
+   public void setMyCharacterWrapperTest(java.lang.Character value) {
+      set(START_PROPERTY_INDEX + 52 , value);
+   }
+
+   public java.lang.Double getMyDoubleWrapperTest() {
+      return getDouble(START_PROPERTY_INDEX + 53);
+   }
+
+   public void setMyDoubleWrapperTest(java.lang.Double value) {
+      set(START_PROPERTY_INDEX + 53 , value);
+   }
+
+   public java.lang.Float getMyFloatWrapperTest() {
+      return getFloat(START_PROPERTY_INDEX + 54);
+   }
+
+   public void setMyFloatWrapperTest(java.lang.Float value) {
+      set(START_PROPERTY_INDEX + 54 , value);
+   }
+
+   public java.lang.Integer getMyIntegerWrapperTest() {
+      return getInt(START_PROPERTY_INDEX + 55);
+   }
+
+   public void setMyIntegerWrapperTest(java.lang.Integer value) {
+      set(START_PROPERTY_INDEX + 55 , value);
+   }
+
+   public java.lang.Long getMyLongWrapperTest() {
+      return getLong(START_PROPERTY_INDEX + 56);
+   }
+
+   public void setMyLongWrapperTest(java.lang.Long value) {
+      set(START_PROPERTY_INDEX + 56 , value);
+   }
+
+   public java.lang.Short getMyShortWrapperTest() {
+      return getShort(START_PROPERTY_INDEX + 57);
+   }
+
+   public void setMyShortWrapperTest(java.lang.Short value) {
+      set(START_PROPERTY_INDEX + 57 , value);
    }
 
 

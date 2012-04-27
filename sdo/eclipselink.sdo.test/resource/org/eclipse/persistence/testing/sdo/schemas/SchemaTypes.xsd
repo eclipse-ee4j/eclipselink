@@ -60,17 +60,17 @@
 			<xsd:element name = 'myUnsignedIntTest' type = 'xsd:unsignedInt'/>
 			<xsd:element name = 'myUnsignedLongTest' type = 'xsd:unsignedLong'/>
 			<xsd:element name = 'myUnsignedShortTest' type = 'xsd:unsignedShort'/>
-                        <xsd:element name = 'myLongWrapperTest' type = 'xsd:boolean' sdoXML:dataType='sdoJava:LongObject'/>
-			<xsd:element name = 'myBooleanWrapperTest' type = 'xsd:boolean' sdoXML:dataType='sdoJava:BooleanObject'/>
+                        <!--xsd:element name = 'myLongWrapperTest' type = 'xsd:boolean' sdoXML:dataType='sdoJava:LongObject'/>
+			<xsd:element name = 'myBooleanWrapperTest' type = 'xsd:boolean' sdoXML:dataType='sdoJava:BooleanObject'/-->
 
-			<!--xsd:element name = 'myBooleanWrapperTest' type = 'xsd:boolean' sdo:dataType='sdoJava:BooleanObject'/>
-			<xsd:element name = 'myByteWrapperTest' type = 'xsd:boolean' sdo:dataType='sdoJava:ByteObject'/>
-			<xsd:element name = 'myCharacterWrapperTest' type = 'xsd:boolean' sdo:dataType='sdoJava:CharacterObject'/>
-			<xsd:element name = 'myDoubleWrapperTest' type = 'xsd:boolean' sdo:dataType='sdoJava:DoubleObject'/>
-			<xsd:element name = 'myFloatWrapperTest' type = 'xsd:boolean' sdo:dataType='sdoJava:FloatObject'/>
-			<xsd:element name = 'myIntegerWrapperTest' type = 'xsd:boolean' sdo:dataType='sdoJava:IntegerObject'/>
-			<xsd:element name = 'myLongWrapperTest' type = 'xsd:boolean' sdo:dataType='sdoJava:LongObject'/>
-			<xsd:element name = 'myShortWrapperTest' type = 'xsd:boolean' sdo:dataType='sdoJava:ShortObject'/-->
+			<xsd:element name = 'myBooleanWrapperTest' type = 'xsd:boolean' sdoXML:dataType='sdoJava:BooleanObject'/>
+			<xsd:element name = 'myByteWrapperTest' type = 'xsd:byte' sdoXML:dataType='sdoJava:ByteObject'/>
+			<xsd:element name = 'myCharacterWrapperTest' type = 'xsd:int' sdoXML:dataType='sdoJava:CharacterObject'/>
+			<xsd:element name = 'myDoubleWrapperTest' type = 'xsd:double' sdoXML:dataType='sdoJava:DoubleObject'/>
+			<xsd:element name = 'myFloatWrapperTest' type = 'xsd:float' sdoXML:dataType='sdoJava:FloatObject'/>
+			<xsd:element name = 'myIntegerWrapperTest' type = 'xsd:int' sdoXML:dataType='sdoJava:IntObject'/>
+			<xsd:element name = 'myLongWrapperTest' type = 'xsd:long' sdoXML:dataType='sdoJava:LongObject'/>
+			<xsd:element name = 'myShortWrapperTest' type = 'xsd:short' sdoXML:dataType='sdoJava:ShortObject'/>
 		</xsd:sequence>
 	  </xsd:complexType>
 	   <xsd:complexType name='PersonType'>

@@ -99,6 +99,7 @@ public class LoadAndSaveSchemaTypesEmptyStringTestCases extends LoadAndSaveSchem
 	        
 	        assertEquals(0l, document.getRootObject().getLong("myLongTest"));
 	        assertEquals(0l, document.getRootObject().getLong("myLongWrapperTest"));
+	        
 	     
 	        //primitive types
 	        assertEquals(0, dataHelper.convertFromStringValue(SDOConstants.EMPTY_STRING, ClassConstants.PINT));
@@ -110,6 +111,16 @@ public class LoadAndSaveSchemaTypesEmptyStringTestCases extends LoadAndSaveSchem
 	        char testChar =0;
 	        assertEquals(testChar, dataHelper.convertFromStringValue(SDOConstants.EMPTY_STRING, ClassConstants.PCHAR));
 	        assertEquals(false, dataHelper.convertFromStringValue(SDOConstants.EMPTY_STRING, ClassConstants.PBOOLEAN)); 
+	        
+	        
+	        //wrappers
+	        assertEquals(testShort, document.getRootObject().getLong("myShortWrapperTest"));
+	        assertEquals(testShort, document.getRootObject().getByte("myByteWrapperTest"));
+	        assertEquals(testChar, document.getRootObject().getChar("myCharacterWrapperTest"));
+	        assertEquals(0f, document.getRootObject().getFloat("myFloatWrapperTest"));
+	        assertEquals(0.0, document.getRootObject().getDouble("myDoubleWrapperTest"));
+	        assertEquals(0, document.getRootObject().getInt("myIntegerWrapperTest"));
+	        
 	        
 	        assertNull(dataHelper.convertFromStringValue(SDOConstants.EMPTY_STRING, ClassConstants.BIGINTEGER));
 	        assertNull(dataHelper.convertFromStringValue(SDOConstants.EMPTY_STRING, ClassConstants.BIGDECIMAL));

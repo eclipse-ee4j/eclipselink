@@ -508,19 +508,10 @@ public class SDOClassGenerator {
             String builtIn = SDOUtil.getBuiltInType(returnType);
 
             if (builtIn != null) {
-                String wrapperCall = getWrapperCall(returnType);
-                if (wrapperCall != null) {
-                    classBuffer.getMethodBuffer().append(wrapperCall);
-                }
-
                 classBuffer.getMethodBuffer().append("get").append(builtIn).append("(");
                 classBuffer.getMethodBuffer().append(START_PROPERTY_INDEX).append(" + ").append(property.getIndexInDeclaredProperties());
 
                 classBuffer.getMethodBuffer().append(")");
-
-                if (wrapperCall != null) {
-                    classBuffer.getMethodBuffer().append(")");
-                }
             } else {
                 if (!returnType.equals(ClassConstants.OBJECT.getName())) {
                     classBuffer.getMethodBuffer().append("(");
@@ -617,23 +608,6 @@ public class SDOClassGenerator {
 
     public Map getGeneratedBuffers() {
         return generatedBuffers;
-    }
-
-    private String getWrapperCall(String javaType) {
-        if (javaType.equals("java.lang.Integer")) {
-            return "new Integer(";
-        } else if (javaType.equals("java.lang.Boolean")) {
-            return "new Boolean(";
-        } else if (javaType.equals("java.lang.Short")) {
-            return "new Short(";
-        } else if (javaType.equals("java.lang.Float")) {
-            return "new Float(";
-        } else if (javaType.equals("java.lang.Double")) {
-            return "new Double(";
-        } else if (javaType.equals("java.lang.Byte")) {
-            return "new Byte(";
-        }
-        return null;
     }
 
     public void setCodeWriter(CodeWriter theCodeWriter) {
