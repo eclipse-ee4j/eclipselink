@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Oracle. All rights reserved.
+ * Copyright (c) 2011, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -29,4 +29,53 @@ package org.eclipse.persistence.jpa.jpql.parser;
  */
 public abstract class AbstractEclipseLinkTraverseChildrenVisitor extends AbstractTraverseChildrenVisitor
                                                                  implements EclipseLinkExpressionVisitor {
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(CastExpression expression) {
+		visit((Expression) expression);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(DatabaseType expression) {
+		visit((Expression) expression);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(ExtractExpression expression) {
+		visit((Expression) expression);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(RegexpExpression expression) {
+		visit((Expression) expression);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(TableExpression expression) {
+		visit((Expression) expression);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(TableVariableDeclaration expression) {
+		visit((Expression) expression);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(UnionClause expression) {
+		visit((Expression) expression);
+	}
 }
