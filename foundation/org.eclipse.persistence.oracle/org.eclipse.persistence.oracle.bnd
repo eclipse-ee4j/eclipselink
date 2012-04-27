@@ -1,6 +1,6 @@
 Export-Package: org.eclipse.persistence*;version="${release.version}";-noimport:=true,
 Bundle-Name: EclipseLink Oracle Extensions
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 HK2-Bundle-Name: org.eclipse.persistence:${ant.project.name}
 Bundle-Vendor: ${implementation.vendor}
 Fragment-Host: org.eclipse.persistence.core;bundle-version="${release.version}"
