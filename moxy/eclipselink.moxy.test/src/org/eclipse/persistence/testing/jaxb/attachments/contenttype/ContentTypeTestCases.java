@@ -22,6 +22,7 @@ import javax.xml.bind.MarshalException;
 import javax.xml.bind.Marshaller;
 import javax.xml.transform.dom.DOMSource;
 
+import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 
@@ -61,9 +62,11 @@ public class ContentTypeTestCases extends TestCase {
         root.setImage(IMAGE);
         try {
             marshaller.marshal(root, new StringWriter());
-        } catch(MarshalException ex) {
-            if(!(((XMLMarshalException)ex.getLinkedException()).getErrorCode() == XMLMarshalException.NO_ENCODER_FOR_MIME_TYPE)) {
-                throw ex;
+        } catch (MarshalException ex) {
+            ConversionException ce = (ConversionException) ex.getLinkedException();
+            XMLMarshalException me = (XMLMarshalException) ce.getInternalException();
+            if (me.getErrorCode() != XMLMarshalException.NO_ENCODER_FOR_MIME_TYPE) {
+                throw ex; 
             } else {
                 return;
             }
@@ -85,9 +88,11 @@ public class ContentTypeTestCases extends TestCase {
         root.setImage(IMAGE);
         try {
             marshaller.marshal(root, new StringWriter());
-        } catch(MarshalException ex) {
-            if(!(((XMLMarshalException)ex.getLinkedException()).getErrorCode() == XMLMarshalException.NO_ENCODER_FOR_MIME_TYPE)) {
-                throw ex;
+        } catch (MarshalException ex) {
+            ConversionException ce = (ConversionException) ex.getLinkedException();
+            XMLMarshalException me = (XMLMarshalException) ce.getInternalException();
+            if (me.getErrorCode() != XMLMarshalException.NO_ENCODER_FOR_MIME_TYPE) {
+                throw ex; 
             } else {
                 return;
             }
@@ -109,9 +114,11 @@ public class ContentTypeTestCases extends TestCase {
         root.setImage(IMAGE);
         try {
             marshaller.marshal(root, new StringWriter());
-        } catch(MarshalException ex) {
-            if(!(((XMLMarshalException)ex.getLinkedException()).getErrorCode() == XMLMarshalException.NO_ENCODER_FOR_MIME_TYPE)) {
-                throw ex;
+        } catch (MarshalException ex) {
+            ConversionException ce = (ConversionException) ex.getLinkedException();
+            XMLMarshalException me = (XMLMarshalException) ce.getInternalException();
+            if (me.getErrorCode() != XMLMarshalException.NO_ENCODER_FOR_MIME_TYPE) {
+                throw ex; 
             } else {
                 return;
             }
