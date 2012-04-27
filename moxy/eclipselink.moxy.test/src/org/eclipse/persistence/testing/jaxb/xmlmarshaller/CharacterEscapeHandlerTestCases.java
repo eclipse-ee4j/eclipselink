@@ -13,11 +13,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.xmlmarshaller;
 
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.PropertyException;
-
 import org.eclipse.persistence.jaxb.JAXBMarshaller;
-import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 
 public class CharacterEscapeHandlerTestCases extends JAXBTestCases {
@@ -55,6 +51,13 @@ public class CharacterEscapeHandlerTestCases extends JAXBTestCases {
     public void testObjectToXMLStreamWriter() throws Exception {
     }
 
+    /**
+     * CharacterEscapeHandler is not supported for this marshal target,
+     * so just pass.
+     */
+    public void testObjectToXMLStreamWriterRecord() throws Exception {    	
+    }
+    
     /**
      * CharacterEscapeHandler is not supported for this marshal target,
      * so just pass.

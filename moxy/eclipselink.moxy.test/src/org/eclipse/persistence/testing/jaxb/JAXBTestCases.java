@@ -69,6 +69,7 @@ import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLRoot;
+import org.eclipse.persistence.oxm.record.XMLStreamWriterRecord;
 import org.eclipse.persistence.platform.xml.SAXDocumentBuilder;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.sessions.Project;
@@ -555,6 +556,41 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
             objectToXMLDocumentTest(testDocument);
         }
     }
+
+    public void testObjectToXMLStreamWriterRecord() throws Exception {
+        if(XML_OUTPUT_FACTORY != null) {
+            StringWriter writer = new StringWriter();
+
+            XMLOutputFactory factory = XMLOutputFactory.newInstance();
+            factory.setProperty(factory.IS_REPAIRING_NAMESPACES, new Boolean(false));
+            XMLStreamWriter streamWriter= factory.createXMLStreamWriter(writer);
+
+            Object objectToWrite = getWriteControlObject();
+            XMLDescriptor desc = null;
+            if (objectToWrite instanceof XMLRoot) {
+                desc = (XMLDescriptor)xmlContext.getSession(0).getProject().getDescriptor(((XMLRoot)objectToWrite).getObject().getClass());
+            } else {
+                desc = (XMLDescriptor)xmlContext.getSession(0).getProject().getDescriptor(objectToWrite.getClass());
+            }
+            jaxbMarshaller.setProperty(org.eclipse.persistence.jaxb.JAXBContext.MEDIA_TYPE, "application/xml");
+
+            int sizeBefore = getNamespaceResolverSize(desc);
+            XMLStreamWriterRecord record = new XMLStreamWriterRecord(streamWriter);
+            ((org.eclipse.persistence.jaxb.JAXBMarshaller)jaxbMarshaller).marshal(objectToWrite, record);
+
+            streamWriter.flush();
+            int sizeAfter = getNamespaceResolverSize(desc);
+
+            assertEquals(sizeBefore, sizeAfter);
+            StringReader reader = new StringReader(writer.toString());
+            InputSource inputSource = new InputSource(reader);
+            Document testDocument = parser.parse(inputSource);
+            writer.close();
+            reader.close();
+            objectToXMLDocumentTest(testDocument);
+        }
+    }
+
 
     public void testObjectToXMLEventWriter() throws Exception {
         if(XML_OUTPUT_FACTORY != null) {

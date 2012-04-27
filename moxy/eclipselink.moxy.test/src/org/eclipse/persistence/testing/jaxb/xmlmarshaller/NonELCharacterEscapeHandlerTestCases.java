@@ -13,13 +13,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.xmlmarshaller;
 
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.PropertyException;
-
-import org.eclipse.persistence.jaxb.JAXBMarshaller;
-import org.eclipse.persistence.oxm.XMLMarshaller;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
-
 public class NonELCharacterEscapeHandlerTestCases extends CharacterEscapeHandlerTestCases {
 
     public NonELCharacterEscapeHandlerTestCases(String name) throws Exception {
