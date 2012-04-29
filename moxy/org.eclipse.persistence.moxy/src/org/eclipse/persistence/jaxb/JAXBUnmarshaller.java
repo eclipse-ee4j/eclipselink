@@ -35,7 +35,6 @@ import javax.xml.bind.UnmarshallerHandler;
 import javax.xml.bind.ValidationEventHandler;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.attachment.AttachmentUnmarshaller;
-import javax.xml.bind.helpers.DefaultValidationEventHandler;
 import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLEventReader;
@@ -150,7 +149,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
     
     public JAXBUnmarshaller(XMLUnmarshaller newXMLUnmarshaller) {
         super();
-        validationEventHandler = new DefaultValidationEventHandler();
+        validationEventHandler = JAXBContext.DEFAULT_VALIDATION_EVENT_HANDER;
         xmlUnmarshaller = newXMLUnmarshaller;
         xmlUnmarshaller.setValidationMode(XMLUnmarshaller.NONVALIDATING);
         xmlUnmarshaller.setUnmarshalListener(new JAXBUnmarshalListener(this));
@@ -801,7 +800,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
 
     public void setEventHandler(ValidationEventHandler newValidationEventHandler) throws JAXBException {
         if (null == newValidationEventHandler) {
-            validationEventHandler = new DefaultValidationEventHandler();
+            validationEventHandler = JAXBContext.DEFAULT_VALIDATION_EVENT_HANDER;
         } else {
             validationEventHandler = newValidationEventHandler;
         }

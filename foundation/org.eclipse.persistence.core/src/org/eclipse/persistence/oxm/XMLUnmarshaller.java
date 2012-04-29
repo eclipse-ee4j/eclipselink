@@ -26,6 +26,7 @@ import java.util.Map.Entry;
 import javax.xml.transform.Source;
 import javax.xml.validation.Schema;
 
+import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.ReferenceResolver;
 import org.eclipse.persistence.internal.oxm.StrBuffer;
@@ -40,6 +41,8 @@ import org.w3c.dom.Node;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 import org.eclipse.persistence.oxm.attachment.*;
 
@@ -92,6 +95,32 @@ public class XMLUnmarshaller implements Cloneable {
     private static Constructor xmlEventReaderReaderConstructor;
     private static Constructor xmlEventReaderInputSourceConstructor;
 
+    /**
+     * @since EclipseLink 2.4
+     */
+    private static final ErrorHandler DEFAULT_ERROR_HANDLER = new ErrorHandler() {
+
+        public void warning(SAXParseException exception)
+                throws SAXException {
+            if(exception.getException() instanceof EclipseLinkException) {
+                throw (EclipseLinkException) exception.getCause();
+            }
+        }
+
+        public void error(SAXParseException exception) throws SAXException {
+            if(exception.getException() instanceof EclipseLinkException) {
+                throw exception;
+            }
+        }
+
+        public void fatalError(SAXParseException exception)
+                throws SAXException {
+            throw exception;
+            
+        }
+
+    };
+
     private XMLContext xmlContext;
     private XMLUnmarshallerHandler xmlUnmarshallerHandler;
     private PlatformUnmarshaller platformUnmarshaller;
@@ -138,6 +167,7 @@ public class XMLUnmarshaller implements Cloneable {
         setXMLContext(xmlContext);
         stringBuffer = new StrBuffer();
         initialize(parserFeatures);
+        setErrorHandler(DEFAULT_ERROR_HANDLER);
     }
 
     private void initialize(Map<String, Boolean> parserFeatures) {
@@ -277,7 +307,11 @@ public class XMLUnmarshaller implements Cloneable {
      * @param errorHandler the ErrorHandler to set on this XMLUnmarshaller
      */
     public void setErrorHandler(ErrorHandler errorHandler) {
-        platformUnmarshaller.setErrorHandler(errorHandler);
+        if(null == errorHandler) {
+            platformUnmarshaller.setErrorHandler(DEFAULT_ERROR_HANDLER);
+        } else {
+            platformUnmarshaller.setErrorHandler(errorHandler);
+        }
     }
 
     public XMLUnmarshalListener getUnmarshalListener() {

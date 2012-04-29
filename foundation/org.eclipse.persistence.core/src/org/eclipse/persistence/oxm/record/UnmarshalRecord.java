@@ -64,6 +64,7 @@ import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
+import org.xml.sax.ErrorHandler;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -406,7 +407,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
         String namespaceURI = lastFragment.getNamespaceURI();
         if(namespaceURI == null){
             namespaceURI = XMLConstants.EMPTY_STRING;
-            if (null != namespaceResolver) {
+            if (null != namespaceResolver && !(lastFragment.isAttribute() && lastFragment.getPrefix() == null)) {
                 namespaceURI = namespaceResolver.resolveNamespacePrefix(lastFragment.getPrefix());
                 if (null == namespaceURI) {
                     namespaceURI = XMLConstants.EMPTY_STRING;
@@ -848,13 +849,45 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
             if ((null == xmlReader) || (null == xmlReader.getErrorHandler())) {
                 throw e;
             } else {
-                SAXParseException saxParseException = new SAXParseException(null, null, null, 0, 0, e);
+                SAXParseException saxParseException = new SAXParseException(e.getLocalizedMessage(), documentLocator, e);
                 xmlReader.getErrorHandler().error(saxParseException);
             }
         }
     }
 
     public void startUnmappedElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
+        if(this.unmarshaller.getMediaType() == MediaType.APPLICATION_XML && null == selfRecords) {
+            ErrorHandler errorHandler = xmlReader.getErrorHandler();
+            if(null != errorHandler) {
+                StringBuilder messageBuilder = new StringBuilder("unexpected element (uri:\"");
+                if(null != namespaceURI) {
+                    messageBuilder.append(namespaceURI);
+                }
+                messageBuilder.append("\", local:\"");
+                messageBuilder.append(localName);
+                messageBuilder.append("\"). Expected elements are ");
+                List<XPathNode> nonAttributeChildren = xPathNode.getNonAttributeChildren();
+                if(nonAttributeChildren == null || nonAttributeChildren.size() == 0) {
+                    messageBuilder.append("(none)");
+                } else {
+                    for(int x=0, size=nonAttributeChildren.size(); x<size; x++) {
+                        XPathFragment nonAttributeChildXPathFragment = nonAttributeChildren.get(x).getXPathFragment();
+                        messageBuilder.append("<{");
+                        String nonAttributeChildXPathFragmentNamespaceURI = nonAttributeChildXPathFragment.getNamespaceURI();
+                        if(null != nonAttributeChildXPathFragmentNamespaceURI) {
+                            messageBuilder.append(nonAttributeChildXPathFragmentNamespaceURI);
+                        }
+                        messageBuilder.append('}');
+                        messageBuilder.append(nonAttributeChildXPathFragment.getLocalName());
+                        messageBuilder.append('>');
+                        if(x<size-1) {
+                            messageBuilder.append(',');
+                        }
+                    }
+                }
+                errorHandler.warning(new SAXParseException(messageBuilder.toString(), documentLocator));
+            }
+        }
         if ((null != selfRecords) || (null == xmlReader) || isSelfRecord()) {
             if(-1 == unmappedLevel) {
                 this.unmappedLevel = this.levelIndex;
@@ -903,7 +936,12 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
                 return;
             }
             if (null != xPathNode.getUnmarshalNodeValue()) {
-                xPathNode.getUnmarshalNodeValue().endElement(xPathFragment, this);
+                try {
+                    xPathNode.getUnmarshalNodeValue().endElement(xPathFragment, this);
+                } catch(EclipseLinkException e) {
+                    SAXParseException saxParseException = new SAXParseException(e.getLocalizedMessage(), documentLocator, e);
+                    xmlReader.getErrorHandler().warning(saxParseException);
+                }
             } else {
                 XPathNode textNode = xPathNode.getTextNode();
                 if (null != textNode && textNode.isWhitespaceAware() && getStringBuffer().length() == 0) {
@@ -960,7 +998,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
                 throw e;
             } else {
                 SAXParseException saxParseException = new SAXParseException(null, null, null, 0, 0, e);
-                xmlReader.getErrorHandler().error(saxParseException);
+                xmlReader.getErrorHandler().warning(saxParseException);
             }
         }
     }

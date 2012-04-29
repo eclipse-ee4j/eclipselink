@@ -67,7 +67,6 @@ public class SetSchemasTestCases extends OXTestCase {
      */
     class MyErrorHandler implements ErrorHandler {
     	public void warning(org.xml.sax.SAXParseException sex) throws org.xml.sax.SAXParseException {
-    		throw sex;
     	}
     	public void error(org.xml.sax.SAXParseException sex) throws org.xml.sax.SAXParseException {
     		throw sex;

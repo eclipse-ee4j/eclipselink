@@ -32,8 +32,8 @@ public class CustomErrorValidationEventHandler implements ValidationEventHandler
     }
 
     public boolean handleEvent(ValidationEvent event) {
-        if (event.getSeverity() != ValidationEvent.ERROR) {
-            return false;
+        if (event.getSeverity() < ValidationEvent.FATAL_ERROR) {
+            return true;
         }
 
         errorCount++;

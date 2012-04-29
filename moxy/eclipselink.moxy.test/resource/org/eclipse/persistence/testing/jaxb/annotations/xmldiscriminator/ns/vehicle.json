@@ -1,0 +1,8 @@
+{
+    "root": {
+        "vehicle":{
+            "vtype":"car",
+            "numberOfDoors":2
+        }
+    }
+}

@@ -40,6 +40,7 @@ public class JAXBDOMTestSuite extends TestCase {
         suite.addTest(MarshallerEncodingTestCases.suite());
         suite.addTestSuite(MarshallerFragmentTestCases.class);
         suite.addTestSuite(XMLDeclarationTestCases.class);
+        suite.addTestSuite(UnmarshalConversionExceptionTestCases.class);
 
         return suite;
     }

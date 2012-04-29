@@ -31,6 +31,8 @@ import java.util.Map.Entry;
 
 import javax.xml.bind.PropertyException;
 import javax.xml.bind.SchemaOutputResolver;
+import javax.xml.bind.ValidationEvent;
+import javax.xml.bind.ValidationEventHandler;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
@@ -179,6 +181,17 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         PARSER_FEATURES.put("http://apache.org/xml/features/validation/schema/normalized-value", false);
         PARSER_FEATURES.put("http://apache.org/xml/features/validation/schema/element-default", false);
     }
+
+    /**
+      * For JAXB 2 there is no explicitly defined default validation handler 
+      * and the default event handling only terminates the  operation after 
+      * encountering a fatal error. 
+      */
+     protected static final ValidationEventHandler DEFAULT_VALIDATION_EVENT_HANDER = new ValidationEventHandler() {
+         public boolean handleEvent(ValidationEvent event) {
+             return event.getSeverity() < ValidationEvent.FATAL_ERROR;
+         }
+     };
 
     protected JAXBContextInput contextInput;
     protected volatile JAXBContextState contextState;

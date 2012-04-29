@@ -27,7 +27,6 @@ import javax.xml.bind.PropertyException;
 import javax.xml.bind.ValidationEventHandler;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.attachment.AttachmentMarshaller;
-import javax.xml.bind.helpers.DefaultValidationEventHandler;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLStreamWriter;
@@ -167,7 +166,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
      */
     public JAXBMarshaller(XMLMarshaller newXMLMarshaller, JAXBIntrospector newIntrospector) {
         super();
-        validationEventHandler = new DefaultValidationEventHandler();
+        validationEventHandler = JAXBContext.DEFAULT_VALIDATION_EVENT_HANDER;
         xmlMarshaller = newXMLMarshaller;
         xmlMarshaller.setEncoding("UTF-8");
         xmlMarshaller.setFormattedOutput(false);
@@ -682,7 +681,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
 
     public void setEventHandler(ValidationEventHandler newValidationEventHandler) throws JAXBException {
         if (null == newValidationEventHandler) {
-            validationEventHandler = new DefaultValidationEventHandler();
+            validationEventHandler = JAXBContext.DEFAULT_VALIDATION_EVENT_HANDER;
         } else {
             validationEventHandler = newValidationEventHandler;
         }

@@ -31,6 +31,8 @@ import java.util.Map.Entry;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.ValidationEventHandler;
+import javax.xml.bind.helpers.DefaultValidationEventHandler;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
@@ -74,6 +76,7 @@ import org.xml.sax.InputSource;
  */
 public class JAXBContextFactory {
 
+    private static final ValidationEventHandler JSON_BINDING_DOCUMENT_VEH = new DefaultValidationEventHandler();
     public static final String ECLIPSELINK_OXM_XML_KEY = "eclipselink-oxm-xml";
     public static final String DEFAULT_TARGET_NAMESPACE_KEY = "defaultTargetNamespace";
     public static final String ANNOTATION_HELPER_KEY = "annotationHelper";
@@ -301,9 +304,8 @@ public class JAXBContextFactory {
         
     	JAXBContext jaxbContext = CompilerHelper.getXmlBindingsModelContext();
     	BufferedReader metadataBufferedReader = null;
-    	Unmarshaller unmarshaller = null;
     	try{
-            unmarshaller = jaxbContext.createUnmarshaller();
+            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
     	    	
             if(metadata instanceof File){
             	metadataBufferedReader = new BufferedReader(new FileReader((File) metadata));
@@ -416,7 +418,12 @@ public class JAXBContextFactory {
          return url;
     }
     
-    private static XmlBindings getXmlBindingsByMediaType(Unmarshaller unmarshaller, Source metadata, ClassLoader classLoader, Map<String, Object> properties, String mediaType) throws JAXBException {        
+    private static XmlBindings getXmlBindingsByMediaType(Unmarshaller unmarshaller, Source metadata, ClassLoader classLoader, Map<String, Object> properties, String mediaType) throws JAXBException {
+        if("application/xml".equals(mediaType)) {
+            unmarshaller.setEventHandler(JSON_BINDING_DOCUMENT_VEH);
+        } else {
+            unmarshaller.setEventHandler(JAXBContext.DEFAULT_VALIDATION_EVENT_HANDER);
+        }
         unmarshaller.setProperty(JAXBUnmarshaller.MEDIA_TYPE, mediaType);
         unmarshaller.setProperty(JAXBUnmarshaller.JSON_INCLUDE_ROOT, false);
         JAXBElement jbe = unmarshaller.unmarshal((Source) metadata, XmlBindings.class);

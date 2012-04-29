@@ -47,7 +47,7 @@ public class JAXBErrorHandler implements ErrorHandler {
      * @param exception the SAXParseException that occurred
      */
     public void warning(SAXParseException exception) throws SAXException {
-        handleException(exception, ValidationEvent.WARNING);
+        handleException(exception, ValidationEvent.ERROR);
     }
 
     /**
@@ -56,7 +56,7 @@ public class JAXBErrorHandler implements ErrorHandler {
      * @param exception the SAXParseException that occurred
      */
     public void error(SAXParseException exception) throws SAXException {
-        handleException(exception, ValidationEvent.ERROR);
+        handleException(exception, ValidationEvent.FATAL_ERROR);
     }
 
     /**
