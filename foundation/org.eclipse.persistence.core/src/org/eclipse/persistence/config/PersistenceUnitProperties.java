@@ -988,12 +988,14 @@ public class PersistenceUnitProperties {
     /**
      * Allows integration with a database event notification service.
      * This allows the EclipseLink cache to be invalidated by database change events.
-     * This is used to support Oracle DCN (Database Change event Notification),
+     * This is used to support Oracle QCN/DCN (Database Change event Notification),
      * but could also be used by triggers or other services, or other types of events.
      * Must be set to the name of a class that implements DatabaseEventListener,
-     * such as the OracleChangeNotificationListener.
+     * such as the OracleChangeNotificationListener (org.eclipse.persistence.platform.database.oracle.dcn.OracleChangeNotificationListener).
+     * The values of "DCN" and "QCN" may also be used for Oracle.
      * 
      * @see DatabaseEventListener
+     * @see org.eclipse.persistence.platform.database.oracle.dcn.OracleChangeNotificationListener
      */
     public static final String DATABASE_EVENT_LISTENER = "eclipselink.cache.database-event-listener";
     

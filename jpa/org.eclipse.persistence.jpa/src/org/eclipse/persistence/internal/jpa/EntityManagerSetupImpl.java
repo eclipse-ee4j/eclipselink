@@ -101,6 +101,7 @@ import org.eclipse.persistence.config.CacheCoordinationProtocol;
 import org.eclipse.persistence.config.DescriptorCustomizer;
 import org.eclipse.persistence.config.ExclusiveConnectionMode;
 import org.eclipse.persistence.config.LoggerType;
+import org.eclipse.persistence.config.ParserType;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.ProfilerType;
 import org.eclipse.persistence.config.SessionCustomizer;
@@ -801,6 +802,9 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     protected void updateDatabaseEventListener(Map m, ClassLoader loader) {
         String listenerClassName = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.DATABASE_EVENT_LISTENER, m, this.session);
         if (listenerClassName != null) {
+            if (listenerClassName.equalsIgnoreCase("DCN") || listenerClassName.equalsIgnoreCase("QCN")) {
+                listenerClassName = "org.eclipse.persistence.platform.database.oracle.dcn.OracleChangeNotificationListener";
+            }
             Class cls = findClassForProperty(listenerClassName, PersistenceUnitProperties.DATABASE_EVENT_LISTENER, loader);
             DatabaseEventListener listener = null;
             try {
@@ -2505,6 +2509,11 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         // Set JPQL parser if it was specified.
         String parser = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JPQL_PARSER, m, this.session);
         if (parser != null) {
+            if (parser.equalsIgnoreCase(ParserType.Hermes)) {
+                parser = "org.eclipse.persistence.internal.jpa.jpql.HermesParser";
+            } else if (parser.equalsIgnoreCase(ParserType.ANTLR)) {
+                parser = "org.eclipse.persistence.queries.ANTLRQueryBuilder";
+            }
             this.session.setProperty(PersistenceUnitProperties.JPQL_PARSER, parser);
         }
         // Set JPQL parser validation mode if it was specified.

@@ -1510,32 +1510,39 @@ public class SQLSelectStatement extends SQLStatement {
                     }
                 }
             }
-            if (base.isQueryKeyExpression()) {
-                QueryKeyExpression expression = (QueryKeyExpression)base;
+            if (base.isObjectExpression()) {
+                ObjectExpression expression = (ObjectExpression)base;
                 expression.getBuilder().setSession(session);
+                List<Expression> orderBys = null;
                 if (expression.getMapping() != null) {
-                    List<Expression> orderBys = expression.getMapping().getOrderByNormalizedExpressions(expression);
-                    if (orderBys != null) {
-                        for (Expression mappingOrderBy : orderBys) {
-                            if (asc != null) {
-                                if (asc) {
-                                    mappingOrderBy = mappingOrderBy.ascending();
-                                } else {
-                                    mappingOrderBy = mappingOrderBy.descending();                                    
-                                }
-                            }
-                            if (nullsFirst != null) {
-                                if (nullsFirst) {
-                                    mappingOrderBy = mappingOrderBy.nullsFirst();
-                                } else {
-                                    mappingOrderBy = mappingOrderBy.nullsLast();                                    
-                                }
-                            }
-                            newOrderBys.add(mappingOrderBy);
-                            allExpressions.add(mappingOrderBy);
-                        }
-                        continue;
+                    // Check if a non basic mapping.
+                    orderBys = expression.getMapping().getOrderByNormalizedExpressions(expression);
+                } else if (base.isExpressionBuilder()) {
+                    orderBys = new ArrayList(expression.getDescriptor().getPrimaryKeyFields().size());
+                    for (DatabaseField field : expression.getDescriptor().getPrimaryKeyFields()) {
+                        orderBys.add(expression.getField(field));
                     }
+                }
+                if (orderBys != null) {
+                    for (Expression mappingOrderBy : orderBys) {
+                        if (asc != null) {
+                            if (asc) {
+                                mappingOrderBy = mappingOrderBy.ascending();
+                            } else {
+                                mappingOrderBy = mappingOrderBy.descending();                                    
+                            }
+                        }
+                        if (nullsFirst != null) {
+                            if (nullsFirst) {
+                                mappingOrderBy = mappingOrderBy.nullsFirst();
+                            } else {
+                                mappingOrderBy = mappingOrderBy.nullsLast();                                    
+                            }
+                        }
+                        newOrderBys.add(mappingOrderBy);
+                        allExpressions.add(mappingOrderBy);
+                    }
+                    continue;
                 }
             }
             newOrderBys.add(orderBy);

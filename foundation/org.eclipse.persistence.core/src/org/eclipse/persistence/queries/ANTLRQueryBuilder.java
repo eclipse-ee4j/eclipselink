@@ -31,7 +31,9 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  * @version 2.4
  * @since 2.2
  * @author John Bracken
+ * @deprecated replaced with Hermes parser, which is the default.
  */
+@Deprecated
 public final class ANTLRQueryBuilder implements JPAQueryBuilder {
 
     /**

@@ -25,8 +25,9 @@ import org.eclipse.persistence.queries.JPAQueryBuilder;
  * @see JPAQueryBuilder
  */
 public class ParserType {
-    public static final String Hermes = "org.eclipse.persistence.internal.jpa.jpql.HermesParser";
-    public static final String ANTLR = "org.eclipse.persistence.queries.ANTLRQueryBuilder";
+    public static final String Hermes = "Hermes";
+    @Deprecated
+    public static final String ANTLR = "ANTLR";
 
     public static final String DEFAULT = Hermes;
 }

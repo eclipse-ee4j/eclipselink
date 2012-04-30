@@ -210,6 +210,9 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         if (query.hasOrderByExpressions()) {
             selectStatement.setOrderByExpressions(cloneExpressions(query.getOrderByExpressions(), clonedExpressions));
         }
+        if (query.hasNonFetchJoinedAttributeExpressions()) {
+            selectStatement.setNonSelectFields(cloneExpressions(query.getNonFetchJoinAttributeExpressions(), clonedExpressions));
+        }
         if (query.hasUnionExpressions()) {
             selectStatement.setUnionExpressions(cloneExpressions(query.getUnionExpressions(), clonedExpressions));
         }
@@ -537,9 +540,6 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         }
 
         selectStatement.setFields(getSelectionFields(selectStatement, true));
-        if (query.hasNonFetchJoinedAttributeExpressions()) {
-            selectStatement.setNonSelectFields(cloneExpressions(query.getNonFetchJoinAttributeExpressions(), clonedExpressions));
-        }
         selectStatement.normalize(getSession(), getDescriptor(), clonedExpressions);
         // Allow for joining indexes to be computed to ensure distinct rows.
         if (((ObjectLevelReadQuery)getQuery()).hasJoining()) {
