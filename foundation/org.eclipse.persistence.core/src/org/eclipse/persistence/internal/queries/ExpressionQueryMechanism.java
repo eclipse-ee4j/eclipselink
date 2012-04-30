@@ -2656,11 +2656,17 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
             // Must also build the call.
             super.prepareSelectAllRows();
             if (shouldPrepare) {
+                if (query.hasJoining()) {
+                    query.getConcreteSubclassJoinedMappingIndexes().put(query.getReferenceClass(), query.getJoinedAttributeManager().getJoinedMappingIndexes_());
+                }
                 query.getConcreteSubclassCalls().put(query.getReferenceClass(), (DatabaseCall)this.call);
                 query.setTranslationRow(translationRow);                
             }
         } else {
             setCall(call);
+            if (shouldPrepare && query.hasJoining()) {
+                query.getJoinedAttributeManager().setJoinedMappingIndexes_(query.getConcreteSubclassJoinedMappingIndexes().get(query.getReferenceClass()));
+            }
         }
 
         return super.selectAllRows();
@@ -2698,14 +2704,32 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
     public AbstractRecord selectOneRowFromConcreteTable() throws DatabaseException {
         ObjectLevelReadQuery query = (ObjectLevelReadQuery)this.query;
         // PERF: First check the subclass calls cache for the prepared call.
-        DatabaseCall call = query.getConcreteSubclassCalls().get(query.getReferenceClass());
+        // Must clear the translation row to avoid in-lining parameters unless not a prepared query.
+        boolean shouldPrepare = query.shouldPrepare();
+        DatabaseCall call = null;
+        if (shouldPrepare) {
+            call = query.getConcreteSubclassCalls().get(query.getReferenceClass());
+        }
         if (call == null) {
+            AbstractRecord translationRow = query.getTranslationRow();
+            if (shouldPrepare) {
+                query.setTranslationRow(null);
+            }
             setSQLStatement(buildConcreteSelectStatement());
             // Must also build the call.
             super.prepareSelectOneRow();
-            query.getConcreteSubclassCalls().put(query.getReferenceClass(), (DatabaseCall)this.call);
+            if (shouldPrepare) {
+                if (query.hasJoining()) {
+                    query.getConcreteSubclassJoinedMappingIndexes().put(query.getReferenceClass(), query.getJoinedAttributeManager().getJoinedMappingIndexes_());
+                }
+                query.getConcreteSubclassCalls().put(query.getReferenceClass(), (DatabaseCall)this.call);
+                query.setTranslationRow(translationRow);                
+            }
         } else {
             setCall(call);
+            if (shouldPrepare && query.hasJoining()) {
+                query.getJoinedAttributeManager().setJoinedMappingIndexes_(query.getConcreteSubclassJoinedMappingIndexes().get(query.getReferenceClass()));
+            }
         }
 
         return super.selectOneRow();
