@@ -62,6 +62,7 @@ import javax.persistence.LockModeType;
 import javax.persistence.PersistenceException;
 import javax.persistence.OptimisticLockException;
 import javax.persistence.RollbackException;
+import javax.persistence.TypedQuery;
 import javax.persistence.spi.LoadState;
 import javax.persistence.spi.ProviderUtil;
 import javax.sql.DataSource;
@@ -392,6 +393,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         tests.add("testEMFBuiltWithSession");
         tests.add("testSequenceObjectWithSchemaName");
         tests.add("testSharedExpressionInQueries");
+        tests.add("testInheritanceFetchJoinSecondCall");
         if (!isJPA10()) {
             tests.add("testDetachNull");
             tests.add("testDetachRemovedObject");
@@ -11542,7 +11544,35 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             }
         }
     }
-
-
+    
+    // Bug 370474 - in a joined inheritance hierarchy, base class OneToMany relationship, query using join fetch works once then fails
+    public void testInheritanceFetchJoinSecondCall() {
+        EntityManager em = createEntityManager();
+        LargeProject project = new LargeProject();
+        project.setName("InheritanceFetchJoinSecondCall");
+        beginTransaction(em);
+        try {
+            // should have at least one project
+            em.persist(project);
+            em.flush();
+            TypedQuery<LargeProject> queryFetchOne = em.createQuery("SELECT p FROM LargeProject p JOIN FETCH p.teamLeader", LargeProject.class);
+            TypedQuery<LargeProject> queryFetchMany = em.createQuery("SELECT p FROM LargeProject p JOIN FETCH p.teamMembers", LargeProject.class);
+            em.clear();
+            // first time works
+            queryFetchOne.getResultList();
+            em.clear();
+            // second time used to fail
+            queryFetchOne.getResultList();
+            em.clear();
+            // first time works
+            queryFetchMany.getResultList();
+            em.clear();
+            // second time used to fail
+            queryFetchMany.getResultList();
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
+    }
 }
 

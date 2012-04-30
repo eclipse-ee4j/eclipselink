@@ -195,6 +195,9 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     /** Allow concrete subclasses calls to be prepared and cached for inheritance queries. */
     protected Map<Class, DatabaseCall> concreteSubclassCalls;
     
+    /** Allow concrete subclasses joined mapping indexes to be prepared and cached for inheritance queries. */
+    protected Map<Class, Map<DatabaseMapping, Object>> concreteSubclassJoinedMappingIndexes;
+    
     /** Used when specifying a lock mode for the query */
     protected String lockModeType;
     
@@ -1912,6 +1915,19 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         if (!isPrepared) {
             this.isReferenceClassLocked = null;
             this.concreteSubclassCalls = null;
+            this.concreteSubclassJoinedMappingIndexes = null;
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Clear cached flags when un-preparing.
+     * The method always keeps concrete subclass data (unlike setIsPrepared(false)).
+     */
+    protected void setIsPreparedKeepingSubclassData(boolean isPrepared) {
+        super.setIsPrepared(isPrepared);
+        if (!isPrepared) {
+            this.isReferenceClassLocked = null;
         }
     }
 
@@ -2012,6 +2028,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             this.shouldOuterJoinSubclasses = objectQuery.shouldOuterJoinSubclasses;
             this.shouldUseDefaultFetchGroup = objectQuery.shouldUseDefaultFetchGroup;
             this.concreteSubclassCalls = objectQuery.concreteSubclassCalls;
+            this.concreteSubclassJoinedMappingIndexes = objectQuery.concreteSubclassJoinedMappingIndexes;
             this.additionalFields = objectQuery.additionalFields;
             this.partialAttributeExpressions = objectQuery.partialAttributeExpressions;
             if (objectQuery.hasOrderByExpressions()) {
@@ -2182,6 +2199,9 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         // This must be initialized in the query before it is cloned, and never cloned.
         if ((!shouldOuterJoinSubclasses()) && this.descriptor.hasInheritance() && this.descriptor.getInheritancePolicy().requiresMultipleTableSubclassRead()) {
             getConcreteSubclassCalls();
+            if (hasJoining()) {
+                getConcreteSubclassJoinedMappingIndexes();
+            }
         }
     }
 
@@ -2290,7 +2310,11 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * Set the descriptor for the query.
      */
     public void setDescriptor(ClassDescriptor descriptor) {
-        super.setDescriptor(descriptor);
+        // If the descriptor changed must unprepare as the SQL may change.
+        if (this.descriptor != descriptor) {
+            setIsPreparedKeepingSubclassData(false);
+            this.descriptor = descriptor;
+        }
         if (this.joinedAttributeManager != null){
             this.joinedAttributeManager.setDescriptor(descriptor);
         }
@@ -2515,7 +2539,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     @Override
     public void setReferenceClass(Class aClass) {
         if (referenceClass != aClass) {
-            setIsPrepared(false);
+            setIsPreparedKeepingSubclassData(false);
         }
         referenceClass = aClass;
     }
@@ -2527,7 +2551,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     @Override
     public void setReferenceClassName(String aClass) {
         if (this.referenceClassName != aClass) {
-            setIsPrepared(false);
+            setIsPreparedKeepingSubclassData(false);
         }
         this.referenceClassName = aClass;
     }
@@ -2869,6 +2893,18 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         return concreteSubclassCalls;
     }
 
+    /**
+     * INTERNAL:
+     * Return the cache of concrete subclass joined mapping indexes.
+     * This allow concrete subclasses calls to be prepared and cached for inheritance queries.
+     */
+    public Map<Class, Map<DatabaseMapping, Object>> getConcreteSubclassJoinedMappingIndexes() {
+        if (concreteSubclassJoinedMappingIndexes == null) {
+            concreteSubclassJoinedMappingIndexes = new ConcurrentHashMap(8);
+        }
+        return concreteSubclassJoinedMappingIndexes;
+    }
+    
 
     /**
      * INTERNAL:
