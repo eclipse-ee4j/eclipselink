@@ -19,6 +19,19 @@ import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
  * This {@link JPQLGrammar} provides support for parsing JPQL queries defined in <a
  * href="http://jcp.org/en/jsr/detail?id=317">JSR-337 - Java Persistence 2.0</a>. EclipseLink 2.0
  * does not add any additional support.
+ * <p>
+ * The BNFs of the additional support are the following:
+ *
+ * <pre><code> in_expression ::= { state_field_path_expression |
+ *                                 type_discriminator |
+ *                                 single_valued_input_parameter |
+ *                                 identification_variable
+ *                               }
+ *                               [NOT] IN { ( in_item {, in_item}* ) |
+ *                                          (subquery) |
+ *                                          collection_valued_input_parameter
+ *                                        }
+ * </code></pre>
  *
  * @version 2.4
  * @since 2.4
