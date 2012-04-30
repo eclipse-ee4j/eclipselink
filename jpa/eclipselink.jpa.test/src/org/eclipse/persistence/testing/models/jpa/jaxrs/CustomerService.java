@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     Blaise Doughan - 2.3 - initial implementation
+ *     Praba Vijayaratnam - 2.4 - added JSON support testing
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.jaxrs;
 
@@ -38,7 +39,7 @@ public class CustomerService {
 	EntityManager entityManager;
 
 	@POST
-	@Consumes(MediaType.APPLICATION_XML)
+	@Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public void create(Customer customer) {
 		entityManager.persist(customer);
 	}
@@ -51,7 +52,7 @@ public class CustomerService {
 	}
 
 	@PUT
-	@Consumes(MediaType.APPLICATION_XML)
+	@Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public void update(Customer customer) {
 		entityManager.merge(customer);
 	}
@@ -67,7 +68,7 @@ public class CustomerService {
 
 	@SuppressWarnings("unchecked")
 	@GET
-	@Produces(MediaType.APPLICATION_XML)
+	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	@Path("findCustomerByCity/{city}")
 	public List<Customer> findCustomerByCity(@PathParam("city") String city) {
 		Query query = entityManager.createNamedQuery("findCustomerByCity");

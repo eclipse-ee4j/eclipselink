@@ -10,12 +10,13 @@
  * Contributors:
  *     Blaise Doughan - 2.3 - initial implementation
  *     Praba Vijayaratnam - 2.3 - test automation
+ *     Praba Vijayaratnam - 2.4 - added JSON support testing 
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.jaxrs;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import javax.xml.bind.*;
 import javax.xml.bind.JAXBContext;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -69,6 +70,23 @@ public class DefaultJAXBContextTestCases extends JUnitTestCase {
 		assertEquals(getControlObject(), testObject);
 	}
 
+	/* READ operation */
+	public void testGetCustomerJSON() throws Exception {
+		URL url = new URL(getURL() + "/" + getID());
+		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+		connection.setRequestMethod("GET");
+		connection.setRequestProperty("Accept", "application/json");
+
+		InputStream inputStream = connection.getInputStream();
+		StreamSource json = new StreamSource(inputStream);
+		Unmarshaller u = getJAXBContext().createUnmarshaller();
+                u.setProperty("eclipselink.media-type", "application/json");
+                u.setProperty("eclipselink.json.include-root", false);
+		Customer testObject = u.unmarshal(json, Customer.class).getValue();
+		connection.disconnect();
+		assertEquals(getControlObject(), testObject);
+	}
+	
 	/* READ operation: CollectionOfObjects */
 	public void testGetCollectionOfObjects() throws Exception {
 		URL url = new URL(getURL() + "/" + "findCustomerByCity" + "/"
@@ -85,6 +103,28 @@ public class DefaultJAXBContextTestCases extends JUnitTestCase {
 
 	}
 
+	/* READ operation: CollectionOfObjects */
+	public void testGetCollectionOfObjectsJSON() throws Exception {
+		URL url = new URL(getURL() + "/" + "findCustomerByCity" + "/"
+				+ "Ottawa");
+		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+		connection.setRequestMethod("GET");
+		connection.setRequestProperty("Accept", "application/json");
+
+		InputStream inputStream = connection.getInputStream();
+		StreamSource json = new StreamSource(inputStream);
+		Unmarshaller u = getJAXBContext().createUnmarshaller();
+                u.setProperty("eclipselink.media-type", "application/json");
+                u.setProperty("eclipselink.json.include-root", false);
+		List<Customer> customers = (List<Customer>) u.unmarshal(json, Customer.class).getValue();				
+
+		connection.disconnect();
+		
+		Customers testObject = new Customers();
+		testObject.setCustomer(customers);
+		assertEquals(getControlObjects(), testObject);
+
+	}	
 	/* DELETE operation */
 	public void testDeleteCustomer() throws Exception {
 
@@ -117,6 +157,26 @@ public class DefaultJAXBContextTestCases extends JUnitTestCase {
 
 	}
 
+		/* INSERT operation */
+	public void testPostCustomerJSON() throws Exception {
+
+		URL url = new URL(getURL());
+		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+		connection.setDoOutput(true);
+		connection.setInstanceFollowRedirects(false);
+		connection.setRequestMethod("POST");
+		connection.setRequestProperty("Content-Type", "application/json");
+
+		OutputStream os = connection.getOutputStream();
+		getJAXBContext().createMarshaller().marshal(getControlObject2(), os);
+		os.flush();
+		connection.getResponseCode();
+		Customer testObject = verifyHelperForPostPutJSON(4);
+		connection.disconnect();
+		assertEquals(getControlObject2(), testObject);
+
+	}
+	
 	/* UPDATE operation */
 	public void testPutCustomer() throws Exception {
 
@@ -138,7 +198,29 @@ public class DefaultJAXBContextTestCases extends JUnitTestCase {
 		assertEquals(getControlObject3(), testObject);
 
 	}
+	
+	/* UPDATE operation */
+	public void testPutCustomerJSON() throws Exception {
 
+		URL url = new URL(getURL());
+		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+		connection.setDoOutput(true);
+		connection.setInstanceFollowRedirects(false);
+		connection.setRequestMethod("PUT");
+		connection.setRequestProperty("Content-Type", "application/json");
+
+		OutputStream os = connection.getOutputStream();
+
+		getJAXBContext().createMarshaller().marshal(getControlObject3(), os);
+		os.flush();
+		connection.getResponseCode();
+		Customer testObject = verifyHelperForPostPutJSON(3);
+		connection.disconnect();
+
+		assertEquals(getControlObject3(), testObject);
+
+	}
+	
 	/* assertion helper method */
 	public Customer verifyHelperForPostPut(int id) throws Exception {
 		URL url = new URL(getURL() + "/" + id);
@@ -153,6 +235,27 @@ public class DefaultJAXBContextTestCases extends JUnitTestCase {
 		return testObject;
 	}
 
+	/* assertion helper method for JSON*/
+	public Customer verifyHelperForPostPutJSON(int id) throws Exception {
+		URL url = new URL(getURL() + "/" + id);
+		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+		connection.setRequestMethod("GET");
+		connection.setRequestProperty("Accept", "application/json");
+
+		//InputStream xml = connection.getInputStream();
+		//Customer testObject = (Customer) getJAXBContext().createUnmarshaller().unmarshal(xml);
+		
+		InputStream inputStream = connection.getInputStream();
+		StreamSource json = new StreamSource(inputStream);
+		Unmarshaller u = getJAXBContext().createUnmarshaller();
+                u.setProperty("eclipselink.media-type", "application/json");
+                u.setProperty("eclipselink.json.include-root", false);
+		Customer testObject = u.unmarshal(json, Customer.class).getValue();
+		connection.disconnect();
+		
+		return testObject;
+	}
+	
 	protected Customer getControlObject() {
 		Customer customer = new Customer();
 		customer.setId(1);

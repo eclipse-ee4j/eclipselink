@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     Blaise Doughan - 2.3 - initial implementation
+ *     Praba Vijayaratnam - 2.4 - added JSON support testing 
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.jaxrs;
 
@@ -20,11 +21,16 @@ import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.ws.rs.*;
+import javax.ws.rs.core.*;
+import javax.ws.rs.ext.*;
+import javax.xml.bind.*;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 
 @Provider
-@Produces("application/xml")
+//@Produces("application/xml")
+@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 public class AddressContextResolver implements ContextResolver<JAXBContext> {
 
 	private JAXBContext jc;

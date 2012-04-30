@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     Blaise Doughan - 2.3 - initial implementation
+ *     Praba Vijayaratnam - 2.4 - added JSON support testing
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.jaxrs;
 
@@ -35,7 +36,8 @@ public class AddressService {
 	EntityManager entityManager;
 
 	@POST
-	@Consumes(MediaType.APPLICATION_XML)
+	//@Consumes(MediaType.APPLICATION_XML)
+	@Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public void create(Address address) {
 		entityManager.persist(address);
 	}
@@ -48,7 +50,8 @@ public class AddressService {
 	}
 
 	@PUT
-	@Consumes(MediaType.APPLICATION_XML)
+	//@Consumes(MediaType.APPLICATION_XML)
+	@Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public void update(Address address) {
 		entityManager.merge(address);
 	}

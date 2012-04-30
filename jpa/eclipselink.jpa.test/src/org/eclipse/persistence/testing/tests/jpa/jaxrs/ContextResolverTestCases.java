@@ -10,6 +10,7 @@
  * Contributors:
  *     Blaise Doughan - 2.3 - initial implementation
  *     Praba Vijayaratnam - 2.3 - test automation
+ *     Praba Vijayaratnam - 2.4 - added JSON support testing 
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.jaxrs;
 
@@ -18,6 +19,12 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import javax.xml.bind.*;
+
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 import javax.xml.bind.JAXBContext;
 
@@ -74,6 +81,24 @@ public class ContextResolverTestCases extends JUnitTestCase {
 		Address testObject = (Address) getJAXBContext().createUnmarshaller()
 				.unmarshal(xml);
 		connection.disconnect();
+
+		assertEquals(getControlObject(), testObject);
+	}
+	
+		/* READ operation */
+	public void testGetAddressJSON() throws Exception {
+		URL url = new URL(getURL() + "/" + getID());
+		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+		connection.setRequestMethod("GET");
+		connection.setRequestProperty("Accept", "application/json");
+
+		InputStream inputStream = connection.getInputStream();
+		StreamSource json = new StreamSource(inputStream);
+		Unmarshaller u = getJAXBContext().createUnmarshaller();
+                u.setProperty("eclipselink.media-type", "application/json");
+                u.setProperty("eclipselink.json.include-root", false);
+		Address testObject = u.unmarshal(json, Address.class).getValue();
+		connection.disconnect();		
 
 		assertEquals(getControlObject(), testObject);
 	}
