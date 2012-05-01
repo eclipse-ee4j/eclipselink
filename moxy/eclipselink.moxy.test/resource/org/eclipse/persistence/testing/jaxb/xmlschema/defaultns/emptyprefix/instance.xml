@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<foo:person xmlns:foo="http://www.example.com/FOO" xmlns="http://www.example.com/BAR">
+   <foo:name>Bob Smith</foo:name>
+   <title>President</title>
+</foo:person>

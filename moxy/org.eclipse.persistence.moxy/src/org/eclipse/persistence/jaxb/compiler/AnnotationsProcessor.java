@@ -3023,10 +3023,6 @@ public class AnnotationsProcessor {
             for (int i = 0; i < xmlns.length; i++) {
                 XmlNs next = xmlns[i];
                 info.getNamespaceResolver().put(next.prefix(), next.namespaceURI());
-                if(next.namespaceURI().equals(packageNamespace)) {
-                    //if there's an explicit prefix for this namespace, don't use default.
-                    isDefaultNamespaceAllowed = false;
-                }
             }
             info.setAttributeFormQualified(xmlSchema.attributeFormDefault() == XmlNsForm.QUALIFIED);
             info.setElementFormQualified(xmlSchema.elementFormDefault() == XmlNsForm.QUALIFIED);
