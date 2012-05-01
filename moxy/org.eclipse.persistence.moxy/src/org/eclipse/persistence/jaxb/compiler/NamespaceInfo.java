@@ -87,6 +87,7 @@ public class NamespaceInfo {
                     this.namespaceResolverForDescriptor.put(next, this.namespaceResolver.resolveNamespacePrefix(next));
                 }
             }
+            this.namespaceResolverForDescriptor.setDefaultNamespaceURI(namespaceResolver.getDefaultNamespaceURI());
         }
         return this.namespaceResolverForDescriptor;
     }
