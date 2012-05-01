@@ -29,7 +29,8 @@ import dbws.testing.DBWSTestSuite;
  *
  */
 public class InvalidPackageTestSuite extends DBWSTestSuite {
-	private static String WARNING_MSG_1 = "WARNING: No packages were found matching the following:  [TLUSER.A_NON_EXISTENT_PACKAGE]";
+	private static String USER = System.getProperty(DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
+	private static String WARNING_MSG_1 = "WARNING: No packages were found matching the following:  [" + USER + ".A_NON_EXISTENT_PACKAGE]";
 	private static String WARNING_MSG_2 = "WARNING: No procedures were found matching the following:  [A_NON_EXISTENT_PACKAGE.CREATE_EMP]";
 			
 	@BeforeClass
@@ -67,7 +68,7 @@ public class InvalidPackageTestSuite extends DBWSTestSuite {
 		assertTrue("No WARNINGs logged", dbwsLogger.hasWarnings());
 		List<String> warnings = dbwsLogger.getWarnings();
 		assertTrue("Expected [2] WARNINGs, but was [" + warnings.size() + "]", warnings.size() == 2);
-		assertTrue("Expected WARNING message '" + WARNING_MSG_1 + "', but was '" + warnings.get(0) + "'", WARNING_MSG_1.equals(warnings.get(0)));   
-		assertTrue("Expected WARNING message '" + WARNING_MSG_2 + "', but was '" + warnings.get(1) + "'", WARNING_MSG_2.equals(warnings.get(1)));   
+		assertTrue("Expected WARNING message '" + WARNING_MSG_1 + "', but was '" + warnings.get(0) + "'", WARNING_MSG_1.equalsIgnoreCase(warnings.get(0)));   
+		assertTrue("Expected WARNING message '" + WARNING_MSG_2 + "', but was '" + warnings.get(1) + "'", WARNING_MSG_2.equalsIgnoreCase(warnings.get(1)));   
     }
 }
