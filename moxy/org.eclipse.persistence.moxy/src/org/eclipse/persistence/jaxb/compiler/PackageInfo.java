@@ -14,6 +14,7 @@ package org.eclipse.persistence.jaxb.compiler;
 
 import java.util.HashMap;
 
+import org.eclipse.persistence.internal.jaxb.AccessorFactoryWrapper;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlAccessOrder;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType;
@@ -32,6 +33,7 @@ public class PackageInfo {
     private XMLNameTransformer xmlNameTransformer;
     private NamespaceInfo namespaceInfo;
     private HashMap<String, JavaClass> packageLevelAdaptersByClass;
+    private AccessorFactoryWrapper accessorFactory;
 
     public PackageInfo() {
     	packageLevelAdaptersByClass = new HashMap<String, JavaClass>();
@@ -109,6 +111,14 @@ public class PackageInfo {
 
     public void setLocation(String location) {
         this.namespaceInfo.setLocation(location);
+    }
+
+    public AccessorFactoryWrapper getAccessorFactory() {
+        return accessorFactory;
+    }
+
+    public void setAccessorFactory(AccessorFactoryWrapper accessorFactory) {
+        this.accessorFactory = accessorFactory;
     }    
     
     

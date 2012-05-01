@@ -112,6 +112,11 @@ public class JAXBException extends EclipseLinkException {
     public static final int INVALID_XMLLOCATION = 50080;
     public static final int EXCEPTION_DURING_SCHEMA_GEN = 50081;
     public static final int JSON_VALUE_WRAPPER_REQUIRED = 50082;
+    public static final int ERROR_INSTANTIATING_ACCESSOR_FACTORY = 50083;
+    public static final int INVALID_ACCESSOR_FACTORY = 50084;
+    public static final int ERROR_CREATING_FIELD_ACCESSOR = 50085;
+    public static final int ERROR_CREATING_PROPERTY_ACCESSOR = 50086;
+    public static final int ERROR_INVOKING_ACCESSOR = 50087;
     
 
 
@@ -1044,5 +1049,43 @@ public class JAXBException extends EclipseLinkException {
         return validationException;
     }
     
-
+    /**
+     * PUBLIC:
+     * Cause: An exception occured while trying to instantiate an instance of the
+     * user specified AccessorFactory
+     */
+    public static JAXBException errorInstantiatingAccessorFactory(Object factoryClass, Exception nestedException) {
+        Object[] args = {factoryClass};
+        JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, ERROR_INSTANTIATING_ACCESSOR_FACTORY, args), nestedException);
+        validationException.setErrorCode(ERROR_INSTANTIATING_ACCESSOR_FACTORY);
+        return validationException;
+    }
+    
+    public static JAXBException invalidAccessorFactory(Object accessorFactoryClass, Exception nestedException) {
+        Object[] args = {accessorFactoryClass};
+        JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, INVALID_ACCESSOR_FACTORY, args), nestedException);
+        validationException.setErrorCode(INVALID_ACCESSOR_FACTORY);
+        return validationException;
+    }
+    
+    public static JAXBException errorCreatingFieldAccessor(Object accessorFactory, Exception nestedException) {
+        Object[] args = {accessorFactory};
+        JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, ERROR_CREATING_FIELD_ACCESSOR, args), nestedException);
+        validationException.setErrorCode(ERROR_CREATING_FIELD_ACCESSOR);
+        return validationException;
+    }
+    
+    public static JAXBException errorCreatingPropertyAccessor(Object accessorFactory, Exception nestedException) {
+        Object[] args = {accessorFactory};
+        JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, ERROR_CREATING_PROPERTY_ACCESSOR, args), nestedException);
+        validationException.setErrorCode(ERROR_CREATING_PROPERTY_ACCESSOR);
+        return validationException;
+    }
+    
+    public static JAXBException errorInvokingAccessor(Object accessor, String method, Exception nestedException) {
+        Object[] args = {method, accessor};
+        JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, ERROR_INVOKING_ACCESSOR, args), nestedException);
+        validationException.setErrorCode(ERROR_INVOKING_ACCESSOR);
+        return validationException;
+    }
 }

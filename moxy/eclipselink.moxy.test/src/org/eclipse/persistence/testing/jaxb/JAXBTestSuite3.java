@@ -109,13 +109,13 @@ public class JAXBTestSuite3 extends TestCase {
         suite.addTest(CollectionsTestSuite.suite());
         suite.addTest(DefaultValueTestSuite.suite());
         suite.addTestSuite(UnmarshalWithSpaceEventTestCases.class);
-        suite.addTestSuite(CycleRecoverableTestCases.class);
         suite.addTestSuite(PrefixMapperTestCases.class);
         suite.addTestSuite(PrefixMapperMapTestCases.class);
         suite.addTestSuite(NonELPrefixMapperTestCases.class);
         suite.addTestSuite(ChildURITestCases.class);
         suite.addTestSuite(URITestCases.class);
         suite.addTestSuite(PropertyTestCases.class);        
+        suite.addTest(SunCompatibilityTestSuite.suite());
         
         suite.addTestSuite(JAXBEmployeeTestCases.class);
         suite.addTestSuite(JAXBEmployeeNoWrapperTestCases.class);

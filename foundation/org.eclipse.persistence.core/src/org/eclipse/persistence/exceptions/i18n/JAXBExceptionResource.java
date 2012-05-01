@@ -101,7 +101,12 @@ public class JAXBExceptionResource extends ListResourceBundle {
         {"50079", "Cannot process schemas.  If using schema imports, XSDs must be provided as a javax.xml.transform.Source."},
         {"50080", "XmlLocation is only allowed on properties of type org.xml.sax.Locator, but [{0}] is of type [{1}]."},
         {"50081", "An exception occurred during schema generation."},
-        {"50082", "An attempt was made to write a value {0} without a key specified.  Try setting JSON_VALUE_WRAPPER on the JAXBMarshaller"}
+        {"50082", "An attempt was made to write a value {0} without a key specified.  Try setting JSON_VALUE_WRAPPER on the JAXBMarshaller"},
+        {"50083", "An error occured while trying to instantiate the AccessorFactoryClass {0}"},
+        {"50084", "The specified AccessorFactory class: {0} is invalid. It must implement createFieldAccessor(Class, Field, boolean) and createPropertyAccessor(Class, Method, Method)."},
+        {"50085", "An exception occured while invoking the createFieldAccessor method on the AccessorFactory {0}"},
+        {"50086", "An exception occured while invoking the createPropertyAccessor method on the AccessorFactory {0}"},
+        {"50087", "An exception occured while attempting to invoke the {0} method on the Accessor {1}"}
     };
 
     /**

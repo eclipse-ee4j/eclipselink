@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.persistence.config.DescriptorCustomizer;
+import org.eclipse.persistence.internal.jaxb.AccessorFactoryWrapper;
 import org.eclipse.persistence.internal.oxm.schema.model.ComplexType;
 import org.eclipse.persistence.internal.oxm.schema.model.Schema;
 import org.eclipse.persistence.internal.oxm.schema.model.SimpleType;
@@ -110,6 +111,9 @@ public class TypeInfo {
     
     private String xmlDiscriminatorNode;
     private String xmlDiscriminatorValue;
+    
+    private AccessorFactoryWrapper xmlAccessorFactory;
+    private AccessorFactoryWrapper packageLevelXmlAccessorFactory;
 
     private static String EMPTY_STRING = "";
     
@@ -1184,6 +1188,22 @@ public class TypeInfo {
      */
     void postInitialize() {
         this.originalProperties = null;
+    }
+
+    public AccessorFactoryWrapper getXmlAccessorFactory() {
+        return xmlAccessorFactory;
+    }
+
+    public void setXmlAccessorFactory(AccessorFactoryWrapper xmlAccessorFactory) {
+        this.xmlAccessorFactory = xmlAccessorFactory;
+    }
+
+    public AccessorFactoryWrapper getPackageLevelXmlAccessorFactory() {
+        return packageLevelXmlAccessorFactory;
+    }
+
+    public void setPackageLevelXmlAccessorFactory(AccessorFactoryWrapper packageLevelXmlAccessorFactory) {
+        this.packageLevelXmlAccessorFactory = packageLevelXmlAccessorFactory;
     }
 
 }

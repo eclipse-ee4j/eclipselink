@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.jaxb.compiler;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -31,6 +32,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlList;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.eclipse.persistence.internal.jaxb.AccessorFactoryWrapper;
 import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
@@ -38,6 +40,7 @@ import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.javamodel.Helper;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
+import org.eclipse.persistence.jaxb.javamodel.JavaField;
 import org.eclipse.persistence.jaxb.javamodel.JavaMethod;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaClassImpl;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes;
@@ -50,7 +53,25 @@ public class CompilerHelper {
 
     private static JAXBContext xmlBindingsModelContext;
     private static final String METADATA_MODEL_PACKAGE = "org.eclipse.persistence.jaxb.xmlmodel";
-
+    private static final String XML_ACCESSOR_FACTORY_ANNOTATION_NAME = "com.sun.xml.bind.XmlAccessorFactory";
+    private static final String INTERNAL_ACCESSOR_FACTORY_ANNOTATION_NAME = "com.sun.xml.internal.bind.XmlAccessorFactory";
+    public static Class ACCESSOR_FACTORY_ANNOTATION_CLASS = null;
+    public static Method ACCESSOR_FACTORY_VALUE_METHOD = null;
+    public static Class INTERNAL_ACCESSOR_FACTORY_ANNOTATION_CLASS = null;
+    public static Method INTERNAL_ACCESSOR_FACTORY_VALUE_METHOD = null;
+    
+    static {
+        try {
+            ACCESSOR_FACTORY_ANNOTATION_CLASS = PrivilegedAccessHelper.getClassForName(XML_ACCESSOR_FACTORY_ANNOTATION_NAME);
+            ACCESSOR_FACTORY_VALUE_METHOD = PrivilegedAccessHelper.getDeclaredMethod(ACCESSOR_FACTORY_ANNOTATION_CLASS, "value", new Class[]{});
+        } catch(Exception ex) {
+        }
+        try {
+            INTERNAL_ACCESSOR_FACTORY_ANNOTATION_CLASS = PrivilegedAccessHelper.getClassForName(INTERNAL_ACCESSOR_FACTORY_ANNOTATION_NAME);
+            INTERNAL_ACCESSOR_FACTORY_VALUE_METHOD = PrivilegedAccessHelper.getDeclaredMethod(INTERNAL_ACCESSOR_FACTORY_ANNOTATION_CLASS, "value", new Class[]{});
+        } catch(Exception ex) {
+        }
+    }
     /**
      * If 2 TypeMappingInfo objects would generate the same generated class (and
      * therefore complex type) then return the existing class otherwise return
@@ -463,5 +484,36 @@ public class CompilerHelper {
             
         }
         return false;
+    }
+
+    public static Object createAccessorFor(JavaClass jClass, Property property, Helper helper, AccessorFactoryWrapper accessorFactory) {
+        if(!(jClass.getClass() == JavaClassImpl.class)) {
+            return null;
+        }
+        Class beanClass = ((JavaClassImpl)jClass).getJavaClass();
+        if(property.isMethodProperty()) {
+            try {
+                Method getMethod = null;
+                Method setMethod = null;
+                if(property.getGetMethodName() != null) {
+                    getMethod = PrivilegedAccessHelper.getMethod(beanClass, property.getGetMethodName(), new Class[]{}, true);
+                }
+                if(property.getSetMethodName() != null) {
+                    String setMethodParamTypeName = property.getType().getName();
+                    JavaClassImpl paramType = (JavaClassImpl)helper.getJavaClass(setMethodParamTypeName);
+                    Class[] setMethodParams = new Class[]{paramType.getJavaClass()};
+                    setMethod = PrivilegedAccessHelper.getMethod(beanClass, property.getSetMethodName(), setMethodParams, true);
+                }
+                return accessorFactory.createPropertyAccessor(beanClass, getMethod, setMethod);
+            } catch(Exception ex) {}      
+        }  else {
+            try {
+                Field field = PrivilegedAccessHelper.getField(beanClass, ((JavaField)property.getElement()).getName(), true);
+                return accessorFactory.createFieldAccessor(beanClass, field, property.isReadOnly());
+            } catch(Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+        return null;
     }
 }

@@ -44,6 +44,8 @@ import org.eclipse.persistence.internal.descriptors.InstantiationPolicy;
 import org.eclipse.persistence.internal.descriptors.MethodAttributeAccessor;
 import org.eclipse.persistence.internal.descriptors.VirtualAttributeAccessor;
 import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.jaxb.AccessorFactoryWrapper;
+import org.eclipse.persistence.internal.jaxb.CustomAccessorAttributeAccessor;
 import org.eclipse.persistence.internal.jaxb.DefaultElementConverter;
 import org.eclipse.persistence.internal.jaxb.DomHandlerConverter;
 import org.eclipse.persistence.internal.jaxb.JAXBElementConverter;
@@ -2253,6 +2255,22 @@ public class MappingsGenerator {
                 // set user-defined properties if necessary
                 if (next.isSetUserProperties()) {
                     mapping.setProperties(next.getUserProperties());
+                }
+                //get package info
+                JavaClass jClass = helper.getJavaClass(info.getJavaClassName());
+                AccessorFactoryWrapper accessorFactory = info.getXmlAccessorFactory();
+                if(accessorFactory == null) {
+                    accessorFactory = info.getPackageLevelXmlAccessorFactory();
+                }
+                if(accessorFactory != null) {
+                    try {
+                        Object accessor = CompilerHelper.createAccessorFor(jClass, next, helper, accessorFactory);
+                        
+                        if(accessor != null) {
+                            CustomAccessorAttributeAccessor attributeAccessor = new CustomAccessorAttributeAccessor(accessor);
+                            mapping.setAttributeAccessor(attributeAccessor);
+                        }
+                    } catch(Exception ex) {}
                 }
             }
             next.postInitialize();
