@@ -21,6 +21,7 @@ import junit.framework.TestCase;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.platform.xml.XMLPlatformException;
 
 public class NoSchemaRefTestCases extends TestCase {
 
@@ -41,11 +42,18 @@ public class NoSchemaRefTestCases extends TestCase {
     }
 
     public void testValidateNoSchemaReference() throws JAXBException {
-        Class[] classes = {Address.class};
-        JAXBContext jc = JAXBContextFactory.createContext(classes, null);
-        Validator validator = jc.createValidator();
-        // We currently always return true for validate
-        assertTrue(validator.validate(new Address()));
+        try {
+            Class[] classes = {Address.class};
+            JAXBContext jc = JAXBContextFactory.createContext(classes, null);
+            Validator validator = jc.createValidator();
+            validator.validate(new Address());
+        } catch (ValidationException e) {
+            XMLMarshalException xme = (XMLMarshalException) e.getLinkedException();
+            XMLPlatformException xpe = (XMLPlatformException) xme.getInternalException();
+            XMLMarshalException xme2 = (XMLMarshalException) xpe.getInternalException();
+            assertEquals(XMLMarshalException.ERROR_RESOLVING_XML_SCHEMA, xme2.getErrorCode());
+            return;
+        }
     }
 
 }
