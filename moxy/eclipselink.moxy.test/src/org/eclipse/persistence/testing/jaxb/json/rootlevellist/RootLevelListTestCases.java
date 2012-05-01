@@ -21,6 +21,15 @@ public class RootLevelListTestCases extends TestSuite {
         TestSuite suite = new TestSuite("Root Level List Test Suite");
         suite.addTestSuite(WithoutXmlRootElementTestCases.class);
         suite.addTestSuite(WithXmlRootElementTestCases.class);
+        suite.addTestSuite(WithXmlRootElementSetTestCases.class);
+        suite.addTestSuite(WithoutXmlRootElementSetTestCases.class);
+        
+        suite.addTestSuite(WithXmlRootElementJAXBElementTestCases.class);
+        suite.addTestSuite(WithXmlRootElementJAXBElementNoRootTestCases.class);
+        suite.addTestSuite(WithoutXmlRootElementJAXBElementTestCases.class);        
+        suite.addTestSuite(WithXmlRootElementJAXBElementSetTestCases.class);
+        suite.addTestSuite(WithoutXmlRootElementJAXBElementSetTestCases.class);
+        
         return suite;
     }
 

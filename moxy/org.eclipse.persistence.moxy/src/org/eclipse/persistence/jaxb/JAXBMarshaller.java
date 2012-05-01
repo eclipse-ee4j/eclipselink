@@ -16,7 +16,10 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.Writer;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
@@ -340,12 +343,8 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             throw new IllegalArgumentException();
         }
 
-        if (object instanceof JAXBElement) {
-            // use the JAXBElement's properties to populate an XMLRoot
-            object = createXMLRootFromJAXBElement((JAXBElement) object);
-        } else if(object != null && object.getClass().isEnum()) {
-            object = wrapEnumeration(object, object.getClass());
-        }
+        object = modifyObjectIfNeeded(object);
+
         try {
             xmlMarshaller.marshal(object, contentHandler);
         } catch (Exception e) {
@@ -368,13 +367,8 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         if (object == null || eventWriter == null) {
             throw new IllegalArgumentException();
         }
-        // let the JAXBIntrospector determine if the object is a JAXBElement
-        if (object instanceof JAXBElement) {
-            // use the JAXBElement's properties to populate an XMLRoot
-            object = createXMLRootFromJAXBElement((JAXBElement) object);
-        } else if(object != null && object.getClass().isEnum()) {
-            object = wrapEnumeration(object, object.getClass());
-        }
+        object = modifyObjectIfNeeded(object);
+
         try {
             XMLEventWriterRecord record = new XMLEventWriterRecord(eventWriter);
             record.setMarshaller(this.xmlMarshaller);
@@ -414,13 +408,8 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         if (object == null || node == null) {
             throw new IllegalArgumentException();
         }
-        // let the JAXBIntrospector determine if the object is a JAXBElement
-        if (object instanceof JAXBElement) {
-            // use the JAXBElement's properties to populate an XMLRoot
-            object = createXMLRootFromJAXBElement((JAXBElement) object);
-        } else if(object != null && object.getClass().isEnum()) {
-            object = wrapEnumeration(object, object.getClass());
-        }
+        object = modifyObjectIfNeeded(object);
+
         try {
             xmlMarshaller.marshal(object, node);
         } catch (Exception e) {
@@ -432,13 +421,8 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         if (object == null || outputStream == null) {
             throw new IllegalArgumentException();
         }
-        // let the JAXBIntrospector determine if the object is a JAXBElement
-        if (object instanceof JAXBElement) {
-            // use the JAXBElement's properties to populate an XMLRoot
-            object = createXMLRootFromJAXBElement((JAXBElement) object);
-        } else if(object != null && object.getClass().isEnum()) {
-            object = wrapEnumeration(object, object.getClass());
-        }
+        object = modifyObjectIfNeeded(object);
+
         try {
             xmlMarshaller.marshal(object, outputStream);
         } catch (Exception e) {
@@ -463,13 +447,8 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         if (object == null || result == null) {
             throw new IllegalArgumentException();
         }
-        // let the JAXBIntrospector determine if the object is a JAXBElement
-        if (object instanceof JAXBElement) {
-            // use the JAXBElement's properties to populate an XMLRoot
-            object = createXMLRootFromJAXBElement((JAXBElement) object);
-        } else if(object != null && object.getClass().isEnum()) {
-            object = wrapEnumeration(object, object.getClass());
-        }
+        object = modifyObjectIfNeeded(object);
+
         try {
             xmlMarshaller.marshal(object, result);
         } catch (Exception e) {
@@ -505,13 +484,8 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         if (object == null || streamWriter == null) {
             throw new IllegalArgumentException();
         }
-        // let the JAXBIntrospector determine if the object is a JAXBElement
-        if (object instanceof JAXBElement) {
-            // use the JAXBElement's properties to populate an XMLRoot
-            object = createXMLRootFromJAXBElement((JAXBElement) object);
-        } else if(object != null && object.getClass().isEnum()) {
-            object = wrapEnumeration(object, object.getClass());
-        }
+        object = modifyObjectIfNeeded(object);
+        
         try {
             XMLStreamWriterRecord record = new XMLStreamWriterRecord(streamWriter);
             record.setMarshaller(this.xmlMarshaller);
@@ -519,6 +493,30 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         } catch (Exception ex) {
             throw new MarshalException(ex);
         }
+    }
+    
+    private Object modifyObjectIfNeeded(Object obj){    	
+    	if(obj instanceof Collection){
+    		Collection objectList = (Collection)obj;    		
+    		List newList = new ArrayList(objectList.size());
+    		for(Object o:objectList){
+    			newList.add(modifySingleObjectIfNeeded(o));
+    		} 
+    		return newList;
+        }else{
+    		return modifySingleObjectIfNeeded(obj);
+    	}    	
+    }
+    
+    private Object modifySingleObjectIfNeeded(Object obj){
+    	// let the JAXBIntrospector determine if the object is a JAXBElement
+        if (obj instanceof JAXBElement) {
+            // use the JAXBElement's properties to populate an XMLRoot
+            return createXMLRootFromJAXBElement((JAXBElement) obj);
+        } else if(obj != null && obj.getClass().isEnum()) {
+        	return wrapEnumeration(obj, obj.getClass());
+        } 
+    	return obj;
     }
 
     public void marshal(Object object, XMLStreamWriter streamWriter, TypeMappingInfo type) throws JAXBException {
@@ -548,6 +546,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
     }
 
     private Object wrapObject(Object object, JAXBElement wrapperElement, TypeMappingInfo typeMappingInfo) {
+    	
         Class generatedClass = jaxbContext.getTypeMappingInfoToGeneratedType().get(typeMappingInfo);
         if(generatedClass != null && object == null && wrapperElement != null) {
             return wrapObjectInXMLRoot(wrapperElement, object);
@@ -601,13 +600,8 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         if (object == null || writer == null) {
             throw new IllegalArgumentException();
         }
-        // let the JAXBIntrospector determine if the object is a JAXBElement
-        if (object instanceof JAXBElement) {
-            // use the JAXBElement's properties to populate an XMLRoot
-            object = createXMLRootFromJAXBElement((JAXBElement) object);
-        } else if(object != null && object.getClass().isEnum()) {
-            object = wrapEnumeration(object, object.getClass());
-        }
+        object = modifyObjectIfNeeded(object);
+
         try {
             xmlMarshaller.marshal(object, writer);
         } catch (Exception e) {
@@ -619,13 +613,8 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         if (object == null || record == null) {
             throw new IllegalArgumentException();
         }
-        // let the JAXBIntrospector determine if the object is a JAXBElement
-        if (object instanceof JAXBElement) {
-            // use the JAXBElement's properties to populate an XMLRoot
-            object = createXMLRootFromJAXBElement((JAXBElement) object);
-        } else if(object != null && object.getClass().isEnum()) {
-            object = wrapEnumeration(object, object.getClass());
-        }
+        object = modifyObjectIfNeeded(object);
+
         try {
             record.setMarshaller(xmlMarshaller);
             xmlMarshaller.marshal(object, record);

@@ -12,7 +12,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.annotations.xmlvalue.text;
 
-import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class NestedTextTestCases extends JAXBWithJSONTestCases {
@@ -25,13 +24,6 @@ public class NestedTextTestCases extends JAXBWithJSONTestCases {
         setClasses(new Class[] {Top.class});
         setControlDocument(XML_RESOURCE);
          setControlJSON(JSON_RESOURCE);
-    }
-
-    @Override
-    public void setUp() throws Exception{
-        super.setUp();
-        jaxbMarshaller.setProperty(JAXBContext.JSON_VALUE_WRAPPER, "value");
-        jaxbUnmarshaller.setProperty(JAXBContext.JSON_VALUE_WRAPPER, "value");
     }
 
     @Override

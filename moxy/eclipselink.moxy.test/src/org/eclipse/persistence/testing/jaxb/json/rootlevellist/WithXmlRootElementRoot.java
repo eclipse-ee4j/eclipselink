@@ -15,7 +15,7 @@ package org.eclipse.persistence.testing.jaxb.json.rootlevellist;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="root")
-public class WithXmlRootElementRoot {
+public class WithXmlRootElementRoot {//implements Comparable<WithXmlRootElementRoot>{
 
     private String name;
 
@@ -39,5 +39,16 @@ public class WithXmlRootElementRoot {
             return name.equals(test.getName());
         }
     }
-
+/*
+	@Override
+	public int compareTo(WithXmlRootElementRoot o) {
+		boolean isEqual = this.equals(o);
+		if(name.equals("FOO")){
+			return -1;
+		}else if(name.equals("BAR")){
+			return 1;
+		}
+		return 1;
+	}
+*/
 }

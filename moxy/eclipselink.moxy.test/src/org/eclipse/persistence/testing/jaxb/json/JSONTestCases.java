@@ -14,6 +14,8 @@ package org.eclipse.persistence.testing.jaxb.json;
 
 import java.io.ByteArrayOutputStream;
 import java.io.StringWriter;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
@@ -109,7 +111,21 @@ public abstract class JSONTestCases extends OXTestCase{
             JAXBElement testObj = (JAXBElement)testObject;
             compareJAXBElementObjects(controlObj, testObj);
         } else {
-            assertEquals(getReadControlObject(), testObject);
+        	Object control = getReadControlObject();
+        	
+        	if(testObject instanceof Collection && control instanceof Collection){
+        		Collection testCollection = (Collection)testObject;
+        		Collection controlCollection = (Collection)control;
+        		assertTrue(testCollection.size() == controlCollection.size());
+        		Iterator testIter = testCollection.iterator();
+        		Iterator controlIter = controlCollection.iterator();
+        		while(controlIter.hasNext()){
+        			assertEquals(controlIter.next(), testIter.next());
+        		}
+        	}else{
+        	
+               assertEquals(control, testObject);
+        	}
         }
     }
 	    

@@ -39,6 +39,7 @@ import org.eclipse.persistence.internal.oxm.record.deferred.DescriptorNotFoundCo
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.oxm.record.XMLRootRecord;
@@ -54,14 +55,19 @@ public class JSONReader extends XMLReaderAdapter {
     private Properties properties;
     private String attributePrefix = null;
     private NamespaceResolver namespaces = null;
-    protected boolean includeRoot;
-    protected String textWrapper;
+    private boolean includeRoot;
+    private String textWrapper;
+    private Class unmarshalClass;
 
     public JSONReader(String attrPrefix, NamespaceResolver nr, boolean namespaceAware, boolean includeRoot, ErrorHandler errorHandler, String textWrapper){
-        this(attrPrefix, nr, namespaceAware, includeRoot, XMLConstants.DOT, errorHandler, textWrapper);        
+        this(attrPrefix, nr, namespaceAware, includeRoot, XMLConstants.DOT, errorHandler, textWrapper, null);        
     }
     
-    private JSONReader(String attrPrefix, NamespaceResolver nr, boolean namespaceAware, boolean includeRoot, char namespaceSeparator, ErrorHandler errorHandler, String textWrapper){
+    public JSONReader(String attrPrefix, NamespaceResolver nr, boolean namespaceAware, boolean includeRoot, ErrorHandler errorHandler, String textWrapper, Class unmarshalClass){
+        this(attrPrefix, nr, namespaceAware, includeRoot, XMLConstants.DOT, errorHandler, textWrapper, unmarshalClass);        
+    }
+    
+    private JSONReader(String attrPrefix, NamespaceResolver nr, boolean namespaceAware, boolean includeRoot, char namespaceSeparator, ErrorHandler errorHandler, String textWrapper, Class unmarshalClass){
         this.attributePrefix = attrPrefix;
     	if(attributePrefix == XMLConstants.EMPTY_STRING){
     	    attributePrefix = null;    	    	
@@ -72,6 +78,7 @@ public class JSONReader extends XMLReaderAdapter {
     	this.includeRoot = includeRoot;   
     	this.setErrorHandler(errorHandler);
     	this.textWrapper = textWrapper;
+    	this.unmarshalClass = unmarshalClass;
     }
     
     private JSONAttributes attributes = new JSONAttributes();
@@ -131,6 +138,12 @@ public class JSONReader extends XMLReaderAdapter {
     		}
     		contentHandler.endDocument();
         } else if(tree.getType() == JSONLexer.ARRAY){
+        	
+        	SAXUnmarshallerHandler rootContentHandler = null;  
+      	    if(getContentHandler() instanceof SAXUnmarshallerHandler) {
+      		  rootContentHandler = (SAXUnmarshallerHandler)getContentHandler();
+      	    }
+      	
             int size = tree.getChildCount();
             List list = new ArrayList(size);
             for(int x=0; x<size; x++) {
@@ -141,15 +154,31 @@ public class JSONReader extends XMLReaderAdapter {
                     saxUnmarshallerHandler.setObject(null);
                 } else if(getContentHandler() instanceof UnmarshalRecord) {
                     UnmarshalRecord unmarshalRecord = (UnmarshalRecord) contentHandler;
-                    list.add(unmarshalRecord.getCurrentObject());
+                    Object unmarshalledObject = unmarshalRecord.getCurrentObject();
+                    if(includeRoot && unmarshalClass != null){
+                    	XMLRoot xmlRoot = new XMLRoot();
+                    	xmlRoot.setNamespaceURI(unmarshalRecord.getRootElementNamespaceUri());
+                    	xmlRoot.setLocalName(unmarshalRecord.getLocalName());
+                        xmlRoot.setObject(unmarshalledObject);
+                        unmarshalledObject = xmlRoot;
+                    }
+                    list.add(unmarshalledObject);
                     unmarshalRecord.setCurrentObject(null);
+                    unmarshalRecord.setRootElementName(null);
+            		unmarshalRecord.setLocalName(null);
                 }
             }
             if(getContentHandler() instanceof SAXUnmarshallerHandler) {
                 ((SAXUnmarshallerHandler) getContentHandler()).setObject(list);
             } else if(getContentHandler() instanceof UnmarshalRecord) {
                 ((UnmarshalRecord) getContentHandler()).setCurrentObject(list);
+               	((UnmarshalRecord) getContentHandler()).setRootElementName(XMLConstants.EMPTY_STRING);
+               	((UnmarshalRecord) getContentHandler()).setLocalName(XMLConstants.EMPTY_STRING);
+                if(rootContentHandler != null){
+                	rootContentHandler.setObject(list);
+                }
             }
+            
         }
     }
     

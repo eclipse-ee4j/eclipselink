@@ -23,6 +23,7 @@ import java.lang.reflect.Type;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -423,11 +424,11 @@ public class JAXBUnmarshaller implements Unmarshaller {
                     StreamSource streamSource = (StreamSource) source;
                     boolean namespaceAware = namespaceResolver != null;
                     if (null != streamSource.getReader()) {
-                        return buildJAXBElementFromObject(xmlUnmarshaller.unmarshal(new JSONReader(attributePrefix, namespaceResolver, namespaceAware, includeRoot, xmlUnmarshaller.getErrorHandler(), xmlUnmarshaller.getValueWrapper()), new InputSource(streamSource.getReader()), classToUnmarshalTo), javaClass);
+                        return buildJAXBElementFromObject(xmlUnmarshaller.unmarshal(new JSONReader(attributePrefix, namespaceResolver, namespaceAware, includeRoot, xmlUnmarshaller.getErrorHandler(), xmlUnmarshaller.getValueWrapper(),classToUnmarshalTo), new InputSource(streamSource.getReader()), classToUnmarshalTo), javaClass);
                     } else if (null != streamSource.getInputStream()) {                        
-                        return buildJAXBElementFromObject(xmlUnmarshaller.unmarshal(new JSONReader(attributePrefix, namespaceResolver, namespaceAware, includeRoot, xmlUnmarshaller.getErrorHandler(), xmlUnmarshaller.getValueWrapper()), new InputSource(streamSource.getInputStream()), classToUnmarshalTo), javaClass);
+                        return buildJAXBElementFromObject(xmlUnmarshaller.unmarshal(new JSONReader(attributePrefix, namespaceResolver, namespaceAware, includeRoot, xmlUnmarshaller.getErrorHandler(), xmlUnmarshaller.getValueWrapper(),classToUnmarshalTo), new InputSource(streamSource.getInputStream()), classToUnmarshalTo), javaClass);
                     } else {                    	                    	
-                        return buildJAXBElementFromObject(xmlUnmarshaller.unmarshal(new JSONReader(attributePrefix, namespaceResolver, namespaceAware, includeRoot, xmlUnmarshaller.getErrorHandler(), xmlUnmarshaller.getValueWrapper()), new InputSource(streamSource.getSystemId()), classToUnmarshalTo), javaClass);                    	
+                        return buildJAXBElementFromObject(xmlUnmarshaller.unmarshal(new JSONReader(attributePrefix, namespaceResolver, namespaceAware, includeRoot, xmlUnmarshaller.getErrorHandler(), xmlUnmarshaller.getValueWrapper(),classToUnmarshalTo), new InputSource(streamSource.getSystemId()), classToUnmarshalTo), javaClass);                    	
                     }
                 } 
         	}
@@ -450,11 +451,11 @@ public class JAXBUnmarshaller implements Unmarshaller {
                 StreamSource streamSource = (StreamSource) source;
                 boolean namespaceAware = namespaceResolver != null;
                 if (null != streamSource.getReader()) {
-                    return buildJAXBElementFromObject(xmlUnmarshaller.unmarshal(new JSONReader(attributePrefix, namespaceResolver, namespaceAware, includeRoot, xmlUnmarshaller.getErrorHandler(), xmlUnmarshaller.getValueWrapper()), new InputSource(streamSource.getReader()), classToUnmarshalTo), declaredType);
+                    return buildJAXBElementFromObject(xmlUnmarshaller.unmarshal(new JSONReader(attributePrefix, namespaceResolver, namespaceAware, includeRoot, xmlUnmarshaller.getErrorHandler(), xmlUnmarshaller.getValueWrapper(),classToUnmarshalTo), new InputSource(streamSource.getReader()), classToUnmarshalTo), declaredType);
                 } else if (null != streamSource.getInputStream()) {                        
-                    return buildJAXBElementFromObject(xmlUnmarshaller.unmarshal(new JSONReader(attributePrefix, namespaceResolver, namespaceAware, includeRoot, xmlUnmarshaller.getErrorHandler(), xmlUnmarshaller.getValueWrapper()), new InputSource(streamSource.getInputStream()), classToUnmarshalTo), declaredType);
+                    return buildJAXBElementFromObject(xmlUnmarshaller.unmarshal(new JSONReader(attributePrefix, namespaceResolver, namespaceAware, includeRoot, xmlUnmarshaller.getErrorHandler(), xmlUnmarshaller.getValueWrapper(),classToUnmarshalTo), new InputSource(streamSource.getInputStream()), classToUnmarshalTo), declaredType);
                 } else {                    	                    	
-                    return buildJAXBElementFromObject(xmlUnmarshaller.unmarshal(new JSONReader(attributePrefix, namespaceResolver, namespaceAware, includeRoot, xmlUnmarshaller.getErrorHandler(), xmlUnmarshaller.getValueWrapper()), new InputSource(streamSource.getSystemId()), classToUnmarshalTo), declaredType);                    	
+                    return buildJAXBElementFromObject(xmlUnmarshaller.unmarshal(new JSONReader(attributePrefix, namespaceResolver, namespaceAware, includeRoot, xmlUnmarshaller.getErrorHandler(), xmlUnmarshaller.getValueWrapper(),classToUnmarshalTo), new InputSource(streamSource.getSystemId()), classToUnmarshalTo), declaredType);                    	
                 }
             } 
     	}
@@ -959,21 +960,26 @@ public class JAXBUnmarshaller implements Unmarshaller {
     private JAXBElement createJAXBElementFromXMLRoot(XMLRoot xmlRoot, Class declaredType){
         Object value = xmlRoot.getObject();
 
-        if(value instanceof WrappedValue){
+        if(value instanceof List){
+		    List theList = (List)value;
+		    for(int i=0;i<theList.size(); i++){
+		    	Object next = theList.get(i);
+			    if(next instanceof XMLRoot){
+			    	theList.set(i, createJAXBElementFromXMLRoot((XMLRoot)next, declaredType));
+			    }    				
+			}    		
+	    } else if (value instanceof WrappedValue){
             QName qname = new QName(xmlRoot.getNamespaceURI(), xmlRoot.getLocalName());
             return new JAXBElement(qname, ((WrappedValue)value).getDeclaredType(), ((WrappedValue)value).getValue());
-        }
-
-        if(value instanceof JAXBElement) {
+        } else if(value instanceof JAXBElement) {
            return (JAXBElement) value;
+        } else if (value instanceof ManyValue){
+            value = ((ManyValue)value).getItem();
         }
         
         QName qname = new QName(xmlRoot.getNamespaceURI(), xmlRoot.getLocalName());
         XPathQName xpathQName = new XPathQName(xmlRoot.getNamespaceURI(), xmlRoot.getLocalName(), xmlUnmarshaller.getMediaType() == MediaType.APPLICATION_XML);
-        if(value instanceof ManyValue){
-            value = ((ManyValue)value).getItem();
-        }
-
+    
         Map<QName, Class> qNamesToDeclaredClasses = jaxbContext.getQNamesToDeclaredClasses();
         if(qNamesToDeclaredClasses != null){
         	Class declaredClass = qNamesToDeclaredClasses.get(qname);    

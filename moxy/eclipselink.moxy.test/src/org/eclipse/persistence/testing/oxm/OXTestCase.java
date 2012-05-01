@@ -23,7 +23,6 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.util.Collection;
 import java.util.Iterator;
@@ -384,6 +383,13 @@ public abstract class OXTestCase extends XMLTestCase {
         }
     }
   
+    protected void compareValues(Object controlValue, Object testValue){
+    	if(controlValue instanceof JAXBElement && testValue instanceof JAXBElement){
+    		compareJAXBElementObjects((JAXBElement)controlValue, (JAXBElement)testValue);
+    	}else{
+    		super.compareValues(controlValue, testValue);
+    	}
+    }
 
     protected String loadFileToString(String fileName){
         StringBuffer sb = new StringBuffer();
