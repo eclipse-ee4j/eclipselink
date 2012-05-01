@@ -1719,7 +1719,9 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             login.setPlatformClassName(eclipselinkPlatform, this.persistenceUnitInfo.getClassLoader());
         }        
         // Check for EIS platform, need to use an EIS login.
+        boolean isEIS = false;
         if (login.getDatasourcePlatform() instanceof EISPlatform) {
+            isEIS = true;
             EISLogin newLogin = new EISLogin();
             newLogin.setDatasourcePlatform(login.getDatasourcePlatform());
             this.session.setDatasourceLogin(newLogin);
@@ -1815,6 +1817,11 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         
         login.setUsesExternalTransactionController(transactionType == PersistenceUnitTransactionType.JTA);
 
+        // Avoid processing data-source if EIS, as container may pass in a default one.
+        if (isEIS) {
+            return;
+        }
+        
         javax.sql.DataSource mainDatasource = null;
         javax.sql.DataSource readDatasource = null;
         if (login.shouldUseExternalTransactionController()) {
