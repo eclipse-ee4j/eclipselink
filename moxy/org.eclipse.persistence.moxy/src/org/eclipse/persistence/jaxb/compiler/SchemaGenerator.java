@@ -1469,7 +1469,8 @@ public class SchemaGenerator {
         // '.' xml-path requires special handling
         if (property.getXmlPath().equals(DOT)) {
             TypeInfo info = (TypeInfo) typeInfo.get(property.getActualType().getQualifiedName());
-            addToSchemaType(info, info.getPropertyList(), compositor, type, info.getSchema());
+            JavaClass infoClass = property.getActualType();
+            addSelfProperties(infoClass, info, compositor, type);
             return null;
         }
         // create the XPathFragment(s) for the path
@@ -1484,7 +1485,18 @@ public class SchemaGenerator {
         // build the schema components for the xml-path
         return buildSchemaComponentsForXPath(xfld.getXPathFragment(), new AddToSchemaResult(compositor, schema), isChoice, property);
     }
-    
+
+    private void addSelfProperties(JavaClass aJavaClass, TypeInfo info, TypeDefParticle compositor, ComplexType type) {
+        // Recursively add all properties from aJavaClass and its superclasses, adding superclass properties first.
+        if (aJavaClass.getSuperclass() != null) {
+            TypeInfo superInfo = (TypeInfo) typeInfo.get(aJavaClass.getSuperclass().getQualifiedName());
+            if (superInfo != null) {
+                addSelfProperties(aJavaClass.getSuperclass(), superInfo, compositor, type);
+            }
+        }
+        addToSchemaType(info, info.getPropertyList(), compositor, type, info.getSchema());
+    }
+
     /**
      * Convenience method for processing an XmlElementWrapper for a given property. Required schema
      * components will be generated and set accordingly.

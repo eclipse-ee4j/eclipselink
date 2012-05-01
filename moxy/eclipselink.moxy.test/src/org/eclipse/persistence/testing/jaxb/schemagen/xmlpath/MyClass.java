@@ -32,11 +32,13 @@ public class MyClass {
     @XmlPath("phones/phone[@type='work']")
     public Phone workPhone;
     
+    @XmlPath(".")
+    public CanadianAddress address;
+    
     public boolean equals(Object obj) {
         MyClass myClass = (MyClass)obj;
         return email.equals(myClass.email) && name.equals(myClass.name)&& confirmed == myClass.confirmed && homePhone.equals(myClass.homePhone) 
-                && workPhone.equals(myClass.workPhone); 
-        
+                && workPhone.equals(myClass.workPhone) && address.equals(myClass.address); 
     }
 
 }

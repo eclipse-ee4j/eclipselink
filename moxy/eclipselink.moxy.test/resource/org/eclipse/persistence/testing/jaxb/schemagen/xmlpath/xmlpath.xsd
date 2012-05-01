@@ -2,11 +2,24 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
    <xsd:complexType name="phone">
       <xsd:simpleContent>
-         <xsd:extension base="xsd:string">
-            <xsd:attribute name="type" type="xsd:string"/>
-         </xsd:extension>
+         <xsd:extension base="xsd:string"/>
       </xsd:simpleContent>
    </xsd:complexType>
+   <xsd:complexType name="address">
+      <xsd:sequence>
+         <xsd:element minOccurs="0" name="street" type="xsd:string"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="canadianAddress">
+      <xsd:complexContent>
+         <xsd:extension base="address">
+            <xsd:sequence>
+               <xsd:element minOccurs="0" name="province" type="xsd:string"/>
+               <xsd:element minOccurs="0" name="postalCode" type="xsd:string"/>
+            </xsd:sequence>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>   
    <xsd:complexType name="myClass">
       <xsd:sequence>
          <xsd:element minOccurs="0" name="name" type="xsd:string"/>
@@ -26,6 +39,9 @@
                </xsd:sequence>
             </xsd:complexType>
          </xsd:element>
+         <xsd:element minOccurs="0" name="street" type="xsd:string"/>
+         <xsd:element minOccurs="0" name="province" type="xsd:string"/>
+         <xsd:element minOccurs="0" name="postalCode" type="xsd:string"/>
       </xsd:sequence>
    </xsd:complexType>
    <xsd:element name="myclass" type="myClass"/>

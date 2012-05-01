@@ -28,10 +28,7 @@ public class SchemaGenXmlPathTestCases extends JAXBTestCases {
 
     public void init() throws Exception {
         setControlDocument(XML_RESOURCE);
-        Class[] classes = new Class[2];
-        classes[0] = MyClass.class;
-        classes[1] = Phone.class;
-        setClasses(classes);
+        setClasses(new Class[] { MyClass.class, Phone.class, Address.class, CanadianAddress.class });
     }
 
     public  List<InputStream> getControlSchemaFiles(){      
@@ -40,8 +37,7 @@ public class SchemaGenXmlPathTestCases extends JAXBTestCases {
         controlSchema.add(instream);
         return controlSchema;
     }
-    
- 
+
     public void testSchemaGen() throws Exception {
         testSchemaGen(getControlSchemaFiles());
     }
@@ -55,6 +51,12 @@ public class SchemaGenXmlPathTestCases extends JAXBTestCases {
         obj.homePhone.number = "123-4567";
         obj.workPhone = new Phone();
         obj.workPhone.number = "345-6789";
+        CanadianAddress a = new CanadianAddress();
+        a.street = "123 Main St.";
+        a.postalCode = "A1B 2C3";
+        a.province = "Nunavut";
+        obj.address = a;
         return obj;
     }
+
 }

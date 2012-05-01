@@ -59,6 +59,7 @@ public class SchemaGenTestSuite extends TestSuite {
         suite.addTestSuite(SchemaGenInheritanceTestCases.class);
         suite.addTestSuite(InherianceWithTransientTestCases.class);
         suite.addTestSuite(InheritanceImportsTestCases.class);
+        suite.addTestSuite(SchemaGenXmlPathTestCases.class);
         return suite;
     }
 

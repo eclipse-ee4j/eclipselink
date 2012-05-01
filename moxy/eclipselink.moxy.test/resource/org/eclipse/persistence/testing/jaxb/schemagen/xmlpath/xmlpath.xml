@@ -5,4 +5,7 @@
       <phone type="home">123-4567</phone>
       <phone type="work">345-6789</phone>
    </phones>
+   <street>123 Main St.</street>
+   <province>Nunavut</province>
+   <postalCode>A1B 2C3</postalCode>
 </myclass>
