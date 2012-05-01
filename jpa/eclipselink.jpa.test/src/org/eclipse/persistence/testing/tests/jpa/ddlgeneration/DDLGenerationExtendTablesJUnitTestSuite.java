@@ -79,8 +79,10 @@ public class DDLGenerationExtendTablesJUnitTestSuite extends
         properties.put(PersistenceUnitProperties.DDL_GENERATION_MODE, PersistenceUnitProperties.DDL_DATABASE_GENERATION);
         //this causes DDL generation to occur on refreshMetadata rather than wait until an em is obtained
         properties.put(PersistenceUnitProperties.DEPLOY_ON_STARTUP, "true");
-
+        // JEE requires a transaction to keep the em open.
+        beginTransaction(em);
         JpaHelper.getEntityManagerFactory(em).refreshMetadata(properties);
+        commitTransaction(em);
         closeEntityManager(em);
         clearCache(DDL_PU);
 
