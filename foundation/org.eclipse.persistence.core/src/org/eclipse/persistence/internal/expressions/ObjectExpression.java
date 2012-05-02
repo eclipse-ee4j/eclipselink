@@ -165,10 +165,16 @@ public abstract class ObjectExpression extends DataExpression {
      *     Java: no direct equivalent
      *     SQL: SELECT DISTINCT ... WHERE (t2.MGR_ID = t1.ID) AND (t2.F_NAME = 'Bob')
      * </pre></blockquote>
+     * @parameter shouldJoinBeIndependent indicates whether a new expression should be created.
      */
     @Override
-    public Expression anyOf(String attributeName) {
-        QueryKeyExpression queryKey = newDerivedExpressionNamed(attributeName);
+    public Expression anyOf(String attributeName, boolean shouldJoinBeIndependent) {
+        QueryKeyExpression queryKey;
+        if (shouldJoinBeIndependent) {
+            queryKey = newDerivedExpressionNamed(attributeName);
+        } else {
+            queryKey = derivedExpressionNamed(attributeName);
+        }
         queryKey.doQueryToManyRelationship();
         return queryKey;
     }
@@ -183,10 +189,16 @@ public abstract class ObjectExpression extends DataExpression {
      *     Java: no direct equivalent
      *     SQL: SELECT DISTINCT ... WHERE (t2.MGR_ID (+) = t1.ID) AND (t2.F_NAME = 'Bob')
      * </pre></blockquote>
+     * @parameter shouldJoinBeIndependent indicates whether a new expression should be created.
      */
     @Override
-    public Expression anyOfAllowingNone(String attributeName) {
-        QueryKeyExpression queryKey = newDerivedExpressionNamed(attributeName);
+    public Expression anyOfAllowingNone(String attributeName, boolean shouldJoinBeIndependent) {
+        QueryKeyExpression queryKey;
+        if (shouldJoinBeIndependent) {
+            queryKey = newDerivedExpressionNamed(attributeName);
+        } else {
+            queryKey = derivedExpressionNamed(attributeName);
+        }
         queryKey.doUseOuterJoin();
         queryKey.doQueryToManyRelationship();
         return queryKey;

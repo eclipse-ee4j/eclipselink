@@ -913,9 +913,9 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
         Expression joinMappingExpression = null;
         if (mapping.isCollectionMapping()) {
             if (mapping.isInnerJoinFetched()) {
-                joinMappingExpression = getBaseExpressionBuilder().anyOf(mapping.getAttributeName());
+                joinMappingExpression = getBaseExpressionBuilder().anyOf(mapping.getAttributeName(), false);
             } else if (mapping.isOuterJoinFetched()) {
-                joinMappingExpression = getBaseExpressionBuilder().anyOfAllowingNone(mapping.getAttributeName());
+                joinMappingExpression = getBaseExpressionBuilder().anyOfAllowingNone(mapping.getAttributeName(), false);
             }
             if (joinMappingExpression != null) {
                 addJoinedMappingExpression(joinMappingExpression);
