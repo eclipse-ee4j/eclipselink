@@ -248,11 +248,44 @@ public abstract class Expression implements Serializable, Cloneable {
      * </table>
      */
     public Expression anyOf(String attributeName) {
-        QueryKeyExpression queryKey = (QueryKeyExpression)get(attributeName);
+        return anyOf(attributeName, true);
+    }
 
-        queryKey.doQueryToManyRelationship();
-        return queryKey;
-
+    /**
+     * ADVANCED:
+     * Return an expression representing traversal of a 1:many or many:many relationship.
+     * This allows you to query whether any of the "many" side of the relationship satisfies the remaining criteria.
+     * <p>Example:
+     * <p>
+     * <table border=0 summary="This table compares an example EclipseLink anyOf Expression to Java and SQL">
+     * <tr>
+     * <th id="c1">Format</th>
+     * <th id="c2">Equivalent</th>
+     * </tr>
+     * <tr>
+     * <td headers="c1">EclipseLink</td>
+     * <td headers="c2">
+     * <pre>
+     * ReadAllQuery query = new ReadAllQuery(Employee.class);</br>
+     * ExpressionBuilder builder = new ExpressionBuilder();</br>
+     * Expression exp = builder.get("id").equal("14858");</br>
+     * exp = exp.or(builder.anyOf("managedEmployees").get("firstName").equal("Bob"));</br>
+     * </pre>
+     * </td>
+     * </tr>
+     * <tr>
+     * <td headers="c1">Java</td>
+     * <td headers="c2">No direct equivalent</td>
+     * </tr>
+     * <tr>
+     * <td headers="c1">SQL</td>
+     * <td headers="c2">SELECT DISTINCT ... WHERE (t2.MGR_ID (+) = t1.ID) AND (t2.F_NAME = 'Bob')</td>
+     * </tr>
+     * </table>
+     * @parameter shouldJoinBeIndependent indicates whether a new expression should be created.
+     */
+    public Expression anyOf(String attributeName, boolean shouldJoinBeIndependent) {
+        throw new UnsupportedOperationException("anyOf");
     }
 
     /**
@@ -261,7 +294,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * This allows you to query whether any of the "many" side of the relationship satisfies the remaining criteria.
      * This version of the anyOf operation performs an outer join.
      * Outer joins allow the join to performed even if the target of the relationship is empty.
-     * NOTE: outer joins are not supported on all database and have differing symantics.
+     * NOTE: outer joins are not supported on all database and have differing semantics.
      * <p>Example:
      * <p>
      * <table border=0 summary="This table compares an example EclipseLink anyOfAllowingNone Expression to Java and SQL">
@@ -291,10 +324,47 @@ public abstract class Expression implements Serializable, Cloneable {
      * </table>
      */
     public Expression anyOfAllowingNone(String attributeName) {
-        QueryKeyExpression queryKey = (QueryKeyExpression)getAllowingNull(attributeName);
-
-        queryKey.doQueryToManyRelationship();
-        return queryKey;
+        return anyOfAllowingNone(attributeName, true);
+    }
+    
+    /**
+     * ADVANCED:
+     * Return an expression representing traversal of a 1:many or many:many relationship.
+     * This allows you to query whether any of the "many" side of the relationship satisfies the remaining criteria.
+     * This version of the anyOf operation performs an outer join.
+     * Outer joins allow the join to performed even if the target of the relationship is empty.
+     * NOTE: outer joins are not supported on all database and have differing semantics.
+     * <p>Example:
+     * <p>
+     * <table border=0 summary="This table compares an example EclipseLink anyOfAllowingNone Expression to Java and SQL">
+     * <tr>
+     * <th id="c1">Format</th>
+     * <th id="c2">Equivalent</th>
+     * </tr>
+     * <tr>
+     * <td headers="c1">EclipseLink</td>
+     * <td headers="c2">
+     * <pre>
+     * ReadAllQuery query = new ReadAllQuery(Employee.class);</br>
+     * ExpressionBuilder builder = new ExpressionBuilder();</br>
+     * Expression exp = builder.get("id").equal("14858");</br>
+     * exp = exp.or(builder.anyOfAllowingNone("managedEmployees").get("firstName").equal("Bob"));</br>
+     * </pre>
+     * </td>
+     * </tr>
+     * <tr>
+     * <td headers="c1">Java</td>
+     * <td headers="c2">No direct equivalent</td>
+     * </tr>
+     * <tr>
+     * <td headers="c1">SQL</td>
+     * <td headers="c2">SELECT DISTINCT ... WHERE (t2.MGR_ID (+) = t1.ID) AND (t2.F_NAME = 'Bob')</td>
+     * </tr>
+     * </table>
+     * @parameter shouldJoinBeIndependent indicates whether a new expression should be created.
+     */
+    public Expression anyOfAllowingNone(String attributeName, boolean shouldJoinBeIndependent) {
+        throw new UnsupportedOperationException("anyOfAllowingNone");
 
     }
     

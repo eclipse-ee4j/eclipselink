@@ -880,7 +880,6 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
         ObjectBuilder objectBuilder = getDescriptor().getObjectBuilder();
         if (objectBuilder.hasJoinedAttributes()) {
             List mappingJoinedAttributes = objectBuilder.getJoinedAttributes();
-            Expression joinMappingExpression = null;
             if (!hasJoinedAttributeExpressions()) {
                 for (int i = 0; i < mappingJoinedAttributes.size(); i++) {
                     ForeignReferenceMapping mapping = (ForeignReferenceMapping) mappingJoinedAttributes.get(i);
@@ -914,9 +913,9 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
         Expression joinMappingExpression = null;
         if (mapping.isCollectionMapping()) {
             if (mapping.isInnerJoinFetched()) {
-                joinMappingExpression = getBaseExpressionBuilder().anyOf(mapping.getAttributeName());
+                joinMappingExpression = getBaseExpressionBuilder().anyOf(mapping.getAttributeName(), false);
             } else if (mapping.isOuterJoinFetched()) {
-                joinMappingExpression = getBaseExpressionBuilder().anyOfAllowingNone(mapping.getAttributeName());
+                joinMappingExpression = getBaseExpressionBuilder().anyOfAllowingNone(mapping.getAttributeName(), false);
             }
             if (joinMappingExpression != null) {
                 addJoinedMappingExpression(joinMappingExpression);

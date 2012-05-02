@@ -1365,13 +1365,20 @@ public class QueryHintsHandler {
                     if (mapping == null){
                         throw QueryException.queryHintNavigatedNonExistantRelationship(query, QueryHints.FETCH, valueToApply, previousToken + "." + token);
                     } else if (!mapping.isForeignReferenceMapping()){
-                        throw QueryException.queryHintNavigatedIllegalRelationship(query, QueryHints.FETCH, valueToApply, previousToken + "." + token);
-                    } else {
-                        frMapping = (ForeignReferenceMapping)mapping;
+                        while (mapping.isAggregateObjectMapping() && tokenizer.hasMoreTokens()){
+                            expression = expression.get(token);
+                            token = tokenizer.nextToken();
+                            descriptor = ((org.eclipse.persistence.mappings.AggregateObjectMapping)mapping).getReferenceDescriptor();
+                            mapping = descriptor.getObjectBuilder().getMappingForAttributeName(token);
+                        }
+                        if (!mapping.isForeignReferenceMapping()){
+                            throw QueryException.queryHintNavigatedIllegalRelationship(query, QueryHints.FETCH, valueToApply, previousToken + "." + token);
+                        }
                     }
+                    frMapping = (ForeignReferenceMapping)mapping;
                     descriptor = frMapping.getReferenceDescriptor();
                     if (frMapping.isCollectionMapping()){
-                        expression = expression.anyOf(token);
+                        expression = expression.anyOf(token, false);
                     } else {
                         expression = expression.get(token);
                     }
@@ -1423,7 +1430,7 @@ public class QueryHintsHandler {
                     frMapping = (ForeignReferenceMapping)mapping;
                     descriptor = frMapping.getReferenceDescriptor();
                     if (frMapping.isCollectionMapping()){
-                        expression = expression.anyOfAllowingNone(token);
+                        expression = expression.anyOfAllowingNone(token, false);
                     } else {
                         expression = expression.getAllowingNull(token);
                     }

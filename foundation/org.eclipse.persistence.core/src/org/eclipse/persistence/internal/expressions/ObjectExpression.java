@@ -141,17 +141,22 @@ public abstract class ObjectExpression extends DataExpression {
      * This allows you to query whether any of the "many" side of the relationship satisfies the remaining criteria.
      * <p>Example:
      * <pre><blockquote>
-     *     TopLink: employee.anyOf("managedEmployees").get("firstName").equal("Bob")
+     *     Expression: employee.anyOf("managedEmployees").get("firstName").equal("Bob")
      *     Java: no direct equivalent
      *     SQL: SELECT DISTINCT ... WHERE (t2.MGR_ID = t1.ID) AND (t2.F_NAME = 'Bob')
      * </pre></blockquote>
+     * @parameter shouldJoinBeIndependent indicates whether a new expression should be created.
      */
-    public Expression anyOf(String attributeName) {
-        QueryKeyExpression queryKey = newDerivedExpressionNamed(attributeName);
-
+    @Override
+    public Expression anyOf(String attributeName, boolean shouldJoinBeIndependent) {
+        QueryKeyExpression queryKey;
+        if (shouldJoinBeIndependent) {
+            queryKey = newDerivedExpressionNamed(attributeName);
+        } else {
+            queryKey = derivedExpressionNamed(attributeName);
+        }
         queryKey.doQueryToManyRelationship();
         return queryKey;
-
     }
     
     /**
@@ -160,17 +165,23 @@ public abstract class ObjectExpression extends DataExpression {
      * This allows you to query whether any of the "many" side of the relationship satisfies the remaining criteria.
      * <p>Example:
      * <pre><blockquote>
-     *     TopLink: employee.anyOf("managedEmployees").get("firstName").equal("Bob")
+     *     Expression: employee.anyOf("managedEmployees").get("firstName").equal("Bob")
      *     Java: no direct equivalent
      *     SQL: SELECT DISTINCT ... WHERE (t2.MGR_ID (+) = t1.ID) AND (t2.F_NAME = 'Bob')
      * </pre></blockquote>
+     * @parameter shouldJoinBeIndependent indicates whether a new expression should be created.
      */
-    public Expression anyOfAllowingNone(String attributeName) {
-        QueryKeyExpression queryKey = newDerivedExpressionNamed(attributeName);
+    @Override
+    public Expression anyOfAllowingNone(String attributeName, boolean shouldJoinBeIndependent) {
+        QueryKeyExpression queryKey;
+        if (shouldJoinBeIndependent) {
+            queryKey = newDerivedExpressionNamed(attributeName);
+        } else {
+            queryKey = derivedExpressionNamed(attributeName);
+        }
         queryKey.doUseOuterJoin();
         queryKey.doQueryToManyRelationship();
         return queryKey;
-
     }
     
     /**

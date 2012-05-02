@@ -145,6 +145,7 @@ import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.descriptors.PersistenceEntity;
+import org.eclipse.persistence.internal.expressions.QueryKeyExpression;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.internal.jpa.jdbc.DataSourceImpl;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -394,6 +395,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         tests.add("testSequenceObjectWithSchemaName");
         tests.add("testSharedExpressionInQueries");
         tests.add("testInheritanceFetchJoinSecondCall");
+        tests.add("testNestedFetchQueryHints");
+        tests.add("testNestedBatchQueryHints");
         if (!isJPA10()) {
             tests.add("testDetachNull");
             tests.add("testDetachRemovedObject");
@@ -5641,6 +5644,269 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         em.remove(emp);
 
         commitTransaction(em);
+    }
+    
+    // Bug 366458 - Query hint eclipselink.join-fetch can cause wrongly populated data
+    public void testNestedFetchQueryHints() {
+        EntityManager em= createEntityManager();
+        String errorMsg = "";
+        
+        Query query1 = em.createQuery("SELECT e FROM Employee e");
+        query1.setHint(QueryHints.FETCH, "e.manager");
+        query1.setHint(QueryHints.FETCH, "e.manager.projects");
+        query1.setHint(QueryHints.FETCH, "e.manager.projects.teamMembers");
+        query1.setHint(QueryHints.FETCH, "e.manager.projects.teamMembers.dealers");
+        query1.setHint(QueryHints.FETCH, "e.manager.projects.teamMembers.phoneNumbers");
+        query1.getResultList();
+        errorMsg += verifyJoinAttributeExpressions("query1", query1);
+        
+        Query query2 = em.createQuery("SELECT e FROM Employee e");
+        query2.setHint(QueryHints.FETCH, "e.manager.projects.teamMembers");
+        query2.setHint(QueryHints.FETCH, "e.manager.projects.teamMembers.dealers");
+        query2.setHint(QueryHints.FETCH, "e.manager.projects.teamMembers.phoneNumbers");
+        query2.getResultList();
+        errorMsg += verifyJoinAttributeExpressions("query2", query2);
+        
+        Query query3 = em.createQuery("SELECT e FROM Employee e");
+        query3.setHint(QueryHints.FETCH, "e.manager.projects.teamMembers.dealers");
+        query3.setHint(QueryHints.FETCH, "e.manager.projects.teamMembers.phoneNumbers");
+        query3.getResultList();
+        errorMsg += verifyJoinAttributeExpressions("query3", query3);
+        
+        Query query4 = em.createQuery("SELECT e FROM Employee e");
+        query4.setHint(QueryHints.LEFT_FETCH, "e.manager");
+        query4.setHint(QueryHints.LEFT_FETCH, "e.manager.projects");
+        query4.setHint(QueryHints.LEFT_FETCH, "e.manager.projects.teamMembers");
+        query4.setHint(QueryHints.LEFT_FETCH, "e.manager.projects.teamMembers.dealers");
+        query4.setHint(QueryHints.LEFT_FETCH, "e.manager.projects.teamMembers.phoneNumbers");
+        query4.getResultList();
+        errorMsg += verifyJoinAttributeExpressions("query4", query4);
+        
+        Query query5 = em.createQuery("SELECT e FROM Employee e");
+        query5.setHint(QueryHints.LEFT_FETCH, "e.manager.projects.teamMembers");
+        query5.setHint(QueryHints.LEFT_FETCH, "e.manager.projects.teamMembers.dealers");
+        query5.setHint(QueryHints.LEFT_FETCH, "e.manager.projects.teamMembers.phoneNumbers");
+        query5.getResultList();
+        errorMsg += verifyJoinAttributeExpressions("query5", query5);
+        
+        Query query6 = em.createQuery("SELECT e FROM Employee e");
+        query6.setHint(QueryHints.LEFT_FETCH, "e.manager.projects.teamMembers.dealers");
+        query6.setHint(QueryHints.LEFT_FETCH, "e.manager.projects.teamMembers.phoneNumbers");
+        query6.getResultList();
+        errorMsg += verifyJoinAttributeExpressions("query6", query6);
+        
+        closeEntityManager(em);
+        if (errorMsg.length() > 0) {
+            fail(errorMsg);
+        }        
+    }    
+    protected String verifyJoinAttributeExpressions(String queryName, Query query) {
+        String[] names = {"manager", "projects", "teamMembers", "dealers", "phoneNumbers"};
+        ReadAllQuery  readAllQuery = (ReadAllQuery)JpaHelper.getDatabaseQuery(query);
+        List<Expression> joinExpressions = readAllQuery.getJoinedAttributeManager().getJoinedAttributeExpressions();
+        boolean ok = true;
+        if (joinExpressions.size() != names.length) {
+            ok = false;
+        } else {
+            Expression baseExp = readAllQuery.getExpressionBuilder();
+            for (int i=0; i <= names.length - 1 && ok; i++) {
+                QueryKeyExpression exp = (QueryKeyExpression)joinExpressions.get(i);
+                if (baseExp != exp.getBaseExpression()) {
+                    ok = false;
+                }
+                if (!exp.getName().equals(names[i])) {
+                    // "dealers" and "phoneNumbers" may have been traansposed in the list
+                    if (i == names.length - 2) {
+                        names[names.length - 2] = "phoneNumbers";
+                        names[names.length - 1] = "dealers";
+                        if (!exp.getName().equals(names[i])) {
+                            ok = false;
+                        }
+                    } else {
+                        ok = false;
+                    }
+                }
+                // "dealers" and "phoneNumbers" have the same base
+                if (i <= 2) {
+                    baseExp = exp;
+                }
+            }
+        }
+        String errorMsg = "";
+        if (!ok) {
+            errorMsg = queryName + ":\n" + joinExpressions + "\n";
+        }
+        return errorMsg;
+    }
+    
+    public void testNestedBatchQueryHints() {
+        String errorMsg = "";
+        clearCache();
+        ServerSession session = getServerSession();
+        QuerySQLTracker counter = new QuerySQLTracker(session);
+        EntityManager em= createEntityManager();
+        beginTransaction(em);
+        try {
+            // setup
+            int nEmployees = 2;
+            int nProjects = 2;
+            int nTeamMembers = 2;
+            int nDealers = 2;
+            int nPhones = 2;
+            boolean useLargeProject = false;
+            List<Employee> employees = new ArrayList(nEmployees);
+            List<Employee> teamMembers = new ArrayList(nEmployees*nProjects*nTeamMembers);
+            for (int i = 0; i < nEmployees; i++) {
+                String iStr = Integer.toString(i);
+                Employee emp = new Employee("Employee_NestedBatchQueryHint", iStr);
+                employees.add(emp);
+                Employee manager = new Employee("Manager_NestedBatchQueryHint", iStr);
+                manager.addManagedEmployee(emp);
+                for (int j = 0; j < nProjects; j++) {
+                    String jStr = Integer.toString(j);
+                    Project project;
+                    if (useLargeProject) {
+                        project = new LargeProject();
+                    } else {
+                        project = new SmallProject();
+                    }
+                    useLargeProject = !useLargeProject;
+                    project.setName(iStr + jStr);
+                    manager.addProject(project);
+                    project.addTeamMember(manager);
+                    for (int k = 0; k < nTeamMembers; k++) {
+                        String kStr = Integer.toString(k);
+                        String teamMemberLastName = iStr+jStr+kStr;
+                        Employee teamMember = new Employee("TeamMember_NestedBatchQueryHint", teamMemberLastName);
+                        teamMembers.add(teamMember);
+                        teamMember.addProject(project);
+                        project.addTeamMember(teamMember);
+                        for (int l = 0; l < nDealers; l++) {
+                            String lStr = Integer.toString(l);
+                            Dealer dealer = new Dealer(lStr, teamMemberLastName);
+                            teamMember.addDealer(dealer);
+                        }
+                        for (int l = 0; l < nPhones; l++) {
+                            String lStr = Integer.toString(l);
+                            PhoneNumber phone = new PhoneNumber(lStr, teamMemberLastName, lStr+lStr+lStr+lStr+lStr+lStr+lStr);
+                            teamMember.addPhoneNumber(phone);
+                        }
+                    }
+                }
+            }
+            // Persist cacscaded manager, then projects
+            for (Employee emp : employees) {
+                em.persist(emp);
+            }
+            // Persist cacscaded dealers and phones
+            for (Employee emp : teamMembers) {
+                em.persist(emp);
+            }
+            em.flush();
+            
+            // test
+            em.clear();
+            Query query1 = em.createQuery("SELECT e FROM Employee e WHERE e.firstName = 'Employee_NestedBatchQueryHint' ORDER BY e.lastName");
+            query1.setHint(QueryHints.BATCH, "e.manager");
+            query1.setHint(QueryHints.BATCH, "e.manager.projects");
+            query1.setHint(QueryHints.BATCH, "e.manager.projects.teamMembers");
+            query1.setHint(QueryHints.BATCH, "e.manager.projects.teamMembers.dealers");
+            query1.setHint(QueryHints.BATCH, "e.manager.projects.teamMembers.phoneNumbers");
+            errorMsg += verifyBatchReading("query1", query1, counter, employees, session);
+            
+            em.clear();
+            Query query2 = em.createQuery("SELECT e FROM Employee e WHERE e.firstName = 'Employee_NestedBatchQueryHint' ORDER BY e.lastName");
+            query2.setHint(QueryHints.BATCH, "e.manager.projects.teamMembers");
+            query2.setHint(QueryHints.BATCH, "e.manager.projects.teamMembers.dealers");
+            query2.setHint(QueryHints.BATCH, "e.manager.projects.teamMembers.phoneNumbers");
+            errorMsg += verifyBatchReading("query2", query2, counter, employees, session);
+            
+            em.clear();
+            Query query3 = em.createQuery("SELECT e FROM Employee e WHERE e.firstName = 'Employee_NestedBatchQueryHint' ORDER BY e.lastName");
+            query3.setHint(QueryHints.BATCH, "e.manager.projects.teamMembers.dealers");
+            query3.setHint(QueryHints.BATCH, "e.manager.projects.teamMembers.phoneNumbers");
+            errorMsg += verifyBatchReading("query3", query3, counter, employees, session);
+            
+        } finally {
+            // clean-up
+            rollbackTransaction(em);
+            closeEntityManager(em);
+            counter.remove();
+        }
+        if (errorMsg.length() > 0) {
+            fail(errorMsg);
+        }        
+    }
+    protected String verifyBatchReading(String queryName, Query query, QuerySQLTracker counter, List<Employee> originalEmployees, ServerSession session) {
+        List<Employee> employees = query.getResultList();
+        Employee employee = employees.get(0);
+        Project project = employee.getManager().getProjects().iterator().next();
+        Employee teamMember = null;
+        for (Employee currentTeamMember : (Collection<Employee>)project.getTeamMembers()) {
+            if (currentTeamMember.getFirstName().equals("TeamMember_NestedBatchQueryHint")) {
+                teamMember = currentTeamMember;
+                break;
+            }
+        }
+        teamMember.getDealers().size();
+        teamMember.getPhoneNumbers().size();
+
+        // References have been triggered on a single object, 
+        // batch reading should have caused all the objects to be read,
+        // therefore triggering all remaining relations should produce no sql.
+        counter.getSqlStatements().clear();
+        for (Employee emp : employees) {
+            Employee manager = emp.getManager();
+            for (Project proj : manager.getProjects()) {
+                for (Employee currentTeamMember : (Collection<Employee>)proj.getTeamMembers()) {
+                    if (currentTeamMember != manager) {
+                        currentTeamMember.getDealers().size();
+                        currentTeamMember.getPhoneNumbers().size();
+                    }
+                }
+            }
+        }                
+        
+        String errorMsg = "";
+        if (counter.getSqlStatements().size() > 0) {
+            errorMsg = counter.getSqlStatements() + "\n";
+        }
+        
+        if (employees.size() != originalEmployees.size()) {
+            errorMsg += "employees.size() = " + employees.size() + "; originalEmployees.size() = " + originalEmployees.size() + "\n";
+        } else {
+            // order of read employees should be the same bacause it's ordered by last name.
+            for (int i = 0; i < employees.size(); i++) {
+                if (!session.compareObjects(originalEmployees.get(i), employees.get(i))) {
+                    errorMsg += "Original and read employee are not equal: original = " + originalEmployees.get(i).getLastName() + "; read = " + employees.get(i).getLastName() + "\n";  
+                }
+                if (!session.compareObjects(originalEmployees.get(i).getManager(), employees.get(i).getManager())) {
+                    errorMsg += "Original and read employee.getManager() are not equal: original = " + originalEmployees.get(i).getManager().getLastName() + "; read = " + employees.get(i).getManager().getLastName() + "\n";  
+                }
+                Collection<Project> projects = employees.get(i).getManager().getProjects();
+                Collection<Project> originalProjects = originalEmployees.get(i).getManager().getProjects();
+                for (Project originalProj : originalProjects) {
+                    boolean foundEqualName = false;
+                    for (Project proj : projects) {
+                        if (originalProj.getName().equals(proj.getName())) {
+                            foundEqualName = true;
+                            if (!session.compareObjects(originalProj, proj)) {
+                                errorMsg += "Original and read projects are not equal for name: " + originalProj.getName() + "\n";  
+                            }
+                            break;
+                        }
+                    }
+                    if (!foundEqualName) {
+                        errorMsg += "No read project has name " + originalProj.getName() + "\n";  
+                    }
+                }
+            }
+        }
+        
+        if (errorMsg.length() > 0) {
+            errorMsg = queryName + ":\n" + errorMsg; 
+        }
+        return errorMsg;
     }
     
     /**
