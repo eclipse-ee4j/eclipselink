@@ -103,9 +103,11 @@ public class XMLMarshaller implements Cloneable {
     private Properties marshalProperties;
     private Schema schema;
     private MediaType mediaType = MediaType.APPLICATION_XML;
+    private char namespaceSeparator = XMLConstants.DOT;
     private String attributePrefix;
     private boolean includeRoot;
     private String valueWrapper = XMLConstants.VALUE_WRAPPER;
+    
     private NamespacePrefixMapper mapper;
     private String indentString;
     private CharacterEscapeHandler charEscapeHandler;
@@ -242,7 +244,7 @@ public class XMLMarshaller implements Cloneable {
      * @param mediaType
      */
     public void setMediaType(MediaType mediaType) {
-        this.mediaType = mediaType;
+        this.mediaType = mediaType;        
     }    
     
     /**
@@ -1577,6 +1579,26 @@ public class XMLMarshaller implements Cloneable {
     }
 
     /**
+     * Get the namespace separator used during marshal operations.
+     * If mediaType is application/json '.' is the default
+     * Ignored marshalling XML.   
+     * @since 2.4
+     */
+    public char getNamespaceSeparator() {    	
+        return namespaceSeparator;
+    }
+
+    /**
+     * Set the namespace separator used during marshal operations.
+     * If mediaType is application/json '.' is the default
+     * Ignored marshalling XML.   
+     * @since 2.4
+     */
+	public void setNamespaceSeparator(char namespaceSeparator) {
+		this.namespaceSeparator = namespaceSeparator;
+	}
+
+	/**
      * NamespacePrefixMapper that can be used during marshal (instead of those set in the project meta data)
      * @since 2.3.3
      * @return

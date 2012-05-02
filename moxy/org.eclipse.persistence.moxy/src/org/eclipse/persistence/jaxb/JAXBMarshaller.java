@@ -74,6 +74,25 @@ import org.eclipse.persistence.jaxb.attachment.*;
  * <li>Perform Object to XML Conversions</li>
  * </ul>
  * <p>
+ * <a name="supportedProps"></a>
+ * <b>Supported Properties</b><br> 
+ * <ul>
+ *     <li>JAXBMarshaller.JAXB_FORMATTED_OUTPUT - accepted value is a Boolean</li>
+ *     <li>JAXBMarshaller.JAXB_ENCODING - accepted value is a String  </li>
+ *     <li>JAXBMarshaller.JAXB_SCHEMA_LOCATION - accepted value is a String</li>
+ *     <li>JAXBMarshaller.JAXB_NO_NAMESPACE_SCHEMA_LOCATION - accepted value is a String</li>
+ *     <li>XMLConstants.JAXB_FRAGMENT - accepted value is a Boolean </li>
+ *     <li>JAXBMarshaller.NAMESPACE_PREFIX_MAPPER - accepted value is a Map<String uri, String prefix> or org.eclipse.persistence.oxm.NamespacePrefixMapper</li>    
+ *     <li>JAXBMarshaller.INDENT_STRING - accepted value is a String </li>
+ *     <li>JAXBMarshaller.CHARACTER_ESCAPE_HANDLER - accepted value is an org.eclipse.persistence.oxm.CharacterEscapeHandler </li>    
+ *     <li>JAXBMarshaller.XML_DECLARATION - accepted value is a Boolean </li>
+ *     <li>JAXBMarshaller.MEDIA_TYPE - accepted value is a String ("application/xml" or "application/json") </li>
+ *     <li>JAXBMarshaller.JSON_ATTRIBUTE_PREFIX - accepted value is a String </li>
+ *     <li>JAXBMarshaller.JSON_INCLUDE_ROOT - accepted value is a Boolean </li>
+ *     <li>JAXBMarshaller.JSON_VALUE_WRAPPER - accepted value is a String </li>
+ *     <li>JAXBMarshaller.JSON_NAMESPACE_SEPARATOR - accepted value is a Character </li>
+ * </ul>
+ * <p> 
  * This implementation of the JAXB 2.0 Marshaller interface provides the
  * required functionality by acting as a thin wrapper on the existing
  * XMLMarshaller API.
@@ -158,6 +177,14 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
      * @since 2.4
      */
     public static final String JSON_VALUE_WRAPPER = JAXBContext.JSON_VALUE_WRAPPER;
+    
+    /**
+     * The Constant JSON_NAMESPACE_SEPARATOR.  This can be used to specify the separator
+     * that will be used when separating prefixes and localnames.  Only applicable when
+     * namespaces are being used. Value should be a Character.
+     * @since 2.4  
+     */
+    public static final String JSON_NAMESPACE_SEPARATOR  = "eclipselink.json.namespace-separator";
 
     /**
      * This constructor initializes various settings on the XML marshaller, and
@@ -292,6 +319,11 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * Get a property from the JAXBMarshaller.
+     * Attempting to get any unsupported property will result in a javax.xml.bind.PropertyException 
+     * See <a href="#supportedProps">Supported Properties</a>.  
+     */
     public Object getProperty(String key) throws PropertyException {
         if (key == null) {
             throw new IllegalArgumentException();
@@ -321,6 +353,8 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             return xmlMarshaller.isIncludeRoot();
         } else if (JAXBContext.JSON_VALUE_WRAPPER.equals(key)) {
             return xmlMarshaller.getValueWrapper(); 
+        } else if (key.equals(JSON_NAMESPACE_SEPARATOR)) {
+            return xmlMarshaller.getNamespaceSeparator();
         } else if (SUN_CHARACTER_ESCAPE_HANDLER.equals(key) || SUN_JSE_CHARACTER_ESCAPE_HANDLER.equals(key)) {
             if (xmlMarshaller.getCharacterEscapeHandler() instanceof CharacterEscapeHandlerWrapper) {
                 CharacterEscapeHandlerWrapper wrapper = (CharacterEscapeHandlerWrapper) xmlMarshaller.getCharacterEscapeHandler();
@@ -685,6 +719,11 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         ((JAXBMarshalListener) xmlMarshaller.getMarshalListener()).setClassBasedMarshalEvents(callbacks);
     }
 
+    /**
+     * Set a property on the JAXBMarshaller.
+     * Attempting to set any unsupported property will result in a javax.xml.bind.PropertyException 
+     * See <a href="#supportedProps">Supported Properties</a>.   
+     */
     public void setProperty(String key, Object value) throws PropertyException {
         try {
             if (key == null) {
@@ -736,6 +775,8 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             	xmlMarshaller.setIncludeRoot((Boolean)value);     
             } else if(JAXBContext.JSON_VALUE_WRAPPER.equals(key)){
             	xmlMarshaller.setValueWrapper((String)value); 
+            } else if(JAXBContext.JSON_NAMESPACE_SEPARATOR.equals(key)){
+            	xmlMarshaller.setNamespaceSeparator((Character)value); 
             } else {
                 throw new PropertyException(key, value);
             }

@@ -131,7 +131,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
 
 
     protected List<UnmarshalRecord> childRecordPool;
-    protected XPathFragment textWrapperFragment;
+    protected XPathFragment textWrapperFragment;    
 
     public UnmarshalRecord(TreeObjectBuilder treeObjectBuilder) {
         super();
@@ -211,7 +211,6 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
     public void setXMLReader(XMLReader xmlReader) {
         this.xmlReader = xmlReader;
         namespaceAware = xmlReader.isNamespaceAware();
-        namespaceSeparator = xmlReader.getNamespaceSeparator();
         if(xPathFragment != null){
             xPathFragment.setNamespaceAware(isNamespaceAware());
         }
@@ -1371,7 +1370,11 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
     public void setXmlLocation(Locator xmlLocation) {
         this.xmlLocation = xmlLocation;
     }
-    
+
+    public char getNamespaceSeparator(){
+    	return xmlReader.getNamespaceSeparator();
+    }
+
     public XPathFragment getTextWrapperFragment() {
     	if(unmarshaller.getMediaType() == MediaType.APPLICATION_JSON){    
             return textWrapperFragment;

@@ -59,22 +59,22 @@ public class JSONReader extends XMLReaderAdapter {
     private String textWrapper;
     private Class unmarshalClass;
 
-    public JSONReader(String attrPrefix, NamespaceResolver nr, boolean namespaceAware, boolean includeRoot, ErrorHandler errorHandler, String textWrapper){
-        this(attrPrefix, nr, namespaceAware, includeRoot, XMLConstants.DOT, errorHandler, textWrapper, null);        
+    public JSONReader(String attrPrefix, NamespaceResolver nr, boolean namespaceAware, boolean includeRoot, Character namespaceSeparator, ErrorHandler errorHandler, String textWrapper){
+        this(attrPrefix, nr, namespaceAware, includeRoot, namespaceSeparator, errorHandler, textWrapper, null);        
     }
-    
-    public JSONReader(String attrPrefix, NamespaceResolver nr, boolean namespaceAware, boolean includeRoot, ErrorHandler errorHandler, String textWrapper, Class unmarshalClass){
-        this(attrPrefix, nr, namespaceAware, includeRoot, XMLConstants.DOT, errorHandler, textWrapper, unmarshalClass);        
-    }
-    
-    private JSONReader(String attrPrefix, NamespaceResolver nr, boolean namespaceAware, boolean includeRoot, char namespaceSeparator, ErrorHandler errorHandler, String textWrapper, Class unmarshalClass){
+
+    public JSONReader(String attrPrefix, NamespaceResolver nr, boolean namespaceAware, boolean includeRoot, Character namespaceSeparator, ErrorHandler errorHandler, String textWrapper, Class unmarshalClass){
         this.attributePrefix = attrPrefix;
     	if(attributePrefix == XMLConstants.EMPTY_STRING){
     	    attributePrefix = null;    	    	
     	}
     	namespaces = nr;
     	this.namespaceAware = namespaceAware;
-    	this.namespaceSeparator = namespaceSeparator;
+    	if(namespaceSeparator == null){
+            this.namespaceSeparator = XMLConstants.DOT;
+    	}else{
+    	    this.namespaceSeparator = namespaceSeparator;
+    	}
     	this.includeRoot = includeRoot;   
     	this.setErrorHandler(errorHandler);
     	this.textWrapper = textWrapper;

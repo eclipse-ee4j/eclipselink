@@ -18,6 +18,7 @@ import junit.framework.TestSuite;
 
 import org.eclipse.persistence.testing.jaxb.events.RootWithCompositeObjectTestCases;
 import org.eclipse.persistence.testing.jaxb.inheritance.JAXBInheritanceTestCases;
+import org.eclipse.persistence.testing.jaxb.inheritance.ns.JAXBInheritanceNSSeparatorTestCases;
 import org.eclipse.persistence.testing.jaxb.inheritance.ns.JAXBInheritanceNSTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbelement.complex.JAXBElementComplexTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbelement.nested.JAXBElementNestedTestCases;
@@ -80,6 +81,7 @@ public class JAXBTestSuite2 extends TestCase {
         suite.addTestSuite(JAXBElementEnumTestCases.class);
         suite.addTestSuite(JAXBInheritanceTestCases.class);
         suite.addTestSuite(JAXBInheritanceNSTestCases.class);
+        suite.addTestSuite(JAXBInheritanceNSSeparatorTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.events.RootWithCompositeCollectionTestCases.class);
         suite.addTest(JAXBDOMTestSuite.suite());
         suite.addTest(JAXBSAXTestSuite.suite());

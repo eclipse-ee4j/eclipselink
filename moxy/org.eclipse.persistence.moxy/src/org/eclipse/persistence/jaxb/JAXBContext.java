@@ -168,6 +168,14 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      * @since 2.4  
      */
     public static final String JSON_VALUE_WRAPPER = "eclipselink.json.value-wrapper";
+    
+    /**
+     * The Constant JSON_NAMESPACE_SEPARATOR.  This can be used to specify the separator
+     * that will be used when separating prefixes and localnames.  Only applicable when
+     * namespaces are being used. Value should be a Character.
+     * @since 2.4  
+     */
+    public static final String JSON_NAMESPACE_SEPARATOR  = "eclipselink.json.namespace-separator";
 
     /**
      * The Constant ID_RESOLVER.  This can be used to specify a custom
@@ -1344,7 +1352,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             	setPropertyOnMarshaller(JAXBContext.NAMESPACE_PREFIX_MAPPER, marshaller);
             	setPropertyOnMarshaller(JAXBContext.JSON_INCLUDE_ROOT, marshaller);
             	setPropertyOnMarshaller(JAXBContext.JSON_VALUE_WRAPPER, marshaller);
-
+            	setPropertyOnMarshaller(JAXBContext.JSON_NAMESPACE_SEPARATOR, marshaller);
             }
         
             return marshaller;
@@ -1368,7 +1376,8 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
              	setPropertyOnUnmarshaller(JAXBContext.NAMESPACE_PREFIX_MAPPER, unmarshaller);
              	setPropertyOnUnmarshaller(JAXBContext.JSON_INCLUDE_ROOT, unmarshaller);
              	setPropertyOnUnmarshaller(JAXBContext.JSON_VALUE_WRAPPER, unmarshaller);
-             }
+            	setPropertyOnUnmarshaller(JAXBContext.JSON_NAMESPACE_SEPARATOR, unmarshaller);
+             }             
              return unmarshaller;
         }
         private void setPropertyOnMarshaller(String propertyName, JAXBMarshaller marshaller) throws PropertyException{

@@ -78,7 +78,6 @@ public class JSONWriterRecord extends MarshalRecord {
     public JSONWriterRecord(){
         super();
         space = XMLConstants.EMPTY_STRING;
-        namespaceSeparator = XMLConstants.DOT;
     }
 
     /**
@@ -513,6 +512,15 @@ public class JSONWriterRecord extends MarshalRecord {
         characters(value);
     }
 
+    /**
+     * INTERNAL:
+	 * The character used to separate the prefix and uri portions when namespaces are present 
+     * @since 2.4
+     */
+    public char getNamespaceSeparator(){    	
+    	return marshaller.getNamespaceSeparator();
+    }
+    
     /**
      * INTERNAL:
      * The optional fragment used to wrap the text() mappings

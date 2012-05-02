@@ -23,7 +23,6 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.oxm.XMLConstants;
-import org.eclipse.persistence.testing.jaxb.inheritance.A;
 import org.eclipse.persistence.testing.jaxb.json.JSONMarshalUnmarshalTestCases;
 
 public class NamespaceInheritanceTestCases extends JSONMarshalUnmarshalTestCases{

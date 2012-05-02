@@ -413,6 +413,9 @@ public class SDOUnmappedContentHandler implements UnmappedContentHandler {
             unmarshalRecord = new UnmarshalRecord((TreeObjectBuilder)xmlDescriptor.getObjectBuilder());
             unmarshalRecord.setUnmarshalNamespaceResolver(unmarshalNamespaceResolver);
             unmarshalRecord.setAttributes(atts);
+            if(parentRecord != null){
+                unmarshalRecord.setXMLReader(parentRecord.getXMLReader());
+            }
             Class classValue = xmlDescriptor.getInheritancePolicy().classFromRow(unmarshalRecord, session);
             if (classValue == null) {
                 // no xsi:type attribute - look for type indicator on the default root element

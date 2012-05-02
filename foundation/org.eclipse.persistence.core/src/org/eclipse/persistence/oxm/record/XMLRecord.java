@@ -45,7 +45,6 @@ public abstract class XMLRecord extends AbstractRecord {
     protected NamespaceResolver namespaceResolver;
     protected AbstractSession session;
     private boolean isXOPPackage;
-    protected char namespaceSeparator;
     protected boolean namespaceAware;
     
     private boolean hasCustomNamespaceMapper;
@@ -69,7 +68,6 @@ public abstract class XMLRecord extends AbstractRecord {
     public XMLRecord() {
         super(null, null);
         namespaceResolver = new NamespaceResolver();
-        namespaceSeparator = XMLConstants.COLON;
         namespaceAware = true;
         // Required for subclasses.
     }
@@ -307,9 +305,9 @@ public abstract class XMLRecord extends AbstractRecord {
      * INTERNAL:
 	 * The character used to separate the prefix and uri portions when namespaces are present 
      * @since 2.4
-     */
+     */    
     public char getNamespaceSeparator(){
-    	return namespaceSeparator;
+    	return XMLConstants.COLON;
     }
 	
     public boolean hasCustomNamespaceMapper() {

@@ -25,8 +25,8 @@ import org.eclipse.persistence.internal.oxm.record.namespaces.MapNamespacePrefix
 import org.eclipse.persistence.internal.oxm.record.namespaces.PrefixMapperNamespaceResolver;
 import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.NamespacePrefixMapper;
-import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLRoot;
+import org.eclipse.persistence.oxm.XMLConstants;
 import org.xml.sax.InputSource;
 
 public abstract class XMLWithJSONMappingTestCases extends XMLMappingTestCases{
@@ -76,7 +76,7 @@ public abstract class XMLWithJSONMappingTestCases extends XMLMappingTestCases{
             	nr = new PrefixMapperNamespaceResolver(mapper, null);
             }
 			
-            Object testObject = xmlUnmarshaller.unmarshal(new JSONReader(getAttributePrefix(), nr, nr != null, true, xmlUnmarshaller.getErrorHandler(), "value"), inputSource);
+            Object testObject = xmlUnmarshaller.unmarshal(new JSONReader(getAttributePrefix(), nr, nr != null, true, XMLConstants.DOT, xmlUnmarshaller.getErrorHandler(), "value"), inputSource);
             
     	    inputStream.close();
     	    

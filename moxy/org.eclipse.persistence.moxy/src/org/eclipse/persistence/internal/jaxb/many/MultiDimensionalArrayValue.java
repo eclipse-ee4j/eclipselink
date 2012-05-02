@@ -32,7 +32,6 @@ public abstract class MultiDimensionalArrayValue<T extends ManyValue<?, Object>>
         Object array = Array.newInstance(containerClass(), adaptedValue.size());
         int x=0;
         for(ManyValue<?, Object> value : adaptedValue) {
-            Object item = value.getItem();
             Array.set(array, x, value.getItem());
             x++;
         }
