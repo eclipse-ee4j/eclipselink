@@ -11,6 +11,7 @@ Bundle-Version: 2.4.0.qualifier
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.eclipse.persistence.nosql
 Import-Package: com.mongodb,
+ javax.resource.cci;version="1.5.0";resolution:=optional,
  org.bson,
  org.bson.types,
  org.eclipse.persistence;version="2.4.0",
@@ -23,7 +24,9 @@ Import-Package: com.mongodb,
  org.eclipse.persistence.internal.expressions;version="2.4.0",
  org.eclipse.persistence.internal.helper;version="2.4.0",
  org.eclipse.persistence.internal.sessions;version="2.4.0",
+ org.eclipse.persistence.mappings;version="2.4.0",
  org.eclipse.persistence.mappings.foundation;version="2.4.0",
  org.eclipse.persistence.queries;version="2.4.0",
+ org.eclipse.persistence.sequencing;version="2.4.0",
  org.eclipse.persistence.sessions;version="2.4.0"
 

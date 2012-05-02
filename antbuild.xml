@@ -118,6 +118,15 @@
     <!-- The default for junit.lib is still "junit.jar", even though we now depend upon junit 4.5  -->
     <property file="${trunk.build.location}/antbuild.properties"/>
 
+    <!-- Detect compatible version of Ant -->
+    <condition property="compat.ant" value="true">
+        <not>
+            <contains string="${ant.version}" substring="1.8"/>
+        </not>
+    </condition>
+    <echo message="Ant Version detected: '${ant.version}'"/>
+    <fail message="An non-compatible version of Ant was detected! Build won't run properly unless running 1.7.x of Ant!." unless="compat.ant"/>
+
     <!-- Needed for Maven/Tycho builds -->
     <condition property="M2_HOME" value="${env.M2_HOME}"
                                   else="C:/apache-maven-3.0.3">
@@ -127,6 +136,7 @@
     <condition property="use.maven" value="true">
         <available file="${M2_HOME}/bin/mvn"/>
     </condition>
+    <fail message="Maven 3 not found. Build won't run if Maven 3 not installed and M2_HOME properly set!." unless="use.maven"/>
 
     <!-- Needed because some buildfiles depend upon JDK6 -->
     <condition property="java_is_v5" value="true">
@@ -229,7 +239,7 @@
         </delete>
     </target>
 
-    <target name="clean-runtime-built" description="Clean the runtime projects" depends="clean-core-mavenbuilt, clean-core-antbuilt">
+    <target name="clean-runtime-built" description="Clean the runtime projects" depends="clean-core">
         <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle}" target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.extension.nosql}"  target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.modelgen}"         target="clean"/>
@@ -241,7 +251,7 @@
         <ant antfile="build.xml"    dir="${eclipselink.util.workbench}"   target="clean"/>
         <delete file="*${eclipselink.zip.suffix}" failonerror="false"/>
     </target>
-    <target name="clean-core-mavenbuilt" if="use.maven" description="Clean the maven built runtime projects">
+    <target name="clean-core" description="Clean the maven built runtime projects">
         <java dir="${eclipselink.mvn.parent}" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
              <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
              <jvmarg value="-Dmaven.home=${M2_HOME}"/>
@@ -261,19 +271,6 @@
             </fileset>
         </delete>
     </target>
-    <target name="clean-core-antbuilt" unless="use.maven" description="Clean the runtime projects" >
-        <ant antfile="antbuild.xml" dir="${eclipselink.hermes}"           target="clean"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.core}"             target="clean"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.core.hermes}"      target="clean"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.dbws}"             target="clean"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.jpa}"              target="clean"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.osgi}"             target="clean"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.weaving}"          target="clean"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.equinox}"          target="clean"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.moxy}"             target="clean"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.sdo}"              target="clean"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.dbws.builder}"     target="clean"/>
-    </target>
 
     <target name="clean-testing" description="Clean the testing projects">
         <ant antfile="antbuild.xml" dir="${eclipselink.core.test}"           target="clean"/>
@@ -285,7 +282,7 @@
     </target>
 
     <!-- Compiles all runtime components (excluding Tests, Oracle extensions). -->
-    <target name="build-core-maven" if="use.maven">
+    <target name="build-core" depends="clean-runtime-checkedin">
         <java dir="${eclipselink.mvn.parent}" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
              <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
              <jvmarg value="-Dmaven.home=${M2_HOME}"/>
@@ -311,23 +308,6 @@
                 <exclude name="**/*-sources.jar"/>
             </fileset>
         </copy>
-    </target>
-
-    <target name="build-core-ant" unless="use.maven">
-        <ant antfile="antbuild.xml" dir="${eclipselink.hermes}"           target="build"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.core}"             target="build"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.core.hermes}"      target="build"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.dbws}"             target="build"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.jpa}"              target="build"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.osgi}"             target="build"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.weaving}"          target="build"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.equinox}"          target="build"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.moxy}"             target="build"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.sdo}"              target="build"/>
-        <!-- ant antfile="antbuild.xml" dir="${eclipselink.dbws.builder}"     target="build"/ -->
-    </target>
-
-    <target name="build-core" depends="clean-runtime-checkedin, build-core-maven, build-core-ant">
         <!-- temporarily force dbws.builder build from ant -->
         <ant antfile="antbuild.xml" dir="${eclipselink.dbws.builder}"     target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle}" target="repackage"/>

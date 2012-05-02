@@ -30,7 +30,7 @@
     <modules>
         <module>../../jpa/org.eclipse.persistence.jpa.jpql</module>
         <module>../../foundation/org.eclipse.persistence.core</module>
-        <!-- module>../../foundation/org.eclipse.persistence.core.jpql</module -->
+        <module>../../foundation/org.eclipse.persistence.nosql</module>
         <module>../../jpa/org.eclipse.persistence.jpa</module>
         <module>../../jpa/org.eclipse.persistence.jpa.osgi</module>
         <module>../../jpa/org.eclipse.persistence.jpa.equinox.weaving</module>
