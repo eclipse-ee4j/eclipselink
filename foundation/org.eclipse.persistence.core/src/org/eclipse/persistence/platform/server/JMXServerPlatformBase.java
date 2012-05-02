@@ -590,7 +590,7 @@ public abstract class JMXServerPlatformBase extends ServerPlatformBase {
         String databaseSessionName = getMBeanSessionName();
         
         // The classLoader toString() is used to get the application name (no reflection required)
-        String classLoaderName = getDatabaseSession().getPlatform().getConversionManager().getLoader().toString();
+        String classLoaderName = getDatabaseSession().getDatasourcePlatform().getConversionManager().getLoader().toString();
         try {
             getAbstractSession().log(SessionLog.FINEST, SessionLog.SERVER, "jmx_mbean_classloader_in_use", 
                 "Platform ConversionManager", classLoaderName);

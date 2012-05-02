@@ -37,6 +37,7 @@ import javax.management.openmbean.TabularType;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
+import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -927,6 +928,9 @@ public abstract class RuntimeServices {
        *        This method will return if batchWriting is in use or not.
        */
      public Boolean getUsesJDBCBatchWriting() {
+         if (!(getSession().getDatasourceLogin().getDatasourcePlatform() instanceof DatabasePlatform)) {
+             return Boolean.FALSE;
+         }
          return Boolean.valueOf(getSession().getDatasourceLogin().getPlatform().usesJDBCBatchWriting());
      }
 
@@ -934,6 +938,9 @@ public abstract class RuntimeServices {
        *     Shows if Byte Array Binding is turned on or not
        */
      public Boolean getUsesByteArrayBinding() {
+         if (!(getSession().getDatasourceLogin().getDatasourcePlatform() instanceof DatabasePlatform)) {
+             return Boolean.FALSE;
+         }
          return Boolean.valueOf(getSession().getDatasourceLogin().getPlatform().usesByteArrayBinding());
      }
 
@@ -941,6 +948,9 @@ public abstract class RuntimeServices {
        *     Shows if native SQL is being used
        */
      public Boolean getUsesNativeSQL() {
+         if (!(getSession().getDatasourceLogin().getDatasourcePlatform() instanceof DatabasePlatform)) {
+             return Boolean.FALSE;
+         }
          return Boolean.valueOf(getSession().getDatasourceLogin().getPlatform().usesNativeSQL());
      }
 
@@ -948,6 +958,9 @@ public abstract class RuntimeServices {
        *     This method indicates if streams are being used for binding
        */
      public Boolean getUsesStreamsForBinding() {
+         if (!(getSession().getDatasourceLogin().getDatasourcePlatform() instanceof DatabasePlatform)) {
+             return Boolean.FALSE;
+         }
          return Boolean.valueOf(getSession().getDatasourceLogin().getPlatform().usesStreamsForBinding());
      }
 
