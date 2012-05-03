@@ -399,7 +399,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         tests.add("testLazyOneToOneFetchInitialization");
         tests.add("testSequenceObjectWithSchemaName");
         tests.add("testSharedExpressionInQueries");
-        tests.add("testInheritanceFetchJoinSecondCall");
         tests.add("testNestedFetchQueryHints");
         tests.add("testNestedBatchQueryHints");
         if (!isJPA10()) {
@@ -426,6 +425,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             tests.add("testNonPooledConnection");
             tests.add("testExclusiveIsolatedLeaksConnectionOnClear");
             tests.add("testSetTargetQueryOneToMany");
+            tests.add("testInheritanceFetchJoinSecondCall");
         }
         Collections.sort(tests);
         for (String test : tests) {
