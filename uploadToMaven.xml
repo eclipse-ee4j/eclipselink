@@ -194,7 +194,6 @@
         <property name="dep.hermes"        value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.jpa.jpql${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.dbws"          value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.dbws${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.core"          value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.core${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
-        <property name="dep.core.parser"   value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.core.jpql${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.oracle"        value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.oracle${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.nosql"         value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.nosql${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.jpa"           value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.jpa${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
@@ -221,7 +220,7 @@
         <property name="jpql.dependencies"        value="${deps.head}${dep.hermes}${deps.foot}"/>
         <property name="core.dependencies"        value="${deps.head}${dep.asm}${deps.foot}"/>
         <property name="oracle.dependencies"      value="${deps.head}${dep.persistence2}${dep.asm}${dep.core}${deps.foot}"/>
-        <property name="jpa.dependencies"         value="${deps.head}${dep.persistence2}${dep.asm}${dep.antlr}${dep.hermes}${dep.core.parser}${dep.core}${deps.foot}"/>
+        <property name="jpa.dependencies"         value="${deps.head}${dep.persistence2}${dep.asm}${dep.antlr}${dep.hermes}${dep.core}${deps.foot}"/>
         <property name="modelgen.dependencies"    value="${deps.head}${dep.core}${dep.jpa}${dep.jpa.processor}${deps.foot}"/>
         <property name="osgi.dependencies"        value="${deps.head}${dep.jpa}${deps.foot}"/>
         <property name="weaving.dependencies"     value="${deps.head}${dep.jpa}${deps.foot}"/>
@@ -311,15 +310,6 @@
             <param name="artifactSrc" value="${maven.2.common.plugins.dir}/${eclipselink.core.bndl.prefix}.source_${version.string}.jar"/>
             <param name="artifactName" value="EclipseLink Core"/>
             <param name="dependencies" value="${core.dependencies}"/>
-        </antcall>
-        <antcall target="upload-artifact">
-            <param name="groupId" value="org.eclipse.persistence"/>
-            <param name="artifactId" value="org.eclipse.persistence.core.jpql"/>
-            <param name="artifactVersion" value="${maven.version}"/>
-            <param name="artifact" value="${maven.2.common.plugins.dir}/org.eclipse.persistence.core.jpql_${version.string}.jar"/>
-            <param name="artifactSrc" value="${maven.2.common.plugins.dir}/org.eclipse.persistence.core.jpql.source_${version.string}.jar"/>
-            <param name="artifactName" value="EclipseLink Hermes JPQL Extensions"/>
-            <param name="dependencies" value="${jpql.dependencies}"/>
         </antcall>
         <antcall target="upload-artifact">
             <param name="groupId" value="org.eclipse.persistence"/>
