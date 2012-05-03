@@ -233,9 +233,9 @@ public class IndirectSet implements CollectionChangeTracker, Set, IndirectCollec
                 objects.next();
                 objects.remove();
             }
-        } else {
-            getDelegate().clear();
+            // clear delegate in case it's still not empty, see bug 338393 
         }
+        getDelegate().clear();
     }
     
     /**
