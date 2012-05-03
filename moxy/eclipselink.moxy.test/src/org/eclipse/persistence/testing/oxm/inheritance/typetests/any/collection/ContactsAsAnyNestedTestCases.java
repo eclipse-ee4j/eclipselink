@@ -16,15 +16,17 @@ import java.util.ArrayList;
 
 import org.eclipse.persistence.testing.oxm.inheritance.typetests.ContactMethod;
 
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 
-public class ContactsAsAnyNestedTestCases extends XMLMappingTestCases {
+public class ContactsAsAnyNestedTestCases extends XMLWithJSONMappingTestCases {
     private static final String READ_DOC = "org/eclipse/persistence/testing/oxm/inheritance/typetests/customer_with_contacts_as_any_noxsi.xml";
+    private static final String JSON_DOC = "org/eclipse/persistence/testing/oxm/inheritance/typetests/customer_with_contacts_as_any_noxsi.json";
     
     public ContactsAsAnyNestedTestCases(String name) throws Exception {
         super(name);
         setProject(new AnyCollectionTypeProject());
         setControlDocument(READ_DOC);
+        setControlJSON(JSON_DOC);
     }
 
     public Object getControlObject() {

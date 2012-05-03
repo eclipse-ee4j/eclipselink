@@ -6,7 +6,6 @@
        "country":"Canada"
        },
      "jb1":["jb1String","jb3String"],
-     "value":["new string1", 10, "new string2"],
      "address":[{
           "street":"222 Fake Street",
 	  "city":"Toronto",
@@ -25,5 +24,6 @@
             "city":"Toronto",
            "country":"Canada"
         }
-     ]  
+     ],
+     "value":["new string1", 10, "new string2"]
  }}

@@ -18,15 +18,14 @@ package org.eclipse.persistence.testing.oxm.mappings.anycollection.withgroupinge
  *  @since   release specific (what release of product did this appear in)
  */
 
-import java.util.Vector;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
-
-public class AnyCollectionNoChildrenTestCases extends XMLMappingTestCases {
+public class AnyCollectionNoChildrenTestCases extends XMLWithJSONMappingTestCases {
     public AnyCollectionNoChildrenTestCases(String name) throws Exception {
         super(name);
         setProject(new AnyCollectionWithGroupingElementProject());
         setControlDocument("org/eclipse/persistence/testing/oxm/mappings/anycollection/withgroupingelement/no_children.xml");
+        setControlJSON("org/eclipse/persistence/testing/oxm/mappings/anycollection/withgroupingelement/no_children.json");
     }
     
     public Object getControlObject() {

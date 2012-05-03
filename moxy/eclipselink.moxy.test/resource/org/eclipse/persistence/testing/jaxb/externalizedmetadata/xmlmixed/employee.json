@@ -1,6 +1,6 @@
 {"employee":{
     "a":1,
     "b":"3",
-    "value":["blah.","lame."],
-    "stuff":["Thisismystuff."]
+    "stuff":["Thisismystuff."],
+    "value":["blah.","lame."]
     }}

@@ -59,4 +59,19 @@ public class XmlAnyElementWithEltRefsViaAnnotationTestCases extends JAXBWithJSON
         foo.setOthers(things);
 		return foo;
 	}
+	
+	public Object getJSONReadControlObject(){
+		FooImpl foo = new FooImpl();
+		Bar bar = new Bar();
+        bar.id = "i69";
+        ObjectFactory factory = new ObjectFactory();
+        
+        List<Object> things = new ArrayList<Object>();
+        things.add(factory.createFooA(66));       
+        things.add(factory.createFooB(99));
+        things.add(bar);
+        things.add("some text");
+        foo.setOthers(things);
+		return foo;
+	}
 }

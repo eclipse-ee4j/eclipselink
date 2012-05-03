@@ -37,6 +37,7 @@ import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy;
@@ -57,6 +58,7 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
+import org.eclipse.persistence.internal.oxm.record.json.JSONReader;
 
 /**
  * INTERNAL:
@@ -158,7 +160,14 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     }
 
     private XMLReader getXMLReader() {
-        if(null == xmlReader) {
+    	return getXMLReader(null);
+    }
+    
+    private XMLReader getXMLReader(Class clazz) {
+        if(null == xmlReader) {        	
+        	if(xmlUnmarshaller.getMediaType() == MediaType.APPLICATION_JSON){         		
+        		return new JSONReader(xmlUnmarshaller.getAttributePrefix(), xmlUnmarshaller.getNamespaceResolver(), xmlUnmarshaller.getNamespaceResolver() != null, xmlUnmarshaller.isIncludeRoot(), xmlUnmarshaller.getNamespaceSeparator(), xmlUnmarshaller.getErrorHandler(), xmlUnmarshaller.getValueWrapper(), clazz);
+        	}
             try {
                 xmlReader = new XMLReader(getSAXParser().getXMLReader());
                 if(null != errorHandler) {
@@ -368,7 +377,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         if (inputSource != null) {
             inputSource.setSystemId(this.systemId);
         }
-        return unmarshal(getXMLReader(), inputSource, clazz);
+        return unmarshal(getXMLReader(clazz), inputSource, clazz);
     }
 
     public Object unmarshal(InputSource inputSource, Class clazz, XMLReader xmlReader) {
@@ -603,16 +612,28 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
                 return unmarshal(saxSource.getInputSource(), clazz, xmlReader);
             }
         } else if (source instanceof DOMSource) {
-            DOMSource domSource = (DOMSource) source;
+            DOMSource domSource = (DOMSource) source;           
             return unmarshal(domSource.getNode(), clazz);
         } else if (source instanceof StreamSource) {
             StreamSource streamSource = (StreamSource) source;
             if (null != streamSource.getReader()) {
-                return unmarshal(streamSource.getReader(), clazz);
+            	if(xmlUnmarshaller.getMediaType() == MediaType.APPLICATION_XML){
+            		return unmarshal(streamSource.getReader(), clazz);	
+            	}else{                
+                    return unmarshal(new InputSource(streamSource.getReader()), clazz, getXMLReader(clazz));
+            	}
             } else if (null != streamSource.getInputStream()) {
-                return unmarshal(streamSource.getInputStream(), clazz);
+            	if(xmlUnmarshaller.getMediaType() == MediaType.APPLICATION_XML){
+            		return unmarshal(streamSource.getInputStream(), clazz);
+            	}else{                
+                    return unmarshal(new InputSource(streamSource.getInputStream()), clazz, getXMLReader(clazz));
+            	}
             } else {
-                return unmarshal(streamSource.getSystemId(), clazz);
+            	if(xmlUnmarshaller.getMediaType() == MediaType.APPLICATION_XML){
+            		return unmarshal(streamSource.getSystemId(), clazz);
+            	}else{                
+                    return unmarshal(new InputSource(streamSource.getSystemId()), clazz, getXMLReader(clazz));
+            	}                
             }
         } else {
         	DOMResult result = new DOMResult();
@@ -703,7 +724,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
            
             SAXUnmarshallerHandler saxUnmarshallerHandler = new SAXUnmarshallerHandler(xmlUnmarshaller.getXMLContext());
             try {
-                XMLReader xmlReader = getXMLReader();
+                XMLReader xmlReader = getXMLReader(clazz);
                 saxUnmarshallerHandler.setXMLReader(xmlReader);
                 saxUnmarshallerHandler.setUnmarshaller(xmlUnmarshaller);
                 saxUnmarshallerHandler.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
@@ -728,7 +749,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         }
 
         try {
-            XMLReader xmlReader = getXMLReader();
+            XMLReader xmlReader = getXMLReader(clazz);
             unmarshalRecord.setXMLReader(xmlReader);
             unmarshalRecord.setUnmarshaller(xmlUnmarshaller);
             setContentHandler(xmlReader, unmarshalRecord);

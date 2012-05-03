@@ -98,21 +98,23 @@ public abstract class JSONTestCases extends OXTestCase{
         jsonMarshaller = jaxbContext.createMarshaller();
         jsonUnmarshaller = jaxbContext.createUnmarshaller();
     }
-	    
     public void jsonToObjectTest(Object testObject) throws Exception {
+    	jsonToObjectTest(getReadControlObject(), testObject);
+    }
+	    
+    public void jsonToObjectTest(Object control, Object testObject) throws Exception {
         log("\n**jsonToObjectTest**");
         log("Expected:");
-        log(getReadControlObject().toString());
+        log(control.toString());
         log("Actual:");
         log(testObject.toString());
 
         if ((getReadControlObject() instanceof JAXBElement) && (testObject instanceof JAXBElement)) {
-            JAXBElement controlObj = (JAXBElement)getReadControlObject();
+            JAXBElement controlObj = (JAXBElement)control;
             JAXBElement testObj = (JAXBElement)testObject;
             compareJAXBElementObjects(controlObj, testObj);
         } else {
-        	Object control = getReadControlObject();
-        	
+       	
         	if(testObject instanceof Collection && control instanceof Collection){
         		Collection testCollection = (Collection)testObject;
         		Collection controlCollection = (Collection)control;

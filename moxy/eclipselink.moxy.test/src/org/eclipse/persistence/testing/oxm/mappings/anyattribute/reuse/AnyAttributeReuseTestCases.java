@@ -17,14 +17,15 @@ import java.util.Properties;
 
 import javax.xml.namespace.QName;
 
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 
-public class AnyAttributeReuseTestCases extends XMLMappingTestCases {
+public class AnyAttributeReuseTestCases extends XMLWithJSONMappingTestCases {
 
     public AnyAttributeReuseTestCases(String name) throws Exception {
         super(name);
         setProject(new AnyAttributeReuseProject());
         setControlDocument("org/eclipse/persistence/testing/oxm/mappings/anyattribute/reuse/reuse.xml");
+        setControlJSON("org/eclipse/persistence/testing/oxm/mappings/anyattribute/reuse/reuse.json");
     }
 
     public Object getControlObject() {

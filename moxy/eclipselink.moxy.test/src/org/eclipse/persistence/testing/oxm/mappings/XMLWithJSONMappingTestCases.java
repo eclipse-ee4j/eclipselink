@@ -20,13 +20,11 @@ import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.util.Map;
 
-import org.eclipse.persistence.internal.oxm.record.json.JSONReader;
 import org.eclipse.persistence.internal.oxm.record.namespaces.MapNamespacePrefixMapper;
 import org.eclipse.persistence.internal.oxm.record.namespaces.PrefixMapperNamespaceResolver;
 import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.NamespacePrefixMapper;
 import org.eclipse.persistence.oxm.XMLRoot;
-import org.eclipse.persistence.oxm.XMLConstants;
 import org.xml.sax.InputSource;
 
 public abstract class XMLWithJSONMappingTestCases extends XMLMappingTestCases{
@@ -74,21 +72,25 @@ public abstract class XMLWithJSONMappingTestCases extends XMLMappingTestCases{
             if(getNamespaces() != null){
             	NamespacePrefixMapper mapper = new MapNamespacePrefixMapper(getNamespaces());
             	nr = new PrefixMapperNamespaceResolver(mapper, null);
+            	xmlUnmarshaller.setNamespaceResolver(nr);
             }
-			
-            Object testObject = xmlUnmarshaller.unmarshal(new JSONReader(getAttributePrefix(), nr, nr != null, true, XMLConstants.DOT, xmlUnmarshaller.getErrorHandler(), "value"), inputSource);
+            Object testObject = xmlUnmarshaller.unmarshal(inputSource);
             
     	    inputStream.close();
     	    
-    	    if ((getReadControlObject() instanceof XMLRoot) && (testObject instanceof XMLRoot)) {
+    	    if ((getJSONReadControlObject() instanceof XMLRoot) && (testObject instanceof XMLRoot)) {
                 XMLRoot controlObj = (XMLRoot)getReadControlObject();
                 XMLRoot testObj = (XMLRoot)testObject;
                 compareXMLRootObjects(controlObj, testObj);
             } else {
-                assertEquals(getReadControlObject(), testObject);
+                assertEquals(getJSONReadControlObject(), testObject);
             }
     	    
     	}
+    }
+    
+    public Object getJSONReadControlObject(){
+    	return getReadControlObject();
     }
     
     public void testJSONMarshalToOutputStream() throws Exception{

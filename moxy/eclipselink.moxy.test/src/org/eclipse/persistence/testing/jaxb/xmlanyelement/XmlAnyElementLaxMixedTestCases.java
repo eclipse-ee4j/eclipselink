@@ -165,10 +165,6 @@ public class XmlAnyElementLaxMixedTestCases extends JAXBWithJSONTestCases {
 		        elem3.setTextContent("jb3String");
 		        employee.elements.add(elem3);
 		        
-		        employee.elements.add("new string1");
-		        employee.elements.add("10");		        				      
-		        employee.elements.add("new string2");
-		        
 		        employee.elements.add(addr);
 		        Address addr2 = new Address();
 		        addr2.street = "second address";
@@ -190,6 +186,10 @@ public class XmlAnyElementLaxMixedTestCases extends JAXBWithJSONTestCases {
 
 	        JAXBElement jb4 = new JAXBElement(new QName("jb4"), Address.class, addr);
 	        employee.elements.add(jb4);
+	        
+	        employee.elements.add("new string1");
+	        employee.elements.add("10");		        				      
+	        employee.elements.add("new string2");
 	        return employee;
 	    }
 	    

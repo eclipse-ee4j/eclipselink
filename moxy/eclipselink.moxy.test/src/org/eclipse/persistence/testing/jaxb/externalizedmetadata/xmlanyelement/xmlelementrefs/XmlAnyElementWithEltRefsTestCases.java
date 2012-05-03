@@ -74,4 +74,20 @@ public class XmlAnyElementWithEltRefsTestCases extends JAXBWithJSONTestCases{
        
 	    return foo;
 	}
+	
+	public Object getJSONReadControlObject(){
+		FooImplNoAnnotations foo = new FooImplNoAnnotations();
+		Bar bar = new Bar();
+        bar.id = "i69";
+        ObjectFactory factory = new ObjectFactory();
+        
+        List<Object> things = new ArrayList<Object>();
+        things.add(factory.createFooA(66));        
+        things.add(factory.createFooB(99));
+        things.add(bar);
+        things.add("some text");
+        foo.setOthers(things);
+       
+	    return foo;
+	}
 }

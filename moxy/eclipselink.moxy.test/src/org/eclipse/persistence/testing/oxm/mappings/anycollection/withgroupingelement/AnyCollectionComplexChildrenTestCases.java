@@ -20,13 +20,14 @@ package org.eclipse.persistence.testing.oxm.mappings.anycollection.withgroupinge
 
 import java.util.Vector;
 
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 
-public class AnyCollectionComplexChildrenTestCases extends XMLMappingTestCases {
+public class AnyCollectionComplexChildrenTestCases extends XMLWithJSONMappingTestCases {
     public AnyCollectionComplexChildrenTestCases(String name) throws Exception {
         super(name);
         setProject(new AnyCollectionWithGroupingElementProject());
         setControlDocument("org/eclipse/persistence/testing/oxm/mappings/anycollection/withgroupingelement/complex_children.xml");
+        setControlJSON("org/eclipse/persistence/testing/oxm/mappings/anycollection/withgroupingelement/complex_children.json");
     }
     
     public Object getControlObject() {

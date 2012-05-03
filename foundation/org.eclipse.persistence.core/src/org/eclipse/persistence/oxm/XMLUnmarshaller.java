@@ -134,6 +134,10 @@ public class XMLUnmarshaller implements Cloneable {
     private MediaType mediaType = MediaType.APPLICATION_XML;
     private IDResolver idResolver;
     private String valueWrapper = XMLConstants.VALUE_WRAPPER;
+    private char namespaceSeparator = XMLConstants.DOT;
+    private String attributePrefix;
+    private boolean includeRoot = true;
+    private NamespaceResolver namespaceResolver;    
 
     static {
         try {
@@ -630,7 +634,7 @@ public class XMLUnmarshaller implements Cloneable {
         if ((null == source) || (null == clazz)) {
             throw XMLMarshalException.nullArgumentException();
         }
-        if (source.getClass() == this.staxSourceClass) {
+        if (source.getClass() == this.staxSourceClass) {        	
             try {
                 Object xmlStreamReader = PrivilegedAccessHelper.invokeMethod(this.staxSourceGetStreamReaderMethod, source);
                 if(xmlStreamReader != null) {
@@ -692,8 +696,27 @@ public class XMLUnmarshaller implements Cloneable {
     }
     
     /**
+     * Value that will be used to prefix attributes.  
+     * Ignored unmarshalling XML.   
+     * @return
+     * @since 2.4
+     */
+    public String getAttributePrefix() {
+        return attributePrefix;
+    }
+    
+    /**
+     * Value that will be used to prefix attributes.  
+     * Ignored unmarshalling XML.
+     * @since 2.4	 
+     */
+    public void setAttributePrefix(String attributePrefix) {
+        this.attributePrefix = attributePrefix;
+    }
+    
+    /**
      * Name of the property to marshal/unmarshal as a wrapper on the text() mappings   
-     * Ignored marshalling XML.  
+     * Ignored unmarshalling XML.  
      * @since 2.4	 
      */	
     public String getValueWrapper() {
@@ -702,11 +725,73 @@ public class XMLUnmarshaller implements Cloneable {
 
     /**
      * Name of the property to marshal/unmarshal as a wrapper on the text() mappings   
-     * Ignored marshalling XML.  
+     * Ignored unmarshalling XML.  
      * @since 2.4	 
      */
     public void setValueWrapper(String valueWrapper) {
         this.valueWrapper = valueWrapper;
+    }
+        
+    /**
+     * Get the namespace separator used during unmarshal operations.
+     * If mediaType is application/json '.' is the default
+     * Ignored unmarshalling XML.   
+     * @since 2.4
+     */
+    public char getNamespaceSeparator() {    	
+        return namespaceSeparator;
+    }
+
+    /**
+     * Set the namespace separator used during unmarshal operations.
+     * If mediaType is application/json '.' is the default
+     * Ignored unmarshalling XML.   
+     * @since 2.4
+     */
+	public void setNamespaceSeparator(char namespaceSeparator) {
+		this.namespaceSeparator = namespaceSeparator;
+	}
+    
+    /**
+     * Determine if the @XMLRootElement should be marshalled when present.  
+     * Ignored unmarshalling XML.   
+     * @return
+     * @since 2.4
+     */
+    public boolean isIncludeRoot() {
+        if(mediaType == MediaType.APPLICATION_JSON){
+            return includeRoot;
+        }
+        return true;
+    }
+
+    /**
+     * Determine if the @XMLRootElement should be marshalled when present.  
+     * Ignored unmarshalling XML.   
+     * @return
+     * @since 2.4
+     */
+    public void setIncludeRoot(boolean includeRoot) {
+         this.includeRoot = includeRoot;
+    }
+    
+    
+    /**
+     * Name of the NamespaceResolver to be used during unmarshal
+     * Ignored unmarshalling XML.  
+     * @since 2.4	 
+     */	
+    public NamespaceResolver getNamespaceResolver() {
+        return namespaceResolver;
+    }
+
+    /**
+     * Get the NamespaceResolver to be used during unmarshal
+     * Ignored unmarshalling XML.  
+     * @since 2.4	 
+     */
+    public void setNamespaceResolver(NamespaceResolver namespaceResolver) {
+        this.namespaceResolver = namespaceResolver;
     }
     
     @Override

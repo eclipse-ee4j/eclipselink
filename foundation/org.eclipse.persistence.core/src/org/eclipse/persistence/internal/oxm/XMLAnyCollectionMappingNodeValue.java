@@ -99,6 +99,8 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
         if(marshalRecord.getMarshaller().getMediaType() == MediaType.APPLICATION_JSON){
             List<XPathFragment> frags = new ArrayList();
             List<List> values = new ArrayList<List>();
+            List mixedValues = new ArrayList();
+            
             //sort the elements. Results will be a list of xpathfragments and a corresponding list of 
             //collections associated with those xpathfragments
             XPathFragment xmlRootFragment;
@@ -110,17 +112,26 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
         	    	nextValue = xmlAnyCollectionMapping.getConverter().convertObjectValueToDataValue(nextValue, session, marshalRecord.getMarshaller());
                 }
                 XPathFragment frag = getXPathFragmentForValue(nextValue, marshalRecord,marshalRecord.getMarshaller() );
-                if(frag != null){        	  
+                if(frag != null){    
+                	if(frag == SIMPLE_FRAGMENT){
+                   	    mixedValues.add(nextValue);
+                    }else{
                         int index = frags.indexOf(frag);
-        	        if(index > -1){
-        	    	    values.get(index).add(nextValue);
-        	        }else{
+        	            if(index > -1){
+        	    	        values.get(index).add(nextValue);
+        	            }else{
                             frags.add(frag);
-        	    	    List valuesList = new ArrayList();
-        	    	    valuesList.add(nextValue);
-        	    	    values.add(valuesList);
-        	        }
-                 } 		        		        	 
+        	    	        List valuesList = new ArrayList();
+        	    	        valuesList.add(nextValue);
+        	    	        values.add(valuesList);
+        	            }
+                    }
+        	        
+                 }
+            }
+            if(mixedValues.size() >0){
+            	frags.add(SIMPLE_FRAGMENT);
+                values.add(mixedValues);
             }
             for(int i =0;i < frags.size(); i++){
             	XPathFragment nextFragment = frags.get(i);            	
@@ -135,8 +146,8 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
                 
                     marshalRecord.endCollection();     
                 }            
-            }            
-  
+            } 
+            
             return true;
         }else{
 	        Object objectValue;

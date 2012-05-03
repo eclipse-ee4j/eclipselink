@@ -92,9 +92,9 @@ public class XmlMixedTestCases extends JAXBWithJSONTestCases {
     	Employee emp = (Employee)testObject;
     	assertNotNull("The Employee did not umnmarshal correctly: 'stuff' is null.", emp.stuff);
         assertTrue("The Employee did not umnmarshal correctly: expected 'stuff' size of [3] but was [" + emp.stuff.size() + "]", emp.stuff.size() == 3);
-        assertTrue("The Employee did not umnmarshal correctly: expected 'stuff.0' to be instanceof [String] but was [" + emp.stuff.get(0) + "]", emp.stuff.get(0) instanceof String);        
-        assertTrue("The Employee did not umnmarshal correctly: expected 'stuff.2' to be instanceof [String] but was [" + emp.stuff.get(1) + "]", emp.stuff.get(1) instanceof String);
-        assertTrue("The Employee did not umnmarshal correctly: expected 'stuff.1' to be instanceof [Element] but was [" + emp.stuff.get(2) + "]", emp.stuff.get(2) instanceof Element);
+        assertTrue("The Employee did not umnmarshal correctly: expected 'stuff.2' to be instanceof [String] but was [" + emp.stuff.get(2) + "]", emp.stuff.get(2) instanceof String);        
+        assertTrue("The Employee did not umnmarshal correctly: expected 'stuff.1' to be instanceof [String] but was [" + emp.stuff.get(1) + "]", emp.stuff.get(1) instanceof String);
+        assertTrue("The Employee did not umnmarshal correctly: expected 'stuff.0' to be instanceof [Element] but was [" + emp.stuff.get(0) + "]", emp.stuff.get(0) instanceof Element);
 
     }
     public void testSchemaGen() throws Exception{

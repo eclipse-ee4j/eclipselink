@@ -14,15 +14,17 @@ package org.eclipse.persistence.testing.oxm.inheritance.typetests.any;
 
 import org.eclipse.persistence.testing.oxm.inheritance.typetests.ContactMethod;
 
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 
-public class ContactAsAnyNestedTestCases extends XMLMappingTestCases {
+public class ContactAsAnyNestedTestCases extends XMLWithJSONMappingTestCases {
     private static final String READ_DOC = "org/eclipse/persistence/testing/oxm/inheritance/typetests/customer_with_contact_noxsi.xml";
+    private static final String JSON_DOC = "org/eclipse/persistence/testing/oxm/inheritance/typetests/customer_with_contact_noxsi.json";
     
     public ContactAsAnyNestedTestCases(String name) throws Exception {
         super(name);
         setProject(new AnyTypeProject());
         setControlDocument(READ_DOC);
+        setControlJSON(JSON_DOC);
     }
 
     public Object getControlObject() {

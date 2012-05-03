@@ -59,6 +59,7 @@ public class XMLMarshalException extends ValidationException {
     public static final int ERROR_PROCESSING_ID_RESOLVER = 25035;
     public static final int WRAPPED_ID_RESOLVER_WITH_MULTI_ID = 25036;
     public static final int OBJECT_CYCLE_DETECTED = 25037;
+    public static final int PLATFORM_NOT_SUPPORTED_WITH_JSON_MEDIA_TYPE = 25038;
 
     // ==========================================================================================
     protected XMLMarshalException(String message) {
@@ -374,5 +375,12 @@ public class XMLMarshalException extends ValidationException {
         exception.setErrorCode(OBJECT_CYCLE_DETECTED);
         return exception;
     }
-
+    
+    public static XMLMarshalException unsupportedMediaTypeForPlatform() {
+        Object[] args = { };
+        XMLMarshalException exception = new XMLMarshalException(ExceptionMessageGenerator.buildMessage(XMLMarshalException.class, PLATFORM_NOT_SUPPORTED_WITH_JSON_MEDIA_TYPE, args));
+        exception.setErrorCode(PLATFORM_NOT_SUPPORTED_WITH_JSON_MEDIA_TYPE);
+        return exception;
+    }
+    
 }

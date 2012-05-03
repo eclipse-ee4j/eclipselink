@@ -35,6 +35,7 @@ public class AnyAttributeSubTypeMappingTestCases extends JAXBWithJSONTestCases {
     
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/anyattribute/subtype-map.xml";
     private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/anyattribute/subtype-map.json";
+    private static final String JSON_RESOURCE2 = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/anyattribute/subtype-map2.json";
     
     private static final String NAME_1 = "Joe";
     private static final String NAME_2 = "Bob";
@@ -100,6 +101,47 @@ public class AnyAttributeSubTypeMappingTestCases extends JAXBWithJSONTestCases {
         controlSchemas.add(is);
     
         super.testSchemaGen(controlSchemas);
+    }
+    
+    protected void compareStrings(String test, String testString) {    
+    	  log(test);
+          if(shouldRemoveEmptyTextNodesFromControlDoc()){
+              log("Expected (With All Whitespace Removed):");
+          }else{
+          	  log("Expected");
+          }
+          
+          String expectedString = loadFileToString(JSON_RESOURCE);
+          if(shouldRemoveEmptyTextNodesFromControlDoc()){
+          	expectedString = expectedString.replaceAll("[ \b\t\n\r ]", "");
+          }
+          log(expectedString);
+          if(shouldRemoveEmptyTextNodesFromControlDoc()){
+              log("\nActual (With All Whitespace Removed):");
+          }else{
+          	log("\nActual");
+          }
+          
+          if(shouldRemoveEmptyTextNodesFromControlDoc()){
+              testString = testString.replaceAll("[ \b\t\n\r]", "");
+          }
+          log(testString);
+          
+          if(expectedString.equals(testString)){
+        	  return;
+          }
+          //try second document with values in a different order
+          expectedString = loadFileToString(JSON_RESOURCE2);
+          if(shouldRemoveEmptyTextNodesFromControlDoc()){
+           	expectedString = expectedString.replaceAll("[ \b\t\n\r ]", "");
+          }
+          log(expectedString);
+          if(shouldRemoveEmptyTextNodesFromControlDoc()){
+              log("\nActual (With All Whitespace Removed):");
+          }else{
+              log("\nActual");
+          }           
+          assertEquals(expectedString, testString);
     }
 }
 

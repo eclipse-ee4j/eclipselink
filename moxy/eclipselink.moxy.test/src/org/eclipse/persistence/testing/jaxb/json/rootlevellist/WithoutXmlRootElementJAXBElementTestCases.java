@@ -61,19 +61,5 @@ public class WithoutXmlRootElementJAXBElementTestCases extends JSONMarshalUnmars
     	
     	return elem;
     }
-    /*
-    public void testUnmarshal() throws Exception {
-        InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);
-        List<WithoutXmlRootElementRoot>  test = (List<WithoutXmlRootElementRoot>) jsonUnmarshaller.unmarshal(new StreamSource(inputStream), WithoutXmlRootElementRoot.class).getValue();
-        inputStream.close();
-        List<WithoutXmlRootElementRoot> control = getControlObject();
-        for(int x=0; x<control.size(); x++) {
-            assertEquals(control.get(x), test.get(x));
-        }
-    }
-
-    public void testUnmarshalEmptyList() throws Exception {
-        List<WithoutXmlRootElementRoot>  test = (List<WithoutXmlRootElementRoot>) jsonUnmarshaller.unmarshal(new StreamSource(new StringReader("[]")), WithoutXmlRootElementRoot.class).getValue();
-        assertEquals(0, test.size());
-    }*/
+  
 }

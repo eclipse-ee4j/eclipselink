@@ -122,6 +122,10 @@ public class XMLStreamWriterRecord extends MarshalRecord {
             throw XMLMarshalException.marshalException(e);
         }
     }
+    
+    public boolean isNamespaceAware() {
+    	return true;    	
+    }
 
     public void closeStartElement() {
     }
