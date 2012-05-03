@@ -23,12 +23,10 @@ import com.sun.xml.bind.v2.runtime.reflect.Accessor;
 public class MyCustomAccessorFactory implements AccessorFactory {
 
     public Accessor createFieldAccessor(Class beanClass, Field field, boolean isReadOnly) throws JAXBException {
-        System.out.println("field");
         return new MyCustomAccessorFactory.MyCustomFieldAccessor(beanClass);
     }
 
     public Accessor createPropertyAccessor(Class beanClass, Method getMethod, Method setMethod) throws JAXBException {
-        System.out.println("prop");
         return new MyCustomAccessorFactory.MyCustomPropertyAccessor(beanClass);
     }
     

@@ -66,21 +66,4 @@ public class InheritanceRootChoiceOnlyTestCases extends JAXBWithJSONTestCases {
 		root.choiceList = choiceList;
 		return root;
     }
-    
-    public void testCompareOutput() throws Exception{
-    	Marshaller m = jaxbContext.createMarshaller();
-		System.out.println(jaxbContext.getClass());
-
-    	m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-    	m.marshal(getWriteControlObject(), new File("InheritanceRootChoiceOnlyTestCases_moxyOutput_equalNR.xml"));
-    	
-    	    	
-    	JAXBContext riContext = JAXBContext.newInstance(new Class[] {RootChoiceOnly.class});
-		System.out.println(riContext.getClass());
-
-    	Marshaller riMarshaller = riContext.createMarshaller();
-    	riMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-    	riMarshaller.marshal(getWriteControlObject(), new File("InheritanceRootChoiceOnlyTestCases_riOutput.xml"));
-    }
-    
 }
