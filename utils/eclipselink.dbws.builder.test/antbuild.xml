@@ -396,6 +396,7 @@
       <javac
         debug="${javac.debug}"
         debuglevel="${javac.debuglevel}"
+        encoding="UTF-8"
         optimize="${javac.optimize}"
         source="1.6"
         target="1.6"

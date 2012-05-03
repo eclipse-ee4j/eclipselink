@@ -293,6 +293,7 @@
                 destdir="${classes.dir}"
                 debug="${javac.debug}"
                 debuglevel="${javac.debuglevel}"
+                encoding="UTF-8"
                 optimize="${javac.optimize}"
                 source="${javac.version}"
                 target="${javac.version}"

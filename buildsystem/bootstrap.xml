@@ -50,7 +50,7 @@
             <os family="unix"/>
         </condition>
 
-        <!-- property name="build.compiler" value="javac1.5"/ -->
+        <property name="build.compiler" value="javac1.6"/>
         <tstamp>
             <format property="run.date" pattern="yyyyMMdd"/>
             <format property="run.time" pattern="HHmm"/>

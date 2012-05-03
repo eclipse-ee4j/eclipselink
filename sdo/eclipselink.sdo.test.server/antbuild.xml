@@ -93,6 +93,7 @@
             destdir="${classes.dir}"
             debug="${javac.debug}"
             debuglevel="${javac.debuglevel}"
+            encoding="UTF-8"
             optimize="${javac.optimize}"
             source="${javac.version}"
             target="${javac.version}"
@@ -109,14 +110,14 @@
       <copy todir="${classes.dir}">
         <fileset dir="${resource.dir}"/>
       </copy>
-      <zip 
+      <zip
         destfile="${tmp.dir}/deptApp.jar"
         basedir="${classes.dir}"
         excludes="org/eclipse/persistence/testing/sdo/server/server/DeptServiceClient*.class" />
     </target>
 
     <target name="build-app-ear" depends="build-ejb-jar">
-      <zip 
+      <zip
         destfile="./deptApp.ear"
         basedir="${tmp.dir}" />
     </target>

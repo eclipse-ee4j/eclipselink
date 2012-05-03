@@ -96,7 +96,7 @@
         <property name="custom.tasks.lib" value="${dbwsbldr.2.buildsys.dir}/ant_customizations.jar"/>
         <available file="${custom.tasks.lib}" property="ant_customizations.exist"/>
         <fail unless="ant_customizations.exist" message="Cannot find custom tasks library: '${custom.tasks.lib}'"/>
-        
+
         <property name="custom.echo.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.Say"/>
         <property name="custom.selectbundle.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.SelectBundle"/>
         <taskdef  name="say"          classname="${custom.echo.task.class}"         classpath="${custom.tasks.lib}"/>
@@ -212,6 +212,7 @@
                includes="**/*.java"
                debug="${javac.debug}"
                debuglevel="${javac.debuglevel}"
+               encoding="UTF-8"
                optimize="${javac.optimize}"
                source="1.6"
                target="1.6"

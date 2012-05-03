@@ -107,6 +107,7 @@
             destdir="${compile.mappingsmodel.destdir}"
             debug="${javac.debug}"
             debuglevel="${javac.debuglevel}"
+            encoding="UTF-8"
             failonerror="${stop.on.error}"
             optimize="${optimize.code}"
             deprecation="${report.deprecation}"

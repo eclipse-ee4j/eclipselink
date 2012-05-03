@@ -107,6 +107,7 @@
             debug="${javac.debug}"
             debuglevel="${javac.debuglevel}"
             failonerror="${stop.on.error}"
+            encoding="UTF-8"
             optimize="${optimize.code}"
             deprecation="${report.deprecation}"
             source="${target.jvm}"
