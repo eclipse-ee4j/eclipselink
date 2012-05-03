@@ -143,7 +143,7 @@
         <contains string="${java.version}" substring="1.5"/>
     </condition>
     <!-- Sets the warning message appropriately -->
-    <condition property="jdk_message" value="Warning: Minimum of JDK6 is required for some components to build." else="java.version='${java.version}'">
+    <condition property="jdk_message" value="Warning: Minimum of JDK6 is required for components to build." else="java.version='${java.version}'">
         <contains string="${java.version}" substring="1.5"/>
     </condition>
     <echo message="${jdk_message}"/>

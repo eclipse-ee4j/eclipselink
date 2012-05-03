@@ -282,7 +282,7 @@
                 <attribute name="Bundle-Name"                         value="SDO"/>
                 <attribute name="Bundle-Vendor"                       value="commonj.sdo Project"/>
                 <attribute name="Bundle-SymbolicName"                 value="commonj.sdo"/>
-                <attribute name="Bundle-RequiredExecutionEnvironment" value="J2SE-1.5"/>
+                <attribute name="Bundle-RequiredExecutionEnvironment" value="JavaSE-1.6"/>
                 <attribute name="Bundle-Version"                      value="2.1.1"/>
                 <attribute name="Export-Package"                      value="${osgi.export.package}"/>
             </manifest>

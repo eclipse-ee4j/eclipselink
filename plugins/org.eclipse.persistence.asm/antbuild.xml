@@ -151,7 +151,7 @@
     <!-- compile -->
     <target name="compile" depends="init, fail-on-no-bnd" description="Compile bundle code">
         <delete dir="${asm.build.location}/org" includeEmptyDirs="true" failonerror="false" quiet="true"/>
-        <property name="javac.version" value="1.5"/>
+        <property name="javac.version" value="1.6"/>
         <javac srcdir="${src.dir}"
                destdir="${asm.build.location}"
                includes="org/eclipse/persistence/**/*.java"
