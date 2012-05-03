@@ -34,6 +34,7 @@ import org.eclipse.persistence.jaxb.javamodel.JavaModel;
 import org.eclipse.persistence.jaxb.javamodel.JavaPackage;
 import org.eclipse.persistence.jaxb.xmlmodel.JavaAttribute;
 import org.eclipse.persistence.jaxb.xmlmodel.JavaType;
+import org.eclipse.persistence.jaxb.xmlmodel.JavaType.JavaAttributes;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlAnyAttribute;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlAnyElement;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlAttribute;
@@ -246,58 +247,61 @@ public class OXMJavaClassImpl implements JavaClass {
                 fieldsToReturn.add(new OXMJavaFieldImpl(iterator.next(), JAVA_LANG_OBJECT, this));
             }
         } else {
-            List<JAXBElement<? extends JavaAttribute>> fields = this.javaType.getJavaAttributes().getJavaAttribute();
-
-            for (Iterator<JAXBElement<? extends JavaAttribute>> iterator = fields.iterator(); iterator.hasNext();) {
-                JAXBElement<? extends JavaAttribute> jaxbElement = iterator.next();
-
-                JavaAttribute att = (JavaAttribute) jaxbElement.getValue();
-
-                if (att instanceof XmlElement) {
-                    XmlElement xme = (XmlElement) att;
-                    String fieldName = xme.getJavaAttribute();
-                    String fieldType = xme.getType();
-                    fieldsToReturn.add(new OXMJavaFieldImpl(fieldName, fieldType, this));
-                } else if (att instanceof XmlElements) {
-                    XmlElements xmes = (XmlElements) att;
-                    String fieldName = xmes.getJavaAttribute();
-                    String fieldType = JAVA_LANG_OBJECT;
-                    fieldsToReturn.add(new OXMJavaFieldImpl(fieldName, fieldType, this));
-                } else if (att instanceof XmlElementRef) {
-                    XmlElementRef xmer = (XmlElementRef) att;
-                    String fieldName = xmer.getJavaAttribute();
-                    String fieldType = xmer.getType();
-                    fieldsToReturn.add(new OXMJavaFieldImpl(fieldName, fieldType, this));
-                } else if (att instanceof XmlAttribute) {
-                    XmlAttribute xma = (XmlAttribute) att;
-                    String fieldName = xma.getJavaAttribute();
-                    String fieldType = xma.getType();
-                    fieldsToReturn.add(new OXMJavaFieldImpl(fieldName, fieldType, this));
-                } else if (att instanceof XmlValue) {
-                    XmlValue xmv = (XmlValue) att;
-                    String fieldName = xmv.getJavaAttribute();
-                    String fieldType = xmv.getType();
-                    fieldsToReturn.add(new OXMJavaFieldImpl(fieldName, fieldType, this));
-                } else if (att instanceof XmlAnyElement) {
-                    XmlAnyElement xmae = (XmlAnyElement) att;
-                    String fieldName = xmae.getJavaAttribute();
-                    String fieldType = JAVA_LANG_OBJECT;
-                    fieldsToReturn.add(new OXMJavaFieldImpl(fieldName, fieldType, this));
-                } else if (att instanceof XmlAnyAttribute) {
-                    XmlAnyAttribute xmaa = (XmlAnyAttribute) att;
-                    String fieldName = xmaa.getJavaAttribute();
-                    String fieldType = JAVA_UTIL_MAP;
-                    fieldsToReturn.add(new OXMJavaFieldImpl(fieldName, fieldType, this));
-                } else if (att instanceof XmlJoinNodes) {
-                    XmlJoinNodes xmjn = (XmlJoinNodes) att;
-                    String fieldName = xmjn.getJavaAttribute();
-                    String fieldType = xmjn.getType();
-                    fieldsToReturn.add(new OXMJavaFieldImpl(fieldName, fieldType, this));
-                } else if (att instanceof XmlInverseReference) {
-                    XmlInverseReference xmir = (XmlInverseReference) att;
-                    String fieldName = xmir.getJavaAttribute();
-                    String fieldType = xmir.getType();
-                    fieldsToReturn.add(new OXMJavaFieldImpl(fieldName, fieldType, this));
+            JavaAttributes javaAttributes = this.javaType.getJavaAttributes();
+            if(null != javaAttributes) {
+                List<JAXBElement<? extends JavaAttribute>> fields = javaAttributes.getJavaAttribute();
+    
+                for (Iterator<JAXBElement<? extends JavaAttribute>> iterator = fields.iterator(); iterator.hasNext();) {
+                    JAXBElement<? extends JavaAttribute> jaxbElement = iterator.next();
+    
+                    JavaAttribute att = (JavaAttribute) jaxbElement.getValue();
+    
+                    if (att instanceof XmlElement) {
+                        XmlElement xme = (XmlElement) att;
+                        String fieldName = xme.getJavaAttribute();
+                        String fieldType = xme.getType();
+                        fieldsToReturn.add(new OXMJavaFieldImpl(fieldName, fieldType, this));
+                    } else if (att instanceof XmlElements) {
+                        XmlElements xmes = (XmlElements) att;
+                        String fieldName = xmes.getJavaAttribute();
+                        String fieldType = JAVA_LANG_OBJECT;
+                        fieldsToReturn.add(new OXMJavaFieldImpl(fieldName, fieldType, this));
+                    } else if (att instanceof XmlElementRef) {
+                        XmlElementRef xmer = (XmlElementRef) att;
+                        String fieldName = xmer.getJavaAttribute();
+                        String fieldType = xmer.getType();
+                        fieldsToReturn.add(new OXMJavaFieldImpl(fieldName, fieldType, this));
+                    } else if (att instanceof XmlAttribute) {
+                        XmlAttribute xma = (XmlAttribute) att;
+                        String fieldName = xma.getJavaAttribute();
+                        String fieldType = xma.getType();
+                        fieldsToReturn.add(new OXMJavaFieldImpl(fieldName, fieldType, this));
+                    } else if (att instanceof XmlValue) {
+                        XmlValue xmv = (XmlValue) att;
+                        String fieldName = xmv.getJavaAttribute();
+                        String fieldType = xmv.getType();
+                        fieldsToReturn.add(new OXMJavaFieldImpl(fieldName, fieldType, this));
+                    } else if (att instanceof XmlAnyElement) {
+                        XmlAnyElement xmae = (XmlAnyElement) att;
+                        String fieldName = xmae.getJavaAttribute();
+                        String fieldType = JAVA_LANG_OBJECT;
+                        fieldsToReturn.add(new OXMJavaFieldImpl(fieldName, fieldType, this));
+                    } else if (att instanceof XmlAnyAttribute) {
+                        XmlAnyAttribute xmaa = (XmlAnyAttribute) att;
+                        String fieldName = xmaa.getJavaAttribute();
+                        String fieldType = JAVA_UTIL_MAP;
+                        fieldsToReturn.add(new OXMJavaFieldImpl(fieldName, fieldType, this));
+                    } else if (att instanceof XmlJoinNodes) {
+                        XmlJoinNodes xmjn = (XmlJoinNodes) att;
+                        String fieldName = xmjn.getJavaAttribute();
+                        String fieldType = xmjn.getType();
+                        fieldsToReturn.add(new OXMJavaFieldImpl(fieldName, fieldType, this));
+                    } else if (att instanceof XmlInverseReference) {
+                        XmlInverseReference xmir = (XmlInverseReference) att;
+                        String fieldName = xmir.getJavaAttribute();
+                        String fieldType = xmir.getType();
+                        fieldsToReturn.add(new OXMJavaFieldImpl(fieldName, fieldType, this));
+                    }
                 }
             }
         }

@@ -162,7 +162,7 @@ public class XMLContext {
      * @param classLoader The ClassLoader to be used 
      */
     public XMLContext(Project project, ClassLoader classLoader) {
-        this (project, classLoader, null);
+        this (project, classLoader, (Collection<SessionEventListener>) null);
     }
     
     /**
@@ -175,7 +175,22 @@ public class XMLContext {
      * @see SessionEventManager
      */
     public XMLContext(Project project, ClassLoader classLoader, SessionEventListener sessionEventListener) {
-        xmlContextState = new XMLContextState(this, project, classLoader, sessionEventListener);
+        Collection<SessionEventListener> sessionEventListeners = new ArrayList<SessionEventListener>(1);
+        sessionEventListeners.add(sessionEventListener);
+        xmlContextState = new XMLContextState(this, project, classLoader, sessionEventListeners);
+    }
+
+    /**
+     * Create a new XMLContext based on the specified Project and ClassLoader.
+     *
+     * @param project An EclipseLink project
+     * @param classLoader The ClassLoader to be used 
+     * @param sessionEventListeners If non-null, these listeners will be registered with the SessionEventManager
+     * @see SessionEventListener
+     * @see SessionEventManager
+     */
+    public XMLContext(Project project, ClassLoader classLoader, Collection<SessionEventListener> sessionEventListeners) {
+        xmlContextState = new XMLContextState(this, project, classLoader, sessionEventListeners);
     }
 
     public XMLContext(Collection projects) {
@@ -784,8 +799,9 @@ public class XMLContext {
         private Map descriptorsByGlobalType;
         private boolean hasDocumentPreservation = false;
         private boolean requireUnitOfWork = false;
+        private Collection<SessionEventListener> sessionEventListeners;
 
-        private XMLContextState(XMLContext xmlContext, Collection projects, ClassLoader classLoader) {
+        private XMLContextState(XMLContext xmlContext, Collection<Project> projects, ClassLoader classLoader) {
             this.xmlContext = xmlContext;
             Iterator iterator = projects.iterator();
             sessions = new ArrayList(projects.size());
@@ -813,7 +829,7 @@ public class XMLContext {
             }
         }
 
-        private XMLContextState(XMLContext xmlContext, Project project, ClassLoader classLoader, SessionEventListener sessionEventListener) {
+        private XMLContextState(XMLContext xmlContext, Project project, ClassLoader classLoader, Collection<SessionEventListener> sessionEventListeners) {
             this.xmlContext = xmlContext;
             if ((project.getDatasourceLogin() == null) || !(project.getDatasourceLogin().getDatasourcePlatform() instanceof XMLPlatform)) {
                 XMLPlatform platform = new SAXPlatform();
@@ -824,8 +840,10 @@ public class XMLContext {
             DatabaseSession session = project.createDatabaseSession();
             
             // if an event listener was passed in as a parameter, register it with the event manager
-            if (sessionEventListener != null) {
-                session.getEventManager().addListener(sessionEventListener);
+            if (sessionEventListeners != null) {
+                for(SessionEventListener sessionEventListener : sessionEventListeners) {
+                    session.getEventManager().addListener(sessionEventListener);
+                }
             }
 
             // turn logging for this session off and leave the global session up

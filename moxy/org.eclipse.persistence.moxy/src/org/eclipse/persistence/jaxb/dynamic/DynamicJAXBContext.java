@@ -254,7 +254,7 @@ public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext
                 throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.errorCreatingDynamicJAXBContext(e));
             }
 
-            XMLContext ctx = new XMLContext(dp, classLoader);
+            XMLContext ctx = new XMLContext(dp, classLoader, sessionEventListeners());
             state.setXMLContext(ctx);
 
             List<Session> sessions = (List<Session>) ctx.getSessions();
@@ -329,7 +329,7 @@ public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext
                 throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.errorCreatingDynamicJAXBContext(e));
             }
 
-            XMLContext ctx = new XMLContext(dp, (DynamicClassLoader) classLoader);
+            XMLContext ctx = new XMLContext(dp, (DynamicClassLoader) classLoader, sessionEventListeners());
             state.setXMLContext(ctx);
 
             List<Session> sessions = (List<Session>) ctx.getSessions();

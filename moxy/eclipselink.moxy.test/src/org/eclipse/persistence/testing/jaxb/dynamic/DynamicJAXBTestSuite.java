@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.dynamic;
 
+import org.eclipse.persistence.testing.jaxb.dynamic.sessioneventlistener.SessionEventListenerTestCases;
 import org.eclipse.persistence.testing.jaxb.dynamic.withstatic.DynamicWithStaticAddressNoPropsTestCases;
 import org.eclipse.persistence.testing.jaxb.dynamic.withstatic.DynamicWithStaticOverrideTestCases;
 import org.eclipse.persistence.testing.jaxb.dynamic.withstatic.DynamicWithStaticTestCases;
@@ -36,6 +37,7 @@ public class DynamicJAXBTestSuite extends TestSuite {
         suite.addTestSuite(DynamicWithStaticAddressNoPropsTestCases.class);
         suite.addTestSuite(DynamicWithStaticOverrideTestCases.class);
         suite.addTestSuite(StaticWithDynamicTestCases.class);
+        suite.addTestSuite(SessionEventListenerTestCases.class);
         return suite;
     }
 

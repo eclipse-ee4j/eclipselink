@@ -104,6 +104,7 @@ public class JAXBTestSuite2 extends TestCase {
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.jaxbcontext.JaxbContextReturnTypesTests.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.jaxbcontext.JaxbTypeToSchemaTypeTestCases.class);
         suite.addTest(org.eclipse.persistence.testing.jaxb.jaxbcontext.empty.EmptyTestCases.suite());
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.jaxbcontext.sessioneventlistener.SessionEventListenerTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.binder.nscollison.NamespaceCollisionTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.binder.adapter.BinderWithAdapterTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.binder.nullpolicy.BinderWithNullPolicyTestCases.class);

@@ -43,7 +43,6 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.jaxb.JAXBSchemaOutputResolver;
 import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
-import org.eclipse.persistence.internal.jaxb.SessionEventListener;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelGenerator;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -71,6 +70,7 @@ import org.eclipse.persistence.oxm.platform.SAXPlatform;
 import org.eclipse.persistence.oxm.platform.XMLPlatform;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.SessionEventListener;
 
 /**
  * <p><b>Purpose:</b>Provide a EclipseLink implementation of the JAXBContext interface.
@@ -183,6 +183,15 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      * @since 2.3.3 
      */
     public static final String ID_RESOLVER = "eclipselink.id-resolver";
+
+    /**
+     * The Constant SESSION_EVENT_LISTENER.  This can be used to specify a
+     * SessionEventListener that can be used to customize the metadata before or
+     * after it has been initialized.
+     * @see org.eclipse.persistence.sessions.SessionEventListener
+     * @since 2.4
+     */
+    public static final String SESSION_EVENT_LISTENER = "eclipselink.session-event-listener";
 
     private static final Map<String, Boolean> PARSER_FEATURES = new HashMap<String, Boolean>(2);
     static {
@@ -683,6 +692,25 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
 
         protected abstract JAXBContextState createContextState() throws javax.xml.bind.JAXBException;
 
+        protected Collection<SessionEventListener> sessionEventListeners() {
+            SessionEventListener eventListenerFromProperties = null;
+            if(this.properties != null) {
+                eventListenerFromProperties = (SessionEventListener) properties.get(JAXBContext.SESSION_EVENT_LISTENER);
+            }
+            List<SessionEventListener> eventListeners;
+            if(null == eventListenerFromProperties) {
+                eventListeners = new ArrayList<SessionEventListener>(1);
+            } else {
+                eventListeners = new ArrayList<SessionEventListener>(2);
+                eventListeners.add(eventListenerFromProperties);
+            }
+            // disable instantiation policy validation during descriptor initialization
+            org.eclipse.persistence.internal.jaxb.SessionEventListener eventListener = new org.eclipse.persistence.internal.jaxb.SessionEventListener();
+            eventListener.setShouldValidateInstantiationPolicy(false);
+            eventListeners.add(eventListener);
+            return eventListeners;
+        }
+
     }
 
     static class ContextPathInput extends JAXBContextInput {
@@ -823,12 +851,10 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                 }
             }
 
-            // disable instantiation policy validation during descriptor initialization
-            SessionEventListener eventListener = new SessionEventListener();
-            eventListener.setShouldValidateInstantiationPolicy(false);
+
             XMLPlatform platform = new SAXPlatform();
             platform.getConversionManager().setLoader(loader);
-            XMLContext xmlContext = new XMLContext(proj, loader, eventListener);
+            XMLContext xmlContext = new XMLContext(proj, loader, sessionEventListeners());
 
             ((XMLLogin)xmlContext.getSession(0).getDatasourceLogin()).setEqualNamespaceResolvers(true);
 
@@ -956,12 +982,9 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                 }
             }
 
-            // disable instantiation policy validation during descriptor initialization
-            SessionEventListener eventListener = new SessionEventListener();
-            eventListener.setShouldValidateInstantiationPolicy(false);
             XMLPlatform platform = new SAXPlatform();
             platform.getConversionManager().setLoader(loader);
-            XMLContext xmlContext = new XMLContext(proj, loader, eventListener);
+            XMLContext xmlContext = new XMLContext(proj, loader, sessionEventListeners());
 
             ((XMLLogin)xmlContext.getSession(0).getDatasourceLogin()).setEqualNamespaceResolvers(true);
 
