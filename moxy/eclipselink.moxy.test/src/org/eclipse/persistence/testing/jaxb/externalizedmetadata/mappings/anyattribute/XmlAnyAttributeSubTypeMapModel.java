@@ -12,18 +12,18 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.anyattribute;
 
-import java.util.HashMap;
+import java.util.Map;
 import java.util.Iterator;
 import javax.xml.namespace.QName;
 
 public class XmlAnyAttributeSubTypeMapModel {
-    public HashMap<QName, String> children;
+    public Map<QName, String> children;
     
-    public HashMap<QName, String> getChildren() {
+    public Map<QName, String> getChildren() {
         return children;
     }
 
-    public void setChildren(HashMap<QName, String> children) {
+    public void setChildren(Map<QName, String> children) {
         this.children = children;
     }
 
@@ -37,8 +37,8 @@ public class XmlAnyAttributeSubTypeMapModel {
             return false;
         }
 
-        HashMap thisChildren = this.children;
-        HashMap otherChildren = modelObj.children;
+        Map thisChildren = this.children;
+        Map otherChildren = modelObj.children;
             
         if (thisChildren == null) {
             return (otherChildren == null || otherChildren.size() == 0); 

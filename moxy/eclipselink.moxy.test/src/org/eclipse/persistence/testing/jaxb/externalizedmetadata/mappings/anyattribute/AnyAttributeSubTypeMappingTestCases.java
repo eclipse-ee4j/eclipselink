@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.LinkedHashMap;
 
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
@@ -75,7 +76,7 @@ public class AnyAttributeSubTypeMappingTestCases extends JAXBWithJSONTestCases {
      */
     public Object getControlObject() {
         XmlAnyAttributeSubTypeMapModel anyAttributeSubTypeMapModel = new XmlAnyAttributeSubTypeMapModel();
-        HashMap children = new HashMap();
+        LinkedHashMap children = new LinkedHashMap();
         QName qname = new QName(OTHER_NS, CHILD1_NAME);
         children.put(qname, NAME_1);
         qname = new QName(OTHER_NS, CHILD2_NAME);
