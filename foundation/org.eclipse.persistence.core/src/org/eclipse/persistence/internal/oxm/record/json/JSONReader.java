@@ -127,11 +127,14 @@ public class JSONReader extends XMLReaderAdapter {
     	if(tree.getType() == JSONLexer.OBJECT){
     	    contentHandler.startDocument();
     		int children = tree.getChildCount();
+    		if(children == 0 && unmarshalClass == null){
+    			return;
+    		}
     		if(includeRoot){
     			parse((CommonTree) tree.getChild(0));
     		}else{
     			contentHandler.startElement(XMLConstants.EMPTY_STRING, XMLConstants.EMPTY_STRING, null, attributes.setTree(tree, attributePrefix, namespaces, namespaceSeparator, namespaceAware));
-    			for(int x=0, size=tree.getChildCount(); x<size; x++) {
+    			for(int x=0, size=children; x<size; x++) {
     	           parse((CommonTree) tree.getChild(x));
     	        }
     			contentHandler.endElement(XMLConstants.EMPTY_STRING,XMLConstants.EMPTY_STRING, null);

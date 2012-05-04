@@ -21,6 +21,7 @@ import org.eclipse.persistence.testing.jaxb.json.attribute.JSONAttributePrefixOn
 import org.eclipse.persistence.testing.jaxb.json.attribute.JSONAttributePrefixOnMarshallerTestCases;
 import org.eclipse.persistence.testing.jaxb.json.characters.EscapeCharactersTestCases;
 import org.eclipse.persistence.testing.jaxb.json.characters.UsAsciiTestCases;
+import org.eclipse.persistence.testing.jaxb.json.emptyroot.EmptyNullMarshalUnmarshalTestCases;
 import org.eclipse.persistence.testing.jaxb.json.namespaces.DifferentNamespacesTestCases;
 import org.eclipse.persistence.testing.jaxb.json.namespaces.NamespaceInheritanceSeparatorContextTestCases;
 import org.eclipse.persistence.testing.jaxb.json.namespaces.NamespaceInheritanceSeparatorTestCases;
@@ -65,6 +66,7 @@ public class JSONTestSuite extends TestSuite {
           suite.addTestSuite(EscapeCharactersTestCases.class);
           suite.addTestSuite(UsAsciiTestCases.class);
           suite.addTest(RootLevelListTestCases.suite());
+          suite.addTestSuite(EmptyNullMarshalUnmarshalTestCases.class);
           return suite;
 	}
 }

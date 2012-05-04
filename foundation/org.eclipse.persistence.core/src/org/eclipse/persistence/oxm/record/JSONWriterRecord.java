@@ -475,9 +475,11 @@ public class JSONWriterRecord extends MarshalRecord {
          endElement(xPathFragment, namespaceResolver);
      }
 
-     public void marshalWithoutRootElement(TreeObjectBuilder treeObjectBuilder, Object object, XMLDescriptor descriptor, XMLRoot root, boolean isXMLRoot){ 
-         treeObjectBuilder.addXsiTypeAndClassIndicatorIfRequired(this, descriptor, null, descriptor.getDefaultRootElementField(), root, object, isXMLRoot, true);
-         treeObjectBuilder.marshalAttributes(this, object, session);
+     public void marshalWithoutRootElement(TreeObjectBuilder treeObjectBuilder, Object object, XMLDescriptor descriptor, XMLRoot root, boolean isXMLRoot){
+    	 if(treeObjectBuilder != null){
+             treeObjectBuilder.addXsiTypeAndClassIndicatorIfRequired(this, descriptor, null, descriptor.getDefaultRootElementField(), root, object, isXMLRoot, true);
+             treeObjectBuilder.marshalAttributes(this, object, session);
+    	 }         
       }
       
 
