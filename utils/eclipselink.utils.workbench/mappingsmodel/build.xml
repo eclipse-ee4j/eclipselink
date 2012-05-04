@@ -37,7 +37,9 @@
         <property name="optimize.code"    value="off"/>
         <property name="report.deprecation" value="off"/>
         <property name="javac.debug"       value="on"/>
+        <property name="javac.debuglevel"  value="lines,vars,source"/>
         <property name="target.jvm"   value="${javac.version}"/>
+        <property name="_nowarn"      value="on"/>
         <echo message="BuildDate.BuildTime='${build.date}.${build.time}'"/>
         <echo message="java.version='${java.version}'"/>
         <echo message="os.name='${os.name}'"/>
@@ -47,24 +49,7 @@
         <echo message="optimize.code='${optimize.code}'"/>
         <echo message="report.deprecation='${report.deprecation}'"/>
         <echo message="target.jvm='${target.jvm}'"/>
-    </target>
-    <!-- =================================================================== -->
-    <!-- =================================================================== -->
-    <target name="set-release" unless="debug" depends="init">
-        <property name="debug.postfix" value=""/>
-        <property name="javac.debuglevel"     value="lines,source"/>
-        <property name="debug.set"    value="true"/>
-        <echo message="javac.debuglevel='${javac.debuglevel}'"/>
-        <echo message="debug.set='${debug.set}'"/>
-        <echo message="debug.postfix='${debug.postfix}'"/>
-    </target>
-
-    <target name="set-debug" if="debug" depends="set-release">
-        <property name="debug.postfix" value="debug"/>
-        <property name="javac.debuglevel"     value="lines,vars,source"/>
-        <echo message="javac.debuglevel='${javac.debuglevel}'"/>
-        <echo message="debug.set not defined."/>
-        <echo message="debug.postfix='${debug.postfix}'"/>
+        <echo message="_nowarn='${_nowarn}'"/>
     </target>
 
     <!-- =================================================================== -->
@@ -72,11 +57,10 @@
 
     <target name="build-all" depends="compile-mappingsmodel, jar-mappingsmodel"/>
 
-
     <!-- =================================================================== -->
     <!--  Properties                                                         -->
     <!-- =================================================================== -->
-    <target name="properties-init" depends="set-debug">
+    <target name="properties-init" depends="init">
         <property file="build.properties"/>
         <property name="build.type" value="SNAPSHOT"/>
         <property name="release.designation" value="EclipseLink DeveloperBuild"/>
@@ -88,7 +72,7 @@
     <!-- =================================================================== -->
     <!--  Clean                                                              -->
     <!-- =================================================================== -->
-    <target name="clean" depends="set-debug">
+    <target name="clean" depends="init">
         <property file="build.properties"/>
 
         <delete dir="${_classesDestDir}" includeEmptyDirs="true" quiet="true"/>
@@ -107,12 +91,13 @@
             destdir="${compile.mappingsmodel.destdir}"
             debug="${javac.debug}"
             debuglevel="${javac.debuglevel}"
-            encoding="UTF-8"
             failonerror="${stop.on.error}"
+            encoding="UTF-8"
             optimize="${optimize.code}"
             deprecation="${report.deprecation}"
             source="${target.jvm}"
             target="${target.jvm}"
+            nowarn="${_nowarn}"
             includes="**/*.java"
             excludes="**/*&#35;*/**, **/.ade_path/**"
         />
