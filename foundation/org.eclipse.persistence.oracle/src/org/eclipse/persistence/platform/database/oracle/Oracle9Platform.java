@@ -682,7 +682,7 @@ public class Oracle9Platform extends Oracle8Platform {
      */
     public int getJDBCType(DatabaseField field) {
         int type = super.getJDBCType(field);
-        if (type == OracleTypes.OPAQUE) {
+        if (type == OracleTypes.OPAQUE || type == Types_SQLXML) {
             // VARCHAR seems to work, driver does not like OPAQUE.
             return java.sql.Types.VARCHAR;
         }
