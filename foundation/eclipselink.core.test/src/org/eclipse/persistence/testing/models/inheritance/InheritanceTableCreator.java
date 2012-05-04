@@ -51,6 +51,8 @@ public class InheritanceTableCreator extends org.eclipse.persistence.tools.schem
 		addTableDefinition(buildENTOMOLOGISTTable());
         addTableDefinition(buildLADYBUGTable());
         addTableDefinition(buildWORKERTable());
+        addTableDefinition(buildTEACHERTable());
+        addTableDefinition(buildFRUITTable());
     }
 
     public TableDefinition buildALLIGATORTable() {
@@ -1406,4 +1408,92 @@ public class InheritanceTableCreator extends org.eclipse.persistence.tools.schem
 
         return table;
     }
+    
+    public TableDefinition buildFRUITTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("FRUIT");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(0);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+        
+        FieldDefinition fieldTYPE = new FieldDefinition();
+        fieldTYPE.setName("TYPE");
+        fieldTYPE.setTypeName("VARCHAR2");
+        fieldTYPE.setSize(20);
+        fieldTYPE.setSubSize(0);
+        fieldTYPE.setIsPrimaryKey(false);
+        fieldTYPE.setIsIdentity(false);
+        fieldTYPE.setUnique(false);
+        fieldTYPE.setShouldAllowNull(false);
+        table.addField(fieldTYPE);
+        
+        FieldDefinition fieldQUALITY = new FieldDefinition();
+        fieldQUALITY.setName("QUALITY");
+        fieldQUALITY.setTypeName("VARCHAR2");
+        fieldQUALITY.setSize(20);
+        fieldQUALITY.setSubSize(0);
+        fieldQUALITY.setIsPrimaryKey(false);
+        fieldQUALITY.setIsIdentity(false);
+        fieldQUALITY.setUnique(false);
+        fieldQUALITY.setShouldAllowNull(true);
+        table.addField(fieldQUALITY);
+        
+        FieldDefinition fieldTEACHER_ID = new FieldDefinition();
+        fieldTEACHER_ID.setName("TEACHER_ID");
+        fieldTEACHER_ID.setTypeName("NUMBER");
+        fieldTEACHER_ID.setSize(0);
+        fieldTEACHER_ID.setSubSize(0);
+        fieldTEACHER_ID.setIsPrimaryKey(false);
+        fieldTEACHER_ID.setIsIdentity(false);
+        fieldTEACHER_ID.setUnique(false);
+        fieldTEACHER_ID.setShouldAllowNull(true);
+        table.addField(fieldTEACHER_ID);
+        
+        ForeignKeyConstraint foreignKeyFRUIT_TEACHER = new ForeignKeyConstraint();
+        foreignKeyFRUIT_TEACHER.setName("FRUIT_TEACHER");
+        foreignKeyFRUIT_TEACHER.setTargetTable("TEACHER");
+        foreignKeyFRUIT_TEACHER.addSourceField("TEACHER_ID");
+        foreignKeyFRUIT_TEACHER.addTargetField("ID");
+        table.addForeignKeyConstraint(foreignKeyFRUIT_TEACHER);
+        
+        return table;
+    }
+    
+    public TableDefinition buildTEACHERTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("TEACHER");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(0);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+        
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("NAME");
+        fieldNAME.setTypeName("VARCHAR2");
+        fieldNAME.setSize(20);
+        fieldNAME.setSubSize(0);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setIsIdentity(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setShouldAllowNull(false);
+        table.addField(fieldNAME);
+        
+        return table;
+    }
+    
 }
