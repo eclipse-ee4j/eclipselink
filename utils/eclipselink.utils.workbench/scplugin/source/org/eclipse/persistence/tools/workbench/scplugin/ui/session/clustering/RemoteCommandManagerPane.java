@@ -61,11 +61,11 @@ import org.eclipse.persistence.tools.workbench.utility.Transformer;
  * ______________________________________
  * |          _________________________ |  ________________
  * | Type:    |                     |v| |<-| CORBA        |
- * |          ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ |  | JMS          |
+ * |          ------------------------- |  | JMS          |
  * |          _________________________ |  | RMI          |
  * | Channel: | I                     | |  | RMI/IIOP     |
- * |          ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ |  | User Defined |
- * |                                    |  ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+ * |          ------------------------- |  | User Defined |
+ * |                                    |  ----------------
  * | x Remove Connection on Error       |<- This check box is placed within the
  * |                                    |   Transport Manager pane for better
  * | -Options-------------------------- |   layout
@@ -76,7 +76,7 @@ import org.eclipse.persistence.tools.workbench.utility.Transformer;
  * |   or                               |
  * |  {@link RCMUserDefinedPane}                |
  * |                                    |
- * ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+ * --------------------------------------
  * </pre>
  *
  * @see RemoteCommandManagerAdapter

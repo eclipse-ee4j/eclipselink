@@ -30,7 +30,7 @@ import org.eclipse.persistence.tools.workbench.uitools.app.ValueModel;
  * |                                              |
  * |  x Remove Connection on Error                |
  * |                                              |
- * ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯<pre>
+ * ------------------------------------------------<pre>
  *
  * Known container of this pane:<br>
  * - {@link RemoteCommandManagerPane}

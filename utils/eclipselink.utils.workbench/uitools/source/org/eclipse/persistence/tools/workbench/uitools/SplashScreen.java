@@ -26,7 +26,7 @@ import javax.swing.SwingConstants;
  * Asynchronously display a copyright and image.
  * 
  * Usage:
- * 	SplashScreen ss = new SplashScreen("© 2001...", icon);
+ * 	SplashScreen ss = new SplashScreen("- 2001...", icon);
  * 	ss.start();
  * 	...initialize stuff...
  * 	ss.stop();

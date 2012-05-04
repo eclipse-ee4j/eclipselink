@@ -61,7 +61,7 @@ import org.eclipse.persistence.tools.workbench.utility.Transformer;
  * |   |                                     | |
  * |   --------------------------------------- |
  * |                                           |
- * ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯</pre>
+ * ---------------------------------------------</pre>
  *
  * @see ConnectionPoolAdapter
  * @see ReadConnectionPoolAdapter

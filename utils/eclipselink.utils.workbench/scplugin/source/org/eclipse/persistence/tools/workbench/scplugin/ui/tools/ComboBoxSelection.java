@@ -25,7 +25,7 @@ package org.eclipse.persistence.tools.workbench.scplugin.ui.tools;
  * This is useful when each selected item performs a different task.
  *
  * @version 10.1.3
- * @author Trân Lê
+ * @author Tran Le
  */
 public abstract class ComboBoxSelection implements Comparable {
 

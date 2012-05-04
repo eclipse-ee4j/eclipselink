@@ -49,12 +49,12 @@ import org.eclipse.persistence.tools.workbench.uitools.app.swing.NumberSpinnerMo
  * | _Connection Count____________ |
  * | |          ____________     | |
  * | | Maximum: | I      |I|     | |
- * | |          ¯¯¯¯¯¯¯¯¯¯¯¯     | |
+ * | |          ------------     | |
  * | |          ____________     | |
  * | | Minimum: | I      |I|     | |
- * | |          ¯¯¯¯¯¯¯¯¯¯¯¯     | |
- * | ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ |
- * ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯</pre>
+ * | |          ------------     | |
+ * | ----------------------------- |
+ * ---------------------------------</pre>
  *
  * Know containers of this pane:<br>
  * - {@link PoolGeneralPropertiesPage}<br>

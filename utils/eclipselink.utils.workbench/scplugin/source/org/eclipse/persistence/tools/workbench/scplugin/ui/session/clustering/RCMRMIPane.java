@@ -49,13 +49,13 @@ import org.eclipse.persistence.tools.workbench.uitools.app.swing.RadioButtonMode
  * ________________________________________________
  * |                          ___________________ |
  * | Multicast Group Address: | XXX.XXX.XXX.XXX | |
- * |                          ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ |
+ * |                          ------------------- |
  * |                          __________          |
  * | Multicast Port:          |      |I|          |
- * |                          ¯¯¯¯¯¯¯¯¯¯          |
+ * |                          ----------          |
  * |                          __________          |
  * | Announcement Delay:      |      |I|          |
- * |                          ¯¯¯¯¯¯¯¯¯¯          |
+ * |                          ----------          |
  * |                                              |
  * |  x Synchronous                               |
  * |                                              |
@@ -64,14 +64,14 @@ import org.eclipse.persistence.tools.workbench.uitools.app.swing.RadioButtonMode
  * | _o Registry Naming Service__________________ |
  * | |           ______________________         | |
  * | | URL:      | I                  |         | |
- * | |           ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯         | |
- * | ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ |
+ * | |           ----------------------         | |
+ * | -------------------------------------------- |
  * | _o JNDI Naming Service______________________ |
  * | |                                          | |
  * | | {@link JNDINamingServicePane}                    | |
  * | |                                          | |
- * | ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ |
- * ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯</pre>
+ * | -------------------------------------------- |
+ * ------------------------------------------------</pre>
  *
  * Known container of this pane:<br>
  * - {@link RemoteCommandManagerPane}

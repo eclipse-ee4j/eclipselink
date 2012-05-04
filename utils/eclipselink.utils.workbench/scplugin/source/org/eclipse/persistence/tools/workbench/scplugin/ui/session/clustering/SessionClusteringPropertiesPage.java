@@ -55,8 +55,8 @@ import org.eclipse.persistence.tools.workbench.utility.iterators.ArrayIterator;
  * | x Enable Clustering                   |
  * |               _______________________ |  _________________________
  * |   Clustering: |                   |v| |<-| Remote Command        |
- * |               ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ |  | Cache Synchronization |
- * |   ----------------------------------- |  ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+ * |               ----------------------- |  | Cache Synchronization |
+ * |   ----------------------------------- |  -------------------------
  * |   |                                 | |
  * |   | {@link RemoteCommandManagerPane}        | |
  * |   |  or                             | |
@@ -64,7 +64,7 @@ import org.eclipse.persistence.tools.workbench.utility.iterators.ArrayIterator;
  * |   |                                 | |
  * |   ----------------------------------- |
  * |                                       |
- * ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯</pre>
+ * -----------------------------------------</pre>
  *
  * Note: The Clustering combo box is only shown if the edited session supports
  * Cache Synchronization.

@@ -79,20 +79,20 @@ import org.eclipse.persistence.tools.workbench.utility.string.StringTools;
  * | _o Standard____________________________________________ |
  * | |                ______________________               | |
  * | | Logging Level: |                  |v|               | |<- {@link DefaultSessionLogAdapter#VALID_LOG_LEVEL}
- * | |                ����������������������               | |
+ * | |                ----------------------               | |
  * | | o Console                                           | |
  * | |                                                     | |
  * | | o File                                              | |
  * | |                ______________________ _____________ | |
  * | | Location:      | I                  | | Browse... | | |<- Enabled if File is selected
- * | |                ���������������������� ������������� | |
- * | ������������������������������������������������������� |
+ * | |                ---------------------- ------------- | |
+ * | ------------------------------------------------------- |
  * | _x Options_____________________________________________ |<- Enabled if Java or Standard is selected
  * | |                                                     | |
  * | |  LoggingOptionsPane                                 | |
  * | |                                                     | |
- * | ������������������������������������������������������� |
- * �����������������������������������������������������������</pre>
+ * | ------------------------------------------------------- |
+ * -----------------------------------------------------------</pre>
  *
  * @see SessionAdapter
  * @see DefaultSessionLogAdapter
@@ -646,14 +646,14 @@ public final class SessionLoggingPropertiesPage extends ScrollablePropertiesPage
 	 * ________________________________________________________
 	 * |                _______________________               |
 	 * | Logging Level: |                   |v|               |<- {@link DefaultSessionLogAdapter#VALID_LOG_LEVEL}
-	 * |                �����������������������               |
+	 * |                -----------------------               |
 	 * |                _______________________               |   ___________
 	 * | Destination:   | File              |v|               |<- | File    |
-	 * |                �����������������������               |   | Console |
-	 * |                _______________________ _____________ |   �����������
+	 * |                -----------------------               |   | Console |
+	 * |                _______________________ _____________ |   -----------
 	 * | Log Location:  | I                   | | Browse... | |<- Shows the File chooser,
-	 * |                ����������������������� ������������� |   Disabled if Destination is Console
-	 * ��������������������������������������������������������</pre>
+	 * |                ----------------------- ------------- |   Disabled if Destination is Console
+	 * --------------------------------------------------------</pre>
 	 */
 	private class StandardPane extends AbstractSubjectPanel
 	{

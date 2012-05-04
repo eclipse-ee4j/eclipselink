@@ -55,7 +55,7 @@ import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
  * ___________________________________________
  * |           _____________________________ |
  * | Platform: |                         |V| |
- * |           ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ |
+ * |           ----------------------------- |
  * | --------------------------------------- |
  * | |                                     | |
  * | | {@link EisLoginPane}                           | |
@@ -68,7 +68,7 @@ import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
  * | |                                     | |
  * | --------------------------------------- |
  * |                                         |
- * ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯</pre>
+ * -------------------------------------------</pre>
  *
  * @see EisLoginAdapter
  *

@@ -36,7 +36,7 @@ import org.eclipse.persistence.tools.workbench.uitools.app.PropertyValueModel;
  * |                     |
  * |    <A message>      |
  * |                     |
- * ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯</pre>
+ * -----------------------</pre>
  *
  * @version 10.1.3
  * @author Pascal Filion

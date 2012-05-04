@@ -40,8 +40,8 @@ import org.eclipse.persistence.tools.workbench.uitools.app.swing.DocumentAdapter
  * ____________________________________________________
  * |                  ___________________ ___________ |
  * | Transport Class: | I               | |Browse...| |
- * |                  ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ ¯¯¯¯¯¯¯¯¯¯¯ |
- * ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯</pre>
+ * |                  ------------------- ----------- |
+ * ----------------------------------------------------</pre>
  *
  * Known container of this pane:<br>
  * - {@link RemoteCommandManagerPane}

@@ -98,8 +98,8 @@ public class GroupBox extends AccessibleTitledPanel
 	 * | |                            | |
 	 * | |  Sub-pane                  | |
 	 * | |                            | |
-	 * | ������������������������������ |
-	 * ����������������������������������</pre>
+	 * | ------------------------------ |
+	 * ----------------------------------</pre>
 	 *
 	 * @param button1 The first button to be shown at the top-left section of the
 	 * group box
@@ -128,8 +128,8 @@ public class GroupBox extends AccessibleTitledPanel
 	 * | |                            | |
 	 * | |  Sub-pane                  | |
 	 * | |                            | |
-	 * | ������������������������������ |
-	 * ����������������������������������</pre>
+	 * | ------------------------------ |
+	 * ----------------------------------</pre>
 	 *
 	 * @param button1 The first button to be shown at the top-left section of the
 	 * group box
@@ -154,8 +154,8 @@ public class GroupBox extends AccessibleTitledPanel
 	 * | |                            | |
 	 * | |  Sub-pane                  | |
 	 * | |                            | |
-	 * | ������������������������������ |
-	 * ����������������������������������</pre>
+	 * | ------------------------------ |
+	 * ----------------------------------</pre>
 	 *
 	 * @param button The button to be shown at the top-left section of the group
 	 * box
@@ -177,13 +177,13 @@ public class GroupBox extends AccessibleTitledPanel
 	 * | |                            | |
 	 * | |  Sub-pane 1                | |
 	 * | |                            | |
-	 * | ������������������������������ |
+	 * | ------------------------------ |
 	 * | _ o Button 2 _________________ |
 	 * | |                            | |
 	 * | |  Sub-pane 2                | |
 	 * | |                            | |
-	 * | ������������������������������ |
-	 * ����������������������������������</pre>
+	 * | ------------------------------ |
+	 * ----------------------------------</pre>
 	 *
 	 * @param button1 The first button to be shown at the top-left section of the
 	 * group box
@@ -213,8 +213,8 @@ public class GroupBox extends AccessibleTitledPanel
 	 * | |                            | |
 	 * | |  Sub-pane                  | |
 	 * | |                            | |
-	 * | ������������������������������ |
-	 * ����������������������������������</pre>
+	 * | ------------------------------ |
+	 * ----------------------------------</pre>
 	 *
 	 * @param buttons The buttons to be shown at the top-left section of
 	 * the group box
@@ -240,13 +240,13 @@ public class GroupBox extends AccessibleTitledPanel
 	 * | |                            | |
 	 * | |  Sub-pane n-1              | |
 	 * | |                            | |
-	 * | ������������������������������ |
+	 * | ------------------------------ |
 	 * | _ o Button n _________________ |
 	 * | |                            | |
 	 * | |  Sub-pane n                | |
 	 * | |                            | |
-	 * | ������������������������������ |
-	 * ����������������������������������</pre>
+	 * | ------------------------------ |
+	 * ----------------------------------</pre>
 
 	 *
 	 * @param buttons The buttons to be shown at the top-left section of
@@ -602,7 +602,6 @@ public class GroupBox extends AccessibleTitledPanel
 		
 		private PropertyChangeListener buildPropertyChangeListener() {
 			return new PropertyChangeListener() {
-				@Override
 				public void propertyChange(PropertyChangeEvent evt) {
 					AbstractButton button = (AbstractButton)evt.getSource();
 					setTitleFont(button.getFont());

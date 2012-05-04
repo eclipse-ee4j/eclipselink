@@ -41,7 +41,7 @@ import org.eclipse.persistence.tools.workbench.uitools.app.swing.CheckBoxModelAd
  * |                                      |
  * | X Print Thread                       |
  * |                                      |
- * ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+ * ----------------------------------------
  * </pre>
  *
  * @version 10.1.3

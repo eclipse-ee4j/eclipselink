@@ -345,7 +345,7 @@ public class ArrowIcon
 			g.setColor(brighter);
 			g.drawLine(triangleWidth / 2, triangleHeight, triangleWidth, 0);		// draw /
 			g.setColor(darker);
-			g.drawLine(0, 0, triangleWidth, 0);		// draw ¯
+			g.drawLine(0, 0, triangleWidth, 0);		// draw -
 			g.drawLine(0, 0, triangleWidth / 2, triangleHeight);		// draw \
 		}
 	}

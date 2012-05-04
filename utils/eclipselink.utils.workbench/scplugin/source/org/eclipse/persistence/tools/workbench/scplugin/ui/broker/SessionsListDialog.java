@@ -38,7 +38,7 @@ import org.eclipse.persistence.tools.workbench.uitools.cell.CellRendererAdapter;
  * Here the layout of this dialog:<br>
  * _____________________________________
  * | Sessions                       x  |
- * |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+ * |-----------------------------------|
  * | Select the session to manage:     |
  * | _________________________________ |
  * | |                             |^| |
@@ -47,12 +47,12 @@ import org.eclipse.persistence.tools.workbench.uitools.cell.CellRendererAdapter;
  * | | x Session3                  ||| |
  * | |   ...                       | | |
  * | |                             |v| |
- * | ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ |
+ * | --------------------------------- |
  * | --------------------------------- |
  * | __________   _________ __________ |
  * | |  Help  |   |  OK   | | Cancel | |
- * | ¯¯¯¯¯¯¯¯¯¯   ¯¯¯¯¯¯¯¯¯ ¯¯¯¯¯¯¯¯¯¯ |
- * ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯</pre>
+ * | ----------   --------- ---------- |
+ * -------------------------------------</pre>
  *
  * @version 10.0.3
  * @author Pascal Filion

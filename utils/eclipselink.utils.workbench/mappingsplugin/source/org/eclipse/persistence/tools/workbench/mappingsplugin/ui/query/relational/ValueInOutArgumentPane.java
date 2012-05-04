@@ -132,7 +132,6 @@ public final class ValueInOutArgumentPane extends AbstractSubjectPanel {
 	
 	private Action buildEditAction() {
 		return new AbstractAction() {
-			@Override
 			public void actionPerformed(ActionEvent e) {
 				ArgumentValueDialog dialog = new ArgumentValueDialog(getWorkbenchContext(), getSubjectHolder());
 

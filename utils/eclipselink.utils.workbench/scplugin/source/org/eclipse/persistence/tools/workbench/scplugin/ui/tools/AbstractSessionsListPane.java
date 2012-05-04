@@ -53,16 +53,16 @@ import org.eclipse.persistence.tools.workbench.utility.CollectionTools;
  * | Sessions for '{0}':                                |
  * | _______________________________ __________________ |
  * | | MySession1 (Database)     |^| | Add Session... | |
- * | | MySession2 (Server)       | | ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ |
+ * | | MySession2 (Server)       | | ------------------ |
  * | |                           ||| __________________ |
  * | |                           ||| |    Remove...   | |
- * | |                           ||| ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ |
+ * | |                           ||| ------------------ |
  * | |                           ||| __________________ |
  * | |                           ||| |    Rename...   | |
- * | |                           | | ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ |
+ * | |                           | | ------------------ |
  * | |                           |v|                    |
- * | ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯                    |
- * ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯</pre>
+ * | -------------------------------                    |
+ * ------------------------------------------------------</pre>
  *
  * Known subclasses of this pane:<br>
  * - {@link org.eclipse.persistence.tools.workbench.scplugin.ui.broker.SessionsListPane}<br>

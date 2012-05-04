@@ -51,7 +51,7 @@ import org.eclipse.persistence.tools.workbench.uitools.app.swing.CheckBoxModelAd
  * |   |                                     | |
  * |   --------------------------------------- |
  * |                                           |
- * ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯</pre>
+ * ---------------------------------------------</pre>
  *
  * @see ConnectionPoolAdapter
  * @see ReadConnectionPoolAdapter

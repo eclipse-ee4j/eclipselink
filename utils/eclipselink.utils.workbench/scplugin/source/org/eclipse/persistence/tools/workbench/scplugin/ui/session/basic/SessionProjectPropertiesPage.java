@@ -35,7 +35,7 @@ import org.eclipse.persistence.tools.workbench.uitools.app.PropertyValueModel;
  * |                          |
  * |  {@link SessionProjectPane}      |
  * |                          |
- * ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯</pre>
+ * ----------------------------</pre>
  *
  * @see DatabaseSessionAdapter
  *

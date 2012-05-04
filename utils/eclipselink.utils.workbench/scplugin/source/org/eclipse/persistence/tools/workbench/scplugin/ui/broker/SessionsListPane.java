@@ -47,7 +47,7 @@ import org.eclipse.persistence.tools.workbench.utility.events.CollectionChangeLi
  * |                             |
  * |  {@link AbstractSessionsListPane}   |
  * |                             |
- * ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯</pre>
+ * -------------------------------</pre>
  *
  * @see SessionBrokerAdapter
  *

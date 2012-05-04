@@ -38,7 +38,7 @@ import org.eclipse.persistence.tools.workbench.uitools.app.swing.CheckBoxModelAd
  * |                                         |
  * | x External Transaction Pooling          |
  * |                                         |
- * ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯</pre>
+ * -------------------------------------------</pre>
  *
  * Known containers of this pane:<br>
  * - {@link EisConnectionPropertiesPage}<br>

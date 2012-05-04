@@ -43,11 +43,11 @@ import org.eclipse.persistence.tools.workbench.uitools.app.swing.DocumentAdapter
  * |                                                      |
  * |                  _______________________ ___________ |
  * | Primary Project: | I                   | | Edit... | |
- * |                  ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ ¯¯¯¯¯¯¯¯¯¯¯ |
+ * |                  ----------------------- ----------- |
  * |                                                      |
  * | x Use Multiple Projects                              |
  * |                                                      |
- * ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯</pre>
+ * --------------------------------------------------------</pre>
  *
  * @see DatabaseSessionAdapter
  *

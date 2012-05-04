@@ -31,7 +31,7 @@ import org.eclipse.persistence.tools.workbench.uitools.app.PropertyValueModel;
  * |                     |
  * |    {@link PropertyPane}     |
  * |                     |
- * ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯</pre>
+ * -----------------------</pre>
  *
  * @see LoginAdapter
  *

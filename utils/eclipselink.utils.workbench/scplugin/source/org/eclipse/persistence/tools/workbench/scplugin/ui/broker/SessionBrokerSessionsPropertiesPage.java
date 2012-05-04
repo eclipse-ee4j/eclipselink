@@ -35,12 +35,12 @@ import org.eclipse.persistence.tools.workbench.uitools.app.PropertyValueModel;
  * |                             |
  * |  {@link SessionsListPane}           |
  * |                             |
- * ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯</pre>
+ * -------------------------------</pre>
  *
  * @see SessionBrokerAdapter
  *
  * @version 10.1.3
- * @author Trân Lê
+ * @author Tran Le
  */
 public final class SessionBrokerSessionsPropertiesPage extends ScrollablePropertiesPage
 {

@@ -53,7 +53,7 @@ import org.eclipse.persistence.tools.workbench.utility.node.Node;
  * ___________________________________________
  * |                    ____________________ |
  * | Database Platform: |                |V| |
- * |                    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ |
+ * |                    -------------------- |
  * | --------------------------------------- |
  * | |                                     | |
  * | | {@link RdbmsLoginPane}                           | |
@@ -66,7 +66,7 @@ import org.eclipse.persistence.tools.workbench.utility.node.Node;
  * | |                                     | |
  * | --------------------------------------- |
  * |                                         |
- * ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯</pre>
+ * -------------------------------------------</pre>
  *
  * @see LoginAdapter
  * @see DatabaseLoginAdapter

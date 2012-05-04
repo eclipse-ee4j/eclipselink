@@ -42,7 +42,7 @@ import org.eclipse.persistence.tools.workbench.uitools.app.swing.CheckBoxModelAd
  * |                                        |
  * | x Acquire Connections Lazily           |
  * |                                        |
- * ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+ * ------------------------------------------
  * </pre>
  *
  * @version 10.1.3

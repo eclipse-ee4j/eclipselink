@@ -39,20 +39,20 @@ import org.eclipse.persistence.tools.workbench.utility.string.StringTools;
  * <pre>
  *   ________________________________________
  *   | Title                                |
- *   |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+ *   |--------------------------------------|
  *   | ____________________________________ |
  *   | |                                  | |
  *   | |                                  | |
  *   | |          Main panel              | |
  *   | |                                  | |
  *   | |                                  | |
- *   | ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ |
+ *   | ------------------------------------ |
  *   | Error Message (or Warning Message)   |
  *   | ____________________________________ |
  *   | ______        ________ ____ ________ |
  *   | |Help|        |Custom| |OK| |Cancel| |
- *   | ¯¯¯¯¯¯        ¯¯¯¯¯¯¯¯ ¯¯¯¯ ¯¯¯¯¯¯¯¯ |
- *   ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯
+ *   | ------        -------- ---- -------- |
+ *   ----------------------------------------
  * </pre>
  * If there is an error message, it will be shown.  If there is a warning
  * message, it will only be shown if there is no error message.

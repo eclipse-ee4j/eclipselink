@@ -32,7 +32,7 @@ import org.eclipse.persistence.tools.workbench.uitools.app.PropertyValueModel;
  * |                     |
  * |    <A sub-pane>     |
  * |                     |
- * ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯</pre>
+ * -----------------------</pre>
  *
  * @see ConnectionPoolAdapter
  *

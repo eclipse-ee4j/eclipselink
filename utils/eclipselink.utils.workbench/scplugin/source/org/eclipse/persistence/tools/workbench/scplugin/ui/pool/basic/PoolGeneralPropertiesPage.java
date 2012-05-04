@@ -39,7 +39,7 @@ import org.eclipse.persistence.tools.workbench.uitools.app.PropertyValueModel;
  * | |                         | |
  * | --------------------------- |
  * |                             |
- * ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯</pre>
+ * -------------------------------</pre>
  *
  * @see ConnectionPoolAdapter
  *

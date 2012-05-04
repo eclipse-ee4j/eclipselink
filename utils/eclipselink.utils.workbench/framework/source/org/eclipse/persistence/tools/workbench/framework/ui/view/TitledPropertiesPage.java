@@ -42,11 +42,11 @@ import org.eclipse.persistence.tools.workbench.framework.context.WorkbenchContex
  * <pre>
  * _______________________________________
  * | icon  displayString                 |
- * |¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯|
+ * |-------------------------------------|
  * |                                     |
  * |                                     |
  * |                                     |
- * ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯</pre>
+ * ---------------------------------------</pre>
  * 
  * @see DisplayableTitlePanel
  * 

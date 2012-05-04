@@ -259,12 +259,10 @@ final class CustomStoredProcedurePropertiesPane extends AbstractSubjectPanel
 	private AddRemoveListPanel.Adapter buildAddRemoveListPanelAdapter() {
 		return new AddRemoveListPanel.Adapter() {
 			
-			@Override
 			public void addNewItem(ObjectListSelectionModel listSelectionModel) {
 				promptToAddAgument(listSelectionModel);
 			}
 
-			@Override
 			public void removeSelectedItems(ObjectListSelectionModel listSelectionModel) {
 				removeSelectedArguments(listSelectionModel);
 			}

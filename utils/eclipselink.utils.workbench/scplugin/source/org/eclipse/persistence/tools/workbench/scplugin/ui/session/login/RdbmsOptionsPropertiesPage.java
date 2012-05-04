@@ -59,7 +59,7 @@ import org.eclipse.persistence.tools.workbench.utility.TriStateBoolean;
  * _____________________________________________
  * |                  ________________________ |
  * | Table Qualifier: | I                    | |
- * |                  ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ |
+ * |                  ------------------------ |
  * | _JDBC Options____________________________ |
  * | |                                       | |
  * | | x Queries Should Bind All Parameters  | |
@@ -73,11 +73,11 @@ import org.eclipse.persistence.tools.workbench.utility.TriStateBoolean;
  * | | x Native SQL                          | |
  * | |                    __________________ | |  ____________
  * | |   Batch Writing:   |              |v| | |<-| None     |
- * | |                    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ | |  | JDBC     |
+ * | |                    ------------------ | |  | JDBC     |
  * | |                          ____________ | |  | Buffered |
- * | | x String Binding   Size: | I      |I| | |  ¯¯¯¯¯¯¯¯¯¯¯¯
- * | |                          ¯¯¯¯¯¯¯¯¯¯¯¯ | |
- * | ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ |
+ * | | x String Binding   Size: | I      |I| | |  ------------
+ * | |                          ------------ | |
+ * | ----------------------------------------- |
  * | _Advanced Options________________________ |
  * | |                                       | |
  * | | x Force Field Names to Uppercase      | |
@@ -88,8 +88,8 @@ import org.eclipse.persistence.tools.workbench.utility.TriStateBoolean;
  * | |                                       | |
  * | | x Use Properties                      | |<- Activate the Properties tab
  * | |                                       | |
- * | ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ |
- * ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯</pre>
+ * | ----------------------------------------- |
+ * ---------------------------------------------</pre>
  *
  * Known containers of this page:<br>
  * - {@link RdbmsOptionsPropertiesPage}
@@ -270,11 +270,11 @@ public class RdbmsOptionsPropertiesPage extends AbstractLoginPropertiesPage
 	 * __________________________________________
 	 * |                    ___________________ |  ____________
 	 * |   Batch Writing:   |               |v| |<-| None     |
-	 * |                    ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯ |  | JDBC     |
+	 * |                    ------------------- |  | JDBC     |
 	 * |                          _____________ |  | Buffered |
-	 * | x String Binding   Size: |         |I| |  ¯¯¯¯¯¯¯¯¯¯¯¯
-	 * |                          ¯¯¯¯¯¯¯¯¯¯¯¯¯ |
-	 * ¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯</pre>
+	 * | x String Binding   Size: |         |I| |  ------------
+	 * |                          ------------- |
+	 * ------------------------------------------</pre>
 	 *
 	 * @return The fully initializes sub-pane with its widgets
 	 */

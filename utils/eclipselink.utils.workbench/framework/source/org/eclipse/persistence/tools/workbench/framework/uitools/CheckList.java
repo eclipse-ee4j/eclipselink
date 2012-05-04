@@ -72,7 +72,7 @@ import org.eclipse.persistence.tools.workbench.uitools.swing.CompositeIcon;
  * | x Item3           |||
  * |   ...             | |
  * |                   |v|
- * �����������������������</pre>
+ * -----------------------</pre>
  *
  * @version 10.1.3
  * @author Pascal Filion

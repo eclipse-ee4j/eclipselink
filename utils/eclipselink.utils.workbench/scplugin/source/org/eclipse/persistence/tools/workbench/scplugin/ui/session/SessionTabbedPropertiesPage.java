@@ -52,7 +52,7 @@ import org.eclipse.persistence.tools.workbench.utility.Transformer;
  * This page shows the Session's information.
  *
  * @version 10.1.3
- * @author Trân Lê
+ * @author Tran Le
  * @author Pascal Filion
  */
 abstract class SessionTabbedPropertiesPage extends TabbedPropertiesPage
