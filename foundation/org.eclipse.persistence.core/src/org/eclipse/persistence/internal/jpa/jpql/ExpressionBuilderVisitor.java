@@ -159,11 +159,6 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	private ChildrenExpressionVisitor childrenExpressionVisitor;
 
 	/**
-	 * This builder visits the {@link InExpression} in order to create the EclipseLink {@link Expression}.
-	 */
-	private InExpressionBuilder inExpressionBuilder;
-
-	/**
 	 * Determines whether the target relationship is allowed to be <code>null</code>.
 	 */
 	private boolean nullAllowed;
@@ -173,12 +168,6 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	 * type that takes precedence.
 	 */
 	private Comparator<Class<?>> numericTypeComparator;
-
-	/**
-	 * This resolver is responsible to traverse a path expression and to create the EclipseLink
-	 * {@link Expression} representation of that path.
-	 */
-	private PathResolver pathResolver;
 
 	/**
 	 * The context used to query information about the application metadata.
@@ -296,12 +285,11 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	 */
 	Expression buildGroupByExpression(CollectionValuedPathExpression expression) {
 
-		PathResolver resolver = pathResolver();
 
 		try {
+			PathResolver resolver     = new PathResolver();
 			resolver.length           = expression.pathSize() - 1;
 			resolver.nullAllowed      = false;
-			resolver.localExpression  = null;
 			resolver.checkMappingType = false;
 
 			expression.accept(resolver);
@@ -309,12 +297,6 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 			return resolver.localExpression;
 		}
 		finally {
-			resolver.length           = -1;
-			resolver.descriptor       = null;
-			resolver.nullAllowed      = false;
-			resolver.checkMappingType = false;
-			resolver.localExpression  = null;
-
 			this.type[0]         = null;
 			this.typeExpression  = false;
 			this.queryExpression = null;
@@ -332,12 +314,10 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	 */
 	Expression buildModifiedPathExpression(StateFieldPathExpression expression) {
 
-		PathResolver resolver = pathResolver();
 
 		try {
+			PathResolver resolver     = new PathResolver();
 			resolver.length           = expression.pathSize();
-			resolver.nullAllowed      = false;
-			resolver.localExpression  = null;
 			resolver.checkMappingType = true;
 
 			expression.accept(resolver);
@@ -345,12 +325,6 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 			return resolver.localExpression;
 		}
 		finally {
-			resolver.length           = -1;
-			resolver.nullAllowed      = false;
-			resolver.checkMappingType = false;
-			resolver.localExpression  = null;
-			resolver.descriptor       = null;
-
 			this.type[0]         = null;
 			this.typeExpression  = false;
 			this.queryExpression = null;
@@ -417,25 +391,11 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 		return variableNames;
 	}
 
-	private InExpressionBuilder inExpressionBuilder() {
-		if (inExpressionBuilder == null) {
-			inExpressionBuilder = new InExpressionBuilder();
-		}
-		return inExpressionBuilder;
-	}
-
 	private Comparator<Class<?>> numericTypeComparator() {
 		if (numericTypeComparator == null) {
 			numericTypeComparator = new NumericTypeComparator();
 		}
 		return numericTypeComparator;
-	}
-
-	private PathResolver pathResolver() {
-		if (pathResolver == null) {
-			pathResolver = new PathResolver();
-		}
-		return pathResolver;
 	}
 
 	/**
@@ -1229,12 +1189,12 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	 */
 	public void visit(InExpression expression) {
 
-		// Create the expression for the state field path expression
+		// Create the expression for the left expression
 		expression.getExpression().accept(this);
-		Expression stateFieldPathExpression = queryExpression;
+		Expression leftExpression = queryExpression;
 
 		// Visit the IN expression
-		visitInExpression(expression, stateFieldPathExpression);
+		visitInExpression(expression, leftExpression);
 
 		// Set the expression type
 		type[0] = Boolean.class;
@@ -2019,54 +1979,33 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 		expression.getConditionalExpression().accept(this);
 	}
 
-	private void visitInExpression(InExpression expression, Expression stateFieldPathExpression) {
+	private void visitInExpression(InExpression expression, Expression leftExpression) {
 
-		InExpressionBuilder visitor = inExpressionBuilder();
+		InExpressionBuilder visitor = new InExpressionBuilder();
 
-		try {
-			visitor.hasNot                   = expression.hasNot();
-			visitor.singleInputParameter     = expression.isSingleInputParameter();
-			visitor.stateFieldPathExpression = stateFieldPathExpression;
+		visitor.hasNot               = expression.hasNot();
+		visitor.singleInputParameter = expression.isSingleInputParameter();
+		visitor.leftExpression       = leftExpression;
 
-			expression.getInItems().accept(visitor);
-		}
-		finally {
-			visitor.hasNot                   = false;
-			visitor.singleInputParameter     = false;
-			visitor.stateFieldPathExpression = null;
-		}
+		expression.getInItems().accept(visitor);
 	}
 
 	private void visitPathExpression(AbstractPathExpression expression,
 	                                 boolean nullAllowed,
 	                                 int lastIndex) {
 
-		PathResolver resolver = pathResolver();
 
-		int oldLength = resolver.length;
-		boolean oldNullAllowed = resolver.nullAllowed;
-		Expression oldLocalExpression = resolver.localExpression;
-		boolean oldCheckMappingType = resolver.checkMappingType;
-		ClassDescriptor oldDescriptor = resolver.descriptor;
+		PathResolver resolver = new PathResolver();
 
-		try {
-			resolver.length           = lastIndex;
-			resolver.nullAllowed      = nullAllowed;
-			resolver.checkMappingType = false;
-			resolver.localExpression  = null;
-			resolver.descriptor       = null;
+		resolver.length           = lastIndex;
+		resolver.nullAllowed      = nullAllowed;
+		resolver.checkMappingType = false;
+		resolver.localExpression  = null;
+		resolver.descriptor       = null;
 
-			expression.accept(resolver);
+		expression.accept(resolver);
 
-			queryExpression = resolver.localExpression;
-		}
-		finally {
-			resolver.length           = oldLength;
-			resolver.nullAllowed      = oldNullAllowed;
-			resolver.localExpression  = oldLocalExpression;
-			resolver.checkMappingType = oldCheckMappingType;
-			resolver.descriptor       = oldDescriptor;
-		}
+		queryExpression = resolver.localExpression;
 	}
 
 	private WhenClauseExpressionVisitor whenClauseExpressionVisitor() {
@@ -2130,7 +2069,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 
 		private boolean hasNot;
 		private boolean singleInputParameter;
-		private Expression stateFieldPathExpression;
+		private Expression leftExpression;
 
 		/**
 		 * Creates a new <code>InExpressionBuilder</code>.
@@ -2154,10 +2093,10 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 			}
 
 			if (hasNot) {
-				queryExpression = stateFieldPathExpression.notIn(expressions);
+				queryExpression = leftExpression.notIn(expressions);
 			}
 			else {
-				queryExpression = stateFieldPathExpression.in(expressions);
+				queryExpression = leftExpression.in(expressions);
 			}
 		}
 
@@ -2181,10 +2120,10 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 				queryContext.addInputParameter(parameterName, type);
 
 				if (hasNot) {
-					queryExpression = stateFieldPathExpression.notIn(queryExpression);
+					queryExpression = leftExpression.notIn(queryExpression);
 				}
 				else {
-					queryExpression = stateFieldPathExpression.in(queryExpression);
+					queryExpression = leftExpression.in(queryExpression);
 				}
 			}
 			else {
@@ -2205,10 +2144,10 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 
 			// Now create the IN expression
 			if (hasNot) {
-				queryExpression = stateFieldPathExpression.notIn(expressions);
+				queryExpression = leftExpression.notIn(expressions);
 			}
 			else {
-				queryExpression = stateFieldPathExpression.in(expressions);
+				queryExpression = leftExpression.in(expressions);
 			}
 		}
 
@@ -2223,10 +2162,10 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 
 			// Now create the IN expression
 			if (hasNot) {
-				queryExpression = stateFieldPathExpression.notIn(subquery);
+				queryExpression = leftExpression.notIn(subquery);
 			}
 			else {
-				queryExpression = stateFieldPathExpression.in(subquery);
+				queryExpression = leftExpression.in(subquery);
 			}
 		}
 

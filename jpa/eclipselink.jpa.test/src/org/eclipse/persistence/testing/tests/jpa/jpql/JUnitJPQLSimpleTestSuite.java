@@ -29,6 +29,7 @@ import javax.persistence.Query;
 import junit.framework.Assert;
 import junit.framework.Test;
 import junit.framework.TestSuite;
+import org.eclipse.persistence.exceptions.JPQLException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.expressions.ExpressionMath;
@@ -173,6 +174,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         suite.addTest(new JUnitJPQLSimpleTestSuite("selectFromClauseWithFullyQualifiedClassName"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("selectFromClauseWithTableName"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("selectFromClauseWithJoin"));
+        suite.addTest(new JUnitJPQLSimpleTestSuite("testMultipleSubqueries"));
 
         return suite;
     }
@@ -2170,5 +2172,38 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
    	 EntityManager em = createEntityManager();
    	 Query query = em.createQuery("SELECT Object(c) from Employee c JOIN FETCH c.address ");
    	 query.getResultList();
+    }
+
+    /** Test for bug#378393 */
+    public void testMultipleSubqueries(){
+   	 EntityManager em = createEntityManager();
+   	 try {
+   		 Query query = em.createQuery(multipleSubqueries());
+   	 }
+   	 catch (Exception e) {
+   		 // JPQLException is not expected but I didn't write a contextually valid query
+   		 // so EL will complain about it, I needed to have multiple nested subqueries
+   		 // to verify the bug is indeed fixed
+   		 if (e instanceof JPQLException) {
+   			 throw (JPQLException) e;
+   		 }
+   	 }
+   	 // The query is not run because the JPQL query was
+   	 // migrated from the bug and cannot be executed
+    }
+
+    private String multipleSubqueries() {
+        return "select e_0 " +
+               "from Employee e_0 " +
+               "where e_0.hugeProject IN (select e_1.projects " +
+               "                          from PhoneNumber e_1 " +
+               "                          where e_1.owner IN (select e_2.employees " +
+               "                                              from Address e_2 JOIN e_2.employees e" +
+               "                                              where e.department IN (select e_3.department " +
+               "                                                                     from Employee e_3 " +
+               "                                                                     where lower(e_3.m_lastName) like :e_3_iStandid" +
+               "                                                                    )" +
+               "                                             )" +
+               "                         )";
     }
 }
