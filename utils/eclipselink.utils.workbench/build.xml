@@ -65,7 +65,6 @@
         <property name="build.type"          value="SNAPSHOT"/>
         <property name="release.designation" value="EclipseLink DeveloperBuild"/>
         <property name="version.string"      value="${release.version}.qualifier"/>
-        <property name="debug"               value="debug"/>
 
         <echo message="mw.build.location   = '${mw.build.location}'"/>
         <echo message="release.designation = '${release.designation}'"/>
@@ -81,7 +80,7 @@
         <echo message="javac.debug         = '${javac.debug}'"/>
         <echo message="javac.debuglevel    = '${javac.debuglevel}'"/>
         <echo message="target.jvm          = '${target.jvm}'"/>
-        <echo message="java_home           = ${java.home}/.."/>
+        <echo message="java_home           = '${java.home}/..'"/>
 
         <mkdir dir="${_buildLogDir}"/>
     </target>
@@ -101,8 +100,8 @@
         <ant antfile="build.xml" dir="${mappingsioDir}"      target="clean"/>
         <ant antfile="build.xml" dir="${mappingspluginDir}"  target="clean"/>
         <ant antfile="build.xml" dir="${scpluginDir}"        target="clean"/>
-        <delete file="${libDir}/${mwcore.debug.jarfile}"/>
-        <delete file="${libDir}/${workbench.debug.jarfile}"/>
+        <delete file="${libDir}/${mwcore.jarfile}"/>
+        <delete file="${libDir}/${workbench.jarfile}"/>
         <delete file="${libDir}/${mwcore.src.jarfile}"/>
         <delete file="${libDir}/${workbench.src.jarfile}"/>
     </target>
@@ -137,7 +136,7 @@
 
     <target name="jar-mwcore" depends="init, jar-mwcore-src">
         <echo message="Implementation-Version: ${version.string}"/>
-        <jar jarfile="${libDir}/${mwcore.debug.jarfile}">
+        <jar jarfile="${libDir}/${mwcore.jarfile}">
             <manifest>
                 <attribute name="Specification-Title" value="${_productName}" />
                 <attribute name="Specification-Vendor" value="${_VendorString}" />
@@ -180,7 +179,7 @@
 
     <target name="jar-workbench" depends="init, jar-workbench-src">
         <echo message="Implementation-Version: ${version.string}"/>
-        <jar jarfile="${libDir}/${workbench.debug.jarfile}">
+        <jar jarfile="${libDir}/${workbench.jarfile}">
             <manifest>
                 <attribute name="Specification-Title" value="${_productName}" />
                 <attribute name="Specification-Vendor" value="${_VendorString}" />
