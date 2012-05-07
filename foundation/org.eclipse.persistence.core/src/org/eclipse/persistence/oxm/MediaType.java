@@ -17,27 +17,27 @@ package org.eclipse.persistence.oxm;
  * @since EclipseLink 2.4
  */
 public enum MediaType {
-	
+
     APPLICATION_XML("application/xml"), APPLICATION_JSON("application/json");
-	
-    private final String name;
-	
-    private MediaType(String name) {
-        this.name = name;
+
+    private final String mediaType;
+
+    private MediaType(String mediaType) {
+        this.mediaType = mediaType;
     }
-			
-    public static MediaType getMediaTypeByName(String mediaTypeName){
-        if(mediaTypeName.equals("application/json")){
+
+    public static MediaType getMediaType(String mediaType){
+        if(APPLICATION_JSON.getMediaType().equals(mediaType)){
             return APPLICATION_JSON;
-        }else if(mediaTypeName.equals("application/xml")){
+        }else if(APPLICATION_XML.getMediaType().equals(mediaType)){
             return APPLICATION_XML;
         }else{
             return null;
         }
     }
-		
-    public String getName() {
-        return name;
+
+    public String getMediaType() {
+        return mediaType;
     }
-		
+
 }

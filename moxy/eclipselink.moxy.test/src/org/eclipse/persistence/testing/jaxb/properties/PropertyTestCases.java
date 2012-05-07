@@ -27,6 +27,7 @@ import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.oxm.CharacterEscapeHandler;
 import org.eclipse.persistence.oxm.IDResolver;
+import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.NamespacePrefixMapper;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.testing.jaxb.employee.Employee;
@@ -139,9 +140,14 @@ public class PropertyTestCases extends TestCase {
         assertFalse((Boolean) m.getProperty(XML_DECLARATION));
     }
 
-    public void testMarshallerMediaType() throws Exception {
+    public void testMarshallerMediaTypeEnum() throws Exception {
         m.setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
-        assertEquals("application/json", m.getProperty(MarshallerProperties.MEDIA_TYPE));
+        assertEquals(MediaType.APPLICATION_JSON, m.getProperty(MarshallerProperties.MEDIA_TYPE));
+    }
+
+    public void testMarshallerMediaTypeString() throws Exception {
+        m.setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
+        assertEquals(MediaType.APPLICATION_JSON, m.getProperty(MarshallerProperties.MEDIA_TYPE));
     }
 
     public void testMarshallerJsonAttributePrefix() throws Exception {
@@ -192,9 +198,14 @@ public class PropertyTestCases extends TestCase {
         assertEquals("wrapper", m.getProperty(MarshallerProperties.JSON_VALUE_WRAPPER));
     }
 
-    public void testUnmarshallerMediaType() throws Exception {
+    public void testUnmarshallerMediaTypeString() throws Exception {
         u.setProperty(UnmarshallerProperties.MEDIA_TYPE, "application/json");
-        assertEquals("application/json", u.getProperty(UnmarshallerProperties.MEDIA_TYPE));
+        assertEquals(MediaType.APPLICATION_JSON, u.getProperty(UnmarshallerProperties.MEDIA_TYPE));
+    }
+
+    public void testUnmarshallerMediaTypeEnum() throws Exception {
+        u.setProperty(UnmarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON);
+        assertEquals(MediaType.APPLICATION_JSON, u.getProperty(UnmarshallerProperties.MEDIA_TYPE));
     }
 
     public void testUnmarshallerJsonAttributePrefix() throws Exception {

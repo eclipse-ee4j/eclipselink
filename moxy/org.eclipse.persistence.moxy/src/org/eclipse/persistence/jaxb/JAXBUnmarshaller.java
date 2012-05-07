@@ -697,10 +697,15 @@ public class JAXBUnmarshaller implements Unmarshaller {
             throw new IllegalArgumentException();
         }
         if (key.equals(UnmarshallerProperties.MEDIA_TYPE)) {
-            MediaType mType = MediaType.getMediaTypeByName((String)value);
-            if (mType != null){
-                xmlUnmarshaller.setMediaType(mType);                
-            } else {
+            MediaType mType = null;
+            if(value instanceof MediaType) {
+                mType = (MediaType) value;
+            } else if(value instanceof String) {
+                mType = MediaType.getMediaType((String)value);
+            }
+            if(mType != null){
+               xmlUnmarshaller.setMediaType(mType);
+            }else{
                throw new PropertyException(key, value);
             }
         } else if (key.equals(UnmarshallerProperties.JSON_ATTRIBUTE_PREFIX)){
@@ -743,7 +748,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
             throw new IllegalArgumentException();
         }
         if (key.equals(UnmarshallerProperties.MEDIA_TYPE)) {
-            return xmlUnmarshaller.getMediaType().getName();
+            return xmlUnmarshaller.getMediaType();
         } else if (key.equals(UnmarshallerProperties.JSON_ATTRIBUTE_PREFIX)) {
             return xmlUnmarshaller.getAttributePrefix();
         } else if (key.equals(UnmarshallerProperties.JSON_INCLUDE_ROOT)) {

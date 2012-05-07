@@ -275,7 +275,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         } else if (XMLConstants.JAXB_FRAGMENT.equals(key)) {
             return xmlMarshaller.isFragment();
         } else if (MarshallerProperties.MEDIA_TYPE.equals(key)) {
-            return xmlMarshaller.getMediaType().getName();
+            return xmlMarshaller.getMediaType();
         } else if (MarshallerProperties.NAMESPACE_PREFIX_MAPPER.equals(key)) {
             return xmlMarshaller.getNamespacePrefixMapper();
         } else if (MarshallerProperties.INDENT_STRING.equals(key) || SUN_INDENT_STRING.equals(key) || SUN_JSE_INDENT_STRING.equals(key)) {
@@ -700,12 +700,17 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
                 Boolean fragment = !(Boolean) value;
                 xmlMarshaller.setFragment(fragment.booleanValue());
             } else if (MarshallerProperties.MEDIA_TYPE.equals(key)) {
-            	MediaType mType = MediaType.getMediaTypeByName((String)value);
-            	if(mType != null){
-            	   xmlMarshaller.setMediaType(mType);
-            	}else{
-            	   throw new PropertyException(key, value);
-            	}
+                MediaType mType = null;
+                if(value instanceof MediaType) {
+                    mType = (MediaType) value;
+                } else if(value instanceof String) {
+                    mType = MediaType.getMediaType((String)value);
+                }
+                if(mType != null){
+                   xmlMarshaller.setMediaType(mType);
+                }else{
+                   throw new PropertyException(key, value);
+                }
             } else if (MarshallerProperties.JSON_ATTRIBUTE_PREFIX.equals(key)) {
                 xmlMarshaller.setAttributePrefix((String)value);
             } else if (MarshallerProperties.JSON_INCLUDE_ROOT.equals(key)) {
