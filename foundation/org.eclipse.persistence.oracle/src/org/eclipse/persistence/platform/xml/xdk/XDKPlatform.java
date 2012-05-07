@@ -167,7 +167,13 @@ public class XDKPlatform implements XMLPlatform {
 
         if (contextNode.getNodeType() == Node.ELEMENT_NODE) {
             Element contextElement = (Element)contextNode;
-            Attr namespaceDeclaration = contextElement.getAttributeNode("xmlns:" + namespacePrefix);
+            Attr namespaceDeclaration = null;
+            if(namespacePrefix != null) {
+                namespaceDeclaration = contextElement.getAttributeNode("xmlns:" + namespacePrefix);
+            } else {
+                //look for default namespace declaration for null prefix
+                namespaceDeclaration = contextElement.getAttributeNode(XMLConstants.XMLNS);
+            }
             if (null != namespaceDeclaration) {
                 return namespaceDeclaration.getValue();
             }
