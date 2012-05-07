@@ -139,7 +139,7 @@
                 <attribute name="Implementation-Title" value="test.org.eclipse.persistence.workbench.utility" />
                 <attribute name="Implementation-Version" value="${version.string}"/>
                 <attribute name="Implementation-Vendor" value="Eclipse Project" />
-                <attribute name="Library-Designation" value="${_LibraryName} (debug)" />
+                <attribute name="Library-Designation" value="${_LibraryName}" />
             </manifest>
             <fileset
                 dir="${compile.utility.srcdir}"

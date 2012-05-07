@@ -138,7 +138,7 @@
                 <attribute name="Implementation-Version" value="${version.string}"/>
                 <attribute name="Implementation-Vendor" value="Eclipse Project" />
                 <attribute name="Release-Designation" value="${release.designation}" />
-                <attribute name="Library-Designation" value="${_LibraryName} (debug)" />
+                <attribute name="Library-Designation" value="${_LibraryName}" />
             </manifest>
             <fileset
                 dir="${compile.platformsmodel.srcdir}"

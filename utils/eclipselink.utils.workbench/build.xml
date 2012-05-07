@@ -148,10 +148,10 @@
                 <attribute name="Library-Designation" value="${workbenchcore.manifest.libraryName}" />
             </manifest>
             <zipgroupfileset dir="${libDir}">
-                <include name="utilitydebug.jar"/>
-                <include name="platformsmodeldebug.jar"/>
-                <include name="mappingsmodeldebug.jar"/>
-                <include name="mappingsiodebug.jar"/>
+                <include name="utility.jar"/>
+                <include name="platformsmodel.jar"/>
+                <include name="mappingsmodel.jar"/>
+                <include name="mappingsio.jar"/>
             </zipgroupfileset>
         </jar>
     </target>
@@ -193,11 +193,11 @@
             </manifest>
             <zipgroupfileset dir="${libDir}">
                 <include name="iconlib.jar"/>
-                <include name="uitoolsdebug.jar"/>
-                <include name="frameworkdebug.jar"/>
-                <include name="platformsplugindebug.jar"/>
-                <include name="mappingsplugindebug.jar"/>
-                <include name="scplugindebug.jar"/>
+                <include name="uitools.jar"/>
+                <include name="framework.jar"/>
+                <include name="platformsplugin.jar"/>
+                <include name="mappingsplugin.jar"/>
+                <include name="scplugin.jar"/>
             </zipgroupfileset>
         </jar>
     </target>
