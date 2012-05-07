@@ -121,13 +121,6 @@ import org.eclipse.persistence.sessions.Session;
 
 public class JAXBContext extends javax.xml.bind.JAXBContext {
 
-    /**
-     * The Constant ID_RESOLVER.  This can be used to specify a custom
-     * IDResolver class, to allow customization of ID/IDREF processing.
-     * @since 2.3.3
-     */
-    public static final String ID_RESOLVER = "eclipselink.id-resolver";
-
     private static final Map<String, Boolean> PARSER_FEATURES = new HashMap<String, Boolean>(2);
     static {
         PARSER_FEATURES.put("http://apache.org/xml/features/validation/schema/normalized-value", false);

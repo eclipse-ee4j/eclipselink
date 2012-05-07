@@ -23,6 +23,8 @@ import junit.framework.TestCase;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.JAXBMarshaller;
+import org.eclipse.persistence.jaxb.MarshallerProperties;
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.oxm.CharacterEscapeHandler;
 import org.eclipse.persistence.oxm.IDResolver;
 import org.eclipse.persistence.oxm.NamespacePrefixMapper;
@@ -86,8 +88,8 @@ public class PropertyTestCases extends TestCase {
         String SUN_JSE_NAMESPACE_PREFIX_MAPPER = "com.sun.xml.internal.bind.namespacePrefixMapper";
 
         NamespacePrefixMapper mapper = new MyPrefixMapper();
-        m.setProperty(org.eclipse.persistence.jaxb.JAXBMarshaller.NAMESPACE_PREFIX_MAPPER, mapper);
-        assertEquals(mapper, m.getProperty(org.eclipse.persistence.jaxb.JAXBMarshaller.NAMESPACE_PREFIX_MAPPER));
+        m.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, mapper);
+        assertEquals(mapper, m.getProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER));
 
         m.setProperty(SUN_NAMESPACE_PREFIX_MAPPER, mapper);
         assertEquals(mapper, m.getProperty(SUN_NAMESPACE_PREFIX_MAPPER));
@@ -100,8 +102,8 @@ public class PropertyTestCases extends TestCase {
         String SUN_JSE_INDENT_STRING = "com.sun.xml.internal.bind.indentString";
 
         String myTab = "\t";
-        m.setProperty(JAXBMarshaller.INDENT_STRING, myTab);
-        assertEquals(myTab, m.getProperty(JAXBMarshaller.INDENT_STRING));
+        m.setProperty(MarshallerProperties.INDENT_STRING, myTab);
+        assertEquals(myTab, m.getProperty(MarshallerProperties.INDENT_STRING));
         m.setProperty(SUN_INDENT_STRING, myTab);
         assertEquals(myTab, m.getProperty(SUN_INDENT_STRING));
         m.setProperty(SUN_JSE_INDENT_STRING, myTab);
@@ -113,10 +115,10 @@ public class PropertyTestCases extends TestCase {
         String SUN_JSE_CHARACTER_ESCAPE_HANDLER = "com.sun.xml.internal.bind.marshaller.CharacterEscapeHandler";
 
         CharacterEscapeHandler handler = new CustomCharacterEscapeHandler();
-        m.setProperty(org.eclipse.persistence.jaxb.JAXBMarshaller.CHARACTER_ESCAPE_HANDLER, handler);
-        assertEquals(handler, m.getProperty(org.eclipse.persistence.jaxb.JAXBMarshaller.CHARACTER_ESCAPE_HANDLER));
-        m.setProperty(org.eclipse.persistence.jaxb.JAXBMarshaller.CHARACTER_ESCAPE_HANDLER, null);
-        assertNull(m.getProperty(org.eclipse.persistence.jaxb.JAXBMarshaller.CHARACTER_ESCAPE_HANDLER));
+        m.setProperty(MarshallerProperties.CHARACTER_ESCAPE_HANDLER, handler);
+        assertEquals(handler, m.getProperty(MarshallerProperties.CHARACTER_ESCAPE_HANDLER));
+        m.setProperty(MarshallerProperties.CHARACTER_ESCAPE_HANDLER, null);
+        assertNull(m.getProperty(MarshallerProperties.CHARACTER_ESCAPE_HANDLER));
 
         m.setProperty(SUN_CHARACTER_ESCAPE_HANDLER, handler);
         assertEquals(handler, m.getProperty(SUN_CHARACTER_ESCAPE_HANDLER));
@@ -143,8 +145,8 @@ public class PropertyTestCases extends TestCase {
         String SUN_JSE_ID_RESOLVER = "com.sun.xml.internal.bind.IDResolver";
 
         IDResolver resolver = new MyIDResolver();
-        u.setProperty(org.eclipse.persistence.jaxb.JAXBUnmarshaller.ID_RESOLVER, resolver);
-        assertEquals(resolver, u.getProperty(org.eclipse.persistence.jaxb.JAXBUnmarshaller.ID_RESOLVER));
+        u.setProperty(UnmarshallerProperties.ID_RESOLVER, resolver);
+        assertEquals(resolver, u.getProperty(UnmarshallerProperties.ID_RESOLVER));
 
         Object nonELResolver = new NonELIDResolver();
         u.setProperty(SUN_ID_RESOLVER, nonELResolver);

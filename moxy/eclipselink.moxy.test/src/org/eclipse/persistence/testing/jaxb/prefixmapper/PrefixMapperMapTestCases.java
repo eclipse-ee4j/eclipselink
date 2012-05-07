@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.persistence.jaxb.JAXBMarshaller;
+import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 
@@ -31,7 +32,7 @@ public class PrefixMapperMapTestCases extends JAXBTestCases {
         map.put(XMLConstants.SCHEMA_INSTANCE_URL, "xsi");
         map.put("my.uri", "somePrefix");
         
-        jaxbMarshaller.setProperty(JAXBMarshaller.NAMESPACE_PREFIX_MAPPER, map);
+        jaxbMarshaller.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, map);
         setControlDocument(XML_RESOURCE);
     }
 

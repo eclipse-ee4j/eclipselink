@@ -13,11 +13,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.xmlmarshaller;
 
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.PropertyException;
-
-import org.eclipse.persistence.jaxb.JAXBMarshaller;
-import org.eclipse.persistence.oxm.XMLMarshaller;
+import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 
 public class CharacterEscapeHandlerTestCases extends JAXBTestCases {
@@ -41,7 +37,7 @@ public class CharacterEscapeHandlerTestCases extends JAXBTestCases {
 
     public void setUp() throws Exception {
         super.setUp();
-        jaxbMarshaller.setProperty(JAXBMarshaller.CHARACTER_ESCAPE_HANDLER, new CustomCharacterEscapeHandler());
+        jaxbMarshaller.setProperty(MarshallerProperties.CHARACTER_ESCAPE_HANDLER, new CustomCharacterEscapeHandler());
     }
 
     public boolean isUnmarshalTest() {

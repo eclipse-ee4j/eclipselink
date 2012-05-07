@@ -12,8 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.jaxb.xmlmarshaller;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.StringWriter;
 
@@ -22,12 +20,10 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.PropertyException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.dom.*;
-import javax.xml.transform.stream.*;
-import org.w3c.dom.Document;
-import org.eclipse.persistence.jaxb.JAXBMarshaller;
+
+import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
+import org.w3c.dom.Document;
 
 public class MarshallerPropertiesTestCases extends OXTestCase {
     private final static String CONTROL_NO_NAMESPACE_XML = "org/eclipse/persistence/testing/oxm/jaxb/Employee_NoNamespaceSchema.xml";
@@ -115,7 +111,7 @@ public class MarshallerPropertiesTestCases extends OXTestCase {
         StringWriter sw = new StringWriter();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
-        marshaller.setProperty(JAXBMarshaller.INDENT_STRING, customIndentString);
+        marshaller.setProperty(MarshallerProperties.INDENT_STRING, customIndentString);
         marshaller.marshal(emp, sw);
         assertTrue("Custom indent string not found in marshalled document or was not escaped.", sw.toString().contains(escapedIndentString));
 

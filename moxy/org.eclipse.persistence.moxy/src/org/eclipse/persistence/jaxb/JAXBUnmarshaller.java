@@ -79,6 +79,9 @@ import org.eclipse.persistence.internal.jaxb.many.ManyValue;
  */
 public class JAXBUnmarshaller implements Unmarshaller {
 
+    private static final String SUN_ID_RESOLVER = "com.sun.xml.bind.IDResolver";
+    private static final String SUN_JSE_ID_RESOLVER = "com.sun.xml.internal.bind.IDResolver";
+
     private ValidationEventHandler validationEventHandler;
     private XMLUnmarshaller xmlUnmarshaller;
     private JAXBContext jaxbContext;
@@ -86,15 +89,6 @@ public class JAXBUnmarshaller implements Unmarshaller {
     private boolean initializedXMLInputFactory = false;
     public static final String XML_JAVATYPE_ADAPTERS = "xml-javatype-adapters";
     public static final String STAX_SOURCE_CLASS_NAME = "javax.xml.transform.stax.StAXSource";
-
-    /**
-     * The Constant ID_RESOLVER.  This can be used to specify a custom
-     * IDResolver class, to allow customization of ID/IDREF processing.
-     * @since 2.3.3
-     */
-    public static final String ID_RESOLVER = JAXBContext.ID_RESOLVER;
-    private static final String SUN_ID_RESOLVER = "com.sun.xml.bind.IDResolver";
-    private static final String SUN_JSE_ID_RESOLVER = "com.sun.xml.internal.bind.IDResolver";
 
     public JAXBUnmarshaller(XMLUnmarshaller newXMLUnmarshaller) {
         super();
@@ -672,7 +666,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
     public void setProperty(String key, Object value) throws PropertyException {
         if (key == null) {
             throw new IllegalArgumentException();
-        } else if (JAXBContext.ID_RESOLVER.equals(key)) {
+        } else if (UnmarshallerProperties.ID_RESOLVER.equals(key)) {
             setIDResolver((IDResolver) value);
         } else if (SUN_ID_RESOLVER.equals(key) || SUN_JSE_ID_RESOLVER.equals(key)) {
             setIDResolver(new IDResolverWrapper(value));
@@ -685,7 +679,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
         if (key == null) {
             throw new IllegalArgumentException();
         }
-        if (ID_RESOLVER.equals(key)) {
+        if (UnmarshallerProperties.ID_RESOLVER.equals(key)) {
             return xmlUnmarshaller.getIDResolver();
         } else if (SUN_ID_RESOLVER.equals(key) || SUN_JSE_ID_RESOLVER.equals(key)) {
             IDResolverWrapper wrapper = (IDResolverWrapper) xmlUnmarshaller.getIDResolver();

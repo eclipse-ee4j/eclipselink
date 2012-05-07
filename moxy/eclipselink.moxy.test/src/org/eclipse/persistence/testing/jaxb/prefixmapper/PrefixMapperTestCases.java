@@ -13,6 +13,7 @@
 package org.eclipse.persistence.testing.jaxb.prefixmapper;
 
 import org.eclipse.persistence.jaxb.JAXBMarshaller;
+import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 
 public class PrefixMapperTestCases extends JAXBTestCases {
@@ -21,7 +22,7 @@ public class PrefixMapperTestCases extends JAXBTestCases {
     public PrefixMapperTestCases(String name) throws Exception {
         super(name);
         setClasses(new Class[]{Employee.class, Person.class});
-        jaxbMarshaller.setProperty(JAXBMarshaller.NAMESPACE_PREFIX_MAPPER, new MyPrefixMapper());
+        jaxbMarshaller.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, new MyPrefixMapper());
         setControlDocument(XML_RESOURCE);
     }
 
