@@ -1,6 +1,5 @@
 package org.eclipse.persistence.jpars.test.server;
 
-import static org.eclipse.persistence.jaxb.JAXBContext.MEDIA_TYPE;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -25,6 +24,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.QueryHints;
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
@@ -746,13 +746,13 @@ public class ServerCrudTest {
             try{
                 context = (JAXBContext)JAXBContextFactory.createContext(jaxbClasses, null);
                 unmarshaller = context.createUnmarshaller();
-                unmarshaller.setProperty(JAXBContext.JSON_INCLUDE_ROOT, Boolean.FALSE);
+                unmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, Boolean.FALSE);
             } catch (JAXBException e){
                 e.printStackTrace();
             }
         }
         try{
-            unmarshaller.setProperty(MEDIA_TYPE, mediaType);
+            unmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, mediaType);
             CharArrayReader reader = new CharArrayReader(result.toCharArray());
             StreamSource ss = new StreamSource(reader);
             Object unmarshalled = unmarshaller.unmarshal(ss, expectedResultClass);
