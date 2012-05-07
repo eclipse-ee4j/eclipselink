@@ -605,8 +605,9 @@ public class MergeManager {
         // Determine if the object needs to be registered in the parent's clone mapping,
         // This is required for registered new objects in a nested unit of work.
         boolean requiresToRegisterInParent = false;
+        Object originalNewObject = null;
         if (unitOfWork.isNestedUnitOfWork()) {
-            Object originalNewObject = unitOfWork.getOriginalVersionOfNewObject(clone);
+            originalNewObject = unitOfWork.getOriginalVersionOfNewObject(clone);
             if ((originalNewObject != null) // Check that the object is new.
                      && (!((UnitOfWorkImpl)parent).isCloneNewObject(originalNewObject)) && (!unitOfWork.isUnregisteredNewObjectInParent(originalNewObject))) {
                 requiresToRegisterInParent = true;
@@ -615,7 +616,7 @@ public class MergeManager {
         ClassDescriptor descriptor = unitOfWork.getDescriptor(clone.getClass());
         AbstractSession parentSession = unitOfWork.getParentIdentityMapSession(descriptor, false, false);
         CacheKey cacheKey = mergeChangesOfWorkingCopyIntoOriginal(clone, objectChangeSet, descriptor, parentSession, unitOfWork);
-        Object original = cacheKey.getObject();
+        
         AbstractSession sharedSession = parentSession;
         if (descriptor.isProtectedIsolation()){
             if (parentSession.isIsolatedClientSession()){
@@ -631,10 +632,11 @@ public class MergeManager {
             // Can use a new instance as backup and original.
             Object backupClone = descriptor.getObjectBuilder().buildNewInstance();
             Object newInstance = descriptor.getObjectBuilder().buildNewInstance();
-            ((UnitOfWorkImpl)parent).registerOriginalNewObjectFromNestedUnitOfWork(original, backupClone, newInstance, descriptor);
+            // EL bug 378512 - use original object from nested uow for registration in parent uow
+            ((UnitOfWorkImpl)parent).registerOriginalNewObjectFromNestedUnitOfWork(originalNewObject, backupClone, newInstance, descriptor);
         }
         return clone;
-}
+    }
     
     /**
      * Recursively merge to clone into the original in its parent.

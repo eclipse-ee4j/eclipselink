@@ -219,6 +219,8 @@ public class CommitOrderTest extends TestCase {
         sb.append("org.eclipse.persistence.testing.models.inheritance.Programmer" + cr);
         sb.append("org.eclipse.persistence.testing.models.inheritance.Alligator" + cr);
         sb.append("org.eclipse.persistence.testing.models.inheritance.Animal" + cr);
+        sb.append("org.eclipse.persistence.testing.models.inheritance.Teacher" + cr);
+        sb.append("org.eclipse.persistence.testing.models.inheritance.Apple" + cr);
         sb.append("org.eclipse.persistence.testing.models.inheritance.BudgettedProject" + cr);
         sb.append("org.eclipse.persistence.testing.models.inheritance.ProjectWorker" + cr);
         sb.append("org.eclipse.persistence.testing.models.inheritance.BaseProject" + cr);
@@ -238,6 +240,7 @@ public class CommitOrderTest extends TestCase {
         sb.append("org.eclipse.persistence.testing.models.inheritance.Developer_King" + cr);
         sb.append("org.eclipse.persistence.testing.models.inheritance.Dog" + cr);
         sb.append("org.eclipse.persistence.testing.models.inheritance.Entomologist" + cr);
+        sb.append("org.eclipse.persistence.testing.models.inheritance.Fruit" + cr);
         sb.append("org.eclipse.persistence.testing.models.inheritance.FueledVehicle" + cr);
         sb.append("org.eclipse.persistence.testing.models.inheritance.GrassHopper" + cr);
         sb.append("org.eclipse.persistence.testing.models.inheritance.IBMPC" + cr);
@@ -248,6 +251,7 @@ public class CommitOrderTest extends TestCase {
         sb.append("org.eclipse.persistence.testing.models.inheritance.Mainframe" + cr);
         sb.append("org.eclipse.persistence.testing.models.inheritance.NonFueledVehicle" + cr);
         sb.append("org.eclipse.persistence.testing.models.inheritance.PC" + cr);
+        sb.append("org.eclipse.persistence.testing.models.inheritance.Pear" + cr);
         sb.append("org.eclipse.persistence.testing.models.inheritance.Person_King" + cr);
         sb.append("org.eclipse.persistence.testing.models.inheritance.SeniorDeveloper_King" + cr);
         sb.append("org.eclipse.persistence.testing.models.inheritance.Vehicle" + cr);
