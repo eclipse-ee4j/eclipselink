@@ -16,7 +16,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.persistence.jaxb.JAXBMarshaller;
-import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
+import org.eclipse.persistence.jaxb.MarshallerProperties;
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.platform.xml.XMLPlatform;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
@@ -39,7 +40,7 @@ public class DefaultNamespaceTestCases extends JAXBWithJSONTestCases {
         Map<String, String> namespaces = new HashMap<String, String>();
         namespaces.put("urn:test","ns1");
         namespaces.put("","ns2");
-        jaxbUnmarshaller.setProperty(JAXBUnmarshaller.JSON_NAMESPACE_PREFIX_MAPPER, namespaces);
+        jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER, namespaces);
     }
     
     protected JAXBMarshaller getJSONMarshaller() throws Exception{
@@ -47,8 +48,8 @@ public class DefaultNamespaceTestCases extends JAXBWithJSONTestCases {
            namespaces.put("urn:test","ns1");
            namespaces.put("","ns2");
            JAXBMarshaller jsonMarshaller = (JAXBMarshaller) jaxbContext.createMarshaller();
-           jsonMarshaller.setProperty(JAXBMarshaller.MEDIA_TYPE, "application/json");
-           jsonMarshaller.setProperty(JAXBMarshaller.NAMESPACE_PREFIX_MAPPER, namespaces);
+           jsonMarshaller.setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
+           jsonMarshaller.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, namespaces);
            return jsonMarshaller;
     }
 

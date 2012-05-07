@@ -19,8 +19,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.persistence.jaxb.JAXBMarshaller;
-import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
+import org.eclipse.persistence.jaxb.MarshallerProperties;
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class AttributeFormDefaultUnsetTestCases extends JAXBWithJSONTestCases{
@@ -42,8 +42,8 @@ public class AttributeFormDefaultUnsetTestCases extends JAXBWithJSONTestCases{
 	    
 	    Map namespaces = new HashMap<String, String>();
 	    namespaces.put("myns","ns0");
-	    jaxbMarshaller.setProperty(JAXBMarshaller.NAMESPACE_PREFIX_MAPPER, namespaces);
-	    jaxbUnmarshaller.setProperty(JAXBUnmarshaller.JSON_NAMESPACE_PREFIX_MAPPER, namespaces);
+	    jaxbMarshaller.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, namespaces);
+	    jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER, namespaces);
 
 	}
 

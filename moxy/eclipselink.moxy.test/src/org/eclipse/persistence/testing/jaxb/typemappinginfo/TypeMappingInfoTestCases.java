@@ -47,6 +47,7 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.JAXBMarshaller;
 import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
+import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 
 import org.eclipse.persistence.oxm.NamespaceResolver;
@@ -176,7 +177,7 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
         int sizeBefore = getNamespaceResolverSize(desc);
         StringWriter stringWriter = new StringWriter();
         StreamResult result = new StreamResult(stringWriter);
-	    jaxbMarshaller.setProperty(JAXBMarshaller.MEDIA_TYPE, "application/xml");
+	    jaxbMarshaller.setProperty(MarshallerProperties.MEDIA_TYPE, "application/xml");
 
         ((JAXBMarshaller)jaxbMarshaller).marshal(objectToWrite, result, getTypeMappingInfo());
  

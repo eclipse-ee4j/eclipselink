@@ -12,8 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.json.namespaces;
 
-import org.eclipse.persistence.jaxb.JAXBMarshaller;
-import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
+import org.eclipse.persistence.jaxb.MarshallerProperties;
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 
 public class NamespaceInheritanceSeparatorTestCases extends NamespaceInheritanceTestCases{
 
@@ -29,7 +29,7 @@ public class NamespaceInheritanceSeparatorTestCases extends NamespaceInheritance
 	
 	public void setUp() throws Exception{
 		super.setUp();
-		jsonMarshaller.setProperty(JAXBMarshaller.JSON_NAMESPACE_SEPARATOR, '#');
-		jsonUnmarshaller.setProperty(JAXBUnmarshaller.JSON_NAMESPACE_SEPARATOR, '#');		
+		jsonMarshaller.setProperty(MarshallerProperties.JSON_NAMESPACE_SEPARATOR, '#');
+		jsonUnmarshaller.setProperty(UnmarshallerProperties.JSON_NAMESPACE_SEPARATOR, '#');		
 	}
 }

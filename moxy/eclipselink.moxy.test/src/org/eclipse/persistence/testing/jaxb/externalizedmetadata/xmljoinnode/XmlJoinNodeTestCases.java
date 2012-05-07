@@ -27,8 +27,8 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.jaxb.JAXBMarshaller;
-import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
+import org.eclipse.persistence.jaxb.MarshallerProperties;
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLCollectionReferenceMapping;
@@ -62,15 +62,15 @@ public class XmlJoinNodeTestCases extends JAXBWithJSONTestCases {
         setClasses(new Class[] { Company.class });
         Map<String, String> namespaces = new HashMap<String, String>();
         namespaces.put("http://www.example.com", "x");
-        jaxbUnmarshaller.setProperty(JAXBUnmarshaller.JSON_NAMESPACE_PREFIX_MAPPER, namespaces);
+        jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER, namespaces);
     }
     
     protected Marshaller getJSONMarshaller() throws Exception{
     	Marshaller m = jaxbContext.createMarshaller();
     	Map<String, String> namespaces = new HashMap<String, String>();
         namespaces.put("http://www.example.com", "x");
-        m.setProperty(JAXBMarshaller.NAMESPACE_PREFIX_MAPPER, namespaces);
-        m.setProperty(JAXBMarshaller.MEDIA_TYPE, "application/json");
+        m.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, namespaces);
+        m.setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
     	return m;
     }
     

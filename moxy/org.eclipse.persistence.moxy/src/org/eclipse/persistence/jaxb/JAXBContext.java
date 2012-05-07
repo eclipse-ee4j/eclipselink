@@ -118,80 +118,12 @@ import org.eclipse.persistence.sessions.SessionEventListener;
  * @see org.eclipse.persistence.jaxb.JAXBUnmarshaller
  * @see org.eclipse.persistence.jaxb.JAXBBinder
  * @see org.eclipse.persistence.jaxb.JAXBIntrospector
+ * @see org.eclipse.persistence.jaxb.JAXBContextProperties
  *
  * @author mmacivor
  */
 
 public class JAXBContext extends javax.xml.bind.JAXBContext {
-	
-    /**
-     * The Constant MEDIA_TYPE. This can be used as the property name with 
-     * JAXBMarshaller.setProperty and JAXBUnmarshaller.setProperty or used in 
-     * the properties supplied during JAXBContext creation to set the media type.  
-     * Supported values are "application/xml" and "application/json".
-     * @since 2.4 
-     */
-    public static final String MEDIA_TYPE = "eclipselink.media-type";
-    
-    /**
-     * The Constant JSON_ATTRIBUTE_PREFIX. This can be used as the property name with 
-     * JAXBMarshaller.setProperty and JAXBUnmarshaller.setProperty or used in 
-     * the properties supplied during JAXBContext creation to specify a prefix to prepend
-     * to attributes.  No effect when media type is "application/xml".
-     * @since 2.4 
-     */ 
-    public static final String JSON_ATTRIBUTE_PREFIX = "eclipselink.json.attribute-prefix";    
-        
-    /**
-     * The Constant NAMESPACE_PREFIX_MAPPER. Provides a means to customize the namespace prefixes used 
-     * while marshalling to XML.  Used for both marshal and unmarshal when mediaType is set to "application/json".
-     * Value is either a Map<String, String> of URIs to prefixes, or an implementation of 
-     * org.eclipse.persistence.oxm.NamespacePrefixMapper.
-     * @since 2.3.3 
-     */
-    public static final String NAMESPACE_PREFIX_MAPPER = "eclipselink.namespace-prefix-mapper";
-    
-    /**
-     * The Constant JSON_INCLUDE_ROOT. This can be used as the property name with 
-     * JAXBMarshaller.setProperty and JAXBUnmarshaller.setProperty or used in 
-     * the properties supplied during JAXBContext creation to specify if the 
-     * @XmlRootElement should be marshalled/unmarshalled.  Not applicable if 
-     * eclipselink.media-type is set to "application/xml".
-     * @since 2.4 
-     */
-    public static final String JSON_INCLUDE_ROOT = "eclipselink.json.include-root";
-    
-    /**
-     * The Constant JSON_VALUE_WRAPPER.  This can be used to specify the wrapper
-     * that will be used around things mapped with @XmlValue.  Not applicable if the
-     * eclipselink.media.type is set to "application/xml".
-     * @since 2.4  
-     */
-    public static final String JSON_VALUE_WRAPPER = "eclipselink.json.value-wrapper";
-    
-    /**
-     * The Constant JSON_NAMESPACE_SEPARATOR.  This can be used to specify the separator
-     * that will be used when separating prefixes and localnames.  Only applicable when
-     * namespaces are being used. Value should be a Character.
-     * @since 2.4  
-     */
-    public static final String JSON_NAMESPACE_SEPARATOR  = "eclipselink.json.namespace-separator";
-
-    /**
-     * The Constant ID_RESOLVER.  This can be used to specify a custom
-     * IDResolver class, to allow customization of ID/IDREF processing.
-     * @since 2.3.3 
-     */
-    public static final String ID_RESOLVER = "eclipselink.id-resolver";
-
-    /**
-     * The Constant SESSION_EVENT_LISTENER.  This can be used to specify a
-     * SessionEventListener that can be used to customize the metadata before or
-     * after it has been initialized.
-     * @see org.eclipse.persistence.sessions.SessionEventListener
-     * @since 2.4
-     */
-    public static final String SESSION_EVENT_LISTENER = "eclipselink.session-event-listener";
 
     private static final Map<String, Boolean> PARSER_FEATURES = new HashMap<String, Boolean>(2);
     static {
@@ -695,7 +627,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         protected Collection<SessionEventListener> sessionEventListeners() {
             SessionEventListener eventListenerFromProperties = null;
             if(this.properties != null) {
-                eventListenerFromProperties = (SessionEventListener) properties.get(JAXBContext.SESSION_EVENT_LISTENER);
+                eventListenerFromProperties = (SessionEventListener) properties.get(JAXBContextProperties.SESSION_EVENT_LISTENER);
             }
             List<SessionEventListener> eventListeners;
             if(null == eventListenerFromProperties) {
@@ -1370,12 +1302,12 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             }
             marshaller.setJaxbContext(jaxbContext);
             if(properties != null){
-            	setPropertyOnMarshaller(JAXBContext.MEDIA_TYPE, marshaller);
-            	setPropertyOnMarshaller(JAXBContext.JSON_ATTRIBUTE_PREFIX, marshaller);            	
-            	setPropertyOnMarshaller(JAXBContext.NAMESPACE_PREFIX_MAPPER, marshaller);
-            	setPropertyOnMarshaller(JAXBContext.JSON_INCLUDE_ROOT, marshaller);
-            	setPropertyOnMarshaller(JAXBContext.JSON_VALUE_WRAPPER, marshaller);
-            	setPropertyOnMarshaller(JAXBContext.JSON_NAMESPACE_SEPARATOR, marshaller);
+            	setPropertyOnMarshaller(JAXBContextProperties.MEDIA_TYPE, marshaller);
+            	setPropertyOnMarshaller(JAXBContextProperties.JSON_ATTRIBUTE_PREFIX, marshaller);
+            	setPropertyOnMarshaller(JAXBContextProperties.NAMESPACE_PREFIX_MAPPER, marshaller);
+            	setPropertyOnMarshaller(JAXBContextProperties.JSON_INCLUDE_ROOT, marshaller);
+            	setPropertyOnMarshaller(JAXBContextProperties.JSON_VALUE_WRAPPER, marshaller);
+            	setPropertyOnMarshaller(JAXBContextProperties.JSON_NAMESPACE_SEPARATOR, marshaller);
             }
         
             return marshaller;
@@ -1394,13 +1326,13 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
              }
              unmarshaller.setJaxbContext(jaxbContext);
              if(properties != null){
-            	setPropertyOnUnmarshaller(JAXBContext.MEDIA_TYPE, unmarshaller);
-             	setPropertyOnUnmarshaller(JAXBContext.JSON_ATTRIBUTE_PREFIX, unmarshaller);
-             	setPropertyOnUnmarshaller(JAXBContext.NAMESPACE_PREFIX_MAPPER, unmarshaller);
-             	setPropertyOnUnmarshaller(JAXBContext.JSON_INCLUDE_ROOT, unmarshaller);
-             	setPropertyOnUnmarshaller(JAXBContext.JSON_VALUE_WRAPPER, unmarshaller);
-            	setPropertyOnUnmarshaller(JAXBContext.JSON_NAMESPACE_SEPARATOR, unmarshaller);
-             }             
+                 setPropertyOnUnmarshaller(JAXBContextProperties.MEDIA_TYPE, unmarshaller);
+                 setPropertyOnUnmarshaller(JAXBContextProperties.JSON_ATTRIBUTE_PREFIX, unmarshaller);
+                 setPropertyOnUnmarshaller(JAXBContextProperties.NAMESPACE_PREFIX_MAPPER, unmarshaller);
+                 setPropertyOnUnmarshaller(JAXBContextProperties.JSON_INCLUDE_ROOT, unmarshaller);
+                 setPropertyOnUnmarshaller(JAXBContextProperties.JSON_VALUE_WRAPPER, unmarshaller);
+                 setPropertyOnUnmarshaller(JAXBContextProperties.JSON_NAMESPACE_SEPARATOR, unmarshaller);
+             }
              return unmarshaller;
         }
         private void setPropertyOnMarshaller(String propertyName, JAXBMarshaller marshaller) throws PropertyException{

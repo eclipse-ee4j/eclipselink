@@ -424,8 +424,8 @@ public class JAXBContextFactory {
         } else {
             unmarshaller.setEventHandler(JAXBContext.DEFAULT_VALIDATION_EVENT_HANDER);
         }
-        unmarshaller.setProperty(JAXBUnmarshaller.MEDIA_TYPE, mediaType);
-        unmarshaller.setProperty(JAXBUnmarshaller.JSON_INCLUDE_ROOT, false);
+        unmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, mediaType);
+        unmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, false);
         JAXBElement jbe = unmarshaller.unmarshal((Source) metadata, XmlBindings.class);
         return (XmlBindings) jbe.getValue();
     }

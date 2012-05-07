@@ -14,7 +14,7 @@
 package org.eclipse.persistence.testing.jaxb.idresolver;
 
 import org.eclipse.persistence.jaxb.IDResolver;
-import org.eclipse.persistence.jaxb.JAXBContext;
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 
 public class IDResolverTestCases extends JAXBTestCases {
@@ -33,7 +33,7 @@ public class IDResolverTestCases extends JAXBTestCases {
     public void setUp() throws Exception {
         super.setUp();
 
-        getJAXBUnmarshaller().setProperty(JAXBContext.ID_RESOLVER, idResolver);
+        getJAXBUnmarshaller().setProperty(UnmarshallerProperties.ID_RESOLVER, idResolver);
     }
 
     public void testHitMethods() throws Exception {

@@ -15,7 +15,7 @@ package org.eclipse.persistence.testing.jaxb.xmladapter.composite;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.persistence.jaxb.JAXBContext;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class XmlAdapterCompositeTestCases extends JAXBWithJSONTestCases {
@@ -45,7 +45,7 @@ public class XmlAdapterCompositeTestCases extends JAXBWithJSONTestCases {
     
     protected Map getProperties(){
     	Map props = new HashMap();
-    	props.put(JAXBContext.JSON_VALUE_WRAPPER, "val");
+    	props.put(JAXBContextProperties.JSON_VALUE_WRAPPER, "val");
     	return props;
     	
     }

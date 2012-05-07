@@ -15,7 +15,7 @@ package org.eclipse.persistence.testing.jaxb.xmlanyelement.domhandler;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.persistence.jaxb.JAXBContext;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class DOMHandlerTestCases extends JAXBWithJSONTestCases {
@@ -32,7 +32,7 @@ public class DOMHandlerTestCases extends JAXBWithJSONTestCases {
 
     public Map getProperties(){
     	Map props = new HashMap();
-    	props.put(JAXBContext.JSON_ATTRIBUTE_PREFIX, "@");
+    	props.put(JAXBContextProperties.JSON_ATTRIBUTE_PREFIX, "@");
     	return props;
     }
     

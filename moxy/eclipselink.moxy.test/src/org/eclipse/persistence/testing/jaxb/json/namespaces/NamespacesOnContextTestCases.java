@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.persistence.jaxb.JAXBContext;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.json.JSONMarshalUnmarshalTestCases;
 
 public class NamespacesOnContextTestCases extends JSONMarshalUnmarshalTestCases{
@@ -51,7 +51,7 @@ public class NamespacesOnContextTestCases extends JSONMarshalUnmarshalTestCases{
 
 	public Map getProperties(){
 		Map props = new HashMap();
-		props.put(JAXBContext.JSON_ATTRIBUTE_PREFIX, "@");
+		props.put(JAXBContextProperties.JSON_ATTRIBUTE_PREFIX, "@");
 		
 		Map<String, String> namespaceMap = new HashMap<String, String>();
 		
@@ -61,7 +61,7 @@ public class NamespacesOnContextTestCases extends JSONMarshalUnmarshalTestCases{
 		namespaceMap.put("namespace3", "ns3");
 		
 		
-		props.put(JAXBContext.NAMESPACE_PREFIX_MAPPER, namespaceMap);
+		props.put(JAXBContextProperties.NAMESPACE_PREFIX_MAPPER, namespaceMap);
 		return props;
 	}
 

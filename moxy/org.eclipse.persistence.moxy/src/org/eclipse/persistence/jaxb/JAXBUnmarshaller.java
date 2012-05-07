@@ -81,21 +81,22 @@ import org.eclipse.persistence.internal.jaxb.many.ManyValue;
  * <a name="supportedProps"></a>
  * <b>Supported Properties</b><br> 
  * <ul>         
- *     <li>JAXBUnmarshaller.MEDIA_TYPE - value is a String ("application/xml" or "application/json") </li>
- *     <li>JAXBUnmarshaller.ID_RESOLVER - value is an org.eclipse.persistence.jaxb.IDResolver</li>
- *     <li>JAXBUnmarshaller.JSON_ATTRIBUTE_PREFIX - value is a String </li>
- *     <li>JAXBUnmarshaller.JSON_INCLUDE_ROOT - value is a Boolean </li>
- *     <li>JAXBUnmarshaller.JSON_VALUE_WRAPPER - value is a String </li>     
- *     <li>JAXBUnmarshaller.JSON_NAMESPACE_SEPARATOR - value is a Character </li>
- *     <li>JAXBUnmarshaller.JSON_NAMESPACE_PREFIX_MAPPER - value is a Map<String uri, String prefix> or org.eclipse.persistence.oxm.NamespacePrefixMapper</li>     * *     
+ *     <li>UnmarshallerProperties.ID_RESOLVER - value is an org.eclipse.persistence.jaxb.IDResolver</li>
+ *     <li>UnmarshallerProperties.JSON_ATTRIBUTE_PREFIX - value is a String </li>
+ *     <li>UnmarshallerProperties.JSON_INCLUDE_ROOT - value is a Boolean </li>
+ *     <li>UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER - value is a Map<String uri, String prefix> or org.eclipse.persistence.oxm.NamespacePrefixMapper</li>     * *     
+ *     <li>UnmarshallerProperties.JSON_NAMESPACE_SEPARATOR - value is a Character </li>
+ *     <li>UnmarshallerProperties.JSON_VALUE_WRAPPER - value is a String </li>     
+ *     <li>UnmarshallerProperties.MEDIA_TYPE - value is a String ("application/xml" or "application/json") </li>
  * </ul>
  * <p> 
- * <p>This implementation of the JAXB 2.0 Unmarshaller interface provides the required functionality
+ * <p>This implementation of the JAXB 2.1/2.2 Unmarshaller interface provides the required functionality
  * by acting as a thin wrapper on the existing XMLMarshaller API.
  *
  * @author mmacivor
  * @since Oracle TopLink 11.1.1.0.0
  * @see javax.xml.bind.Unmarshaller
+ * @see org.eclipse.persistence.jaxb.UnmarshallerProperties
  * @see org.eclipse.persistence.oxm.XMLUnmarshaller
  */
 public class JAXBUnmarshaller implements Unmarshaller {
@@ -108,59 +109,9 @@ public class JAXBUnmarshaller implements Unmarshaller {
     public static final String XML_JAVATYPE_ADAPTERS = "xml-javatype-adapters";
     public static final String STAX_SOURCE_CLASS_NAME = "javax.xml.transform.stax.StAXSource";
     
-    /**
-     * The Constant JSON_NAMESPACE_PREFIX_MAPPER. Provides a means to set a   
-     * a Map<String, String> of uris to prefixes.  Alternatively can be an implementation 
-     * of org.eclipse.persistence.oxm.NamespacePrefixMapper.
-     * @since 2.4      
-     */
-    public static final String JSON_NAMESPACE_PREFIX_MAPPER = JAXBContext.NAMESPACE_PREFIX_MAPPER;
-    
-    /**
-     * The Constant MEDIA_TYPE. This can be used to set the media type.  
-     * Supported values are "application/xml" and "application/json".
-     * @since 2.4 
-     */
-    public static final String MEDIA_TYPE = JAXBContext.MEDIA_TYPE;
-    
-    /**
-     * The Constant ID_RESOLVER.  This can be used to specify a custom
-     * IDResolver class, to allow customization of ID/IDREF processing.
-     * @since 2.3.3
-     */
-    public static final String ID_RESOLVER = JAXBContext.ID_RESOLVER;
     private static final String SUN_ID_RESOLVER = "com.sun.xml.bind.IDResolver";
     private static final String SUN_JSE_ID_RESOLVER = "com.sun.xml.internal.bind.IDResolver";
-    
-    /**
-     * The Constant JSON_ATTRIBUTE_PREFIX. This can be used to specify a prefix that 
-     * is prepended to attributes.  Only applicable if media type is "application/json".
-     * @since 2.4  
-     */ 
-    public static final String JSON_ATTRIBUTE_PREFIX = JAXBContext.JSON_ATTRIBUTE_PREFIX;
-    
-    /**
-     * The Constant JSON_INCLUDE_ROOT. This can be used  to specify if the root element 
-     * should be unmarshalled.  Only applicable if media type is "application/json".
-     * @since 2.4   
-     */
-    public static final String JSON_INCLUDE_ROOT = JAXBContext.JSON_INCLUDE_ROOT;
-    
-    /**
-     * The Constant JSON_VALUE_WRAPPER.  This can be used to specify the wrapper
-     * that will be used around things mapped with @XmlValue.  Only applicable if media type is "application/json".
-     * @since 2.4  
-     */
-    public static final String JSON_VALUE_WRAPPER = JAXBContext.JSON_VALUE_WRAPPER;
-    
-    /**
-     * The Constant JSON_NAMESPACE_SEPARATOR.  This can be used to specify the separator
-     * that will be used when separating prefixes and localnames.  Only applicable when
-     * namespaces are being used. Value should be a Character.
-     * @since 2.4  
-     */
-    public static final String JSON_NAMESPACE_SEPARATOR  = "eclipselink.json.namespace-separator";
-    
+
     public JAXBUnmarshaller(XMLUnmarshaller newXMLUnmarshaller) {
         super();
         validationEventHandler = JAXBContext.DEFAULT_VALIDATION_EVENT_HANDER;
@@ -745,18 +696,18 @@ public class JAXBUnmarshaller implements Unmarshaller {
         if (key == null) {
             throw new IllegalArgumentException();
         }
-        if (key.equals(JAXBContext.MEDIA_TYPE)) {
+        if (key.equals(UnmarshallerProperties.MEDIA_TYPE)) {
             MediaType mType = MediaType.getMediaTypeByName((String)value);
             if (mType != null){
                 xmlUnmarshaller.setMediaType(mType);                
             } else {
                throw new PropertyException(key, value);
             }
-        } else if (key.equals(JAXBContext.JSON_ATTRIBUTE_PREFIX)){        	
+        } else if (key.equals(UnmarshallerProperties.JSON_ATTRIBUTE_PREFIX)){
         	xmlUnmarshaller.setAttributePrefix((String)value);
-        } else if (JAXBContext.JSON_INCLUDE_ROOT.equals(key)) {
+        } else if (UnmarshallerProperties.JSON_INCLUDE_ROOT.equals(key)) {
         	xmlUnmarshaller.setIncludeRoot((Boolean)value);            
-        } else if (JAXBUnmarshaller.JSON_NAMESPACE_PREFIX_MAPPER.equals(key)){
+        } else if (UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER.equals(key)){
             if (value instanceof Map){
                 Map<String, String> namespaces = (Map<String, String>)value;
                 NamespaceResolver nr = new NamespaceResolver();
@@ -769,11 +720,11 @@ public class JAXBUnmarshaller implements Unmarshaller {
             } else if (value instanceof NamespacePrefixMapper){
             	xmlUnmarshaller.setNamespaceResolver(new PrefixMapperNamespaceResolver((NamespacePrefixMapper)value, null));
             }
-        } else if (JAXBContext.JSON_VALUE_WRAPPER.equals(key)){        	
+        } else if (UnmarshallerProperties.JSON_VALUE_WRAPPER.equals(key)){        	
             xmlUnmarshaller.setValueWrapper((String)value);
-        } else if (JAXBContext.JSON_NAMESPACE_SEPARATOR.equals(key)){        
+        } else if (UnmarshallerProperties.JSON_NAMESPACE_SEPARATOR.equals(key)){        
         	xmlUnmarshaller.setNamespaceSeparator((Character)value);            
-        } else if (JAXBContext.ID_RESOLVER.equals(key)) {
+        } else if (UnmarshallerProperties.ID_RESOLVER.equals(key)) {
             setIDResolver((IDResolver) value);
         } else if (SUN_ID_RESOLVER.equals(key) || SUN_JSE_ID_RESOLVER.equals(key)) {
             setIDResolver(new IDResolverWrapper(value));
@@ -791,15 +742,15 @@ public class JAXBUnmarshaller implements Unmarshaller {
         if (key == null) {
             throw new IllegalArgumentException();
         }
-        if (key.equals(MEDIA_TYPE)) {
+        if (key.equals(UnmarshallerProperties.MEDIA_TYPE)) {
             return xmlUnmarshaller.getMediaType().getName();
-        } else if (key.equals(JSON_ATTRIBUTE_PREFIX)) {
+        } else if (key.equals(UnmarshallerProperties.JSON_ATTRIBUTE_PREFIX)) {
             return xmlUnmarshaller.getAttributePrefix();
-        } else if (key.equals(JSON_INCLUDE_ROOT)) {
+        } else if (key.equals(UnmarshallerProperties.JSON_INCLUDE_ROOT)) {
             return xmlUnmarshaller.isIncludeRoot();
-        }  else if (key.equals(JSON_NAMESPACE_SEPARATOR)) {
+        }  else if (key.equals(UnmarshallerProperties.JSON_NAMESPACE_SEPARATOR)) {
             return xmlUnmarshaller.getNamespaceSeparator();
-        } else if (key.equals(JSON_NAMESPACE_PREFIX_MAPPER)) {
+        } else if (key.equals(UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER)) {
         	if(xmlUnmarshaller.getNamespaceResolver() == null){
         		return null;
         	}
@@ -817,9 +768,9 @@ public class JAXBUnmarshaller implements Unmarshaller {
                 }
                 return nsMap;
             }
-        } else if (key.equals(JSON_VALUE_WRAPPER)) {
+        } else if (key.equals(UnmarshallerProperties.JSON_VALUE_WRAPPER)) {
             return xmlUnmarshaller.getValueWrapper();
-        } else if (ID_RESOLVER.equals(key)) {
+        } else if (UnmarshallerProperties.ID_RESOLVER.equals(key)) {
             return xmlUnmarshaller.getIDResolver();
         } else if (SUN_ID_RESOLVER.equals(key) || SUN_JSE_ID_RESOLVER.equals(key)) {
             IDResolverWrapper wrapper = (IDResolverWrapper) xmlUnmarshaller.getIDResolver();

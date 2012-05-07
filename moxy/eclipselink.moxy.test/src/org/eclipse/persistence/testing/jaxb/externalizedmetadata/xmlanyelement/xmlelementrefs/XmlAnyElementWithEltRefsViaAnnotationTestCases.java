@@ -16,8 +16,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.persistence.jaxb.JAXBMarshaller;
-import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
+import org.eclipse.persistence.jaxb.MarshallerProperties;
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class XmlAnyElementWithEltRefsViaAnnotationTestCases extends JAXBWithJSONTestCases{
@@ -31,8 +31,8 @@ public class XmlAnyElementWithEltRefsViaAnnotationTestCases extends JAXBWithJSON
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
         setClasses(new Class[]{FooImpl.class, Bar.class, ObjectFactory.class});
-    	jaxbMarshaller.setProperty(JAXBMarshaller.JSON_ATTRIBUTE_PREFIX, "@");
-    	jaxbUnmarshaller.setProperty(JAXBUnmarshaller.JSON_ATTRIBUTE_PREFIX, "@");
+    	jaxbMarshaller.setProperty(MarshallerProperties.JSON_ATTRIBUTE_PREFIX, "@");
+    	jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_ATTRIBUTE_PREFIX, "@");
     }  
 	
 	

@@ -23,8 +23,8 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.jaxb.JAXBMarshaller;
-import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
+import org.eclipse.persistence.jaxb.MarshallerProperties;
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class XmlValueInternationalPriceTestCases extends JAXBWithJSONTestCases{
@@ -36,8 +36,8 @@ public class XmlValueInternationalPriceTestCases extends JAXBWithJSONTestCases{
 		setClasses(new Class[] { InternationalPriceNoAnnotation.class });
 		setControlDocument(XML_RESOURCE);
 		setControlJSON(JSON_RESOURCE);
-		jaxbMarshaller.setProperty(JAXBMarshaller.JSON_VALUE_WRAPPER, "value");
-		jaxbUnmarshaller.setProperty(JAXBUnmarshaller.JSON_VALUE_WRAPPER, "value");
+		jaxbMarshaller.setProperty(MarshallerProperties.JSON_VALUE_WRAPPER, "value");
+		jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_VALUE_WRAPPER, "value");
 	}
 	
 	   

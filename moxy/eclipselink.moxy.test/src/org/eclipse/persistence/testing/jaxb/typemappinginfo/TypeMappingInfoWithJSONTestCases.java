@@ -24,6 +24,8 @@ import javax.xml.transform.stream.StreamSource;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.jaxb.JAXBMarshaller;
 import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
+import org.eclipse.persistence.jaxb.MarshallerProperties;
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 
 public abstract class TypeMappingInfoWithJSONTestCases extends TypeMappingInfoTestCases {
 	protected String controlJSONLocation;
@@ -36,10 +38,10 @@ public abstract class TypeMappingInfoWithJSONTestCases extends TypeMappingInfoTe
     public void testXMLToObjectFromSourceWithTypeMappingInfoJSON() throws Exception {         
         InputStream instream = ClassLoader.getSystemResourceAsStream(controlJSONLocation);        
         StreamSource ss = new StreamSource(instream);
-        jaxbUnmarshaller.setProperty(JAXBUnmarshaller.MEDIA_TYPE,"application/json");
+        jaxbUnmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE,"application/json");
         Object testObject = ((JAXBUnmarshaller)jaxbUnmarshaller).unmarshal(ss, getTypeMappingInfo());
         instream.close();
-        jaxbUnmarshaller.setProperty(JAXBUnmarshaller.MEDIA_TYPE,"application/xml");
+        jaxbUnmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE,"application/xml");
 
         Object controlObj = getReadControlObject();
         xmlToObjectTest(testObject, controlObj);                  
@@ -48,7 +50,7 @@ public abstract class TypeMappingInfoWithJSONTestCases extends TypeMappingInfoTe
   
     
     public void testObjectToResultWithTypeMappingInfoJSON() throws Exception {
-    	jaxbMarshaller.setProperty(JAXBMarshaller.MEDIA_TYPE, "application/json");
+    	jaxbMarshaller.setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
         Object objectToWrite = getWriteControlObject();
         StringWriter stringWriter = new StringWriter();
         StreamResult result = new StreamResult(stringWriter);
@@ -57,7 +59,7 @@ public abstract class TypeMappingInfoWithJSONTestCases extends TypeMappingInfoTe
         compareStrings("testObjectToResultWithTypeMappingInfoJSON",stringWriter.toString(), getWriteControlJSON());
 
         stringWriter.close();
-	    jaxbMarshaller.setProperty(JAXBMarshaller.MEDIA_TYPE, "application/xml");
+	    jaxbMarshaller.setProperty(MarshallerProperties.MEDIA_TYPE, "application/xml");
     }     
 
 
@@ -112,7 +114,7 @@ public abstract class TypeMappingInfoWithJSONTestCases extends TypeMappingInfoTe
         assertEquals(controlObj.getName().getLocalPart(), testObj.getName().getLocalPart());
         Object mapper = null;
 		try {
-			mapper = jaxbUnmarshaller.getProperty(JAXBUnmarshaller.JSON_NAMESPACE_PREFIX_MAPPER);
+			mapper = jaxbUnmarshaller.getProperty(UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER);
 		} catch (PropertyException e) {
 			e.printStackTrace();
 			fail();

@@ -18,7 +18,7 @@ import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
-import org.eclipse.persistence.jaxb.JAXBContext;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.json.JSONMarshalUnmarshalTestCases;
 
 public class NoRootElementNSTestCases extends JSONMarshalUnmarshalTestCases {    
@@ -58,8 +58,8 @@ public class NoRootElementNSTestCases extends JSONMarshalUnmarshalTestCases {
 			
 			namespaceMap.put("namespace1","ns0");
 			
-			props.put(JAXBContext.NAMESPACE_PREFIX_MAPPER, namespaceMap);
-			props.put(JAXBContext.JSON_INCLUDE_ROOT, Boolean.FALSE);
+			props.put(JAXBContextProperties.NAMESPACE_PREFIX_MAPPER, namespaceMap);
+			props.put(JAXBContextProperties.JSON_INCLUDE_ROOT, Boolean.FALSE);
 			return props;
 		}
 

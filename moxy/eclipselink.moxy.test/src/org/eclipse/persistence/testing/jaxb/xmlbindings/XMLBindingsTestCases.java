@@ -18,6 +18,7 @@ import java.io.StringWriter;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
+import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.xmlmodel.JavaType;
 import org.eclipse.persistence.jaxb.xmlmodel.JavaType.JavaAttributes;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
@@ -114,7 +115,7 @@ public class XMLBindingsTestCases extends JAXBWithJSONTestCases{
  		    StringWriter writer = new StringWriter();
 
  		    //marshal control object to XML
-	        jaxbMarshaller.setProperty(org.eclipse.persistence.jaxb.JAXBContext.MEDIA_TYPE, "application/xml");
+	        jaxbMarshaller.setProperty(MarshallerProperties.MEDIA_TYPE, "application/xml");
 	        jaxbMarshaller.marshal(getWriteControlObject(), writer);
 
 	        StringReader reader = new StringReader(writer.toString());        

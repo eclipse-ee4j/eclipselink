@@ -12,13 +12,13 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.json.attribute;
 
-import org.eclipse.persistence.jaxb.JAXBMarshaller;
+import org.eclipse.persistence.jaxb.MarshallerProperties;
 
 public class JSONAttributeNoXmlRootElementIncludeRootFalseTestCases extends JSONAttributeNoXmlRootElementTestCases{
 
 	public JSONAttributeNoXmlRootElementIncludeRootFalseTestCases(String name) throws Exception {
 		super(name);
-		jaxbMarshaller.setProperty(JAXBMarshaller.JSON_INCLUDE_ROOT, false);
+		jaxbMarshaller.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, false);
 	
 	}
 

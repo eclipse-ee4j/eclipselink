@@ -12,7 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.annotations.xmlvalue.integer;
 
-import org.eclipse.persistence.jaxb.JAXBContext;
+import org.eclipse.persistence.jaxb.MarshallerProperties;
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class IntegerTestCases extends JAXBWithJSONTestCases {
@@ -30,8 +31,8 @@ public class IntegerTestCases extends JAXBWithJSONTestCases {
     @Override
     public void setUp() throws Exception{
         super.setUp();
-        jaxbMarshaller.setProperty(JAXBContext.JSON_VALUE_WRAPPER, "value");
-        jaxbUnmarshaller.setProperty(JAXBContext.JSON_VALUE_WRAPPER, "value");
+        jaxbMarshaller.setProperty(MarshallerProperties.JSON_VALUE_WRAPPER, "value");
+        jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_VALUE_WRAPPER, "value");
     }
 
     @Override

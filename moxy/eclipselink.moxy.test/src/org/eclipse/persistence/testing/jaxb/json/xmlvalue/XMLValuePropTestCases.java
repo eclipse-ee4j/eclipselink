@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.persistence.jaxb.JAXBContext;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class XMLValuePropTestCases extends JAXBWithJSONTestCases {
@@ -33,9 +33,9 @@ public class XMLValuePropTestCases extends JAXBWithJSONTestCases {
 	}
 
 	public Map getProperties(){
-		Map props = new HashMap();		
-		props.put(JAXBContext.JSON_VALUE_WRAPPER, "valuewrapper");
-		return props;		   
+		Map props = new HashMap();
+		props.put(JAXBContextProperties.JSON_VALUE_WRAPPER, "valuewrapper");
+		return props;
 	}
 	
 	@Override

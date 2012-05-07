@@ -19,6 +19,7 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 
 public class UnmarshalWithSpaceEventTestCases extends JAXBTestCases{
@@ -46,7 +47,7 @@ public class UnmarshalWithSpaceEventTestCases extends JAXBTestCases{
 	        if(null != XML_INPUT_FACTORY && isUnmarshalTest()) {
 	            InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
 	            XMLStreamReader xmlStreamReader = XML_INPUT_FACTORY.createXMLStreamReader(instream);
-	            jaxbUnmarshaller.setProperty(org.eclipse.persistence.jaxb.JAXBContext.MEDIA_TYPE, "application/xml");
+	            jaxbUnmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, "application/xml");
 	            JAXBElement testObject = jaxbUnmarshaller.unmarshal(xmlStreamReader, TestObject.class);
 	            instream.close();
 	            xmlToObjectTest(testObject, getJAXBElementControlObject());

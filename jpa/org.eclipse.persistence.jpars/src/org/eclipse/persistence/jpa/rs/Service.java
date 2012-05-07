@@ -12,7 +12,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs;
 
-import static org.eclipse.persistence.jaxb.JAXBContext.MEDIA_TYPE;
 import static org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller.mediaType;
 
 import java.io.IOException;
@@ -73,6 +72,8 @@ import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.MarshallerProperties;
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.jpa.rs.metadata.DatabaseMetadataStore;
 import org.eclipse.persistence.jpa.rs.metadata.model.Attribute;
@@ -645,8 +646,8 @@ public class Service {
         Class[] jaxbClasses = new Class[]{Link.class, Attribute.class, Descriptor.class, LinkTemplate.class, PersistenceUnit.class, Query.class};
         JAXBContext context = (JAXBContext)JAXBContextFactory.createContext(jaxbClasses, null);
         Marshaller marshaller = context.createMarshaller();
-        marshaller.setProperty(JAXBContext.JSON_INCLUDE_ROOT, Boolean.FALSE);
-        marshaller.setProperty(MEDIA_TYPE, mediaType);
+        marshaller.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, Boolean.FALSE);
+        marshaller.setProperty(MarshallerProperties.MEDIA_TYPE, mediaType);
         StringWriter writer = new StringWriter();
         marshaller.marshal(metadata, writer);
         return writer.toString();
@@ -656,8 +657,8 @@ public class Service {
         Class[] jaxbClasses = new Class[]{SessionBeanCall.class};
         JAXBContext context = (JAXBContext)JAXBContextFactory.createContext(jaxbClasses, null);
         Unmarshaller unmarshaller = context.createUnmarshaller();
-        unmarshaller.setProperty(JAXBContext.JSON_INCLUDE_ROOT, Boolean.FALSE);
-        unmarshaller.setProperty(MEDIA_TYPE, MediaType.APPLICATION_JSON);
+        unmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, Boolean.FALSE);
+        unmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON);
         StreamSource ss = new StreamSource(data);
         return unmarshaller.unmarshal(ss, SessionBeanCall.class).getValue();
     }

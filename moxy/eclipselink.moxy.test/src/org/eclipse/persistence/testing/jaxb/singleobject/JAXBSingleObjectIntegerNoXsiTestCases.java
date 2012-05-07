@@ -26,9 +26,9 @@ import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.internal.oxm.record.XMLStreamReaderInputSource;
-import org.eclipse.persistence.jaxb.JAXBContext;
-import org.eclipse.persistence.jaxb.JAXBMarshaller;
-import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
+import org.eclipse.persistence.jaxb.MarshallerProperties;
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
@@ -53,8 +53,8 @@ public class JAXBSingleObjectIntegerNoXsiTestCases extends JAXBWithJSONTestCases
 		setClasses(classes);
 		Map namespaces = new HashMap();
     	namespaces.put("rootNamespace","ns1");
-		jaxbMarshaller.setProperty(JAXBMarshaller.NAMESPACE_PREFIX_MAPPER, namespaces);
-		jaxbUnmarshaller.setProperty(JAXBUnmarshaller.JSON_NAMESPACE_PREFIX_MAPPER, namespaces);		
+		jaxbMarshaller.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, namespaces);
+		jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER, namespaces);
 	}
 
    public Map getProperties(){
@@ -63,7 +63,7 @@ public class JAXBSingleObjectIntegerNoXsiTestCases extends JAXBWithJSONTestCases
     	Map namespaces = new HashMap();
     	namespaces.put("ns1", "rootNamespace");
 
-    	props.put(JAXBContext.JSON_INCLUDE_ROOT, true);
+    	props.put(JAXBContextProperties.JSON_INCLUDE_ROOT, true);
 
 	    return props;
 }
@@ -174,7 +174,7 @@ public class JAXBSingleObjectIntegerNoXsiTestCases extends JAXBWithJSONTestCases
         }    	
     }
     public void testJSONUnmarshalFromInputStream() throws Exception {
-    	jaxbUnmarshaller.setProperty(JAXBContext.MEDIA_TYPE, "application/json");
+    	jaxbUnmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, "application/json");
         InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);
         Object testObject = jaxbUnmarshaller.unmarshal(new StreamSource(inputStream), Integer.class);
         inputStream.close();

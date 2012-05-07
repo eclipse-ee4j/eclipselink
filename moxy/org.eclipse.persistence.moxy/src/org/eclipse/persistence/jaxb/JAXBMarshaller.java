@@ -77,29 +77,29 @@ import org.eclipse.persistence.jaxb.attachment.*;
  * <a name="supportedProps"></a>
  * <b>Supported Properties</b><br> 
  * <ul>
- *     <li>JAXBMarshaller.JAXB_FORMATTED_OUTPUT - accepted value is a Boolean</li>
- *     <li>JAXBMarshaller.JAXB_ENCODING - accepted value is a String  </li>
- *     <li>JAXBMarshaller.JAXB_SCHEMA_LOCATION - accepted value is a String</li>
- *     <li>JAXBMarshaller.JAXB_NO_NAMESPACE_SCHEMA_LOCATION - accepted value is a String</li>
+ *     <li>Marshaller.JAXB_ENCODING - accepted value is a String  </li>
+ *     <li>Marshaller.JAXB_FORMATTED_OUTPUT - accepted value is a Boolean</li>
+ *     <li>Marshaller.JAXB_NO_NAMESPACE_SCHEMA_LOCATION - accepted value is a String</li>
+ *     <li>Marshaller.JAXB_SCHEMA_LOCATION - accepted value is a String</li>
  *     <li>XMLConstants.JAXB_FRAGMENT - accepted value is a Boolean </li>
- *     <li>JAXBMarshaller.NAMESPACE_PREFIX_MAPPER - accepted value is a Map<String uri, String prefix> or org.eclipse.persistence.oxm.NamespacePrefixMapper</li>    
- *     <li>JAXBMarshaller.INDENT_STRING - accepted value is a String </li>
- *     <li>JAXBMarshaller.CHARACTER_ESCAPE_HANDLER - accepted value is an org.eclipse.persistence.oxm.CharacterEscapeHandler </li>    
- *     <li>JAXBMarshaller.XML_DECLARATION - accepted value is a Boolean </li>
- *     <li>JAXBMarshaller.MEDIA_TYPE - accepted value is a String ("application/xml" or "application/json") </li>
- *     <li>JAXBMarshaller.JSON_ATTRIBUTE_PREFIX - accepted value is a String </li>
- *     <li>JAXBMarshaller.JSON_INCLUDE_ROOT - accepted value is a Boolean </li>
- *     <li>JAXBMarshaller.JSON_VALUE_WRAPPER - accepted value is a String </li>
- *     <li>JAXBMarshaller.JSON_NAMESPACE_SEPARATOR - accepted value is a Character </li>
+ *     <li>MarshallerProperties.CHARACTER_ESCAPE_HANDLER - accepted value is an org.eclipse.persistence.oxm.CharacterEscapeHandler </li>    
+ *     <li>MarshallerProperties.INDENT_STRING - accepted value is a String </li>
+ *     <li>MarshallerProperties.JSON_ATTRIBUTE_PREFIX - accepted value is a String </li>
+ *     <li>MarshallerProperties.JSON_INCLUDE_ROOT - accepted value is a Boolean </li>
+ *     <li>MarshallerProperties.JSON_NAMESPACE_SEPARATOR - accepted value is a Character </li>
+ *     <li>MarshallerProperties.JSON_VALUE_WRAPPER - accepted value is a String </li>
+ *     <li>MarshallerProperties.MEDIA_TYPE - accepted value is a String ("application/xml" or "application/json") </li>
+ *     <li>MarshallerProperties.NAMESPACE_PREFIX_MAPPER - accepted value is a Map<String uri, String prefix> or org.eclipse.persistence.oxm.NamespacePrefixMapper</li>    
  * </ul>
  * <p> 
- * This implementation of the JAXB 2.0 Marshaller interface provides the
+ * This implementation of the JAXB 2.1/2.2 Marshaller interface provides the
  * required functionality by acting as a thin wrapper on the existing
  * XMLMarshaller API.
  * 
  * @author mmacivor
  * @since Oracle TopLink 11.1.1.0.0
  * @see javax.xml.bind.Marshaller
+ * @see org.eclipse.persistence.jaxb.MarshallerProperties
  * @see org.eclipse.persistence.oxm.XMLMarshaller
  */
 
@@ -111,80 +111,17 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
 
     public static final String XML_JAVATYPE_ADAPTERS = "xml-javatype-adapters";
 
-    /**
-     * The Constant NAMESPACE_PREFIX_MAPPER. Provides a means to customize the namespace prefixes used 
-     * while marshalling to XML.  Used for both marshal and unmarshal when mediaType is set to "application/json".
-     * Value is either a Map<String, String> of URIs to prefixes, or an implementation of 
-     * org.eclipse.persistence.oxm.NamespacePrefixMapper.
-     * @since 2.3.3 
-     */
-    public static final String NAMESPACE_PREFIX_MAPPER = JAXBContext.NAMESPACE_PREFIX_MAPPER;
     private static final String SUN_NAMESPACE_PREFIX_MAPPER = "com.sun.xml.bind.namespacePrefixMapper";
     private static final String SUN_JSE_NAMESPACE_PREFIX_MAPPER = "com.sun.xml.internal.bind.namespacePrefixMapper";
 
-    /**
-     * The Constant INDENT_STRING. Property used to set the string used when indenting formatted marshalled documents.
-     * The default for formatted documents is &quot;   &quot; (three spaces).
-     * @since 2.3.3
-     */
-    public static final String INDENT_STRING = "eclipselink.indent-string";
     private static final String SUN_INDENT_STRING = "com.sun.xml.bind.indentString";
     private static final String SUN_JSE_INDENT_STRING = "com.sun.xml.internal.bind.indentString";
 
-    /**
-     * The Constant CHARACTER_ESCAPE_HANDLER.  Allows for customization of character escaping when marshalling.
-     * Value should be an implementation of org.eclipse.persistence.oxm.CharacterEscapeHandler.
-     * @since 2.3.3
-     */
-    public static final String CHARACTER_ESCAPE_HANDLER = "eclipselink.character-escape-handler";
     private static final String SUN_CHARACTER_ESCAPE_HANDLER = "com.sun.xml.bind.marshaller.CharacterEscapeHandler";
     private static final String SUN_JSE_CHARACTER_ESCAPE_HANDLER = "com.sun.xml.internal.bind.marshaller.CharacterEscapeHandler";
 
     // XML_DECLARATION is the "opposite" to JAXB_FRAGMENT.  If XML_DECLARATION is set to false it means JAXB_FRAGMENT should be set to true.
     private static final String XML_DECLARATION = "com.sun.xml.bind.xmlDeclaration";
-
-    /**
-     * The Constant MEDIA_TYPE. This can be used to set the media type.
-     * Supported values are "application/xml" and "application/json".
-     * @since 2.4
-     */
-    public static final String MEDIA_TYPE = JAXBContext.MEDIA_TYPE;
-
-    /**
-     * The Constant ID_RESOLVER.  This can be used to specify a custom
-     * IDResolver class, to allow for customization of ID/IDREF processing.
-     * @since 2.3.3
-     */
-    public static final String ID_RESOLVER = JAXBContext.ID_RESOLVER;
-
-    /**
-     * The Constant JSON_ATTRIBUTE_PREFIX. This can be used to specify a prefix to prepend
-     * to attributes.  Only applicable if media type is "application/json".
-     * @since 2.4
-     */
-    public static final String JSON_ATTRIBUTE_PREFIX = JAXBContext.JSON_ATTRIBUTE_PREFIX;
-
-    /**
-     * The Constant JSON_INCLUDE_ROOT. This can be used  to specify if the
-     * @XmlRootElement should be marshalled.  Only applicable if media type is "application/json".
-     * @since 2.4
-     */
-    public static final String JSON_INCLUDE_ROOT = JAXBContext.JSON_INCLUDE_ROOT;
-
-    /**
-     * The Constant JSON_VALUE_WRAPPER.  This can be used to specify the wrapper
-     * that will be used around things mapped with @XmlValue.  Only applicable if media type is "application/json".
-     * @since 2.4
-     */
-    public static final String JSON_VALUE_WRAPPER = JAXBContext.JSON_VALUE_WRAPPER;
-    
-    /**
-     * The Constant JSON_NAMESPACE_SEPARATOR.  This can be used to specify the separator
-     * that will be used when separating prefixes and localnames.  Only applicable when
-     * namespaces are being used. Value should be a Character.
-     * @since 2.4  
-     */
-    public static final String JSON_NAMESPACE_SEPARATOR  = "eclipselink.json.namespace-separator";
 
     /**
      * This constructor initializes various settings on the XML marshaller, and
@@ -337,23 +274,23 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             return xmlMarshaller.getNoNamespaceSchemaLocation();
         } else if (XMLConstants.JAXB_FRAGMENT.equals(key)) {
             return xmlMarshaller.isFragment();
-        } else if (JAXBContext.MEDIA_TYPE.equals(key)) {
+        } else if (MarshallerProperties.MEDIA_TYPE.equals(key)) {
             return xmlMarshaller.getMediaType().getName();
-        } else if (NAMESPACE_PREFIX_MAPPER.equals(key)) {
+        } else if (MarshallerProperties.NAMESPACE_PREFIX_MAPPER.equals(key)) {
             return xmlMarshaller.getNamespacePrefixMapper();
-        } else if (INDENT_STRING.equals(key) || SUN_INDENT_STRING.equals(key) || SUN_JSE_INDENT_STRING.equals(key)) {
+        } else if (MarshallerProperties.INDENT_STRING.equals(key) || SUN_INDENT_STRING.equals(key) || SUN_JSE_INDENT_STRING.equals(key)) {
             return xmlMarshaller.getIndentString();
-        } else if (CHARACTER_ESCAPE_HANDLER.equals(key)) {
+        } else if (MarshallerProperties.CHARACTER_ESCAPE_HANDLER.equals(key)) {
             return xmlMarshaller.getCharacterEscapeHandler();
         } else if (XML_DECLARATION.equals(key)) {
             return !xmlMarshaller.isFragment();
-        } else if (JAXBContext.JSON_ATTRIBUTE_PREFIX.equals(key)) {
+        } else if (MarshallerProperties.JSON_ATTRIBUTE_PREFIX.equals(key)) {
             return xmlMarshaller.getAttributePrefix();
-        } else if (JAXBContext.JSON_INCLUDE_ROOT.equals(key)) {
+        } else if (MarshallerProperties.JSON_INCLUDE_ROOT.equals(key)) {
             return xmlMarshaller.isIncludeRoot();
-        } else if (JAXBContext.JSON_VALUE_WRAPPER.equals(key)) {
+        } else if (MarshallerProperties.JSON_VALUE_WRAPPER.equals(key)) {
             return xmlMarshaller.getValueWrapper(); 
-        } else if (key.equals(JSON_NAMESPACE_SEPARATOR)) {
+        } else if (MarshallerProperties.JSON_NAMESPACE_SEPARATOR.equals(key)) {
             return xmlMarshaller.getNamespaceSeparator();
         } else if (SUN_CHARACTER_ESCAPE_HANDLER.equals(key) || SUN_JSE_CHARACTER_ESCAPE_HANDLER.equals(key)) {
             if (xmlMarshaller.getCharacterEscapeHandler() instanceof CharacterEscapeHandlerWrapper) {
@@ -740,7 +677,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             } else if (XMLConstants.JAXB_FRAGMENT.equals(key)) {
                 Boolean fragment = (Boolean) value;
                 xmlMarshaller.setFragment(fragment.booleanValue());
-            } else if(NAMESPACE_PREFIX_MAPPER.equals(key)) { 
+            } else if(MarshallerProperties.NAMESPACE_PREFIX_MAPPER.equals(key)) { 
             	if(value instanceof Map){
             		NamespacePrefixMapper namespacePrefixMapper = new MapNamespacePrefixMapper((Map)value);
             		xmlMarshaller.setNamespacePrefixMapper(namespacePrefixMapper);
@@ -749,9 +686,9 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             	}
             } else if(SUN_NAMESPACE_PREFIX_MAPPER.equals(key) || SUN_JSE_NAMESPACE_PREFIX_MAPPER.equals(key)) {
                 xmlMarshaller.setNamespacePrefixMapper(new NamespacePrefixMapperWrapper(value));
-            } else if (INDENT_STRING.equals(key) || SUN_INDENT_STRING.equals(key) || SUN_JSE_INDENT_STRING.equals(key)) {
+            } else if (MarshallerProperties.INDENT_STRING.equals(key) || SUN_INDENT_STRING.equals(key) || SUN_JSE_INDENT_STRING.equals(key)) {
                 xmlMarshaller.setIndentString((String) value);
-            } else if (CHARACTER_ESCAPE_HANDLER.equals(key)) {
+            } else if (MarshallerProperties.CHARACTER_ESCAPE_HANDLER.equals(key)) {
                 xmlMarshaller.setCharacterEscapeHandler((CharacterEscapeHandler) value);
             } else if (SUN_CHARACTER_ESCAPE_HANDLER.equals(key) || SUN_JSE_CHARACTER_ESCAPE_HANDLER.equals(key)) {
                 if (value == null) {
@@ -762,21 +699,21 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             } else if (XML_DECLARATION.equals(key)) {
                 Boolean fragment = !(Boolean) value;
                 xmlMarshaller.setFragment(fragment.booleanValue());
-            } else if (JAXBContext.MEDIA_TYPE.equals(key)) {
+            } else if (MarshallerProperties.MEDIA_TYPE.equals(key)) {
             	MediaType mType = MediaType.getMediaTypeByName((String)value);
             	if(mType != null){
             	   xmlMarshaller.setMediaType(mType);
             	}else{
             	   throw new PropertyException(key, value);
             	}
-            } else if (JAXBContext.JSON_ATTRIBUTE_PREFIX.equals(key)) {            	
-            	xmlMarshaller.setAttributePrefix((String)value);            	
-            } else if (JAXBContext.JSON_INCLUDE_ROOT.equals(key)) {            	
-            	xmlMarshaller.setIncludeRoot((Boolean)value);     
-            } else if(JAXBContext.JSON_VALUE_WRAPPER.equals(key)){
-            	xmlMarshaller.setValueWrapper((String)value); 
-            } else if(JAXBContext.JSON_NAMESPACE_SEPARATOR.equals(key)){
-            	xmlMarshaller.setNamespaceSeparator((Character)value); 
+            } else if (MarshallerProperties.JSON_ATTRIBUTE_PREFIX.equals(key)) {
+                xmlMarshaller.setAttributePrefix((String)value);
+            } else if (MarshallerProperties.JSON_INCLUDE_ROOT.equals(key)) {
+                xmlMarshaller.setIncludeRoot((Boolean)value);
+            } else if(MarshallerProperties.JSON_VALUE_WRAPPER.equals(key)){
+                xmlMarshaller.setValueWrapper((String)value); 
+            } else if(MarshallerProperties.JSON_NAMESPACE_SEPARATOR.equals(key)){
+                xmlMarshaller.setNamespaceSeparator((Character)value);
             } else {
                 throw new PropertyException(key, value);
             }

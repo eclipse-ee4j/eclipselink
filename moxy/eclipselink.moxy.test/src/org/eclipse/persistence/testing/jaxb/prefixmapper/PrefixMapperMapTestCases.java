@@ -15,8 +15,8 @@ package org.eclipse.persistence.testing.jaxb.prefixmapper;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.persistence.jaxb.JAXBMarshaller;
-import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
+import org.eclipse.persistence.jaxb.MarshallerProperties;
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
@@ -33,9 +33,9 @@ public class PrefixMapperMapTestCases extends JAXBWithJSONTestCases {
         map.put(XMLConstants.SCHEMA_INSTANCE_URL, "xsi");
         map.put("my.uri", "somePrefix");
         
-        jaxbMarshaller.setProperty(JAXBMarshaller.NAMESPACE_PREFIX_MAPPER, map);
+        jaxbMarshaller.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, map);
         
-        jaxbUnmarshaller.setProperty(JAXBUnmarshaller.JSON_NAMESPACE_PREFIX_MAPPER, map);
+        jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER, map);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }

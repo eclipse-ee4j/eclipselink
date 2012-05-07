@@ -17,12 +17,13 @@ import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 
 import junit.framework.TestCase;
 
-import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory;
 import org.eclipse.persistence.sessions.SessionEventListener;
 import org.eclipse.persistence.testing.jaxb.jaxbcontext.sessioneventlistener.Address;
@@ -44,7 +45,7 @@ public class SessionEventListenerTestCases extends TestCase {
 
     public void testOXM() throws Exception {
         Map<String, Object> properties = new HashMap<String, Object>(2);
-        properties.put(JAXBContext.SESSION_EVENT_LISTENER, sessionEventListener);
+        properties.put(JAXBContextProperties.SESSION_EVENT_LISTENER, sessionEventListener);
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, "org/eclipse/persistence/testing/jaxb/dynamic/sessioneventlistener/oxm.xml");
         JAXBContext jc = (JAXBContext) DynamicJAXBContextFactory.createContextFromOXM(this.getClass().getClassLoader(), properties);
         unmarshalTest(jc);
@@ -52,7 +53,7 @@ public class SessionEventListenerTestCases extends TestCase {
 
     public void testXSD() throws Exception {
         Map<String, Object> properties = new HashMap<String, Object>(1);
-        properties.put(JAXBContext.SESSION_EVENT_LISTENER, sessionEventListener);
+        properties.put(JAXBContextProperties.SESSION_EVENT_LISTENER, sessionEventListener);
 
         ClassLoader classLoader = SessionEventListenerTestCases.class.getClassLoader();
         InputStream schemaStream = classLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/dynamic/sessioneventlistener/schema.xsd");

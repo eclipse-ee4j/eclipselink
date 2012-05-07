@@ -21,7 +21,8 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.PropertyException;
 import javax.xml.namespace.QName;
 
-import org.eclipse.persistence.jaxb.JAXBContext;
+import org.eclipse.persistence.jaxb.MarshallerProperties;
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.testing.jaxb.json.JSONMarshalUnmarshalTestCases;
 
@@ -93,8 +94,8 @@ public class NamespaceInheritanceTestCases extends JSONMarshalUnmarshalTestCases
 	
 		
 		try{
-		    jsonMarshaller.setProperty(JAXBContext.NAMESPACE_PREFIX_MAPPER, marshalNamespaceMap);
-		    jsonUnmarshaller.setProperty(JAXBContext.NAMESPACE_PREFIX_MAPPER, unmarshalNamespaceMap);
+		    jsonMarshaller.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, marshalNamespaceMap);
+		    jsonUnmarshaller.setProperty(UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER, unmarshalNamespaceMap);
 		}catch(PropertyException e){
 			e.printStackTrace();
 			fail("An error occurred setting properties during setup.");

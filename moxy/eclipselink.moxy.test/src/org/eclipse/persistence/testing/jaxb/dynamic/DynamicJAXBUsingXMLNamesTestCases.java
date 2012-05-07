@@ -29,6 +29,8 @@ import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.JAXBMarshaller;
 import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
+import org.eclipse.persistence.jaxb.MarshallerProperties;
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory;
 import org.eclipse.persistence.oxm.NamespaceResolver;
@@ -102,13 +104,13 @@ public class DynamicJAXBUsingXMLNamesTestCases extends TestCase {
         jaxbContext.setValueByXPath(employee, "employee-id/text()", nsResolver, "CA34287");
 
         JAXBMarshaller m = jaxbContext.createMarshaller();
-        m.setProperty(org.eclipse.persistence.jaxb.JAXBContext.MEDIA_TYPE, "application/json");
+        m.setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
         Document marshalDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
 
         m.marshal(employee, marshalDoc);
 
         JAXBUnmarshaller u = jaxbContext.createUnmarshaller();
-        u.setProperty(org.eclipse.persistence.jaxb.JAXBContext.MEDIA_TYPE, "application/json");
+        u.setProperty(UnmarshallerProperties.MEDIA_TYPE, "application/json");
         DynamicEntity employee2 = (DynamicEntity) u.unmarshal(marshalDoc);
         String newName = jaxbContext.getValueByXPath(employee2, "name/text()", nsResolver, String.class);
         String newId = jaxbContext.getValueByXPath(employee2, "employee-id/text()", nsResolver, String.class);

@@ -21,7 +21,7 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 import javax.xml.transform.stream.StreamSource;
 
-import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.testing.jaxb.json.JSONMarshalUnmarshalTestCases;
 public class WithoutXmlRootElementTestCases extends JSONMarshalUnmarshalTestCases {
 
@@ -31,7 +31,7 @@ public class WithoutXmlRootElementTestCases extends JSONMarshalUnmarshalTestCase
         super(name);
         setClasses(new Class[] {WithoutXmlRootElementRoot.class});
         setControlJSON(CONTROL_JSON);
-        jsonUnmarshaller.setProperty(JAXBUnmarshaller.JSON_INCLUDE_ROOT, Boolean.FALSE);
+        jsonUnmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, Boolean.FALSE);
     }
 
     @Override

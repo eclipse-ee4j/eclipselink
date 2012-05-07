@@ -14,7 +14,8 @@ package org.eclipse.persistence.testing.jaxb.json.xmlvalue;
 
 import java.util.Map;
 
-import org.eclipse.persistence.jaxb.JAXBContext;
+import org.eclipse.persistence.jaxb.MarshallerProperties;
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 
 public class XMLValuePropDifferentTestCases extends XMLValuePropTestCases {
 
@@ -30,8 +31,8 @@ public class XMLValuePropDifferentTestCases extends XMLValuePropTestCases {
 
 	public void setUp() throws Exception{
 		super.setUp();
-		jaxbMarshaller.setProperty(JAXBContext.JSON_VALUE_WRAPPER, "marshalWrapper");
-		jaxbUnmarshaller.setProperty(JAXBContext.JSON_VALUE_WRAPPER, "unmarshalWrapper");
+		jaxbMarshaller.setProperty(MarshallerProperties.JSON_VALUE_WRAPPER, "marshalWrapper");
+		jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_VALUE_WRAPPER, "unmarshalWrapper");
 	}
 	
 	public Map getProperties(){

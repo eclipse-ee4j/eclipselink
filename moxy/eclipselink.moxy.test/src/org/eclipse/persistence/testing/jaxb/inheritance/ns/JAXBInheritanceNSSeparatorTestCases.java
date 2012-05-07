@@ -20,7 +20,8 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.eclipse.persistence.jaxb.JAXBMarshaller;
-import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
+import org.eclipse.persistence.jaxb.MarshallerProperties;
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.record.XMLStreamWriterRecord;
@@ -33,18 +34,18 @@ public class JAXBInheritanceNSSeparatorTestCases extends JAXBInheritanceNSTestCa
 	public JAXBInheritanceNSSeparatorTestCases(String name) throws Exception {
 		super(name);
 		setControlJSON(JSON_RESOURCE);
-		jaxbMarshaller.setProperty(JAXBMarshaller.JSON_NAMESPACE_SEPARATOR, '*');
-		jaxbUnmarshaller.setProperty(JAXBUnmarshaller.JSON_NAMESPACE_SEPARATOR, '*');
+		jaxbMarshaller.setProperty(MarshallerProperties.JSON_NAMESPACE_SEPARATOR, '*');
+		jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_NAMESPACE_SEPARATOR, '*');
 	}
 	
 	public JAXBMarshaller getJSONMarshaller() throws Exception{
 		JAXBMarshaller m = super.getJSONMarshaller();
-		m.setProperty(JAXBMarshaller.JSON_NAMESPACE_SEPARATOR, '*');
+		m.setProperty(MarshallerProperties.JSON_NAMESPACE_SEPARATOR, '*');
 		return m;	
 	}
 	
 	public void testUnmarshalFromFile() throws Exception{
-		jaxbUnmarshaller.setProperty(JAXBUnmarshaller.MEDIA_TYPE, "application/json");
+		jaxbUnmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, "application/json");
         File file = new File(ClassLoader.getSystemResource(JSON_RESOURCE).getFile());
 		Object testObject = jaxbUnmarshaller.unmarshal(file);
         jsonToObjectTest(testObject);
@@ -66,7 +67,7 @@ public class JAXBInheritanceNSSeparatorTestCases extends JAXBInheritanceNSTestCa
 	                desc = (XMLDescriptor)xmlContext.getSession(0).getProject().getDescriptor(objectToWrite.getClass());
 	            }
 	            
-	            jaxbMarshaller.setProperty(org.eclipse.persistence.jaxb.JAXBContext.MEDIA_TYPE, "application/json");
+	            jaxbMarshaller.setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
 
 	            int sizeBefore = getNamespaceResolverSize(desc);
 	            XMLStreamWriterRecord record = new XMLStreamWriterRecord(streamWriter);

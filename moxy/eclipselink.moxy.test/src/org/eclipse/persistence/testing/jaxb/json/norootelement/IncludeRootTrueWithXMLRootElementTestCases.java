@@ -14,6 +14,9 @@ package org.eclipse.persistence.testing.jaxb.json.norootelement;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
+
+import org.eclipse.persistence.jaxb.MarshallerProperties;
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
    
 public class IncludeRootTrueWithXMLRootElementTestCases extends IncludeRootFalseWithXMLRootElementTestCases{
 	
@@ -26,8 +29,8 @@ public class IncludeRootTrueWithXMLRootElementTestCases extends IncludeRootFalse
 	
 	public void setUp() throws Exception{
 		super.setUp();
-	    jsonMarshaller.setProperty(org.eclipse.persistence.jaxb.JAXBContext.JSON_INCLUDE_ROOT, true);	    	   
-	    jsonUnmarshaller.setProperty(org.eclipse.persistence.jaxb.JAXBContext.JSON_INCLUDE_ROOT, true);
+	    jsonMarshaller.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, true);	    	   
+	    jsonUnmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, true);
   	}
 	
 	@Override

@@ -28,6 +28,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.JAXBMarshaller;
 import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
@@ -106,7 +107,7 @@ public class XmlListTestCases extends OXTestCase {
         TypeMappingInfo[] types = { t };
         
         Map props = new HashMap();
-        props.put(JAXBContext.MEDIA_TYPE, mediaType);
+        props.put(JAXBContextProperties.MEDIA_TYPE, mediaType);
         
         JAXBContext jaxbContext = (JAXBContext) JAXBContextFactory .createContext(types, props, Thread.currentThread().getContextClassLoader());
        

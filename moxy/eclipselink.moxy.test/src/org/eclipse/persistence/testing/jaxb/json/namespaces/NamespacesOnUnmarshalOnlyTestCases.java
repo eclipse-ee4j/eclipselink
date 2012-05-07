@@ -8,6 +8,8 @@ import java.util.Map;
 import javax.xml.bind.PropertyException;
 
 import org.eclipse.persistence.jaxb.JAXBContext;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.testing.jaxb.json.JSONMarshalUnmarshalTestCases;
 
 public class NamespacesOnUnmarshalOnlyTestCases extends JSONMarshalUnmarshalTestCases{
@@ -30,7 +32,7 @@ public class NamespacesOnUnmarshalOnlyTestCases extends JSONMarshalUnmarshalTest
 			namespaceMap.put("namespace1", "ns1");
 			namespaceMap.put("namespace2", "ns2");
 			namespaceMap.put("namespace3", "ns3");
-			jsonUnmarshaller.setProperty(JAXBContext.NAMESPACE_PREFIX_MAPPER, namespaceMap);
+			jsonUnmarshaller.setProperty(UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER, namespaceMap);
 		} catch (PropertyException e) {
 			e.printStackTrace();
 			fail("An error occurred during setup.");
@@ -59,7 +61,7 @@ public class NamespacesOnUnmarshalOnlyTestCases extends JSONMarshalUnmarshalTest
 
 	public Map getProperties(){
 		Map props = new HashMap();
-		props.put(JAXBContext.JSON_ATTRIBUTE_PREFIX, "@");
+		props.put(JAXBContextProperties.JSON_ATTRIBUTE_PREFIX, "@");
 		/*
 		Map<String, String> namespaceMap = new HashMap<String, String>();
 		

@@ -14,8 +14,8 @@ package org.eclipse.persistence.testing.jaxb.xmlmixed;
 
 import java.util.ArrayList;
 
-import org.eclipse.persistence.jaxb.JAXBMarshaller;
-import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
+import org.eclipse.persistence.jaxb.MarshallerProperties;
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class XmlMixedTestCases extends JAXBWithJSONTestCases {
@@ -27,8 +27,8 @@ public class XmlMixedTestCases extends JAXBWithJSONTestCases {
         setClasses(new Class[] {Root.class});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        jaxbMarshaller.setProperty(JAXBMarshaller.JSON_ATTRIBUTE_PREFIX, "@");
-        jaxbUnmarshaller.setProperty(JAXBUnmarshaller.JSON_ATTRIBUTE_PREFIX, "@");
+        jaxbMarshaller.setProperty(MarshallerProperties.JSON_ATTRIBUTE_PREFIX, "@");
+        jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_ATTRIBUTE_PREFIX, "@");
     }
 
     protected Object getControlObject() {

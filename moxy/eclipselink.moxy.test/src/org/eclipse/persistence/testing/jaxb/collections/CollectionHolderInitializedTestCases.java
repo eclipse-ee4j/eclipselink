@@ -12,8 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.collections;
 
-import org.eclipse.persistence.jaxb.JAXBMarshaller;
-import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
+import org.eclipse.persistence.jaxb.MarshallerProperties;
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class CollectionHolderInitializedTestCases extends JAXBWithJSONTestCases{
@@ -28,8 +28,8 @@ public class CollectionHolderInitializedTestCases extends JAXBWithJSONTestCases{
         Class[] classes = new Class[1];
         classes[0] = CollectionHolderInitialized.class;
         setClasses(classes);
-        jaxbMarshaller.setProperty(JAXBMarshaller.JSON_ATTRIBUTE_PREFIX, "@");
-        jaxbUnmarshaller.setProperty(JAXBUnmarshaller.JSON_ATTRIBUTE_PREFIX, "@");
+        jaxbMarshaller.setProperty(MarshallerProperties.JSON_ATTRIBUTE_PREFIX, "@");
+        jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_ATTRIBUTE_PREFIX, "@");
     }
 
     @Override

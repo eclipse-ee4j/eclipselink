@@ -20,7 +20,7 @@ import java.util.Calendar;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
-import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
@@ -47,7 +47,7 @@ public class EmployeeNullInCollectionTestCases extends JAXBWithJSONTestCases {
         Class[] classes = new Class[1];
         classes[0] = Employee_B.class;
         setClasses(classes);
-        jaxbUnmarshaller.setProperty(JAXBUnmarshaller.JSON_INCLUDE_ROOT, Boolean.TRUE);
+        jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, Boolean.TRUE);
     }
     
     public void testRoundTrip(){

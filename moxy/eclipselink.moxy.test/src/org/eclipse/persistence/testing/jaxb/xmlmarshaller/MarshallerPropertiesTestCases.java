@@ -26,7 +26,7 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.dom.*;
 import javax.xml.transform.stream.*;
 import org.w3c.dom.Document;
-import org.eclipse.persistence.jaxb.JAXBMarshaller;
+import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
 
 public class MarshallerPropertiesTestCases extends OXTestCase {
@@ -115,7 +115,7 @@ public class MarshallerPropertiesTestCases extends OXTestCase {
         StringWriter sw = new StringWriter();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
-        marshaller.setProperty(JAXBMarshaller.INDENT_STRING, customIndentString);
+        marshaller.setProperty(MarshallerProperties.INDENT_STRING, customIndentString);
         marshaller.marshal(emp, sw);
         assertTrue("Custom indent string not found in marshalled document or was not escaped.", sw.toString().contains(escapedIndentString));
 

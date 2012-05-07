@@ -13,8 +13,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.util;
 
-import static org.eclipse.persistence.jaxb.JAXBContext.MEDIA_TYPE;
-
 import java.beans.PropertyChangeListener;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -32,6 +30,7 @@ import javax.xml.bind.Marshaller;
 
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl;
+import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 
 /**
@@ -122,8 +121,8 @@ public class StreamingOutputMarshaller implements StreamingOutput {
     
     public static Marshaller createMarshaller(PersistenceContext context, MediaType mediaType) throws JAXBException{
         Marshaller marshaller = context.getJAXBContext().createMarshaller();
-        marshaller.setProperty(MEDIA_TYPE, mediaType.toString());
-        marshaller.setProperty(org.eclipse.persistence.jaxb.JAXBContext.JSON_INCLUDE_ROOT, false);
+        marshaller.setProperty(MarshallerProperties.MEDIA_TYPE, mediaType.toString());
+        marshaller.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, false);
         marshaller.setAdapter(new LinkAdapter(context.getBaseURI().toString(), context));
         marshaller.setListener(new Marshaller.Listener() {
             @Override

@@ -20,8 +20,8 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
-import org.eclipse.persistence.jaxb.JAXBMarshaller;
-import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
+import org.eclipse.persistence.jaxb.MarshallerProperties;
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class ValidTestCases extends JAXBWithJSONTestCases {
@@ -34,8 +34,8 @@ public class ValidTestCases extends JAXBWithJSONTestCases {
         setClasses(new Class[] {ValidChild.class});
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        jaxbMarshaller.setProperty(JAXBMarshaller.JSON_ATTRIBUTE_PREFIX, "@");
-        jaxbUnmarshaller.setProperty(JAXBUnmarshaller.JSON_ATTRIBUTE_PREFIX, "@");
+        jaxbMarshaller.setProperty(MarshallerProperties.JSON_ATTRIBUTE_PREFIX, "@");
+        jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_ATTRIBUTE_PREFIX, "@");
     }
 
     @Override

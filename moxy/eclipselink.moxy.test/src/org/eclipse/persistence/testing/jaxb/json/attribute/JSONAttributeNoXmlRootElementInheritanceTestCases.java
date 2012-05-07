@@ -15,7 +15,7 @@ package org.eclipse.persistence.testing.jaxb.json.attribute;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
-import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.testing.jaxb.json.JSONMarshalUnmarshalTestCases;
 
 public class JSONAttributeNoXmlRootElementInheritanceTestCases extends JSONMarshalUnmarshalTestCases {
@@ -26,7 +26,7 @@ public class JSONAttributeNoXmlRootElementInheritanceTestCases extends JSONMarsh
 		super(name);
 		setClasses(new Class[]{MailingAddressNoRoot.class});
 		setControlJSON(JSON_RESOURCE);
-		jsonUnmarshaller.setProperty(JAXBUnmarshaller.JSON_INCLUDE_ROOT, false);
+		jsonUnmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, false);
 	}
 
 	public Class getUnmarshalClass(){		

@@ -24,6 +24,8 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.MarshallerProperties;
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
 
@@ -44,8 +46,8 @@ public abstract class JSONTestCases extends OXTestCase{
     public void setUp() throws Exception{
     	try {
             super.setUp();		
-            jsonMarshaller.setProperty(org.eclipse.persistence.jaxb.JAXBContext.MEDIA_TYPE, "application/json");
-            jsonUnmarshaller.setProperty(org.eclipse.persistence.jaxb.JAXBContext.MEDIA_TYPE, "application/json");
+            jsonMarshaller.setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
+            jsonUnmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, "application/json");
            
     	} catch (Exception e) {		
             e.printStackTrace();

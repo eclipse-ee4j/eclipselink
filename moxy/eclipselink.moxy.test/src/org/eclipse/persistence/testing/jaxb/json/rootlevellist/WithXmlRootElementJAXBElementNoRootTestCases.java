@@ -20,8 +20,8 @@ import java.util.List;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
-import org.eclipse.persistence.jaxb.JAXBMarshaller;
-import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
+import org.eclipse.persistence.jaxb.MarshallerProperties;
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.testing.jaxb.json.JSONMarshalUnmarshalTestCases;
 
 public class WithXmlRootElementJAXBElementNoRootTestCases extends JSONMarshalUnmarshalTestCases {
@@ -32,8 +32,8 @@ public class WithXmlRootElementJAXBElementNoRootTestCases extends JSONMarshalUnm
         super(name);
         setClasses(new Class[] {WithXmlRootElementRoot.class});
         setControlJSON(CONTROL_JSON);
-        jsonMarshaller.setProperty(JAXBMarshaller.JSON_INCLUDE_ROOT, false);
-        jsonUnmarshaller.setProperty(JAXBUnmarshaller.JSON_INCLUDE_ROOT, false);
+        jsonMarshaller.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, false);
+        jsonUnmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, false);
     }
     
     public Class getUnmarshalClass(){

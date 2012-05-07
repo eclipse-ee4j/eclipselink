@@ -24,7 +24,8 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.JAXBMarshaller;
-import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
+import org.eclipse.persistence.jaxb.MarshallerProperties;
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLAnyAttributeMapping;
@@ -52,8 +53,8 @@ public class XmlAnyAttributeTestCases extends JAXBWithJSONTestCases {
         
     	Map<String, String> namespaces = new HashMap<String, String>();
     	namespaces.put("www.example.com","ns0");
-    	jaxbUnmarshaller.setProperty(JAXBUnmarshaller.JSON_NAMESPACE_PREFIX_MAPPER, namespaces);
-    	jaxbUnmarshaller.setProperty(JAXBUnmarshaller.JSON_ATTRIBUTE_PREFIX, "@");
+    	jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER, namespaces);
+    	jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_ATTRIBUTE_PREFIX, "@");
     }
     
     public JAXBMarshaller getJSONMarshaller() throws Exception{
@@ -62,9 +63,9 @@ public class XmlAnyAttributeTestCases extends JAXBWithJSONTestCases {
     	namespaces.put("www.example.com","ns0");
     	
     	JAXBMarshaller jsonMarhsaller = (JAXBMarshaller) jaxbContext.createMarshaller();
-    	jsonMarhsaller.setProperty(JAXBMarshaller.MEDIA_TYPE, "application/json");
-    	jsonMarhsaller.setProperty(JAXBMarshaller.NAMESPACE_PREFIX_MAPPER, namespaces);
-    	jsonMarhsaller.setProperty(JAXBMarshaller.JSON_ATTRIBUTE_PREFIX, "@");
+    	jsonMarhsaller.setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
+    	jsonMarhsaller.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, namespaces);
+    	jsonMarhsaller.setProperty(MarshallerProperties.JSON_ATTRIBUTE_PREFIX, "@");
 
     	return jsonMarhsaller;
     }

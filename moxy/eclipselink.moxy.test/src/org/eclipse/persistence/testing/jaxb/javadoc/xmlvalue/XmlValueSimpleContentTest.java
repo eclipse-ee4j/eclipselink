@@ -16,9 +16,11 @@ package org.eclipse.persistence.testing.jaxb.javadoc.xmlvalue;
 
 import java.io.StringWriter;
 
+import javax.xml.bind.Marshaller;
 
-import org.eclipse.persistence.jaxb.JAXBMarshaller;
-import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
+
+import org.eclipse.persistence.jaxb.MarshallerProperties;
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class XmlValueSimpleContentTest extends JAXBWithJSONTestCases {
@@ -34,8 +36,8 @@ public class XmlValueSimpleContentTest extends JAXBWithJSONTestCases {
         Class[] classes = new Class[1];
         classes[0] = InternationalPrice.class;
         setClasses(classes);
-        jaxbMarshaller.setProperty(JAXBMarshaller.JSON_VALUE_WRAPPER, "valuewrapper");
-        jaxbUnmarshaller.setProperty(JAXBUnmarshaller.JSON_VALUE_WRAPPER, "valuewrapper");
+        jaxbMarshaller.setProperty(MarshallerProperties.JSON_VALUE_WRAPPER, "valuewrapper");
+        jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_VALUE_WRAPPER, "valuewrapper");
     }
 
     protected Object getControlObject() {
@@ -47,7 +49,7 @@ public class XmlValueSimpleContentTest extends JAXBWithJSONTestCases {
     
     public void testJSONNoValuePropException() throws Exception{
     	jaxbMarshaller = jaxbContext.createMarshaller();
-    	jaxbMarshaller.setProperty(JAXBMarshaller.MEDIA_TYPE, "application/json");
+    	jaxbMarshaller.setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
     	
     	StringWriter sw = new StringWriter();
     	jaxbMarshaller.marshal(getControlObject(), sw);

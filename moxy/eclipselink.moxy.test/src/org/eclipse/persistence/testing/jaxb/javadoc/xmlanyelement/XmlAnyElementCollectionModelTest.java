@@ -19,7 +19,7 @@ import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.eclipse.persistence.jaxb.JAXBContext;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -41,7 +41,7 @@ public class XmlAnyElementCollectionModelTest extends JAXBWithJSONTestCases {
     
     public Map getProperties(){
     	Map props = new HashMap();
-    	props.put(JAXBContext.JSON_ATTRIBUTE_PREFIX, "@");
+    	props.put(JAXBContextProperties.JSON_ATTRIBUTE_PREFIX, "@");
     	return props;
     }
 

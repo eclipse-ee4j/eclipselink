@@ -23,8 +23,8 @@ import javax.xml.bind.Unmarshaller;
 import junit.framework.TestCase;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.jaxb.JAXBMarshaller;
-import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
+import org.eclipse.persistence.jaxb.MarshallerProperties;
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.oxm.CharacterEscapeHandler;
 import org.eclipse.persistence.oxm.IDResolver;
 import org.eclipse.persistence.oxm.NamespacePrefixMapper;
@@ -87,8 +87,8 @@ public class PropertyTestCases extends TestCase {
         String SUN_JSE_NAMESPACE_PREFIX_MAPPER = "com.sun.xml.internal.bind.namespacePrefixMapper";
 
         NamespacePrefixMapper mapper = new MyPrefixMapper();
-        m.setProperty(org.eclipse.persistence.jaxb.JAXBMarshaller.NAMESPACE_PREFIX_MAPPER, mapper);
-        assertEquals(mapper, m.getProperty(org.eclipse.persistence.jaxb.JAXBMarshaller.NAMESPACE_PREFIX_MAPPER));
+        m.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, mapper);
+        assertEquals(mapper, m.getProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER));
 
         m.setProperty(SUN_NAMESPACE_PREFIX_MAPPER, mapper);
         assertEquals(mapper, m.getProperty(SUN_NAMESPACE_PREFIX_MAPPER));
@@ -101,8 +101,8 @@ public class PropertyTestCases extends TestCase {
         String SUN_JSE_INDENT_STRING = "com.sun.xml.internal.bind.indentString";
 
         String myTab = "\t";
-        m.setProperty(JAXBMarshaller.INDENT_STRING, myTab);
-        assertEquals(myTab, m.getProperty(JAXBMarshaller.INDENT_STRING));
+        m.setProperty(MarshallerProperties.INDENT_STRING, myTab);
+        assertEquals(myTab, m.getProperty(MarshallerProperties.INDENT_STRING));
         m.setProperty(SUN_INDENT_STRING, myTab);
         assertEquals(myTab, m.getProperty(SUN_INDENT_STRING));
         m.setProperty(SUN_JSE_INDENT_STRING, myTab);
@@ -114,10 +114,10 @@ public class PropertyTestCases extends TestCase {
         String SUN_JSE_CHARACTER_ESCAPE_HANDLER = "com.sun.xml.internal.bind.marshaller.CharacterEscapeHandler";
 
         CharacterEscapeHandler handler = new CustomCharacterEscapeHandler();
-        m.setProperty(org.eclipse.persistence.jaxb.JAXBMarshaller.CHARACTER_ESCAPE_HANDLER, handler);
-        assertEquals(handler, m.getProperty(org.eclipse.persistence.jaxb.JAXBMarshaller.CHARACTER_ESCAPE_HANDLER));
-        m.setProperty(org.eclipse.persistence.jaxb.JAXBMarshaller.CHARACTER_ESCAPE_HANDLER, null);
-        assertNull(m.getProperty(org.eclipse.persistence.jaxb.JAXBMarshaller.CHARACTER_ESCAPE_HANDLER));
+        m.setProperty(MarshallerProperties.CHARACTER_ESCAPE_HANDLER, handler);
+        assertEquals(handler, m.getProperty(MarshallerProperties.CHARACTER_ESCAPE_HANDLER));
+        m.setProperty(MarshallerProperties.CHARACTER_ESCAPE_HANDLER, null);
+        assertNull(m.getProperty(MarshallerProperties.CHARACTER_ESCAPE_HANDLER));
 
         m.setProperty(SUN_CHARACTER_ESCAPE_HANDLER, handler);
         assertEquals(handler, m.getProperty(SUN_CHARACTER_ESCAPE_HANDLER));
@@ -140,45 +140,45 @@ public class PropertyTestCases extends TestCase {
     }
 
     public void testMarshallerMediaType() throws Exception {
-        m.setProperty(org.eclipse.persistence.jaxb.JAXBContext.MEDIA_TYPE, "application/json");
-        assertEquals("application/json", m.getProperty(org.eclipse.persistence.jaxb.JAXBContext.MEDIA_TYPE));
+        m.setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
+        assertEquals("application/json", m.getProperty(MarshallerProperties.MEDIA_TYPE));
     }
 
     public void testMarshallerJsonAttributePrefix() throws Exception {
-        m.setProperty(org.eclipse.persistence.jaxb.JAXBContext.JSON_ATTRIBUTE_PREFIX, "@");
-        assertEquals("@", m.getProperty(org.eclipse.persistence.jaxb.JAXBContext.JSON_ATTRIBUTE_PREFIX));
+        m.setProperty(MarshallerProperties.JSON_ATTRIBUTE_PREFIX, "@");
+        assertEquals("@", m.getProperty(MarshallerProperties.JSON_ATTRIBUTE_PREFIX));
     }
 
     public void testMarshallerJsonIncludeRoot() throws Exception {
         // Must set media type to JSON, otherwise get will always return true
-        m.setProperty(org.eclipse.persistence.jaxb.JAXBContext.MEDIA_TYPE, "application/json");
+        m.setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
 
-        m.setProperty(org.eclipse.persistence.jaxb.JAXBContext.JSON_INCLUDE_ROOT, true);
-        assertTrue((Boolean) m.getProperty(org.eclipse.persistence.jaxb.JAXBContext.JSON_INCLUDE_ROOT));
-        m.setProperty(org.eclipse.persistence.jaxb.JAXBContext.JSON_INCLUDE_ROOT, false);
-        assertFalse((Boolean) m.getProperty(org.eclipse.persistence.jaxb.JAXBContext.JSON_INCLUDE_ROOT));
+        m.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, true);
+        assertTrue((Boolean) m.getProperty(MarshallerProperties.JSON_INCLUDE_ROOT));
+        m.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, false);
+        assertFalse((Boolean) m.getProperty(MarshallerProperties.JSON_INCLUDE_ROOT));
     }
     
     public void testMarshallerJsonNamespaceSeparator() throws Exception {
-    	assertEquals (XMLConstants.DOT, m.getProperty(JAXBMarshaller.JSON_NAMESPACE_SEPARATOR));
-    	m.setProperty(org.eclipse.persistence.jaxb.JAXBMarshaller.JSON_NAMESPACE_SEPARATOR, '&');
-    	assertEquals ('&', m.getProperty(JAXBMarshaller.JSON_NAMESPACE_SEPARATOR));
-    	m.setProperty(org.eclipse.persistence.jaxb.JAXBMarshaller.MEDIA_TYPE, "application/json");
-    	assertEquals ('&', m.getProperty(JAXBMarshaller.JSON_NAMESPACE_SEPARATOR));
+    	assertEquals (XMLConstants.DOT, m.getProperty(MarshallerProperties.JSON_NAMESPACE_SEPARATOR));
+    	m.setProperty(MarshallerProperties.JSON_NAMESPACE_SEPARATOR, '&');
+    	assertEquals ('&', m.getProperty(MarshallerProperties.JSON_NAMESPACE_SEPARATOR));
+    	m.setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
+    	assertEquals ('&', m.getProperty(MarshallerProperties.JSON_NAMESPACE_SEPARATOR));
     }
 
     
     public void testUnmarshallerJsonNamespaceSeparator() throws Exception {
-    	assertEquals (XMLConstants.DOT, m.getProperty(JAXBUnmarshaller.JSON_NAMESPACE_SEPARATOR));
-    	m.setProperty(org.eclipse.persistence.jaxb.JAXBUnmarshaller.JSON_NAMESPACE_SEPARATOR, '&');
-    	assertEquals ('&', m.getProperty(JAXBUnmarshaller.JSON_NAMESPACE_SEPARATOR));
-    	m.setProperty(org.eclipse.persistence.jaxb.JAXBUnmarshaller.MEDIA_TYPE, "application/json");
-    	assertEquals ('&', m.getProperty(JAXBUnmarshaller.JSON_NAMESPACE_SEPARATOR));
+    	assertEquals (XMLConstants.DOT, m.getProperty(UnmarshallerProperties.JSON_NAMESPACE_SEPARATOR));
+    	m.setProperty(UnmarshallerProperties.JSON_NAMESPACE_SEPARATOR, '&');
+    	assertEquals ('&', m.getProperty(UnmarshallerProperties.JSON_NAMESPACE_SEPARATOR));
+    	m.setProperty(UnmarshallerProperties.MEDIA_TYPE, "application/json");
+    	assertEquals ('&', m.getProperty(UnmarshallerProperties.JSON_NAMESPACE_SEPARATOR));
     }
     
     public void testInvalidValue() throws Exception {
     	try{
-    	    m.setProperty(org.eclipse.persistence.jaxb.JAXBUnmarshaller.JSON_NAMESPACE_SEPARATOR, "mySep");
+    	    m.setProperty(UnmarshallerProperties.JSON_NAMESPACE_SEPARATOR, "mySep");
     	}catch(PropertyException pException){
     		assertTrue(pException.getCause() instanceof ClassCastException);     		
     		return;
@@ -188,44 +188,44 @@ public class PropertyTestCases extends TestCase {
         
     
     public void testMarshallerJsonValueWrapper() throws Exception {
-        m.setProperty(org.eclipse.persistence.jaxb.JAXBContext.JSON_VALUE_WRAPPER, "wrapper");
-        assertEquals("wrapper", m.getProperty(org.eclipse.persistence.jaxb.JAXBContext.JSON_VALUE_WRAPPER));
+        m.setProperty(MarshallerProperties.JSON_VALUE_WRAPPER, "wrapper");
+        assertEquals("wrapper", m.getProperty(MarshallerProperties.JSON_VALUE_WRAPPER));
     }
 
     public void testUnmarshallerMediaType() throws Exception {
-        u.setProperty(org.eclipse.persistence.jaxb.JAXBContext.MEDIA_TYPE, "application/json");
-        assertEquals("application/json", u.getProperty(org.eclipse.persistence.jaxb.JAXBContext.MEDIA_TYPE));
+        u.setProperty(UnmarshallerProperties.MEDIA_TYPE, "application/json");
+        assertEquals("application/json", u.getProperty(UnmarshallerProperties.MEDIA_TYPE));
     }
 
     public void testUnmarshallerJsonAttributePrefix() throws Exception {
-        u.setProperty(org.eclipse.persistence.jaxb.JAXBContext.JSON_ATTRIBUTE_PREFIX, "@");
-        assertEquals("@", u.getProperty(org.eclipse.persistence.jaxb.JAXBContext.JSON_ATTRIBUTE_PREFIX));
+        u.setProperty(UnmarshallerProperties.JSON_ATTRIBUTE_PREFIX, "@");
+        assertEquals("@", u.getProperty(UnmarshallerProperties.JSON_ATTRIBUTE_PREFIX));
     }
 
     public void testUnmarshallerJsonIncludeRoot() throws Exception {
         // Must set media type to JSON, otherwise get will always return true
-        u.setProperty(org.eclipse.persistence.jaxb.JAXBContext.MEDIA_TYPE, "application/json");
+        u.setProperty(UnmarshallerProperties.MEDIA_TYPE, "application/json");
 
-        u.setProperty(org.eclipse.persistence.jaxb.JAXBContext.JSON_INCLUDE_ROOT, true);
-        assertTrue((Boolean) u.getProperty(org.eclipse.persistence.jaxb.JAXBContext.JSON_INCLUDE_ROOT));
-        u.setProperty(org.eclipse.persistence.jaxb.JAXBContext.JSON_INCLUDE_ROOT, false);
-        assertFalse((Boolean) u.getProperty(org.eclipse.persistence.jaxb.JAXBContext.JSON_INCLUDE_ROOT));
+        u.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, true);
+        assertTrue((Boolean) u.getProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT));
+        u.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, false);
+        assertFalse((Boolean) u.getProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT));
     }
 
     public void testUnmarshallerJsonNamespacePrefixMapper() throws Exception {
         NamespacePrefixMapper mapper = new MyPrefixMapper();
-        u.setProperty(org.eclipse.persistence.jaxb.JAXBUnmarshaller.JSON_NAMESPACE_PREFIX_MAPPER, mapper);
-        assertEquals(mapper, u.getProperty(org.eclipse.persistence.jaxb.JAXBUnmarshaller.JSON_NAMESPACE_PREFIX_MAPPER));
+        u.setProperty(UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER, mapper);
+        assertEquals(mapper, u.getProperty(UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER));
 
         HashMap<String, String> map = new HashMap<String, String>();
         map.put("mynamespace", "ns1");
-        u.setProperty(org.eclipse.persistence.jaxb.JAXBUnmarshaller.JSON_NAMESPACE_PREFIX_MAPPER, map);
-        assertEquals(map, u.getProperty(org.eclipse.persistence.jaxb.JAXBUnmarshaller.JSON_NAMESPACE_PREFIX_MAPPER));
+        u.setProperty(UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER, map);
+        assertEquals(map, u.getProperty(UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER));
     }
 
     public void testUnmarshallerJsonValueWrapper() throws Exception {
-        u.setProperty(org.eclipse.persistence.jaxb.JAXBContext.JSON_VALUE_WRAPPER, "wrapper");
-        assertEquals("wrapper", u.getProperty(org.eclipse.persistence.jaxb.JAXBContext.JSON_VALUE_WRAPPER));
+        u.setProperty(UnmarshallerProperties.JSON_VALUE_WRAPPER, "wrapper");
+        assertEquals("wrapper", u.getProperty(UnmarshallerProperties.JSON_VALUE_WRAPPER));
     }
 
     public void testUnmarshallerIdResolver() throws Exception {
@@ -233,8 +233,8 @@ public class PropertyTestCases extends TestCase {
         String SUN_JSE_ID_RESOLVER = "com.sun.xml.internal.bind.IDResolver";
 
         IDResolver resolver = new MyIDResolver();
-        u.setProperty(org.eclipse.persistence.jaxb.JAXBUnmarshaller.ID_RESOLVER, resolver);
-        assertEquals(resolver, u.getProperty(org.eclipse.persistence.jaxb.JAXBUnmarshaller.ID_RESOLVER));
+        u.setProperty(UnmarshallerProperties.ID_RESOLVER, resolver);
+        assertEquals(resolver, u.getProperty(UnmarshallerProperties.ID_RESOLVER));
 
         Object nonELResolver = new NonELIDResolver();
         u.setProperty(SUN_ID_RESOLVER, nonELResolver);

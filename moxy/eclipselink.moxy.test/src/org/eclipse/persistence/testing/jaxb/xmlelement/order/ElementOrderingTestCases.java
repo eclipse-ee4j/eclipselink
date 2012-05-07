@@ -17,8 +17,8 @@ import java.util.ArrayList;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
-import org.eclipse.persistence.jaxb.JAXBMarshaller;
-import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
+import org.eclipse.persistence.jaxb.MarshallerProperties;
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class ElementOrderingTestCases extends JAXBWithJSONTestCases {
@@ -31,8 +31,8 @@ public class ElementOrderingTestCases extends JAXBWithJSONTestCases {
         setControlJSON(JSON_RESOURCE);
         Class[] classes = new Class[]{AlbumInfo.class};        
         setClasses(classes);
-        jaxbMarshaller.setProperty(JAXBMarshaller.JSON_INCLUDE_ROOT, false);
-        jaxbUnmarshaller.setProperty(JAXBUnmarshaller.JSON_INCLUDE_ROOT, false);
+        jaxbMarshaller.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, false);
+        jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, false);
     }
 	
 	public Class getUnmarshalClass(){

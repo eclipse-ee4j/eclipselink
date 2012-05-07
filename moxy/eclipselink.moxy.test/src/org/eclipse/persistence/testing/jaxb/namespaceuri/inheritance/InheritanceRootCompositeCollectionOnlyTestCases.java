@@ -21,6 +21,8 @@ import java.util.Map;
 
 import org.eclipse.persistence.jaxb.JAXBMarshaller;
 import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
+import org.eclipse.persistence.jaxb.MarshallerProperties;
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
@@ -46,12 +48,12 @@ public class InheritanceRootCompositeCollectionOnlyTestCases extends JAXBWithJSO
     	namespaces.put("uri3", "ns4");
     	namespaces.put("someNamespace", "ns1");
     	namespaces.put(XMLConstants.SCHEMA_INSTANCE_URL, "xsi");
-    	jaxbUnmarshaller.setProperty(JAXBUnmarshaller.JSON_NAMESPACE_PREFIX_MAPPER, namespaces);
+    	jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER, namespaces);
     }
 
     protected JAXBMarshaller getJSONMarshaller() throws Exception{
     	JAXBMarshaller jsonMarshaller = (JAXBMarshaller) jaxbContext.createMarshaller();
-    	jsonMarshaller.setProperty(JAXBMarshaller.MEDIA_TYPE, "application/json");
+    	jsonMarshaller.setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
     	Map<String, String> namespaces = new HashMap<String, String>();
     	namespaces.put("uri1", "ns5");
     	namespaces.put("rootNamespace", "ns0");
@@ -61,7 +63,7 @@ public class InheritanceRootCompositeCollectionOnlyTestCases extends JAXBWithJSO
     	namespaces.put("someNamespace", "ns1");
     	namespaces.put(XMLConstants.SCHEMA_INSTANCE_URL, "xsi");
     	
-    	jsonMarshaller.setProperty(JAXBMarshaller.NAMESPACE_PREFIX_MAPPER, namespaces);
+    	jsonMarshaller.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, namespaces);
     	return jsonMarshaller;
     }
     
@@ -89,8 +91,8 @@ public class InheritanceRootCompositeCollectionOnlyTestCases extends JAXBWithJSO
 	public void testJSONNoNamespacesSet() throws Exception {
 		JAXBMarshaller m = (JAXBMarshaller) jaxbContext.createMarshaller();
 		JAXBUnmarshaller u = (JAXBUnmarshaller) jaxbContext.createUnmarshaller();
-		m.setProperty(JAXBMarshaller.MEDIA_TYPE, "application/json");
-		u.setProperty(JAXBMarshaller.MEDIA_TYPE, "application/json");
+		m.setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
+		u.setProperty(UnmarshallerProperties.MEDIA_TYPE, "application/json");
 		StringWriter sw = new StringWriter();
 		
 		m.marshal(getWriteControlObject(), sw);

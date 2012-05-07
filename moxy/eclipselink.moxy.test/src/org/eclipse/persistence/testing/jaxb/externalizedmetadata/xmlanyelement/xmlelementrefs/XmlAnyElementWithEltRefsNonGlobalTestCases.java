@@ -20,8 +20,8 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.jaxb.JAXBMarshaller;
-import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
+import org.eclipse.persistence.jaxb.MarshallerProperties;
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class XmlAnyElementWithEltRefsNonGlobalTestCases extends JAXBWithJSONTestCases{
@@ -35,8 +35,8 @@ public class XmlAnyElementWithEltRefsNonGlobalTestCases extends JAXBWithJSONTest
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
         setClasses(new Class[]{Customer.class, ObjectFactory2.class });
-    	jaxbMarshaller.setProperty(JAXBMarshaller.JSON_ATTRIBUTE_PREFIX, "@");
-    	jaxbUnmarshaller.setProperty(JAXBUnmarshaller.JSON_ATTRIBUTE_PREFIX, "@");
+    	jaxbMarshaller.setProperty(MarshallerProperties.JSON_ATTRIBUTE_PREFIX, "@");
+    	jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_ATTRIBUTE_PREFIX, "@");
     }  
 	
 	  public Map getProperties(){

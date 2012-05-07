@@ -25,7 +25,8 @@ import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.internal.oxm.record.XMLStreamReaderInputSource;
-import org.eclipse.persistence.jaxb.JAXBContext;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
@@ -78,9 +79,9 @@ public class JAXBSingleObjectStringNoXsiTestCases extends JAXBWithJSONTestCases 
 	    	
     	Map namespaces = new HashMap();
     	namespaces.put("rootNamespace", "ns1");
-    	props.put(JAXBContext.NAMESPACE_PREFIX_MAPPER, namespaces);
+    	props.put(JAXBContextProperties.NAMESPACE_PREFIX_MAPPER, namespaces);
     	
-    	props.put(JAXBContext.JSON_INCLUDE_ROOT, true);
+    	props.put(JAXBContextProperties.JSON_INCLUDE_ROOT, true);
 	    return props;
 }
 	
@@ -167,7 +168,7 @@ public class JAXBSingleObjectStringNoXsiTestCases extends JAXBWithJSONTestCases 
     }
     
     public void testJSONUnmarshalFromInputStream() throws Exception {
-    	jaxbUnmarshaller.setProperty(JAXBContext.MEDIA_TYPE, "application/json");
+    	jaxbUnmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, "application/json");
         InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);
         Object testObject = jaxbUnmarshaller.unmarshal(new StreamSource(inputStream), String.class);
         inputStream.close();

@@ -25,7 +25,8 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.JAXBMarshaller;
-import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
+import org.eclipse.persistence.jaxb.MarshallerProperties;
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 /**
@@ -57,16 +58,16 @@ public class AnyAttributeSubTypeMappingTestCases extends JAXBWithJSONTestCases {
         
     	Map<String, String> namespaces = new HashMap<String, String>();
 	    namespaces.put("http://www.example.com/other", "ns0");
-	    jaxbUnmarshaller.setProperty(JAXBUnmarshaller.JSON_NAMESPACE_PREFIX_MAPPER, namespaces);
+	    jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER, namespaces);
     }
     
     public JAXBMarshaller getJSONMarshaller() throws Exception{
         JAXBMarshaller jsonMarshaller = (JAXBMarshaller) jaxbContext.createMarshaller();
-        jsonMarshaller.setProperty(JAXBMarshaller.MEDIA_TYPE, "application/json");
+        jsonMarshaller.setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
         Map<String, String> namespaces = new HashMap<String, String>();
         namespaces.put("http://www.example.com/other", "ns0");
 	    	
-        jsonMarshaller.setProperty(JAXBMarshaller.NAMESPACE_PREFIX_MAPPER, namespaces);
+        jsonMarshaller.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, namespaces);
         return jsonMarshaller;
 
 	  }    

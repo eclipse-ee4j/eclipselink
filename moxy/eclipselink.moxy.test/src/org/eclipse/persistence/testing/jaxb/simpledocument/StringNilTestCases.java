@@ -17,7 +17,7 @@ import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
 
-import org.eclipse.persistence.jaxb.JAXBContext;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class StringNilTestCases extends JAXBWithJSONTestCases {
@@ -47,7 +47,7 @@ public class StringNilTestCases extends JAXBWithJSONTestCases {
     	Map namespaces = new HashMap();
     	namespaces.put("myns","ns0");
 
-    	props.put(JAXBContext.NAMESPACE_PREFIX_MAPPER, namespaces);
+    	props.put(JAXBContextProperties.NAMESPACE_PREFIX_MAPPER, namespaces);
     	
 	    return props;
 }

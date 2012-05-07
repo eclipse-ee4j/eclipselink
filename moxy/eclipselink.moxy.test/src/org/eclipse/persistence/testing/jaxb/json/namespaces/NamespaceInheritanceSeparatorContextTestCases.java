@@ -15,7 +15,9 @@ package org.eclipse.persistence.testing.jaxb.json.namespaces;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.persistence.jaxb.JAXBMarshaller;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
+import org.eclipse.persistence.jaxb.MarshallerProperties;
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 
 public class NamespaceInheritanceSeparatorContextTestCases extends NamespaceInheritanceTestCases{
 
@@ -31,12 +33,12 @@ public class NamespaceInheritanceSeparatorContextTestCases extends NamespaceInhe
 	
 	public Map getProperties(){
 		Map props = new HashMap();
-		props.put(org.eclipse.persistence.jaxb.JAXBContext.JSON_NAMESPACE_SEPARATOR, '#');		
+		props.put(JAXBContextProperties.JSON_NAMESPACE_SEPARATOR, '#');		
 		return props;
 	}
 	
 	public void testProperties() throws Exception{
-		assertEquals('#', jsonMarshaller.getProperty(JAXBMarshaller.JSON_NAMESPACE_SEPARATOR));
-		assertEquals('#', jsonUnmarshaller.getProperty(JAXBMarshaller.JSON_NAMESPACE_SEPARATOR));
+		assertEquals('#', jsonMarshaller.getProperty(MarshallerProperties.JSON_NAMESPACE_SEPARATOR));
+		assertEquals('#', jsonUnmarshaller.getProperty(UnmarshallerProperties.JSON_NAMESPACE_SEPARATOR));
 	}
 }

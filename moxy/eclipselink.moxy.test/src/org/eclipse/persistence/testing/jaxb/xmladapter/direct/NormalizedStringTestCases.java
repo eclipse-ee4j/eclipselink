@@ -12,8 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.xmladapter.direct;
 
-import org.eclipse.persistence.jaxb.JAXBMarshaller;
-import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
+import org.eclipse.persistence.jaxb.MarshallerProperties;
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class NormalizedStringTestCases extends JAXBWithJSONTestCases {
@@ -31,8 +31,8 @@ public class NormalizedStringTestCases extends JAXBWithJSONTestCases {
         setWriteControlDocument(XML_RESOURCE_WRITE);
         setWriteControlJSON(JSON_RESOURCE_WRITE);
         setClasses(new Class[] {NormalizedStringRoot.class});
-        jaxbMarshaller.setProperty(JAXBMarshaller.JSON_ATTRIBUTE_PREFIX, "@");
-        jaxbUnmarshaller.setProperty(JAXBUnmarshaller.JSON_ATTRIBUTE_PREFIX, "@");
+        jaxbMarshaller.setProperty(MarshallerProperties.JSON_ATTRIBUTE_PREFIX, "@");
+        jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_ATTRIBUTE_PREFIX, "@");
     }
    
     @Override

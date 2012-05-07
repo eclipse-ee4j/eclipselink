@@ -24,7 +24,8 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 
-import org.eclipse.persistence.jaxb.JAXBContext;
+import org.eclipse.persistence.jaxb.MarshallerProperties;
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.xml.sax.InputSource;
 
 public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
@@ -100,7 +101,7 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
     
     public void testJSONUnmarshalFromInputStream() throws Exception {
     	if(isUnmarshalTest()){
-	    	getJSONUnmarshaller().setProperty(JAXBContext.MEDIA_TYPE, "application/json");
+	    	getJSONUnmarshaller().setProperty(UnmarshallerProperties.MEDIA_TYPE, "application/json");
 	        InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);
 	        Object testObject = null;
 	        if(getUnmarshalClass() != null){
@@ -116,7 +117,7 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
 
     public void testJSONUnmarshalFromInputSource() throws Exception {
     	if(isUnmarshalTest()){
-	    	getJSONUnmarshaller().setProperty(JAXBContext.MEDIA_TYPE, "application/json");
+	    	getJSONUnmarshaller().setProperty(UnmarshallerProperties.MEDIA_TYPE, "application/json");
 	
 	        InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);
 	        InputSource inputSource = new InputSource(inputStream);
@@ -133,7 +134,7 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
 
     public void testJSONUnmarshalFromReader() throws Exception {
     	if(isUnmarshalTest()){
-	    	getJSONUnmarshaller().setProperty(JAXBContext.MEDIA_TYPE, "application/json");
+	    	getJSONUnmarshaller().setProperty(UnmarshallerProperties.MEDIA_TYPE, "application/json");
 	
 	        InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);
 	        Reader reader = new InputStreamReader(inputStream);
@@ -154,7 +155,7 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
 
     public void testJSONUnmarshalFromURL() throws Exception {
     	if(isUnmarshalTest()){
-	    	getJSONUnmarshaller().setProperty(JAXBContext.MEDIA_TYPE, "application/json");
+	    	getJSONUnmarshaller().setProperty(UnmarshallerProperties.MEDIA_TYPE, "application/json");
 	
 	        URL url = getJSONURL();
 	        Object testObject= null;
@@ -170,7 +171,7 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
     
 
     public void testJSONMarshalToOutputStream() throws Exception{
-    	getJSONMarshaller().setProperty(JAXBContext.MEDIA_TYPE, "application/json");
+    	getJSONMarshaller().setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
 
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         getJSONMarshaller().marshal(getWriteControlObject(), os);
@@ -179,7 +180,7 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
     }
 
     public void testJSONMarshalToOutputStream_FORMATTED() throws Exception{
-    	getJSONMarshaller().setProperty(JAXBContext.MEDIA_TYPE, "application/json");
+    	getJSONMarshaller().setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
     	getJSONMarshaller().setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
         ByteArrayOutputStream os = new ByteArrayOutputStream();
@@ -189,7 +190,7 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
     }
 
     public void testJSONMarshalToStringWriter() throws Exception{
-    	getJSONMarshaller().setProperty(JAXBContext.MEDIA_TYPE, "application/json");
+    	getJSONMarshaller().setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
 
         StringWriter sw = new StringWriter();
         getJSONMarshaller().marshal(getWriteControlObject(), sw);
@@ -198,7 +199,7 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
     }
 
     public void testJSONMarshalToStringWriter_FORMATTED() throws Exception{
-    	getJSONMarshaller().setProperty(JAXBContext.MEDIA_TYPE, "application/json");
+    	getJSONMarshaller().setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
     	getJSONMarshaller().setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
         StringWriter sw = new StringWriter();

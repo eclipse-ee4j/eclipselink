@@ -26,8 +26,11 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.JAXBMarshaller;
 import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
+import org.eclipse.persistence.jaxb.MarshallerProperties;
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
 
@@ -44,7 +47,7 @@ public class EmptyNullMarshalUnmarshalTestCases extends OXTestCase{
 	public void setUp() throws Exception{
 		super.setUp();
 		HashMap props = new HashMap();
-		props.put(JAXBContext.MEDIA_TYPE, "application/json");
+		props.put(JAXBContextProperties.MEDIA_TYPE, "application/json");
 		
 		ctx = (JAXBContext) JAXBContextFactory.createContext(new Class[]{Root.class}, props);
 		ctxNoRoot = (JAXBContext) JAXBContextFactory.createContext(new Class[]{RootNoXmlRootElement.class}, props);
@@ -54,7 +57,7 @@ public class EmptyNullMarshalUnmarshalTestCases extends OXTestCase{
 		StringWriter sw = new StringWriter();		
 		JAXBElement obj = new JAXBElement<Object>(new QName(XMLConstants.EMPTY_STRING),Object.class, null );		
 		Marshaller m = ctx.createMarshaller();
-		m.setProperty(JAXBMarshaller.JSON_INCLUDE_ROOT, true);
+		m.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, true);
 		m.marshal(obj, sw);
 		compareStrings("testJAXBElementNullValueIncludeRootTrue", EMPTY_JSON, sw.getBuffer().toString());
 	}
@@ -64,7 +67,7 @@ public class EmptyNullMarshalUnmarshalTestCases extends OXTestCase{
 		JAXBElement obj = new JAXBElement<Object>(new QName(XMLConstants.EMPTY_STRING),Object.class, null );		
 		
 		Marshaller m = ctx.createMarshaller();
-		m.setProperty(JAXBMarshaller.JSON_INCLUDE_ROOT, false);
+		m.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, false);
 		m.marshal(obj, sw);
 		compareStrings("testJAXBElementNullValueIncludeRootFalse", EMPTY_JSON, sw.getBuffer().toString());
 	}
@@ -73,7 +76,7 @@ public class EmptyNullMarshalUnmarshalTestCases extends OXTestCase{
 		StringWriter sw = new StringWriter();		
 		JAXBElement obj = new JAXBElement<Object>(new QName(XMLConstants.EMPTY_STRING),Object.class, new Root() );		
 		Marshaller m = ctx.createMarshaller();
-		m.setProperty(JAXBMarshaller.JSON_INCLUDE_ROOT, true);
+		m.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, true);
 		m.marshal(obj, sw);
 		String expectedString = "{\"type\":\"root\"}";
 		compareStrings("testJAXBElementEmptyValueIncludeRootTrue", expectedString, sw.getBuffer().toString());
@@ -84,7 +87,7 @@ public class EmptyNullMarshalUnmarshalTestCases extends OXTestCase{
 		JAXBElement obj = new JAXBElement<Object>(new QName(XMLConstants.EMPTY_STRING),Object.class, new Root() );		
 		
 		Marshaller m = ctx.createMarshaller();
-		m.setProperty(JAXBMarshaller.JSON_INCLUDE_ROOT, false);
+		m.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, false);
 		m.marshal(obj, sw);
 		String expectedString = "{\"type\":\"root\"}";
 		compareStrings("testJAXBElementEmptyValueIncludeRootFalse", expectedString, sw.getBuffer().toString());
@@ -94,7 +97,7 @@ public class EmptyNullMarshalUnmarshalTestCases extends OXTestCase{
 		StringWriter sw = new StringWriter();		
 		JAXBElement obj = new JAXBElement<Object>(new QName(XMLConstants.EMPTY_STRING),Object.class, new RootNoXmlRootElement() );		
 		Marshaller m = ctxNoRoot.createMarshaller();		
-		m.setProperty(JAXBMarshaller.JSON_INCLUDE_ROOT, true);
+		m.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, true);
 		m.marshal(obj, sw);
 		String expectedString = "{\"type\":\"rootNoXmlRootElement\"}";
 		compareStrings("testJAXBElementEmptyValueNoRootIncludeRootTrue", expectedString, sw.getBuffer().toString());
@@ -105,7 +108,7 @@ public class EmptyNullMarshalUnmarshalTestCases extends OXTestCase{
 		JAXBElement obj = new JAXBElement<Object>(new QName(XMLConstants.EMPTY_STRING),Object.class, new RootNoXmlRootElement() );		
 		
 		Marshaller m = ctxNoRoot.createMarshaller();
-		m.setProperty(JAXBMarshaller.JSON_INCLUDE_ROOT, false);
+		m.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, false);
 		m.marshal(obj, sw);
 		String expectedString = "{\"type\":\"rootNoXmlRootElement\"}";
 		compareStrings("testJAXBElementEmptyValueNoRootIncludeRootFalse", expectedString, sw.getBuffer().toString());
@@ -115,7 +118,7 @@ public class EmptyNullMarshalUnmarshalTestCases extends OXTestCase{
 		StringWriter sw = new StringWriter();		
 		Object obj = new Root();		
 		Marshaller m = ctx.createMarshaller();
-		m.setProperty(JAXBMarshaller.JSON_INCLUDE_ROOT, true);
+		m.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, true);
 		m.marshal(obj, sw);
 		String expected = "{\"root\":{}}";
 		compareStrings("testEmptyIncludeRootTrue", expected, sw.getBuffer().toString());
@@ -125,7 +128,7 @@ public class EmptyNullMarshalUnmarshalTestCases extends OXTestCase{
 		StringWriter sw = new StringWriter();		
 		Object obj = new Root();				
 		Marshaller m = ctx.createMarshaller();
-		m.setProperty(JAXBMarshaller.JSON_INCLUDE_ROOT, false);
+		m.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, false);
 		m.marshal(obj, sw);
 		compareStrings("testEmptyIncludeRootFalse", EMPTY_JSON, sw.getBuffer().toString());
 	}
@@ -134,7 +137,7 @@ public class EmptyNullMarshalUnmarshalTestCases extends OXTestCase{
 		StringWriter sw = new StringWriter();		
 		Object obj = new RootNoXmlRootElement();		
 		Marshaller m = ctxNoRoot.createMarshaller();
-		m.setProperty(JAXBMarshaller.JSON_INCLUDE_ROOT, true);
+		m.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, true);
 		m.marshal(obj, sw);		
 		compareStrings("testEmptyNoRootIncludeRootTrue", EMPTY_JSON, sw.getBuffer().toString());
 	}
@@ -143,7 +146,7 @@ public class EmptyNullMarshalUnmarshalTestCases extends OXTestCase{
 		StringWriter sw = new StringWriter();		
 		Object obj = new RootNoXmlRootElement();				
 		Marshaller m = ctxNoRoot.createMarshaller();
-		m.setProperty(JAXBMarshaller.JSON_INCLUDE_ROOT, false);
+		m.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, false);
 		m.marshal(obj, sw);
 		compareStrings("testEmptyNoRootIncludeRootFalse", EMPTY_JSON, sw.getBuffer().toString());
 	}
@@ -156,7 +159,7 @@ public class EmptyNullMarshalUnmarshalTestCases extends OXTestCase{
 		theList.add(obj);
 		theList.add(obj2);
 		Marshaller m = ctx.createMarshaller();
-		m.setProperty(JAXBMarshaller.JSON_INCLUDE_ROOT, true);
+		m.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, true);
 		m.marshal(theList, sw);
 		String expectedString = "[{\"type\":\"root\"},{\"type\":\"root\"}]";
 		compareStrings("testJAXBElementEmptyValueIncludeRootTrue", expectedString, sw.getBuffer().toString());
@@ -171,7 +174,7 @@ public class EmptyNullMarshalUnmarshalTestCases extends OXTestCase{
 		theList.add(obj2);
 		
 		Marshaller m = ctx.createMarshaller();
-		m.setProperty(JAXBMarshaller.JSON_INCLUDE_ROOT, false);
+		m.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, false);
 		m.marshal(theList, sw);
 		String expectedString = "[{\"type\":\"root\"},{\"type\":\"root\"}]";
 		compareStrings("testJAXBElementEmptyValueIncludeRootFalse", expectedString, sw.getBuffer().toString());
@@ -179,7 +182,7 @@ public class EmptyNullMarshalUnmarshalTestCases extends OXTestCase{
 	
 	public void testUnmarshalIncludeRootTrue() throws Exception{
 		Unmarshaller unmarshaller = ctx.createUnmarshaller();
-		unmarshaller.setProperty(JAXBUnmarshaller.JSON_INCLUDE_ROOT, true);
+		unmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, true);
 		StringReader reader = new StringReader("{}");
 		Object o = unmarshaller.unmarshal(reader);
 		assertNull(o);
@@ -187,7 +190,7 @@ public class EmptyNullMarshalUnmarshalTestCases extends OXTestCase{
 	
 	public void testUnmarshalIncludeRootFalse() throws Exception{
 		Unmarshaller unmarshaller = ctx.createUnmarshaller();
-		unmarshaller.setProperty(JAXBUnmarshaller.JSON_INCLUDE_ROOT, false);
+		unmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, false);
 		StringReader reader = new StringReader("{}");
 		Object o = unmarshaller.unmarshal(reader);
 		assertNull(o);	
@@ -195,7 +198,7 @@ public class EmptyNullMarshalUnmarshalTestCases extends OXTestCase{
 	
 	public void testUnmarshalClassIncludeRootTrue() throws Exception{
 		Unmarshaller unmarshaller = ctx.createUnmarshaller();
-		unmarshaller.setProperty(JAXBUnmarshaller.JSON_INCLUDE_ROOT, true);
+		unmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, true);
 		StringReader reader = new StringReader("{}");
 		Object o = unmarshaller.unmarshal(new StreamSource(reader), Root.class);
 		assertTrue (o instanceof JAXBElement);
@@ -205,7 +208,7 @@ public class EmptyNullMarshalUnmarshalTestCases extends OXTestCase{
 	
 	public void testUnmarshalClassIncludeRootFalse() throws Exception{
 		Unmarshaller unmarshaller = ctx.createUnmarshaller();
-		unmarshaller.setProperty(JAXBUnmarshaller.JSON_INCLUDE_ROOT, false);
+		unmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, false);
 		StringReader reader = new StringReader("{}");
 		Object o = unmarshaller.unmarshal(new StreamSource(reader), Root.class);
 
@@ -217,7 +220,7 @@ public class EmptyNullMarshalUnmarshalTestCases extends OXTestCase{
 	
 	public void testUnmarshalNoRootTypeAttrIncludeRootFalse() throws Exception{
 		Unmarshaller unmarshaller = ctxNoRoot.createUnmarshaller();
-		unmarshaller.setProperty(JAXBUnmarshaller.JSON_INCLUDE_ROOT, false);
+		unmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, false);
 		StringReader reader = new StringReader("{\"type\":\"rootNoXmlRootElement\"}");
 		StringReader reader2 = new StringReader("{\"type\":\"rootNoXmlRootElement\"}");
 		Object o = unmarshaller.unmarshal(new StreamSource(reader), RootNoXmlRootElement.class);
@@ -233,7 +236,7 @@ public class EmptyNullMarshalUnmarshalTestCases extends OXTestCase{
 	
 	public void testUnmarshalTypeAttrIncludeRootFalse() throws Exception{
 		Unmarshaller unmarshaller = ctx.createUnmarshaller();
-		unmarshaller.setProperty(JAXBUnmarshaller.JSON_INCLUDE_ROOT, false);
+		unmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, false);
 		StringReader reader = new StringReader("{\"type\":\"root\"}");
 		StringReader reader2 = new StringReader("{\"type\":\"root\"}");
 		Object o = unmarshaller.unmarshal(new StreamSource(reader), Root.class);
@@ -252,7 +255,7 @@ public class EmptyNullMarshalUnmarshalTestCases extends OXTestCase{
 	
 	public void testUnmarshalEmptyListIncludeRootTrue() throws Exception{
 		Unmarshaller unmarshaller = ctx.createUnmarshaller();
-		unmarshaller.setProperty(JAXBUnmarshaller.JSON_INCLUDE_ROOT, true);
+		unmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, true);
 		StringReader reader = new StringReader("[]");
 		Object o = unmarshaller.unmarshal(new StreamSource(reader));
 		assertEquals(new ArrayList(), o);
@@ -260,7 +263,7 @@ public class EmptyNullMarshalUnmarshalTestCases extends OXTestCase{
 	
 	public void testUnmarshalEmptyListIncludeRootFalse() throws Exception{
 		Unmarshaller unmarshaller = ctx.createUnmarshaller();
-		unmarshaller.setProperty(JAXBUnmarshaller.JSON_INCLUDE_ROOT, false);
+		unmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, false);
 		StringReader reader = new StringReader("[]");
 		Object o = unmarshaller.unmarshal(new StreamSource(reader));
 		assertEquals(new ArrayList(), o);
@@ -268,7 +271,7 @@ public class EmptyNullMarshalUnmarshalTestCases extends OXTestCase{
 	
 	public void testUnmarshalEmptyListObjectIncludeRootTrue() throws Exception{
 		Unmarshaller unmarshaller = ctx.createUnmarshaller();
-		unmarshaller.setProperty(JAXBUnmarshaller.JSON_INCLUDE_ROOT, true);
+		unmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, true);
 		StringReader reader = new StringReader("[{}]");
 		Object o = unmarshaller.unmarshal(new StreamSource(reader));
 		
@@ -283,7 +286,7 @@ public class EmptyNullMarshalUnmarshalTestCases extends OXTestCase{
 	
 	public void testUnmarshalEmptyListObjectIncludeRootFalse() throws Exception{
 		Unmarshaller unmarshaller = ctx.createUnmarshaller();
-		unmarshaller.setProperty(JAXBUnmarshaller.JSON_INCLUDE_ROOT, false);
+		unmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, false);
 		StringReader reader = new StringReader("[{}]");
 		Object o = unmarshaller.unmarshal(new StreamSource(reader));
 		
@@ -296,7 +299,7 @@ public class EmptyNullMarshalUnmarshalTestCases extends OXTestCase{
 	
 	public void testUnmarshalEmptyListObjectClassIncludeRootTrue() throws Exception{
 		Unmarshaller unmarshaller = ctx.createUnmarshaller();
-		unmarshaller.setProperty(JAXBUnmarshaller.JSON_INCLUDE_ROOT, true);
+		unmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, true);
 		StringReader reader = new StringReader("[{}]");
 		JAXBElement o = unmarshaller.unmarshal(new StreamSource(reader), Root.class);
 		//assertTrue (o instanceof JAXBElement);
@@ -317,7 +320,7 @@ public class EmptyNullMarshalUnmarshalTestCases extends OXTestCase{
 	
 	public void testUnmarshalEmptyListObjectClassIncludeRootFalse() throws Exception{
 		Unmarshaller unmarshaller = ctx.createUnmarshaller();
-		unmarshaller.setProperty(JAXBUnmarshaller.JSON_INCLUDE_ROOT, false);
+		unmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, false);
 		StringReader reader = new StringReader("[{}]");
 		JAXBElement o = unmarshaller.unmarshal(new StreamSource(reader),Root.class);
 		

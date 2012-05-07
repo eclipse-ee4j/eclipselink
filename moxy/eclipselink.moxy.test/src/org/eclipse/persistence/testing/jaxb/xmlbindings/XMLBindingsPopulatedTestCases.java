@@ -20,12 +20,30 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 import javax.xml.transform.stream.StreamSource;
 
-import org.eclipse.persistence.jaxb.JAXBMarshaller;
-import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
-import org.eclipse.persistence.jaxb.xmlmodel.*;
-import org.eclipse.persistence.jaxb.xmlmodel.XmlProperties.XmlProperty;
-import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.*;
+import org.eclipse.persistence.jaxb.MarshallerProperties;
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
+import org.eclipse.persistence.jaxb.xmlmodel.JavaType;
 import org.eclipse.persistence.jaxb.xmlmodel.JavaType.JavaAttributes;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlAttribute;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.JavaTypes;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.XmlEnums;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.XmlRegistries;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlClassExtractor;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlElement;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlEnum;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapters;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlNsForm;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlProperties;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlProperties.XmlProperty;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlRegistry;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlRootElement;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlSchema;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlSchemaType;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlSchemaTypes;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlType;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
@@ -42,8 +60,8 @@ public class XMLBindingsPopulatedTestCases extends JAXBWithJSONTestCases{
 		setClasses(new Class[]{XmlBindings.class});
 		setControlDocument(XML_RESOURCE);
 		setControlJSON(JSON_RESOURCE);
-		jaxbMarshaller.setProperty(JAXBMarshaller.JSON_INCLUDE_ROOT, false);
-		jaxbUnmarshaller.setProperty(JAXBUnmarshaller.JSON_INCLUDE_ROOT, false);
+		jaxbMarshaller.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, false);
+		jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, false);
 	}
 
 	public Class getUnmarshalClass(){		
@@ -180,22 +198,22 @@ public class XMLBindingsPopulatedTestCases extends JAXBWithJSONTestCases{
 		StringWriter writer = new StringWriter();
         //unmarshal control XML
 		InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
-		jaxbUnmarshaller.setProperty(org.eclipse.persistence.jaxb.JAXBContext.MEDIA_TYPE, "application/xml");
+		jaxbUnmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, "application/xml");
 		Object testObject = jaxbUnmarshaller.unmarshal(instream);
         
 		//marshal to JSON
-        jaxbMarshaller.setProperty(JAXBMarshaller.MEDIA_TYPE, "application/json");
+        jaxbMarshaller.setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
         StringWriter sw = new StringWriter();
         jaxbMarshaller.marshal(testObject,sw);
         
         //unmarshal from JSON
         StringReader sr = new StringReader(sw.toString());
-        jaxbUnmarshaller.setProperty(JAXBUnmarshaller.MEDIA_TYPE, "application/json");
+        jaxbUnmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, "application/json");
         JAXBElement jbe = jaxbUnmarshaller.unmarshal(new StreamSource(sr), XmlBindings.class);
         Object unmarshalledJSON = jbe.getValue();
         
         //marshal to XML again
-        jaxbMarshaller.setProperty(JAXBMarshaller.MEDIA_TYPE, "application/xml");
+        jaxbMarshaller.setProperty(MarshallerProperties.MEDIA_TYPE, "application/xml");
         StringWriter xmlStringWriter = new StringWriter();
         jaxbMarshaller.marshal(testObject,xmlStringWriter);
         
@@ -239,7 +257,7 @@ public class XMLBindingsPopulatedTestCases extends JAXBWithJSONTestCases{
 	        log(testObject.toString());
 
 	        StringWriter sw = new StringWriter();
-	        jaxbMarshaller.setProperty(JAXBMarshaller.MEDIA_TYPE, "application/xml");
+	        jaxbMarshaller.setProperty(MarshallerProperties.MEDIA_TYPE, "application/xml");
 	        
 	        jaxbMarshaller.marshal(((JAXBElement)testObject).getValue(),sw);
 	        StringReader sr = new StringReader(sw.toString());

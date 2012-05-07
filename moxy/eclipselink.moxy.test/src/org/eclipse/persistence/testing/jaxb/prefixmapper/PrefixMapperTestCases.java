@@ -12,8 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.prefixmapper;
 
-import org.eclipse.persistence.jaxb.JAXBMarshaller;
-import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
+import org.eclipse.persistence.jaxb.MarshallerProperties;
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class PrefixMapperTestCases extends JAXBWithJSONTestCases {
@@ -23,8 +23,8 @@ public class PrefixMapperTestCases extends JAXBWithJSONTestCases {
     public PrefixMapperTestCases(String name) throws Exception {
         super(name);
         setClasses(new Class[]{Employee.class, Person.class});
-        jaxbMarshaller.setProperty(JAXBMarshaller.NAMESPACE_PREFIX_MAPPER, new MyPrefixMapper());
-        jaxbUnmarshaller.setProperty(JAXBUnmarshaller.JSON_NAMESPACE_PREFIX_MAPPER, new MyPrefixMapper());
+        jaxbMarshaller.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, new MyPrefixMapper());
+        jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER, new MyPrefixMapper());
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
     }

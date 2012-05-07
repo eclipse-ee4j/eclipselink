@@ -17,6 +17,7 @@ import javax.xml.namespace.QName;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class JSONAttributeNoXmlRootElementTestCases extends JAXBWithJSONTestCases {
@@ -29,7 +30,7 @@ public class JSONAttributeNoXmlRootElementTestCases extends JAXBWithJSONTestCase
 		setClasses(new Class[]{AddressNoRoot.class});
 		setControlDocument(XML_RESOURCE);
 		setControlJSON(JSON_RESOURCE);	
-		jaxbUnmarshaller.setProperty(JAXBUnmarshaller.JSON_INCLUDE_ROOT, false);
+		jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, false);
 	}
 
 	public Class getUnmarshalClass(){		
@@ -61,7 +62,7 @@ public class JSONAttributeNoXmlRootElementTestCases extends JAXBWithJSONTestCase
 	  public void testXMLToObjectFromURL() throws Exception {
 	        if(isUnmarshalTest()) {
 	            java.net.URL url = ClassLoader.getSystemResource(resourceName);
-	            jaxbUnmarshaller.setProperty(org.eclipse.persistence.jaxb.JAXBContext.MEDIA_TYPE, "application/xml");
+	            jaxbUnmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, "application/xml");
 	            
 	            Object testObject = null;
 	            if(getUnmarshalClass() != null){

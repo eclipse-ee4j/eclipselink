@@ -12,8 +12,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs;
 
-import static org.eclipse.persistence.jaxb.JAXBContext.MEDIA_TYPE;
-
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,6 +33,9 @@ import javax.persistence.spi.PersistenceUnitInfo;
 import javax.ws.rs.core.MediaType;
 
 import org.eclipse.persistence.jaxb.JAXBContext;
+import org.eclipse.persistence.jaxb.MarshallerProperties;
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
+
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -614,8 +615,8 @@ public class PersistenceContext {
     
     public Object unmarshalEntity(String type, String tenantId, MediaType acceptedMedia, InputStream in) throws JAXBException {
         Unmarshaller unmarshaller = getJAXBContext().createUnmarshaller();
-        unmarshaller.setProperty(JAXBContext.JSON_INCLUDE_ROOT, Boolean.FALSE);
-        unmarshaller.setProperty(MEDIA_TYPE, acceptedMedia.toString());
+        unmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, Boolean.FALSE);
+        unmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, acceptedMedia.toString());
         unmarshaller.setAdapter(new LinkAdapter(getBaseURI().toString(), this));
         JAXBElement<?> element = unmarshaller.unmarshal(new StreamSource(in), getClass(type));
         return element.getValue();
@@ -623,8 +624,8 @@ public class PersistenceContext {
     
     public void marshallEntity(Object object, MediaType mediaType, OutputStream output) throws JAXBException {              
         Marshaller marshaller = getJAXBContext().createMarshaller();
-        marshaller.setProperty(MEDIA_TYPE, mediaType.toString());
-        marshaller.setProperty(org.eclipse.persistence.jaxb.JAXBContext.JSON_INCLUDE_ROOT, false);
+        marshaller.setProperty(MarshallerProperties.MEDIA_TYPE, mediaType.toString());
+        marshaller.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, false);
         marshaller.setAdapter(new LinkAdapter(getBaseURI().toString(), this));
         marshaller.setListener(new Marshaller.Listener() {
             @Override

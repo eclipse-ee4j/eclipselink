@@ -1,7 +1,7 @@
 package org.eclipse.persistence.testing.jaxb.xmlanyelement;
 
-import org.eclipse.persistence.jaxb.JAXBMarshaller;
-import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
+import org.eclipse.persistence.jaxb.MarshallerProperties;
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class XmlAnyElementLaxMixedEmptyTestCases extends JAXBWithJSONTestCases{
@@ -16,8 +16,8 @@ public class XmlAnyElementLaxMixedEmptyTestCases extends JAXBWithJSONTestCases{
 	        classes[0] = EmployeeLaxMixed.class;
 	        classes[1] = Address.class;
 	        setClasses(classes);
-	        jaxbUnmarshaller.setProperty(JAXBUnmarshaller.JSON_ATTRIBUTE_PREFIX, "@");
-	        jaxbMarshaller.setProperty(JAXBMarshaller.JSON_ATTRIBUTE_PREFIX, "@");
+	        jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_ATTRIBUTE_PREFIX, "@");
+	        jaxbMarshaller.setProperty(MarshallerProperties.JSON_ATTRIBUTE_PREFIX, "@");
 	    }
 
 	    protected Object getControlObject() {

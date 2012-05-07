@@ -15,8 +15,8 @@ package org.eclipse.persistence.testing.jaxb.annotations.xmlelementsjoinnodes.co
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.persistence.jaxb.JAXBMarshaller;
-import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
+import org.eclipse.persistence.jaxb.MarshallerProperties;
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlelementsjoinnodes.Address;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlelementsjoinnodes.PhoneNumber;
@@ -30,8 +30,8 @@ public class XmlElementsJoinNodeTestCases extends JAXBWithJSONTestCases {
         setClasses(new Class[]{ Root.class });
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        jaxbMarshaller.setProperty(JAXBMarshaller.JSON_VALUE_WRAPPER, "value");
-        jaxbUnmarshaller.setProperty(JAXBUnmarshaller.JSON_VALUE_WRAPPER, "value");
+        jaxbMarshaller.setProperty(MarshallerProperties.JSON_VALUE_WRAPPER, "value");
+        jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_VALUE_WRAPPER, "value");
     }
     
     public Object getJSONReadControlObject() {

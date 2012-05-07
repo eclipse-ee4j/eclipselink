@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.persistence.jaxb.JAXBContext;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class XmlEnumAttributeCollectionTestCases extends JAXBWithJSONTestCases {
@@ -48,7 +49,7 @@ public class XmlEnumAttributeCollectionTestCases extends JAXBWithJSONTestCases {
     
     protected Map getProperties(){
     	Map<String, String> props = new HashMap<String, String>();
-    	props.put(JAXBContext.JSON_ATTRIBUTE_PREFIX, "@");
+    	props.put(JAXBContextProperties.JSON_ATTRIBUTE_PREFIX, "@");
     	return props;
     }
 }

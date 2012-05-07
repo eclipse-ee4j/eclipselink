@@ -18,7 +18,8 @@ import java.util.Map;
 
 import javax.xml.bind.PropertyException;
 
-import org.eclipse.persistence.jaxb.JAXBContext;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
+import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.testing.jaxb.json.JSONMarshalUnmarshalTestCases;
 
 public class JSONAttributePrefixOnContextTestCases extends JSONMarshalUnmarshalTestCases {
@@ -42,13 +43,13 @@ public class JSONAttributePrefixOnContextTestCases extends JSONMarshalUnmarshalT
 	
 	public Map getProperties(){
 		Map props = new HashMap();
-		props.put(JAXBContext.JSON_ATTRIBUTE_PREFIX, "@");
+		props.put(JAXBContextProperties.JSON_ATTRIBUTE_PREFIX, "@");
 		return props;
 	}
 	
 	public void testingTurnAttributesOnOff() throws Exception{
 		try{
-		    jsonMarshaller.setProperty(JAXBContext.JSON_ATTRIBUTE_PREFIX, "");
+		    jsonMarshaller.setProperty(MarshallerProperties.JSON_ATTRIBUTE_PREFIX, "");
 		}catch (PropertyException e){
 			e.printStackTrace();
 			fail("an error occurred during setup");
@@ -61,7 +62,7 @@ public class JSONAttributePrefixOnContextTestCases extends JSONMarshalUnmarshalT
 	    assertFalse(sw.getBuffer().toString().indexOf('@')>-1);
 				
 		try{
-		    jsonMarshaller.setProperty(JAXBContext.JSON_ATTRIBUTE_PREFIX, "@");
+		    jsonMarshaller.setProperty(MarshallerProperties.JSON_ATTRIBUTE_PREFIX, "@");
 		}catch (PropertyException e){
 			e.printStackTrace();
 			fail("an error occurred during setup");
