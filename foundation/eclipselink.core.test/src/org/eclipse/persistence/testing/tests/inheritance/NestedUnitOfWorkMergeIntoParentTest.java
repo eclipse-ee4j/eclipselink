@@ -46,11 +46,12 @@ public class NestedUnitOfWorkMergeIntoParentTest extends TestCase {
             
             Teacher teacher = new Teacher();
             teacher.setName("Mrs. Crabapple");
-            nestedUnitOfWork.registerObject(teacher);
             
             Apple apple = new Apple();
             apple.setQuality("high");
             apple.setTeacher(teacher);
+            
+            nestedUnitOfWork.registerObject(teacher);
             nestedUnitOfWork.registerObject(apple);
             
             int numberOfPearsToInsert = 10;
