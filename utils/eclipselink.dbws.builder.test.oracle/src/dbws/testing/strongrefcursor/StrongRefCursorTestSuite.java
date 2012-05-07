@@ -60,31 +60,47 @@ public class StrongRefCursorTestSuite extends DBWSTestSuite {
         "INSERT INTO " + STRONGLY_TYPED_REF_CURSOR_TABLE + " (ID, NAME, SINCE) VALUES (3, 'rick', " +
             "TO_DATE('2001-10-30 00:00:00','YYYY-MM-DD HH24:MI:SS'))",
         "INSERT INTO " + STRONGLY_TYPED_REF_CURSOR_TABLE + " (ID, NAME, SINCE) VALUES (4, 'mikey', " +
-            "TO_DATE('2010-01-01 00:00:00','YYYY-MM-DD HH24:MI:SS'))"
+            "TO_DATE('2010-01-01 00:00:00','YYYY-MM-DD HH24:MI:SS'))",
+        "INSERT INTO " + STRONGLY_TYPED_REF_CURSOR_TABLE + " (ID, NAME, SINCE) VALUES (5, 'richard', " +
+            "TO_DATE('2012-01-03 00:00:00','YYYY-MM-DD HH24:MI:SS'))",
+        "INSERT INTO " + STRONGLY_TYPED_REF_CURSOR_TABLE + " (ID, NAME, SINCE) VALUES (6, 'rilley', " +
+            "TO_DATE('2012-02-03 00:00:00','YYYY-MM-DD HH24:MI:SS'))"
     };
-    static final String STRONGLY_TYPED_REF_CURSOR = "STRONGLY_TYPED_REF_CURSOR";
+    static final String STRONGLY_TYPED_REF_CURSOR = "STR_CURSOR";
     static final String STRONGLY_TYPED_REF_CURSOR_TEST_PACKAGE = STRONGLY_TYPED_REF_CURSOR + "_TEST";
+    static final String CREATE_TAB1_SHADOW_TYPE = "CREATE OR REPLACE TYPE " + STRONGLY_TYPED_REF_CURSOR_TEST_PACKAGE + "_STRC_TAB1 AS TABLE OF VARCHAR2(111)";
+    
     static final String CREATE_STRONGLY_TYPED_REF_CURSOR_TEST_PACKAGE =
         "CREATE OR REPLACE PACKAGE " + STRONGLY_TYPED_REF_CURSOR_TEST_PACKAGE + " AS" +
+            "\nTYPE STRC_TAB1 IS TABLE OF VARCHAR2(111) INDEX BY BINARY_INTEGER;" +
             "\nTYPE " + STRONGLY_TYPED_REF_CURSOR + " IS REF CURSOR RETURN " + STRONGLY_TYPED_REF_CURSOR_TABLE + "%ROWTYPE;" +
-            "\nPROCEDURE GET_EMS(P_EMS " + STRONGLY_TYPED_REF_CURSOR_TABLE+".NAME%TYPE, P_EMS_SET OUT " +
-            STRONGLY_TYPED_REF_CURSOR + ");" +
+        	"\nTYPE EMPREC IS RECORD("+
+                "\n ID NUMBER," +
+        	    "\n NAME VARCHAR(25)," +
+                "\n SINCE DATE" +
+        	"\n);" +
+        	"\nTYPE EMPREC_CURSOR IS REF CURSOR RETURN EMPREC;" +
+            "\nPROCEDURE GET_EMS(P_EMS " + STRONGLY_TYPED_REF_CURSOR_TABLE+".NAME%TYPE, P_EMS_SET OUT " + STRONGLY_TYPED_REF_CURSOR + ");" +
+            "\nPROCEDURE GET_EMPREC(ENAME IN VARCHAR, EMPREC_SET OUT EMPREC_CURSOR);" +
         "\nEND " + STRONGLY_TYPED_REF_CURSOR_TEST_PACKAGE + ";";
+    
     static final String CREATE_STRONGLY_TYPED_REF_CURSOR_TEST_PACKAGE_BODY =
         "CREATE OR REPLACE PACKAGE BODY " + STRONGLY_TYPED_REF_CURSOR_TEST_PACKAGE + " AS" +
-            "\nPROCEDURE GET_EMS(P_EMS " + STRONGLY_TYPED_REF_CURSOR_TABLE+".NAME%TYPE, P_EMS_SET OUT " +
-                STRONGLY_TYPED_REF_CURSOR + ") AS" +
+            "\nPROCEDURE GET_EMS(P_EMS " + STRONGLY_TYPED_REF_CURSOR_TABLE+".NAME%TYPE, P_EMS_SET OUT " + STRONGLY_TYPED_REF_CURSOR + ") AS" +
             "\nBEGIN" +
-            "\n    OPEN P_EMS_SET FOR" +
-            "\n        SELECT ID, NAME, SINCE FROM " + STRONGLY_TYPED_REF_CURSOR_TABLE +
-              " WHERE NAME LIKE P_EMS;" +
+              "\n OPEN P_EMS_SET FOR" +
+              "\n SELECT ID, NAME, SINCE FROM " + STRONGLY_TYPED_REF_CURSOR_TABLE + " WHERE NAME LIKE P_EMS;" +
             "\nEND GET_EMS;" +
+            "\nPROCEDURE GET_EMPREC(ENAME IN VARCHAR, EMPREC_SET OUT EMPREC_CURSOR) AS" +
+            "\nBEGIN" +
+                "\nOPEN EMPREC_SET FOR" + 
+                "\nSELECT * FROM " + STRONGLY_TYPED_REF_CURSOR_TABLE + " WHERE NAME LIKE ENAME;" + 
+            "\nEND GET_EMPREC;" +
         "\nEND " + STRONGLY_TYPED_REF_CURSOR_TEST_PACKAGE + ";";
 
-    static final String DROP_STRONGLY_TYPED_REF_CURSOR_TEST_PACKAGE =
-        "DROP PACKAGE " + STRONGLY_TYPED_REF_CURSOR_TEST_PACKAGE;
-    static final String DROP_STRONGLY_TYPED_REF_CURSOR_TABLE =
-        "DROP TABLE " + STRONGLY_TYPED_REF_CURSOR_TABLE;
+    static final String DROP_STRONGLY_TYPED_REF_CURSOR_TEST_PACKAGE = "DROP PACKAGE " + STRONGLY_TYPED_REF_CURSOR_TEST_PACKAGE;
+    static final String DROP_STRONGLY_TYPED_REF_CURSOR_TABLE = "DROP TABLE " + STRONGLY_TYPED_REF_CURSOR_TABLE;
+    static final String DROP_TAB1_SHADOW_TYPE = "DROP TYPE " + STRONGLY_TYPED_REF_CURSOR_TEST_PACKAGE + "_STRC_TAB1";
 
     static boolean ddlCreate = false;
     static boolean ddlDrop = false;
@@ -124,6 +140,7 @@ public class StrongRefCursorTestSuite extends DBWSTestSuite {
             catch (SQLException e) {
                 //e.printStackTrace();
             }
+            runDdl(conn, CREATE_TAB1_SHADOW_TYPE, ddlDebug);
             runDdl(conn, CREATE_STRONGLY_TYPED_REF_CURSOR_TEST_PACKAGE, ddlDebug);
             runDdl(conn, CREATE_STRONGLY_TYPED_REF_CURSOR_TEST_PACKAGE_BODY, ddlDebug);
         }
@@ -153,6 +170,13 @@ public class StrongRefCursorTestSuite extends DBWSTestSuite {
                   "isCollection=\"true\" " +
                   "isSimpleXMLFormat=\"true\" " +
               "/>" +
+              "<plsql-procedure " +
+	              "name=\"emprecRefCursorTest\" " +
+		          "catalogPattern=\"" + STRONGLY_TYPED_REF_CURSOR_TEST_PACKAGE + "\" " +
+		          "procedurePattern=\"GET_EMPREC\" " +
+		          "isCollection=\"true\" " +
+		          "isSimpleXMLFormat=\"true\" " +
+		      "/>" +
             "</dbws-builder>";
           builder = new DBWSBuilder();
           DBWSTestSuite.setUp(".");
@@ -163,14 +187,12 @@ public class StrongRefCursorTestSuite extends DBWSTestSuite {
         if (ddlDrop) {
             runDdl(conn, DROP_STRONGLY_TYPED_REF_CURSOR_TEST_PACKAGE, ddlDebug);
             runDdl(conn, DROP_STRONGLY_TYPED_REF_CURSOR_TABLE, ddlDebug);
+            runDdl(conn, DROP_TAB1_SHADOW_TYPE, ddlDebug);
         }
     }
 
-
-    @SuppressWarnings("rawtypes")
     @Test
     public void strongRefCursorTest() {
-        /*
         Invocation invocation = new Invocation("strongRefCursorTest");
         invocation.setParameter("P_EMS", "mike%");
         Operation op = xrService.getOperation(invocation.getName());
@@ -180,23 +202,58 @@ public class StrongRefCursorTestSuite extends DBWSTestSuite {
         Document doc = xmlPlatform.createDocument();
         marshaller.marshal(result, doc);
         Document controlDoc = xmlParser.parse(new StringReader(MIKE_NAMES_XML));
-        assertTrue("Expected:\n" + documentToString(controlDoc) + 
-            "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
-        */
+        assertTrue("Expected:\n" + documentToString(controlDoc) +  "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
     public static final String MIKE_NAMES_XML =
         REGULAR_XML_HEADER +
-        "<simple-xml-format>" +
-           "<simple-xml>" +
+        "<STR_CURSOR xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:type=\"any\">" +
+           "<STRC_TABLE>" +
               "<ID>1</ID>" +
               "<NAME>mike</NAME>" +
               "<SINCE>2001-12-25T00:00:00.0</SINCE>" +
-           "</simple-xml>" +
-           "<simple-xml>" +
+           "</STRC_TABLE>" +
+           "<STRC_TABLE>" +
               "<ID>4</ID>" +
               "<NAME>mikey</NAME>" +
               "<SINCE>2010-01-01T00:00:00.0</SINCE>" +
-           "</simple-xml>" +
-        "</simple-xml-format>";
-    
+           "</STRC_TABLE>" +
+        "</STR_CURSOR>";
+    public static final String TABLE_XML =
+        STANDALONE_XML_HEADER +
+        "<STR_CURSOR_TEST_STRC_TAB1 xmlns=\"urn:strongRefCursor\">" +
+            "<item>BLAH</item>" +
+        "</STR_CURSOR_TEST_STRC_TAB1>";
+
+    @Test
+    public void emprecRefCursorTest() {
+        Invocation invocation = new Invocation("emprecRefCursorTest");
+        invocation.setParameter("ENAME", "ri%");
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        Document doc = xmlPlatform.createDocument();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(NAMES_XML));
+        assertTrue("Expected:\n" + documentToString(controlDoc) +  "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+    }
+    public static final String NAMES_XML =
+        REGULAR_XML_HEADER +
+        "<EMPREC_CURSOR xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:type=\"any\">" +
+           "<EMPREC>" +
+              "<ID>3</ID>" +
+              "<NAME>rick</NAME>" +
+              "<SINCE>2001-10-30T00:00:00.0</SINCE>" +
+           "</EMPREC>" +
+           "<EMPREC>" +
+              "<ID>5</ID>" +
+              "<NAME>richard</NAME>" +
+              "<SINCE>2012-01-03T00:00:00.0</SINCE>" +
+           "</EMPREC>" +
+           "<EMPREC>" +
+	           "<ID>6</ID>" +
+	           "<NAME>rilley</NAME>" +
+	           "<SINCE>2012-02-03T00:00:00.0</SINCE>" +
+	        "</EMPREC>" +
+        "</EMPREC_CURSOR>";
 }

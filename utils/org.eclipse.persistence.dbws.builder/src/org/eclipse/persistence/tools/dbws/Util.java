@@ -612,7 +612,6 @@ public class Util {
      */
     public static boolean isTypeComplex(DatabaseType dbType) {
         return dbType.isPLSQLType()
-                || (dbType.isPLSQLCursorType() && !((PLSQLCursorType)dbType).isWeaklyTyped())
                 || dbType.isVArrayType()
                 || dbType.isObjectType()
                 || dbType.isObjectTableType();

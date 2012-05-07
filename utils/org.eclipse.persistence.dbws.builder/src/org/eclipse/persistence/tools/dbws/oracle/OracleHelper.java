@@ -96,6 +96,7 @@ import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLPackageType;
 import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLRecordType;
 import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLType;
 import org.eclipse.persistence.tools.oracleddl.metadata.ProcedureType;
+import org.eclipse.persistence.tools.oracleddl.metadata.ROWTYPEType;
 import org.eclipse.persistence.tools.oracleddl.metadata.TableType;
 import org.eclipse.persistence.tools.oracleddl.metadata.VArrayType;
 import org.eclipse.persistence.tools.oracleddl.metadata.visit.BaseDatabaseTypeVisitor;
@@ -133,7 +134,6 @@ import static org.eclipse.persistence.tools.dbws.Util.UNDERSCORE;
 import static org.eclipse.persistence.tools.dbws.Util.SLASH;
 import static org.eclipse.persistence.tools.dbws.Util.TOPLEVEL;
 import static org.eclipse.persistence.tools.dbws.Util.TYPE_STR;
-import static org.eclipse.persistence.tools.dbws.Util.UNDERSCORE;
 import static org.eclipse.persistence.tools.oracleddl.metadata.ArgumentTypeDirection.IN;
 import static org.eclipse.persistence.tools.oracleddl.metadata.ArgumentTypeDirection.INOUT;
 import static org.eclipse.persistence.tools.oracleddl.metadata.ArgumentTypeDirection.OUT;
@@ -280,35 +280,35 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                             }
                         }
                         else {
-                    	    xmlType = getXMLTypeFromJDBCType(Util.getJDBCTypeFromTypeName(arg.getTypeName()));
+                            xmlType = getXMLTypeFromJDBCType(Util.getJDBCTypeFromTypeName(arg.getTypeName()));
                         }
                     } else {
-	                    // handle PL/SQL records and collections
-	                    if (arg.getEnclosedType().isPLSQLType()) {
-	                        hasComplexProcedureArgs = true;
-	                        String packageName = ((PLSQLType) arg.getEnclosedType()).getParentType().getPackageName();
-	                        String typeString = (packageName != null && packageName.length() > 0) ?
-	                                packageName + UNDERSCORE + arg.getTypeName() : arg.getTypeName();
-	                        xmlType = buildCustomQName(typeString, dbwsBuilder);
-	                    } else if (arg.getEnclosedType().isVArrayType() ||
-	                        arg.getEnclosedType().isObjectType() ||
-	                        arg.getEnclosedType().isObjectTableType()) {
-	                        // handle advanced JDBC types
-	                        hasComplexProcedureArgs = true;
-	                        String typeString = arg.getTypeName().toLowerCase().concat(TYPE_STR);
-	                        xmlType = buildCustomQName(typeString, dbwsBuilder);
-	                    } else {
-	                        switch (Util.getJDBCTypeFromTypeName(arg.getTypeName())) {
-	                            case STRUCT:
-	                            case ARRAY:
-	                                String typeString = nct.generateSchemaAlias(arg.getTypeName());
-	                                xmlType = buildCustomQName(typeString, dbwsBuilder);
-	                                break;
-	                            default :
-	                                xmlType = getXMLTypeFromJDBCType(Util.getJDBCTypeFromTypeName(arg.getTypeName()));
-	                                break;
-	                        }
-	                    }
+                        // handle PL/SQL records and collections
+                        if (arg.getEnclosedType().isPLSQLType()) {
+                            hasComplexProcedureArgs = true;
+                            String packageName = ((PLSQLType) arg.getEnclosedType()).getParentType().getPackageName();
+                            String typeString = (packageName != null && packageName.length() > 0) ?
+                                    packageName + UNDERSCORE + arg.getTypeName() : arg.getTypeName();
+                            xmlType = buildCustomQName(typeString, dbwsBuilder);
+                        } else if (arg.getEnclosedType().isVArrayType() ||
+                            arg.getEnclosedType().isObjectType() ||
+                            arg.getEnclosedType().isObjectTableType()) {
+                            // handle advanced JDBC types
+                            hasComplexProcedureArgs = true;
+                            String typeString = arg.getTypeName().toLowerCase().concat(TYPE_STR);
+                            xmlType = buildCustomQName(typeString, dbwsBuilder);
+                        } else {
+                            switch (Util.getJDBCTypeFromTypeName(arg.getTypeName())) {
+                                case STRUCT:
+                                case ARRAY:
+                                    String typeString = nct.generateSchemaAlias(arg.getTypeName());
+                                    xmlType = buildCustomQName(typeString, dbwsBuilder);
+                                    break;
+                                default :
+                                    xmlType = getXMLTypeFromJDBCType(Util.getJDBCTypeFromTypeName(arg.getTypeName()));
+                                    break;
+                            }
+                        }
                     }
                     if (direction == null || direction == IN) {
                         parm = new Parameter();
@@ -330,7 +330,37 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                         ProcedureOutputArgument pao = (ProcedureOutputArgument)pa;
                         pao.setName(argName);
                         pao.setParameterName(argName);
-                        boolean isCursor = arg.getTypeName().contains(CURSOR_STR);
+                        boolean isCursor = arg.isPLSQLCursorType() || arg.getTypeName().contains(CURSOR_STR);
+                        
+                        // for strongly typed ref cursors we will customize the simple-xml-format 
+                        // tags to better represent the PL/SQL record/table/column type
+                        if (arg.isPLSQLCursorType()) {
+                            PLSQLCursorType plsqlCursor = (PLSQLCursorType) arg.getEnclosedType();
+                            if (!plsqlCursor.isWeaklyTyped()) {
+                                // do not override user tag customization
+                                if (procedureOperationModel.getSimpleXMLFormatTag() == null) {
+                                    procedureOperationModel.setSimpleXMLFormatTag(plsqlCursor.getCursorName());
+                                }
+                                
+                                // Enclosed type could be one of:
+                                // - PLSQLRecordType
+                                // - ROWTYPEType
+                                // - TYPEType
+                                if (procedureOperationModel.getXmlTag() == null) {
+                                    if (plsqlCursor.getEnclosedType().isPLSQLRecordType()) {
+                                        PLSQLRecordType recType = (PLSQLRecordType) plsqlCursor.getEnclosedType();
+                                        procedureOperationModel.setXmlTag(recType.getTypeName());
+                                    } else if (plsqlCursor.getEnclosedType().isROWTYPEType()) {
+                                        // assumes ROWTYPEType has an enclosed TableType
+                                        ROWTYPEType rowType = (ROWTYPEType) plsqlCursor.getEnclosedType();
+                                        TableType tableType = (TableType) rowType.getEnclosedType();
+                                        procedureOperationModel.setXmlTag(tableType.getTableName());
+                                    } else {
+                                        // TODO:  handle TYPEType
+                                    }
+                                }
+                            }
+                        }
                         if (isCursor && returnType == null) { // if user overrides returnType, assume they're right
                             pao.setResultType(SXF_QNAME_CURSOR);
                             if (result == null) {
@@ -369,13 +399,13 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                             // use of INOUT precludes SimpleXMLFormat
                             isSimpleXMLFormat = false;
                             if (!hasComplexArgs) {
-                            	if (qh instanceof StoredProcedureQueryHandler) {
-                            		((StoredProcedureQueryHandler)qh).getInOutArguments().add(pao);
+                                if (qh instanceof StoredProcedureQueryHandler) {
+                                    ((StoredProcedureQueryHandler)qh).getInOutArguments().add(pao);
                                 }
                             } else {   // complex
-	                            paShadow = new ProcedureArgument();
-	                            paShadow.setName(argName);
-	                            paShadow.setParameterName(argName);
+                                paShadow = new ProcedureArgument();
+                                paShadow.setName(argName);
+                                paShadow.setParameterName(argName);
                             }
                         } else if (!hasComplexArgs) {
                             if (qh instanceof StoredProcedureQueryHandler) {
@@ -1270,11 +1300,15 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             	}
             } else if (direction == OUT) {
             	if (hasComplexArgs) {
-                    Class wrapperClass = getWrapperClass(databaseType);
-                    if (wrapperClass != null) {
-                    	((ComplexDatabaseType) databaseType).setJavaType(wrapperClass);
-                    }
-            		((PLSQLStoredProcedureCall)call).addNamedOutputArgument(arg.getArgumentName(), databaseType);
+//                    if (databaseType != null) {
+                        Class wrapperClass = getWrapperClass(databaseType);
+                        if (wrapperClass != null) {
+                        	((ComplexDatabaseType) databaseType).setJavaType(wrapperClass);
+                        }
+                		((PLSQLStoredProcedureCall)call).addNamedOutputArgument(arg.getArgumentName(), databaseType);
+//                    } else {
+                        
+//                    }
             	} else {
                     if (argType.isComposite()) {
                         Class wrapperClass = getWrapperClass(javaTypeName);
@@ -1299,7 +1333,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
 	            	if (argType.isPLSQLCollectionType() && !((PLSQLCollectionType)argType).isIndexed()) {
 	            		PLSQLargument plsqlArg = ((PLSQLStoredProcedureCall)call).getArguments().get(((PLSQLStoredProcedureCall)call).getArguments().size()-1);
 	            		plsqlArg.setIsNonAssociativeCollection(true);
-	            	}
+                    }
             	} else {
                     dq.addArgument(arg.getArgumentName());
                     call.addNamedInOutputArgument(arg.getArgumentName());
