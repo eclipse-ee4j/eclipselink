@@ -136,8 +136,8 @@ public class JSONWriterRecord extends MarshalRecord {
      * INTERNAL:
      */
     public void endDocument() {
-        try {
-            writer.write('}');
+        try {            
+            closeComplex();
             levels.pop();
         } catch (IOException e) {
             throw XMLMarshalException.marshalException(e);
@@ -285,7 +285,7 @@ public class JSONWriterRecord extends MarshalRecord {
                 Level position = levels.pop();
                 if(position.needToOpenComplex){
                     writer.write('{');
-                    writer.write('}');
+                    closeComplex();
                 } else if(position.needToCloseComplex){
                     closeComplex();
                 }

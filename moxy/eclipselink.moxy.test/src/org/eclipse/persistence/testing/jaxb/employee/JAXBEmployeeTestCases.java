@@ -14,12 +14,14 @@ package org.eclipse.persistence.testing.jaxb.employee;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class JAXBEmployeeTestCases extends JAXBWithJSONTestCases {
 
 	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/employee/employee.xml";
 	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/employee/employee.json";
+	private final static String JSON_RESOURCE_FORMATTED = "org/eclipse/persistence/testing/jaxb/employee/employee_formatted.json";
 	private final static String CONTROL_RESPONSIBILITY1 = "Fix Bugs";
 	private final static String CONTROL_RESPONSIBILITY2 = "Write JAXB2.0 Prototype";
 	private final static String CONTROL_RESPONSIBILITY3 = "Write Design Spec";
@@ -61,4 +63,12 @@ public class JAXBEmployeeTestCases extends JAXBWithJSONTestCases {
         return employee;
     }
 
+    public String getWriteControlJSONFormatted(){
+		return JSON_RESOURCE_FORMATTED;    	
+    }
+    
+    public boolean shouldRemoveWhitespaceFromControlDocJSON(){
+    	return false;
+    }  
+    
 }

@@ -135,12 +135,23 @@ public abstract class JSONTestCases extends OXTestCase{
 	    
 	   
 	protected void compareStrings(String test, String testString) {
+    
+	    compareStrings(test, testString,getWriteControlJSON(), true);
+	}
+	
+	protected void compareStrings(String test, String testString, String writeControlJSON, boolean removeWhitespace) {
 	    log(test);
 	    log("Expected (With All Whitespace Removed):");
-	    String expectedString = loadFileToString(getWriteControlJSON()).replaceAll("[ \b\t\n\r ]", "");
+	    String expectedString = loadFileToString(writeControlJSON);
+	    if(removeWhitespace){
+	       expectedString = expectedString.replaceAll("[ \b\t\n\r ]", "");
+	    }
 	    log(expectedString);
+	  	   
 	    log("\nActual (With All Whitespace Removed):");
-	    testString = testString.replaceAll("[ \b\t\n\r]", "");
+	    if(removeWhitespace){
+	    	testString = testString.replaceAll("[ \b\t\n\r]", "");
+		}	    
 	    log(testString);
 	    assertEquals(expectedString, testString);
 	}
@@ -162,7 +173,7 @@ public abstract class JSONTestCases extends OXTestCase{
 	    jsonMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 	    ByteArrayOutputStream os = new ByteArrayOutputStream();
 		jsonMarshaller.marshal(getWriteControlObject(), os);
-		compareStrings("testJSONMarshalToOutputStream", new String(os.toByteArray()));
+		compareStrings("testJSONMarshalToOutputStream", new String(os.toByteArray()), getWriteControlJSONFormatted(), shouldRemoveWhitespaceFromControlDocJSON());
 		os.close();
 	}
 
@@ -175,9 +186,15 @@ public abstract class JSONTestCases extends OXTestCase{
 	public void testJSONMarshalToStringWriter_FORMATTED() throws Exception{
 	    jsonMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 		StringWriter sw = new StringWriter();
-		jsonMarshaller.marshal(getWriteControlObject(), sw);
-		compareStrings("**testJSONMarshalToStringWriter**", sw.toString());
+		jsonMarshaller.marshal(getWriteControlObject(), sw);		
+	    compareStrings("**testJSONMarshalToStringWriter**", sw.toString(), getWriteControlJSONFormatted(), shouldRemoveWhitespaceFromControlDocJSON());
 	}
-		 
-	  
+
+	protected String getWriteControlJSONFormatted(){
+		return getWriteControlJSON();
+	}
+	
+	protected boolean shouldRemoveWhitespaceFromControlDocJSON(){
+		return true;
+	}
 }

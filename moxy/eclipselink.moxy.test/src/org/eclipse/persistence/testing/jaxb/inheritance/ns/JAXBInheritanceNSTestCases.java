@@ -66,7 +66,7 @@ public class JAXBInheritanceNSTestCases extends JAXBWithJSONTestCases {
 		StringWriter sw = new StringWriter();
 		
 		m.marshal(getWriteControlObject(), sw);
-        compareStrings("**testJSONMarshalToStringWriter-NoNamespacesSet**", sw.toString(), controlFile);
+        compareStrings("**testJSONMarshalToStringWriter-NoNamespacesSet**", sw.toString(), controlFile, shouldRemoveEmptyTextNodesFromControlDoc());
 
         StringReader sr = new StringReader(sw.toString());
         Object o = u.unmarshal(sr);

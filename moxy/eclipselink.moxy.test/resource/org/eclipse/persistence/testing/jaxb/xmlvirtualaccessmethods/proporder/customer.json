@@ -1,11 +1,1 @@
-{"customer":{
-   "first-name":"Jane",
-   "last-name":"Doe",
-   "billingAddress":{
-      "street":"1 Billing Street"
-    },
-   "shipping-address":{
-      "street":"2 Shipping Road"
-    },
-    "phone-number":[{},{}]
-}}
+{"customer":{"first-name":"Jane","last-name":"Doe","billingAddress":{"street":"1 Billing Street"},"shipping-address":{"street":"2 Shipping Road"},"phone-number":[{},{}]}}

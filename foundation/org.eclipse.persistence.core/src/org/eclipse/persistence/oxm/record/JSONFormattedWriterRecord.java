@@ -55,7 +55,7 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
     private boolean isLastEventText;
 
     public JSONFormattedWriterRecord() {
-        numberOfTabs = 1;
+        numberOfTabs = 0;
         complexType = true;
         isLastEventText = false;
         space = " ";
@@ -67,22 +67,19 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
         }
         return tab;
     }
+    
+    public void startDocument(String encoding, String version) {
+        super.startDocument(encoding, version);
+        numberOfTabs++;; 
+    }
+    
     /**
      * INTERNAL:
      */
     @Override
     public void endDocument() {
-        try {
-            if(levels.size() != 1) {
-                writer.write(Helper.cr());
-            }
-            super.endDocument();
-            if(levels.isEmpty()) {
-                writer.write(Helper.cr());
-            }
-        } catch (IOException e) {
-            throw XMLMarshalException.marshalException(e);
-        }
+         numberOfTabs--;
+         super.endDocument();
     }
 
     @Override
@@ -217,9 +214,6 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
         try {
             writer.write(' ');
             super.endCollection();
-            if(levels.size() == 1) {
-                writer.write(Helper.cr());
-            }
         } catch(IOException e) {
             throw XMLMarshalException.marshalException(e);
         }

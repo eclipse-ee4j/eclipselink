@@ -29,6 +29,8 @@ public class PropOrderTestCases extends JAXBWithJSONTestCases {
         setTypes(new Class[] {Customer.class, Parent.class, PhoneNumber.class, Address.class});
     }
 
+    
+    
     @Override
     protected Map getProperties() {
         Map<String, Object> properties = new HashMap<String, Object>();
@@ -63,4 +65,13 @@ public class PropOrderTestCases extends JAXBWithJSONTestCases {
         customer.set("phoneNumbers", phoneNumbers);
         return customer;
     }
+    
+     public String getWriteControlJSONFormatted(){
+    	 return "org/eclipse/persistence/testing/jaxb/xmlvirtualaccessmethods/proporder/customer_formatted.json";
+     }
+     
+     public boolean shouldRemoveWhitespaceFromControlDocJSON(){
+    	 return false;
+     }
+    
 }

@@ -26,6 +26,7 @@ import org.eclipse.persistence.testing.jaxb.json.JSONMarshalUnmarshalTestCases;
 public class WithoutXmlRootElementTestCases extends JSONMarshalUnmarshalTestCases {
 
     private static final String CONTROL_JSON = "org/eclipse/persistence/testing/jaxb/json/rootlevellist/WithoutXmlRootElement.json";
+    private static final String CONTROL_JSON_FORMATTED = "org/eclipse/persistence/testing/jaxb/json/rootlevellist/WithoutXmlRootElementFormatted.json";
 
     public WithoutXmlRootElementTestCases(String name) throws Exception {
         super(name);
@@ -74,5 +75,13 @@ public class WithoutXmlRootElementTestCases extends JSONMarshalUnmarshalTestCase
     public void testUnmarshalEmptyList() throws Exception {
         List<WithoutXmlRootElementRoot>  test = (List<WithoutXmlRootElementRoot>) jsonUnmarshaller.unmarshal(new StreamSource(new StringReader("[]")), WithoutXmlRootElementRoot.class).getValue();
         assertEquals(0, test.size());
+    }
+
+    protected boolean shouldRemoveWhitespaceFromControlDocJSON(){
+		return false;
+	}
+    
+    public String getWriteControlJSONFormatted(){
+    	return CONTROL_JSON_FORMATTED;
     }
 }

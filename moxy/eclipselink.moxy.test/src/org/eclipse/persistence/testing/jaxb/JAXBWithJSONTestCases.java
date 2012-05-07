@@ -185,7 +185,7 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
 
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         getJSONMarshaller().marshal(getWriteControlObject(), os);
-        compareStrings("testJSONMarshalToOutputStream_FORMATTED", new String(os.toByteArray()), getWriteControlJSONFormatted());
+        compareStrings("testJSONMarshalToOutputStream_FORMATTED", new String(os.toByteArray()), getWriteControlJSONFormatted(), shouldRemoveWhitespaceFromControlDocJSON());
         os.close();
     }
 
@@ -205,7 +205,7 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
         StringWriter sw = new StringWriter();
         getJSONMarshaller().marshal(getWriteControlObject(), sw);
         log(sw.toString());
-        compareStrings("testJSONMarshalToStringWriter_FORMATTED", sw.toString(), getWriteControlJSONFormatted());
+        compareStrings("testJSONMarshalToStringWriter_FORMATTED", sw.toString(), getWriteControlJSONFormatted(),shouldRemoveWhitespaceFromControlDocJSON());
     }
 
     protected void compareStrings(String test, String testString) {
@@ -213,25 +213,29 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
     }
     
     protected void compareStrings(String test, String testString, String controlFileLocation) {
+    	compareStrings(test, testString, controlFileLocation, shouldRemoveEmptyTextNodesFromControlDoc());
+    }
+    
+    protected void compareStrings(String test, String testString, String controlFileLocation, boolean removeWhitespace) {
         log(test);
-        if(shouldRemoveEmptyTextNodesFromControlDoc()){
+        if(removeWhitespace){
             log("Expected (With All Whitespace Removed):");
         }else{
         	log("Expected");
         }
         
         String expectedString = loadFileToString(controlFileLocation);
-        if(shouldRemoveEmptyTextNodesFromControlDoc()){
+        if(removeWhitespace){
         	expectedString = expectedString.replaceAll("[ \b\t\n\r ]", "");
         }
         log(expectedString);
-        if(shouldRemoveEmptyTextNodesFromControlDoc()){
+        if(removeWhitespace){
             log("\nActual (With All Whitespace Removed):");
         }else{
         	log("\nActual");
         }
         
-        if(shouldRemoveEmptyTextNodesFromControlDoc()){
+        if(removeWhitespace){
             testString = testString.replaceAll("[ \b\t\n\r]", "");
         }
         log(testString);
@@ -245,5 +249,8 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
     private URL getJSONURL() {
         return Thread.currentThread().getContextClassLoader().getResource(controlJSONLocation);
     }
-
+        
+    public boolean shouldRemoveWhitespaceFromControlDocJSON(){
+    	return true;
+    }
 }
