@@ -399,7 +399,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         tests.add("testLazyOneToOneFetchInitialization");
         tests.add("testSequenceObjectWithSchemaName");
         tests.add("testSharedExpressionInQueries");
-        tests.add("testNestedFetchQueryHints");
         tests.add("testNestedBatchQueryHints");
         if (!isJPA10()) {
             tests.add("testDetachNull");
@@ -425,6 +424,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             tests.add("testNonPooledConnection");
             tests.add("testExclusiveIsolatedLeaksConnectionOnClear");
             tests.add("testSetTargetQueryOneToMany");
+            tests.add("testNestedFetchQueryHints");
             tests.add("testInheritanceFetchJoinSecondCall");
         }
         Collections.sort(tests);
@@ -5735,7 +5735,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }    
     protected String verifyJoinAttributeExpressions(String queryName, Query query) {
         String[] names = {"manager", "projects", "teamMembers", "dealers", "phoneNumbers"};
-        ReadAllQuery  readAllQuery = (ReadAllQuery)JpaHelper.getDatabaseQuery(query);
+        ReadAllQuery  readAllQuery = query.unwrap(ReadAllQuery.class);
         List<Expression> joinExpressions = readAllQuery.getJoinedAttributeManager().getJoinedAttributeExpressions();
         boolean ok = true;
         if (joinExpressions.size() != names.length) {
