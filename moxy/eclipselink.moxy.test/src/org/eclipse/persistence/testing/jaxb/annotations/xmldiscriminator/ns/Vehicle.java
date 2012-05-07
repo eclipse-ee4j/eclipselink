@@ -18,6 +18,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.eclipse.persistence.oxm.annotations.XmlDiscriminatorNode;
 import org.eclipse.persistence.oxm.annotations.XmlDiscriminatorValue;
 
+@XmlRootElement(name="vehicle")
 @XmlDiscriminatorNode("@vtype")
 @XmlDiscriminatorValue("vehicle")
 public class Vehicle {

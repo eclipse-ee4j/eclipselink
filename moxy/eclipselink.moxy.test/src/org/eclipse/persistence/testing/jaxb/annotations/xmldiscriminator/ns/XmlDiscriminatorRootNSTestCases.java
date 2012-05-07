@@ -12,22 +12,24 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.annotations.xmldiscriminator.ns;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-import org.eclipse.persistence.oxm.annotations.XmlDiscriminatorValue;
+public class XmlDiscriminatorRootNSTestCases extends JAXBWithJSONTestCases {
 
-@XmlRootElement(name="vehicle")
-@XmlDiscriminatorValue("car")
-public class Car extends Vehicle {
+    private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmldiscriminator/ns/root.xml";
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/annotations/xmldiscriminator/ns/root.json";
 
-    public int numberOfDoors;
-    
-    public boolean equals(Object obj) {
-        if(null == obj || obj.getClass() != this.getClass()) {
-            return false;
-        }
-        Car test = (Car) obj;
-        return numberOfDoors == test.numberOfDoors;
+    public XmlDiscriminatorRootNSTestCases(String name) throws Exception {
+        super(name);
+        setClasses(new Class[]{ Root.class, Car.class});
+        setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
+    }
+
+    public Car getControlObject() {
+        Car car = new Car();
+        car.numberOfDoors = 2;
+        return car;
     }
 
 }
