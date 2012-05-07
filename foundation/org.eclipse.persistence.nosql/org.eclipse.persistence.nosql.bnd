@@ -11,5 +11,8 @@ Include-Resource:\
  ${nosql.2.base.dir}/license.html
 Import-Package:\
  javax.naming;resolution:=optional,\
+ com.mongodb;resolution:=optional,\
+ org.bson;resolution:=optional,\
+ org.bson.types;resolution:=optional,\
  javax.resource.*;version="1.5.0";resolution:=optional,\
  org.eclipse.persistence.*;version="${release.version}", *
