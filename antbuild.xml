@@ -242,7 +242,6 @@
 
     <target name="clean-runtime-built" description="Clean the runtime projects" depends="clean-core">
         <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle}" target="clean"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.extension.nosql}"  target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.modelgen}"         target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.moxy.dynamicxjc}"  target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.util.jaxb}"        target="clean"/>
@@ -312,7 +311,6 @@
         <!-- temporarily force dbws.builder build from ant -->
         <ant antfile="antbuild.xml" dir="${eclipselink.dbws.builder}"     target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle}" target="repackage"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.extension.nosql}"  target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.modelgen}"         target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.moxy.dynamicxjc}"  target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.util.jaxb}"        target="build"/>
@@ -930,6 +928,7 @@
     </target>
     <!-- Run nosql Tests -->
     <target name="test-nosql" description="run all nosql specific tests">
+        <!-- No Mongodb installed on nightly build machine. Test execution won't work.  -->
         <!-- ant antfile="antbuild.xml" dir="${eclipselink.extension.nosql.test}"      target="test"/ -->
     </target>
     <!-- Run JPA LRG. -->
