@@ -110,19 +110,41 @@
         <property name="specification.vendor"  value="Eclipse.org - EclipseLink Project"/>
         <property name="implementation.vendor" value="${specification.vendor}"/>
 
-        <!-- dependency properties -->
-        <property name="persistence.lib"    value="${core.2.jpa.plugins.dir}/${persistence20.jar}"/>
+        <!-- Test for dependencies -->
+        <selectbundle basename="javax.persistence" directory="${core.build.location}/${core.2.jpa.plugins.dir}" separator="_"
+            criterion="[2.0.0,3.0.0)" property="persistence.lib" includepath="true"
+        />
         <!-- Core has no jpa 2.0 specific compile dependency: use below instead to test assertion -->
-        <!-- property name="persistence.lib"    value="${core.2.common.plugins.dir}/${persistence10.jar}"/ -->
-
-        <!-- dependency tests -->
+        <!-- selectbundle basename="javax.persistence" directory="${core.build.location}/${core.2.jpa.plugins.dir}" separator="_"
+            criterion="[1.0.0,2.0.0)" property="persistence.lib" includepath="true"
+        / -->
+        <selectbundle basename="org.eclipse.persistence.antlr" directory="${core.build.location}/${core.2.common.plugins.dir}" separator="_"
+            criterion="[2.0.0,4.0.0)" property="antlr.lib" includepath="true"
+        />
+        <selectbundle basename="org.eclipse.persistence.asm" directory="${core.build.location}/${core.2.common.plugins.dir}" separator="_"
+            criterion="[2.0.0,4.0.0)" property="asm.lib" includepath="true"
+        />
+        <selectbundle basename="org.eclipse.persistence.jpa.jpql" directory="${core.build.location}/${core.2.common.plugins.dir}" separator="_"
+            criterion="[2.0.0,3.0.0)" property="hermes.lib" includepath="true"
+        />
         <available file="${persistence.lib}" property="persistence.bundle.exist"/>
+        <available file="${antlr.lib}"       property="antlr.bundle.exist"/>
+        <available file="${asm.lib}"         property="asm.bundle.exist"/>
+        <available file="${hermes.lib}"      property="hermes.bundle.exist"/>
+        <say  message="persistence.lib ='${persistence.lib}'" if="persistence.bundle.exist"/>
+        <say  message="antlr.lib       ='${antlr.lib}'"       if="antlr.bundle.exist"/>
+        <say  message="asm.lib         ='${asm.lib}'"         if="asm.bundle.exist"/>
+        <say  message="hermes.lib      ='${hermes.lib}'"      if="hermes.bundle.exist"/>
         <fail message="Cannot find: '${persistence.lib}'" unless="persistence.bundle.exist"/>
+        <fail message="Cannot find: '${antlr.lib}'"       unless="antlr.bundle.exist"/>
+        <fail message="Cannot find: '${asm.lib}'"         unless="asm.bundle.exist"/>
+        <fail message="Cannot find: '${hermes.lib}'"      unless="hermes.bundle.exist"/>
 
         <!-- Set Compile Path-->
         <path id="core.compile.path">
-            <pathelement path="${core.2.common.plugins.dir}/${antlr}"/>
-            <pathelement path="${core.2.common.plugins.dir}/${asm}"/>
+            <pathelement path="${antlr.lib}"/>
+            <pathelement path="${asm.lib}"/>
+            <pathelement path="${hermes.lib}"/>
             <pathelement path="${persistence.lib}"/>
             <fileset
                 dir="${core.2.common.plugins.dir}"
@@ -141,16 +163,12 @@
         <selectbundle basename="${bndtool.prefix}" directory="${extensions.depend.dir}" separator="${bndtool.separator}"
                      criterion="${bndtool.criteria}" property="bndtool.lib" includepath="true"
         />
-        <echo message="bndtool.prefix      = '${bndtool.prefix}'"/>
-        <echo message="core.2.buildsys.dir = '${core.2.buildsys.dir}'"/>
-        <echo message="bndtool.separator   = '${bndtool.separator}'"/>
-        <echo message="bndtool.criteria    = '${bndtool.criteria}'"/>
-        <echo message="core.2.buildsys.dir = '${core.2.buildsys.dir}'"/>
-        <selectbundle basename="${bndtool.prefix}" directory="..\..\buildsystem" separator="${bndtool.separator}"
+        <echo message="core.2.buildsys.dir   = '${core.2.buildsys.dir}'"/>
+        <selectbundle basename="${bndtool.prefix}" directory="${core.2.buildsys.dir}" separator="${bndtool.separator}"
                      criterion="${bndtool.criteria}" property="bndtool.lib" includepath="true"
         />
-        <say message="bndtool.lib                     = '${bndtool.lib}'" if="bndtool.lib"/>
-        <say message="Bnd bundle not found in '${extensions.depend.dir}' or '${core.2.buildsys.dir}'!" unless="bndtool.lib"/>
+        <say  message="bndtool.lib           = '${bndtool.lib}'" if="bndtool.lib"/>
+        <say  message="Bnd bundle not found in '${extensions.depend.dir}' or '${core.2.buildsys.dir}'!" unless="bndtool.lib"/>
 
         <condition property="bld">
             <or>
