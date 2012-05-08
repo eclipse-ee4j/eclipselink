@@ -28,11 +28,15 @@ import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.javamodel.Helper;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
+import org.eclipse.persistence.jaxb.javamodel.JavaField;
+import org.eclipse.persistence.jaxb.javamodel.JavaHasAnnotations;
+import org.eclipse.persistence.jaxb.javamodel.JavaMethod;
 import org.eclipse.persistence.jaxb.javamodel.JavaModelInput;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaClassImpl;
 import org.eclipse.persistence.jaxb.xmlmodel.JavaAttribute;
 import org.eclipse.persistence.jaxb.xmlmodel.JavaType;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlAbstractNullPolicy;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlAnyAttribute;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlAnyElement;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlAttribute;
@@ -90,8 +94,12 @@ public class XMLProcessor {
     private static final String SLASH = "/";
     private static final String SELF = ".";
     private static final String OPEN_BRACKET =  "[";
+    private static final String IS_STR = "is";
+    private static final String GET_STR = "get";
+    private static final String SET_STR = "set";
     private static final String JAVA_LANG_OBJECT = "java.lang.Object";
     public static final String DEFAULT = "##default";
+    
 
     /**
      * This is the preferred constructor.
@@ -440,6 +448,9 @@ public class XMLProcessor {
                 JavaAttribute javaAttribute = (JavaAttribute) jaxbElement.getValue();
 
                 Property originalProperty = typeInfo.getOriginalProperties().get(javaAttribute.getJavaAttribute());
+                if(javaAttribute.getXmlAccessorType() != null) {
+                    originalProperty = processPropertyForAccessorType(typeInfo, javaAttribute, originalProperty);
+                }
                 if (originalProperty == null) {
                     if (typeInfo.getXmlVirtualAccessMethods() != null) {
                         Property newProperty = new Property(this.aProcessor.getHelper());
@@ -507,6 +518,99 @@ public class XMLProcessor {
                 }
             }
         }
+    }
+
+    private Property processPropertyForAccessorType(TypeInfo typeInfo, JavaAttribute javaAttribute, Property originalProperty) {
+        if(originalProperty == null) {
+            Property prop = createProperty(typeInfo, javaAttribute);
+            if(prop != null) {
+                typeInfo.addProperty(prop.getPropertyName(), prop);
+            }
+            return prop;
+        }
+        
+        if((javaAttribute.getXmlAccessorType() == XmlAccessType.FIELD && !(originalProperty.isMethodProperty())) || 
+                javaAttribute.getXmlAccessorType() == XmlAccessType.PROPERTY && originalProperty.isMethodProperty()) {
+            return originalProperty;
+        }
+        
+        originalProperty.setMethodProperty(!(originalProperty.isMethodProperty()));
+        if(originalProperty.isMethodProperty()) {
+            //figure out get and set method names. See if they exist. 
+            JavaClass jClass = this.jModelInput.getJavaModel().getClass(typeInfo.getJavaClassName());
+
+            String propName = originalProperty.getPropertyName();
+            propName = Character.toUpperCase(propName.charAt(0)) + propName.substring(1);
+            String getMethodName = GET_STR + propName;
+            String setMethodName = SET_STR + propName;
+            
+            JavaMethod getMethod = jClass.getDeclaredMethod(getMethodName, new JavaClass[]{});
+            if(getMethod == null) {
+                getMethodName = IS_STR + propName;
+                getMethod = jClass.getDeclaredMethod(getMethodName, new JavaClass[]{});
+            }
+            JavaMethod setMethod = jClass.getDeclaredMethod(setMethodName, new JavaClass[]{originalProperty.getType()});
+            if(getMethod != null) {
+                originalProperty.setGetMethodName(getMethodName);
+            }
+            if(setMethod != null) {
+                originalProperty.setSetMethodName(setMethodName);
+            }
+        } else {
+            originalProperty.setGetMethodName(null);
+            originalProperty.setSetMethodName(null);
+            originalProperty.setMethodProperty(false);
+        }
+        
+        return originalProperty;
+    }
+
+    private Property createProperty(TypeInfo info, JavaAttribute javaAttribute) {
+        XmlAccessType xmlAccessorType = javaAttribute.getXmlAccessorType();
+        //Property prop = new Property();
+        //prop.setPropertyName(javaAttribute.getJavaAttribute());
+        String propName = javaAttribute.getJavaAttribute();
+        JavaHasAnnotations element = null;
+        JavaClass pType = null;
+        JavaClass jClass = this.jModelInput.getJavaModel().getClass(info.getJavaClassName());
+        if(xmlAccessorType == XmlAccessType.PROPERTY) {
+            //set up accessor method names
+            String name  = Character.toUpperCase(propName.charAt(0)) + propName.substring(1);
+            String getMethodName = GET_STR + name;
+            String setMethodName = SET_STR + name;
+            
+            JavaMethod jMethod = jClass.getDeclaredMethod(getMethodName, new JavaClass[]{});
+            if(jMethod == null) {
+                getMethodName = IS_STR + name;
+                jMethod = jClass.getDeclaredMethod(getMethodName, new JavaClass[]{});
+            }
+            if(jMethod != null) {
+                pType = jMethod.getReturnType();
+                element = jMethod;
+            } else {
+                //look for a set method if type is set on javaAttribute
+                for (Object next:jClass.getDeclaredMethods()) {
+                    JavaMethod nextMethod = (JavaMethod)next;
+                    if(nextMethod.getName().equals(setMethodName) && nextMethod.getParameterTypes().length == 1) {
+                        pType = nextMethod.getParameterTypes()[0];
+                        element = nextMethod;
+                    }
+                    
+                }
+                if(element == null) {
+                    return null;
+                }
+            }
+        } else {
+            JavaField jField = jClass.getDeclaredField(propName);
+            if(jField == null) {
+                return null;
+            }
+            pType = jField.getResolvedType();
+            element = jField;
+        }
+        
+        return this.aProcessor.buildNewProperty(info, jClass, element, propName, pType);
     }
 
     /**

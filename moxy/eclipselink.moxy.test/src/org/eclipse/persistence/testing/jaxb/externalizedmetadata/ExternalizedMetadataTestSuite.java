@@ -31,6 +31,9 @@ import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessortype
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessortype.packagelevel.javaclassoverride.XmlAccessorTypePackageJavaClassOverrideTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessortype.packagelevel.nooverride.XmlAccessorTypePackageNoOverrideTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessortype.property.XmlAccessorTypePropertyTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessortype.propertylevel.FieldAccessTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessortype.propertylevel.PropertyAccessTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessortype.propertylevel.UnspecifiedTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessortype.publicmember.XmlAccessorTypePublicMemberTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.classlevel.AdapterOnClassTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.hexbinary.AdapterHexBinaryTestCases;
@@ -210,6 +213,9 @@ public class ExternalizedMetadataTestSuite extends TestSuite {
         suite.addTestSuite(FactoryTestCases.class);
         suite.addTestSuite(SuperClassOverrideTestCases.class);
         suite.addTest(PropOrderTestSuite.suite());
+        suite.addTestSuite(FieldAccessTestCases.class);
+        suite.addTestSuite(PropertyAccessTestCases.class);
+        suite.addTestSuite(UnspecifiedTestCases.class);
         return suite;
     }
     

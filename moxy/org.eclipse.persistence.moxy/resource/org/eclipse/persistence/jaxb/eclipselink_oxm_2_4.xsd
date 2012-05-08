@@ -109,6 +109,7 @@
     <xs:element name="java-attribute" type="java-attribute" />
     <xs:complexType name="java-attribute" abstract="true">
         <xs:attribute name="java-attribute" type="xs:string" />
+        <xs:attribute name="xml-accessor-type" type="xml-access-type"/>
     </xs:complexType>
     <xs:element name="xml-access-methods" type="xml-access-methods" />
     <xs:complexType name="xml-access-methods">

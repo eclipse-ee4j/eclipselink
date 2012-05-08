@@ -8,11 +8,10 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- * dmccann - June 29/2009 - 2.0 - Initial implementation
+ * dmccann - August 30/2010 - 2.2 - Initial implementation
  ******************************************************************************/
 package org.eclipse.persistence.jaxb.xmlmodel;
 
-import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
@@ -28,6 +27,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;attribute name="java-attribute" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="xml-accessor-type" type="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-access-type" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -35,7 +35,7 @@ import javax.xml.bind.annotation.XmlType;
  * 
  * 
  */
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(javax.xml.bind.annotation.XmlAccessType.FIELD)
 @XmlType(name = "java-attribute")
 @XmlSeeAlso({
     XmlValue.class,
@@ -56,6 +56,8 @@ public abstract class JavaAttribute {
 
     @javax.xml.bind.annotation.XmlAttribute(name = "java-attribute")
     protected String javaAttribute;
+    @javax.xml.bind.annotation.XmlAttribute(name = "xml-accessor-type")
+    protected org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType xmlAccessorType;
 
     /**
      * Gets the value of the javaAttribute property.
@@ -79,6 +81,30 @@ public abstract class JavaAttribute {
      */
     public void setJavaAttribute(String value) {
         this.javaAttribute = value;
+    }
+
+    /**
+     * Gets the value of the xmlAccessorType property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType }
+     *     
+     */
+    public org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType getXmlAccessorType() {
+        return xmlAccessorType;
+    }
+
+    /**
+     * Sets the value of the xmlAccessorType property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType }
+     *     
+     */
+    public void setXmlAccessorType(org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType value) {
+        this.xmlAccessorType = value;
     }
 
 }

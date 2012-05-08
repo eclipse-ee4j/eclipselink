@@ -1770,7 +1770,7 @@ public class AnnotationsProcessor {
      * Create a new Property Object and process the annotations that are common
      * to fields and methods
      */
-    private Property buildNewProperty(TypeInfo info, JavaClass cls, JavaHasAnnotations javaHasAnnotations, String propertyName, JavaClass ptype) {
+    Property buildNewProperty(TypeInfo info, JavaClass cls, JavaHasAnnotations javaHasAnnotations, String propertyName, JavaClass ptype) {
         Property property = null;
         if (helper.isAnnotationPresent(javaHasAnnotations, XmlElements.class)) {
             property = buildChoiceProperty(javaHasAnnotations);
