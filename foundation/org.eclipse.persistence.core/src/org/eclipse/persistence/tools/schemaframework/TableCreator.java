@@ -334,14 +334,14 @@ public class TableCreator {
     /**
      * Return true if DatabaseException is to be ignored.
      */
-    protected boolean shouldIgnoreDatabaseException() {
+    public boolean shouldIgnoreDatabaseException() {
         return ignoreDatabaseException;
     }
 
     /**
      * Set flag whether DatabaseException should be ignored. 
      */
-    protected void setIgnoreDatabaseException(boolean ignoreDatabaseException) {
+    public void setIgnoreDatabaseException(boolean ignoreDatabaseException) {
         this.ignoreDatabaseException = ignoreDatabaseException;
     }
 

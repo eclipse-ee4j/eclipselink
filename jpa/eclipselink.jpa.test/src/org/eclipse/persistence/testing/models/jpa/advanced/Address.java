@@ -64,7 +64,8 @@ import static org.eclipse.persistence.annotations.Direction.IN_OUT;
 )
 @NamedQuery(
     name="findAllAddressesByPostalCode", 
-    query="SELECT OBJECT(address) FROM Address address WHERE address.postalCode = :postalcode"
+    query="SELECT OBJECT(address) FROM Address address WHERE address.postalCode = :postalcode",
+    hints={@QueryHint(name="eclipselink.sql.hint", value="/* + RESULT_CACHE + */")}
 )
 @NamedStoredProcedureQueries({
     @NamedStoredProcedureQuery(

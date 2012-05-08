@@ -23,7 +23,13 @@ public interface AggregateChangeRecord extends ChangeRecord {
     /**
      * ADVANCED:
      * This method is used to return the ObjectChangeSet representing the changed Aggregate.
-     * @return org.eclipse.persistence.CahngeSets.ObjectChanges
      */
     public ObjectChangeSet getChangedObject();
+    
+    /**
+     * ADVANCED:
+     * If the owning UnitOfWork has shouldChangeRecordKeepOldValue set to true,
+     * then return the old value of the attribute represented by this ChangeRecord.
+     */
+    public Object getOldValue();
 }

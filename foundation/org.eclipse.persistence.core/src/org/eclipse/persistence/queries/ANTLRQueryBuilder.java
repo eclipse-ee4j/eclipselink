@@ -17,6 +17,7 @@ import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.jpa.parsing.JPQLParseTree;
 import org.eclipse.persistence.internal.jpa.parsing.jpql.JPQLParser;
 import org.eclipse.persistence.internal.jpa.parsing.jpql.JPQLParserFactory;
+import org.eclipse.persistence.internal.queries.JPQLCallQueryMechanism;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
@@ -78,6 +79,7 @@ public final class ANTLRQueryBuilder implements JPAQueryBuilder {
         JPQLParseTree parseTree = buildParseTree(jpqlQuery, session);
         DatabaseQuery databaseQuery = parseTree.createDatabaseQuery();
         databaseQuery.setJPQLString(jpqlQuery.toString());
+        ((JPQLCallQueryMechanism)databaseQuery.getQueryMechanism()).getJPQLCall().setIsParsed(true);
 
         populateQueryInternal(session, parseTree, databaseQuery);
 

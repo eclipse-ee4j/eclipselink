@@ -152,7 +152,8 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         suite.addTest(new AdvancedQueryTestSuite("testMapKeyJoinFetching"));
         suite.addTest(new AdvancedQueryTestSuite("testMapKeyBatchFetching"));
         suite.addTest(new AdvancedQueryTestSuite("testJPQLCacheHits"));
-        suite.addTest(new AdvancedQueryTestSuite("testCacheIndexes"));        
+        suite.addTest(new AdvancedQueryTestSuite("testCacheIndexes"));
+        suite.addTest(new AdvancedQueryTestSuite("testSQLHint"));
         if (!isJPA10()) {
             suite.addTest(new AdvancedQueryTestSuite("testQueryPESSIMISTIC_FORCE_INCREMENTLock"));
             suite.addTest(new AdvancedQueryTestSuite("testVersionChangeWithReadLock"));
@@ -218,6 +219,35 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             }
             if (counter.getSqlStatements().size() > 0) {
                 fail("Cache hit do not occur: " + counter.getSqlStatements());
+            }
+        } finally {
+            rollbackTransaction(em);
+            if (counter != null) {
+                counter.remove();
+            }
+        }
+    }
+
+    
+    /**
+     * Test using the hint hint.
+     */
+    public void testSQLHint() {
+        if (!getDatabaseSession().getPlatform().isOracle()) {
+            return;
+        }
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        QuerySQLTracker counter = null;
+        try {
+            counter = new QuerySQLTracker(getServerSession());
+            
+            Query query = em.createNamedQuery("findAllAddressesByPostalCode");
+            query.setParameter("postalcode", "K2H8C2");
+            query.getResultList();
+
+            if (((String)counter.getSqlStatements().get(0)).indexOf("/*") == -1) {
+                fail("SQL hint was not used: " + counter.getSqlStatements());
             }
         } finally {
             rollbackTransaction(em);

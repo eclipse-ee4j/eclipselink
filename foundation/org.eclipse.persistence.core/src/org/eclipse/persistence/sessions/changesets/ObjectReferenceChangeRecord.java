@@ -28,4 +28,10 @@ public interface ObjectReferenceChangeRecord extends ChangeRecord {
      * @return org.eclipse.persistence.sessions.changesets.ObjectChangeSet
      */
     public ObjectChangeSet getNewValue();
+    
+    /**
+     * Return the old value of the object reference.
+     * This is used during the commit for private-owned references.
+     */
+    public Object getOldValue();
 }

@@ -28,4 +28,10 @@ public interface DirectToFieldChangeRecord extends ChangeRecord {
      * @return java.lang.Object
      */
     public Object getNewValue();
+
+    /**
+     * ADVANCED:
+     * Return the old value of the attribute represented by this ChangeRecord.
+     */
+    public Object getOldValue();
 }

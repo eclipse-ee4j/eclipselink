@@ -21,6 +21,7 @@ import java.util.ResourceBundle;
 import org.eclipse.persistence.config.ParserValidationType;
 import org.eclipse.persistence.exceptions.JPQLException;
 import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.internal.queries.JPQLCallQueryMechanism;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.jpql.EclipseLinkGrammarValidator;
 import org.eclipse.persistence.jpa.jpql.EclipseLinkSemanticValidator;
@@ -386,6 +387,7 @@ public final class HermesParser implements JPAQueryBuilder {
 				query = new DeleteAllQuery();
 				queryContext.setDatabasQuery(query);
 				query.setJPQLString(jpqlQuery);
+				((JPQLCallQueryMechanism)query.getQueryMechanism()).getJPQLCall().setIsParsed(true);
 			}
 
 			query.setSession(queryContext.getSession());
@@ -417,6 +419,7 @@ public final class HermesParser implements JPAQueryBuilder {
 				query = buildReadAllQuery(expression);
 				queryContext.setDatabasQuery(query);
 				query.setJPQLString(jpqlQuery);
+                                ((JPQLCallQueryMechanism)query.getQueryMechanism()).getJPQLCall().setIsParsed(true);
 			}
 
 			// Now populate it
@@ -436,6 +439,7 @@ public final class HermesParser implements JPAQueryBuilder {
 				query = new UpdateAllQuery();
 				queryContext.setDatabasQuery(query);
 				query.setJPQLString(jpqlQuery);
+                                ((JPQLCallQueryMechanism)query.getQueryMechanism()).getJPQLCall().setIsParsed(true);
 			}
 
 			query.setSession(queryContext.getSession());
