@@ -1,0 +1,21 @@
+
+{"root":{
+    "nested":{
+         "child":["Child1","Child2"],
+	 "theInteger":[{
+	    "type":"int",
+	    "value":15
+	 }],
+	 "theString":["15"],
+         "theTime":[{
+ 	    "type":"time",
+	    "value":"09:30:45.0"
+	 }],
+	 "someChild":["Child3",{}],
+         "blah":[{
+	      "type":"childType",
+	      "value":"Child4"
+	 }],
+         "value":["myTextNode"]
+	}
+}}

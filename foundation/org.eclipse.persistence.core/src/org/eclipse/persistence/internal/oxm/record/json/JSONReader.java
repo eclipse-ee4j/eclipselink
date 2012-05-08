@@ -35,7 +35,7 @@ import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.record.SAXUnmarshallerHandler;
 import org.eclipse.persistence.internal.oxm.XPathNode;
 import org.eclipse.persistence.internal.oxm.record.XMLReaderAdapter;
-import org.eclipse.persistence.internal.oxm.record.deferred.DescriptorNotFoundContentHandler;
+import org.eclipse.persistence.internal.oxm.record.deferred.DeferredContentHandler;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
@@ -215,7 +215,7 @@ public class JSONReader extends XMLReaderAdapter {
             		}  
                 }
                 
-                if(contentHandler instanceof XMLRootRecord || contentHandler instanceof DescriptorNotFoundContentHandler){      
+                if(contentHandler instanceof XMLRootRecord || contentHandler instanceof DeferredContentHandler){
                 	//if its not namespaceAware don't report the "type" child as it is will be read by the xsi:type lookup
                 	if(!namespaceAware && localName.equals(XMLConstants.SCHEMA_TYPE_ATTRIBUTE)){
                 		break;
