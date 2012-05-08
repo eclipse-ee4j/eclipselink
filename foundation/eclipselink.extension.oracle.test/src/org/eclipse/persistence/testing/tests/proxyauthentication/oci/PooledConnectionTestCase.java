@@ -28,7 +28,7 @@ import org.eclipse.persistence.sessions.server.*;
 // which is used to connect ClientSession's write connection. 
 // There are three alternative approaches to realize the use case.
 //
-// B.  ClientSession uses pooled connection – proxy properties set into Accessor's login.
+// B.  ClientSession uses pooled connection - proxy properties set into Accessor's login.
 //
 // Proxy properties are set into writeAccessor's login.
 // Caching of ClientSessions is required because postAcquireConnection event

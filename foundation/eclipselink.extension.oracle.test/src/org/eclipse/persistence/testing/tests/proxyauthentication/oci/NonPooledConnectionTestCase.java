@@ -28,7 +28,7 @@ import org.eclipse.persistence.sessions.server.*;
 // which is used to connect ClientSession's write connection. 
 // There are three alternative approaches to realize the use case.
 //
-// A. Client Session uses non-pooled connection – proxy properties set on its login.
+// A. Client Session uses non-pooled connection - proxy properties set on its login.
 //
 // Proxy properties could be set either before ClientSession is created (useEvent=false);
 // or in postAcquireClientSession event (useEvent=true).
