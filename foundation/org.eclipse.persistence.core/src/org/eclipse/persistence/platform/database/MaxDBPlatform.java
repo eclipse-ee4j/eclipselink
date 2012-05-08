@@ -1,15 +1,15 @@
 /*******************************************************************************
  * Copyright (c) 2009,2010 Markus Karg, SAP. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  * Markus Karg - initial contribution (bug 284657)
- * SAP AG      - finalized implementation (bug 327778) 
+ * SAP AG      - finalized implementation (bug 327778)
  ******************************************************************************/
 package org.eclipse.persistence.platform.database;
 
@@ -44,19 +44,19 @@ import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
  * <b>Usage</b>
  * <p>
  * The MaxDB platform is configured in the persistence.xml by the following property:
- * <p>  
- * <code>&lt;property name="eclipselink.target-database" value="MaxDB"/&gt;</code>  
+ * <p>
+ * <code>&lt;property name="eclipselink.target-database" value="MaxDB"/&gt;</code>
  * <p>
  * Forward mapping with EclipseLink assumes that MaxDB is configured for unicode (in version 7.7, this is the default). Unicode mode also needs to be specified in the URL as follows:
  * <p>
  * <code>jdbc:sapdb://localhost/E32?unicode=yes</code>
  * <p>
- * <b>Tested with:</b> 
+ * <b>Tested with:</b>
  * <ul>
  * <li>DB: MaxDB, kernel 7.8.01 build 004-123-218-928</li>
- * <li>JDBC driver: MaxDB JDBC Driver, SAP AG, 7.6.06 Build 006-000-009-234 (Make-Version: 7.8.01 Build 003-123-215-703)</li> 
+ * <li>JDBC driver: MaxDB JDBC Driver, SAP AG, 7.6.06 Build 006-000-009-234 (Make-Version: 7.8.01 Build 003-123-215-703)</li>
  * </ul>
- * 
+ *
  * <b>Limitations:</b>
  * <br>
  * <ul>
@@ -70,16 +70,16 @@ import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
  * <li>Pessimistic locking with lock scope EXTENDED should be used cautiously in the presence of foreign key constraints - see bug 327472.</li>
 
  * </ul>
- * <br> 
+ * <br>
  * @author Markus KARG (markus at headcrashing.eu)
- * @author afischbach <°)))><
+ * @author afischbach
  * @author agoerler
  * @author Sabine Heider (sabine.heider at sap.com)
  * @author Konstantin Schwed (konstantin.schwed at sap.com)
  */
 @SuppressWarnings("serial")
-public final class MaxDBPlatform extends DatabasePlatform {    
-    
+public final class MaxDBPlatform extends DatabasePlatform {
+
     private static final FieldTypeDefinition FIELD_TYPE_DEFINITION_CLOB = new FieldTypeDefinition("LONG UNICODE", false);
 
     private static final FieldTypeDefinition FIELD_TYPE_DEFINITION_BLOB = new FieldTypeDefinition("LONG BYTE", false);
@@ -89,7 +89,7 @@ public final class MaxDBPlatform extends DatabasePlatform {
      *
      * ({@link http://maxdb.sap.com/doc/7_8/45/33337d9faf2b34e10000000a1553f7/content.htm})
      */
-    private static final int MAX_VARCHAR_UNICODE_LENGTH = 4000; // 
+    private static final int MAX_VARCHAR_UNICODE_LENGTH = 4000; //
 
     @Override
     public boolean isForUpdateCompatibleWithDistinct() {
@@ -110,7 +110,7 @@ public final class MaxDBPlatform extends DatabasePlatform {
         super();
         this.pingSQL = "SELECT 1 FROM DUAL";
     }
-            
+
     @Override
     protected final Hashtable buildFieldTypes() {
         final Hashtable<Class, FieldTypeDefinition> fieldTypeMapping = new Hashtable<Class, FieldTypeDefinition>();
@@ -124,13 +124,13 @@ public final class MaxDBPlatform extends DatabasePlatform {
 
         fieldTypeMapping.put(BigInteger.class, new FieldTypeDefinition("FIXED",19));
         fieldTypeMapping.put(BigDecimal.class, new FieldTypeDefinition("FIXED", 38));
-         
+
         fieldTypeMapping.put(Character.class, new FieldTypeDefinition("CHAR", 1, "UNICODE"));
-        fieldTypeMapping.put(Character[].class, new FieldTypeDefinition("VARCHAR", 255, "UNICODE")); 
+        fieldTypeMapping.put(Character[].class, new FieldTypeDefinition("VARCHAR", 255, "UNICODE"));
         fieldTypeMapping.put(char[].class, new FieldTypeDefinition("VARCHAR", 255, "UNICODE"));
-        fieldTypeMapping.put(String.class, new FieldTypeDefinition("VARCHAR", 255, "UNICODE")); 
-         
-        fieldTypeMapping.put(Byte.class, new FieldTypeDefinition("SMALLINT", false)); // can't be mapped to CHAR(1) BYTE as byte in java is signed        
+        fieldTypeMapping.put(String.class, new FieldTypeDefinition("VARCHAR", 255, "UNICODE"));
+
+        fieldTypeMapping.put(Byte.class, new FieldTypeDefinition("SMALLINT", false)); // can't be mapped to CHAR(1) BYTE as byte in java is signed
         fieldTypeMapping.put(Byte[].class, FIELD_TYPE_DEFINITION_BLOB);
         fieldTypeMapping.put(byte[].class, FIELD_TYPE_DEFINITION_BLOB);
         fieldTypeMapping.put(Blob.class, FIELD_TYPE_DEFINITION_BLOB);
@@ -153,7 +153,7 @@ public final class MaxDBPlatform extends DatabasePlatform {
      * Map VARCHAR types with length > MAX_VARCHAR_UNICODE_LENGTH to LONG UNICODE (i.e clob); shorter types to VARCHAR (n) UNICODE
      * See also bugs 317597, 317448
      */
-    protected void printFieldTypeSize(Writer writer, FieldDefinition field, FieldTypeDefinition fieldType) throws IOException {        
+    protected void printFieldTypeSize(Writer writer, FieldDefinition field, FieldTypeDefinition fieldType) throws IOException {
         String typeName = fieldType.getName();
         Class javaFieldType = field.getType();
         if ("VARCHAR".equals(typeName) && "UNICODE".equals(fieldType.getTypesuffix())) {
@@ -161,20 +161,20 @@ public final class MaxDBPlatform extends DatabasePlatform {
                 fieldType = FIELD_TYPE_DEFINITION_CLOB;
             }
         }
-        
-        
+
+
         super.printFieldTypeSize(writer, field, fieldType);
         if (fieldType.getTypesuffix() != null) {
             writer.append(" " + fieldType.getTypesuffix());
         }
-    }    
-    
-    
+    }
+
+
     @Override
     protected final void initializePlatformOperators() {
         super.initializePlatformOperators();
         this.addOperator(MaxDBPlatform.createConcatExpressionOperator());
-        this.addOperator(MaxDBPlatform.createTrim2ExpressionOperator());        
+        this.addOperator(MaxDBPlatform.createTrim2ExpressionOperator());
         this.addOperator(MaxDBPlatform.createToNumberOperator());
         this.addOperator(MaxDBPlatform.createNullifOperator());
         this.addOperator(MaxDBPlatform.createCoalesceOperator());
@@ -183,46 +183,46 @@ public final class MaxDBPlatform extends DatabasePlatform {
         this.addOperator(MaxDBPlatform.createCurrentTimeExpressionOperator());
         this.addNonBindingOperator(MaxDBPlatform.createNullValueOperator());
     }
-    
+
     private static final ExpressionOperator createConcatExpressionOperator() {
         return ExpressionOperator.simpleLogicalNoParens(ExpressionOperator.Concat, "||");
     }
-    
+
     /**
-     * Creates the expression operator representing the JPQL function current_timestamp as defined by § 4.6.17.2.3 of the JPA 2.0 specification
-     * 
-     * @return the expression operator representing the JPQL function current_timestamp as defined by § 4.6.17.2.3 of the JPA 2.0 specification
+     * Creates the expression operator representing the JPQL function current_timestamp as defined by 4.6.17.2.3 of the JPA 2.0 specification
+     *
+     * @return the expression operator representing the JPQL function current_timestamp as defined by 4.6.17.2.3 of the JPA 2.0 specification
      */
     private static final ExpressionOperator createTodayExpressionOperator() {
         return ExpressionOperator.simpleLogicalNoParens(ExpressionOperator.Today, "TIMESTAMP");
     }
-    
+
     /**
-     * Creates the expression operator representing the JPQL function current_date as defined by § 4.6.17.2.3 of the JPA 2.0 specification
-     * 
-     * @return the expression operator representing the JPQL function current_date as defined by § 4.6.17.2.3 of the JPA 2.0 specification
+     * Creates the expression operator representing the JPQL function current_date as defined by 4.6.17.2.3 of the JPA 2.0 specification
+     *
+     * @return the expression operator representing the JPQL function current_date as defined by 4.6.17.2.3 of the JPA 2.0 specification
      */
     private static final ExpressionOperator createCurrentDateExpressionOperator() {
         return ExpressionOperator.simpleLogicalNoParens(ExpressionOperator.CurrentDate, "DATE");
-    }        
-    
+    }
+
     /**
-     * Creates the expression operator representing the JPQL function current_timestamp as defined by § 4.6.17.2.3 of the JPA 2.0 specification
-     * 
-     * @return the expression operator representing the JPQL function current_timestamp as defined by § 4.6.17.2.3 of the JPA 2.0 specification
+     * Creates the expression operator representing the JPQL function current_timestamp as defined by 4.6.17.2.3 of the JPA 2.0 specification
+     *
+     * @return the expression operator representing the JPQL function current_timestamp as defined by 4.6.17.2.3 of the JPA 2.0 specification
      */
     private static final ExpressionOperator createCurrentTimeExpressionOperator() {
         return ExpressionOperator.simpleLogicalNoParens(ExpressionOperator.CurrentTime, "TIME");
-    }        
-    
-    private static final ExpressionOperator createTrim2ExpressionOperator() { 
+    }
+
+    private static final ExpressionOperator createTrim2ExpressionOperator() {
         return ExpressionOperator.simpleTwoArgumentFunction(ExpressionOperator.Trim2, "TRIM");
     }
 
     private static final ExpressionOperator createNullValueOperator() {
         return ExpressionOperator.simpleTwoArgumentFunction(ExpressionOperator.Nvl, "VALUE");
     }
-    
+
     /* see bug 316774 */
     private static final ExpressionOperator createCoalesceOperator() {
         ListExpressionOperator operator = (ListExpressionOperator) ExpressionOperator.coalesce();
@@ -230,11 +230,11 @@ public final class MaxDBPlatform extends DatabasePlatform {
         operator.setSelector(ExpressionOperator.Coalesce);
         return operator;
     }
-    
+
     private static final ExpressionOperator createToNumberOperator() {
         return ExpressionOperator.simpleFunction(ExpressionOperator.ToNumber, "NUM");
     }
-    
+
     private static final ExpressionOperator createNullifOperator() {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(ExpressionOperator.FunctionOperator);
@@ -251,22 +251,22 @@ public final class MaxDBPlatform extends DatabasePlatform {
         exOperator.setNodeClass(ClassConstants.FunctionExpression_Class);
         return exOperator;
     }
-    
+
     @Override
     public boolean shouldOptimizeDataConversion() {
         return true; // TODO is this needed? (seems to default to true)
     }
-           
+
     private void addNonBindingOperator(ExpressionOperator operator) {
         operator.setIsBindingSupported(false);
         addOperator(operator);
     }
-    
+
     @Override
     public final boolean supportsNativeSequenceNumbers() {
         return true;
     }
-    
+
     @Override
     public final ValueReadQuery buildSelectQueryForSequenceObject(final String sequenceName, final Integer size) {
         return new ValueReadQuery("SELECT " + sequenceName + ".NEXTVAL FROM DUAL");
@@ -292,7 +292,7 @@ public final class MaxDBPlatform extends DatabasePlatform {
         return new DatabaseTable("$" + table.getName(), "TEMP");
     }
 
-    @Override     
+    @Override
     public final boolean isMaxDB() {
         return true;
     }
@@ -326,22 +326,22 @@ public final class MaxDBPlatform extends DatabasePlatform {
     public final boolean supportsStoredFunctions() {
         return true;
     }
-    
-    @Override
-	public boolean canBatchWriteWithOptimisticLocking(DatabaseCall call) {
-    	return true;
-	}
 
-	@Override
-	public int executeBatch(Statement statement, boolean isStatementPrepared)
-			throws SQLException {
-		if (isStatementPrepared) {
-			statement.executeBatch();
-			return statement.getUpdateCount();
-		} else {
-			int[] updateCounts = statement.executeBatch();
-			return updateCounts.length;
-		}
-	}    
+    @Override
+    public boolean canBatchWriteWithOptimisticLocking(DatabaseCall call) {
+        return true;
+    }
+
+    @Override
+    public int executeBatch(Statement statement, boolean isStatementPrepared)
+            throws SQLException {
+        if (isStatementPrepared) {
+            statement.executeBatch();
+            return statement.getUpdateCount();
+        } else {
+            int[] updateCounts = statement.executeBatch();
+            return updateCounts.length;
+        }
+    }
 
 }
