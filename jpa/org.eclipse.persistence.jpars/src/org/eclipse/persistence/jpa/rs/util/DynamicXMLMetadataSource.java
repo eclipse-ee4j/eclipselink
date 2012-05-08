@@ -51,6 +51,7 @@ public class DynamicXMLMetadataSource implements MetadataSource {
     private XmlBindings xmlBindings;
 
     public DynamicXMLMetadataSource(String persistenceUnitName, Server session, String packageName) {
+        System.out.println("---- Creating Metadata source for " + packageName);
         ObjectFactory objectFactory = new ObjectFactory();
         xmlBindings = new XmlBindings();
         xmlBindings.setPackageName(packageName);
@@ -66,7 +67,14 @@ public class DynamicXMLMetadataSource implements MetadataSource {
         xmlBindings.setXmlSchema(xmlSchema);
         
         for (ClassDescriptor ormDescriptor : session.getProject().getOrderedDescriptors()) {
-            String descriptorPackageName = ormDescriptor.getJavaClassName().substring(0, ormDescriptor.getJavaClassName().lastIndexOf('.'));
+
+System.out.println("---- Creating Metadata source for " + packageName);
+System.out.println("---- Creating Metadata source descriptor = " + ormDescriptor);
+System.out.println("---- Creating Metadata source javaClass = " + ormDescriptor.getJavaClassName());
+            String descriptorPackageName = "";
+            if (ormDescriptor.getJavaClassName().lastIndexOf('.') > 0){
+                descriptorPackageName = ormDescriptor.getJavaClassName().substring(0, ormDescriptor.getJavaClassName().lastIndexOf('.'));
+            }
             if (descriptorPackageName.equals(packageName)){
                 javaTypes.getJavaType().add(createJAXBType(ormDescriptor, objectFactory));
             }
