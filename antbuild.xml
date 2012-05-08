@@ -354,6 +354,7 @@
 
     <!-- Compiles Oracle extensions and tests. -->
     <target name="build-oracle-extension">
+        <ant antfile="antbuild.xml" dir="${eclipselink.hermes}"           target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.core}"             target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle}" target="build"/>
     </target>
