@@ -53,9 +53,16 @@
     </condition>
     <echo message="jparstest.2.base.dir     = '${jparstest.2.base.dir}'"/>
     <property name="jparstest.2.common.plugins.dir" value="${jparstest.2.base.dir}/plugins"/>
-    <property name="jparstest.2.jpa.plugins.dir"    value="${jparstest.2.base.dir}/jpa/plugins"/>
+    <condition property="jparstest.2.jpa.plugins.dir" value="${jparstest.2.base.dir}/jpa/plugins" else="../plugins">
+        <available file="${jparstest.2.base.dir}/jpa/plugins" type="dir"/>
+    </condition>
     <property name="jparstest.2.buildsys.dir"       value="${jparstest.2.base.dir}/buildsystem"/>
 
+    <condition property="custom.properties.message" value="Loading ${user.home}/build.properties..."
+                                                     else="Custom properties file '${user.home}/build.properties' not found to load.">
+        <available file="${user.home}/build.properties"/>
+    </condition>
+    <echo message="${custom.properties.message}"/>
     <property file="${user.home}/build.properties"/>
     <property file="${jparstest.build.location}/antbuild.properties"/>
     <property file="${user.home}/${test.properties}"/>
@@ -143,9 +150,6 @@
         <selectbundle basename="org.eclipse.persistence.jpars" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
             criterion="[2.0.0,3.0.0)" property="jpars.lib" includepath="true"
         />
-        <selectbundle basename="org.eclipse.persistence.core.jpql" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
-            criterion="[2.0.0,3.0.0)" property="hermesimpl.lib" includepath="true"
-        />
         <available file="${antlr.lib}"        property="antlr.bundle.exist"/>
         <available file="${asm.lib}"          property="asm.bundle.exist"/>
         <available file="${hermes.lib}"       property="hermes.bundle.exist"/>
@@ -153,7 +157,6 @@
         <available file="${moxy.lib}"         property="moxy.bundle.exist"/>
         <available file="${jpa.lib}"          property="jpa.bundle.exist"/>
         <available file="${jpars.lib}"        property="jpars.bundle.exist"/>
-        <available file="${hermesimple.lib}"  property="hermesimpl.bundle.exist"/>
         <available file="${jparstest.2.base.dir}/${eclipselink.jar}"      property="eclipselink.jar.exist"/>
         <echo message="antlr.lib             ='${antlr.lib}'"/>
         <echo message="asm.lib               ='${asm.lib}'"/>
@@ -162,7 +165,6 @@
         <echo message="moxy.lib              ='${moxy.lib}'"/>
         <echo message="jpa.lib               ='${jpa.lib}'"/>
         <echo message="jpars.lib             ='${jpars.lib}'"/>
-        <echo message="hermesImpl.lib        ='${hermesimpl.lib}'"/>
 
         <!-- path to OSGi Bundle compile dependencies -->
         <path id="jparstest.bundle.compile.path">
@@ -187,7 +189,6 @@
             <pathelement path="${antlr.lib}"/>
             <pathelement path="${asm.lib}"/>
             <pathelement path="${hermes.lib}"/>
-            <pathelement path="${hermesimpl.lib}"/>
             <fileset
                 dir="${jparstest.2.common.plugins.dir}"
                 includes="
