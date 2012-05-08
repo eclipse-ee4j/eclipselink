@@ -5684,51 +5684,61 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         EntityManager em= createEntityManager();
         String errorMsg = "";
         
-        Query query1 = em.createQuery("SELECT e FROM Employee e");
-        query1.setHint(QueryHints.FETCH, "e.manager");
-        query1.setHint(QueryHints.FETCH, "e.manager.projects");
-        query1.setHint(QueryHints.FETCH, "e.manager.projects.teamMembers");
-        query1.setHint(QueryHints.FETCH, "e.manager.projects.teamMembers.dealers");
-        query1.setHint(QueryHints.FETCH, "e.manager.projects.teamMembers.phoneNumbers");
-        query1.getResultList();
-        errorMsg += verifyJoinAttributeExpressions("query1", query1);
+        if (isJTA()) {
+            beginTransaction(em);
+        }
         
-        Query query2 = em.createQuery("SELECT e FROM Employee e");
-        query2.setHint(QueryHints.FETCH, "e.manager.projects.teamMembers");
-        query2.setHint(QueryHints.FETCH, "e.manager.projects.teamMembers.dealers");
-        query2.setHint(QueryHints.FETCH, "e.manager.projects.teamMembers.phoneNumbers");
-        query2.getResultList();
-        errorMsg += verifyJoinAttributeExpressions("query2", query2);
+        try {
+            Query query1 = em.createQuery("SELECT e FROM Employee e");
+            query1.setHint(QueryHints.FETCH, "e.manager");
+            query1.setHint(QueryHints.FETCH, "e.manager.projects");
+            query1.setHint(QueryHints.FETCH, "e.manager.projects.teamMembers");
+            query1.setHint(QueryHints.FETCH, "e.manager.projects.teamMembers.dealers");
+            query1.setHint(QueryHints.FETCH, "e.manager.projects.teamMembers.phoneNumbers");
+            query1.getResultList();
+            errorMsg += verifyJoinAttributeExpressions("query1", query1);
+            
+            Query query2 = em.createQuery("SELECT e FROM Employee e");
+            query2.setHint(QueryHints.FETCH, "e.manager.projects.teamMembers");
+            query2.setHint(QueryHints.FETCH, "e.manager.projects.teamMembers.dealers");
+            query2.setHint(QueryHints.FETCH, "e.manager.projects.teamMembers.phoneNumbers");
+            query2.getResultList();
+            errorMsg += verifyJoinAttributeExpressions("query2", query2);
+            
+            Query query3 = em.createQuery("SELECT e FROM Employee e");
+            query3.setHint(QueryHints.FETCH, "e.manager.projects.teamMembers.dealers");
+            query3.setHint(QueryHints.FETCH, "e.manager.projects.teamMembers.phoneNumbers");
+            query3.getResultList();
+            errorMsg += verifyJoinAttributeExpressions("query3", query3);
+            
+            Query query4 = em.createQuery("SELECT e FROM Employee e");
+            query4.setHint(QueryHints.LEFT_FETCH, "e.manager");
+            query4.setHint(QueryHints.LEFT_FETCH, "e.manager.projects");
+            query4.setHint(QueryHints.LEFT_FETCH, "e.manager.projects.teamMembers");
+            query4.setHint(QueryHints.LEFT_FETCH, "e.manager.projects.teamMembers.dealers");
+            query4.setHint(QueryHints.LEFT_FETCH, "e.manager.projects.teamMembers.phoneNumbers");
+            query4.getResultList();
+            errorMsg += verifyJoinAttributeExpressions("query4", query4);
+            
+            Query query5 = em.createQuery("SELECT e FROM Employee e");
+            query5.setHint(QueryHints.LEFT_FETCH, "e.manager.projects.teamMembers");
+            query5.setHint(QueryHints.LEFT_FETCH, "e.manager.projects.teamMembers.dealers");
+            query5.setHint(QueryHints.LEFT_FETCH, "e.manager.projects.teamMembers.phoneNumbers");
+            query5.getResultList();
+            errorMsg += verifyJoinAttributeExpressions("query5", query5);
+            
+            Query query6 = em.createQuery("SELECT e FROM Employee e");
+            query6.setHint(QueryHints.LEFT_FETCH, "e.manager.projects.teamMembers.dealers");
+            query6.setHint(QueryHints.LEFT_FETCH, "e.manager.projects.teamMembers.phoneNumbers");
+            query6.getResultList();
+            errorMsg += verifyJoinAttributeExpressions("query6", query6);
+        } finally {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);            
+        }
         
-        Query query3 = em.createQuery("SELECT e FROM Employee e");
-        query3.setHint(QueryHints.FETCH, "e.manager.projects.teamMembers.dealers");
-        query3.setHint(QueryHints.FETCH, "e.manager.projects.teamMembers.phoneNumbers");
-        query3.getResultList();
-        errorMsg += verifyJoinAttributeExpressions("query3", query3);
-        
-        Query query4 = em.createQuery("SELECT e FROM Employee e");
-        query4.setHint(QueryHints.LEFT_FETCH, "e.manager");
-        query4.setHint(QueryHints.LEFT_FETCH, "e.manager.projects");
-        query4.setHint(QueryHints.LEFT_FETCH, "e.manager.projects.teamMembers");
-        query4.setHint(QueryHints.LEFT_FETCH, "e.manager.projects.teamMembers.dealers");
-        query4.setHint(QueryHints.LEFT_FETCH, "e.manager.projects.teamMembers.phoneNumbers");
-        query4.getResultList();
-        errorMsg += verifyJoinAttributeExpressions("query4", query4);
-        
-        Query query5 = em.createQuery("SELECT e FROM Employee e");
-        query5.setHint(QueryHints.LEFT_FETCH, "e.manager.projects.teamMembers");
-        query5.setHint(QueryHints.LEFT_FETCH, "e.manager.projects.teamMembers.dealers");
-        query5.setHint(QueryHints.LEFT_FETCH, "e.manager.projects.teamMembers.phoneNumbers");
-        query5.getResultList();
-        errorMsg += verifyJoinAttributeExpressions("query5", query5);
-        
-        Query query6 = em.createQuery("SELECT e FROM Employee e");
-        query6.setHint(QueryHints.LEFT_FETCH, "e.manager.projects.teamMembers.dealers");
-        query6.setHint(QueryHints.LEFT_FETCH, "e.manager.projects.teamMembers.phoneNumbers");
-        query6.getResultList();
-        errorMsg += verifyJoinAttributeExpressions("query6", query6);
-        
-        closeEntityManager(em);
         if (errorMsg.length() > 0) {
             fail(errorMsg);
         }        
@@ -5748,7 +5758,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                     ok = false;
                 }
                 if (!exp.getName().equals(names[i])) {
-                    // "dealers" and "phoneNumbers" may have been traansposed in the list
+                    // "dealers" and "phoneNumbers" may have been transposed in the list
                     if (i == names.length - 2) {
                         names[names.length - 2] = "phoneNumbers";
                         names[names.length - 1] = "dealers";
