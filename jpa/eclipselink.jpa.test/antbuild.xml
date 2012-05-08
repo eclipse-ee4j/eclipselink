@@ -147,14 +147,19 @@
         </and>
     </condition>
 
-    <!-- This checks if the Apllication Server is WebSphere -->
-    <condition property="is.websphere">
-        <contains string="${server.name}" substring="websphere"/>
+    <!-- This checks if the Apllication Server is GlassFish -->
+    <condition property="is.glassfish">
+        <contains string="${server.name}" substring="glassfish"/>
     </condition>
 
     <!-- This checks if the Apllication Server is JBoss -->
     <condition property="is.jboss">
         <contains string="${server.name}" substring="jboss"/>
+    </condition>
+
+    <!-- This checks if the Apllication Server is WebSphere -->
+    <condition property="is.websphere">
+        <contains string="${server.name}" substring="websphere"/>
     </condition>
 
     <!-- This checks if the Apllication Server is WebLogic -->
@@ -312,15 +317,18 @@
                 <isset property="is.netweaver"/>
             </not>
         </condition>
+
     <condition property="is.jaxrs.testing">
         <contains string="${MODEL_NAME}" substring="eclipselink-jaxrs-model"/>
-        </condition>
+    </condition>
+
     <condition property="is.jaxrs.testing.on.glassfish">
         <and>
             <isset property="is.jaxrs.testing"/>
             <contains string="${server.name}" substring="glassfish"/>
         </and>
-        </condition>
+    </condition>
+    
     <condition property="is.jaxrs.testing.on.weblogic">
         <and>
             <isset property="is.jaxrs.testing"/>
@@ -396,6 +404,7 @@
             <path refid="compile.path"/>
             <pathelement path="${jdbc.driver.jar}"/>
             <pathelement path="${oracle.extensions.depend.dir}/${oracle.sdoapi.jar}"/>
+            <pathelement path="../../../extension.lib.external/mongo.jar"/>
         </path>
     </target>
 
@@ -3607,6 +3616,32 @@
             <param name="EAR_NAME" value="eclipselink-customfeatures-model"/>
             <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.customfeatures.CustomFeaturesJUnitTestSuite"/>
             <param name="eclipselink.jpa.test.dir" value="./../../foundation/eclipselink.extension.oracle.test"/>
+        </antcall>
+    </target>
+
+    <target name="server-test-mongo" if="is.glassfish">
+        <antcall target="server-run-all" inheritRefs="true">
+            <param name="PERSISTENCE_UNIT_NAME" value="mongo"/>
+            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/mongo"/>
+            <param name="MODEL_NAME" value="eclipselink-mongo-model"/>
+            <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/mongo"/>
+            <param name="TEST_NAME" value="eclipselink-mongo-model"/>
+            <param name="EAR_NAME" value="eclipselink-mongo-model"/>
+            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.mongo.MongoTestSuite"/>
+            <param name="eclipselink.jpa.test.dir" value="./../../foundation/eclipselink.extension.nosql.test"/>
+        </antcall>
+    </target>
+
+    <target name="server-test-mongo-xml" if="is.glassfish">
+        <antcall target="server-run-all" inheritRefs="true">
+            <param name="PERSISTENCE_UNIT_NAME" value="mongo-xml"/>
+            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/mongo"/>
+            <param name="MODEL_NAME" value="eclipselink-mongo-model"/>
+            <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/mongo"/>
+            <param name="TEST_NAME" value="eclipselink-mongo-model-xml"/>
+            <param name="EAR_NAME" value="eclipselink-mongo-model-xml"/>
+            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.mongo.MongoXMLTestSuite"/>
+            <param name="eclipselink.jpa.test.dir" value="./../../foundation/eclipselink.extension.nosql.test"/>
         </antcall>
     </target>
 
