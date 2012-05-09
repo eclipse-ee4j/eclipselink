@@ -102,6 +102,7 @@
         <copy file="${oracle.extensions.depend.dir}/${oracle.sdoapi.jar}" todir="${glassfish.home}/domains/domain1/lib/ext" failonerror="false"/>
         <copy file="${oracle.extensions.depend.dir}/${oracle.xdb.jar}" todir="${glassfish.home}/domains/domain1/lib/ext" failonerror="false"/>
         <copy file="${oracle.extensions.depend.dir}/xmlparserv2_sans_jaxp_services.jar" todir="${glassfish.home}/domains/domain1/lib/ext" failonerror="false"/>
+        <copy file="../../../extension.lib.external/mongo.jar" todir="${glassfish.home}/domains/domain1/lib/ext" failonerror="false"/>
         <copy file="${jpatest.2.sdo.plugins.dir}/${commonj.sdo.jar}" tofile="${glassfish.home}/modules/commonj.sdo.jar" overwrite="true" failonerror="false"/>
         <antcall target="copy-eclipselink-to-glassfish2" inheritRefs="true"/>
         <antcall target="copy-eclipselink-and-persistence-latest-jars-to-glassfish3" inheritRefs="true"/>
@@ -127,12 +128,12 @@
                 includes="org.eclipse.persistence.antlr_*.jar
                           org.eclipse.persistence.asm_*.jar
                           org.eclipse.persistence.core_*.jar
-                          org.eclipse.persistence.core.jpql_*.jar
                           org.eclipse.persistence.dbws_*.jar
                           org.eclipse.persistence.jpa_*.jar
                           org.eclipse.persistence.jpa.jpql_*.jar
                           org.eclipse.persistence.jpa.modelgen_*.jar
                           org.eclipse.persistence.moxy_*.jar
+                          org.eclipse.persistence.nosql_*.jar
                           org.eclipse.persistence.oracle_*.jar
                           org.eclipse.persistence.sdo_*.jar"
                 excludes="org.eclipse.persistence.*.source*.jar"/>

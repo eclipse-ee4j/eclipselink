@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings version="2.4" xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <persistence-unit-metadata>
+       <xml-mapping-metadata-complete/>
+    </persistence-unit-metadata>
+    <package>org.eclipse.persistence.testing.models.jpa.mongo</package>
+    <entity class="Order" access="FIELD">
+        <no-sql data-format="MAPPED"/>
+        <attributes>
+            <id name="id">
+                <field name="_id"/>
+                <generated-value/>
+            </id>
+            <basic name="orderDate">
+                <temporal>TIMESTAMP</temporal>
+            </basic>
+            <basic name="orderCal">
+                <temporal>TIMESTAMP</temporal>
+            </basic>
+            <version name="version"/>
+            <one-to-one name="customer">
+                <join-field name="customerId" referenced-field-name="_id"/>
+            </one-to-one>
+            <element-collection name="lineItems">
+                <field name="items"/>
+            </element-collection>
+            <element-collection name="lineItemsByNumber">
+                <map-key name="lineNumber"/>
+                <field name="lineItemsByNumber"/>
+            </element-collection>
+            <element-collection name="comments">
+                <field name="comments"/>
+            </element-collection>
+            <embedded name="address">
+                <field name="address"/>
+            </embedded>
+        </attributes>
+    </entity>
+    <entity class="Customer" access="FIELD">
+        <no-sql data-format="MAPPED"/>
+        <attributes>
+            <id name="id">
+                <field name="_id"/>
+                <generated-value/>
+            </id>
+        </attributes>
+    </entity>
+    <entity class="Buyer" access="FIELD">
+        <no-sql data-format="MAPPED"/>
+        <attributes>
+            <id name="id1"/>
+            <id name="id2"/>
+        </attributes>
+    </entity>
+    <embeddable class="Address" access="FIELD">
+        <no-sql data-format="MAPPED"/>
+        <attributes>
+            <basic name="addressee">
+                <field name="addressee"/>
+            </basic>
+        </attributes>
+    </embeddable>
+    <embeddable class="LineItem" access="FIELD">
+        <no-sql data-format="MAPPED"/>
+    </embeddable>
+</entity-mappings>
