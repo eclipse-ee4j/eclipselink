@@ -20,6 +20,7 @@ import org.eclipse.persistence.testing.jaxb.idresolver.IDResolverTestCases;
 import org.eclipse.persistence.testing.jaxb.idresolver.NonELIDResolverTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbcontext.JAXBContextMediaTypeTestCases;
 import org.eclipse.persistence.testing.jaxb.namespaceuri.xml.XMLNamespaceTestCases;
+import org.eclipse.persistence.testing.jaxb.nomappings.NoMappingsTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlelementref.ns.XmlElementRefWithNamespaceTests;
 import org.eclipse.persistence.testing.jaxb.xmlvalue.XmlValueByteArrayTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlvalue.XmlValueListTestCases;
@@ -56,6 +57,7 @@ public class JAXBTestSuite extends TestCase {
         suite.addTestSuite(InvalidTestCases.class);
         suite.addTestSuite(ValidTestCases.class);
         suite.addTestSuite(XMLNamespaceTestCases.class);
+        suite.addTestSuite(NoMappingsTestCases.class);
         suite.addTestSuite(JAXBContextMediaTypeTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlschema.attributeformdefault.qualified.AttributeFormDefaultQualifiedTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlschema.attributeformdefault.unqualified.AttributeFormDefaultUnqualifiedTestCases.class);

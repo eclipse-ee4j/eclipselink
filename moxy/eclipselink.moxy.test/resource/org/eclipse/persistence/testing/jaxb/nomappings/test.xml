@@ -1,0 +1,6 @@
+<someClass>
+   <someChild>abc</someChild>
+   <someChild2>
+       <someList/>
+   </someChild2>
+</someClass>

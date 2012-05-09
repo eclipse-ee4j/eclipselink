@@ -301,6 +301,9 @@ public class JSONReader extends XMLReaderAdapter {
     
     private boolean isTextValue(String localName){
    		XPathNode currentNode = ((UnmarshalRecord)contentHandler).getXPathNode();	
+   		if(currentNode == null){
+   			return textWrapper != null && textWrapper.equals(localName);
+   		}
 
     	return((currentNode.getNonAttributeChildrenMap() == null 
     			|| currentNode.getNonAttributeChildrenMap().size() ==0 
