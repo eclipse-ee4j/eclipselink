@@ -17,7 +17,6 @@
          <xsd:element name="age" type="xsd:int"/>
          <xsd:element name="lastName" type="xsd:string" minOccurs="0"/>
          <xsd:element name="address" type="x:address-type" minOccurs="0"/>
-         <xsd:element name="department" type="x:department" minOccurs="0"/>
          <xsd:element name="startTime" type="xsd:time" minOccurs="0"/>
          <xsd:element name="phone-number" type="x:phone-number" minOccurs="0" maxOccurs="unbounded"/>
          <xsd:element name="responsibilities" minOccurs="0">
@@ -28,6 +27,7 @@
          <xsd:element form="qualified" maxOccurs="unbounded" minOccurs="0" name="peep" type="x:employee-type"/>
       </xsd:sequence>
       <xsd:attribute name="id" type="xsd:int" use="required"/>
+      <xsd:attribute name="department" type="x:department" />
    </xsd:complexType>
    <xsd:complexType name="myTestType">
       <xsd:sequence>

@@ -1604,7 +1604,11 @@ public class SchemaGenerator {
             // may need to qualify the type
             if (typeName != null && !typeName.contains(COLON)) {
                 if (info.getSchema() == schema) {
-                    String prefix = getPrefixForNamespace(schema, schema.getTargetNamespace());
+                    String uri = schema.getTargetNamespace();
+                    if(uri == null) {
+                        uri = EMPTY_STRING;
+                    }
+                    String prefix = getPrefixForNamespace(schema, uri);
                     if (prefix != null) {
                         typeName = prefix + COLON + typeName;
                     }

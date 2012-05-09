@@ -31,6 +31,7 @@ public class Employee
     @XmlMixed
     public Address address;
     
+    @XmlAttribute
     public Department department;
     
     @XmlElement(name="phone-number")
