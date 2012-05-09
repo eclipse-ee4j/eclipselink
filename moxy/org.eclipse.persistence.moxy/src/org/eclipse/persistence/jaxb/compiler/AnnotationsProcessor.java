@@ -776,7 +776,7 @@ public class AnnotationsProcessor {
                 // need to check for transient reference class
                 JavaClass typeClass = property.getActualType();
                 TypeInfo targetInfo = typeInfo.get(typeClass.getQualifiedName());
-                if (targetInfo != null && targetInfo.isTransient()) {
+                if (targetInfo != null && targetInfo.isTransient() && property.getXmlElements() == null) {
                     throw JAXBException.invalidReferenceToTransientClass(jClass.getQualifiedName(), property.getPropertyName(), typeClass.getQualifiedName());
                 }
                 // only one XmlValue is allowed per class, and if there is one
@@ -2053,6 +2053,10 @@ public class AnnotationsProcessor {
             if (!(this.typeInfo.containsKey(choiceProp.getType().getQualifiedName())) && shouldGenerateTypeInfo(choiceProp.getType())) {
                 JavaClass[] jClassArray = new JavaClass[] { choiceProp.getType() };
                 buildNewTypeInfo(jClassArray);
+                TypeInfo newInfo = typeInfo.get(choiceProp.getType().getQualifiedName());
+                if (newInfo != null && newInfo.isTransient()) {
+                    throw JAXBException.invalidReferenceToTransientClass(info.getJavaClassName(), choiceProperty.getPropertyName(), newInfo.getJavaClassName());
+                }
             }
         }
         choiceProperty.setChoiceProperties(choiceProperties);

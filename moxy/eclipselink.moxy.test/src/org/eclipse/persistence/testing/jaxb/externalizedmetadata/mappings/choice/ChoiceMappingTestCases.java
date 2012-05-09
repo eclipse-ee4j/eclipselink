@@ -206,7 +206,7 @@ public class ChoiceMappingTestCases extends ExternalizedMetadataTestCases {
     public void testChoiceWithJoinNodesMarshal() {
         try {
             // load instance doc
-            String src = PATH + "reference/root.xml";
+            String src = PATH + "reference/root2.xml";
 
             // setup control document
             Document testDoc = parser.newDocument();

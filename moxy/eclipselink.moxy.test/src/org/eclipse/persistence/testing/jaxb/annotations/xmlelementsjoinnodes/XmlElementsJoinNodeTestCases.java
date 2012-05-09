@@ -40,7 +40,12 @@ public class XmlElementsJoinNodeTestCases extends JAXBTestCases {
 
         Client client1 = new Client("c100", address2);
         Client client2 = new Client("c200", phone2);
-        
+
+        PublicCompany company1 = new PublicCompany();
+        company1.setId(1001); company1.setName("Oracle Corporation"); company1.setStockSymbol("ORCL");
+        PublicCompany company2 = new PublicCompany();
+        company2.setId(1002); company2.setName("Intel Corporation"); company2.setStockSymbol("INTC");
+
         List<Address> addressList = new ArrayList<Address>();
         addressList.add(address1);
         addressList.add(address2);
@@ -57,7 +62,11 @@ public class XmlElementsJoinNodeTestCases extends JAXBTestCases {
         List<Client> clients = new ArrayList<Client>();
         clients.add(client1);
         clients.add(client2);
-        
-        return new Root(clients, addressList, phoneList);
+
+        List<Company> companies = new ArrayList<Company>();
+        companies.add(company1);
+        companies.add(company2);
+
+        return new Root(clients, addressList, phoneList, companies);
     }
 }

@@ -15,6 +15,7 @@ package org.eclipse.persistence.testing.jaxb.annotations.xmlelementsjoinnodes;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.eclipse.persistence.oxm.annotations.XmlPath;
@@ -32,12 +33,18 @@ public class Root {
     @XmlElement
     @XmlPath("phone-number")
     public List<PhoneNumber> phoneNumbers;
-    
+
+    @XmlElements({
+        @XmlElement(name="publicCompany", type=PublicCompany.class)
+    })
+    private List<Company> companies;
+
     public Root() {}
-    public Root(List<Client> clients, List<Address> addresses, List<PhoneNumber> phoneNumbers) {
+    public Root(List<Client> clients, List<Address> addresses, List<PhoneNumber> phoneNumbers, List<Company> companies) {
         this.clients = clients;
         this.addresses = addresses;
         this.phoneNumbers = phoneNumbers;
+        this.companies = companies;
     }
     
     public boolean equals(Object o) {
