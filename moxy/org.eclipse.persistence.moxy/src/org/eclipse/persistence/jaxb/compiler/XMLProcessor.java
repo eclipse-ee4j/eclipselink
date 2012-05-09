@@ -340,8 +340,7 @@ public class XMLProcessor {
             // post-build the TypeInfo objects
             javaClasses = annotationsProcessor.postBuildTypeInfo(javaClasses);
 
-            // now trigger the annotations processor to process the classes
-            annotationsProcessor.processJavaClasses(null);
+
 
             // get the generated TypeInfo
             Map<String, TypeInfo> typeInfosForPackage = annotationsProcessor.getTypeInfosForPackage(packageName);
@@ -404,11 +403,12 @@ public class XMLProcessor {
                 }
             }
         }
+        // now trigger the annotations processor to process the classes
         ArrayList<JavaClass> jClasses = aProcessor.getTypeInfoClasses();
         aProcessor.processPropertyTypes(jClasses.toArray(new JavaClass[jClasses.size()]));
-        
         aProcessor.finalizeProperties();
         aProcessor.createElementsForTypeMappingInfo();
+        annotationsProcessor.processJavaClasses(null);       
     }
 
     private XMLNameTransformer getXMLNameTransformerClassFromString(String transformerClassName){

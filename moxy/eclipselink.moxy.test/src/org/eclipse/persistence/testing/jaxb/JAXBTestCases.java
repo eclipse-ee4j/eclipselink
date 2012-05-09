@@ -379,7 +379,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         }
     }
     
-    private JAXBContext createJaxbContextFromJSONBindings() throws JAXBException{
+    protected JAXBContext createJaxbContextFromJSONBindings() throws JAXBException{
     	if(classes != null){
     		return JAXBContextFactory.createContext(classes, getPropertiesFromJSON(), classLoader);
     	}else if (types != null){
