@@ -3479,7 +3479,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     // Test that subselects can be used in the from clause.
     public void testSubselectInFrom() {
         EntityManager em = createEntityManager();
-        Query query = em.createQuery("Select e.firstName, avg(e3.count) from Employee e, (Select count(e2), e2.firstName from Employee e2 group by e2.firstName) e3 where e.firstName = e3.firstName");
+        Query query = em.createQuery("Select e.firstName from Employee e, (Select count(e2), e2.firstName from Employee e2 group by e2.firstName) e3 where e.firstName = e3.firstName");
         query.getResultList();
         closeEntityManager(em);
     }
