@@ -39,7 +39,7 @@ public class ConnectTest extends TestCase {
         login.setConnectionSpec(spec);
 
         login.setProperty(OracleNoSQLConnectionSpec.STORE, "kvstore");
-        login.setProperty(OracleNoSQLConnectionSpec.HOST, "ottvm070:5000");
+        login.setProperty(OracleNoSQLConnectionSpec.HOST, "localhost:5000");
 
         DatabaseSession session = new Project(login).createDatabaseSession();
         session.setSessionLog(getSession().getSessionLog());
@@ -53,7 +53,7 @@ public class ConnectTest extends TestCase {
         login.setConnectionSpec(spec);
 
         login.setProperty(OracleNoSQLConnectionSpec.STORE, "kvstore");
-        login.setProperty(OracleNoSQLConnectionSpec.HOST, "ottvm070:5000");
+        login.setProperty(OracleNoSQLConnectionSpec.HOST, "localhost:5000");
 
         Server session = new Project(login).createServerSession();
         session.setSessionLog(getSession().getSessionLog());

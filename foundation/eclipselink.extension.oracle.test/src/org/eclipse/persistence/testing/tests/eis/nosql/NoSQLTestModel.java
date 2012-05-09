@@ -54,7 +54,7 @@ public class NoSQLTestModel extends TestModel {
         EISLogin eisLogin = (EISLogin)session.getDatasourceLogin();
         eisLogin.setConnectionSpec(new OracleNoSQLConnectionSpec());
         eisLogin.setProperty(OracleNoSQLConnectionSpec.STORE, "kvstore");
-        eisLogin.setProperty(OracleNoSQLConnectionSpec.HOST, "ottvm070:5000");
+        eisLogin.setProperty(OracleNoSQLConnectionSpec.HOST, "localhost:5000");
         session.login();
 
         getExecutor().setSession(session);
