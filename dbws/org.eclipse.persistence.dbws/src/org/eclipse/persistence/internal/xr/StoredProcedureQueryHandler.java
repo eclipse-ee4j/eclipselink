@@ -22,6 +22,7 @@ import javax.xml.namespace.QName;
 
 // EclipseLink imports
 import org.eclipse.persistence.exceptions.DBWSException;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.queries.DataModifyQuery;
 import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
@@ -40,7 +41,7 @@ import static org.eclipse.persistence.internal.xr.Util.SXF_QNAME;
  */
 
 public class StoredProcedureQueryHandler extends QueryHandler {
-
+    public static String CURSOR_STR = "CURSOR";
     protected String name;
     protected List<ProcedureArgument> inArguments = new ArrayList<ProcedureArgument>();
     protected List<ProcedureOutputArgument> inOutArguments = new ArrayList<ProcedureOutputArgument>();
@@ -137,6 +138,7 @@ public class StoredProcedureQueryHandler extends QueryHandler {
         setDatabaseQuery(databaseQueryToInitialize);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void initializeCall(XRServiceAdapter xrService, QueryOperation queryOperation,
         DatabaseQuery databaseQuery) {
@@ -181,15 +183,15 @@ public class StoredProcedureQueryHandler extends QueryHandler {
             if (!queryOperation.isSimpleXMLFormat() ||
                 (spCall.isStoredFunctionCall() && !isCursorType(xrService, resultType))) {
                 setSingleResult(xrService, spCall, resultType);
-            }
-            else {
+            } else {
                 if (spCall.isStoredFunctionCall() && isCursorType(xrService, resultType)) {
-                    spCall.useUnnamedCursorOutputAsResultSet();
-                }
-                else if (getOutArguments().isEmpty()) {
+                    spCall.setIsCursorOutputProcedure(true);
+                    // remove the null OUT parameter added by the constructor of SFC
+                    spCall.getParameters().remove(0);
+                    spCall.getParameters().add(0, new DatabaseField(CURSOR_STR));
+                } else if (getOutArguments().isEmpty()) {
                     spCall.setReturnsResultSet(true);
-                }
-                else {
+                } else {
                     for (ProcedureOutputArgument arg : getOutArguments()) {
                         // use argument type
                         if (arg.getResultType() != null && isCursorType(xrService, arg.getResultType())) {

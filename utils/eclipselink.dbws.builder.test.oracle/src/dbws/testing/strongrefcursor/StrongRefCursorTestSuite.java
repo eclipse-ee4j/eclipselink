@@ -74,14 +74,16 @@ public class StrongRefCursorTestSuite extends DBWSTestSuite {
         "CREATE OR REPLACE PACKAGE " + STRONGLY_TYPED_REF_CURSOR_TEST_PACKAGE + " AS" +
             "\nTYPE STRC_TAB1 IS TABLE OF VARCHAR2(111) INDEX BY BINARY_INTEGER;" +
             "\nTYPE " + STRONGLY_TYPED_REF_CURSOR + " IS REF CURSOR RETURN " + STRONGLY_TYPED_REF_CURSOR_TABLE + "%ROWTYPE;" +
-        	"\nTYPE EMPREC IS RECORD("+
+            "\nTYPE EMPREC IS RECORD("+
                 "\n ID NUMBER," +
-        	    "\n NAME VARCHAR(25)," +
+                "\n NAME VARCHAR(25)," +
                 "\n SINCE DATE" +
-        	"\n);" +
-        	"\nTYPE EMPREC_CURSOR IS REF CURSOR RETURN EMPREC;" +
+            "\n);" +
+            "\nTYPE EMPREC_CURSOR IS REF CURSOR RETURN EMPREC;" +
             "\nPROCEDURE GET_EMS(P_EMS " + STRONGLY_TYPED_REF_CURSOR_TABLE+".NAME%TYPE, P_EMS_SET OUT " + STRONGLY_TYPED_REF_CURSOR + ");" +
             "\nPROCEDURE GET_EMPREC(ENAME IN VARCHAR, EMPREC_SET OUT EMPREC_CURSOR);" +
+            "\nFUNCTION GET_EMS_FUNC(P_EMS " + STRONGLY_TYPED_REF_CURSOR_TABLE+".NAME%TYPE) RETURN " + STRONGLY_TYPED_REF_CURSOR + ";" +
+            "\nFUNCTION GET_EMPREC_FUNC(ENAME IN VARCHAR) RETURN EMPREC_CURSOR;" +
         "\nEND " + STRONGLY_TYPED_REF_CURSOR_TEST_PACKAGE + ";";
     
     static final String CREATE_STRONGLY_TYPED_REF_CURSOR_TEST_PACKAGE_BODY =
@@ -96,6 +98,20 @@ public class StrongRefCursorTestSuite extends DBWSTestSuite {
                 "\nOPEN EMPREC_SET FOR" + 
                 "\nSELECT * FROM " + STRONGLY_TYPED_REF_CURSOR_TABLE + " WHERE NAME LIKE ENAME;" + 
             "\nEND GET_EMPREC;" +
+            "\nFUNCTION GET_EMS_FUNC(P_EMS " + STRONGLY_TYPED_REF_CURSOR_TABLE+".NAME%TYPE) RETURN " + STRONGLY_TYPED_REF_CURSOR + " IS" +
+            "\nP_EMS_SET " + STRONGLY_TYPED_REF_CURSOR + ";" +
+            "\nBEGIN" +
+              "\n OPEN P_EMS_SET FOR" +
+              "\n SELECT ID, NAME, SINCE FROM " + STRONGLY_TYPED_REF_CURSOR_TABLE + " WHERE NAME LIKE P_EMS;" +
+              "\nRETURN P_EMS_SET;" +
+            "\nEND GET_EMS_FUNC;" +
+            "\nFUNCTION GET_EMPREC_FUNC(ENAME IN VARCHAR) RETURN EMPREC_CURSOR IS" +
+            "\nEMPREC_SET EMPREC_CURSOR;" +
+            "\nBEGIN" +
+                "\nOPEN EMPREC_SET FOR" + 
+                "\nSELECT * FROM " + STRONGLY_TYPED_REF_CURSOR_TABLE + " WHERE NAME LIKE ENAME;" +
+                "\nRETURN EMPREC_SET;" + 
+            "\nEND GET_EMPREC_FUNC;" +
         "\nEND " + STRONGLY_TYPED_REF_CURSOR_TEST_PACKAGE + ";";
 
     static final String DROP_STRONGLY_TYPED_REF_CURSOR_TEST_PACKAGE = "DROP PACKAGE " + STRONGLY_TYPED_REF_CURSOR_TEST_PACKAGE;
@@ -163,20 +179,34 @@ public class StrongRefCursorTestSuite extends DBWSTestSuite {
           DBWS_BUILDER_XML_MAIN =
                   "</property>" +
               "</properties>" +
-              "<plsql-procedure " +
+              "<procedure " +
                   "name=\"strongRefCursorTest\" " +
                   "catalogPattern=\"" + STRONGLY_TYPED_REF_CURSOR_TEST_PACKAGE + "\" " +
                   "procedurePattern=\"GET_EMS\" " +
                   "isCollection=\"true\" " +
                   "isSimpleXMLFormat=\"true\" " +
               "/>" +
-              "<plsql-procedure " +
-	              "name=\"emprecRefCursorTest\" " +
-		          "catalogPattern=\"" + STRONGLY_TYPED_REF_CURSOR_TEST_PACKAGE + "\" " +
-		          "procedurePattern=\"GET_EMPREC\" " +
-		          "isCollection=\"true\" " +
-		          "isSimpleXMLFormat=\"true\" " +
-		      "/>" +
+              "<procedure " +
+                  "name=\"strongRefCursorTest2\" " +
+                  "catalogPattern=\"" + STRONGLY_TYPED_REF_CURSOR_TEST_PACKAGE + "\" " +
+                  "procedurePattern=\"GET_EMS_FUNC\" " +
+                  "isCollection=\"true\" " +
+                  "isSimpleXMLFormat=\"true\" " +
+              "/>" +
+              "<procedure " +
+                  "name=\"emprecRefCursorTest\" " +
+                  "catalogPattern=\"" + STRONGLY_TYPED_REF_CURSOR_TEST_PACKAGE + "\" " +
+                  "procedurePattern=\"GET_EMPREC\" " +
+                  "isCollection=\"true\" " +
+                  "isSimpleXMLFormat=\"true\" " +
+                  "/>" +
+              "<procedure " +
+                  "name=\"emprecRefCursorTest2\" " +
+                  "catalogPattern=\"" + STRONGLY_TYPED_REF_CURSOR_TEST_PACKAGE + "\" " +
+                  "procedurePattern=\"GET_EMPREC_FUNC\" " +
+                  "isCollection=\"true\" " +
+                  "isSimpleXMLFormat=\"true\" " +
+              "/>" +
             "</dbws-builder>";
           builder = new DBWSBuilder();
           DBWSTestSuite.setUp(".");
@@ -194,6 +224,19 @@ public class StrongRefCursorTestSuite extends DBWSTestSuite {
     @Test
     public void strongRefCursorTest() {
         Invocation invocation = new Invocation("strongRefCursorTest");
+        invocation.setParameter("P_EMS", "mike%");
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        Document doc = xmlPlatform.createDocument();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(MIKE_NAMES_XML));
+        assertTrue("Expected:\n" + documentToString(controlDoc) +  "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+    }
+    @Test
+    public void strongRefCursorTest2() {
+        Invocation invocation = new Invocation("strongRefCursorTest2");
         invocation.setParameter("P_EMS", "mike%");
         Operation op = xrService.getOperation(invocation.getName());
         Object result = op.invoke(xrService, invocation);
@@ -237,6 +280,20 @@ public class StrongRefCursorTestSuite extends DBWSTestSuite {
         Document controlDoc = xmlParser.parse(new StringReader(NAMES_XML));
         assertTrue("Expected:\n" + documentToString(controlDoc) +  "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
+    
+    @Test
+    public void emprecRefCursorTest2() {
+        Invocation invocation = new Invocation("emprecRefCursorTest2");
+        invocation.setParameter("ENAME", "ri%");
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        Document doc = xmlPlatform.createDocument();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(NAMES_XML));
+        assertTrue("Expected:\n" + documentToString(controlDoc) +  "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+    }
     public static final String NAMES_XML =
         REGULAR_XML_HEADER +
         "<EMPREC_CURSOR xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:type=\"any\">" +
@@ -251,9 +308,9 @@ public class StrongRefCursorTestSuite extends DBWSTestSuite {
               "<SINCE>2012-01-03T00:00:00.0</SINCE>" +
            "</EMPREC>" +
            "<EMPREC>" +
-	           "<ID>6</ID>" +
-	           "<NAME>rilley</NAME>" +
-	           "<SINCE>2012-02-03T00:00:00.0</SINCE>" +
-	        "</EMPREC>" +
+               "<ID>6</ID>" +
+               "<NAME>rilley</NAME>" +
+               "<SINCE>2012-02-03T00:00:00.0</SINCE>" +
+           "</EMPREC>" +
         "</EMPREC_CURSOR>";
 }
