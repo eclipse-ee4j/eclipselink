@@ -58,6 +58,15 @@ public class HistoryPolicy implements Cloneable, Serializable {
      * Add any temporal querying conditions to this object expression.
      */
     public Expression additionalHistoryExpression(Expression context, Expression base) {
+        return additionalHistoryExpression(context, base, null);
+    }
+
+    /**
+     * INTERNAL:
+     * Add any temporal querying conditions to this object expression.
+     * @parameter Integer tableIndex not null indicates that only expression for a single table should be returned.
+     */
+    public Expression additionalHistoryExpression(Expression context, Expression base, Integer tableIndex) {
         //
         AsOfClause clause = base.getAsOfClause();
         Object value = clause.getValue();
@@ -81,6 +90,9 @@ public class HistoryPolicy implements Cloneable, Serializable {
             }
 
             if (getMapping() != null) {
+                if (tableIndex != null && tableIndex.intValue() > 0) {
+                    return null;
+                }
                 TableExpression tableExp = null;
                 DatabaseTable historicalTable = (DatabaseTable)getHistoricalTables().elementAt(0);
                 tableExp = (TableExpression)((ObjectExpression)base).existingDerivedTable(historicalTable);
@@ -88,28 +100,28 @@ public class HistoryPolicy implements Cloneable, Serializable {
                 start = tableExp.getField(getStart());
                 end = tableExp.getField(getEnd());
 
-                if (((ObjectExpression)base).shouldUseOuterJoin()) {
-                    join = start.isNull().or(start.lessThanEqual(value));
-                } else {
-                    join = start.lessThanEqual(value);
-                }
-                join = join.and(end.isNull().or(end.greaterThan(value)));
+                join = start.lessThanEqual(value).and(end.isNull().or(end.greaterThan(value)));
 
                 // We also need to do step two here in advance.	
                 tableExp.setTable(historicalTable);
 
                 return join;
             }
-            for (int i = 0; i < getHistoricalTables().size(); i++) {
+            int iFirst, iLast;
+            if (tableIndex == null) {
+                // loop through all history tables
+                iFirst = 0;
+                iLast = getHistoricalTables().size() - 1;
+            } else {
+                // only return expression for the specified table
+                iFirst = tableIndex.intValue();
+                iLast = iFirst;
+            }
+            for (int i = iFirst; i <= iLast ; i++) {
                 start = base.getField(getStart(i));
                 end = base.getField(getEnd(i));
 
-                if (((ObjectExpression)base).shouldUseOuterJoin()) {
-                    subJoin = start.isNull().or(start.lessThanEqual(value));
-                } else {
-                    subJoin = start.lessThanEqual(value);
-                }
-                subJoin = subJoin.and(end.isNull().or(end.greaterThan(value)));
+                subJoin = start.lessThanEqual(value).and(end.isNull().or(end.greaterThan(value)));
                 join = ((join == null) ? subJoin : join.and(subJoin));
             }
             return join;

@@ -141,7 +141,7 @@ public class QueryKeyExpression extends ObjectExpression {
                 }
             }
         }
-        if ((getDescriptor() != null) && (getDescriptor().getHistoryPolicy() != null)) {
+        if (getDescriptor().getHistoryPolicy() != null) {
             Expression historyCriteria = getDescriptor().getHistoryPolicy().additionalHistoryExpression(this, this);
             if (criteria != null) {
                 criteria = criteria.and(historyCriteria);
@@ -172,6 +172,9 @@ public class QueryKeyExpression extends ObjectExpression {
                 DatabaseTable table = (DatabaseTable)tables.elementAt(i);
                 Expression joinExpression = getDescriptor().getQueryManager().getTablesJoinExpressions().get(table);
                 joinExpression = this.baseExpression.twist(joinExpression, this);
+                if (getDescriptor().getHistoryPolicy() != null) {
+                    joinExpression = joinExpression.and(getDescriptor().getHistoryPolicy().additionalHistoryExpression(this, this, i));
+                }
                 tablesJoinExpressions.put(table, joinExpression);
             }
         }
@@ -705,9 +708,11 @@ public class QueryKeyExpression extends ObjectExpression {
                 statement.getOuterJoinedAdditionalJoinCriteria().add(additionalExpressionCriteriaMap());
                 statement.getDescriptorsForMultitableInheritanceOnly().add(null);
                 if ((getDescriptor() != null) && (getDescriptor().getHistoryPolicy() != null)) {
-                    Expression historyCriteria = getDescriptor().getHistoryPolicy().additionalHistoryExpression(this, base);
-                    if (historyCriteria != null) {
-                        normalizer.addAdditionalExpression(historyCriteria);
+                    Expression historyOnClause = getDescriptor().getHistoryPolicy().additionalHistoryExpression(this, this, 0); 
+                    if (getOnClause() != null) {
+                        setOnClause(getOnClause().and(historyOnClause));
+                    } else {
+                        setOnClause(historyOnClause);
                     }
                 }
                 return this;
