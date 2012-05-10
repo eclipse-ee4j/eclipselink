@@ -14,11 +14,8 @@
 package org.eclipse.persistence.jpa.rs.util;
 
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
@@ -26,12 +23,6 @@ import org.eclipse.persistence.config.CacheUsage;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl;
-import org.eclipse.persistence.internal.helper.ConversionManager;
-import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.jpa.CMP3Policy;
-import org.eclipse.persistence.internal.queries.EntityFetchGroup;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.queries.FetchGroup;
@@ -89,7 +80,7 @@ public class LinkAdapter extends XmlAdapter<String, Object> {
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put(QueryHints.FETCH_GROUP, fetchGroup);
         properties.put(QueryHints.CACHE_USAGE, CacheUsage.CheckCacheOnly);
-        DynamicEntityImpl entity = (DynamicEntityImpl)context.find(null, entityType, id, properties);
+        Object entity = context.find(null, entityType, id, properties);
         
         if (entity == null){
             return IdHelper.buildObjectShell(context, entityType, id);
@@ -102,10 +93,9 @@ public class LinkAdapter extends XmlAdapter<String, Object> {
         if (null == v) {
             return null;
         }
-        DynamicEntityImpl de = (DynamicEntityImpl) v;
 
         String href = baseURI + context.getName() + "/entity/"  + v.getClass().getSimpleName() + "/"
-                + IdHelper.stringifyId(de, context);
+                + IdHelper.stringifyId((DynamicEntityImpl)v, ((DynamicEntityImpl)v).getType().getName(), context);
         return href;
     }
 

@@ -14,6 +14,7 @@ package org.eclipse.persistence.jpars.test.model;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -24,6 +25,11 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import org.eclipse.persistence.annotations.PrivateOwned;
 
 @NamedQueries({
     @NamedQuery(
@@ -73,11 +79,12 @@ public class StaticUser {
 
     private String name;
     
-    @OneToOne(cascade=CascadeType.ALL)
+    @OneToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY)
     @JoinColumns({
         @JoinColumn(name="ADDRESS_ID", referencedColumnName="ID"),
         @JoinColumn(name="ADDRESS_TYPE", referencedColumnName="TYPE")
     })
+    @PrivateOwned
     private StaticAddress address;
 
     public int getId() {

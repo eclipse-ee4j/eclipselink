@@ -15,6 +15,8 @@ package org.eclipse.persistence.jpars.test.crud;
 import static org.junit.Assert.*;
 
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -76,7 +78,7 @@ public class CRUDTests {
     }
     
     @Test
-    public void testCreateAndDelete() {
+    public void testCreateAndDelete()  {
         DynamicEntity entity = (DynamicEntity)persistenceContext.newEntity("User");
         entity.set("name", "Jim");
         persistenceContext.create(null, entity);

@@ -12,10 +12,14 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpars.test.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -38,6 +42,9 @@ public class StaticAuction {
     private double endPrice;
     
     private boolean sold;
+    
+    @OneToMany(mappedBy="auction")
+    private List<StaticBid> bids = new ArrayList<StaticBid>();
 
     public int getId() {
         return id;
@@ -93,6 +100,14 @@ public class StaticAuction {
 
     public void setSold(boolean sold) {
         this.sold = sold;
+    }
+
+    public List<StaticBid> getBids() {
+        return bids;
+    }
+
+    public void setBids(List<StaticBid> bids) {
+        this.bids = bids;
     }
     
 }

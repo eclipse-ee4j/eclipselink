@@ -19,14 +19,19 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.StreamingOutput;
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl;
@@ -70,8 +75,26 @@ public class StreamingOutputMarshaller implements StreamingOutput {
                     context.marshallEntity(result, mediaType, output);
                     return;
                 } catch (JAXBException e) {
-                    // TODO: proper warning message
-                    e.printStackTrace();
+                    JAXBException initialException = e;
+                    if (this.result instanceof List){
+                        List<JAXBElement<Object>> returnList = new ArrayList<JAXBElement<Object>>(((List)this.result).size());
+                        List resultAsList = (List)this.result;
+                        try{
+                            for (Object object: resultAsList){
+                                JAXBElement jaxbResult = new JAXBElement(new QName("result"), object.getClass(), object);
+                                returnList.add(jaxbResult);
+                            }
+    
+                            context.marshallEntity(returnList, mediaType, output);
+                            return;
+                        } catch (JAXBException ex){
+                            // TODO: proper warning message
+
+                            ex.printStackTrace();
+
+                        }
+                    }
+                    initialException.printStackTrace();
                     System.out.println("WARNING, could not marshall entity, serializing. " + e.toString());
                 }
             }

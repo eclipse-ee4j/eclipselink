@@ -92,10 +92,12 @@
             <basic name="time" attribute-type="Long"/>        
             <one-to-one name="user" fetch="EAGER" target-entity="User">
                 <join-column name="USER_ID" />
-                <private-owned/>
             </one-to-one>
-            <one-to-one name="auction" fetch="EAGER" target-entity="Auction">
+            <one-to-one name="auction" fetch="EAGER"  target-entity="Auction">
                 <join-column name="AUCTION_ID" />
+                <cascade>
+                    <cascade-all/>
+                </cascade>
                 <private-owned/>
             </one-to-one>
         </attributes>

@@ -13,12 +13,14 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.util;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.dynamic.DynamicEntity;
+import org.eclipse.persistence.internal.weaving.RelationshipInfo;
 import org.eclipse.persistence.jaxb.metadata.MetadataSource;
 import org.eclipse.persistence.jaxb.xmlmodel.JavaType;
 import org.eclipse.persistence.jaxb.xmlmodel.JavaType.JavaAttributes;
@@ -30,6 +32,7 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.JavaTypes;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlSchema.XmlNs;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlElement;
 import org.eclipse.persistence.jpa.rs.PersistenceFactory;
+import org.eclipse.persistence.jpa.rs.metadata.model.Link;
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ObjectReferenceMapping;
@@ -84,12 +87,17 @@ System.out.println("---- Creating Metadata source javaClass = " + ormDescriptor.
     private JavaType createJAXBType(ClassDescriptor classDescriptor, ObjectFactory objectFactory) {
         JavaType javaType = new JavaType();
         javaType.setName(classDescriptor.getAlias());
-        if (DynamicEntity.class.isAssignableFrom(classDescriptor.getJavaClass())){
-            javaType.setJavaAttributes(new JavaAttributes());
-            for (DatabaseMapping ormMapping : classDescriptor.getMappings()) {
-                javaType.getJavaAttributes().getJavaAttribute().add(createJAXBProperty(ormMapping, objectFactory));
+        javaType.setJavaAttributes(new JavaAttributes());
+        boolean isDynamic = DynamicEntity.class.isAssignableFrom(classDescriptor.getJavaClass());
+        for (DatabaseMapping ormMapping : classDescriptor.getMappings()) {
+            JAXBElement<XmlElement> element = createJAXBProperty(ormMapping, objectFactory, isDynamic);
+            if (element != null){
+                javaType.getJavaAttributes().getJavaAttribute().add(element);
             }
+        }
+        if (isDynamic){
             javaType.getJavaAttributes().getJavaAttribute().add(createSelfProperty(classDescriptor.getJavaClassName(), objectFactory));
+            javaType.getJavaAttributes().getJavaAttribute().add(createRelationshipsProperty(classDescriptor.getJavaClassName(), objectFactory));
         }
         // Make them all root elements for now
         javaType.setXmlRootElement(new org.eclipse.persistence.jaxb.xmlmodel.XmlRootElement());
@@ -97,18 +105,21 @@ System.out.println("---- Creating Metadata source javaClass = " + ormDescriptor.
         return javaType;
     }
     
-    private JAXBElement<XmlElement> createJAXBProperty(DatabaseMapping mapping, ObjectFactory objectFactory) {
+    private JAXBElement<XmlElement> createJAXBProperty(DatabaseMapping mapping, ObjectFactory objectFactory, boolean isDynamic) {
+        if (!isDynamic && (mapping.isPrivateOwned() || (!mapping.isObjectReferenceMapping() &&  !mapping.isCollectionMapping()) )){
+            return null;
+        }
         XmlElement xmlElement = new XmlElement();
         xmlElement.setJavaAttribute(mapping.getAttributeName());
         if (mapping.isObjectReferenceMapping()){
             xmlElement.setType(((ObjectReferenceMapping)mapping).getReferenceClassName());
             if (!mapping.isPrivateOwned()){
-                addXmlAdapter(xmlElement);
+                xmlElement.setReadOnly(true);
             }
         } else if (mapping.isCollectionMapping()){
             xmlElement.setType(((CollectionMapping)mapping).getReferenceClassName());
             if (!mapping.isPrivateOwned()){
-                addXmlAdapter(xmlElement);
+                xmlElement.setReadOnly(true);
             }
         } else {
             xmlElement.setType(mapping.getAttributeClassification().getName());
@@ -123,6 +134,23 @@ System.out.println("---- Creating Metadata source javaClass = " + ormDescriptor.
         addXmlAdapter(xmlElement);
         return objectFactory.createXmlElement(xmlElement);
     }
+    
+    public static JAXBElement<XmlElement> createRelationshipsProperty(String ownerClassName, ObjectFactory objectFactory){
+        XmlElement xmlElement = new XmlElement();
+        xmlElement.setJavaAttribute("_persistence_relationshipInfo");
+        xmlElement.setName("relationships");
+        xmlElement.setType(RelationshipInfo.class.getName());
+        xmlElement.setContainerType(List.class.getName());
+        xmlElement.setWriteOnly(true);
+
+        XmlJavaTypeAdapter adapter = new XmlJavaTypeAdapter();
+        adapter.setValue(RelationshipLinkAdapter.class.getName());
+        adapter.setValueType(Link.class.getName());
+        adapter.setType(xmlElement.getType());
+        xmlElement.setXmlJavaTypeAdapter(adapter);
+        return objectFactory.createXmlElement(xmlElement);
+    }
+    
     
     public static void addXmlAdapter(XmlElement xmlElement) {
         xmlElement.setXmlPath(xmlElement.getJavaAttribute() + "/" + LINK_PREFIX + ":" + LINK_LOCAL_NAME + "[@rel='" + xmlElement.getJavaAttribute() + "']/@href");

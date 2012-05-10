@@ -47,6 +47,7 @@ public class TestBootstrap {
 		    FileInputStream xmlStream = new FileInputStream(XMLFilePathBuilder.getXMLFileName("auction-persistence.xml"));
 			factory.bootstrapPersistenceContext("auction", xmlStream, properties, true);
 		} catch (Exception e){
+		    e.printStackTrace();
 			fail(e.toString());
 		}
 		

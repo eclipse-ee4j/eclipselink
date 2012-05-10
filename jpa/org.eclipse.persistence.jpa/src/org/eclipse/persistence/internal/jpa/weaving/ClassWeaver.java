@@ -73,6 +73,10 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
     public static final String PBOOLEAN_SIGNATURE = "Z";
     public static final String LONG_SIGNATURE = "J";
 
+    // REST
+    public static final String WEAVED_REST_LAZY_SHORT_SIGNATURE = "org/eclipse/persistence/internal/weaving/PersistenceWeavedRest";
+    public static final String LIST_RELATIONSHIP_INFO_SIGNATURE = "Ljava/util/List;";
+ 
     // Cloneable
     public static final String CLONEABLE_SHORT_SIGNATURE = "java/lang/Cloneable";
 
@@ -781,6 +785,25 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
         cv_clone.visitMaxs(0, 0);
     }
 
+    public void addPersistenceRestMethods(ClassDetails classDetails) {
+        MethodVisitor cv_getPKVector = cv.visitMethod(ACC_PUBLIC, "_persistence_getRelationships", "()" + LIST_RELATIONSHIP_INFO_SIGNATURE, null, null);
+        cv_getPKVector.visitVarInsn(ALOAD, 0);
+        cv_getPKVector.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_relationshipInfo", LIST_RELATIONSHIP_INFO_SIGNATURE);
+        cv_getPKVector.visitInsn(ARETURN);
+        cv_getPKVector.visitMaxs(0, 0);
+
+        MethodVisitor cv_setPKVector = cv.visitMethod(ACC_PUBLIC, "_persistence_setRelationships", "(" + LIST_RELATIONSHIP_INFO_SIGNATURE + ")V", null, null);
+        cv_setPKVector.visitVarInsn(ALOAD, 0);
+        cv_setPKVector.visitVarInsn(ALOAD, 1);
+        cv_setPKVector.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_relationshipInfo", LIST_RELATIONSHIP_INFO_SIGNATURE);
+        cv_setPKVector.visitInsn(RETURN);
+        cv_setPKVector.visitMaxs(0, 0);
+    }
+    
+    public void addPersistenceRestVariables() {
+        cv.visitField(ACC_PROTECTED + ACC_TRANSIENT, "_persistence_relationshipInfo", LIST_RELATIONSHIP_INFO_SIGNATURE, null, null);
+    }
+    
     /**
      * Add an internal shallow clone method. This can be used to optimize uow
      * cloning.
@@ -1208,6 +1231,7 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
             persistenceWeavedLazyIndex = newInterfacesLength;
             newInterfacesLength++;
         }
+        
         // ChangeTracker
         boolean changeTracker = !classDetails.doesSuperclassWeaveChangeTracking() && classDetails.shouldWeaveChangeTracking();
         int persistenceWeavedChangeTrackingIndex = 0;
@@ -1220,7 +1244,10 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
             persistenceWeavedChangeTrackingIndex = newInterfacesLength;
             newInterfacesLength++;
         }
-
+        
+        int persistenceWeavedRestIndex = newInterfacesLength;
+        newInterfacesLength++;
+        
         String[] newInterfaces = new String[newInterfacesLength];
         System.arraycopy(interfaces, 0, newInterfaces, 0, interfaces.length);
         // Add 'marker'
@@ -1260,6 +1287,9 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
         if (classDetails.shouldWeaveChangeTracking()) {
             newInterfaces[persistenceWeavedChangeTrackingIndex] = TW_CT_SHORT_SIGNATURE;
         }
+        
+        newInterfaces[persistenceWeavedRestIndex] = WEAVED_REST_LAZY_SHORT_SIGNATURE;
+        
         cv.visit(version, access, name, signature, superName, newInterfaces);
     }
 
@@ -1374,6 +1404,10 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
                     addFetchGroupMethods(this.classDetails);
                 }
             }
+        }
+        if (classDetails.getSuperClassDetails() == null) {
+            addPersistenceRestVariables();
+            addPersistenceRestMethods(classDetails);
         }
         cv.visitEnd();
     }

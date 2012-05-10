@@ -119,6 +119,9 @@
         <selectbundle basename="javax.ws.rs" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
             criterion="[1.0.0,2.0.0)" property="javax.ws.rs.lib" includepath="true"
         />
+        <selectbundle basename="javax.ejb" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
+            criterion="[3.0.0,4.0.0)" property="javax.ejb.lib" includepath="true"
+        />
         <available file="${jaxb-api.lib}"      property="jaxb-api.lib.exist"/>
         <available file="${persistence20.lib}" property="persistence20.lib.exist"/>
         <available file="${jersey.lib}"        property="jersey.lib.exist"/>
@@ -165,6 +168,7 @@
         <echo message="moxy.lib              ='${moxy.lib}'"/>
         <echo message="jpa.lib               ='${jpa.lib}'"/>
         <echo message="jpars.lib             ='${jpars.lib}'"/>
+        <echo message="javax.ejb.lib             ='${javax.ejb.lib}'"/>
 
         <!-- path to OSGi Bundle compile dependencies -->
         <path id="jparstest.bundle.compile.path">
@@ -181,6 +185,7 @@
             <pathelement path="${jersey.lib}"/>
             <pathelement path="${javax.ws.rs.lib}"/>
             <pathelement path="${jdbc.driver.jar}"/>
+            <pathelement path="${javax.ejb.lib}"/>
         </path>
         <!-- Run path without product components -->
         <path id="jparstest.thirdparty.run.path">

@@ -36,7 +36,12 @@ import javax.xml.bind.JAXBException;
 
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.persistence.config.QueryHints;
+import org.eclipse.persistence.descriptors.FetchGroupManager;
 import org.eclipse.persistence.dynamic.DynamicEntity;
+import org.eclipse.persistence.indirection.ValueHolder;
+import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl;
+import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.PersistenceFactory;
 import org.eclipse.persistence.jpa.rs.Service;
@@ -44,11 +49,15 @@ import org.eclipse.persistence.jpa.rs.metadata.DatabaseMetadataStore;
 import org.eclipse.persistence.jpa.rs.util.LinkAdapter;
 import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
 import org.eclipse.persistence.jpars.test.model.StaticAddress;
+import org.eclipse.persistence.jpars.test.model.StaticAuction;
+import org.eclipse.persistence.jpars.test.model.StaticBid;
 import org.eclipse.persistence.jpars.test.model.StaticUser;
+import org.eclipse.persistence.jpars.test.util.StaticModelDatabasePopulator;
 import org.eclipse.persistence.jpars.test.util.ExamplePropertiesLoader;
 import org.eclipse.persistence.jpars.test.util.TestHttpHeaders;
 import org.eclipse.persistence.jpars.test.util.TestURIInfo;
 import org.eclipse.persistence.jpars.test.util.XMLFilePathBuilder;
+import org.eclipse.persistence.queries.FetchGroup;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -88,6 +97,7 @@ public class TestService {
             EntityManagerFactory emf = Persistence.createEntityManagerFactory("auction-static", properties);
             context = factory.bootstrapPersistenceContext("auction-static", emf, new URI("http://localhost:8080/JPA-RS/"), false);
 
+            StaticModelDatabasePopulator.populateDB(emf);
         } catch (Exception e){
             fail(e.toString());
         }
@@ -244,7 +254,6 @@ public class TestService {
         
         DynamicEntity entity1 = (DynamicEntity)context.newEntity("Auction");
         entity1.set("name", "Computer");
-        context.create(null, entity1);
         
         DynamicEntity entity2 = (DynamicEntity)context.newEntity("User");
         entity2.set("name", "Bob");
@@ -263,16 +272,12 @@ public class TestService {
         } catch (JAXBException e){
             fail("Exception unmarsalling: " + e);
         }
-        System.out.println(entity3);
-        entity2 = entity3.get("auction");
+        (new FetchGroupManager()).setObjectFetchGroup(entity3, null, null);
+        entity1 = entity3.get("auction");
 
-        assertNotNull("Name of auction is null.", entity2.get("name"));
-        assertTrue("Name of auction is incorrect.", entity2.get("name").equals("Computer"));
+        assertNotNull("Name of auction is null.", entity1.get("name"));
+        assertTrue("Name of auction is incorrect.", entity1.get("name").equals("Computer"));
         
-        entity1 = entity3.get("user");
-        
-        assertNotNull("Name of user is null.", entity1.get("name"));
-        assertTrue("Name of user is incorrect.", entity1.get("name").equals("Bob"));
     }
     
     @Test
@@ -295,7 +300,7 @@ public class TestService {
         mediaTypes.add(MediaType.APPLICATION_JSON);
         TestURIInfo ui = new TestURIInfo();
         StreamingOutput output = (StreamingOutput)service.namedQuery("auction", "Auction.all", headers, ui).getEntity();
-     
+   
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try{
             output.write(outputStream);
@@ -338,7 +343,7 @@ public class TestService {
         
         clearData();
     }
-   
+    
     @Test
     public void testUpdate(){
         Service service = new Service();
@@ -351,14 +356,47 @@ public class TestService {
         entity1.set("name", "Laptop");
         entity1.set("description", "Speedy");
 
-        TestURIInfo ui = new TestURIInfo();
-        ui.addMatrixParameter("name", "Computer");
         StreamingOutput output = (StreamingOutput)service.update("auction", "Auction", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo(), serializeToStream(entity1, context, MediaType.APPLICATION_JSON_TYPE)).getEntity();
 
         String resultString = stringifyResults(output);
         
         assertTrue("Laptop was not in results.", resultString.contains("\"name\":\"Laptop\""));
         assertTrue("Laptop was not in results.", resultString.contains("\"description\":\"Speedy\""));
+    }
+    
+    @Test
+    public void testUpdateRelationship(){
+        Service service = new Service();
+        service.setPersistenceFactory(factory);
+        PersistenceContext context = factory.getPersistenceContext("auction");
+        
+        DynamicEntity entity1 = (DynamicEntity)context.newEntity("Auction");
+        entity1.set("name", "Computer");
+        
+        DynamicEntity entity2 = (DynamicEntity)context.newEntity("User");
+        entity2.set("name", "Bob");
+        context.create(null, entity2);
+        
+        DynamicEntity entity3 = (DynamicEntity)context.newEntity("Bid");
+        entity3.set("bid", 200d);
+        entity3.set("user", entity2);
+        entity3.set("auction", entity1);
+        context.create(null, entity3);
+
+        entity3 = (DynamicEntity)context.find(null, "Bid", entity3.get("id"), null);
+
+        entity3.set("bid", 201d);
+        entity1 = entity3.get("auction");
+        entity1.set("name", "Laptop");
+        StreamingOutput output = (StreamingOutput)service.update("auction", "Bid", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo(), serializeToStream(entity3, context, MediaType.APPLICATION_JSON_TYPE)).getEntity();
+
+        String resultString = stringifyResults(output);
+        
+        assertTrue("bid was not in results.", resultString.replace(" ","").contains("\"bid\":201.0"));
+        assertTrue("link was not in results.", resultString.replace(" ","").contains("http://localhost:8080/JPA-RS/auction/entity/Bid/"));
+        assertTrue("rel was not in results.", resultString.replace(" ","").contains("\"rel\":\"user\""));
+        assertTrue("Laptop was not in results.", resultString.replace(" ","").contains("\"name\":\"Laptop\""));
+        
     }
     
     @Test 
@@ -438,7 +476,7 @@ public class TestService {
         address.set("type", "Home");
         user.set("address", address);
         context.create(null, user);
-
+                
         Response output = service.find("auction", "Address", address.get("id") + "+" + address.get("type"), generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo());
 
         String result = stringifyResults((StreamingOutputMarshaller)output.getEntity());
@@ -450,23 +488,141 @@ public class TestService {
     public void testStaticCompositeKey(){
         Service service = new Service();
         service.setPersistenceFactory(factory);
-        PersistenceContext context = factory.getPersistenceContext("auction-static");
-        StaticUser user = new StaticUser();
-        user.setName("Wes");
-        user.setId(7);
-        StaticAddress address = new StaticAddress();
-        address.setCity("Ottawa");
-        address.setPostalCode("a1a1a1");
-        address.setStreet("Main Street");
-        address.setType("Home");
-        user.setAddress(address);
-        context.create(null, user);
 
-        Response output = service.find("auction-static", "StaticAddress", user.getAddress().getId() + "+" + user.getAddress().getType(), generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo());
+        Response output = service.find("auction-static", "StaticAddress", StaticModelDatabasePopulator.ADDRESS1_ID + "+" + StaticModelDatabasePopulator.address1().getType(), generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo());
 
         String result = stringifyResults((StreamingOutputMarshaller)output.getEntity());
-        assertTrue("Type was not in the result", result.contains("Home"));
-        assertTrue("Id was not in the result", result.contains(Integer.toString(user.getAddress().getId())));
+        assertTrue("home was not in the result", result.contains("home"));
+        assertTrue("user was not in the result", result.contains("\"rel\":\"user\""));
+    }
+    
+    @Test 
+    public void testStaticRelationships(){
+        Service service = new Service();
+        service.setPersistenceFactory(factory);
+        
+        Response output = service.find("auction-static", "StaticBid", String.valueOf(StaticModelDatabasePopulator.BID1_ID), generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo());
+
+        String result = stringifyResults((StreamingOutputMarshaller)output.getEntity());
+        assertTrue("Auction was not in the result", result.contains("\"rel\":\"auction\""));
+        assertTrue("User link was not in the result", result.contains("\"rel\":\"user\""));
+    }
+    
+    @Test
+    public void testUpdateStaticRelationship(){
+        Service service = new Service();
+        service.setPersistenceFactory(factory);
+        PersistenceContext context = factory.getPersistenceContext("auction-static");
+        
+        StaticUser initialUser = (StaticUser)((StaticBid)context.find("StaticBid", StaticModelDatabasePopulator.BID1_ID)).getUser();
+        StaticUser user2 = (StaticUser)context.find("StaticUser", StaticModelDatabasePopulator.USER2_ID);
+        
+        try{
+            Response output = service.setOrAddAttribute("auction-static", "StaticBid", String.valueOf(StaticModelDatabasePopulator.BID1_ID), "user", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo(), serializeToStream(user2, context, MediaType.APPLICATION_JSON_TYPE));
+    
+            String result = stringifyResults((StreamingOutputMarshaller)output.getEntity());
+            context.getJpaSession().getIdentityMapAccessor().initializeAllIdentityMaps();
+            
+            StaticBid bid = (StaticBid)context.find("StaticBid", StaticModelDatabasePopulator.BID1_ID);
+            
+            assertTrue(bid.getUser().equals(user2));
+        } finally {
+        
+            context.updateOrAddAttribute(null, "StaticBid", StaticModelDatabasePopulator.BID1_ID, null, "user", initialUser, null);
+        }
+    }
+    
+    @Test
+    public void testDeleteStaticRelationship(){
+        Service service = new Service();
+        service.setPersistenceFactory(factory);
+        PersistenceContext context = factory.getPersistenceContext("auction-static");
+        
+        StaticBid bid = (StaticBid)context.find("StaticBid", StaticModelDatabasePopulator.BID1_ID);
+        StaticUser user = bid.getUser();
+        
+        try{
+            Response output = service.removeAttribute("auction-static", "StaticBid", String.valueOf(StaticModelDatabasePopulator.BID1_ID), "user", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo(), serializeToStream(user, context, MediaType.APPLICATION_JSON_TYPE));
+    
+            String result = stringifyResults((StreamingOutputMarshaller)output.getEntity());
+            context.getJpaSession().getIdentityMapAccessor().initializeAllIdentityMaps();
+            
+            bid = (StaticBid)context.find("StaticBid", StaticModelDatabasePopulator.BID1_ID);
+            
+            assertTrue(bid.getUser() == null);
+        } finally {
+            context.updateOrAddAttribute(null, "StaticBid", StaticModelDatabasePopulator.BID1_ID, null, "user", user, null);
+        }
+     }
+    
+    @Test
+    public void testUpdateAndRemoveStaticCollectionRelationship(){
+        Service service = new Service();
+        service.setPersistenceFactory(factory);
+        PersistenceContext context = factory.getPersistenceContext("auction-static");
+        StaticAuction auction = (StaticAuction)context.find("StaticAuction", StaticModelDatabasePopulator.AUCTION1_ID);
+        StaticBid bid = new StaticBid();
+        bid.setBid(100);
+        bid.setId(1000);
+        context.create(null, bid);
+
+        TestURIInfo ui = new TestURIInfo();
+        ui.addMatrixParameter("partner", "auction");
+        Response output = service.setOrAddAttribute("auction-static", "StaticAuction", String.valueOf(StaticModelDatabasePopulator.AUCTION1_ID), "bids", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), ui, serializeToStream(bid, context, MediaType.APPLICATION_JSON_TYPE));
+        String result = stringifyResults((StreamingOutputMarshaller)output.getEntity());
+        context.getJpaSession().getIdentityMapAccessor().initializeAllIdentityMaps();
+        
+        auction = (StaticAuction)context.find("StaticAuction", StaticModelDatabasePopulator.AUCTION1_ID);
+        
+        boolean found = false;
+        for (StaticBid sbid: auction.getBids()){
+            if (sbid.getId() == bid.getId()){
+                found = true;
+            }
+        }
+        
+        assertTrue("The new bid was not found", found);
+        
+        context.getJpaSession().getIdentityMapAccessor().initializeAllIdentityMaps();
+        bid = (StaticBid)context.find("StaticBid", bid.getId());
+        output = service.removeAttribute("auction-static", "StaticAuction", String.valueOf(StaticModelDatabasePopulator.AUCTION1_ID), "bids", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), ui, serializeToStream(bid, context, MediaType.APPLICATION_JSON_TYPE));
+        context.getJpaSession().getIdentityMapAccessor().initializeAllIdentityMaps();
+        
+        auction = (StaticAuction)context.find("StaticAuction", StaticModelDatabasePopulator.AUCTION1_ID);
+        found = false;
+        for (StaticBid sbid: auction.getBids()){
+            if (sbid.getId() == bid.getId()){
+                found = true;
+            }
+        }
+        assertFalse("The removed bid was found", found);
+    }
+
+    
+    @Test
+    public void testStaticReportQuery(){
+        Service service = new Service();
+        service.setPersistenceFactory(factory);
+        PersistenceContext context = factory.getPersistenceContext("auction-static");
+        Long count = (Long)((List)context.query("User.count", null)).get(0);
+        
+        TestHttpHeaders headers = new TestHttpHeaders();
+        headers.getAcceptableMediaTypes().add(MediaType.APPLICATION_JSON_TYPE);
+        List<String> mediaTypes = new ArrayList<String>();
+        mediaTypes.add(MediaType.APPLICATION_JSON);
+        TestURIInfo ui = new TestURIInfo();
+        StreamingOutput output = (StreamingOutput)service.namedQuery("auction-static", "User.count", headers, ui).getEntity();
+   
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        try{
+            output.write(outputStream);
+        } catch (IOException ex){
+            fail(ex.toString());
+        }
+        String resultString = outputStream.toString();
+        
+        assertTrue("Incorrect result", resultString.contains("[{\"value\":\"" + count.toString() + "\"}]"));
+        clearData();
     }
     
     @Test

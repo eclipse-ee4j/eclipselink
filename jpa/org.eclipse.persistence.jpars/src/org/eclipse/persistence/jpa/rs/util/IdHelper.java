@@ -54,7 +54,7 @@ public class IdHelper {
     private static final String SEPARATOR_STRING = "+";
     
     public static Object buildId(PersistenceContext app, String entityName, String idString) {
-        Server session = JpaHelper.getServerSession(app.getEmf());
+        Server session = app.getJpaSession();
         ClassDescriptor descriptor = app.getDescriptor(entityName);
         List<DatabaseMapping> pkMappings = descriptor.getObjectBuilder().getPrimaryKeyMappings();
         List<SortableKey> pkIndices = new ArrayList<SortableKey>();
@@ -93,8 +93,8 @@ public class IdHelper {
         return keyElements;
     }
     
-    public static String stringifyId(DynamicEntityImpl entity, PersistenceContext app){
-        ClassDescriptor descriptor = app.getDescriptor(entity.getType().getName());
+    public static String stringifyId(Object entity, String typeName, PersistenceContext app){
+        ClassDescriptor descriptor = app.getDescriptor(typeName);
         List<DatabaseMapping> pkMappings = descriptor.getObjectBuilder().getPrimaryKeyMappings();
         if (pkMappings.isEmpty()){
             return "";
@@ -109,13 +109,15 @@ public class IdHelper {
         StringBuffer key = new StringBuffer();
         Iterator<SortableKey> sortableKeys = pkIndices.iterator();
         while (sortableKeys.hasNext()){
-            key.append(entity.get(sortableKeys.next().getMapping().getAttributeName()).toString());
+            DatabaseMapping mapping = sortableKeys.next().getMapping();
+            key.append(mapping.getAttributeValueFromObject(entity).toString());
             if (sortableKeys.hasNext()){
                 key.append(SEPARATOR_STRING);
             }
         }
         return key.toString();
     }
+     
     
     /**
      * build a shell of an object based on a primary key.  The object shell will be an instance of the object with
@@ -131,7 +133,7 @@ public class IdHelper {
         DynamicEntityImpl entity = null;
         if (descriptor.hasCMPPolicy()) {
             CMP3Policy policy = (CMP3Policy) descriptor.getCMPPolicy();
-            entity = (DynamicEntityImpl)policy.createBeanUsingKey(id, (AbstractSession)JpaHelper.getDatabaseSession(context.getEmf()));
+            entity = (DynamicEntityImpl)policy.createBeanUsingKey(id, context.getJpaSession());
         } else { 
             entity = (DynamicEntityImpl)context.newEntity(entityType);
             // if there is only one PK mapping, we assume the id object represents the value of that mapping

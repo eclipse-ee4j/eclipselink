@@ -2,12 +2,15 @@ package org.eclipse.persistence.jpars.test.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.MapsId;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 
 @Entity
 @Table(name="ST_AUC_ADDRESS")
@@ -22,7 +25,7 @@ public class StaticAddress {
     protected String city;
     protected String street;
     protected String postalCode;
-    @OneToOne(mappedBy="address")
+    @OneToOne(mappedBy="address", fetch=FetchType.LAZY)
     protected StaticUser user;
 
     public int getId() {
@@ -55,6 +58,8 @@ public class StaticAddress {
     public void setPostalCode(String postalCode) {
         this.postalCode = postalCode;
     }
+    
+    @XmlInverseReference(mappedBy="address")
     public StaticUser getUser() {
         return user;
     }

@@ -22,4 +22,5 @@ Import-Package: javax.ejb;version="3.1.0",
  javax.xml.bind.annotation.adapters;version="2.0",
  javax.xml.stream,
  javax.annotation
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 

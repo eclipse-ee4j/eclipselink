@@ -15,6 +15,7 @@
 	    <properties>
 	       <property name="javax.persistence.nonJtaDataSource" value="jdbc/jpa-rs"/>
 	       <property name="eclipselink.logging.level" value="FINEST"/>
+	       <property name="eclipselink.logging.parameters" value="true"/>
 	    </properties>
 	</persistence-unit>
 </persistence>

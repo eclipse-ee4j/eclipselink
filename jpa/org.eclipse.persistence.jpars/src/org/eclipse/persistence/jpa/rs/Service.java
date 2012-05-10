@@ -69,7 +69,6 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.queries.MapContainerPolicy;
 import org.eclipse.persistence.internal.queries.ReportItem;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
@@ -107,6 +106,7 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
 public class Service {
 	static final Logger logger = Logger.getLogger("AppService");	
 
+	public static final String RELATIONSHIP_PARTNER = "partner";
     private PersistenceFactory factory;
 
     public PersistenceFactory getPersistenceFactory() {
@@ -119,7 +119,6 @@ public class Service {
     }
     
    @PUT
-   @Path("/")
    @Consumes({ MediaType.WILDCARD})
    public Response start(@PathParam("context") String persistenceUnit, @PathParam("type") String type, @Context HttpHeaders hh, InputStream in){
        factory.setMetadataStore(new DatabaseMetadataStore());
@@ -133,7 +132,6 @@ public class Service {
    }
    
    @GET
-   @Path("/")
    public Response getContexts(@Context HttpHeaders hh, @Context UriInfo uriInfo) throws JAXBException {
        Set<String> contexts = factory.getPersistenceContextNames();
        Iterator<String> contextIterator = contexts.iterator();
@@ -150,7 +148,6 @@ public class Service {
    
    
    @POST
-   @Path("/")
    @Produces(MediaType.WILDCARD)
    public Response callSessionBean(@Context HttpHeaders hh, @Context UriInfo ui, InputStream is) throws JAXBException, ClassNotFoundException, NamingException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
        SessionBeanCall call = null;
@@ -231,7 +228,7 @@ public class Service {
         } else {
             PersistenceUnit pu = new PersistenceUnit();
             pu.setPersistenceUnitName(persistenceUnit);
-            Map<Class, ClassDescriptor> descriptors = JpaHelper.getServerSession(app.getEmf()).getDescriptors();
+            Map<Class, ClassDescriptor> descriptors = app.getJpaSession().getDescriptors();
             String mediaType = StreamingOutputMarshaller.mediaType(hh.getAcceptableMediaTypes()).toString();
             Iterator<Class> contextIterator = descriptors.keySet().iterator();
             while (contextIterator.hasNext()){
@@ -276,7 +273,7 @@ public class Service {
         if (app == null){
             return Response.status(Status.NOT_FOUND).build();
         } else {
-            ClassDescriptor descriptor = JpaHelper.getServerSession(app.getEmf()).getDescriptorForAlias(descriptorAlias);
+            ClassDescriptor descriptor = app.getJpaSession().getDescriptorForAlias(descriptorAlias);
             if (descriptor == null){
                 return Response.status(Status.NOT_FOUND).build();
             } else {
@@ -321,7 +318,7 @@ public class Service {
             return Response.status(Status.NOT_FOUND).build();
         } else {
             List<Query> returnQueries = new ArrayList<Query>();
-            Map<String, List<DatabaseQuery>> queries = JpaHelper.getServerSession(app.getEmf()).getQueries();
+            Map<String, List<DatabaseQuery>> queries = app.getJpaSession().getQueries();
             if (queries.get(queryName) != null){
                 for (DatabaseQuery query :queries.get(queryName)){
                     returnQueries.add(getQuery(query, app));
@@ -355,6 +352,86 @@ public class Service {
             return Response.ok(new StreamingOutputMarshaller(app, entity, hh.getAcceptableMediaTypes())).build();
         }        
     }
+    
+    @GET
+    @Path("{context}/entity/{type}/{key}/{attribute}")
+    public Response findAttribute(@PathParam("context") String persistenceUnit, @PathParam("type") String type, @PathParam("key") String key, @PathParam("attribute") String attribute, @Context HttpHeaders hh, @Context UriInfo ui) {
+        PersistenceContext app = get(persistenceUnit, ui.getBaseUri());
+        if (app == null || app.getClass(type) == null){
+            return Response.status(Status.NOT_FOUND).build();
+        }
+        Object id = IdHelper.buildId(app, type, key);
+
+        Object entity = app.findAttribute(getTenantId(hh), type, id, Service.getHintMap(ui), attribute);
+
+        if (entity == null) {
+            return Response.status(Status.NOT_FOUND).build();
+        } else {
+            return Response.ok(new StreamingOutputMarshaller(app, entity, hh.getAcceptableMediaTypes())).build();
+        }        
+    }
+    
+    @POST
+    @Path("{context}/entity/{type}/{key}/{attribute}")
+    public Response setOrAddAttribute(@PathParam("context") String persistenceUnit, @PathParam("type") String type, @PathParam("key") String key, @PathParam("attribute") String attribute, @Context HttpHeaders hh, @Context UriInfo ui, InputStream in) {
+        PersistenceContext app = get(persistenceUnit, ui.getBaseUri());
+        if (app == null || app.getClass(type) == null){
+            return Response.status(Status.NOT_FOUND).build();
+        }
+        Object id = IdHelper.buildId(app, type, key);
+
+        Object entity = null;
+        String partner = (String)Service.getParameterMap(ui).get(RELATIONSHIP_PARTNER);
+        try{
+            ClassDescriptor descriptor = app.getDescriptor(type);
+            DatabaseMapping mapping = (DatabaseMapping)descriptor.getMappingForAttributeName(attribute);
+            if (!mapping.isForeignReferenceMapping()){
+                return Response.status(Status.NOT_FOUND).build();
+            }
+            entity = app.unmarshalEntity(((ForeignReferenceMapping)mapping).getReferenceDescriptor().getAlias(), getTenantId(hh), mediaType(hh.getAcceptableMediaTypes()), in);
+        } catch (JAXBException e){
+            return Response.status(Status.BAD_REQUEST).build();
+        }
+        
+        Object result = app.updateOrAddAttribute(getTenantId(hh), type, id, Service.getHintMap(ui), attribute, entity, partner);
+
+        if (result == null) {
+            return Response.status(Status.NOT_FOUND).build();
+        } else {
+            return Response.ok(new StreamingOutputMarshaller(app, result, hh.getAcceptableMediaTypes())).build();
+        }
+    }
+    
+    @DELETE
+    @Path("{context}/entity/{type}/{key}/{attribute}")
+    public Response removeAttribute(@PathParam("context") String persistenceUnit, @PathParam("type") String type, @PathParam("key") String key, @PathParam("attribute") String attribute, @Context HttpHeaders hh, @Context UriInfo ui, InputStream in) {
+        PersistenceContext app = get(persistenceUnit, ui.getBaseUri());
+        if (app == null || app.getClass(type) == null){
+            return Response.status(Status.NOT_FOUND).build();
+        }
+        Object id = IdHelper.buildId(app, type, key);
+
+        Object entity = null;
+        String partner = (String)Service.getParameterMap(ui).get(RELATIONSHIP_PARTNER);
+        try{
+            ClassDescriptor descriptor = app.getDescriptor(type);
+            DatabaseMapping mapping = (DatabaseMapping)descriptor.getMappingForAttributeName(attribute);
+            if (!mapping.isForeignReferenceMapping()){
+                return Response.status(Status.NOT_FOUND).build();
+            }
+            entity = app.unmarshalEntity(((ForeignReferenceMapping)mapping).getReferenceDescriptor().getAlias(), getTenantId(hh), mediaType(hh.getAcceptableMediaTypes()), in);
+        } catch (JAXBException e){
+            return Response.status(Status.BAD_REQUEST).build();
+        }
+        
+        Object result = app.removeAttribute(getTenantId(hh), type, id, Service.getHintMap(ui), attribute, entity, partner);
+
+        if (result == null) {
+            return Response.status(Status.NOT_FOUND).build();
+        } else {
+            return Response.ok(new StreamingOutputMarshaller(app, result, hh.getAcceptableMediaTypes())).build();
+        }     
+    }
 
     @PUT
     @Path("{context}/entity/{type}")
@@ -368,26 +445,17 @@ public class Service {
         try{
             entity = app.unmarshalEntity(type, getTenantId(hh), mediaType(hh.getAcceptableMediaTypes()), in);
         } catch (JAXBException e){
+            e.printStackTrace();
             return Response.status(Status.BAD_REQUEST).build();
         }
 
-        // maintain itempotence on PUT by disallowing sequencing and cascade persist.
+        // maintain itempotence on PUT by disallowing sequencing
         AbstractDirectMapping sequenceMapping = descriptor.getObjectBuilder().getSequenceMapping();
         if (sequenceMapping != null){
             Object value = sequenceMapping.getAttributeAccessor().getAttributeValueFromObject(entity);
 
             if (descriptor.getObjectBuilder().isPrimaryKeyComponentInvalid(value, descriptor.getPrimaryKeyFields().indexOf(descriptor.getSequenceNumberField())) || descriptor.getSequence().shouldAlwaysOverrideExistingValue()){
                 return Response.status(Status.BAD_REQUEST).build();
-            }
-        }
-        for (DatabaseMapping mapping: descriptor.getObjectBuilder().getRelationshipMappings()){
-            if (mapping.isForeignReferenceMapping()){
-                if (((ForeignReferenceMapping)mapping).isCascadePersist()){
-                    Object value = mapping.getAttributeAccessor().getAttributeValueFromObject(entity);
-                    if (value != null){
-                        return Response.status(Status.BAD_REQUEST).build();
-                    }
-                }
             }
         }
 
@@ -504,7 +572,7 @@ public class Service {
     }
     
     protected void addQueries(List<Query>  queryList, PersistenceContext app, String javaClassName){
-        Map<String, List<DatabaseQuery>> queries = JpaHelper.getServerSession(app.getEmf()).getQueries();
+        Map<String, List<DatabaseQuery>> queries = app.getJpaSession().getQueries();
         List<DatabaseQuery> returnQueries = new ArrayList<DatabaseQuery>();
         for (String key: queries.keySet()){
             List<DatabaseQuery> keyQueries = queries.get(key);
@@ -534,7 +602,7 @@ public class Service {
         }
         Query returnQuery = new Query(query.getName(), jpql, new LinkTemplate("execute", method, app.getBaseURI() + app.getName() + "/query/" + query.getName() + parameterString));
         if (query.isReportQuery()){
-            query.checkPrepare(((AbstractSession)JpaHelper.getServerSession(app.getEmf())), new DatabaseRecord());
+            query.checkPrepare(app.getJpaSession(), new DatabaseRecord());
             for (ReportItem item: ((ReportQuery)query).getItems()){
                 if (item.getMapping() != null) {
                      if (item.getAttributeExpression() != null && item.getAttributeExpression().isMapEntryExpression()){
@@ -577,7 +645,11 @@ public class Service {
                 DynamicClassLoader dcl = new DynamicClassLoader(Thread.currentThread().getContextClassLoader());
                 Map<String, Object> properties = new HashMap<String, Object>();
                 properties.put(PersistenceUnitProperties.CLASSLOADER, dcl);
-                EntityManagerFactory factory = Persistence.createEntityManagerFactory(persistenceUnit, properties);
+                
+                EntityManagerFactory factory = null;//(EntityManagerFactory) Naming.getInitialContext().lookup("java:comp/env/persistence/pu1")
+                if (factory == null){
+                    factory = Persistence.createEntityManagerFactory(persistenceUnit, properties);
+                }
                 if (factory != null){
                     app = getPersistenceFactory().bootstrapPersistenceContext(persistenceUnit, factory, defaultURI, true);
                 }

@@ -39,6 +39,7 @@ import org.eclipse.persistence.jpa.rs.util.LinkAdapter;
 import org.eclipse.persistence.jpars.test.model.StaticAuction;
 import org.eclipse.persistence.jpars.test.model.StaticBid;
 import org.eclipse.persistence.jpars.test.model.StaticUser;
+import org.eclipse.persistence.jpars.test.util.StaticModelDatabasePopulator;
 import org.eclipse.persistence.jpars.test.util.ExamplePropertiesLoader;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -52,23 +53,11 @@ public class ServerCrudTest {
     
     public static final String SERVER_URI_BASE = "server.uri.base";
     public static final String DEFAULT_SERVER_URI_BASE = "http://localhost:8080";
-   public static final String APPLICATION_LOCATION = "/eclipselink.jpars.test/jpa-rs/";
+    public static final String APPLICATION_LOCATION = "/eclipselink.jpars.test/persistence/";
     public static final String DEFAULT_PU = "auction-static";
     protected static Client client = null;
     protected static Unmarshaller unmarshaller = null;
     protected static PersistenceContext context = null;
-    
-    protected static int user1Id;
-    protected static int user2Id;
-    protected static int user3Id;
-    
-    protected static int auction1Id;
-    protected static int auction2Id;
-    protected static int auction3Id;
-    
-    protected static int bid1Id;;
-    protected static int bid2Id;
-    protected static int bid3Id;
     
     @BeforeClass
     public static void setup(){
@@ -89,34 +78,23 @@ public class ServerCrudTest {
             throw new RuntimeException("Setup Exception ", e);
         }
         
-        populateDB(emf);
-        
+        StaticModelDatabasePopulator.populateDB(emf);
         client = Client.create();
     }
     
     
     @Test
     public void testRead(){
-        StaticBid bid = restRead(bid1Id, "StaticBid", StaticBid.class);
-        assertTrue("Wrong big retrieved.", bid.getBid() == 110);
-        assertTrue("No user for Bid", bid.getUser() != null);
-        assertTrue("No auction for Bid", bid.getAuction() != null);
-        bid = dbRead(bid1Id, StaticBid.class);
-        assertTrue("Wrong big in DB.", bid.getBid() == 110);
-        assertTrue("No user for Bid in DB", bid.getUser() != null);
-        assertTrue("No auction for Bid in DB", bid.getAuction() != null);
+        StaticBid bid = restRead(StaticModelDatabasePopulator.BID1_ID, "StaticBid", StaticBid.class);
+        StaticBid bid2 = dbRead(StaticModelDatabasePopulator.BID1_ID, StaticBid.class);
+        assertTrue("Wrong big in DB.", bid.getBid() == bid2.getBid());
     }
     
     @Test
     public void testReadXML(){
-        StaticBid bid = restRead(bid1Id, "StaticBid", StaticBid.class, DEFAULT_PU, MediaType.APPLICATION_XML_TYPE);
-        assertTrue("Wrong big retrieved.", bid.getBid() == 110);
-        assertTrue("No user for Bid", bid.getUser() != null);
-        assertTrue("No auction for Bid", bid.getAuction() != null);
-        bid = dbRead(bid1Id, StaticBid.class);
-        assertTrue("Wrong big in DB.", bid.getBid() == 110);
-        assertTrue("No user for Bid in DB", bid.getUser() != null);
-        assertTrue("No auction for Bid in DB", bid.getAuction() != null);
+        StaticBid bid = restRead(StaticModelDatabasePopulator.BID1_ID, "StaticBid", StaticBid.class, DEFAULT_PU, MediaType.APPLICATION_XML_TYPE);
+        StaticBid bid2 = dbRead(StaticModelDatabasePopulator.BID1_ID, StaticBid.class);
+        assertTrue("Wrong big in DB.", bid.getBid() == bid2.getBid());
     }
     
     @Test
@@ -157,15 +135,12 @@ public class ServerCrudTest {
     
     @Test
     public void testUpdate(){
-        StaticBid bid = restRead(bid1Id, "StaticBid", StaticBid.class);
+        StaticBid bid = restRead(StaticModelDatabasePopulator.BID1_ID, "StaticBid", StaticBid.class);
         bid.setBid(120);
         bid = restUpdate(bid, "StaticBid", StaticBid.class);
         assertTrue("Wrong big retrieved.", bid.getBid() == 120);
-        assertTrue("No user for Bid", bid.getUser() != null);
-        assertTrue("No auction for Bid", bid.getAuction() != null);
-        bid = dbRead(bid1Id, StaticBid.class);
+        bid = dbRead(StaticModelDatabasePopulator.BID1_ID, StaticBid.class);
         assertTrue("Wrong big retrieved in db.", bid.getBid() == 120);
-        assertTrue("No user for Bid in db", bid.getUser() != null);
         assertTrue("No auction for Bid in db", bid.getAuction() != null);
         bid.setBid(110);
         bid = restUpdate(bid, "StaticBid", StaticBid.class);
@@ -281,16 +256,12 @@ public class ServerCrudTest {
     
     @Test
     public void testUpdateXML(){
-        StaticBid bid = restRead(bid1Id, "StaticBid", StaticBid.class, DEFAULT_PU, MediaType.APPLICATION_XML_TYPE);
+        StaticBid bid = restRead(StaticModelDatabasePopulator.BID1_ID, "StaticBid", StaticBid.class, DEFAULT_PU, MediaType.APPLICATION_XML_TYPE);
         bid.setBid(120);
         bid = restUpdate(bid, "StaticBid", StaticBid.class, DEFAULT_PU, MediaType.APPLICATION_XML_TYPE, MediaType.APPLICATION_XML_TYPE);
         assertTrue("Wrong big retrieved.", bid.getBid() == 120);
-        assertTrue("No user for Bid", bid.getUser() != null);
-        assertTrue("No auction for Bid", bid.getAuction() != null);
-        bid = dbRead(bid1Id, StaticBid.class);
+        bid = dbRead(StaticModelDatabasePopulator.BID1_ID, StaticBid.class);
         assertTrue("Wrong big retrieved in db.", bid.getBid() == 120);
-        assertTrue("No user for Bid in db", bid.getUser() != null);
-        assertTrue("No auction for Bid in db", bid.getAuction() != null);
         bid.setBid(110);
         bid = restUpdate(bid, "StaticBid", StaticBid.class);
     }
@@ -351,6 +322,23 @@ public class ServerCrudTest {
     }
     
     @Test
+    public void testUpdateRelationship(){
+        StaticBid bid = dbRead(StaticModelDatabasePopulator.BID1_ID, StaticBid.class);
+        StaticUser user = bid.getUser();
+        StaticUser newUser = new StaticUser();
+        newUser.setName("Mark");
+        bid = restUpdateRelationship(String.valueOf(StaticModelDatabasePopulator.BID1_ID), "StaticBid", "user", newUser, StaticBid.class, "auction-static", MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON_TYPE);
+
+        bid = dbRead(StaticModelDatabasePopulator.BID1_ID, StaticBid.class);
+        assertTrue("Wrong user.", bid.getUser().getName().equals("Mark"));
+        newUser = bid.getUser();
+        bid = restUpdateRelationship(String.valueOf(StaticModelDatabasePopulator.BID1_ID), "StaticBid", "user", user, StaticBid.class, "auction-static", MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON_TYPE);
+        bid = dbRead(StaticModelDatabasePopulator.BID1_ID, StaticBid.class);
+        assertTrue("Wrong user.", bid.getUser().getName().equals(bid.getUser().getName()));
+        dbDelete(newUser);
+    }
+    
+    @Test
     public void testDeleteNonExistant(){
         try{
             restDelete(1000, "StaticUser", StaticUser.class);
@@ -392,16 +380,16 @@ public class ServerCrudTest {
     @Test
     public void testNamedQueryParameter(){
         Map<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put("id", user1Id);
+        parameters.put("id", StaticModelDatabasePopulator.USER1_ID);
         List<StaticUser> users = (List<StaticUser>)restNamedQuery("User.byId", "StaticUser", parameters, null);
         assertTrue("Incorrect Number of users found.", users.size() == 1);
-        assertTrue("Wrong user returned", users.get(0).getId() == user1Id);
+        assertTrue("Wrong user returned", users.get(0).getId() == StaticModelDatabasePopulator.USER1_ID);
     }
     
     @Test
     public void testNamedQueryParameters(){
         Map<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put("id", user1Id);
+        parameters.put("id", StaticModelDatabasePopulator.USER1_ID);
         parameters.put("name", "user2");
         List<StaticUser> users = (List<StaticUser>)restNamedQuery("User.byNameOrId", "StaticUser", parameters, null);
         assertTrue("Incorrect Number of users found.", users.size() == 2);
@@ -412,7 +400,7 @@ public class ServerCrudTest {
         RestCallFailedException exc = null;
         try{
             Map<String, Object> parameters = new HashMap<String, Object>();
-            parameters.put("wrong", user1Id);
+            parameters.put("wrong", StaticModelDatabasePopulator.USER1_ID);
             restNamedQuery("User.byId", "StaticUser", parameters, null);
         } catch (RestCallFailedException e){
             exc = e;
@@ -426,7 +414,7 @@ public class ServerCrudTest {
         RestCallFailedException exc = null;
         try{
             Map<String, Object> parameters = new HashMap<String, Object>();
-            parameters.put("id", user1Id);
+            parameters.put("id", StaticModelDatabasePopulator.USER1_ID);
             restNamedQuery("User.byNameOrId", "StaticUser", parameters, null);
         } catch (RestCallFailedException e){
             exc = e;
@@ -448,7 +436,7 @@ public class ServerCrudTest {
         RestCallFailedException exc = null;
         try{
             Map<String, Object> parameters = new HashMap<String, Object>();
-            parameters.put("id", user1Id);
+            parameters.put("id", StaticModelDatabasePopulator.USER1_ID);
             restNamedQuery("User.nonExistant", "StaticUser", parameters, null);
         } catch (RestCallFailedException e){
             exc = e;
@@ -462,7 +450,7 @@ public class ServerCrudTest {
         RestCallFailedException exc = null;
         try{
             Map<String, Object> parameters = new HashMap<String, Object>();
-            parameters.put("id", user1Id);
+            parameters.put("id", StaticModelDatabasePopulator.USER1_ID);
             restNamedQuery("User.all", "StatisUser", "nonExistant", parameters, null, MediaType.APPLICATION_JSON_TYPE);
         } catch (RestCallFailedException e){
             exc = e;
@@ -499,11 +487,11 @@ public class ServerCrudTest {
     @Test
     public void testNamedQueryParameterHint(){
         Map<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put("id", user1Id);
+        parameters.put("id", StaticModelDatabasePopulator.USER1_ID);
         // load the cache
         List<StaticUser> users = (List<StaticUser>)restNamedQuery("User.byId", "StaticUser", parameters, null);
         assertTrue("Incorrect Number of users found.", users.size() == 1);
-        assertTrue("Wrong user returned", users.get(0).getId() == user1Id);
+        assertTrue("Wrong user returned", users.get(0).getId() == StaticModelDatabasePopulator.USER1_ID);
         StaticUser user1 = users.get(0);
         String oldName = user1.getName();
         user1.setName("Changed2");
@@ -524,7 +512,7 @@ public class ServerCrudTest {
     @Test
     public void testNamedQuerySingleResult(){
         Map<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put("id", user1Id);
+        parameters.put("id", StaticModelDatabasePopulator.USER1_ID);
         StaticUser user = (StaticUser)restNamedSingleResultQuery("User.byId", "StaticUser", DEFAULT_PU, parameters, null, MediaType.APPLICATION_JSON_TYPE);
         assertTrue("user was not returned", user != null);
         assertTrue("incorrect user returned", user.getName().equals("user1"));
@@ -549,13 +537,13 @@ public class ServerCrudTest {
     @Test
     public void testUpdateQuery(){
         Map<String, Object> parameters = new HashMap<String, Object>();
-        parameters.put("id", user1Id);
+        parameters.put("id", StaticModelDatabasePopulator.USER1_ID);
         parameters.put("name", "newName");
         Object result = restUpdateQuery("User.updateName", "StaticUser", DEFAULT_PU, parameters, null);
         assertTrue(result.equals("1"));
-        StaticUser user1 = dbRead(user1Id, StaticUser.class);
+        StaticUser user1 = dbRead(StaticModelDatabasePopulator.USER1_ID, StaticUser.class);
         assertTrue(user1.getName().equals("newName"));
-        dbUpdate(user1());
+        dbUpdate(StaticModelDatabasePopulator.user1());
     }
     
     public static <T> T dbRead(Object id, Class<T> resultClass){
@@ -568,6 +556,14 @@ public class ServerCrudTest {
         EntityManager em = context.getEmf().createEntityManager();
         em.getTransaction().begin();
         em.merge(object);
+        em.getTransaction().commit();
+    }
+    
+    public static void dbDelete(Object object){
+        EntityManager em = context.getEmf().createEntityManager();
+        em.getTransaction().begin();
+        Object merged = em.merge(object);
+        em.remove(merged);
         em.getTransaction().commit();
     }
     
@@ -739,6 +735,32 @@ public class ServerCrudTest {
         return resultObject;
     }
     
+    public static <T> T restUpdateRelationship(String objectId, String type, String relationshipName, Object newValue, Class<T> resultClass, String persistenceUnit, MediaType inputMediaType, MediaType outputMediaType) throws RestCallFailedException {
+
+        WebResource webResource = client.resource(getServerURI() + persistenceUnit + "/entity/" + type + "/" + objectId + "/" + relationshipName);
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        try{
+            context.marshallEntity(newValue, inputMediaType, os);
+        
+        } catch (JAXBException e){
+            fail("Exception thrown unmarshalling: " + e);
+        }
+        ClientResponse response = webResource.type(inputMediaType).accept(outputMediaType).post(ClientResponse.class, os.toString());
+        Status status = response.getClientResponseStatus();
+        if (status != Status.OK){
+            throw new RestCallFailedException(status);
+        }
+        String result = response.getEntity(String.class);
+        
+        T resultObject = null;
+        try {
+            resultObject = (T)context.unmarshalEntity(type, null, outputMediaType, new ByteArrayInputStream(result.getBytes()));
+        } catch (JAXBException e){
+            fail("Exception thrown unmarshalling: " + e);
+        }
+        return resultObject;
+    }
+    
     public static Object unmarshall(String result, String mediaType, Class expectedResultClass){
         if (unmarshaller == null){
             Class[] jaxbClasses = new Class[]{Link.class, LinkAdapter.class, PersistenceUnit.class, Descriptor.class, Attribute.class, Query.class};
@@ -765,105 +787,7 @@ public class ServerCrudTest {
 
     }
     
-    public static void populateDB(EntityManagerFactory emf){
-        EntityManager em = emf.createEntityManager();
-        em.getTransaction().begin();
-        StaticUser user1 = user1();
-        em.persist(user1);
-        StaticUser user2 = user2();
-        em.persist(user2);
-        StaticUser user3 = user3();
-        em.persist(user3);
-        StaticAuction auction1 = auction1();
-        em.persist(auction1);
-        StaticAuction auction2 = auction1();
-        em.persist(auction2);
-        StaticAuction auction3 = auction1();
-        em.persist(auction3);
-        
-        StaticBid bid1 = new StaticBid();
-        bid1.setBid(110);
-        bid1.setTime(System.currentTimeMillis());
-        bid1.setAuction(auction1);
-        bid1.setUser(user1);
-        em.persist(bid1);
-        
-        StaticBid bid2 = new StaticBid();
-        bid2.setBid(111);
-        bid2.setTime(System.currentTimeMillis());
-        bid2.setAuction(auction1);
-        bid2.setUser(user2);
-        em.persist(bid2);
-        
-        StaticBid bid3 = new StaticBid();
-        bid3.setBid(1100);
-        bid3.setTime(System.currentTimeMillis());
-        bid3.setAuction(auction2);
-        bid3.setUser(user2);
-        em.persist(bid3);
-        
-        em.getTransaction().commit();
-        user1Id = user1.getId();
-        user2Id = user2.getId();
-        user3Id = user3.getId();
-        
-        auction1Id = auction1.getId();
-        auction2Id = auction2.getId();
-        auction3Id = auction3.getId();
-        
-        bid1Id = bid1.getId();
-        bid2Id = bid2.getId();
-        bid3Id = bid3.getId();
-        
-    }
-    
-    public static StaticUser user1(){
-        StaticUser user = new StaticUser();
-        user.setId(11);
-        user.setName("user1");
-        return user;
-    }
-    
-    public static StaticUser user2(){
-        StaticUser user = new StaticUser();
-        user.setId(22);
-        user.setName("user2");
-        return user;
-    }
-    
-    public static StaticUser user3(){
-        StaticUser user = new StaticUser();
-        user.setId(33);
-        user.setName("user3");
-        return user;
-    }
-    
-    public static StaticAuction auction1(){
-        StaticAuction auction = new StaticAuction();
-        auction.setDescription("Auction 1");
-        auction.setImage("auction1.jpg");
-        auction.setName("A1");
-        auction.setStartPrice(100);
-        return auction;
-    }
-    
-    public static StaticAuction auction2(){
-        StaticAuction auction = new StaticAuction();
-        auction.setDescription("Auction 2");
-        auction.setImage("auction2.jpg");
-        auction.setName("A2");
-        auction.setStartPrice(1000);
-        return auction;
-    }
-    
-    public static StaticAuction auction3(){
-        StaticAuction auction = new StaticAuction();
-        auction.setDescription("Auction 3");
-        auction.setImage("auction3.jpg");
-        auction.setName("A3");
-        auction.setStartPrice(1010);
-        return auction;
-    }
+
     
     public static String getServerURI(){
         String serverURIBase = System.getProperty(SERVER_URI_BASE, DEFAULT_SERVER_URI_BASE);
