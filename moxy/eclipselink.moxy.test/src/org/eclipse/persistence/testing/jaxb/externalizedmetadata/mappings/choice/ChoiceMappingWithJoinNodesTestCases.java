@@ -32,8 +32,8 @@ import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.choice
 
 public class ChoiceMappingWithJoinNodesTestCases extends JAXBWithJSONTestCases{
 
-    private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/choice/reference/root.xml";
-    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/choice/reference/root.json";
+    private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/choice/reference/root2.xml";
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/choice/reference/root2.json";
 	
 	public ChoiceMappingWithJoinNodesTestCases(String name) throws Exception {
 		super(name);
