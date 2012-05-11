@@ -301,6 +301,7 @@ public class StaticWeaveProcessor {
                                 originalClassBytes = baos.toByteArray();
                             } finally {
                                 baos.close();
+                                is.close();
                             }
                         } else {
                             swoh.addEntry(entryInputStream, newEntry);
