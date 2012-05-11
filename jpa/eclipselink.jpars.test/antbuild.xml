@@ -292,6 +292,7 @@
                 <jvmarg value="-Ddb.url=${db.url}"/>
                 <jvmarg value="-Ddb.user=${db.user}"/>
                 <jvmarg value="-Ddb.pwd=${db.pwd}"/>
+                <jvmarg value="-javaagent:../${jparstest.2.base.dir}/${eclipselink.jar}"/>
                 <sysproperty key="loggingLevelFinest" value="false"/>
                 <sysproperty key="tempFileDir" value="${tmp.dir}"/>
                 <sysproperty key="ignoreCRLF" value="true"/>
