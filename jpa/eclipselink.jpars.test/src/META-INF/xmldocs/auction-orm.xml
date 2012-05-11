@@ -72,9 +72,7 @@
             </id>
             <basic name="name" attribute-type="String" />
             <basic name="image" attribute-type="String"/>
-            <basic name="description" attribute-type="String">
-                <column column-definition="TEXT"/>
-            </basic>
+            <basic name="description" attribute-type="String"/>
             <basic name="startPrice" attribute-type="Double"/>
             <basic name="endPrice" attribute-type="Double"/>
             <basic name="sold" attribute-type="boolean"/>

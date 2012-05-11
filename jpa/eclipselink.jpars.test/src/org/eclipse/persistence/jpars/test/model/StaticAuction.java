@@ -34,7 +34,6 @@ public class StaticAuction {
     
     private String image;
     
-    @Column(columnDefinition="TEXT")
     private String description;
     
     private double startPrice;
