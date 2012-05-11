@@ -234,15 +234,24 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
                 info.addTransformer(transformer);
             }
         }
-        // When EntityManagerFactory is created, the session is only partially created
-        // When the factory is actually accessed, the emSetupImpl will be used to complete the session construction
-        EntityManagerFactoryImpl factory = new EntityManagerFactoryImpl(emSetupImpl, nonNullProperties);
 
-        // This code has been added to allow validation to occur without actually calling createEntityManager
-        if (emSetupImpl.shouldGetSessionOnCreateFactory(nonNullProperties)) {
-            factory.getDatabaseSession();
+        EntityManagerFactoryImpl factory = null;
+        try {
+            factory = new EntityManagerFactoryImpl(emSetupImpl, nonNullProperties);
+        
+            // This code has been added to allow validation to occur without actually calling createEntityManager
+            if (emSetupImpl.shouldGetSessionOnCreateFactory(nonNullProperties)) {
+                factory.getDatabaseSession();
+            }
+            return factory;
+        } catch (RuntimeException ex) {
+            if(factory != null) {
+                factory.close();
+            } else {
+                emSetupImpl.undeploy();
+            }
+            throw ex;
         }
-        return factory;
     }
 
     /**
