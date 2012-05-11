@@ -138,12 +138,22 @@ public class WeavedObjectBasicIndirectionPolicy extends BasicIndirectionPolicy {
     /**
      * Set the value of the appropriate attribute of target to attributeValue.
      * In this case, place the value inside the target's ValueHolder.
+     * Change tracking will be turned off when this method is called
      */
     public void setRealAttributeValueInObject(Object target, Object attributeValue) {
+        setRealAttributeValueInObject(target, attributeValue, false);
+    }
+
+    /**
+     * Set the value of the appropriate attribute of target to attributeValue.
+     * In this case, place the value inside the target's ValueHolder.
+     * if trackChanges is true, set the value in the object as if the user was setting it.  Allow change tracking to pick up the change.
+     */
+    public void setRealAttributeValueInObject(Object target, Object attributeValue, boolean trackChanges) {
         // If the target object is using change tracking, it must be disable first to avoid thinking the value changed.
         PropertyChangeListener listener = null;
         ChangeTracker trackedObject = null;
-        if (target instanceof ChangeTracker) {
+        if (!trackChanges && target instanceof ChangeTracker) {
             trackedObject = (ChangeTracker)target;
             listener = trackedObject._persistence_getPropertyChangeListener();
             trackedObject._persistence_setPropertyChangeListener(null);
@@ -172,7 +182,7 @@ public class WeavedObjectBasicIndirectionPolicy extends BasicIndirectionPolicy {
         } catch (InvocationTargetException exception) {
             throw DescriptorException.targetInvocationWhileSettingValueThruMethodAccessor(setMethod.getName(), attributeValue, exception);
         } finally {
-            if (trackedObject != null) {
+            if (!trackChanges && trackedObject != null) {
                 trackedObject._persistence_setPropertyChangeListener(listener);
             }
         }

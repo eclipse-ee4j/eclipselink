@@ -18,7 +18,9 @@ package org.eclipse.persistence.internal.dynamic;
 //javase imports
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 //EclipseLink imports
@@ -39,6 +41,8 @@ import org.eclipse.persistence.internal.sessions.ChangeRecord;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.internal.weaving.PersistenceWeavedRest;
+import org.eclipse.persistence.internal.weaving.RelationshipInfo;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.FetchGroupTracker;
@@ -69,7 +73,7 @@ import static org.eclipse.persistence.internal.helper.Helper.getShortClassName;
  * @since EclipseLink 1.2
  */
 public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEntity,
-    ChangeTracker, FetchGroupTracker {
+    ChangeTracker, FetchGroupTracker, PersistenceWeavedRest {
 
     public abstract DynamicPropertiesManager fetchPropertiesManager();
     
@@ -166,6 +170,11 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
     }
 
     public DynamicEntity set(String propertyName, Object value) throws DynamicException {
+        return set(propertyName, value, false);
+    }
+
+    
+    public DynamicEntity set(String propertyName, Object value, boolean firePropertyChange) throws DynamicException {
         DynamicPropertiesManager dpm = fetchPropertiesManager();
         dpm.checkSet(propertyName, value); // life-cycle callback
         if (_persistence_getFetchGroup() != null) {
@@ -195,7 +204,7 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
             wrapper.setValue(value);
             wrapper.isSet(true);
         }
-        if (changeListener != null) {
+        if (changeListener != null && firePropertyChange) {
             changeListener.propertyChange(new PropertyChangeEvent(this, propertyName, 
                 oldValue, value));
         }
@@ -362,6 +371,20 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
     public void _persistence_resetFetchGroup() {
         throw new UnsupportedOperationException("DynamicEntity._persistence_resetFetchGroup:: NOT SUPPORTED");
     }
+    
+    public List<RelationshipInfo> _persistence_getRelationships(){
+        List<RelationshipInfo> relationships = (List<RelationshipInfo>)get("_persistence_relationshipInfo");
+        if (relationships == null){
+            relationships = new ArrayList<RelationshipInfo>();
+            _persistence_setRelationships(relationships);
+        }
+        return relationships;
+    }
+    
+    public void _persistence_setRelationships(List<RelationshipInfo> relationships){
+        set("_persistence_relationshipInfo", relationships, false);
+    }
+    
     /**
      * Session cached by
      * {@link FetchGroupTracker#_persistence_setSession(Session)}
@@ -370,6 +393,7 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
     public Session _persistence_getSession() {
         return this.session;
     }
+    
     public void _persistence_setSession(Session session) {
         this.session = session;
     }

@@ -339,6 +339,18 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
     
     /**
      * INTERNAL:
+     * Same functionality as setRealAttributeValueInObject(Object target, Object attributeValue) but allows
+     * overridden behavior for IndirectionPolicies that track changes
+     * @param target
+     * @param attributeValue
+     * @param allowChangeTracking
+     */
+    public void setRealAttributeValueInObject(Object target, Object attributeValue, boolean allowChangeTracking) {
+        setRealAttributeValueInObject(target, attributeValue);
+    }
+    
+    /**
+     * INTERNAL:
      * set the source object into QueryBasedValueHolder.
      * Used only by transparent indirection.
      */
