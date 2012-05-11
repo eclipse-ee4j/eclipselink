@@ -58,6 +58,7 @@ import org.eclipse.persistence.jpars.test.util.TestHttpHeaders;
 import org.eclipse.persistence.jpars.test.util.TestURIInfo;
 import org.eclipse.persistence.jpars.test.util.XMLFilePathBuilder;
 import org.eclipse.persistence.queries.FetchGroup;
+import org.eclipse.persistence.queries.FetchGroupTracker;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -165,6 +166,7 @@ public class TestService {
         values.add("James");
         values.add("Gillian");
         for (DynamicEntity value: entities){
+            ((FetchGroupTracker)value)._persistence_setSession(context.getJpaSession());
             assertTrue("Incorrect name returned", value.get("name").equals("James") || value.get("name").equals("Gillian"));
             values.remove(value.get("name"));
         }
@@ -219,6 +221,7 @@ public class TestService {
         values.add("James");
         values.add("Gillian");
         for (DynamicEntity value: entities){
+            ((FetchGroupTracker)value)._persistence_setSession(context.getJpaSession());
             assertTrue("Incorrect firstName returned", value.get("firstName").equals("James") || value.get("firstName").equals("Gillian"));
             values.remove(value.get("firstName"));
         }

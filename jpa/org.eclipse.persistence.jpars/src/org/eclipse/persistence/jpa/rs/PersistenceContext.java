@@ -56,6 +56,7 @@ import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
 import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.weaving.PersistenceWeavedRest;
 import org.eclipse.persistence.internal.weaving.RelationshipInfo;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
@@ -67,6 +68,7 @@ import org.eclipse.persistence.jpa.dynamic.JPADynamicHelper;
 import org.eclipse.persistence.jpa.rs.eventlistener.ChangeListener;
 import org.eclipse.persistence.jpa.rs.eventlistener.DatabaseEventListenerFactory;
 import org.eclipse.persistence.jpa.rs.eventlistener.DescriptorBasedDatabaseEventListener;
+import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
 import org.eclipse.persistence.jpa.rs.util.DynamicXMLMetadataSource;
 import org.eclipse.persistence.jpa.rs.util.JTATransactionWrapper;
 import org.eclipse.persistence.jpa.rs.util.LinkAdapter;
@@ -765,12 +767,20 @@ public class PersistenceContext {
         unmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, acceptedMedia.toString());
         unmarshaller.setAdapter(new LinkAdapter(getBaseURI().toString(), this));
         JAXBElement<?> element = unmarshaller.unmarshal(new StreamSource(in), type);
-        return wrap(element.getValue());
+        if (element.getValue() instanceof List<?>){
+            for (Object object: (List<?>)element.getValue()){
+                wrap(object);
+            }
+            return element.getValue();
+        } else {
+            wrap(element.getValue());
+        }
+        return element.getValue();
     }
     
     protected Object wrap(Object entity){
+        ClassDescriptor descriptor = getJpaSession().getDescriptor(entity);
         if (entity instanceof FetchGroupTracker){
-            ClassDescriptor descriptor = getJpaSession().getDescriptor(entity);
             FetchGroup fetchGroup = new FetchGroup();
             for (DatabaseMapping mapping: descriptor.getMappings()){
                 if (!mapping.isForeignReferenceMapping() || mapping.isPrivateOwned()){
@@ -778,6 +788,13 @@ public class PersistenceContext {
                 }
             }
             (new FetchGroupManager()).setObjectFetchGroup(entity, fetchGroup, null);
+        } else if (descriptor.hasRelationships()){
+            for (DatabaseMapping mapping: descriptor.getMappings()){
+                if (mapping.isForeignReferenceMapping() && !mapping.isPrivateOwned()){
+                    // we require Fetch groups to handle relationships
+                    throw new JPARSException();
+                }
+            }
         }
         return entity;
     }
