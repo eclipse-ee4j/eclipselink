@@ -58,6 +58,13 @@
          unpack="false"/>
 
    <plugin
+         id="javax.ws.rs"
+         download-size="0"
+         install-size="0"
+         version="@JAXRS_VERSION@"
+         unpack="false"/>
+
+   <plugin
          id="org.eclipse.persistence.asm"
          download-size="0"
          install-size="0"

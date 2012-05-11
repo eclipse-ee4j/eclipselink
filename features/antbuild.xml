@@ -213,10 +213,15 @@
         <property name="servlet.criteria" value="[2.4.0,2.5.0)"/>
         <property name="wsdl.prefix" value="javax.wsdl"/>
         <property name="wsdl.criteria" value="[1.0,9.0)"/>
+        <property name="jaxrs.prefix" value="javax.ws.rs"/>
+        <property name="jaxrs.criteria" value="[1.0,9.0)"/>
         <property name="xml.bind.prefix" value="javax.xml.bind"/>
         <property name="xml.bind.criteria" value="[2.2.0,2.3.0)"/>
         <property name="xml.stream.prefix" value="javax.xml.stream"/>
         <property name="xml.stream.criteria" value="[1.0.1,1.1.0)"/>
+        <property name="mongodb.prefix" value="org.eclipse.orbit.mongodb"/>
+        <property name="mongodb.criteria" value="[2.7.2,2.8.0)"/>
+
         <!-- For EclipseLink bundles -->
         <property name="antlr.prefix" value="org.eclipse.persistence.antlr"/>
         <property name="antlr.criteria" value="[3.0,9.0)"/>
@@ -286,6 +291,12 @@
         <selectbundle basename="${xml.stream.prefix}" directory="${feature.2.common.plugins.dir}"
                      criterion="${xml.stream.criteria}" property="xml.stream.version" versiononly="true"
         />
+        <selectbundle basename="${mongodb.prefix}" directory="${feature.2.common.plugins.dir}"
+                     criterion="${mongodb.criteria}" property="mongodb.version" versiononly="true"
+        />
+        <selectbundle basename="${jaxrs.prefix}" directory="${feature.2.common.plugins.dir}"
+                     criterion="${jaxrs.criteria}" property="jaxrs.version" versiononly="true"
+        />
         <selectbundle basename="${antlr.prefix}" directory="${feature.2.common.plugins.dir}"
                      criterion="${antlr.criteria}" property="antlr.version" versiononly="true"
         />
@@ -323,6 +334,10 @@
         <say  message="   '${xml.bind.prefix}_${xml.bind.criteria}.jar' not found! Generated features will be invalid."       unless="xml.bind.version"/>
         <say  message="   xml.stream.version  = '${xml.stream.version}'"                                                      if="xml.stream.version"/>
         <say  message="   '${xml.stream.prefix}_${xml.stream.criteria}.jar' not found! Generated features will be invalid."   unless="xml.stream.version"/>
+        <say  message="   mongodb.version     = '${mongodb.version}'"                                                         if="mongodb.version"/>
+        <say  message="   '${mongodb.prefix}_${mongodb.criteria}.jar' not found! Generated features will be invalid."         unless="mongodb.version"/>
+        <say  message="   jaxrs.version       = '${jaxrs.version}'"                                                           if="jaxrs.version"/>
+        <say  message="   '${jaxrs.prefix}_${jaxrs.criteria}.jar' not found! Generated features will be invalid."             unless="jaxrs.version"/>
         <say  message="   antlr.version       = '${antlr.version}'"                                                           if="antlr.version"/>
         <say  message="   '${antlr.prefix}_${antlr.criteria}.jar' not found! Generated features will be invalid."             unless="antlr.version"/>
         <say  message="   asm.version         = '${asm.version}'"                                                             if="asm.version"/>
@@ -344,8 +359,10 @@
         <filter token="PERSISTENCE_VERSION" value="${persistence.version}"/>
         <filter token="SERVLET_VERSION"     value="${servlet.version}"/>
         <filter token="WSDL_VERSION"        value="${wsdl.version}"/>
+        <filter token="JAXRS_VERSION"       value="${jaxrs.version}"/>
         <filter token="XMLBIND_VERSION"     value="${xml.bind.version}"/>
         <filter token="XMLSTREAM_VERSION"   value="${xml.stream.version}"/>
+        <filter token="MONGODB_VERSION"     value="${mongodb.version}"/>
         <!--          Filters for product bundles in feature.xml files -->
         <filter token="ANTLR_VERSION"       value="${antlr.version}"/>
         <filter token="ASM_VERSION"         value="${asm.version}"/>
@@ -372,6 +389,9 @@
           <param name="feature.name" value="org.eclipse.persistence.jpa"/>
         </antcall>
         <antcall target="jar-feature">
+          <param name="feature.name" value="org.eclipse.persistence.jpars"/>
+        </antcall>
+        <antcall target="jar-feature">
           <param name="feature.name" value="org.eclipse.persistence.moxy"/>
         </antcall>
         <antcall target="jar-feature">
@@ -385,6 +405,9 @@
         </antcall>
         <antcall target="jar-feature">
           <param name="feature.name" value="org.eclipse.persistence.jpa.source"/>
+        </antcall>
+        <antcall target="jar-feature">
+          <param name="feature.name" value="org.eclipse.persistence.jpars.source"/>
         </antcall>
         <antcall target="jar-feature">
           <param name="feature.name" value="org.eclipse.persistence.moxy.source"/>

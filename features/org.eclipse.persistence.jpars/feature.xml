@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="org.eclipse.persistence.sdo.source"
+      id="org.eclipse.persistence.jpars"
       label="%featureName"
       version="@VERSION@.@QUALIFIER@"
       provider-name="%providerName">
@@ -22,12 +22,8 @@
       <discovery label="%secondaryUpdateSiteName" url="%secondaryUpdateURL"/>
    </url>
 
-   <includes
-         id="org.eclipse.persistence.moxy.source"
-         version="@VERSION@.@QUALIFIER@"/>
-
    <plugin
-         id="org.eclipse.persistence.sdo.source"
+         id="org.eclipse.persistence.jpars"
          download-size="0"
          install-size="0"
          version="@VERSION@.@QUALIFIER@"

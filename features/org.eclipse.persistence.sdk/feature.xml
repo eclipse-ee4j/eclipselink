@@ -27,6 +27,10 @@
          version="@VERSION@.@QUALIFIER@"/>
 
    <includes
+         id="org.eclipse.persistence.jpars"
+         version="@VERSION@.@QUALIFIER@"/>
+
+   <includes
          id="org.eclipse.persistence.moxy"
          version="@VERSION@.@QUALIFIER@"/>
 
@@ -44,6 +48,10 @@
 
    <includes
          id="org.eclipse.persistence.jpa.source"
+         version="@VERSION@.@QUALIFIER@"/>
+
+   <includes
+         id="org.eclipse.persistence.jpars.source"
          version="@VERSION@.@QUALIFIER@"/>
 
    <includes

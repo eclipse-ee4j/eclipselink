@@ -55,6 +55,13 @@
          unpack="false"/>
 
    <plugin
+         id="org.eclipse.orbit.mongodb"
+         download-size="0"
+         install-size="0"
+         version="@MONGODB_VERSION@"
+         unpack="false"/>
+
+   <plugin
          id="org.eclipse.persistence.antlr"
          download-size="0"
          install-size="0"
@@ -112,6 +119,13 @@
 
    <plugin
          id="org.eclipse.persistence.oracle"
+         download-size="0"
+         install-size="0"
+         version="@VERSION@.@QUALIFIER@"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.persistence.nosql"
          download-size="0"
          install-size="0"
          version="@VERSION@.@QUALIFIER@"
