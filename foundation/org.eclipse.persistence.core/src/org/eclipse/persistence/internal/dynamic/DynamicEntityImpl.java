@@ -170,7 +170,7 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
     }
 
     public DynamicEntity set(String propertyName, Object value) throws DynamicException {
-        return set(propertyName, value, false);
+        return set(propertyName, value, true);
     }
 
     
