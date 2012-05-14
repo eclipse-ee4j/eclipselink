@@ -31,23 +31,6 @@ public class TestURIInfo implements UriInfo {
     protected MultivaluedMap<String, String> queryParameters = new StringKeyIgnoreCaseMultivaluedMap<String>();
     
     public TestURIInfo(){
-        PathSegment segment = new PathSegment() {
-                
-            MultivaluedMap<String, String> matrixParameters = new MultivaluedMapImpl();
-                
-            @Override
-            public String getPath() {
-                // TODO Auto-generated method stub
-                return null;
-            }
-                
-            @Override
-            public MultivaluedMap<String, String> getMatrixParameters() {
-                // TODO Auto-generated method stub
-                return matrixParameters;
-            }
-        };
-        pathSegments.add(segment);
     }
     
     @Override
@@ -122,13 +105,11 @@ public class TestURIInfo implements UriInfo {
 
     @Override
     public List<PathSegment> getPathSegments() {
-        // TODO Auto-generated method stub
         return pathSegments;
     }
 
     @Override
     public List<PathSegment> getPathSegments(boolean arg0) {
-        // TODO Auto-generated method stub
         return pathSegments;
     }
 
@@ -156,14 +137,45 @@ public class TestURIInfo implements UriInfo {
         return null;
     }
     
-    public void addMatrixParameter(String key, String value){
-        PathSegment segment = pathSegments.get(pathSegments.size() - 1);
-        List<String> parameters = segment.getMatrixParameters().get(key);
+    public void addMatrixParameter(String segment, String key, String value){
+        PathSegment segmentToUse = null;
+        for (PathSegment pathSegment: pathSegments){
+            if (pathSegment.getPath().equals(segment)){
+                segmentToUse = pathSegment;
+            }
+        }
+        if (segmentToUse == null){
+            segmentToUse = new TestPathSegment(segment);
+            pathSegments.add(segmentToUse);
+        }
+        
+        List<String> parameters = segmentToUse.getMatrixParameters().get(key);
         if (parameters == null){
             parameters = new ArrayList<String>();
         }
         parameters.add(value);
-        segment.getMatrixParameters().put(key, parameters);
+        segmentToUse.getMatrixParameters().put(key, parameters);
+    }
+    
+    public class TestPathSegment implements PathSegment{
+        private MultivaluedMap<String, String> matrixParameters = new MultivaluedMapImpl();
+        private String path;
+        
+        public TestPathSegment(String path){
+            this.path = path;
+        }
+
+            
+        @Override
+        public String getPath() {
+            return path;
+        }
+                
+        @Override
+        public MultivaluedMap<String, String> getMatrixParameters() {
+            // TODO Auto-generated method stub
+            return matrixParameters;
+        }
     }
 
 }

@@ -114,7 +114,7 @@ public class StaticCrudTests {
         user.setId(4);
         persistenceContext.create(null, user);
         
-        List<StaticUser> users = (List<StaticUser>)persistenceContext.query("User.all", null);
+        List<StaticUser> users = (List<StaticUser>)persistenceContext.query(null, "User.all", null);
         assertTrue(users.size() == 3);
     }
     

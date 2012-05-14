@@ -56,13 +56,10 @@ public class ExamplePropertiesLoader {
      */
     public static void loadProperties(Map<String, Object> properties, String filename) {
         loadProperties(properties, new File(filename));
-
         String home = System.getProperty("user.home");
         loadProperties(properties, new File(home + System.getProperty("file.separator") + filename));
-
         for (Object key : System.getProperties().keySet()) {
             String keyName = (String) key;
-
             if (keyName.startsWith("javax.persistence") || keyName.startsWith("eclipselink")) {
                 String value = System.getProperty(keyName);
                 properties.put(keyName, value);

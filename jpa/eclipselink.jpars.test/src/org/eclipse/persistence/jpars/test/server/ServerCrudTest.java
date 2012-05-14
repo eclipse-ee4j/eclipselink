@@ -587,7 +587,7 @@ public class ServerCrudTest {
         String result = response.getEntity(String.class);
         T resultObject = null;
         try {
-            resultObject = (T)context.unmarshalEntity(type, null, outputMediaType, new ByteArrayInputStream(result.getBytes()));
+            resultObject = (T)context.unmarshalEntity(type, outputMediaType, new ByteArrayInputStream(result.getBytes()));
         } catch (JAXBException e){
             fail("Exception thrown unmarshalling: " + e);
         }
@@ -622,7 +622,7 @@ public class ServerCrudTest {
         }
         String result = response.getEntity(String.class);
         try {
-            return context.unmarshalEntity(returnType, null, outputMediaType, new ByteArrayInputStream(result.getBytes()));
+            return context.unmarshalEntity(returnType, outputMediaType, new ByteArrayInputStream(result.getBytes()));
         } catch (JAXBException e){
             fail("Exception thrown unmarshalling: " + e);
         }
@@ -642,7 +642,7 @@ public class ServerCrudTest {
         }
         String result = response.getEntity(String.class);
         try {
-            return context.unmarshalEntity(returnType, null, outputMediaType, new ByteArrayInputStream(result.getBytes()));
+            return context.unmarshalEntity(returnType, outputMediaType, new ByteArrayInputStream(result.getBytes()));
         } catch (JAXBException e){
             fail("Exception thrown unmarshalling: " + e);
         }
@@ -697,7 +697,7 @@ public class ServerCrudTest {
         String result = response.getEntity(String.class);
         T resultObject = null;
         try {
-            resultObject = (T)context.unmarshalEntity(type, null, outputMediaType, new ByteArrayInputStream(result.getBytes()));
+            resultObject = (T)context.unmarshalEntity(type, outputMediaType, new ByteArrayInputStream(result.getBytes()));
         } catch (JAXBException e){
             fail("Exception thrown unmarshalling: " + e);
         }
@@ -728,7 +728,7 @@ public class ServerCrudTest {
         
         T resultObject = null;
         try {
-            resultObject = (T)context.unmarshalEntity(type, null, outputMediaType, new ByteArrayInputStream(result.getBytes()));
+            resultObject = (T)context.unmarshalEntity(type, outputMediaType, new ByteArrayInputStream(result.getBytes()));
         } catch (JAXBException e){
             fail("Exception thrown unmarshalling: " + e);
         }
@@ -754,7 +754,7 @@ public class ServerCrudTest {
         
         T resultObject = null;
         try {
-            resultObject = (T)context.unmarshalEntity(type, null, outputMediaType, new ByteArrayInputStream(result.getBytes()));
+            resultObject = (T)context.unmarshalEntity(type, outputMediaType, new ByteArrayInputStream(result.getBytes()));
         } catch (JAXBException e){
             fail("Exception thrown unmarshalling: " + e);
         }

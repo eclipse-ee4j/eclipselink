@@ -15,8 +15,6 @@ package org.eclipse.persistence.jpars.test.crud;
 import static org.junit.Assert.*;
 
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -110,7 +108,7 @@ public class CRUDTests {
         entity.set("name", "Judy");
         persistenceContext.create(null, entity);
         
-        List<DynamicEntity> users = (List<DynamicEntity>)persistenceContext.query("User.all", null);
+        List<DynamicEntity> users = (List<DynamicEntity>)persistenceContext.query(null, "User.all", null);
         assertTrue(users.size() == 3);
     }
     

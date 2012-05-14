@@ -36,19 +36,14 @@ import javax.xml.bind.JAXBException;
 
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
 import org.eclipse.persistence.dynamic.DynamicEntity;
-import org.eclipse.persistence.indirection.ValueHolder;
-import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl;
-import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.PersistenceFactory;
 import org.eclipse.persistence.jpa.rs.Service;
 import org.eclipse.persistence.jpa.rs.metadata.DatabaseMetadataStore;
 import org.eclipse.persistence.jpa.rs.util.LinkAdapter;
 import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
-import org.eclipse.persistence.jpars.test.model.StaticAddress;
 import org.eclipse.persistence.jpars.test.model.StaticAuction;
 import org.eclipse.persistence.jpars.test.model.StaticBid;
 import org.eclipse.persistence.jpars.test.model.StaticUser;
@@ -57,7 +52,6 @@ import org.eclipse.persistence.jpars.test.util.ExamplePropertiesLoader;
 import org.eclipse.persistence.jpars.test.util.TestHttpHeaders;
 import org.eclipse.persistence.jpars.test.util.TestURIInfo;
 import org.eclipse.persistence.jpars.test.util.XMLFilePathBuilder;
-import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.FetchGroupTracker;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -156,7 +150,7 @@ public class TestService {
         }
         InputStream stream = new ByteArrayInputStream(outputStream.toByteArray());
         try{
-            entities = (List<DynamicEntity>)context.unmarshalEntity("User", null, MediaType.APPLICATION_JSON_TYPE, stream);
+            entities = (List<DynamicEntity>)context.unmarshalEntity("User", MediaType.APPLICATION_JSON_TYPE, stream);
         } catch (JAXBException e){
             fail("Exception unmarsalling: " + e);
         }
@@ -210,7 +204,7 @@ public class TestService {
         }
         InputStream stream = new ByteArrayInputStream(outputStream.toByteArray());
         try{
-            entities = (List<DynamicEntity>)context.unmarshalEntity("Person", null, MediaType.APPLICATION_JSON_TYPE, stream);
+            entities = (List<DynamicEntity>)context.unmarshalEntity("Person", MediaType.APPLICATION_JSON_TYPE, stream);
         } catch (JAXBException e){
             fail("Exception unmarsalling: " + e);
         }        
@@ -271,7 +265,7 @@ public class TestService {
         InputStream stream = serializeToStream(entity3, context, MediaType.APPLICATION_JSON_TYPE);
 
         try{
-            entity3 = (DynamicEntity)context.unmarshalEntity("Bid", null, MediaType.APPLICATION_JSON_TYPE, stream);
+            entity3 = (DynamicEntity)context.unmarshalEntity("Bid", MediaType.APPLICATION_JSON_TYPE, stream);
         } catch (JAXBException e){
             fail("Exception unmarsalling: " + e);
         }
@@ -336,7 +330,7 @@ public class TestService {
         List<String> mediaTypes = new ArrayList<String>();
         mediaTypes.add(MediaType.APPLICATION_JSON);
         TestURIInfo ui = new TestURIInfo();
-        ui.addMatrixParameter("name", "Computer");
+        ui.addMatrixParameter("Auction.forName", "name", "Computer");
         StreamingOutput output = (StreamingOutput)service.namedQuerySingleResult("auction", "Auction.forName", headers, ui).getEntity();
         
         String resultString = stringifyResults(output);
@@ -455,8 +449,8 @@ public class TestService {
         context.create(null, entity);
         
         TestURIInfo ui = new TestURIInfo();
-        ui.addMatrixParameter("name", "Robert");
-        ui.addMatrixParameter("id", entity.get("id").toString());
+        ui.addMatrixParameter("User.updateName", "name", "Robert");
+        ui.addMatrixParameter("User.updateName", "id", entity.get("id").toString());
         
         service.namedQueryUpdate("auction", "User.updateName", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), ui);
 
@@ -570,7 +564,7 @@ public class TestService {
         context.create(null, bid);
 
         TestURIInfo ui = new TestURIInfo();
-        ui.addMatrixParameter("partner", "auction");
+        ui.addMatrixParameter("bids", "partner", "auction");
         Response output = service.setOrAddAttribute("auction-static", "StaticAuction", String.valueOf(StaticModelDatabasePopulator.AUCTION1_ID), "bids", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), ui, serializeToStream(bid, context, MediaType.APPLICATION_JSON_TYPE));
         String result = stringifyResults((StreamingOutputMarshaller)output.getEntity());
         context.getJpaSession().getIdentityMapAccessor().initializeAllIdentityMaps();
@@ -607,7 +601,7 @@ public class TestService {
         Service service = new Service();
         service.setPersistenceFactory(factory);
         PersistenceContext context = factory.getPersistenceContext("auction-static");
-        Long count = (Long)((List)context.query("User.count", null)).get(0);
+        Long count = (Long)((List)context.query(null, "User.count", null)).get(0);
         
         TestHttpHeaders headers = new TestHttpHeaders();
         headers.getAcceptableMediaTypes().add(MediaType.APPLICATION_JSON_TYPE);

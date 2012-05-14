@@ -73,7 +73,6 @@ import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
-import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.jpa.rs.metadata.DatabaseMetadataStore;
 import org.eclipse.persistence.jpa.rs.metadata.model.Attribute;
 import org.eclipse.persistence.jpa.rs.metadata.model.Descriptor;
@@ -179,7 +178,7 @@ public class Service {
                parameterClass = context.getClass(param.getTypeName());
            }
            if (parameterClass != null){
-               parameterValue = context.unmarshalEntity(param.getTypeName(), null, hh.getMediaType(), is);
+               parameterValue = context.unmarshalEntity(param.getTypeName(),  hh.getMediaType(), is);
            } else {
                parameterClass = Thread.currentThread().getContextClassLoader().loadClass(param.getTypeName());
                parameterValue = ConversionManager.getDefaultManager().convertObject(param.getValue(), parameterClass);
@@ -344,7 +343,7 @@ public class Service {
         }
         Object id = IdHelper.buildId(app, type, key);
 
-        Object entity = app.find(getTenantId(hh), type, id, Service.getHintMap(ui));
+        Object entity = app.find(getParameterMap(ui, persistenceUnit), type, id, Service.getHintMap(ui));
 
         if (entity == null) {
             return Response.status(Status.NOT_FOUND).build();
@@ -362,7 +361,7 @@ public class Service {
         }
         Object id = IdHelper.buildId(app, type, key);
 
-        Object entity = app.findAttribute(getTenantId(hh), type, id, Service.getHintMap(ui), attribute);
+        Object entity = app.findAttribute(getParameterMap(ui, persistenceUnit), type, id, Service.getHintMap(ui), attribute);
 
         if (entity == null) {
             return Response.status(Status.NOT_FOUND).build();
@@ -381,19 +380,19 @@ public class Service {
         Object id = IdHelper.buildId(app, type, key);
 
         Object entity = null;
-        String partner = (String)Service.getParameterMap(ui).get(RELATIONSHIP_PARTNER);
+        String partner = (String)Service.getParameterMap(ui, attribute).get(RELATIONSHIP_PARTNER);
         try{
             ClassDescriptor descriptor = app.getDescriptor(type);
             DatabaseMapping mapping = (DatabaseMapping)descriptor.getMappingForAttributeName(attribute);
             if (!mapping.isForeignReferenceMapping()){
                 return Response.status(Status.NOT_FOUND).build();
             }
-            entity = app.unmarshalEntity(((ForeignReferenceMapping)mapping).getReferenceDescriptor().getAlias(), getTenantId(hh), mediaType(hh.getAcceptableMediaTypes()), in);
+            entity = app.unmarshalEntity(((ForeignReferenceMapping)mapping).getReferenceDescriptor().getAlias(), mediaType(hh.getAcceptableMediaTypes()), in);
         } catch (JAXBException e){
             return Response.status(Status.BAD_REQUEST).build();
         }
         
-        Object result = app.updateOrAddAttribute(getTenantId(hh), type, id, Service.getHintMap(ui), attribute, entity, partner);
+        Object result = app.updateOrAddAttribute(getParameterMap(ui, persistenceUnit), type, id, Service.getHintMap(ui), attribute, entity, partner);
 
         if (result == null) {
             return Response.status(Status.NOT_FOUND).build();
@@ -412,20 +411,19 @@ public class Service {
         Object id = IdHelper.buildId(app, type, key);
 
         Object entity = null;
-        String partner = (String)Service.getParameterMap(ui).get(RELATIONSHIP_PARTNER);
+        String partner = (String)Service.getParameterMap(ui, attribute).get(RELATIONSHIP_PARTNER);
         try{
             ClassDescriptor descriptor = app.getDescriptor(type);
             DatabaseMapping mapping = (DatabaseMapping)descriptor.getMappingForAttributeName(attribute);
             if (!mapping.isForeignReferenceMapping()){
                 return Response.status(Status.NOT_FOUND).build();
             }
-            entity = app.unmarshalEntity(((ForeignReferenceMapping)mapping).getReferenceDescriptor().getAlias(), getTenantId(hh), mediaType(hh.getAcceptableMediaTypes()), in);
+            entity = app.unmarshalEntity(((ForeignReferenceMapping)mapping).getReferenceDescriptor().getAlias(), mediaType(hh.getAcceptableMediaTypes()), in);
         } catch (JAXBException e){
             return Response.status(Status.BAD_REQUEST).build();
         }
         
-        Object result = app.removeAttribute(getTenantId(hh), type, id, Service.getHintMap(ui), attribute, entity, partner);
-
+        Object result = app.removeAttribute(getParameterMap(ui, persistenceUnit), type, id, Service.getHintMap(ui), attribute, entity, partner);
         if (result == null) {
             return Response.status(Status.NOT_FOUND).build();
         } else {
@@ -443,7 +441,7 @@ public class Service {
         }
         Object entity = null;
         try{
-            entity = app.unmarshalEntity(type, getTenantId(hh), mediaType(hh.getAcceptableMediaTypes()), in);
+            entity = app.unmarshalEntity(type, mediaType(hh.getAcceptableMediaTypes()), in);
         } catch (JAXBException e){
             e.printStackTrace();
             return Response.status(Status.BAD_REQUEST).build();
@@ -459,7 +457,7 @@ public class Service {
             }
         }
 
-        app.create(getTenantId(hh), entity);
+        app.create(getParameterMap(uriInfo, persistenceUnit), entity);
         ResponseBuilder rb = Response.status(Status.CREATED);
         rb.entity(new StreamingOutputMarshaller(app, entity, hh.getAcceptableMediaTypes()));
         return rb.build();
@@ -472,15 +470,14 @@ public class Service {
         if (app == null || app.getClass(type) == null){
             return Response.status(Status.NOT_FOUND).build();
          }
-        String tenantId = getTenantId(hh);
         MediaType contentType = mediaType(hh.getRequestHeader(HttpHeaders.CONTENT_TYPE)); 
         Object entity = null;
         try {
-            entity = app.unmarshalEntity(type, tenantId, contentType, in);
+            entity = app.unmarshalEntity(type, contentType, in);
         } catch (JAXBException e){
             return Response.status(Status.BAD_REQUEST).build();
         }
-        entity = app.merge(tenantId, entity);
+        entity = app.merge(getParameterMap(uriInfo, persistenceUnit), entity);
         return Response.ok(new StreamingOutputMarshaller(app, entity, hh.getAcceptableMediaTypes())).build();
     }
 
@@ -491,20 +488,24 @@ public class Service {
         if (app == null || app.getClass(type) == null){
             return Response.status(Status.NOT_FOUND).build();
         }
-        String tenantId = getTenantId(hh);
         Object id = IdHelper.buildId(app, type, key);
-        app.delete(tenantId, type, id);
+        app.delete(getParameterMap(ui, persistenceUnit), type, id);
         return Response.ok().build();
     }
     
     @GET
     @Path("{context}/query/{name}")
     public Response namedQuery(@PathParam("context") String persistenceUnit, @PathParam("name") String name, @Context HttpHeaders hh, @Context UriInfo ui) {
+
+        for (PathSegment segment: ui.getPathSegments()){
+            System.out.println(" --- segment " + segment.getPath());
+            System.out.println(" ---  segment parameters " + segment.getMatrixParameters());
+        }
         PersistenceContext app = get(persistenceUnit, ui.getBaseUri());
         if (app == null){
             return Response.status(Status.NOT_FOUND).build();
         }
-        Object result = app.query(name, Service.getParameterMap(ui), Service.getHintMap(ui), false, false);
+        Object result = app.query(getParameterMap(ui, persistenceUnit), name, Service.getParameterMap(ui, name), Service.getHintMap(ui), false, false);
         return Response.ok(new StreamingOutputMarshaller(app, result, hh.getAcceptableMediaTypes())).build();
     }
     
@@ -516,7 +517,7 @@ public class Service {
         if (app == null){
             return Response.status(Status.NOT_FOUND).build();
         }
-        Object result = app.query(name, Service.getParameterMap(ui), Service.getHintMap(ui), false, true);
+        Object result = app.query(getParameterMap(ui, persistenceUnit), name, Service.getParameterMap(ui, name), Service.getHintMap(ui), false, true);
         return Response.ok(new StreamingOutputMarshaller(app, result.toString(), hh.getAcceptableMediaTypes())).build();
     }
     
@@ -528,7 +529,7 @@ public class Service {
         if (app == null){
             return Response.status(Status.NOT_FOUND).build();
         }
-        Object result = app.query(name, Service.getParameterMap(ui), Service.getHintMap(ui), true, false);
+        Object result = app.query(getParameterMap(ui, persistenceUnit), name, Service.getParameterMap(ui, name), Service.getHintMap(ui), true, false);
         return Response.ok(new StreamingOutputMarshaller(app, result, hh.getAcceptableMediaTypes())).build();
     }
     
@@ -682,24 +683,17 @@ public class Service {
      * @param info
      * @return
      */
-    private static Map<String, Object> getParameterMap(UriInfo info){
-        Map<String, Object> parameters = new HashMap<String, Object>();
-        PathSegment pathSegment = info.getPathSegments().get(info.getPathSegments().size() - 1); 
-        for(Entry<String, List<String>> entry : pathSegment.getMatrixParameters().entrySet()) { 
-            parameters.put(entry.getKey(), entry.getValue().get(0)); 
+    private static Map<String, String> getParameterMap(UriInfo info, String segment){
+        Map<String, String> parameters = new HashMap<String, String>();
+        for (PathSegment pathSegment: info.getPathSegments()){
+            if (pathSegment.getPath() != null && pathSegment.getPath().equals(segment)){
+                for(Entry<String, List<String>> entry : pathSegment.getMatrixParameters().entrySet()) { 
+                    parameters.put(entry.getKey(), entry.getValue().get(0)); 
+                }
+                return parameters;
+            }
         }
         return parameters;
-    }
-
-    private String getTenantId(HttpHeaders hh) {
-        List<String> tenantIdValues = hh.getRequestHeader("tenant-id");
-        if (tenantIdValues == null || tenantIdValues.isEmpty()) {
-            return null;
-        }
-        if (tenantIdValues.size() != 1) {
-            throw new WebApplicationException(Status.BAD_REQUEST);
-        }
-        return tenantIdValues.get(0);
     }
     
     private String getSingleHeader(String parameterName, HttpHeaders hh){

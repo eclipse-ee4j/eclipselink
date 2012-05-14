@@ -235,8 +235,8 @@ public class PersistenceContext {
      * @param tenantId
      * @param entity
      */
-    public void create(String tenantId, Object entity) {
-        EntityManager em = getEmf().createEntityManager();
+    public void create(Map<String, String> tenantId, Object entity) {
+        EntityManager em = getEmf().createEntityManager(tenantId);
         try {
             transaction.beginTransaction(em);
             em.persist(entity);
@@ -319,8 +319,8 @@ public class PersistenceContext {
      *  A part of the facade over the JPA API
      *  Delete the given entity in JPA and commit the changes
      */
-    public void delete(String tenantId, String type, Object id) {
-        EntityManager em = getEmf().createEntityManager();
+    public void delete(Map<String, String> tenantId, String type, Object id) {
+        EntityManager em = getEmf().createEntityManager(tenantId);
 
         try {
             transaction.beginTransaction(em);
@@ -353,7 +353,7 @@ public class PersistenceContext {
      * @param id
      * @return
      */
-    public Object find(String tenantId, String entityName, Object id) {
+    public Object find(Map<String, String> tenantId, String entityName, Object id) {
         return find(tenantId, entityName, id, null);
     }
     
@@ -366,8 +366,8 @@ public class PersistenceContext {
      * @param properties - query hints used on the find
      * @return
      */
-    public Object find(String tenantId, String entityName, Object id, Map<String, Object> properties) {
-        EntityManager em = getEmf().createEntityManager();
+    public Object find(Map<String, String> tenantId, String entityName, Object id, Map<String, Object> properties) {
+        EntityManager em = getEmf().createEntityManager(tenantId);
 
         try {
             return em.find(getClass(entityName), id, properties);
@@ -376,8 +376,8 @@ public class PersistenceContext {
         }
     }
     
-    public Object findAttribute(String tenantId, String entityName, Object id, Map<String, Object> properties, String attribute) {
-        EntityManager em = getEmf().createEntityManager();
+    public Object findAttribute(Map<String, String> tenantId, String entityName, Object id, Map<String, Object> properties, String attribute) {
+        EntityManager em = getEmf().createEntityManager(tenantId);
 
         try {
             Object object = em.find(getClass(entityName), id, properties);
@@ -392,8 +392,8 @@ public class PersistenceContext {
         }
     }
     
-    public Object updateOrAddAttribute(String tenantId, String entityName, Object id, Map<String, Object> properties, String attribute, Object attributeValue, String partner) {
-        EntityManager em = getEmf().createEntityManager();
+    public Object updateOrAddAttribute(Map<String, String> tenantId, String entityName, Object id, Map<String, Object> properties, String attribute, Object attributeValue, String partner) {
+        EntityManager em = getEmf().createEntityManager(tenantId);
 
         try {
             ClassDescriptor descriptor = getJpaSession().getClassDescriptor(getClass(entityName));
@@ -431,8 +431,8 @@ public class PersistenceContext {
         }
     }
     
-    public Object removeAttribute(String tenantId, String entityName, Object id, Map<String, Object> properties, String attribute, Object attributeValue, String partner) {
-        EntityManager em = getEmf().createEntityManager();
+    public Object removeAttribute(Map<String, String> tenantId, String entityName, Object id, Map<String, Object> properties, String attribute, Object attributeValue, String partner) {
+        EntityManager em = getEmf().createEntityManager(tenantId);
 
         try {
             Object object = em.find(getClass(entityName), id, properties);
@@ -562,8 +562,8 @@ public class PersistenceContext {
      * @param entity
      * @return
      */
-    public Object merge(String tenantId, Object entity) {
-        EntityManager em = getEmf().createEntityManager();
+    public Object merge(Map<String, String> tenantId, Object entity) {
+        EntityManager em = getEmf().createEntityManager(tenantId);
         Object mergedEntity = null;
         try {
             transaction.beginTransaction(em);
@@ -598,7 +598,7 @@ public class PersistenceContext {
      * @param type
      * @return
      */
-    public DynamicEntity newEntity(String tenantId, String type) {
+    public DynamicEntity newEntity(Map<String, String> tenantId, String type) {
         JPADynamicHelper helper = new JPADynamicHelper(getEmf());
         DynamicEntity entity = null;
         try{
@@ -623,8 +623,8 @@ public class PersistenceContext {
      * @param parameters
      * @return
      */
-    public Object query(String name, Map<?, ?> parameters) {
-        return query(name, parameters, null, false, false);
+    public Object query(Map<String, String> tenantId, String name, Map<?, ?> parameters) {
+        return query(tenantId, name, parameters, null, false, false);
     }
     
     /**
@@ -637,8 +637,8 @@ public class PersistenceContext {
      * @return
      */
     @SuppressWarnings("rawtypes")
-    public Object query(String name, Map<?, ?> parameters, Map<String, ?> hints, boolean returnSingleResult, boolean executeUpdate) {
-        EntityManager em = getEmf().createEntityManager();
+    public Object query(Map<String, String> tenantId, String name, Map<?, ?> parameters, Map<String, ?> hints, boolean returnSingleResult, boolean executeUpdate) {
+        EntityManager em = getEmf().createEntityManager(tenantId);
         try{
             Query query = em.createNamedQuery(name);
             DatabaseQuery dbQuery = ((EJBQueryImpl<?>)query).getDatabaseQuery();
@@ -757,11 +757,11 @@ public class PersistenceContext {
         return "Application(" + getName() + ")::" + System.identityHashCode(this);
     }
     
-    public Object unmarshalEntity(String type, String tenantId, MediaType acceptedMedia, InputStream in) throws JAXBException {
-        return unmarshalEntity(getClass(type), tenantId, acceptedMedia, in);
+    public Object unmarshalEntity(String type, MediaType acceptedMedia, InputStream in) throws JAXBException {
+        return unmarshalEntity(getClass(type), acceptedMedia, in);
     }
     
-    public Object unmarshalEntity(Class type, String tenantId, MediaType acceptedMedia, InputStream in) throws JAXBException {
+    public Object unmarshalEntity(Class type, MediaType acceptedMedia, InputStream in) throws JAXBException {
         Unmarshaller unmarshaller = getJAXBContext().createUnmarshaller();
         unmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, Boolean.FALSE);
         unmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, acceptedMedia.toString());
