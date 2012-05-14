@@ -3205,7 +3205,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         try {
            Query query = null;
            if (getDatabaseSession().getPlatform().isOracle()) {
-               query = em.createQuery("Select cast(e.firstName as char) from Employee e where cast(e.firstName as char(3)) = 'Bob'");
+               query = em.createQuery("Select cast(e.firstName as char) from Employee e where cast(e.firstName as char) = 'Bob'");
            } else {
                query = em.createQuery("Select cast(e.firstName as char(3)) from Employee e where cast(e.firstName as char(3)) = 'Bob'");
            }
