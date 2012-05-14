@@ -19,6 +19,8 @@
  *       - 330755: Nested embeddables can't be used as embedded ids
  *     11/10/2011-2.4 Guy Pelletier 
  *       - 357474: Address primaryKey option from tenant discriminator column
+ *     14/05/2012-2.4 Guy Pelletier   
+ *       - 376603: Provide for table per tenant support for multitenant applications
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa;
 
@@ -106,6 +108,17 @@ public class CMP3Policy extends CMPPolicy {
         if (readOnlyMappings != null) {
             allMappings.addAll(readOnlyMappings);
         }
+    }
+    
+    /**
+     * INTERNAL:
+     * Clone the CMP3Policy
+     */
+    public CMP3Policy clone() {
+        CMP3Policy policy = new CMP3Policy();
+        policy.setPrimaryKeyClassName(getPKClassName());
+        policy.setPKClass(getPKClass());
+        return policy;
     }
     
     /**

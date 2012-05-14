@@ -146,5 +146,28 @@
             <property name="eclipselink.orm.validate.schema" value="true"/>
         </properties>
     </persistence-unit>
+    
+    <persistence-unit name="extended-multi-tenant-table-per-tenant">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <mapping-file>META-INF/advanced-tpt-multitenant-entity-mappings.xml</mapping-file>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.exclude-eclipselink-orm" value="true"/>
+            <property name="eclipselink.multitenant.tenants-share-cache" value="false"/>
+            <property name="eclipselink.jdbc.allow-native-sql-queries" value="true"/>
+            <property name="eclipselink.orm.validate.schema" value="true"/>
+        </properties>        
+    </persistence-unit>
+    
+    <persistence-unit name="extended-multi-tenant-table-per-tenant-C">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <mapping-file>META-INF/advanced-tpt-multitenant-entity-mappings.xml</mapping-file>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <!-- tenant properties will be set in code (from test suite) -->
+            <property name="eclipselink.exclude-eclipselink-orm" value="true"/>
+            <property name="eclipselink.orm.validate.schema" value="true"/>
+        </properties>
+    </persistence-unit>
 
 </persistence>

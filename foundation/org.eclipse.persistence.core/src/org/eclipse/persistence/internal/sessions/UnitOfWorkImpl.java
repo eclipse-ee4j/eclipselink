@@ -26,6 +26,8 @@
  *       - 277039: JPA 2.0 Cache Usage Settings
  *     07/15/2011-2.2.1 Guy Pelletier 
  *       - 349424: persists during an preCalculateUnitOfWorkChangeSet event are lost
+ *     14/05/2012-2.4 Guy Pelletier   
+ *       - 376603: Provide for table per tenant support for multitenant applications
  ******************************************************************************/  
 package org.eclipse.persistence.internal.sessions;
 
@@ -331,6 +333,8 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         
         // Order updates by id
         this.shouldOrderUpdates = true;
+        
+        this.tablePerTenantDescriptors = parent.tablePerTenantDescriptors;
     }
 
     /**

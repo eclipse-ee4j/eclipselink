@@ -17,6 +17,8 @@
  *       - 356197: Add new VPD type to MultitenantType 
  *     09/14/2011-2.3.1 Guy Pelletier 
  *       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
+ *     14/05/2012-2.4 Guy Pelletier  
+ *       - 376603: Provide for table per tenant support for multitenant applications
  ******************************************************************************/
 package org.eclipse.persistence.internal.sessions;
 
@@ -27,6 +29,7 @@ import org.eclipse.persistence.config.ReferenceMode;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
+import org.eclipse.persistence.descriptors.TablePerMultitenantPolicy;
 import org.eclipse.persistence.descriptors.invalidation.CacheInvalidationPolicy;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
@@ -168,6 +171,9 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     
     /** PERF: cache descriptors from project. */
     transient protected Map<Class, ClassDescriptor> descriptors;
+    
+    /** PERF: cache table per tenant descriptors */
+    transient protected List<ClassDescriptor> tablePerTenantDescriptors;
 
     // bug 3078039: move EJBQL alias > descriptor map from Session to Project (MWN)
 
@@ -241,6 +247,9 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     /** the MetadataRefreshListener is used with RCM to force a refresh of the metadata used within EntityManagerFactoryWrappers */
     protected MetadataRefreshListener metadatalistener;
 
+    /** Stores the set of multitenant context properties this session requires **/
+    protected Set<String> multitenantContextProperties;
+    
     /**
      * INTERNAL:
      * Create and return a new session.
@@ -421,6 +430,14 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     }
     
     /**
+     * PUBLIC:
+     * Return a set of multitenant context properties this session
+     */
+    public void addMultitenantContextProperty(String contextProperty) {
+        getMultitenantContextProperties().add(contextProperty);
+    }
+    
+    /**
      * INTERNAL:
      * Add the query to the session queries.
      */
@@ -454,6 +471,14 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         staticMetamodelClasses.put(modelClassName, metamodelClassName);
     }
 
+    /**
+     * INTERNAL:
+     * Add a descriptor that is uses a table per tenant multitenant policy.
+     */
+    protected void addTablePerTenantDescriptor(ClassDescriptor descriptor) {
+        getTablePerTenantDescriptors().add(descriptor);
+    }
+    
     /**
      * INTERNAL:
      * Called by beginTransaction() to start a transaction.
@@ -1152,6 +1177,56 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         }
     }
 
+    /**
+     * INTERNAL:
+     * Set the table per tenant. This should be called per client session after 
+     * the start of a transaction. From JPA this method is called on the entity 
+     * manager by setting the multitenant table per tenant property.
+     */
+    public void updateTablePerTenantDescriptors(String property, Object value) {
+        // When all the table per tenant descriptors are set, we should initialize them.
+        boolean shouldInitializeDescriptors = true;
+        
+        for (ClassDescriptor descriptor : getTablePerTenantDescriptors()) {
+            TablePerMultitenantPolicy policy = (TablePerMultitenantPolicy) descriptor.getMultitenantPolicy();
+            
+            if ((! policy.hasContextTenant()) && policy.usesContextProperty(property)) {
+                policy.setContextTenant((String) value);
+            }
+            
+            shouldInitializeDescriptors = shouldInitializeDescriptors && policy.hasContextTenant();
+        }
+        
+        if (shouldInitializeDescriptors) {
+            // Now that the correct tables are set on all table per tenant 
+            // descriptors, we can go through the initialization phases safely.
+            try {
+                // First initialize basic properties (things that do not depend on anything else)
+                for (ClassDescriptor descriptor : tablePerTenantDescriptors) {
+                    descriptor.preInitialize(this);
+                }
+
+                // Second initialize basic mappings
+                for (ClassDescriptor descriptor : tablePerTenantDescriptors) {
+                    descriptor.initialize(this);
+                }
+
+                // Third initialize child dependencies
+                for (ClassDescriptor descriptor : tablePerTenantDescriptors) {
+                    descriptor.postInitialize(this);
+                }
+
+                if (getIntegrityChecker().hasErrors()) {
+                    handleSevere(new IntegrityException(getIntegrityChecker()));
+                }
+            } finally {
+                clearIntegrityChecker();
+            }
+
+            getCommitManager().initializeCommitOrder();
+        }
+    }
+    
     /**
      * INTERNAL:
      * Updates the count of SessionProfiler event
@@ -2139,7 +2214,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     public ClassDescriptor getDescriptorForAlias(String alias) {
         return this.project.getDescriptorForAlias(alias);
     }
-
+    
     /**
      * ADVANCED:
      * Return all registered descriptors.
@@ -2355,6 +2430,18 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     
     /**
      * PUBLIC:
+     * Return a set of multitenant context properties this session
+     */
+    public Set<String> getMultitenantContextProperties() {
+        if (this.multitenantContextProperties == null) {
+            this.multitenantContextProperties = new HashSet<String>();
+        }
+
+        return this.multitenantContextProperties;
+    }
+    
+    /**
+     * PUBLIC:
      * Return the name of the session.
      * This is used with the session broker, or to give the session a more meaningful name.
      */
@@ -2525,6 +2612,14 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      */
     public boolean hasProperties() {
         return ((properties != null) && !properties.isEmpty());
+    }
+    
+    /**
+     * INTERNAL:
+     * Return list of table per tenant multitenant descriptors.
+     */
+    public boolean hasTablePerTenantDescriptors() {
+        return (tablePerTenantDescriptors != null && ! tablePerTenantDescriptors.isEmpty());
     }
 
     /**
@@ -2700,6 +2795,18 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         return sessionLog;
     }
 
+    /**
+     * INTERNAL:
+     * Return list of table per tenant multitenant descriptors.
+     */
+    public List<ClassDescriptor> getTablePerTenantDescriptors() {
+        if (tablePerTenantDescriptors == null) {
+            tablePerTenantDescriptors = new ArrayList<ClassDescriptor>();
+        }
+        
+        return tablePerTenantDescriptors;
+    }
+    
     /**
      * INTERNAL:
      * The transaction mutex ensure mutual exclusion on transaction across multiple threads.

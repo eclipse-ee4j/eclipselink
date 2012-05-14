@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2010 Oracle, Sei Syvalta. All rights reserved.
+ * Copyright (c) 1998, 2012 Oracle, Sei Syvalta. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -18,6 +18,8 @@
  *       - 356197: Add new VPD type to MultitenantType
  *     11/10/2011-2.4 Guy Pelletier 
  *       - 357474: Address primaryKey option from tenant discriminator column
+ *     14/05/2012-2.4 Guy Pelletier   
+ *       - 376603: Provide for table per tenant support for multitenant applications
  ******************************************************************************/  
 package org.eclipse.persistence.tools.schemaframework;
 
@@ -175,7 +177,8 @@ public class DefaultTableGenerator {
             // Aggregate descriptors do not contain table/field data and are 
             // processed through their owning entities. Aggregate descriptors
             // can not exist on their own.
-            if (!descriptor.isDescriptorTypeAggregate()) {
+            // Table per tenant descriptors will not be initialized.
+            if (!descriptor.isDescriptorTypeAggregate() && ! descriptor.hasTablePerMultitenantPolicy()) {
                 initTableSchema(descriptor);
             }
         }
@@ -185,7 +188,8 @@ public class DefaultTableGenerator {
             // Aggregate descriptors do not contain table/field data and are 
             // processed through their owning entities. Aggregate descriptors
             // can not exist on their own.
-            if (!descriptor.isAggregateDescriptor() && !descriptor.isAggregateCollectionDescriptor()) {
+            // Table per tenant descriptors will not be initialized.
+            if (!descriptor.isAggregateDescriptor() && !descriptor.isAggregateCollectionDescriptor() && ! descriptor.hasTablePerMultitenantPolicy()) {
                 postInitTableSchema(descriptor);
                 
                 // If VPD descriptor we need to generate some DDL for its default table.

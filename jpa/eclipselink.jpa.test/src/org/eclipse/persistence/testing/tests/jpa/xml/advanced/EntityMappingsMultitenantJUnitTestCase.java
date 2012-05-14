@@ -15,7 +15,9 @@
  *     04/21/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 5)
  *     06/30/2011-2.3.1 Guy Pelletier 
- *       - 341940: Add disable/enable allowing native queries 
+ *       - 341940: Add disable/enable allowing native queries
+ *     14/05/2012-2.4 Guy Pelletier   
+ *       - 376603: Provide for table per tenant support for multitenant applications 
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.xml.advanced;
 
@@ -33,9 +35,17 @@ import javax.persistence.Query;
 import junit.framework.*;
 
 import org.eclipse.persistence.config.EntityManagerProperties;
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.persistence.internal.helper.Helper;
 
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
 
+import org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant.Candidate;
+import org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant.Mason;
+import org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant.Party;
+import org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant.Riding;
+import org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant.Supporter;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant.AdvancedMultiTenantTableCreator;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant.Boss;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant.Capo;
@@ -43,11 +53,22 @@ import org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant.Contr
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant.MafiaFamily;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant.Mafioso;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant.Soldier;
+import org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant.Trowel;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant.Underboss;
 
 public class EntityMappingsMultitenantJUnitTestCase extends JUnitTestCase { 
     public static final String MULTI_TENANT_PU = "extended-multi-tenant-shared-emf";
     public static final String MULTI_TENANT_PU_123 = "extended-multi-tenant-123";
+    public static final String MULTI_TENANT_TABLE_PER_TENANT_PU = "extended-multi-tenant-table-per-tenant";
+    public static final String MULTI_TENANT_TABLE_PER_TENANT_C_PU = "extended-multi-tenant-table-per-tenant-C";
+    private static final String MULTI_TENANT_TABLE_PER_TENANT = null;
+    
+    public static long candidateAId;
+    public static long supporter1Id;
+    public static long supporter2Id;
+    public static int ridingId;
+    public static int partyId;
+    public static int masonId;
     
     public static int family707;
     public static int family007;
@@ -83,6 +104,11 @@ public class EntityMappingsMultitenantJUnitTestCase extends JUnitTestCase {
         suite.addTest(new EntityMappingsMultitenantJUnitTestCase("testValidateMafiaFamily007"));
         suite.addTest(new EntityMappingsMultitenantJUnitTestCase("testValidateMafiaFamily707and007WithSameEM"));
         suite.addTest(new EntityMappingsMultitenantJUnitTestCase("testValidateMafiaFamily123"));
+        
+        suite.addTest(new EntityMappingsMultitenantJUnitTestCase("testTablePerTenantA"));
+        suite.addTest(new EntityMappingsMultitenantJUnitTestCase("testTablePerTenantB"));
+        suite.addTest(new EntityMappingsMultitenantJUnitTestCase("testTablePerTenantC"));
+        
         return suite;
     }
     
@@ -671,6 +697,217 @@ public class EntityMappingsMultitenantJUnitTestCase extends JUnitTestCase {
         query.setParameter("id", family007Mafiosos.get(0));
         query.executeUpdate();
         commitTransaction(em);
+    }
+    
+    public void testTablePerTenantA() {
+        EntityManager em = createEntityManager(MULTI_TENANT_TABLE_PER_TENANT_PU);
+        
+        try {
+            beginTransaction(em);
+            
+            // Valid to set the table per tenant qualifier now.
+            em.setProperty(EntityManagerProperties.MULTITENANT_PROPERTY_DEFAULT, "A");
+            
+            Candidate candidateA = new Candidate();
+            candidateA.setName("CA");
+            
+            candidateA.addHonor("Raised most money");
+            candidateA.addHonor("Highest win margin");
+            
+            candidateA.setSalary(9999999);
+            
+            Supporter supporter1 = new Supporter();
+            supporter1.setName("Supporter1");
+            candidateA.addSupporter(supporter1);
+            
+            Supporter supporter2 = new Supporter();
+            supporter2.setName("Supporter2");
+            candidateA.addSupporter(supporter2);
+            
+            Party party = new Party();
+            party.setName("Conservatives");
+            party.addCandidate(candidateA);
+            
+            Riding riding = new Riding();
+            riding.setName("Ottawa");
+            candidateA.setRiding(riding);
+            
+            // Persist our objects.
+            em.persist(party);
+            em.persist(candidateA);
+            em.persist(supporter2);
+            em.persist(supporter1);
+            em.persist(riding);
+            
+            Mason mason = new Mason();
+            mason.setName("FromTenantA");
+            mason.addAward(Helper.timestampFromDate(Helper.dateFromYearMonthDate(2009, 1, 1)), "Concrete float master");
+            mason.addAward(Helper.timestampFromDate(Helper.dateFromYearMonthDate(2010, 5, 9)), "Form stake out expert");
+            
+            Trowel trowel = new Trowel();
+            trowel.setType("Concrete");
+            mason.setTrowel(trowel);
+            trowel.setMason(mason);
+            
+            em.persist(mason);
+            em.persist(trowel);
+            
+            // Grab any id's for verification.
+            candidateAId = candidateA.getId();
+            ridingId = riding.getId();
+            partyId = party.getId();
+            supporter1Id = supporter1.getId();
+            supporter2Id = supporter2.getId();
+            masonId = mason.getId();
+            
+            commitTransaction(em);
+        } catch (RuntimeException e) {
+            throw e;
+        } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            
+            closeEntityManager(em);
+        }
+    }
+    
+    public void testTablePerTenantB() {
+        EntityManager em = createEntityManager(MULTI_TENANT_TABLE_PER_TENANT_PU);
+        
+        try {    
+            beginTransaction(em);
+            
+            // Valid to set the table per tenant qualifier now.
+            em.setProperty(EntityManagerProperties.MULTITENANT_PROPERTY_DEFAULT, "B");
+            
+            // Should not find these ... 
+            assertNull("CandidateA was found from tenant B.", em.find(Candidate.class, candidateAId));
+            assertNull("Supporter1 was found from tenant B.", em.find(Supporter.class, supporter1Id));
+            assertNull("Supporter2 was found from tenant B.", em.find(Supporter.class, supporter2Id));
+            assertNull("Mason was found from tenant B.", em.find(Mason.class, masonId));
+            
+            // Should find these ...
+            Riding riding = em.find(Riding.class, ridingId);
+            assertNotNull("Riding was not found from tenant B", riding);
+            Party party = em.find(Party.class, partyId);
+            assertNotNull("Party was not found from tenant B", party);
+            // TODO: can't do this (would have to initialize the mapping from party again to the new descriptor.
+            // future implementation maybe.
+            //assertTrue("Party had candidates", party.getCandidates().isEmpty());
+            
+            Candidate candidateB = new Candidate();
+            candidateB.setName("CB");
+            candidateB.setSalary(100);
+            em.persist(candidateB);
+            commitTransaction(em);
+            
+            em.clear();
+            clearCache(MULTI_TENANT_TABLE_PER_TENANT_PU);
+            
+            beginTransaction(em);
+            
+            // Valid to set the table per tenant qualifier now.
+            em.setProperty(EntityManagerProperties.MULTITENANT_PROPERTY_DEFAULT, "B");
+            
+            Candidate candidateBRefreshed = em.find(Candidate.class, candidateB.getId());
+            
+            assertNull("Candidate B has a Party when he shouldn't have.", candidateBRefreshed.getParty());
+            assertNull("Candidate B has a Riding when he shouldn't have.", candidateBRefreshed.getRiding());
+            assertTrue("Candidate B had supporters when he shouldn't have.", candidateBRefreshed.getSupporters().isEmpty());
+            assertTrue("Candidate B had honors when he shouldn't have.", candidateBRefreshed.getHonors().isEmpty());
+            assertTrue("Candidate B had the incorrect salary.", candidateBRefreshed.getSalary() == 100);
+            
+            commitTransaction(em);
+            
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            
+            throw e;
+        } finally {
+
+            closeEntityManager(em);
+        }
+    }
+    
+    public void testTablePerTenantC() {
+        // Set the tenant through EMF properties.
+        Map properties = JUnitTestCaseHelper.getDatabaseProperties();
+        properties.put(PersistenceUnitProperties.EXCLUDE_ECLIPSELINK_ORM_FILE, "true");
+        properties.put(PersistenceUnitProperties.MULTITENANT_SHARED_EMF, "false");
+        properties.put(PersistenceUnitProperties.SESSION_NAME, "extended-multi-tenant-C");
+        properties.put(PersistenceUnitProperties.MULTITENANT_PROPERTY_DEFAULT, "C");
+        properties.put(PersistenceUnitProperties.ALLOW_NATIVE_SQL_QUERIES, "true");
+        
+        EntityManager em = createEntityManager(MULTI_TENANT_TABLE_PER_TENANT_C_PU, properties);
+        
+        try {
+            beginTransaction(em);
+            
+            Candidate candidate = new Candidate();
+            candidate.setName("C");
+            
+            candidate.addHonor("Raised most money");
+            candidate.addHonor("Highest win margin");
+            
+            candidate.setSalary(9999999);
+            
+            Supporter supporter1 = new Supporter();
+            supporter1.setName("Supporter1");
+            candidate.addSupporter(supporter1);
+            
+            Supporter supporter2 = new Supporter();
+            supporter2.setName("Supporter2");
+            candidate.addSupporter(supporter2);
+            
+            Party party = new Party();
+            party.setName("Conservatives");
+            party.addCandidate(candidate);
+            
+            Riding riding = new Riding();
+            riding.setName("Ottawa");
+            candidate.setRiding(riding);
+            
+            // Persist our objects.
+            em.persist(party);
+            em.persist(candidate);
+            em.persist(supporter2);
+            em.persist(supporter1);
+            em.persist(riding);
+            
+            Mason mason = new Mason();
+            mason.setName("FromTenantC");
+            mason.addAward(Helper.timestampFromDate(Helper.dateFromYearMonthDate(2009, 1, 1)), "Best pointer");
+            mason.addAward(Helper.timestampFromDate(Helper.dateFromYearMonthDate(2010, 5, 9)), "Least screw-ups");
+            
+            Trowel trowel = new Trowel();
+            trowel.setType("Pointing");
+            mason.setTrowel(trowel);
+            trowel.setMason(mason);
+           
+            em.persist(mason);
+            em.persist(trowel);
+            
+            // Grab any id's for verification.
+            candidateAId = candidate.getId();
+            ridingId = riding.getId();
+            partyId = party.getId();
+            supporter1Id = supporter1.getId();
+            supporter2Id = supporter2.getId();
+            masonId = mason.getId();
+            
+            commitTransaction(em);
+        } catch (RuntimeException e) {
+            throw e;
+        } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            
+            closeEntityManager(em);
+        }
     }
 }
 

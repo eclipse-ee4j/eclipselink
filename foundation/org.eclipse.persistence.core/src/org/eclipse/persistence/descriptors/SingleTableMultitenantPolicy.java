@@ -12,6 +12,8 @@
  *       - 356197: Add new VPD type to MultitenantType 
  *     11/10/2011-2.4 Guy Pelletier 
  *       - 357474: Address primaryKey option from tenant discriminator column
+ *     14/05/2012-2.4 Guy Pelletier  
+ *       - 376603: Provide for table per tenant support for multitenant applications
  ******************************************************************************/  
 package org.eclipse.persistence.descriptors;
 
@@ -145,6 +147,9 @@ public class SingleTableMultitenantPolicy implements MultitenantPolicy {
                 if (mapping != null && ! mapping.isReadOnly() && ! mapping.isMultitenantPrimaryKeyMapping()) {
                     throw ValidationException.nonReadOnlyMappedTenantDiscriminatorField(getDescriptor().getJavaClassName(), discriminatorField.getQualifiedName());
                 }
+                
+                // Add the context property to the session set.
+                session.addMultitenantContextProperty(tenantDiscriminatorFields.get(discriminatorField));
             }
         }
     }
@@ -156,6 +161,13 @@ public class SingleTableMultitenantPolicy implements MultitenantPolicy {
         return true;
     }
 
+    /**
+     * INTERNAL:
+     */
+    public boolean isTablePerMultitenantPolicy() {
+        return false;
+    }
+    
     /**
      * INTERNAL:
      * Subclasses that need to add field to an expresison should override this method.

@@ -11,7 +11,8 @@
  *     dclarke, mnorman - Dynamic Persistence
  *       http://wiki.eclipse.org/EclipseLink/Development/Dynamic 
  *       (https://bugs.eclipse.org/bugs/show_bug.cgi?id=200045)
- *
+ *     14/05/2012-2.4 Guy Pelletier  
+ *       - 376603: Provide for table per tenant support for multitenant applications
  ******************************************************************************/
 package org.eclipse.persistence.dynamic;
 
@@ -216,7 +217,7 @@ public class DynamicHelper {
                 return;
             }
             descriptors.add(desc);
-            if (!types[index].getDescriptor().requiresInitialization()) {
+            if (!types[index].getDescriptor().requiresInitialization((AbstractSession) session)) {
                 types[index].getDescriptor().getInstantiationPolicy().initialize((AbstractSession) session);
             }
         }

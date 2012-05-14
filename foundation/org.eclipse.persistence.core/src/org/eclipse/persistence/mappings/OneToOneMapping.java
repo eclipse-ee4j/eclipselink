@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     14/05/2012-2.4 Guy Pelletier   
+ *       - 376603: Provide for table per tenant support for multitenant applications
  ******************************************************************************/  
 package org.eclipse.persistence.mappings;
 
@@ -1845,6 +1847,15 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      */
     public RelationTableMechanism getRelationTableMechanism() {
         return this.mechanism;
+    }
+    
+    /**
+     * PUBLIC:
+     * Set the relational table.
+     * This is the join table that store both the source and target primary keys.
+     */
+    public void setRelationTable(DatabaseTable relationTable) {
+        this.mechanism.setRelationTable(relationTable);
     }
     
     /**

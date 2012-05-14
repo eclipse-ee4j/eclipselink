@@ -24,6 +24,8 @@
  *       - 356197: Add new VPD type to MultitenantType
  *     11/10/2011-2.4 Guy Pelletier 
  *       - 357474: Address primaryKey option from tenant discriminator column
+ *     14/05/2012-2.4 Guy Pelletier  
+ *       - 376603: Provide for table per tenant support for multitenant applications
  ******************************************************************************/  
 package org.eclipse.persistence.descriptors;
 
@@ -1308,7 +1310,35 @@ public class ClassDescriptor implements Cloneable, Serializable {
         }
         //bug 5171059 clone change tracking policies as well
         clonedDescriptor.setObjectChangePolicy(this.getObjectChangePolicyInternal());
+        
+        // Clone the tables
+        Vector<DatabaseTable> tables = NonSynchronizedVector.newInstance(3);
+        for (DatabaseTable table : getTables()) {
+            tables.add(table.clone());
+        }
+        clonedDescriptor.setTables(tables);
+        
+        // Clone the default table
+        if (getDefaultTable() != null) {
+            clonedDescriptor.setDefaultTable(getDefaultTable().clone());
+        }
+        
+        // Clone the CMPPolicy
+        if (getCMPPolicy() != null) {
+            clonedDescriptor.setCMPPolicy(getCMPPolicy().clone());
+            clonedDescriptor.getCMPPolicy().setDescriptor(clonedDescriptor);
+        }
+        
+        // Clone the sequence number field.
+        if (getSequenceNumberField() != null) {
+            clonedDescriptor.setSequenceNumberField(getSequenceNumberField().clone());
+        }
 
+        // Clone the multitenant policy.
+        if (hasMultitenantPolicy()) {
+            clonedDescriptor.setMultitenantPolicy(getMultitenantPolicy().clone(clonedDescriptor));
+        }
+        
         return clonedDescriptor;
     }
 
@@ -2542,6 +2572,14 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * Checks if table name exists with the current descriptor or not.
      */
     public DatabaseTable getTable(String tableName) throws DescriptorException {
+        if (hasTablePerMultitenantPolicy()) {
+            DatabaseTable table =  ((TablePerMultitenantPolicy) getMultitenantPolicy()).getTable(tableName);
+            
+            if (table != null) {
+                return table;
+            }
+        }
+        
         if (getTables().isEmpty()) {
             return null;// Assume aggregate descriptor.
         }
@@ -3764,7 +3802,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
      * Hook together the inheritance policy tree.
      */
     protected void preInitializeInheritancePolicy(AbstractSession session) throws DescriptorException {
-        if (isChildDescriptor() && (requiresInitialization())) {
+        if (isChildDescriptor() && (requiresInitialization(session))) {
             if (getInheritancePolicy().getParentClass().equals(getJavaClass())) {
                 setInterfaceInitializationStage(ERROR);
                 throw DescriptorException.parentClassIsSelf(this);
@@ -3882,12 +3920,27 @@ public class ClassDescriptor implements Cloneable, Serializable {
     /**
      * INTERNAL:
      * Aggregate and Interface descriptors do not require initialization as they are cloned and
-     * initialized by each mapping.
+     * initialized by each mapping. Descriptors with table per tenant policies are cloned per
+     * client session (per tenant) so do not initialize the original descriptor.
      */
-    public boolean requiresInitialization() {
-        return !(isDescriptorTypeAggregate() || isDescriptorForInterface());
+    public boolean requiresInitialization(AbstractSession session) {
+        // If we are an aggregate or interface descriptor we do not require initialization.
+        if (isDescriptorTypeAggregate() || isDescriptorForInterface()) {
+            return false;
+        }
+        
+        // If we have a table per tenant policy then check for our tenant 
+        // context property. If it is available from the session, set it and
+        // return true to initialize. Otherwise do not initialize the
+        // descriptor (it will be initialized per client session).
+        if (hasTablePerMultitenantPolicy()) {
+            return ((TablePerMultitenantPolicy) getMultitenantPolicy()).shouldInitialize(session);
+        }
+        
+        // By default it should be initialized.
+        return true;
     }
-
+    
     /**
      * INTERNAL:
      * Validate that the descriptor was defined correctly.
@@ -6290,6 +6343,13 @@ public class ClassDescriptor implements Cloneable, Serializable {
      */
     public boolean hasMultitenantPolicy() {
         return multitenantPolicy != null;
+    }
+    /**
+     * PUBLIC
+     * @return true if this descriptor is configured with a table per tenant policy.
+     */
+    public boolean hasTablePerMultitenantPolicy() {
+        return hasMultitenantPolicy() && getMultitenantPolicy().isTablePerMultitenantPolicy();
     }
 
     /**

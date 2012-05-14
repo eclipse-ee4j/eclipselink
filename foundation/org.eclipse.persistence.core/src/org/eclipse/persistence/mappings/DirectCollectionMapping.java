@@ -13,6 +13,8 @@
  *       - 338812: ManyToMany mapping in aggregate object violate integrity constraint on deletion
  *     04/09/2012-2.4 Guy Pelletier 
  *       - 374377: OrderBy with ElementCollection doesn't work
+ *     14/05/2012-2.4 Guy Pelletier   
+ *       - 376603: Provide for table per tenant support for multitenant applications
  ******************************************************************************/  
 package org.eclipse.persistence.mappings;
 
@@ -23,6 +25,7 @@ import java.util.*;
 
 import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.TablePerMultitenantPolicy;
 import org.eclipse.persistence.descriptors.changetracking.*;
 import org.eclipse.persistence.internal.descriptors.changetracking.AttributeChangeListener;
 import org.eclipse.persistence.internal.descriptors.changetracking.ObjectChangeListener;
@@ -1704,9 +1707,14 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
             throw DescriptorException.noReferenceKeyIsSpecified(this);
         }
 
-        for (Enumeration referenceEnum = getReferenceKeyFields().elements();
-                 referenceEnum.hasMoreElements();) {
+        for (Enumeration referenceEnum = getReferenceKeyFields().elements(); referenceEnum.hasMoreElements();) {
             DatabaseField field = (DatabaseField)referenceEnum.nextElement();
+            
+            // Update the field first if the mapping is on a table per tenant entity.
+            if (getDescriptor().hasTablePerMultitenantPolicy()) {
+                field.setTable(((TablePerMultitenantPolicy) getDescriptor().getMultitenantPolicy()).getTable(field.getTable()));
+            }
+            
             if (field.hasTableName() && (!(field.getTableName().equals(getReferenceTable().getName())))) {
                 throw DescriptorException.referenceKeyFieldNotProperlySpecified(field, this);
             }

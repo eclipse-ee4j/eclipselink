@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     14/05/2012-2.4 Guy Pelletier  
+ *       - 376603: Provide for table per tenant support for multitenant applications
  ******************************************************************************/  
 package org.eclipse.persistence.eis;
 
@@ -561,7 +563,7 @@ public class EISDescriptor extends ClassDescriptor {
      * not need to be cloned by ESI aggregate mappings.
      */
     @Override
-    public boolean requiresInitialization() {
+    public boolean requiresInitialization(AbstractSession session) {
         return (!isDescriptorForInterface());
     }
 

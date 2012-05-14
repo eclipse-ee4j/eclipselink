@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     14/05/2012-2.4 Guy Pelletier   
+ *       - 376603: Provide for table per tenant support for multitenant applications
  ******************************************************************************/  
 package org.eclipse.persistence.sessions.server;
 
@@ -69,7 +71,15 @@ public class ClientSession extends AbstractSession {
     
     public ClientSession(ServerSession parent, ConnectionPolicy connectionPolicy, Map properties) {
         super();
-        this.project = parent.getProject();
+        // If we have table per tenant descriptors let's clone the project so
+        // that we can have a separate jpql parse cache for each tenant. 
+        if (! parent.getTablePerTenantDescriptors().isEmpty()) {
+            this.project = parent.getProject().clone();
+            this.project.setJPQLParseCacheMaxSize(parent.getProject().getJPQLParseCache().getMaxSize());
+        } else {
+            this.project = parent.getProject();
+        }
+        
         if (connectionPolicy.isUserDefinedConnection()) {
             // PERF: project only requires clone if login is different
             this.setProject(getProject().clone());
@@ -93,10 +103,33 @@ public class ClientSession extends AbstractSession {
         this.pessimisticLockTimeoutDefault = parent.getPessimisticLockTimeoutDefault();
         this.queryTimeoutDefault = parent.getQueryTimeoutDefault();
         this.properties = properties;
+        this.multitenantContextProperties = parent.getMultitenantContextProperties();
+        
         if (this.eventManager != null) {
             this.eventManager.postAcquireClientSession();
         }
-        this.descriptors = parent.getDescriptors();
+        
+        // If we have table per tenant descriptors, they will need to be
+        // cloned as we will be changing the descriptors per tenant.
+        if (parent.hasTablePerTenantDescriptors()) {
+            this.descriptors = new HashMap<Class, ClassDescriptor>();
+            this.descriptors.putAll(parent.getDescriptors());
+            
+            for (ClassDescriptor descriptor : parent.getTablePerTenantDescriptors()) {
+                ClassDescriptor clonedDescriptor = (ClassDescriptor) descriptor.clone();
+                addTablePerTenantDescriptor(clonedDescriptor);
+                this.descriptors.put(clonedDescriptor.getJavaClass(), clonedDescriptor);
+            }  
+            
+            if (hasProperties()) {
+                for (Object propertyName : properties.keySet()) {
+                    updateTablePerTenantDescriptors((String) propertyName, properties.get(propertyName));
+                }
+            }
+        } else {
+            this.descriptors = parent.getDescriptors();
+        }
+        
         incrementProfile(SessionProfiler.ClientSessionCreated);
     }
 
@@ -317,6 +350,20 @@ public class ClientSession extends AbstractSession {
      */
     public ConnectionPolicy getConnectionPolicy() {
         return connectionPolicy;
+    }
+    
+    /**
+     * ADVANCED:
+     * Return all registered descriptors.
+     */
+    public Map<Class, ClassDescriptor> getDescriptors() {
+        // descriptors from the project may have been modified (for table per
+        // tenants so make sure to return the updated ones)
+        if (hasTablePerTenantDescriptors()) {
+            return this.descriptors;
+        } else {
+            return super.getDescriptors();
+        }
     }
 
     /**

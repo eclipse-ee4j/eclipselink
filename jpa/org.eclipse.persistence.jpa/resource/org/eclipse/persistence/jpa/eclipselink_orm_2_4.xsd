@@ -3432,7 +3432,10 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:element name="tenant-discriminator-column" type="orm:tenant-discriminator-column" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:choice>
+            <xsd:element name="tenant-discriminator-column" type="orm:tenant-discriminator-column" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element name="tenant-table-discriminator" type="orm:tenant-table-discriminator" minOccurs="0"/>
+        </xsd:choice>
     </xsd:sequence>
     <xsd:attribute name="type" type="orm:multitenant-type"/>
     <xsd:attribute name="include-criteria" type="xsd:boolean"/>
@@ -3452,9 +3455,12 @@
              */
             SINGLE_TABLE, 
 
-            /**
-             * Specifies that different tables are used for each tenant. The table scan 
-             * be uniquely identified by name, schema/tablespace.
+            /** 
+             * Specifies that different tables are used for each tenant. The
+             * tenant table discriminator describes how the table is uniquely
+             * identified, that is, using a suffix/prefix or a separate schema.
+             * 
+             * @since 2.4
              */
             TABLE_PER_TENANT,
             
@@ -3462,6 +3468,8 @@
              * Specifies that the DB will handle the tenant filtering on all SELECT,
              * UPDATE and DELETE queries. Using this type assumes that the platform
              * used with your persistence unit does indeed support VPD.
+             * 
+             * @since 2.3.1
              */
             VPD
         }
@@ -3470,8 +3478,8 @@
     </xsd:annotation>
     <xsd:restriction base="xsd:token">
       <xsd:enumeration value="SINGLE_TABLE"/>
-      <xsd:enumeration value="TABLE_PER_TENANT"/>
       <xsd:enumeration value="VPD"/>
+      <xsd:enumeration value="TABLE_PER_TENANT"/>
     </xsd:restriction>
   </xsd:simpleType>
   
@@ -5279,6 +5287,51 @@
     <xsd:attribute name="table" type="xsd:string"/>
     <xsd:attribute name="primary-key" type="xsd:boolean"/>
   </xsd:complexType>
+
+  <!-- **************************************************** -->
+
+  <xsd:complexType name="tenant-table-discriminator">
+    <xsd:annotation>
+      <xsd:documentation>
+        @Target({}) 
+        @Retention(RUNTIME)
+        public @interface TenantDiscriminatorColumn {
+            /**
+             * (Optional) The name of the context property to apply to as 
+             * tenant table discriminator. Default is "eclipselink-tenant.id"
+             */
+            String contextProperty() default PersistenceUnitProperties.MULTITENANT_PROPERTY_DEFAULT;
+    
+            /**
+             * (Optional) The type of tenant table discriminator to use with the tables
+             * of the persistence unit.
+             * Defaults to {@link TenantTableDiscriminatorType#SUFFIX TenantTableDiscriminatorType.SUFFIX}.
+             */
+            TenantTableDiscriminatorType type() default TenantTableDiscriminatorType.SUFFIX;
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="context-property" type="xsd:string"/>
+    <xsd:attribute name="type" type="orm:tenant-table-discriminator-type"/>
+  </xsd:complexType>
+  
+  <!-- **************************************************** -->
+
+  <xsd:simpleType name="tenant-table-discriminator-type">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        public enum TenantTableDiscriminatorType { SCHEMA, SUFFIX, PREFIX }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:token">
+      <xsd:enumeration value="SCHEMA"/>
+      <xsd:enumeration value="SUFFIX"/>
+      <xsd:enumeration value="PREFIX"/>
+    </xsd:restriction>
+  </xsd:simpleType>
   
   <!-- **************************************************** -->  
 

@@ -27,6 +27,8 @@
  *       - 356197: Add new VPD type to MultitenantType
  *     09/14/2011-2.3.1 Guy Pelletier 
  *       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
+ *     14/05/2012-2.4 Guy Pelletier   
+ *       - 376603: Provide for table per tenant support for multitenant applications
  ******************************************************************************/  
 package org.eclipse.persistence.sessions;
 
@@ -487,7 +489,7 @@ public class Project implements Serializable, Cloneable {
      */
     public Project clone() {
         try {
-            return (Project)super.clone();
+            return (Project) super.clone();
         } catch (CloneNotSupportedException exception) {
             throw new InternalError(exception.toString());
         }

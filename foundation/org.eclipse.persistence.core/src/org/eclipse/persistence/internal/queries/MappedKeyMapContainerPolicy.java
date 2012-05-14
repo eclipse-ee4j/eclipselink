@@ -12,6 +12,8 @@
  *     tware - implemenation of basic CRUD functionality
  *     11/10/2011-2.4 Guy Pelletier 
  *       - 357474: Address primaryKey option from tenant discriminator column
+ *     14/05/2012-2.4 Guy Pelletier  
+ *       - 376603: Provide for table per tenant support for multitenant applications
  ******************************************************************************/
 package org.eclipse.persistence.internal.queries;
 
@@ -317,6 +319,23 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy {
         keyMapping.cascadeRegisterNewIfRequired(((Map.Entry)object).getKey(), uow, visitedObjects, false);
     }
 
+    /**
+     * INTERNAL:
+     * The mapping clones itself to create deep copy.
+     */
+    @Override
+    public Object clone() {
+        MappedKeyMapContainerPolicy clone = (MappedKeyMapContainerPolicy) super.clone();
+        
+        clone.keyMapping = (MapKeyMapping) this.keyMapping.clone();
+        
+        if (this.keyQuery != null) {
+            clone.keyQuery = (DatabaseQuery) this.keyQuery.clone();
+        }
+        
+        return clone;
+    }
+    
     /**
      * INTERNAL:
      * Return true if keys are the same.  False otherwise

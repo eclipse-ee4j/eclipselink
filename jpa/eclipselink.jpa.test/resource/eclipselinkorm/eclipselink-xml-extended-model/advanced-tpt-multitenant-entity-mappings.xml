@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings version="2.3" xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <description>Advanced Multitenant Test Model Instance Document</description>
+    <package>org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant</package>
+    
+    <entity name="XMLMason" class="Mason">
+        <multitenant type="TABLE_PER_TENANT"/>
+        <table name="XML_MASON"/>
+        <attributes>
+            <id name="id">
+                <generated-value/>
+            </id>
+            <basic name="name"/>
+            <one-to-one name="trowel">
+                <join-column name="TROWEL_ID"/>
+            </one-to-one>
+            <element-collection name="awards">
+                <map-key-temporal>DATE</map-key-temporal>
+                <map-key-column name="AWARD_DATE"/>
+                <column name="AWARD"/>
+                <collection-table name="XML_MASON_AWARDS">
+                    <join-column name="MASON_ID"/>
+                </collection-table>
+            </element-collection>
+        </attributes>
+    </entity>
+    
+    <entity name="XMLTrowel" class="Trowel">
+        <multitenant type="TABLE_PER_TENANT"/>
+        <table name="XML_TROWEL"/>
+        <attributes>
+            <id name="id">
+                <generated-value/>
+            </id>
+            <basic name="type">
+                <column name="TROWEL_TYPE"/>
+            </basic>
+            <one-to-one name="mason" mapped-by="trowel"/>
+        </attributes>
+    </entity>
+    
+    <entity name="XMLParty" class="Party">
+        <table name="XML_PARTY"/>
+        <attributes>
+            <id name="id">
+                <generated-value/>
+            </id>
+            <basic name="name"/>
+        </attributes>
+    </entity>
+    
+    <entity name="XMLRiding" class="Riding">
+        <table name="XML_RIDING"/>
+        <attributes>
+            <id name="id">
+                <generated-value/>
+            </id>
+            <basic name="name"/>
+        </attributes>
+    </entity>
+    
+    <entity name="XMLSupporter" class="Supporter">
+        <multitenant type="TABLE_PER_TENANT">
+            <tenant-table-discriminator type="PREFIX"/>
+        </multitenant>
+        <table name="XML_SUPPORTER"/>
+        <attributes>
+            <id name="id">
+                <generated-value/>
+            </id>
+            <basic name="name"/>
+            <many-to-many name="supportedCandidates" mapped-by="supporters"/>
+        </attributes>
+    </entity>
+    
+    <entity name="XMLCandidate" class="Candidate">
+        <multitenant type="TABLE_PER_TENANT">
+            <tenant-table-discriminator type="SUFFIX"/>
+        </multitenant>
+        <table name="XML_CANDIDATE"/>
+        <secondary-table name="XML_CANDY_SALARY"/>
+        <attributes>
+            <id name="id">
+                <generated-value/>
+            </id>
+            <basic name="salary">
+                <column table="XML_CANDY_SALARY"/> 
+            </basic>
+            <basic name="name"/>
+            <many-to-one name="riding"/>
+            <many-to-one name="party"/>
+            <many-to-many name="supporters">
+                <join-table name="XML_CAN_SUP">
+                    <join-column name="CANDIDATE_ID"/>
+                    <inverse-join-column name="SUPPORTER_ID"/>
+                </join-table>
+            </many-to-many>
+            <element-collection name="honors">
+                <collection-table name="XML_CANDIDATE_HONORS"/>
+                <column name="HONOR"/>
+            </element-collection>
+        </attributes>
+    </entity>
+    
+</entity-mappings>

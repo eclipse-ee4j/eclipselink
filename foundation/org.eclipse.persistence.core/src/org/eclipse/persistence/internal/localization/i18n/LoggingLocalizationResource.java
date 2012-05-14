@@ -29,6 +29,8 @@
  *       - 343632: Can't map a compound constraint because of exception: 
  *                 The reference column name [y] mapped on the element [field x] 
  *                 does not correspond to a valid field on the mapping reference
+ *     14/05/2012-2.4 Guy Pelletier  
+ *       - 376603: Provide for table per tenant support for multitenant applications
  ******************************************************************************/  
 package org.eclipse.persistence.internal.localization.i18n;
 
@@ -251,6 +253,8 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "metadata_default_secondary_table_fk_column", "The secondary table foreign key column name for element [{0}] is being defaulted to: {1}." },
         { "metadata_default_tenant_discriminator_column", "The tenant discriminator column name for element [{0}] is being defaulted to: {1}." },
         { "metadata_default_tenant_discriminator_context_property", "The tenant discriminator context property for the tenant discriminator column [{1}] on the element [{0}] is being defaulted to: {2}." },
+        { "metadata_default_tenant_table_discriminator_type", "The tenant table discriminator type for the entity [{0}] is being defaulted to: {1}." },
+        { "metadata_default_tenant_table_discriminator_context_property", "The tenant table discriminator context property for the entity [{0}] is being defaulted to: {1}." },
         { "metadata_default_one_to_one_mapping", "The element [{0}] is being defaulted to a one to one mapping." },
         { "metadata_default_one_to_many_mapping", "The element [{0}] is being defaulted to a one to many mapping." },
         { "metadata_default_variable_one_to_one_mapping", "The element [{0}] is being defaulted to a variable one to one mapping." },
@@ -283,7 +287,8 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "metadata_warning_ignore_inheritance_subclass_cache_interceptor", "Ignoring the cache interceptor metadata on the inheritance subclass [{0}]. Cache interceptor metadata should only be specified on the root of the inheritance hierarchy and can not be overidden in an inheritance subclass." },
         { "metadata_warning_ignore_inheritance_subclass_default_redirectors", "Ignoring the default redirector metadata on the inheritance subclass [{0}]. Default redirector metadata should only be specified on the root of the inheritance hierarchy and can not be overidden in an inheritance subclass." },
         { "metadata_warning_ignore_inheritance_subclass_read_only", "Ignoring the read only setting on the inheritance subclass [{0}]. A read only setting should only be specified on the root of the inheritance hierarchy and can not be overridden in an inheritance subclass." },
-        { "metadata_warning_ignore_inheritance_tenant_discriminator_column", "Ignoring the tenant discriminator column setting on the inheritance subclass [{0}]. Tenant discriminator column(s) should only be specified on the root of the inheritance hierarchy and can not be overridden and/or specified in an inheritance subclass." }, 
+        { "metadata_warning_ignore_inheritance_tenant_discriminator_column", "Ignoring the tenant discriminator column setting on the inheritance subclass [{0}]. Tenant discriminator column(s) should only be specified on the root of the inheritance hierarchy and can not be overridden and/or specified in an inheritance subclass." },
+        { "metadata_warning_ignore_inheritance_tenant_table_discriminator", "Ignoring the tenant table discriminator setting on the inheritance subclass [{0}]. The tenant table discriminator should only be specified on the root of the inheritance hierarchy and can not be overridden and/or specified in an inheritance subclass." },
        
         { "metadata_warning_ignore_mapped_superclass_association_override", "Ignoring the association override named [{0}] defined on the mapped superclass [{1}] for the entity [{2}] since an association override with the same name was previously discovered for that entity (either on the entity itself or another mapped-superclass)." },
         { "metadata_warning_ignore_mapped_superclass_attribute_override", "Ignoring the attribute override named [{0}] defined on the mapped superclass [{1}] for the entity [{2}] since an attribute override override with the same name was previously discovered for that entity (either on the entity itself or another mapped-superclass)." },

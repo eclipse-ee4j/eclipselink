@@ -10,6 +10,8 @@
  * Contributors:
  *     07/16/2009 Andrei Ilitchev 
  *       - Bug 282553: JPA 2.0 JoinTable support for OneToOne and ManyToOne
+ *     14/05/2012-2.4 Guy Pelletier   
+ *       - 376603: Provide for table per tenant support for multitenant applications
  ******************************************************************************/  
 package org.eclipse.persistence.mappings;
 
@@ -20,6 +22,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.TablePerMultitenantPolicy;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
@@ -672,6 +676,13 @@ public class RelationTableMechanism  implements Cloneable {
     protected void initializeRelationTable(AbstractSession session, ForeignReferenceMapping mapping) throws DescriptorException {
         Platform platform = session.getDatasourcePlatform();
 
+        // We need to look up the relation table name from the reference
+        // descriptor if we are the non owning side of a bidirectional mapping
+        // to a table per tenant descriptor.
+        if (mapping.isReadOnly() && mapping.getReferenceDescriptor().hasTablePerMultitenantPolicy()) {
+            setRelationTable(((TablePerMultitenantPolicy) mapping.getReferenceDescriptor().getMultitenantPolicy()).getTable(getRelationTable()));
+        }
+        
         if (!hasRelationTable()) {
             throw DescriptorException.noRelationTable(mapping);
         }
@@ -715,6 +726,13 @@ public class RelationTableMechanism  implements Cloneable {
 
         for (Enumeration entry = getSourceRelationKeyFields().elements(); entry.hasMoreElements();) {
             DatabaseField field = (DatabaseField)entry.nextElement();
+            
+            // Update the fields table first if the mapping is from a table per tenant entity.
+            ClassDescriptor sourceDescriptor = mapping.getDescriptor();
+            if (sourceDescriptor.hasTablePerMultitenantPolicy()) {
+                field.setTable(((TablePerMultitenantPolicy) sourceDescriptor.getMultitenantPolicy()).getTable(field.getTable()));
+            }
+            
             if (field.hasTableName() && (!(field.getTableName().equals(getRelationTable().getName())))) {
                 throw DescriptorException.relationKeyFieldNotProperlySpecified(field, mapping);
             }
@@ -753,9 +771,15 @@ public class RelationTableMechanism  implements Cloneable {
             throw DescriptorException.noTargetRelationKeysSpecified(mapping);
         }
 
-        for (Enumeration targetEnum = getTargetRelationKeyFields().elements();
-                 targetEnum.hasMoreElements();) {
+        for (Enumeration targetEnum = getTargetRelationKeyFields().elements(); targetEnum.hasMoreElements();) {
             DatabaseField field = (DatabaseField)targetEnum.nextElement();
+            
+            // Update the fields table first if the mapping is from a table per tenant entity.
+            ClassDescriptor referenceDescriptor = mapping.getReferenceDescriptor();
+            if (referenceDescriptor.hasTablePerMultitenantPolicy()) {
+                field.setTable(((TablePerMultitenantPolicy) referenceDescriptor.getMultitenantPolicy()).getTable(field.getTable()));
+            }
+            
             if (field.hasTableName() && (!(field.getTableName().equals(getRelationTable().getName())))) {
                 throw DescriptorException.relationKeyFieldNotProperlySpecified(field, mapping);
             }

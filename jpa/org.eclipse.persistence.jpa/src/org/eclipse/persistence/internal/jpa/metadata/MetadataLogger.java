@@ -47,6 +47,8 @@
  *       - 343632: Can't map a compound constraint because of exception: 
  *                 The reference column name [y] mapped on the element [field x] 
  *                 does not correspond to a valid field on the mapping reference
+ *     14/05/2012-2.4 Guy Pelletier   
+ *       - 376603: Provide for table per tenant support for multitenant applications
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -108,6 +110,7 @@ public class MetadataLogger {
     public static final String IGNORE_INHERITANCE_SUBCLASS_DEFAULT_REDIRECTORS = "metadata_warning_ignore_inheritance_subclass_default_redirectors";
     public static final String IGNORE_INHERITANCE_SUBCLASS_READ_ONLY = "metadata_warning_ignore_inheritance_subclass_read_only";
     public static final String IGNORE_INHERITANCE_TENANT_DISCRIMINATOR_COLUMN = "metadata_warning_ignore_inheritance_tenant_discriminator_column";
+    public static final String IGNORE_INHERITANCE_TENANT_TABLE_DISCRIMINATOR = "metadata_warning_ignore_inheritance_tenant_table_discriminator";
     
     public static final String IGNORE_MAPPED_SUPERCLASS_COPY_POLICY = "metadata_warning_ignore_mapped_superclass_copy_policy";
     public static final String IGNORE_MAPPED_SUPERCLASS_ADDITIONAL_CRITERIA = "metadata_warning_ignore_mapped_superclass_additional_criteria";
@@ -186,6 +189,8 @@ public class MetadataLogger {
     public static final String SECONDARY_TABLE_FK_COLUMN = "metadata_default_secondary_table_fk_column";
     public static final String TENANT_DISCRIMINATOR_COLUMN = "metadata_default_tenant_discriminator_column";
     public static final String TENANT_DISCRIMINATOR_CONTEXT_PROPERTY = "metadata_default_tenant_discriminator_context_property";
+    public static final String TENANT_TABLE_DISCRIMINATOR_TYPE = "metadata_default_tenant_table_discriminator_type";
+    public static final String TENANT_TABLE_DISCRIMINATOR_CONTEXT_PROPERTY = "metadata_default_tenant_table_discriminator_context_property";
     
     public static final String ONE_TO_ONE_MAPPING = "metadata_default_one_to_one_mapping";
     public static final String ONE_TO_MANY_MAPPING = "metadata_default_one_to_many_mapping";
@@ -254,6 +259,7 @@ public class MetadataLogger {
         addContextString(IGNORE_INHERITANCE_SUBCLASS_DEFAULT_REDIRECTORS);
         addContextString(IGNORE_INHERITANCE_SUBCLASS_READ_ONLY);
         addContextString(IGNORE_INHERITANCE_TENANT_DISCRIMINATOR_COLUMN);
+        addContextString(IGNORE_INHERITANCE_TENANT_TABLE_DISCRIMINATOR);
        
         addContextString(IGNORE_MAPPED_SUPERCLASS_COPY_POLICY);
         addContextString(IGNORE_MAPPED_SUPERCLASS_ADDITIONAL_CRITERIA);
@@ -331,6 +337,8 @@ public class MetadataLogger {
         addContextString(SECONDARY_TABLE_FK_COLUMN);
         addContextString(TENANT_DISCRIMINATOR_COLUMN);
         addContextString(TENANT_DISCRIMINATOR_CONTEXT_PROPERTY);
+        addContextString(TENANT_TABLE_DISCRIMINATOR_TYPE);
+        addContextString(TENANT_TABLE_DISCRIMINATOR_CONTEXT_PROPERTY);
         
         addContextString(ONE_TO_ONE_MAPPING);
         addContextString(ONE_TO_MANY_MAPPING);

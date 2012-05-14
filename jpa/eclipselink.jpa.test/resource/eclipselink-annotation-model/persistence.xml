@@ -317,6 +317,33 @@
             <property name="eclipselink.ddl-generation.output-mode" value="both"/>
         </properties>
     </persistence-unit>
+
+    <persistence-unit name="multi-tenant-table-per-tenant">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Candidate</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Supporter</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Riding</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Party</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Mason</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Trowel</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+    </persistence-unit>
+    
+    <persistence-unit name="multi-tenant-table-per-tenant-C">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Candidate</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Supporter</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Riding</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Party</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Mason</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Trowel</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.tenant-id" value="C"/>
+            <property name="eclipselink.multitenant.tenants-share-emf" value="false"/>
+            <property name="eclipselink.session-name" value="multi-tenant-C"/>
+        </properties>
+    </persistence-unit>
     
     <persistence-unit name="additional-criteria">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>

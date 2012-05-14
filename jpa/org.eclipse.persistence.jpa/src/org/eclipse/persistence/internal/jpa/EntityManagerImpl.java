@@ -23,6 +23,8 @@
  *       - 277039: JPA 2.0 Cache Usage Settings
  *     02/08/2012-2.4 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     14/05/2012-2.4 Guy Pelletier  
+ *       - 376603: Provide for table per tenant support for multitenant applications
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa;
 
@@ -660,6 +662,11 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
                 session = (AbstractSession) getActiveSession();
             } else {
                 session = (AbstractSession) getReadOnlySession();
+            }
+
+            // Be sure to use the descriptor from the active session.
+            if (descriptor.hasTablePerMultitenantPolicy()) {
+                descriptor = session.getDescriptor(entityClass);
             }
             return (T) findInternal(descriptor, session, primaryKey, lockMode, properties);
         } catch (LockTimeoutException e) {
@@ -1779,6 +1786,11 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         }
         
         properties.put(propertyName, value);
+        
+        // If there is an extended persistence context update table per tenant descriptors.
+        if (hasActivePersistenceContext()) {
+            extendedPersistenceContext.updateTablePerTenantDescriptors(propertyName, value);
+        } 
         
         // Re-process the property.
         PropertyProcessor processor = processors.get(propertyName);

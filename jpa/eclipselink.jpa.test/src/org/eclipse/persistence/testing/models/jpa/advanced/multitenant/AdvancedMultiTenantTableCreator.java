@@ -14,6 +14,8 @@
  *       - 337323: Multi-tenant with shared schema support (part 9)
  *     11/10/2011-2.4 Guy Pelletier 
  *       - 357474: Address primaryKey option from tenant discriminator column
+ *     14/05/2012-2.4 Guy Pelletier  
+ *       - 376603: Provide for table per tenant support for multitenant applications
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.advanced.multitenant;
 
@@ -37,6 +39,34 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildContract_SoldierTable());
         addTableDefinition(buildRewardTable());
         addTableDefinition(buildPhoneNumberTable());
+        
+        // Table per tenant tables.
+        addTableDefinition(buildRidingTable());
+        addTableDefinition(buildPartyTable());
+        addTableDefinition(buildCandidateTenantATable());
+        addTableDefinition(buildCandidateTenantBTable());
+        addTableDefinition(buildCandidateTenantCTable());
+        addTableDefinition(buildSalaryTenantATable());
+        addTableDefinition(buildSalaryTenantBTable());
+        addTableDefinition(buildSalaryTenantCTable());
+        addTableDefinition(buildCandidateSupporterTenantATable());
+        addTableDefinition(buildCandidateSupporterTenantBTable());
+        addTableDefinition(buildCandidateSupporterTenantCTable());
+        addTableDefinition(buildCandidateHonorsTenantATable());
+        addTableDefinition(buildCandidateHonorsTenantBTable());
+        addTableDefinition(buildCandidateHonorsTenantCTable());
+        addTableDefinition(buildSupporterTenantATable());
+        addTableDefinition(buildSupporterTenantBTable());
+        addTableDefinition(buildSupporterTenantCTable());
+        addTableDefinition(buildMasonTenantATable());
+        addTableDefinition(buildMasonTenantBTable());
+        addTableDefinition(buildMasonTenantCTable());
+        addTableDefinition(buildMasonAwardsTenantATable());
+        addTableDefinition(buildMasonAwardsTenantBTable());
+        addTableDefinition(buildMasonAwardsTenantCTable());
+        addTableDefinition(buildTrowelTenantATable());
+        addTableDefinition(buildTrowelTenantBTable());
+        addTableDefinition(buildTrowelTenantCTable());
     }
     
     public TableDefinition buildAddressTable() {
@@ -353,6 +383,315 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         return table;
     }
 
+    public TableDefinition buildMasonTenantATable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_MASON_A");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setShouldAllowNull(false);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setUnique(false);
+        fieldID.setIsIdentity(true);
+        table.addField(fieldID);
+    
+        FieldDefinition fieldName = new FieldDefinition();
+        fieldName.setName("NAME");
+        fieldName.setTypeName("VARCHAR");
+        fieldName.setSize(30);
+        fieldName.setShouldAllowNull(true);
+        fieldName.setIsPrimaryKey(false);
+        fieldName.setUnique(false);
+        fieldName.setIsIdentity(false);
+        table.addField(fieldName);
+        
+        FieldDefinition fieldTrowelId = new FieldDefinition();
+        fieldTrowelId.setName("TROWEL_ID");
+        fieldTrowelId.setTypeName("NUMERIC");
+        fieldTrowelId.setSize(15);
+        fieldTrowelId.setIsPrimaryKey(false);
+        fieldTrowelId.setIsIdentity(false);
+        fieldTrowelId.setUnique(false);
+        fieldTrowelId.setShouldAllowNull(true);
+        fieldTrowelId.setForeignKeyFieldName("JPA_TROWEL_A.ID");
+        table.addField(fieldTrowelId);
+        
+        return table;
+    }
+    
+    public TableDefinition buildMasonTenantBTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_MASON_B");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setShouldAllowNull(false);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setUnique(false);
+        fieldID.setIsIdentity(true);
+        table.addField(fieldID);
+    
+        FieldDefinition fieldName = new FieldDefinition();
+        fieldName.setName("NAME");
+        fieldName.setTypeName("VARCHAR");
+        fieldName.setSize(30);
+        fieldName.setShouldAllowNull(true);
+        fieldName.setIsPrimaryKey(false);
+        fieldName.setUnique(false);
+        fieldName.setIsIdentity(false);
+        table.addField(fieldName);
+        
+        FieldDefinition fieldTrowelId = new FieldDefinition();
+        fieldTrowelId.setName("TROWEL_ID");
+        fieldTrowelId.setTypeName("NUMERIC");
+        fieldTrowelId.setSize(15);
+        fieldTrowelId.setIsPrimaryKey(false);
+        fieldTrowelId.setIsIdentity(false);
+        fieldTrowelId.setUnique(false);
+        fieldTrowelId.setShouldAllowNull(true);
+        fieldTrowelId.setForeignKeyFieldName("JPA_TROWEL_B.ID");
+        table.addField(fieldTrowelId);
+        
+        return table;
+    }
+    
+    public TableDefinition buildMasonTenantCTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_MASON_C");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setShouldAllowNull(false);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setUnique(false);
+        fieldID.setIsIdentity(true);
+        table.addField(fieldID);
+    
+        FieldDefinition fieldName = new FieldDefinition();
+        fieldName.setName("NAME");
+        fieldName.setTypeName("VARCHAR");
+        fieldName.setSize(30);
+        fieldName.setShouldAllowNull(true);
+        fieldName.setIsPrimaryKey(false);
+        fieldName.setUnique(false);
+        fieldName.setIsIdentity(false);
+        table.addField(fieldName);
+        
+        FieldDefinition fieldTrowelId = new FieldDefinition();
+        fieldTrowelId.setName("TROWEL_ID");
+        fieldTrowelId.setTypeName("NUMERIC");
+        fieldTrowelId.setSize(15);
+        fieldTrowelId.setIsPrimaryKey(false);
+        fieldTrowelId.setIsIdentity(false);
+        fieldTrowelId.setUnique(false);
+        fieldTrowelId.setShouldAllowNull(true);
+        fieldTrowelId.setForeignKeyFieldName("JPA_TROWEL_C.ID");
+        table.addField(fieldTrowelId);
+        
+        return table;
+    }
+    
+    public TableDefinition buildMasonAwardsTenantATable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_MASON_AWARDS_A");
+    
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("MASON_ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setShouldAllowNull(false);
+        fieldID.setIsPrimaryKey(false);
+        fieldID.setUnique(false);
+        fieldID.setIsIdentity(false);
+        fieldID.setForeignKeyFieldName("JPA_MASON_A.ID");
+        table.addField(fieldID);
+    
+        FieldDefinition fieldAWARDDATE = new FieldDefinition();
+        fieldAWARDDATE.setName("AWARD_DATE");
+        fieldAWARDDATE.setTypeName("DATE");
+        fieldAWARDDATE.setSize(23);
+        fieldAWARDDATE.setShouldAllowNull(true);
+        fieldAWARDDATE.setIsPrimaryKey(false);
+        fieldAWARDDATE.setUnique(false);
+        fieldAWARDDATE.setIsIdentity(false);
+        table.addField(fieldAWARDDATE);
+
+        FieldDefinition fieldAWARD = new FieldDefinition();
+        fieldAWARD.setName("AWARD");
+        fieldAWARD.setTypeName("VARCHAR");
+        fieldAWARD.setSize(50);
+        fieldAWARD.setShouldAllowNull(false);
+        fieldAWARD.setIsPrimaryKey(false);
+        fieldAWARD.setUnique(false);
+        fieldAWARD.setIsIdentity(false);
+        table.addField(fieldAWARD);
+    
+        return table;
+    }
+    
+    public TableDefinition buildMasonAwardsTenantBTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_MASON_AWARDS_B");
+    
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("MASON_ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setShouldAllowNull(false);
+        fieldID.setIsPrimaryKey(false);
+        fieldID.setUnique(false);
+        fieldID.setIsIdentity(false);
+        fieldID.setForeignKeyFieldName("JPA_MASON_B.ID");
+        table.addField(fieldID);
+    
+        FieldDefinition fieldAWARDDATE = new FieldDefinition();
+        fieldAWARDDATE.setName("AWARD_DATE");
+        fieldAWARDDATE.setTypeName("DATE");
+        fieldAWARDDATE.setSize(23);
+        fieldAWARDDATE.setShouldAllowNull(true);
+        fieldAWARDDATE.setIsPrimaryKey(false);
+        fieldAWARDDATE.setUnique(false);
+        fieldAWARDDATE.setIsIdentity(false);
+        table.addField(fieldAWARDDATE);
+
+        FieldDefinition fieldAWARD = new FieldDefinition();
+        fieldAWARD.setName("AWARD");
+        fieldAWARD.setTypeName("VARCHAR");
+        fieldAWARD.setSize(50);
+        fieldAWARD.setShouldAllowNull(false);
+        fieldAWARD.setIsPrimaryKey(false);
+        fieldAWARD.setUnique(false);
+        fieldAWARD.setIsIdentity(false);
+        table.addField(fieldAWARD);
+    
+        return table;
+    }
+    
+    public TableDefinition buildMasonAwardsTenantCTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_MASON_AWARDS_C");
+    
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("MASON_ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setShouldAllowNull(false);
+        fieldID.setIsPrimaryKey(false);
+        fieldID.setUnique(false);
+        fieldID.setIsIdentity(false);
+        fieldID.setForeignKeyFieldName("JPA_MASON_C.ID");
+        table.addField(fieldID);
+    
+        FieldDefinition fieldAWARDDATE = new FieldDefinition();
+        fieldAWARDDATE.setName("AWARD_DATE");
+        fieldAWARDDATE.setTypeName("DATE");
+        fieldAWARDDATE.setSize(23);
+        fieldAWARDDATE.setShouldAllowNull(true);
+        fieldAWARDDATE.setIsPrimaryKey(false);
+        fieldAWARDDATE.setUnique(false);
+        fieldAWARDDATE.setIsIdentity(false);
+        table.addField(fieldAWARDDATE);
+
+        FieldDefinition fieldAWARD = new FieldDefinition();
+        fieldAWARD.setName("AWARD");
+        fieldAWARD.setTypeName("VARCHAR");
+        fieldAWARD.setSize(50);
+        fieldAWARD.setShouldAllowNull(false);
+        fieldAWARD.setIsPrimaryKey(false);
+        fieldAWARD.setUnique(false);
+        fieldAWARD.setIsIdentity(false);
+        table.addField(fieldAWARD);
+    
+        return table;
+    }
+    
+    public TableDefinition buildTrowelTenantATable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_TROWEL_A");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setShouldAllowNull(false);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setUnique(false);
+        fieldID.setIsIdentity(true);
+        table.addField(fieldID);
+    
+        FieldDefinition fieldName = new FieldDefinition();
+        fieldName.setName("TROWEL_TYPE");
+        fieldName.setTypeName("VARCHAR");
+        fieldName.setSize(30);
+        fieldName.setShouldAllowNull(true);
+        fieldName.setIsPrimaryKey(false);
+        fieldName.setUnique(false);
+        fieldName.setIsIdentity(false);
+        table.addField(fieldName);
+        
+        return table;
+    }
+    
+    public TableDefinition buildTrowelTenantBTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_TROWEL_B");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setShouldAllowNull(false);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setUnique(false);
+        fieldID.setIsIdentity(true);
+        table.addField(fieldID);
+    
+        FieldDefinition fieldName = new FieldDefinition();
+        fieldName.setName("TROWEL_TYPE");
+        fieldName.setTypeName("VARCHAR");
+        fieldName.setSize(30);
+        fieldName.setShouldAllowNull(true);
+        fieldName.setIsPrimaryKey(false);
+        fieldName.setUnique(false);
+        fieldName.setIsIdentity(false);
+        table.addField(fieldName);
+        
+        return table;
+    }
+    
+    public TableDefinition buildTrowelTenantCTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_TROWEL_C");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setShouldAllowNull(false);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setUnique(false);
+        fieldID.setIsIdentity(true);
+        table.addField(fieldID);
+    
+        FieldDefinition fieldName = new FieldDefinition();
+        fieldName.setName("TROWEL_TYPE");
+        fieldName.setTypeName("VARCHAR");
+        fieldName.setSize(30);
+        fieldName.setShouldAllowNull(true);
+        fieldName.setIsPrimaryKey(false);
+        fieldName.setUnique(false);
+        fieldName.setIsIdentity(false);
+        table.addField(fieldName);
+        
+        return table;
+    }
+    
     public TableDefinition buildPhoneNumberTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_MT_PHONE_NUMBER");
@@ -458,6 +797,321 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         return table;
     }
     
+    public TableDefinition buildCandidateHonorsTenantATable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_CANDIDATE_HONORS_A");
+    
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("Candidate_ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setShouldAllowNull(false);
+        fieldID.setIsPrimaryKey(false);
+        fieldID.setUnique(false);
+        fieldID.setIsIdentity(false);
+        table.addField(fieldID);
+    
+        FieldDefinition field1 = new FieldDefinition();
+        field1.setName("HONOR");
+        field1.setTypeName("VARCHAR");
+        field1.setSize(30);
+        field1.setShouldAllowNull(false);
+        field1.setIsPrimaryKey(false);
+        field1.setUnique(false);
+        field1.setIsIdentity(false);
+        table.addField(field1);
+    
+        return table;
+    }
+    
+    public TableDefinition buildCandidateHonorsTenantBTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_CANDIDATE_HONORS_B");
+    
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("Candidate_ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setShouldAllowNull(false);
+        fieldID.setIsPrimaryKey(false);
+        fieldID.setUnique(false);
+        fieldID.setIsIdentity(false);
+        table.addField(fieldID);
+    
+        FieldDefinition field1 = new FieldDefinition();
+        field1.setName("HONOR");
+        field1.setTypeName("VARCHAR");
+        field1.setSize(30);
+        field1.setShouldAllowNull(false);
+        field1.setIsPrimaryKey(false);
+        field1.setUnique(false);
+        field1.setIsIdentity(false);
+        table.addField(field1);
+    
+        return table;
+    }
+    
+    public TableDefinition buildCandidateHonorsTenantCTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_CANDIDATE_HONORS_C");
+    
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("Candidate_ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setShouldAllowNull(false);
+        fieldID.setIsPrimaryKey(false);
+        fieldID.setUnique(false);
+        fieldID.setIsIdentity(false);
+        table.addField(fieldID);
+    
+        FieldDefinition field1 = new FieldDefinition();
+        field1.setName("HONOR");
+        field1.setTypeName("VARCHAR");
+        field1.setSize(30);
+        field1.setShouldAllowNull(false);
+        field1.setIsPrimaryKey(false);
+        field1.setUnique(false);
+        field1.setIsIdentity(false);
+        table.addField(field1);
+    
+        return table;
+    }
+    
+    public TableDefinition buildCandidateSupporterTenantATable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_CAN_SUP_A");
+        
+        FieldDefinition fieldCandidateId = new FieldDefinition();
+        fieldCandidateId.setName("CANDIDATE_ID");
+        fieldCandidateId.setTypeName("NUMERIC");
+        fieldCandidateId.setSize(15);
+        fieldCandidateId.setIsPrimaryKey(true);
+        fieldCandidateId.setIsIdentity(false);
+        fieldCandidateId.setUnique(false);
+        fieldCandidateId.setShouldAllowNull(false);
+        fieldCandidateId.setForeignKeyFieldName("JPA_CANDIDATE_A.ID");
+        table.addField(fieldCandidateId);
+        
+        FieldDefinition fieldSupporterId = new FieldDefinition();
+        fieldSupporterId.setName("SUPPORTER_ID");
+        fieldSupporterId.setTypeName("NUMERIC");
+        fieldSupporterId.setSize(15);
+        fieldSupporterId.setIsPrimaryKey(true);
+        fieldSupporterId.setIsIdentity(false);
+        fieldSupporterId.setUnique(false);
+        fieldSupporterId.setShouldAllowNull(false);
+        fieldSupporterId.setForeignKeyFieldName("A_JPA_SUPPORTER.ID");
+        table.addField(fieldSupporterId);
+        
+        return table;
+    }
+    
+    public TableDefinition buildCandidateSupporterTenantBTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_CAN_SUP_B");
+        
+        FieldDefinition fieldCandidateId = new FieldDefinition();
+        fieldCandidateId.setName("CANDIDATE_ID");
+        fieldCandidateId.setTypeName("NUMERIC");
+        fieldCandidateId.setSize(15);
+        fieldCandidateId.setIsPrimaryKey(true);
+        fieldCandidateId.setIsIdentity(false);
+        fieldCandidateId.setUnique(false);
+        fieldCandidateId.setShouldAllowNull(false);
+        fieldCandidateId.setForeignKeyFieldName("JPA_CANDIDATE_B.ID");
+        table.addField(fieldCandidateId);
+        
+        FieldDefinition fieldSupporterId = new FieldDefinition();
+        fieldSupporterId.setName("SUPPORTER_ID");
+        fieldSupporterId.setTypeName("NUMERIC");
+        fieldSupporterId.setSize(15);
+        fieldSupporterId.setIsPrimaryKey(true);
+        fieldSupporterId.setIsIdentity(false);
+        fieldSupporterId.setUnique(false);
+        fieldSupporterId.setShouldAllowNull(false);
+        fieldSupporterId.setForeignKeyFieldName("B_JPA_SUPPORTER.ID");
+        table.addField(fieldSupporterId);
+        
+        return table;
+    }
+    
+    public TableDefinition buildCandidateSupporterTenantCTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_CAN_SUP_C");
+        
+        FieldDefinition fieldCandidateId = new FieldDefinition();
+        fieldCandidateId.setName("CANDIDATE_ID");
+        fieldCandidateId.setTypeName("NUMERIC");
+        fieldCandidateId.setSize(15);
+        fieldCandidateId.setIsPrimaryKey(true);
+        fieldCandidateId.setIsIdentity(false);
+        fieldCandidateId.setUnique(false);
+        fieldCandidateId.setShouldAllowNull(false);
+        fieldCandidateId.setForeignKeyFieldName("JPA_CANDIDATE_C.ID");
+        table.addField(fieldCandidateId);
+        
+        FieldDefinition fieldSupporterId = new FieldDefinition();
+        fieldSupporterId.setName("SUPPORTER_ID");
+        fieldSupporterId.setTypeName("NUMERIC");
+        fieldSupporterId.setSize(15);
+        fieldSupporterId.setIsPrimaryKey(true);
+        fieldSupporterId.setIsIdentity(false);
+        fieldSupporterId.setUnique(false);
+        fieldSupporterId.setShouldAllowNull(false);
+        fieldSupporterId.setForeignKeyFieldName("C_JPA_SUPPORTER.ID");
+        table.addField(fieldSupporterId);
+        
+        return table;
+    }
+    
+    public TableDefinition buildCandidateTenantATable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_CANDIDATE_A");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setShouldAllowNull(false);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setUnique(false);
+        fieldID.setIsIdentity(true);
+        table.addField(fieldID);
+    
+        FieldDefinition fieldName = new FieldDefinition();
+        fieldName.setName("NAME");
+        fieldName.setTypeName("VARCHAR");
+        fieldName.setSize(30);
+        fieldName.setShouldAllowNull(true);
+        fieldName.setIsPrimaryKey(false);
+        fieldName.setUnique(false);
+        fieldName.setIsIdentity(false);
+        table.addField(fieldName);
+        
+        FieldDefinition fieldRidingId = new FieldDefinition();
+        fieldRidingId.setName("RIDING_ID");
+        fieldRidingId.setTypeName("NUMERIC");
+        fieldRidingId.setSize(15);
+        fieldRidingId.setIsPrimaryKey(false);
+        fieldRidingId.setIsIdentity(false);
+        fieldRidingId.setUnique(false);
+        fieldRidingId.setShouldAllowNull(true);
+        fieldRidingId.setForeignKeyFieldName("JPA_RIDING.ID");
+        table.addField(fieldRidingId);
+        
+        FieldDefinition fieldPartyId = new FieldDefinition();
+        fieldPartyId.setName("PARTY_ID");
+        fieldPartyId.setTypeName("NUMERIC");
+        fieldPartyId.setSize(15);
+        fieldPartyId.setIsPrimaryKey(false);
+        fieldPartyId.setIsIdentity(false);
+        fieldPartyId.setUnique(false);
+        fieldPartyId.setShouldAllowNull(true);
+        fieldPartyId.setForeignKeyFieldName("JPA_PARTY.ID");
+        table.addField(fieldPartyId);
+        
+        return table;
+    }
+    
+    public TableDefinition buildCandidateTenantBTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_CANDIDATE_B");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setShouldAllowNull(false);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setUnique(false);
+        fieldID.setIsIdentity(true);
+        table.addField(fieldID);
+    
+        FieldDefinition fieldName = new FieldDefinition();
+        fieldName.setName("NAME");
+        fieldName.setTypeName("VARCHAR");
+        fieldName.setSize(30);
+        fieldName.setShouldAllowNull(true);
+        fieldName.setIsPrimaryKey(false);
+        fieldName.setUnique(false);
+        fieldName.setIsIdentity(false);
+        table.addField(fieldName);
+        
+        FieldDefinition fieldRidingId = new FieldDefinition();
+        fieldRidingId.setName("RIDING_ID");
+        fieldRidingId.setTypeName("NUMERIC");
+        fieldRidingId.setSize(15);
+        fieldRidingId.setIsPrimaryKey(false);
+        fieldRidingId.setIsIdentity(false);
+        fieldRidingId.setUnique(false);
+        fieldRidingId.setShouldAllowNull(true);
+        fieldRidingId.setForeignKeyFieldName("JPA_RIDING.ID");
+        table.addField(fieldRidingId);
+        
+        FieldDefinition fieldPartyId = new FieldDefinition();
+        fieldPartyId.setName("PARTY_ID");
+        fieldPartyId.setTypeName("NUMERIC");
+        fieldPartyId.setSize(15);
+        fieldPartyId.setIsPrimaryKey(false);
+        fieldPartyId.setIsIdentity(false);
+        fieldPartyId.setUnique(false);
+        fieldPartyId.setShouldAllowNull(true);
+        fieldPartyId.setForeignKeyFieldName("JPA_PARTY.ID");
+        table.addField(fieldPartyId);
+        
+        return table;
+    }
+    
+    public TableDefinition buildCandidateTenantCTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_CANDIDATE_C");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setShouldAllowNull(false);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setUnique(false);
+        fieldID.setIsIdentity(true);
+        table.addField(fieldID);
+    
+        FieldDefinition fieldName = new FieldDefinition();
+        fieldName.setName("NAME");
+        fieldName.setTypeName("VARCHAR");
+        fieldName.setSize(30);
+        fieldName.setShouldAllowNull(true);
+        fieldName.setIsPrimaryKey(false);
+        fieldName.setUnique(false);
+        fieldName.setIsIdentity(false);
+        table.addField(fieldName);
+        
+        FieldDefinition fieldRidingId = new FieldDefinition();
+        fieldRidingId.setName("RIDING_ID");
+        fieldRidingId.setTypeName("NUMERIC");
+        fieldRidingId.setSize(15);
+        fieldRidingId.setIsPrimaryKey(false);
+        fieldRidingId.setIsIdentity(false);
+        fieldRidingId.setUnique(false);
+        fieldRidingId.setShouldAllowNull(true);
+        fieldRidingId.setForeignKeyFieldName("JPA_RIDING.ID");
+        table.addField(fieldRidingId);
+        
+        FieldDefinition fieldPartyId = new FieldDefinition();
+        fieldPartyId.setName("PARTY_ID");
+        fieldPartyId.setTypeName("NUMERIC");
+        fieldPartyId.setSize(15);
+        fieldPartyId.setIsPrimaryKey(false);
+        fieldPartyId.setIsIdentity(false);
+        fieldPartyId.setUnique(false);
+        fieldPartyId.setShouldAllowNull(true);
+        fieldPartyId.setForeignKeyFieldName("JPA_PARTY.ID");
+        table.addField(fieldPartyId);
+        
+        return table;
+    }
+    
     public TableDefinition buildCapoTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_CAPO");
@@ -484,6 +1138,96 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldUnderboss.setForeignKeyFieldName("JPA_MAFIOSO.ID");
         table.addField(fieldUnderboss);
         
+        return table;
+    }
+    
+    public TableDefinition buildSalaryTenantATable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_CANDY_SALARY_A");
+
+        FieldDefinition fieldCandidateId = new FieldDefinition();
+        fieldCandidateId.setName("ID");
+        fieldCandidateId.setTypeName("NUMERIC");
+        fieldCandidateId.setSize(15);
+        fieldCandidateId.setSubSize(0);
+        fieldCandidateId.setIsPrimaryKey(true);
+        fieldCandidateId.setIsIdentity(false);
+        fieldCandidateId.setUnique(false);
+        fieldCandidateId.setShouldAllowNull(false);
+        fieldCandidateId.setForeignKeyFieldName("JPA_CANDIDATE_A.ID");
+        table.addField(fieldCandidateId);
+
+        FieldDefinition fieldSalary = new FieldDefinition();
+        fieldSalary.setName("SALARY");
+        fieldSalary.setTypeName("NUMBER");
+        fieldSalary.setSize(15);
+        fieldSalary.setSubSize(0);
+        fieldSalary.setIsPrimaryKey(false);
+        fieldSalary.setIsIdentity(false);
+        fieldSalary.setUnique(false);
+        fieldSalary.setShouldAllowNull(true);
+        table.addField(fieldSalary);
+
+        return table;
+    }
+    
+    public TableDefinition buildSalaryTenantBTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_CANDY_SALARY_B");
+
+        FieldDefinition fieldCandidateId = new FieldDefinition();
+        fieldCandidateId.setName("ID");
+        fieldCandidateId.setTypeName("NUMERIC");
+        fieldCandidateId.setSize(15);
+        fieldCandidateId.setSubSize(0);
+        fieldCandidateId.setIsPrimaryKey(true);
+        fieldCandidateId.setIsIdentity(false);
+        fieldCandidateId.setUnique(false);
+        fieldCandidateId.setShouldAllowNull(false);
+        fieldCandidateId.setForeignKeyFieldName("JPA_CANDIDATE_B.ID");
+        table.addField(fieldCandidateId);
+
+        FieldDefinition fieldSalary = new FieldDefinition();
+        fieldSalary.setName("SALARY");
+        fieldSalary.setTypeName("NUMBER");
+        fieldSalary.setSize(15);
+        fieldSalary.setSubSize(0);
+        fieldSalary.setIsPrimaryKey(false);
+        fieldSalary.setIsIdentity(false);
+        fieldSalary.setUnique(false);
+        fieldSalary.setShouldAllowNull(true);
+        table.addField(fieldSalary);
+
+        return table;
+    }
+    
+    public TableDefinition buildSalaryTenantCTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_CANDY_SALARY_C");
+
+        FieldDefinition fieldCandidateId = new FieldDefinition();
+        fieldCandidateId.setName("ID");
+        fieldCandidateId.setTypeName("NUMERIC");
+        fieldCandidateId.setSize(15);
+        fieldCandidateId.setSubSize(0);
+        fieldCandidateId.setIsPrimaryKey(true);
+        fieldCandidateId.setIsIdentity(false);
+        fieldCandidateId.setUnique(false);
+        fieldCandidateId.setShouldAllowNull(false);
+        fieldCandidateId.setForeignKeyFieldName("JPA_CANDIDATE_C.ID");
+        table.addField(fieldCandidateId);
+
+        FieldDefinition fieldSalary = new FieldDefinition();
+        fieldSalary.setName("SALARY");
+        fieldSalary.setTypeName("NUMBER");
+        fieldSalary.setSize(15);
+        fieldSalary.setSubSize(0);
+        fieldSalary.setIsPrimaryKey(false);
+        fieldSalary.setIsIdentity(false);
+        fieldSalary.setUnique(false);
+        fieldSalary.setShouldAllowNull(true);
+        table.addField(fieldSalary);
+
         return table;
     }
     
@@ -515,7 +1259,88 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         
         return table;
     }
-         
+    
+    public TableDefinition buildSupporterTenantATable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("A_JPA_SUPPORTER");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setUnique(false);
+        fieldID.setIsIdentity(true);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+    
+        FieldDefinition fieldName = new FieldDefinition();
+        fieldName.setName("NAME");
+        fieldName.setTypeName("VARCHAR");
+        fieldName.setSize(30);
+        fieldName.setIsPrimaryKey(false);
+        fieldName.setUnique(false);
+        fieldName.setIsIdentity(false);
+        fieldName.setShouldAllowNull(false);
+        table.addField(fieldName);
+        
+        return table;
+    }
+     
+    public TableDefinition buildSupporterTenantBTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("B_JPA_SUPPORTER");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setUnique(false);
+        fieldID.setIsIdentity(true);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+    
+        FieldDefinition fieldName = new FieldDefinition();
+        fieldName.setName("NAME");
+        fieldName.setTypeName("VARCHAR");
+        fieldName.setSize(30);
+        fieldName.setIsPrimaryKey(false);
+        fieldName.setUnique(false);
+        fieldName.setIsIdentity(false);
+        fieldName.setShouldAllowNull(false);
+        table.addField(fieldName);
+        
+        return table;
+    }
+    
+    public TableDefinition buildSupporterTenantCTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("C_JPA_SUPPORTER");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setUnique(false);
+        fieldID.setIsIdentity(true);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+    
+        FieldDefinition fieldName = new FieldDefinition();
+        fieldName.setName("NAME");
+        fieldName.setTypeName("VARCHAR");
+        fieldName.setSize(30);
+        fieldName.setIsPrimaryKey(false);
+        fieldName.setUnique(false);
+        fieldName.setIsIdentity(false);
+        fieldName.setShouldAllowNull(false);
+        table.addField(fieldName);
+        
+        return table;
+    }
+    
     public TableDefinition buildContractTable() {
         TableDefinition table = new TableDefinition();
         table.setName("JPA_CONTRACT");
@@ -640,6 +1465,60 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldMafiosoId.setIsIdentity(false);
         fieldMafiosoId.setForeignKeyFieldName("JPA_MAFIOSO.ID");
         table.addField(fieldMafiosoId);
+        
+        return table;
+    }
+    
+    public TableDefinition buildRidingTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_RIDING");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setShouldAllowNull(false);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setUnique(false);
+        fieldID.setIsIdentity(true);
+        table.addField(fieldID);
+    
+        FieldDefinition fieldName = new FieldDefinition();
+        fieldName.setName("NAME");
+        fieldName.setTypeName("VARCHAR");
+        fieldName.setSize(30);
+        fieldName.setShouldAllowNull(true);
+        fieldName.setIsPrimaryKey(false);
+        fieldName.setUnique(false);
+        fieldName.setIsIdentity(false);
+        table.addField(fieldName);
+        
+        return table;
+    }
+    
+    public TableDefinition buildPartyTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_PARTY");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setShouldAllowNull(false);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setUnique(false);
+        fieldID.setIsIdentity(true);
+        table.addField(fieldID);
+    
+        FieldDefinition fieldName = new FieldDefinition();
+        fieldName.setName("NAME");
+        fieldName.setTypeName("VARCHAR");
+        fieldName.setSize(30);
+        fieldName.setShouldAllowNull(true);
+        fieldName.setIsPrimaryKey(false);
+        fieldName.setUnique(false);
+        fieldName.setIsIdentity(false);
+        table.addField(fieldName);
         
         return table;
     }

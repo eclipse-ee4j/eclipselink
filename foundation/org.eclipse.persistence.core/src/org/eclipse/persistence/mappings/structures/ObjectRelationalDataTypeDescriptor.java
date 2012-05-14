@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     14/05/2012-2.4 Guy Pelletier   
+ *       - 376603: Provide for table per tenant support for multitenant applications
  ******************************************************************************/  
 package org.eclipse.persistence.mappings.structures;
 
@@ -448,7 +450,7 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
      * Aggregates obj-rel are initialized normally as no cloning is required.
      */
     @Override
-    public boolean requiresInitialization() {
+    public boolean requiresInitialization(AbstractSession session) {
         return true;
     }
 

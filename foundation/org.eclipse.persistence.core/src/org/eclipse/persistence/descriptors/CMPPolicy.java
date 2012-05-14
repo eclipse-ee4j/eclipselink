@@ -13,6 +13,8 @@
  *       - 330755: Nested embeddables can't be used as embedded ids
  *     11/10/2011-2.4 Guy Pelletier 
  *       - 357474: Address primaryKey option from tenant discriminator column
+ *     14/05/2012-2.4 Guy Pelletier  
+ *       - 376603: Provide for table per tenant support for multitenant applications
  ******************************************************************************/  
 package org.eclipse.persistence.descriptors;
 
@@ -44,7 +46,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  *
  * @since TopLink 10.1.3
  */
-public class CMPPolicy implements java.io.Serializable {
+public class CMPPolicy implements java.io.Serializable, Cloneable {
     
     protected Boolean forceUpdate;
     protected Boolean updateAllFields;
@@ -322,6 +324,19 @@ public class CMPPolicy implements java.io.Serializable {
     public boolean isCMP3Policy() {
         return false;
     }
+    
+    /**
+     * INTERNAL:
+     * Clone the CMPPolicy
+     */
+    public CMPPolicy clone() {
+       try {
+            return (CMPPolicy) super.clone();
+        } catch (CloneNotSupportedException exception) {
+            throw new InternalError(exception.getMessage());
+        }
+    }
+    
     /**
      * INTERNAL:
      * Convert all the class-name-based settings in this object to actual class-based

@@ -67,6 +67,8 @@
  *       - 355093: Add new 'includeCriteria' flag to Multitenant metadata
  *     02/08/2012-2.4 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     14/05/2012-2.4 Guy Pelletier  
+ *       - 376603: Provide for table per tenant support for multitenant applications
  *******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
@@ -139,6 +141,7 @@ import org.eclipse.persistence.internal.jpa.metadata.mappings.MapKeyMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.mappings.OrderByMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.mappings.ReturnInsertMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.multitenant.MultitenantMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.multitenant.TenantTableDiscriminatorMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.nosql.NoSqlMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.partitioning.HashPartitioningMetadata;
@@ -256,7 +259,8 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         
         addDescriptor(buildAdditionalCriteriaDescriptor());
         addDescriptor(buildMultitenantDescriptor());
-        addDescriptor(buildTenantDiscriminatorDescriptor());
+        addDescriptor(buildTenantDiscriminatorColumnDescriptor());
+        addDescriptor(buildTenantTableDiscriminatorDescriptor());
         addDescriptor(buildNamedQueryDescriptor());
         addDescriptor(buildNamedNativeQueryDescriptor());        
         addDescriptor(buildSqlResultSetMappingDescriptor());
@@ -2200,6 +2204,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         
         // Element mappings - must remain in order of definition in XML.
         descriptor.addMapping(getTenantDiscriminatorColumnsMapping());
+        descriptor.addMapping(getTenantTableDiscriminatorMapping());
         
         // Attribute mappings.
         descriptor.addMapping(getTypeAttributeMapping());
@@ -3194,9 +3199,9 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     
     /**
      * INTERNAL:
-     * XSD: tenant-discriminator
+     * XSD: tenant-discriminator-column
      */
-    protected ClassDescriptor buildTenantDiscriminatorDescriptor() {
+    protected ClassDescriptor buildTenantDiscriminatorColumnDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(TenantDiscriminatorColumnMetadata.class);
         
@@ -3208,6 +3213,21 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.addMapping(getTableAttributeMapping());
         descriptor.addMapping(getLengthAttributeMapping());
         descriptor.addMapping(getPrimaryKeyAttributeMapping());
+
+        return descriptor;
+    }
+    
+    /**
+     * INTERNAL:
+     * XSD: tenant-table-discriminator
+     */
+    protected ClassDescriptor buildTenantTableDiscriminatorDescriptor() {
+        XMLDescriptor descriptor = new XMLDescriptor();
+        descriptor.setJavaClass(TenantTableDiscriminatorMetadata.class);
+        
+        // Attribute mappings
+        descriptor.addMapping(getContextPropertyAttributeMapping());
+        descriptor.addMapping(getTypeAttributeMapping());
 
         return descriptor;
     }
@@ -5595,6 +5615,19 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         tenantDiscriminatorsMapping.setReferenceClass(TenantDiscriminatorColumnMetadata.class);
         tenantDiscriminatorsMapping.setXPath("orm:tenant-discriminator-column");
         return tenantDiscriminatorsMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLCompositeObjectMapping getTenantTableDiscriminatorMapping() {
+        XMLCompositeObjectMapping tenantTableDiscriminatorMapping = new XMLCompositeObjectMapping();
+        tenantTableDiscriminatorMapping.setAttributeName("m_tenantTableDiscriminator");
+        tenantTableDiscriminatorMapping.setGetMethodName("getTenantTableDiscriminator");
+        tenantTableDiscriminatorMapping.setSetMethodName("setTenantTableDiscriminator");
+        tenantTableDiscriminatorMapping.setReferenceClass(TenantTableDiscriminatorMetadata.class);
+        tenantTableDiscriminatorMapping.setXPath("orm:tenant-table-discriminator");
+        return tenantTableDiscriminatorMapping;
     }
     
     /**

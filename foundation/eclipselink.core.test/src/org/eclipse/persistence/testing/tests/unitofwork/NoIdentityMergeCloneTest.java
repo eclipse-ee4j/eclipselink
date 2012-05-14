@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     14/05/2012-2.4 Guy Pelletier  
+ *       - 376603: Provide for table per tenant support for multitenant applications
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.unitofwork;
 
@@ -17,6 +19,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.framework.TestWarningException;
@@ -64,7 +67,7 @@ public class NoIdentityMergeCloneTest extends TransactionalTestCase {
             ClassDescriptor descriptor = (ClassDescriptor)iterator.next();
             checkCacheState.put(descriptor, 
                                 new Integer(descriptor.getQueryManager().getDoesExistQuery().getExistencePolicy()));
-            if(descriptor.requiresInitialization()) {
+            if(descriptor.requiresInitialization((AbstractSession) getSession())) {
                 // identityMapClass is null for AggregateObject, AggregateMapping and Interface descriptors.
                 identityMapTypes.put(descriptor, descriptor.getIdentityMapClass());
             }

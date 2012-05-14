@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     14/05/2012-2.4 Guy Pelletier  
+ *       - 376603: Provide for table per tenant support for multitenant applications
  ******************************************************************************/  
 package org.eclipse.persistence.internal.sessions;
 
@@ -492,7 +494,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      * Normally the descriptors are added before login, then initialized on login.
      */
     public void initializeDescriptorIfSessionAlive(ClassDescriptor descriptor) {
-        if (isConnected() && (descriptor.requiresInitialization())) {
+        if (isConnected() && (descriptor.requiresInitialization(this))) {
             try {
                 try {
                     Collection descriptorsToAdd = new ArrayList(1);
@@ -581,10 +583,15 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
                 ClassDescriptor descriptor = (ClassDescriptor)iterator.next();
                 try {
                     AbstractSession session = getSessionForClass(descriptor.getJavaClass());
-                    if (descriptor.requiresInitialization()) {
+                    if (descriptor.requiresInitialization(session)) {
                         descriptor.preInitialize(session);
+                    } else if (descriptor.hasTablePerMultitenantPolicy()) {
+                        // If the descriptor doesn't require initialization and
+                        // has a table per tenant policy then add to the list
+                        // to be cloned and initialized per client session.
+                        addTablePerTenantDescriptor(descriptor);
                     }
-
+                    
                     //check if inheritance is involved in aggregate relationship, and let the parent know the child descriptor
                     if (descriptor.isDescriptorTypeAggregate() && descriptor.isChildDescriptor()) {
                         descriptor.initializeAggregateInheritancePolicy(session);
@@ -600,7 +607,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
                 ClassDescriptor descriptor = (ClassDescriptor)iterator.next();
                 try {
                     AbstractSession session = getSessionForClass(descriptor.getJavaClass());
-                    if (descriptor.requiresInitialization()) {
+                    if (descriptor.requiresInitialization(session)) {
                         descriptor.initialize(session);
                     }
                 } catch (RuntimeException exception) {
@@ -614,7 +621,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
                 ClassDescriptor descriptor = (ClassDescriptor)iterator.next();
                 try {
                     AbstractSession session = getSessionForClass(descriptor.getJavaClass());
-                    if (descriptor.requiresInitialization()) {
+                    if (descriptor.requiresInitialization(session)) {
                         descriptor.postInitialize(session);
                     }
                 } catch (RuntimeException exception) {

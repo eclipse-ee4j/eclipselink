@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     14/05/2012-2.4 Guy Pelletier   
+ *       - 376603: Provide for table per tenant support for multitenant applications
  ******************************************************************************/
 package org.eclipse.persistence.oxm;
 
@@ -776,7 +778,8 @@ public class XMLDescriptor extends ClassDescriptor {
      * XML descriptors are initialized normally, since they do
      * not need to be cloned by XML aggregate mappings.
      */
-    public boolean requiresInitialization() {
+    @Override
+    public boolean requiresInitialization(AbstractSession session) {
         return (!isDescriptorForInterface());
     }
 

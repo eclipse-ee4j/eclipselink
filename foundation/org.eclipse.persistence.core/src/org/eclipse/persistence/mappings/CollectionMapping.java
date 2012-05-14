@@ -19,6 +19,8 @@
  *       - 338812: ManyToMany mapping in aggregate object violate integrity constraint on deletion
  *     04/09/2012-2.4 Guy Pelletier 
  *       - 374377: OrderBy with ElementCollection doesn't work
+ *     14/05/2012-2.4 Guy Pelletier   
+ *       - 376603: Provide for table per tenant support for multitenant applications
  ******************************************************************************/  
 package org.eclipse.persistence.mappings;
 
@@ -487,6 +489,10 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         if(this.changeOrderTargetQuery != null) {
             clone.changeOrderTargetQuery = (DataModifyQuery)this.changeOrderTargetQuery.clone();
         }
+        
+        // Clone the container policy.
+        clone.containerPolicy = (ContainerPolicy) this.containerPolicy.clone();
+        
         return clone;
     }
 
