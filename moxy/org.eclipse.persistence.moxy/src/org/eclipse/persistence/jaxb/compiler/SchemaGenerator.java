@@ -934,6 +934,10 @@ public class SchemaGenerator {
                 }
                 sourceSchema.getImports().add(schemaImport);
                 if (schemaImport.getNamespace() != null) {
+                    if(schemaImport.getNamespace().equals(XMLConstants.XML_NAMESPACE_URL)) {
+                        //make sure xml namespace is in the resolver so it gets declared
+                        sourceSchema.getNamespaceResolver().put(XMLConstants.XML_NAMESPACE_PREFIX, XMLConstants.XML_NAMESPACE_URL);
+                    }
                     String prefix = sourceSchema.getNamespaceResolver().resolveNamespaceURI(importNamespace);
                     //Don't need to generate prefix for default namespace
                     if (prefix == null && !importNamespace.equals(EMPTY_STRING)) {
@@ -1091,13 +1095,19 @@ public class SchemaGenerator {
             
             // handle Attribute case
             if (frag.isAttribute()) {
-                if ((fragSchema.isAttributeFormDefault() && !fragUri.equals(targetNS)) || (!fragSchema.isAttributeFormDefault() && fragUri.length() > 0)) {
+                if (fragSchema == null || (fragSchema.isAttributeFormDefault() && !fragUri.equals(targetNS)) || (!fragSchema.isAttributeFormDefault() && fragUri.length() > 0)) {
                     // must generate a global attribute and create a reference to it
                     // if the global attribute exists, use it; otherwise create a new one
-                    Attribute globalAttribute = null;
-                    globalAttribute = (Attribute) fragSchema.getTopLevelAttributes().get(frag.getLocalName());
-                    if (globalAttribute == null) {
-                        globalAttribute = createGlobalAttribute(frag, workingSchema, fragSchema, next);
+                    // if fragSchema is null, just generate the ref
+                    if(fragSchema != null) {
+                        Attribute globalAttribute = null;
+                        globalAttribute = (Attribute) fragSchema.getTopLevelAttributes().get(frag.getLocalName());
+                        if (globalAttribute == null) {
+                            globalAttribute = createGlobalAttribute(frag, workingSchema, fragSchema, next);
+                        }
+                    } else {
+                        //may need to add an import
+                        addImportIfRequired(workingSchema, fragSchema, fragUri);
                     }
                     // add the attribute ref to the current element
                     String attributeRefName;
