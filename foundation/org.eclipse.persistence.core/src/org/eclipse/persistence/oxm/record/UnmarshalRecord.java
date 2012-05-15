@@ -393,7 +393,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
         String namespaceURI = lastFragment.getNamespaceURI();
         if(namespaceURI == null){
             namespaceURI = XMLConstants.EMPTY_STRING;
-            if (null != namespaceResolver) {
+            if (null != namespaceResolver && !(lastFragment.isAttribute() && lastFragment.getPrefix() == null)) {
                 namespaceURI = namespaceResolver.resolveNamespacePrefix(lastFragment.getPrefix());
                 if (null == namespaceURI) {
                     namespaceURI = XMLConstants.EMPTY_STRING;

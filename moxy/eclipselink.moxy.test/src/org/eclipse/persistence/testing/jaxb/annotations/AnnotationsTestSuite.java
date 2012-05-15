@@ -64,6 +64,8 @@ public class AnnotationsTestSuite extends TestSuite {
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.PropertyTypeTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.required.RequiredAnnotationTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmldiscriminator.XmlDiscriminatorTestCases.class);
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmldiscriminator.ns.XmlDiscriminatorNSTestCases.class);
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmldiscriminator.ns.XmlDiscriminatorRootNSTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmljoinnode.XmlJoinNodeTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmljoinnode.xmlvalue.XmlJoinNodesWithValueTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmlelementsjoinnodes.XmlElementsJoinNodeTestCases.class);
