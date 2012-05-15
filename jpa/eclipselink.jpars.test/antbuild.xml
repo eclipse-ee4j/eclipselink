@@ -289,7 +289,7 @@
             <junit printsummary="withOutAndErr" fork="yes" dir="${classes.dir}" maxmemory="512m" showoutput="yes">
                 <jvmarg value="-XX:MaxPermSize=256m"/>
                 <jvmarg value="-Ddb.driver=${db.driver}"/>
-                <jvmarg value="-Ddb.url=${DB_URL}"/>
+                <jvmarg value="-Ddb.url=${db.url}"/>
                 <jvmarg value="-Ddb.user=${db.user}"/>
                 <jvmarg value="-Ddb.pwd=${db.pwd}"/>
                 <jvmarg value="-javaagent:../${jparstest.2.base.dir}/${eclipselink.jar}"/>

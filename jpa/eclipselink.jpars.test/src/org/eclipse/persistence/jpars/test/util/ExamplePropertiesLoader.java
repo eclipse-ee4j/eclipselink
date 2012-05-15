@@ -35,6 +35,7 @@ public class ExamplePropertiesLoader {
     public static final String DB_URL_KEY = "db.url";
     public static final String DB_USER_KEY = "db.user";
     public static final String DB_PWD_KEY = "db.pwd";
+    public static final String JPA_PWD_KEY = "password";
     public static final String DB_PLATFORM_KEY = "db.platform";
     public static final String LOGGING_LEVEL_KEY = "eclipselink.logging.level";
     
@@ -81,7 +82,9 @@ public class ExamplePropertiesLoader {
                 in.close();
 
                 for (Map.Entry<Object, Object> entry : exampleProps.entrySet()) {
-                    if (((String)entry.getKey()).startsWith(ECLIPSELINK_TEST_DB_PROP_PREFIX)){
+                    if (((String)entry.getKey()).startsWith(DB_PWD_KEY)){
+                        properties.put(((String) entry.getKey()).replace(DB_PWD_KEY, JPA_DB_PROP_PREFIX + JPA_PWD_KEY), entry.getValue());
+                    } else if (((String)entry.getKey()).startsWith(ECLIPSELINK_TEST_DB_PROP_PREFIX)){
                         properties.put(((String) entry.getKey()).replace(ECLIPSELINK_TEST_DB_PROP_PREFIX, JPA_DB_PROP_PREFIX), entry.getValue());
                     } else {
                         properties.put((String) entry.getKey(), entry.getValue());
