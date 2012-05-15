@@ -288,10 +288,10 @@
             <!-- junit printsummary="withOutAndErr" fork="yes" forkmode="once" dir="${resource.dir}" maxmemory="512m" showoutput="yes" -->
             <junit printsummary="withOutAndErr" fork="yes" dir="${classes.dir}" maxmemory="512m" showoutput="yes">
                 <jvmarg value="-XX:MaxPermSize=256m"/>
-                <jvmarg value="-Ddb.driver=${javax.persistence.jdbc.driver}"/>
-                <jvmarg value="-Ddb.url=${javax.persistence.jdbc.url}"/>
-                <jvmarg value="-Ddb.user=${javax.persistence.jdbc.user}"/>
-                <jvmarg value="-Ddb.pwd=${javax.persistence.jdbc.password}"/>
+                <jvmarg value="-Ddb.driver=${db.driver}"/>
+                <jvmarg value="-Ddb.url=${DB_URL}"/>
+                <jvmarg value="-Ddb.user=${db.user}"/>
+                <jvmarg value="-Ddb.pwd=${db.pwd}"/>
                 <jvmarg value="-javaagent:../${jparstest.2.base.dir}/${eclipselink.jar}"/>
                 <sysproperty key="loggingLevelFinest" value="false"/>
                 <sysproperty key="tempFileDir" value="${tmp.dir}"/>
