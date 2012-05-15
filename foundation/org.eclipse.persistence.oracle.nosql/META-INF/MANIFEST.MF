@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Export-Package: org.eclipse.persistence.internal.nosql.adapters.nosql;version="2.4.0",
+ org.eclipse.persistence.nosql.adapters.nosql;version="2.4.0",
+Bundle-Name: EclipseLink Oracle NoSQL Extensions
+Created-By: 1.6.0_26 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.oracle.nosql
+Bundle-Vendor: Eclipse.org - EclipseLink Project
+Fragment-Host: org.eclipse.persistence.nosql;bundle-version="2.4.0"
+Bundle-Version: 2.4.0.qualifier
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.eclipse.persistence.oracle.nosql
+Import-Package:
