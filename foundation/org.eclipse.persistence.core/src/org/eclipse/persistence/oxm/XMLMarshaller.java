@@ -15,6 +15,7 @@ package org.eclipse.persistence.oxm;
 import java.io.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -333,7 +334,16 @@ public class XMLMarshaller implements Cloneable {
                     marshal(object, streamResult.getOutputStream());
                 } else {
                     try {
-                        File f = new File(new URL(streamResult.getSystemId()).toURI());
+                        File f;
+                        try {
+                            f = new File(new URL(streamResult.getSystemId()).toURI());
+                        } catch (MalformedURLException malformedURLException) {
+                            try {
+                                f = new File(streamResult.getSystemId());
+                            } catch (Exception e) {
+                                throw malformedURLException;
+                            }
+                        }
                         writer = new FileWriter(f);
                         try {
                             marshal(object, writer);
