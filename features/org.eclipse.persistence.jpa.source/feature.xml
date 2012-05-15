@@ -85,11 +85,4 @@
          version="@VERSION@.@QUALIFIER@"
          unpack="false"/>
 
-   <plugin
-         id="org.eclipse.persistence.nosql.source"
-         download-size="0"
-         install-size="0"
-         version="@VERSION@.@QUALIFIER@"
-         unpack="false"/>
-
 </feature>

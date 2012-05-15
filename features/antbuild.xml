@@ -392,6 +392,9 @@
           <param name="feature.name" value="org.eclipse.persistence.jpars"/>
         </antcall>
         <antcall target="jar-feature">
+          <param name="feature.name" value="org.eclipse.persistence.nosql"/>
+        </antcall>
+        <antcall target="jar-feature">
           <param name="feature.name" value="org.eclipse.persistence.moxy"/>
         </antcall>
         <antcall target="jar-feature">
@@ -408,6 +411,9 @@
         </antcall>
         <antcall target="jar-feature">
           <param name="feature.name" value="org.eclipse.persistence.jpars.source"/>
+        </antcall>
+        <antcall target="jar-feature">
+          <param name="feature.name" value="org.eclipse.persistence.nosql.source"/>
         </antcall>
         <antcall target="jar-feature">
           <param name="feature.name" value="org.eclipse.persistence.moxy.source"/>
