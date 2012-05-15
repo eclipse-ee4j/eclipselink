@@ -365,23 +365,29 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
      * Yes the elementIndex looks strange but this is just a simple way to get the index to be pass-by-reference
      */
     public Object createPrimaryKeyInstanceFromPrimaryKeyValues(AbstractSession session, int[] elementIndex, Object ... keyElements ) {
-        Object keyInstance = null;
+        Object keyInstance = getPKClassInstance();
         KeyElementAccessor[] pkElementArray = getKeyClassFields();
-        if ((pkElementArray.length == 1) && (pkElementArray[0] instanceof KeyIsElementAccessor)) {
-            DatabaseMapping mapping = getDescriptor().getObjectBuilder().getMappingForAttributeName(pkElementArray[0].getAttributeName());
-            if (mapping.isAbstractColumnMapping()) {    
-                Converter converter = ((AbstractColumnMapping) mapping).getConverter();
-                if (converter != null){
-                    return converter.convertDataValueToObjectValue(keyElements[elementIndex[0]], session);
+        if (keyInstance == null){
+            // single primary key - there is no key class
+            for (KeyElementAccessor accessor : pkElementArray){
+                if (accessor instanceof KeyIsElementAccessor){
+                    DatabaseMapping mapping = getDescriptor().getObjectBuilder().getMappingForAttributeName(accessor.getAttributeName());
+                    if (mapping != null && !mapping.isMultitenantPrimaryKeyMapping()){
+                        if (mapping.isAbstractColumnMapping()) {    
+                            Converter converter = ((AbstractColumnMapping) mapping).getConverter();
+                            if (converter != null){
+                                return converter.convertDataValueToObjectValue(keyElements[elementIndex[0]], session);
+                            }
+                            keyInstance = keyElements[elementIndex[0]];
+                        } else if (mapping.isObjectReferenceMapping()) { // what if mapping comes from derived ID.  need to get the derived mapping.
+                            //get reference descriptor and extract pk from target cmp policy
+                            keyInstance = mapping.getReferenceDescriptor().getCMPPolicy().createPrimaryKeyInstanceFromPrimaryKeyValues(session, elementIndex, keyElements);
+                        }
+                        ++elementIndex[0]; // remove processed key in case keys are complex and derived
+                    }
                 }
-                keyInstance = keyElements[elementIndex[0]];
-            } else if (mapping.isObjectReferenceMapping()) { // what if mapping comes from derived ID.  need to get the derived mapping.
-                //get reference descriptor and extract pk from target cmp policy
-                keyInstance = mapping.getReferenceDescriptor().getCMPPolicy().createPrimaryKeyInstanceFromPrimaryKeyValues(session, elementIndex, keyElements);
             }
-            ++elementIndex[0]; // remove processed key in case keys are complex and derived
         } else {
-            keyInstance = getPKClassInstance();
             //get clone of Key so we can remove values.
             for (int index = 0; index < pkElementArray.length; index++) {
                 KeyElementAccessor accessor = pkElementArray[index];

@@ -64,7 +64,7 @@ public class LinkAdapter extends XmlAdapter<String, Object> {
         String entityType = fixedString.substring((baseURI + context.getName() + "/entity/" ).length(), lastSlash);
         String entityId = fixedString.substring(lastSlash + 1);
         ClassDescriptor descriptor = context.getDescriptor(entityType);
-        Object id = IdHelper.buildId(context, descriptor.getAlias(), entityId);
+        Object id = IdHelper.buildId(context, descriptor.getAlias(), entityId, null);
         
         return constructObjectForId(entityType, id);
     }

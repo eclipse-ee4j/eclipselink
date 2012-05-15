@@ -47,6 +47,7 @@ import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
 import org.eclipse.persistence.jpars.test.model.StaticAuction;
 import org.eclipse.persistence.jpars.test.model.StaticBid;
 import org.eclipse.persistence.jpars.test.model.StaticUser;
+import org.eclipse.persistence.jpars.test.model.multitenant.Account;
 import org.eclipse.persistence.jpars.test.util.StaticModelDatabasePopulator;
 import org.eclipse.persistence.jpars.test.util.ExamplePropertiesLoader;
 import org.eclipse.persistence.jpars.test.util.TestHttpHeaders;
@@ -660,6 +661,35 @@ public class TestService {
         result = service.getDescriptorMetadata("auction", "Bid", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo());
     
         result = service.getQueriesMetadata("auction", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo());
+    }
+    
+    @Test
+    public void testMultitenant() throws JAXBException {
+        Service service = new Service();
+        service.setPersistenceFactory(factory);
+        PersistenceContext context = factory.getPersistenceContext("auction-static");
+        
+        Account account = new Account();
+        account.setAccoutNumber("AAA111");
+        TestURIInfo ui = new TestURIInfo();
+        ui.addMatrixParameter("auction-static", "tenant.id", "AcctOwner1");
+
+        StreamingOutput output = (StreamingOutput)service.update("auction-static", "Account", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), ui, serializeToStream(account, context, MediaType.APPLICATION_JSON_TYPE)).getEntity();
+        
+        String result = stringifyResults(output);
+        
+        account = (Account)context.unmarshalEntity(Account.class, MediaType.APPLICATION_JSON_TYPE, new ByteArrayInputStream(result.getBytes()));
+        
+        output = (StreamingOutput)service.find("auction-static", "Account", String.valueOf(account.getId()), generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), ui).getEntity();
+        result = stringifyResults(output);
+        account = (Account)context.unmarshalEntity(Account.class, MediaType.APPLICATION_JSON_TYPE, new ByteArrayInputStream(result.getBytes()));
+
+        assertTrue("account is null", account != null);
+        TestURIInfo ui2 = new TestURIInfo();
+        ui2.addMatrixParameter("auction-static", "tenant.id", "AcctOwner2");
+        
+        output = (StreamingOutput)service.find("auction-static", "Account", String.valueOf(account.getId()), generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), ui2).getEntity();
+        assertTrue("output should be null", output == null);
     }
     
     public static String stringifyResults(StreamingOutput output){

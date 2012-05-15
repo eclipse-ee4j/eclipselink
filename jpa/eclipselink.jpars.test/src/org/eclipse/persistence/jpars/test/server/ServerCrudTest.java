@@ -39,6 +39,7 @@ import org.eclipse.persistence.jpa.rs.util.LinkAdapter;
 import org.eclipse.persistence.jpars.test.model.StaticAuction;
 import org.eclipse.persistence.jpars.test.model.StaticBid;
 import org.eclipse.persistence.jpars.test.model.StaticUser;
+import org.eclipse.persistence.jpars.test.model.multitenant.Account;
 import org.eclipse.persistence.jpars.test.util.StaticModelDatabasePopulator;
 import org.eclipse.persistence.jpars.test.util.ExamplePropertiesLoader;
 import org.junit.BeforeClass;
@@ -92,7 +93,7 @@ public class ServerCrudTest {
     
     @Test
     public void testReadXML(){
-        StaticBid bid = restRead(StaticModelDatabasePopulator.BID1_ID, "StaticBid", StaticBid.class, DEFAULT_PU, MediaType.APPLICATION_XML_TYPE);
+        StaticBid bid = restRead(StaticModelDatabasePopulator.BID1_ID, "StaticBid", StaticBid.class, DEFAULT_PU, null, MediaType.APPLICATION_XML_TYPE);
         StaticBid bid2 = dbRead(StaticModelDatabasePopulator.BID1_ID, StaticBid.class);
         assertTrue("Wrong big in DB.", bid.getBid() == bid2.getBid());
     }
@@ -125,7 +126,7 @@ public class ServerCrudTest {
     public void testReadNonExistantPU(){
         RestCallFailedException exc = null;
         try{
-            restRead(1, "StaticBid", StaticBid.class, "non-existant", MediaType.APPLICATION_JSON_TYPE);
+            restRead(1, "StaticBid", StaticBid.class, "non-existant", null, MediaType.APPLICATION_JSON_TYPE);
         } catch (RestCallFailedException e){
             exc = e;
         }
@@ -165,7 +166,7 @@ public class ServerCrudTest {
         StaticUser user = new StaticUser();
         user.setName("Joe");
         user.setId(101);
-        user = restCreate(user, "StaticUser", StaticUser.class, DEFAULT_PU,  MediaType.APPLICATION_XML_TYPE, MediaType.APPLICATION_XML_TYPE);
+        user = restCreate(user, "StaticUser", StaticUser.class, DEFAULT_PU, null, MediaType.APPLICATION_XML_TYPE, MediaType.APPLICATION_XML_TYPE);
         assertTrue("Wrong big retrieved.", user.getName().equals("Joe"));
         StaticUser dbUser = dbRead(user.getId(), StaticUser.class);
         assertTrue("DB User not equal ", user.equals(dbUser));
@@ -211,7 +212,7 @@ public class ServerCrudTest {
         user.setId(103);
         RestCallFailedException exc = null;
         try{
-            user = restCreate(user, "StaticUser", StaticUser.class, "non-existant",  MediaType.APPLICATION_XML_TYPE, MediaType.APPLICATION_XML_TYPE);
+            user = restCreate(user, "StaticUser", StaticUser.class, "non-existant", null, MediaType.APPLICATION_XML_TYPE, MediaType.APPLICATION_XML_TYPE);
         } catch (RestCallFailedException e){
             exc = e;
         }
@@ -256,9 +257,9 @@ public class ServerCrudTest {
     
     @Test
     public void testUpdateXML(){
-        StaticBid bid = restRead(StaticModelDatabasePopulator.BID1_ID, "StaticBid", StaticBid.class, DEFAULT_PU, MediaType.APPLICATION_XML_TYPE);
+        StaticBid bid = restRead(StaticModelDatabasePopulator.BID1_ID, "StaticBid", StaticBid.class, DEFAULT_PU, null, MediaType.APPLICATION_XML_TYPE);
         bid.setBid(120);
-        bid = restUpdate(bid, "StaticBid", StaticBid.class, DEFAULT_PU, MediaType.APPLICATION_XML_TYPE, MediaType.APPLICATION_XML_TYPE);
+        bid = restUpdate(bid, "StaticBid", StaticBid.class, DEFAULT_PU, null, MediaType.APPLICATION_XML_TYPE, MediaType.APPLICATION_XML_TYPE);
         assertTrue("Wrong big retrieved.", bid.getBid() == 120);
         bid = dbRead(StaticModelDatabasePopulator.BID1_ID, StaticBid.class);
         assertTrue("Wrong big retrieved in db.", bid.getBid() == 120);
@@ -298,7 +299,7 @@ public class ServerCrudTest {
         user.setName("Joe");
         RestCallFailedException exc = null;
         try{
-            user = restUpdate(user, "StaticUser", StaticUser.class, "non-existant",  MediaType.APPLICATION_XML_TYPE, MediaType.APPLICATION_XML_TYPE);
+            user = restUpdate(user, "StaticUser", StaticUser.class, "non-existant", null, MediaType.APPLICATION_XML_TYPE, MediaType.APPLICATION_XML_TYPE);
         } catch (RestCallFailedException e){
             exc = e;
         }
@@ -363,7 +364,7 @@ public class ServerCrudTest {
     public void testDeleteNonExistantPersistenceUnit(){
         RestCallFailedException exc = null;
         try{
-            restDelete(1000, "StaticUser", StaticUser.class, "non-existant");
+            restDelete(1000, "StaticUser", StaticUser.class, "non-existant", null);
         } catch (RestCallFailedException e){
             exc = e;
         }
@@ -476,6 +477,7 @@ public class ServerCrudTest {
                 assertTrue("User was not refreshed", user.getName().equals(user1.getName()));
             }
         }
+        user1 = dbRead(user1.getId(), StaticUser.class);
         user1.setName(oldName);
         dbUpdate(user1);        
         // refresh cache
@@ -500,6 +502,7 @@ public class ServerCrudTest {
         hints.put(QueryHints.REFRESH, "true");
         users = (List<StaticUser>)restNamedQuery("User.byId", "StaticUser", parameters, hints);
         assertTrue("User was not refreshed", users.get(0).getName().equals(user1.getName()));
+        user1 = dbRead(user1.getId(), StaticUser.class);
         user1.setName(oldName);
         dbUpdate(user1);  
         
@@ -543,7 +546,37 @@ public class ServerCrudTest {
         assertTrue(result.equals("1"));
         StaticUser user1 = dbRead(StaticModelDatabasePopulator.USER1_ID, StaticUser.class);
         assertTrue(user1.getName().equals("newName"));
-        dbUpdate(StaticModelDatabasePopulator.user1());
+        user1 = dbRead(user1.getId(), StaticUser.class);
+        user1.setName(StaticModelDatabasePopulator.user1().getName());
+        dbUpdate(user1);
+    }
+    
+    @Test
+    public void testMultitenant(){
+        Account account = new Account();
+        account.setAccoutNumber("AAA1");
+        Map<String, String> tenantId = new HashMap<String, String>();
+        tenantId.put("tenant.id", "AcctHolder1");
+        account = restUpdate(account, "Account", Account.class, DEFAULT_PU, tenantId, MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON_TYPE);
+
+        assertTrue("account not created.", account != null);
+        
+        account = restRead(account.getId(), "Account", Account.class, DEFAULT_PU, tenantId, MediaType.APPLICATION_JSON_TYPE);
+        
+        assertTrue("account not read.", account != null);
+        assertTrue("account not completely read.", account.getAccoutNumber().equals("AAA1"));
+        
+        Map<String, String> tenantId2 = new HashMap<String, String>();
+        tenantId2.put("tenant.id", "AcctHolder2");
+        RestCallFailedException rcfe = null;
+        try{
+            Account account2 = restRead(account.getId(), "Account", Account.class, DEFAULT_PU, tenantId2, MediaType.APPLICATION_JSON_TYPE);
+        } catch (RestCallFailedException ex){
+            rcfe = ex;
+        }
+        assertTrue("No exception on read from wrong tenant.", rcfe != null);
+        
+        restDelete(account.getId(), "Account", Account.class, DEFAULT_PU, tenantId);
     }
     
     public static <T> T dbRead(Object id, Class<T> resultClass){
@@ -568,11 +601,19 @@ public class ServerCrudTest {
     }
     
     public static <T> T restCreate(Object object, String type, Class<T> resultClass) throws RestCallFailedException {
-        return restCreate(object, type, resultClass, DEFAULT_PU, MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON_TYPE);
+        return restCreate(object, type, resultClass, DEFAULT_PU, null, MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON_TYPE);
     }
     
-    public static <T> T restCreate(Object object, String type, Class<T> resultClass, String persistenceUnit, MediaType inputMediaType, MediaType outputMediaType) throws RestCallFailedException {
-        WebResource webResource = client.resource(getServerURI() + persistenceUnit + "/entity/" + type);
+    public static <T> T restCreate(Object object, String type, Class<T> resultClass, String persistenceUnit, Map<String, String> tenantId, MediaType inputMediaType, MediaType outputMediaType) throws RestCallFailedException {
+        StringBuffer uri = new StringBuffer();
+        uri.append(getServerURI() + persistenceUnit);
+        if (tenantId != null){
+            for (String key: tenantId.keySet()){
+                uri.append(";" + key + "=" + tenantId.get(key));
+            }
+        }
+        uri.append("/entity/" + type);
+        WebResource webResource = client.resource(uri.toString());
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         try{
             context.marshallEntity(object, inputMediaType, os);       
@@ -594,11 +635,19 @@ public class ServerCrudTest {
         return resultObject;
     }
     public static <T> void restDelete(Object id, String type, Class<T> resultClass) throws RestCallFailedException {
-        restDelete(id, type, resultClass, DEFAULT_PU);
+        restDelete(id, type, resultClass, DEFAULT_PU, null);
     }
     
-    public static <T> void restDelete(Object id, String type, Class<T> resultClass, String persistenceUnit) throws RestCallFailedException {
-        WebResource webResource = client.resource(getServerURI() + persistenceUnit + "/entity/" + type + "/" + id);
+    public static <T> void restDelete(Object id, String type, Class<T> resultClass, String persistenceUnit, Map<String, String> tenantId) throws RestCallFailedException {
+        StringBuffer uri = new StringBuffer();
+        uri.append(getServerURI() + persistenceUnit);
+        if (tenantId != null){
+            for (String key: tenantId.keySet()){
+                uri.append(";" + key + "=" + tenantId.get(key));
+            }
+        }
+        uri.append("/entity/" + type + "/" + id);
+        WebResource webResource = client.resource(uri.toString());;
         ClientResponse response = webResource.type(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).delete(ClientResponse.class);
         Status status = response.getClientResponseStatus();
         if (status != Status.OK){
@@ -684,11 +733,19 @@ public class ServerCrudTest {
     }
     
     public static <T> T restRead(Object id, String type, Class<T> resultClass) throws RestCallFailedException {
-        return restRead(id, type, resultClass, DEFAULT_PU, MediaType.APPLICATION_JSON_TYPE);
+        return restRead(id, type, resultClass, DEFAULT_PU, null, MediaType.APPLICATION_JSON_TYPE);
     }
     
-    public static <T> T restRead(Object id, String type, Class<T> resultClass, String persistenceUnit, MediaType outputMediaType) throws RestCallFailedException {
-        WebResource webResource = client.resource(getServerURI() + persistenceUnit + "/entity/" + type + "/" + id);
+    public static <T> T restRead(Object id, String type, Class<T> resultClass, String persistenceUnit, Map<String, String> tenantId, MediaType outputMediaType) throws RestCallFailedException {
+        StringBuffer uri = new StringBuffer();
+        uri.append(getServerURI() + persistenceUnit);
+        if (tenantId != null){
+            for (String key: tenantId.keySet()){
+                uri.append(";" + key + "=" + tenantId.get(key));
+            }
+        }
+        uri.append("/entity/" + type + "/" + id);
+        WebResource webResource = client.resource(uri.toString());
         ClientResponse response = webResource.accept(outputMediaType).get(ClientResponse.class);
         Status status = response.getClientResponseStatus();
         if (status != Status.OK){
@@ -706,12 +763,19 @@ public class ServerCrudTest {
     
     
     public static <T> T restUpdate(Object object, String type, Class<T> resultClass) throws RestCallFailedException {
-        return restUpdate(object, type, resultClass, DEFAULT_PU, MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON_TYPE);
+        return restUpdate(object, type, resultClass, DEFAULT_PU, null, MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON_TYPE);
     }
     
-    public static <T> T restUpdate(Object object, String type, Class<T> resultClass, String persistenceUnit, MediaType inputMediaType, MediaType outputMediaType) throws RestCallFailedException {
-
-        WebResource webResource = client.resource(getServerURI() + persistenceUnit + "/entity/" + type);
+    public static <T> T restUpdate(Object object, String type, Class<T> resultClass, String persistenceUnit, Map<String, String> tenantId, MediaType inputMediaType, MediaType outputMediaType) throws RestCallFailedException {
+        StringBuffer uri = new StringBuffer();
+        uri.append(getServerURI() + persistenceUnit);
+        if (tenantId != null){
+            for (String key: tenantId.keySet()){
+                uri.append(";" + key + "=" + tenantId.get(key));
+            }
+        }
+        uri.append("/entity/" + type);
+        WebResource webResource = client.resource(uri.toString());
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         try{
             context.marshallEntity(object, inputMediaType, os);

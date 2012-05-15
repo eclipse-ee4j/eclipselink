@@ -37,6 +37,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.sessions.server.Server;
 
@@ -53,24 +54,28 @@ public class IdHelper {
 
     private static final String SEPARATOR_STRING = "+";
     
-    public static Object buildId(PersistenceContext app, String entityName, String idString) {
+    public static Object buildId(PersistenceContext app, String entityName, String idString, Map<String, String> multitenantDiscriminators) {
         Server session = app.getJpaSession();
         ClassDescriptor descriptor = app.getDescriptor(entityName);
         List<DatabaseMapping> pkMappings = descriptor.getObjectBuilder().getPrimaryKeyMappings();
         List<SortableKey> pkIndices = new ArrayList<SortableKey>();
         int index = 0;
+        int multitenantPKMappings = 0;
         for (DatabaseMapping mapping: pkMappings){
-            pkIndices.add(new SortableKey(mapping, index));
-            index++;
+            if (mapping.isMultitenantPrimaryKeyMapping()){
+                multitenantPKMappings++;
+            } else {
+                pkIndices.add(new SortableKey(mapping, index));
+                index++;
+            }
         }
         Collections.sort(pkIndices);
         
         // Handle composite key in map
-        int[] elementIndex = new int[pkMappings.size()];
-        Object[] keyElements = new Object[pkMappings.size()];
+        Object[] keyElements = new Object[pkMappings.size() - multitenantPKMappings];
         StringTokenizer tokenizer = new StringTokenizer(idString, SEPARATOR_STRING);
         int tokens = tokenizer.countTokens();
-        if (tokens != pkMappings.size()){
+        if (tokens + multitenantPKMappings != pkMappings.size()){
             throw new RuntimeException("Failed, incorrect number of keys values");
         }
         index = 0;
@@ -84,7 +89,7 @@ public class IdHelper {
 
         if (descriptor.hasCMPPolicy()) {
             CMP3Policy policy = (CMP3Policy) descriptor.getCMPPolicy();
-            return policy.createPrimaryKeyInstanceFromPrimaryKeyValues((AbstractSession) session, elementIndex, keyElements);
+            return policy.createPrimaryKeyInstanceFromPrimaryKeyValues((AbstractSession) session, new int[]{0}, keyElements);
         }
 
         if (keyElements.length == 1) {

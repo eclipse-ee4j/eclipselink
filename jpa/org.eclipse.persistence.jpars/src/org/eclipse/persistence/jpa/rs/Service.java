@@ -341,9 +341,11 @@ public class Service {
         if (app == null || app.getClass(type) == null){
             return Response.status(Status.NOT_FOUND).build();
         }
-        Object id = IdHelper.buildId(app, type, key);
+        Map<String, String> discriminators = getParameterMap(ui, persistenceUnit);
+        
+        Object id = IdHelper.buildId(app, type, key, discriminators);
 
-        Object entity = app.find(getParameterMap(ui, persistenceUnit), type, id, Service.getHintMap(ui));
+        Object entity = app.find(discriminators, type, id, Service.getHintMap(ui));
 
         if (entity == null) {
             return Response.status(Status.NOT_FOUND).build();
@@ -359,9 +361,10 @@ public class Service {
         if (app == null || app.getClass(type) == null){
             return Response.status(Status.NOT_FOUND).build();
         }
-        Object id = IdHelper.buildId(app, type, key);
+        Map<String, String> discriminators = getParameterMap(ui, persistenceUnit);
+        Object id = IdHelper.buildId(app, type, key, discriminators);
 
-        Object entity = app.findAttribute(getParameterMap(ui, persistenceUnit), type, id, Service.getHintMap(ui), attribute);
+        Object entity = app.findAttribute(discriminators, type, id, Service.getHintMap(ui), attribute);
 
         if (entity == null) {
             return Response.status(Status.NOT_FOUND).build();
@@ -377,7 +380,9 @@ public class Service {
         if (app == null || app.getClass(type) == null){
             return Response.status(Status.NOT_FOUND).build();
         }
-        Object id = IdHelper.buildId(app, type, key);
+        
+        Map<String, String> discriminators = getParameterMap(ui, persistenceUnit);
+        Object id = IdHelper.buildId(app, type, key, discriminators);
 
         Object entity = null;
         String partner = (String)Service.getParameterMap(ui, attribute).get(RELATIONSHIP_PARTNER);
@@ -408,7 +413,9 @@ public class Service {
         if (app == null || app.getClass(type) == null){
             return Response.status(Status.NOT_FOUND).build();
         }
-        Object id = IdHelper.buildId(app, type, key);
+        
+        Map<String, String> discriminators = getParameterMap(ui, persistenceUnit);
+        Object id = IdHelper.buildId(app, type, key, discriminators);
 
         Object entity = null;
         String partner = (String)Service.getParameterMap(ui, attribute).get(RELATIONSHIP_PARTNER);
@@ -488,8 +495,9 @@ public class Service {
         if (app == null || app.getClass(type) == null){
             return Response.status(Status.NOT_FOUND).build();
         }
-        Object id = IdHelper.buildId(app, type, key);
-        app.delete(getParameterMap(ui, persistenceUnit), type, id);
+        Map<String, String> discriminators = getParameterMap(ui, persistenceUnit);
+        Object id = IdHelper.buildId(app, type, key, discriminators);
+        app.delete(discriminators, type, id);
         return Response.ok().build();
     }
     

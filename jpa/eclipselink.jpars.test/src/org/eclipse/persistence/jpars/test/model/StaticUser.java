@@ -25,10 +25,7 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
+import javax.persistence.Version;
 import org.eclipse.persistence.annotations.PrivateOwned;
 
 @NamedQueries({
@@ -87,6 +84,9 @@ public class StaticUser {
     @PrivateOwned
     private StaticAddress address;
 
+    @Version
+    private int version;
+    
     public int getId() {
         return id;
     }
@@ -111,6 +111,14 @@ public class StaticUser {
         this.address = address;
     }
     
+    public int getVersion() {
+        return version;
+    }
+
+    public void setVersion(int version) {
+        this.version = version;
+    }
+
     public boolean equals(Object object){
         if (object == null || !(object instanceof StaticUser)){
             return false;

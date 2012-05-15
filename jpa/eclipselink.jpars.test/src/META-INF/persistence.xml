@@ -12,6 +12,7 @@
 		<class>org.eclipse.persistence.jpars.test.model.StaticAuction</class>
 		<class>org.eclipse.persistence.jpars.test.model.StaticBid</class>
 		<class>org.eclipse.persistence.jpars.test.model.StaticAddress</class>
+        <class>org.eclipse.persistence.jpars.test.model.multitenant.Account</class>
 	    <properties>
 	       <property name="javax.persistence.nonJtaDataSource" value="jdbc/jpa-rs"/>
 	       <property name="eclipselink.logging.level" value="FINEST"/>
