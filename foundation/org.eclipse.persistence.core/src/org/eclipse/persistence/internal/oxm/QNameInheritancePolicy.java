@@ -46,6 +46,8 @@ public class QNameInheritancePolicy extends InheritancePolicy {
     //used for initialization. Prefixed type names will be changed to QNames.
     private NamespaceResolver namespaceResolver;
 
+    private boolean usesXsiType = false;
+
     public QNameInheritancePolicy() {
         super();
     }
@@ -95,36 +97,35 @@ public class QNameInheritancePolicy extends InheritancePolicy {
             while (entries.hasNext()) {
                 Map.Entry entry = entries.next();
                 Object key = entry.getKey();
+                XPathFragment frag = ((XMLField) getClassIndicatorField()).getXPathFragment();
+                if (frag.getLocalName().equals(XMLConstants.SCHEMA_TYPE_ATTRIBUTE) && frag.getNamespaceURI() != null && frag.getNamespaceURI().equals(XMLConstants.SCHEMA_INSTANCE_URL)) {
+                    usesXsiType = true;
+                }
                 if (key instanceof String) {
                     XPathQName qname;
-                    String indicatorValue = (String)key;
-                    int index = indicatorValue.indexOf(XMLConstants.COLON);
-                    if (index != -1 && namespaceResolver != null) {
-                        //if it's a prefixed string, key it on QName and 
-                        //local name, in case the namespace can't be resolved
-                        //at runtime. Needs to be revisited.
-                        String prefix = indicatorValue.substring(0, index);
-                        String localPart = indicatorValue.substring(index + 1);
-                        String uri = namespaceResolver.resolveNamespacePrefix(prefix);
-                        qname = new XPathQName(uri, localPart, true);
+
+                    String indicatorValue = (String) key;
+                    if (!usesXsiType || namespaceResolver == null) {
+                        qname = new XPathQName(indicatorValue, true);
                     } else {
-                        // we always want to create/insert QNames into the map
-                        if (namespaceResolver != null) {
-                            qname = new XPathQName(namespaceResolver.getDefaultNamespaceURI(),indicatorValue, true);
-                        }
-                        else {
-                            qname = new XPathQName(indicatorValue, true);
+                        int index = indicatorValue.indexOf(XMLConstants.COLON);
+                        if (index != -1 && namespaceResolver != null) {
+                            String prefix = indicatorValue.substring(0, index);
+                            String localPart = indicatorValue.substring(index + 1);
+                            String uri = namespaceResolver.resolveNamespacePrefix(prefix);
+                            qname = new XPathQName(uri, localPart, true);
+                        } else {
+                            qname = new XPathQName(namespaceResolver.getDefaultNamespaceURI(), indicatorValue, true);
                         }
                     }
                     getClassIndicatorMapping().put(qname, entry.getValue());
-                }else if(key instanceof QName){
-                	XPathQName xpathQName = new XPathQName((QName)key, true);
-                	getClassIndicatorMapping().put(xpathQName, entry.getValue());
-                	
+                } else if (key instanceof QName) {
+                    XPathQName xpathQName = new XPathQName((QName) key, true);
+                    getClassIndicatorMapping().put(xpathQName, entry.getValue());
                 }
             }
         }
-        
+
         //bug 6012173 - changed to initialize namespare uri on indicator field
         //need to be able to compare uri and local name during marshal to see if field is xsi type field
         if(getClassIndicatorField() != null){
@@ -168,18 +169,18 @@ public class QNameInheritancePolicy extends InheritancePolicy {
             String indicatorValue = (String)indicator;
             int index = indicatorValue.indexOf(((XMLRecord)rowFromDatabase).getNamespaceSeparator());
             if (index == -1) {
-            	if(namespaceAware){
+                if (namespaceAware && usesXsiType) {
                     String uri = ((XMLRecord)rowFromDatabase).resolveNamespacePrefix(null);
-                    if(uri == null) {
-                    concreteClass = (Class)this.classIndicatorMapping.get(new XPathQName(((XMLRecord)rowFromDatabase).getNamespaceResolver().getDefaultNamespaceURI() ,indicatorValue, namespaceAware));
+                    if (uri == null) {
+                        concreteClass = (Class)this.classIndicatorMapping.get(new XPathQName(((XMLRecord)rowFromDatabase).getNamespaceResolver().getDefaultNamespaceURI() ,indicatorValue, namespaceAware));
                     } else {
-                    	XPathQName qname = new XPathQName(uri, indicatorValue, namespaceAware);
+                        XPathQName qname = new XPathQName(uri, indicatorValue, namespaceAware);
                         concreteClass = (Class)this.classIndicatorMapping.get(qname);
                     }
-            	}else{            		
+                } else {
                     XPathQName qname = new XPathQName(indicatorValue, namespaceAware);
-            	    concreteClass = (Class)this.classIndicatorMapping.get(qname);
-            	}
+                    concreteClass = (Class)this.classIndicatorMapping.get(qname);
+                }
             } else {
                 String prefix = indicatorValue.substring(0, index);
                 String localPart = indicatorValue.substring(index + 1);
