@@ -1025,9 +1025,14 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 				    validator.rightStateFieldPathExpressionValid) {
 
 					Object mapping = helper.resolveMapping(rightExpression);
+					IdentificationVariable variable = (IdentificationVariable) leftExpression;
 
-					// The path expression can only be a non-basic mapping
-					if ((mapping != null) && helper.isPropertyMapping(mapping)) {
+					// The path expression can only be a non-basic mapping.
+					// There is a specific EclipseLink case where it is valid to use an
+					// identification variable, which is when the identification variable
+					// maps to a direct collection mapping
+					if ((mapping != null) && helper.isPropertyMapping(mapping) &&
+					    !isIdentificationVariableValidInComparison(variable)) {
 
 						addProblem(
 							rightExpression,
@@ -1039,17 +1044,22 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 						valid = false;
 					}
 				}
-				// The right expression is an identification variable
 				// The left expression is a path expression
+				// The right expression is an identification variable
 				else if (validator.rightIdentificationVariable      &&
 				         validator.rightIdentificationVariableValid &&
 				         validator.leftStateFieldPathExpression     &&
 				         validator.leftStateFieldPathExpressionValid) {
 
 					Object mapping = helper.resolveMapping(leftExpression);
+					IdentificationVariable variable = (IdentificationVariable) rightExpression;
 
-					// The path expression can only be a non-basic mapping
-					if ((mapping != null) && helper.isPropertyMapping(mapping)) {
+					// The path expression can only be a non-basic mapping.
+					// There is a specific EclipseLink case where it is valid to use an
+					// identification variable, which is when the identification variable
+					// maps to a direct collection mapping
+					if ((mapping != null) && helper.isPropertyMapping(mapping) &&
+					    !isIdentificationVariableValidInComparison(variable)) {
 
 						addProblem(
 							leftExpression,

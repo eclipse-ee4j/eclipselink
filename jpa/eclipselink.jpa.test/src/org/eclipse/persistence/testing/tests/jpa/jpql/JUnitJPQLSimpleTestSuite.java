@@ -175,6 +175,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         suite.addTest(new JUnitJPQLSimpleTestSuite("selectFromClauseWithTableName"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("selectFromClauseWithJoin"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("testMultipleSubqueries"));
+        suite.addTest(new JUnitJPQLSimpleTestSuite("testDirectCollectionComparison"));
 
         return suite;
     }
@@ -2205,5 +2206,15 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
                "                                                                    )" +
                "                                             )" +
                "                         )";
+    }
+
+    /** Test for bug#379432 */
+    public void testDirectCollectionComparison() {
+        EntityManager em = createEntityManager();
+        Query query = em.createQuery("select b " +
+                                     "from Buyer as b, " +
+                                     "     Employee as e join b.creditLines as logicalName " +
+                                     "where logicalName = e.version");
+        query.getResultList();
     }
 }
