@@ -653,7 +653,7 @@ public class XMLProcessor {
             return processXmlJavaTypeAdapter((XmlJavaTypeAdapter) javaAttribute, oldProperty);
         }
         if (javaAttribute instanceof XmlInverseReference) {
-            return processXmlInverseReference((XmlInverseReference)javaAttribute, oldProperty);
+            return processXmlInverseReference((XmlInverseReference)javaAttribute, oldProperty, typeInfo);
         }
         if (javaAttribute instanceof XmlTransformation) {
             return processXmlTransformation((XmlTransformation)javaAttribute, oldProperty, typeInfo);
@@ -684,7 +684,8 @@ public class XMLProcessor {
      * @param oldProperty
      * @return
      */
-    private Property processXmlInverseReference(XmlInverseReference xmlInverseReference, Property oldProperty) {
+    private Property processXmlInverseReference(XmlInverseReference xmlInverseReference, Property oldProperty, TypeInfo info) {
+        resetProperty(oldProperty, info);
         oldProperty.setInverseReference(true);
         oldProperty.setInverseReferencePropertyName(xmlInverseReference.getMappedBy());
         if (xmlInverseReference.getXmlAccessMethods() != null) {
