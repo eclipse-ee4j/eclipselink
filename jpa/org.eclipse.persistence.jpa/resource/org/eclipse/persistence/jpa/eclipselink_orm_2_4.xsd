@@ -650,6 +650,24 @@
       <xsd:enumeration value="OUT_CURSOR"/>
     </xsd:restriction>
   </xsd:simpleType>
+  
+  <!-- **************************************************** -->
+
+  <xsd:simpleType name="parameter-mode">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        public enum ParameterMode { IN, INOUT, OUT, REF_CURSOR };
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:token">
+      <xsd:enumeration value="IN"/>
+      <xsd:enumeration value="OUT"/>
+      <xsd:enumeration value="INOUT"/>
+      <xsd:enumeration value="REF_CURSOR"/>
+    </xsd:restriction>
+  </xsd:simpleType>
 
   <!-- **************************************************** -->
 
@@ -2065,15 +2083,37 @@
         @Target({}) @Retention(RUNTIME)
         public @interface ColumnResult {
           String name();
+          Class type() default void.class;
         }
 
       </xsd:documentation>
     </xsd:annotation>
     <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attribute name="type" type="xsd:string"/>
   </xsd:complexType>
 
   <!-- **************************************************** -->
 
+  <xsd:complexType name="constructor-result">
+    <xsd:annotation>
+      <xsd:documentation>
+
+        @Target({}) @Retention(RUNTIME)
+        public @interface ConstructorResult {
+          Class targetClass();
+          ColumnResult[] columns() default {};
+        }
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+        <xsd:element name="column-result" type="orm:column-result" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attribute name="target-class" type="xsd:string" use="required"/>
+  </xsd:complexType>
+
+  <!-- **************************************************** -->
+  
   <xsd:complexType name="copy-policy">
     <xsd:annotation>
       <xsd:documentation>
@@ -3524,13 +3564,27 @@
 
           /**
            * (Optional) Refers to the class of the result.
+           * @deprecated
+           * @see resultClasses
            */
           Class resultClass() default void.class;
 
           /**
+           * (Optional) Refers to the classes of the result.
+           */
+          Class[] resultClasses() default {};
+
+          /**
            * (Optional) The name of the SQLResultMapping.
+           * @deprecated
+           * @see resultSetMappings
            */
           String resultSetMapping() default "";
+    
+          /**
+           * (Optional) The names of the SQLResultMappings.
+           */
+          String[] resultSetMappings() default {};
 
           /**
            * (Required) The name of the stored procedure.
@@ -3538,20 +3592,24 @@
           String procedureName();
 
           /**
-           * (Optional) Whether the query should return a result set.
+           * (Optional) Defines if stored procedure returns a result set.
+           * This is only relevant on databases that support returning result sets 
+           * from stored procedures.
            */
-          boolean returnsResultSet() default true; 
-
+          boolean returnsResultSet() default false;
+    
           /**
            * (Optional) Defines if the stored procedure returns multiple result sets.
-           * This is only relevant on databases that support multiple result sets from stored procedures.
+           * This is only relevant on databases that support multiple result sets from 
+           * stored procedures.
            */
           boolean multipleResultSets() default false;
-          
+    
           /**
-           * (Optional) Defines if the stored procedure should be called by index or by name.
-           * By index requires that the StoredProcedureParameter are defined in the same order as the procedure on the database.
-           * By name requires the database platform support naming procedure parameters.
+           * (Optional) Defines if the stored procedure should be called by index or 
+           * by name. By index requires that the StoredProcedureParameter are defined 
+           * in the same order as the procedure on the database. By name requires the 
+           * database platform support naming procedure parameters.
            */
           boolean callByIndex() default false;
     
@@ -3564,6 +3622,8 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
+      <xsd:element name="result-class" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="result-set-mapping" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="hint" type="orm:query-hint" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="parameter" type="orm:stored-procedure-parameter" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
@@ -4688,6 +4748,7 @@
         public @interface SqlResultSetMapping {
           String name();
           EntityResult[] entities() default {};
+          ConstructorResult[] classes() default {};
           ColumnResult[] columns() default {};
         }
 
@@ -4696,6 +4757,8 @@
     <xsd:sequence>
       <xsd:element name="description" type="xsd:string" minOccurs="0"/>
       <xsd:element name="entity-result" type="orm:entity-result" 
+                   minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="constructor-result" type="orm:constructor-result" 
                    minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="column-result" type="orm:column-result" 
                    minOccurs="0" maxOccurs="unbounded"/>
@@ -4718,8 +4781,15 @@
         public @interface StoredProcedureParameter {
           /**
            * (Optional) The direction of the stored procedure parameter.
+           * @deprecated
+           * @see mode()
            */
           Direction direction() default IN;
+          
+          /**
+           * (Optional) The direction of the stored procedure parameter.
+           */
+          ParameterMode mode() default ParameterMode.IN;
 
           /**
            * (Optional) Stored procedure parameter name.
@@ -4758,6 +4828,7 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:attribute name="direction" type="orm:direction-type"/>
+    <xsd:attribute name="mode" type="orm:parameter-mode"/>
     <xsd:attribute name="name" type="xsd:string"/>
     <xsd:attribute name="query-parameter" type="xsd:string" use="required"/>
     <xsd:attribute name="optional" type="xsd:boolean"/>
