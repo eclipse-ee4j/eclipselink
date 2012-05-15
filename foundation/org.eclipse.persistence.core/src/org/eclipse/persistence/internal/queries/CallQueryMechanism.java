@@ -202,15 +202,9 @@ public class CallQueryMechanism extends DatasourceCallQueryMechanism {
             for (Enumeration callsEnum = getCalls().elements(); callsEnum.hasMoreElements();) {
                 DatabaseCall call = (DatabaseCall)callsEnum.nextElement();
                 call.returnNothing();
-                if (getQuery().getDescriptor().usesOptimisticLocking()) {
-                    call.setHasOptimisticLock(true);
-                }
             }
         } else {
             getCall().returnNothing();
-            if (getQuery().getDescriptor().usesOptimisticLocking()) {
-                getDatabaseCall().setHasOptimisticLock(true);
-            }
         }
 
         prepareCall();
