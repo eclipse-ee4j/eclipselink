@@ -12,7 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.nosql;
 
-import org.eclipse.persistence.annotations.DataFormatType;
+//import org.eclipse.persistence.annotations.DataFormatType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.eis.EISDescriptor;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -94,11 +94,11 @@ public class NoSqlMetadata extends ORMetadata {
             newDescriptor.setDataTypeName(defaultName);
         }
         if (this.dataFormat != null) {
-            if (this.dataFormat.equals(DataFormatType.XML.name())) {
+            if (this.dataFormat.equals("XML")) {
                 newDescriptor.setDataFormat(EISDescriptor.XML);
-            } else if (this.dataFormat.equals(DataFormatType.MAPPED.name())) {
+            } else if (this.dataFormat.equals("MAPPED")) {
                 newDescriptor.setDataFormat(EISDescriptor.MAPPED);
-            } else if (this.dataFormat.equals(DataFormatType.INDEXED.name())) {
+            } else if (this.dataFormat.equals("INDEXED")) {
                 newDescriptor.setDataFormat(EISDescriptor.INDEXED);
             }
         }

@@ -20,6 +20,8 @@ package org.eclipse.persistence.platform.server;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.sql.SQLException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import javax.persistence.spi.PersistenceUnitInfo;
 
@@ -121,6 +123,16 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      */
     protected String serverNameAndVersion;
     
+    /**
+     * Allow the thread pool size to be configured.
+     */
+    protected int threadPoolSize = 32;
+
+    /**
+     * Allow pooling of threads for asynchronous processing in RCM and other areas.
+     */
+    protected volatile Executor threadPool;
+
     /**
      * INTERNAL:
      * Default Constructor: Initialize so that runtime services and JTA are enabled. Set the DatabaseSession that I
@@ -411,7 +423,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      * @return void
      */
     public void launchContainerRunnable(Runnable runnable) {
-        new Thread(runnable).start();
+        getThreadPool().execute(runnable);
     }
 
     /**
@@ -435,6 +447,37 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      */
     public org.eclipse.persistence.logging.SessionLog getServerLog() {
         return new ServerLog();
+    }
+    
+    /**
+     * Return the thread pool size.
+     */
+    public int getThreadPoolSize() {
+        return threadPoolSize;
+    }
+    
+    /**
+     * Set the thread pool size.
+     */
+    public void setThreadPoolSize(int threadPoolSize) {
+        this.threadPoolSize = threadPoolSize;
+    }
+
+    /**
+     * INTERNAL: Return the thread pool, initializing if required.
+     */
+    public Executor getThreadPool() {
+        if (threadPool == null) {
+            threadPool = Executors.newFixedThreadPool(getThreadPoolSize());
+        }
+        return threadPool;
+    }
+
+    /**
+     * INTERNAL: Set the thread pool to use.
+     */
+    public void setThreadPool(Executor threadPool) {
+        this.threadPool = threadPool;
     }
     
     /**

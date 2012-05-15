@@ -82,7 +82,7 @@ import java.util.Set;
 
 import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.annotations.Convert;
-import org.eclipse.persistence.annotations.Field;
+//import org.eclipse.persistence.annotations.Field;
 import org.eclipse.persistence.annotations.JoinFetchType;
 import org.eclipse.persistence.annotations.Properties;
 import org.eclipse.persistence.annotations.Property;
@@ -192,7 +192,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
         initAccess();
 
         // Any mapping type may have a field for EIS/NoSQL data.
-        MetadataAnnotation field = getAnnotation(Field.class);
+        MetadataAnnotation field = getAnnotation("org.eclipse.persistence.nosql.annotations.Field");
         if (field != null) {
             m_field = new ColumnMetadata(field, this);
         }

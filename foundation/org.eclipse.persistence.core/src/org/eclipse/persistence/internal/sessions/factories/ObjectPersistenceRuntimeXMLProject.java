@@ -57,7 +57,7 @@ import org.eclipse.persistence.descriptors.invalidation.NoExpiryCacheInvalidatio
 import org.eclipse.persistence.descriptors.invalidation.TimeToLiveCacheInvalidationPolicy;
 import org.eclipse.persistence.eis.EISDescriptor;
 import org.eclipse.persistence.eis.EISLogin;
-import org.eclipse.persistence.eis.adapters.xmlfile.XMLFileSequence;
+//import org.eclipse.persistence.eis.adapters.xmlfile.XMLFileSequence;
 import org.eclipse.persistence.eis.mappings.EISCompositeCollectionMapping;
 import org.eclipse.persistence.eis.mappings.EISCompositeDirectCollectionMapping;
 import org.eclipse.persistence.eis.mappings.EISCompositeObjectMapping;
@@ -5116,8 +5116,11 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         descriptor.getInheritancePolicy().addClassIndicator(NativeSequence.class, getPrimaryNamespaceXPath() + "native-sequence");
         descriptor.getInheritancePolicy().addClassIndicator(TableSequence.class, getPrimaryNamespaceXPath() + "table-sequence");
         descriptor.getInheritancePolicy().addClassIndicator(UnaryTableSequence.class, getPrimaryNamespaceXPath() + "unary-table-sequence");
-        descriptor.getInheritancePolicy().addClassIndicator(XMLFileSequence.class, getPrimaryNamespaceXPath() + "xmlfile-sequence");
-
+        try {
+            descriptor.getInheritancePolicy().addClassIndicator(Class.forName("org.eclipse.persistence.eis.adapters.xmlfile.XMLFileSequence"), getPrimaryNamespaceXPath() + "xmlfile-sequence");
+        } catch (Exception missing) {
+            // Ignore.
+        }
         XMLDirectMapping nameMapping = new XMLDirectMapping();
         nameMapping.setAttributeName("name");
         nameMapping.setGetMethodName("getName");
@@ -5208,8 +5211,13 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
     }
 
     protected ClassDescriptor buildXMLFileSequenceDescriptor() {
+        // Can no longer reference class directly as in a different project.
         XMLDescriptor descriptor = new XMLDescriptor();
-        descriptor.setJavaClass(XMLFileSequence.class);
+        try {
+            descriptor.setJavaClass(Class.forName("org.eclipse.persistence.eis.adapters.xmlfile.XMLFileSequence"));
+        } catch (Exception missing) {
+            descriptor.setJavaClass(new DefaultSequence() {}.getClass());
+        }
 
         descriptor.getInheritancePolicy().setParentClass(Sequence.class);
 

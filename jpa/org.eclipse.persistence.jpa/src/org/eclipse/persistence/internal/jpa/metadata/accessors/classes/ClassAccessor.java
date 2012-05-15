@@ -86,7 +86,7 @@ import org.eclipse.persistence.annotations.CopyPolicy;
 import org.eclipse.persistence.annotations.ExcludeDefaultMappings;
 import org.eclipse.persistence.annotations.InstantiationCopyPolicy;
 import org.eclipse.persistence.annotations.CloneCopyPolicy;
-import org.eclipse.persistence.annotations.NoSql;
+//import org.eclipse.persistence.annotations.NoSql;
 import org.eclipse.persistence.annotations.Properties;
 import org.eclipse.persistence.annotations.Property;
 import org.eclipse.persistence.annotations.Struct;
@@ -1635,7 +1635,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
             m_noSql.process(getDescriptor());
         } else {
             // Check for a annotation
-            MetadataAnnotation eis = getAnnotation(NoSql.class);
+            MetadataAnnotation eis = getAnnotation("org.eclipse.persistence.nosql.annotations.NoSql");
             if (eis != null) {
                 new NoSqlMetadata(eis, this).process(getDescriptor());
             }

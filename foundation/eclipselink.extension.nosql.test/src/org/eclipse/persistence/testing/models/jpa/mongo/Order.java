@@ -30,11 +30,11 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Version;
 
-import org.eclipse.persistence.annotations.DataFormatType;
-import org.eclipse.persistence.annotations.Field;
-import org.eclipse.persistence.annotations.JoinField;
-import org.eclipse.persistence.annotations.JoinFields;
-import org.eclipse.persistence.annotations.NoSql;
+import org.eclipse.persistence.nosql.annotations.DataFormatType;
+import org.eclipse.persistence.nosql.annotations.Field;
+import org.eclipse.persistence.nosql.annotations.JoinField;
+import org.eclipse.persistence.nosql.annotations.JoinFields;
+import org.eclipse.persistence.nosql.annotations.NoSql;
 import org.eclipse.persistence.internal.helper.Helper;
 
 /**

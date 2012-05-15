@@ -10,31 +10,27 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
-package org.eclipse.persistence.testing.models.jpa.mongo;
+package org.eclipse.persistence.testing.models.jpa.nosql;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.Embeddable;
 
-import org.eclipse.persistence.nosql.annotations.DataFormatType;
-import org.eclipse.persistence.nosql.annotations.Field;
 import org.eclipse.persistence.nosql.annotations.NoSql;
 
 
 /**
- * Model customer class, maps to CUSTOMER record.
+ * Model address class, maps to ADDRESS record.
  */
-@Entity
-@NoSql(dataFormat=DataFormatType.MAPPED)
-public class Customer {
-    @Id
-    @GeneratedValue
-    @Field(name="_id")
-    public byte[] id;
-    
-    public String name;
+@Embeddable
+@NoSql
+public class Address {
+    public String addressee;
+    public String street;
+    public String city;
+    public String state;
+    public String country;
+    public String zipCode;
 
     public String toString() {
-        return "Customer(" + name + ")";
+        return "Address(" + addressee + ", " + street + ", " + city + ", " + state + ", " + country + ", " + zipCode + ")";
     }
 }

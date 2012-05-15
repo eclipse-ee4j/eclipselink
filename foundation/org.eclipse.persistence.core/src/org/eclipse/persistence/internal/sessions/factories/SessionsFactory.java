@@ -20,7 +20,7 @@ import java.lang.reflect.Constructor;
 
 import org.eclipse.persistence.config.SessionCustomizer;
 import org.eclipse.persistence.eis.*;
-import org.eclipse.persistence.eis.adapters.xmlfile.XMLFileSequence;
+//import org.eclipse.persistence.eis.adapters.xmlfile.XMLFileSequence;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.oxm.XMLLogin;
 import org.eclipse.persistence.logging.*;
@@ -963,7 +963,16 @@ public class SessionsFactory {
             UnaryTableSequenceConfig utsc = (UnaryTableSequenceConfig)sequenceConfig;
             return new UnaryTableSequence(name, size, utsc.getCounterField());
         } else if (sequenceConfig instanceof XMLFileSequenceConfig) {
-            return new XMLFileSequence(name, size);
+            try {
+                // Can no longer reference class directly as in a different project.
+                Class xmlClass = Class.forName("org.eclipse.persistence.eis.adapters.xmlfile.XMLFileSequence");
+                Sequence sequence = (Sequence)xmlClass.newInstance();
+                sequence.setName(name);
+                sequence.setInitialValue(size);
+                return sequence;
+            } catch (Exception missing) {
+                return null;
+            }
         } else {
             // Unknown SequenceConfig subclass - should never happen
             return null;

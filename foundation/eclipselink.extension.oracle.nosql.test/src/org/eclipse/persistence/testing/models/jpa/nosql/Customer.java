@@ -10,14 +10,13 @@
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
  ******************************************************************************/  
-package org.eclipse.persistence.testing.models.jpa.mongo;
+package org.eclipse.persistence.testing.models.jpa.nosql;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 import org.eclipse.persistence.nosql.annotations.DataFormatType;
-import org.eclipse.persistence.nosql.annotations.Field;
 import org.eclipse.persistence.nosql.annotations.NoSql;
 
 
@@ -25,13 +24,11 @@ import org.eclipse.persistence.nosql.annotations.NoSql;
  * Model customer class, maps to CUSTOMER record.
  */
 @Entity
-@NoSql(dataFormat=DataFormatType.MAPPED)
+@NoSql(dataFormat=DataFormatType.XML)
 public class Customer {
     @Id
     @GeneratedValue
-    @Field(name="_id")
-    public byte[] id;
-    
+    public String id;
     public String name;
 
     public String toString() {

@@ -769,7 +769,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
      */
     protected Vector buildThreadCursoredResult(final DatabaseCall dbCall, final ResultSet resultSet, final Statement statement, final ResultSetMetaData metaData, final AbstractSession session) {
         final ThreadCursoredList results = new ThreadCursoredList(20);
-        Thread thread = new Thread() {
+        Runnable runnable = new Runnable() {
             public void run() {
                 session.startOperationProfile(SessionProfiler.RowFetch, dbCall.getQuery(), SessionProfiler.ALL);
                 try {
@@ -819,7 +819,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
                 results.setIsComplete(true);
             }
         };
-        thread.start();
+        session.getServerPlatform().launchContainerRunnable(runnable);
 
         return results;
     }

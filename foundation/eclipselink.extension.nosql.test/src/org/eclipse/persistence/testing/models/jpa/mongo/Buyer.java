@@ -15,8 +15,8 @@ package org.eclipse.persistence.testing.models.jpa.mongo;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
-import org.eclipse.persistence.annotations.DataFormatType;
-import org.eclipse.persistence.annotations.NoSql;
+import org.eclipse.persistence.nosql.annotations.DataFormatType;
+import org.eclipse.persistence.nosql.annotations.NoSql;
 
 
 /**

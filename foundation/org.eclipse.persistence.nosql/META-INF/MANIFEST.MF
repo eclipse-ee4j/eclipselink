@@ -1,5 +1,10 @@
 Manifest-Version: 1.0
-Export-Package: org.eclipse.persistence.internal.nosql.adapters.mongo;version="2.4.0",
+Export-Package: 
+ org.eclipse.persistence.internal.eis.adapters.jms;version="2.4.0",
+ org.eclipse.persistence.internal.eis.adapters.xmlfile;version="2.4.0",
+ org.eclipse.persistence.internal.eis.cobol;version="2.4.0",
+ org.eclipse.persistence.internal.eis.cobol.helper;version="2.4.0",
+ org.eclipse.persistence.internal.nosql.adapters.mongo;version="2.4.0",
  org.eclipse.persistence.nosql.adapters.mongo;version="2.4.0"
 Bundle-Name: EclipseLink NoSQL Extensions
 Created-By: 1.6.0_26 (Sun Microsystems Inc.)
@@ -12,6 +17,7 @@ Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.eclipse.persistence.nosql
 Import-Package: com.mongodb;resolution:=optional,
  javax.resource.cci;version="1.5.0";resolution:=optional,
+ javax.jms;version="1.1.0";resolution:=optional,
  org.bson;resolution:=optional,
  org.bson.types;resolution:=optional,
  org.eclipse.persistence;version="2.4.0",

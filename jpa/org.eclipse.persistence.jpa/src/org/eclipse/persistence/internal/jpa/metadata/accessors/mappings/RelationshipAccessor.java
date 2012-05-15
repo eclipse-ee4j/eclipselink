@@ -59,8 +59,8 @@ import org.eclipse.persistence.mappings.RelationTableMechanism;
 import org.eclipse.persistence.annotations.BatchFetch;
 import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.eclipse.persistence.annotations.JoinFetch;
-import org.eclipse.persistence.annotations.JoinField;
-import org.eclipse.persistence.annotations.JoinFields;
+//import org.eclipse.persistence.annotations.JoinField;
+//import org.eclipse.persistence.annotations.JoinFields;
 import org.eclipse.persistence.annotations.Noncacheable;
 import org.eclipse.persistence.annotations.PrivateOwned;
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -171,15 +171,15 @@ public abstract class RelationshipAccessor extends MappingAccessor {
         }
         
         // Set the join fields if some are present.
-        if (isAnnotationPresent(JoinFields.class)) {
-            for (Object joinColumn : (Object[]) getAnnotation(JoinFields.class).getAttributeArray("value")) {
+        if (isAnnotationPresent("org.eclipse.persistence.nosql.annotations.JoinFields")) {
+            for (Object joinColumn : (Object[]) getAnnotation("org.eclipse.persistence.nosql.annotations.JoinFields").getAttributeArray("value")) {
                 m_joinColumns.add(new JoinColumnMetadata((MetadataAnnotation)joinColumn, this));
             }
         }
         
         // Process EIS/NoSQL join field.
-        if (isAnnotationPresent(JoinField.class)) {
-            m_joinColumns.add(new JoinColumnMetadata(getAnnotation(JoinField.class), this));
+        if (isAnnotationPresent("org.eclipse.persistence.nosql.annotations.JoinField")) {
+            m_joinColumns.add(new JoinColumnMetadata(getAnnotation("org.eclipse.persistence.nosql.annotations.JoinField"), this));
         }
         
         // Set the join table if one is present.
