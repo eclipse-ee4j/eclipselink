@@ -34,7 +34,6 @@ public class OracleTestModel extends TestModel {
         tests.add("org.eclipse.persistence.testing.tests.conversion.ConversionManagerOracleTestModel");
         tests.add("org.eclipse.persistence.testing.tests.distributedservers.rcm.jms.JMSRCMDistributedServersModel");
         tests.add("org.eclipse.persistence.testing.tests.dbchangenotification.DbChangeNotificationTestModel");
-        tests.add("org.eclipse.persistence.testing.tests.eis.aq.AQTestModel");
         tests.add("org.eclipse.persistence.testing.tests.lob.LOBTestModel");
         tests.add("org.eclipse.persistence.testing.tests.lob.LOBSessionBrokerTestModel");
         tests.add("org.eclipse.persistence.testing.tests.nchar.NcharTestModel");
