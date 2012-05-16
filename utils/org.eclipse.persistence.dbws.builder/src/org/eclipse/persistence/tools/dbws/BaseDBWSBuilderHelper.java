@@ -87,6 +87,7 @@ import org.eclipse.persistence.platform.database.oracle.jdbc.OracleArrayType;
 import org.eclipse.persistence.platform.database.oracle.jdbc.OracleObjectType;
 import org.eclipse.persistence.platform.database.oracle.plsql.OraclePLSQLTypes;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLCollection;
+import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLCursor;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLrecord;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
@@ -148,7 +149,6 @@ import static org.eclipse.persistence.tools.dbws.Util.getGeneratedJavaClassName;
 import static org.eclipse.persistence.tools.dbws.Util.getGeneratedWrapperClassName;
 import static org.eclipse.persistence.tools.dbws.Util.hasComplexArgs;
 import static org.eclipse.persistence.tools.dbws.Util.hasPLSQLArgs;
-import static org.eclipse.persistence.tools.dbws.Util.hasPLSQLScalarArgs;
 import static org.eclipse.persistence.tools.dbws.Util.isNullStream;
 import static org.eclipse.persistence.tools.dbws.Util.requiresSimpleXMLFormat;
 import static org.eclipse.persistence.tools.dbws.Util.sqlMatch;
@@ -173,6 +173,7 @@ import org.eclipse.persistence.tools.oracleddl.metadata.NumericType;
 import org.eclipse.persistence.tools.oracleddl.metadata.ObjectTableType;
 import org.eclipse.persistence.tools.oracleddl.metadata.ObjectType;
 import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLCollectionType;
+import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLCursorType;
 import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLPackageType;
 import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLRecordType;
 import org.eclipse.persistence.tools.oracleddl.metadata.PrecisionType;
@@ -183,6 +184,7 @@ import org.eclipse.persistence.tools.oracleddl.metadata.RealType;
 import org.eclipse.persistence.tools.oracleddl.metadata.ScalarDatabaseType;
 import org.eclipse.persistence.tools.oracleddl.metadata.ScalarDatabaseTypeEnum;
 import org.eclipse.persistence.tools.oracleddl.metadata.SizedType;
+import org.eclipse.persistence.tools.oracleddl.metadata.TYPEType;
 import org.eclipse.persistence.tools.oracleddl.metadata.TableType;
 import org.eclipse.persistence.tools.oracleddl.metadata.TimeStampType;
 import org.eclipse.persistence.tools.oracleddl.metadata.VArrayType;
@@ -405,7 +407,7 @@ public abstract class BaseDBWSBuilderHelper {
                         List<ArgumentType> args = getArgumentListForProcedureType(procType);
                         boolean hasComplexArgs = hasComplexArgs(args);
                         boolean hasPLSQLArgs = hasPLSQLArgs(args);
-                        boolean hasPLSQLScalarArgs = hasPLSQLScalarArgs(args);
+                        
                         // set 'complex' flag on model to indicate complex arg processing is required
                         // TODO: don't overwrite previously set to TRUE, as not all proc/funcs in the
                         //       model necessarily have complex args, but we will need to know to
@@ -413,10 +415,9 @@ public abstract class BaseDBWSBuilderHelper {
                         if (!procedureOperation.hasComplexArguments) {
                             procedureOperation.setHasComplexArguments(hasComplexArgs);
                         }
-                        if (hasComplexArgs || hasPLSQLScalarArgs) {
+                        if (hasComplexArgs || hasPLSQLArgs) {
                             // build a query for this ProcedureType as it has one or more complex arguments
-                            buildQueryForProcedureType(procType, orProject, oxProject, procedureOperation,
-                                hasPLSQLArgs);
+                            buildQueryForProcedureType(procType, orProject, oxProject, procedureOperation, hasPLSQLArgs);
                         }
                     }
                 }
@@ -1241,9 +1242,25 @@ public abstract class BaseDBWSBuilderHelper {
      */
     @SuppressWarnings("rawtypes")
 	protected org.eclipse.persistence.internal.helper.DatabaseType buildDatabaseTypeFromMetadataType(DatabaseType dType, String catalog) {
+        // handle cursors
+        if (dType.isPLSQLCursorType()) {
+            if (dType.isArgumentType()) {
+                dType = ((ArgumentType)dType).getEnclosedType();
+            }
+            PLSQLCursorType pType = (PLSQLCursorType)dType;
+            String typeName = pType.getCursorName();
+            if (catalog != null) {
+                typeName = (catalog + DOT).concat(typeName);
+            }
+            return new PLSQLCursor(typeName);
+        } 
+        
         if (dType.isArgumentType()) {
             dType = ((ArgumentType)dType).getEnclosedType();
+        } else if (dType.isTYPEType()) {
+            dType = ((TYPEType)dType).getEnclosedType();
         }
+        
         // composite types
         if (dType.isComposite()) {
             String typeName = dType.getTypeName();

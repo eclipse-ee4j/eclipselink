@@ -612,6 +612,7 @@ public class Util {
      */
     public static boolean isTypeComplex(DatabaseType dbType) {
         return dbType.isPLSQLType()
+                || (dbType.isPLSQLCursorType() && !((PLSQLCursorType)dbType).isWeaklyTyped())
                 || dbType.isVArrayType()
                 || dbType.isObjectType()
                 || dbType.isObjectTableType();
@@ -734,6 +735,19 @@ public class Util {
     public static boolean hasPLSQLScalarArgs(List<ArgumentType> arguments) {
         for (ArgumentType arg : arguments) {
         	if (isArgPLSQLScalar(arg)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Indicates if a given List<ArgumentType> contains a PL/SQL Cursor 
+     * type.
+     */
+    public static boolean hasPLSQLCursorArg(List<ArgumentType> arguments) {
+        for (ArgumentType arg : arguments) {
+            if (arg.isPLSQLCursorType()) {
                 return true;
             }
         }

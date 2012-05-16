@@ -121,6 +121,7 @@ import static org.eclipse.persistence.tools.dbws.Util.SXF_QNAME_CURSOR;
 import static org.eclipse.persistence.tools.dbws.Util.buildCustomQName;
 import static org.eclipse.persistence.tools.dbws.Util.getGeneratedJavaClassName;
 import static org.eclipse.persistence.tools.dbws.Util.getXMLTypeFromJDBCType;
+import static org.eclipse.persistence.tools.dbws.Util.hasPLSQLCursorArg;
 import static org.eclipse.persistence.tools.dbws.Util.qNameFromString;
 import static org.eclipse.persistence.tools.dbws.Util.sqlMatch;
 import static org.eclipse.persistence.tools.dbws.Util.APP_OCTET_STREAM;
@@ -285,8 +286,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                             if (cursorType.isWeaklyTyped()) {
                                 xmlType = buildCustomQName("SYS_REFCURSOR", dbwsBuilder);
                             }
-                        }
-                        else {
+                        } else {
                             xmlType = getXMLTypeFromJDBCType(Util.getJDBCTypeFromTypeName(arg.getTypeName()));
                         }
                     } else {
@@ -470,6 +470,72 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
         }
         return result;
     }
+    
+    /**
+     * Build and return a Result instance based on a given ProcedureType
+     * and return type name.
+     *
+    protected Result buildResultForStoredFunction(ProcedureType storedProcedure, String returnType) {
+=======
+    protected Result buildResultForStoredFunction(ArgumentType returnArgument, String returnType) {
+>>>>>>> .r11379
+        Result result = null;
+<<<<<<< .mine
+        FunctionType storedFunction = (FunctionType)storedProcedure;
+        ArgumentType rarg = storedFunction.getReturnArgument();
+        DatabaseType rargDataType = rarg.getEnclosedType();
+        if (rarg.isPLSQLCursorType() || rarg.getTypeName().contains(CURSOR_STR)) {
+=======
+        DatabaseType rargDataType = returnArgument.getEnclosedType();
+
+        // handle ref cursor
+        if (rargDataType.isPLSQLCursorType() || returnArgument.getTypeName().contains(CURSOR_STR)) {
+>>>>>>> .r11379
+            result = new CollectionResult();
+            result.setType(SXF_QNAME_CURSOR);
+        } else {
+            result = new Result();
+            int rargJdbcType = OTHER;
+            if (rargDataType.isComposite()) {
+                if (rargDataType.isObjectType()) {
+                    rargJdbcType = STRUCT;
+                } else if (rargDataType.isVArrayType() || rargDataType.isObjectTableType()) {
+                    rargJdbcType = ARRAY;
+                }
+            } else {
+                rargJdbcType = Util.getJDBCTypeFromTypeName(returnArgument.getTypeName());
+            }
+            switch (rargJdbcType) {
+                case OTHER:
+                    // if user overrides returnType, assume they're right
+                    if (returnType == null || returnType.length() == 0) {
+                        returnType = rargDataType.getTypeName();
+                    }
+                    // packages only apply to PL/SQL types
+                    String packageName = null;
+                    if (rargDataType.isPLSQLType()) {
+                        packageName = ((PLSQLType) rargDataType).getParentType().getPackageName();
+                    }
+                    String returnTypeName = (packageName != null && packageName.length() > 0) ?
+                            packageName + UNDERSCORE + returnType : returnType;
+                    result.setType(buildCustomQName(returnTypeName, dbwsBuilder));
+                    break;
+                case STRUCT:
+                case ARRAY:
+                    // if user overrides returnType, assume they're right
+                    if (returnType == null || returnType.length() == 0) {
+                        returnType = rargDataType.getTypeName().toLowerCase().concat(TYPE_STR);
+                    }
+                    result.setType(buildCustomQName(returnType, dbwsBuilder));
+                    break;
+                default :
+                    // scalar types
+                    result.setType(getXMLTypeFromJDBCType(rargJdbcType));
+                    break;
+            }
+        }
+        return result;
+    }*/
 
     /**
      * Returns the name to be used for a QueryOperation (or Query) based on a
@@ -1159,22 +1225,33 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
      * it to the given OR project's list of queries.
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    protected void buildQueryForProcedureType(ProcedureType procType, Project orProject, Project oxProject, ProcedureOperationModel opModel, boolean hasComplexArgs) {
-        // if there are one or more PL/SQL args, then we need a PLSQLStoredProcedureCall
+	protected void buildQueryForProcedureType(ProcedureType procType, Project orProject, Project oxProject, ProcedureOperationModel opModel, boolean hasPLSQLArgs) {
+    	// if there are one or more PL/SQL args, then we need a PLSQLStoredProcedureCall
         StoredProcedureCall call;
-        ArgumentType returnArg = procType.isFunctionType() ? ((FunctionType)procType).getReturnArgument() : null;
-        if (hasComplexArgs) {
+    	ArgumentType returnArg = procType.isFunctionType() ? ((FunctionType)procType).getReturnArgument() : null;
+
+    	// check for PL/SQL cursor arg
+        boolean hasCursor = hasPLSQLCursorArg(getArgumentListForProcedureType(procType));
+        hasPLSQLArgs = hasPLSQLArgs || hasCursor;
+    	if (hasPLSQLArgs) {
             if (procType.isFunctionType()) {
                 org.eclipse.persistence.internal.helper.DatabaseType dType = buildDatabaseTypeFromMetadataType(returnArg, procType.getCatalogName());
-                Class wrapperClass = getWrapperClass(dType);
-                if (wrapperClass != null) {
-                    ((ComplexDatabaseType) dType).setJavaType(wrapperClass);
-                }
-                call = new PLSQLStoredFunctionCall(dType);
-                // check for non-associative collection
-                if (returnArg.getEnclosedType().isPLSQLCollectionType() && !((PLSQLCollectionType)returnArg.getEnclosedType()).isIndexed()) {
-                    PLSQLargument plsqlArg = ((PLSQLStoredFunctionCall)call).getArguments().get(0);
-                    plsqlArg.setIsNonAssociativeCollection(true);
+                if (hasCursor) {
+                    call = new PLSQLStoredFunctionCall();
+                    // constructor by default adds a RETURN argument, so remove it
+                    ((PLSQLStoredFunctionCall)call).getArguments().remove(0);
+                    ((PLSQLStoredFunctionCall)call).useNamedCursorOutputAsResultSet(CURSOR_STR, dType);
+                } else {
+                	Class wrapperClass = getWrapperClass(dType);
+                	if (wrapperClass != null) {
+                		((ComplexDatabaseType) dType).setJavaType(wrapperClass);
+                	}
+                    call = new PLSQLStoredFunctionCall(dType);
+                	// check for non-associative collection
+                	if (returnArg.getEnclosedType().isPLSQLCollectionType() && !((PLSQLCollectionType)returnArg.getEnclosedType()).isIndexed()) {
+                		PLSQLargument plsqlArg = ((PLSQLStoredFunctionCall)call).getArguments().get(0);
+                		plsqlArg.setIsNonAssociativeCollection(true);
+                	}
                 }
             } else {
                 call = new PLSQLStoredProcedureCall();
@@ -1213,7 +1290,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
         boolean hasResponse = returnType != null;
 
         DatabaseQuery dq = null;
-        if (hasResponse && opModel.isCollection()) {
+        if (hasCursor || (hasResponse && opModel.isCollection())) {
             dq = new DataReadQuery();
         } else {
             dq = new ValueReadQuery();
@@ -1236,7 +1313,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             // for Advanced JDBC
             String javaTypeName = null;
 
-            if (hasComplexArgs) {
+            if (hasPLSQLArgs) {
                 databaseType = buildDatabaseTypeFromMetadataType(argType, cat);
             } else {
                 javaTypeName = argType.getTypeName();
@@ -1248,7 +1325,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             }
 
             if (direction == IN) {
-                if (hasComplexArgs) {
+            	if (hasPLSQLArgs) {
                     Class wrapperClass = getWrapperClass(databaseType);
                     if (wrapperClass != null) {
                         ((ComplexDatabaseType) databaseType).setJavaType(wrapperClass);
@@ -1279,16 +1356,16 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                     }
                 }
             } else if (direction == OUT) {
-                if (hasComplexArgs) {
-//                    if (databaseType != null) {
+            	if (hasPLSQLArgs) {
+            	    if(arg.isPLSQLCursorType()) {
+            	        ((PLSQLStoredProcedureCall)call).useNamedCursorOutputAsResultSet(arg.getArgumentName(), databaseType);
+            	    } else {
                         Class wrapperClass = getWrapperClass(databaseType);
                         if (wrapperClass != null) {
                             ((ComplexDatabaseType) databaseType).setJavaType(wrapperClass);
                         }
                         ((PLSQLStoredProcedureCall)call).addNamedOutputArgument(arg.getArgumentName(), databaseType);
-//                    } else {
-                        
-//                    }
+            	    }
                 } else {
                     if (argType.isComposite()) {
                         Class wrapperClass = getWrapperClass(javaTypeName);
@@ -1307,19 +1384,19 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                     }
             	}
             } else {  // INOUT
-                if (hasComplexArgs) {
-                    ((PLSQLStoredProcedureCall)call).addNamedInOutputArgument(arg.getArgumentName(), databaseType);
-                    // check for non-associative collection
-                    if (argType.isPLSQLCollectionType() && !((PLSQLCollectionType)argType).isIndexed()) {
-                        PLSQLargument plsqlArg = ((PLSQLStoredProcedureCall)call).getArguments().get(((PLSQLStoredProcedureCall)call).getArguments().size()-1);
-                        plsqlArg.setIsNonAssociativeCollection(true);
+            	if (hasPLSQLArgs) {
+            		((PLSQLStoredProcedureCall)call).addNamedInOutputArgument(arg.getArgumentName(), databaseType);
+	            	// check for non-associative collection
+	            	if (argType.isPLSQLCollectionType() && !((PLSQLCollectionType)argType).isIndexed()) {
+	            		PLSQLargument plsqlArg = ((PLSQLStoredProcedureCall)call).getArguments().get(((PLSQLStoredProcedureCall)call).getArguments().size()-1);
+	            		plsqlArg.setIsNonAssociativeCollection(true);
                     }
                 } else {
                     dq.addArgument(arg.getArgumentName());
                     call.addNamedInOutputArgument(arg.getArgumentName());
                 }
             }
-            if (hasComplexArgs && (direction == IN || direction == INOUT)) {
+            if (hasPLSQLArgs && (direction == IN || direction == INOUT)) {
                 ClassDescriptor xdesc = null;
                 if (hasResponse) {
                     int idx = returnType.indexOf(COLON);
