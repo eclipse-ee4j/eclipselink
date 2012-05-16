@@ -172,29 +172,9 @@
                                                     else="${extensions.depend.dir}/${ojdbc.jar}">
             <available file="${oracle.extensions.depend.dir}/${ojdbc.jar}"/>
         </condition>
-        <condition property="sdoapi.lib"    value="${oracle.extensions.depend.dir}/${sdoapi.jar}"
-                                                    else="${extensions.depend.dir}/${sdoapi.jar}">
-            <available file="${oracle.extensions.depend.dir}/${sdoapi.jar}"/>
-        </condition>
-        <condition property="xdb.lib"       value="${oracle.extensions.depend.dir}/${xdb.jar}"
-                                                    else="${extensions.depend.dir}/${xdb.jar}">
-            <available file="${oracle.extensions.depend.dir}/${xdb.jar}"/>
-        </condition>
-        <condition property="xmlparser.lib" value="${oracle.extensions.depend.dir}/${xmlparser.jar}"
-                                                    else="${extensions.depend.dir}/${xmlparser.jar}">
-            <available file="${oracle.extensions.depend.dir}/${xmlparser.jar}"/>
-        </condition>
-        <condition property="ucp.lib"       value="${oracle.extensions.depend.dir}/${ucp.jar}"
-                                                    else="${extensions.depend.dir}/${ucp.jar}">
-            <available file="${oracle.extensions.depend.dir}/${ucp.jar}"/>
-        </condition>
         <condition property="orcl_nosql.lib" value="${oracle.extensions.depend.dir}/${orcl_nosql.jar}"
                                                      else="${extensions.depend.dir}/${orcl_nosql.jar}">
             <available file="${oracle.extensions.depend.dir}/${orcl_nosql.jar}"/>
-        </condition>
-        <condition property="dms.lib"       value="${oracle.extensions.depend.dir}/${dms.jar}"
-                                                    else="${extensions.depend.dir}/${dms.jar}">
-            <available file="${oracle.extensions.depend.dir}/${dms.jar}"/>
         </condition>
 
         <!-- dependency tests -->
@@ -205,12 +185,7 @@
         <!-- oracle dependency tests -->
         <available file="${aqapi.lib}"         property="aqapi.bundle.exist"/>
         <available file="${ojdbc.lib}"         property="ojdbc.bundle.exist"/>
-        <available file="${sdoapi.lib}"        property="sdoapi.bundle.exist"/>
-        <available file="${xdb.lib}"           property="xdb.bundle.exist"/>
-        <available file="${xmlparser.lib}"     property="xmlparser.bundle.exist"/>
-        <available file="${ucp.lib}"           property="ucp.bundle.exist"/>
         <available file="${orcl_nosql.lib}"    property="nosql.bundle.exist"/>
-        <available file="${dms.lib}"           property="dms.bundle.exist"/>
         <!-- oracle extension dir test -->
         <available file="${oracle.extensions.depend.dir}" type="dir" property="oracle.depend.dir.exist"/>
 
@@ -220,23 +195,13 @@
         <say  message="resource.lib:         '${resource.lib}'"        if="resource.bundle.exist"/>
         <say  message="aqapi.lib:            '${aqapi.lib}'"           if="aqapi.bundle.exist"/>
         <say  message="ojdbc.lib:            '${ojdbc.lib}'"           if="ojdbc.bundle.exist"/>
-        <say  message="sdoapi.lib:           '${sdoapi.lib}'"          if="sdoapi.bundle.exist"/>
-        <say  message="xdb.lib:              '${xdb.lib}'"             if="xdb.bundle.exist"/>
-        <say  message="xmlparser.lib:        '${xmlparser.lib}'"       if="xmlparser.bundle.exist"/>
-        <say  message="ucp.lib:              '${ucp.lib}'"             if="ucp.bundle.exist"/>
         <say  message="orcl_nosql.lib:       '${orcl_nosql.lib}'"      if="nosql.bundle.exist"/>
-        <say  message="dms.lib:              '${dms.lib}'"             if="dms.bundle.exist"/>
         <fail message="Cannot find:          '${persistence.lib}'" unless="persistence.bundle.exist"/>
         <fail message="Cannot find:          '${core.lib}'"        unless="core.bundle.exist"/>
         <fail message="Cannot find:          '${resource.lib}'"    unless="resource.bundle.exist"/>
         <fail message="Cannot find:          '${aqapi.lib}'"       unless="aqapi.bundle.exist"/>
         <fail message="Cannot find:          '${ojdbc.lib}'"       unless="ojdbc.bundle.exist"/>
-        <fail message="Cannot find:          '${sdoapi.lib}'"      unless="sdoapi.bundle.exist"/>
-        <fail message="Cannot find:          '${xdb.lib}'"         unless="xdb.bundle.exist"/>
-        <fail message="Cannot find:          '${xmlparser.lib}'"   unless="xmlparser.bundle.exist"/>
-        <fail message="Cannot find:          '${ucp.lib}'"         unless="ucp.bundle.exist"/>
         <fail message="Cannot find:          '${orcl_nosql.lib}'"  unless="nosql.bundle.exist"/>
-        <fail message="Cannot find:          '${dms.lib}'"         unless="dms.bundle.exist"/>
 
         <!-- Set Compile Path-->
         <path id="oracle.nosql.compile.path">
@@ -245,12 +210,7 @@
             <pathelement path="${resource.lib}"/>
             <pathelement path="${aqapi.lib}"/>
             <pathelement path="${ojdbc.lib}"/>
-            <pathelement path="${sdoapi.lib}"/>
-            <pathelement path="${xdb.lib}"/>
-            <pathelement path="${xmlparser.lib}"/>
-            <pathelement path="${ucp.lib}"/>
             <pathelement path="${orcl_nosql.lib}"/>
-            <pathelement path="${dms.lib}"/>
         </path>
     </target>
 

@@ -11,7 +11,6 @@ Include-Resource:\
  ${oracle.2.base.dir}/license.html
 Import-Package:\
  javax.naming;resolution:=optional,\
- javax.resource.*;version="1.5.0";resolution:=optional,\
  javax.sql.*;resolution:=optional,\
  javax.xml.*;resolution:=optional,\
  oracle.*;resolution:=optional,\

@@ -10,5 +10,7 @@
 	<classpathentry kind="var" path="ORACLE_JDBC_LIB"/>
 	<classpathentry kind="var" path="AQAPI_LIB"/>
 	<classpathentry kind="var" path="NOSQL_LIB"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.oracle.nosql"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.nosql"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

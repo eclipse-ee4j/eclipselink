@@ -1,0 +1,187 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<object-persistence version="Eclipse Persistence Services - 0.1-incubation" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.eclipse.org/eclipselink/xsds/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <name>OrderProject</name>
+   <class-mapping-descriptors>
+      <class-mapping-descriptor xsi:type="eis-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.order.Address</class>
+         <alias>Address</alias>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="eis-direct-mapping">
+               <attribute-name>addressee</attribute-name>
+               <field name="@addressee" xsi:type="node">
+                  <schema-type>{http://www.w3.org/2001/XMLSchema}anySimpleType</schema-type>
+               </field>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="eis-direct-mapping">
+               <attribute-name>city</attribute-name>
+               <field name="@city" xsi:type="node">
+                  <schema-type>{http://www.w3.org/2001/XMLSchema}anySimpleType</schema-type>
+               </field>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="eis-direct-mapping">
+               <attribute-name>country</attribute-name>
+               <field name="@country" xsi:type="node">
+                  <schema-type>{http://www.w3.org/2001/XMLSchema}anySimpleType</schema-type>
+               </field>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="eis-direct-mapping">
+               <attribute-name>state</attribute-name>
+               <field name="@state" xsi:type="node">
+                  <schema-type>{http://www.w3.org/2001/XMLSchema}anySimpleType</schema-type>
+               </field>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="eis-direct-mapping">
+               <attribute-name>street</attribute-name>
+               <field name="@street" xsi:type="node">
+                  <schema-type>{http://www.w3.org/2001/XMLSchema}anySimpleType</schema-type>
+               </field>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="eis-direct-mapping">
+               <attribute-name>zipCode</attribute-name>
+               <field name="@zip" xsi:type="node">
+                  <schema-type>{http://www.w3.org/2001/XMLSchema}anySimpleType</schema-type>
+               </field>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>aggregate</descriptor-type>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <datatype>address</datatype>
+         <namespace-resolver>
+            <namespaces>
+               <namespace>
+                  <prefix>xsd</prefix>
+                  <namespace-uri>http://www.w3.org/2001/XMLSchema</namespace-uri>
+               </namespace>
+               <namespace>
+                  <prefix>xsi</prefix>
+                  <namespace-uri>http://www.w3.org/2001/XMLSchema-instance</namespace-uri>
+               </namespace>
+            </namespaces>
+         </namespace-resolver>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="eis-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.order.LineItem</class>
+         <alias>LineItem</alias>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="eis-direct-mapping">
+               <attribute-name>itemName</attribute-name>
+               <field name="@name" xsi:type="node">
+                  <schema-type>{http://www.w3.org/2001/XMLSchema}anySimpleType</schema-type>
+               </field>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="eis-direct-mapping">
+               <attribute-name>itemPrice</attribute-name>
+               <field name="@price" xsi:type="node">
+                  <schema-type>{http://www.w3.org/2001/XMLSchema}double</schema-type>
+               </field>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="eis-direct-mapping">
+               <attribute-name>lineNumber</attribute-name>
+               <field name="@number" xsi:type="node">
+                  <schema-type>{http://www.w3.org/2001/XMLSchema}integer</schema-type>
+               </field>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="eis-direct-mapping">
+               <attribute-name>quantity</attribute-name>
+               <field name="@quanity" xsi:type="node">
+                  <schema-type>{http://www.w3.org/2001/XMLSchema}integer</schema-type>
+               </field>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>aggregate</descriptor-type>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <datatype>line-item</datatype>
+         <namespace-resolver>
+            <namespaces>
+               <namespace>
+                  <prefix>xsd</prefix>
+                  <namespace-uri>http://www.w3.org/2001/XMLSchema</namespace-uri>
+               </namespace>
+               <namespace>
+                  <prefix>xsi</prefix>
+                  <namespace-uri>http://www.w3.org/2001/XMLSchema-instance</namespace-uri>
+               </namespace>
+            </namespaces>
+         </namespace-resolver>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="eis-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.order.Order</class>
+         <alias>Order</alias>
+         <primary-key>
+            <field name="@id" xsi:type="node">
+               <schema-type>{http://www.w3.org/2001/XMLSchema}integer</schema-type>
+            </field>
+         </primary-key>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy">
+            <timeout>0</timeout>
+            <insert-query xsi:type="insert-object-query">
+               <call xsi:type="xml-interaction">
+                  <function-name>insert-order</function-name>
+                  <input-record-name>insert-order</input-record-name>
+                  <input-root-element-name>insert-order</input-root-element-name>
+               </call>
+            </insert-query>
+         </querying>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="eis-direct-mapping">
+               <attribute-name>id</attribute-name>
+               <field name="@id" xsi:type="node">
+                  <schema-type>{http://www.w3.org/2001/XMLSchema}integer</schema-type>
+               </field>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="eis-direct-mapping">
+               <attribute-name>orderedBy</attribute-name>
+               <field name="@ordered-by" xsi:type="node">
+                  <schema-type>{http://www.w3.org/2001/XMLSchema}anySimpleType</schema-type>
+               </field>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="eis-composite-object-mapping">
+               <attribute-name>address</attribute-name>
+               <reference-class>org.eclipse.persistence.testing.models.order.Address</reference-class>
+               <field name="address" xsi:type="node"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="eis-composite-collection-mapping">
+               <attribute-name>lineItems</attribute-name>
+               <reference-class>org.eclipse.persistence.testing.models.order.LineItem</reference-class>
+               <field name="line-item" xsi:type="node"/>
+               <container xsi:type="list-container-policy">
+                  <collection-type>java.util.Vector</collection-type>
+               </container>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <amendment>
+            <amendment-class>org.eclipse.persistence.testing.models.order.eis.aq.OrderAmendments</amendment-class>
+            <amendment-method>addToOrderDescriptor</amendment-method>
+         </amendment>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <datatype>order</datatype>
+         <namespace-resolver>
+            <namespaces>
+               <namespace>
+                  <prefix>xsd</prefix>
+                  <namespace-uri>http://www.w3.org/2001/XMLSchema</namespace-uri>
+               </namespace>
+               <namespace>
+                  <prefix>xsi</prefix>
+                  <namespace-uri>http://www.w3.org/2001/XMLSchema-instance</namespace-uri>
+               </namespace>
+            </namespaces>
+         </namespace-resolver>
+      </class-mapping-descriptor>
+   </class-mapping-descriptors>
+   <login xsi:type="eis-login">
+      <platform-class>org.eclipse.persistence.nosql.adapters.nosql.OracleNoSQLPlatform</platform-class>
+      <user-name></user-name>
+      <password></password>
+      <connection-spec-class>org.eclipse.persistence.nosql.adapters.nosql.OracleNoSQLConnectionSpec</connection-spec-class>
+   </login>
+</object-persistence>

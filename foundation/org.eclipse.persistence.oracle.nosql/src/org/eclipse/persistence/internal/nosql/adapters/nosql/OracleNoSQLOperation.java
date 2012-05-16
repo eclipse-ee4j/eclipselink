@@ -8,28 +8,16 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
+ *     Oracle - initial API and implementation
  ******************************************************************************/  
-package org.eclipse.persistence.testing.models.jpa.nosql.mapped;
-
-import javax.persistence.Entity;
-import javax.persistence.Id;
-
-import org.eclipse.persistence.nosql.annotations.DataFormatType;
-import org.eclipse.persistence.nosql.annotations.NoSql;
-
+package org.eclipse.persistence.internal.nosql.adapters.nosql;
 
 /**
- * Model customer class, maps to CUSTOMER record.
+ * Defines the valid Oracle NoSQL operations.
+ *
+ * @author James
+ * @since EclipseLink 2.4
  */
-@Entity
-@NoSql(dataFormat=DataFormatType.MAPPED, dataType="Customer-mapped")
-public class Customer {
-    @Id
-    public String id;
-    public String name;
-
-    public String toString() {
-        return "Customer(" + name + ")";
-    }
+public enum OracleNoSQLOperation {
+    GET, PUT, PUT_IF_ABSENT, PUT_IF_PRESENT, PUT_IF_VERSION, DELETE, DELETE_IF_VERSION, ITERATOR
 }

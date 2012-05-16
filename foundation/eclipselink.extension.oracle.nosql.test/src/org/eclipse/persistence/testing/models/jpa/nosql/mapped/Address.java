@@ -14,8 +14,8 @@ package org.eclipse.persistence.testing.models.jpa.nosql.mapped;
 
 import javax.persistence.Embeddable;
 
-import org.eclipse.persistence.annotations.DataFormatType;
-import org.eclipse.persistence.annotations.NoSql;
+import org.eclipse.persistence.nosql.annotations.DataFormatType;
+import org.eclipse.persistence.nosql.annotations.NoSql;
 
 
 /**

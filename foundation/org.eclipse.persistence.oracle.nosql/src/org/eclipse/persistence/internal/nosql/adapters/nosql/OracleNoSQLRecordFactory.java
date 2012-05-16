@@ -10,26 +10,30 @@
  * Contributors:
  *     Oracle - initial API and implementation
  ******************************************************************************/  
-package org.eclipse.persistence.annotations;
+package org.eclipse.persistence.internal.nosql.adapters.nosql;
 
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+import javax.resource.cci.*;
+import org.eclipse.persistence.exceptions.ValidationException;
 
 /**
- * Allow a set of fields to be define on a relationship.
- * This is a generic form of the @JoinColumns annotation, which is not specific to relational databases.
- * It can be use to map EIS and NoSQL data.
- * 
- * @see NoSql
- * @author James Sutherland
+ * Record factory for Oracle NoSQL JCA adapter.
+ *
+ * @author James
  * @since EclipseLink 2.4
  */
-@Target({METHOD, FIELD})
-@Retention(RUNTIME)
-public @interface JoinFields {
-    JoinField[] value() default {};
+public class OracleNoSQLRecordFactory implements RecordFactory {
+
+    /**
+     * Default constructor.
+     */
+    public OracleNoSQLRecordFactory() {
+    }
+
+    public IndexedRecord createIndexedRecord(String recordName) {
+        throw ValidationException.operationNotSupported("createIndexedRecord");
+    }
+
+    public MappedRecord createMappedRecord(String recordName) {
+        return new OracleNoSQLRecord();
+    }
 }

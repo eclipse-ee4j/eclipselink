@@ -21,7 +21,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
 
-import org.eclipse.persistence.annotations.NoSql;
+import org.eclipse.persistence.nosql.annotations.NoSql;
 import org.eclipse.persistence.annotations.UuidGenerator;
 
 /**

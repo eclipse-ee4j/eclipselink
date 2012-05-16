@@ -16,7 +16,7 @@ import java.math.*;
 
 import javax.persistence.Embeddable;
 
-import org.eclipse.persistence.annotations.NoSql;
+import org.eclipse.persistence.nosql.annotations.NoSql;
 
 /**
  * Model line item class, maps to LINE record.
