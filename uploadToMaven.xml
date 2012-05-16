@@ -338,6 +338,15 @@
             <param name="artifactName" value="EclipseLink JPA"/>
             <param name="dependencies" value="${jpa.dependencies}"/>
         </antcall>
+        <antcall target="upload-artifact">
+            <param name="groupId" value="org.eclipse.persistence"/>
+            <param name="artifactId" value="org.eclipse.persistence.jpars"/>
+            <param name="artifactVersion" value="${maven.version}"/>
+            <param name="artifact" value="${maven.2.common.plugins.dir}/org.eclipse.persistence.jpars_${version.string}.jar"/>
+            <param name="artifactSrc" value="${maven.2.common.plugins.dir}/org.eclipse.persistence.jpars.source_${version.string}.jar"/>
+            <param name="artifactName" value="EclipseLink JPA-RS"/>
+            <param name="dependencies" value=""/>
+        </antcall>
         <antcall target="upload-artifact-no-src">
             <param name="groupId" value="org.eclipse.persistence"/>
             <param name="artifactId" value="org.eclipse.persistence.jpa.modelgen.processor"/>
