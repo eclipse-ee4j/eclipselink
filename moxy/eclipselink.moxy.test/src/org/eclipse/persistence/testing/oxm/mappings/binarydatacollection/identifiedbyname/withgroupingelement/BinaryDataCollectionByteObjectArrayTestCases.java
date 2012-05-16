@@ -50,6 +50,7 @@ public class BinaryDataCollectionByteObjectArrayTestCases extends XMLMappingTest
 	        }
 	        
 	        photos.addElement(objectBytes);
+	        photos.addElement(objectBytes);
 	        employee = new EmployeeWithByteArrayObject();
 	        employee.setID(EmployeeWithByteArrayObject.DEFAULT_ID);
 	        employee.setPhotos(photos);

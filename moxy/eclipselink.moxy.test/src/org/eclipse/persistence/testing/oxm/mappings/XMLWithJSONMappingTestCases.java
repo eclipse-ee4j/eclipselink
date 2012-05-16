@@ -152,7 +152,7 @@ public abstract class XMLWithJSONMappingTestCases extends XMLMappingTestCases{
     private void compareStrings(String test, String testString) {
         log(test);
         log("Expected (With All Whitespace Removed):");
-        String expectedString = getJSONControlString(getJSONWriteControlLocation()).replaceAll("[ \b\t\n\r' ']", "");
+        String expectedString = getJSONControlString(getJSONWriteControlLocation()).replaceAll("[ \b\t\n\r]", "");
         log(expectedString);
         log("\nActual (With All Whitespace Removed):");
         testString = testString.replaceAll("[ \b\t\n\r]", "");

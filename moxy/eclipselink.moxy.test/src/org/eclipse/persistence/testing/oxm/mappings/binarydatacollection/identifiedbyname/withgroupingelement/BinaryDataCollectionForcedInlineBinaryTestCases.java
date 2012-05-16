@@ -24,8 +24,7 @@ import java.util.Vector;
 import org.eclipse.persistence.internal.descriptors.Namespace;
 import org.eclipse.persistence.internal.oxm.conversion.Base64;
 import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.Employee;
 import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.MyAttachmentMarshaller;
 import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.MyAttachmentUnmarshaller;
@@ -37,8 +36,9 @@ import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.MyAttac
  * @author mfobrien
  *
  */
-public class BinaryDataCollectionForcedInlineBinaryTestCases extends XMLMappingTestCases {
+public class BinaryDataCollectionForcedInlineBinaryTestCases extends XMLWithJSONMappingTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/binarydatacollection/identifiedbyname/withgroupingelement/BinaryDataCollectionForcedInline.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/binarydatacollection/identifiedbyname/withgroupingelement/BinaryDataCollectionForcedInline.json";
 
     //private final static String PHOTO_PATH1 = "http://www.example.com/admin/images/ocom/oralogo_small.gif";
     //private final static String PHOTO_PATH2 = "http://www.example.com/admin/images/ocom/oralogo_small.gif";
@@ -46,6 +46,7 @@ public class BinaryDataCollectionForcedInlineBinaryTestCases extends XMLMappingT
     public BinaryDataCollectionForcedInlineBinaryTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         NamespaceResolver namespaceResolver = new NamespaceResolver();
         Vector namespaces = new Vector();
         namespaces.add(new Namespace(MyAttachmentUnmarshaller.XOP_NAMESPACE_PREFIX,//
@@ -61,6 +62,7 @@ public class BinaryDataCollectionForcedInlineBinaryTestCases extends XMLMappingT
         Vector photos = new Vector();
         String base64 = MyAttachmentUnmarshaller.PHOTO_BASE64;
         byte[] bytes = Base64.base64Decode(base64.getBytes());
+        photos.addElement(bytes);
         photos.addElement(bytes);
         employee = new Employee();
         employee.setID(Employee.DEFAULT_ID);

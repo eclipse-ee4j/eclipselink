@@ -20,13 +20,15 @@ public class CollectionsTestSuite extends TestSuite {
     public static Test suite() {
         TestSuite suite = new TestSuite("Collections Test Suite");
         suite.addTestSuite(CollectionHolderTestCases.class);
+        suite.addTestSuite(CollectionHolderPopulatedTestCases.class);
         suite.addTestSuite(CollectionHolderInitializedTestCases.class);
         suite.addTestSuite(CollectionHolderNillableTestCases.class);
         suite.addTestSuite(CollectionHolderWrappersTestCases.class);
         suite.addTestSuite(CollectionHolderWrappersInitializedTestCases.class);
         suite.addTestSuite(CollectionHolderWrappersNillableTestCases.class);
         suite.addTestSuite(CollectionHolderWrappersNillableInitializedTestCases.class);
-        suite.addTestSuite(CollectionHolderWrappersOverrideTestCases.class);
+        suite.addTestSuite(CollectionHolderWrappersOverrideTestCases.class);       
+        suite.addTestSuite(CollectionHolderWrappersPopulatedTestCases.class);
         return suite;
     }
 

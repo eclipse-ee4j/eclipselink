@@ -86,7 +86,11 @@ public class JSONWriterRecord extends MarshalRecord {
     public void setMarshaller(XMLMarshaller marshaller) {
         super.setMarshaller(marshaller);
         attributePrefix = marshaller.getAttributePrefix();
-        encoder = Charset.forName(marshaller.getEncoding()).newEncoder();
+        encoder = Charset.forName(marshaller.getEncoding()).newEncoder();        
+        if(marshaller.getValueWrapper() != null){
+        	textWrapperFragment = new XPathFragment(marshaller.getValueWrapper());
+        }
+        
     }
 
     /**
@@ -148,13 +152,6 @@ public class JSONWriterRecord extends MarshalRecord {
      * INTERNAL:
      */
     public void openStartElement(XPathFragment xPathFragment, NamespaceResolver namespaceResolver) {
-        openStartElement(xPathFragment, namespaceResolver, true);
-    }
-
-    /**
-     * INTERNAL:
-     */
-    private void openStartElement(XPathFragment xPathFragment, NamespaceResolver namespaceResolver, boolean addOpenBrace) {    	
         try {
         	Level newLevel = null;
             Level position = null;
@@ -171,13 +168,12 @@ public class JSONWriterRecord extends MarshalRecord {
                     writer.write(',');                    
                 }
             }
-            
             if(xPathFragment.nameIsText()){
                 if(position != null && position.isCollection() && position.isEmptyCollection()) {
                 	if(!charactersAllowed){
                 		 throw JAXBException.jsonValuePropertyRequired("[");   
                 	}
-                    writer.write('[');
+                    writer.write('[');                    
                     position.setEmptyCollection(false);
                     position.setNeedToOpenComplex(false);
                     charactersAllowed = true;
@@ -185,27 +181,23 @@ public class JSONWriterRecord extends MarshalRecord {
                 }
             }
             
-            if(position == null || !position.isCollection() || position.isEmptyCollection()){
-            	   if(position !=null && position.needToOpenComplex){
-                       writer.write('{');
-                       position.needToOpenComplex = false;
-                       position.needToCloseComplex = true;
-                   }
-                   writeKey(xPathFragment);
-             
-                if(position !=null && position.isEmptyCollection()){
-               	    XPathFragment nextFragment =xPathFragment.getNextFragment();
-                	
-                    if(nextFragment !=null && !nextFragment.nameIsText()&& !nextFragment.isAttribute()){ 
-               		newLevel.setEmptyCollection(true);
-                    	newLevel.setCollection(true);
-                    	position.setEmptyCollection(false);
-                   }else{
-                		writer.write('[');
-                		position.setEmptyCollection(false);
-                	}
-                }
-             }
+            if(position !=null && position.needToOpenComplex){
+                   writer.write('{');
+                   position.needToOpenComplex = false;
+                   position.needToCloseComplex = true;
+           }
+          
+           //write the key unless this is a a non-empty collection
+           if(!(position.isCollection() && !position.isEmptyCollection())){
+        	   writeKey(xPathFragment);
+        	   //if it is the first thing in the collection also add the [
+    		   if(position.isCollection() && position.isEmptyCollection()){
+                    writer.write('[');
+               	    position.setEmptyCollection(false);        		   
+        	   }
+           }
+     		    
+            
             charactersAllowed = true;
         } catch (IOException e) {
             throw XMLMarshalException.marshalException(e);
@@ -270,16 +262,10 @@ public class JSONWriterRecord extends MarshalRecord {
      */
     public void closeStartElement() {}
 
-	/**
-     * INTERNAL:
-     */
-    public void endElement(XPathFragment xPathFragment, NamespaceResolver namespaceResolver) {
-        endElement(xPathFragment, namespaceResolver, true);
-    }
     /**
      * INTERNAL:
      */
-    private void endElement(XPathFragment xPathFragment, NamespaceResolver namespaceResolver, boolean addCloseBrace) {
+    public void endElement(XPathFragment xPathFragment, NamespaceResolver namespaceResolver) {
         try{
             if(!levels.isEmpty()) {
                 Level position = levels.pop();
@@ -442,9 +428,9 @@ public class JSONWriterRecord extends MarshalRecord {
      public void nilComplex(XPathFragment xPathFragment, NamespaceResolver namespaceResolver){
          XPathFragment groupingFragment = openStartGroupingElements(namespaceResolver);
          closeStartGroupingElements(groupingFragment);
-         openStartElement(xPathFragment, namespaceResolver, false);
+         openStartElement(xPathFragment, namespaceResolver);
          nonStringCharacters(NULL);
-         endElement(xPathFragment, namespaceResolver, false);
+         endElement(xPathFragment, namespaceResolver);
      }
 
     /**
@@ -775,7 +761,6 @@ public class JSONWriterRecord extends MarshalRecord {
         private boolean emptyCollection;
         private boolean needToOpenComplex;
         private boolean needToCloseComplex;
-
         public Level(boolean value, boolean needToOpen) {
             this.first = value;
             needToOpenComplex = needToOpen;
@@ -820,7 +805,6 @@ public class JSONWriterRecord extends MarshalRecord {
         public void setCollection(boolean collection) {
             this.collection = collection;
         }
-
     }
 
 }

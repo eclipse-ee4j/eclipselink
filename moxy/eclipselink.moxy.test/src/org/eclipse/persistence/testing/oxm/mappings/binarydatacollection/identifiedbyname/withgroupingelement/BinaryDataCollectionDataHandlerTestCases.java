@@ -19,17 +19,19 @@ import javax.activation.DataHandler;
 import org.eclipse.persistence.internal.descriptors.Namespace;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLMarshaller;
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.EmployeeWithByteArrayObject;
 import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.MyAttachmentMarshallerDataHandler;
 import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.MyAttachmentUnmarshaller;
 
-public class BinaryDataCollectionDataHandlerTestCases extends XMLMappingTestCases{
+public class BinaryDataCollectionDataHandlerTestCases extends XMLWithJSONMappingTestCases{
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/binarydatacollection/identifiedbyname/withgroupingelement/BinaryDataCollectionDataHandler.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/binarydatacollection/identifiedbyname/withgroupingelement/BinaryDataCollectionDataHandler.json";
 
 	public BinaryDataCollectionDataHandlerTestCases(String name) throws Exception {
 		super(name);
 		 setControlDocument(XML_RESOURCE);
+		 setControlJSON(JSON_RESOURCE);
 	        NamespaceResolver namespaceResolver = new NamespaceResolver();
 	        Vector namespaces = new Vector();
 	        namespaces.add(new Namespace(MyAttachmentUnmarshaller.XOP_NAMESPACE_PREFIX,//

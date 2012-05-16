@@ -615,18 +615,7 @@ public abstract class MarshalRecord extends XMLRecord {
     	//subclass records can return the fragment if supported.
         return null;
     }
-    
-    /**
-     * INTERNAL:
-     */
-    public void setMarshaller(XMLMarshaller marshaller) {
-    	super.setMarshaller(marshaller);
-        if(marshaller.getValueWrapper() != null){
-        	textWrapperFragment = new XPathFragment(marshaller.getValueWrapper());
-        }
-    }
-
-    
+     
     protected String getNameForFragment(XPathFragment xPathFragment) {
         if(!this.hasCustomNamespaceMapper()) {
             return xPathFragment.getShortName();

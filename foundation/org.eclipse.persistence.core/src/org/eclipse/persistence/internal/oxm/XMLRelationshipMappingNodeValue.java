@@ -192,7 +192,7 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
             }
             String qName = xPathFragment.getLocalName();
             if (xPathFragment.getPrefix() != null) {
-                qName = xPathFragment.getPrefix() + XMLConstants.COLON + qName;
+                qName = xPathFragment.getPrefix() + unmarshalRecord.getNamespaceSeparator() + qName;
             }
 
             if(!(unmarshalRecord.getPrefixesForFragment().isEmpty())) {

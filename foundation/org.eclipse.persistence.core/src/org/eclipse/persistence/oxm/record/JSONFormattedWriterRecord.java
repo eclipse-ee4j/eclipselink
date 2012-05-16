@@ -111,7 +111,6 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
                     writer.write(',');
                 }
             }
-
             if(xPathFragment.nameIsText()){
                if(position != null && position.isCollection() && position.isEmptyCollection()) {
             	    if(!charactersAllowed){
@@ -126,13 +125,11 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
             }
 
             this.addPositionalNodes(xPathFragment, namespaceResolver);
-            if(position == null || !position.isCollection() || position.isEmptyCollection()){
                 if(position.isNeedToOpenComplex()){
                     writer.write('{');
                     position.setNeedToOpenComplex(false);
                     position.setNeedToCloseComplex(true);
                 }
-            }
             if (!isLastEventText) {
                 if(position.isCollection() && !position.isEmptyCollection()) {
                     writer.write(' ');
@@ -143,21 +140,17 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
                     }
                 }
             }
-            if(position == null || !position.isCollection() || position.isEmptyCollection()){
-                super.writeKey(xPathFragment);
-                if(position !=null && position.isEmptyCollection()){
-                   XPathFragment nextFragment =xPathFragment.getNextFragment();                	
-                   if(newLevel != null && nextFragment !=null && !nextFragment.nameIsText()&& !nextFragment.isAttribute()){                    
-               		    newLevel.setEmptyCollection(true);
-                    	newLevel.setCollection(true);
-               	   }else{
-               		    writer.write('[');
-                        writer.write(' ');
-               	   }
-               	   position.setEmptyCollection(false);
-                }
-            }
-
+            
+            //write the key unless this is a a non-empty collection
+            if(!(position.isCollection() && !position.isEmptyCollection())){
+     		   super.writeKey(xPathFragment);
+     		   if(position.isCollection() && position.isEmptyCollection()){
+           		   writer.write('[');
+           		   writer.write(' ');
+           		  position.setEmptyCollection(false);         		
+         	   }
+     	   }
+            
             numberOfTabs++;
             isLastEventText = false;
             charactersAllowed = true;

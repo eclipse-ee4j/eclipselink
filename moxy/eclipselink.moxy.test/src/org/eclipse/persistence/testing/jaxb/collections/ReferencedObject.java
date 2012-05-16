@@ -13,9 +13,17 @@
 package org.eclipse.persistence.testing.jaxb.collections;
 
 import javax.xml.bind.annotation.XmlID;
+import javax.xml.bind.annotation.XmlRootElement;
 
+@XmlRootElement
 public class ReferencedObject {
      @XmlID
      public String id;
 
+     public boolean equals(Object obj){
+    	 if(obj instanceof ReferencedObject){
+    		 return id.equals(((ReferencedObject)obj).id);
+    	 }
+    	 return false;
+     }
 }

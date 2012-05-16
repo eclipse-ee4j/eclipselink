@@ -92,16 +92,21 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
             if (xmlBinaryDataCollectionMapping.getWrapperNullPolicy() != null) {
                 XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
                 marshalRecord.closeStartGroupingElements(groupingFragment);
+                return true;
             } else {
                 return false;
             }
         }
+        
+        XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
+        marshalRecord.closeStartGroupingElements(groupingFragment);
+          
         marshalRecord.startCollection();
         while (cp.hasNext(iterator)) {
             Object objectValue = cp.next(iterator, session);
-            marshalSingleValue(xPathFragment, marshalRecord, object, objectValue, session, namespaceResolver, ObjectMarshalContext.getInstance());
+          marshalSingleValue(xPathFragment, marshalRecord, object, objectValue, session, namespaceResolver, ObjectMarshalContext.getInstance());
         }
-        marshalRecord.endCollection();
+        	marshalRecord.endCollection();
         return true;
     }
 
@@ -166,7 +171,8 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
         return true;
     }
 
-    public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object objectValue, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
+	@Override
+	public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object objectValue, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         if(objectValue == null) {
             return false;
         }
@@ -182,9 +188,7 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
             } else {
                 objectValue = converter.convertObjectValueToDataValue(objectValue, session);
             }
-        }
-        XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
-        marshalRecord.closeStartGroupingElements(groupingFragment);
+        }        
         marshalRecord.openStartElement(xPathFragment, namespaceResolver);
         marshalRecord.closeStartElement();
 

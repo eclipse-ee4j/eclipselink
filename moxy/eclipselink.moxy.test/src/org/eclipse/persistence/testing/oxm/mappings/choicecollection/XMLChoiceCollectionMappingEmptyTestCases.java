@@ -12,17 +12,18 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.oxm.mappings.choicecollection;
 
-import org.eclipse.persistence.oxm.platform.SAXPlatform;
 import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 
-public class XMLChoiceCollectionMappingEmptyTestCases extends XMLMappingTestCases {
+public class XMLChoiceCollectionMappingEmptyTestCases extends XMLWithJSONMappingTestCases {
 
   private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/choicecollection/ChoiceCollectionEmpty.xml";
+  private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/choicecollection/ChoiceCollectionEmpty.json";
 
   public XMLChoiceCollectionMappingEmptyTestCases(String name) throws Exception {
     super(name);
     setControlDocument(XML_RESOURCE);
+    setControlJSON(JSON_RESOURCE);
     //setSession(SESSION_NAME);
     setProject(new EmployeeProject());
   }

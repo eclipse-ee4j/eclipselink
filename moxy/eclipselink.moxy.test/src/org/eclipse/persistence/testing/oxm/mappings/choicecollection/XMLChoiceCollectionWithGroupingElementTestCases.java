@@ -12,25 +12,25 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.oxm.mappings.choicecollection;
 
-import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.InputStream;
 
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
-import org.eclipse.persistence.oxm.platform.SAXPlatform;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.factories.XMLProjectReader;
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 
-public class XMLChoiceCollectionWithGroupingElementTestCases extends XMLMappingTestCases {
+public class XMLChoiceCollectionWithGroupingElementTestCases extends XMLWithJSONMappingTestCases {
 
   private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/choicecollection/ChoiceCollectionGrouping.xml";
+  private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/choicecollection/ChoiceCollectionGrouping.json";
   private final static String DEPLOYMENT_XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/choicecollection/deploymentXML-file_g.xml";
 
   public XMLChoiceCollectionWithGroupingElementTestCases(String name) throws Exception {
     super(name);
     setControlDocument(XML_RESOURCE);
+    setControlJSON(JSON_RESOURCE);
     //setSession(SESSION_NAME);
     setProject(new EmployeeWithGroupingElementProject());
   }
@@ -52,6 +52,25 @@ public class XMLChoiceCollectionWithGroupingElementTestCases extends XMLMappingT
     
     return employee;
   }
+  
+  
+  public Object getJSONReadControlObject() {	  
+	    Employee employee = new Employee();
+	    employee.name = "Jane Doe";
+	    
+	    employee.choice = new java.util.Vector<Object>();
+	    employee.choice.add("123 Fake Street");
+	    employee.choice.add(new Integer(12));
+	    employee.choice.add(new Integer(14));
+	    Address addr = new Address();
+	    addr.city = "Ottawa";
+	    addr.street = "45 O'Connor";
+	    employee.choice.add(addr);
+	    	    
+	    employee.phone = "123-4567"; 
+	    
+	    return employee;
+	  }
   
   public Project getNewProject(Project originalProject, ClassLoader classLoader) {
       Project project = super.getNewProject(originalProject, classLoader);

@@ -32,5 +32,6 @@ public class CollectionHolderWrappersInitialized extends CollectionHolderWrapper
         collection6 = TEST_LIST;
         collection7 = TEST_LIST;
     }
+    
 
 }

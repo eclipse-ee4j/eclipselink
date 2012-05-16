@@ -226,7 +226,7 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
         
         String expectedString = loadFileToString(controlFileLocation);
         if(removeWhitespace){
-        	expectedString = expectedString.replaceAll("[ \b\t\n\r ]", "");
+        	expectedString = expectedString.replaceAll("[ \b\t\n\r]", "");
         }
         log(expectedString);
         if(removeWhitespace){
