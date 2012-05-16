@@ -51,6 +51,15 @@ public abstract class ComplexDatabaseType implements DatabaseType, Cloneable {
         return false;
     }
 
+    /**
+     * Indicates if a given subclass represents a PL/SQL cursor.
+     * 
+     * @see org.eclipse.persistence.platform.database.oracle.plsql.PLSQLCursor
+     */
+    public boolean isCursor() {
+        return false;
+    }
+    
     public int getConversionCode() {
         return getSqlCode();
     }
