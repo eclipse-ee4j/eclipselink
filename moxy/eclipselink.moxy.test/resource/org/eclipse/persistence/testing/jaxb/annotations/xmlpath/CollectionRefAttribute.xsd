@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:complexType name="xmlPathCollectionRefAttributeRoot">
+      <xsd:sequence>
+         <xsd:element maxOccurs="unbounded" minOccurs="0" name="element" nillable="true" type="xmlPathCollectionRefAttributeChild"/>
+         <xsd:element maxOccurs="unbounded" minOccurs="0" name="attribute1">
+            <xsd:complexType>
+               <xsd:sequence/>
+               <xsd:attribute name="id" type="xsd:IDREF"/>
+            </xsd:complexType>
+         </xsd:element>
+         <xsd:element minOccurs="0" name="attribute2">
+            <xsd:complexType>
+               <xsd:sequence/>
+               <xsd:attribute name="ids">
+                  <xsd:simpleType>
+                     <xsd:list itemType="xsd:IDREF"/>
+                  </xsd:simpleType>
+               </xsd:attribute>
+            </xsd:complexType>
+         </xsd:element>
+      </xsd:sequence>
+      <xsd:attribute name="attribute">
+         <xsd:simpleType>
+            <xsd:list itemType="xsd:IDREF"/>
+         </xsd:simpleType>
+      </xsd:attribute>
+   </xsd:complexType>
+   <xsd:complexType name="xmlPathCollectionRefAttributeChild">
+      <xsd:sequence>
+         <xsd:element minOccurs="0" name="id" type="xsd:ID"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="root" type="xmlPathCollectionRefAttributeRoot"/>
+</xsd:schema>

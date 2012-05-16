@@ -49,7 +49,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
 
     public boolean isOwningNode(XPathFragment xPathFragment) {    	 
     	 XPathFragment nextFragment = xPathFragment.getNextFragment();
-    	 if(nextFragment == null ){
+    	 if(nextFragment == null || xmlCompositeDirectCollectionMapping.usesSingleNode()){
     		 return xPathFragment.isAttribute() || xPathFragment.nameIsText();
     	 }else{
              return  (nextFragment != null) && (nextFragment.nameIsText() || nextFragment.isAttribute());    		 

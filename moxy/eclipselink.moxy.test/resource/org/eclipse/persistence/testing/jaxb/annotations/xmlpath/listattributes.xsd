@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:complexType name="testClass">
+      <xsd:sequence>
+         <xsd:element minOccurs="0" name="attribute">
+            <xsd:complexType>
+               <xsd:sequence/>
+               <xsd:attribute name="list">
+                  <xsd:simpleType>
+                     <xsd:list itemType="xsd:string"/>
+                  </xsd:simpleType>
+               </xsd:attribute>
+            </xsd:complexType>
+         </xsd:element>
+         <xsd:element minOccurs="0" name="element">
+            <xsd:complexType>
+               <xsd:sequence>
+                  <xsd:element minOccurs="0" name="list">
+                     <xsd:simpleType>
+                        <xsd:list itemType="xsd:string"/>
+                     </xsd:simpleType>
+                  </xsd:element>
+               </xsd:sequence>
+            </xsd:complexType>
+         </xsd:element>
+         <xsd:element minOccurs="0" maxOccurs="unbounded" name="item">
+            <xsd:complexType>
+               <xsd:sequence/>
+               <xsd:attribute name="type" type="xsd:string"/>
+            </xsd:complexType>
+         </xsd:element>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="test" type="testClass"/>
+</xsd:schema>
