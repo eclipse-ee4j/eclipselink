@@ -1,0 +1,19 @@
+<collectionHolderInitialized abcQName="80" collection12="abc def">
+   <collection2>one two</collection2>
+   <referencedObject>
+       <id>1</id>
+   </referencedObject>
+   <root>60</root>
+   <root>70</root>
+   <collection1>10</collection1>
+   <collection1>20</collection1>
+   <collection11>YWJj</collection11>
+   <collection11>ZGVm</collection11>
+   <collection3 xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:int">20</collection3>
+   <collection3 xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:int">30</collection3>
+   <collection5 collection12="" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="collectionHolderInitialized">
+      <collection2></collection2>
+   </collection5>
+   <collection9>1</collection9>
+   <collection9>5</collection9>   
+</collectionHolderInitialized>
