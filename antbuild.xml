@@ -210,9 +210,7 @@
             <isset property="env.M2_HOME"/>
         </condition>
         <echo message="Maven install (M2_HOME) set to: '${M2_HOME}'"/>
-        <condition property="use.maven" value="true">
-            <available file="${M2_HOME}/bin/mvn"/>
-        </condition>
+        <available file="${M2_HOME}/bin/mvn" property="use.maven"/>
         <fail message="Maven 3 not found. Build won't run if Maven 3 not installed and M2_HOME properly set!." unless="use.maven"/>
     </target>
 
@@ -365,24 +363,18 @@
     </target>
 
     <!-- Compiles tests (excluding workbench, dbws-util and Oracle extensions). -->
-    <target name="build-core-test" depends="build-all-core-except-dbws-test, build-dbws-test"/>
-
-    <target name="build-all-core-except-dbws-test">
+    <target name="build-core-test">
         <ant antfile="antbuild.xml" dir="${eclipselink.core.test}"             target="build"/>
         <ant antfile="${eclipselink.jpa.test}/antbuild.xml"                    target="all"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.jpa.wdf.test}"          target="build-against-jar"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.jpars.test}"            target="compile-jpars-tests"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.moxy.test}"             target="compile-tests-against-jar"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.sdo.test}"              target="compile-sdo-tests-against-jar"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.dbws.test}"             target="build"/>
     </target>
 
     <target name="build-nosql-test">
         <ant antfile="antbuild.xml" dir="${eclipselink.extension.nosql.test}"  target="build"/>
-    </target>
-
-    <target name="build-dbws-test" unless="java_is_v5">
-        <!-- Compiling dbws tests requires JDK 1.6 -->
-        <ant antfile="antbuild.xml" dir="${eclipselink.dbws.test}" target="build"/>
     </target>
 
     <!-- Compiles all util tests -->
