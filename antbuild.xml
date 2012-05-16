@@ -664,6 +664,7 @@
                 <exclude name="*equinox*.jar"/>
                 <exclude name="*builder*.jar"/>
                 <exclude name="*jpars*.jar"/>
+                <exclude name="*nosql*.jar"/>
             </zipgroupfileset>
         </jar>
     </target>
