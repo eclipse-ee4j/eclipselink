@@ -151,10 +151,6 @@ public class TestRunModel extends TestModel {
 
             // Can take a long time, can deadlock.
             tests.add("org.eclipse.persistence.testing.tests.clientserver.ClientServerTestModel");
-
-            // Requires EIS datasources config.
-            tests.add("org.eclipse.persistence.testing.tests.eis.cobol.CobolTestModel");
-            tests.add("org.eclipse.persistence.testing.tests.eis.xmlfile.XMLFileTestModel");
             
             // PLSQL
             tests.add("org.eclipse.persistence.testing.tests.plsql.PLSQLTestModel");
@@ -277,6 +273,7 @@ public class TestRunModel extends TestModel {
         tests.add("org.eclipse.persistence.testing.tests.eis.nosql.NoSQLTestModel");
         tests.add("org.eclipse.persistence.testing.tests.jpa.nosql.NoSQLTestSuite");
         tests.add("org.eclipse.persistence.testing.tests.jpa.nosql.NoSQLMappedTestSuite");
+        tests.add("org.eclipse.persistence.testing.tests.eis.aq.AQTestModel");        
 
         TestModel model = new TestModel();
         model.setName("Oracle NoSQL Tests");
@@ -303,6 +300,8 @@ public class TestRunModel extends TestModel {
     public static TestModel buildNoSQLTestModel() {
         List tests = new ArrayList();
         tests.add("org.eclipse.persistence.testing.tests.NoSQLJPATestSuite");
+        tests.add("org.eclipse.persistence.testing.tests.eis.cobol.CobolTestModel");
+        tests.add("org.eclipse.persistence.testing.tests.eis.xmlfile.XMLFileTestModel");
         
         TestModel model = new TestModel();
         model.setName("NoSQL Tests");
