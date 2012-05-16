@@ -253,7 +253,6 @@ public final class LikeExpression extends AbstractExpression {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(LikeExpressionBNF.ID);
 	}

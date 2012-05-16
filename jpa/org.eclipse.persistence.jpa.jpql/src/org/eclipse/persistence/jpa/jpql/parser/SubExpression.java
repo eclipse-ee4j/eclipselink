@@ -81,7 +81,6 @@ public final class SubExpression extends AbstractSingleEncapsulatedExpression {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(queryBNF);
 	}

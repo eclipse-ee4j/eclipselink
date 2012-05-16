@@ -59,7 +59,6 @@ public final class NullExpression extends AbstractExpression {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getParent().getQueryBNF();
 	}

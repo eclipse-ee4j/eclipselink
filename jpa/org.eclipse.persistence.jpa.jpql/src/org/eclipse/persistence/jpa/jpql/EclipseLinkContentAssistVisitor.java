@@ -61,49 +61,81 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 		super(queryContext);
 	}
 
-//	/**
-//	 * {@inheritDoc}
-//	 */
-//	@Override
-//	protected FromClauseSelectStatementHelper buildFromClauseSelectStatementHelper() {
-//		return new FromClauseSelectStatementHelper();
-//	}
-//
-//	/**
-//	 * {@inheritDoc}
-//	 */
-//	@Override
-//	protected GroupByClauseSelectStatementHelper buildGroupByClauseSelectStatementHelper() {
-//		return new GroupByClauseSelectStatementHelper();
-//	}
-//
-//	/**
-//	 * {@inheritDoc}
-//	 */
-//	@Override
-//	protected HavingClauseSelectStatementHelper buildHavingClauseSelectStatementHelper() {
-//		return new HavingClauseSelectStatementHelper();
-//	}
-//
-//	/**
-//	 * {@inheritDoc}
-//	 */
-//	@Override
-//	protected OrderByClauseSelectStatementHelper buildOrderByClauseSelectStatementHelper() {
-//		return new OrderByClauseSelectStatementHelper();
-//	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected AppendableExpressionVisitor buildAppendableExpressionVisitor() {
+		return new AppendableExpressionVisitor();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected FromClauseSelectStatementHelper buildFromClauseSelectStatementHelper() {
+		return new FromClauseSelectStatementHelper();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected GroupByClauseCollectionHelper buildGroupByClauseCollectionHelper() {
+		return new GroupByClauseCollectionHelper();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected GroupByClauseSelectStatementHelper buildGroupByClauseSelectStatementHelper() {
+		return new GroupByClauseSelectStatementHelper();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected HavingClauseSelectStatementHelper buildHavingClauseSelectStatementHelper() {
+		return new HavingClauseSelectStatementHelper();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected OrderByClauseSelectStatementHelper buildOrderByClauseSelectStatementHelper() {
+		return new OrderByClauseSelectStatementHelper();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected TrailingCompletenessVisitor buildTrailingCompleteness() {
+		return new TrailingCompletenessVisitor();
+	}
 
 	protected UnionClauseSelectStatementHelper buildUnionClauseSelectStatementHelper() {
 		return new UnionClauseSelectStatementHelper();
 	}
 
-//	/**
-//	 * {@inheritDoc}
-//	 */
-//	@Override
-//	protected WhereClauseSelectStatementHelper buildWhereClauseSelectStatementHelper() {
-//		return new WhereClauseSelectStatementHelper();
-//	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected WhereClauseHelper buildWhereClauseHelper() {
+		return new WhereClauseHelper();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected WhereClauseSelectStatementHelper buildWhereClauseSelectStatementHelper() {
+		return new WhereClauseSelectStatementHelper();
+	}
 
 	protected UnionClauseSelectStatementHelper getUnionClauseSelectStatementHelper() {
 		UnionClauseSelectStatementHelper helper = getHelper(UnionClauseSelectStatementHelper.class);
@@ -353,7 +385,20 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 	 * {@inheritDoc}
 	 */
 	public void visit(TableVariableDeclaration expression) {
+
+		TableExpression tableExpression = expression.getTableExpression();
 		int position = getPosition(expression) - corrections.peek();
+		int length = length(tableExpression);
+
+		// After "TABLE()"
+		if (expression.hasSpaceAfterTableExpression()) {
+			length += SPACE_LENGTH;
+
+			// Right after "TABLE() "
+			if (isPositionWithin(position, length, AS)) {
+				addIdentifier(AS);
+			}
+		}
 	}
 
 	/**
@@ -379,27 +424,80 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 				proposals.addIdentifier(ALL);
 
 				if (!expression.hasAll()) {
-					proposals.addIdentifier(SELECT);
+					addIdentifier(SELECT);
 				}
 			}
 			// Within "ALL"
 			else if (isPositionWithin(position, length, ALL)) {
-				proposals.addIdentifier(ALL);
+				addIdentifier(ALL);
 			}
-			// After "ALL"
 			else {
-				position += 3 /* ALL */;
+				if ((position == length) && !expression.hasAll()) {
+					proposals.addIdentifier(SELECT);
+				}
+				else {
 
-				// After "ALL "
-				if (expression.hasSpaceAfterAll()) {
-					position += SPACE_LENGTH;
+					if (expression.hasAll()) {
+						length += 3 /* ALL */;
+					}
 
-					// Right after "ALL "
-					if (position == length) {
-						proposals.addIdentifier(SELECT);
+					// After "ALL "
+					if (expression.hasSpaceAfterAll()) {
+						length += SPACE_LENGTH;
+
+						// Right after "ALL "
+						if (position == length) {
+							proposals.addIdentifier(SELECT);
+						}
 					}
 				}
 			}
+		}
+	}
+
+	protected class AppendableExpressionVisitor extends AbstractContentAssistVisitor.AppendableExpressionVisitor
+	                                            implements EclipseLinkExpressionVisitor {
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public void visit(CastExpression expression) {
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public void visit(DatabaseType expression) {
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public void visit(ExtractExpression expression) {
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public void visit(RegexpExpression expression) {
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public void visit(TableExpression expression) {
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public void visit(TableVariableDeclaration expression) {
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public void visit(UnionClause expression) {
 		}
 	}
 
@@ -427,6 +525,19 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 		}
 	}
 
+	protected class GroupByClauseCollectionHelper extends AbstractContentAssistVisitor.GroupByClauseCollectionHelper {
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void addAtTheEndOfChild(GroupByClause expression, Expression child, int index) {
+//			addIdentifier(EXCEPT);
+//			addIdentifier(INTERSECT);
+//			addIdentifier(UNION);
+		}
+	}
+
 	protected class GroupByClauseSelectStatementHelper extends AbstractContentAssistVisitor.GroupByClauseSelectStatementHelper {
 
 		/**
@@ -440,14 +551,12 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 
 			super.appendNextClauseProposals(expression, clause, position, complete);
 
-			if (complete || isAppendable(clause)) {
-				if (!expression.hasGroupByClause()) {
-					if (!expression.hasHavingClause()) {
-						if (!expression.hasOrderByClause()) {
-							addIdentifier(EXCEPT);
-							addIdentifier(INTERSECT);
-							addIdentifier(UNION);
-						}
+			if (complete || isGroupByComplete(clause)) {
+				if (!expression.hasHavingClause()) {
+					if (!expression.hasOrderByClause()) {
+						addIdentifier(EXCEPT);
+						addIdentifier(INTERSECT);
+						addIdentifier(UNION);
 					}
 				}
 			}
@@ -491,11 +600,9 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 			super.appendNextClauseProposals(expression, clause, position, complete);
 
 			if (complete || isAppendable(clause)) {
-				if (!expression.hasOrderByClause()) {
-					addIdentifier(EXCEPT);
-					addIdentifier(INTERSECT);
-					addIdentifier(UNION);
-				}
+				addIdentifier(EXCEPT);
+				addIdentifier(INTERSECT);
+				addIdentifier(UNION);
 			}
 		}
 
@@ -513,6 +620,64 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 		@Override
 		public boolean hasSpaceAfterClause(SelectStatement expression) {
 			return expression.hasSpaceBeforeUnion();
+		}
+	}
+
+	protected class TrailingCompletenessVisitor extends AbstractContentAssistVisitor.TrailingCompletenessVisitor
+	                                            implements EclipseLinkExpressionVisitor {
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public void visit(CastExpression expression) {
+			complete = expression.hasRightParenthesis();
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public void visit(DatabaseType expression) {
+			// Always complete since it's a single word
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public void visit(ExtractExpression expression) {
+			complete = expression.hasRightParenthesis();
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public void visit(RegexpExpression expression) {
+			complete = expression.hasPatternValue();
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public void visit(TableExpression expression) {
+			complete = expression.hasRightParenthesis();
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public void visit(TableVariableDeclaration expression) {
+			complete = expression.hasIdentificationVariable();
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public void visit(UnionClause expression) {
+
+			complete = expression.hasQuery();
+
+			if (complete) {
+				expression.getQuery().accept(this);
+			}
 		}
 	}
 
@@ -601,6 +766,17 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 		 */
 		public boolean isClauseExpressionComplete(Expression expression) {
 			return false;
+		}
+	}
+
+	protected class WhereClauseHelper extends AbstractContentAssistVisitor.WhereClauseHelper {
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void addAtTheEndOfExpression(WhereClause expression) {
+			super.addAtTheEndOfExpression(expression);
 		}
 	}
 

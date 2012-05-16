@@ -24,7 +24,6 @@ import javax.persistence.Transient;
    @NamedQuery(name="customer.city",      query="SELECT c from Customer c where c.home.city IN :city"),
    @NamedQuery(name="customer.new",       query="SELECT new com.titan.domain.Name(c.firstName, c.lastName) FROM Customer c")
 })
-@SuppressWarnings("unused")
 public class Customer implements Serializable {
 	@Column(name="FIRST_NAME")
 	private String firstName;

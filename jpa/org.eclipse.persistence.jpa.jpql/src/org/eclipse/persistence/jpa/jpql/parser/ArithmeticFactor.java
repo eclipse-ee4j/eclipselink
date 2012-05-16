@@ -93,7 +93,6 @@ public final class ArithmeticFactor extends AbstractExpression {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(ArithmeticFactorBNF.ID);
 	}

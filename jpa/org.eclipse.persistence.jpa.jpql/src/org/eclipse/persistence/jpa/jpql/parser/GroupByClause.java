@@ -137,7 +137,6 @@ public final class GroupByClause extends AbstractExpression {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(GroupByClauseBNF.ID);
 	}

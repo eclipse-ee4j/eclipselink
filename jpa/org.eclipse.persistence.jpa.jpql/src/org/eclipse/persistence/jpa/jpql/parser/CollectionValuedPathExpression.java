@@ -73,7 +73,6 @@ public final class CollectionValuedPathExpression extends AbstractPathExpression
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(CollectionValuedPathExpressionBNF.ID);
 	}

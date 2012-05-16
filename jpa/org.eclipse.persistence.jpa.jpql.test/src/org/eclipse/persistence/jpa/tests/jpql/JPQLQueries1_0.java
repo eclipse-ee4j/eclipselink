@@ -1343,4 +1343,19 @@ public final class JPQLQueries1_0 {
 		       "              FROM e.projects p " +
 		       "              WHERE p.name LIKE :projectName)";
 	}
+
+	public static String query_213() {
+		return "select e_0 " +
+		       "from Sellexpect e_0 " +
+		       "where e_0.iSellexpectnr IN (select e_1.iSellexpectnr " +
+		       "                            from Sellexpectline e_1 " +
+		       "                            where e_1.iStandversionnr IN (select e_2.iStandversionnr " +
+		       "                                                          from Standversion e_2 " +
+		       "                                                          where e_2.iStandnr IN (select e_3.iStandnr " +
+		       "                                                                                 from Stand e_3 " +
+		       "                                                                                 where lower(e_3.iStandid) like :e_3_iStandid" +
+		       "                                                                                )" +
+		       "                                                         )" +
+		       "                           )";
+	}
 }

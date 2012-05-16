@@ -121,7 +121,6 @@ public final class NotExpression extends AbstractExpression {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return queryBNF;
 	}

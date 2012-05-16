@@ -149,7 +149,6 @@ public final class FunctionExpression extends AbstractSingleEncapsulatedExpressi
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(FunctionExpressionBNF.ID);
 	}

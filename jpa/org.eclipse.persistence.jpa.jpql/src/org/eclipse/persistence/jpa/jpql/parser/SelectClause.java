@@ -45,7 +45,6 @@ public final class SelectClause extends AbstractSelectClause {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(SelectClauseBNF.ID);
 	}

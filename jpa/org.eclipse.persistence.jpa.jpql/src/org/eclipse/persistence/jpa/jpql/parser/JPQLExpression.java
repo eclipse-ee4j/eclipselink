@@ -228,7 +228,6 @@ public final class JPQLExpression extends AbstractExpression {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(queryBNFId);
 	}

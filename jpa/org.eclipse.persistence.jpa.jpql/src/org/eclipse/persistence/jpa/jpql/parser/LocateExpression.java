@@ -56,7 +56,6 @@ public final class LocateExpression extends AbstractTripleEncapsulatedExpression
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(FunctionsReturningNumericsBNF.ID);
 	}

@@ -188,7 +188,6 @@ public final class RangeVariableDeclaration extends AbstractExpression {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(RangeVariableDeclarationBNF.ID);
 	}

@@ -68,7 +68,6 @@ public final class EntityTypeLiteral extends AbstractExpression {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(EntityTypeExpressionBNF.ID);
 	}

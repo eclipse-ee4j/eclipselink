@@ -143,7 +143,6 @@ public final class RegexpExpression extends AbstractExpression {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(RegexpExpressionBNF.ID);
 	}

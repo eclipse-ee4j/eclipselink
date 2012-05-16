@@ -58,7 +58,6 @@ public final class SimpleSelectStatement extends AbstractSelectStatement {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(SubqueryBNF.ID);
 	}

@@ -757,6 +757,14 @@ public interface Expression {
 	Expression getParent();
 
 	/**
+	 * Returns the BNF of this {@link Expression}.
+	 *
+	 * @return The {@link JPQLQueryBNF}, which represents the grammar of this {@link Expression}
+	 * @since 2.4
+	 */
+	JPQLQueryBNF getQueryBNF();
+
+	/**
 	 * Retrieves the root node of the parsed tree hierarchy.
 	 *
 	 * @return The root of the {@link Expression} tree

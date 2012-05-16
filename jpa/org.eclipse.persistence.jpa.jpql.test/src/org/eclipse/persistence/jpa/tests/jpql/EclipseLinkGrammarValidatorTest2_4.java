@@ -106,6 +106,23 @@ public class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarValidator
 	}
 
 	@Test
+	public final void test_BadExpression_InvalidExpression_4() throws Exception {
+
+		String jpqlQuery  = "select e from Employee e where e.id in (select table('employee') t from Employee e)";
+		int startPosition = "select e from Employee e where e.id in(select ".length();
+		int endPosition   = "select e from Employee e where e.id in(select table('employee')".length();
+
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		testHasOnlyOneProblem(
+			problems,
+			BadExpression_InvalidExpression,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
 	public final void test_CastExpression_InvalidExpression_1() throws Exception {
 
 		String jpqlQuery = "Select cast(e.firstName as char) from Employee e";

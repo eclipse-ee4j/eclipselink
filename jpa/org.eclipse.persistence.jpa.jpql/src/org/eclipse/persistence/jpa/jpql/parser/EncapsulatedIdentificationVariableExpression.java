@@ -49,7 +49,6 @@ public abstract class EncapsulatedIdentificationVariableExpression extends Abstr
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(GeneralIdentificationVariableBNF.ID);
 	}

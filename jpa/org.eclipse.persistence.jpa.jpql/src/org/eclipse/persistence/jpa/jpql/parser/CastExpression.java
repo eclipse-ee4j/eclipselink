@@ -127,7 +127,6 @@ public final class CastExpression extends AbstractSingleEncapsulatedExpression {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(CastExpressionBNF.ID);
 	}

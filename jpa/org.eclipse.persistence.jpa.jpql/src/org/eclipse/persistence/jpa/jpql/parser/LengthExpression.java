@@ -58,7 +58,6 @@ public final class LengthExpression extends AbstractSingleEncapsulatedExpression
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(FunctionsReturningNumericsBNF.ID);
 	}

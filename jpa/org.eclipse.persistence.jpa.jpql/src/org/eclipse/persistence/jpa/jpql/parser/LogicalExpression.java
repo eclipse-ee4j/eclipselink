@@ -47,7 +47,6 @@ public abstract class LogicalExpression extends CompoundExpression {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public final JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(ConditionalExpressionBNF.ID);
 	}

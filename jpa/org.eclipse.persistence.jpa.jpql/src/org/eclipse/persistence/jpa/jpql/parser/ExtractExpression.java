@@ -137,7 +137,6 @@ public final class ExtractExpression extends AbstractSingleEncapsulatedExpressio
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(ExtractExpressionBNF.ID);
 	}

@@ -294,9 +294,7 @@ public final class HermesParser implements JPAQueryBuilder {
 	}
 
 	/**
-	 * Allows the parser validation level to be set.
-	 *
-	 * @param level The validation levels are defined in {@link ParserValidationType}
+	 * {@inheritDoc}
 	 */
 	public void setValidationLevel(String validationLevel) {
 		this.validationLevel = validationLevel;
@@ -387,7 +385,7 @@ public final class HermesParser implements JPAQueryBuilder {
 				query = new DeleteAllQuery();
 				queryContext.setDatabasQuery(query);
 				query.setJPQLString(jpqlQuery);
-				((JPQLCallQueryMechanism)query.getQueryMechanism()).getJPQLCall().setIsParsed(true);
+				((JPQLCallQueryMechanism) query.getQueryMechanism()).getJPQLCall().setIsParsed(true);
 			}
 
 			query.setSession(queryContext.getSession());
@@ -419,7 +417,7 @@ public final class HermesParser implements JPAQueryBuilder {
 				query = buildReadAllQuery(expression);
 				queryContext.setDatabasQuery(query);
 				query.setJPQLString(jpqlQuery);
-                                ((JPQLCallQueryMechanism)query.getQueryMechanism()).getJPQLCall().setIsParsed(true);
+				((JPQLCallQueryMechanism) query.getQueryMechanism()).getJPQLCall().setIsParsed(true);
 			}
 
 			// Now populate it
@@ -439,7 +437,7 @@ public final class HermesParser implements JPAQueryBuilder {
 				query = new UpdateAllQuery();
 				queryContext.setDatabasQuery(query);
 				query.setJPQLString(jpqlQuery);
-                                ((JPQLCallQueryMechanism)query.getQueryMechanism()).getJPQLCall().setIsParsed(true);
+				((JPQLCallQueryMechanism) query.getQueryMechanism()).getJPQLCall().setIsParsed(true);
 			}
 
 			query.setSession(queryContext.getSession());

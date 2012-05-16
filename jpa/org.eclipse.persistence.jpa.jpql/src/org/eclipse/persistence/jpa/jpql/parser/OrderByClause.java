@@ -137,7 +137,6 @@ public final class OrderByClause extends AbstractExpression {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(OrderByClauseBNF.ID);
 	}

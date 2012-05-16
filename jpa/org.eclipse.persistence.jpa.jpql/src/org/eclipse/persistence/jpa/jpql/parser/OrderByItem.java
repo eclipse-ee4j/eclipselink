@@ -282,7 +282,6 @@ public final class OrderByItem extends AbstractExpression {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(OrderByItemBNF.ID);
 	}

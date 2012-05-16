@@ -62,7 +62,6 @@ public final class ConcatExpression extends AbstractSingleEncapsulatedExpression
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(FunctionsReturningStringsBNF.ID);
 	}

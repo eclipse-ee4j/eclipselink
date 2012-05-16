@@ -149,7 +149,7 @@ public abstract class AbstractJPQLQueryHelper {
 
 		// Create a map of the positions within the parsed tree
 		QueryPosition queryPosition = getJPQLExpression().buildPosition(
-			getQueryContext().getQuery().getExpression(),
+			getQuery().getExpression(),
 			position
 		);
 

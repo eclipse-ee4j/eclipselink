@@ -32,6 +32,22 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 @SuppressWarnings("nls")
 public class EclipseLinkContentAssistTest extends AbstractContentAssistTest {
 
+	@Override
+	protected void addClauseIdentifiers(String afterIdentifier,
+	                                    String beforeIdentifier,
+	                                    List<String> proposals) {
+
+		super.addClauseIdentifiers(afterIdentifier, beforeIdentifier, proposals);
+
+		if (afterIdentifier != SELECT &&
+		    beforeIdentifier == null) {
+
+			proposals.add(EXCEPT);
+			proposals.add(INTERSECT);
+			proposals.add(UNION);
+		}
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -582,7 +598,14 @@ public class EclipseLinkContentAssistTest extends AbstractContentAssistTest {
 
 		String jpqlQuery = "SELECT e FROM Employee e ORDER BY e ";
 		int position = jpqlQuery.length();
-		testHasOnlyTheseProposals(jpqlQuery, position, ASC, DESC, NULLS_FIRST, NULLS_LAST);
+
+		testHasOnlyTheseProposals(
+			jpqlQuery,
+			position,
+			ASC, DESC,
+			NULLS_FIRST, NULLS_LAST,
+			UNION, INTERSECT, EXCEPT
+		);
 	}
 
 	@Test
@@ -598,7 +621,13 @@ public class EclipseLinkContentAssistTest extends AbstractContentAssistTest {
 
 		String jpqlQuery = "SELECT e FROM Employee e ORDER BY e ASC ";
 		int position = jpqlQuery.length();
-		testHasOnlyTheseProposals(jpqlQuery, position, NULLS_FIRST, NULLS_LAST);
+
+		testHasOnlyTheseProposals(
+			jpqlQuery,
+			position,
+			NULLS_FIRST, NULLS_LAST,
+			UNION, INTERSECT, EXCEPT
+		);
 	}
 
 	@Test
@@ -928,819 +957,930 @@ public class EclipseLinkContentAssistTest extends AbstractContentAssistTest {
 		testHasOnlyTheseProposals(jpqlQuery, position, proposals);
 	}
 
-//	@Test
-//	public void test_UnionClause_001() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e ";
-//		int startPosition = jpqlQuery.length();
-//		testHasTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_002() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e WHERE e.name ";
-//		int startPosition = jpqlQuery.length();
-//		testDoesNotHaveTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_003() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e WHERE e.name <> 'JPQL' ";
-//		int startPosition = jpqlQuery.length();
-//		testHasTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_004() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e WHERE e.name <> 'JPQL' GROUP BY e.name ";
-//		int startPosition = jpqlQuery.length();
-//		testHasTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_005() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e WHERE e.name <> 'JPQL' GROUP BY e.name ";
-//		int startPosition = "SELECT e FROM Employee e WHERE e.name <> 'JPQL' ".length();
-//		testHasTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_006() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e WHERE e.name <> 'JPQL' GROUP BY e.name ";
-//		int startPosition = jpqlQuery.length();
-//		testHasTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_007() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e WHERE e.name <> 'JPQL' GROUP BY e.name HAVING e.age > 12 ";
-//		int startPosition = "SELECT e FROM Employee e WHERE e.name <> 'JPQL' ".length();
-//		testDoesNotHaveTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_008() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e WHERE e.name <> 'JPQL' GROUP BY e.name HAVING e.age > 12 ";
-//		int startPosition = "SELECT e FROM Employee e WHERE e.name <> 'JPQL' GROUP BY e.name ".length();
-//		testDoesNotHaveTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_009() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e WHERE e.name <> 'JPQL' GROUP BY e.name HAVING e.age > 12 ";
-//		int startPosition = jpqlQuery.length();
-//		testHasTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_010() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e WHERE e.name <> 'JPQL' GROUP BY e.name HAVING e.age > 12 ORDER BY e.name ";
-//		int startPosition = "SELECT e FROM Employee e WHERE e.name <> 'JPQL' ".length();
-//		testDoesNotHaveTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_011() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e WHERE e.name <> 'JPQL' GROUP BY e.name HAVING e.age > 12 ORDER BY e.name ";
-//		int startPosition = "SELECT e FROM Employee e WHERE e.name <> 'JPQL' GROUP BY e.name ".length();
-//		testDoesNotHaveTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_012() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e WHERE e.name <> 'JPQL' GROUP BY e.name HAVING e.age > 12 ORDER BY e.name ";
-//		int startPosition = "SELECT e FROM Employee e WHERE e.name <> 'JPQL' GROUP BY e.name HAVING e.age > 12 ".length();
-//		testDoesNotHaveTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_013() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e WHERE e.name <> 'JPQL' GROUP BY e.name HAVING e.age > 12 ORDER BY e.name ";
-//		int startPosition = jpqlQuery.length();
-//		testHasTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_014() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e UNION";
-//		int startPosition = "SELECT e FROM Employee e ".length();
-//		testHasTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_015() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e UNION";
-//		int startPosition = "SELECT e FROM Employee e U".length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_016() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e UNION";
-//		int startPosition = "SELECT e FROM Employee e UN".length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_017() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e UNION";
-//		int startPosition = "SELECT e FROM Employee e UNI".length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_018() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e UNION";
-//		int startPosition = "SELECT e FROM Employee e UNIO".length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_019() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e UNION";
-//		int startPosition = "SELECT e FROM Employee e UNION".length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_020() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e UNION ";
-//		int startPosition = jpqlQuery.length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, ALL, SELECT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_021() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e UNION A";
-//		int startPosition = jpqlQuery.length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, ALL);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_022() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e UNION AL";
-//		int startPosition = jpqlQuery.length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, ALL);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_023() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e UNION ALL";
-//		int startPosition = jpqlQuery.length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, ALL);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_024() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e UNION ALL ";
-//		int startPosition = jpqlQuery.length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_025() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e UNION ALL";
-//		int startPosition = "SELECT e FROM Employee e UNION ".length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, ALL);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_026() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e UNION AL";
-//		int startPosition = "SELECT e FROM Employee e UNION A".length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, ALL);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_027() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e UNION ALL";
-//		int startPosition = "SELECT e FROM Employee e UNION ALL".length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, ALL);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_028() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e UNION ALL ";
-//		int startPosition = jpqlQuery.length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_029() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e UNION ALL S";
-//		int startPosition = jpqlQuery.length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_030() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e UNION ALL SE";
-//		int startPosition = jpqlQuery.length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_031() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e UNION ALL SEL";
-//		int startPosition = jpqlQuery.length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_032() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e UNION ALL SELE";
-//		int startPosition = jpqlQuery.length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_033() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e UNION ALL SELEC";
-//		int startPosition = jpqlQuery.length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_034() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e UNION ALL SELECT";
-//		int startPosition = jpqlQuery.length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_035() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e UNION ALL SELECT ";
-//		int startPosition = "SELECT e FROM Employee e UNION ALL ".length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_036() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e UNION ALL SELECT ";
-//		int startPosition = "SELECT e FROM Employee e UNION ALL S".length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_037() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e UNION ALL SELECT ";
-//		int startPosition = "SELECT e FROM Employee e UNION ALL SE".length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_038() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e UNION ALL SELECT ";
-//		int startPosition = "SELECT e FROM Employee e UNION ALL SEL".length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_039() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e UNION ALL SELECT ";
-//		int startPosition = "SELECT e FROM Employee e UNION ALL SELE".length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_040() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e UNION ALL SELECT ";
-//		int startPosition = "SELECT e FROM Employee e UNION ALL SELEC".length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_041() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e UNION ALL SELECT ";
-//		int startPosition = "SELECT e FROM Employee e UNION ALL SELECT".length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_042() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e INTERCEPT";
-//		int startPosition = "SELECT e FROM Employee e ".length();
-//		testHasTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_043() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e INTERCEPT";
-//		int startPosition = "SELECT e FROM Employee e I".length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_044() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e INTERCEPT";
-//		int startPosition = "SELECT e FROM Employee e IN".length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_045() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e INTERCEPT";
-//		int startPosition = "SELECT e FROM Employee e INT".length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_046() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e INTERCEPT";
-//		int startPosition = "SELECT e FROM Employee e INTE".length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_047() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e INTERCEPT";
-//		int startPosition = "SELECT e FROM Employee e INTER".length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_048() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e INTERCEPT";
-//		int startPosition = "SELECT e FROM Employee e INTERC".length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_049() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e INTERCEPT";
-//		int startPosition = "SELECT e FROM Employee e INTERCE".length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_050() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e INTERCEPT";
-//		int startPosition = "SELECT e FROM Employee e INTERCEP".length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_051() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e INTERCEPT";
-//		int startPosition = "SELECT e FROM Employee e INTERCEPT".length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_052() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e INTERCEPT ";
-//		int startPosition = jpqlQuery.length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, ALL, SELECT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_053() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e INTERCEPT A";
-//		int startPosition = jpqlQuery.length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, ALL);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_054() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e INTERCEPT AL";
-//		int startPosition = jpqlQuery.length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, ALL);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_055() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e INTERCEPT ALL";
-//		int startPosition = jpqlQuery.length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, ALL);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_056() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e INTERCEPT ALL ";
-//		int startPosition = jpqlQuery.length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_057() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e INTERCEPT ALL";
-//		int startPosition = "SELECT e FROM Employee e INTERCEPT ".length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, ALL);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_058() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e INTERCEPT AL";
-//		int startPosition = "SELECT e FROM Employee e INTERCEPT A".length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, ALL);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_059() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e INTERCEPT ALL";
-//		int startPosition = "SELECT e FROM Employee e INTERCEPT ALL".length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, ALL);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_060() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e INTERCEPT ALL ";
-//		int startPosition = jpqlQuery.length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_061() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e INTERCEPT ALL S";
-//		int startPosition = jpqlQuery.length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_062() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e INTERCEPT ALL SE";
-//		int startPosition = jpqlQuery.length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_063() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e INTERCEPT ALL SEL";
-//		int startPosition = jpqlQuery.length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_064() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e INTERCEPT ALL SELE";
-//		int startPosition = jpqlQuery.length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_065() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e INTERCEPT ALL SELEC";
-//		int startPosition = jpqlQuery.length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_066() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e INTERCEPT ALL SELECT";
-//		int startPosition = jpqlQuery.length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_067() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e INTERCEPT ALL SELECT ";
-//		int startPosition = "SELECT e FROM Employee e INTERCEPT ALL ".length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_068() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e INTERCEPT ALL SELECT ";
-//		int startPosition = "SELECT e FROM Employee e INTERCEPT ALL S".length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_069() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e INTERCEPT ALL SELECT ";
-//		int startPosition = "SELECT e FROM Employee e INTERCEPT ALL SE".length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_070() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e INTERCEPT ALL SELECT ";
-//		int startPosition = "SELECT e FROM Employee e INTERCEPT ALL SEL".length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_071() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e INTERCEPT ALL SELECT ";
-//		int startPosition = "SELECT e FROM Employee e INTERCEPT ALL SELE".length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_072() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e INTERCEPT ALL SELECT ";
-//		int startPosition = "SELECT e FROM Employee e INTERCEPT ALL SELEC".length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_073() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e INTERCEPT ALL SELECT ";
-//		int startPosition = "SELECT e FROM Employee e INTERCEPT ALL SELECT".length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_074() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e EXCEPT";
-//		int startPosition = "SELECT e FROM Employee e ".length();
-//		testHasTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_075() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e EXCEPT";
-//		int startPosition = "SELECT e FROM Employee e E".length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_076() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e EXCEPT";
-//		int startPosition = "SELECT e FROM Employee e EX".length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_077() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e EXCEPT";
-//		int startPosition = "SELECT e FROM Employee e EXC".length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_078() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e EXCEPT";
-//		int startPosition = "SELECT e FROM Employee e EXCE".length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_079() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e EXCEPT";
-//		int startPosition = "SELECT e FROM Employee e EXCEP".length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_080() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e EXCEPT";
-//		int startPosition = "SELECT e FROM Employee e EXCEPT".length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_081() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e EXCEPT ";
-//		int startPosition = jpqlQuery.length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, ALL, SELECT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_082() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e EXCEPT A";
-//		int startPosition = jpqlQuery.length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, ALL);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_083() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e EXCEPT AL";
-//		int startPosition = jpqlQuery.length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, ALL);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_084() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e EXCEPT ALL";
-//		int startPosition = jpqlQuery.length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, ALL);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_085() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e EXCEPT ALL ";
-//		int startPosition = jpqlQuery.length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_086() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e EXCEPT ALL";
-//		int startPosition = "SELECT e FROM Employee e EXCEPT ".length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, ALL);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_087() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e EXCEPT AL";
-//		int startPosition = "SELECT e FROM Employee e EXCEPT A".length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, ALL);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_088() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e EXCEPT ALL";
-//		int startPosition = "SELECT e FROM Employee e EXCEPT ALL".length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, ALL);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_089() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e EXCEPT ALL ";
-//		int startPosition = jpqlQuery.length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_090() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e EXCEPT ALL S";
-//		int startPosition = jpqlQuery.length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_091() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e EXCEPT ALL SE";
-//		int startPosition = jpqlQuery.length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_092() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e EXCEPT ALL SEL";
-//		int startPosition = jpqlQuery.length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_093() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e EXCEPT ALL SELE";
-//		int startPosition = jpqlQuery.length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_094() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e EXCEPT ALL SELEC";
-//		int startPosition = jpqlQuery.length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_095() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e EXCEPT ALL SELECT";
-//		int startPosition = jpqlQuery.length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_096() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e EXCEPT ALL SELECT ";
-//		int startPosition = "SELECT e FROM Employee e EXCEPT ALL ".length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_097() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e EXCEPT ALL SELECT ";
-//		int startPosition = "SELECT e FROM Employee e EXCEPT ALL S".length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_098() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e EXCEPT ALL SELECT ";
-//		int startPosition = "SELECT e FROM Employee e EXCEPT ALL SE".length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_099() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e EXCEPT ALL SELECT ";
-//		int startPosition = "SELECT e FROM Employee e EXCEPT ALL SEL".length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_100() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e EXCEPT ALL SELECT ";
-//		int startPosition = "SELECT e FROM Employee e EXCEPT ALL SELE".length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_101() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e EXCEPT ALL SELECT ";
-//		int startPosition = "SELECT e FROM Employee e EXCEPT ALL SELEC".length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
-//	}
-//
-//	@Test
-//	public void test_UnionClause_102() {
-//
-//		String jpqlQuery  = "SELECT e FROM Employee e EXCEPT ALL SELECT ";
-//		int startPosition = "SELECT e FROM Employee e EXCEPT ALL SELECT".length();
-//		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
-//	}
+	@Test
+	public void test_TableVariableDeclaration_01() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e, TABLE('EMP_ID')";
+		int startPosition = jpqlQuery.length();
+		testHasNoProposals(jpqlQuery, startPosition);
+	}
+
+	@Test
+	public void test_TableVariableDeclaration_02() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e, TABLE('EMP_ID') ";
+		int startPosition = jpqlQuery.length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, AS);
+	}
+
+	@Test
+	public void test_TableVariableDeclaration_03() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e, TABLE('EMP_ID') AS";
+		int startPosition = jpqlQuery.length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, AS);
+	}
+
+	@Test
+	public void test_TableVariableDeclaration_04() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e, TABLE('EMP_ID') AS";
+		int startPosition = "SELECT e FROM Employee e, TABLE('EMP_ID') ".length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, AS);
+	}
+
+	@Test
+	public void test_TableVariableDeclaration_05() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e, TABLE('EMP_ID') AS";
+		int startPosition = "SELECT e FROM Employee e, TABLE('EMP_ID') A".length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, AS);
+	}
+
+	@Test
+	public void test_TableVariableDeclaration_06() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e, TABLE('EMP_ID') A";
+		int startPosition = "SELECT e FROM Employee e, TABLE('EMP_ID') ".length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, AS);
+	}
+
+	@Test
+	public void test_TableVariableDeclaration_07() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e, TABLE('EMP_ID') A";
+		int startPosition = "SELECT e FROM Employee e, TABLE('EMP_ID') A".length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, AS);
+	}
+
+	@Test
+	public void test_TableVariableDeclaration_08() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e, TABLE('EMP_ID') E";
+		int startPosition = "SELECT e FROM Employee e, TABLE('EMP_ID') ".length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, AS);
+	}
+
+	@Test
+	public void test_TableVariableDeclaration_09() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e, TABLE('EMP_ID') E";
+		int startPosition = jpqlQuery.length();
+		testHasNoProposals(jpqlQuery, startPosition);
+	}
+
+	@Test
+	public void test_TableVariableDeclaration_10() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e, TABLE('EMP_ID') Astérix";
+		int startPosition = jpqlQuery.length();
+		testHasNoProposals(jpqlQuery, startPosition);
+	}
+
+	@Test
+	public void test_UnionClause_001() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e ";
+		int startPosition = jpqlQuery.length();
+		testHasTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
+	}
+
+	@Test
+	public void test_UnionClause_002() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e WHERE e.name ";
+		int startPosition = jpqlQuery.length();
+		testDoesNotHaveTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
+	}
+
+	@Test
+	public void test_UnionClause_003() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e WHERE e.name <> 'JPQL' ";
+		int startPosition = jpqlQuery.length();
+		testHasTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
+	}
+
+	@Test
+	public void test_UnionClause_004() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e WHERE e.name <> 'JPQL' GROUP BY e.name ";
+		int startPosition = jpqlQuery.length();
+		testHasTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
+	}
+
+	@Test
+	public void test_UnionClause_005() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e WHERE e.name <> 'JPQL' GROUP BY e.name ";
+		int startPosition = "SELECT e FROM Employee e WHERE e.name <> 'JPQL' ".length();
+		testDoesNotHaveTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
+	}
+
+	@Test
+	public void test_UnionClause_006() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e WHERE e.name <> 'JPQL' GROUP BY e.name ";
+		int startPosition = jpqlQuery.length();
+		testHasTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
+	}
+
+	@Test
+	public void test_UnionClause_007() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e WHERE e.name <> 'JPQL' GROUP BY e.name HAVING e.age > 12 ";
+		int startPosition = "SELECT e FROM Employee e WHERE e.name <> 'JPQL' ".length();
+		testDoesNotHaveTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
+	}
+
+	@Test
+	public void test_UnionClause_008() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e WHERE e.name <> 'JPQL' GROUP BY e.name HAVING e.age > 12 ";
+		int startPosition = "SELECT e FROM Employee e WHERE e.name <> 'JPQL' GROUP BY e.name ".length();
+		testDoesNotHaveTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
+	}
+
+	@Test
+	public void test_UnionClause_009() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e WHERE e.name <> 'JPQL' GROUP BY e.name HAVING e.age > 12 ";
+		int startPosition = jpqlQuery.length();
+		testHasTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
+	}
+
+	@Test
+	public void test_UnionClause_010() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e WHERE e.name <> 'JPQL' GROUP BY e.name HAVING e.age > 12 ORDER BY e.name ";
+		int startPosition = "SELECT e FROM Employee e WHERE e.name <> 'JPQL' ".length();
+		testDoesNotHaveTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
+	}
+
+	@Test
+	public void test_UnionClause_011() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e WHERE e.name <> 'JPQL' GROUP BY e.name HAVING e.age > 12 ORDER BY e.name ";
+		int startPosition = "SELECT e FROM Employee e WHERE e.name <> 'JPQL' GROUP BY e.name ".length();
+		testDoesNotHaveTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
+	}
+
+	@Test
+	public void test_UnionClause_012() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e WHERE e.name <> 'JPQL' GROUP BY e.name HAVING e.age > 12 ORDER BY e.name ";
+		int startPosition = "SELECT e FROM Employee e WHERE e.name <> 'JPQL' GROUP BY e.name HAVING e.age > 12 ".length();
+		testDoesNotHaveTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
+	}
+
+	@Test
+	public void test_UnionClause_013() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e WHERE e.name <> 'JPQL' GROUP BY e.name HAVING e.age > 12 ORDER BY e.name ";
+		int startPosition = jpqlQuery.length();
+
+		testHasTheseProposals(
+			jpqlQuery,
+			startPosition,
+			ASC, DESC,
+			NULLS_FIRST, NULLS_LAST,
+			UNION, INTERSECT, EXCEPT
+		);
+	}
+
+	@Test
+	public void test_UnionClause_014() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e UNION";
+		int startPosition = "SELECT e FROM Employee e ".length();
+		testHasTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
+	}
+
+	@Test
+	public void test_UnionClause_015() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e UNION";
+		int startPosition = "SELECT e FROM Employee e U".length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
+	}
+
+	@Test
+	public void test_UnionClause_016() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e UNION";
+		int startPosition = "SELECT e FROM Employee e UN".length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
+	}
+
+	@Test
+	public void test_UnionClause_017() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e UNION";
+		int startPosition = "SELECT e FROM Employee e UNI".length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
+	}
+
+	@Test
+	public void test_UnionClause_018() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e UNION";
+		int startPosition = "SELECT e FROM Employee e UNIO".length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
+	}
+
+	@Test
+	public void test_UnionClause_019() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e UNION";
+		int startPosition = "SELECT e FROM Employee e UNION".length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
+	}
+
+	@Test
+	public void test_UnionClause_020() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e UNION ";
+		int startPosition = jpqlQuery.length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, ALL, SELECT);
+	}
+
+	@Test
+	public void test_UnionClause_021() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e UNION A";
+		int startPosition = jpqlQuery.length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, ALL);
+	}
+
+	@Test
+	public void test_UnionClause_022() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e UNION AL";
+		int startPosition = jpqlQuery.length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, ALL);
+	}
+
+	@Test
+	public void test_UnionClause_023() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e UNION ALL";
+		int startPosition = jpqlQuery.length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, ALL);
+	}
+
+	@Test
+	public void test_UnionClause_024() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e UNION ALL ";
+		int startPosition = jpqlQuery.length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
+	}
+
+	@Test
+	public void test_UnionClause_025() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e UNION ALL";
+		int startPosition = "SELECT e FROM Employee e UNION ".length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, ALL);
+	}
+
+	@Test
+	public void test_UnionClause_026() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e UNION AL";
+		int startPosition = "SELECT e FROM Employee e UNION A".length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, ALL);
+	}
+
+	@Test
+	public void test_UnionClause_027() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e UNION ALL";
+		int startPosition = "SELECT e FROM Employee e UNION ALL".length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, ALL);
+	}
+
+	@Test
+	public void test_UnionClause_028() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e UNION ALL ";
+		int startPosition = jpqlQuery.length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
+	}
+
+	@Test
+	public void test_UnionClause_029() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e UNION ALL S";
+		int startPosition = jpqlQuery.length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
+	}
+
+	@Test
+	public void test_UnionClause_030() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e UNION ALL SE";
+		int startPosition = jpqlQuery.length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
+	}
+
+	@Test
+	public void test_UnionClause_031() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e UNION ALL SEL";
+		int startPosition = jpqlQuery.length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
+	}
+
+	@Test
+	public void test_UnionClause_032() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e UNION ALL SELE";
+		int startPosition = jpqlQuery.length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
+	}
+
+	@Test
+	public void test_UnionClause_033() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e UNION ALL SELEC";
+		int startPosition = jpqlQuery.length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
+	}
+
+	@Test
+	public void test_UnionClause_034() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e UNION ALL SELECT";
+		int startPosition = jpqlQuery.length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
+	}
+
+	@Test
+	public void test_UnionClause_035() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e UNION ALL SELECT ";
+		int startPosition = "SELECT e FROM Employee e UNION ALL ".length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
+	}
+
+	@Test
+	public void test_UnionClause_036() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e UNION ALL SELECT ";
+		int startPosition = "SELECT e FROM Employee e UNION ALL S".length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
+	}
+
+	@Test
+	public void test_UnionClause_037() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e UNION ALL SELECT ";
+		int startPosition = "SELECT e FROM Employee e UNION ALL SE".length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
+	}
+
+	@Test
+	public void test_UnionClause_038() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e UNION ALL SELECT ";
+		int startPosition = "SELECT e FROM Employee e UNION ALL SEL".length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
+	}
+
+	@Test
+	public void test_UnionClause_039() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e UNION ALL SELECT ";
+		int startPosition = "SELECT e FROM Employee e UNION ALL SELE".length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
+	}
+
+	@Test
+	public void test_UnionClause_040() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e UNION ALL SELECT ";
+		int startPosition = "SELECT e FROM Employee e UNION ALL SELEC".length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
+	}
+
+	@Test
+	public void test_UnionClause_041() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e UNION ALL SELECT ";
+		int startPosition = "SELECT e FROM Employee e UNION ALL SELECT".length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
+	}
+
+	@Test
+	public void test_UnionClause_042() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e INTERSECT";
+		int startPosition = "SELECT e FROM Employee e ".length();
+		testHasTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
+	}
+
+	@Test
+	public void test_UnionClause_043() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e INTERSECT";
+		int startPosition = "SELECT e FROM Employee e I".length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
+	}
+
+	@Test
+	public void test_UnionClause_044() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e INTERSECT";
+		int startPosition = "SELECT e FROM Employee e IN".length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
+	}
+
+	@Test
+	public void test_UnionClause_045() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e INTERSECT";
+		int startPosition = "SELECT e FROM Employee e INT".length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
+	}
+
+	@Test
+	public void test_UnionClause_046() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e INTERSECT";
+		int startPosition = "SELECT e FROM Employee e INTE".length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
+	}
+
+	@Test
+	public void test_UnionClause_047() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e INTERSECT";
+		int startPosition = "SELECT e FROM Employee e INTER".length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
+	}
+
+	@Test
+	public void test_UnionClause_048() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e INTERSECT";
+		int startPosition = "SELECT e FROM Employee e INTERC".length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
+	}
+
+	@Test
+	public void test_UnionClause_049() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e INTERSECT";
+		int startPosition = "SELECT e FROM Employee e INTERCE".length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
+	}
+
+	@Test
+	public void test_UnionClause_050() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e INTERSECT";
+		int startPosition = "SELECT e FROM Employee e INTERCEP".length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
+	}
+
+	@Test
+	public void test_UnionClause_051() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e INTERSECT";
+		int startPosition = "SELECT e FROM Employee e INTERSECT".length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
+	}
+
+	@Test
+	public void test_UnionClause_052() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e INTERSECT ";
+		int startPosition = jpqlQuery.length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, ALL, SELECT);
+	}
+
+	@Test
+	public void test_UnionClause_053() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e INTERSECT A";
+		int startPosition = jpqlQuery.length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, ALL);
+	}
+
+	@Test
+	public void test_UnionClause_054() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e INTERSECT AL";
+		int startPosition = jpqlQuery.length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, ALL);
+	}
+
+	@Test
+	public void test_UnionClause_055() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e INTERSECT ALL";
+		int startPosition = jpqlQuery.length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, ALL);
+	}
+
+	@Test
+	public void test_UnionClause_056() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e INTERSECT ALL ";
+		int startPosition = jpqlQuery.length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
+	}
+
+	@Test
+	public void test_UnionClause_057() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e INTERSECT ALL";
+		int startPosition = "SELECT e FROM Employee e INTERSECT ".length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, ALL);
+	}
+
+	@Test
+	public void test_UnionClause_058() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e INTERSECT AL";
+		int startPosition = "SELECT e FROM Employee e INTERSECT A".length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, ALL);
+	}
+
+	@Test
+	public void test_UnionClause_059() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e INTERSECT ALL";
+		int startPosition = "SELECT e FROM Employee e INTERSECT ALL".length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, ALL);
+	}
+
+	@Test
+	public void test_UnionClause_060() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e INTERSECT ALL ";
+		int startPosition = jpqlQuery.length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
+	}
+
+	@Test
+	public void test_UnionClause_061() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e INTERSECT ALL S";
+		int startPosition = jpqlQuery.length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
+	}
+
+	@Test
+	public void test_UnionClause_062() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e INTERSECT ALL SE";
+		int startPosition = jpqlQuery.length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
+	}
+
+	@Test
+	public void test_UnionClause_063() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e INTERSECT ALL SEL";
+		int startPosition = jpqlQuery.length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
+	}
+
+	@Test
+	public void test_UnionClause_064() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e INTERSECT ALL SELE";
+		int startPosition = jpqlQuery.length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
+	}
+
+	@Test
+	public void test_UnionClause_065() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e INTERSECT ALL SELEC";
+		int startPosition = jpqlQuery.length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
+	}
+
+	@Test
+	public void test_UnionClause_066() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e INTERSECT ALL SELECT";
+		int startPosition = jpqlQuery.length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
+	}
+
+	@Test
+	public void test_UnionClause_067() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e INTERSECT ALL SELECT ";
+		int startPosition = "SELECT e FROM Employee e INTERSECT ALL ".length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
+	}
+
+	@Test
+	public void test_UnionClause_068() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e INTERSECT ALL SELECT ";
+		int startPosition = "SELECT e FROM Employee e INTERSECT ALL S".length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
+	}
+
+	@Test
+	public void test_UnionClause_069() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e INTERSECT ALL SELECT ";
+		int startPosition = "SELECT e FROM Employee e INTERSECT ALL SE".length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
+	}
+
+	@Test
+	public void test_UnionClause_070() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e INTERSECT ALL SELECT ";
+		int startPosition = "SELECT e FROM Employee e INTERSECT ALL SEL".length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
+	}
+
+	@Test
+	public void test_UnionClause_071() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e INTERSECT ALL SELECT ";
+		int startPosition = "SELECT e FROM Employee e INTERSECT ALL SELE".length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
+	}
+
+	@Test
+	public void test_UnionClause_072() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e INTERSECT ALL SELECT ";
+		int startPosition = "SELECT e FROM Employee e INTERSECT ALL SELEC".length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
+	}
+
+	@Test
+	public void test_UnionClause_073() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e INTERSECT ALL SELECT ";
+		int startPosition = "SELECT e FROM Employee e INTERSECT ALL SELECT".length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
+	}
+
+	@Test
+	public void test_UnionClause_074() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e EXCEPT";
+		int startPosition = "SELECT e FROM Employee e ".length();
+		testHasTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
+	}
+
+	@Test
+	public void test_UnionClause_075() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e EXCEPT";
+		int startPosition = "SELECT e FROM Employee e E".length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
+	}
+
+	@Test
+	public void test_UnionClause_076() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e EXCEPT";
+		int startPosition = "SELECT e FROM Employee e EX".length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
+	}
+
+	@Test
+	public void test_UnionClause_077() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e EXCEPT";
+		int startPosition = "SELECT e FROM Employee e EXC".length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
+	}
+
+	@Test
+	public void test_UnionClause_078() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e EXCEPT";
+		int startPosition = "SELECT e FROM Employee e EXCE".length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
+	}
+
+	@Test
+	public void test_UnionClause_079() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e EXCEPT";
+		int startPosition = "SELECT e FROM Employee e EXCEP".length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
+	}
+
+	@Test
+	public void test_UnionClause_080() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e EXCEPT";
+		int startPosition = "SELECT e FROM Employee e EXCEPT".length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, UNION, INTERSECT, EXCEPT);
+	}
+
+	@Test
+	public void test_UnionClause_081() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e EXCEPT ";
+		int startPosition = jpqlQuery.length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, ALL, SELECT);
+	}
+
+	@Test
+	public void test_UnionClause_082() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e EXCEPT A";
+		int startPosition = jpqlQuery.length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, ALL);
+	}
+
+	@Test
+	public void test_UnionClause_083() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e EXCEPT AL";
+		int startPosition = jpqlQuery.length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, ALL);
+	}
+
+	@Test
+	public void test_UnionClause_084() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e EXCEPT ALL";
+		int startPosition = jpqlQuery.length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, ALL);
+	}
+
+	@Test
+	public void test_UnionClause_085() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e EXCEPT ALL ";
+		int startPosition = jpqlQuery.length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
+	}
+
+	@Test
+	public void test_UnionClause_086() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e EXCEPT ALL";
+		int startPosition = "SELECT e FROM Employee e EXCEPT ".length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, ALL);
+	}
+
+	@Test
+	public void test_UnionClause_087() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e EXCEPT AL";
+		int startPosition = "SELECT e FROM Employee e EXCEPT A".length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, ALL);
+	}
+
+	@Test
+	public void test_UnionClause_088() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e EXCEPT ALL";
+		int startPosition = "SELECT e FROM Employee e EXCEPT ALL".length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, ALL);
+	}
+
+	@Test
+	public void test_UnionClause_089() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e EXCEPT ALL ";
+		int startPosition = jpqlQuery.length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
+	}
+
+	@Test
+	public void test_UnionClause_090() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e EXCEPT ALL S";
+		int startPosition = jpqlQuery.length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
+	}
+
+	@Test
+	public void test_UnionClause_091() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e EXCEPT ALL SE";
+		int startPosition = jpqlQuery.length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
+	}
+
+	@Test
+	public void test_UnionClause_092() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e EXCEPT ALL SEL";
+		int startPosition = jpqlQuery.length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
+	}
+
+	@Test
+	public void test_UnionClause_093() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e EXCEPT ALL SELE";
+		int startPosition = jpqlQuery.length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
+	}
+
+	@Test
+	public void test_UnionClause_094() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e EXCEPT ALL SELEC";
+		int startPosition = jpqlQuery.length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
+	}
+
+	@Test
+	public void test_UnionClause_095() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e EXCEPT ALL SELECT";
+		int startPosition = jpqlQuery.length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
+	}
+
+	@Test
+	public void test_UnionClause_096() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e EXCEPT ALL SELECT ";
+		int startPosition = "SELECT e FROM Employee e EXCEPT ALL ".length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
+	}
+
+	@Test
+	public void test_UnionClause_097() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e EXCEPT ALL SELECT ";
+		int startPosition = "SELECT e FROM Employee e EXCEPT ALL S".length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
+	}
+
+	@Test
+	public void test_UnionClause_098() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e EXCEPT ALL SELECT ";
+		int startPosition = "SELECT e FROM Employee e EXCEPT ALL SE".length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
+	}
+
+	@Test
+	public void test_UnionClause_099() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e EXCEPT ALL SELECT ";
+		int startPosition = "SELECT e FROM Employee e EXCEPT ALL SEL".length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
+	}
+
+	@Test
+	public void test_UnionClause_100() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e EXCEPT ALL SELECT ";
+		int startPosition = "SELECT e FROM Employee e EXCEPT ALL SELE".length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
+	}
+
+	@Test
+	public void test_UnionClause_101() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e EXCEPT ALL SELECT ";
+		int startPosition = "SELECT e FROM Employee e EXCEPT ALL SELEC".length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
+	}
+
+	@Test
+	public void test_UnionClause_102() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e EXCEPT ALL SELECT ";
+		int startPosition = "SELECT e FROM Employee e EXCEPT ALL SELECT".length();
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, SELECT);
+	}
+
+	@Test
+	public void test_UnionClause_103() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e WHERE e.name <> 'JPQL' GROUP BY e.name, e";
+		int startPosition = jpqlQuery.length();
+
+		List<String> proposals = new ArrayList<String>();
+		addAll(proposals, filter(bnfAccessor.groupByItemFunctions(), "e"));
+
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, proposals);
+	}
+
+	@Test
+	public void test_UnionClause_104() {
+
+		String jpqlQuery  = "SELECT e FROM Employee e WHERE e.name <> 'JPQL' GROUP BY e.name, e e";
+		int startPosition = jpqlQuery.length();
+
+		List<String> proposals = new ArrayList<String>();
+		addAll(proposals, filter(bnfAccessor.groupByItemFunctions(), "e"));
+
+		testHasOnlyTheseProposals(jpqlQuery, startPosition, proposals);
+	}
 }

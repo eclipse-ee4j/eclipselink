@@ -49,7 +49,6 @@ public final class OnClause extends AbstractConditionalClause {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(OnClauseBNF.ID);
 	}

@@ -123,7 +123,6 @@ public abstract class AggregateFunction extends AbstractSingleEncapsulatedExpres
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(AggregateExpressionBNF.ID);
 	}

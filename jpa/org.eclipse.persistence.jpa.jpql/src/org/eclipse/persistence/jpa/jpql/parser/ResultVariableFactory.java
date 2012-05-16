@@ -69,9 +69,16 @@ public final class ResultVariableFactory extends ExpressionFactory {
 		// the invalid portion can be properly validated and possibly the rest of the query
 		// can be parsed correctly
 		if (tolerant && registry.isIdentifier(word)) {
+
 			ExpressionFactory factory = registry.expressionFactoryForIdentifier(word);
+
 			if (factory != null) {
-				return factory.buildExpression(parent, wordParser, word, queryBNF, expression, tolerant);
+
+				expression = factory.buildExpression(parent, wordParser, word, queryBNF, expression, tolerant);
+
+				if (expression != null) {
+					return new BadExpression(parent, expression);
+				}
 			}
 		}
 

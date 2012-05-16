@@ -63,7 +63,6 @@ public final class AbsExpression extends AbstractSingleEncapsulatedExpression {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(FunctionsReturningNumericsBNF.ID);
 	}

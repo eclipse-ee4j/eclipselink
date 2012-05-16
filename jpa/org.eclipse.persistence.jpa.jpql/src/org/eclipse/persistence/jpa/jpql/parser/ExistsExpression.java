@@ -71,7 +71,6 @@ public final class ExistsExpression extends AbstractSingleEncapsulatedExpression
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(ExistsExpressionBNF.ID);
 	}

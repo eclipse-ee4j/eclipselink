@@ -168,7 +168,11 @@ public abstract class JPQLQueryContext {
 
 	protected DeclarationResolver buildDeclarationResolver() {
 		DeclarationResolver parentResolver = (parent != null) ? parent.getDeclarationResolverImp() : null;
-		return new DeclarationResolver(parentResolver, this);
+		return buildDeclarationResolver(parentResolver);
+	}
+
+	protected DeclarationResolver buildDeclarationResolver(DeclarationResolver parent) {
+		return new DeclarationResolver(parent, this);
 	}
 
 	protected InputParameterVisitor buildInputParameter() {

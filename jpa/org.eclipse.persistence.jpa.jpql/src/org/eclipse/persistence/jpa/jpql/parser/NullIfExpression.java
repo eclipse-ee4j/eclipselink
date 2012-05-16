@@ -51,7 +51,6 @@ public final class NullIfExpression extends AbstractDoubleEncapsulatedExpression
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(NullIfExpressionBNF.ID);
 	}

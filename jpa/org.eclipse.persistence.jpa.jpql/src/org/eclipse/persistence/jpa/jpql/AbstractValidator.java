@@ -89,14 +89,20 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 	private LiteralVisitor literalVisitor;
 
 	/**
+	 * This visitor is responsible to traverse the parent hierarchy and to retrieve the owning clause
+	 * of the {@link Expression} being visited.
+	 */
+	private OwningClauseVisitor owningClauseVisitor;
+
+	/**
 	 * The list of {@link JPQLQueryProblem} describing grammatical and semantic issues found in the query.
 	 */
 	private Collection<JPQLQueryProblem> problems;
 
 	/**
-	 * The {@link BNFValidator} mapped by the BNF IDs.
+	 * The {@link JPQLQueryBNFValidator} mapped by the BNF IDs.
 	 */
-	private Map<String, BNFValidator> validators;
+	private Map<String, JPQLQueryBNFValidator> validators;
 
 	/**
 	 * Creates a new <code>AbstractValidator</code>.
@@ -186,6 +192,14 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 	protected abstract LiteralVisitor buildLiteralVisitor();
 
 	/**
+	 * Creates the visitor that traverses the parent hierarchy of any {@link Expression} and stop at
+	 * the first {@link Expression} that is a clause.
+	 *
+	 * @return A new {@link OwningClauseVisitor}
+	 */
+	protected abstract OwningClauseVisitor buildOwningClauseVisitor();
+
+	/**
 	 * Creates a new validation problem that was found in the given {@link Expression}.
 	 *
 	 * @param expression The {@link Expression} that is either not following the BNF grammar or that
@@ -217,22 +231,6 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 	 */
 	public void dispose() {
 		problems = null;
-	}
-
-	/**
-	 * Returns the {@link BNFValidator} that can be used to validate an {@link Expression} by making
-	 * sure its BNF is part of the given BNF.
-	 *
-	 * @param queryBNF The BNF used to determine the validity of an {@link Expression}
-	 * @return A {@link BNFValidator} that can determine if an {@link Expression} follows the given BNF
-	 */
-	protected BNFValidator getBNFValidator(String queryBNF) {
-		BNFValidator validator = validators.get(queryBNF);
-		if (validator == null) {
-			validator = new BNFValidator(getQueryBNF(queryBNF));
-			validators.put(queryBNF, validator);
-		}
-		return validator;
 	}
 
 	protected BypassChildCollectionExpressionVisitor getBypassChildCollectionExpressionVisitor() {
@@ -287,10 +285,10 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 		return getGrammar().getExpressionRegistry();
 	}
 
-	protected BNFValidator getExpressionValidator(String queryBNF) {
-		BNFValidator validator = validators.get(queryBNF);
+	protected JPQLQueryBNFValidator getExpressionValidator(String queryBNF) {
+		JPQLQueryBNFValidator validator = validators.get(queryBNF);
 		if (validator == null) {
-			validator = new BNFValidator(getExpressionRegistry().getQueryBNF(queryBNF));
+			validator = new JPQLQueryBNFValidator(getExpressionRegistry().getQueryBNF(queryBNF));
 			validators.put(queryBNF, validator);
 		}
 		return validator;
@@ -313,6 +311,35 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 	}
 
 	/**
+	 * Returns the {@link JPQLQueryBNFValidator} that can be used to validate an {@link Expression}
+	 * by making sure its BNF is part of the given BNF.
+	 *
+	 * @param queryBNF The BNF used to determine the validity of an {@link Expression}
+	 * @return A {@link JPQLQueryBNFValidator} that can determine if an {@link Expression} follows
+	 * the given BNF
+	 */
+	protected JPQLQueryBNFValidator getJPQLQueryBNFValidator(JPQLQueryBNF queryBNF) {
+		JPQLQueryBNFValidator validator = validators.get(queryBNF);
+		if (validator == null) {
+			validator = new JPQLQueryBNFValidator(queryBNF);
+			validators.put(queryBNF.getId(), validator);
+		}
+		return validator;
+	}
+
+	/**
+	 * Returns the {@link JPQLQueryBNFValidator} that can be used to validate an {@link Expression}
+	 * by making sure its BNF is part of the given BNF.
+	 *
+	 * @param queryBNF The BNF used to determine the validity of an {@link Expression}
+	 * @return A {@link JPQLQueryBNFValidator} that can determine if an {@link Expression} follows
+	 * the given BNF
+	 */
+	protected JPQLQueryBNFValidator getJPQLQueryBNFValidator(String queryBNF) {
+		return getJPQLQueryBNFValidator(getQueryBNF(queryBNF));
+	}
+
+	/**
 	 * Returns the visitor that can retrieve some information about various literal.
 	 *
 	 * @return A {@link LiteralVisitor}
@@ -322,6 +349,19 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 			literalVisitor = buildLiteralVisitor();
 		}
 		return literalVisitor;
+	}
+
+	/**
+	 * Returns the visitor that traverses the parent hierarchy of any {@link Expression} and stop at
+	 * the first {@link Expression} that is a clause.
+	 *
+	 * @return {@link OwningClauseVisitor}
+	 */
+	protected OwningClauseVisitor getOwningClauseVisitor() {
+		if (owningClauseVisitor == null) {
+			owningClauseVisitor = buildOwningClauseVisitor();
+		}
+		return owningClauseVisitor;
 	}
 
 	/**
@@ -349,18 +389,20 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 	 * Initializes this validator.
 	 */
 	protected void initialize() {
-		validators = new HashMap<String, BNFValidator>();
+		validators = new HashMap<String, JPQLQueryBNFValidator>();
 	}
 
 	/**
-	 * Determines whether the given {@link Expression} part is an expression of the given query BNF.
+	 * Determines whether the given {@link Expression} is valid by checking its {@link JPQLQueryBNF}
+	 * with the given {@link JPQLQueryBNF}.
 	 *
 	 * @param expression The {@link Expression} to validate based on the query BNF
-	 * @return <code>true</code> if the {@link Expression} part is a child of the given query BNF;
-	 * <code>false</code> otherwise
+	 * @param queryBNF The {@link JPQLQueryBNF} that determines if the given {@link Expression} is valid
+	 * @return <code>true</code> if the {@link Expression}'s {@link JPQLQueryBNF} is either the
+	 * {@link JPQLQueryBNF} or a child of it; <code>false</code> otherwise
 	 */
-	protected boolean isValid(Expression expression, String queryBNF) {
-		BNFValidator validator = getBNFValidator(queryBNF);
+	protected boolean isValid(Expression expression, JPQLQueryBNF queryBNF) {
+		JPQLQueryBNFValidator validator = getJPQLQueryBNFValidator(queryBNF);
 		try {
 			expression.accept(validator);
 			return validator.valid;
@@ -368,6 +410,41 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 		finally {
 			validator.valid = false;
 		}
+	}
+
+	/**
+	 * Determines whether the given {@link Expression} is valid by checking its {@link JPQLQueryBNF}
+	 * with the {@link JPQLQueryBNF} associated with the given unique identifier.
+	 *
+	 * @param expression The {@link Expression} to validate based on the query BNF
+	 * @param queryBNFId The unique identifier of the {@link JPQLQueryBNF} that determines if the
+	 * given {@link Expression} is valid
+	 * @return <code>true</code> if the {@link Expression}'s {@link JPQLQueryBNF} is either the
+	 * {@link JPQLQueryBNF} or a child of it; <code>false</code> otherwise
+	 */
+	protected boolean isValid(Expression expression, String queryBNFId) {
+		return isValid(expression, getQueryBNF(queryBNFId));
+	}
+
+	/**
+	 * Determines whether the given {@link Expression} is valid by checking its {@link JPQLQueryBNF}
+	 * with the list of {@link JPQLQueryBNF} associated with the given unique identifiers.
+	 *
+	 * @param expression The {@link Expression} to validate based on the query BNF
+	 * @param queryBNFId The unique identifier of the {@link JPQLQueryBNF} that determines if the
+	 * given {@link Expression} is valid
+	 * @return <code>true</code> if the {@link Expression}'s {@link JPQLQueryBNF} is either the
+	 * {@link JPQLQueryBNF} or a child of it; <code>false</code> otherwise
+	 */
+	protected boolean isValid(Expression expression, String... queryBNFIds) {
+
+		for (String queryBNFId : queryBNFIds) {
+			if (isValid(expression, queryBNFId)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
@@ -380,7 +457,7 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 	 * <code>false</code> otherwise
 	 */
 	protected boolean isValidWithChildCollectionBypass(Expression expression, String queryBNF) {
-		BNFValidator validator = getExpressionValidator(queryBNF);
+		JPQLQueryBNFValidator validator = getExpressionValidator(queryBNF);
 		BypassChildCollectionExpressionVisitor bypassValidator = getBypassChildCollectionExpressionVisitor();
 		try {
 			bypassValidator.visitor = validator;
@@ -469,110 +546,6 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 	}
 
 	/**
-	 * This visitor validates any {@link Expression} by checking its BNF against some BNFs.
-	 */
-	protected static class BNFValidator extends AnonymousExpressionVisitor {
-
-		/**
-		 * The {@link JPQLQueryBNF} used to determine if the expression's BNF is valid.
-		 */
-		private JPQLQueryBNF queryBNF;
-
-		/**
-		 * Determines whether the visited {@link Expression}'s BNF is valid based on the BNF that was
-		 * used for validation.
-		 */
-		public boolean valid;
-
-		/**
-		 * Creates a new <code>ExpressionValidator</code>.
-		 *
-		 * @param queryBNF The {@link JPQLQueryBNF} used to determine if the expression's BNF is valid
-		 */
-		protected BNFValidator(JPQLQueryBNF queryBNF) {
-			super();
-			this.queryBNF = queryBNF;
-		}
-
-		private void allJPQLQueryBNFs(Set<String> queryBNFIds, JPQLQueryBNF queryBNF) {
-			if (queryBNFIds.add(queryBNF.getId()) && !queryBNF.isCompound()) {
-				for (JPQLQueryBNF childQueryBNF : queryBNF.nonCompoundChildren()) {
-					allJPQLQueryBNFs(queryBNFIds, childQueryBNF);
-				}
-			}
-		}
-
-		/**
-		 * Validates the given {@link JPQLQueryBNF} by making sure it is the one expected or one of
-		 * the children from the "root" BNF passed to this validator's constructor.
-		 *
-		 * @param queryBNF The {@link JPQLQueryBNF} to validate
-		 */
-		public void validate(JPQLQueryBNF queryBNF) {
-
-			// By setting the flag to false will assure that if this validator is used for
-			// more than one item, it will reflect the global validity state. If all are
-			// valid, then the last expression will set the flag to true
-			valid = false;
-
-			// Quick check
-			if (queryBNF.getId() == this.queryBNF.getId()) {
-				valid = true;
-			}
-			// Retrieve all the children from the "root" JPQLQueryBNF and
-			// check if the BNF to validate is one of those children
-			else {
-				Set<String> allQueryBNFIds = new HashSet<String>();
-				allJPQLQueryBNFs(allQueryBNFIds, this.queryBNF);
-				valid = allQueryBNFIds.contains(queryBNF.getId());
-			}
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(BadExpression expression) {
-			// This is not a valid expression
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		protected void visit(Expression expression) {
-			validate(((AbstractExpression) expression).getQueryBNF());
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(NullExpression expression) {
-			// The missing expression is validated by GrammarValidator
-			valid = true;
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(SubExpression expression) {
-			if (expression.hasExpression()) {
-				expression.getExpression().accept(this);
-			}
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(UnknownExpression expression) {
-			// This is not a valid expression
-		}
-	}
-
-	/**
 	 * This visitor is responsible to traverse the children of a {@link CollectionExpression} in
 	 * order to properly validate the {@link Expression}.
 	 */
@@ -581,7 +554,7 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 		/**
 		 * The visitor that will visit the {@link Expression}.
 		 */
-		public BNFValidator visitor;
+		public JPQLQueryBNFValidator visitor;
 
 		/**
 		 * Creates a new <code>BypassChildCollectionExpressionVisitor</code>.
@@ -688,6 +661,110 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 		@Override
 		public void visit(NullExpression expression) {
 			// Don't add it
+		}
+	}
+
+	/**
+	 * This visitor validates any {@link Expression} by checking its BNF against some BNFs.
+	 */
+	protected static class JPQLQueryBNFValidator extends AnonymousExpressionVisitor {
+
+		/**
+		 * The {@link JPQLQueryBNF} used to determine if the expression's BNF is valid.
+		 */
+		private JPQLQueryBNF queryBNF;
+
+		/**
+		 * Determines whether the visited {@link Expression}'s BNF is valid based on the BNF that was
+		 * used for validation.
+		 */
+		public boolean valid;
+
+		/**
+		 * Creates a new <code>JPQLQueryBNFValidator</code>.
+		 *
+		 * @param queryBNF The {@link JPQLQueryBNF} used to determine if the expression's BNF is valid
+		 */
+		protected JPQLQueryBNFValidator(JPQLQueryBNF queryBNF) {
+			super();
+			this.queryBNF = queryBNF;
+		}
+
+		private void allJPQLQueryBNFs(Set<String> queryBNFIds, JPQLQueryBNF queryBNF) {
+			if (queryBNFIds.add(queryBNF.getId()) && !queryBNF.isCompound()) {
+				for (JPQLQueryBNF childQueryBNF : queryBNF.nonCompoundChildren()) {
+					allJPQLQueryBNFs(queryBNFIds, childQueryBNF);
+				}
+			}
+		}
+
+		/**
+		 * Validates the given {@link JPQLQueryBNF} by making sure it is the one expected or one of
+		 * the children from the "root" BNF passed to this validator's constructor.
+		 *
+		 * @param queryBNF The {@link JPQLQueryBNF} to validate
+		 */
+		public void validate(JPQLQueryBNF queryBNF) {
+
+			// By setting the flag to false will assure that if this validator is used for
+			// more than one item, it will reflect the global validity state. If all are
+			// valid, then the last expression will set the flag to true
+			valid = false;
+
+			// Quick check
+			if (queryBNF.getId() == this.queryBNF.getId()) {
+				valid = true;
+			}
+			// Retrieve all the children from the "root" JPQLQueryBNF and
+			// check if the BNF to validate is one of those children
+			else {
+				Set<String> allQueryBNFIds = new HashSet<String>();
+				allJPQLQueryBNFs(allQueryBNFIds, this.queryBNF);
+				valid = allQueryBNFIds.contains(queryBNF.getId());
+			}
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(BadExpression expression) {
+			// This is not a valid expression
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		protected void visit(Expression expression) {
+			validate(((AbstractExpression) expression).getQueryBNF());
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(NullExpression expression) {
+			// The missing expression is validated by GrammarValidator
+			valid = true;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(SubExpression expression) {
+			if (expression.hasExpression()) {
+				expression.getExpression().accept(this);
+			}
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(UnknownExpression expression) {
+			// This is not a valid expression
 		}
 	}
 

@@ -56,7 +56,6 @@ public final class SubstringExpression extends AbstractTripleEncapsulatedExpress
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(FunctionsReturningStringsBNF.ID);
 	}

@@ -149,7 +149,6 @@ public final class DeleteClause extends AbstractExpression {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(DeleteClauseBNF.ID);
 	}

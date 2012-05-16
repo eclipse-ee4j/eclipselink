@@ -149,7 +149,6 @@ public final class TableVariableDeclaration extends AbstractExpression {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(TableVariableDeclarationBNF.ID);
 	}

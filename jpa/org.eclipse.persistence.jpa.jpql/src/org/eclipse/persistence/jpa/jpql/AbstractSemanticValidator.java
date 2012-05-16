@@ -166,6 +166,10 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 */
 	protected StateFieldPathExpressionVisitor stateFieldPathExpressionVisitor;
 
+	private SubqueryFirstDeclarationVisitor subqueryFirstDeclarationVisitor;
+
+	private TopLevelFirstDeclarationVisitor topLevelFirstDeclarationVisitor;
+
 	/**
 	 * The {@link IdentificationVariable IdentificationVariables} that are used throughout the query
 	 * (top-level query and subqueries), except the identification variables defining an abstract
@@ -194,6 +198,14 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 
 	protected ComparingEntityTypeLiteralVisitor buildComparingEntityTypeLiteralVisitor() {
 		return new ComparingEntityTypeLiteralVisitor();
+	}
+
+	protected SubqueryFirstDeclarationVisitor buildSubqueryFirstDeclarationVisitor() {
+		return new SubqueryFirstDeclarationVisitor();
+	}
+
+	protected TopLevelFirstDeclarationVisitor buildTopLevelFirstDeclarationVisitor() {
+		return new TopLevelFirstDeclarationVisitor();
 	}
 
 	/**
@@ -437,6 +449,20 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 */
 	protected abstract PathType selectClausePathExpressionPathType();
 
+	protected FirstDeclarationVisitor subqueryFirstDeclarationVisitor() {
+		if (subqueryFirstDeclarationVisitor == null) {
+			subqueryFirstDeclarationVisitor = buildSubqueryFirstDeclarationVisitor();
+		}
+		return subqueryFirstDeclarationVisitor;
+	}
+
+	protected FirstDeclarationVisitor topLevelFirstDeclarationVisitor() {
+		if (topLevelFirstDeclarationVisitor == null) {
+			topLevelFirstDeclarationVisitor = buildTopLevelFirstDeclarationVisitor();
+		}
+		return topLevelFirstDeclarationVisitor;
+	}
+
 	/**
 	 * Updates the validation status of an expression at a specified position. The value is stored
 	 * in an integer value.
@@ -475,8 +501,10 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 * identification variable declarations.
 	 *
 	 * @param expression The {@link AbstractFromClause} to validate
+	 * @param visitor
 	 */
-	protected void validateAbstractFromClause(AbstractFromClause expression) {
+	protected void validateAbstractFromClause(AbstractFromClause expression,
+	                                          FirstDeclarationVisitor visitor) {
 
 		// The identification variable declarations are evaluated from left to right in
 		// the FROM clause, and an identification variable declaration can use the result
@@ -484,42 +512,29 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 		List<JPQLQueryDeclaration> declarations = helper.getDeclarations();
 
 		for (int index = 0, count = declarations.size(); index < count; index++) {
+
 			JPQLQueryDeclaration declaration = declarations.get(index);
+
+			// Make sure the first declaration is valid
+			if (index == 0) {
+				validateFirstDeclaration(expression, declaration, visitor);
+			}
+			else {
+				Expression declarationExpression = declaration.getDeclarationExpression();
+
+				// A JOIN expression does not have a declaration and it should not be traversed here
+				if (declarationExpression != null) {
+					declarationExpression.accept(this);
+				}
+			}
 
 			// Check the JOIN expressions in the identification variable declaration
 			if (declaration.isRange() && declaration.hasJoins()) {
-
-				List<Join> joins = declaration.getJoins();
-
-				for (int joinIndex = 0, joinCount = joins.size(); joinIndex < joinCount; joinIndex++) {
-
-					Join join = joins.get(joinIndex);
-
-					// Retrieve the identification variable from the join association path
-					String variableName = literal(
-						join.getJoinAssociationPath(),
-						LiteralType.PATH_EXPRESSION_IDENTIFICATION_VARIABLE
-					);
-
-					// Make sure the identification variable is defined before the JOIN expression
-					if (ExpressionTools.stringIsNotEmpty(variableName) &&
-					    isIdentificationVariableDeclaredAfter(variableName, index, joinIndex, declarations)) {
-
-						int startPosition = position(join.getJoinAssociationPath());
-						int endPosition   = startPosition + variableName.length();
-
-						addProblem(
-							expression,
-							startPosition,
-							endPosition,
-							AbstractFromClause_WrongOrderOfIdentificationVariableDeclaration,
-							variableName
-						);
-					}
-				}
+				validateJoinsIdentificationVariable(expression, declarations, declaration, index);
 			}
-			// Check the collection member declaration
-			else if (!declaration.isRange()) {
+			// Check the collection member declaration or derived path expression
+			else if (declaration.isDerived() ||
+			         declaration.isCollection()) {
 
 				// Retrieve the identification variable from the path expression
 				String variableName = literal(
@@ -1209,14 +1224,37 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 		super.visit(expression);
 	}
 
+	protected void validateFirstDeclaration(AbstractFromClause expression,
+	                                        JPQLQueryDeclaration declaration,
+	                                        FirstDeclarationVisitor visitor) {
+
+		Expression declarationExpression = declaration.getDeclarationExpression();
+		Expression baseExpression = declaration.getBaseExpression();
+
+		try {
+			baseExpression.accept(visitor);
+
+			if (!visitor.valid) {
+				int startPosition = position(declarationExpression);
+				int endPosition = startPosition + length(declarationExpression);
+				addProblem(expression, startPosition, endPosition, AbstractFromClause_InvalidFirstIdentificationVariableDeclaration);
+			}
+			else {
+				declarationExpression.accept(this);
+			}
+		}
+		finally {
+			visitor.valid = false;
+		}
+	}
+
 	/**
 	 * Validates the given {@link FromClause}.
 	 *
 	 * @param expression The {@link FromClause} to validate
 	 */
 	protected void validateFromClause(FromClause expression) {
-		validateAbstractFromClause(expression);
-		super.visit(expression);
+		validateAbstractFromClause(expression, topLevelFirstDeclarationVisitor());
 	}
 
 	/**
@@ -1475,18 +1513,8 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 * @param expression The {@link InExpression} to validate
 	 */
 	protected void validateInExpression(InExpression expression) {
-
-		Expression leftExpression = expression.getExpression();
-
-		// Special case for state field path expression, only association field are allowed
-//		StateFieldPathExpression pathExpression = getStateFieldPathExpression(leftExpression);
-//
-//		if (pathExpression != null) {
-//			validateStateFieldPathExpression(pathExpression, PathType.ASSOCIATION_FIELD_ONLY);
-//		}
-//		else {
-			leftExpression.accept(this);
-//		}
+		expression.getExpression().accept(this);
+		expression.getInItems().accept(this);
 	}
 
 	/**
@@ -1509,6 +1537,41 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 			}
 			finally {
 				registerIdentificationVariable = true;
+			}
+		}
+	}
+
+	protected void validateJoinsIdentificationVariable(AbstractFromClause expression,
+	                                                   List<JPQLQueryDeclaration> declarations,
+	                                                   JPQLQueryDeclaration declaration,
+	                                                   int index) {
+
+		List<Join> joins = declaration.getJoins();
+
+		for (int joinIndex = 0, joinCount = joins.size(); joinIndex < joinCount; joinIndex++) {
+
+			Join join = joins.get(joinIndex);
+
+			// Retrieve the identification variable from the join association path
+			String variableName = literal(
+				join.getJoinAssociationPath(),
+				LiteralType.PATH_EXPRESSION_IDENTIFICATION_VARIABLE
+			);
+
+			// Make sure the identification variable is defined before the JOIN expression
+			if (ExpressionTools.stringIsNotEmpty(variableName) &&
+			    isIdentificationVariableDeclaredAfter(variableName, index, joinIndex, declarations)) {
+
+				int startPosition = position(join.getJoinAssociationPath());
+				int endPosition   = startPosition + variableName.length();
+
+				addProblem(
+					expression,
+					startPosition,
+					endPosition,
+					AbstractFromClause_WrongOrderOfIdentificationVariableDeclaration,
+					variableName
+				);
 			}
 		}
 	}
@@ -1905,8 +1968,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 	 * @param expression The {@link SimpleFromClause} to validate
 	 */
 	protected void validateSimpleFromClause(SimpleFromClause expression) {
-		validateAbstractFromClause(expression);
-		super.visit(expression);
+		validateAbstractFromClause(expression, subqueryFirstDeclarationVisitor());
 	}
 
 	/**
@@ -2031,16 +2093,11 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 				}
 			}
 			else {
-				// TODO: Test for an enum type in the wrong location
-				Object type = helper.getType(expression);
 
-				// Does not resolve to a valid path
-				if (!helper.isTypeResolvable(type)) {
-					addProblem(expression, StateFieldPathExpression_NotResolvable, expression.toActualText());
-					valid = false;
-				}
+				Object type = helper.getType(expression.toParsedText(0, expression.pathSize() - 1));
+
 				// An enum constant could have been parsed as a state field path expression
-				else if (helper.isEnumType(type)) {
+				if (helper.isEnumType(type)) {
 
 					// Search for the enum constant
 					String enumConstant = expression.getPath(expression.pathSize() - 1);
@@ -2064,10 +2121,20 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 					// package name of the fully qualified enum constant
 					usedIdentificationVariables.remove(expression.getIdentificationVariable());
 				}
-				// No mapping can be found for that path
 				else {
-					addProblem(expression, StateFieldPathExpression_NoMapping, expression.toActualText());
-					valid = false;
+
+					type = helper.getType(expression);
+
+					// Does not resolve to a valid path
+					if (!helper.isTypeResolvable(type)) {
+						addProblem(expression, StateFieldPathExpression_NotResolvable, expression.toActualText());
+						valid = false;
+					}
+					// No mapping can be found for that path
+					else {
+						addProblem(expression, StateFieldPathExpression_NoMapping, expression.toActualText());
+						valid = false;
+					}
 				}
 			}
 		}
@@ -3151,6 +3218,60 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 			}
 		}
 	}
+	protected class FirstDeclarationVisitor extends AnonymousExpressionVisitor {
+
+		protected boolean valid;
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(AbstractSchemaName expression) {
+			valid = true;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(BadExpression expression) {
+			// Already validated, no need to duplicate the issue
+			valid = false;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		protected void visit(Expression expression) {
+			valid = false;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(IdentificationVariableDeclaration expression) {
+			expression.getRangeVariableDeclaration().accept(this);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(NullExpression expression) {
+			// Already validated, no need to duplicate the issue
+			valid = false;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(RangeVariableDeclaration expression) {
+			expression.getRootObject().accept(this);
+		}
+	}
 
 	/**
 	 * This enumeration allows {@link AbstractSemanticValidator#validateStateFieldPathExpression(
@@ -3178,5 +3299,28 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 		 * This will allow basic fields to be specified but association mappings are not valid.
 		 */
 		BASIC_FIELD_ONLY
+	}
+
+	protected class SubqueryFirstDeclarationVisitor extends FirstDeclarationVisitor {
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(CollectionValuedPathExpression expression) {
+			valid = true;
+		}
+	}
+
+	protected class TopLevelFirstDeclarationVisitor extends FirstDeclarationVisitor {
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(AbstractSchemaName expression) {
+			// TODO
+			valid = true;
+		}
 	}
 }

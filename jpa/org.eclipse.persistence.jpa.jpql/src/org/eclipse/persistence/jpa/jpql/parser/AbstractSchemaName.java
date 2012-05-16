@@ -59,7 +59,6 @@ public final class AbstractSchemaName extends AbstractExpression {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(AbstractSchemaNameBNF.ID);
 	}

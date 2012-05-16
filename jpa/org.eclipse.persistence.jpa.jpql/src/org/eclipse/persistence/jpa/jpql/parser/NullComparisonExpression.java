@@ -174,7 +174,6 @@ public final class NullComparisonExpression extends AbstractExpression {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(NullComparisonExpressionBNF.ID);
 	}

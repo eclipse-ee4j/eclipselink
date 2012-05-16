@@ -57,7 +57,6 @@ public final class SimpleFromClause extends AbstractFromClause {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(SubqueryFromClauseBNF.ID);
 	}

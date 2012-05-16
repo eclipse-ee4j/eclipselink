@@ -187,11 +187,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 	 * The {@link JPQLGrammar} that defines how the JPQL query was parsed.
 	 */
 	private JPQLGrammar jpqlGrammar;
-	/**
-	 * This visitor is responsible to traverse the parent hierarchy and to retrieve the owning clause
-	 * of the {@link Expression} being visited.
-	 */
-	private OwningClauseVisitor owningClauseVisitor;
 
 	/**
 	 * Creates a new <code>AbstractGrammarValidator</code>.
@@ -781,10 +776,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 		};
 	}
 
-	protected OwningClauseVisitor buildOwningClauseVisitor() {
-		return new OwningClauseVisitor();
-	}
-
 	protected AbstractSingleEncapsulatedExpressionHelper<SizeExpression> buildSizeExpressionHelper() {
 		return new AbstractSingleEncapsulatedExpressionHelper<SizeExpression>() {
 			@Override
@@ -1117,19 +1108,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 	@SuppressWarnings("unchecked")
 	protected <T> T getHelper(String id) {
 		return (T) helpers.get(id);
-	}
-
-	/**
-	 * Returns the visitor that traverses the parent hierarchy of any {@link Expression} and stop at
-	 * the first {@link Expression} that is a clause.
-	 *
-	 * @return {@link OwningClauseVisitor}
-	 */
-	protected OwningClauseVisitor getOwningClauseVisitor() {
-		if (owningClauseVisitor == null) {
-			owningClauseVisitor = buildOwningClauseVisitor();
-		}
-		return owningClauseVisitor;
 	}
 
 	protected AbstractSingleEncapsulatedExpressionHelper<IndexExpression> indexExpressionHelper() {
@@ -1713,22 +1691,28 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 
 	protected void validateAbstractFromClause(AbstractFromClause expression) {
 
-		if (expression.hasDeclaration()) {
+		// Missing declaration
+		if (!expression.hasDeclaration()) {
 
-			// Two identification variable declarations have to be separated by a comma and
-			// the FROM clause cannot end with a comma
-			validateCollectionSeparatedByComma(
-				expression.getDeclaration(),
-				AbstractFromClause_IdentificationVariableDeclarationEndsWithComma,
-				AbstractFromClause_IdentificationVariableDeclarationIsMissingComma
-			);
-		}
-		else {
 			int startPosition = position(expression) +
 			                    4 /* FROM */ +
 			                    (expression.hasSpaceAfterFrom() ? 1 : 0);
 
 			addProblem(expression, startPosition, AbstractFromClause_MissingIdentificationVariableDeclaration);
+		}
+		else {
+			Expression declaration = expression.getDeclaration();
+
+			// Two identification variable declarations have to be separated by a comma and
+			// the FROM clause cannot end with a comma
+			validateCollectionSeparatedByComma(
+				declaration,
+				AbstractFromClause_IdentificationVariableDeclarationEndsWithComma,
+				AbstractFromClause_IdentificationVariableDeclarationIsMissingComma
+			);
+
+			// Validate the declaration
+			declaration.accept(this);
 		}
 	}
 
@@ -2425,6 +2409,10 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 
 			addProblem(expression, AbstractPathExpression_MissingIdentificationVariable);
 		}
+		// Validate the identification variable
+		else {
+			expression.getIdentificationVariable().accept(this);
+		}
 
 		// Cannot end with a dot
 		if (expression.endsWithDot()) {
@@ -2433,17 +2421,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 	}
 
 	protected void validateSimpleSelectStatement(SimpleSelectStatement expression) {
-
-		// - Note that some contexts in which a subquery can be used require that
-		//   the subquery be a scalar subquery (i.e., produce a single result).
-
-		// Subqueries may be used in the WHERE or HAVING clause
-		if (!isSubqueryAllowedAnywhere() && !isOwnedByConditionalClause(expression)) {
-			addProblem(expression, SimpleSelectStatement_InvalidLocation);
-		}
-		else {
-			validateAbstractSelectStatement(expression);
-		}
+		validateAbstractSelectStatement(expression);
 	}
 
 	protected AbstractSingleEncapsulatedExpressionHelper<ValueExpression> valueExpressionHelper() {
@@ -2872,7 +2850,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 	@Override
 	public void visit(CollectionValuedPathExpression expression) {
 		validatePathExpression(expression);
-		super.visit(expression);
 	}
 
 	/**
@@ -3091,7 +3068,10 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 			int startPosition = 12 /* DELETE FROM + whitespace) */;
 			addProblem(expression, startPosition, DeleteClause_RangeVariableDeclarationMissing);
 		}
-		else {
+
+		// Validate range variable declaration
+		if (expression.hasRangeVariableDeclaration()) {
+
 			// More than one entity abstract schema type is declared
 			CollectionExpression collectionExpression = getCollectionExpression(expression.getRangeVariableDeclaration());
 
@@ -3216,7 +3196,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 	@Override
 	public void visit(FromClause expression) {
 		validateAbstractFromClause(expression);
-		super.visit(expression);
 	}
 
 	/**
@@ -4022,7 +4001,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 	@Override
 	public void visit(SimpleFromClause expression) {
 		validateAbstractFromClause(expression);
-		super.visit(expression);
 	}
 
 	/**
@@ -4064,7 +4042,6 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 	@Override
 	public void visit(StateFieldPathExpression expression) {
 		validatePathExpression(expression);
-		super.visit(expression);
 	}
 
 	/**

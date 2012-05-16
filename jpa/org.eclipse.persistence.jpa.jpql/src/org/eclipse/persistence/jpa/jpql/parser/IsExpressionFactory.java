@@ -51,13 +51,16 @@ public final class IsExpressionFactory extends ExpressionFactory {
 	                                             AbstractExpression expression,
 	                                             boolean tolerant) {
 
-		int index = wordParser.position() + 2;
-		index += wordParser.whitespaceCount(index);
+		int position = wordParser.position();
+		int index = position + 2;
+		int count = wordParser.whitespaceCount(index);
+		index += count;
 
 		// IS NOT EMPTY or IS NO NULL
 		if (wordParser.startsWithIdentifier(Expression.NOT, index)) {
 			index += 3;
-			index += wordParser.whitespaceCount(index);
+			count = wordParser.whitespaceCount(index);
+			index += count;
 
 			// IS NOT EMPTY
 			if (wordParser.startsWithIdentifier(Expression.EMPTY, index)) {
@@ -68,7 +71,8 @@ public final class IsExpressionFactory extends ExpressionFactory {
 				expression = new NullComparisonExpression(parent, Expression.IS_NOT_NULL, expression);
 			}
 			else {
-				return null;
+				word = wordParser.substring(position, index - count);
+				expression = new UnknownExpression(parent, word);
 			}
 		}
 		// IS EMPTY
@@ -80,7 +84,8 @@ public final class IsExpressionFactory extends ExpressionFactory {
 			expression = new NullComparisonExpression(parent, Expression.IS_NULL, expression);
 		}
 		else {
-			return null;
+			word = wordParser.substring(position, index - count);
+			expression = new UnknownExpression(parent, word);
 		}
 
 		expression.parse(wordParser, tolerant);

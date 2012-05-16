@@ -565,16 +565,16 @@ public final class JPQLGrammar1_0 extends AbstractJPQLGrammar {
 		registerIdentifierRole(Expression.UPDATE,                IdentifierRole.CLAUSE);
 		registerIdentifierRole(Expression.UPPER,                 IdentifierRole.FUNCTION);           // UPPER(x)
 		registerIdentifierRole(Expression.WHERE,                 IdentifierRole.CLAUSE);
-		registerIdentifierRole(Expression.PLUS,                  IdentifierRole.AGGREGATE);
-		registerIdentifierRole(Expression.MINUS,                 IdentifierRole.AGGREGATE);
-		registerIdentifierRole(Expression.MULTIPLICATION,        IdentifierRole.AGGREGATE);
-		registerIdentifierRole(Expression.DIVISION,              IdentifierRole.AGGREGATE);
-		registerIdentifierRole(Expression.LOWER_THAN,            IdentifierRole.AGGREGATE);
-		registerIdentifierRole(Expression.LOWER_THAN_OR_EQUAL,   IdentifierRole.AGGREGATE);
-		registerIdentifierRole(Expression.GREATER_THAN,          IdentifierRole.AGGREGATE);
-		registerIdentifierRole(Expression.GREATER_THAN_OR_EQUAL, IdentifierRole.AGGREGATE);
-		registerIdentifierRole(Expression.DIFFERENT,             IdentifierRole.AGGREGATE);
-		registerIdentifierRole(Expression.EQUAL,                 IdentifierRole.AGGREGATE);
+		registerIdentifierRole(Expression.PLUS,                  IdentifierRole.AGGREGATE);          // x + y
+		registerIdentifierRole(Expression.MINUS,                 IdentifierRole.AGGREGATE);          // x - y
+		registerIdentifierRole(Expression.MULTIPLICATION,        IdentifierRole.AGGREGATE);          // x * y
+		registerIdentifierRole(Expression.DIVISION,              IdentifierRole.AGGREGATE);          // x / y
+		registerIdentifierRole(Expression.LOWER_THAN,            IdentifierRole.AGGREGATE);          // x < y
+		registerIdentifierRole(Expression.LOWER_THAN_OR_EQUAL,   IdentifierRole.AGGREGATE);          // x <= y
+		registerIdentifierRole(Expression.GREATER_THAN,          IdentifierRole.AGGREGATE);          // x >  y
+		registerIdentifierRole(Expression.GREATER_THAN_OR_EQUAL, IdentifierRole.AGGREGATE);          // x >= y
+		registerIdentifierRole(Expression.DIFFERENT,             IdentifierRole.AGGREGATE);          // x <> y
+		registerIdentifierRole(Expression.EQUAL,                 IdentifierRole.AGGREGATE);          // x =  y
 
 		// Composite Identifiers
 		registerIdentifierRole(Expression.GROUP_BY,              IdentifierRole.CLAUSE);

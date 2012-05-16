@@ -582,9 +582,13 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
 
 		protected UnionClause unionClause;
 
+		/**
+		 * {@inheritDoc}
+		 */
 		@Override
 		protected void dispose() {
 			super.dispose();
+			unionClause = null;
 		}
 
 		public void visit(UnionClause expression) {

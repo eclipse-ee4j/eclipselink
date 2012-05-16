@@ -52,7 +52,6 @@ public final class ModExpression extends AbstractDoubleEncapsulatedExpression {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(FunctionsReturningNumericsBNF.ID);
 	}

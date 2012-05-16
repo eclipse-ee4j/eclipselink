@@ -54,7 +54,6 @@ public final class SizeExpression extends AbstractSingleEncapsulatedExpression {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(FunctionsReturningNumericsBNF.ID);
 	}

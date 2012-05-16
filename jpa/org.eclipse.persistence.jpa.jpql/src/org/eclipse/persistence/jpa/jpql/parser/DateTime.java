@@ -86,7 +86,6 @@ public final class DateTime extends AbstractExpression {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(FunctionsReturningDatetimeBNF.ID);
 	}

@@ -167,7 +167,6 @@ public final class WhenClause extends AbstractExpression {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(WhenClauseBNF.ID);
 	}

@@ -160,4 +160,19 @@ public final class OrderByItemTest extends JPQLParserTest {
 
 		testInvalidQuery(query, selectStatement);
 	}
+
+	@Test
+	public void test_BuildExpression_08() throws Exception {
+
+		String query = "SELECT i FROM Item i WHERE i.category=:category ORDER BY i.id\"";
+
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("i")),
+			from("Item", "i"),
+			where(path("i.category").equal(inputParameter(":category"))),
+			orderBy(orderByItem(path("i.id\"")))
+		);
+
+		testInvalidQuery(query, selectStatement);
+	}
 }

@@ -10,7 +10,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 @Entity
-@SuppressWarnings("unused")
 public class CodeAssist {
 
 	@Basic

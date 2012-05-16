@@ -57,7 +57,6 @@ public final class CoalesceExpression extends AbstractSingleEncapsulatedExpressi
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(CoalesceExpressionBNF.ID);
 	}

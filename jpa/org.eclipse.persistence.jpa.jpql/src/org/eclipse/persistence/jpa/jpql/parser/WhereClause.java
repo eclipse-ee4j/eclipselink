@@ -62,7 +62,6 @@ public final class WhereClause extends AbstractConditionalClause {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(WhereClauseBNF.ID);
 	}

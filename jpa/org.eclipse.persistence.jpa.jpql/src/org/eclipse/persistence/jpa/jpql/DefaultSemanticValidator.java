@@ -183,6 +183,14 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
 		return new DefaultLiteralVisitor();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected OwningClauseVisitor buildOwningClauseVisitor() {
+		return new OwningClauseVisitor();
+	}
+
 	protected ResultVariableInOrderByVisitor buildResultVariableInOrderByVisitor() {
 		return new ResultVariableInOrderByVisitor();
 	}
@@ -389,7 +397,7 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
 	}
 
 	protected boolean isValidWithFindQueryBNF(AbstractExpression expression, String queryBNF) {
-		BNFValidator validator = getExpressionValidator(queryBNF);
+		JPQLQueryBNFValidator validator = getExpressionValidator(queryBNF);
 		try {
 			JPQLQueryBNF childQueryBNF = expression.getParent().findQueryBNF(expression);
 			validator.validate(childQueryBNF);

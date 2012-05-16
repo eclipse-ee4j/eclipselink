@@ -73,7 +73,6 @@ public final class KeywordExpression extends AbstractExpression {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(BooleanLiteralBNF.ID);
 	}

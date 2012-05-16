@@ -136,7 +136,7 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
 
 		if (resultVariable != null) {
 			generateName = resultVariable;
-			queryContext.addQueryExpression(resultVariable, queryExpression);
+			queryContext.addQueryExpression(resultVariable.toUpperCase(), queryExpression);
 		}
 
 		query.addAttribute(generateName, queryExpression);
@@ -146,7 +146,7 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
 
 		if (resultVariable != null) {
 			generateName = resultVariable;
-			queryContext.addQueryExpression(resultVariable, queryExpression);
+			queryContext.addQueryExpression(resultVariable.toUpperCase(), queryExpression);
 		}
 
 		query.addAttribute(generateName, queryExpression, type);
@@ -529,7 +529,7 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
 
 		// Now cache the Expression for future retrieval by the ORDER BY clause
 		IdentificationVariable identificationVariable = (IdentificationVariable) expression.getResultVariable();
-		resultVariable = identificationVariable.getVariableName();
+		resultVariable = identificationVariable.getText();
 
 		// Create the Expression that is added to the query as an attribute
 		expression.getSelectExpression().accept(this);

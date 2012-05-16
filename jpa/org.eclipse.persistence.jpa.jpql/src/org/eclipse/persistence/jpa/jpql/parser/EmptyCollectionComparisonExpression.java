@@ -214,7 +214,6 @@ public final class EmptyCollectionComparisonExpression extends AbstractExpressio
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(EmptyCollectionComparisonExpressionBNF.ID);
 	}

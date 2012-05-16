@@ -64,9 +64,14 @@ public abstract class AbstractValidatorTest extends JPQLCoreTest {
 
 		StringBuilder sb = new StringBuilder();
 
-		for (JPQLQueryProblem problem : problems) {
+		for (int index = 0, count = problems.size(); index < count; index++) {
+
+			JPQLQueryProblem problem = problems.get(index);
 			sb.append(problem.getMessageKey());
-			sb.append(", ");
+
+			if (index + 1 < count) {
+				sb.append(", ");
+			}
 		}
 
 		return sb;
@@ -135,10 +140,6 @@ public abstract class AbstractValidatorTest extends JPQLCoreTest {
 	}
 
 	protected final void testDoesNotHaveProblem(List<JPQLQueryProblem> problems, String messageKey) {
-
-		if (problems.isEmpty()) {
-			return;
-		}
 
 		for (JPQLQueryProblem problem : problems) {
 			assertFalse(
@@ -215,21 +216,29 @@ public abstract class AbstractValidatorTest extends JPQLCoreTest {
 			problemsNotFound.add(messageKey);
 		}
 
+		// Iterate through the problems that should be part of the list
 		for (int index = 0; index < messageKeys.length; index++) {
+
 			String messageKey = messageKeys[index];
 
+			// Iterator through the list that was generated from validation
 			for (JPQLQueryProblem problem : problems) {
-				if (messageKey == problem.getMessageKey()) {
+
+				if (problem.getMessageKey()    == messageKey &&
+				    problem.getStartPosition() == startPositions[index] &&
+				    problem.getEndPosition()   == endPositions[index]) {
+
 					problemsNotFound.remove(messageKey);
-					testProblem(problem, startPositions[index], endPositions[index]);
+					testResourceBundle(messageKey);
+					break;
 				}
 			}
 		}
 
-//		assertTrue(
-//			"Some problems were not added to the list" + problemsNotFound,
-//			problemsNotFound.isEmpty()
-//		);
+		assertTrue(
+			"Some problems were not added to the list: " + problemsNotFound,
+			problemsNotFound.isEmpty()
+		);
 	}
 
 	private void testProblem(JPQLQueryProblem problem, int startPosition, int endPosition) {

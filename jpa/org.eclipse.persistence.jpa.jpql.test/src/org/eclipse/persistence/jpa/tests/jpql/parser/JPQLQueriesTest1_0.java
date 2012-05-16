@@ -36,7 +36,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_001() {
+	public final void test_Query_001() {
 
 		// SELECT e FROM Employee e
 
@@ -49,7 +49,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_002() {
+	public final void test_Query_002() {
 
 		// SELECT e\nFROM Employee e
 
@@ -62,7 +62,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_003() {
+	public final void test_Query_003() {
 
 		// SELECT e
       // FROM Employee e
@@ -84,7 +84,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_004() {
+	public final void test_Query_004() {
 
 		// SELECT p.number
 		// FROM Employee e, Phone p
@@ -110,7 +110,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_005() {
+	public final void test_Query_005() {
 
 		// SELECT d, COUNT(e), MAX(e.salary), AVG(e.salary)
 		// FROM Department d JOIN d.employees e
@@ -134,7 +134,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_006() {
+	public final void test_Query_006() {
 
 		// SELECT e
 		// FROM Employee e
@@ -156,7 +156,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_007() {
+	public final void test_Query_007() {
 
 		// SELECT e
 		// FROM Employee e
@@ -178,7 +178,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_008() {
+	public final void test_Query_008() {
 
 		// SELECT e
 		// FROM Employee e
@@ -200,7 +200,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_009() {
+	public final void test_Query_009() {
 
 		// SELECT e
 		// FROM Employee e
@@ -216,7 +216,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_010() {
+	public final void test_Query_010() {
 
 		// SELECT e
 		// FROM Employee e
@@ -246,7 +246,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_011() {
+	public final void test_Query_011() {
 
 		// SELECT e
 		// FROM Project p JOIN p.employees e
@@ -266,7 +266,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_012() {
+	public final void test_Query_012() {
 
 		// SELECT e
 		// FROM Employee e
@@ -282,7 +282,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_013() {
+	public final void test_Query_013() {
 
 		// SELECT e
 		// FROM Employee e
@@ -298,7 +298,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_014() {
+	public final void test_Query_014() {
 
 		// UPDATE Employee e
 		// SET e.manager = ?1
@@ -313,7 +313,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_015() {
+	public final void test_Query_015() {
 
 		// DELETE FROM Project p
       // WHERE p.employees IS EMPTY
@@ -328,7 +328,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_016() {
+	public final void test_Query_016() {
 
 		// DELETE FROM Department d
 		// WHERE d.name IN ('CA13', 'CA19', 'NY30')
@@ -350,7 +350,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_017() {
+	public final void test_Query_017() {
 
 		// UPDATE Employee e
 		// SET e.department = null
@@ -365,7 +365,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_018() {
+	public final void test_Query_018() {
 
 		// SELECT d
 		// FROM Department d
@@ -387,7 +387,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_019() {
+	public final void test_Query_019() {
 
 		// SELECT e
 		// FROM Employee e
@@ -413,7 +413,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_020() {
+	public final void test_Query_020() {
 
 		// SELECT e
 		// FROM Employee e
@@ -445,7 +445,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_021() {
+	public final void test_Query_021() {
 
 		// SELECT e
 		// FROM Employee e
@@ -469,7 +469,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_022() {
+	public final void test_Query_022() {
 
 		// SELECT e
 		// FROM Employee e
@@ -493,7 +493,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_023() {
+	public final void test_Query_023() {
 
 		// SELECT p
 		// FROM Phone p
@@ -515,7 +515,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_024() {
+	public final void test_Query_024() {
 
 		// SELECT m
 		// FROM Employee m
@@ -549,7 +549,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_025() {
+	public final void test_Query_025() {
 
 		// SELECT e
 		// FROM Employee e
@@ -565,7 +565,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_026() {
+	public final void test_Query_026() {
 
 		// SELECT e
 		// FROM Employee e
@@ -594,7 +594,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_027() {
+	public final void test_Query_027() {
 
 		// SELECT e
 		// FROM Employee e
@@ -626,7 +626,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_028() {
+	public final void test_Query_028() {
 
 		// SELECT e
 		// FROM Employee e
@@ -654,7 +654,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_029() {
+	public final void test_Query_029() {
 
 		// SELECT d
 		// FROM Department d
@@ -670,7 +670,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_030() {
+	public final void test_Query_030() {
 
 		// SELECT d
       // FROM Department d
@@ -692,7 +692,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_031() {
+	public final void test_Query_031() {
 
 		// SELECT e
 		// FROM Employee e
@@ -711,7 +711,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_032() {
+	public final void test_Query_032() {
 
 		// SELECT e
       // FROM Employee e JOIN e.department d
@@ -733,7 +733,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_033() {
+	public final void test_Query_033() {
 
 		// SELECT AVG(e.salary) FROM Employee e
 		ExpressionTester selectStatement = selectStatement(
@@ -745,7 +745,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_034() {
+	public final void test_Query_034() {
 
 		// SELECT d.name, AVG(e.salary)
 		// FROM Department d JOIN d.employees e
@@ -764,7 +764,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_035() {
+	public final void test_Query_035() {
 
 		// SELECT d.name, AVG(e.salary)
       // FROM Department d JOIN d.employees e
@@ -784,7 +784,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_036() {
+	public final void test_Query_036() {
 
 		// SELECT d.name, AVG(e.salary)
       // FROM Department d JOIN d.employees e
@@ -805,7 +805,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_037() {
+	public final void test_Query_037() {
 
 		// SELECT e, COUNT(p), COUNT(DISTINCT p.type)
 		// FROM Employee e JOIN e.phones p
@@ -826,7 +826,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_038() {
+	public final void test_Query_038() {
 
 		// SELECT d.name, e.salary, COUNT(p)
 		// FROM Department d JOIN d.employees e JOIN e.projects p
@@ -848,7 +848,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_039() {
+	public final void test_Query_039() {
 
 		// SELECT e, COUNT(p)
 		// FROM Employee e JOIN e.projects p
@@ -868,7 +868,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_040() {
+	public final void test_Query_040() {
 
 		// UPDATE Employee e
 		// SET e.salary = 60000
@@ -883,7 +883,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_041() {
+	public final void test_Query_041() {
 
 		// UPDATE Employee e
 		// SET e.salary = e.salary + 5000
@@ -911,7 +911,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_042() {
+	public final void test_Query_042() {
 
 		// UPDATE Phone p
 		// SET p.number = CONCAT('288', SUBSTRING(p.number, LOCATE(p.number, '-'), 4)),
@@ -945,7 +945,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_043() {
+	public final void test_Query_043() {
 
 		// DELETE FROM Employee e
 		// WHERE e.department IS NULL";
@@ -959,7 +959,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_044() {
+	public final void test_Query_044() {
 
 		// Select Distinct object(c)
 		// From Customer c, In(c.orders) co
@@ -988,7 +988,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_045() {
+	public final void test_Query_045() {
 
 		// SELECT DISTINCT object(c)
 		// FROM Customer c, IN(c.orders) co
@@ -1017,7 +1017,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_046() {
+	public final void test_Query_046() {
 
 		// SELECT Distinct object(c)
 		// FROM Customer c, IN(c.orders) co
@@ -1043,7 +1043,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_047() {
+	public final void test_Query_047() {
 
 		// SELECT Distinct object(c)
 		// FROM Customer c, IN(c.orders) co
@@ -1072,7 +1072,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_048() {
+	public final void test_Query_048() {
 
 		// SELECT Distinct object(c)
 		// FROM Customer c, IN(c.orders) co
@@ -1099,7 +1099,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_049() {
+	public final void test_Query_049() {
 
 		// SELECT Distinct object(c)
 		// FROM Customer c, IN(c.orders) co
@@ -1125,7 +1125,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_050() {
+	public final void test_Query_050() {
 
 		// SELECT Distinct object(c)
       // FROM Customer c, IN(c.orders) co
@@ -1154,7 +1154,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_051() {
+	public final void test_Query_051() {
 
 		// SELECT Distinct object(c)
 		// FROM Customer c, IN(c.orders) co
@@ -1183,7 +1183,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_052() {
+	public final void test_Query_052() {
 
 		// SELECT DISTINCT object(c)
 		// FROM Customer c, IN(c.orders) co
@@ -1209,7 +1209,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_053() {
+	public final void test_Query_053() {
 
 		// SELECT DISTINCT object(c)
 		// FROM Customer c, IN(c.orders) co
@@ -1238,7 +1238,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_054() {
+	public final void test_Query_054() {
 
 		// SELECT DISTINCT object(c)
 		// FROM Customer c, IN(c.orders) co
@@ -1267,7 +1267,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_055() {
+	public final void test_Query_055() {
 
 		// SELECT DISTINCT c
 		// FROM Customer c JOIN c.orders o
@@ -1293,7 +1293,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_056() {
+	public final void test_Query_056() {
 
 		// SELECT DISTINCT c
 		// FROM Customer c JOIN c.orders o
@@ -1317,7 +1317,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_057() {
+	public final void test_Query_057() {
 
 		// SELECT DISTINCT c
 		// from Customer c
@@ -1344,7 +1344,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_058() {
+	public final void test_Query_058() {
 
 		// Select Object(o)
 		// from Order o
@@ -1368,7 +1368,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_059() {
+	public final void test_Query_059() {
 
 		// SELECT DISTINCT c
 		// FROM Customer c
@@ -1392,7 +1392,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_060() {
+	public final void test_Query_060() {
 
 		// SELECT c
 		// FROM Customer c
@@ -1413,7 +1413,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_061() {
+	public final void test_Query_061() {
 
 		// select object(o)
 		// FROM Order o
@@ -1429,7 +1429,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_062() {
+	public final void test_Query_062() {
 
 		// select sum(o.totalPrice)
 		// FROM Order o
@@ -1449,7 +1449,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_063() {
+	public final void test_Query_063() {
 
 		// select c.name
 		// FROM Customer c
@@ -1469,7 +1469,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_064() {
+	public final void test_Query_064() {
 
 		// select c.name
 		// FROM  Customer c
@@ -1489,7 +1489,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_065() {
+	public final void test_Query_065() {
 
 		// select c.name
 		// FROM  Customer c
@@ -1509,7 +1509,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_066() {
+	public final void test_Query_066() {
 
 		// select c.name
 		// FROM  Customer c
@@ -1529,7 +1529,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_067() {
+	public final void test_Query_067() {
 
 		// select a.city
 		// FROM  Customer c JOIN c.home a
@@ -1549,7 +1549,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_068() {
+	public final void test_Query_068() {
 
 		// select count(cc.country)
 		// FROM  Customer c JOIN c.country cc
@@ -1569,7 +1569,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_069() {
+	public final void test_Query_069() {
 
 		// select count(cc.country)
 		// FROM  Customer c JOIN c.country cc
@@ -1589,7 +1589,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_070() {
+	public final void test_Query_070() {
 
 		// select c.name
 		// FROM  Customer c
@@ -1609,7 +1609,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_071() {
+	public final void test_Query_071() {
 
 		// select count(c)
 		// FROM  Customer c JOIN c.aliases a
@@ -1632,7 +1632,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_072() {
+	public final void test_Query_072() {
 
 		// select c.country.country
 		// FROM  Customer c
@@ -1651,7 +1651,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_073() {
+	public final void test_Query_073() {
 
 		// select Count(c)
 		// FROM  Customer c JOIN c.country cc
@@ -1671,7 +1671,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_074() {
+	public final void test_Query_074() {
 
 		// select c.name
 		// FROM  Customer c JOIN c.orders o
@@ -1691,7 +1691,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_075() {
+	public final void test_Query_075() {
 
 		// select Object(o)
 		// FROM Order AS o
@@ -1712,7 +1712,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_076() {
+	public final void test_Query_076() {
 
 		// select Distinct Object(o)
 		// FROM Order AS o
@@ -1733,7 +1733,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_077() {
+	public final void test_Query_077() {
 
 		// select Object(o)
 		// FROM Order AS o
@@ -1754,7 +1754,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_078() {
+	public final void test_Query_078() {
 
 		// select DISTINCT o
 		// FROM Order AS o
@@ -1775,7 +1775,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_079() {
+	public final void test_Query_079() {
 
 		// select Object(o)
 		// FROM Order AS o
@@ -1796,7 +1796,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_080() {
+	public final void test_Query_080() {
 
 		// select Object(o)
 		// FROM Order AS o
@@ -1817,7 +1817,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_081() {
+	public final void test_Query_081() {
 
 		// select Object(o)
 		// FROM Order AS o
@@ -1838,7 +1838,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_082() {
+	public final void test_Query_082() {
 
 		// select Object(o)
 		// FROM Order AS o
@@ -1859,7 +1859,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_083() {
+	public final void test_Query_083() {
 
 		// SELECT DISTINCT p
 		// From Product p
@@ -1875,7 +1875,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_084() {
+	public final void test_Query_084() {
 
 		// SELECT DISTINCT o
 		// From Order o
@@ -1891,7 +1891,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_085() {
+	public final void test_Query_085() {
 
 		// SELECT DISTINCT p
 		// From Product p
@@ -1907,7 +1907,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_086() {
+	public final void test_Query_086() {
 
 		// SELECT DISTINCT a
 		// from Alias a LEFT JOIN FETCH a.customers
@@ -1923,7 +1923,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_087() {
+	public final void test_Query_087() {
 
 		// select Object(o)
 		// from Order o LEFT JOIN FETCH o.customer
@@ -1939,7 +1939,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_088() {
+	public final void test_Query_088() {
 
 		// select o
 		// from Order o LEFT JOIN FETCH o.customer
@@ -1955,7 +1955,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_089() {
+	public final void test_Query_089() {
 
 		// SELECT DISTINCT c
 		// from Customer c LEFT JOIN FETCH c.orders
@@ -1971,7 +1971,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_090() {
+	public final void test_Query_090() {
 
 		// SELECT c
 		// from Customer c JOIN FETCH c.spouse
@@ -1985,7 +1985,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_091() {
+	public final void test_Query_091() {
 
 		// SELECT Object(c)
 		// from Customer c INNER JOIN c.aliases a
@@ -2001,7 +2001,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_092() {
+	public final void test_Query_092() {
 
 		// SELECT Object(o)
 		// from Order o INNER JOIN o.customer cust
@@ -2017,7 +2017,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_093() {
+	public final void test_Query_093() {
 
 		// SELECT DISTINCT object(c)
 		// from Customer c INNER JOIN c.creditCards cc
@@ -2033,7 +2033,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_094() {
+	public final void test_Query_094() {
 
 		// SELECT c
 		// from Customer c INNER JOIN c.spouse s
@@ -2047,7 +2047,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_095() {
+	public final void test_Query_095() {
 
 		// select cc.type
 		// FROM CreditCard cc JOIN cc.customer cust
@@ -2066,7 +2066,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_096() {
+	public final void test_Query_096() {
 
 		// select cc.code
 		// FROM Customer c JOIN c.country cc
@@ -2085,7 +2085,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_097() {
+	public final void test_Query_097() {
 
 		// select Object(c)
 		// FROM Customer c JOIN c.aliases a
@@ -2104,7 +2104,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_098() {
+	public final void test_Query_098() {
 
 		// select Object(c)
 		// FROM Customer c JOIN c.aliases a
@@ -2123,7 +2123,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_099() {
+	public final void test_Query_099() {
 
 		// SELECT c.id, a.alias
 		// from Customer c LEFT OUTER JOIN c.aliases a
@@ -2146,7 +2146,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_100() {
+	public final void test_Query_100() {
 
 		// SELECT o.id, cust.id
 		// from Order o LEFT OUTER JOIN o.customer cust
@@ -2166,7 +2166,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_101() {
+	public final void test_Query_101() {
 
 		// SELECT DISTINCT c
 		// from Customer c LEFT OUTER JOIN c.creditCards cc
@@ -2185,7 +2185,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_102() {
+	public final void test_Query_102() {
 
 		// SELECT Sum(p.quantity)
 		// FROM Product p
@@ -2199,7 +2199,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_103() {
+	public final void test_Query_103() {
 
 		// Select Count(c.home.city)
 		// from Customer c
@@ -2213,7 +2213,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_104() {
+	public final void test_Query_104() {
 
 		// SELECT Sum(p.price)
 		// FROM Product p
@@ -2227,7 +2227,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_105() {
+	public final void test_Query_105() {
 
 		// SELECT AVG(o.totalPrice)
 		// FROM Order o
@@ -2241,7 +2241,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_106() {
+	public final void test_Query_106() {
 
 		// SELECT DISTINCT MAX(l.quantity)
 		// FROM LineItem l
@@ -2255,7 +2255,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_107() {
+	public final void test_Query_107() {
 
 		// SELECT DISTINCT MIN(o.id)
 		// FROM Order o
@@ -2271,7 +2271,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_108() {
+	public final void test_Query_108() {
 
 		// SELECT NEW com.sun.ts.tests.ejb30.persistence.query.language.schema30.Customer(c.id, c.name)
 		// FROM Customer c
@@ -2291,7 +2291,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_109() {
+	public final void test_Query_109() {
 
 		// SELECT DISTINCT c
 		// FROM Customer c
@@ -2307,7 +2307,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_110() {
+	public final void test_Query_110() {
 
 		// SELECT DISTINCT c
 		// FROM Customer c
@@ -2323,7 +2323,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_111() {
+	public final void test_Query_111() {
 
 		// select Distinct c
 		// FROM Customer c LEFT OUTER JOIN c.work workAddress
@@ -2339,7 +2339,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_112() {
+	public final void test_Query_112() {
 
 		// SELECT DISTINCT c
 		// FROM Customer c, IN(c.orders) o
@@ -2355,7 +2355,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_113() {
+	public final void test_Query_113() {
 
 		// Select Distinct Object(c)
 		// from Customer c
@@ -2371,7 +2371,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_114() {
+	public final void test_Query_114() {
 
 		// Select c.name
 		// from Customer c
@@ -2387,7 +2387,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_115() {
+	public final void test_Query_115() {
 
 		// Select s.customer
 		// from Spouse s
@@ -2403,7 +2403,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_116() {
+	public final void test_Query_116() {
 
 		// Select c.work.zip
 		// from Customer c
@@ -2417,7 +2417,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_117() {
+	public final void test_Query_117() {
 
 		// SELECT Distinct Object(c)
 		// From Customer c, IN(c.home.phones) p
@@ -2440,7 +2440,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_118() {
+	public final void test_Query_118() {
 
 		// SELECT DISTINCT Object(c)
 		// from Customer c, in(c.aliases) a
@@ -2456,7 +2456,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_119() {
+	public final void test_Query_119() {
 
 		// select distinct object(c)
 		// fRoM Customer c, IN(c.aliases) a
@@ -2472,7 +2472,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_120() {
+	public final void test_Query_120() {
 
 		// select Distinct Object(c)
 		// from Customer c, in(c.aliases) a
@@ -2488,7 +2488,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_121() {
+	public final void test_Query_121() {
 
 		// sElEcT Distinct oBJeCt(c)
 		// FROM Customer c, IN(c.aliases) a
@@ -2504,7 +2504,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_122() {
+	public final void test_Query_122() {
 
 		// select distinct Object(c)
 		// FROM Customer c, in(c.aliases) a
@@ -2520,7 +2520,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_123() {
+	public final void test_Query_123() {
 
 		// Select Distinct Object(c)
 		// FROM Customer c, in(c.aliases) a
@@ -2536,7 +2536,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_124() {
+	public final void test_Query_124() {
 
 		// Select Distinct o.creditCard.balance
 		// from Order o
@@ -2555,7 +2555,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_125() {
+	public final void test_Query_125() {
 
 		// Select c.work.zip
 		// from Customer c
@@ -2575,7 +2575,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_126() {
+	public final void test_Query_126() {
 
 		// SELECT a.alias
 		// FROM Alias AS a
@@ -2599,7 +2599,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_127() {
+	public final void test_Query_127() {
 
 		// Select Object(c)
 		// from Customer c
@@ -2620,7 +2620,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_128() {
+	public final void test_Query_128() {
 
 		// Select Distinct Object(p)
 		// from Product p
@@ -2636,7 +2636,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_129() {
+	public final void test_Query_129() {
 
 		// Select Distinct Object(p)
 		// from Product p
@@ -2662,7 +2662,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_130() {
+	public final void test_Query_130() {
 
 		// Select Distinct Object(o)
 		// from Order o
@@ -2678,7 +2678,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_131() {
+	public final void test_Query_131() {
 
 		// Select DISTINCT Object(p)
 		// From Product p
@@ -2699,7 +2699,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_132() {
+	public final void test_Query_132() {
 
 		// Select DISTINCT Object(p)
 		// From Product p
@@ -2715,7 +2715,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_133() {
+	public final void test_Query_133() {
 
 		// Select DISTINCT OBJECT(p)
 		// From Product p
@@ -2736,7 +2736,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_134() {
+	public final void test_Query_134() {
 
 		// Select DISTINCT OBJECT(p)
 		// From Product p
@@ -2752,7 +2752,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_135() {
+	public final void test_Query_135() {
 
 		// Select Distinct OBJECT(c)
 		// from Customer c, IN(c.creditCards) b
@@ -2768,7 +2768,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_136() {
+	public final void test_Query_136() {
 
 		// Select Distinct OBJECT(c)
 		// From Product p
@@ -2784,7 +2784,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_137() {
+	public final void test_Query_137() {
 
 		// SELECT DISTINCT Object(c)
 		// from Customer c
@@ -2805,7 +2805,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_138() {
+	public final void test_Query_138() {
 
 		// SELECT DISTINCT Object(c)
 		// from Customer c
@@ -2821,7 +2821,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_139() {
+	public final void test_Query_139() {
 
 		// SELECT o
 		// FROM Customer c JOIN c.orders o JOIN c.address a
@@ -2841,7 +2841,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_140() {
+	public final void test_Query_140() {
 
 		// SELECT c
 		// from Customer c
@@ -2857,7 +2857,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_141() {
+	public final void test_Query_141() {
 
 		// Select Distinct Object(o)
 		// from Order o, in(o.lineItems) l
@@ -2873,7 +2873,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_142() {
+	public final void test_Query_142() {
 
 		// Select Distinct Object(o)
 		// FROM Order o
@@ -2889,7 +2889,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_143() {
+	public final void test_Query_143() {
 
 		// Select Distinct Object(o)
 		// FROM Order o
@@ -2905,7 +2905,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_144() {
+	public final void test_Query_144() {
 
 		// Select Distinct Object(o)
 		// FROM Order o, LineItem l
@@ -2921,7 +2921,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_145() {
+	public final void test_Query_145() {
 
 		// select distinct Object(c)
 		// FROM Customer c, in(c.aliases) a
@@ -2937,7 +2937,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_146() {
+	public final void test_Query_146() {
 
 		// Select Distinct Object(a)
 		// FROM Alias a
@@ -2953,7 +2953,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_147() {
+	public final void test_Query_147() {
 
 		// Select Distinct Object(a)
 		// FROM Alias a
@@ -2969,7 +2969,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_148() {
+	public final void test_Query_148() {
 
 		// Select Distinct Object(a)
 		// from Alias a
@@ -2985,7 +2985,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_149() {
+	public final void test_Query_149() {
 
 		// Select DISTINCT Object(o)
 		// From Order o
@@ -3001,7 +3001,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_150() {
+	public final void test_Query_150() {
 
 		// Select Distinct OBjeCt(a)
 		// From Alias a
@@ -3017,7 +3017,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_151() {
+	public final void test_Query_151() {
 
 		// Select Distinct Object(a)
 		// From Alias a
@@ -3036,7 +3036,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_152() {
+	public final void test_Query_152() {
 
 		// Select Distinct Object(a)
 		// From Alias a
@@ -3055,7 +3055,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_153() {
+	public final void test_Query_153() {
 
 		// Select Distinct Object(c)
 		// FROM Customer c
@@ -3071,7 +3071,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_154() {
+	public final void test_Query_154() {
 
 		// sELEct dIsTiNcT oBjEcT(c)
 		// FROM Customer c
@@ -3087,7 +3087,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_155() {
+	public final void test_Query_155() {
 
 		// Select Distinct Object(c)
 		// FROM Customer c
@@ -3103,7 +3103,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_156() {
+	public final void test_Query_156() {
 
 		// Select Distinct Object(c)
 		// FROM Customer c
@@ -3119,7 +3119,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_157() {
+	public final void test_Query_157() {
 
 		// Select Distinct Object(c)
 		// FROM Customer c
@@ -3135,7 +3135,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_158() {
+	public final void test_Query_158() {
 
 		// Select Distinct Object(c)
 		// FROM Customer c
@@ -3151,7 +3151,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_159() {
+	public final void test_Query_159() {
 
 		// Select Distinct Object(c)
 		// FROM Customer c Left Outer Join c.home h
@@ -3167,7 +3167,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_160() {
+	public final void test_Query_160() {
 
 		// select distinct c
 		// FROM Customer c
@@ -3183,7 +3183,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_161() {
+	public final void test_Query_161() {
 
 		// sElEcT c
 		// FROM Customer c
@@ -3199,7 +3199,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_162() {
+	public final void test_Query_162() {
 
 		// select distinct Object(o)
 		// From Order o
@@ -3215,7 +3215,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_163() {
+	public final void test_Query_163() {
 
 		// SELECT DISTINCT Object(o)
 		// From Order o
@@ -3231,7 +3231,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_164() {
+	public final void test_Query_164() {
 
 		// SELECT DISTINCT Object(o)
 		// From Order o
@@ -3247,7 +3247,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_165() {
+	public final void test_Query_165() {
 
 		// SELECT DISTINCT Object(o)
 		// FROM Order o, in(o.lineItems) l
@@ -3269,7 +3269,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_166() {
+	public final void test_Query_166() {
 
 		// select distinct Object(o)
 		// FROM Order AS o, in(o.lineItems) l
@@ -3310,7 +3310,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_167() {
+	public final void test_Query_167() {
 
 		// SeLeCt DiStInCt oBjEcT(o)
 		// FROM Order AS o
@@ -3331,7 +3331,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_168() {
+	public final void test_Query_168() {
 
 		// Select Distinct Object(o)
 		// FROM Order o
@@ -3347,7 +3347,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_169() {
+	public final void test_Query_169() {
 
 		// Select DISTINCT Object(P)
 		// From Product p
@@ -3361,7 +3361,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_170() {
+	public final void test_Query_170() {
 
 		// SELECT DISTINCT c
 		// from Customer c
@@ -3388,7 +3388,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_171() {
+	public final void test_Query_171() {
 
 		// SELECT c
 		// from Customer c
@@ -3415,7 +3415,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_172() {
+	public final void test_Query_172() {
 
 		// SELECT c
 		// from Customer c
@@ -3442,7 +3442,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_173() {
+	public final void test_Query_173() {
 
 		// Select Distinct Object(c)
 		// FrOm Customer c, In(c.aliases) a
@@ -3458,7 +3458,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_174() {
+	public final void test_Query_174() {
 
 		// Select Distinct Object(c)
 		// FROM Customer AS c
@@ -3472,7 +3472,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_175() {
+	public final void test_Query_175() {
 
 		// Select Distinct o
 		// from Order AS o
@@ -3488,7 +3488,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_176() {
+	public final void test_Query_176() {
 
 		// UPDATE Customer c SET c.name = 'CHANGED'
 		// WHERE c.orders IS NOT EMPTY
@@ -3502,7 +3502,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_177() {
+	public final void test_Query_177() {
 
 		// UPDATE DateTime SET date = CURRENT_DATE
 
@@ -3514,7 +3514,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_178() {
+	public final void test_Query_178() {
 
 		// SELECT c
 		// FROM Customer c
@@ -3536,7 +3536,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_179() {
+	public final void test_Query_179() {
 
 		// SELECT OBJECT ( c ) FROM Customer AS c
 
@@ -3549,7 +3549,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_180() {
+	public final void test_Query_180() {
 
 		// SELECT c.firstName, c.lastName
 		// FROM Customer AS c
@@ -3563,7 +3563,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_181() {
+	public final void test_Query_181() {
 
 		// SELECT c.address.city
 		// FROM Customer AS c
@@ -3577,7 +3577,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_182() {
+	public final void test_Query_182() {
 
 		// SELECT new com.titan.domain.Name(c.firstName, c.lastName)
 		// FROM Customer c
@@ -3591,7 +3591,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_183() {
+	public final void test_Query_183() {
 
 		// SELECT cbn.ship
 		// FROM Customer AS c, IN ( c.reservations ) r, IN ( r.cabins ) cbn
@@ -3609,7 +3609,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_184() {
+	public final void test_Query_184() {
 
 		// Select c.firstName, c.lastName, p.number
 		// From Customer c Left Join c.phoneNumbers p
@@ -3623,7 +3623,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_185() {
+	public final void test_Query_185() {
 
 		// SELECT r
 		// FROM Reservation AS r
@@ -3644,7 +3644,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_186() {
+	public final void test_Query_186() {
 
 		// SELECT s
 		// FROM Ship AS s
@@ -3665,7 +3665,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_187() {
+	public final void test_Query_187() {
 
 		// SELECT r
 		// FROM Reservation r, IN ( r.customers ) AS cust
@@ -3681,7 +3681,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_188() {
+	public final void test_Query_188() {
 
 		// SELECT s
 		// FROM Ship AS s
@@ -3697,7 +3697,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_189() {
+	public final void test_Query_189() {
 
 		// SELECT s
 		// FROM Ship AS s
@@ -3713,7 +3713,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_190() {
+	public final void test_Query_190() {
 
 		// SELECT c
 		// FROM Customer AS c
@@ -3729,7 +3729,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_191() {
+	public final void test_Query_191() {
 
 		// SELECT cab
 		// FROM Cabin AS cab
@@ -3753,7 +3753,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_192() {
+	public final void test_Query_192() {
 
 		// SELECT c
 		// FROM Customer c
@@ -3778,7 +3778,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_193() {
+	public final void test_Query_193() {
 
 		// SELECT c
 		// FROM Customer c
@@ -3794,7 +3794,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_194() {
+	public final void test_Query_194() {
 
 		// SELECT c
 		// FROM Customer c
@@ -3820,7 +3820,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_195() {
+	public final void test_Query_195() {
 
 		// SELECT crs
 		// FROM Cruise AS crs, IN(crs.reservations) AS res, Customer AS cust
@@ -3848,7 +3848,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_196() {
+	public final void test_Query_196() {
 
 		// SELECT c
 		// FROM Customer AS c
@@ -3874,7 +3874,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_197() {
+	public final void test_Query_197() {
 
 		// SELECT c
 		// FROM Customer AS C
@@ -3890,7 +3890,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_198() {
+	public final void test_Query_198() {
 
 		// SELECT c
 		// FROM Customer AS C
@@ -3913,7 +3913,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_199() {
+	public final void test_Query_199() {
 
 		// SELECT cr.name, COUNT (res)
 		// FROM Cruise cr LEFT JOIN cr.reservations res
@@ -3929,7 +3929,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_200() {
+	public final void test_Query_200() {
 
 		// SELECT cr.name, COUNT (res)
 		// FROM Cruise cr LEFT JOIN cr.reservations res
@@ -3947,7 +3947,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_201() {
+	public final void test_Query_201() {
 
 		// SELECT COUNT (res)
 		// FROM Reservation res
@@ -3974,7 +3974,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_202() {
+	public final void test_Query_202() {
 
 		// SELECT cr
 		// FROM Cruise cr
@@ -4002,7 +4002,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_203() {
+	public final void test_Query_203() {
 
 		// SELECT cr
 		// FROM Cruise cr
@@ -4030,7 +4030,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_204() {
+	public final void test_Query_204() {
 
 		// UPDATE Reservation res
 		// SET res.name = 'Pascal'
@@ -4062,7 +4062,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_205() {
+	public final void test_Query_205() {
 
 		// SELECT o.quantity, a.zipcode
 		// FROM Customer c JOIN c.orders o JOIN c.address a
@@ -4083,7 +4083,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_206() {
+	public final void test_Query_206() {
 
 		// DELETE
 		// FROM Customer c
@@ -4098,7 +4098,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_207() {
+	public final void test_Query_207() {
 
 		// DELETE
 		// FROM Customer c
@@ -4119,7 +4119,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_208() {
+	public final void test_Query_208() {
 
 		// UPDATE customer c
 		// SET c.status = 'outstanding'
@@ -4134,7 +4134,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_209() {
+	public final void test_Query_209() {
 
 		// Select e
 		// from Employee e join e.phoneNumbers p
@@ -4164,7 +4164,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_210() {
+	public final void test_Query_210() {
 
 		// Select e
 		// From Employee e
@@ -4189,7 +4189,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_211() {
+	public final void test_Query_211() {
 
 		// Select e
 		// From Employee e
@@ -4211,7 +4211,7 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_Query_212() {
+	public final void test_Query_212() {
 
 		// UPDATE Employee e SET e.salary = e.salary*(1+(:percent/100))
 		// WHERE EXISTS (SELECT p
@@ -4249,5 +4249,62 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 		);
 
 		testQuery(query_212(), updateStatement, buildQueryFormatter_1());
+	}
+
+	@Test
+	public final void test_Query_213() {
+
+		// select e_0
+      // from Sellexpect e_0
+      // where e_0.iSellexpectnr IN (select e_1.iSellexpectnr
+      //                             from Sellexpectline e_1
+      //                             where e_1.iStandversionnr IN (select e_2.iStandversionnr
+      //                                                           from Standversion e_2
+      //                                                           where e_2.iStandnr IN (select e_3.iStandnr
+      //                                                                                  from Stand e_3
+      //                                                                                  where lower(e_3.iStandid) like :e_3_iStandid)
+      //                                                                                 )
+		//                                                          )
+      //                            )
+
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e_0")),
+			from("Sellexpect", "e_0"),
+			where(
+					path("e_0.iSellexpectnr")
+				.in(
+					subquery(
+						subSelect(path("e_1.iSellexpectnr")),
+						subFrom("Sellexpectline", "e_1"),
+						where(
+								path("e_1.iStandversionnr")
+							.in(
+								subquery(
+									subSelect(path("e_2.iStandversionnr")),
+									subFrom("Standversion", "e_2"),
+									where(
+											path("e_2.iStandnr")
+										.in(
+											subquery(
+												subSelect(path("e_3.iStandnr")),
+												subFrom("Stand", "e_3"),
+												where(
+														lower(path("e_3.iStandid"))
+													.like(
+														inputParameter(":e_3_iStandid")
+													)
+												)
+											)
+										)
+									)
+								)
+							)
+						)
+					)
+				)
+			)
+		);
+
+		testQuery(query_213(), selectStatement);
 	}
 }

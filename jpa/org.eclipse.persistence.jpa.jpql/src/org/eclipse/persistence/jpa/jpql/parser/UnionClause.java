@@ -164,7 +164,6 @@ public final class UnionClause extends AbstractExpression {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(UnionClauseBNF.ID);
 	}

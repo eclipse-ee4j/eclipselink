@@ -17,6 +17,7 @@ import org.eclipse.persistence.jpa.jpql.parser.CastExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionValuedPathExpression;
 import org.eclipse.persistence.jpa.jpql.parser.DatabaseType;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkExpressionVisitor;
+import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_4;
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.ExtractExpression;
 import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
@@ -80,6 +81,26 @@ public class EclipseLinkSemanticValidator extends AbstractSemanticValidator
 	@Override
 	protected LiteralVisitor buildLiteralVisitor() {
 		return new EclipseLinkLiteralVisitor();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected OwningClauseVisitor buildOwningClauseVisitor() {
+		return new EclipseLinkGrammarValidator.EclipseLinkOwningClauseVisitor();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected TopLevelFirstDeclarationVisitor buildTopLevelFirstDeclarationVisitor() {
+		return new TopLevelFirstDeclarationVisitor();
+	}
+
+	protected boolean isEclipseLink2_4OrLater() {
+		return getProviderVersion() == EclipseLinkJPQLGrammar2_4.VERSION;
 	}
 
 	/**
@@ -162,5 +183,24 @@ public class EclipseLinkSemanticValidator extends AbstractSemanticValidator
 	 */
 	public void visit(UnionClause expression) {
 		// Nothing to validate semantically
+	}
+
+	protected class TopLevelFirstDeclarationVisitor extends AbstractSemanticValidator.TopLevelFirstDeclarationVisitor {
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(CollectionValuedPathExpression expression) {
+
+			// Derived path is not allowed, this could although be a fully
+			// qualified class name, which was added to EclipseLink 2.4
+			valid = isEclipseLink2_4OrLater();
+
+			if (valid) {
+				Object type = helper.getType(expression.toActualText());
+				valid = helper.isTypeResolvable(type);
+			}
+		}
 	}
 }

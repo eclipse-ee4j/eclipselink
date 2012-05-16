@@ -209,7 +209,7 @@ public class JavaTypeRepository implements ITypeRepository {
 			return buildType(javaType);
 		}
 
-		// Now try with a possible inner enum type
+		// Now try with a possible inner type
 		type = loadInnerType(typeName);
 
 		if (type == null) {

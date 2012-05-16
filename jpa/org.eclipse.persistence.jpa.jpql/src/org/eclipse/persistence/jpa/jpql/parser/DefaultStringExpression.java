@@ -57,7 +57,6 @@ public final class DefaultStringExpression extends AbstractExpression {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return null;
 	}

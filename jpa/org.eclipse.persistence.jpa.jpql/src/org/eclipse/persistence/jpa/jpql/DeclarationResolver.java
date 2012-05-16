@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractExpression;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractExpressionVisitor;
+import org.eclipse.persistence.jpa.jpql.parser.AbstractSchemaName;
 import org.eclipse.persistence.jpa.jpql.parser.AnonymousExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionMemberDeclaration;
@@ -98,6 +99,9 @@ public class DeclarationResolver extends Resolver {
 	 */
 	private Map<IdentificationVariable, String> resultVariables;
 
+	/**
+	 *
+	 */
 	private RootObjectExpressionVisitor rootObjectExpressionVisitor;
 
 	/**
@@ -117,6 +121,15 @@ public class DeclarationResolver extends Resolver {
 	 */
 	@Override
 	public void accept(ResolverVisitor visitor) {
+	}
+
+	/**
+	 * Adds the given {@link Declaration} at the end of the list.
+	 *
+	 * @param declaration The {@link Declaration} representing a single variable declaration
+	 */
+	protected final void addDeclaration(Declaration declaration) {
+		declarations.add(declaration);
 	}
 
 	/**
@@ -277,6 +290,15 @@ public class DeclarationResolver extends Resolver {
 	@Override
 	protected IQuery getQuery() {
 		return queryContext.getQuery();
+	}
+
+	/**
+	 * Returns the {@link JPQLQueryContext} that is used by this visitor.
+	 *
+	 * @return The {@link JPQLQueryContext} holding onto the JPQL query and the cached information
+	 */
+	protected JPQLQueryContext getQueryContext() {
+		return queryContext;
 	}
 
 	/**
@@ -775,6 +797,11 @@ public class DeclarationResolver extends Resolver {
 	protected class DeclarationVisitor extends AbstractExpressionVisitor {
 
 		/**
+		 * This flag is used to determine what to do in {@link #visit(SimpleSelectStatement)}.
+		 */
+		protected boolean buildingDeclaration;
+
+		/**
 		 * Flag used to determine if the {@link IdentificationVariable} to visit is a result variable.
 		 */
 		protected boolean collectResultVariable;
@@ -783,6 +810,15 @@ public class DeclarationResolver extends Resolver {
 		 * The {@link Declaration} being populated.
 		 */
 		protected Declaration currentDeclaration;
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(AbstractSchemaName expression) {
+			currentDeclaration.rangeDeclaration = true;
+			currentDeclaration.rootPath = expression.getText();
+		}
 
 		/**
 		 * {@inheritDoc}
@@ -807,10 +843,19 @@ public class DeclarationResolver extends Resolver {
 				declaration.identificationVariable = (IdentificationVariable) identificationVariable;
 			}
 
-			declaration.declarationExpression  = expression;
-			declaration.baseExpression         = expression.getCollectionValuedPathExpression();
+			declaration.declarationExpression = expression;
+			declaration.baseExpression        = expression.getCollectionValuedPathExpression();
 			declaration.lockData();
 			declarations.add(declaration);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(CollectionValuedPathExpression expression) {
+			currentDeclaration.derived = true;
+			currentDeclaration.rootPath = expression.toActualText();
 		}
 
 		/**
@@ -875,7 +920,7 @@ public class DeclarationResolver extends Resolver {
 			currentDeclaration = declaration;
 
 			try {
-				expression.getRangeVariableDeclaration().accept(this);
+				declaration.baseExpression.accept(this);
 				expression.getJoins().accept(this);
 			}
 			finally {
@@ -915,34 +960,19 @@ public class DeclarationResolver extends Resolver {
 		@Override
 		public void visit(RangeVariableDeclaration expression) {
 
-			Expression abstractSchemaName     = expression.getRootObject();
-			Expression identificationVariable = expression.getIdentificationVariable();
+			Expression rootObject = expression.getRootObject();
+
+			// Traverse the "root" object
+			buildingDeclaration = true;
+			rootObject.accept(this);
+			buildingDeclaration = false;
 
 			// Identification variable
-			String variableName = visitDeclaration(abstractSchemaName, identificationVariable);
+			Expression identificationVariable = expression.getIdentificationVariable();
+			String variableName = visitDeclaration(rootObject, identificationVariable);
 
 			if (variableName.length() > 0) {
 				currentDeclaration.identificationVariable = (IdentificationVariable) identificationVariable;
-			}
-
-			// Abstract schema name or derived path expression (for subqueries)
-			String entityName = queryContext.literal(
-				abstractSchemaName,
-				LiteralType.ABSTRACT_SCHEMA_NAME
-			);
-
-			if (ExpressionTools.stringIsNotEmpty(entityName)) {
-				currentDeclaration.rangeDeclaration = true;
-				currentDeclaration.rootPath = entityName;
-			}
-			else {
-				String derivedPath = queryContext.literal(
-					abstractSchemaName,
-					LiteralType.PATH_EXPRESSION_ALL_PATH
-				);
-
-				currentDeclaration.derived = true;
-				currentDeclaration.rootPath = derivedPath;
 			}
 		}
 

@@ -100,6 +100,18 @@ public final class CollectionExpression extends AbstractExpression {
 	}
 
 	/**
+	 * Visits the child {@link Expression} at the given position by the given {@link ExpressionVisitor
+	 * visitor}.
+	 *
+	 * @param index The index of the child to visit
+	 * @param visitor The {@link ExpressionVisitor} to visit a specific child
+	 * @since 2.4
+	 */
+	public void accept(int index, ExpressionVisitor visitor) {
+		getChild(index).accept(visitor);
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	public void acceptChildren(ExpressionVisitor visitor) {
@@ -225,7 +237,6 @@ public final class CollectionExpression extends AbstractExpression {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getParent().getQueryBNF();
 	}

@@ -83,7 +83,6 @@ public final class ComparisonExpression extends CompoundExpression {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(ComparisonExpressionBNF.ID);
 	}

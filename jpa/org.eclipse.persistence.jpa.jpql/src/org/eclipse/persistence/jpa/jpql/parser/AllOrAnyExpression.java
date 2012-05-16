@@ -66,7 +66,6 @@ public final class AllOrAnyExpression extends AbstractSingleEncapsulatedExpressi
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(AllOrAnyExpressionBNF.ID);
 	}

@@ -69,7 +69,6 @@ public final class UnknownExpression extends AbstractExpression {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getParent().getQueryBNF();
 	}

@@ -55,7 +55,6 @@ public final class TableExpression extends AbstractSingleEncapsulatedExpression 
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(TableExpressionBNF.ID);
 	}

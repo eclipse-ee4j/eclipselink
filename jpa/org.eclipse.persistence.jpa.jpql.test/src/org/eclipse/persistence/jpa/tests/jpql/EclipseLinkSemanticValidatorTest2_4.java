@@ -21,6 +21,8 @@ import org.eclipse.persistence.jpa.jpql.JPQLQueryContext;
 import org.eclipse.persistence.jpa.jpql.JPQLQueryProblem;
 import org.junit.Test;
 
+import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
+
 /**
  * The unit-test class used for testing a JPQL query semantically when the JPA version is 1.0 and 2.0
  * and EclipseLink is the persistence provider. The EclipseLink version supported is 2.4 only.
@@ -48,10 +50,86 @@ public class EclipseLinkSemanticValidatorTest2_4 extends AbstractSemanticValidat
 	}
 
 	@Test
-	public void test_CollectionValuedPathExpression_NotResolvable() throws Exception {
+	public final void test_AbstractFromClause_InvalidFirstIdentificationVariableDeclaration_07() throws Exception {
+
+		String jpqlQuery = "select e from (select e2 from Employee e2) e";
+		int startPosition = "select e from ".length();
+		int endPosition   = jpqlQuery.length();
+
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		testHasOnlyOneProblem(
+			problems,
+			AbstractFromClause_InvalidFirstIdentificationVariableDeclaration,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public final void test_AbstractFromClause_InvalidFirstIdentificationVariableDeclaration_08() throws Exception {
+
+		String jpqlQuery = "select e3 from Employee e, (select e2 from Employee e2) e3, IN(e.phoneNumbers) p";
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+		testHasNoProblems(problems);
+	}
+
+	@Test
+	public final void test_AbstractFromClause_InvalidFirstIdentificationVariableDeclaration_09() throws Exception {
+
+		String jpqlQuery = "select EMP from TABLE('EMPLOYEE') EMP";
+		int startPosition = "select EMP from ".length();
+		int endPosition   = jpqlQuery.length();
+
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		testHasOnlyOneProblem(
+			problems,
+			AbstractFromClause_InvalidFirstIdentificationVariableDeclaration,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public final void test_AbstractFromClause_InvalidFirstIdentificationVariableDeclaration_10() throws Exception {
+
+		String jpqlQuery = "select e from TABLE('EMPLOYEE') EMP, Employee e";
+		int startPosition = "select e from ".length();
+		int endPosition   = "select e from TABLE('EMPLOYEE') EMP".length();
+
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		testHasOnlyOneProblem(
+			problems,
+			AbstractFromClause_InvalidFirstIdentificationVariableDeclaration,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
+	public final void test_CollectionValuedPathExpression_NotResolvable() throws Exception {
 
 		String query = "SELECT a FROM jpql.query.Address a";
 		List<JPQLQueryProblem> problems = validate(query);
 		testHasNoProblems(problems);
+	}
+
+	@Test
+	public final void test_StateFieldPathExpression_NotResolvable_4() throws Exception {
+
+		String jpqlQuery  = "select e from Employee e where e.empId in (select table('employee').id from Employee e)";
+		int startPosition = "select e from Employee e where e.empId in(select ".length();
+		int endPosition   = "select e from Employee e where e.empId in(select table('employee').id".length();
+
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		testHasOnlyOneProblem(
+			problems,
+			StateFieldPathExpression_NotResolvable,
+			startPosition,
+			endPosition
+		);
 	}
 }

@@ -62,6 +62,14 @@ public class EclipseLinkJPQLQueryContext extends JPQLQueryContext {
 	 * {@inheritDoc}
 	 */
 	@Override
+	protected DeclarationResolver buildDeclarationResolver(DeclarationResolver parent) {
+		return new EclipseLinkDeclarationResolver(parent, this);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	protected JPQLQueryContext buildJPQLQueryContext(JPQLQueryContext currentContext,
 	                                                 Expression currentQuery) {
 

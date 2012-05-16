@@ -35,9 +35,11 @@ public interface JPQLQueryProblemMessages {
 	String AbsExpression_MissingRightParenthesis = "ABS_EXPRESSION_MISSING_RIGHT_PARENTHESIS";
 	String AbstractFromClause_IdentificationVariableDeclarationEndsWithComma = "ABSTRACT_FROM_CLAUSE_IDENTIFICATION_VARIABLE_DECLARATION_ENDS_WITH_COMMA";
 	String AbstractFromClause_IdentificationVariableDeclarationIsMissingComma = "ABSTRACT_FROM_CLAUSE_IDENTIFICATION_VARIABLE_DECLARATION_IS_MISSING_COMMA";
+	String AbstractFromClause_InvalidFirstIdentificationVariableDeclaration = "ABSTRACT_FROM_CLAUSE_INVALID_FIRST_IDENTIFICATION_VARIABLE_DECLARATION";
 	String AbstractFromClause_MissingIdentificationVariableDeclaration = "ABSTRACT_FROM_CLAUSE_MISSING_IDENTIFICATION_VARIABLE_DECLARATION";
 	String AbstractFromClause_WrongOrderOfIdentificationVariableDeclaration = "ABSTRACT_FROM_CLAUSE_WRONG_ORDER_OF_IDENTIFICATION_VARIABLE_DECLARATION";
 	String AbstractPathExpression_CannotEndWithComma = "ABSTRACT_PATH_EXPRESSION_CANNOT_END_WITH_COMMA";
+	String AbstractPathExpression_InvalidIdentificationVariable = "ABSTRACT_PATH_EXPRESSION_INVALID_IDENTIFICATION_VARIABLE";
 	String AbstractPathExpression_MissingIdentificationVariable = "ABSTRACT_PATH_EXPRESSION_MISSING_IDENTIFICATION_VARIABLE";
 	String AbstractSchemaName_Invalid = "ABSTRACT_SCHEMA_NAME_INVALID";
 	String AbstractSelectClause_InvalidSelectExpression = "ABSTRACT_SELECT_CLAUSE_INVALID_SELECT_EXPRESSION";
@@ -311,7 +313,6 @@ public interface JPQLQueryProblemMessages {
 	String ResultVariable_MissingResultVariable = "RESULT_VARIABLE_MISSING_RESULT_VARIABLE";
 	String ResultVariable_MissingSelectExpression = "RESULT_VARIABLE_MISSING_SELECT_EXPRESSION";
 	String SimpleSelectClause_NotSingleExpression = "SIMPLE_SELECT_CLAUSE_NOT_SINGLE_EXPRESSION";
-	String SimpleSelectStatement_InvalidLocation = "SIMPLE_SELECT_STATEMENT_INVALID_LOCATION";
 	String SizeExpression_InvalidExpression = "SIZE_EXPRESSION_INVALID_EXPRESSION";
 	String SizeExpression_MissingExpression = "SIZE_EXPRESSION_MISSING_EXPRESSION";
 	String SizeExpression_MissingLeftParenthesis = "SIZE_EXPRESSION_MISSING_LEFT_PARENTHESIS";

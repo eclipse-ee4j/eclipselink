@@ -71,7 +71,6 @@ public final class InputParameter extends AbstractExpression {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(InputParameterBNF.ID);
 	}

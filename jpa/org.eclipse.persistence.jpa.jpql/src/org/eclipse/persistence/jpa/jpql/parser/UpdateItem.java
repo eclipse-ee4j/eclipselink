@@ -135,7 +135,6 @@ public final class UpdateItem extends AbstractExpression {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(UpdateItemBNF.ID);
 	}

@@ -58,7 +58,6 @@ public final class UpperExpression extends AbstractSingleEncapsulatedExpression 
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(FunctionsReturningStringsBNF.ID);
 	}

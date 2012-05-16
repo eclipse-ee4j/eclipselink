@@ -51,7 +51,6 @@ public final class DatabaseType extends AbstractDoubleEncapsulatedExpression {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(DatabaseTypeQueryBNF.ID);
 	}

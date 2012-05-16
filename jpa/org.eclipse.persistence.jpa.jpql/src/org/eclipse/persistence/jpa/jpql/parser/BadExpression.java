@@ -108,7 +108,6 @@ public final class BadExpression extends AbstractExpression {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(BadExpressionBNF.ID);
 	}

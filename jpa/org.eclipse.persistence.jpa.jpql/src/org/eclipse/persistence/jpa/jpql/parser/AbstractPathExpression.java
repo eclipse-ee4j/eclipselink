@@ -267,9 +267,7 @@ public abstract class AbstractPathExpression extends AbstractExpression {
 		}
 
 		// A null WordParser happens in a unique case
-//		if (wordParser != null) {
-			wordParser.moveForward(word);
-//		}
+		wordParser.moveForward(word);
 	}
 
 	/**
@@ -351,12 +349,23 @@ public abstract class AbstractPathExpression extends AbstractExpression {
 	@Override
 	protected final void toParsedText(StringBuilder writer, boolean actual) {
 
-		checkPaths();
+		int pathSize = pathSize();
 
-		for (int index = 0, count = paths.size(); index < count; index++) {
+		if (startsWithDot) {
+			writer.append(DOT);
+		}
+		else if (!virtualIdentificationVariable) {
+			identificationVariable.toParsedText(writer, actual);
+			if (pathSize > 1) {
+				writer.append(DOT);
+			}
+		}
+
+		for (int index = (virtualIdentificationVariable ? 0 : 1); index < pathSize; index++) {
+
 			writer.append(paths.get(index));
 
-			if (index < count - 1) {
+			if (index < pathSize - 1) {
 				writer.append(DOT);
 			}
 		}

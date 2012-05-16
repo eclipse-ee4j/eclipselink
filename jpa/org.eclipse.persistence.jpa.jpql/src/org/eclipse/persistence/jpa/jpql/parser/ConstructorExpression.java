@@ -190,7 +190,6 @@ public final class ConstructorExpression extends AbstractExpression {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(ConstructorExpressionBNF.ID);
 	}

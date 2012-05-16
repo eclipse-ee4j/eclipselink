@@ -248,7 +248,6 @@ public final class BetweenExpression extends AbstractExpression {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(BetweenExpressionBNF.ID);
 	}

@@ -128,7 +128,6 @@ public final class IdentificationVariable extends AbstractExpression {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(IdentificationVariableBNF.ID);
 	}

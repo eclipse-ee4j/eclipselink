@@ -58,7 +58,6 @@ public final class TypeExpression extends AbstractSingleEncapsulatedExpression {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(TypeExpressionBNF.ID);
 	}

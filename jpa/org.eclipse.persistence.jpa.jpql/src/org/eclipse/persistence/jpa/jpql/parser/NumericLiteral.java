@@ -75,7 +75,6 @@ public final class NumericLiteral extends AbstractExpression {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(NumericLiteralBNF.ID);
 	}

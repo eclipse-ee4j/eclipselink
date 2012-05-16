@@ -258,7 +258,6 @@ public final class Join extends AbstractExpression {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(JoinBNF.ID);
 	}

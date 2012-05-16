@@ -166,7 +166,6 @@ public final class TreatExpression extends AbstractEncapsulatedExpression {
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(TreatExpressionBNF.ID);
 	}

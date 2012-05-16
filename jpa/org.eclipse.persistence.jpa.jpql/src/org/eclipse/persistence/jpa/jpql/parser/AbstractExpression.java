@@ -503,7 +503,7 @@ public abstract class AbstractExpression implements Expression {
 	/**
 	 * {@inheritDoc}
 	 */
-	public int getLength() {
+	public final int getLength() {
 		return toActualText().length();
 	}
 
@@ -523,13 +523,6 @@ public abstract class AbstractExpression implements Expression {
 	public final AbstractExpression getParent() {
 		return parent;
 	}
-
-	/**
-	 * Returns the BNF of this {@link Expression}.
-	 *
-	 * @return The {@link JPQLQueryBNF}, which represents the grammar of this {@link Expression}
-	 */
-	public abstract JPQLQueryBNF getQueryBNF();
 
 	/**
 	 * Retrieves the BNF object that was registered for the given unique identifier.

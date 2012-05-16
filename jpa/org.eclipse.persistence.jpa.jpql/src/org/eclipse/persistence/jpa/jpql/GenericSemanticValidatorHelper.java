@@ -103,7 +103,9 @@ public class GenericSemanticValidatorHelper implements SemanticValidatorHelper {
 	private void collectLocalDeclarationIdentificationVariables(JPQLQueryContext queryContext,
 	                                                            Map<String, List<IdentificationVariable>> identificationVariables) {
 
-		for (Declaration declaration : queryContext.getActualDeclarationResolver().getDeclarations()) {
+		DeclarationResolver declarationResolver = queryContext.getDeclarationResolverImp();
+
+		for (Declaration declaration : declarationResolver.getDeclarations()) {
 
 			// Register the identification variable from the base expression
 			IdentificationVariable identificationVariable = declaration.identificationVariable;
@@ -114,13 +116,19 @@ public class GenericSemanticValidatorHelper implements SemanticValidatorHelper {
 				addIdentificationVariable(joinIdentificationVariable, identificationVariables);
 			}
 		}
+
+		if (queryContext.getParent() == null) {
+			for (IdentificationVariable identificationVariable : declarationResolver.getResultVariablesMap().keySet()) {
+				addIdentificationVariable(identificationVariable, identificationVariables);
+			}
+		}
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public void collectLocalDeclarationIdentificationVariables(Map<String, List<IdentificationVariable>> identificationVariables) {
-		collectLocalDeclarationIdentificationVariables(queryContext, identificationVariables);
+		collectLocalDeclarationIdentificationVariables(queryContext.getCurrentContext(), identificationVariables);
 	}
 
 	/**

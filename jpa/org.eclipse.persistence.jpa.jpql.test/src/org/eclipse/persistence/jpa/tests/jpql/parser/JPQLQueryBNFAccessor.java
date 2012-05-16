@@ -20,10 +20,13 @@ import java.util.List;
 import java.util.Set;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionValuedPathExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.ComparisonExpressionBNF;
+import org.eclipse.persistence.jpa.jpql.parser.ComparisonExpressionFactory;
 import org.eclipse.persistence.jpa.jpql.parser.ConditionalExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.ConstructorItemBNF;
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
+import org.eclipse.persistence.jpa.jpql.parser.ExpressionFactory;
 import org.eclipse.persistence.jpa.jpql.parser.ExpressionRegistry;
+import org.eclipse.persistence.jpa.jpql.parser.GroupByItemBNF;
 import org.eclipse.persistence.jpa.jpql.parser.IdentifierRole;
 import org.eclipse.persistence.jpa.jpql.parser.InternalAggregateFunctionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.InternalCountBNF;
@@ -32,6 +35,7 @@ import org.eclipse.persistence.jpa.jpql.parser.PatternValueBNF;
 import org.eclipse.persistence.jpa.jpql.parser.ScalarExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.SelectExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectExpressionBNF;
+import org.eclipse.persistence.jpa.jpql.util.iterator.ArrayIterator;
 
 /**
  * This accessor is used to easily retrieve the JPQL identifiers registered with various {@link
@@ -71,6 +75,11 @@ public class JPQLQueryBNFAccessor {
 
 	public Iterable<String> collectionMemberDeclarationParameters() {
 		return getIdentifiers(CollectionValuedPathExpressionBNF.ID);
+	}
+
+	public Iterable<String> comparators() {
+		ExpressionFactory factory = getExpressionFactory(ComparisonExpressionFactory.ID);
+		return new ArrayIterator<String>(factory.identifiers());
 	}
 
 	public Iterable<String> comparisonExpressionClauses() {
@@ -139,6 +148,10 @@ public class JPQLQueryBNFAccessor {
 		return filter(identifiers, IdentifierRole.FUNCTION);
 	}
 
+	public ExpressionFactory getExpressionFactory(String expressionFactoryId) {
+		return registry.getExpressionFactory(expressionFactoryId);
+	}
+
 	public IdentifierRole getIdentifierRole(String identifier) {
 		return registry.getIdentifierRole(identifier);
 	}
@@ -155,6 +168,14 @@ public class JPQLQueryBNFAccessor {
 		return registry;
 	}
 
+	public Iterable<String> groupByItemFunctions() {
+		return functions(groupByItemIdentifiers());
+	}
+
+	public Iterable<String> groupByItemIdentifiers() {
+		return getIdentifiers(GroupByItemBNF.ID);
+	}
+
 	public Iterable<String> internalAggregateFunctionFunctions() {
 		return functions(internalAggregateFunctionIdentifiers());
 	}
@@ -167,7 +188,7 @@ public class JPQLQueryBNFAccessor {
 		return functions(patternValueIdentifiers());
 	}
 
-	private Iterable<String> patternValueIdentifiers() {
+	public Iterable<String> patternValueIdentifiers() {
 		return getIdentifiers(PatternValueBNF.ID);
 	}
 

@@ -70,6 +70,14 @@ public class DefaultGrammarValidator extends AbstractGrammarValidator {
 	 * {@inheritDoc}
 	 */
 	@Override
+	protected OwningClauseVisitor buildOwningClauseVisitor() {
+		return new OwningClauseVisitor();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	protected boolean isJoinFetchIdentifiable() {
 		return false;
 	}
