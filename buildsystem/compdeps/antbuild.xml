@@ -133,6 +133,8 @@
         <!-- Defaults, set var in ${user.home}/build.properties if different version required -->
         <property name="sun.xml.bind.prefix" value="com.sun.xml.bind"/>
         <property name="sun.xml.bind.criteria" value="[0.0.1,5.0.0)"/>
+        <property name="jersey.prefix" value="com.sun.jersey"/>
+        <property name="jersey.criteria" value="[1.8.0,5.0.0)"/>
         <property name="sdo.prefix" value="commonj.sdo"/>
         <property name="sdo.criteria" value="[2.1.1,5.0.0)"/>
         <property name="ejb.prefix" value="javax.ejb"/>
@@ -179,6 +181,9 @@
         <selectbundle basename="${sun.xml.bind.prefix}"  directory="${compdeps.2.common.plugins.dir}"
                      criterion="${sun.xml.bind.criteria}" property="sun.xml.bind.version" versiononly="true"
         />
+        <selectbundle basename="${jersey.prefix}"  directory="${compdeps.2.common.plugins.dir}"
+                     criterion="${jersey.criteria}" property="jersey.version" versiononly="true"
+        />
         <selectbundle basename="${ejb.prefix}"  directory="${compdeps.2.common.plugins.dir}"
                      criterion="${ejb.criteria}" property="ejb.version" versiononly="true"
         />
@@ -202,6 +207,8 @@
         />
         <say  message="   sun.xml.bind.version     = '${sun.xml.bind.version}'"                                                     if="sun.xml.bind.version"/>
         <say  message="   '${sun.xml.bind.prefix}_${sun.xml.bind.criteria}.jar' not found! Generated features will be invalid." unless="sun.xml.bind.version"/>
+        <say  message="   jersey.version           = '${jersey.version}'"                                                           if="jersey.version"/>
+        <say  message="   '${jersey.prefix}_${jersey.criteria}.jar' not found! Generated features will be invalid."             unless="jersey.version"/>
         <say  message="   ejb.version              = '${ejb.version}'"                                                              if="ejb.version"/>
         <say  message="   '${ejb.prefix}_${ejb.criteria}.jar' not found! Generated features will be invalid."                   unless="ejb.version"/>
         <say  message="   jms.version              = '${jms.version}'"                                                              if="jms.version"/>
@@ -276,6 +283,7 @@
         <filter token="QUALIFIER"            value="${compdeps.qualifier}"/>
         <!--          Filters for dependencies in feature.xml files -->
         <filter token="SUN_XML_BIND_VERSION" value="${sun.xml.bind.version}"/>
+        <filter token="JERSEY_VERSION"       value="${jersey.version}"/>
         <filter token="EJB_VERSION"          value="${ejb.version}"/>
         <filter token="JMS_VERSION"          value="${jms.version}"/>
         <filter token="RESOURCE_VERSION"     value="${resource.version}"/>
@@ -315,6 +323,7 @@
                 dir="${compdeps.2.common.plugins.dir}"
                 includes="${sun.xml.bind.prefix}_${sun.xml.bind.version}.jar,
                           ${sun.xml.bind.prefix}.source_${sun.xml.bind.version}.jar,
+                          ${jersey.prefix}_${jersey.version}.jar,
                           ${ejb.prefix}_${ejb.version}.jar,
                           ${jms.prefix}_${jms.version}.jar,
                           ${resource.prefix}_${resource.version}.jar,
