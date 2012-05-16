@@ -708,6 +708,7 @@ public class SDOType implements Type, Serializable {
      */
     private void addClassIndicator(XMLDescriptor xdesc, Class pCls, boolean isInheritanceRoot) {
         XMLField field = (XMLField)getXmlDescriptor().buildField("@xsi:type");
+        field.initialize();
         xdesc.getInheritancePolicy().setClassIndicatorField(field);
 
         String parentIndicator = getName();
