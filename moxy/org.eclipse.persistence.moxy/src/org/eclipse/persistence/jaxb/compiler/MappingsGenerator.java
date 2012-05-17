@@ -2173,7 +2173,7 @@ public class MappingsGenerator {
         XMLCollectionReferenceMapping mapping = new XMLCollectionReferenceMapping();
         mapping.setAttributeName(property.getPropertyName());
         initializeXMLContainerMapping(mapping);
-        mapping.setUsesSingleNode(property.isXmlList() || property.isAttribute());
+        mapping.setUsesSingleNode(property.isXmlList() || (property.isAttribute() && (property.getXmlPath() == null || !property.getXmlPath().contains("/"))));
         // handle read-only set via metadata
         if (property.isSetReadOnly()) {
             mapping.setIsReadOnly(property.isReadOnly());

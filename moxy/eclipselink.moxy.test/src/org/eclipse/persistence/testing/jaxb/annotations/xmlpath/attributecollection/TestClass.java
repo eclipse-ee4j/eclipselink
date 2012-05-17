@@ -13,40 +13,83 @@
 package org.eclipse.persistence.testing.jaxb.annotations.xmlpath.attributecollection;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlList;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.eclipse.persistence.oxm.annotations.XmlPath;
 
 @XmlRootElement(name = "test")
-public class TestClass
-{
-    private ArrayList<String> itemList = new ArrayList<String>();
+@XmlAccessorType(XmlAccessType.NONE)
+public class TestClass {
 
-	@XmlPath("item/@type")
-    public ArrayList<String> getItemList(){
-		return itemList;
-	}
-    
-	public void setItemList(ArrayList<String> itemList) {
-	   this.itemList = itemList;
+    private ArrayList<String> itemList = new ArrayList<String>();
+    private ArrayList<String> attributeList = new ArrayList<String>();
+    private ArrayList<String> elementList = new ArrayList<String>();
+
+    @XmlPath("item/@type")
+    public ArrayList<String> getItemList() {
+        return itemList;
     }
-	
-    public boolean equals(Object obj){
-    	if(obj instanceof TestClass){
-    		TestClass testObj = ((TestClass)obj);
-    		if(testObj == this){
-    			return true;
-    		}    		
-    		if(getItemList().size() != testObj.getItemList().size()){
-    			return false;    				
-    		}
-    		if(!getItemList().containsAll(testObj.getItemList())){
-    			return false;
-    		}
-    		
-    		return true;
-    	}
-    	return false;
+
+    public void setItemList(ArrayList<String> itemList) {
+        this.itemList = itemList;
     }
+
+    @XmlPath("attribute/@list")
+    @XmlList
+    public ArrayList<String> getAttributeList() {
+        return attributeList;
+    }
+
+    public void setAttributeList(ArrayList<String> attributeList) {
+        this.attributeList = attributeList;
+    }
+
+    @XmlPath("element/list/text()")
+    @XmlList
+    public ArrayList<String> getElementList() {
+        return elementList;
+    }
+
+    public void setElementList(ArrayList<String> elementList) {
+        this.elementList = elementList;
+    }
+
+    public boolean equals(Object obj) {
+        if(null == obj || obj.getClass() != this.getClass()) {
+            return false;
+        }
+        TestClass testObj = (TestClass) obj;
+        if(!equals(this.attributeList, testObj.attributeList)) {
+            return false;
+        }
+        if(!equals(this.elementList, testObj.elementList)) {
+            return false;
+        }
+        if(!equals(this.itemList, testObj.itemList)) {
+            return false;
+        }
+        return true;
+    }
+
+    private boolean equals(List<String> control, List<String> test) {
+        if(null == control) {
+            return null == test;
+        } else if(null == test) {
+            return null == control;
+        } else if(control.size() != test.size()) {
+            return false;
+        }
+        for(int x=0,size=control.size(); x<size; x++) {
+            if(!control.get(x).equals(test.get(x))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
 }

@@ -1059,6 +1059,10 @@ public class SchemaGenerator {
                     particle.setMaxOccurs(Occurs.UNBOUNDED);
                 }
             } else {
+                XPathFragment nextFragment = frag.getNextFragment();
+                if(!next.isXmlList() && null != nextFragment && nextFragment.isAttribute() && next.isCollectionType(next.getType())) {
+                    currentElement.setMaxOccurs(Occurs.UNBOUNDED);
+                }
                 particle = new Sequence();
             }
             cType.setTypeDefParticle(particle);
@@ -1523,12 +1527,16 @@ public class SchemaGenerator {
         }
 
         if (isCollectionType(property)) {
-            // assume XmlList for an attribute collection
-            SimpleType localType = new SimpleType();
-            org.eclipse.persistence.internal.oxm.schema.model.List list = new org.eclipse.persistence.internal.oxm.schema.model.List();
-            list.setItemType(typeName);
-            localType.setList(list);
-            attribute.setSimpleType(localType);
+            if(!property.isXmlList() && null != property.getXmlPath() && property.getXmlPath().contains("/")) {
+                attribute.setType(typeName);
+            } else {
+                // assume XmlList for an attribute collection
+                SimpleType localType = new SimpleType();
+                org.eclipse.persistence.internal.oxm.schema.model.List list = new org.eclipse.persistence.internal.oxm.schema.model.List();
+                list.setItemType(typeName);
+                localType.setList(list);
+                attribute.setSimpleType(localType);
+            }
         } else {
             // may need to qualify the type
             if (typeName != null && !typeName.contains(COLON)) {

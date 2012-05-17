@@ -48,10 +48,10 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
     }
 
     public boolean isOwningNode(XPathFragment xPathFragment) {
-        if (xmlCompositeDirectCollectionMapping.usesSingleNode()) {
-            return xPathFragment.nameIsText() || xPathFragment.isAttribute();
+        XPathFragment nextFragment = xPathFragment.getNextFragment();
+        if(nextFragment == null || xmlCompositeDirectCollectionMapping.usesSingleNode()){
+            return xPathFragment.isAttribute() || xPathFragment.nameIsText();
         } else {
-            XPathFragment nextFragment = xPathFragment.getNextFragment();
             return (nextFragment != null) && (nextFragment.nameIsText() || nextFragment.isAttribute());
         }
     }
