@@ -2214,7 +2214,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         Query query = em.createQuery("select b " +
                                      "from Buyer as b, " +
                                      "     Employee as e join b.creditLines as logicalName " +
-                                     "where logicalName = e.version");
+                                     "where logicalName = e.firstName");
         query.getResultList();
     }
 }
