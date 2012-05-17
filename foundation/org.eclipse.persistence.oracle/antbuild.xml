@@ -156,15 +156,6 @@
         <echo message="oracle.extensions.depend.dir = '${oracle.extensions.depend.dir}'"/>
         <echo message="extensions.depend.dir        = '${extensions.depend.dir}'"/>
 
-        <!-- Test for dependencies -->
-        <selectbundle basename="javax.persistence" directory="${core.build.location}/${core.2.jpa.plugins.dir}" separator="_"
-            criterion="[2.0.0,3.0.0)" property="persistence.lib" includepath="true"
-        />
-        <!-- Core has no jpa 2.0 specific compile dependency: use below instead to test assertion -->
-        <!-- selectbundle basename="javax.persistence" directory="${core.build.location}/${core.2.jpa.plugins.dir}" separator="_"
-            criterion="[1.0.0,2.0.0)" property="persistence.lib" includepath="true"
-        / -->
-	
         <!-- dependency properties -->
         <property name="core.lib"         value="${oracle.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
         <!-- "Oracle" dependency definitions from "oracle.extensions.depend.jars" -->
@@ -194,7 +185,6 @@
         </condition>
 
         <!-- dependency tests -->
-        <available file="${persistence.lib}"   property="persistence.bundle.exist"/>
         <available file="${core.lib}"          property="core.bundle.exist"/>
         <!-- oracle dependency tests -->
         <available file="${ojdbc.lib}"         property="ojdbc.bundle.exist"/>
@@ -207,7 +197,6 @@
         <available file="${oracle.extensions.depend.dir}" type="dir" property="oracle.depend.dir.exist"/>
 
         <say  message="'${oracle.extensions.depend.dir}' found."       if="oracle.depend.dir.exist"/>
-        <say  message="persistence.lib:      '${persistence.lib}'"     if="persistence.bundle.exist"/>
         <say  message="core.lib:             '${core.lib}'"            if="core.bundle.exist"/>
         <say  message="ojdbc.lib:            '${ojdbc.lib}'"           if="ojdbc.bundle.exist"/>
         <say  message="sdoapi.lib:           '${sdoapi.lib}'"          if="sdoapi.bundle.exist"/>
@@ -215,7 +204,6 @@
         <say  message="xmlparser.lib:        '${xmlparser.lib}'"       if="xmlparser.bundle.exist"/>
         <say  message="ucp.lib:              '${ucp.lib}'"             if="ucp.bundle.exist"/>
         <say  message="dms.lib:              '${dms.lib}'"             if="dms.bundle.exist"/>
-        <fail message="Cannot find:          '${persistence.lib}'" unless="persistence.bundle.exist"/>
         <fail message="Cannot find:          '${core.lib}'"        unless="core.bundle.exist"/>
         <fail message="Cannot find:          '${ojdbc.lib}'"       unless="ojdbc.bundle.exist"/>
         <fail message="Cannot find:          '${sdoapi.lib}'"      unless="sdoapi.bundle.exist"/>
@@ -227,7 +215,6 @@
         <!-- Set Compile Path-->
         <path id="oracle.compile.path">
             <pathelement path="${core.lib}"/>
-            <pathelement path="${persistence.lib}"/>
             <pathelement path="${ojdbc.lib}"/>
             <pathelement path="${sdoapi.lib}"/>
             <pathelement path="${xdb.lib}"/>
