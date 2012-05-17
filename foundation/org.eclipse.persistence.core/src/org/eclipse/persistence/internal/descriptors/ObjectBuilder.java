@@ -3525,7 +3525,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * Clones the attributes of the specified object. This is called only from unit of work.
      * The domainObject sent as parameter is always a copy from the parent of unit of work.
      */
-    public void populateAttributesForClone(Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession) {
+    public void populateAttributesForClone(Object original, CacheKey cacheKey, Object clone, Integer refreshCascade, AbstractSession cloningSession) {
         List mappings = getCloningMappings();
         int size = mappings.size();
         if (this.descriptor.hasFetchGroupManager() && this.descriptor.getFetchGroupManager().isPartialObject(original)) {
@@ -3533,12 +3533,12 @@ public class ObjectBuilder implements Cloneable, Serializable {
             for (int index = 0; index < size; index++) {
                 DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
                 if (fetchGroupManager.isAttributeFetched(original, mapping.getAttributeName())) {
-                    mapping.buildClone(original, cacheKey, clone, cloningSession);
+                    mapping.buildClone(original, cacheKey, clone, refreshCascade, cloningSession);
                 }
             }
         } else {
             for (int index = 0; index < size; index++) {
-                ((DatabaseMapping)mappings.get(index)).buildClone(original, cacheKey, clone, cloningSession);
+                ((DatabaseMapping)mappings.get(index)).buildClone(original, cacheKey, clone, refreshCascade, cloningSession);
             }
         }
 

@@ -163,7 +163,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      */
     @Override
     public void buildBackupClone(Object clone, Object backup, UnitOfWorkImpl unitOfWork) {
-        buildClone(clone, null, backup, unitOfWork);
+        buildClone(clone, null, backup, null, unitOfWork);
     }
 
     /**
@@ -180,7 +180,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      * Clone the attribute from the original and assign it to the clone.
      */
     @Override
-    public void buildClone(Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession) {
+    public void buildClone(Object original, CacheKey cacheKey, Object clone, Integer refreshCascade, AbstractSession cloningSession) {
         buildCloneValue(original, clone, cloningSession);
     }
     
@@ -266,7 +266,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
     /**
      * Build a clone of the given element in a unitOfWork.
      */
-    public Object buildElementClone(Object attributeValue, Object parent, CacheKey cacheKey, AbstractSession cloningSession, boolean isExisting){
+    public Object buildElementClone(Object attributeValue, Object parent, CacheKey cacheKey, Integer refreshCascade, AbstractSession cloningSession, boolean isExisting){
         return buildCloneValue(attributeValue, cloningSession);
     }
     

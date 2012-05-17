@@ -89,7 +89,7 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
      *  directly from a row as opposed to building the original from the
      *  row, putting it in the shared cache, and then cloning the original.
      */
-    public Object cloneAttribute(Object attributeValue, Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession, boolean buildDirectlyFromRow) {
+    public Object cloneAttribute(Object attributeValue, Object original, CacheKey cacheKey, Object clone, Integer refreshCascade, AbstractSession cloningSession, boolean buildDirectlyFromRow) {
         ValueHolderInterface valueHolder = (ValueHolderInterface) attributeValue;
         ValueHolderInterface result;
         
@@ -104,7 +104,7 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
             }
             if (this.mapping.getRelationshipPartner() == null) {
                 result = new ValueHolder();
-                result.setValue(this.mapping.buildCloneForPartObject(valueHolder.getValue(), original, null, clone, cloningSession, false));
+                result.setValue(this.mapping.buildCloneForPartObject(valueHolder.getValue(), original, null, clone, cloningSession, refreshCascade, false));
             } else {
                 //if I have a relationship partner trigger the indirection so that the value will be inserted
                 // because of this call the entire tree should be recursively cloned
@@ -114,7 +114,7 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
                 }
                 result = this.mapping.createCloneValueHolder(valueHolder, original, clone, row, cloningSession, buildDirectlyFromRow);
 
-                Object newObject = this.mapping.buildCloneForPartObject(valueHolder.getValue(), original, cacheKey, clone, cloningSession, false);
+                Object newObject = this.mapping.buildCloneForPartObject(valueHolder.getValue(), original, cacheKey, clone, cloningSession, refreshCascade, false);
                 ((UnitOfWorkValueHolder)result).privilegedSetValue(newObject);
                 ((UnitOfWorkValueHolder)result).setInstantiated();
             }

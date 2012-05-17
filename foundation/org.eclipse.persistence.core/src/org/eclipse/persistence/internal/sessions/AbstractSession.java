@@ -975,7 +975,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * This method is similar to getAndCloneCacheKeyFromParent.  It purpose is to get protected cache data from the shared cache and
      * build/return a protected instance.
      */
-    public Object createProtectedInstanceFromCachedData(Object cached, ClassDescriptor descriptor){
+    public Object createProtectedInstanceFromCachedData(Object cached, Integer refreshCascade, ClassDescriptor descriptor){
         CacheKey localCacheKey = getIdentityMapAccessorInstance().getCacheKeyForObject(cached);
         if (localCacheKey != null && localCacheKey.getObject() != null){
             return localCacheKey.getObject();
@@ -1013,7 +1013,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
             ObjectBuilder builder = descriptor.getObjectBuilder();
             Object workingClone = builder.instantiateWorkingCopyClone(cached, this);
             // PERF: Cache the primary key if implements PersistenceEntity.
-            builder.populateAttributesForClone(cached, cacheKey,  workingClone, this);
+            builder.populateAttributesForClone(cached, cacheKey,  workingClone, refreshCascade, this);
             getIdentityMapAccessorInstance().putInIdentityMap(workingClone, key, lockValue, readTime, descriptor);
             return workingClone;
         }finally{

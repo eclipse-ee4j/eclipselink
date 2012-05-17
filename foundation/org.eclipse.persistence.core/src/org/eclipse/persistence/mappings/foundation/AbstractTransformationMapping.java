@@ -232,7 +232,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      */
     @Override
     public Object buildBackupCloneForPartObject(Object attributeValue, Object clone, Object backup, UnitOfWorkImpl unitOfWork) {
-        return buildCloneForPartObject(attributeValue, clone, null, backup, unitOfWork, true);
+        return buildCloneForPartObject(attributeValue, clone, null, backup, unitOfWork, null, true);
     }
  
     /**
@@ -240,13 +240,13 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * Clone the attribute from the original and assign it to the clone.
      */
     @Override
-    public void buildClone(Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession) {
+    public void buildClone(Object original, CacheKey cacheKey, Object clone, Integer refreshCascade, AbstractSession cloningSession) {
         // If mapping is a no-attribute transformation mapping, do nothing
         if (isWriteOnly()) {
             return;
         }
         Object attributeValue = getAttributeValueFromObject(original);
-        Object clonedAttributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, original, cacheKey, clone, cloningSession, false);// building clone from an original not a row.
+        Object clonedAttributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, original, cacheKey, clone, refreshCascade, cloningSession, false);// building clone from an original not a row.
         setAttributeValueInObject(clone, clonedAttributeValue);
     }
  
@@ -274,7 +274,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
             if (!wasCacheUsed){
                 //if the cache was used then the attribute has already been cloned by readFromRowIntoObject
                 attributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, null,// no original
-                        null, clone, unitOfWork, true);// build clone directly from row.
+                        null, clone, null, unitOfWork, true);// build clone directly from row.
             }
             setAttributeValueInObject(clone, attributeValue);
         }
@@ -285,7 +285,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * Require for cloning, the part must be cloned.
      * Ignore the attribute value, go right to the object itself.
      */
-    public Object buildCloneForPartObject(Object attributeValue, Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession, boolean isExisting) {
+    public Object buildCloneForPartObject(Object attributeValue, Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession, Integer refreshCascade, boolean isExisting) {
         if (isReadOnly() || !isMutable()) {
             return attributeValue;
         }
@@ -1082,7 +1082,11 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
                 Object cached = parentCacheKey.getObject();
                 if (cached != null) {
                     Object attributeValue =  getAttributeValueFromObject(cached);
-                    return this.indirectionPolicy.cloneAttribute(attributeValue, cached, parentCacheKey, object, executionSession, false);
+                    Integer refreshCascade = null;
+                    if (query != null && query.shouldRefreshIdentityMapResult()){
+                        refreshCascade = query.getCascadePolicy();
+                    }
+                    return this.indirectionPolicy.cloneAttribute(attributeValue, cached, parentCacheKey, object, refreshCascade, executionSession, false);
                 }
                 return null;
             }

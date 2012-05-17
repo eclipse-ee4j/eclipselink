@@ -141,7 +141,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
      * from a row as opposed to building the original from the row, putting it in
      * the shared cache, and then cloning the original.
      */
-    public Object cloneAttribute(Object attributeValue, Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession, boolean buildDirectlyFromRow) {
+    public Object cloneAttribute(Object attributeValue, Object original, CacheKey cacheKey, Object clone, Integer refreshCascade, AbstractSession cloningSession, boolean buildDirectlyFromRow) {
         ValueHolderInterface valueHolder = null;
         Object container = null;
         IndirectList indirectList = null;
@@ -163,7 +163,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
                 throw DescriptorException.attemptToRegisterDeadIndirection(original, this.mapping);
             }
             if (this.mapping.getRelationshipPartner() == null) {
-                container = this.mapping.buildCloneForPartObject(attributeValue, original, cacheKey, clone, cloningSession, false);
+                container = this.mapping.buildCloneForPartObject(attributeValue, original, cacheKey, clone, cloningSession, refreshCascade, false);
             } else {
                 if (indirectContainer == null) {
                     valueHolder = new ValueHolder(attributeValue);
@@ -180,7 +180,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
                 //  Goes through it's own instantiation process.
                 DatabaseValueHolder newValueHolder = this.mapping.createCloneValueHolder(valueHolder, original, clone, row, cloningSession, buildDirectlyFromRow);
                 container = buildIndirectContainer(newValueHolder);
-                Object cloneCollection = this.mapping.buildCloneForPartObject(attributeValue, original, cacheKey, clone, cloningSession, false);
+                Object cloneCollection = this.mapping.buildCloneForPartObject(attributeValue, original, cacheKey, clone, cloningSession, refreshCascade, false);
                 newValueHolder.privilegedSetValue(cloneCollection);
                 newValueHolder.setInstantiated();
             }

@@ -328,7 +328,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
                 localCacheKey.setObject(workingClone);
                 localCacheKey.setReadTime(cacheKey.getReadTime());
                 localCacheKey.setWriteLockValue(cacheKey.getWriteLockValue());
-                builder.populateAttributesForClone(objectFromCache, cacheKey, workingClone, session);
+                builder.populateAttributesForClone(objectFromCache, cacheKey, workingClone, null, session);
             }finally{
                 localCacheKey.release();
             }

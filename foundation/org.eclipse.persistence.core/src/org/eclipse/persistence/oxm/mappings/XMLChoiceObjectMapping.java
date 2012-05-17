@@ -46,6 +46,7 @@ import org.eclipse.persistence.oxm.mappings.converters.XMLRootConverter;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.sessions.remote.RemoteSession;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLRoot;
@@ -141,7 +142,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements XMLMappin
     * Clone the attribute from the original and assign it to the clone.
     */
     @Override
-    public void buildClone(Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession) {
+    public void buildClone(Object original, CacheKey cacheKey, Object clone, Integer refreshCascade, AbstractSession cloningSession) {
         throw DescriptorException.invalidMappingOperation(this, "buildClone");
     }
 

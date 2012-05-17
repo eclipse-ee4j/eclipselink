@@ -239,7 +239,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * Clone the attribute from the original and assign it to the clone.
      */
     @Override
-    public void buildClone(Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession) {
+    public void buildClone(Object original, CacheKey cacheKey, Object clone, Integer refreshCascade, AbstractSession cloningSession) {
         Object attributeValue = null;
         if (!this.isCacheable && (cacheKey != null && !cacheKey.isIsolated())){
             ReadObjectQuery query = new ReadObjectQuery(descriptor.getJavaClass());
@@ -248,7 +248,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         }else{
             attributeValue = getAttributeValueFromObject(original);
         }
-        attributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, original, cacheKey, clone, cloningSession, false); // building clone from an original not a row.
+        attributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, original, cacheKey, clone, refreshCascade, cloningSession, false); // building clone from an original not a row.
         //GFBug#404 - fix moved to ObjectBuildingQuery.registerIndividualResult 
         setAttributeValueInObject(clone, attributeValue);
     }
@@ -274,7 +274,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
     public void buildCloneFromRow(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object clone, CacheKey sharedCacheKey, ObjectBuildingQuery sourceQuery, UnitOfWorkImpl unitOfWork, AbstractSession executionSession) {
         Boolean[] wasCacheUsed = new Boolean[]{Boolean.FALSE};
         Object attributeValue = valueFromRow(databaseRow, joinManager, sourceQuery, sharedCacheKey, executionSession, true, wasCacheUsed);
-        Object clonedAttributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, null, sharedCacheKey,clone, unitOfWork, !wasCacheUsed[0]);// building clone directly from row.
+        Object clonedAttributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, null, sharedCacheKey,clone, null, unitOfWork, !wasCacheUsed[0]);// building clone directly from row.
         if (executionSession.isUnitOfWork() && sourceQuery.shouldRefreshIdentityMapResult()){
             // check whether the attribute is fully build before calling getAttributeValueFromObject because that
             // call may fully build the attribute
@@ -297,7 +297,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * INTERNAL:
      * Require for cloning, the part must be cloned.
      */
-    public abstract Object buildCloneForPartObject(Object attributeValue, Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession, boolean isExisting);
+    public abstract Object buildCloneForPartObject(Object attributeValue, Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession, Integer refreshCascade, boolean isExisting);
 
     /**
      * INTERNAL:
@@ -1352,7 +1352,11 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         Object attributeValue = valueFromRow(databaseRow, joinManager, sourceQuery, parentCacheKey, executionSession, isTargetProtected, wasCacheUsed);
         if (wasCacheUsed[0]){
             //must clone here as certain mappings require the clone object to clone the attribute.
-            attributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, parentCacheKey.getObject(), parentCacheKey, targetObject, executionSession, false);
+            Integer refreshCascade = null;
+            if (sourceQuery != null && sourceQuery.isObjectBuildingQuery() && ((ObjectBuildingQuery)sourceQuery).shouldRefreshIdentityMapResult()){
+                refreshCascade = sourceQuery.getCascadePolicy();
+            }
+        attributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, parentCacheKey.getObject(), parentCacheKey, targetObject, refreshCascade, executionSession, false);
         }
         if (executionSession.isUnitOfWork() && sourceQuery.shouldRefreshIdentityMapResult()){
             // check whether the attribute is fully build before calling getAttributeValueFromObject because that
@@ -1716,7 +1720,15 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * Returns true if the merge should cascade to the mappings reference's parts.
      */
     public boolean shouldMergeCascadeParts(MergeManager mergeManager) {
-        return ((mergeManager.shouldCascadeByMapping() && this.isCascadeMerge()) || (mergeManager.shouldCascadeAllParts()) || (mergeManager.shouldCascadePrivateParts() && isPrivateOwned()));
+        return (mergeManager.shouldCascadeByMapping() && ((this.isCascadeMerge() && !mergeManager.isForRefresh()) || (this.isCascadeRefresh() && mergeManager.isForRefresh()) )) || mergeManager.shouldCascadeAllParts() || (mergeManager.shouldCascadePrivateParts() && isPrivateOwned());
+    }
+
+    /**
+     * INTERNAL:
+     * Returns true if the merge should cascade to the mappings reference's parts.
+     */
+    public boolean shouldRefreshCascadeParts(MergeManager mergeManager) {
+        return (mergeManager.shouldCascadeByMapping() && this.isCascadeRefresh()) || mergeManager.shouldCascadeAllParts() || (mergeManager.shouldCascadePrivateParts() && isPrivateOwned());
     }
 
     /**

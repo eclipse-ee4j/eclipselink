@@ -120,7 +120,7 @@ public abstract class IndirectionPolicy implements Cloneable, Serializable {
      *  directly from a row as opposed to building the original from the
      *  row, putting it in the shared cache, and then cloning the original.
      */
-    public abstract Object cloneAttribute(Object attributeValue, Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession, boolean buildDirectlyFromRow);
+    public abstract Object cloneAttribute(Object attributeValue, Object original, CacheKey cacheKey, Object clone, Integer refreshCascade, AbstractSession cloningSession, boolean buildDirectlyFromRow);
 
     /**
      * INTERNAL:

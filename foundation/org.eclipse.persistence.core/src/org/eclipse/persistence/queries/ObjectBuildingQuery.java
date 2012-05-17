@@ -409,9 +409,6 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
     public void postRegisterIndividualResult(Object clone, Object original, Object primaryKey, UnitOfWorkImpl unitOfWork, JoinedAttributeManager joinManager, ClassDescriptor concreteDescriptor) {
         // Check for refreshing, require to revert in the unit of work to accomplish a refresh.
         if (shouldRefreshIdentityMapResult()) {
-            if (primaryKey == null) {
-                primaryKey = concreteDescriptor.getObjectBuilder().extractPrimaryKeyFromObject(original, unitOfWork);
-            }
             
             if (shouldCascadeAllParts()) {
                 unitOfWork.mergeClone(original, MergeManager.CASCADE_ALL_PARTS, true);

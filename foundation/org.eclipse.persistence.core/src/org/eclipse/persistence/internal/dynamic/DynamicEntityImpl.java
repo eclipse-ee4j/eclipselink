@@ -262,7 +262,7 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
         public void buildBackupClone(Object clone, Object backup, UnitOfWorkImpl unitOfWork) {            
         }
         @Override
-        public void buildClone(Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession) {
+        public void buildClone(Object original, CacheKey cacheKey, Object clone, Integer refreshCascade, AbstractSession cloningSession) {
         }
         public void buildCloneFromRow(AbstractRecord databaseRow,
             JoinedAttributeManager joinManager, Object clone, CacheKey sharedCacheKey, ObjectBuildingQuery sourceQuery,

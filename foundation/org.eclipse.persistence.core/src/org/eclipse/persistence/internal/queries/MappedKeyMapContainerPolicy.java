@@ -237,8 +237,8 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy {
      * Build a clone for the key of a Map represented by this container policy.
      */
     @Override
-    public Object buildCloneForKey(Object key, Object parent, CacheKey parentCacheKey, AbstractSession cloningSession, boolean isExisting){
-        return keyMapping.buildElementClone(key, parent, parentCacheKey, cloningSession, isExisting);
+    public Object buildCloneForKey(Object key, Object parent, CacheKey parentCacheKey, Integer refreshCascade, AbstractSession cloningSession, boolean isExisting){
+        return keyMapping.buildElementClone(key, parent, parentCacheKey, refreshCascade, cloningSession, isExisting);
 
     }
     

@@ -901,7 +901,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         // Must put in clone mapping.
         getCloneMapping().put(clone, clone);
 
-        builder.populateAttributesForClone(original, null, clone, this);
+        builder.populateAttributesForClone(original, null, clone, null, this);
         // Must reregister in both new objects.
         registerNewObjectClone(clone, original, descriptor);
 
@@ -3654,7 +3654,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         changePolicy.dissableEventProcessing(workingClone);
 
         ObjectBuilder builder = descriptor.getObjectBuilder();
-        builder.populateAttributesForClone(original, parentCacheKey, workingClone, this);
+        builder.populateAttributesForClone(original, parentCacheKey, workingClone, null, this);
         Object backupClone = changePolicy.buildBackupClone(workingClone, builder, this);
         // PERF: Avoid put if no backup clone.
         if (workingClone != backupClone) {

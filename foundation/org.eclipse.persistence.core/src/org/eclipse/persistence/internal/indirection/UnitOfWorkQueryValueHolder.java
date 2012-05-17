@@ -13,6 +13,7 @@
 package org.eclipse.persistence.internal.indirection;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.WrapperPolicy;
 import org.eclipse.persistence.indirection.*;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
@@ -48,7 +49,11 @@ public class UnitOfWorkQueryValueHolder extends UnitOfWorkValueHolder {
      * Clone the original attribute value.
      */
     public Object buildCloneFor(Object originalAttributeValue) {
-        return this.mapping.buildCloneForPartObject(originalAttributeValue, null, null, this.relationshipSourceObject, getUnitOfWork(), true);
+        Integer refreshCascade = null;
+        if (wrappedValueHolder instanceof QueryBasedValueHolder){
+            refreshCascade = ((QueryBasedValueHolder)getWrappedValueHolder()).getRefreshCascadePolicy();
+        }
+        return this.mapping.buildCloneForPartObject(originalAttributeValue, null, null, this.relationshipSourceObject, getUnitOfWork(), refreshCascade, true);
     }
 
     /**

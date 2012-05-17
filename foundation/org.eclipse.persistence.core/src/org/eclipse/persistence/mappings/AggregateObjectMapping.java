@@ -557,9 +557,9 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * Clone the attribute from the original and assign it to the clone.
      */
     @Override
-    public void buildClone(Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession) {
+    public void buildClone(Object original, CacheKey cacheKey, Object clone, Integer refreshCascade, AbstractSession cloningSession) {
         Object attributeValue = getAttributeValueFromObject(original);
-        Object aggregateClone = buildClonePart(original, cacheKey, attributeValue, cloningSession);
+        Object aggregateClone = buildClonePart(original, cacheKey, attributeValue, refreshCascade, cloningSession);
 
         if (aggregateClone != null && cloningSession.isUnitOfWork()) {
             ClassDescriptor descriptor = getReferenceDescriptor(aggregateClone, cloningSession);
@@ -577,8 +577,8 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * @param isExisting
      * @return
      */
-    public Object buildElementClone(Object attributeValue, Object parent, CacheKey parentCacheKey, AbstractSession cloningSession, boolean isExisting){
-        Object aggregateClone = buildClonePart(attributeValue, parentCacheKey, cloningSession, isExisting);
+    public Object buildElementClone(Object attributeValue, Object parent, CacheKey parentCacheKey, Integer refreshCascade, AbstractSession cloningSession, boolean isExisting){
+        Object aggregateClone = buildClonePart(attributeValue, parentCacheKey, refreshCascade, cloningSession, isExisting);
         if (aggregateClone != null && cloningSession.isUnitOfWork()) {
             ClassDescriptor descriptor = getReferenceDescriptor(aggregateClone, cloningSession);
             descriptor.getObjectChangePolicy().setAggregateChangeListener(parent, aggregateClone, (UnitOfWorkImpl)cloningSession, descriptor, getAttributeName());
@@ -1109,7 +1109,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
     public Object getTargetVersionOfSourceObject(Object object, Object parent, MergeManager mergeManager, AbstractSession targetSession){
         if (mergeManager.getSession().isUnitOfWork()){
             UnitOfWorkImpl uow = (UnitOfWorkImpl)mergeManager.getSession();
-            Object aggregateObject = buildClonePart(object, null, targetSession, uow.isOriginalNewObject(parent));
+            Object aggregateObject = buildClonePart(object, null, null, targetSession, uow.isOriginalNewObject(parent));
             return aggregateObject;
         }
         return object;

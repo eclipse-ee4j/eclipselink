@@ -63,12 +63,12 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * Ignore the objects, use the attribute value.
      */
     @Override
-    public Object buildCloneForPartObject(Object attributeValue, Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession, boolean isExisting) {
+    public Object buildCloneForPartObject(Object attributeValue, Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession, Integer refreshCascade, boolean isExisting) {
         if (attributeValue == null) {
             return null;
         }
         if (cloningSession.isUnitOfWork()){
-            return buildUnitofWorkCloneForPartObject(attributeValue, original, clone, (UnitOfWorkImpl)cloningSession, isExisting);
+            return buildUnitofWorkCloneForPartObject(attributeValue, original, clone, refreshCascade, (UnitOfWorkImpl)cloningSession, isExisting);
         }
         // Not a unit Of Work clone so must have been a PROTECTED object
         if (this.referenceDescriptor.getCachePolicy().isProtectedIsolation()) {
@@ -76,7 +76,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
             if (descriptor.hasInterfacePolicy()){
                 descriptor = cloningSession.getClassDescriptor(attributeValue.getClass());
             }
-            return cloningSession.createProtectedInstanceFromCachedData(attributeValue, descriptor);
+            return cloningSession.createProtectedInstanceFromCachedData(attributeValue, refreshCascade, descriptor);
         }
         return attributeValue;
         
@@ -87,23 +87,36 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
      * Require for cloning, the part must be cloned.
      * Ignore the objects, use the attribute value.
      */
-    public Object buildUnitofWorkCloneForPartObject(Object attributeValue, Object original, Object clone, UnitOfWorkImpl unitOfWork, boolean isExisting) {
+    public Object buildUnitofWorkCloneForPartObject(Object attributeValue, Object original, Object clone, Integer refreshCascade, UnitOfWorkImpl unitOfWork, boolean isExisting) {
         if (attributeValue == null) {
             return null;
         }
-        // Optimize registration to knowledge of existence.
-        Object registeredObject = null;
-        if (isExisting) {
-            registeredObject = unitOfWork.registerExistingObject(attributeValue);
-        } else {
-            // Not known whether existing or not.
-            registeredObject = unitOfWork.registerObject(attributeValue);
-            // if the mapping is privately owned, keep track of the privately owned reference in the UnitOfWork
-            if (isCandidateForPrivateOwnedRemoval() && unitOfWork.shouldDiscoverNewObjects() && registeredObject != null && unitOfWork.isCloneNewObject(registeredObject)) {
-                unitOfWork.addPrivateOwnedObject(this, registeredObject);
+        if (refreshCascade != null ){
+            switch(refreshCascade){
+            case ObjectBuildingQuery.CascadeAllParts : 
+                return unitOfWork.mergeClone(attributeValue, MergeManager.CASCADE_ALL_PARTS, true);
+            case ObjectBuildingQuery.CascadePrivateParts :
+                return unitOfWork.mergeClone(attributeValue, MergeManager.CASCADE_PRIVATE_PARTS, true);
+            case ObjectBuildingQuery.CascadeByMapping :
+                return unitOfWork.mergeClone(attributeValue, MergeManager.CASCADE_BY_MAPPING, true);
+            default:
+                return unitOfWork.mergeClone(attributeValue, MergeManager.NO_CASCADE, true);
             }
+        }else{
+            // Optimize registration to knowledge of existence.
+            Object registeredObject = null;
+            if (isExisting) {
+                registeredObject = unitOfWork.registerExistingObject(attributeValue);
+            } else {
+                // Not known whether existing or not.
+                registeredObject = unitOfWork.registerObject(attributeValue);
+                // if the mapping is privately owned, keep track of the privately owned reference in the UnitOfWork
+                if (isCandidateForPrivateOwnedRemoval() && unitOfWork.shouldDiscoverNewObjects() && registeredObject != null && unitOfWork.isCloneNewObject(registeredObject)) {
+                    unitOfWork.addPrivateOwnedObject(this, registeredObject);
+                }
+            }
+            return registeredObject;
         }
-        return registeredObject;
     }
 
     /**
@@ -444,6 +457,15 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
             if (!isAttributeValueInstantiated(target)) {
                 // This will occur when the clone's value has not been instantiated yet and we do not need
                 // the refresh that attribute
+                if (shouldRefreshCascadeParts(mergeManager)){
+                    Object attributeValue = getAttributeValueFromObject(source);
+                    Integer refreshCascade = null;
+                    if (selectionQuery != null && selectionQuery.isObjectBuildingQuery() && ((ObjectBuildingQuery)selectionQuery).shouldRefreshIdentityMapResult()){
+                        refreshCascade = selectionQuery.getCascadePolicy();
+                    }
+                  Object clonedAttributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, source, null, target, refreshCascade, mergeManager.getSession(), false); // building clone from an original not a row. 
+                    setAttributeValueInObject(target, clonedAttributeValue);
+                }
                 return;
             }
         } else if (!isAttributeValueInstantiated(source)) {

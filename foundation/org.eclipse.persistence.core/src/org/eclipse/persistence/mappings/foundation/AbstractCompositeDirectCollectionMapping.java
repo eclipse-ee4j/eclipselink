@@ -103,7 +103,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * For these mappings, this is the same as building the first clone.
      */
     public void buildBackupClone(Object clone, Object backup, UnitOfWorkImpl unitOfWork) {
-        this.buildClone(clone, null, backup, unitOfWork);
+        this.buildClone(clone, null, backup, null, unitOfWork);
     }
 
     /**
@@ -120,7 +120,7 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
      * Clone the attribute from the original and assign it to the clone.
      */
     @Override
-    public void buildClone(Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession) {
+    public void buildClone(Object original, CacheKey cacheKey, Object clone, Integer refreshCascade, AbstractSession cloningSession) {
         Object attributeValue = this.getAttributeValueFromObject(original);
         this.setAttributeValueInObject(clone, this.buildClonePart(attributeValue, cacheKey, cloningSession));
     }

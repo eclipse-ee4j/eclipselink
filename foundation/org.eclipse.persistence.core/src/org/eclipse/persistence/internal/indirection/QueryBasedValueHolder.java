@@ -35,6 +35,7 @@ public class QueryBasedValueHolder extends DatabaseValueHolder {
      */
     protected transient ReadQuery query;
     protected transient Object sourceObject;
+    protected Integer refreshCascade;
 
     /**
      * Initialize the query-based value holder.
@@ -73,6 +74,15 @@ public class QueryBasedValueHolder extends DatabaseValueHolder {
         this.query = query;
         this.sourceObject = sourceObject;
     }
+    
+    /**
+     * INTERNAL:
+     * Returns the refresh cascade policy that was set on the query that was used to instantiate the valueholder
+     * a null value means that a non refresh query was used.
+     */
+    public Integer getRefreshCascadePolicy(){
+        return this.refreshCascade;
+    }
 
     /**
      * Return the query. The query for a QueryBasedValueHolder is constructed
@@ -95,6 +105,9 @@ public class QueryBasedValueHolder extends DatabaseValueHolder {
     protected Object instantiate(AbstractSession session) throws DatabaseException {
         if (session == null) {
             throw ValidationException.instantiatingValueholderWithNullSession();
+        }
+        if (this.query.isObjectBuildingQuery() && ((ObjectBuildingQuery)this.query).shouldRefreshIdentityMapResult()){
+            this.refreshCascade = ((ObjectBuildingQuery)this.query).getCascadePolicy();
         }
         return session.executeQuery(getQuery(), getRow());
     }

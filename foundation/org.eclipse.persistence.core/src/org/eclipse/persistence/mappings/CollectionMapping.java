@@ -193,7 +193,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * Ignore the objects, use the attribute value.
      */
     @Override
-    public Object buildCloneForPartObject(Object attributeValue, Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession, boolean isExisting) {
+    public Object buildCloneForPartObject(Object attributeValue, Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession, Integer refreshCascade, boolean isExisting) {
         ContainerPolicy containerPolicy = this.containerPolicy;
         if (attributeValue == null) {
             Object container = containerPolicy.containerInstance(1);
@@ -219,7 +219,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             temporaryCollection = attributeValue;
         }
         for (Object valuesIterator = containerPolicy.iteratorFor(temporaryCollection);containerPolicy.hasNext(valuesIterator);){
-            containerPolicy.addNextValueFromIteratorInto(valuesIterator, clone, cacheKey, clonedAttributeValue, this, cloningSession, isExisting);
+            containerPolicy.addNextValueFromIteratorInto(valuesIterator, clone, cacheKey, clonedAttributeValue, this, refreshCascade, cloningSession, isExisting);
         }
         if (cloningSession.isUnitOfWork() && (this.getDescriptor().getObjectChangePolicy().isObjectChangeTrackingPolicy()) && ((clone != null) && (((ChangeTracker)clone)._persistence_getPropertyChangeListener() != null)) && (clonedAttributeValue instanceof CollectionChangeTracker)) {
             ((CollectionChangeTracker)clonedAttributeValue).setTrackedAttributeName(this.getAttributeName());
@@ -278,12 +278,25 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * INTERNAL:
      * Clone the element, if necessary.
      */
-    public Object buildElementUnitOfWorkClone(Object element, Object parent, UnitOfWorkImpl unitOfWork, boolean isExisting) {
+    public Object buildElementUnitOfWorkClone(Object element, Object parent, Integer refreshCascade, UnitOfWorkImpl unitOfWork, boolean isExisting) {
         // optimize registration to knowledge of existence
-        if (isExisting) {
-            return unitOfWork.registerExistingObject(element);
-        } else {// not known whether existing or not
-            return unitOfWork.registerObject(element);
+        if (refreshCascade != null ){
+            switch(refreshCascade){
+            case ObjectBuildingQuery.CascadeAllParts : 
+                return unitOfWork.mergeClone(element, MergeManager.CASCADE_ALL_PARTS, true);
+            case ObjectBuildingQuery.CascadePrivateParts :
+                return unitOfWork.mergeClone(element, MergeManager.CASCADE_PRIVATE_PARTS, true);
+            case ObjectBuildingQuery.CascadeByMapping :
+                return unitOfWork.mergeClone(element, MergeManager.CASCADE_BY_MAPPING, true);
+            default:
+                return unitOfWork.mergeClone(element, MergeManager.NO_CASCADE, true);
+            }
+        }else{
+            if (isExisting) {
+                return unitOfWork.registerExistingObject(element);
+            } else {// not known whether existing or not
+                return unitOfWork.registerObject(element);
+            }
         }
     }
 
@@ -291,12 +304,12 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * INTERNAL:
      * Clone the element, if necessary.
      */
-    public Object buildElementClone(Object element, Object parent, CacheKey parentCacheKey, AbstractSession cloningSession, boolean isExisting) {
+    public Object buildElementClone(Object element, Object parent, CacheKey parentCacheKey, Integer refreshCascade, AbstractSession cloningSession, boolean isExisting) {
         if (cloningSession.isUnitOfWork()){
-            return buildElementUnitOfWorkClone(element, parent, (UnitOfWorkImpl)cloningSession, isExisting);
+            return buildElementUnitOfWorkClone(element, parent, refreshCascade, (UnitOfWorkImpl)cloningSession, isExisting);
         }
         if (referenceDescriptor.getCachePolicy().isProtectedIsolation()){
-            return cloningSession.createProtectedInstanceFromCachedData(element, referenceDescriptor);
+            return cloningSession.createProtectedInstanceFromCachedData(element, refreshCascade, referenceDescriptor);
         }
         return element;
     }
@@ -1419,10 +1432,13 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
         }
         if (mergeManager.isForRefresh()) {
             if (!isAttributeValueInstantiated(target)) {
-                // We must clone and set the value holder from the source to the target.
-                Object attributeValue = getAttributeValueFromObject(source);
-                Object clonedAttributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, source, null, target, mergeManager.getSession(), false); // building clone from an original not a row. 
-                setAttributeValueInObject(target, clonedAttributeValue);
+                if(shouldRefreshCascadeParts(mergeManager)){
+                    // We must clone and set the value holder from the source to the target.
+                    // This ensures any cascaded refresh will be applied to the UOW backup valueholder
+                    Object attributeValue = getAttributeValueFromObject(source);
+                    Object clonedAttributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, source, null, target, null, mergeManager.getSession(), false); // building clone from an original not a row. 
+                    setAttributeValueInObject(target, clonedAttributeValue);
+                }
                 
                 // This will occur when the clone's value has not been instantiated yet and we do not need
                 // the refresh that attribute

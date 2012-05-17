@@ -63,7 +63,7 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
      * from a row as opposed to building the original from the row, putting it in
      * the shared cache, and then cloning the original.
      */
-    public Object cloneAttribute(Object attributeValue, Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession, boolean buildDirectlyFromRow) {
+    public Object cloneAttribute(Object attributeValue, Object original, CacheKey cacheKey, Object clone, Integer refreshCascade, AbstractSession cloningSession, boolean buildDirectlyFromRow) {
         // Since valueFromRow was called with the UnitOfWork, attributeValue
         // is already a registered result.
         if (buildDirectlyFromRow) {
@@ -73,7 +73,7 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
             return mapping.buildContainerClone(attributeValue, cloningSession);
         }
         boolean isExisting = !cloningSession.isUnitOfWork() || (((UnitOfWorkImpl) cloningSession).isObjectRegistered(clone) && (!(((UnitOfWorkImpl)cloningSession).isOriginalNewObject(original))));
-        return this.getMapping().buildCloneForPartObject(attributeValue, original, cacheKey, clone, cloningSession, isExisting);
+        return this.getMapping().buildCloneForPartObject(attributeValue, original, cacheKey, clone, cloningSession, refreshCascade, isExisting);
     }
 
     /**

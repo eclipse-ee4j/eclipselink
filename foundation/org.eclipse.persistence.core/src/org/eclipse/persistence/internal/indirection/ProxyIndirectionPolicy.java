@@ -299,10 +299,10 @@ public class ProxyIndirectionPolicy extends BasicIndirectionPolicy {
      *  directly from a row as opposed to building the original from the
      *  row, putting it in the shared cache, and then cloning the original.
      */
-    public Object cloneAttribute(Object attributeValue, Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession, boolean buildDirectlyFromRow) {
+    public Object cloneAttribute(Object attributeValue, Object original, CacheKey cacheKey, Object clone, Integer refreshCascade, AbstractSession cloningSession, boolean buildDirectlyFromRow) {
         if (!(attributeValue instanceof Proxy)) {
             boolean isExisting = !cloningSession.isUnitOfWork() || (((UnitOfWorkImpl)cloningSession).isObjectRegistered(clone) && (!((UnitOfWorkImpl)cloningSession).isOriginalNewObject(original)));
-            return this.getMapping().buildCloneForPartObject(attributeValue, original, null, clone, cloningSession, isExisting);
+            return this.getMapping().buildCloneForPartObject(attributeValue, original, null, clone, cloningSession, refreshCascade, isExisting);
         }
 
         ValueHolderInterface newValueHolder;
@@ -319,7 +319,7 @@ public class ProxyIndirectionPolicy extends BasicIndirectionPolicy {
                 throw DescriptorException.attemptToRegisterDeadIndirection(original, getMapping());
             }
             newValueHolder = new ValueHolder();
-            newValueHolder.setValue(this.getMapping().buildCloneForPartObject(oldValueHolder.getValue(), original, null, clone, cloningSession, false));
+            newValueHolder.setValue(this.getMapping().buildCloneForPartObject(oldValueHolder.getValue(), original, null, clone, cloningSession, refreshCascade, false));
         } else {
         	AbstractRecord row = null;
             if (oldValueHolder instanceof DatabaseValueHolder) {

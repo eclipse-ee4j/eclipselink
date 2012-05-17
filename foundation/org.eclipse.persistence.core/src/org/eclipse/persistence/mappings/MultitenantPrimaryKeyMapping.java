@@ -70,7 +70,7 @@ public class MultitenantPrimaryKeyMapping extends AbstractColumnMapping {
      * This is an override from DatabaseMapping and must be implemented.
      */
     @Override
-    public void buildClone(Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession) {
+    public void buildClone(Object original, CacheKey cacheKey, Object clone, Integer refreshCascade, AbstractSession cloningSession) {
         // Mapping is write only so nothing to do.
     }
     

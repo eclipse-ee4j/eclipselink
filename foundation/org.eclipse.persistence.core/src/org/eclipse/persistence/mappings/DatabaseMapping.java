@@ -170,7 +170,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * INTERNAL:
      * Clone the attribute from the original and assign it to the clone.
      */
-    public abstract void buildClone(Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession);
+    public abstract void buildClone(Object original, CacheKey cacheKey, Object clone, Integer refreshCascade, AbstractSession cloningSession);
 
     /**
      * INTERNAL:
@@ -206,7 +206,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * INTERNAL:
      * Require for cloning, the part must be cloned.
      */
-    public Object buildCloneForPartObject(Object attributeValue, Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession, boolean isExisting) {
+    public Object buildCloneForPartObject(Object attributeValue, Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession, Integer refreshCascade, boolean isExisting) {
         throw DescriptorException.invalidMappingOperation(this, "buildCloneForPartObject");
     }
 

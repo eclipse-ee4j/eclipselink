@@ -44,7 +44,11 @@ public class ProtectedValueHolder extends DatabaseValueHolder implements Wrappin
         }
         //no need for original or cachekey here as the relationship must be cacheable and present in
         // wrapped valueholder or the ProtectedValueHolder would not have been created.
-        return mapping.buildCloneForPartObject(this.wrappedValueHolder.getValue(),null, null, null, this.session, true);
+        Integer refreshCascade = null;
+        if (wrappedValueHolder instanceof QueryBasedValueHolder){
+            refreshCascade = ((QueryBasedValueHolder)getWrappedValueHolder()).getRefreshCascadePolicy();
+        }
+        return mapping.buildCloneForPartObject(this.wrappedValueHolder.getValue(),null, null, null, this.session, refreshCascade, true);
     }
 
     @Override

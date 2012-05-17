@@ -223,7 +223,11 @@ public abstract class AbstractCompositeObjectMapping extends AggregateMapping {
                         wasCacheUsed[0] = Boolean.TRUE;
                     }
                     Object attributeValue = this.getAttributeValueFromObject(cached);
-                    return buildClonePart(cached, cacheKey, attributeValue, executionSession);
+                    Integer refreshCascade = null;
+                    if (sourceQuery != null && sourceQuery.isObjectBuildingQuery() && ((ObjectBuildingQuery)sourceQuery).shouldRefreshIdentityMapResult()){
+                        refreshCascade = sourceQuery.getCascadePolicy();
+                    }
+                    return buildClonePart(cached, cacheKey, attributeValue, refreshCascade, executionSession);
                 }
                 return result;
                 

@@ -96,7 +96,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      * Build and return a clone of the attribute.
      */
     @Override
-    protected Object buildClonePart(Object original, CacheKey cacheKey, Object attributeValue, AbstractSession clonningSession) {
+    protected Object buildClonePart(Object original, CacheKey cacheKey, Object attributeValue, Integer refreshCascade, AbstractSession clonningSession) {
         ContainerPolicy cp = this.getContainerPolicy();
         if (attributeValue == null) {
             return cp.containerInstance();
@@ -104,7 +104,7 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
 
         Object clonedAttributeValue = cp.containerInstance(cp.sizeFor(attributeValue));
         for (Object iter = cp.iteratorFor(attributeValue); cp.hasNext(iter);) {
-            Object cloneElement = super.buildClonePart(original, cacheKey, cp.next(iter, clonningSession), clonningSession);
+            Object cloneElement = super.buildClonePart(original, cacheKey, cp.next(iter, clonningSession), refreshCascade, clonningSession);
             cp.addInto(cloneElement, clonedAttributeValue, clonningSession);
         }
         return clonedAttributeValue;
@@ -634,7 +634,11 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
                         wasCacheUsed[0] = Boolean.TRUE;
                     }
                     Object attributeValue = this.getAttributeValueFromObject(cached);
-                    return buildClonePart(cached, cacheKey, attributeValue, executionSession);
+                    Integer refreshCascade = null;
+                    if (sourceQuery != null && sourceQuery.isObjectBuildingQuery() && ((ObjectBuildingQuery)sourceQuery).shouldRefreshIdentityMapResult()){
+                        refreshCascade = sourceQuery.getCascadePolicy();
+                    }
+                    return buildClonePart(cached, cacheKey, attributeValue, refreshCascade, executionSession);
                 }
                 return result;
                 

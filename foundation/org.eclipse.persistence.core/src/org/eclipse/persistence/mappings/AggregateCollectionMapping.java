@@ -272,7 +272,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * aggregates collection so that the referenced objects will be cloned correctly
      */
     @Override
-    public Object buildCloneForPartObject(Object attributeValue, Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession, boolean isExisting) {
+    public Object buildCloneForPartObject(Object attributeValue, Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession, Integer refreshCascade, boolean isExisting) {
         ContainerPolicy containerPolicy = getContainerPolicy();
         if (attributeValue == null) {
             return containerPolicy.containerInstance(1);
@@ -300,8 +300,8 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
             if (cloningSession.isUnitOfWork() && ((UnitOfWorkImpl)cloningSession).isOriginalNewObject(original)) {
                 ((UnitOfWorkImpl)cloningSession).addNewAggregate(originalElement);
             }
-            Object cloneValue = buildElementClone(originalElement, clone, cacheKey, cloningSession, isExisting);
-            Object clonedKey = containerPolicy.buildCloneForKey(containerPolicy.keyFromIterator(valuesIterator), clone, cacheKey, cloningSession, isExisting);
+            Object cloneValue = buildElementClone(originalElement, clone, cacheKey, refreshCascade, cloningSession, isExisting);
+            Object clonedKey = containerPolicy.buildCloneForKey(containerPolicy.keyFromIterator(valuesIterator), clone, cacheKey, refreshCascade, cloningSession, isExisting);
             containerPolicy.addInto(clonedKey, cloneValue, clonedAttributeValue, cloningSession);
         }
         if(temporaryCollection instanceof IndirectList) {
@@ -330,7 +330,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * INTERNAL:
      * Clone the aggregate collection, if necessary.
      */
-    public Object buildElementClone(Object element, Object parent, CacheKey parentCacheKey, AbstractSession cloningSession, boolean isExisting) {
+    public Object buildElementClone(Object element, Object parent, CacheKey parentCacheKey, Integer refreshCascade, AbstractSession cloningSession, boolean isExisting) {
         // Do not clone for read-only.
         if (cloningSession.isUnitOfWork() && cloningSession.isClassReadOnly(element.getClass(), getReferenceDescriptor())) {
             return element;
@@ -340,7 +340,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
 
         // bug 2612602 as we are building the working copy make sure that we call to correct clone method.
         Object clonedElement = aggregateDescriptor.getObjectBuilder().instantiateWorkingCopyClone(element, cloningSession);
-        aggregateDescriptor.getObjectBuilder().populateAttributesForClone(element, parentCacheKey, clonedElement, cloningSession);
+        aggregateDescriptor.getObjectBuilder().populateAttributesForClone(element, parentCacheKey, clonedElement, refreshCascade, cloningSession);
         
         if (cloningSession.isUnitOfWork()){
             // CR 4155 add the originals to the UnitOfWork so that we can find it later in the merge

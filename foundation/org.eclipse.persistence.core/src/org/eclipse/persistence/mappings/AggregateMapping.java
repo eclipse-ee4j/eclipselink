@@ -125,9 +125,9 @@ public abstract class AggregateMapping extends DatabaseMapping {
      * Clone the attribute from the original and assign it to the clone.
      */
     @Override
-    public void buildClone(Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession) {
+    public void buildClone(Object original, CacheKey cacheKey, Object clone, Integer refreshCascade, AbstractSession cloningSession) {
         Object attributeValue = getAttributeValueFromObject(original);
-        setAttributeValueInObject(clone, buildClonePart(original, cacheKey, attributeValue, cloningSession));
+        setAttributeValueInObject(clone, buildClonePart(original, cacheKey, attributeValue, refreshCascade, cloningSession));
     }
 
     /**
@@ -157,14 +157,14 @@ public abstract class AggregateMapping extends DatabaseMapping {
      * INTERNAL:
      * Build and return a clone of the attribute.
      */
-    protected Object buildClonePart(Object original, CacheKey cacheKey, Object attributeValue, AbstractSession cloningSession) {
-        return buildClonePart(attributeValue, cacheKey, cloningSession, cloningSession.isUnitOfWork() && ((UnitOfWorkImpl)cloningSession).isOriginalNewObject(original));
+    protected Object buildClonePart(Object original, CacheKey cacheKey, Object attributeValue, Integer refreshCascade, AbstractSession cloningSession) {
+        return buildClonePart(attributeValue, cacheKey, refreshCascade, cloningSession, cloningSession.isUnitOfWork() && ((UnitOfWorkImpl)cloningSession).isOriginalNewObject(original));
     }
     
     /**
      * INTERNAL:     * Build and return a clone of the attribute.
      */
-    protected Object buildClonePart(Object attributeValue, CacheKey parentCacheKey, AbstractSession cloningSession, boolean isNewObject) {
+    protected Object buildClonePart(Object attributeValue, CacheKey parentCacheKey, Integer refreshCascade, AbstractSession cloningSession, boolean isNewObject) {
         if (attributeValue == null) {
             return null;
         }
@@ -181,7 +181,7 @@ public abstract class AggregateMapping extends DatabaseMapping {
 
         // bug 2612602 as we are building the working copy make sure that we call to correct clone method.
         Object clonedAttributeValue = aggregateObjectBuilder.instantiateWorkingCopyClone(attributeValue, cloningSession);
-        aggregateObjectBuilder.populateAttributesForClone(attributeValue, parentCacheKey, clonedAttributeValue, cloningSession);
+        aggregateObjectBuilder.populateAttributesForClone(attributeValue, parentCacheKey, clonedAttributeValue, refreshCascade, cloningSession);
 
         return clonedAttributeValue;
     }

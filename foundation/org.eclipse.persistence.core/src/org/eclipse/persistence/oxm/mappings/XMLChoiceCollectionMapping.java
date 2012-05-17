@@ -64,6 +64,7 @@ import org.eclipse.persistence.oxm.record.XMLEntry;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.sessions.remote.RemoteSession;
 
 /**
@@ -152,7 +153,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
     * Clone the attribute from the original and assign it to the clone.
     */
     @Override
-    public void buildClone(Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession) {
+    public void buildClone(Object original, CacheKey cacheKey, Object clone, Integer refreshCascade, AbstractSession cloningSession) {
         throw DescriptorException.invalidMappingOperation(this, "buildClone");
     }
 

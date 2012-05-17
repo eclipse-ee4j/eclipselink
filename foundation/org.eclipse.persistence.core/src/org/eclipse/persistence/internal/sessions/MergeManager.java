@@ -211,7 +211,7 @@ public class MergeManager {
                 if (descriptor.getCopyPolicy().buildsNewInstance()){
                     List<DatabaseMapping> pkMappings = descriptor.getObjectBuilder().getPrimaryKeyMappings();
                     for (DatabaseMapping mapping : pkMappings){
-                        mapping.buildClone(source, null, original, targetSession);
+                        mapping.buildClone(source, null, original, null, targetSession);
                     }
                 }
             }
@@ -531,7 +531,22 @@ public class MergeManager {
      * The map is used to resolve recursion.
      */
     protected Object mergeChangesOfCloneIntoWorkingCopy(Object rmiClone) {
-        Object registeredObject = registerObjectForMergeCloneIntoWorkingCopy(rmiClone);
+        
+        Object registeredObject = null;
+        if (isForRefresh){
+            UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl)this.session;
+            //refreshing UOW instance so only merge if already registered
+            ClassDescriptor descriptor = unitOfWork.getDescriptor(rmiClone.getClass());
+            Object primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(rmiClone, unitOfWork, true);
+            if (primaryKey != null) {
+                registeredObject = unitOfWork.getIdentityMapAccessorInstance().getFromIdentityMap(primaryKey, null, descriptor.getJavaClass(), false, descriptor);
+            }
+            if (registeredObject == null){
+                return unitOfWork.internalRegisterObject(rmiClone, descriptor);
+            }
+        }else{
+            registeredObject = registerObjectForMergeCloneIntoWorkingCopy(rmiClone);
+        }
 
         if (registeredObject == rmiClone && !shouldForceCascade()) {
             //need to find better better fix.  prevents merging into itself.
@@ -1029,7 +1044,7 @@ public class MergeManager {
         }
         if (objectFromCache != null) {
             // gf830 - merging a removed entity should throw exception.
-            if (unitOfWork.isObjectDeleted(objectFromCache)) {
+            if (!isForRefresh && unitOfWork.isObjectDeleted(objectFromCache)) {
                 if (shouldMergeCloneIntoWorkingCopy() || shouldMergeCloneWithReferencesIntoWorkingCopy()) {
                     throw new IllegalArgumentException(ExceptionLocalization.buildMessage("cannot_merge_removed_entity", new Object[] { clone }));
                 }
@@ -1178,7 +1193,7 @@ public class MergeManager {
      * specified.
      */
     public boolean shouldCascadeReferences() {
-        return !shouldMergeCloneIntoWorkingCopy();
+        return !shouldMergeCloneIntoWorkingCopy() || isForRefresh;
     }
 
     /**

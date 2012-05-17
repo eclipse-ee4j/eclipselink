@@ -586,7 +586,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
         // Must put in clone mapping.
         getCloneMapping().put(clone, clone);
 
-        builder.populateAttributesForClone(original, null, clone, this);
+        builder.populateAttributesForClone(original, null, clone, null, this);
         if (!this.discoverUnregisteredNewObjectsWithoutPersist){
             assignSequenceNumber(clone);
         }

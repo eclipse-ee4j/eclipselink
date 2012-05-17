@@ -379,6 +379,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         tests.add("testWeaving");
         tests.add("testRefreshForFlush");
         tests.add("testRefreshForCommit");
+        tests.add("testRefreshLazyRelationship");
+        tests.add("testNonRefreshLazyRelationship");
         tests.add("testChangeFlushChangeRefresh");
         tests.add("testChangeRecordKeepOldValue_Simple");
         tests.add("testChangeRecordKeepOldValue_TwoStep");
@@ -10931,7 +10933,106 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     	}
     }
     
+    public void testRefreshLazyRelationship(){
+        if (isOnServer()){
+            return;
+        }
+        EntityManager setupEm = createEntityManager();
+        setupEm.getTransaction().begin();
+        Employee emp = new Employee();
+        setupEm.persist(emp);
+        Employee direct = new Employee("Managed", "EMployee");
+        setupEm.persist(direct);
+        emp.getManagedEmployees().add(direct);
+        direct.setManager(emp);
+        setupEm.getTransaction().commit();
+        clearCache();
+
+        EntityManager em1 = createEntityManager();
+        EntityManager em2 = createEntityManager();
+        
+        emp = em1.find(Employee.class, emp.getId());
+        Employee emp2 = em2.find(Employee.class, emp.getId());
+        Employee direct2 = em2.find(Employee.class, direct.getId());
+
+        em1.getTransaction().begin();
+        emp.getManagedEmployees().iterator().next().setFirstName("something");
+        em1.getTransaction().commit();
+        
+        em2.refresh(emp2);
+        try{
+            assertEquals("Did not cascade refresh across untriggered lazy", emp2.getManagedEmployees().iterator().next().getFirstName(), "something");
+        }finally{
+            try{
+                em2.getTransaction().begin();
+                em2.remove(emp2);
+                em2.remove(direct2);
+                em2.getTransaction().commit();
+            }catch (Exception e){
+                
+            }
+        }
+        
+    }
+    
     // Bug 335322
+    public void testNonRefreshLazyRelationship(){
+        if (isOnServer()){
+            return;
+        }
+        
+        EntityManager setupEm = createEntityManager();
+        setupEm.getTransaction().begin();
+        Employee emp = new Employee();
+        setupEm.persist(emp);
+        Employee direct = new Employee("Managed", "EMployee");
+        setupEm.persist(direct);
+        emp.getManagedEmployees().add(direct);
+        direct.setManager(emp);
+        Dealer dealer = new Dealer("Jim", "Bob");
+        emp.getDealers().add(dealer);
+        setupEm.persist(dealer);
+        Project project = new LargeProject("Alpha Alpha Zulu");
+        setupEm.persist(project);
+        emp.getProjects().add(project);
+        setupEm.getTransaction().commit();
+        clearCache();
+
+        EntityManager em1 = createEntityManager();
+        EntityManager em2 = createEntityManager();
+        
+        emp = em1.find(Employee.class, emp.getId());
+        Employee emp2 = em2.find(Employee.class, emp.getId());
+        Employee direct2 = em2.find(Employee.class, direct.getId());
+        Dealer dealer2 = em2.find(Dealer.class, dealer.getId());
+        Project project2 = em2.find(Project.class, project.getId());
+
+        em1.getTransaction().begin();
+        emp.getManagedEmployees().iterator().next().setFirstName("something");
+        emp.getDealers().get(0).setFirstName("Something");
+        emp.getProjects().iterator().next().setName("Beta Beta Wiskey");
+        em1.getTransaction().commit();
+        
+        em2.refresh(emp2);
+        try{
+            assertEquals("Did not cascade refresh across untriggered lazy", emp2.getManagedEmployees().iterator().next().getFirstName(), "something");
+            assertEquals("Cascaded refresh to non cascade refresh entity", emp2.getDealers().get(0).getFirstName(), "Jim");
+            assertEquals("Cascade refresh to non cascade refresh", emp2.getProjects().iterator().next().getName(), "Alpha Alpha Zulu");
+        }finally{
+            try{
+                em2.getTransaction().begin();
+                em2.remove(emp2);
+                em2.remove(direct2);
+                em2.remove(dealer2);
+                em2.remove(project2);
+                em2.getTransaction().commit();
+            }catch (Exception e){
+                
+            }
+        }
+        
+    }
+
     public void testRefreshForCommit(){
     	EntityManager em = createEntityManager();
     	beginTransaction(em);

@@ -135,7 +135,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
      * Ignore the objects, use the attribute value.
      */
     @Override
-    public Object buildCloneForPartObject(Object attributeValue, Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession, boolean isExisting) {
+    public Object buildCloneForPartObject(Object attributeValue, Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession, Integer refreshCascade, boolean isExisting) {
         if (attributeValue == null) {
             return containerPolicy.containerInstance(1);
         }
@@ -153,8 +153,8 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
         for (Object keysIterator = containerPolicy.iteratorFor(temporaryCollection);
                  containerPolicy.hasNext(keysIterator);) {
             Map.Entry entry = (Map.Entry)containerPolicy.nextEntry(keysIterator, cloningSession);
-            Object cloneKey = containerPolicy.buildCloneForKey(entry.getKey(), clone, cacheKey, cloningSession, isExisting);
-            Object cloneValue = buildElementClone(entry.getValue(), clone, cacheKey, cloningSession, isExisting);
+            Object cloneKey = containerPolicy.buildCloneForKey(entry.getKey(), clone, cacheKey, null, cloningSession, isExisting);
+            Object cloneValue = buildElementClone(entry.getValue(), clone, cacheKey, refreshCascade, cloningSession, isExisting);
             containerPolicy.addInto(cloneKey, cloneValue, clonedAttributeValue, cloningSession);
         }
         return clonedAttributeValue;
