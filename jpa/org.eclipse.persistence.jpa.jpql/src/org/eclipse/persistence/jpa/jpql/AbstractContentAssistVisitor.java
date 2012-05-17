@@ -2841,12 +2841,12 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	@Override
 	public void visit(DateTime expression) {
 		super.visit(expression);
-		int position = getPosition(expression) - corrections.peek();;
+		int position = getPosition(expression) - corrections.peek();
 
 		// Within the identifier
-		if (isPositionWithin(position, CURRENT_DATE) ||
-		    isPositionWithin(position, CURRENT_TIME) ||
-		    isPositionWithin(position, CURRENT_TIMESTAMP)) {
+		if (expression.isCurrentDate()      && isPositionWithin(position, CURRENT_DATE) ||
+		    expression.isCurrentTime()      && isPositionWithin(position, CURRENT_TIME) ||
+		    expression.isCurrentTimestamp() && isPositionWithin(position, CURRENT_TIMESTAMP)) {
 
 			proposals.addIdentifier(CURRENT_DATE);
 			proposals.addIdentifier(CURRENT_TIME);
@@ -3166,9 +3166,8 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	public void visit(JPQLExpression expression) {
 
 		if (!isLocked(expression)) {
+
 			int position = getPosition(expression);
-			boolean hasQueryStatement = expression.hasQueryStatement();
-			int length = hasQueryStatement ? length(expression.getQueryStatement()) : 0;
 
 			// At the beginning of the query
 			if (position == 0) {
@@ -3176,23 +3175,32 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 				addIdentifier(UPDATE);
 				addIdentifier(DELETE_FROM);
 			}
-			// After the query, inside the invalid query (or ending whitespace)
-			else if (position > length) {
+			else {
+				Expression queryStatement = expression.getQueryStatement();
+				boolean hasQueryStatement = expression.hasQueryStatement();
+				int length = hasQueryStatement ? length(queryStatement) : 0;
 
-				String text = expression.getUnknownEndingStatement().toActualText();
+				// After the query, inside the invalid query (or ending whitespace)
+				if (position > length) {
+					String text = expression.getUnknownEndingStatement().toActualText();
 
-				addIdentifier(SELECT,      text);
-				addIdentifier(DELETE_FROM, text);
-				addIdentifier(UPDATE,      text);
+					// Only try to add the identifiers if there is no query statement,
+					// they cannot be added at the end of a query
+					if (!hasQueryStatement) {
+						addIdentifier(SELECT,      text);
+						addIdentifier(DELETE_FROM, text);
+						addIdentifier(UPDATE,      text);
+					}
+					else {
 
-				if (hasQueryStatement) {
-					lockedExpressions.add(expression);
-					corrections.add(-length - 1);
+						lockedExpressions.add(expression);
+						corrections.add(-length - 2); // -2 because the position of any Expression is -1
 
-					expression.getQueryStatement().accept(this);
+						queryStatement.accept(this);
 
-					corrections.pop();
-					lockedExpressions.pop();
+						corrections.pop();
+						lockedExpressions.pop();
+					}
 				}
 			}
 		}
@@ -3218,11 +3226,12 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		corrections.pop();
 
 		int position = getPosition(expression) - corrections.peek();
+		String keyword = expression.getText();
 
 		// Within the identifier
-		if (isPositionWithin(position, TRUE)  ||
-		    isPositionWithin(position, FALSE) ||
-		    isPositionWithin(position, NULL)) {
+		if ((keyword == TRUE)  && isPositionWithin(position, TRUE)  ||
+		    (keyword == FALSE) && isPositionWithin(position, FALSE) ||
+		    (keyword == NULL)  && isPositionWithin(position, NULL)) {
 
 			proposals.addIdentifier(TRUE);
 			proposals.addIdentifier(FALSE);
@@ -4180,7 +4189,8 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	                                                          ClauseHelper<T> helper) {
 
 		lockedExpressions.add(expression);
-		int position = getPosition(expression) - corrections.peek();
+		int correction = corrections.peek();
+		int position = getPosition(expression) - correction;
 
 		// Within "<identifier>"
 		if (isPositionWithin(position, identifier)) {
@@ -4214,6 +4224,14 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 
 					virtualSpaces.pop();
 					corrections.pop();
+				}
+				// At the end of the clause's expression, check to see if the identifier can be appended
+				else if (position == length + clauseExpressionLength + virtualSpaces.peek() - correction) {
+
+					// Now ask the helper to add possible identifiers at the end of its expression
+					if (isAppendable(clauseExpression)) {
+						helper.addAtTheEndOfExpression(expression);
+					}
 				}
 			}
 		}
@@ -4360,7 +4378,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	protected void visitDeleteStatement(DeleteStatement expression) {
 
 		lockedExpressions.add(expression);
-		int position = getPosition(expression);
+		int position = getPosition(expression) - corrections.peek();
 
 		//
 		// DELETE clause
@@ -4373,7 +4391,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		if ((position == length) && isAppendable(deleteClause)) {
 			addIdentifier(WHERE);
 		}
-		// Right after the DELETE clause, the space is owned by the select statement
+		// Right after the DELETE clause, the space is owned by JPQLExpression
 		else if ((position == length + SPACE_LENGTH) && expression.hasSpaceAfterDeleteClause()) {
 
 			virtualSpaces.add(SPACE_LENGTH);
@@ -4420,8 +4438,8 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 				int whereClauseLength = length(whereClause);
 				length += whereClauseLength;
 
-				// Right after the WHERE clause, the space is owned by the select statement
-				if ((position == length + SPACE_LENGTH) && true) {
+				// Right after the WHERE clause
+				if (position == length + SPACE_LENGTH) {
 
 					virtualSpaces.add(SPACE_LENGTH);
 					corrections.add(-whereClauseLength - 2);
@@ -5716,8 +5734,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	protected abstract class CompletenessVisitor extends AbstractExpressionVisitor {
 
 		/**
-		 * Determines whether an {@link Expression} that was visited is complete or if some part is
-		 * missing.
+		 * Determines whether an {@link Expression} that was visited is complete or if some part is missing.
 		 */
 		protected boolean complete;
 
@@ -6053,7 +6070,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 * {@inheritDoc}
 		 */
 		public void addAtTheEndOfExpression(DeleteClause expression) {
-			// TODO?
+			addIdentifier(WHERE);
 		}
 
 		/**

@@ -6288,4 +6288,21 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 			endPosition
 		);
 	}
+
+	@Test
+	public final void test_WhereClause_InvalidConditionalExpression_4() throws Exception {
+
+		String jpqlQuery  = "delete from Address as a where current_date ";
+		int startPosition = "delete from Address as a where ".length();
+		int endPosition   = "delete from Address as a where current_date".length();
+
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		testHasOnlyOneProblem(
+			problems,
+			WhereClause_InvalidConditionalExpression,
+			startPosition,
+			endPosition
+		);
+	}
 }

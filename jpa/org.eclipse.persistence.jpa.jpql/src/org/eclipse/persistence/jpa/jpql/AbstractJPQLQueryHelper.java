@@ -229,8 +229,14 @@ public abstract class AbstractJPQLQueryHelper {
 	 * Disposes of the internal data.
 	 */
 	public void dispose() {
+
 		if (queryContext != null) {
 			queryContext.dispose();
+		}
+
+		// Not required but during debugging, this is important to be reset
+		if (contentAssistVisitor != null) {
+			contentAssistVisitor.dispose();
 		}
 	}
 

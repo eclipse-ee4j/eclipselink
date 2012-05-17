@@ -3543,29 +3543,35 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 	@Override
 	public void visit(JPQLExpression expression) {
 
-		// Invalid query
-		if (!expression.hasQueryStatement()) {
-			addProblem(expression, 0, length(expression), JPQLExpression_InvalidQuery);
-		}
-		// Should never have an unknown ending statement
-		else if (expression.hasUnknownEndingStatement()) {
+		// Validate the statement
+		if (expression.hasQueryStatement()) {
 
-			String unknownStatement = expression.getUnknownEndingStatement().toActualText();
-
-			// Make sure the unknown ending statement is not a whitespace, one is kept for content assist
-			if (ExpressionTools.stringIsNotEmpty(unknownStatement)) {
-				int startPosition = length(expression.getQueryStatement());
-				int endPosition   = startPosition + length(expression.getUnknownEndingStatement());
-				addProblem(expression, startPosition, endPosition, JPQLExpression_UnknownEnding);
-			}
-		}
-		else {
-			// Validate the statement
 			expression.getQueryStatement().accept(this);
 
 			// Now that the entire tree was visited, we can validate the input parameters, which were
 			// automatically cached. Positional and named parameters must not be mixed in a single query
 			validateInputParameters(expression);
+
+			// Should never have an unknown ending statement
+			if (expression.hasUnknownEndingStatement()) {
+
+				String unknownStatement = expression.getUnknownEndingStatement().toActualText();
+
+				// Make sure the unknown ending statement is not a whitespace, one is kept for content assist
+				if (ExpressionTools.stringIsNotEmpty(unknownStatement)) {
+					int startPosition = length(expression.getQueryStatement());
+					int endPosition   = startPosition + length(expression.getUnknownEndingStatement());
+					addProblem(expression, startPosition, endPosition, JPQLExpression_UnknownEnding);
+				}
+				// Empty query
+				else if (!expression.hasQueryStatement()) {
+					addProblem(expression, 0, length(expression), JPQLExpression_InvalidQuery);
+				}
+			}
+		}
+		// Invalid query
+		else {
+			addProblem(expression, 0, length(expression), JPQLExpression_InvalidQuery);
 		}
 	}
 
