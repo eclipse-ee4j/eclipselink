@@ -45,6 +45,8 @@
  *       - 337323: Multi-tenant with shared schema support (part 1)
  *     07/03/2011-2.3.1 Guy Pelletier 
  *       - 348756: m_cascadeOnDelete boolean should be changed to Boolean
+ *     05/17/2012-2.3.3 Guy Pelletier  
+ *       - 379829: NPE Thrown with OneToOne Relationship
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -454,7 +456,7 @@ public abstract class RelationshipAccessor extends MappingAccessor {
      * value has been specified and that a check against mappedBy has been
      * done.
      */
-    protected DatabaseMapping getOwningMappingAccessor() {
+    protected DatabaseMapping getOwningMapping() {
         MetadataDescriptor ownerDescriptor = getReferenceDescriptor();
         MappingAccessor mappingAccessor = ownerDescriptor.getMappingAccessor(getMappedBy());
         
@@ -471,6 +473,11 @@ public abstract class RelationshipAccessor extends MappingAccessor {
                 
             if (mappedBy != null && mappedBy.equals(getAttributeName())) {
                 throw ValidationException.circularMappedByReferences(getJavaClass(), getAttributeName(), getJavaClass(), getMappedBy());
+            }
+            
+            // Make sure the mapping accessor is processed.
+            if (! mappingAccessor.isProcessed()) {
+                mappingAccessor.process();
             }
         }
         

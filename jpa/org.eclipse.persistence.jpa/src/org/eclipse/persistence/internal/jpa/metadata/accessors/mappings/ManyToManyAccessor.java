@@ -25,6 +25,8 @@
  *       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     05/17/2012-2.3.3 Arron Ferguson  
+ *       - 379829: NPE Thrown with OneToOne Relationship
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -142,7 +144,7 @@ public class ManyToManyAccessor extends CollectionAccessor {
             // We are processing the non-owning side of a M-M relationship. Get 
             // the owning mapping from the reference descriptor metadata and
             // process the keys from it.
-            DatabaseMapping owningMapping = getOwningMappingAccessor();
+            DatabaseMapping owningMapping = getOwningMapping();
             if (owningMapping.isManyToManyMapping()){
                 ManyToManyMapping ownerMapping = (ManyToManyMapping) owningMapping;
                 processMappedByRelationTable(ownerMapping.getRelationTableMechanism(), ((ManyToManyMapping)mapping).getRelationTableMechanism());

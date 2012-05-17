@@ -27,6 +27,8 @@
  *       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     05/17/2012-2.3.3 Arron Ferguson  
+ *       - 379829: NPE Thrown with OneToOne Relationship
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -113,7 +115,7 @@ public class OneToOneAccessor extends ObjectAccessor {
         
         if (hasMappedBy()) {
             // Non-owning side, process the foreign keys from the owner.
-            DatabaseMapping owningMapping = getOwningMappingAccessor();
+            DatabaseMapping owningMapping = getOwningMapping();
             if (owningMapping.isOneToOneMapping()){
                 OneToOneMapping ownerMapping = (OneToOneMapping) owningMapping;
                 
