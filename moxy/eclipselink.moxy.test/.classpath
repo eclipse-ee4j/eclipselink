@@ -13,5 +13,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/javax.xml.stream"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.moxy.dynamicxjc"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/com.sun.xml.bind"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.nosql"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
