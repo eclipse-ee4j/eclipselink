@@ -83,6 +83,18 @@ public class FormattedWriterRecord extends WriterRecord {
     }
 
     /**
+     * INTERNAL
+     */
+    public void writeHeader() {
+        try {
+            writer.write(getMarshaller().getXmlHeader());
+            writer.write(Helper.cr());
+        } catch (IOException e) {
+            throw XMLMarshalException.marshalException(e);
+        }
+    }
+
+    /**
      * INTERNAL:
      */
     public void openStartElement(XPathFragment xPathFragment, NamespaceResolver namespaceResolver) {

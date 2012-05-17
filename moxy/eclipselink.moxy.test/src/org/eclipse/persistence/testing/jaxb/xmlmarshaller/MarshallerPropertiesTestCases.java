@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.jaxb.xmlmarshaller;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -25,6 +26,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.dom.*;
 import javax.xml.transform.stream.*;
+
 import org.w3c.dom.Document;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
@@ -126,6 +128,57 @@ public class MarshallerPropertiesTestCases extends OXTestCase {
         marshaller.setProperty("com.sun.xml.internal.bind.indentString", customIndentString);
         marshaller.marshal(emp, sw);
         assertTrue("Custom indent string not found in marshalled document or was not escaped.", sw.toString().contains(escapedIndentString));
+    }
+
+    public void testXmlHeaders() throws Exception {
+        String header = "<!-- Copyright 2012 ACME Corp. -->";
+
+        Employee emp = new Employee();
+
+        // Marshal to Stream
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        marshaller.setProperty("com.sun.xml.bind.xmlHeaders", header);
+        marshaller.marshal(emp, stream);
+        assertTrue("Custom header not written when marshalling to Stream.", new String(stream.toByteArray()).contains(header));
+
+        // Marshal to Writer
+        StringWriter writer =  new StringWriter();
+        marshaller.marshal(emp, writer);
+        assertTrue("Custom header not written when marshalling to Writer.", writer.toString().contains(header));
+
+        // Marshal to Result
+        StringWriter writer2 = new StringWriter();
+        StreamResult result = new StreamResult(writer2);
+        marshaller.marshal(emp, result);
+        assertTrue("Custom header not written when marshalling to Result.", writer2.toString().contains(header));
+
+        marshaller.setProperty("com.sun.xml.bind.xmlHeaders", null);
+    }
+
+    public void testXmlHeadersWithNoXmlDeclaration() throws Exception {
+        String header = "<!-- Copyright 2012 ACME Corp. -->";
+
+        Employee emp = new Employee();
+
+        // Marshal to Stream
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        marshaller.setProperty("com.sun.xml.bind.xmlHeaders", header);
+        marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
+        marshaller.marshal(emp, stream);
+        assertTrue("Custom header not written when marshalling to Stream.", new String(stream.toByteArray()).contains(header));
+
+        // Marshal to Writer
+        StringWriter writer =  new StringWriter();
+        marshaller.marshal(emp, writer);
+        assertTrue("Custom header not written when marshalling to Writer.", writer.toString().contains(header));
+
+        // Marshal to Result
+        StringWriter writer2 = new StringWriter();
+        StreamResult result = new StreamResult(writer2);
+        marshaller.marshal(emp, result);
+        assertTrue("Custom header not written when marshalling to Result.", writer2.toString().contains(header));
+
+        marshaller.setProperty("com.sun.xml.bind.xmlHeaders", null);
     }
 
     public void testSetNullPropertyException() {

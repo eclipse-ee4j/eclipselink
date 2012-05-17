@@ -34,7 +34,6 @@ import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLMarshalListener;
-import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -198,6 +197,13 @@ public abstract class MarshalRecord extends XMLRecord {
      * @param version This specifies the version of XML.
      */
     public abstract void startDocument(String encoding, String version);
+
+    /**
+     * INTERNAL
+     * Writes the header, if appropriate.
+     */
+    public void writeHeader() {
+    }
 
     /**
      * Recieve notification that a document is being ended.

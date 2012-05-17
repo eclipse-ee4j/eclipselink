@@ -79,6 +79,14 @@ public class FormattedOutputStreamRecord extends OutputStreamRecord {
     }
 
     /**
+     * INTERNAL
+     */
+    public void writeHeader() {
+        outputStreamWrite(getMarshaller().getXmlHeader().getBytes());
+        outputStreamWrite(CR);
+    }
+
+    /**
      * INTERNAL:
      */
     public void openStartElement(XPathFragment xPathFragment, NamespaceResolver namespaceResolver) {

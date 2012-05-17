@@ -144,6 +144,13 @@ public class OutputStreamRecord extends MarshalRecord {
     }
 
     /**
+     * INTERNAL
+     */
+    public void writeHeader() {
+        outputStreamWrite(getMarshaller().getXmlHeader().getBytes());
+    }
+
+    /**
      * INTERNAL:
      */
     public void endDocument() {}

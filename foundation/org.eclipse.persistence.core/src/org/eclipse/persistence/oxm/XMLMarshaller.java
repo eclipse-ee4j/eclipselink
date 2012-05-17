@@ -112,6 +112,7 @@ public class XMLMarshaller implements Cloneable {
     private NamespacePrefixMapper mapper;
     private String indentString;
     private CharacterEscapeHandler charEscapeHandler;
+    private String xmlHeader;
 
     private static final String STAX_RESULT_CLASS_NAME = "javax.xml.transform.stax.StAXResult";
     private static final String GET_XML_STREAM_WRITER_METHOD_NAME = "getXMLStreamWriter";
@@ -945,6 +946,9 @@ public class XMLMarshaller implements Cloneable {
             }
             marshalRecord.startDocument(encoding, version);
         }
+        if (getXmlHeader() != null) {
+            marshalRecord.writeHeader();
+        }
         if(isXMLRoot) {
             if(root.getObject() instanceof Node) {
                 marshalRecord.node((Node)root.getObject(), new NamespaceResolver());
@@ -1657,6 +1661,31 @@ public class XMLMarshaller implements Cloneable {
      */
     public void setCharacterEscapeHandler(CharacterEscapeHandler c) {
         this.charEscapeHandler = c;
+    }
+
+    /**
+     * Get this Marshaller's XML Header.
+     * @since 2.4
+     */
+    public String getXmlHeader() {
+        return xmlHeader;
+    }
+
+    /**
+     * <p>
+     * Set this Marshaller's XML Header.  This header string will appear after
+     * the XML processing instruction (&lt;?xml ...&gt;), but before the start 
+     * of the document's data.
+     * </p>
+     * 
+     * <p>
+     * This feature is only supported when marshalling to Stream, Writer,
+     * or StreamResult.
+     * </p>
+     * @since 2.4
+     */
+    public void setXmlHeader(String xmlHeader) {
+        this.xmlHeader = xmlHeader;
     }
 
 }

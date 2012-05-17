@@ -23,6 +23,7 @@ import javax.xml.bind.Unmarshaller;
 import junit.framework.TestCase;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBMarshaller;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.oxm.CharacterEscapeHandler;
@@ -138,6 +139,16 @@ public class PropertyTestCases extends TestCase {
         assertTrue((Boolean) m.getProperty(XML_DECLARATION));
         m.setProperty(XML_DECLARATION, false);
         assertFalse((Boolean) m.getProperty(XML_DECLARATION));
+    }
+
+    public void testMarshallerXmlHeaders() throws Exception {
+        String XML_HEADERS = "com.sun.xml.bind.xmlHeaders";
+        String HEADER_STRING = "ABC";
+
+        m.setProperty(XML_HEADERS, HEADER_STRING);
+        assertEquals(HEADER_STRING, m.getProperty(XML_HEADERS));
+        m.setProperty(XML_HEADERS, null);
+        assertNull(m.getProperty(XML_HEADERS));
     }
 
     public void testMarshallerMediaTypeEnum() throws Exception {

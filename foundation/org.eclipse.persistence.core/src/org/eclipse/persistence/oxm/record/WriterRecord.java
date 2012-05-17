@@ -100,6 +100,17 @@ public class WriterRecord extends MarshalRecord {
     }
 
     /**
+     * INTERNAL
+     */
+    public void writeHeader() {
+        try {
+            writer.write(getMarshaller().getXmlHeader());
+        } catch (IOException e) {
+            throw XMLMarshalException.marshalException(e);
+        }
+    }
+
+    /**
      * INTERNAL:
      */
     public void endDocument() {}

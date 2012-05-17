@@ -123,6 +123,8 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
     // XML_DECLARATION is the "opposite" to JAXB_FRAGMENT.  If XML_DECLARATION is set to false it means JAXB_FRAGMENT should be set to true.
     private static final String XML_DECLARATION = "com.sun.xml.bind.xmlDeclaration";
 
+    private static final String XML_HEADERS = "com.sun.xml.bind.xmlHeaders";
+
     /**
      * This constructor initializes various settings on the XML marshaller, and
      * stores the provided JAXBIntrospector instance for usage in marshal()
@@ -284,6 +286,8 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             return xmlMarshaller.getCharacterEscapeHandler();
         } else if (XML_DECLARATION.equals(key)) {
             return !xmlMarshaller.isFragment();
+        } else if (XML_HEADERS.equals(key)) {
+            return xmlMarshaller.getXmlHeader();
         } else if (MarshallerProperties.JSON_ATTRIBUTE_PREFIX.equals(key)) {
             return xmlMarshaller.getAttributePrefix();
         } else if (MarshallerProperties.JSON_INCLUDE_ROOT.equals(key)) {
@@ -699,6 +703,8 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             } else if (XML_DECLARATION.equals(key)) {
                 Boolean fragment = !(Boolean) value;
                 xmlMarshaller.setFragment(fragment.booleanValue());
+            } else if (XML_HEADERS.equals(key)) {
+                xmlMarshaller.setXmlHeader((String) value);
             } else if (MarshallerProperties.MEDIA_TYPE.equals(key)) {
                 MediaType mType = null;
                 if(value instanceof MediaType) {
