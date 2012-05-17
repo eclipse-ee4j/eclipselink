@@ -41,7 +41,6 @@ import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.PersistenceFactory;
 import org.eclipse.persistence.jpa.rs.Service;
-import org.eclipse.persistence.jpa.rs.metadata.DatabaseMetadataStore;
 import org.eclipse.persistence.jpa.rs.util.LinkAdapter;
 import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
 import org.eclipse.persistence.jpars.test.model.StaticAuction;
@@ -76,9 +75,6 @@ public class TestService {
         factory = null;
         try{
             factory = new PersistenceFactory();
-            factory.setMetadataStore(new DatabaseMetadataStore());
-            factory.getMetadataStore().setProperties(properties);
-            factory.getMetadataStore().clearMetadata();
             FileInputStream xmlStream = new FileInputStream(XMLFilePathBuilder.getXMLFileName("auction-persistence.xml"));
 
             PersistenceContext context = factory.bootstrapPersistenceContext("auction", xmlStream, properties, true);
@@ -102,7 +98,6 @@ public class TestService {
     @AfterClass
     public static void teardown(){
         clearData();
-        factory.getMetadataStore().clearMetadata();
     }
     
     protected static void clearData(){

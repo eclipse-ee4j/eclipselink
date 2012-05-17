@@ -449,6 +449,11 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         // 338837:
         { "metamodel_type_collection_empty", "The collection of metamodel types is empty. Model classes may not have been found during entity search for Java SE and some Java EE container managed persistence units.  Please verify that your entity classes are referenced in persistence.xml using either <class> elements or a global <exclude-unlisted-classes>false</exclude-unlisted-classes> element" },      
         { "metamodel_type_collection_empty_during_lookup", "The collection of metamodel [{1}] types is empty. Model classes may not have been found during entity search for Java SE and some Java EE container managed persistence units.  Please verify that your entity classes are referenced in persistence.xml using either <class> elements or a global <exclude-unlisted-classes>false</exclude-unlisted-classes> element.  The lookup on [{0}] will return null." },
+        { "jpars_could_not_find_session_bean", "A call is being made to a session bean with JNDI Name: [{0}].  That bean can not be found."},
+        { "jpars_could_not_find_persistence_context", "A JPA-RS call is requesting persistence context: [{0}].  That persistence context is not found."},
+        { "jpars_could_not_find_class_in_persistence_unit", "Type: [{0}] cannot be found in persistence unit: [{1}]."},
+        { "jpars_could_bootstrap_persistence_context", "Persistence Context: [{0}] could not be bootstrapped."},
+
         // MESSAGES end
         
         
@@ -734,8 +739,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "jmx_unable_to_unregister_mbean.MSGID", "TOP-50249" },
         // 338837:
         { "metamodel_type_collection_empty.MSGID", "TOP-50250" },                                            
-        { "metamodel_type_collection_empty_during_lookup.MSGID", "TOP-50251" }
-        
+        { "metamodel_type_collection_empty_during_lookup.MSGID", "TOP-50251" }        
 
         /**
          * Note: Each MSGID and TOP-NNNNN key above must have a corresponding 

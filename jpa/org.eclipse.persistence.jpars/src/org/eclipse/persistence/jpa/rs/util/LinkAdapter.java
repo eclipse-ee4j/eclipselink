@@ -54,7 +54,6 @@ public class LinkAdapter extends XmlAdapter<String, Object> {
     
     @Override
     @SuppressWarnings("rawtypes")
-    // TODO Composite keys
     public Object unmarshal(String v) throws Exception {
         if (v.equals("")){
             return null;

@@ -32,8 +32,6 @@ import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
 import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
 import org.eclipse.persistence.jpa.Archive;
-import org.eclipse.persistence.jpa.rs.metadata.Application;
-import org.eclipse.persistence.jpa.rs.metadata.MetadataStore;
 import org.eclipse.persistence.jpa.rs.util.InMemoryArchive;
 
 /**
@@ -48,9 +46,6 @@ public class PersistenceFactory {
     
     /** Holds all the PersistenceContexts available to this factory by name **/
 	private Map<String, PersistenceContext> persistenceContexts = new HashMap<String, PersistenceContext>();
-    
-	/** used to keep information about bootstrapped PersistenceContexts in a persistent store **/
-    private MetadataStore metadataStore;
 	
     public PersistenceFactory(){
     }
@@ -111,7 +106,6 @@ public class PersistenceFactory {
      * @return
      */
     public PersistenceContext bootstrapPersistenceContext(String name, Archive archive, String persistenceXMLLocation, Map<String, ?> originalProperties, boolean replace){
-        initialize();
         PersistenceContext persistenceContext = getPersistenceContext(name);
         if (persistenceContext == null || replace){
             DynamicClassLoader dcl = new DynamicClassLoader(Thread.currentThread().getContextClassLoader());
@@ -121,9 +115,6 @@ public class PersistenceFactory {
     
             persistenceContexts.put(name, persistenceContext);
             // TODO store persistence units that were composed from a stream or a String rather than just a URL
-            if (persistenceXMLLocation != null){
-                storeApplicationMetadata(name, persistenceXMLLocation);
-            }
         } else {
             System.out.println("PersistenceContext " + name + " already started.  Using existing.");
         }
@@ -139,7 +130,6 @@ public class PersistenceFactory {
      * @return
      */
     public PersistenceContext bootstrapPersistenceContext(String name, EntityManagerFactory emf, URI baseURI, boolean replace){
-        initialize();
         PersistenceContext persistenceContext = null;
         if (!replace){
             persistenceContext = getPersistenceContext(name);
@@ -171,9 +161,6 @@ public class PersistenceFactory {
         for (String key: persistenceContexts.keySet()){
             persistenceContexts.get(key).stop();
         }
-        if (metadataStore != null){
-            metadataStore.close();
-        }
     }
 
     /**
@@ -199,7 +186,6 @@ public class PersistenceFactory {
     
     public PersistenceContext getPersistenceContext(String name){
         synchronized (this) {
-            initialize();
             return persistenceContexts.get(name);
         }
     }
@@ -221,56 +207,6 @@ public class PersistenceFactory {
             e.printStackTrace();
         }
         return contextNames;
-    }
-
-    public MetadataStore getMetadataStore() {
-        return metadataStore;
-    }
-    
-    /**
-     * Initialize the factory by checking any existing metadata store for persistence units.
-     */
-    public void initialize(){
-        initialize(new HashMap<String, Object>());
-    }
-    
-    /**
-     * Initialize the factory by checking any existing metadata store for persistence units.
-     * @param properties
-     */
-    public void initialize(Map<String, Object> properties){
-        if (metadataStore != null && !metadataStore.isInitialized()){
-            List<Application> applications = metadataStore.retreiveMetadata();
-            for (Application application: applications){
-                try{
-                    URL persistenceXMLURL = new URL( application.getPersistenceXMLURL());
-                    bootstrapPersistenceContext(application.getName(), persistenceXMLURL, properties, false);
-                } catch (Exception e){
-                    // TODO proper logging
-                    System.out.println("Exception bootstrapping PersistenceFactory for application "  + application.getName());
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
-    public void setMetadataStore(MetadataStore metadataStore) {
-        this.metadataStore = metadataStore;
-    }
-    
-    /**
-     * Ask the metadata store to store a given persistence unit.
-     * Currently only persistence units that are defined by a location string (usually a URL) can be saved.
-     * @param applicationName
-     * @param persistenceXMLURL
-     */
-    public void storeApplicationMetadata(String applicationName, String persistenceXMLURL){
-        if (metadataStore != null){
-            metadataStore.persistMetadata(applicationName, persistenceXMLURL);
-        } else {
-            // TODO Real Logging
-            System.out.println("Unable to store metadata.  No MetadataStore has been configured.");
-        }
     }
     
 }

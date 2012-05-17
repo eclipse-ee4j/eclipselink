@@ -4,8 +4,8 @@
     <servlet-name>JPA-RS Service</servlet-name>
     <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
     <init-param>
-      <param-name>com.sun.jersey.config.property.packages</param-name>
-      <param-value>org.eclipse.persistence.jpa.rs</param-value>
+      <param-name> com.sun.jersey.config.property.resourceConfigClass</param-name>
+      <param-value>org.eclipse.persistence.jpa.rs.JparsResourceConfig</param-value>
     </init-param>
     <load-on-startup>1</load-on-startup>
   </servlet>

@@ -115,8 +115,9 @@ public interface SessionLog extends Cloneable {
     public static final String PROPERTIES = "properties";
     public static final String SERVER = "server";
     public static final String DDL = "ddl";
+    public static final String JPARS = "jpars";
     
-    public final String[] loggerCatagories = new String[] { SQL ,TRANSACTION ,EVENT ,CONNECTION ,QUERY ,CACHE ,PROPAGATION ,SEQUENCING ,EJB ,DMS ,EJB_OR_METADATA, METAMODEL, WEAVER ,PROPERTIES ,SERVER};
+    public final String[] loggerCatagories = new String[] { SQL ,TRANSACTION ,EVENT ,CONNECTION ,QUERY ,CACHE ,PROPAGATION ,SEQUENCING ,EJB ,DMS ,EJB_OR_METADATA, METAMODEL, WEAVER ,PROPERTIES ,SERVER, JPARS};
 
     /**
      * PUBLIC:

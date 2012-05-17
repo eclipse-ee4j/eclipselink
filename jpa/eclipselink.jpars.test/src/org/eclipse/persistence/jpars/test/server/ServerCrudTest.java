@@ -29,7 +29,6 @@ import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.PersistenceFactory;
-import org.eclipse.persistence.jpa.rs.metadata.DatabaseMetadataStore;
 import org.eclipse.persistence.jpa.rs.metadata.model.Attribute;
 import org.eclipse.persistence.jpa.rs.metadata.model.Descriptor;
 import org.eclipse.persistence.jpa.rs.metadata.model.Link;
@@ -69,9 +68,6 @@ public class ServerCrudTest {
         properties.put(PersistenceUnitProperties.DDL_GENERATION, PersistenceUnitProperties.DROP_AND_CREATE);
 
         PersistenceFactory factory = new PersistenceFactory();
-        factory.setMetadataStore(new DatabaseMetadataStore());
-        factory.getMetadataStore().setProperties(properties);
-        factory.getMetadataStore().clearMetadata();
         EntityManagerFactory emf = Persistence.createEntityManagerFactory(DEFAULT_PU, properties);
         try{
             context = factory.bootstrapPersistenceContext("auction-static", emf, new URI("http://localhost:8080/JPA-RS/"), false);
