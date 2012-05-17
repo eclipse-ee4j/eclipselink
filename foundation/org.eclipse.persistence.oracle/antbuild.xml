@@ -156,10 +156,16 @@
         <echo message="oracle.extensions.depend.dir = '${oracle.extensions.depend.dir}'"/>
         <echo message="extensions.depend.dir        = '${extensions.depend.dir}'"/>
 
-        <!-- dependency properties -->
+        <!-- Test for dependencies -->
+        <selectbundle basename="javax.persistence" directory="${core.build.location}/${core.2.jpa.plugins.dir}" separator="_"
+            criterion="[2.0.0,3.0.0)" property="persistence.lib" includepath="true"
+        />
         <!-- Core has no jpa 2.0 specific compile dependency: use below instead to test assertion -->
-        <!-- property name="persistence.lib"    value="${oracle.2.common.plugins.dir}/${persistence10.jar}"/ -->
-        <property name="persistence.lib"  value="${oracle.2.jpa.plugins.dir}/${persistence20.jar}"/>
+        <!-- selectbundle basename="javax.persistence" directory="${core.build.location}/${core.2.jpa.plugins.dir}" separator="_"
+            criterion="[1.0.0,2.0.0)" property="persistence.lib" includepath="true"
+        / -->
+	
+        <!-- dependency properties -->
         <property name="core.lib"         value="${oracle.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
         <!-- "Oracle" dependency definitions from "oracle.extensions.depend.jars" -->
         <condition property="ojdbc.lib"     value="${oracle.extensions.depend.dir}/${ojdbc.jar}"
@@ -291,6 +297,7 @@
                includes="org/eclipse/persistence/**/*.java"
                debug="${javac.debug}"
                debuglevel="${javac.debuglevel}"
+               encoding="UTF-8"
                optimize="${javac.optimize}"
                source="${javac.version}"
                target="${javac.version}"

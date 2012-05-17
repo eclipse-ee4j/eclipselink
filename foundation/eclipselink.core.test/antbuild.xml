@@ -246,11 +246,9 @@
                deprecation="${javac.deprecation}"
                failonerror="true"
                memoryMaximumSize="512m"
-               fork="true">
-            <classpath>
-                <path refid="core_test.compile.path"/>
-            </classpath>
-        </javac>
+               fork="true"
+               classpathref="core_test.compile.path"
+        />
     </target>
 
     <!-- Packages tests jar. -->

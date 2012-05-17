@@ -110,6 +110,32 @@
         <property name="specification.vendor"  value="Eclipse.org - EclipseLink Project"/>
         <property name="implementation.vendor" value="${specification.vendor}"/>
 
+        <!-- Check for BND library -->
+        <property name="nobndtool.manifest.dir"      value="${core.build.location}/META-INF"/>
+        <!-- extensions.depend.dir must be tested first to allow user overrides to work properly,  **
+         **  once bnd is added to the buildsystem directory.                                       -->
+        <echo message="bndtool.prefix        = '${bndtool.prefix}'"/>
+        <echo message="core.2.buildsys.dir   = '${core.2.buildsys.dir}'"/>
+        <echo message="bndtool.separator     = '${bndtool.separator}'"/>
+        <echo message="bndtool.criteria      = '${bndtool.criteria}'"/>
+        <echo message="extensions.depend.dir = '${extensions.depend.dir}'"/>
+        <selectbundle basename="${bndtool.prefix}" directory="${extensions.depend.dir}" separator="${bndtool.separator}"
+                     criterion="${bndtool.criteria}" property="bndtool.lib" includepath="true"
+        />
+        <echo message="core.2.buildsys.dir   = '${core.2.buildsys.dir}'"/>
+        <selectbundle basename="${bndtool.prefix}" directory="${core.2.buildsys.dir}" separator="${bndtool.separator}"
+                     criterion="${bndtool.criteria}" property="bndtool.lib" includepath="true"
+        />
+        <say  message="bndtool.lib           = '${bndtool.lib}'" if="bndtool.lib"/>
+        <say  message="Bnd bundle not found in '${extensions.depend.dir}' or '${core.2.buildsys.dir}'!" unless="bndtool.lib"/>
+
+        <condition property="bld">
+            <or>
+                <isset property="bndtool.lib"/>
+                <isset property="nobnd"/>
+            </or>
+        </condition>
+
         <!-- Test for dependencies -->
         <selectbundle basename="javax.persistence" directory="${core.build.location}/${core.2.jpa.plugins.dir}" separator="_"
             criterion="[2.0.0,3.0.0)" property="persistence.lib" includepath="true"
@@ -150,32 +176,6 @@
                 dir="${core.2.common.plugins.dir}"
                 includes="${eclipselink.core.depend}"/>
         </path>
-
-        <!-- Check for BND library -->
-        <property name="nobndtool.manifest.dir"      value="${core.build.location}/META-INF"/>
-        <!-- extensions.depend.dir must be tested first to allow user overrides to work properly,  **
-         **  once bnd is added to the buildsystem directory.                                       -->
-        <echo message="bndtool.prefix        = '${bndtool.prefix}'"/>
-        <echo message="core.2.buildsys.dir   = '${core.2.buildsys.dir}'"/>
-        <echo message="bndtool.separator     = '${bndtool.separator}'"/>
-        <echo message="bndtool.criteria      = '${bndtool.criteria}'"/>
-        <echo message="extensions.depend.dir = '${extensions.depend.dir}'"/>
-        <selectbundle basename="${bndtool.prefix}" directory="${extensions.depend.dir}" separator="${bndtool.separator}"
-                     criterion="${bndtool.criteria}" property="bndtool.lib" includepath="true"
-        />
-        <echo message="core.2.buildsys.dir   = '${core.2.buildsys.dir}'"/>
-        <selectbundle basename="${bndtool.prefix}" directory="${core.2.buildsys.dir}" separator="${bndtool.separator}"
-                     criterion="${bndtool.criteria}" property="bndtool.lib" includepath="true"
-        />
-        <say  message="bndtool.lib           = '${bndtool.lib}'" if="bndtool.lib"/>
-        <say  message="Bnd bundle not found in '${extensions.depend.dir}' or '${core.2.buildsys.dir}'!" unless="bndtool.lib"/>
-
-        <condition property="bld">
-            <or>
-                <isset property="bndtool.lib"/>
-                <isset property="nobnd"/>
-            </or>
-        </condition>
         <condition property="bnd.bld">
             <and>
                 <isset property="bndtool.lib"/>
@@ -223,6 +223,7 @@
                includes="org/eclipse/persistence/Version.java"
                debug="${javac.debug}"
                debuglevel="${javac.debuglevel}"
+               encoding="UTF-8"
                optimize="${javac.optimize}"
                source="${javac.version}"
                target="${javac.version}"
@@ -238,6 +239,7 @@
                excludes="org/eclipse/persistence/Version.java"
                debug="${javac.debug}"
                debuglevel="${javac.debuglevel}"
+               encoding="UTF-8"
                optimize="${javac.optimize}"
                source="${javac.version}"
                target="${javac.version}"
