@@ -64,6 +64,8 @@
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Clientes</class>
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Operaciones</class>
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.RoutingOrders</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Address2</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Sponsor</class>
         
         <properties>
             <property name="eclipselink.multitenant.tenants-share-cache" value="false"/>

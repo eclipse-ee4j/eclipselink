@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2011 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2012 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -33,6 +33,8 @@
  *       - 317286: DB column lenght not in sync between @Column and @JoinColumn
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     05/17/2012-2.3.3 Guy Pelletier  
+ *       - 379829: NPE Thrown with OneToOne Relationship
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -197,7 +199,7 @@ public class OneToManyAccessor extends CollectionAccessor {
      */
     protected void processOneToManyMapping() {
        // Non-owning side, process the foreign keys from the owner.
-       DatabaseMapping owningMapping = getOwningMappingAccessor();
+       DatabaseMapping owningMapping = getOwningMapping();
        if (owningMapping.isOneToOneMapping()){ 
            OneToOneMapping ownerMapping = (OneToOneMapping) owningMapping;
            
