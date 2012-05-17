@@ -17,7 +17,7 @@ import java.io.*;
 import java.sql.*;
 
 import javax.sql.*;
-
+import java.util.logging.Logger;
 /**
  * dummy DataSource that returns a Connection
  */
@@ -70,4 +70,6 @@ public class TestDataSource implements DataSource {
     public <T>T unwrap(Class<T> iFace)  throws SQLException {
         return iFace.cast(this);
     }    
+
+    public Logger getParentLogger(){return null;}
 }

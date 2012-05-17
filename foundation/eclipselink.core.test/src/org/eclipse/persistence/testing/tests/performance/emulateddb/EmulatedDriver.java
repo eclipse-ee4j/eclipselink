@@ -13,7 +13,7 @@
 package org.eclipse.persistence.testing.tests.performance.emulateddb;
 
 import java.sql.*;
-
+import java.util.logging.Logger;
 /**
  * Emulated database driver.
  */
@@ -141,4 +141,6 @@ public class EmulatedDriver implements Driver {
     public boolean jdbcCompliant() {
         return true;
     }
+
+    public Logger getParentLogger(){return null;}
 }

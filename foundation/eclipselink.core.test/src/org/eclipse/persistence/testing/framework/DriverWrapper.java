@@ -20,7 +20,7 @@ import java.sql.DriverPropertyInfo;
 import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Iterator;
-
+import java.util.logging.Logger;
 /*
  * DriverWrapper works together with ConnectionWrapper.
  * This pair of classes allows to intercept calls to Driver and Connection methods.
@@ -269,4 +269,6 @@ public class DriverWrapper implements Driver {
     public boolean jdbcCompliant() {
         return getDriver().jdbcCompliant();
     }
+
+    public Logger getParentLogger() {return null;}
 } 

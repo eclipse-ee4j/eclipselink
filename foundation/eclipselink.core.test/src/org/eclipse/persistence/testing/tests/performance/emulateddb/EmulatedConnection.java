@@ -14,7 +14,7 @@ package org.eclipse.persistence.testing.tests.performance.emulateddb;
 
 import java.sql.*;
 import java.util.*;
-
+import java.util.concurrent.Executor;
 /**
  * Emulated database connection.
  * This connection performs operations in-memory, simulating a database.
@@ -939,4 +939,13 @@ public class EmulatedConnection implements Connection {
         return iFace.cast(this);
     }
         
+    public int getNetworkTimeout(){return 0;}
+
+    public void setNetworkTimeout(Executor executor, int milliseconds){}
+
+    public void abort(Executor executor){}
+
+    public String getSchema(){return null;}
+
+    public void setSchema(String schema){}
 }

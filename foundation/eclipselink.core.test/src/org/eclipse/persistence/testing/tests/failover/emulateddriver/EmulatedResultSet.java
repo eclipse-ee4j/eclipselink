@@ -740,12 +740,15 @@ public class EmulatedResultSet implements ResultSet {
    public void updateRowId(String columnLabel, RowId rowid)  throws SQLException {       
    }
    
-    public boolean isWrapperFor(Class<?> iFace) throws SQLException{
+   public boolean isWrapperFor(Class<?> iFace) throws SQLException{
         return false;
     }
 
-    public <T>T unwrap(Class<T> iFace)  throws SQLException {
+   public <T>T unwrap(Class<T> iFace)  throws SQLException {
         return iFace.cast(this);
     }
 	
+   public <T> T getObject(String columnLabel, Class<T> type){return null;}
+   
+   public <T> T getObject(int columnIndex, Class<T> type){return null;}
 }

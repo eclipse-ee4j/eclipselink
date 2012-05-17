@@ -28,6 +28,7 @@ import java.sql.Statement;
 import java.sql.Struct;
 import java.util.Properties;
 import java.util.Vector;
+import java.util.concurrent.Executor;
 
 public class EmulatedConnection implements Connection {
 	protected EmulatedDriver driver;
@@ -256,4 +257,13 @@ public class EmulatedConnection implements Connection {
         return iFace.cast(this);
     }
 
+    public int getNetworkTimeout(){return 0;}
+
+    public void setNetworkTimeout(Executor executor, int milliseconds){}
+
+    public void abort(Executor executor){}
+
+    public String getSchema(){return null;}
+
+    public void setSchema(String schema){}
 }

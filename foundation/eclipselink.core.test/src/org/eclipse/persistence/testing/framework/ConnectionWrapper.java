@@ -28,7 +28,7 @@ import java.sql.Savepoint;
 import java.sql.Statement;
 import java.sql.Struct;
 import java.util.Properties;
-
+import java.util.concurrent.Executor;
 /*
  * DriverWrapper works together with ConnectionWrapper.
  * This pair of classes allows to intercept calls to Driver and Connection methods.
@@ -420,4 +420,14 @@ public class ConnectionWrapper implements Connection {
     public <T> T unwrap(Class<T> iFace) throws SQLException {
         return iFace.cast(this);
     }
+    
+    public int getNetworkTimeout(){return 0;}
+    
+    public void setNetworkTimeout(Executor executor, int milliseconds){}
+
+    public void abort(Executor executor){}
+
+    public String getSchema(){return null;}
+
+    public void setSchema(String schema){}
 }
