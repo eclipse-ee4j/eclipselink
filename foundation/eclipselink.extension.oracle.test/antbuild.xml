@@ -107,7 +107,6 @@
     <target name="init">
         <!-- Give this a default value if not set in a user.home or test property file -->
         <property name="oracle.extensions.depend.dir" value="../${oracle_test.2.base.dir}/extension.oracle.lib.external"/>
-        <property name="oracle.nosql.jar.dir" value="${oracle.extensions.depend.dir}"/>
         <property name="extensions.depend.dir" value="../${oracle_test.2.base.dir}/extension.lib.external"/>
         <property name="junit.lib" value="${extensions.depend.dir}/junit.jar"/>
         <echo message="oracle_test.src.dir     ='${oracle_test.src.dir}'"/>
@@ -162,10 +161,6 @@
                                           else="${extensions.depend.dir}/${oracle.ucp.jar}">
             <available file="${oracle.extensions.depend.dir}/${oracle.ucp.jar}"/>
         </condition>
-        <condition property="oracle.nosql.lib" value="${oracle.nosql.jar.dir}/${oracle.nosql.jar}"
-                                          else="${extensions.depend.dir}/${oracle.nosql.jar}">
-            <available file="${oracle.nosql.jar.dir}/${oracle.nosql.jar}"/>
-        </condition>
 
         <!-- Create needed directories
         <mkdir dir="${oracle_test.classes.dir}"/>
@@ -202,7 +197,6 @@
         <available file="${oracle.sdoapi.lib}"    property="oracle.sdoapi.lib.exist"/>
         <available file="${oracle.xmlparser.lib}" property="oracle.xmlparser.lib.exist"/>
         <available file="${oracle.ucp.lib}"       property="oracle.ucp.lib.exist"/>
-        <available file="${oracle.nosql.lib}"     property="oracle.nosql.lib.exist"/>
 
         <!-- Determine where to get product classes, based upon availability  -->
         <condition property="use.eclipselink">
@@ -250,7 +244,6 @@
                 <isset property="oracle.sdoapi.lib.exist"/>
                 <isset property="oracle.xmlparser.lib.exist"/>
                 <isset property="oracle.ucp.lib.exist"/>
-                <isset property="oracle.nosql.lib.exist"/>
             </and>
         </condition>
         <condition property="run.ok">
@@ -297,7 +290,6 @@
             <pathelement path="${oracle.xmlparser.lib}"/>
             <pathelement path="${oracle.orai18n-mapping.lib}"/>
             <pathelement path="${oracle.ucp.lib}"/>
-            <pathelement path="${oracle.nosql.lib}"/>
             <pathelement path="${junit.lib}"/>
         </path>
         <path id="oracle_test.test.infrastructure.path">
@@ -349,7 +341,6 @@
         <echo message="        '${oracle.sdoapi.lib}'      :: found='${oracle.sdoapi.lib.exist}'"/>
         <echo message="        '${oracle.xmlparser.lib}'   :: found='${oracle.xmlparser.lib.exist}'"/>
         <echo message="        '${oracle.ucp.lib}' :: found='${oracle.ucp.lib.exist}'"/>
-        <echo message="        '${oracle.nosql.lib}' :: found='${oracle.nosql.lib.exist}'"/>
         <echo message="Please put your Oracle dependencies in one of the two 'dependency' locations (default or custom defined)."/>
         <fail message="Missing dependencies!" unless="compile.ok"/>
     </target>
@@ -364,7 +355,6 @@
         <echo message="    '${oracle.xmlparser.lib}'"/>
         <echo message="    '${oracle.orai18n-mapping.lib}'"/>
         <echo message="    '${oracle.ucp.lib}'"/>
-        <echo message="    '${oracle.nosql.lib}'"/>
         <mkdir dir="${oracle_test.classes.dir}"/>
         <javac srcdir="${oracle_test.src.dir}"
                destdir="${oracle_test.classes.dir}"
@@ -416,12 +406,6 @@
             <fileset dir="${oracle_test.classes.dir}"
                      includes="org/eclipse/persistence/testing/models/jpa/dcn/**"/>
         </jar>
-        <!-- Package the NoSQL JPA model jar. -->
-        <jar jarfile="eclipselink-nosql-model.jar">
-            <zipfileset dir="resource/nosql" includes="*.xml" prefix="META-INF"/>
-            <fileset dir="${oracle_test.classes.dir}"
-                     includes="org/eclipse/persistence/testing/models/jpa/nosql/**"/>
-        </jar>
         <!-- Package the JPA oracle specific tests jar. -->
         <jar jarfile="${oracle.jpa.test.jar}">
             <fileset dir="${oracle_test.classes.dir}"
@@ -468,12 +452,6 @@ CREATE OR REPLACE TYPE MY_GEOMETRY AS OBJECT (id NUMBER, geom MDSYS.SDO_GEOMETRY
         <run_test testclass="org.eclipse.persistence.testing.tests.xdb.XDBTestModel" dburl="${db.oci.url}"/>
         <run_test testclass="org.eclipse.persistence.testing.tests.xdb.XDBTestModelMWIntegration" dburl="${db.oci.url}"/>
         <run_test testclass="org.eclipse.persistence.testing.tests.unwrappedconnection.UnwrapConnectionXDBTestModel" dburl="${db.oci.url}"/>
-        <generate_report/>
-    </target>
-
-    <!-- Runs Core Oracle NoSQL tests. -->
-    <target name="test-oracle-nosql" depends="init_run">
-        <run_test testclass="org.eclipse.persistence.testing.tests.eis.nosql.NoSQLTestModel"  dburl="${db.url}"/>
         <generate_report/>
     </target>
 
