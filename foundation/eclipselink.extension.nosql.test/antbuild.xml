@@ -133,6 +133,9 @@
         <condition property="coretest.framework.lib" value="${nosql_test.2.core.test.dir}/${coretest.framework.jar}">
             <available file="${nosql_test.2.core.test.dir}/${coretest.framework.jar}"/>
         </condition>
+        <condition property="coretest.lib" value="${nosql_test.2.core.test.dir}/${coretest.jar}">
+            <available file="${nosql_test.2.core.test.dir}/${coretest.jar}"/>
+        </condition>
         <condition property="jpatest.framework.lib" value="${nosql_test.2.jpa.test.dir}/${jpatest.framework.jar}">
             <available file="${nosql_test.2.jpa.test.dir}/${jpatest.framework.jar}"/>
         </condition>
@@ -155,6 +158,7 @@
         <available file="${junit.lib}"                                                                           property="junit.lib.exist"/>
         <available file="${nosql_test.2.common.plugins.dir}/${unsigned.persistence10.jar}"                       property="persistence.bundle.exist"/>
         <available file="${coretest.framework.lib}"                                                              property="test.framework.exist"/>
+        <available file="${coretest.lib}"																         property="core.test.exist"/>
         <available file="${jpatest.framework.lib}"                                                               property="jpatest.framework.exist"/>
         <!-- Determine availability of runtime dependencies   -->
         <available file="${nosql_test.2.jpa.dir}/${resource.dir}" type="dir" property="jpa.resources.exist"/>
@@ -247,6 +251,7 @@
         </path>
         <path id="nosql_test.test.infrastructure.path">
             <pathelement path="${coretest.framework.lib}"/>
+            <pathelement path="${coretest.lib}"/>
             <pathelement path="${jpatest.framework.lib}"/>
             <pathelement path="${junit.lib}"/>
         </path>
@@ -285,6 +290,7 @@
         <echo message="        '${junit.lib}' :: found='${junit.lib.exist}'"/>
         <echo message="        '${jpatest.framework.lib}' :: found='${jpatest.framework.exist}'"/>
         <echo message="        '${coretest.framework.lib}' :: found='${test.framework.exist}'"/>
+        <echo message="        '${coretest.lib}' :: found='${core.test.exist}'"/>
         <echo message="The test framework is currently part of the core.test and jpa.test projects. Be sure they are built."/>
         <echo message="    dependency jars:"/>
         <echo message="        '${mongo.lib}'         :: found='${mongo.lib.exist}'"/>
