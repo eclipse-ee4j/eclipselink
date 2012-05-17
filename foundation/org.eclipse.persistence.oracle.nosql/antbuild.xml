@@ -157,12 +157,7 @@
         <echo message="extensions.depend.dir        = '${extensions.depend.dir}'"/>
 
         <!-- dependency properties -->
-        <!-- Core has no jpa 2.0 specific compile dependency: use below instead to test assertion -->
-        <!-- property name="persistence.lib"    value="${oracle.nosql.2.common.plugins.dir}/${persistence10.jar}"/ -->
-        <property name="persistence.lib"  value="${oracle.nosql.2.jpa.plugins.dir}/${persistence20.jar}"/>
         <property name="core.lib"         value="${oracle.nosql.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
-        <!-- Common "Core" dependency definitions from "eclipselink.core.depend" -->
-        <property name="resource.lib"    value="${oracle.nosql.2.common.plugins.dir}/${resource.jar}"/>
         <!-- "Oracle" dependency definitions from "oracle.extensions.depend.jars" -->
         <condition property="aqapi.lib"     value="${oracle.extensions.depend.dir}/${aqapi.jar}"
                                                     else="${extensions.depend.dir}/${aqapi.jar}">
@@ -178,10 +173,14 @@
         </condition>
 
         <!-- dependency tests -->
-        <available file="${persistence.lib}"   property="persistence.bundle.exist"/>
         <available file="${core.lib}"          property="core.bundle.exist"/>
         <!-- common dependency tests -->
-        <available file="${resource.lib}"      property="resource.bundle.exist"/>
+        <selectbundle basename="javax.persistence" directory="${oracle.nosql.build.location}/${oracle.nosql.2.jpa.plugins.dir}" separator="_"
+            criterion="[2.0.0,3.0.0)" property="persistence.lib" includepath="true"
+        />
+        <selectbundle basename="javax.resource" directory="${oracle.nosql.build.location}/${oracle.nosql.2.common.plugins.dir}" separator="_"
+            criterion="[1.0.0,3.0.0)" property="resource.lib" includepath="true"
+        />
         <!-- oracle dependency tests -->
         <available file="${aqapi.lib}"         property="aqapi.bundle.exist"/>
         <available file="${ojdbc.lib}"         property="ojdbc.bundle.exist"/>
@@ -190,15 +189,15 @@
         <available file="${oracle.extensions.depend.dir}" type="dir" property="oracle.depend.dir.exist"/>
 
         <say  message="'${oracle.extensions.depend.dir}' found."       if="oracle.depend.dir.exist"/>
-        <say  message="persistence.lib:      '${persistence.lib}'"     if="persistence.bundle.exist"/>
         <say  message="core.lib:             '${core.lib}'"            if="core.bundle.exist"/>
-        <say  message="resource.lib:         '${resource.lib}'"        if="resource.bundle.exist"/>
+        <say  message="persistence.lib:      '${persistence.lib}'"     if="persistence.lib"/>
+        <say  message="resource.lib:         '${resource.lib}'"        if="resource.lib"/>
         <say  message="aqapi.lib:            '${aqapi.lib}'"           if="aqapi.bundle.exist"/>
         <say  message="ojdbc.lib:            '${ojdbc.lib}'"           if="ojdbc.bundle.exist"/>
         <say  message="orcl_nosql.lib:       '${orcl_nosql.lib}'"      if="nosql.bundle.exist"/>
-        <fail message="Cannot find:          '${persistence.lib}'" unless="persistence.bundle.exist"/>
         <fail message="Cannot find:          '${core.lib}'"        unless="core.bundle.exist"/>
-        <fail message="Cannot find:          '${resource.lib}'"    unless="resource.bundle.exist"/>
+        <fail message="Cannot find:          '${persistence.lib}'" unless="persistence.lib"/>
+        <fail message="Cannot find:          '${resource.lib}'"    unless="resource.lib"/>
         <fail message="Cannot find:          '${aqapi.lib}'"       unless="aqapi.bundle.exist"/>
         <fail message="Cannot find:          '${ojdbc.lib}'"       unless="ojdbc.bundle.exist"/>
         <fail message="Cannot find:          '${orcl_nosql.lib}'"  unless="nosql.bundle.exist"/>

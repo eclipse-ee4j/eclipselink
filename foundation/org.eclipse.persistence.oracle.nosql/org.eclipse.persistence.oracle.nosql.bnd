@@ -6,9 +6,9 @@ Bundle-Vendor: ${implementation.vendor}
 Fragment-Host: org.eclipse.persistence.nosql;bundle-version="${release.version}"
 Bundle-Version: ${version.string}
 Include-Resource:\
- ${oracle.2.base.dir}/about.html,\
- ${oracle.2.base.dir}/readme.html,\
- ${oracle.2.base.dir}/license.html
+ ${oracle.nosql.2.base.dir}/about.html,\
+ ${oracle.nosql.2.base.dir}/readme.html,\
+ ${oracle.nosql.2.base.dir}/license.html
 Import-Package:\
  javax.resource.*;version="1.5.0";resolution:=optional,\
  oracle.*;resolution:=optional,\
