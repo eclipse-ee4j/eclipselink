@@ -3622,6 +3622,7 @@
     <target name="server-test-mongotest" if="is.glassfish">
         <antcall target="server-test-mongo" inheritRefs="true"/>
         <antcall target="server-test-mongo-xml" inheritRefs="true"/>
+        <antcall target="generate-servertest-report" inheritRefs="true"/>
     </target>
 
     <target name="server-test-mongo" if="is.glassfish">
