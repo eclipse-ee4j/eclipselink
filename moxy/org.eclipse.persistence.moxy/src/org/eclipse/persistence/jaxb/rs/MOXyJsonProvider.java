@@ -18,6 +18,7 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Map;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -161,8 +162,23 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
  
     @Context
     protected Providers providers;
-    private boolean includeRoot = false;
+
+    private String attributePrefix = null;
     private boolean formattedOutput = false;
+    private boolean includeRoot = false;
+    private Map<String, String> namespacePrefixMapper;
+    private Character namespaceSeperator;
+    private String valueWrapper;
+
+    /**
+     * The value that will be prepended to all keys that are mapped to an XML
+     * attribute.  By default there is no attribute prefix.
+     * @see org.eclipse.persistence.jaxb.MarshallerPropertes.JSON_ATTRIBUTE_PREFIX
+     * @see org.eclipse.persistence.jaxb.UnmarshallerPropertes.JSON_ATTRIBUTE_PREFIX
+     */
+    public String getAttributePrefix() {
+        return attributePrefix;
+    }
 
     /**
      * A convenience method to get the domain class (i.e. <i>Customer</i>) from 
@@ -208,12 +224,44 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
         }
     }
 
+    /**
+     * By default the JSON-binding will ignore namespace qualification. If this 
+     * property is set the portion of the key before the namespace separator
+     * will be used to determine the namespace URI.
+     * @see org.eclipse.persistence.jaxb.MarshallerProperties.NAMESPACE_PREFIX_MAPPER
+     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER
+     */
+    public Map<String, String> getNamespacePrefixMapper() {
+        return namespacePrefixMapper;
+    }
+
+    /**
+     * This character (default is '.') separates the prefix from the key name.
+     * It is only used if namespace qualification has been enabled be setting a
+     * namespace prefix mapper.
+     * @see org.eclipse.persistence.jaxb.MarshallerProperties.NAMESPACE_SEPARATOR
+     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties.NAMESPACE_SEPARATOR
+     */
+    public Character getNamespaceSeparator() {
+        return this.namespaceSeperator;
+    }
+
     /*
      * @return -1 since the size of the JSON message is not known.
      * @see javax.ws.rs.ext.MessageBodyWriter#getSize(java.lang.Object, java.lang.Class, java.lang.reflect.Type, java.lang.annotation.Annotation[], javax.ws.rs.core.MediaType)
      */
     public long getSize(Object t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
         return -1;
+    }
+
+    /**
+     * The key that will correspond to the property mapped with @XmlValue.  This
+     * key will only be used if there are other mapped properties.
+     * @see org.eclipse.persistence.jaxb.MarshallerPropertes.JSON_VALUE_WRAPPER
+     * @see org.eclipse.persistence.jaxb.UnmarshallerPropertes.JSON_VALUE_WRAPPER
+     */
+    public String getValueWrapper() {
+        return valueWrapper;
     }
 
     /**
@@ -226,6 +274,8 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
     /**
      * @return true if the root node is included in the JSON message (default is
      * false).
+     * @see org.eclipse.persistence.jaxb.MarshallerPropertes.JSON_INCLUDE_ROOT
+     * @see org.eclipse.persistence.jaxb.UnmarshallerPropertes.JSON_INCLUDE_ROOT
      */
     public boolean isIncludeRoot() {
         return includeRoot;
@@ -297,12 +347,26 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
             JAXBContext jaxbContext = getJAXBContext(domainClass, annotations, mediaType, httpHeaders);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             unmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON);
+            unmarshaller.setProperty(UnmarshallerProperties.JSON_ATTRIBUTE_PREFIX, attributePrefix);
             unmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, includeRoot);
+            unmarshaller.setProperty(UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER, namespacePrefixMapper);
+            unmarshaller.setProperty(UnmarshallerProperties.JSON_NAMESPACE_SEPARATOR, namespaceSeperator);
+            unmarshaller.setProperty(UnmarshallerProperties.JSON_VALUE_WRAPPER, valueWrapper);
             preReadFrom(type, genericType, annotations, mediaType, httpHeaders, unmarshaller);
             return unmarshaller.unmarshal(new StreamSource(entityStream), domainClass).getValue();
         } catch(JAXBException jaxbException) {
             throw new WebApplicationException(jaxbException);
         }
+    }
+
+    /**
+     * Specify a value that will be prepended to all keys that are mapped to an
+     * XML attribute.  By default there is no attribute prefix.
+     * @see org.eclipse.persistence.jaxb.MarshallerPropertes.JSON_ATTRIBUTE_PREFIX
+     * @see org.eclipse.persistence.jaxb.UnmarshallerPropertes.JSON_ATTRIBUTE_PREFIX
+     */
+    public void setAttributePrefix(String attributePrefix) {
+        this.attributePrefix = attributePrefix;
     }
 
     /**
@@ -319,9 +383,45 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
      * is false).
      * @param includeRoot - true if the message includes the root node, else 
      * false.
+     * @see org.eclipse.persistence.jaxb.MarshallerPropertes.JSON_INCLUDE_ROOT
+     * @see org.eclipse.persistence.jaxb.UnmarshallerPropertes.JSON_INCLUDE_ROOT
      */
     public void setIncludeRoot(boolean includeRoot) {
         this.includeRoot = includeRoot;
+    }
+
+    /**
+     * By default the JSON-binding will ignore namespace qualification. If this
+     * property is set then a prefix corresponding to the namespace URI and a 
+     * namespace separator will be prefixed to the key.
+     * include it you can specify a Map of namespace URI to prefix.
+     * @see org.eclipse.persistence.jaxb.MarshallerProperties.NAMESPACE_PREFIX_MAPPER
+     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER
+     */
+    public void setNamespacePrefixMapper(Map<String, String> namespacePrefixMapper) {
+        this.namespacePrefixMapper = namespacePrefixMapper;
+    }
+
+    /**
+     * This character (default is '.') separates the prefix from the key name.
+     * It is only used if namespace qualification has been enabled be setting a
+     * namespace prefix mapper.
+     * @see org.eclipse.persistence.jaxb.MarshallerProperties.NAMESPACE_SEPARATOR
+     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties.NAMESPACE_SEPARATOR
+     */
+    public void setNamespaceSeparator(Character namespaceSeparator) {
+        this.namespaceSeperator = namespaceSeparator;
+    }
+
+    /**
+     * Specify the key that will correspond to the property mapped with
+     * @XmlValue.  This key will only be used if there are other mapped
+     * properties.
+     * @see org.ecli1pse.persistence.jaxb.MarshallerPropertes.JSON_VALUE_WRAPPER
+     * @see org.eclipse.persistence.jaxb.UnmarshallerPropertes.JSON_VALUE_WRAPPER
+     */
+    public void setValueWrapper(String valueWrapper) {
+        this.valueWrapper = valueWrapper;
     }
 
     /*
@@ -334,7 +434,11 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
             Marshaller marshaller = jaxbContext.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, formattedOutput);
             marshaller.setProperty(MarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON);
+            marshaller.setProperty(MarshallerProperties.JSON_ATTRIBUTE_PREFIX, attributePrefix);
             marshaller.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, includeRoot);
+            marshaller.setProperty(MarshallerProperties.JSON_NAMESPACE_SEPARATOR, namespaceSeperator);
+            marshaller.setProperty(MarshallerProperties.JSON_VALUE_WRAPPER, valueWrapper);
+            marshaller.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, namespacePrefixMapper);
             preWriteTo(object, type, genericType, annotations, mediaType, httpHeaders, marshaller);
             marshaller.marshal(object, entityStream);
         } catch(JAXBException jaxbException) {
