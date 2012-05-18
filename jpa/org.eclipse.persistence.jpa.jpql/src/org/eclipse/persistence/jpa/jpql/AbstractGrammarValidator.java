@@ -135,12 +135,15 @@ import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
 /**
- * The abstract validator that validates a JPQL query grammatically.
+ * The base validator responsible to gather the problems found in a JPQL query by validating it
+ * against the provided JPQL grammar. The semantic of the JPQL query is not validated by this visitor.
  * <p>
  * Provisional API: This interface is part of an interim API that is still under development and
  * expected to change significantly before reaching stability. It is available at this early stage
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
  * API will almost certainly be broken (repeatedly) as the API evolves.
+ *
+ * @see AbstractSemanticValidator
  *
  * @version 2.4
  * @since 2.4
@@ -457,12 +460,8 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 			protected boolean isEncapsulatedExpressionMissing(FunctionExpression expression) {
 				switch (expression.getParameterCount()) {
 					case ONE:
-					case ONE_OR_MANY: {
-						return !expression.hasExpression();
-					}
-					default: {
-						return false;
-					}
+					case ONE_OR_MANY: return !expression.hasExpression();
+					default:          return false;
 				}
 			}
 			@Override
@@ -1369,13 +1368,14 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 	protected boolean isValidJavaIdentifier(String variable) {
 
 		for (int index = 0, count = variable.length(); index < count; index++) {
+
 			int character = variable.charAt(index);
 
 			if ((index == 0) && !Character.isJavaIdentifierStart(character)) {
 				return false;
 			}
 
-			else if ((index > 0) && !Character.isJavaIdentifierPart(character)) {
+			if ((index > 0) && !Character.isJavaIdentifierPart(character)) {
 				return false;
 			}
 		}

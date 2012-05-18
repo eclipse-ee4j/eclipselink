@@ -244,6 +244,27 @@ public abstract class AbstractSemanticValidatorTest extends AbstractValidatorTes
 	}
 
 	@Test
+	public final void test_AbstractSchemaName_Invalid_4() throws Exception {
+
+		String jpqlQuery   = "delete aaa aaa a";
+
+		int startPosition1 = "delete ".length();
+		int endPosition1   = "delete aaa".length();
+
+		int startPosition2 = "delete aaa aaa ".length();
+		int endPosition2   = "delete aaa aaa a".length();
+
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		testHasOnlyTheseProblems(
+			problems,
+			new String[] { AbstractSchemaName_Invalid, AbstractSchemaName_Invalid },
+			new int[] { startPosition1, startPosition2 },
+			new int[] { endPosition1,   endPosition2 }
+		);
+	}
+
+	@Test
 	public final void test_CollectionValuedPathExpression_NotCollectionType_01() throws Exception {
 
 		String jpqlQuery = "SELECT a FROM Address a JOIN a.customerList c";

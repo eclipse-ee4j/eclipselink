@@ -116,12 +116,15 @@ import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
 
 /**
  * The base validator responsible to gather the problems found in a JPQL query by validating the
- * content to make sure it is semantically valid. The grammar is not validated by this visitor.
+ * content to make sure it is semantically valid, i.e. based on the information contained in the
+ * JPA application. The grammar is not validated by this visitor.
  * <p>
  * Provisional API: This interface is part of an interim API that is still under development and
  * expected to change significantly before reaching stability. It is available at this early stage
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
  * API will almost certainly be broken (repeatedly) as the API evolves.
+ *
+ * @see AbstractGrammarValidator
  *
  * @version 2.4
  * @since 2.4
@@ -593,7 +596,12 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 
 				// Does not resolve to a valid path
 				if (!helper.isTypeResolvable(type)) {
-					addProblem(expression, StateFieldPathExpression_NotResolvable, abstractSchemaName);
+					if (isSubquery(expression)) {
+						addProblem(expression, StateFieldPathExpression_NotResolvable, abstractSchemaName);
+					}
+					else {
+						addProblem(expression, AbstractSchemaName_Invalid, abstractSchemaName);
+					}
 					valid = false;
 				}
 				// Not a relationship mapping

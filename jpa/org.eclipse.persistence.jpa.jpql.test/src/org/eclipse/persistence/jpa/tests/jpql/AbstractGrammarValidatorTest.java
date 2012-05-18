@@ -2896,6 +2896,27 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
+	public final void test_InvalidQuery_01() throws Exception {
+
+		String jpqlQuery   = "delete aaa aaa a";
+
+		int startPosition1 = "delete ".length();
+		int endPosition1   = "delete ".length();
+
+		int startPosition2 = "delete aaa aaa".length();
+		int endPosition2   = "delete aaa aaa a".length();
+
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		testHasOnlyTheseProblems(
+			problems,
+			new String[] { DeleteClause_FromMissing, DeleteClause_RangeVariableDeclarationMalformed },
+			new int[] { startPosition1, startPosition2 },
+			new int[] { endPosition1,   endPosition2 }
+		);
+	}
+
+	@Test
 	public final void test_Join_MissingIdentificationVariable_1() throws Exception {
 
 		String jpqlQuery  = "SELECT e FROM Employee e JOIN e.employees ";
@@ -5751,23 +5772,6 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 		);
 	}
 
-	@Test
-	public final void test_UpdateClause_MissingRangeVariableDeclaration() throws Exception {
-
-		String jpqlQuery  = "UPDATE SET e.name = 'Pascal'";
-		int startPosition = "UPDATE ".length();
-		int endPosition   = startPosition;
-
-		List<JPQLQueryProblem> problems = validate(jpqlQuery);
-
-		testHasOnlyOneProblem(
-			problems,
-			UpdateClause_MissingRangeVariableDeclaration,
-			startPosition,
-			endPosition
-		);
-	}
-
 //	@Test
 //	public final void test_UpdateItem_InvalidNewValue()
 //	{
@@ -5786,6 +5790,23 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 //			endPosition
 //		);
 //	}
+
+	@Test
+	public final void test_UpdateClause_MissingRangeVariableDeclaration() throws Exception {
+
+		String jpqlQuery  = "UPDATE SET e.name = 'Pascal'";
+		int startPosition = "UPDATE ".length();
+		int endPosition   = startPosition;
+
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		testHasOnlyOneProblem(
+			problems,
+			UpdateClause_MissingRangeVariableDeclaration,
+			startPosition,
+			endPosition
+		);
+	}
 
 	@Test
 	public final void test_UpdateClause_MissingSet() throws Exception {

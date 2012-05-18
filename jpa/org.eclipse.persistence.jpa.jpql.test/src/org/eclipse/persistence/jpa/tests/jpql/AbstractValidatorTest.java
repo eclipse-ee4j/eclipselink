@@ -183,6 +183,53 @@ public abstract class AbstractValidatorTest extends JPQLCoreTest {
 		testProblem(problem, startPosition, endPosition);
 	}
 
+	protected final void testHasOnlyTheseProblems(List<JPQLQueryProblem> problems,
+	                                              String[] messageKeys,
+	                                              int[] startPositions,
+	                                              int[] endPositions) {
+
+		List<String> problemsNotFound = new ArrayList<String>();
+		List<String> extraProblems = new ArrayList<String>();
+
+		for (String messageKey : messageKeys) {
+			problemsNotFound.add(messageKey);
+		}
+
+		for (JPQLQueryProblem problem : problems) {
+			extraProblems.add(problem.getMessageKey());
+		}
+
+		// Iterate through the problems that should be part of the list
+		for (int index = 0; index < messageKeys.length; index++) {
+
+			String messageKey = messageKeys[index];
+
+			// Iterator through the list that was generated from validation
+			for (JPQLQueryProblem problem : problems) {
+
+				if (problem.getMessageKey()    == messageKey &&
+				    problem.getStartPosition() == startPositions[index] &&
+				    problem.getEndPosition()   == endPositions  [index]) {
+
+					extraProblems.remove(messageKey);
+					problemsNotFound.remove(messageKey);
+					testResourceBundle(messageKey);
+					break;
+				}
+			}
+		}
+
+		assertTrue(
+			"Some problems were not added to the list or has wrong positions: " + problemsNotFound,
+			problemsNotFound.isEmpty()
+		);
+
+		assertTrue(
+			"Some problems were incorrectly added to the list: " + extraProblems,
+			extraProblems.isEmpty()
+		);
+	}
+
 	protected final void testHasProblem(List<JPQLQueryProblem> problems,
 	                                    String messageKey,
 	                                    int startPosition,
@@ -212,7 +259,7 @@ public abstract class AbstractValidatorTest extends JPQLCoreTest {
 
 		List<String> problemsNotFound = new ArrayList<String>();
 
-		for (String messageKey: messageKeys) {
+		for (String messageKey : messageKeys) {
 			problemsNotFound.add(messageKey);
 		}
 

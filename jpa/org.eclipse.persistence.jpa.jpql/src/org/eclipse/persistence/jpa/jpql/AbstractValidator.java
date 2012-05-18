@@ -26,6 +26,7 @@ import org.eclipse.persistence.jpa.jpql.parser.AnonymousExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.BadExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.DeleteClause;
+import org.eclipse.persistence.jpa.jpql.parser.DeleteStatement;
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.ExpressionRegistry;
 import org.eclipse.persistence.jpa.jpql.parser.ExpressionVisitor;
@@ -37,11 +38,14 @@ import org.eclipse.persistence.jpa.jpql.parser.JPQLQueryBNF;
 import org.eclipse.persistence.jpa.jpql.parser.NullExpression;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByClause;
 import org.eclipse.persistence.jpa.jpql.parser.SelectClause;
+import org.eclipse.persistence.jpa.jpql.parser.SelectStatement;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleFromClause;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectClause;
+import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectStatement;
 import org.eclipse.persistence.jpa.jpql.parser.SubExpression;
 import org.eclipse.persistence.jpa.jpql.parser.UnknownExpression;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateClause;
+import org.eclipse.persistence.jpa.jpql.parser.UpdateStatement;
 import org.eclipse.persistence.jpa.jpql.parser.WhereClause;
 import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
 import org.eclipse.persistence.jpa.jpql.util.CollectionTools;
@@ -93,6 +97,14 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 	 * of the {@link Expression} being visited.
 	 */
 	private OwningClauseVisitor owningClauseVisitor;
+
+	/**
+	 * This visitor is responsible to traverse the parent hierarchy and to retrieve the owning
+	 * statement of the {@link Expression} being visited.
+	 *
+	 * @since 2.4
+	 */
+	private OwningStatementVisitor owningStatementVisitor;
 
 	/**
 	 * The list of {@link JPQLQueryProblem} describing grammatical and semantic issues found in the query.
@@ -192,12 +204,23 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 	protected abstract LiteralVisitor buildLiteralVisitor();
 
 	/**
-	 * Creates the visitor that traverses the parent hierarchy of any {@link Expression} and stop at
+	 * Creates the visitor that traverses the parent hierarchy of any {@link Expression} and stops at
 	 * the first {@link Expression} that is a clause.
 	 *
 	 * @return A new {@link OwningClauseVisitor}
 	 */
 	protected abstract OwningClauseVisitor buildOwningClauseVisitor();
+
+	/**
+	 * Creates the visitor that traverses the parent hierarchy of any {@link Expression} and stops at
+	 * the first {@link Expression} that is a statement.
+	 *
+	 * @return A new {@link OwningStatementVisitor}
+	 * @since 2.4
+	 */
+	protected OwningStatementVisitor buildOwningStatementVisitor() {
+		return new OwningStatementVisitor();
+	}
 
 	/**
 	 * Creates a new validation problem that was found in the given {@link Expression}.
@@ -352,7 +375,7 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 	}
 
 	/**
-	 * Returns the visitor that traverses the parent hierarchy of any {@link Expression} and stop at
+	 * Returns the visitor that traverses the parent hierarchy of any {@link Expression} and stops at
 	 * the first {@link Expression} that is a clause.
 	 *
 	 * @return {@link OwningClauseVisitor}
@@ -362,6 +385,20 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 			owningClauseVisitor = buildOwningClauseVisitor();
 		}
 		return owningClauseVisitor;
+	}
+
+	/**
+	 * Returns the visitor that traverses the parent hierarchy of any {@link Expression} and stops at
+	 * the first {@link Expression} that is a statement.
+	 *
+	 * @return {@link OwningStatementVisitor}
+	 * @since 2.4
+	 */
+	protected OwningStatementVisitor getOwningStatementVisitor() {
+		if (owningStatementVisitor == null) {
+			owningStatementVisitor = buildOwningStatementVisitor();
+		}
+		return owningStatementVisitor;
 	}
 
 	/**
@@ -390,6 +427,46 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 	 */
 	protected void initialize() {
 		validators = new HashMap<String, JPQLQueryBNFValidator>();
+	}
+
+	/**
+	 * Determines whether the given {@link Expression} is part of a subquery.
+	 *
+	 * @param expression The {@link Expression} to start scanning its location
+	 * @return <code>true</code> if the given {@link Expression} is part of a subquery; <code>false</code>
+	 * if it's part of the top-level query
+	 * @since 2.4
+	 */
+	protected boolean isSubquery(Expression expression) {
+		OwningStatementVisitor visitor = getOwningStatementVisitor();
+		try {
+			expression.accept(visitor);
+			return visitor.simpleSelectStatement != null;
+		}
+		finally {
+			visitor.dispose();
+		}
+	}
+
+	/**
+	 * Determines whether the given {@link Expression} is part of the top-level query.
+	 *
+	 * @param expression The {@link Expression} to start scanning its location
+	 * @return <code>true</code> if the given {@link Expression} is part of the top-level query;
+	 * <code>false</code> if it's part of a subquery
+	 * @since 2.4
+	 */
+	protected boolean isTopLevelQuery(Expression expression) {
+		OwningStatementVisitor visitor = getOwningStatementVisitor();
+		try {
+			expression.accept(visitor);
+			return visitor.deleteStatement != null ||
+			       visitor.selectStatement != null ||
+			       visitor.updateStatement != null;
+		}
+		finally {
+			visitor.dispose();
+		}
 	}
 
 	/**
@@ -885,6 +962,59 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 		@Override
 		public void visit(WhereClause expression) {
 			whereClause = expression;
+		}
+	}
+
+	/**
+	 * This visitor retrieves the statement owning the visited {@link Expression}.
+	 */
+	protected static class OwningStatementVisitor extends AbstractTraverseParentVisitor {
+
+		public DeleteStatement deleteStatement;
+		public SelectStatement selectStatement;
+		public SimpleSelectStatement simpleSelectStatement;
+		public UpdateStatement updateStatement;
+
+		/**
+		 * Disposes the internal data.
+		 */
+		protected void dispose() {
+			deleteStatement       = null;
+			selectStatement       = null;
+			simpleSelectStatement = null;
+			updateStatement       = null;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(DeleteStatement expression) {
+			deleteStatement = expression;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(SelectStatement expression) {
+			selectStatement = expression;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(SimpleSelectStatement expression) {
+			simpleSelectStatement = expression;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(UpdateStatement expression) {
+			updateStatement = expression;
 		}
 	}
 }

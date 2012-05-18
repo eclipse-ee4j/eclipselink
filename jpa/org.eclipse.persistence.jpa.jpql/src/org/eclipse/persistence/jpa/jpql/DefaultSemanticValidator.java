@@ -1715,6 +1715,10 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
 		}
 	}
 
+	/**
+	 * This visitor traverses the parsed tree and retrieves the {@link IdentificationVariable}
+	 * defined for a range variable declaration.
+	 */
 	protected static class VirtualIdentificationVariableFinder extends AbstractTraverseParentVisitor {
 
 		/**
@@ -1728,6 +1732,20 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
 		 * variable expression or simply visit the parent hierarchy.
 		 */
 		protected boolean traverse;
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(CollectionExpression expression) {
+			if (traverse) {
+				// Invalid query, scan the first expression only
+				expression.getChild(0).accept(this);
+			}
+			else {
+				super.visit(expression);
+			}
+		}
 
 		/**
 		 * {@inheritDoc}
@@ -1757,6 +1775,14 @@ public class DefaultSemanticValidator extends AbstractSemanticValidator {
 		@Override
 		public void visit(IdentificationVariable expression) {
 			this.expression = expression;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(NullExpression expression) {
+			// Incomplete/invalid query, stop here
 		}
 
 		/**
