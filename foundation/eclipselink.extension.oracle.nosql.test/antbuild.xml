@@ -241,6 +241,7 @@
         <echo message="Using EclipseLink.jar as 'product' in compile dependency."/>
         <path id="oracle_test.product.path">
             <pathelement path="${oracle_test.2.base.dir}/${eclipselink.jar}"/>
+            <fileset dir="${oracle_test.2.common.plugins.dir}" includes="org.eclipse.persistence.oracle.nosql_*.jar"/>
         </path>
     </target>
     <target name="init_bundles" if="use.bundles">
