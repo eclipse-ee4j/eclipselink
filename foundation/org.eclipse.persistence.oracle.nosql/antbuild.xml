@@ -70,7 +70,7 @@
     <property file="${user.home}/build.properties"/>
     <!-- Sets default junit.lib and all extensions.depend dir locations to defaults based upon discovered dir heirarchy -->
     <!-- Must be defined after ${user.home}/build.properties is included to allow redefinition -->
-    <condition property="oracle.nosql.extensions.depend.dir" value="../../../extension.oracle.nosql.lib.external" else="../../extension.oracle.nosql.lib.external">
+    <condition property="oracle.extensions.depend.dir" value="../../../extension.oracle.lib.external" else="../../extension.oracle.lib.external">
         <contains string="${oracle.nosql.build.location}" substring="foundation"/>
     </condition>
     <property file="${oracle.nosql.build.location}/antbuild.properties"/>
@@ -153,7 +153,7 @@
     <!-- initialize varables and paths needed for compile -->
     <!-- the number of properties needed now is too great for lazy loading without a target -->
     <target name="init-compile" depends="init">
-        <echo message="oracle.nosql.extensions.depend.dir = '${oracle.nosql.extensions.depend.dir}'"/>
+        <echo message="oracle.extensions.depend.dir = '${oracle.extensions.depend.dir}'"/>
         <echo message="extensions.depend.dir        = '${extensions.depend.dir}'"/>
 
         <!-- dependency properties -->

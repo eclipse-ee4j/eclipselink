@@ -75,8 +75,12 @@
     <target name="build-continuous" description="Trigger an automated build and run the tests if source changes exist"
             depends="clean, build-no-javadoc, build-utils, test-srg"
     />
-    <target name="build-oracle"     description="Trigger the automated oracle build"
-            depends="init, build-oracle-extension, publish-oracle"
+    <target name="build-ora-extension" description="Trigger the automated oracle extension build"
+            depends="init, build-oracle-extension, publish-oracle-extension"
+    />
+
+    <target name="build-ora-nosql" description="Trigger the automated oracle nosql build"
+            depends="init, build-oracle-nosql, publish-oracle-nosql"
     />
 
     <target name="init" depends="pre-init, common-init"/>
@@ -333,6 +337,10 @@
         <ant antfile="antbuild.xml" dir="${build.root.dir}" target="build-oracle-extension"/>
     </target>
 
+    <target name="build-oracle-nosql">
+        <ant antfile="antbuild.xml" dir="${build.root.dir}" target="build-oracle-nosql"/>
+    </target>
+
     <target name="build-no-javadoc" depends="get-dependencies">
         <ant antfile="antbuild.xml" dir="${build.root.dir}" target="build"/>
     </target>
@@ -484,13 +492,23 @@
         <!-- Run gen summary dat script -->
     </target>
 
-    <target name="publish-oracle">
-        <echo message="oracle commit in progress..."/>
+    <target name="publish-oracle-extension">
+        <echo message="oracle-extension commit in progress..."/>
         <exec executable="${svn.exec}" failonerror="false" logError="true">
             <arg value="commit"/>
             <arg value="-m ${version.string}"/>
             <arg value="${build.root.dir}/foundation/plugins/org.eclipse.persistence.oracle.jar"/>
             <arg value="${build.root.dir}/foundation/plugins/org.eclipse.persistence.oracle.source.jar"/>
+        </exec>
+    </target>
+
+    <target name="publish-oracle-nosql">
+        <echo message="oracle-nosql commit in progress..."/>
+        <exec executable="${svn.exec}" failonerror="false" logError="true">
+            <arg value="commit"/>
+            <arg value="-m ${version.string}"/>
+            <arg value="${build.root.dir}/foundation/plugins/org.eclipse.persistence.oracle.nosql.jar"/>
+            <arg value="${build.root.dir}/foundation/plugins/org.eclipse.persistence.oracle.nosql.source.jar"/>
         </exec>
     </target>
 
