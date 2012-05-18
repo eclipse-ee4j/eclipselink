@@ -179,7 +179,7 @@
 <!-- ================================================================================= -->
 
     <!-- "top-level" target for creating the distribution archives. -->
-    <target name="package-all" depends="package-eclipselink-bundles, package-src-jar, package-example-jar, package-tst-src-zip, package-tst-jar-zip, package-javadoc-zip, package-installer-zip"/>
+    <target name="package-all" depends="package-eclipselink-bundles, package-eclipselink-nosql-bundles, package-src-jar, package-example-jar, package-tst-src-zip, package-tst-jar-zip, package-javadoc-zip, package-installer-zip"/>
 
     <!-- Compiles all components except tests, builds eclipselink.jar. -->
     <target name="build-eclipselink-jar" depends="build-core, package-eclipselink-jar" description="build all EclipseLink distribution files except docs and tests"/>
@@ -239,14 +239,15 @@
     </target>
 
     <target name="clean-runtime-built" description="Clean the runtime projects" depends="clean-core">
-        <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle}" target="clean"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.modelgen}"         target="clean"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.moxy.dynamicxjc}"  target="clean"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.util.jaxb}"        target="clean"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.dbws.builder}"     target="clean"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.util.rename}"      target="clean"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.util.sigcompare}"  target="clean"/>
-        <ant antfile="build.xml"    dir="${eclipselink.util.workbench}"   target="clean"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle}"       target="clean"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle.nosql}" target="clean"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.modelgen}"               target="clean"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.moxy.dynamicxjc}"        target="clean"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.util.jaxb}"              target="clean"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.dbws.builder}"           target="clean"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.util.rename}"            target="clean"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.util.sigcompare}"        target="clean"/>
+        <ant antfile="build.xml"    dir="${eclipselink.util.workbench}"         target="clean"/>
         <delete file="*${eclipselink.zip.suffix}" failonerror="false"/>
     </target>
     <target name="clean-core" depends="check-maven" description="Clean the maven built runtime projects">
@@ -307,11 +308,12 @@
             </fileset>
         </copy>
         <!-- temporarily force dbws.builder build from ant -->
-        <ant antfile="antbuild.xml" dir="${eclipselink.dbws.builder}"     target="build"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle}" target="repackage"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.modelgen}"         target="build"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.moxy.dynamicxjc}"  target="build"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.util.jaxb}"        target="build"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.dbws.builder}"           target="build"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle}"       target="repackage"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle.nosql}" target="repackage"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.modelgen}"               target="build"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.moxy.dynamicxjc}"        target="build"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.util.jaxb}"              target="build"/>
     </target>
 
     <!--      *** intended for dev use only ***
@@ -332,6 +334,7 @@
 
         <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle}" target="jar"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.extension.nosql}"  target="jar"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle.nosql}" target="jar"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.modelgen}"         target="jar"/>
     </target>
 
@@ -342,12 +345,12 @@
     <!-- Compiles all utils components. -->
     <target name="build-util" depends="build-dbws-utils">
         <ant antfile="antbuild.xml" dir="${eclipselink.util.sigcompare}"  target="build"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.util.rename}"    target="build"/>
-        <ant antfile="build.xml"    dir="${eclipselink.util.workbench}" target="all"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.util.rename}"      target="build"/>
+        <ant antfile="build.xml"    dir="${eclipselink.util.workbench}"   target="all"/>
     </target>
 
     <target name="build-dbws-utils" unless="java_is_v5">
-        <ant antfile="antbuild.xml" dir="${eclipselink.dbws.builder}"      target="build"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.dbws.builder}"     target="build"/>
     </target>
 
     <!-- Compiles Oracle extensions and tests. -->
@@ -360,6 +363,19 @@
     <target name="build-oracle-extension-test">
         <ant antfile="antbuild.xml" dir="${eclipselink.core.test}"             target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle.test}" target="build"/>
+    </target>
+
+    <!-- Compiles Oracle extensions and tests. -->
+    <target name="build-oracle-nosql-extension">
+        <ant antfile="antbuild.xml" dir="${eclipselink.hermes}"           target="build"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.core}"             target="build"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.nosql}"            target="build"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.oracle.nosql}"     target="build"/>
+    </target>
+
+    <target name="build-oracle-nosql-extension-test">
+        <ant antfile="antbuild.xml" dir="${eclipselink.core.test}"             target="build"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.oracle.nosql.test}"     target="build"/>
     </target>
 
     <!-- Compiles tests (excluding workbench, dbws-util and Oracle extensions). -->
@@ -612,6 +628,7 @@
             <zipfileset dir="${eclipselink.plugins}">
                 <include name="**.jar"/>
                 <exclude name="javax.persistence*1.0.0.jar"/>
+                <exclude name="*nosql*"/>
                 <exclude name="osgi.cmpn_4.1.0.jar"/>
                 <exclude name="javax.ejb_3.0.0.v200906010428.jar"/>
                 <exclude name="org.apache.ant_1.7.0.v20080627-1145.zip"/>
@@ -628,6 +645,20 @@
             <zipfileset dir="${eclipselink.util.plugins}/">
                 <include name="javax.wsdl*.jar"/>
                 <include name="org.eclipse.persistence*oracleddl*.jar"/>
+            </zipfileset>
+        </zip>
+    </target>
+
+    <target name="package-eclipselink-nosql-bundles">
+        <delete file="${eclipselink.plugins.install.prefix}-nosql${eclipselink.zip.suffix}" failonerror="false"/>
+        <zip destfile="${eclipselink.plugins.install.prefix}-nosql${eclipselink.zip.suffix}">
+            <zipfileset dir="${eclipselink.plugins}">
+                <include name="*nosql*"/>
+            </zipfileset>
+            <zipfileset dir=".">
+                <include name="${about-file}"/>
+                <include name="${readme-file}"/>
+                <include name="${license-files}"/>
             </zipfileset>
         </zip>
     </target>
