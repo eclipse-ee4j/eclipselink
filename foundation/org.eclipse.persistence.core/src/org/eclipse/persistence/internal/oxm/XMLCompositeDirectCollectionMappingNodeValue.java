@@ -81,12 +81,12 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
             XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
             marshalRecord.closeStartGroupingElements(groupingFragment);
         } else {
-            if ((xmlCompositeDirectCollectionMapping.usesSingleNode() && !xmlCompositeDirectCollectionMapping.isDefaultEmptyContainer()) || xmlCompositeDirectCollectionMapping.getWrapperNullPolicy() != null) {
-                XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
+        	if (xmlCompositeDirectCollectionMapping.usesSingleNode() && !xmlCompositeDirectCollectionMapping.isDefaultEmptyContainer()){
+        		XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
                 marshalRecord.closeStartGroupingElements(groupingFragment);
-            } else {
-                return false;
-            }
+        	} else {
+        		return marshalRecord.emptyCollection(xPathFragment, namespaceResolver, xmlCompositeDirectCollectionMapping.getWrapperNullPolicy() != null);
+        	}
         }
         Object objectValue;
         StringBuilder stringValueStringBuilder = new StringBuilder();

@@ -82,9 +82,9 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
     public void attribute(UnmarshalRecord unmarshalRecord, String namespaceURI, String localName, String value) {
         if (value != null) {
             Object realValue = unmarshalRecord.getXMLReader().convertValueBasedOnSchemaType(xmlField, value, (XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager(), unmarshalRecord);
-
+            Object container = unmarshalRecord.getContainerInstance(this);		
             // build a reference which will be resolved after unmarshalling is complete
-            xmlCollectionReferenceMapping.buildReference(unmarshalRecord, xmlField, realValue, unmarshalRecord.getSession());
+            xmlCollectionReferenceMapping.buildReference(unmarshalRecord, xmlField, realValue, unmarshalRecord.getSession(), container);
         }
     }
 
@@ -115,8 +115,10 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
             value = unmarshalRecord.getXMLReader().convertValueBasedOnSchemaType(xmlField, value, xmlConversionManager, unmarshalRecord);
         }
 
+        Object container = unmarshalRecord.getContainerInstance(this);
+        
         // build a reference which will be resolved after unmarshalling is complete
-        xmlCollectionReferenceMapping.buildReference(unmarshalRecord, xmlField, value, unmarshalRecord.getSession());
+        xmlCollectionReferenceMapping.buildReference(unmarshalRecord, xmlField, value, unmarshalRecord.getSession(), container);
     }
 
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Object container) {
@@ -174,7 +176,7 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
             XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
             marshalRecord.closeStartGroupingElements(groupingFragment);
         } else {
-            return false;
+        	return marshalRecord.emptyCollection(xPathFragment, namespaceResolver, false);
         }
 
         Object objectValue;
@@ -232,7 +234,8 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
                 } else {
                     value = atts.getValue(namespaceURI, xmlField.getLastXPathFragment().getLocalName());
                 }
-                xmlCollectionReferenceMapping.buildReference(unmarshalRecord, xmlField, value, unmarshalRecord.getSession());
+                
+                xmlCollectionReferenceMapping.buildReference(unmarshalRecord, xmlField, value, unmarshalRecord.getSession(), unmarshalRecord.getContainerInstance(this));
                 return true;
             }
         }

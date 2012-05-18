@@ -109,12 +109,7 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implem
                 marshalRecord.closeStartGroupingElements(groupingFragment);
             }
         } else {
-            if (xmlChoiceCollectionMapping.getWrapperNullPolicy() != null ) {
-                XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
-                marshalRecord.closeStartGroupingElements(groupingFragment);
-            } else {
-                return false;
-            }
+        	return marshalRecord.emptyCollection(xPathFragment, namespaceResolver, xmlChoiceCollectionMapping.getWrapperNullPolicy() != null);
         }
         
         if(marshalRecord.getMarshaller().getMediaType() == MediaType.APPLICATION_JSON){

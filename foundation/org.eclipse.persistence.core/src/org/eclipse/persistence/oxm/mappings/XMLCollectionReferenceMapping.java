@@ -160,11 +160,23 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
      * @param session
      * @return
      */
-    public void buildReference(UnmarshalRecord record, XMLField xmlField, Object object, AbstractSession session) {
-         buildReference(record.getCurrentObject(), xmlField, object, session);
+    public void buildReference(UnmarshalRecord record, XMLField xmlField, Object object, AbstractSession session, Object container) {
+         buildReference(record.getCurrentObject(), xmlField, object, session, container);
     }
 
-    public void buildReference(Object srcObject, XMLField xmlField, Object object, AbstractSession session) {
+    /**
+     * INTERNAL:
+     * Create (if necessary) and populate a reference object that will be used
+     * during the mapping reference resolution phase after unmarshalling is
+     * complete.
+     * 
+     * @param record
+     * @param xmlField
+     * @param object
+     * @param session
+     * @return
+     */
+    public void buildReference(Object srcObject, XMLField xmlField, Object object, AbstractSession session, Object container) {
         ReferenceResolver resolver = ReferenceResolver.getInstance(session);
         if (resolver == null) {
             return;
@@ -173,7 +185,7 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
         Reference reference = resolver.getReference(this, srcObject, xmlField);
         if (reference == null) {
             // if reference is null, create a new instance and set it on the resolver
-            reference = new Reference(this, srcObject, referenceClass, new HashMap());
+            reference = new Reference(this, srcObject, referenceClass, new HashMap(), container);
             resolver.addReference(reference);
         }
         CacheId primaryKeys;
@@ -191,7 +203,7 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
                     reference = resolver.getReference(this, srcObject, xmlField);
                     if (reference == null) {
                         // if reference is null, create a new instance and set it on the resolver
-                        reference = new Reference(this, srcObject, referenceClass, new HashMap());
+                        reference = new Reference(this, srcObject, referenceClass, new HashMap(), container);
                         resolver.addReference(reference);
                     }
                     primaryKeyMap = reference.getPrimaryKeyMap();
@@ -226,7 +238,7 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
                     reference = resolver.getReference(this, srcObject, xmlField);
                     if (reference == null) {
                         // if reference is null, create a new instance and set it on the resolver
-                        reference = new Reference(this, srcObject, referenceClass, new HashMap());
+                        reference = new Reference(this, srcObject, referenceClass, new HashMap(), container);
                         resolver.addReference(reference);
                     }
                     primaryKeyMap = reference.getPrimaryKeyMap();
@@ -280,27 +292,56 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
      * on the session's org.eclipse.persistence.internal.oxm.ReferenceResolver.
      */
     public Object readFromRowIntoObject(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object targetObject, CacheKey parentCacheKey, ObjectBuildingQuery sourceQuery, AbstractSession executionSession, boolean isTargetProtected) throws DatabaseException {
+    	  ContainerPolicy cp = getContainerPolicy();                
+          
+          Object container = null;
+          
+          if (reuseContainer) {
+              Object currentObject = ((XMLRecord) databaseRow).getCurrentObject();
+              container = getAttributeAccessor().getAttributeValueFromObject(currentObject);
+              
+          } 
+          if(container == null){
+          	container = cp.containerInstance();
+          }
+          return readFromRowIntoObject(databaseRow, joinManager, targetObject, parentCacheKey, sourceQuery, executionSession, isTargetProtected, container);
+    	
+    }
+
+    /**
+     * INTERNAL:
+     * Extract the primary key values from the row, then create an 
+     * org.eclipse.persistence.internal.oxm.Reference instance and stored it 
+     * on the session's org.eclipse.persistence.internal.oxm.ReferenceResolver.
+     */
+    
+    public Object readFromRowIntoObject(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object targetObject, CacheKey parentCacheKey, ObjectBuildingQuery sourceQuery, AbstractSession executionSession, boolean isTargetProtected, Object container) throws DatabaseException {
         ClassDescriptor descriptor = sourceQuery.getSession().getClassDescriptor(getReferenceClass());
-        ContainerPolicy cp = getContainerPolicy();
+        
+        if(container == null){
+        	readFromRowIntoObject(databaseRow, joinManager, targetObject, parentCacheKey, sourceQuery, executionSession, isTargetProtected);
+        }
+        
         // for each source xmlField, get the value from the row and store
         for (Iterator fieldIt = getFields().iterator(); fieldIt.hasNext();) {
             XMLField fld = (XMLField) fieldIt.next();
             //
             Object fieldValue = databaseRow.getValues(fld);
             if ((fieldValue == null) || (fieldValue instanceof String) || !(fieldValue instanceof Vector)) {
-                return cp.containerInstance();
+                return container;
             }
             // fix for bug# 5687430
             // need to get the actual type of the target (i.e. int, String, etc.) 
             // and use the converted value when checking the cache.
             for (Iterator valIt = ((Vector) fieldValue).iterator(); valIt.hasNext();) {
                 Object nextValue = valIt.next();
-                this.buildReference(((XMLRecord)databaseRow).getCurrentObject(), fld, nextValue, sourceQuery.getSession());
+                this.buildReference(((XMLRecord)databaseRow).getCurrentObject(), fld, nextValue, sourceQuery.getSession(), container);
             }
         }
         return null;
     }
 
+    
     /**
      * ADVANCED:
      * Set the mapping's containerPolicy.

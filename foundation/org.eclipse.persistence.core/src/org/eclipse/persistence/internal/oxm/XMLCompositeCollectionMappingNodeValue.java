@@ -83,12 +83,7 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
             XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
             marshalRecord.closeStartGroupingElements(groupingFragment);
         } else {
-            if (xmlCompositeCollectionMapping.getWrapperNullPolicy() != null ) {
-                XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
-                marshalRecord.closeStartGroupingElements(groupingFragment);
-            } else {
-                return false;
-            }
+        	return marshalRecord.emptyCollection(xPathFragment, namespaceResolver, xmlCompositeCollectionMapping.getWrapperNullPolicy() != null);
         }
         marshalRecord.startCollection(); 
         while (cp.hasNext(iterator)) {

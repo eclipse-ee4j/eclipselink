@@ -25,6 +25,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlElementRefs;
+import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlList;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -66,6 +67,10 @@ public class CollectionHolder {
     @XmlAttribute
     protected List<String> collection12;
 
+    //@XmlElements({@XmlElement(name="root"), @XmlElementRef(name="root2")})
+    @XmlElements({@XmlElement(name="integer", type=Integer.class), @XmlElement(name="string", type=String.class)})   
+    protected List collection13;
+    
     public CollectionHolder(){
     }
 
@@ -156,6 +161,14 @@ public class CollectionHolder {
         this.collection12 = collection12;
     }
     
+    public List getCollection13() {
+        return collection13;
+    }
+
+    public void setCollection13(List collection13) {
+        this.collection13 = collection13;
+    }
+    
     public boolean equals(Object compareObject){
 
          if(compareObject instanceof CollectionHolder){
@@ -172,6 +185,7 @@ public class CollectionHolder {
                     && compareMaps(collection10, compareCollectionHolder.getCollection10())
                     && compareCollections(collection11, compareCollectionHolder.getCollection11())
                     && compareCollections(collection12, compareCollectionHolder.getCollection12())
+                    && compareCollections(collection13, compareCollectionHolder.getCollection13())
                     ;
          }
          return false;

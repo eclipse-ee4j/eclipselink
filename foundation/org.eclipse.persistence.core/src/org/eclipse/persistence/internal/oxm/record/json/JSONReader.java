@@ -31,6 +31,8 @@ import org.eclipse.persistence.internal.libraries.antlr.runtime.TokenRewriteStre
 import org.eclipse.persistence.internal.libraries.antlr.runtime.TokenStream;
 import org.eclipse.persistence.internal.libraries.antlr.runtime.tree.CommonTree;
 import org.eclipse.persistence.internal.libraries.antlr.runtime.tree.Tree;
+import org.eclipse.persistence.internal.oxm.ContainerValue;
+import org.eclipse.persistence.internal.oxm.NodeValue;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.record.SAXUnmarshallerHandler;
 import org.eclipse.persistence.internal.oxm.XPathNode;
@@ -265,6 +267,10 @@ public class JSONReader extends XMLReaderAdapter {
             Tree parentStringTree = tree.getParent().getChild(0);
             String parentLocalName = parentStringTree.getText().substring(1, parentStringTree.getText().length() - 1);
             
+            if(attributePrefix != null && parentLocalName.startsWith(attributePrefix)){
+            	break;
+            }
+            
             String uri = XMLConstants.EMPTY_STRING;
             if(namespaceAware && namespaces != null){
             	int nsIndex = parentLocalName.indexOf(namespaceSeparator);
@@ -274,21 +280,35 @@ public class JSONReader extends XMLReaderAdapter {
             		uri = namespaces.resolveNamespacePrefix(prefix);                		
             	}
             }           
-                                            	
+                             
         	boolean isTextValue = isTextValue(parentLocalName);           
-            
-          for(int x=0, size=tree.getChildCount(); x<size; x++) {
-        	CommonTree nextChildTree = (CommonTree) tree.getChild(x);
-        	if(!isTextValue){
+            int size = tree.getChildCount();
+            if(size == 0){       
+            	if(contentHandler instanceof UnmarshalRecord){
+            		UnmarshalRecord ur = (UnmarshalRecord)contentHandler;            	    
+                    XPathNode node = ur.getNonAttributeXPathNode(uri, parentLocalName, parentLocalName, null);
+                    if(node != null){
+	                    NodeValue nv = node.getNodeValue();
+	                    if(nv == null && node.getTextNode() != null){
+	                    	nv = node.getTextNode().getUnmarshalNodeValue();
+	                    }
+	                    if(nv != null && nv.isContainerValue()){
+	                    	ur.getContainerInstance(((ContainerValue)nv));
+	                    }
+                    }
+            	}
+            }
+            for(int x=0; x<size; x++) {
+        	   CommonTree nextChildTree = (CommonTree) tree.getChild(x);
+        	   if(!isTextValue){
          	   contentHandler.startElement(uri, parentLocalName, parentLocalName, attributes.setTree(nextChildTree, attributePrefix, namespaces, namespaceSeparator, namespaceAware));
-         	}
-             parse(nextChildTree);
-             if(!isTextValue){
-                contentHandler.endElement(uri, parentLocalName, parentLocalName);
-             }
-          }
-            
-           
+         	   }
+               parse(nextChildTree);
+               if(!isTextValue){
+                  contentHandler.endElement(uri, parentLocalName, parentLocalName);
+               }
+            } 
+                       
             break;
         }
         default: {
@@ -522,7 +542,11 @@ public class JSONReader extends XMLReaderAdapter {
 
                         Tree childValueTree = childTree.getChild(1);
                         if(childValueTree.getType() == JSONLexer.ARRAY){
-                            for(int y=0, size=childValueTree.getChildCount(); y<size; y++) {
+                        	int size = childValueTree.getChildCount();
+                        	if(size == 0){                 
+                        		attributesList.add(new Attribute(uri, attributeLocalName, attributeLocalName, ""));
+                        	}
+                            for(int y=0; y<size; y++) {
                                 CommonTree nextChildTree = (CommonTree) childValueTree.getChild(y);
                                 addSimpleAttribute(attributesList, uri, attributeLocalName, nextChildTree);
                             }

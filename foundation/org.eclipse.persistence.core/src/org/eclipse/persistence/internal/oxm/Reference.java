@@ -31,7 +31,16 @@ public class Reference {
 	protected Object primaryKey;		// primary key values for cache lookup - used in single case
 	protected HashMap primaryKeyMap;	// map of primary key values for cache lookup - used in collection case
 	private Setting setting;
+	private Object container;
 
+	/**
+	 * Get the container this reference should be added to if it was from a collection mapping
+	 * @return
+	 */
+	public Object getContainer() {
+		return container;
+	}
+	
 	public Setting getSetting() {
 		return setting;
 	}
@@ -43,11 +52,12 @@ public class Reference {
 	/**
 	 * Constructor typically used in the collection case.
 	 */
-	public Reference(XMLMapping mapping, Object source, Class target, HashMap primaryKeyMap) {
+	public Reference(XMLMapping mapping, Object source, Class target, HashMap primaryKeyMap, Object container) {
 		this.mapping = mapping;
 		sourceObject = source;
 		targetClass = target;
 		this.primaryKeyMap = primaryKeyMap;
+		this.container = container;
 	}
 	
 	/**

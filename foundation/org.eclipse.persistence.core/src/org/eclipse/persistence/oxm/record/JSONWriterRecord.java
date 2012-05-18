@@ -93,6 +93,34 @@ public class JSONWriterRecord extends MarshalRecord {
         
     }
 
+        
+    /**
+     * Handle marshal of an empty collection.  
+     * @param xPathFragment
+     * @param namespaceResolver
+     * @param openGrouping if grouping elements should be marshalled for empty collections
+     * @return
+     */    
+    public boolean emptyCollection(XPathFragment xPathFragment, NamespaceResolver namespaceResolver, boolean openGrouping) {    	
+    	 if(marshaller.isMarshalEmptyCollections()){  
+    		 super.emptyCollection(xPathFragment, namespaceResolver, true);
+    		 startCollection();
+    		 if(xPathFragment != null){
+	    		 openStartElement(xPathFragment, namespaceResolver);	    		 
+	    		 if(!levels.isEmpty()){
+	          	   Level position = levels.peek();
+	          	   position.setNeedToCloseComplex(false);
+	          	   position.setNeedToOpenComplex(false);
+	          	 }
+	    		 endElement(xPathFragment, namespaceResolver);
+    		 }
+    		 endEmptyCollection();
+    		 return true;
+    	 }else{
+    		 return super.emptyCollection(xPathFragment, namespaceResolver, openGrouping);
+    	 }
+    }
+    
     /**
      * Return the Writer that the object will be marshalled to.
      * @return The marshal target.
@@ -176,7 +204,7 @@ public class JSONWriterRecord extends MarshalRecord {
                     writer.write('[');                    
                     position.setEmptyCollection(false);
                     position.setNeedToOpenComplex(false);
-                    charactersAllowed = true;
+                    charactersAllowed = true;                    
                     return;
                 }
             }
@@ -299,6 +327,10 @@ public class JSONWriterRecord extends MarshalRecord {
             levels.peek().setCollection(true);
             levels.peek().setEmptyCollection(true);
         }
+    }
+    
+    protected void endEmptyCollection(){
+    	endCollection();
     }
 
     @Override

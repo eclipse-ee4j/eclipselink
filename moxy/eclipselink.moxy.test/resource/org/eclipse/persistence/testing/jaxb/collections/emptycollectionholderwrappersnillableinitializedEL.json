@@ -1,0 +1,21 @@
+{"collectionHolderWrappersNillableInitialized":{   
+   "collection1":{
+      "collection1":[]
+   },
+   "collection2-wrapper":{
+      "collection2":[]
+   },
+   "collection3-wrapper":{},
+   "collection4-wrapper":{
+       "collection4":[]
+    },
+   "collection5-wrapper":{
+      "root":[]
+   },
+   "collection6-wrapper":{
+       "collection6":[]
+   },
+   "collection7-wrapper":{
+      "collection7":[]
+   }
+}}

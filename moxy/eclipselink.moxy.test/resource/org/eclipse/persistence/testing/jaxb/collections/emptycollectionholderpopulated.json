@@ -1,18 +1,30 @@
-{"collectionHolderInitialized":{
-   "@collection12":"abc def",
-   "@abcQName":"80",
-   "collection2":"one two",
-   "referencedObject":[
-      {"id":"1"}
-   ],
-   "root":["60","70"],
-   "collection1":[10,20],
-   "collection11":["YWJj","ZGVm"],
-   "collection3":[{"@type":"int","value":20},{"@type":"int","value":30}],
-   "collection5":[{
-      "@collection12":"",
-      "@type":"collectionHolderInitialized",
-      "collection2":""
-   }],
-   "collection9":["1","5"]
-}}
+{
+   "collectionHolderInitialized" : {
+      "@attribute-referenced-id" : "4 5",
+      "@collection12" : "abc def",
+      "@abcQName" : "80",
+      "collection2" : "one two",
+      "referencedObject" : [ {
+         "id" : "1"
+      } ],
+      "root" : [ "60", "70" ],
+      "referenced-id" : "2 3",
+      "integer" : [ 123, 456 ],
+      "string" : [ "eee" ],
+      "collection1" : [ 10, 20 ],
+      "collection11" : [ "YWJj", "ZGVm" ],
+      "collection3" : [ {
+         "@type" : "int",
+         "value" : 20
+      }, {
+         "@type" : "int",
+         "value" : 30
+      } ],
+      "collection5" : [ {
+         "@collection12" : "",
+         "@type" : "collectionHolderInitialized",
+         "collection2" : ""
+      } ],
+      "collection9" : [ "1", "5" ]
+   }
+}

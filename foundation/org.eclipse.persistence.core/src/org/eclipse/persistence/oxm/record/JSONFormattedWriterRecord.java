@@ -120,6 +120,7 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
                     writer.write(' ');
                     position.setEmptyCollection(false);
                     position.setNeedToOpenComplex(false);
+                    numberOfTabs++;
                     return;
                 }
             }
@@ -201,10 +202,14 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
             super.startCollection();
         }
     }
-
+    @Override
+    protected void endEmptyCollection(){
+    	super.endCollection();
+    }
+    
     @Override
     public void endCollection() {
-        try {
+        try {        	
             writer.write(' ');
             super.endCollection();
         } catch(IOException e) {

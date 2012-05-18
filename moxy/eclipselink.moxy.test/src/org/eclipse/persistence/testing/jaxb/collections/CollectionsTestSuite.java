@@ -29,6 +29,10 @@ public class CollectionsTestSuite extends TestSuite {
         suite.addTestSuite(CollectionHolderWrappersNillableInitializedTestCases.class);
         suite.addTestSuite(CollectionHolderWrappersOverrideTestCases.class);       
         suite.addTestSuite(CollectionHolderWrappersPopulatedTestCases.class);
+        suite.addTestSuite(CollectionHolderInitializedELTestCases.class);
+        suite.addTestSuite(CollectionHolderWrappersNillableInitializedELTestCases.class);
+        suite.addTestSuite(CollectionHolderWrappersInitializedELTestCases.class);
+        suite.addTestSuite(CollectionHolderELTestCases.class);
         return suite;
     }
 

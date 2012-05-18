@@ -1,10 +1,14 @@
-<collectionHolderInitialized abcQName="80" collection12="abc def">
+<collectionHolderInitialized abcQName="80" attribute-referenced-id="4 5" collection12="abc def">
    <collection2>one two</collection2>
    <referencedObject>
        <id>1</id>
    </referencedObject>
    <root>60</root>
    <root>70</root>
+   <referenced-id>2 3</referenced-id>
+   <integer>123</integer>
+   <string>eee</string>
+   <integer>456</integer>
    <collection1>10</collection1>
    <collection1>20</collection1>
    <collection11>YWJj</collection11>

@@ -1099,7 +1099,10 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
     public void skippedEntity(String name) throws SAXException {
     }
 
-    protected XPathNode getNonAttributeXPathNode(String namespaceURI, String localName, String qName, Attributes attributes) {
+    /**
+     * INTERNAL:
+     */
+    public XPathNode getNonAttributeXPathNode(String namespaceURI, String localName, String qName, Attributes attributes) {
         if (0 == levelIndex) {
             return xPathNode;
         }

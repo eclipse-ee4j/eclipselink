@@ -89,13 +89,7 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
         ContainerPolicy cp = getContainerPolicy();
         Object iterator = cp.iteratorFor(collection);
         if (!cp.hasNext(iterator)) {
-            if (xmlBinaryDataCollectionMapping.getWrapperNullPolicy() != null) {
-                XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
-                marshalRecord.closeStartGroupingElements(groupingFragment);
-                return true;
-            } else {
-                return false;
-            }
+        	return marshalRecord.emptyCollection(xPathFragment, namespaceResolver, xmlBinaryDataCollectionMapping.getWrapperNullPolicy() != null);
         }
         
         XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);

@@ -174,6 +174,23 @@ public abstract class MarshalRecord extends XMLRecord {
         }
     }
     
+    /**
+     * Handle marshal of an empty collection.  
+     * @param xPathFragment
+     * @param namespaceResolver
+     * @param openGrouping if grouping elements should be marshalled for empty collections
+     * @return
+     */
+    public boolean emptyCollection(XPathFragment xPathFragment, NamespaceResolver namespaceResolver, boolean openGrouping) {
+    	 if (openGrouping) {
+             XPathFragment groupingFragment = openStartGroupingElements(namespaceResolver);
+             closeStartGroupingElements(groupingFragment);
+             return true;
+         } else {
+             return false;
+         }           
+    }
+    
 	/**
 	 * Add the specified namespace declaration
 	 * @param prefix

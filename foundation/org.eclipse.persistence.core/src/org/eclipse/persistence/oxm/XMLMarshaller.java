@@ -107,6 +107,7 @@ public class XMLMarshaller implements Cloneable {
     private char namespaceSeparator = XMLConstants.DOT;
     private String attributePrefix;
     private boolean includeRoot;
+    private boolean marshalEmptyCollections;
     private String valueWrapper = XMLConstants.VALUE_WRAPPER;
     
     private NamespacePrefixMapper mapper;
@@ -1567,6 +1568,24 @@ public class XMLMarshaller implements Cloneable {
      */
     public void setValueWrapper(String valueWrapper) {
         this.valueWrapper = valueWrapper;
+    }
+    
+    /**
+     * Name of the property to determine if empty collections should be marshalled as []   
+     * Ignored marshalling XML.  
+     * @since 2.4	 
+     */	
+    public boolean isMarshalEmptyCollections() {
+        return marshalEmptyCollections;
+    }
+    
+    /**
+     * Name of the property to determine if empty collections should be marshalled as []    
+     * Ignored marshalling XML.  
+     * @since 2.4	 
+     */
+    public void setMarshalEmptyCollections(Boolean marshalEmptyCollections) {
+        this.marshalEmptyCollections = marshalEmptyCollections;
     }
     
     /**

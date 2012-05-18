@@ -1,23 +1,29 @@
-{"collectionHolderWrappers":{   
-   "collection1":{
-      "collection1":[10, 20]
-   },
-   "collection2-wrapper":{
-      "collection2":[
-          {"type":"int","value":10},
-          {"type":"int","value":20}
-      ]
-   },
-   "collection4-wrapper":{
-      "collection4":[{}]
-   },
-   "collection5-wrapper":{
-      "root":["abcvalue"]
-   },
-   "collection6-wrapper":{
-       "collection6":["10"]
-   },
-   "collection7-wrapper":{
-      "collection7":["YWJj","ZGVm"]
+{
+   "collectionHolderWrappers" : {
+      "collection1" : {
+         "collection1" : [ 10, 20 ]
+      },
+      "collection2-wrapper" : {
+         "collection2" : [ {
+            "type" : "int",
+            "value" : 10
+         }, {
+            "type" : "int",
+            "value" : 20
+         } ]
+      },
+      "collection4-wrapper" : {
+         "collection4" : [ {
+         } ]
+      },
+      "collection5-wrapper" : {
+         "root" : [ "abcvalue" ]
+      },
+      "collection6-wrapper" : {
+         "collection6" : [ "10" ]
+      },
+      "collection7-wrapper" : {
+         "collection7" : [ "YWJj", "ZGVm" ]
+      }
    }
-}}
+}

@@ -88,12 +88,7 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
             XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
             marshalRecord.closeStartGroupingElements(groupingFragment);
         } else {
-            if (xmlAnyCollectionMapping.getWrapperNullPolicy() != null ) {
-                XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
-                marshalRecord.closeStartGroupingElements(groupingFragment);
-            } else {
-                return false;
-            }
+        	return marshalRecord.emptyCollection(xPathFragment, namespaceResolver, xmlAnyCollectionMapping.getWrapperNullPolicy() != null);
         }
         
         if(marshalRecord.getMarshaller().getMediaType() == MediaType.APPLICATION_JSON){

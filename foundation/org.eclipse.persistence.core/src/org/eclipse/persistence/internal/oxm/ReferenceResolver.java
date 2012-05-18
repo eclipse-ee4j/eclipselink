@@ -42,8 +42,7 @@ public class ReferenceResolver {
 
     public static final String KEY = "REFERENCE_RESOLVER";
 
-    private ArrayList<Reference> references;
-    private HashMap<ReferenceKey, Object> referencedContainers;
+    private ArrayList<Reference> references;    
     private ReferenceKey lookupKey;
 
     /**
@@ -64,7 +63,6 @@ public class ReferenceResolver {
      */
     public ReferenceResolver() {
         references = new ArrayList();
-        referencedContainers = new HashMap<ReferenceKey, Object>();
         lookupKey = new ReferenceKey(null, null);
     }
 
@@ -191,16 +189,8 @@ public class ReferenceResolver {
             if (reference.getMapping() instanceof XMLCollectionReferenceMapping) {
                 XMLCollectionReferenceMapping mapping = (XMLCollectionReferenceMapping) reference.getMapping();
                 ContainerPolicy cPolicy = mapping.getContainerPolicy();
-                Object container = this.getContainerForMapping(mapping, referenceSourceObject);
-                if(container == null) {
-                    if (mapping.getReuseContainer()) {
-                        container = mapping.getAttributeAccessor().getAttributeValueFromObject(referenceSourceObject);
-                    } 
-                    if(null == container){
-                        container = cPolicy.containerInstance();
-                    }
-                    this.referencedContainers.put(new ReferenceKey(referenceSourceObject, mapping), container);
-                }
+                //container should never be null                
+                Object container = reference.getContainer();              
 
                 // create vectors of primary key values - one vector per reference instance
                 createPKVectorsFromMap(reference, mapping);
@@ -293,13 +283,6 @@ public class ReferenceResolver {
 
         // reset the references list
         references = new ArrayList<Reference>();
-        referencedContainers = new HashMap<ReferenceKey, Object>();
-    }
-
-    private Object getContainerForMapping(XMLCollectionReferenceMapping mapping, Object referenceSourceObject) {
-        this.lookupKey.setMapping(mapping);
-        this.lookupKey.setSourceObject(referenceSourceObject);
-        return this.referencedContainers.get(lookupKey);
     }
 
     private Object getValue(AbstractSession session, Reference reference, CacheId primaryKey) {

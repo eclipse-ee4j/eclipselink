@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.collections;
 
+import java.util.ArrayList;
+
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
@@ -32,11 +34,63 @@ public class CollectionHolderPopulatedTestCases extends JAXBWithJSONTestCases{
         classes[0] = CollectionHolderInitialized.class;
         setClasses(classes);
         jaxbMarshaller.setProperty(MarshallerProperties.JSON_ATTRIBUTE_PREFIX, "@");
-        jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_ATTRIBUTE_PREFIX, "@");
+        jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_ATTRIBUTE_PREFIX, "@");      
     }
 
     @Override
     protected Object getControlObject() {
+    	CollectionHolderInitialized ch  = new CollectionHolderInitialized();
+    	ch.getCollection1().add(10);
+    	ch.getCollection1().add(20);
+    	
+    	ch.getCollection2().add("one");
+    	ch.getCollection2().add("two");
+    	
+    	ch.getCollection3().add(20);
+    	ch.getCollection3().add(30);
+    	
+    	ReferencedObject ref1 = new ReferencedObject();
+    	ref1.id ="1";
+    	ch.getCollection4().add(ref1);
+    	    	
+    	ch.getCollection5().add(new CollectionHolderInitialized());
+    	
+    	ch.getCollection6().add(new JAXBElement<String>(new QName("root"), String.class, "60"));
+    	ch.getCollection6().add(new JAXBElement<String>(new QName("root"), String.class, "70"));
+    	
+    	ReferencedObject ref2 = new ReferencedObject();
+    	ref2.id ="2";
+    	ReferencedObject ref3 = new ReferencedObject();
+    	ref3.id ="3";
+    	ch.getCollection7().add(ref2);
+    	ch.getCollection7().add(ref3);
+    	
+    	ReferencedObject ref4 = new ReferencedObject();
+    	ref4.id ="4";
+    	ReferencedObject ref5 = new ReferencedObject();
+    	ref5.id ="5";
+    	ch.getCollection8().add(ref4);
+    	ch.getCollection8().add(ref5);
+    	
+    	ch.getCollection9().add(CoinEnum.PENNY);
+    	ch.getCollection9().add(CoinEnum.NICKEL);
+    	
+    	ch.getCollection10().put(new QName("abcQName"), "80");
+    	ch.getCollection10().put(new QName("abcQName"), "80");
+    	
+    	ch.getCollection11().add("abc".getBytes());
+    	ch.getCollection11().add("def".getBytes());
+    	
+    	ch.getCollection12().add("abc");
+    	ch.getCollection12().add("def");
+    	
+    	ch.getCollection13().add(123);
+    	ch.getCollection13().add("eee");
+    	ch.getCollection13().add(456);
+    	return ch;
+    }
+    
+    public Object getReadControlObject() {
     	CollectionHolderInitialized ch  = new CollectionHolderInitialized();
     	ch.getCollection1().add(10);
     	ch.getCollection1().add(20);
@@ -67,9 +121,9 @@ public class CollectionHolderPopulatedTestCases extends JAXBWithJSONTestCases{
     	ref4.id ="4";
     	ReferencedObject ref5 = new ReferencedObject();
     	ref5.id ="5";
-    	//ch.getCollection8().add(ref4);
+    //	ch.getCollection8().add(ref4);
     	//ch.getCollection8().add(ref5);
-    	
+    	//
     	ch.getCollection9().add(CoinEnum.PENNY);
     	ch.getCollection9().add(CoinEnum.NICKEL);
     	
@@ -83,13 +137,31 @@ public class CollectionHolderPopulatedTestCases extends JAXBWithJSONTestCases{
     	ch.getCollection12().add("def");
     	
     	
+    	ch.getCollection13().add(123);
+    	ch.getCollection13().add("eee");
+    	ch.getCollection13().add(456);
     	return ch;
     }
     
     protected Object getJSONReadControlObject() {
     	CollectionHolderInitialized obj = (CollectionHolderInitialized)getControlObject();
     	obj.collection5.get(0).collection10.put(new QName("type"), "collectionHolderInitialized");
+    	obj.collection7 = new ArrayList();
+    	obj.collection8 = new ArrayList();
+    	obj.collection13 = new ArrayList();
+    	obj.getCollection13().add(123);    	
+    	obj.getCollection13().add(456);
+    	obj.getCollection13().add("eee");
     	return obj;
+    }
+
+    public boolean shouldRemoveWhitespaceFromControlDocJSON(){
+    	return false;
+    }
+    
+    //not applicable
+    public void testRoundTrip(){
+    	
     }
     
 }

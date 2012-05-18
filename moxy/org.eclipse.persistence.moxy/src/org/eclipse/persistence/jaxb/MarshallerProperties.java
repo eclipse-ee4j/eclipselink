@@ -57,7 +57,7 @@ public class MarshallerProperties {
      * namespaces are being used. Value should be a Character.
      * @since 2.4
      */
-    public static final String JSON_NAMESPACE_SEPARATOR  = "eclipselink.json.namespace-separator";
+    public static final String JSON_NAMESPACE_SEPARATOR  = JAXBContextProperties.JSON_NAMESPACE_SEPARATOR;
 
     /**
      * The Constant JSON_VALUE_WRAPPER.  This can be used to specify the wrapper
@@ -66,6 +66,13 @@ public class MarshallerProperties {
      */
     public static final String JSON_VALUE_WRAPPER = JAXBContextProperties.JSON_VALUE_WRAPPER;
 
+    /**
+     * The Constant JSON_MARSHAL_EMPTY_COLLECTIONS.  This can be used to specify the wrapper
+     * that will be used around things mapped with @XmlValue.  Only applicable if media type is "application/json".
+     * @since 2.4
+     */
+    public static final String JSON_MARSHAL_EMPTY_COLLECTIONS = "eclipselink.json.marshal-empty-collections";
+    
     /**
      * The Constant MEDIA_TYPE. This can be used to set the media type.
      * Supported values are "application/xml" and "application/json".

@@ -84,7 +84,7 @@ public class XMLCollectionReferenceMappingMarshalNodeValue extends MappingNodeVa
             XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
             marshalRecord.closeStartGroupingElements(groupingFragment);
         } else {
-            return false;
+        	return marshalRecord.emptyCollection(xPathFragment, namespaceResolver, false);
         }
         if(xPathFragment != XPathFragment.SELF_FRAGMENT) {
             marshalRecord.openStartElement(xPathFragment, namespaceResolver);

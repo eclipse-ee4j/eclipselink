@@ -65,5 +65,8 @@ public class CollectionHolderWrappersPopulatedTestCases extends JAXBWithJSONTest
     	return obj;
     }
 
+    public boolean shouldRemoveWhitespaceFromControlDocJSON(){
+    	return false;
+    }
 }
 

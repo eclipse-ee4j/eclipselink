@@ -264,8 +264,8 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
        }
        ArrayList<XMLMapping> processedMappings = new ArrayList<XMLMapping>();
        for(XMLMapping mapping:choiceElementMappings.values()) {
-           if(((DatabaseMapping)mapping).isObjectReferenceMapping() && !(processedMappings.contains(mapping))) {
-               ((DatabaseMapping)mapping).readFromRowIntoObject(row, joinManager, ((XMLRecord)row).getCurrentObject(), cacheKey, sourceQuery, executionSession, isTargetProtected);
+           if(((DatabaseMapping)mapping).isObjectReferenceMapping() && ((DatabaseMapping)mapping).isCollectionMapping() && !(processedMappings.contains(mapping))) {
+        	   ((XMLCollectionReferenceMapping)mapping).readFromRowIntoObject(row, joinManager, ((XMLRecord)row).getCurrentObject(), cacheKey, sourceQuery, executionSession, isTargetProtected, container);
                processedMappings.add(mapping);
            }
        }

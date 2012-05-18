@@ -34,6 +34,7 @@ public class CollectionHolderInitialized extends CollectionHolder{
         collection10 = new HashMap();
         collection11 = new ArrayList();
         collection12 = new ArrayList();
+        collection13 = new ArrayList();
     }
 
 }
