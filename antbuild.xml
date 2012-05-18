@@ -374,8 +374,8 @@
     </target>
 
     <target name="build-oracle-nosql-extension-test">
-        <ant antfile="antbuild.xml" dir="${eclipselink.core.test}"             target="build"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.oracle.nosql.test}"     target="build"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.core.test}"                   target="build"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle.nosql.test}" target="build"/>
     </target>
 
     <!-- Compiles tests (excluding workbench, dbws-util and Oracle extensions). -->

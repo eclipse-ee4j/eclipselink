@@ -41,42 +41,42 @@
 
         It requires some configuration of the build.properties and test.properties to run.
 -->
-<project name="eclipselink.extension.oracle.test" default="build" basedir=".">
-    <available file="../${ant.project.name}" type="dir" property="oracle_test.is.local"/>
-    <fail message="Not running from '${ant.project.name}' directory" unless="oracle_test.is.local"/>
+<project name="eclipselink.extension.oracle.nosql.test" default="build" basedir=".">
+    <available file="../${ant.project.name}" type="dir" property="ora_nosql_test.is.local"/>
+    <fail message="Not running from '${ant.project.name}' directory" unless="ora_nosql_test.is.local"/>
 
-    <dirname  property="oracle_test.build.location_temp" file="${ant.file.eclipselink.extension.oracle.test}"/>
-    <pathconvert targetos="unix" property="oracle_test.build.location">
+    <dirname  property="ora_nosql_test.build.location_temp" file="${ant.file.eclipselink.extension.oracle.nosql.test}"/>
+    <pathconvert targetos="unix" property="ora_nosql_test.build.location">
         <path>
-            <pathelement location="${oracle_test.build.location_temp}"/>
+            <pathelement location="${ora_nosql_test.build.location_temp}"/>
         </path>
     </pathconvert>
-    <echo message="oracle_test.build.location = '${oracle_test.build.location}'"/>
-    <condition property="oracle_test.2.base.dir" value="../.." else="..">
-        <contains string="${oracle_test.build.location}" substring="foundation"/>
+    <echo message="ora_nosql_test.build.location = '${ora_nosql_test.build.location}'"/>
+    <condition property="ora_nosql_test.2.base.dir" value="../.." else="..">
+        <contains string="${ora_nosql_test.build.location}" substring="foundation"/>
     </condition>
-    <echo message="oracle_test.2.base.dir = '${oracle_test.2.base.dir}'"/>
-    <property name="oracle_test.2.common.plugins.dir" value="${oracle_test.2.base.dir}/plugins"/>
-    <property name="oracle_test.2.core.dir"      value="../org.eclipse.persistence.core"/>
-    <property name="oracle_test.2.core.test.dir" value="../eclipselink.core.test"/>
-    <property name="oracle_test.2.jpa.dir"       value="${oracle_test.2.base.dir}/jpa/org.eclipse.persistence.jpa"/>
-    <property name="oracle_test.2.jpa.test.dir"  value="${oracle_test.2.base.dir}/jpa/eclipselink.jpa.test"/>
-    <property name="oracle_test.2.jpa.plugins.dir"       value="${oracle_test.2.base.dir}/jpa/plugins"/>
-    <property name="oracle_test.plugins.dir"     value="../plugins"/>
+    <echo message="ora_nosql_test.2.base.dir = '${ora_nosql_test.2.base.dir}'"/>
+    <property name="ora_nosql_test.2.common.plugins.dir" value="${ora_nosql_test.2.base.dir}/plugins"/>
+    <property name="ora_nosql_test.2.core.dir"           value="../org.eclipse.persistence.core"/>
+    <property name="ora_nosql_test.2.core.test.dir"      value="../eclipselink.core.test"/>
+    <property name="ora_nosql_test.2.jpa.dir"            value="${ora_nosql_test.2.base.dir}/jpa/org.eclipse.persistence.jpa"/>
+    <property name="ora_nosql_test.2.jpa.test.dir"       value="${ora_nosql_test.2.base.dir}/jpa/eclipselink.jpa.test"/>
+    <property name="ora_nosql_test.2.jpa.plugins.dir"    value="${ora_nosql_test.2.base.dir}/jpa/plugins"/>
+    <property name="ora_nosql_test.plugins.dir"          value="../plugins"/>
 
     <!-- Allows a user to overide certain user specific properties. -->
     <property file="${user.home}/build.properties"/>
     <property file="${user.home}/test.properties"/>
-    <property file="${oracle_test.build.location}/antbuild.properties"/>
-    <property file="${oracle_test.build.location}/${test.properties}"/>
-    <property file="${oracle_test.build.location}/test.properties"/>
+    <property file="${ora_nosql_test.build.location}/antbuild.properties"/>
+    <property file="${ora_nosql_test.build.location}/${test.properties}"/>
+    <property file="${ora_nosql_test.build.location}/test.properties"/>
 
     <!-- Local path variables -->
-    <property name="oracle_test.src.dir"      value="${oracle_test.build.location}/${src.dir}"/>
-    <property name="oracle_test.resource.dir" value="${oracle_test.build.location}/${resource.dir}"/>
-    <property name="oracle_test.classes.dir"  value="${oracle_test.build.location}/${classes.dir}"/>
-    <property name="oracle_test.report.dir"   value="${oracle_test.build.location}/${report.dir}"/>
-    <property name="oracle_test.run.dir"      value="${oracle_test.build.location}/${run.dir}"/>
+    <property name="ora_nosql_test.src.dir"      value="${ora_nosql_test.build.location}/${src.dir}"/>
+    <property name="ora_nosql_test.resource.dir" value="${ora_nosql_test.build.location}/${resource.dir}"/>
+    <property name="ora_nosql_test.classes.dir"  value="${ora_nosql_test.build.location}/${classes.dir}"/>
+    <property name="ora_nosql_test.report.dir"   value="${ora_nosql_test.build.location}/${report.dir}"/>
+    <property name="ora_nosql_test.run.dir"      value="${ora_nosql_test.build.location}/${run.dir}"/>
 
     <!-- Default ant target, compiles and translates resources, does not run tests. -->
     <target name="build" depends="clean, compile, package" description="build Oracle extension tests"/>
@@ -84,39 +84,32 @@
     <!-- Clean all build generated content. -->
     <target name="clean" description="Clean the build">
         <echo message="Cleaning..."/>
-        <echo message="    ${oracle_test.classes.dir}"/>
-        <echo message="    ${oracle_test.report.dir}"/>
-        <echo message="    ${oracle_test.run.dir}"/>
-        <echo message="    ${oracle_test.build.location}/${oracle.test.jar}"/>
-        <echo message="    ${oracle_test.build.location}/eclipselink-struct-converter-model.jar"/>
-        <echo message="    ${oracle_test.build.location}/eclipselink-customfeatures-model.jar"/>
-        <echo message="    ${oracle_test.build.location}/eclipselink-dcn-model.jar"/>
-        <echo message="    ${oracle_test.build.location}/${oracle.jpa.test.jar}"/>
+        <echo message="    ${ora_nosql_test.classes.dir}"/>
+        <echo message="    ${ora_nosql_test.report.dir}"/>
+        <echo message="    ${ora_nosql_test.run.dir}"/>
+        <echo message="    ${ora_nosql_test.build.location}/${oracle.nosql.test.jar}"/>
+        <echo message="    ${ora_nosql_test.build.location}/${oracle.nosql.model.jar}"/>
         <delete includeEmptyDirs="true" failonerror="false">
-            <fileset dir="${oracle_test.classes.dir}"/>
-            <fileset dir="${oracle_test.report.dir}"/>
-            <fileset dir="${oracle_test.run.dir}"/>
-            <fileset dir="${oracle_test.build.location}" includes="${oracle.test.jar}"/>
-            <fileset dir="${oracle_test.build.location}" includes="eclipselink-struct-converter-model.jar"/>
-            <fileset dir="${oracle_test.build.location}" includes="eclipselink-customfeatures-model.jar"/>
-            <fileset dir="${oracle_test.build.location}" includes="eclipselink-dcn-model.jar"/>
-            <fileset dir="${oracle_test.build.location}" includes="${oracle.jpa.test.jar}"/>
+            <fileset dir="${ora_nosql_test.classes.dir}"/>
+            <fileset dir="${ora_nosql_test.report.dir}"/>
+            <fileset dir="${ora_nosql_test.run.dir}"/>
+            <fileset dir="${ora_nosql_test.build.location}" includes="${oracle.nosql.test.jar}"/>
+            <fileset dir="${ora_nosql_test.build.location}" includes="${oracle.nosql.model.jar}"/>
         </delete>
     </target>
 
     <target name="init">
         <!-- Give this a default value if not set in a user.home or test property file -->
-        <property name="oracle.extensions.depend.dir" value="../${oracle_test.2.base.dir}/extension.oracle.lib.external"/>
-        <property name="oracle.nosql.jar.dir" value="${oracle.extensions.depend.dir}"/>
-        <property name="extensions.depend.dir" value="../${oracle_test.2.base.dir}/extension.lib.external"/>
-        <property name="junit.lib" value="${extensions.depend.dir}/junit.jar"/>
-        <echo message="oracle_test.src.dir     ='${oracle_test.src.dir}'"/>
-        <echo message="oracle_test.resource.dir='${oracle_test.resource.dir}'"/>
-        <echo message="oracle_test.classes.dir ='${oracle_test.classes.dir}'"/>
-        <echo message="oracle_test.report.dir  ='${oracle_test.report.dir}'"/>
-        <echo message="oracle_test.run.dir     ='${oracle_test.run.dir}'"/>
-        <echo message="user.home      ='${user.home}'"/>
-        <echo message="test.properties='${test.properties}'"/>
+        <property name="oracle.extensions.depend.dir" value="../${ora_nosql_test.2.base.dir}/extension.oracle.lib.external"/>
+        <property name="extensions.depend.dir"        value="../${ora_nosql_test.2.base.dir}/extension.lib.external"/>
+        <property name="junit.lib"                    value="${extensions.depend.dir}/junit.jar"/>
+        <echo message="ora_nosql_test.src.dir     ='${ora_nosql_test.src.dir}'"/>
+        <echo message="ora_nosql_test.resource.dir='${ora_nosql_test.resource.dir}'"/>
+        <echo message="ora_nosql_test.classes.dir ='${ora_nosql_test.classes.dir}'"/>
+        <echo message="ora_nosql_test.report.dir  ='${ora_nosql_test.report.dir}'"/>
+        <echo message="ora_nosql_test.run.dir     ='${ora_nosql_test.run.dir}'"/>
+        <echo message="user.home             ='${user.home}'"/>
+        <echo message="test.properties       ='${test.properties}'"/>
         <echo message="extensions.depend.dir ='${extensions.depend.dir}'"/>
         <echo message="junit.lib             ='${junit.lib}'"/>
 
@@ -146,35 +139,35 @@
                                              else="${extensions.depend.dir}/${oracle.orai18n-mapping.jar}">
             <available file="${oracle.extensions.depend.dir}/${oracle.orai18n-mapping.jar}"/>
         </condition>
-        <condition property="oracle.nosql.lib" value="${oracle.nosql.jar.dir}/${oracle.nosql.jar}"
+        <condition property="oracle.nosql.lib" value="${oracle.extensions.depend.dir}/${oracle.nosql.jar}"
                                           else="${extensions.depend.dir}/${oracle.nosql.jar}">
-            <available file="${oracle.nosql.jar.dir}/${oracle.nosql.jar}"/>
+            <available file="${oracle.extensions.depend.dir}/${oracle.nosql.jar}"/>
         </condition>
 
         <!-- Create needed directories
-        <mkdir dir="${oracle_test.classes.dir}"/>
-        <mkdir dir="${oracle_test.run.dir}"/>
-        <mkdir dir="${oracle_test.report.dir}"/ -->
+        <mkdir dir="${ora_nosql_test.classes.dir}"/>
+        <mkdir dir="${ora_nosql_test.run.dir}"/>
+        <mkdir dir="${ora_nosql_test.report.dir}"/ -->
 
         <!-- Determine availability of compile dependencies   -->
-        <available file="${oracle_test.2.common.plugins.dir}/${antlr}_${version.string}.jar" property="antlr.bundle.exist"/>
-        <available file="${oracle_test.2.common.plugins.dir}/${asm}_${version.string}.jar" property="asm.bundle.exist"/>
-        <available file="${oracle_test.2.common.plugins.dir}/org.eclipse.persistence.jpa_${version.string}.jar" property="jpa.bundle.exist"/>
-        <available file="${oracle_test.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar" property="core.bundle.exist"/>
-        <available file="${oracle_test.2.common.plugins.dir}/org.eclipse.persistence.oracle_${version.string}.jar" property="oracle.bundle.exist"/>
-        <available file="${oracle_test.2.base.dir}/${eclipselink.jar}" property="eclipselink.jar.exist"/>
-        <available file="${oracle_test.2.jpa.dir}/${classes.dir}" type="dir" property="jpa.classes.exist"/>
-        <available file="${oracle_test.2.core.dir}/${classes.dir}" type="dir" property="core.classes.exist"/>
-        <available file="${oracle_test.2.oracle.dir}/${classes.dir}" type="dir" property="oracle.classes.exist"/>
+        <available file="${ora_nosql_test.2.common.plugins.dir}/${antlr}_${version.string}.jar" property="antlr.bundle.exist"/>
+        <available file="${ora_nosql_test.2.common.plugins.dir}/${asm}_${version.string}.jar" property="asm.bundle.exist"/>
+        <available file="${ora_nosql_test.2.common.plugins.dir}/org.eclipse.persistence.jpa_${version.string}.jar" property="jpa.bundle.exist"/>
+        <available file="${ora_nosql_test.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar" property="core.bundle.exist"/>
+        <available file="${ora_nosql_test.2.common.plugins.dir}/org.eclipse.persistence.oracle.nosql_${version.string}.jar" property="oracle.nosql.bundle.exist"/>
+        <available file="${ora_nosql_test.2.base.dir}/${eclipselink.jar}" property="eclipselink.jar.exist"/>
+        <available file="${ora_nosql_test.2.jpa.dir}/${classes.dir}" type="dir" property="jpa.classes.exist"/>
+        <available file="${ora_nosql_test.2.core.dir}/${classes.dir}" type="dir" property="core.classes.exist"/>
+        <available file="${ora_nosql_test.2.oracle.nosql.dir}/${classes.dir}" type="dir" property="oracle.nosql.classes.exist"/>
         <available file="${junit.lib}" property="junit.lib.exist"/>
-        <available file="${oracle_test.2.common.plugins.dir}/${unsigned.persistence10.jar}" property="persistence.bundle.exist"/>
-        <available file="${oracle_test.2.core.test.dir}/${coretest.framework.jar}" property="test.framework.exist"/>
-        <available file="${oracle_test.2.core.test.dir}/${core.test.jar}" property="core.test.models.exist"/>
-        <available file="${oracle_test.2.jpa.test.dir}/${jpatest.framework.jar}" property="jpatest.framework.exist"/>
+        <available file="${ora_nosql_test.2.common.plugins.dir}/${unsigned.persistence10.jar}" property="persistence.bundle.exist"/>
+        <available file="${ora_nosql_test.2.core.test.dir}/${coretest.framework.jar}" property="test.framework.exist"/>
+        <available file="${ora_nosql_test.2.core.test.dir}/${core.test.jar}" property="core.test.models.exist"/>
+        <available file="${ora_nosql_test.2.jpa.test.dir}/${jpatest.framework.jar}" property="jpatest.framework.exist"/>
         <!-- Determine availability of runtime dependencies   -->
-        <available file="${oracle_test.2.jpa.dir}/${resource.dir}" type="dir" property="jpa.resources.exist"/>
-        <available file="${oracle_test.2.core.dir}/${resource.dir}" type="dir" property="core.resources.exist"/>
-        <available file="${oracle_test.2.oracle.dir}/${resource.dir}" type="dir" property="oracle.resources.exist"/>
+        <available file="${ora_nosql_test.2.jpa.dir}/${resource.dir}" type="dir" property="jpa.resources.exist"/>
+        <available file="${ora_nosql_test.2.core.dir}/${resource.dir}" type="dir" property="core.resources.exist"/>
+        <available file="${ora_nosql_test.2.oracle.nosql.dir}/${resource.dir}" type="dir" property="oracle.nosql.resources.exist"/>
         <available file="${jdbc.driver.jar}" property="jdbc.jar.exist"/>
         <!-- Determine availability and location of Oracle dependencies   -->
         <available file="${oracle.extensions.depend.dir}" type="dir" property="oracle.depend.dir.exist"/>
@@ -186,7 +179,10 @@
 
         <!-- Determine where to get product classes, based upon availability  -->
         <condition property="use.eclipselink">
+            <and>
                 <isset property="eclipselink.jar.exist"/>
+                <isset property="oracle.nosql.bundle.exist"/>
+            </and>
         </condition>
         <condition property="use.bundles">
             <and>
@@ -194,7 +190,7 @@
                 <isset property="asm.bundle.exist"/>
                 <isset property="jpa.bundle.exist"/>
                 <isset property="core.bundle.exist"/>
-                <isset property="oracle.bundle.exist"/>
+                <isset property="oracle.nosql.bundle.exist"/>
                 <not> <isset property="use.eclipselink"/> </not>
             </and>
         </condition>
@@ -202,10 +198,10 @@
             <and>
                 <isset property="jpa.resources.exist"/>
                 <isset property="core.resources.exist"/>
-                <isset property="oracle.resources.exist"/>
+                <isset property="oracle.nosql.resources.exist"/>
                 <isset property="jpa.classes.exist"/>
                 <isset property="core.classes.exist"/>
-                <isset property="oracle.classes.exist"/>
+                <isset property="oracle.nosql.classes.exist"/>
                 <not> <isset property="use.eclipselink"/> </not>
                 <not> <isset property="use.bundles"/>     </not>
             </and>
@@ -238,86 +234,89 @@
     </target>
 
     <target name="init_eclipselink" if="use.eclipselink">
-        <echo message="Using EclipseLink.jar as 'product' in compile dependency."/>
-        <path id="oracle_test.product.path">
-            <pathelement path="${oracle_test.2.base.dir}/${eclipselink.jar}"/>
-            <fileset dir="${oracle_test.2.common.plugins.dir}" includes="org.eclipse.persistence.oracle.nosql_*.jar"/>
+        <echo message="Using EclipseLink.jar and org.eclipse.persistence.oracle.nosql_*.jar as 'product' in compile dependency."/>
+        <path id="ora_nosql_test.product.path">
+            <pathelement path="${ora_nosql_test.2.base.dir}/${eclipselink.jar}"/>
+            <fileset dir="${ora_nosql_test.2.common.plugins.dir}" includes="org.eclipse.persistence.oracle.nosql_*.jar"/>
         </path>
     </target>
     <target name="init_bundles" if="use.bundles">
         <echo message="Using EclipseLink OSGi bundles as 'product' in compile dependency."/>
-        <path id="oracle_test.product.path">
-            <pathelement path="${oracle_test.2.common.plugins.dir}/${antlr}_${version.string}.jar"/>
-            <pathelement path="${oracle_test.2.common.plugins.dir}/${asm}_${version.string}.jar"/>
-            <pathelement path="${oracle_test.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
+        <path id="ora_nosql_test.product.path">
+            <pathelement path="${ora_nosql_test.2.common.plugins.dir}/${antlr}_${version.string}.jar"/>
+            <pathelement path="${ora_nosql_test.2.common.plugins.dir}/${asm}_${version.string}.jar"/>
+            <pathelement path="${ora_nosql_test.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
+            <pathelement path="${ora_nosql_test.2.common.plugins.dir}/org.eclipse.persistence.oracle.nosql_${version.string}.jar"/>
         </path>
     </target>
     <target name="init_classes" if="use.classes">
         <echo message="Using EclipseLink classes directly as 'product' in compile dependency."/>
-        <path id="oracle_test.product.path">
-            <pathelement path="${oracle_test.2.common.plugins.dir}/${antlr}"/>
-            <pathelement path="${oracle_test.2.common.plugins.dir}/${asm}"/>
-            <pathelement path="${oracle_test.2.jpa.dir}/${classes.dir}"/>
-            <pathelement path="${oracle_test.2.jpa.dir}/${resource.dir}"/>
-            <pathelement path="${oracle_test.2.core.dir}/${classes.dir}"/>
-            <pathelement path="${oracle_test.2.core.dir}/${resource.dir}"/>
-            <pathelement path="${oracle_test.2.oracle.dir}/${classes.dir}"/>
-            <pathelement path="${oracle_test.2.oracle.dir}/${resource.dir}"/>
+        <path id="ora_nosql_test.product.path">
+            <pathelement path="${ora_nosql_test.2.common.plugins.dir}/${antlr}"/>
+            <pathelement path="${ora_nosql_test.2.common.plugins.dir}/${asm}"/>
+            <pathelement path="${ora_nosql_test.2.jpa.dir}/${classes.dir}"/>
+            <pathelement path="${ora_nosql_test.2.jpa.dir}/${resource.dir}"/>
+            <pathelement path="${ora_nosql_test.2.core.dir}/${classes.dir}"/>
+            <pathelement path="${ora_nosql_test.2.core.dir}/${resource.dir}"/>
+            <pathelement path="${ora_nosql_test.2.oracle.nosql.dir}/${classes.dir}"/>
+            <pathelement path="${ora_nosql_test.2.oracle.nosql.dir}/${resource.dir}"/>
         </path>
     </target>
-    <target name="init_dependency" if="dependency.ok" depends="announce_missing_dependencies">
-        <path id="oracle_test.oracle.dependency.path">
-            <pathelement path="${oracle.ojdbc.lib}"/>
-            <pathelement path="${oracle.aqapi.lib}"/>
+    <!--
             <pathelement path="${oracle.orai18n-mapping.lib}"/>
+    -->
+    <target name="init_dependency" if="dependency.ok" depends="announce_missing_dependencies">
+        <path id="ora_nosql_test.oracle.dependency.path">
             <pathelement path="${oracle.nosql.lib}"/>
+            <pathelement path="${oracle.aqapi.lib}"/>
             <pathelement path="${junit.lib}"/>
         </path>
-        <path id="oracle_test.test.infrastructure.path">
-            <pathelement path="${oracle_test.2.core.test.dir}/${coretest.framework.jar}"/>
-            <pathelement path="${oracle_test.2.core.test.dir}/${core.test.jar}"/>
-            <pathelement path="${oracle_test.2.jpa.test.dir}/${jpatest.framework.jar}"/>
+        <path id="ora_nosql_test.test.infrastructure.path">
+            <pathelement path="${ora_nosql_test.2.core.test.dir}/${coretest.framework.jar}"/>
+            <pathelement path="${ora_nosql_test.2.core.test.dir}/${core.test.jar}"/>
+            <pathelement path="${ora_nosql_test.2.jpa.test.dir}/${jpatest.framework.jar}"/>
             <pathelement path="${junit.lib}"/>
         </path>
-        <path id="oracle_test.public.dependency.path">
-            <pathelement path="${oracle_test.2.jpa.plugins.dir}/${persistence20.jar}"/>
-            <fileset dir="${oracle_test.2.common.plugins.dir}" includes="${eclipselink.core.depend}"/>
+        <path id="ora_nosql_test.public.dependency.path">
+            <pathelement path="${ora_nosql_test.2.jpa.plugins.dir}/${persistence20.jar}"/>
+            <pathelement path="${ora_nosql_test.2.common.plugins.dir}/${resource.jar}"/>
+            <pathelement path="${ora_nosql_test.2.common.plugins.dir}/${jms.jar}"/>
         </path>
     </target>
     <target name="init_paths" depends="init, init_eclipselink, init_bundles, init_classes, init_dependency">
         <fail message="Product classes do not exist anywhere! Compile product or populate jars." if="use.failed"/>
         <!-- Define 'Helper' path refids -->
-        <path id="oracle_test.runtime.only.path">
-            <pathelement path="${oracle_test.build.location}/${oracle.test.jar}"/>
-            <pathelement path="${oracle_test.run.dir}"/>
+        <path id="ora_nosql_test.runtime.only.path">
+            <pathelement path="${ora_nosql_test.build.location}/${oracle.nosql.test.jar}"/>
+            <pathelement path="${ora_nosql_test.build.location}/${oracle.nosql.model.jar}"/>
+            <pathelement path="${ora_nosql_test.run.dir}"/>
             <pathelement path="${jdbc.driver.jar}"/>
-            <pathelement path="${oracle_test.2.core.test.dir}/resource"/>
+            <pathelement path="${ora_nosql_test.2.core.test.dir}/resource"/>
         </path>
         <!-- Classpath used for compiling tests. -->
-        <path id="oracle_test.compile.path">
-            <path refid="oracle_test.product.path"/>
-            <path refid="oracle_test.public.dependency.path"/>
-            <path refid="oracle_test.oracle.dependency.path"/>
-            <path refid="oracle_test.test.infrastructure.path"/>
+        <path id="ora_nosql_test.compile.path">
+            <path refid="ora_nosql_test.product.path"/>
+            <path refid="ora_nosql_test.public.dependency.path"/>
+            <path refid="ora_nosql_test.oracle.dependency.path"/>
+            <path refid="ora_nosql_test.test.infrastructure.path"/>
         </path>
         <!-- Classpath used for running tests. -->
-        <path id="oracle_test.run.path">
-            <path refid="oracle_test.compile.path"/>
-            <path refid="oracle_test.runtime.only.path"/>
+        <path id="ora_nosql_test.run.path">
+            <path refid="ora_nosql_test.compile.path"/>
+            <path refid="ora_nosql_test.runtime.only.path"/>
         </path>
     </target>
     <target name="announce_missing_dependencies" unless="dependency.ok" description="publicize missing dependencies">
-        <echo message="Following is a list of dependencies and their status ('found=' anything but 'true' means it wasn't found):"/>
+        <echo message="Following is a list of dependencies and their status (where anything other than 'true' after 'found=' means it wasn't found):"/>
         <echo message="    Test infrastructure:"/>
         <echo message="        '${junit.lib}' :: found='${junit.lib.exist}'"/>
-        <echo message="        '${oracle_test.2.jpa.test.dir}/${jpatest.framework.jar}' :: found='${jpatest.framework.exist}'"/>
-        <echo message="        '${oracle_test.2.core.test.dir}/${core.test.jar}' :: found='${core.test.models.exist}'"/>
-        <echo message="        '${oracle_test.2.core.test.dir}/${coretest.framework.jar}' :: found='${test.framework.exist}'"/>
+        <echo message="        '${ora_nosql_test.2.jpa.test.dir}/${jpatest.framework.jar}' :: found='${jpatest.framework.exist}'"/>
+        <echo message="        '${ora_nosql_test.2.core.test.dir}/${core.test.jar}' :: found='${core.test.models.exist}'"/>
+        <echo message="        '${ora_nosql_test.2.core.test.dir}/${coretest.framework.jar}' :: found='${test.framework.exist}'"/>
         <echo message="The test framework is currently part of the core.test and jpa.test projects. Be sure they are built."/>
         <echo message="    oracle dependency location: '${oracle.extensions.depend.dir}' :: found='${oracle.depend.dir.exist}'"/>
         <echo message="    dependency location:        '${extensions.depend.dir}' :: found='${ext.depend.dir.exist}'"/>
-        <echo message="        '${oracle.ojdbc.lib}'       :: found='${oracle.ojdbc.lib.exist}'"/>
-        <echo message="        '${oracle.aqapi.lib}'       :: found='${oracle.aqapi.lib.exist}'"/>
+        <echo message="        '${oracle.aqapi.lib}' :: found='${oracle.aqapi.lib.exist}'"/>
         <echo message="        '${oracle.nosql.lib}' :: found='${oracle.nosql.lib.exist}'"/>
         <echo message="Please put your Oracle dependencies in one of the two 'dependency' locations (default or custom defined)."/>
         <fail message="Missing dependencies!" unless="compile.ok"/>
@@ -330,9 +329,9 @@
         <echo message="    '${oracle.aqapi.lib}'"/>
         <echo message="    '${oracle.orai18n-mapping.lib}'"/>
         <echo message="    '${oracle.nosql.lib}'"/>
-        <mkdir dir="${oracle_test.classes.dir}"/>
-        <javac srcdir="${oracle_test.src.dir}"
-               destdir="${oracle_test.classes.dir}"
+        <mkdir dir="${ora_nosql_test.classes.dir}"/>
+        <javac srcdir="${ora_nosql_test.src.dir}"
+               destdir="${ora_nosql_test.classes.dir}"
                includes="org/eclipse/persistence/**, java/sql/**"
                debug="${javac.debug}"
                debuglevel="${javac.debuglevel}"
@@ -345,33 +344,39 @@
                memoryMaximumSize="512m"
                fork="true">
             <classpath>
-                <path refid="oracle_test.compile.path"/>
+                <path refid="ora_nosql_test.compile.path"/>
             </classpath>
         </javac>
     </target>
 
     <target name="package">
         <!-- Package the NoSQL JPA model jar. -->
-        <jar jarfile="eclipselink-nosql-model.jar">
+        <jar jarfile="${oracle.nosql.model.jar}">
             <zipfileset dir="resource/nosql" includes="*.xml" prefix="META-INF"/>
-            <fileset dir="${oracle_test.classes.dir}"
+            <fileset dir="${ora_nosql_test.classes.dir}"
                      includes="org/eclipse/persistence/testing/models/jpa/nosql/**"/>
         </jar>
+        <!-- Package the EIS AQ model jar??? Any reason this is in the test jar and not a model jar?? -->
+        <!-- jar jarfile="${oracle.eis.model.jar}">
+            <zipfileset dir="resource/eis" includes="*.xml" prefix="META-INF"/>
+            <fileset dir="${ora_nosql_test.classes.dir}"
+                     includes="org/eclipse/persistence/testing/models/eis/**"/>
+        </jar -->
         <!-- Build tests jar. -->
-        <jar jarfile="${oracle.test.jar}">
-            <fileset dir="${oracle_test.classes.dir}"
+        <jar jarfile="${oracle.nosql.test.jar}">
+            <fileset dir="${ora_nosql_test.classes.dir}"
                      includes="org/eclipse/persistence/**/*.class"
                      excludes="org/eclipse/persistence/testing/models/jpa/**,
                                org/eclipse/persistence/testing/tests/jpa/**"/>
-            <fileset dir="${oracle_test.resource.dir}"
+            <fileset dir="${ora_nosql_test.resource.dir}"
                      includes="org/eclipse/persistence/**"/>
         </jar>
     </target>
 
     <target name="init_run" depends="init_paths">
-        <mkdir dir="${oracle_test.run.dir}"/>
-        <mkdir dir="${oracle_test.report.dir}"/>
-        <copy file="${oracle_test.2.core.test.dir}/${resource.dir}/java.policy.allpermissions" todir="${oracle_test.run.dir}" overwrite="true"/>
+        <mkdir dir="${ora_nosql_test.run.dir}"/>
+        <mkdir dir="${ora_nosql_test.report.dir}"/>
+        <copy file="${ora_nosql_test.2.core.test.dir}/${resource.dir}/java.policy.allpermissions" todir="${ora_nosql_test.run.dir}" overwrite="true"/>
     </target>
 
     <!-- Default test target, runs test.class from test.properties (default is OracleTestModel). -->
@@ -394,9 +399,9 @@
     <!-- Launches the testing browser -->
     <target name="test-browser">
         <echo>Running test browser</echo>
-        <mkdir dir="${oracle_test.run.dir}"/>
-        <mkdir dir="${oracle_test.report.dir}"/>
-        <copy file="${oracle_test.2.core.test.dir}/${resource.dir}/java.policy.allpermissions" todir="${oracle_test.run.dir}" overwrite="true"/>
+        <mkdir dir="${ora_nosql_test.run.dir}"/>
+        <mkdir dir="${ora_nosql_test.report.dir}"/>
+        <copy file="${ora_nosql_test.2.core.test.dir}/${resource.dir}/java.policy.allpermissions" todir="${ora_nosql_test.run.dir}" overwrite="true"/>
         <java classname="org.eclipse.persistence.testing.framework.ui.TestingBrowserFrame"
              fork="true"
              maxmemory="512m"
@@ -411,7 +416,7 @@
             <jvmarg value="-Djava.security.manager"/>
             <jvmarg value="-Djava.security.policy=../java.policy.allpermissions"/>
             <classpath>
-                <path refid="oracle_test.run.path"/>
+                <path refid="ora_nosql_test.run.path"/>
             </classpath>
         </java>
     </target>
@@ -432,7 +437,7 @@
                 <jvmarg value="-Djava.security.manager"/>
                 <jvmarg value="-Djava.security.policy=./java.policy.allpermissions"/>
                 <classpath>
-                    <path refid="oracle_test.run.path"/>
+                    <path refid="ora_nosql_test.run.path"/>
                 </classpath>
                 <formatter type="xml"/>
                 <test name="@{testclass}" haltonfailure="no" outfile="${report.dir}/@{testclass}-test-results">
@@ -462,7 +467,7 @@
                  fork="true"
                  maxmemory="512m"
                  failonerror="false"
-                 dir="${oracle_test.run.dir}">
+                 dir="${ora_nosql_test.run.dir}">
                 <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
                 <jvmarg value="-Ddb.driver=${db.driver}"/>
                 <jvmarg value="-Ddb.url=@{dburl}"/>
@@ -476,7 +481,7 @@
                 <arg value="regressionlog=${report.dir}/@{testclass}-test.log" />
                 <arg value="saveresults=true" />
                 <classpath>
-                    <path refid="oracle_test.run.path"/>
+                    <path refid="ora_nosql_test.run.path"/>
                 </classpath>
             </java>
         </sequential>
