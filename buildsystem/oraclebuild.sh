@@ -4,10 +4,14 @@ THIS=$0
 PROGNAME=`basename ${THIS}`
 CUR_DIR=`dirname ${THIS}`
 umask 0002
-TARGET=oracle
-TARG_NM="oracle"
-BRANCH=$1
-
+TARGET=$1
+BRANCH=$2
+if [ ! "${TARGET}" = "" ] ; then
+    TARG_NM=${TARGET}
+else
+    TARGET=oracleext
+    TARG_NM="oracleext"
+fi
 
 ##-- Convert "BRANCH" to BRANCH_NM (version or trunk) and BRANCH (svn branch path)
 #    BRANCH_NM is used for reporting and naming purposes
@@ -46,18 +50,31 @@ tmp=$tmp/somedir.$RANDOM.$RANDOM.$RANDOM.$$
 }
 echo "results stored in: '${tmp}'"
 
+#Execution dependent settings
+if [ ! "${TARGET}" = "oracleext" ] ; then
+    HOME_DIR=/shared/el_oracleext
+    ORACLE_ROOT=foundation/org.eclipse.persistence.oracle
+    ORACLE_CI_DIR=foundation/plugins
+fi
+if [ ! "${TARGET}" = "oraclenosql" ] ; then
+    HOME_DIR=/shared/el_oraclenosql
+    ORACLE_ROOT=foundation/org.eclipse.persistence.oracle.nosql
+    ORACLE_CI_DIR=foundation/plugins
+fi
+if [ ! "${HOME_DIR}" = "" ] ; then
+    echo "Invalid argument set for \$1!"
+    echo "Valid options are 'oracleext' or 'oraclenosql'"
+fi
+
 #Define common variables
 SVN_SERVER=dev.eclipse.org
 START_DATE=`date '+%y%m%d-%H%M'`
 DEFAULT_PREVREV=5400
 DEFAULT_PREVCOMMIT=5401
 #Directories
-HOME_DIR=/shared/el_oracleext
 JAVA_HOME=/shared/common/jdk1.6.0_21
 ANT_HOME=/usr/share/ant
 LOG_DIR=${HOME_DIR}/logs
-ORACLE_ROOT=foundation/org.eclipse.persistence.oracle
-ORACLE_CI_DIR=foundation/plugins
 BRANCH_PATH=${HOME_DIR}/${BRANCH}trunk
 BLD_DEPS_DIR=${HOME_DIR}/bld_deps/${BRANCH_NM}
 #URLs
@@ -76,8 +93,8 @@ TEMP_FILE=${tmp}/SVNLOG-${BRANCH_NM}_${TARG_NM}_${START_DATE}.txt
 MAIL_EXEC=/usr/bin/mail
 MAILFROM=eric.gwin@oracle.com
 MAILLIST=${MAILFROM}
-SUCC_MAILLIST="eric.gwin@oracle.com"
-FAIL_MAILLIST=${MAILLIST}
+SUCC_MAILLIST="eric.gwin@oracle.com edwin.tang@oracle.com"
+FAIL_MAILLIST=${SUCC_MAILLIST}
 TESTDATA_FILE=${tmp}/testsummary-${BRANCH_NM}_${TARG_NM}.txt
 SVN_LOG_FILE=${tmp}/svnlog-${BRANCH_NM}_${TARG_NM}.txt
 PROJ_LOG_FILE=${tmp}/projlog-${BRANCH_NM}_${TARG_NM}.txt

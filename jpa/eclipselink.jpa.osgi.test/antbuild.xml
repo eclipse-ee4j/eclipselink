@@ -61,7 +61,6 @@
         <property name="eclipselink.core.dir" value="${eclipselink.jpa.osgi.test}/${eclipselink.core.trunk}"/>
         <property name="eclipselink.core.test.dir" value="${eclipselink.jpa.osgi.test}/${eclipselink.core.test.trunk}"/>
         <property name="eclipselink.core.lib.dir" value="${eclipselink.jpa.osgi.test}/${eclipselink.plugins.trunk}"/>
-        <property name="eclipselink.extension.oracle.dir" value="${eclipselink.jpa.osgi.test}/${eclipselink.extension.oracle.trunk}"/>
         <property name="eclipselink.extension.oracle.test.dir" value="${eclipselink.jpa.osgi.test}/${eclipselink.extension.oracle.test.trunk}"/>
         <property name="eclipselink.plugins.dir" value="${eclipselink.jpa.osgi.test}/${eclipselink.plugins.trunk}"/>
         <antcall target="config-compile-path" inheritRefs="true"/>
@@ -72,7 +71,6 @@
         <property name="eclipselink.core.dir" value="${eclipselink.core}"/>
         <property name="eclipselink.core.test.dir" value="${eclipselink.core.test}"/>
         <property name="eclipselink.core.lib.dir" value="${eclipselink.plugins}"/>
-        <property name="eclipselink.extension.oracle.dir" value="${eclipselink.extension.oracle}"/>
         <property name="eclipselink.extension.oracle.test.dir" value="${eclipselink.extension.oracle.test}"/>
         <property name="eclipselink.plugins.dir" value="${eclipselink.plugins}"/>
         <antcall target="config-compile-path" inheritRefs="true"/>

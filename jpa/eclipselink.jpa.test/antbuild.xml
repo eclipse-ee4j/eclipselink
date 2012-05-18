@@ -328,7 +328,7 @@
             <contains string="${server.name}" substring="glassfish"/>
         </and>
     </condition>
-    
+
     <condition property="is.jaxrs.testing.on.weblogic">
         <and>
             <isset property="is.jaxrs.testing"/>
@@ -344,7 +344,6 @@
         <property name="eclipselink.core.lib.dir" value="${eclipselink.jpa.test}/${eclipselink.plugins.trunk}"/>
         <property name="eclipselink.moxy.dir" value="${eclipselink.jpa.test}/${eclipselink.moxy.trunk}"/>
         <property name="eclipselink.moxy.lib.dir" value="${eclipselink.jpa.test}/${eclipselink.moxy.plugins.trunk}"/>
-        <property name="eclipselink.extension.oracle.dir" value="${eclipselink.jpa.test}/${eclipselink.extension.oracle.trunk}"/>
         <property name="eclipselink.extension.oracle.test.dir" value="${eclipselink.jpa.test}/${eclipselink.extension.oracle.test.trunk}"/>
         <antcall target="config-compile-path" inheritRefs="true"/>
         <antcall target="config-run-path" inheritRefs="true"/>
@@ -357,7 +356,6 @@
         <property name="eclipselink.core.lib.dir" value="${eclipselink.plugins}"/>
         <property name="eclipselink.moxy.dir" value="${eclipselink.moxy}"/>
         <property name="eclipselink.moxy.lib.dir" value="${eclipselink.moxy.plugins}"/>
-        <property name="eclipselink.extension.oracle.dir" value="${eclipselink.extension.oracle}"/>
         <property name="eclipselink.extension.oracle.test.dir" value="${eclipselink.extension.oracle.test}"/>
         <antcall target="config-compile-path" inheritRefs="true"/>
         <antcall target="config-run-path" inheritRefs="true"/>
@@ -1293,8 +1291,8 @@
             <path refid="run.classpath"/>
             <!-- Currently the Oracle extensions are included to allow running Oracle extensions tests from here. -->
             <pathelement path="${eclipselink.extension.oracle.test.dir}/${classes.dir}"/>
-            <pathelement path="${eclipselink.extension.oracle.dir}/${classes.dir}"/>
-            <pathelement path="${eclipselink.extension.oracle.dir}/eclipselink-extension-oracle.jar"/>
+            <pathelement path="${eclipselink.extension.oracle}/${classes.dir}"/>
+            <pathelement path="${eclipselink.core.plugins}/${eclipselink.oracle.bndl.prefix}.jar"/>
             <pathelement path="${oracle.extensions.depend.dir}/${oracle.xdb.jar}"/>
             <pathelement path="${oracle.extensions.depend.dir}/${oracle.xmlparser.jar}"/>
             <pathelement path="${oracle.extensions.depend.dir}/${oracle.orai18n-mapping.jar}"/>
@@ -1308,7 +1306,7 @@
         </path>
          <path id="run.oracle.nosql.classpath">
             <pathelement path="${eclipselink.extension.oracle.test.dir}/${classes.dir}"/>
-            <pathelement path="${eclipselink.extension.oracle.dir}/${classes.dir}"/>
+            <pathelement path="${eclipselink.extension.oracle}/${classes.dir}"/>
             <path refid="compile.path"/>
             <pathelement path="${oracle.extensions.depend.dir}/${oracle.nosql.jar}"/>
             <pathelement path="${eclipselink.jpa.test}/${jpatest.framework.jar}"/>
