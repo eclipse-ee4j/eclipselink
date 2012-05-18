@@ -70,20 +70,21 @@
         <!-- feature.2.base.dir needs to be explicit (not relative) for antcall usage            -->
         <!-- (I think the selectbundle call reverts to calling dir - despite the antcall "dir=") -->
         <property name="feature.2.base.dir"           value="${feature.build.location}/.."/>
-        <property name="feature.2.common.plugins.dir" value="${feature.2.base.dir}/plugins"/>
         <property name="feature.common.dir"           value="${feature.build.location}/common"/>
+        <property name="feature.2.buildsys.dir"       value="${feature.2.base.dir}/buildsystem"/>
+        <property name="feature.2.common.plugins.dir" value="${feature.2.base.dir}/plugins"/>
         <property name="feature.2.jpa.plugins.dir"    value="${feature.2.base.dir}/jpa/plugins"/>
         <property name="feature.2.sdo.plugins.dir"    value="${feature.2.base.dir}/sdo/plugins"/>
-        <property name="feature.2.buildsys.dir"       value="${feature.2.base.dir}/buildsystem"/>
+
         <echo message="ant.project.name            ='${ant.project.name}'"/>
         <echo message="basedir                     ='${basedir}'"/>
         <echo message="feature.build.location      ='${feature.build.location}'"/>
         <echo message="feature.2.base.dir          ='${feature.2.base.dir}'"/>
-        <echo message="feature.2.common.plugins.dir='${feature.2.common.plugins.dir}'"/>
         <echo message="feature.common.dir          ='${feature.common.dir}'"/>
+        <echo message="feature.2.buildsys.dir      ='${feature.2.buildsys.dir}'"/>
+        <echo message="feature.2.common.plugins.dir='${feature.2.common.plugins.dir}'"/>
         <echo message="feature.2.jpa.plugins.dir   ='${feature.2.jpa.plugins.dir}'"/>
         <echo message="feature.2.sdo.plugins.dir   ='${feature.2.sdo.plugins.dir}'"/>
-        <echo message="feature.2.buildsys.dir      ='${feature.2.buildsys.dir}'"/>
         <echo message=" ---"/>
 
         <!-- Custom task definitions -->
@@ -106,7 +107,7 @@
         <property name="eclipselink.zip.suffix"             value=".zip"/>
         <property name="classes.dir"                        value="classes"/>
         <property name="specification.vendor"               value="Eclipse.org - EclipseLink Project"/>
-        <property name="p2.archive.presigned.zip"           value="${eclipselink.install.prefix}-P2-${release.version}${eclipselink.zip.suffix}"/>
+        <property name="p2.archive.presigned.zip"           value="${eclipselink.install.prefix}-P2-${version.string}${eclipselink.zip.suffix}"/>
         <property name="build.id"                           value="${release.version}"/>
         <echo message="release.version                   ='${release.version}'"/>
         <echo message="version.qualifier                 ='${version.qualifier}'"/>
@@ -128,7 +129,7 @@
         <echo message=" ---"/>
 
         <!-- Tool definitions -->
-        <property name="p2.SDK.install.dir" value="C:/eclipseSDK-3.6M6/eclipse"/>
+        <property name="p2.SDK.install.dir" value="D:/Indigo-gm/eclipse"/>
         <property name="p2.SDK.plugin.dir" value="${p2.SDK.install.dir}/plugins"/>
         <property name="p2.publisher.jar" value="org.eclipse.equinox.p2.publisher_*.jar"/>
         <property name="p2.launcher.jar" value="org.eclipse.equinox.launcher_*.jar"/>
@@ -147,12 +148,12 @@
         <echo message=" ---"/>
 
         <!-- Input definitions -->
-        <property name="p2.composite.home.dir"    value="C:/__EL-CompositeRepositoryTest2Site"/>
+        <property name="p2.composite.home.dir"    value="D:/__EL-CompositeRepositoryTest2Site"/>
         <condition property="p2.repos.dir"        value="${p2.composite.home.dir}/${version.string}"
-                                                   else="C:/__EL-RepositorySite">
+                                                   else="D:/__EL-RepositorySite">
             <isset property="do.composite"/>
         </condition>
-        <property name="p2.mirror.dir"            value="C:/__EL-MirroredRepoSite"/>
+        <property name="p2.mirror.dir"            value="D:/__EL-MirroredRepoSite"/>
         <property name="p2.feature.dir"           value="${p2.repos.dir}/features"/>
         <property name="p2.bundle.dir"            value="${p2.repos.dir}/plugins"/>
         <condition property="bundle.install.file" value="${feature.2.base.dir}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}"
@@ -369,7 +370,9 @@
     </target>
 
     <target name="create-sign-zipfile" depends="create-eclipselink-buildfile">
-        <delete file="${p2.archive.presigned.zip}"/>
+        <delete failonerror="false">
+            <fileset dir="." includes="${eclipselink.install.prefix}-P2-*.zip"/>
+        </delete>
         <zip destfile="${p2.archive.presigned.zip}">
             <!-- Removed based on decision not to sign non-Galileo artifacts due to signing issues - 5/20/09 -->
             <!-- zipfileset dir="${feature.2.base.dir}"                         includes="eclipselink*.jar"/ -->

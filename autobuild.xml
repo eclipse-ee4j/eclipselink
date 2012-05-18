@@ -75,8 +75,8 @@
     <target name="build-continuous" description="Trigger an automated build and run the tests if source changes exist"
             depends="clean, build-no-javadoc, build-utils, test-srg"
     />
-    <target name="build-oracle"     description="Trigger the automated oracle build"
-            depends="init, build-oracle-extension, publish-oracle"
+    <target name="build-ora-extension" description="Trigger the automated oracle extension build"
+            depends="init, build-oracle-extension, publish-oracle-extension"
     />
 
     <target name="init" depends="pre-init, common-init"/>
@@ -132,7 +132,7 @@
         <property name="version.string" value="${release.version}.${version.qualifier}"/>
 
         <!-- For signed archive name need "version.string" defined first -->
-        <property name="p2.archive.presigned.zip" value="eclipselink-P2-${release.version}.zip"/>
+        <property name="p2.archive.presigned.zip" value="eclipselink-P2-${version.string}.zip"/>
         <property name="p2.archive.signed.zip"    value="eclipselink-P2signed-${version.string}.zip"/>
 
         <!-- Set download.dir appropriately depending upon build target          -->
@@ -477,8 +477,8 @@
         <!-- Run gen summary dat script -->
     </target>
 
-    <target name="publish-oracle">
-        <echo message="oracle commit in progress..."/>
+    <target name="publish-oracle-extension">
+        <echo message="oracle-extension commit in progress..."/>
         <exec executable="${svn.exec}" failonerror="false" logError="true">
             <arg value="commit"/>
             <arg value="-m ${version.string}"/>

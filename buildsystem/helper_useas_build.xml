@@ -54,7 +54,7 @@
         <property name="version.qualifier"          value="v${date}-r${rev}"/>
         <property name="version.string"             value="${release.version}.${version.qualifier}"/>
         <property name="bundle.install.zip"         value="eclipselink-plugins-${version.string}.zip"/>
-        <property name="p2.archive.presigned.zip"   value="eclipselink-P2-${release.version}.zip"/>
+        <property name="p2.archive.presigned.zip"   value="eclipselink-P2-${version.string}.zip"/>
         <property name="p2.archive.signed.zip"      value="eclipselink-P2signed-${version.string}.zip"/>
         <condition property="p2.repos.dir"          value="${p2.composite.root.dir}/${version.string}_${mtag}"
                                                      else="${p2.composite.root.dir}/${version.string}">
