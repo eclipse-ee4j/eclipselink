@@ -477,6 +477,7 @@
                 <include name="org.eclipse.persistence.jpa.jpql*.jar"/>
                 <include name="org.eclipse.persistence.asm*.jar"/>
                 <include name="org.eclipse.persistence.antlr*.jar"/>
+                <exclude name="*nosql*.jar"/>
                 <exclude name="*source*.jar"/>
                 <exclude name="*equinox*.jar"/>
                 <exclude name="*builder*.jar"/>
