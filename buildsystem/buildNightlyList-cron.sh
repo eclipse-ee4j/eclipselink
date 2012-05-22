@@ -3,7 +3,7 @@
 
 export PATH=/usr/bin:/usr/local/bin:${PATH}
 
-GeneratedDownloadPage=nightly2.xml
+GeneratedDownloadPage=nightly.xml
 BaseDownloadURL="http://www.eclipse.org/downloads/download.php?file=/rt/eclipselink/nightly"
 BaseDisplayURL="http://download.eclipse.org/rt/eclipselink/nightly"
 BaseDownloadNFSDir="/home/data/httpd/download.eclipse.org/rt/eclipselink"
