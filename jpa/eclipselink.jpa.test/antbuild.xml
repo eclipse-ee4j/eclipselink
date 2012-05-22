@@ -3617,7 +3617,7 @@
         </antcall>
     </target>
 
-    <target name="server-test-mongotest" if="is.glassfish">
+    <target name="server-test-mongotest" depends="clean-test" if="is.glassfish">
         <antcall target="server-test-mongo" inheritRefs="true"/>
         <antcall target="server-test-mongo-xml" inheritRefs="true"/>
         <antcall target="generate-servertest-report" inheritRefs="true"/>
