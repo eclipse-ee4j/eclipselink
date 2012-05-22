@@ -1,6 +1,7 @@
 {
  "order" : 
   { 
+   "items":{"item":[]},
    "customer" : { 
       "id" : 0,
       "firstName" : "Jane", 
@@ -13,7 +14,9 @@
          } 
 	 }
 	 , 
-       "firstTimeCustomer" : false
+        "phoneNumbers":[],
+       "firstTimeCustomer" : false,
+       "orderNumbers":[]
    } , 
    "id" : 1
    } 

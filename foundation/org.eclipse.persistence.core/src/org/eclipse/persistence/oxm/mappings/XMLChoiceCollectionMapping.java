@@ -64,7 +64,6 @@ import org.eclipse.persistence.oxm.record.XMLEntry;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
-import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.sessions.remote.RemoteSession;
 
 /**

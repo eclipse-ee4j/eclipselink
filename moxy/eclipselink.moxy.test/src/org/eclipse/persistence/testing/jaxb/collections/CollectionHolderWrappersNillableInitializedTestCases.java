@@ -13,6 +13,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.collections;
 
+import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class CollectionHolderWrappersNillableInitializedTestCases extends JAXBWithJSONTestCases {
@@ -28,6 +29,8 @@ public class CollectionHolderWrappersNillableInitializedTestCases extends JAXBWi
         Class[] classes = new Class[1];
         classes[0] = CollectionHolderWrappersNillableInitialized.class;
         setClasses(classes);
+        jaxbMarshaller.setProperty(MarshallerProperties.JSON_MARSHAL_EMPTY_COLLECTIONS, Boolean.FALSE);
+
     }
 
     @Override

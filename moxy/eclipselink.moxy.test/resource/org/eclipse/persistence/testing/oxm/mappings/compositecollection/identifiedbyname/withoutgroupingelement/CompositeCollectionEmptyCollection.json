@@ -9,6 +9,7 @@
             "user-id":"jdoe",
            "domain":"test.com"
            }
-         ]
+         ],
+     "mailing-address":[]
      }
 }

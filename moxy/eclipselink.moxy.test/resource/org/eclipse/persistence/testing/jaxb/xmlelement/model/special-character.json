@@ -1,6 +1,7 @@
 {
  "order" : 
   { 
+   "items":{"item":[]},
     "customerInput":{
    "comments" : [ "com<ment1", "com&ment2", "com\"ment3"] }, 
 
@@ -16,7 +17,9 @@
          } 
 	 }
 	 , 
-       "firstTimeCustomer" : false
+        "phoneNumbers":[],
+       "firstTimeCustomer" : false,
+       "orderNumbers":[]
        } , 
    "id" : 1
    } 

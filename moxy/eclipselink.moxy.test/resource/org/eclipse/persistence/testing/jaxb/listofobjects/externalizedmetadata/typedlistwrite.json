@@ -1,4 +1,15 @@
-{"root":{ 
-   "departments":[1,2,3]
-  }
+{"root":
+   {"departmentIdToName":
+      {"entry":[]},
+      "departments":[1,2,3],
+      "int-to-object":
+          {"entry":[]},
+	   "object-to-int":{
+	       "entry":[]
+	   },
+          "object-to-string":{
+	  "entry":[]
+      }
+   }
 }
+

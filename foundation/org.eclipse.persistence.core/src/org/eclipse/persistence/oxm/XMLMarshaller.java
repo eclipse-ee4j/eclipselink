@@ -179,6 +179,7 @@ public class XMLMarshaller implements Cloneable {
         setFormattedOutput(true);
         marshalProperties = new Properties();
         includeRoot = true;
+        marshalEmptyCollections = true;
         indentString = "   "; // default indent is three spaces
     }
 

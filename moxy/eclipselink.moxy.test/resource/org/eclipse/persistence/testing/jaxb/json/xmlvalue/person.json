@@ -2,6 +2,7 @@
    "address":"someStreet someCity somePostalCode",
    "firstName":"Sally",
    "lastName":"Smith",
+   "middleNames":[],
    "phoneNumber":{
       "areaCode":"613",
       "valuewrapper":"1234567"  

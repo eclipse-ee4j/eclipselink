@@ -1,9 +1,13 @@
 {"testObject":{
    "classBCollection":[
-       {"theValue":"listValue1"},
-       {"theValue":"listValue2"}
+       {"theValue":"listValue1",
+        "theValues":[]},
+       {"theValue":"listValue2",
+        "theValues":[]
+       }
    ],
    "classBObject":{
-       "theValue":"singleValue"
+       "theValue":"singleValue",
+       "theValues":[]
    }
 }}

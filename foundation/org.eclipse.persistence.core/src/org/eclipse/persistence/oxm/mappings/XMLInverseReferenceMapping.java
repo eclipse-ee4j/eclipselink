@@ -36,7 +36,6 @@ import org.eclipse.persistence.mappings.ContainerMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
-import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.sessions.remote.RemoteSession;
 
 /**

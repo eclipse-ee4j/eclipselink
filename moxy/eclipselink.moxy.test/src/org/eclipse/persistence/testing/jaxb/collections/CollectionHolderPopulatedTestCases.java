@@ -34,7 +34,8 @@ public class CollectionHolderPopulatedTestCases extends JAXBWithJSONTestCases{
         classes[0] = CollectionHolderInitialized.class;
         setClasses(classes);
         jaxbMarshaller.setProperty(MarshallerProperties.JSON_ATTRIBUTE_PREFIX, "@");
-        jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_ATTRIBUTE_PREFIX, "@");      
+        jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_ATTRIBUTE_PREFIX, "@");
+        jaxbMarshaller.setProperty(MarshallerProperties.JSON_MARSHAL_EMPTY_COLLECTIONS, Boolean.FALSE);
     }
 
     @Override

@@ -11,7 +11,8 @@
            "domain":"test.com"
            }
          ]
-     }
+     },
+     "mailing-addresses":{"mailing-address":[]}
       
      }
 }

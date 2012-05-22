@@ -23,6 +23,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class CollectionHolderWrappersOverrideTestCases extends JAXBWithJSONTestCases {
@@ -39,6 +40,8 @@ public class CollectionHolderWrappersOverrideTestCases extends JAXBWithJSONTestC
         Class[] classes = new Class[1];
         classes[0] = CollectionHolderWrappersInitialized.class;
         setClasses(classes);
+        jaxbMarshaller.setProperty(MarshallerProperties.JSON_MARSHAL_EMPTY_COLLECTIONS, Boolean.FALSE);
+
     }
 
     @Override

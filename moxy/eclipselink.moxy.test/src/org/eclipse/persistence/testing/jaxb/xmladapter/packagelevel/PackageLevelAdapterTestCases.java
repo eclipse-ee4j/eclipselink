@@ -30,7 +30,7 @@ public class PackageLevelAdapterTestCases extends JAXBWithJSONTestCases{
         xmlContext =((org.eclipse.persistence.jaxb.JAXBContext)jaxbContext).getXMLContext(); 
         setProject(xmlContext.getSession(0).getProject());
         jaxbMarshaller = jaxbContext.createMarshaller();
-        jaxbUnmarshaller = jaxbContext.createUnmarshaller();        
+        jaxbUnmarshaller = jaxbContext.createUnmarshaller();      
     }
 
     protected Object getControlObject() {
