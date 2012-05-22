@@ -33,8 +33,7 @@ import javax.activation.DataHandler;
 import org.eclipse.persistence.oxm.attachment.XMLAttachmentMarshaller;
 
 public class MyAttachmentMarshaller implements XMLAttachmentMarshaller {
-    public static int count = 0;
-    public static HashMap attachments = new HashMap();
+	public HashMap attachments = new HashMap();
     public boolean returnNull = false;
     private String localName = null;
 
@@ -44,8 +43,6 @@ public class MyAttachmentMarshaller implements XMLAttachmentMarshaller {
         }
         String id = MyAttachmentUnmarshaller.ATTACHMENT_TEST_ID;
 
-        //String id = MyAttachmentUnmarshaller.ATTACHMENT_PREFIX +  MyAttachmentMarshaller.count;
-        MyAttachmentMarshaller.count++;
         attachments.put(id, data);
         return id;
     }
@@ -55,7 +52,6 @@ public class MyAttachmentMarshaller implements XMLAttachmentMarshaller {
             return null;
         }
         String id = MyAttachmentUnmarshaller.ATTACHMENT_TEST_ID;
-        MyAttachmentMarshaller.count++;
         attachments.put(id, data);
         return id;
     }
@@ -66,8 +62,6 @@ public class MyAttachmentMarshaller implements XMLAttachmentMarshaller {
         }
         String id = MyAttachmentUnmarshaller.ATTACHMENT_TEST_ID;
 
-        //String id = MyAttachmentUnmarshaller.ATTACHMENT_PREFIX +  MyAttachmentMarshaller.count;
-        MyAttachmentMarshaller.count++;
         attachments.put(id, bytes);
         this.localName = elementName;
         return id;
@@ -79,8 +73,6 @@ public class MyAttachmentMarshaller implements XMLAttachmentMarshaller {
         }
         String id = MyAttachmentUnmarshaller.ATTACHMENT_TEST_ID;
 
-        //String id = MyAttachmentUnmarshaller.ATTACHMENT_PREFIX +  MyAttachmentMarshaller.count;
-        MyAttachmentMarshaller.count++;
         attachments.put(id, data);
         this.localName = elementName;
         return id;

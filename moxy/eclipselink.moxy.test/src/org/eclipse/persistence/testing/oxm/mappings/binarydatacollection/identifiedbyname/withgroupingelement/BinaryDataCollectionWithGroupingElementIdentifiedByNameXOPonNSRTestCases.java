@@ -22,13 +22,10 @@ package org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.identi
 
 import java.util.Vector;
 
-import javax.activation.DataHandler;
-
 import org.eclipse.persistence.internal.descriptors.Namespace;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLMarshaller;
-import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.Employee;
 import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.MyAttachmentMarshaller;
 import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.MyAttachmentUnmarshaller;
@@ -40,8 +37,9 @@ import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.MyAttac
  * @author mfobrien
  *
  */
-public class BinaryDataCollectionWithGroupingElementIdentifiedByNameXOPonNSRTestCases extends XMLMappingTestCases {
+public class BinaryDataCollectionWithGroupingElementIdentifiedByNameXOPonNSRTestCases extends XMLWithJSONMappingTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/binarydatacollection/identifiedbyname/withgroupingelement/BinaryDataCollectionWithGroupElemIdentifiedByNameXOPinNSR.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/binarydatacollection/identifiedbyname/withgroupingelement/BinaryDataCollectionWithGroupElemIdentifiedByNameXOPinNSR.json";
 
     //private final static String PHOTO_PATH1 = "http://www.example.com/admin/images/ocom/oralogo_small.gif";
     //private final static String PHOTO_PATH2 = "http://www.example.com/admin/images/ocom/oralogo_small.gif";
@@ -49,6 +47,7 @@ public class BinaryDataCollectionWithGroupingElementIdentifiedByNameXOPonNSRTest
     public BinaryDataCollectionWithGroupingElementIdentifiedByNameXOPonNSRTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         NamespaceResolver namespaceResolver = new NamespaceResolver();
         Vector namespaces = new Vector();
         namespaces.add(new Namespace(MyAttachmentUnmarshaller.XOP_NAMESPACE_PREFIX,//
@@ -81,9 +80,10 @@ public class BinaryDataCollectionWithGroupingElementIdentifiedByNameXOPonNSRTest
 
     public void setUp() throws Exception {
         super.setUp();
-        xmlUnmarshaller.setAttachmentUnmarshaller(new MyAttachmentUnmarshaller());
+        MyAttachmentUnmarshaller handler = new MyAttachmentUnmarshaller();
         
-    	MyAttachmentMarshaller.attachments.put(MyAttachmentUnmarshaller.ATTACHMENT_TEST_ID, MyAttachmentUnmarshaller.PHOTO_BASE64.getBytes());
+        handler.attachments.put(MyAttachmentUnmarshaller.ATTACHMENT_TEST_ID,MyAttachmentUnmarshaller.PHOTO_BASE64.getBytes());
+        xmlUnmarshaller.setAttachmentUnmarshaller(handler);	    
         
     }
 

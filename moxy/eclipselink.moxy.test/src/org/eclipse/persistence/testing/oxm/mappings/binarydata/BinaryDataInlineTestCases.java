@@ -12,14 +12,16 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.mappings.binarydata;
 
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 
-public class BinaryDataInlineTestCases extends XMLMappingTestCases {
+public class BinaryDataInlineTestCases extends XMLWithJSONMappingTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/binarydata/BinaryDataInline.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/binarydata/BinaryDataInline.json";    
 
 	public BinaryDataInlineTestCases(String name) throws Exception {
 		super(name);
 		setControlDocument(XML_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
         setProject(new BinaryDataInlineProject());
 	}
 	

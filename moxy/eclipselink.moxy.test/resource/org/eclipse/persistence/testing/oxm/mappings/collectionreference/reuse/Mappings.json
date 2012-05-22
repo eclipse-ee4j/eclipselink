@@ -1,0 +1,23 @@
+{"root":{
+   "employee":{
+      "id":3208,
+      "name":"Dave Matthews",
+      "address-id":[1198, 1453, 1676]
+    },
+    "address":[
+    { 
+       "id":1198,
+       "info":"727 Main Street, Anytown NY, 78228",
+       "type":"home"
+    }, {
+      "id":1453,
+       "info":"30 Capital Ave Suite 100, Big Town NY, 78441",
+       "type":"work"
+    }, {
+       "id":1676,
+       "info":"Site 17 RR#4, Boonies NY, 78112",
+       "type":"other"
+    }
+    ]
+   }
+}

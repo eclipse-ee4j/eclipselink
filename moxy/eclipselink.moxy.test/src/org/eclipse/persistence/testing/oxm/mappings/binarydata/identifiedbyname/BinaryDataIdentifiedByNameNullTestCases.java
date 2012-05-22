@@ -12,11 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.mappings.binarydata.identifiedbyname;
 
-import java.util.Vector;
-import org.eclipse.persistence.internal.descriptors.Namespace;
-import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.binarydata.Employee;
 import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.MyAttachmentMarshaller;
 import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.MyAttachmentUnmarshaller;
@@ -25,13 +21,14 @@ import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.MyAttac
  * Not supported
  * base64Binary as attribute - no singlenode\xmlattribute
  */
-public class BinaryDataIdentifiedByNameNullTestCases extends XMLMappingTestCases {
+public class BinaryDataIdentifiedByNameNullTestCases extends XMLWithJSONMappingTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/binarydata/identifiedbyname/BinaryDataIdentifiedByNameNull.xml";
-
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/binarydata/identifiedbyname/BinaryDataIdentifiedByNameNull.json";
     public BinaryDataIdentifiedByNameNullTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
-
+        setControlJSON(JSON_RESOURCE);
+        
         setProject(new BinaryDataIdentifiedByNameProject(null));
     }
 

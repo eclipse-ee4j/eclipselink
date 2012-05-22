@@ -42,8 +42,7 @@ package org.eclipse.persistence.testing.oxm.mappings.binarydata.identifiedbyname
 
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLMarshaller;
-import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.binarydata.Employee;
 import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.MyAttachmentMarshaller;
 import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.MyAttachmentUnmarshaller;
@@ -52,12 +51,14 @@ import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.MyAttac
  * Not supported
  * base64Binary as attribute - no singlenode\xmlattribute
  */
-public class BinaryDataIdentifiedByNameNullNSRTestCases extends XMLMappingTestCases {
+public class BinaryDataIdentifiedByNameNullNSRTestCases extends XMLWithJSONMappingTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/binarydata/identifiedbyname/BinaryDataIdentifiedByNameNullNSR.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/binarydata/identifiedbyname/BinaryDataIdentifiedByNameNullNSR.json";
 
     public BinaryDataIdentifiedByNameNullNSRTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         NamespaceResolver namespaceResolver = null;//new NamespaceResolver();
 
         setProject(new BinaryDataIdentifiedByNameProject(namespaceResolver));
@@ -69,10 +70,11 @@ public class BinaryDataIdentifiedByNameNullNSRTestCases extends XMLMappingTestCa
 
     public void setUp() throws Exception {
         super.setUp();
-        xmlUnmarshaller.setAttachmentUnmarshaller(new MyAttachmentUnmarshaller());
-        
+        MyAttachmentUnmarshaller attachmentUnmarshaller = new MyAttachmentUnmarshaller();
         byte[] bytes = MyAttachmentUnmarshaller.PHOTO_BASE64.getBytes();
-    	MyAttachmentMarshaller.attachments.put(MyAttachmentUnmarshaller.ATTACHMENT_TEST_ID, bytes);
+
+        attachmentUnmarshaller.attachments.put(attachmentUnmarshaller.ATTACHMENT_TEST_ID, bytes);
+        xmlUnmarshaller.setAttachmentUnmarshaller(attachmentUnmarshaller);
     }
 
     @Override

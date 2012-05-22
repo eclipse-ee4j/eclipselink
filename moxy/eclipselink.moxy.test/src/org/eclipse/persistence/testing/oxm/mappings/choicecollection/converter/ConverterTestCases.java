@@ -21,8 +21,8 @@ import org.eclipse.persistence.testing.oxm.mappings.choicecollection.Employee;
 
 public class ConverterTestCases extends XMLWithJSONMappingTestCases {
 
-    private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/choice/ChoiceComplexValue.xml";
-    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/choice/ChoiceComplexValue.json";
+    private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/choicecollection/ChoiceCollectionComplexValue.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/choicecollection/ChoiceCollectionComplexValue.json";
 
     public ConverterTestCases(String name) throws Exception {
         super(name);

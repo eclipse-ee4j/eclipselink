@@ -21,10 +21,11 @@
 package org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.identifiedbyname.withgroupingelement;
 
 import java.util.Vector;
+
+
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLMarshaller;
-import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.Employee;
 import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.MyAttachmentMarshaller;
 import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.MyAttachmentUnmarshaller;
@@ -36,12 +37,14 @@ import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.MyAttac
  * @author mfobrien
  *
  */
-public class BinaryDataCollectionWithGroupingElementIdentifiedByNameEmptyNSRTestCases extends XMLMappingTestCases {
+public class BinaryDataCollectionWithGroupingElementIdentifiedByNameEmptyNSRTestCases extends XMLWithJSONMappingTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/binarydatacollection/identifiedbyname/withgroupingelement/BinaryDataCollectionWithGroupElemIdentifiedByNameEmptyNSR.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/binarydatacollection/identifiedbyname/withgroupingelement/BinaryDataCollectionWithGroupElemIdentifiedByNameEmptyNSR.json";
 
     public BinaryDataCollectionWithGroupingElementIdentifiedByNameEmptyNSRTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         NamespaceResolver namespaceResolver = new NamespaceResolver();
 
         // NSR must be empty
@@ -59,7 +62,11 @@ public class BinaryDataCollectionWithGroupingElementIdentifiedByNameEmptyNSRTest
 
     public void setUp() throws Exception {
         super.setUp();
-        xmlUnmarshaller.setAttachmentUnmarshaller(new MyAttachmentUnmarshaller());
+        
+        MyAttachmentUnmarshaller handler = new MyAttachmentUnmarshaller();
+
+        handler.attachments.put(MyAttachmentUnmarshaller.ATTACHMENT_TEST_ID,MyAttachmentUnmarshaller.PHOTO_BASE64.getBytes());
+        xmlUnmarshaller.setAttachmentUnmarshaller(handler);	       
     }
 
     @Override

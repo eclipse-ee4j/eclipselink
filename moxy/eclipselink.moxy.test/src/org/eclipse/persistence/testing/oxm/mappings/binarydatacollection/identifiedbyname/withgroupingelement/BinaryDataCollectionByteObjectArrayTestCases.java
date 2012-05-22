@@ -17,17 +17,19 @@ import java.util.Vector;
 import org.eclipse.persistence.internal.descriptors.Namespace;
 import org.eclipse.persistence.internal.oxm.conversion.Base64;
 import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.EmployeeWithByteArrayObject;
 import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.MyAttachmentMarshaller;
 import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.MyAttachmentUnmarshaller;
 
-public class BinaryDataCollectionByteObjectArrayTestCases extends XMLMappingTestCases{
+public class BinaryDataCollectionByteObjectArrayTestCases extends XMLWithJSONMappingTestCases{
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/binarydatacollection/identifiedbyname/withgroupingelement/BinaryDataCollectionForcedInline.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/binarydatacollection/identifiedbyname/withgroupingelement/BinaryDataCollectionForcedInline.json";
 
 	public BinaryDataCollectionByteObjectArrayTestCases(String name) throws Exception {
 		super(name);
 		 setControlDocument(XML_RESOURCE);
+		 setControlJSON(JSON_RESOURCE);
 	        NamespaceResolver namespaceResolver = new NamespaceResolver();
 	        Vector namespaces = new Vector();
 	        namespaces.add(new Namespace(MyAttachmentUnmarshaller.XOP_NAMESPACE_PREFIX,//

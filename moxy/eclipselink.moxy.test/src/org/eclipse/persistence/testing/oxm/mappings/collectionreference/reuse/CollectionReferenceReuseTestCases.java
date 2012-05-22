@@ -16,14 +16,16 @@ import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 
-public class CollectionReferenceReuseTestCases extends XMLMappingTestCases {
+public class CollectionReferenceReuseTestCases extends XMLWithJSONMappingTestCases {
 
     public CollectionReferenceReuseTestCases(String name) throws Exception {
         super(name);
         setProject(new CollectionReferenceReuseProject());
         setControlDocument("org/eclipse/persistence/testing/oxm/mappings/collectionreference/reuse/Mappings.xml");
+        setControlJSON("org/eclipse/persistence/testing/oxm/mappings/collectionreference/reuse/Mappings.json");
+        
     }
 
     public Object getControlObject() {

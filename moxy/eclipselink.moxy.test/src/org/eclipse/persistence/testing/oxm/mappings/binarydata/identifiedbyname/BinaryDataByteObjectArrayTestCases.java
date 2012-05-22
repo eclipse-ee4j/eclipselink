@@ -19,18 +19,19 @@ import javax.activation.DataHandler;
 import org.eclipse.persistence.internal.descriptors.Namespace;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLMarshaller;
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
-import org.eclipse.persistence.testing.oxm.mappings.binarydata.Employee;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.MyAttachmentMarshaller;
 import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.MyAttachmentUnmarshaller;
 
-public class BinaryDataByteObjectArrayTestCases extends XMLMappingTestCases{
+public class BinaryDataByteObjectArrayTestCases extends XMLWithJSONMappingTestCases{
 	private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/binarydata/identifiedbyname/BinaryDataIdentifiedByNameXOPonNSR.xml";
+	private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/binarydata/identifiedbyname/BinaryDataIdentifiedByNameXOPonNSR.json";
 	private MyAttachmentUnmarshaller attachmentUnmarshaller;
 	    
 	public BinaryDataByteObjectArrayTestCases(String name) throws Exception {
 		super(name);
 		setControlDocument(XML_RESOURCE);
+		setControlJSON(JSON_RESOURCE);
 	    NamespaceResolver namespaceResolver = new NamespaceResolver();
 
 	    // NSR must be not be empty
@@ -58,11 +59,11 @@ public class BinaryDataByteObjectArrayTestCases extends XMLMappingTestCases{
 	  public void setUp() throws Exception {
 	        super.setUp();
 	        attachmentUnmarshaller = new MyAttachmentUnmarshaller();
+	        DataHandler data = new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text");
+
+	        attachmentUnmarshaller.attachments.put(attachmentUnmarshaller.ATTACHMENT_TEST_ID, data);
 	        xmlUnmarshaller.setAttachmentUnmarshaller(attachmentUnmarshaller);
 	        
-	    	DataHandler data = new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text");    	
-	    	MyAttachmentMarshaller.attachments.put(MyAttachmentUnmarshaller.ATTACHMENT_TEST_ID, data);
-	   
 	    }
 
     @Override

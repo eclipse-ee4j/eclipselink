@@ -18,16 +18,19 @@ import javax.mail.util.ByteArrayDataSource;
 import org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.MyAttachmentMarshaller;
 import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.MyAttachmentUnmarshaller;
 
-public class BinaryDataSelfTestCases extends XMLMappingTestCases {
+public class BinaryDataSelfTestCases extends XMLMappingTestCases{ //XMLWithJSONMappingTestCases{
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/binarydata/BinaryDataSelf.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/binarydata/BinaryDataSelf.json";
 
     public BinaryDataSelfTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
+       // setControlJSON(JSON_RESOURCE);
         Project p = new BinaryDataSelfProject();
         p.getDescriptor(Employee.class).getMappingForAttributeName("data").setIsReadOnly(true);
         ((XMLBinaryDataMapping)p.getDescriptor(Employee.class).getMappingForAttributeName("data")).setShouldInlineBinaryData(false);
@@ -42,7 +45,7 @@ public class BinaryDataSelfTestCases extends XMLMappingTestCases {
     }
  
     public Object getReadControlObject() {
-        Employee emp = new Employee(123); 
+        Employee emp = new Employee(123);     	
         byte[] bytes = new byte[] { 0, 1, 2, 3};
         emp.setPhoto(bytes);
  
@@ -56,10 +59,14 @@ public class BinaryDataSelfTestCases extends XMLMappingTestCases {
     public void setUp() throws Exception {
     	super.setUp();
     	
-    	xmlMarshaller.setAttachmentMarshaller(new MyAttachmentMarshaller());
-    	xmlUnmarshaller.setAttachmentUnmarshaller(new MyAttachmentUnmarshaller());
-    	
-    	DataHandler data = new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text");    	
-    	MyAttachmentMarshaller.attachments.put(MyAttachmentUnmarshaller.ATTACHMENT_TEST_ID, data);
+       	MyAttachmentUnmarshaller handler = new MyAttachmentUnmarshaller();
+    	DataHandler data = new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text");
+    	handler.attachments.put(MyAttachmentUnmarshaller.ATTACHMENT_TEST_ID, data);
+
+    	MyAttachmentMarshaller marshalHandler = new MyAttachmentMarshaller();
+    	marshalHandler.attachments.put(MyAttachmentUnmarshaller.ATTACHMENT_TEST_ID, data);
+    	    	
+    	xmlMarshaller.setAttachmentMarshaller(marshalHandler);
+    	xmlUnmarshaller.setAttachmentUnmarshaller(handler);
     }
 }

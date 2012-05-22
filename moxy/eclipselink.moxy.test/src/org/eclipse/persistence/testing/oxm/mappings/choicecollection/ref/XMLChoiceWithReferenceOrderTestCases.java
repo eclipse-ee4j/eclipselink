@@ -14,16 +14,20 @@ package org.eclipse.persistence.testing.oxm.mappings.choicecollection.ref;
 
 import java.util.ArrayList;
 
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 
-public class XMLChoiceWithReferenceOrderTestCases extends XMLMappingTestCases{
+public class XMLChoiceWithReferenceOrderTestCases extends XMLWithJSONMappingTestCases{
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/choicecollection/ref/read_doc.xml";
     private final static String XML_WRITE_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/choicecollection/ref/write_doc.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/choicecollection/ref/read_doc.json";
+    private final static String JSON_WRITE_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/choicecollection/ref/write_doc.json";
     
     public XMLChoiceWithReferenceOrderTestCases(String name) throws Exception {
       super(name);
       setControlDocument(XML_RESOURCE);
       setWriteControlDocument(XML_WRITE_RESOURCE);
+      setControlJSON(JSON_RESOURCE);
+      setControlJSONWrite(JSON_WRITE_RESOURCE);
       setProject(new XMLChoiceWithReferenceProject());
     }
 

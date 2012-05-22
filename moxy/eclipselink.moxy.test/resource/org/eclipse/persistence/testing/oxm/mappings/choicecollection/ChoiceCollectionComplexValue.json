@@ -1,9 +1,9 @@
 {"employee":{
   "name":"Jane Doe",
-  "address":{
+  "address":[{
      "street":"45 O'Connor",
      "city":"Ottawa"
-     },
+     }],
   "phone":"123-4567"
 }}
 

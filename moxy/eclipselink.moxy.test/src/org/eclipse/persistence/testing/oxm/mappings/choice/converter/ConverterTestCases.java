@@ -15,17 +15,19 @@ package org.eclipse.persistence.testing.oxm.mappings.choice.converter;
 import org.eclipse.persistence.oxm.XMLLogin;
 import org.eclipse.persistence.oxm.platform.SAXPlatform;
 import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.choice.Address;
 import org.eclipse.persistence.testing.oxm.mappings.choice.Employee;
 
-public class ConverterTestCases extends XMLMappingTestCases {
+public class ConverterTestCases extends XMLWithJSONMappingTestCases {
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/choice/ChoiceComplexValue.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/choice/ChoiceComplexValue.json";
 
     public ConverterTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         setProject(new EmployeeProject());
     }
 

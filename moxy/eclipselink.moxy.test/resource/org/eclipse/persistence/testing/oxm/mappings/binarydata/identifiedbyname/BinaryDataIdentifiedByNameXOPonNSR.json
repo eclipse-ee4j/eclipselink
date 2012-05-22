@@ -1,0 +1,14 @@
+{"employee":{
+    "id":123,
+     "photo":{
+        "Include":{
+	   "href":"c_id0"
+	 }
+      },
+      "data":{
+          "Include":{
+	   "href":"c_id0"   
+	  }
+      }
+   }
+}

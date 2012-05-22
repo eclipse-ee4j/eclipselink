@@ -33,8 +33,7 @@ import javax.activation.DataHandler;
 import org.eclipse.persistence.internal.descriptors.Namespace;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLMarshaller;
-import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.binarydata.Employee;
 import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.MyAttachmentMarshaller;
 import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.MyAttachmentUnmarshaller;
@@ -43,13 +42,15 @@ import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.MyAttac
  * Not supported
  * base64Binary as attribute - no singlenode\xmlattribute
  */
-public class BinaryDataIdentifiedByNameXOPonNSRTestCases extends XMLMappingTestCases {
+public class BinaryDataIdentifiedByNameXOPonNSRTestCases extends XMLWithJSONMappingTestCases {
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/binarydata/identifiedbyname/BinaryDataIdentifiedByNameXOPonNSR.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/binarydata/identifiedbyname/BinaryDataIdentifiedByNameXOPonNSR.json";
     private MyAttachmentUnmarshaller attachmentUnmarshaller;
 
     public BinaryDataIdentifiedByNameXOPonNSRTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         NamespaceResolver namespaceResolver = new NamespaceResolver();
 
         // NSR must be not be empty
@@ -72,10 +73,10 @@ public class BinaryDataIdentifiedByNameXOPonNSRTestCases extends XMLMappingTestC
     public void setUp() throws Exception {
         super.setUp();
         attachmentUnmarshaller = new MyAttachmentUnmarshaller();
-        xmlUnmarshaller.setAttachmentUnmarshaller(attachmentUnmarshaller);
-        
     	DataHandler data = new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text");    	
-    	MyAttachmentMarshaller.attachments.put(MyAttachmentUnmarshaller.ATTACHMENT_TEST_ID, data);
+
+        attachmentUnmarshaller.attachments.put(attachmentUnmarshaller.ATTACHMENT_TEST_ID, data);
+        xmlUnmarshaller.setAttachmentUnmarshaller(attachmentUnmarshaller);
    
     }
 

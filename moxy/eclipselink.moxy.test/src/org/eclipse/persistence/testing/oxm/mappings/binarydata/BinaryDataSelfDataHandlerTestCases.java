@@ -18,17 +18,20 @@ import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.MyAttachmentMarshaller;
 import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.MyAttachmentUnmarshaller;
 import org.w3c.dom.Document;
 
-public class BinaryDataSelfDataHandlerTestCases extends XMLMappingTestCases {
+public class BinaryDataSelfDataHandlerTestCases extends XMLMappingTestCases{// XMLWithJSONMappingTestCases {
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/binarydata/BinaryDataSelfDataHandler.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/binarydata/BinaryDataSelfDataHandler.json";
     private MyAttachmentMarshaller attachmentMarshaller;
     public BinaryDataSelfDataHandlerTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
+       // setControlJSON(JSON_RESOURCE);
         Project p = new BinaryDataSelfProject();
         p.getDescriptor(Employee.class).getMappingForAttributeName("photo").setIsReadOnly(true);
         
@@ -41,12 +44,10 @@ public class BinaryDataSelfDataHandlerTestCases extends XMLMappingTestCases {
     
     public void setUp() throws Exception {
     	super.setUp();
-    	
-    	xmlUnmarshaller.setAttachmentUnmarshaller(new MyAttachmentUnmarshaller());
-    	
-    	DataHandler data = new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text");    	
-    	MyAttachmentMarshaller.attachments.put(MyAttachmentUnmarshaller.ATTACHMENT_TEST_ID, data);
-    	
+    	MyAttachmentUnmarshaller handler = new MyAttachmentUnmarshaller();
+    	DataHandler data = new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text");
+    	handler.attachments.put(MyAttachmentUnmarshaller.ATTACHMENT_TEST_ID, data);
+    	xmlUnmarshaller.setAttachmentUnmarshaller(handler);
     }
 
     @Override

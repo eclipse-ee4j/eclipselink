@@ -12,35 +12,33 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.mappings.binarydata;
 
-import javax.activation.DataHandler;
 
 import org.eclipse.persistence.oxm.XMLMarshaller;
-import org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping;
 import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.MyAttachmentMarshaller;
 import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.MyAttachmentUnmarshaller;
 import org.w3c.dom.Document;
 
-public class BinaryDataCompositeSelfTestCases extends XMLMappingTestCases{
+public class BinaryDataCompositeSelfTestCases extends XMLWithJSONMappingTestCases{
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/binarydata/BinaryDataCompositeSelf.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/binarydata/BinaryDataCompositeSelf.json";
     private MyAttachmentMarshaller attachmentMarshaller;
     
     public BinaryDataCompositeSelfTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         Project p = new BinaryDataCompositeSelfProject();
         setProject(p);
     }
     
     public void setUp() throws Exception {
     	super.setUp();
-    	
-    	xmlUnmarshaller.setAttachmentUnmarshaller(new MyAttachmentUnmarshaller());
-    	
+    	MyAttachmentUnmarshaller handler = new MyAttachmentUnmarshaller();
     	byte[] bytes = new byte[] {1, 2, 3, 4, 5, 6};    	
-    	MyAttachmentMarshaller.attachments.put(MyAttachmentUnmarshaller.ATTACHMENT_TEST_ID, bytes);
-    	
+    	handler.attachments.put(MyAttachmentUnmarshaller.ATTACHMENT_TEST_ID, bytes);
+    	xmlUnmarshaller.setAttachmentUnmarshaller(handler);    	
     }
 
     @Override

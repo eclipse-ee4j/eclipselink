@@ -12,22 +12,18 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.mappings.binarydata;
 
-import java.util.Vector;
-import org.eclipse.persistence.internal.descriptors.Namespace;
-import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.binarydata.Employee;
-import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.MyAttachmentMarshaller;
-import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.MyAttachmentUnmarshaller;
 
-public class BinaryDataEmptyElementTestCases extends XMLMappingTestCases {
+public class BinaryDataEmptyElementTestCases extends XMLWithJSONMappingTestCases {
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/binarydata/BinaryDataEmptyElement.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/binarydata/BinaryDataEmptyElement.json";
 
     public BinaryDataEmptyElementTestCases(String name) throws Exception {
         super(name);
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
         setProject(new BinaryDataEmptyElementProject());
     }
 

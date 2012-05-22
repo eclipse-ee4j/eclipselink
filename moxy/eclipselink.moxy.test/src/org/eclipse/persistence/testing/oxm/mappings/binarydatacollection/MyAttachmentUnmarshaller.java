@@ -28,6 +28,7 @@
 package org.eclipse.persistence.testing.oxm.mappings.binarydatacollection;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 import javax.activation.DataHandler;
 import org.eclipse.persistence.oxm.attachment.XMLAttachmentUnmarshaller;
@@ -41,12 +42,16 @@ public class MyAttachmentUnmarshaller implements XMLAttachmentUnmarshaller {
     public static final String ATTACHMENT_TEST_ID = "c_id0";
     public boolean getAttachmentAsDataHandlerWasCalled;
 
+	public HashMap attachments;
+
+    
     public MyAttachmentUnmarshaller() {
         getAttachmentAsDataHandlerWasCalled = false;
+        attachments = new HashMap();
     }
     
     public byte[] getAttachmentAsByteArray(String cid) {
-    	Object obj = MyAttachmentMarshaller.attachments.get(cid);
+    	Object obj = attachments.get(cid);
     	if(obj instanceof byte[]){
     		return (byte[])obj;
     	}
@@ -63,7 +68,7 @@ public class MyAttachmentUnmarshaller implements XMLAttachmentUnmarshaller {
 
     public DataHandler getAttachmentAsDataHandler(String cid) {
         this.getAttachmentAsDataHandlerWasCalled = true;
-        Object obj = MyAttachmentMarshaller.attachments.get(cid);
+        Object obj = attachments.get(cid);        
         if (obj instanceof DataHandler) {
             return (DataHandler)obj;
         }

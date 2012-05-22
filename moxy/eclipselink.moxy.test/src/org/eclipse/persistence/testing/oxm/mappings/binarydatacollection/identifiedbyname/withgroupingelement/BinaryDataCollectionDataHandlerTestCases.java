@@ -59,10 +59,11 @@ public class BinaryDataCollectionDataHandlerTestCases extends XMLWithJSONMapping
 
 	    public void setUp() throws Exception {
 	        super.setUp();
-	        xmlUnmarshaller.setAttachmentUnmarshaller(new MyAttachmentUnmarshaller());
-	        
+	        MyAttachmentUnmarshaller handler = new MyAttachmentUnmarshaller();
 	        DataHandler data = new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text");    	
-	        MyAttachmentMarshallerDataHandler.attachments.put(MyAttachmentUnmarshaller.ATTACHMENT_TEST_ID, data);
+
+	        handler.attachments.put(MyAttachmentUnmarshaller.ATTACHMENT_TEST_ID,data);
+	        xmlUnmarshaller.setAttachmentUnmarshaller(handler);	       
 	    	
 	    }
 
