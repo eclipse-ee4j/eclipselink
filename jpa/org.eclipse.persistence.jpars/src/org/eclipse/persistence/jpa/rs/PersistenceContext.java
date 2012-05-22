@@ -67,7 +67,9 @@ import org.eclipse.persistence.jpa.rs.eventlistener.ChangeListener;
 import org.eclipse.persistence.jpa.rs.eventlistener.DatabaseEventListenerFactory;
 import org.eclipse.persistence.jpa.rs.eventlistener.DescriptorBasedDatabaseEventListener;
 import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
+import org.eclipse.persistence.jpa.rs.logging.LoggingLocalization;
 import org.eclipse.persistence.jpa.rs.util.DynamicXMLMetadataSource;
+import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 import org.eclipse.persistence.jpa.rs.util.JTATransactionWrapper;
 import org.eclipse.persistence.jpa.rs.util.LinkAdapter;
 import org.eclipse.persistence.jpa.rs.util.LinkMetadataSource;
@@ -145,7 +147,7 @@ public class PersistenceContext {
     
     private TransactionWrapper transaction = null;
 
-    public PersistenceContext(Archive archive, Map<String, Object> properties, ClassLoader classLoader){
+    public PersistenceContext(Archive archive, Map<String, Object> properties, ClassLoader classLoader) {
         super();
         List<SEPersistenceUnitInfo> persistenceUnits = PersistenceUnitProcessor.getPersistenceUnits(archive, classLoader);
         SEPersistenceUnitInfo persistenceUnitInfo = persistenceUnits.get(0);
@@ -163,13 +165,16 @@ public class PersistenceContext {
         try{
             JAXBContext jaxbContext = createDynamicJAXBContext(persistenceUnitInfo.getPersistenceUnitName(), emf.getServerSession());
             this.context = jaxbContext;
-        } catch (Exception e){
+        } catch (JAXBException jaxbe){
+            JPARSLogger.fine("exception_creating_jaxb_context", new Object[]{persistenceUnitInfo.getPersistenceUnitName(), jaxbe.toString()});
             emf.close();
-            throw new RuntimeException("JAXB Creation Exception", e);
+        } catch (IOException e){
+            JPARSLogger.fine("exception_creating_jaxb_context", new Object[]{persistenceUnitInfo.getPersistenceUnitName(), e.toString()});
+            emf.close();
         }
     }
     
-    public PersistenceContext(String emfName, EntityManagerFactoryImpl emf, URI defaultURI){
+    public PersistenceContext(String emfName, EntityManagerFactoryImpl emf, URI defaultURI) {
         super();
         this.emf = emf;
         this.name = emfName;
@@ -180,9 +185,13 @@ public class PersistenceContext {
         }
         try{
             JAXBContext jaxbContext = createDynamicJAXBContext(emfName, emf.getServerSession());
-           this.context = jaxbContext;
-        } catch (Exception e){
-            throw new RuntimeException("JAXB Creation Exception", e);
+            this.context = jaxbContext;
+        } catch (JAXBException jaxbe){
+            JPARSLogger.fine("exception_creating_jaxb_context", new Object[]{emfName, jaxbe.toString()});
+            emf.close();
+        } catch (IOException e){
+            JPARSLogger.fine("exception_creating_jaxb_context", new Object[]{emfName, e.toString()});
+            emf.close();
         }
         setBaseURI(defaultURI);
     }
@@ -222,7 +231,7 @@ public class PersistenceContext {
     public void addListener(ChangeListener listener) {
         DescriptorBasedDatabaseEventListener changeListener = (DescriptorBasedDatabaseEventListener) getJpaSession().getProperty(CHANGE_NOTIFICATION_LISTENER);
         if (changeListener == null) {
-            throw new RuntimeException("Change Listener not registered properly");
+            throw new JPARSException(LoggingLocalization.buildMessage("jpars_could_not_add_listener", new Object[]{}));
         }
         changeListener.addChangeListener(listener);
     }
@@ -324,7 +333,7 @@ public class PersistenceContext {
             transaction.beginTransaction(em);
             Object entity = em.find(getClass(type), id);
             if (entity != null){
-                em.remove(entity);          
+                em.remove(entity);
             }
             transaction.commitTransaction(em);
         } finally {
@@ -418,6 +427,7 @@ public class PersistenceContext {
                     setMappingValueInObject(object, attributeValue, mapping, partnerMapping);
                     transaction.commitTransaction(em);
                 } catch (Exception e){
+                    JPARSLogger.fine("exception_while_updating_attribute", new Object[]{entityName, getName(), e.toString()});
                     transaction.rollbackTransaction(em);
                 }
             } else {
@@ -604,11 +614,12 @@ public class PersistenceContext {
         } catch (IllegalArgumentException e){
             ClassDescriptor descriptor = getDescriptor(type);
             if (descriptor != null){
-                DynamicType jaxbType = (DynamicType) descriptor.getProperty(DynamicType.DESCRIPTOR_PROPERTY);     
+                DynamicType jaxbType = (DynamicType) descriptor.getProperty(DynamicType.DESCRIPTOR_PROPERTY);
                 if (jaxbType != null){
                     return jaxbType.newDynamicEntity();
                 }
             }
+            JPARSLogger.fine("exception_thrown_while_creating_dynamic_entity", new Object[]{type, e.toString()});
             throw e;
         }
         return entity;
@@ -724,7 +735,8 @@ public class PersistenceContext {
     public DatabaseEventListener subscribeToEventNotification(String descriptorAlias) {
         ClassDescriptor descriptor = getJpaSession().getDescriptorForAlias(descriptorAlias);
         if (descriptor == null){
-            throw new RuntimeException("Could not find " + descriptorAlias + " for subscription");
+            JPARSLogger.warning("jpars_could_not_find_descriptor", new Object[]{descriptorAlias});
+            return null;
         }
         return subscribeToEventNotification(emf, descriptor);
     }
@@ -743,8 +755,9 @@ public class PersistenceContext {
                 session.setDatabaseEventListener(databaseEventListener);
                 session.setProperty(CHANGE_NOTIFICATION_LISTENER, databaseEventListener);
             } else {
-                throw new RuntimeException("Could not subscribe to change notification for " + descriptor.getAlias());
-            }
+                JPARSLogger.warning("jpars_could_not_find_descriptor", new Object[]{descriptor.getAlias()});
+                return null;
+           }
         }
         databaseEventListener.initialize(descriptor, session);
         databaseEventListener.register(session, descriptor);
@@ -790,7 +803,7 @@ public class PersistenceContext {
             for (DatabaseMapping mapping: descriptor.getMappings()){
                 if (mapping.isForeignReferenceMapping() && !mapping.isPrivateOwned()){
                     // we require Fetch groups to handle relationships
-                    throw new JPARSException();
+                    throw new JPARSException(LoggingLocalization.buildMessage("weaving_required_for_relationships", new Object[]{}));
                 }
             }
         }

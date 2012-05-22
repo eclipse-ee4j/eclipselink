@@ -12,25 +12,42 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.util;
 
-import org.eclipse.persistence.logging.AbstractSessionLog;
-import org.eclipse.persistence.logging.SessionLog;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.eclipse.persistence.jpa.rs.logging.LoggingLocalization;
 
 public class JPARSLogger {
-
+    
+    static final Logger logger = Logger.getLogger("org.eclipse.persistence.jpars");    
+    
     /**
      * INTERNAL:
      * Logging utility method.
      */
-    public static void log(String message, int level, Object[] params) {
-        AbstractSessionLog.getLog().log(level, SessionLog.JPARS, message, params);
+    public static void log(String message, Level level, Object[] params) {
+        logger.log(level, LoggingLocalization.buildMessage(message, params));
     }
     
     public static void finest(String message, Object[] params){
-        log(message, SessionLog.FINEST, params);
+        log(message, Level.FINEST, params);
     }
 
     public static void fine(String message, Object[] params){
-        log(message, SessionLog.FINEST, params);
+        log(message, Level.FINE, params);
+    }
+    
+    public static void warning(String message, Object[] params){
+        log(message, Level.WARNING, params);
+    }
+    
+    public static void exception(String message, Object[] params, Exception exc){
+        logger.log(Level.FINER, LoggingLocalization.buildMessage(message, params), exc);
+    }
+    
+    public static void setLogLevel(Level level){
+        logger.setLevel(level);
     }
     
 }
+

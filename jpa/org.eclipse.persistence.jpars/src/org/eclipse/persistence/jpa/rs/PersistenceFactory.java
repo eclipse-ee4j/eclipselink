@@ -114,9 +114,6 @@ public class PersistenceFactory {
             persistenceContext = new PersistenceContext(archive, properties, dcl);
     
             persistenceContexts.put(name, persistenceContext);
-            // TODO store persistence units that were composed from a stream or a String rather than just a URL
-        } else {
-            System.out.println("PersistenceContext " + name + " already started.  Using existing.");
         }
         return persistenceContext;
     }

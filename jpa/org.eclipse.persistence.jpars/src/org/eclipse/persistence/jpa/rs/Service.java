@@ -224,6 +224,7 @@ public class Service {
             try {
                 result = marshallMetadata(pu, mediaType);
             } catch (JAXBException e){
+                JPARSLogger.fine("exception_marshalling_persitence_unit", new Object[]{persistenceUnit, e.toString()});
                 return Response.status(Status.INTERNAL_SERVER_ERROR).build();
             }
             ResponseBuilder rb = Response.ok(new StreamingOutputMarshaller(null , result, hh.getAcceptableMediaTypes()));
@@ -262,6 +263,7 @@ public class Service {
         } else {
             ClassDescriptor descriptor = app.getJpaSession().getDescriptorForAlias(descriptorAlias);
             if (descriptor == null){
+                JPARSLogger.fine("jpars_could_not_find_entity_type", new Object[]{descriptorAlias, persistenceUnit});
                 return Response.status(Status.NOT_FOUND).build();
             } else {
                 String mediaType = StreamingOutputMarshaller.mediaType(hh.getAcceptableMediaTypes()).toString();
@@ -270,6 +272,7 @@ public class Service {
                 try {
                     result = marshallMetadata(returnDescriptor, mediaType);
                 } catch (JAXBException e){
+                    JPARSLogger.fine("exception_marshalling_entity_metadata", new Object[]{descriptorAlias, persistenceUnit, e.toString()});
                     return Response.status(Status.INTERNAL_SERVER_ERROR).build();
                 }
                 return Response.ok(new StreamingOutputMarshaller(null , result, hh.getAcceptableMediaTypes())).build();
@@ -292,6 +295,7 @@ public class Service {
             try {
                 result = marshallMetadata(queries, mediaType);
             } catch (JAXBException e){
+                JPARSLogger.fine("exception_marshalling_query_metadata", new Object[]{persistenceUnit, e.toString()});
                 return Response.status(Status.INTERNAL_SERVER_ERROR).build();
             }
             return Response.ok(new StreamingOutputMarshaller(null , result, hh.getAcceptableMediaTypes())).build();
@@ -318,6 +322,7 @@ public class Service {
             try {
                 result = marshallMetadata(returnQueries, mediaType);
             } catch (JAXBException e){
+                JPARSLogger.fine("exception_marshalling_individual_query_metadata", new Object[]{queryName, persistenceUnit, e.toString()});
                 return Response.status(Status.INTERNAL_SERVER_ERROR).build();
             }
             return Response.ok(new StreamingOutputMarshaller(null , result, hh.getAcceptableMediaTypes())).build();
@@ -343,6 +348,7 @@ public class Service {
         Object entity = app.find(discriminators, type, id, Service.getHintMap(ui));
 
         if (entity == null) {
+            JPARSLogger.fine("jpars_could_not_entity_for_key", new Object[]{type, key, persistenceUnit});
             return Response.status(Status.NOT_FOUND).build();
         } else {
             return Response.ok(new StreamingOutputMarshaller(app, entity, hh.getAcceptableMediaTypes())).build();
@@ -367,6 +373,7 @@ public class Service {
         Object entity = app.findAttribute(discriminators, type, id, Service.getHintMap(ui), attribute);
 
         if (entity == null) {
+            JPARSLogger.fine("jpars_could_not_entity_for_attribute", new Object[]{type, key, attribute, persistenceUnit});
             return Response.status(Status.NOT_FOUND).build();
         } else {
             return Response.ok(new StreamingOutputMarshaller(app, entity, hh.getAcceptableMediaTypes())).build();
@@ -395,16 +402,19 @@ public class Service {
             ClassDescriptor descriptor = app.getDescriptor(type);
             DatabaseMapping mapping = (DatabaseMapping)descriptor.getMappingForAttributeName(attribute);
             if (!mapping.isForeignReferenceMapping()){
+                JPARSLogger.fine("jpars_could_find_appropriate_mapping_for_update", new Object[]{attribute, type, key, persistenceUnit});
                 return Response.status(Status.NOT_FOUND).build();
             }
             entity = app.unmarshalEntity(((ForeignReferenceMapping)mapping).getReferenceDescriptor().getAlias(), mediaType(hh.getAcceptableMediaTypes()), in);
         } catch (JAXBException e){
+            JPARSLogger.fine("exception_while_ummarhalling_entity", new Object[]{type, persistenceUnit, e.toString()});
             return Response.status(Status.BAD_REQUEST).build();
         }
         
         Object result = app.updateOrAddAttribute(getParameterMap(ui, persistenceUnit), type, id, Service.getHintMap(ui), attribute, entity, partner);
 
         if (result == null) {
+            JPARSLogger.fine("jpars_could_not_update_attribute", new Object[]{attribute, type, key, persistenceUnit});
             return Response.status(Status.NOT_FOUND).build();
         } else {
             return Response.ok(new StreamingOutputMarshaller(app, result, hh.getAcceptableMediaTypes())).build();
@@ -433,15 +443,18 @@ public class Service {
             ClassDescriptor descriptor = app.getDescriptor(type);
             DatabaseMapping mapping = (DatabaseMapping)descriptor.getMappingForAttributeName(attribute);
             if (!mapping.isForeignReferenceMapping()){
+                JPARSLogger.fine("jpars_could_find_appropriate_mapping_for_update", new Object[]{attribute, type, key, persistenceUnit});
                 return Response.status(Status.NOT_FOUND).build();
             }
             entity = app.unmarshalEntity(((ForeignReferenceMapping)mapping).getReferenceDescriptor().getAlias(), mediaType(hh.getAcceptableMediaTypes()), in);
         } catch (JAXBException e){
+            JPARSLogger.fine("exception_while_ummarhalling_entity", new Object[]{type, persistenceUnit, e.toString()});
             return Response.status(Status.BAD_REQUEST).build();
         }
         
         Object result = app.removeAttribute(getParameterMap(ui, persistenceUnit), type, id, Service.getHintMap(ui), attribute, entity, partner);
         if (result == null) {
+            JPARSLogger.fine("jpars_could_not_update_attribute", new Object[]{attribute, type, key, persistenceUnit});
             return Response.status(Status.NOT_FOUND).build();
         } else {
             return Response.ok(new StreamingOutputMarshaller(app, result, hh.getAcceptableMediaTypes())).build();
@@ -452,20 +465,20 @@ public class Service {
     @Path("{context}/entity/{type}")
     public Response create(@PathParam("context") String persistenceUnit, @PathParam("type") String type, @Context HttpHeaders hh, @Context UriInfo uriInfo, InputStream in) throws JAXBException {
         PersistenceContext app = get(persistenceUnit, uriInfo.getBaseUri());
+        if (app == null){
+            JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[]{persistenceUnit});
+            return Response.status(Status.NOT_FOUND).build();
+        }
         ClassDescriptor descriptor = app.getDescriptor(type);
-        if (app == null || descriptor == null){
-            if (app == null){
-                JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[]{persistenceUnit});
-            } else {
-                JPARSLogger.fine("jpars_could_not_find_class_in_persistence_unit", new Object[]{type, persistenceUnit});
-            }
+        if (descriptor == null){
+            JPARSLogger.fine("jpars_could_not_find_class_in_persistence_unit", new Object[]{type, persistenceUnit});
             return Response.status(Status.NOT_FOUND).build();
         }
         Object entity = null;
         try{
             entity = app.unmarshalEntity(type, mediaType(hh.getAcceptableMediaTypes()), in);
         } catch (JAXBException e){
-            e.printStackTrace();
+            JPARSLogger.fine("exception_while_ummarhalling_entity", new Object[]{type, persistenceUnit, e.toString()});
             return Response.status(Status.BAD_REQUEST).build();
         }
 
@@ -475,6 +488,7 @@ public class Service {
             Object value = sequenceMapping.getAttributeAccessor().getAttributeValueFromObject(entity);
 
             if (descriptor.getObjectBuilder().isPrimaryKeyComponentInvalid(value, descriptor.getPrimaryKeyFields().indexOf(descriptor.getSequenceNumberField())) || descriptor.getSequence().shouldAlwaysOverrideExistingValue()){
+                JPARSLogger.fine("jpars_put_not_itempotent", new Object[]{type, persistenceUnit});
                 return Response.status(Status.BAD_REQUEST).build();
             }
         }
@@ -502,6 +516,7 @@ public class Service {
         try {
             entity = app.unmarshalEntity(type, contentType, in);
         } catch (JAXBException e){
+            JPARSLogger.fine("exception_while_ummarhalling_entity", new Object[]{type, persistenceUnit, e.toString()});
             return Response.status(Status.BAD_REQUEST).build();
         }
         entity = app.merge(getParameterMap(uriInfo, persistenceUnit), entity);
@@ -685,16 +700,12 @@ public class Service {
                     app = getPersistenceFactory().bootstrapPersistenceContext(persistenceUnit, factory, defaultURI, true);
                 }
             } catch (Exception e){
-                e.printStackTrace();
+                JPARSLogger.fine("exception_creating_persistence_context", new Object[]{persistenceUnit, e.toString()});
             }
         } else {
             if (app.getBaseURI() == null){
                 app.setBaseURI(defaultURI);
             }
-        }
-        
-        if (app == null) {
-            throw new WebApplicationException(Status.NOT_FOUND);
         }
         return app;
     }

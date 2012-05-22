@@ -16,4 +16,7 @@ import org.eclipse.persistence.exceptions.EclipseLinkException;
 
 public class JPARSException extends EclipseLinkException {
 
+    public JPARSException(String message){
+        super(message);
+    }
 }

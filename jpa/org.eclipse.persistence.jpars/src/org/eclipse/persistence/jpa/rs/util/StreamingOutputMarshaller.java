@@ -86,14 +86,11 @@ public class StreamingOutputMarshaller implements StreamingOutput {
                             context.marshallEntity(returnList, mediaType, output);
                             return;
                         } catch (JAXBException ex){
-                            // TODO: proper warning message
-
-                            ex.printStackTrace();
-
+                            JPARSLogger.fine("jaxb_exception_while_marshalling", new Object[]{ex.toString()});
                         }
                     }
                     initialException.printStackTrace();
-                    System.out.println("WARNING, could not marshall entity, serializing. " + e.toString());
+                    JPARSLogger.fine("jpars_could_not_marshal_serializing", new Object[]{initialException});
                 }
             }
             // could not marshall, try serializing
