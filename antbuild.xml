@@ -472,12 +472,13 @@
                 <attribute name="Main-Class"             value="${eclipselink.main.class}"/>
             </manifest>
                 <!--exclude name="*jpa.jpql*.jar"/ -->
+                <!-- Kills Testing:: core:18e JPA:1e JAXB:24f:160e OXM:170e DBWS:2e DBWSU:15e  -->
+                <!-- exclude name="*nosql*.jar"/ -->
             <zipgroupfileset dir="${eclipselink.plugins}">
                 <include name="org.eclipse.persistence*${version.string}.jar"/>
                 <include name="org.eclipse.persistence.jpa.jpql*.jar"/>
                 <include name="org.eclipse.persistence.asm*.jar"/>
                 <include name="org.eclipse.persistence.antlr*.jar"/>
-                <exclude name="*nosql*.jar"/>
                 <exclude name="*source*.jar"/>
                 <exclude name="*equinox*.jar"/>
                 <exclude name="*builder*.jar"/>
