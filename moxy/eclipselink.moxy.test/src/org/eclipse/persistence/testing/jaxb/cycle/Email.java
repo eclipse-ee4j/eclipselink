@@ -18,5 +18,10 @@ public class Email {
     public String user;
     public String domain;
     public ContactInfo parentInfo;
+    public Email forward;
+
+    public boolean equals(Object obj) {
+        return false;
+    }
 
 }

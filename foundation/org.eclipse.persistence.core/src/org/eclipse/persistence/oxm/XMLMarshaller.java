@@ -114,6 +114,7 @@ public class XMLMarshaller implements Cloneable {
     private String indentString;
     private CharacterEscapeHandler charEscapeHandler;
     private String xmlHeader;
+    private boolean equalUsingIdenity = true;
 
     private static final String STAX_RESULT_CLASS_NAME = "javax.xml.transform.stax.StAXResult";
     private static final String GET_XML_STREAM_WRITER_METHOD_NAME = "getXMLStreamWriter";
@@ -1706,6 +1707,20 @@ public class XMLMarshaller implements Cloneable {
      */
     public void setXmlHeader(String xmlHeader) {
         this.xmlHeader = xmlHeader;
+    }
+
+    /**
+     * INTERNAL
+     */
+    public boolean isEqualUsingIdenity() {
+        return equalUsingIdenity;
+    }
+
+    /**
+     * INTERNAL
+     */
+    public void setEqualUsingIdenity(boolean equalUsingIdenity) {
+        this.equalUsingIdenity = equalUsingIdenity;
     }
 
 }

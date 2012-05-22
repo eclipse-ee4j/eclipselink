@@ -387,7 +387,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
         MarshalRecord marshalRecord = (MarshalRecord) record;
         QName schemaType = null;
 
-        if (marshalRecord.getCycleDetectionStack().contains(object)) {
+        if (marshalRecord.getCycleDetectionStack().contains(object, marshaller.isEqualUsingIdenity())) {
             if (cycleRecoverableClass == null) {
                 initCycleRecoverableClasses();
             }

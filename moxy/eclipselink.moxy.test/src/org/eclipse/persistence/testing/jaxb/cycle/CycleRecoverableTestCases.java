@@ -40,6 +40,31 @@ public class CycleRecoverableTestCases extends JAXBWithJSONTestCases {
         return false;
     }
 
+    public void testEqualsUsingEqualsMethod() throws Exception {
+        Marshaller m = getJAXBMarshaller();
+
+        // Use equals() method for object comparison.
+        // Email's equals() always returns false, so Cycle cannot be detected.
+        // Expecting StackOverflowError.
+        m.setProperty("com.sun.xml.bind.objectIdentitityCycleDetection", false);
+
+        Email em1 = new Email(); em1.user = "me"; em1.domain = "here.com";
+        Email em2 = new Email(); em2.user = "myself"; em2.domain = "overthere.co.uk";
+        em1.forward = em2; em2.forward = em1;
+
+        Throwable expectedException = null;
+        try {
+            m.marshal(em1, new ByteArrayOutputStream());
+        } catch (Throwable ex) {
+            expectedException = ex;
+        }
+
+        assertNotNull("No exception caught as expected.", expectedException);
+        assertEquals("Incorrect exception caught.", StackOverflowError.class, expectedException.getClass());
+
+        m.setProperty("com.sun.xml.bind.objectIdentitityCycleDetection", true);
+    }
+
     public void testUnhandledCycle() throws Exception {
         Company c = (Company) getControlObject();
 

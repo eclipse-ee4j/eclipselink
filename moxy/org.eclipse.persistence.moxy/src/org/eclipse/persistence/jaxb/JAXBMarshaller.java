@@ -125,6 +125,8 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
 
     private static final String XML_HEADERS = "com.sun.xml.bind.xmlHeaders";
 
+    private static final String OBJECT_IDENTITY_CYCLE_DETECTION = "com.sun.xml.bind.objectIdentitityCycleDetection";
+
     /**
      * This constructor initializes various settings on the XML marshaller, and
      * stores the provided JAXBIntrospector instance for usage in marshal()
@@ -288,6 +290,8 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             return !xmlMarshaller.isFragment();
         } else if (XML_HEADERS.equals(key)) {
             return xmlMarshaller.getXmlHeader();
+        } else if (OBJECT_IDENTITY_CYCLE_DETECTION.equals(key)) {
+            return xmlMarshaller.isEqualUsingIdenity();
         } else if (MarshallerProperties.JSON_ATTRIBUTE_PREFIX.equals(key)) {
             return xmlMarshaller.getAttributePrefix();
         } else if (MarshallerProperties.JSON_INCLUDE_ROOT.equals(key)) {
@@ -707,6 +711,8 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
                 xmlMarshaller.setFragment(fragment.booleanValue());
             } else if (XML_HEADERS.equals(key)) {
                 xmlMarshaller.setXmlHeader((String) value);
+            } else if (OBJECT_IDENTITY_CYCLE_DETECTION.equals(key)) {
+                xmlMarshaller.setEqualUsingIdenity(((Boolean) value).booleanValue());
             } else if (MarshallerProperties.MEDIA_TYPE.equals(key)) {
                 MediaType mType = null;
                 if(value instanceof MediaType) {

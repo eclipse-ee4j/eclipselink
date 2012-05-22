@@ -721,10 +721,18 @@ public abstract class MarshalRecord extends XMLRecord {
             return data.remove(data.size() - 1);
         }
 
-        public boolean contains(Object item) {
-            for (E e : data) {
-                if (e == item) {
-                    return true;
+        public boolean contains(Object item, boolean equalsUsingIdentity) {
+            if (equalsUsingIdentity) {
+                for (E e : data) {
+                    if (e == item) {
+                        return true;
+                    }
+                }
+            } else {
+                for (E e : data) {
+                    if (e.equals(item)) {
+                        return true;
+                    }
                 }
             }
             return false;
@@ -740,7 +748,7 @@ public abstract class MarshalRecord extends XMLRecord {
                 sb.append(" -> ");
                 x = get(--i);
                 sb.append(x);
-            } while(obj != x);
+            } while (obj != x);
 
             return sb.toString();
         }

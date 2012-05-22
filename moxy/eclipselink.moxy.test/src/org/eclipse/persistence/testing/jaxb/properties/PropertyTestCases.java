@@ -151,6 +151,15 @@ public class PropertyTestCases extends TestCase {
         assertNull(m.getProperty(XML_HEADERS));
     }
 
+    public void testMarshallerObjectIdentity() throws Exception {
+        String prop = "com.sun.xml.bind.objectIdentitityCycleDetection";
+
+        m.setProperty(prop, false);
+        assertFalse((Boolean) m.getProperty(prop));
+        m.setProperty(prop, true);
+        assertTrue((Boolean) m.getProperty(prop));
+    }
+
     public void testMarshallerMediaTypeEnum() throws Exception {
         m.setProperty(MarshallerProperties.MEDIA_TYPE, "application/json");
         assertEquals(MediaType.APPLICATION_JSON, m.getProperty(MarshallerProperties.MEDIA_TYPE));
