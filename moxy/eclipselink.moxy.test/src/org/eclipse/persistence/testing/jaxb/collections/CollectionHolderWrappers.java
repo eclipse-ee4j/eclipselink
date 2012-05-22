@@ -27,6 +27,8 @@ import javax.xml.bind.annotation.XmlElementRefs;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.w3c.dom.Element;
+
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement
 public class CollectionHolderWrappers {
@@ -166,7 +168,12 @@ public class CollectionHolderWrappers {
 	    	     return true;
     		 }
     		 return false;
-    	}else{
+    	} else if (obj1 instanceof org.w3c.dom.Element) {
+    	    if(obj2 instanceof org.w3c.dom.Element) {
+    	        return ((Element)obj1).getLocalName().equals(((Element)obj2).getLocalName());
+    	    }
+    	    return false;
+    	} else{
     		 if(obj1.getClass().isArray() && obj2.getClass().isArray()){
     	         return compareArrays(obj1, obj2);
     	     }else{

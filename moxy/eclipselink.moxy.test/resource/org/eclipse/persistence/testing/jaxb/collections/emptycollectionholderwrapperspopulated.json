@@ -12,6 +12,10 @@
             "value" : 20
          } ]
       },
+      "collection3-wrapper" : {
+         "collectionHolderWrappers" : [ {
+         } ]
+      },
       "collection4-wrapper" : {
          "collection4" : [ {
          } ]

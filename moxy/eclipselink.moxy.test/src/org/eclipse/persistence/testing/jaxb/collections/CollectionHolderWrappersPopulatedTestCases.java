@@ -19,9 +19,14 @@ import java.util.List;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
+import org.eclipse.persistence.oxm.platform.XMLPlatform;
+import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
+import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
+import org.w3c.dom.Document;
 
-public class CollectionHolderWrappersPopulatedTestCases extends JAXBWithJSONTestCases {
+public class CollectionHolderWrappersPopulatedTestCases extends JAXBWithJSONTestCases 
+{
 
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/collections/emptycollectionholderwrapperspopulated.xml";
     private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/collections/emptycollectionholderwrapperspopulated.json";
@@ -47,8 +52,8 @@ public class CollectionHolderWrappersPopulatedTestCases extends JAXBWithJSONTest
     	
     	obj.collection2 = new ArrayList<Object>(obj.collection1);
     	
-    	//obj.collection3 = new ArrayList<Object>();
-    //	obj.collection3.add(new CollectionHolderWrappers());
+    	obj.collection3 = new ArrayList<Object>();
+    	obj.collection3.add(new CollectionHolderWrappers());
     	    	
     	obj.collection4 = new ArrayList<CollectionHolderWrappers>();    	    	    
     	obj.collection4.add(new CollectionHolderWrappers());
@@ -67,6 +72,16 @@ public class CollectionHolderWrappersPopulatedTestCases extends JAXBWithJSONTest
 
     public boolean shouldRemoveWhitespaceFromControlDocJSON(){
     	return false;
+    }
+    
+    @Override
+    public Object getReadControlObject() {
+        CollectionHolderWrappers obj = (CollectionHolderWrappers)getControlObject();
+        obj.collection3 = new ArrayList<Object>();
+        
+        Document doc = XMLPlatformFactory.getInstance().getXMLPlatform().createDocument();
+        obj.collection3.add(doc.createElementNS("", "collectionHolderWrappers"));
+        return obj;
     }
 }
 
