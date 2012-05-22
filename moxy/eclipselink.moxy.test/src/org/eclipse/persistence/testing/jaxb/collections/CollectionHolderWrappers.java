@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Oracle. All rights reserved.
+ * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -13,6 +13,9 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.collections;
 
+import java.lang.reflect.Array;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.bind.JAXBElement;
@@ -23,6 +26,8 @@ import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlElementRefs;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import org.w3c.dom.Element;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement
@@ -125,15 +130,72 @@ public class CollectionHolderWrappers {
          return false;
     }
 
-    private boolean compareCollections(Object compareList1, Object compareList2) {
+    private boolean compareCollections(Collection compareList1, Collection compareList2) {
         if (compareList1 == null) {
             return compareList2 == null;
         } else {
             if (compareList2 == null) {
                 return false;
             }
-            return compareList1 == compareList2;
+            if(compareList1.size() != compareList2.size()){
+                return false;
+            }
+            Iterator iter1 = compareList1.iterator();
+            Iterator iter2 = compareList2.iterator();
+            while(iter1.hasNext()){
+            	Object next1 = iter1.next();
+            	Object next2 = iter2.next();
+            	if(!compareObjects(next1, next2)){
+            		return false;
+            	}
+            }
+            return true;       
         }
     }
+    
+    private boolean compareObjects(Object obj1, Object obj2){
+    	if(obj1 instanceof JAXBElement){
+    		 if(obj2 instanceof JAXBElement){
+	    		 if(! ((JAXBElement)obj1).getName().getLocalPart().equals(((JAXBElement)obj2).getName().getLocalPart())){
+	    			 return false;
+	    		 }
+	    		 if(! ((JAXBElement)obj1).getDeclaredType().equals(((JAXBElement)obj2).getDeclaredType())){
+	    			 return false;
+	    		 }
+	    		 if(! ((JAXBElement)obj1).getValue().equals(((JAXBElement)obj2).getValue())){
+	    			 return false;
+	    		 } 
+	    	     return true;
+    		 }
+    		 return false;
+    	} else if (obj1 instanceof org.w3c.dom.Element) {
+    	    if(obj2 instanceof org.w3c.dom.Element) {
+    	        return ((Element)obj1).getLocalName().equals(((Element)obj2).getLocalName());
+    	    }
+    	    return false;
+    	} else{
+    		 if(obj1.getClass().isArray() && obj2.getClass().isArray()){
+    	         return compareArrays(obj1, obj2);
+    	     }else{
+    		    return obj1.equals(obj2);
+    	     }
+    	}
+    }
 
+    protected boolean compareArrays(Object controlValue, Object testValue) {    	
+        int controlSize = Array.getLength(controlValue);
+        int objSize = Array.getLength(testValue);
+        if(controlSize != objSize){
+        	return false;
+        }
+        for(int x=0; x<controlSize; x++) {
+            Object controlItem = Array.get(controlValue, x);
+            Object testItem = Array.get(testValue, x);
+                           
+            if(!controlItem.equals(testItem)){
+             	return false;
+            }           
+        }
+        return true;
+    }
 }

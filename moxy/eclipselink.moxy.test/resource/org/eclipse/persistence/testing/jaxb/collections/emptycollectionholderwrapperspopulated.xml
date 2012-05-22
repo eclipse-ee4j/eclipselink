@@ -1,0 +1,26 @@
+<collectionHolderWrappers>
+   <collection1>
+      <collection1>10</collection1>
+      <collection1>20</collection1>
+   </collection1>
+   <collection2-wrapper>
+      <collection2 xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:int">10</collection2>
+      <collection2 xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:int">20</collection2>
+   </collection2-wrapper>
+   <collection3-wrapper>
+     <collectionHolderWrappers/>
+   </collection3-wrapper>
+   <collection4-wrapper>
+      <collection4/>
+   </collection4-wrapper>
+   <collection5-wrapper>
+      <root>abcvalue</root>
+   </collection5-wrapper>
+   <collection6-wrapper>
+      <collection6>10</collection6>
+   </collection6-wrapper>
+   <collection7-wrapper>
+      <collection7>YWJj</collection7>
+	  <collection7>ZGVm</collection7>
+   </collection7-wrapper>
+</collectionHolderWrappers>

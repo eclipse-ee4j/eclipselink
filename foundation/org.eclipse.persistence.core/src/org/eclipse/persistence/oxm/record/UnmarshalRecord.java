@@ -887,7 +887,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
                 }
             }
             XPathFragment xPathFragment = xPathNode.getXPathFragment();
-            if(null != xPathFragment && xPathFragment.nameIsText()) {
+            if(null != xPathFragment && xPathFragment.nameIsText() || (this.xpathNodeIsMixedContent && xPathNode.getParent() != null)) {
                 xPathNode = xPathNode.getParent();
             }
             if (null != xPathNode.getParent()) {
