@@ -21,6 +21,8 @@
  *                 does not correspond to a valid field on the mapping reference
  *     09/09/2011-2.3.1 Guy Pelletier 
  *       - 356197: Add new VPD type to MultitenantType
+ *     22/05/2012-2.4 Guy Pelletier  
+ *       - 380008: Multitenant persistence units with a dedicated emf should force tenant property specification up front.
  ******************************************************************************/  
 package org.eclipse.persistence.exceptions;
 
@@ -437,6 +439,7 @@ public class ValidationException extends EclipseLinkException {
     public static final int VPD_NOT_SUPPORTED = 7344;
     
     public static final int MISSING_PROPERTIES_FILE_FOR_METADATA_SOURCE = 7345;
+    public static final int MULTITENANT_PROPERTY_FOR_NON_SHARED_EMF_NOT_SPECIFIED = 7346;
     
     /**
      * INTERNAL:
@@ -1868,6 +1871,13 @@ public class ValidationException extends EclipseLinkException {
         Object[] args = { identifier1, entityClassName1, identifier2, entityClassName2 };
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, VPD_MULTIPLE_IDENTIFIERS_SPECIFIED, args));
         validationException.setErrorCode(VPD_MULTIPLE_IDENTIFIERS_SPECIFIED);
+        return validationException;
+    }
+    
+    public static ValidationException multitenantContextPropertyForNonSharedEMFNotSpecified(String contextProperty) {
+        Object[] args = { contextProperty };
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, MULTITENANT_PROPERTY_FOR_NON_SHARED_EMF_NOT_SPECIFIED, args));
+        validationException.setErrorCode(MULTITENANT_PROPERTY_FOR_NON_SHARED_EMF_NOT_SPECIFIED);
         return validationException;
     }
     

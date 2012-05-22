@@ -21,10 +21,14 @@
  *                 does not correspond to a valid field on the mapping reference
  *     09/09/2011-2.3.1 Guy Pelletier 
  *       - 356197: Add new VPD type to MultitenantType
+ *     22/05/2012-2.4 Guy Pelletier  
+ *       - 380008: Multitenant persistence units with a dedicated emf should force tenant property specification up front.
  ******************************************************************************/  
 package org.eclipse.persistence.exceptions.i18n;
 
 import java.util.ListResourceBundle;
+
+import org.eclipse.persistence.config.PersistenceUnitProperties;
 
 /**
  * INTERNAL:
@@ -331,6 +335,7 @@ public class ValidationExceptionResource extends ListResourceBundle {
                                            { "7343", "Multiple VPD identifiers (tenant discriminator context property) have been specified. Entity [{1}] uses [{0}] and Entity [{3]} uses [{2}]. When using a Multitenant VPD strategy, there can only be one tenant discriminator column per entity and its context property must be consistent across all the Multitenant VPD entities."},
                                            { "7344", "VPD (connections and DDL generation) is not supported for the platform: [{0}]."},
                                            { "7345", "{0} file specified for XMLMetadataSource is not found"},
+                                           { "7346", "The multitenant context property [{0}] has not been provided. When the persistence unit property (" + PersistenceUnitProperties.MULTITENANT_SHARED_EMF + ") is set to false, all multitenant context properties must be provided up front. This can be done through the persistence unit definition directly or by passing a properties map containing all the multitenant context properties on the create entity manager factory call."},
                                            
  };
     

@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     14/05/2012-2.4 Guy Pelletier  
  *       - 376603: Provide for table per tenant support for multitenant applications
+ *     22/05/2012-2.4 Guy Pelletier  
+ *       - 380008: Multitenant persistence units with a dedicated emf should force tenant property specification up front.
  ******************************************************************************/  
 package org.eclipse.persistence.internal.sessions;
 
@@ -777,6 +779,23 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
                 getCommandManager().initialize();
             }
         }
+        
+        // Once the descriptors are initialized we can check if there are
+        // multitenant entities and if this session (emf) is shared or not. If
+        // not shared, all multitenant properties must be available and set by 
+        // the user at this point for us to validate (meaning they must be set 
+        // in a persitence.xml or passed into the create EMF call).
+        if (getProperties().containsKey(PersistenceUnitProperties.MULTITENANT_SHARED_EMF)) {
+            String value = (String) getProperties().get(PersistenceUnitProperties.MULTITENANT_SHARED_EMF);
+            if (! new Boolean(value)) {
+                for (String property : getMultitenantContextProperties()) {
+                    if (! getProperties().containsKey(property)) {
+                        throw ValidationException.multitenantContextPropertyForNonSharedEMFNotSpecified(property);
+                    }
+                }
+            }
+        }
+        
         log(SessionLog.INFO, SessionLog.CONNECTION, "login_successful", this.getName());
         // postLogin event should not be risen before descriptors have been initialized 
         if (!hasBroker()) {

@@ -28,6 +28,8 @@
  *       - 363820: Issue with clone method from VPDMultitenantPolicy
  *     14/05/2012-2.4 Guy Pelletier   
  *       - 376603: Provide for table per tenant support for multitenant applications
+ *     22/05/2012-2.4 Guy Pelletier  
+ *       - 380008: Multitenant persistence units with a dedicated emf should force tenant property specification up front.
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.advanced.multitenant;
 
@@ -129,6 +131,7 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
         
         suite.addTest(new AdvancedMultiTenantJunitTest("testCreateMafiaFamily707"));
         suite.addTest(new AdvancedMultiTenantJunitTest("testCreateMafiaFamily007"));
+        suite.addTest(new AdvancedMultiTenantJunitTest("testCreateEMF123WithoutAllTenantPropertiesSet"));
         suite.addTest(new AdvancedMultiTenantJunitTest("testCreateMafiaFamily123"));
         
         suite.addTest(new AdvancedMultiTenantJunitTest("testValidateMafiaFamily707"));
@@ -652,8 +655,33 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
         }
     }
     
+    /**
+     * This test is expected to fail.
+     */
+    public void testCreateEMF123WithoutAllTenantPropertiesSet() {
+        EntityManager em = null;
+        boolean exceptionCaught = false;
+        try {
+            em = createEntityManager(MULTI_TENANT_PU_123);
+        } catch (RuntimeException e) {
+            exceptionCaught = true;
+        } finally {
+            if (em != null) {
+                closeEntityManager(em);
+            }
+            
+            closeEntityManagerFactory(MULTI_TENANT_PU_123);
+        }
+        
+        assertTrue("No exception received on a non shared emf without all tenant properties provided", exceptionCaught);
+    }
+    
     public void testCreateMafiaFamily123() {
-        EntityManager em = createEntityManager(MULTI_TENANT_PU_123);
+        Map<String, String> properties = new HashMap<String, String>();
+        properties.putAll(JUnitTestCaseHelper.getDatabaseProperties(MULTI_TENANT_PU_123));
+        properties.put(PersistenceUnitProperties.MULTITENANT_PROPERTY_DEFAULT, "123");
+        EntityManager em = createEntityManager(MULTI_TENANT_PU_123, properties);
+        
         try {
             beginTransaction(em);
             

@@ -297,7 +297,8 @@
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
             <property name="tenant.id" value="123"/>
-            <property name="eclipselink.tenant-id" value="123"/>
+            <!--  this one will be appended in the test suite when creating the emf -->
+            <!-- property name="eclipselink.tenant-id" value="123"/ -->
             <property name="eclipselink.multitenant.tenants-share-emf" value="false"/>
             <property name="eclipselink.session-name" value="multi-tenant-123"/>
             <property name="eclipselink.jdbc.allow-native-sql-queries" value="false"/>
