@@ -54,6 +54,9 @@ public class JavaModelImpl implements JavaModel {
 
     public JavaClass getClass(Class<?> jClass) {
         try {
+            if(null == jClass) {
+                return null;
+            }
             JavaClassImpl javaClass = new JavaClassImpl(jClass, this);
             // may need to set metadata complete indicator on the class
             if (metadataCompletePackages != null && metadataCompletePackages.containsKey(javaClass.getPackageName())) {

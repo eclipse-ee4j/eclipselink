@@ -23,6 +23,8 @@ import org.eclipse.persistence.oxm.record.XMLRecord;
  */
 public interface XMLMapping {
     
+    public void convertClassNamesToClasses(ClassLoader classLoader);
+
     /**
      * INTERNAL:
      * A method that marshals a single value to the provided Record based on this mapping's
