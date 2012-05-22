@@ -345,6 +345,8 @@
         <property name="eclipselink.moxy.dir" value="${eclipselink.jpa.test}/${eclipselink.moxy.trunk}"/>
         <property name="eclipselink.moxy.lib.dir" value="${eclipselink.jpa.test}/${eclipselink.moxy.plugins.trunk}"/>
         <property name="eclipselink.extension.oracle.test.dir" value="${eclipselink.jpa.test}/${eclipselink.extension.oracle.test.trunk}"/>
+        <property name="eclipselink.extension.oracle.nosql.dir" value="${eclipselink.jpa.test}/${eclipselink.extension.oracle.nosql.trunk}"/>
+        <property name="eclipselink.extension.oracle.nosql.test.dir" value="${eclipselink.jpa.test}/${eclipselink.extension.oracle.nosql.test.trunk}"/>
         <antcall target="config-compile-path" inheritRefs="true"/>
         <antcall target="config-run-path" inheritRefs="true"/>
     </target>
@@ -1305,14 +1307,14 @@
             <pathelement path="${oracle.extensions.depend.dir}/${oracle.sdoapi.jar}"/>
         </path>
          <path id="run.oracle.nosql.classpath">
-            <pathelement path="${eclipselink.extension.oracle.test.dir}/${classes.dir}"/>
-            <pathelement path="${eclipselink.extension.oracle}/${classes.dir}"/>
+            <pathelement path="${eclipselink.extension.oracle.nosql.test.dir}/${classes.dir}"/>
+            <pathelement path="${eclipselink.extension.oracle.nosql.dir}/${classes.dir}"/>
             <path refid="compile.path"/>
-            <pathelement path="${oracle.extensions.depend.dir}/${oracle.nosql.jar}"/>
+            <pathelement path="${oracle.nosql.jar.dir}/${oracle.nosql.jar}"/>
             <pathelement path="${eclipselink.jpa.test}/${jpatest.framework.jar}"/>
             <pathelement path="${eclipselink.jpa.test}/${jpa.test.jar}"/>
-            <pathelement path="${eclipselink.extension.oracle.test.dir}/${oracle.jpa.test.jar}"/>
-            <pathelement path="${eclipselink.extension.oracle.test.dir}/eclipselink-nosql-model.jar"/>
+            <pathelement path="${eclipselink.extension.oracle.nosql.test.dir}/eclipselink-oracle-nosql-test.jar"/>
+            <pathelement path="${eclipselink.extension.oracle.nosql.test.dir}/eclipselink-oracle-nosql-model.jar"/>
         </path>
     </target>
 
