@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -11,7 +11,7 @@
  * Contributors:
  *  - rbarkhouse - 27 February - 2.3.3 - Initial implementation
  ******************************************************************************/
-package org.eclipse.persistence.testing.jaxb.idresolver;
+package org.eclipse.persistence.testing.jaxb.sun.idresolver;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,7 +21,7 @@ import javax.xml.bind.ValidationEventHandler;
 
 import org.xml.sax.SAXException;
 
-public class NonELIDResolver {
+public class NonELIDResolver extends com.sun.xml.bind.IDResolver{
     Map<String, Melon> melons = new HashMap<String, Melon>();
     
     public boolean hitStartDocument = false;

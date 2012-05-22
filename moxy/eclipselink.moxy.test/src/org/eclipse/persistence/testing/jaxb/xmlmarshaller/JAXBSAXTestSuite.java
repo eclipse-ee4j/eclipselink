@@ -12,6 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.jaxb.xmlmarshaller;
 
+import org.eclipse.persistence.testing.jaxb.sun.charescape.NonELCharacterEscapeHandlerTestCases;
+
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -36,11 +38,11 @@ public class JAXBSAXTestSuite extends TestCase {
         suite.addTestSuite(UnmarshallValidationTestCases.class);
         suite.addTestSuite(MarshallerPropertiesTestCases.class);
         suite.addTestSuite(CharacterEscapeHandlerTestCases.class);
-        suite.addTestSuite(NonELCharacterEscapeHandlerTestCases.class);
         suite.addTestSuite(MarshallerFormattingTestCases.class);
         suite.addTest(MarshallerEncodingTestCases.suite());
         suite.addTestSuite(MarshallerFragmentTestCases.class);
         suite.addTestSuite(XMLDeclarationTestCases.class);
+        suite.addTestSuite(NonELCharacterEscapeHandlerTestCases.class);
 
         return suite;
     }

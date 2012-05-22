@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -10,30 +10,23 @@
  * Contributors:
  * Matt MacIvor - 2.4
  ******************************************************************************/
-package org.eclipse.persistence.testing.jaxb.prefixmapper;
+package org.eclipse.persistence.testing.jaxb.sun.prefixmapper;
 
 import org.eclipse.persistence.oxm.XMLConstants;
 
-public class NonELPrefixMapperImpl extends NonELPrefixMapperSuperClass {
-    @Override
-    public String getPreferredPrefix(String arg0, String arg1, boolean arg2) {
-        if(arg0.equals("someuri")) {
-            return "newPrefix";
-        }
-        if(arg0.equals(XMLConstants.SCHEMA_INSTANCE_PREFIX)) {
-            return "xsi";
-        }
-        return arg1;
-    }
+public abstract class NonELPrefixMapperSuperClass extends com.sun.xml.bind.marshaller.NamespacePrefixMapper{
+
+    public abstract String getPreferredPrefix(String arg0, String arg1, boolean arg2);
     
-    @Override
     public java.lang.String[] getPreDeclaredNamespaceUris() {
-        return new String[] {"someuri", XMLConstants.SCHEMA_INSTANCE_URL, "my.uri"};
+        return null;
     }
     
-    @Override
     public java.lang.String[] getPreDeclaredNamespaceUris2() {
-        return new String[] {"newPrefix", "someuri", "xsi", XMLConstants.SCHEMA_INSTANCE_URL, "somePrefix", "my.uri"};
+        return null;
+    }
+    
+    public java.lang.String[] getContextualNamespaceDecls() {
+        return null;
     }
 }
-

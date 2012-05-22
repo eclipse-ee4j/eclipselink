@@ -33,7 +33,7 @@ import org.eclipse.persistence.oxm.NamespacePrefixMapper;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.testing.jaxb.employee.Employee;
 import org.eclipse.persistence.testing.jaxb.idresolver.MyIDResolver;
-import org.eclipse.persistence.testing.jaxb.idresolver.NonELIDResolver;
+import org.eclipse.persistence.testing.jaxb.sun.idresolver.NonELIDResolver;
 import org.eclipse.persistence.testing.jaxb.prefixmapper.MyPrefixMapper;
 import org.eclipse.persistence.testing.jaxb.xmlmarshaller.CustomCharacterEscapeHandler;
 

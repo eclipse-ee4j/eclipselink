@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011 Oracle. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -10,23 +10,22 @@
  * Contributors:
  * Matt MacIvor - 2.4
  ******************************************************************************/
-package org.eclipse.persistence.testing.jaxb.prefixmapper;
+package org.eclipse.persistence.testing.jaxb.sun.prefixmapper;
 
-import org.eclipse.persistence.oxm.XMLConstants;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
-public abstract class NonELPrefixMapperSuperClass {
+@XmlRootElement(namespace="someuri")
+@XmlType(name="emp-type", namespace="someuri")
+public class Employee extends Person {
 
-    public abstract String getPreferredPrefix(String arg0, String arg1, boolean arg2);
+    public int employeeId;
     
-    public java.lang.String[] getPreDeclaredNamespaceUris() {
-        return null;
-    }
+    public Person manager;
     
-    public java.lang.String[] getPreDeclaredNamespaceUris2() {
-        return null;
-    }
-    
-    public java.lang.String[] getContextualNamespaceDecls() {
-        return null;
+    public boolean equals(Object obj) {
+        Employee e = (Employee)obj;
+        
+        return super.equals(e) && employeeId == e.employeeId && (manager == e.manager || manager.equals(e.manager));
     }
 }
