@@ -1243,9 +1243,17 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 			baseExpression.accept(visitor);
 
 			if (!visitor.valid) {
+
 				int startPosition = position(declarationExpression);
 				int endPosition = startPosition + length(declarationExpression);
-				addProblem(expression, startPosition, endPosition, AbstractFromClause_InvalidFirstIdentificationVariableDeclaration);
+
+				addProblem(
+					expression,
+					startPosition,
+					endPosition,
+					AbstractFromClause_InvalidFirstIdentificationVariableDeclaration,
+					baseExpression.toActualText()
+				);
 			}
 			else {
 				declarationExpression.accept(this);
