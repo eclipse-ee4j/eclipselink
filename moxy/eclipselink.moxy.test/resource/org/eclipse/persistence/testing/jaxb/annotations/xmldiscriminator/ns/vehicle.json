@@ -1,7 +1,7 @@
 {
     "root": {
         "vehicle":{
-            "vtype":"car",
+            "vtype":"c:ar",
             "numberOfDoors":2
         }
     }

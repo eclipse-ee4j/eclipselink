@@ -18,7 +18,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.eclipse.persistence.oxm.annotations.XmlDiscriminatorValue;
 
 @XmlRootElement(name = "car-data")
-@XmlDiscriminatorValue("car")
+@XmlDiscriminatorValue("c:ar")
 public class Car extends Vehicle {
     @XmlElement(name = "number-of-doors")
     public int numberOfDoors;

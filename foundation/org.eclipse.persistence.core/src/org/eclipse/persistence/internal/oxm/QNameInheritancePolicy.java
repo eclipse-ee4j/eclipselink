@@ -230,18 +230,22 @@ public class QNameInheritancePolicy extends InheritancePolicy {
         }
 
         DatabaseField field = getClassIndicatorField();
-        
         Object value = getClassIndicatorValue();
-        boolean namespaceAware = ((XMLRecord)databaseRow).isNamespaceAware() || ((XMLRecord)databaseRow).hasCustomNamespaceMapper();
-        if(!namespaceAware && value instanceof String){
-            int colonIndex = ((String)value).indexOf(XMLConstants.COLON);
-            if(colonIndex > -1){
-                value = ((String)value).substring(colonIndex + 1);
-    	    }
-        }else if(namespaceAware && value instanceof String){
-        	if(((XMLRecord)databaseRow).getNamespaceSeparator() != XMLConstants.COLON){
-        	   value= ((String)value).replace(XMLConstants.COLON, ((XMLRecord)databaseRow).getNamespaceSeparator());
-        	}
+        
+        if(usesXsiType){        
+            boolean namespaceAware = ((XMLRecord)databaseRow).isNamespaceAware() || ((XMLRecord)databaseRow).hasCustomNamespaceMapper();
+            if(value instanceof String){
+            	if(namespaceAware){
+            		if(((XMLRecord)databaseRow).getNamespaceSeparator() != XMLConstants.COLON){
+                 	   value= ((String)value).replace(XMLConstants.COLON, ((XMLRecord)databaseRow).getNamespaceSeparator());
+                 	}
+            	}else{
+            		 int colonIndex = ((String)value).indexOf(XMLConstants.COLON);
+                     if(colonIndex > -1){
+                         value = ((String)value).substring(colonIndex + 1);
+             	    }		
+            	}
+            }        
         }
         
         databaseRow.put(field, value);
