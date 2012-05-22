@@ -20,6 +20,7 @@ import java.util.Map;
 import javax.xml.bind.JAXBException;
 
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
+import org.eclipse.persistence.jaxb.javamodel.Helper;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.JavaModelInput;
 import org.eclipse.persistence.jaxb.javamodel.oxm.OXMJavaClassImpl;
@@ -66,7 +67,8 @@ public class OXMMetadata extends Metadata {
         Iterator<String> keys = bindings.keySet().iterator();
 
         while (keys.hasNext()) {
-            XmlBindings b = bindings.get(keys.next());
+            String pkgName = keys.next();
+            XmlBindings b = bindings.get(pkgName);
 
             if (b.getJavaTypes() != null) {
                 List<JavaType> javaTypes = b.getJavaTypes().getJavaType();
@@ -74,9 +76,10 @@ public class OXMMetadata extends Metadata {
                     JavaType type = iterator.next();
                     //Check to see if it's a static class or if should be treated as dynamic
                     try {
-                        Class staticClass = dynamicClassLoader.getParent().loadClass(type.getName());
+                        Class staticClass = dynamicClassLoader.getParent().loadClass(Helper.getQualifiedJavaTypeName(type.getName(), pkgName));
                         oxmJavaClasses.add(new JavaClassImpl(staticClass, null));
                     } catch(Exception ex) {
+                        type.setName(Helper.getQualifiedJavaTypeName(type.getName(), pkgName));
                         oxmJavaClasses.add(new OXMJavaClassImpl(type));
                     }
                 }

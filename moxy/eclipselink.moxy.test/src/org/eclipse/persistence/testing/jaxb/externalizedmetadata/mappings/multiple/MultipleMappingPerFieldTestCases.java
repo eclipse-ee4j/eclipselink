@@ -22,6 +22,9 @@ import java.util.Map;
 import java.util.Vector;
 
 import javax.xml.namespace.QName;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLDescriptor;
@@ -66,14 +69,16 @@ public class MultipleMappingPerFieldTestCases extends JAXBWithJSONTestCases {
         return ctrlObj;
     }
     
-    public Map getProperties(){
-		InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/multiple/oxm.xml");
+    public Map getProperties() {
+        InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/multiple/oxm.xml");
+        HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
+        metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.multiple", new StreamSource(inputStream));
+        
+        Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);
 
- 		Map<String, InputStream> properties = new HashMap<String, InputStream>();
-	    properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, inputStream);
-	    
         return properties;
-	}
+    }
 
     /**
      * We expect two mappings for 'currencyPairCode'.  We will verify mapping count, 
@@ -127,5 +132,15 @@ public class MultipleMappingPerFieldTestCases extends JAXBWithJSONTestCases {
     	controlSchemas.add(is);
     	super.testSchemaGen(controlSchemas);
     }
- 
+
+    /**
+     * Make sure the inner class was processed,
+     * 
+     * Positive test.
+     * 
+     */
+    public void testInnerClassProcessing() {
+        XMLDescriptor xDesc = ((org.eclipse.persistence.jaxb.JAXBContext) jaxbContext).getXMLContext().getDescriptor(new QName("QRInnerClass"));
+        assertNotNull("No descriptor was generated for CustomQuoteRequest$MyCQRInnerClass.", xDesc);
+    }
 }

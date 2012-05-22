@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jaxb;
 
+import static org.eclipse.persistence.jaxb.javamodel.Helper.getQualifiedJavaTypeName;
+
 import java.awt.Image;
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -816,7 +818,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             if (jTypes != null) {
                 for (JavaType javaType : jTypes.getJavaType()) {
                     try {
-                        Class jClass = classLoader.loadClass(javaType.getName());
+                        Class jClass = classLoader.loadClass(getQualifiedJavaTypeName(javaType.getName(), xmlBindings.getPackageName()));
                         if (!additionalClasses.contains(jClass)) {
                             additionalClasses.add(jClass);
                         }
@@ -947,7 +949,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
 
                  for (JavaType javaType : jTypes.getJavaType()) {
                     try {
-                        Class nextClass = classLoader.loadClass(javaType.getName());
+                        Class nextClass = classLoader.loadClass(getQualifiedJavaTypeName(javaType.getName(), xmlBindings.getPackageName()));
                         if(!(existingClasses.contains(nextClass))){
                             TypeMappingInfo typeMappingInfo = new TypeMappingInfo();
                             typeMappingInfo.setType(nextClass);
@@ -964,9 +966,8 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                 Object[] additionalTypes = additionalTypeMappingInfos.toArray();
                 System.arraycopy(additionalTypes, 0, allTypeMappingInfos, existingTypes.length, additionalTypes.length);
                 return allTypeMappingInfos;
-            }else{
-                return existingTypes;
             }
+            return existingTypes;
         }
     }
 
@@ -1350,5 +1351,4 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
          }
      
     }
-
 }

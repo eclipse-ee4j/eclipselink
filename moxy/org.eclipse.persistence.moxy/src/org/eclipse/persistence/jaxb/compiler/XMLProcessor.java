@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jaxb.compiler;
 
+import static org.eclipse.persistence.jaxb.javamodel.Helper.getQualifiedJavaTypeName;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -99,6 +101,7 @@ public class XMLProcessor {
     private static final String SET_STR = "set";
     private static final String JAVA_LANG_OBJECT = "java.lang.Object";
     public static final String DEFAULT = "##default";
+    public static final String GENERATE = "##generate";
     
 
     /**
@@ -169,9 +172,9 @@ public class XMLProcessor {
             if(xmlBindings.getJavaTypes() != null) {
                 List<JavaType> types = xmlBindings.getJavaTypes().getJavaType();
                 for(JavaType next:types) {
-                    JavaClass typeClass = jModelInput.getJavaModel().getClass(next.getName());
+                    JavaClass typeClass = jModelInput.getJavaModel().getClass(getQualifiedJavaTypeName(next.getName(), packageName));
                     if(typeClass != null && typeClass.getClass() == JavaClassImpl.class) {
-                        if(next.getSuperType() != null && !(next.getSuperType().equals("##default"))) {
+                        if(next.getSuperType() != null && !(next.getSuperType().equals(DEFAULT))) {
                             JavaClass newSuperClass = jModelInput.getJavaModel().getClass(next.getSuperType());
                             ((JavaClassImpl)typeClass).setSuperClassOverride(newSuperClass);
                         }
@@ -211,7 +214,7 @@ public class XMLProcessor {
             JavaTypes jTypes = xmlBindings.getJavaTypes();
             if (jTypes != null) {
                 for (JavaType javaType : jTypes.getJavaType()) {
-                    TypeInfo info = typeInfoMap.get(javaType.getName());
+                    TypeInfo info = typeInfoMap.get(getQualifiedJavaTypeName(javaType.getName(), packageName));
 
                     // package/class override order:
                     // 1 - xml class-level
@@ -375,7 +378,7 @@ public class XMLProcessor {
                     nsInfo = packageInfo.getNamespaceInfo();
                 }
                 for (JavaType javaType : jTypes.getJavaType()) {
-                    processJavaType(javaType, typeInfosForPackage.get(javaType.getName()), nsInfo);
+                    processJavaType(javaType, typeInfosForPackage.get(getQualifiedJavaTypeName(javaType.getName(), packageName)), nsInfo);
                 }
             }
             // remove the entry for this package from the map
@@ -1480,7 +1483,7 @@ public class XMLProcessor {
         }
         
         // make sure defaults are set, not null
-        nsInfo.setLocation(schema.getLocation() == null ? "##generate" : schema.getLocation());
+        nsInfo.setLocation(schema.getLocation() == null ? GENERATE : schema.getLocation());
         String namespace = schema.getNamespace();
         if(namespace == null) {
             namespace = this.aProcessor.getDefaultTargetNamespace();
@@ -1574,7 +1577,7 @@ public class XMLProcessor {
             JavaTypes jTypes = xmlBindings.getJavaTypes();
             if (jTypes != null) {
                 for (JavaType javaType : jTypes.getJavaType()) {
-                    JavaClass nextClass = jModelInput.getJavaModel().getClass(javaType.getName());
+                    JavaClass nextClass = jModelInput.getJavaModel().getClass(getQualifiedJavaTypeName(javaType.getName(), packageName));
                     String nextPackageName = nextClass.getPackageName();
                     if(nextPackageName == null || !nextPackageName.equals(packageName)){
                         throw JAXBException.javaTypeNotAllowedInBindingsFile(nextPackageName, packageName);

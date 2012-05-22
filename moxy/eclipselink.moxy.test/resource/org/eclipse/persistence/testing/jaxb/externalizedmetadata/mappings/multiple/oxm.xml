@@ -26,5 +26,11 @@
                 <xml-element java-attribute="date" xml-path="QuoteReq/Leg/Ordered/text()"  write-only="true"/>
             </java-attributes>
         </java-type>
+        <java-type name="CustomQuoteRequest$MyCQRInnerClass">
+            <xml-root-element name="QRInnerClass"/>
+            <java-attributes>
+                <xml-attribute java-attribute="foo" xml-path="QRInnerClass/@foo"/>
+            </java-attributes>
+        </java-type>
     </java-types>
 </xml-bindings>

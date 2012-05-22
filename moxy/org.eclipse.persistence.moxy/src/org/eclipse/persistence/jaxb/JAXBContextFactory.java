@@ -271,16 +271,6 @@ public class JAXBContextFactory {
             if (key.equals(XMLProcessor.DEFAULT)) {
                 throw org.eclipse.persistence.exceptions.JAXBException.packageNotSetForBindingException();
             }
-            // may need to prepend the package-name
-            JavaTypes jTypes = binding.getJavaTypes();
-            if (jTypes != null) {
-                for (JavaType javaType : jTypes.getJavaType()) {
-                    String javaTypeName = javaType.getName();
-                    if (!(javaTypeName.contains(key))) {
-                        javaType.setName(key + PKG_SEPARATOR + javaTypeName);
-                    }
-                }
-            }
             List<XmlBindings> existingBindings = bindingMap.get(key);
             if(existingBindings != null) {
                 existingBindings.add(binding);

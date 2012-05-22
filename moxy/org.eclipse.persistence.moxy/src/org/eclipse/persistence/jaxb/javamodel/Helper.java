@@ -12,6 +12,9 @@
  ******************************************************************************/  
 package org.eclipse.persistence.jaxb.javamodel;
 
+import static org.eclipse.persistence.jaxb.JAXBContextFactory.PKG_SEPARATOR;
+import static org.eclipse.persistence.jaxb.compiler.XMLProcessor.DEFAULT;
+
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -367,5 +370,21 @@ public class Helper {
             return true;
         }
         return false;
+    }
+
+
+    /**
+     * Prepends a package name to a given java type name, if it is not already present.
+     * 
+     * @param javaTypeName Java type name that may/may not contain 'packageName'
+     * @param packageName package name to prepend to javaTypeName if not already
+     * @return fully qualified java type name
+     */
+    public static String getQualifiedJavaTypeName(String javaTypeName, String packageName) {
+        // prepend the package name if not already present
+        if (packageName != null && packageName.length() > 0 && !packageName.equals(DEFAULT) && !javaTypeName.contains(PKG_SEPARATOR)) {
+            return packageName + PKG_SEPARATOR + javaTypeName;
+        }
+        return javaTypeName;
     }
 }

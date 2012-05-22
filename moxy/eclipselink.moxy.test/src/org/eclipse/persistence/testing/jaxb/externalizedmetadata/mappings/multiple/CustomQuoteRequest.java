@@ -52,4 +52,9 @@ public class CustomQuoteRequest {
         }
         return requestId.equals(cObj.requestId) && currencyPairCode.equals(cObj.currencyPairCode);
     }
+    
+    public static class MyCQRInnerClass {
+        public String foo;
+        public MyCQRInnerClass() {};
+    }
 }

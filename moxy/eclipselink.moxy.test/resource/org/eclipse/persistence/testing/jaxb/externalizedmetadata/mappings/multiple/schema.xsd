@@ -35,5 +35,16 @@
          <xsd:element name="OrderDate" type="customDateType" minOccurs="0"/>
       </xsd:sequence>
    </xsd:complexType>
+   <xsd:complexType name="myCQRInnerClass">
+      <xsd:sequence>
+         <xsd:element name="QRInnerClass" minOccurs="0">
+            <xsd:complexType>
+               <xsd:sequence/>
+               <xsd:attribute name="foo" type="xsd:string"/>
+            </xsd:complexType>
+         </xsd:element>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="QRInnerClass" type="myCQRInnerClass"/>
    <xsd:element name="QuoteRequest" type="customQuoteRequest"/>
 </xsd:schema>
