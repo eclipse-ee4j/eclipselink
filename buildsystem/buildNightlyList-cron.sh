@@ -280,28 +280,28 @@ for version in `ls -dr [0-9]*` ; do
 #            echo "              <a href=\"${BaseDownloadURL}/${version}/${contentdir}/${file}\" class=\"info\"><img src=\"http://dev.eclipse.org/large_icons/actions/go-bottom.png\"/><span>Download Install Archive</span></a>" >> $tmp/index.xml
             echo "              <a href=\"${BaseDownloadURL}/${version}/${contentdir}/${file}\">Installer</a>" >> $tmp/index.xml
         else
-            echo "              Z" >> $tmp/index.xml
+            echo "              Installer" >> $tmp/index.xml
         fi
         file=`ls | sort -r | grep -m1 eclipselink-src-[0-9]`
         if [ "${file}" != "" ] ; then
 #            echo "              <a href=\"${BaseDownloadURL}/${version}/${contentdir}/${file}\" class=\"info\">S<span>Download Source Archive</span></a>" >> $tmp/index.xml
             echo "              <a href=\"${BaseDownloadURL}/${version}/${contentdir}/${file}\">Source</a>" >> $tmp/index.xml
         else
-            echo "              S" >> $tmp/index.xml
+            echo "              Source" >> $tmp/index.xml
         fi
         file=`ls | sort -r | grep -m1 eclipselink-plugins-[0-9]`
         if [ "${file}" != "" ] ; then
 #            echo "              <a href=\"${BaseDownloadURL}/${version}/${contentdir}/${file}\" class=\"info\">B<span>Download OSGi Plugins Archive</span></a>" >> $tmp/index.xml
             echo "              <a href=\"${BaseDownloadURL}/${version}/${contentdir}/${file}\">Bundle</a>" >> $tmp/index.xml
         else
-            echo "              B" >> $tmp/index.xml
+            echo "              Bundle" >> $tmp/index.xml
         fi
         file=`ls | sort -r | grep -m1 eclipselink-plugins-nosql-[0-9]`
         if [ "${file}" != "" ] ; then
 #            echo "              <a href=\"${BaseDownloadURL}/${version}/${contentdir}/${file}\" class=\"info\">B<span>Download NoSQL Plugins Archive</span></a>" >> $tmp/index.xml
             echo "              <a href=\"${BaseDownloadURL}/${version}/${contentdir}/${file}\">NoSQL</a>" >> $tmp/index.xml
         else
-            echo "              NoSQL" >> $tmp/index.xml
+            echo "              -" >> $tmp/index.xml
         fi
         echo "            </td>" >> $tmp/index.xml
         echo "            <td rowspan=\"${num_hosts}\" style=\"text-align:center;\"> </td>" >> $tmp/index.xml
