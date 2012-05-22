@@ -296,12 +296,15 @@ for version in `ls -dr [0-9]*` ; do
         else
             echo "              Bundle" >> $tmp/index.xml
         fi
-        file=`ls | sort -r | grep -m1 eclipselink-plugins-nosql-[0-9]`
-        if [ "${file}" != "" ] ; then
-#            echo "              <a href=\"${BaseDownloadURL}/${version}/${contentdir}/${file}\" class=\"info\">B<span>Download NoSQL Plugins Archive</span></a>" >> $tmp/index.xml
-            echo "              <a href=\"${BaseDownloadURL}/${version}/${contentdir}/${file}\">NoSQL</a>" >> $tmp/index.xml
-        else
-            echo "              -" >> $tmp/index.xml
+        ## If Version is 2.4.0 or greater
+        if [ `expr "$version" \> "2.4"` = 1 ] ; then
+            file=`ls | sort -r | grep -m1 eclipselink-plugins-nosql-[0-9]`
+            if [ "${file}" != "" ] ; then
+#                echo "              <a href=\"${BaseDownloadURL}/${version}/${contentdir}/${file}\" class=\"info\">B<span>Download NoSQL Plugins Archive</span></a>" >> $tmp/index.xml
+                echo "              <a href=\"${BaseDownloadURL}/${version}/${contentdir}/${file}\">NoSQL</a>" >> $tmp/index.xml
+            else
+                echo "              NoSQL" >> $tmp/index.xml
+            fi
         fi
         echo "            </td>" >> $tmp/index.xml
         echo "            <td rowspan=\"${num_hosts}\" style=\"text-align:center;\"> </td>" >> $tmp/index.xml
