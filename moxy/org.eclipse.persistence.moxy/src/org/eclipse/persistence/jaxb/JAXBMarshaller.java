@@ -73,28 +73,9 @@ import org.eclipse.persistence.jaxb.attachment.*;
  * <li>Provide a JAXB wrapper on the XMLMarshaller API</li>
  * <li>Perform Object to XML Conversions</li>
  * </ul>
- * <p>
- * <a name="supportedProps"></a>
- * <b>Supported Properties</b><br> 
- * <ul>
- *     <li>Marshaller.JAXB_ENCODING - accepted value is a String  </li>
- *     <li>Marshaller.JAXB_FORMATTED_OUTPUT - accepted value is a Boolean</li>
- *     <li>Marshaller.JAXB_NO_NAMESPACE_SCHEMA_LOCATION - accepted value is a String</li>
- *     <li>Marshaller.JAXB_SCHEMA_LOCATION - accepted value is a String</li>
- *     <li>XMLConstants.JAXB_FRAGMENT - accepted value is a Boolean </li>
- *     <li>MarshallerProperties.CHARACTER_ESCAPE_HANDLER - accepted value is an org.eclipse.persistence.oxm.CharacterEscapeHandler </li>    
- *     <li>MarshallerProperties.INDENT_STRING - accepted value is a String </li>
- *     <li>MarshallerProperties.JSON_ATTRIBUTE_PREFIX - accepted value is a String </li>
- *     <li>MarshallerProperties.JSON_INCLUDE_ROOT - accepted value is a Boolean </li>
- *     <li>MarshallerProperties.JSON_NAMESPACE_SEPARATOR - accepted value is a Character </li>
- *     <li>MarshallerProperties.JSON_VALUE_WRAPPER - accepted value is a String </li>
- *     <li>MarshallerProperties.MEDIA_TYPE - accepted value is a String ("application/xml" or "application/json") </li>
- *     <li>MarshallerProperties.NAMESPACE_PREFIX_MAPPER - accepted value is a Map<String uri, String prefix> or org.eclipse.persistence.oxm.NamespacePrefixMapper</li>    
- * </ul>
- * <p> 
- * This implementation of the JAXB 2.1/2.2 Marshaller interface provides the
- * required functionality by acting as a thin wrapper on the existing
- * XMLMarshaller API.
+ * <p>This implementation of the JAXB 2.1/2.2 Marshaller interface provides the
+ * required functionality by acting as a thin wrapper on the existing 
+ * XMLMarshaller API.</p>
  * 
  * @author mmacivor
  * @since Oracle TopLink 11.1.1.0.0
@@ -261,9 +242,9 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
     }
 
     /**
-     * Get a property from the JAXBMarshaller.
-     * Attempting to get any unsupported property will result in a javax.xml.bind.PropertyException 
-     * See <a href="#supportedProps">Supported Properties</a>.  
+     * Get a property from the JAXBMarshaller. Attempting to get any unsupported
+     * property will result in a javax.xml.bind.PropertyException 
+     * @see org.eclipse.persistence.jaxb.MarshallerProperties
      */
     public Object getProperty(String key) throws PropertyException {
         if (key == null) {
@@ -665,9 +646,9 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
     }
 
     /**
-     * Set a property on the JAXBMarshaller.
-     * Attempting to set any unsupported property will result in a javax.xml.bind.PropertyException 
-     * See <a href="#supportedProps">Supported Properties</a>.   
+     * Set a property on the JAXBMarshaller. Attempting to set any unsupported
+     * property will result in a javax.xml.bind.PropertyException 
+     * @see org.eclipse.persistence.jaxb.MarshallerProperties
      */
     public void setProperty(String key, Object value) throws PropertyException {
         try {

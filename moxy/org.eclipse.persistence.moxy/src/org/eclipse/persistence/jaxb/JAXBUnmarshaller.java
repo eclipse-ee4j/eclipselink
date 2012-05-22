@@ -77,19 +77,6 @@ import org.eclipse.persistence.internal.jaxb.many.ManyValue;
  * <li>Provide a JAXB wrapper on the XMLUnmarshaller API</li>
  * <li>Perform XML to Object Conversions</li>
  * </ul>
- * <p>
- * <a name="supportedProps"></a>
- * <b>Supported Properties</b><br> 
- * <ul>         
- *     <li>UnmarshallerProperties.ID_RESOLVER - value is an org.eclipse.persistence.jaxb.IDResolver</li>
- *     <li>UnmarshallerProperties.JSON_ATTRIBUTE_PREFIX - value is a String </li>
- *     <li>UnmarshallerProperties.JSON_INCLUDE_ROOT - value is a Boolean </li>
- *     <li>UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER - value is a Map<String uri, String prefix> or org.eclipse.persistence.oxm.NamespacePrefixMapper</li>     * *     
- *     <li>UnmarshallerProperties.JSON_NAMESPACE_SEPARATOR - value is a Character </li>
- *     <li>UnmarshallerProperties.JSON_VALUE_WRAPPER - value is a String </li>     
- *     <li>UnmarshallerProperties.MEDIA_TYPE - value is a String ("application/xml" or "application/json") </li>
- * </ul>
- * <p> 
  * <p>This implementation of the JAXB 2.1/2.2 Unmarshaller interface provides the required functionality
  * by acting as a thin wrapper on the existing XMLMarshaller API.
  *
@@ -688,9 +675,9 @@ public class JAXBUnmarshaller implements Unmarshaller {
     }
 
     /**
-     * Set a property on the JAXBUnmarshaller.
-     * Attempting to set any unsupported property will result in a javax.xml.bind.PropertyException 
-     * See <a href="#supportedProps">Supported Properties</a>.      
+     * Set a property on the JAXBUnmarshaller. Attempting to set any unsupported
+     * property will result in a javax.xml.bind.PropertyException.
+     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties
      */
     public void setProperty(String key, Object value) throws PropertyException {
         if (key == null) {
@@ -739,9 +726,10 @@ public class JAXBUnmarshaller implements Unmarshaller {
     }
 
     /**
-     * Get a property from the JAXBMarshaller.
-     * Attempting to get any unsupported property will result in a javax.xml.bind.PropertyException 
+     * Get a property from the JAXBMarshaller. Attempting to get any unsupported
+     * property will result in a javax.xml.bind.PropertyException 
      * See <a href="#supportedProps">Supported Properties</a>.  
+     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties
      */
     public Object getProperty(String key) throws PropertyException {
         if (key == null) {

@@ -24,62 +24,88 @@ package org.eclipse.persistence.jaxb;
 public class JAXBContextProperties {
 
     /**
-     * The Constant JSON_ATTRIBUTE_PREFIX. This can be used as the property name with 
-     * JAXBMarshaller.setProperty and JAXBUnmarshaller.setProperty or used in 
-     * the properties supplied during JAXBContext creation to specify a prefix to prepend
-     * to attributes.  No effect when media type is "application/xml".
+     * The name of the property used to specify a value that will be prepended 
+     * to all keys that are mapped to an XML attribute. By default there is no 
+     * attribute prefix.  There is no effect when media type is 
+     * "application/xml".  When this property is specified at the
+     * <i>JAXBContext</i> level all instances of <i>Marshaller</i> and 
+     * <i>Unmarshaller</i> will default to this attribute prefix.
      * @since 2.4
+     * @see org.eclipse.persistence.jaxb.MarshallerProperties.JSON_ATTRIBUTE_PREFIX
+     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties.JSON_ATTRIBUTE_PREFIX
      */ 
     public static final String JSON_ATTRIBUTE_PREFIX = "eclipselink.json.attribute-prefix";
 
     /**
-     * The Constant JSON_INCLUDE_ROOT. This can be used as the property name with 
-     * JAXBMarshaller.setProperty and JAXBUnmarshaller.setProperty or used in 
-     * the properties supplied during JAXBContext creation to specify if the 
-     * @XmlRootElement should be marshalled/unmarshalled.  Not applicable if 
-     * eclipselink.media-type is set to "application/xml".
-     * @since 2.4 
+     * The name of the property used to specify in the root node should be
+     * included in the message (default is true). There is no effect when media
+     * type is "application/xml".  When this property is specified at the
+     * <i>JAXBContext</i> level all instances of <i>Marshaller</i> and 
+     * <i>Unmarshaller</i> will default to this setting.
+     * @since 2.4
+     * @see org.eclipse.persistence.jaxb.JAXBContextProperties.JSON_INCLUDE_ROOT
+     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties.JSON_INCLUDE_ROOT
      */
     public static final String JSON_INCLUDE_ROOT = "eclipselink.json.include-root";
 
     /**
-     * The Constant JSON_NAMESPACE_SEPARATOR.  This can be used to specify the separator
-     * that will be used when separating prefixes and localnames.  Only applicable when
-     * namespaces are being used. Value should be a Character.
+     * The name of the property used to specify the character (default is '.')
+     * that separates the prefix from the key name. It is only used if namespace
+     * qualification has been enabled be setting a namespace prefix mapper.  
+     * When this property is specified at the <i>JAXBContext</i> level all 
+     * instances of <i>Marshaller</i> and <i>Unmarshaller</i> will default to 
+     * this setting.
      * @since 2.4
+     * @see org.eclipse.persistence.jaxb.MarshallerProperties.NAMESPACE_SEPARATOR
+     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties.NAMESPACE_SEPARATOR
      */
     public static final String JSON_NAMESPACE_SEPARATOR  = "eclipselink.json.namespace-separator";
 
     /**
-     * The Constant JSON_VALUE_WRAPPER.  This can be used to specify the wrapper
-     * that will be used around things mapped with @XmlValue.  Not applicable if the
-     * eclipselink.media.type is set to "application/xml".
+     * The name of the property used to specify the key that will correspond to
+     * the property mapped with <i>@XmlValue</i>.  This key will only be used if
+     * there are other mapped properties.  When this property is specified at 
+     * the <i>JAXBContext</i> level all instances of <i>Marshaller</i> and 
+     * <i>Unmarshaller</i> will default to this setting.
      * @since 2.4
+     * @see org.eclipse.persistence.jaxb.MarshallerPropertes.JSON_VALUE_WRAPPER
+     * @see org.eclipse.persistence.jaxb.UnmarshallerPropertes.JSON_VALUE_WRAPPER
      */
     public static final String JSON_VALUE_WRAPPER = "eclipselink.json.value-wrapper";
 
     /**
-     * The Constant MEDIA_TYPE. This can be used as the property name with 
-     * JAXBMarshaller.setProperty and JAXBUnmarshaller.setProperty or used in 
-     * the properties supplied during JAXBContext creation to set the media type. 
-     * Supported values are "application/xml" and "application/json".
+     * The name of the property used to specify the type of binding to be 
+     * performed.  When this property is specified at the <i>JAXBContext</i>
+     * level all instances of <i>Marshaller</i> and <i>Unmarshaller</i> will
+     * default to this media type. Supported values are:
+     * <ul>
+     * <li>MediaType.APPLICATION_XML (default)
+     * <li>MediaType.APPLICATION_JSON
+     * <li>"application/xml"
+     * <li>"application/json"
+     * </ul>
      * @since 2.4
+     * @see org.eclipse.persistence.jaxb.MarshallerProperties.MEDIA_TYPE
+     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties.MEDIA_TYPE
+     * @see org.eclipse.persistence.oxm.MediaType
      */
     public static final String MEDIA_TYPE = "eclipselink.media-type";
 
     /**
-     * The Constant NAMESPACE_PREFIX_MAPPER. Provides a means to customize the namespace prefixes used 
-     * while marshalling to XML.  Used for both marshal and unmarshal when mediaType is set to "application/json".
-     * Value is either a Map<String, String> of URIs to prefixes, or an implementation of 
+     * The Constant NAMESPACE_PREFIX_MAPPER. Provides a means to customize the
+     * namespace prefixes used  while marshalling to XML.  Used for both marshal
+     * and unmarshal when mediaType is set to "application/json".  Value is
+     * either a Map<String, String> of URIs to prefixes, or an implementation of 
      * org.eclipse.persistence.oxm.NamespacePrefixMapper.
      * @since 2.4
+     * @see org.eclipse.persistence.oxm.NamespacePrefixMapper
      */
     public static final String NAMESPACE_PREFIX_MAPPER = "eclipselink.namespace-prefix-mapper";
 
     /**
-     * The Constant SESSION_EVENT_LISTENER.  This can be used to specify a
-     * SessionEventListener that can be used to customize the metadata before or
-     * after it has been initialized.
+     * The name of the property used to specify a SessionEventListener that can
+     * be used to customize the metadata before or after it has been 
+     * initialized.
      * @see org.eclipse.persistence.sessions.SessionEventListener
      * @since 2.4
      */

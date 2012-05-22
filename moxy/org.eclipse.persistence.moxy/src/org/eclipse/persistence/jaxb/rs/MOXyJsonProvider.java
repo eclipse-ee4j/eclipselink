@@ -417,7 +417,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
      * Specify the key that will correspond to the property mapped with
      * @XmlValue.  This key will only be used if there are other mapped
      * properties.
-     * @see org.ecli1pse.persistence.jaxb.MarshallerPropertes.JSON_VALUE_WRAPPER
+     * @see org.eclipse.persistence.jaxb.MarshallerPropertes.JSON_VALUE_WRAPPER
      * @see org.eclipse.persistence.jaxb.UnmarshallerPropertes.JSON_VALUE_WRAPPER
      */
     public void setValueWrapper(String valueWrapper) {

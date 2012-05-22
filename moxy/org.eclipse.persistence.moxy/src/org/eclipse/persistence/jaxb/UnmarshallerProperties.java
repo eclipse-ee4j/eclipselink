@@ -13,9 +13,9 @@
 package org.eclipse.persistence.jaxb;
 
 /**
- * These are properties that may be set on an instance of Unmarshaller.  Below is
- * an example of using the property mechanism to enable MOXy's JSON binding for 
- * an instance of Unmarshaller.
+ * These are properties that may be set on an instance of Unmarshaller.  Below 
+ * is an example of using the property mechanism to enable MOXy's JSON binding 
+ * for an instance of Unmarshaller.
  * <pre>
  * Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
  * unmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, "application/json");
@@ -24,54 +24,88 @@ package org.eclipse.persistence.jaxb;
 public class UnmarshallerProperties {
 
     /**
-     * The Constant JSON_NAMESPACE_PREFIX_MAPPER. Provides a means to set a   
-     * a Map<String, String> of uris to prefixes.  Alternatively can be an implementation 
-     * of org.eclipse.persistence.oxm.NamespacePrefixMapper.
-     * @since 2.4
-     */
-    public static final String JSON_NAMESPACE_PREFIX_MAPPER = JAXBContextProperties.NAMESPACE_PREFIX_MAPPER;
-
-    /**
-     * The Constant MEDIA_TYPE. This can be used to set the media type.  
-     * Supported values are "application/xml" and "application/json".
-     * @since 2.4
-     */
-    public static final String MEDIA_TYPE = JAXBContextProperties.MEDIA_TYPE;
-
-    /**
-     * The Constant ID_RESOLVER.  This can be used to specify a custom
-     * IDResolver class, to allow customization of ID/IDREF processing.
+     * The name of the property used to specify a custom IDResolver class, to 
+     * allow customization of ID/IDREF processing.
      * @since 2.3.3
+     * @see org.eclipse.persistence.jaxb.IDResolver
      */
     public static final String ID_RESOLVER = "eclipselink.id-resolver";
 
     /**
-     * The Constant JSON_ATTRIBUTE_PREFIX. This can be used to specify a prefix that 
-     * is prepended to attributes.  Only applicable if media type is "application/json".
+     * The name of the property used to specify a value that will be prepended 
+     * to all keys that are mapped to an XML attribute. By default there is no 
+     * attribute prefix.  There is no effect when media type is 
+     * "application/xml".  When this property is specified at the
+     * <i>JAXBContext</i> level all instances of <i>Marshaller</i> and 
+     * <i>Unmarshaller</i> will default to this attribute prefix.
      * @since 2.4
-     */ 
+     * @see org.eclipse.persistence.jaxb.JAXBContextProperties.JSON_ATTRIBUTE_PREFIX
+     * @see org.eclipse.persistence.jaxb.MarshallerProperties.JSON_ATTRIBUTE_PREFIX
+     */
     public static final String JSON_ATTRIBUTE_PREFIX = JAXBContextProperties.JSON_ATTRIBUTE_PREFIX;
 
     /**
-     * The Constant JSON_INCLUDE_ROOT. This can be used  to specify if the root element 
-     * should be unmarshalled.  Only applicable if media type is "application/json".
+     * The name of the property used to specify in the root node should be
+     * included in the message (default is true). There is no effect when media
+     * type is "application/xml".  When this property is specified at the
+     * <i>JAXBContext</i> level all instances of <i>Marshaller</i> and 
+     * <i>Unmarshaller</i> will default to this setting.
      * @since 2.4
+     * @see org.eclipse.persistence.jaxb.JAXBContextProperties.JSON_INCLUDE_ROOT
+     * @see org.eclipse.persistence.jaxb.MarshallerProperties.JSON_INCLUDE_ROOT
      */
     public static final String JSON_INCLUDE_ROOT = JAXBContextProperties.JSON_INCLUDE_ROOT;
 
     /**
-     * The Constant JSON_VALUE_WRAPPER.  This can be used to specify the wrapper
-     * that will be used around things mapped with @XmlValue.  Only applicable if media type is "application/json".
+     * The Constant JSON_NAMESPACE_PREFIX_MAPPER. Provides a means to set a
+     * a Map<String, String> of namespace URIs to prefixes.  Alternatively can
+     * be an implementation of NamespacePrefixMapper.
      * @since 2.4
+     * @see org.eclipse.persistence.oxm.NamespacePrefixMapper
+     */
+    public static final String JSON_NAMESPACE_PREFIX_MAPPER = JAXBContextProperties.NAMESPACE_PREFIX_MAPPER;
+
+    /**
+     * The name of the property used to specify the character (default is '.')
+     * that separates the prefix from the key name. It is only used if namespace
+     * qualification has been enabled be setting a namespace prefix mapper.  
+     * When this property is specified at the <i>JAXBContext</i> level all 
+     * instances of <i>Marshaller</i> and <i>Unmarshaller</i> will default to 
+     * this setting.
+     * @since 2.4
+     * @see org.eclipse.persistence.jaxb.JAXBContextProperties.NAMESPACE_SEPARATOR
+     * @see org.eclipse.persistence.jaxb.MarshallerProperties.NAMESPACE_SEPARATOR
+     */
+    public static final String JSON_NAMESPACE_SEPARATOR  = "eclipselink.json.namespace-separator";
+
+    /**
+     * The name of the property used to specify the key that will correspond to
+     * the property mapped with <i>@XmlValue</i>.  This key will only be used if
+     * there are other mapped properties.  When this property is specified at 
+     * the <i>JAXBContext</i> level all instances of <i>Marshaller</i> and 
+     * <i>Unmarshaller</i> will default to this setting.
+     * @since 2.4
+     * @see org.eclipse.persistence.jaxb.JAXBContextPropertes.JSON_VALUE_WRAPPER
+     * @see org.eclipse.persistence.jaxb.MarshallerPropertes.JSON_VALUE_WRAPPER
      */
     public static final String JSON_VALUE_WRAPPER = JAXBContextProperties.JSON_VALUE_WRAPPER;
 
     /**
-     * The Constant JSON_NAMESPACE_SEPARATOR.  This can be used to specify the separator
-     * that will be used when separating prefixes and localnames.  Only applicable when
-     * namespaces are being used. Value should be a Character.
-     * @since 2.4
-     */
-    public static final String JSON_NAMESPACE_SEPARATOR  = "eclipselink.json.namespace-separator";
+     * The name of the property used to specify the type of binding to be 
+     * performed.  When this property is specified at the <i>JAXBContext</i>
+     * level all instances of <i>Marshaller</i> and <i>Unmarshaller</i> will
+     * default to this media type. Supported values are:
+     * <ul>
+     * <li>MediaType.APPLICATION_XML (default)
+     * <li>MediaType.APPLICATION_JSON
+     * <li>"application/xml"
+     * <li>"application/json"
+     * </ul>
+    * @since 2.4
+    * @see org.eclipse.persistence.jaxb.JAXBContextProperties.MEDIA_TYPE
+    * @see org.eclipse.persistence.jaxb.MarshallerProperties.MEDIA_TYPE
+    * @see org.eclipse.persistence.oxm.MediaType
+    */
+    public static final String MEDIA_TYPE = JAXBContextProperties.MEDIA_TYPE;
 
 }
