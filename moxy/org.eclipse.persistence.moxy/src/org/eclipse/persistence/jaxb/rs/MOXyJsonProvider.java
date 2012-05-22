@@ -40,6 +40,7 @@ import javax.xml.transform.stream.StreamSource;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
+import org.eclipse.persistence.oxm.XMLConstants;
 
 /**
  * <p>This is an implementation of <i>MessageBodyReader</i>/<i>MessageBodyWriter
@@ -166,9 +167,11 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
     private String attributePrefix = null;
     private boolean formattedOutput = false;
     private boolean includeRoot = false;
+    private boolean marshalEmptyCollections = true;
     private Map<String, String> namespacePrefixMapper;
-    private Character namespaceSeperator;
+    private char namespaceSeperator = XMLConstants.DOT;
     private String valueWrapper;
+
 
     /**
      * The value that will be prepended to all keys that are mapped to an XML
@@ -242,7 +245,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
      * @see org.eclipse.persistence.jaxb.MarshallerProperties.NAMESPACE_SEPARATOR
      * @see org.eclipse.persistence.jaxb.UnmarshallerProperties.NAMESPACE_SEPARATOR
      */
-    public Character getNamespaceSeparator() {
+    public char getNamespaceSeparator() {
         return this.namespaceSeperator;
     }
 
@@ -279,6 +282,15 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
      */
     public boolean isIncludeRoot() {
         return includeRoot;
+    }
+
+    /**
+     * If true empty collections will be marshalled as empty arrays, else the 
+     * collection will not be marshalled to JSON (default is true).
+     * @see org.eclipse.persistence.jaxb.MarshallerProperties.JSON_MARSHAL_EMPTY_COLLECTIONS
+     */
+    public boolean isMarshalEmptyCollections() {
+        return marshalEmptyCollections;
     }
 
     /**
@@ -391,6 +403,15 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
     }
 
     /**
+     * If true empty collections will be marshalled as empty arrays, else the 
+     * collection will not be marshalled to JSON (default is true).
+     * @see org.eclipse.persistence.jaxb.MarshallerProperties.JSON_MARSHAL_EMPTY_COLLECTIONS
+     */
+    public void setMarshalEmptyCollections(boolean marshalEmptyCollections) {
+        this.marshalEmptyCollections = marshalEmptyCollections;
+    }
+
+   /**
      * By default the JSON-binding will ignore namespace qualification. If this
      * property is set then a prefix corresponding to the namespace URI and a 
      * namespace separator will be prefixed to the key.
@@ -409,7 +430,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
      * @see org.eclipse.persistence.jaxb.MarshallerProperties.NAMESPACE_SEPARATOR
      * @see org.eclipse.persistence.jaxb.UnmarshallerProperties.NAMESPACE_SEPARATOR
      */
-    public void setNamespaceSeparator(Character namespaceSeparator) {
+    public void setNamespaceSeparator(char namespaceSeparator) {
         this.namespaceSeperator = namespaceSeparator;
     }
 
@@ -436,6 +457,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
             marshaller.setProperty(MarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON);
             marshaller.setProperty(MarshallerProperties.JSON_ATTRIBUTE_PREFIX, attributePrefix);
             marshaller.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, includeRoot);
+            marshaller.setProperty(MarshallerProperties.JSON_MARSHAL_EMPTY_COLLECTIONS, marshalEmptyCollections);
             marshaller.setProperty(MarshallerProperties.JSON_NAMESPACE_SEPARATOR, namespaceSeperator);
             marshaller.setProperty(MarshallerProperties.JSON_VALUE_WRAPPER, valueWrapper);
             marshaller.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, namespacePrefixMapper);
