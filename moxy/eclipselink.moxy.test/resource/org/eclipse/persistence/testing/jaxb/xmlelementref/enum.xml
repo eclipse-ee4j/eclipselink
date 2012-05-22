@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<root>
+    <collection>
+        <string>A</string>
+        <enum>FOO</enum>
+        <string>B</string>
+        <enum>BAR</enum>
+    </collection>
+    <enum>BAR</enum>
+</root>

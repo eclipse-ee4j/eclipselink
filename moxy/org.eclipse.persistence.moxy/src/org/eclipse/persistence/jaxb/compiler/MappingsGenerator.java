@@ -996,7 +996,7 @@ public class MappingsGenerator {
             QName elementName = element.getElementName();
             JavaClass pType = element.getJavaType();
             boolean isBinaryType = (areEquals(pType, AnnotationsProcessor.JAVAX_ACTIVATION_DATAHANDLER) || areEquals(pType, byte[].class) || areEquals(pType, Image.class) || areEquals(pType, Source.class) || areEquals(pType, AnnotationsProcessor.JAVAX_MAIL_INTERNET_MIMEMULTIPART));        
-            boolean isText = !isBinaryType && !(this.typeInfo.containsKey(element.getJavaTypeName())) && !(element.getJavaTypeName().equals(OBJECT_CLASS_NAME));
+            boolean isText = pType.isEnum() || (!isBinaryType && !(this.typeInfo.containsKey(element.getJavaTypeName())) && !(element.getJavaTypeName().equals(OBJECT_CLASS_NAME)));
             String xPath = wrapperXPath;
 
             XMLField xmlField = this.getXPathForElement(xPath, elementName, namespaceInfo, isText);
@@ -1018,7 +1018,12 @@ public class MappingsGenerator {
                 }
 
                 if (nestedMapping.isAbstractCompositeDirectCollectionMapping()) {
-                    ((XMLCompositeDirectCollectionMapping) nestedMapping).getNullPolicy().setNullRepresentedByEmptyNode(false);
+                    XMLCompositeDirectCollectionMapping nestedCompositeDirectCollectionMapping = (XMLCompositeDirectCollectionMapping) nestedMapping;
+                    nestedCompositeDirectCollectionMapping.getNullPolicy().setNullRepresentedByEmptyNode(false);
+                    if(pType.isEnum()) {
+                        TypeInfo enumTypeInfo = typeInfo.get(pType.getQualifiedName());
+                        nestedCompositeDirectCollectionMapping.setValueConverter(buildJAXBEnumTypeConverter(nestedCompositeDirectCollectionMapping, (EnumTypeInfo) enumTypeInfo));
+                    }
                 }
 
                 if (element.isList() && nestedMapping.isAbstractCompositeDirectCollectionMapping()) {
@@ -1030,6 +1035,10 @@ public class MappingsGenerator {
                 XMLChoiceObjectMapping xmlChoiceObjectMapping = (XMLChoiceObjectMapping) mapping;
                 xmlChoiceObjectMapping.addChoiceElement(xmlField, element.getJavaTypeName());
                 nestedMapping = (DatabaseMapping) xmlChoiceObjectMapping.getChoiceElementMappings().get(xmlField);
+                if(pType.isEnum()) {
+                    TypeInfo enumTypeInfo = typeInfo.get(pType.getQualifiedName());
+                    ((XMLDirectMapping)nestedMapping).setConverter(buildJAXBEnumTypeConverter(nestedMapping, (EnumTypeInfo) enumTypeInfo));
+                }
                 if(nestedMapping.isAbstractCompositeObjectMapping()){
                     ((XMLCompositeObjectMapping)nestedMapping).setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
                 }

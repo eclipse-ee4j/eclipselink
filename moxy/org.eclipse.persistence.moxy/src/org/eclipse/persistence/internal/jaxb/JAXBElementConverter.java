@@ -63,7 +63,7 @@ public class JAXBElementConverter implements XMLConverter {
     public Object convertDataValueToObjectValue(Object dataValue, Session session) {
         QName name = new QName(rootFragment.getNamespaceURI(), rootFragment.getLocalName());
 
-        if(mapping.isAbstractDirectMapping()){
+        if(mapping.isAbstractDirectMapping() && null == nestedConverter){
             if ((dataValue == null) || (dataValue.getClass() != mapping.getAttributeClassification())) {
                 try {
                     dataValue = session.getDatasourcePlatform().convertObject(dataValue, mapping.getAttributeClassification());

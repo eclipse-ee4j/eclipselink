@@ -497,9 +497,6 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
 
     public void initialize(AbstractSession session) throws DescriptorException {
         super.initialize(session);
-        if (this.fieldToClassMappings.size() == 0) {
-            this.convertClassNamesToClasses(((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).getLoader());
-        }
 
         if (this.converter != null) {
             this.converter.initialize(this, session);
@@ -585,6 +582,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
                 throw ValidationException.classNotFoundWhileConvertingClassNames(className, exc);
             }
             XMLMapping mapping = this.choiceElementMappings.get(entry.getKey());
+            mapping.convertClassNamesToClasses(classLoader);
 
             if(fieldToClassMappings.get(entry.getKey()) == null) {
                 fieldToClassMappings.put(entry.getKey(), elementType);

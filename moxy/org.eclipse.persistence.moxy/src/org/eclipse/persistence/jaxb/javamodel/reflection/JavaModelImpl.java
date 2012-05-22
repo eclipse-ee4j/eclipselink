@@ -56,6 +56,9 @@ public class JavaModelImpl implements JavaModel {
 
     public JavaClass getClass(Class<?> jClass) {
         try {
+            if(null == jClass) {
+                return null;
+            }
             JavaClassImpl javaClass = getCachedJavaClasses().get(jClass.getName());
             if(javaClass == null) {
                 javaClass = new JavaClassImpl(jClass, this);

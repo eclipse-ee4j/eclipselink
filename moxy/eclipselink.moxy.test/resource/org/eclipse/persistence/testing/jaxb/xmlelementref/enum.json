@@ -1,0 +1,15 @@
+{
+   "root":{
+      "collection":{
+         "string":[
+            "A",
+            "B"
+         ],
+         "enum":[
+            "FOO",
+            "BAR"
+         ]
+      },
+      "enum":"BAR"
+   }
+}
