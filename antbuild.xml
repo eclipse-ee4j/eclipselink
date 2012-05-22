@@ -650,8 +650,8 @@
     </target>
 
     <target name="package-eclipselink-nosql-bundles">
-        <delete file="${eclipselink.plugins.install.prefix}-nosql${eclipselink.zip.suffix}" failonerror="false"/>
-        <zip destfile="${eclipselink.plugins.install.prefix}-nosql${eclipselink.zip.suffix}">
+        <delete file="${eclipselink.nosql.install.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
+        <zip destfile="${eclipselink.nosql.install.prefix}${eclipselink.zip.suffix}">
             <zipfileset dir="${eclipselink.plugins}">
                 <include name="*nosql*"/>
             </zipfileset>

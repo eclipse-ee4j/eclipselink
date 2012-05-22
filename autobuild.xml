@@ -424,6 +424,7 @@
         <copy file="${build.root.dir}/${eclipselink.tst.src.prefix}${eclipselink.zip.suffix}"          tofile="${download.dir}/${eclipselink.tst.src.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
         <copy file="${build.root.dir}/${eclipselink.tst.jar.prefix}${eclipselink.zip.suffix}"          tofile="${download.dir}/${eclipselink.tst.jar.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
         <copy file="${build.root.dir}/${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}"  tofile="${download.dir}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
+        <copy file="${build.root.dir}/${eclipselink.nosql.install.prefix}${eclipselink.zip.suffix}"  tofile="${download.dir}/${eclipselink.nosql.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
         <copy todir="${download.dir}" failonerror="false">
             <fileset  dir="${build.root.dir}">
                 <include name="${eclipselink.install.prefix}*${version.qualifier}-shared-lib.zip"/>
@@ -449,6 +450,7 @@
             <property name="do.composite"        value="true"/>
             <property name="ready-to-go"         value="true"/>
             <property name="bundle.install.file" value="${download.dir}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}"/>
+            <property name="nosql.install.file"  value="${download.dir}/${eclipselink.nosql.install.prefix}-${version.string}${eclipselink.zip.suffix}"/>
             <property name="p2.archive.zip"      value="${p2.archive.to.use}"/>
         </ant>
         <!-- Regenerate Composite Repos metadata -->
@@ -601,7 +603,7 @@
         <mkdir dir="${temp.rebuild.dir}"/>
     </target>
 
-    <target name="regen-archives" depends="check-to-continue, extract-signed-artifacts, regen-installer-archive, regen-plugin-archive, gen-build-for-maven"/>
+    <target name="regen-archives" depends="check-to-continue, extract-signed-artifacts, regen-installer-archive, regen-plugin-archive, regen-nosql-archive, gen-build-for-maven"/>
     <target name="check-to-continue" unless="signed.archive.exist">
         <fail message="Signing appears to have failed. Verify existence of signed archive before retrying..."/>
     </target>
@@ -648,6 +650,26 @@
         <!-- Rezip EclipseLink Plugins Zip -->
         <zip destfile="${temp.rebuild.dir}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}" update="true">
             <zipfileset dir="${temp.rebuild.dir}/bundlezip" includes="**/*" />
+        </zip>
+    </target>
+
+    <target name="regen-nosql-archive">
+        <echo message="Creating signed versions of NoSQL archive..."/>
+        <!-- unzip original PluginInstaller to working dir -->
+        <unzip dest="${temp.rebuild.dir}/nosqlzip" src="${promote.source.dir}/${eclipselink.nosql.install.prefix}-${version.string}${eclipselink.zip.suffix}">
+            <patternset>
+                <include name="**/*"/>
+            </patternset>
+        </unzip>
+        <!-- Force overwrite of original content -->
+        <copy todir="${temp.rebuild.dir}/nosqlzip" failonerror="false">
+            <fileset dir="${signed.jar.path}/plugins">
+                <include name="*nosql*.jar"/>
+            </fileset>
+        </copy>
+        <!-- Rezip EclipseLink Plugins Zip -->
+        <zip destfile="${temp.rebuild.dir}/${eclipselink.nosql.install.prefix}-${version.string}${eclipselink.zip.suffix}" update="true">
+            <zipfileset dir="${temp.rebuild.dir}/nosqlzip" includes="**/*" />
         </zip>
     </target>
 
@@ -707,6 +729,7 @@
             <fileset dir="${temp.rebuild.dir}">
                 <!-- Populate new "signed" version of archives (from temp rebuild location) -->
                 <include name="${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}"/>
+                <include name="${eclipselink.nosql.install.prefix}-${version.string}${eclipselink.zip.suffix}"/>
                 <!-- copy eclipse build file for safekeeping (in case rebuild needed) -->
                 <include name="**/eclipselink.build"/>
             </fileset>

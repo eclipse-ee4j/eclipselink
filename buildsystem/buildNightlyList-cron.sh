@@ -3,7 +3,7 @@
 
 export PATH=/usr/bin:/usr/local/bin:${PATH}
 
-GeneratedDownloadPage=nightly.xml
+GeneratedDownloadPage=nightly2.xml
 BaseDownloadURL="http://www.eclipse.org/downloads/download.php?file=/rt/eclipselink/nightly"
 BaseDisplayURL="http://download.eclipse.org/rt/eclipselink/nightly"
 BaseDownloadNFSDir="/home/data/httpd/download.eclipse.org/rt/eclipselink"
@@ -233,7 +233,7 @@ for version in `ls -dr [0-9]*` ; do
     echo "      <a name=\"${version}\"> </a>                                                     " >> $tmp/index.xml
     echo "        <table border=\"1\">                                                           " >> $tmp/index.xml
     echo "          <tr>                                                                         " >> $tmp/index.xml
-    echo "            <th colspan=\"13\" style=\"text-align:left;\"><b>${version} Nightly Build Results</b></th>" >> $tmp/index.xml
+    echo "            <th colspan=\"14\" style=\"text-align:left;\"><b>${version} Nightly Build Results</b></th>" >> $tmp/index.xml
     echo "          </tr>                                                                        " >> $tmp/index.xml
     echo "          <tr>                                                                         " >> $tmp/index.xml
     echo "            <th rowspan=\"3\" style=\"text-align:center;border-top: 2px solid #444;\"> Build ID </th>                         " >> $tmp/index.xml
@@ -295,6 +295,13 @@ for version in `ls -dr [0-9]*` ; do
             echo "              <a href=\"${BaseDownloadURL}/${version}/${contentdir}/${file}\">Bundle</a>" >> $tmp/index.xml
         else
             echo "              B" >> $tmp/index.xml
+        fi
+        file=`ls | sort -r | grep -m1 eclipselink-plugins-nosql-[0-9]`
+        if [ "${file}" != "" ] ; then
+#            echo "              <a href=\"${BaseDownloadURL}/${version}/${contentdir}/${file}\" class=\"info\">B<span>Download NoSQL Plugins Archive</span></a>" >> $tmp/index.xml
+            echo "              <a href=\"${BaseDownloadURL}/${version}/${contentdir}/${file}\">NoSQL</a>" >> $tmp/index.xml
+        else
+            echo "              NoSQL" >> $tmp/index.xml
         fi
         echo "            </td>" >> $tmp/index.xml
         echo "            <td rowspan=\"${num_hosts}\" style=\"text-align:center;\"> </td>" >> $tmp/index.xml

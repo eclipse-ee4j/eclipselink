@@ -36,8 +36,9 @@
 *        - the version qualifier of the built bundles to sign and promote to p2
 *
 *  The command-line would look something like:
-*        ant -Dp2.SDK.install.dir=${sdk.install.dir} -Dbundle.install.file=${bundle.install.filepath} \
-*            -Dversion.qualifier=${version.qualifier} -Dp2.repos.dir=${update.site.base.dir}
+*        ant -Dp2.SDK.install.dir=${sdk.install.dir} -Dbundle.install.file=${bundle.install.filepath}  \
+*            -Dnosql.install.file=${nosql.install.filepath} -Dversion.qualifier=${version.qualifier} \
+*            -Dp2.repos.dir=${update.site.base.dir}
 *
 *  There are some additional parameters that should be added:
 *        - flags to specify if the repos should be overwritten or built upon (would change how the repos is built)
@@ -105,6 +106,7 @@
         <property name="version.string"                     value="${release.version}.${version.qualifier}"/>
         <property name="eclipselink.install.prefix"         value="eclipselink"/>
         <property name="eclipselink.plugins.install.prefix" value="eclipselink-plugins"/>
+        <property name="eclipselink.nosql.install.prefix"   value="eclipselink-plugins-nosql"/>
         <property name="eclipselink.zip.suffix"             value=".zip"/>
         <property name="classes.dir"                        value="classes"/>
         <property name="specification.vendor"               value="Eclipse.org - EclipseLink Project"/>
@@ -115,6 +117,7 @@
         <echo message="version.string                    ='${version.string}'"/>
         <echo message="eclipselink.install.prefix        ='${eclipselink.install.prefix}'"/>
         <echo message="eclipselink.plugins.install.prefix='${eclipselink.plugins.install.prefix}'"/>
+        <echo message="eclipselink.nosql.install.prefix  ='${eclipselink.nosql.install.prefix}'"/>
         <echo message="eclipselink.zip.suffix            ='${eclipselink.zip.suffix}'"/>
         <echo message="classes.dir                       ='${classes.dir}'"/>
         <echo message="specification.vendor              ='${specification.vendor}'"/>
@@ -161,17 +164,24 @@
                                                    else="${feature.2.base.dir}/${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}">
             <available file="${feature.2.base.dir}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}"/>
         </condition>
+        <condition property="nosql.install.file"  value="${feature.2.base.dir}/${eclipselink.nosql.install.prefix}-${version.string}${eclipselink.zip.suffix}"
+                                                   else="${feature.2.base.dir}/${eclipselink.nosql.install.prefix}${eclipselink.zip.suffix}">
+            <available file="${feature.2.base.dir}/${eclipselink.nosql.install.prefix}-${version.string}${eclipselink.zip.suffix}"/>
+        </condition>
         <property name="site.dir"                 value="${feature.build.location}/${classes.dir}"/>
         <property name="site.dir.url"             value="file:${site.dir}"/>
         <property name="site.url"                 value="${site.dir.url}/site.xml"/>
         <available file="${bundle.install.file}" property="bundle.installer.exist"/>
+        <available file="${nosql.install.file}"  property="nosql.installer.exist"/>
         <echo message="p2.composite.home.dir ='${p2.composite.home.dir}'"/>
         <echo message="p2.repos.dir          ='${p2.repos.dir}'"/>
         <echo message="p2.mirror.dir         ='${p2.mirror.dir}'"/>
         <echo message="p2.feature.dir        ='${p2.feature.dir}'"/>
         <echo message="p2.bundle.dir         ='${p2.bundle.dir}'"/>
-        <say  message="bundle.install.file   ='${bundle.install.file}'" if="bundle.installer.exist"/>
+        <say  message="bundle.install.file   ='${bundle.install.file}'"                if="bundle.installer.exist"/>
         <say  message="bundle.install.file:   '${bundle.install.file}' not found!" unless="bundle.installer.exist"/>
+        <say  message="nosql.install.file    ='${nosql.install.file}'"                 if="nosql.installer.exist"/>
+        <say  message="nosql.install.file:    '${nosql.install.file}' not found!"  unless="nosql.installer.exist"/>
         <echo message="site.dir              ='${site.dir}'"/>
         <echo message="site.dir.url          ='${site.dir.url}'"/>
         <echo message="site.url              ='${site.url}'"/>
@@ -510,6 +520,11 @@
         <mkdir dir="${p2.feature.dir}"/>
         <!-- populate update site with feature and bundle jars -->
         <unzip dest="${p2.bundle.dir}" src="${bundle.install.file}">
+            <patternset>
+                <include name="**/*.jar"/>
+            </patternset>
+        </unzip>
+        <unzip dest="${p2.bundle.dir}" src="${nosql.install.file}">
             <patternset>
                 <include name="**/*.jar"/>
             </patternset>
