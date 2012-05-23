@@ -221,6 +221,7 @@
         <property name="core.dependencies"        value="${deps.head}${dep.asm}${deps.foot}"/>
         <property name="oracle.dependencies"      value="${deps.head}${dep.persistence2}${dep.asm}${dep.core}${deps.foot}"/>
         <property name="jpa.dependencies"         value="${deps.head}${dep.persistence2}${dep.asm}${dep.antlr}${dep.hermes}${dep.core}${deps.foot}"/>
+        <property name="nosql.dependencies"       value="${deps.head}${dep.persistence2}${dep.asm}${dep.antlr}${dep.hermes}${dep.core}${dep.nosql}${deps.foot}"/>
         <property name="modelgen.dependencies"    value="${deps.head}${dep.core}${dep.jpa}${dep.jpa.processor}${deps.foot}"/>
         <property name="osgi.dependencies"        value="${deps.head}${dep.jpa}${deps.foot}"/>
         <property name="weaving.dependencies"     value="${deps.head}${dep.jpa}${deps.foot}"/>
@@ -322,12 +323,21 @@
         </antcall>
         <antcall target="upload-artifact">
             <param name="groupId" value="org.eclipse.persistence"/>
+            <param name="artifactId" value="org.eclipse.persistence.oracle.nosql"/>
+            <param name="artifactVersion" value="${maven.version}"/>
+            <param name="artifact" value="${maven.2.common.plugins.dir}/org.eclipse.persistence.nosql_${version.string}.jar"/>
+            <param name="artifactSrc" value="${maven.2.common.plugins.dir}/org.eclipse.persistence.nosql.source_${version.string}.jar"/>
+            <param name="artifactName" value="EclipseLink Oracle NoSQL database Extensions"/>
+            <param name="dependencies" value="${nosql.dependencies}"/>
+        </antcall>
+        <antcall target="upload-artifact">
+            <param name="groupId" value="org.eclipse.persistence"/>
             <param name="artifactId" value="org.eclipse.persistence.nosql"/>
             <param name="artifactVersion" value="${maven.version}"/>
             <param name="artifact" value="${maven.2.common.plugins.dir}/org.eclipse.persistence.nosql_${version.string}.jar"/>
             <param name="artifactSrc" value="${maven.2.common.plugins.dir}/org.eclipse.persistence.nosql.source_${version.string}.jar"/>
             <param name="artifactName" value="EclipseLink NoSQL database Extensions"/>
-            <param name="dependencies" value="${oracle.dependencies}"/>
+            <param name="dependencies" value="${jpa.dependencies}"/>
         </antcall>
         <antcall target="upload-artifact">
             <param name="groupId" value="org.eclipse.persistence"/>
