@@ -1,0 +1,15 @@
+<xsd:schema targetNamespace="http://example.com/dept/" xmlns="http://example.com/dept/" elementFormDefault="qualified"
+     sdoJava:package="dept" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sdoJava="commonj.sdo/java">
+    <xsd:complexType name="Emp">
+        <xsd:sequence>
+            <xsd:element name="Empno" type="xsd:integer" minOccurs="0"/>
+            <xsd:element name="Ename" type="xsd:string" minOccurs="0" nillable="true"/>
+            <xsd:element name="Job" type="xsd:string" minOccurs="0" nillable="true"/>
+            <xsd:element name="Mgr" type="xsd:decimal" minOccurs="0" nillable="true"/>
+            <xsd:element name="Sal" type="xsd:decimal" minOccurs="0" nillable="true"/>
+            <xsd:element name="Comm" type="xsd:decimal" minOccurs="0" nillable="true"/>
+            <xsd:element name="Deptno" type="xsd:decimal" minOccurs="0" nillable="true"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:element name="emp" type="Emp"/>
+</xsd:schema>

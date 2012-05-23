@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:corporation xmlns:ns0="http://www.example.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <ns0:name>aCorporation</ns0:name>
+   <ns0:stock>
+      <ns0:myChangeSummary logging="true" xmlns:sdo="commonj.sdo">
+      </ns0:myChangeSummary>   
+      <ns0:symbol>COR.N</ns0:symbol>
+      <ns0:exchange>Nasdaq</ns0:exchange>
+      <ns0:results>
+         <ns0:dividend>
+            <ns0:cash>
+                <ns0:dollarAmount>0.90</ns0:dollarAmount>
+                <ns0:currency>US</ns0:currency>
+            </ns0:cash>
+         </ns0:dividend>
+      </ns0:results>
+   </ns0:stock>
+   <ns0:stock>
+      <ns0:myChangeSummary logging="true" xmlns:sdo="commonj.sdo">
+      </ns0:myChangeSummary>   
+      <ns0:symbol>COR.T</ns0:symbol>
+      <ns0:exchange>TSE</ns0:exchange>
+      <ns0:results>
+         <ns0:dividend>
+            <ns0:cash>
+                <ns0:dollarAmount>1.03</ns0:dollarAmount>
+                <ns0:currency>CDN</ns0:currency>
+            </ns0:cash>
+         </ns0:dividend>
+      </ns0:results>
+   </ns0:stock>
+   <ns0:stock>
+      <ns0:myChangeSummary logging="true" xmlns:sdo="commonj.sdo">
+      </ns0:myChangeSummary>   
+      <ns0:symbol>COR.N</ns0:symbol>
+      <ns0:exchange>NYSE</ns0:exchange>
+      <ns0:results>
+         <ns0:dividend>
+            <ns0:cash>
+                <ns0:dollarAmount>0.90</ns0:dollarAmount>
+                <ns0:currency>US</ns0:currency>
+            </ns0:cash>
+         </ns0:dividend>
+      </ns0:results>
+   </ns0:stock>
+   <ns0:development>
+      <ns0:name>Development</ns0:name>
+      <ns0:purchaseOrder orderDate="2007-12-12">
+         <ns0:myChangeSummary logging="true" xmlns:sdo="commonj.sdo">
+         </ns0:myChangeSummary>
+         <ns0:shipTo country="US">
+            <ns0:name>Bryan Somebody</ns0:name>
+            <ns0:street>234 This Street</ns0:street>
+            <ns0:city>Factory Valley</ns0:city>
+            <ns0:state>FL</ns0:state>
+            <ns0:zip>70952</ns0:zip>
+            <ns0:yard>
+               <ns0:length>1</ns0:length>
+               <ns0:width>2</ns0:width>
+            </ns0:yard>
+            <ns0:phone>
+               <ns0:number>1000001</ns0:number>
+            </ns0:phone>
+            <ns0:phone>
+               <ns0:number>2000002</ns0:number>
+            </ns0:phone>
+         </ns0:shipTo>
+         <ns0:billTo country="CA">
+            <ns0:name>Leslie Somebody</ns0:name>
+            <ns0:street>9 Oat Avenue</ns0:street>
+            <ns0:city>Shad Valley</ns0:city>
+            <ns0:state>TX</ns0:state>
+            <ns0:zip>65819</ns0:zip>
+         </ns0:billTo>
+         <ns0:comment>results/dividend is a ComplexSingle of a Complex Single off a child</ns0:comment>
+         <ns0:comment>Stock is a ComplexMany off the root</ns0:comment>
+         <ns0:items>
+            <ns0:item partNum="901-AA">
+               <ns0:product>
+               <ns0:productName>Lawnmower</ns0:productName>
+                  <ns0:price>
+                     <ns0:dollarAmount>201.01</ns0:dollarAmount>
+                     <ns0:currency>US</ns0:currency>		
+                  </ns0:price>
+                  <ns0:price>
+                     <ns0:dollarAmount>202.02</ns0:dollarAmount>
+                     <ns0:currency>CDN</ns0:currency>
+                  </ns0:price>
+               </ns0:product>
+               <ns0:quantity>1</ns0:quantity>
+               <ns0:comment>First Item</ns0:comment>
+               <ns0:comment>First Item comment 2</ns0:comment>
+            </ns0:item>
+            <ns0:item partNum="902-AA">
+               <ns0:product>
+                  <ns0:productName>Baby Monitor</ns0:productName>
+                  <ns0:price>
+                     <ns0:dollarAmount>203.03</ns0:dollarAmount>
+                     <ns0:currency>US</ns0:currency>
+                  </ns0:price>
+                  <ns0:price>
+                     <ns0:dollarAmount>204.04</ns0:dollarAmount>
+                     <ns0:currency>CDN</ns0:currency>
+                  </ns0:price>
+               </ns0:product>
+               <ns0:quantity>2</ns0:quantity>
+               <ns0:shipDate>2007-12-12</ns0:shipDate>
+            </ns0:item>
+         </ns0:items>
+      </ns0:purchaseOrder>
+      <ns0:employee>
+         <ns0:id>2001</ns0:id>
+         <ns0:name>Employee1</ns0:name>         
+      </ns0:employee>
+   </ns0:development>
+   <ns0:sales>
+      <ns0:name>Sales</ns0:name>
+      <ns0:purchaseOrder orderDate="2007-10-10">
+         <ns0:myChangeSummary logging="true" xmlns:sdo="commonj.sdo">
+         </ns0:myChangeSummary>
+         <ns0:shipTo country="US">
+            <ns0:name>Bryan Somebody</ns0:name>
+            <ns0:street>234 This Street</ns0:street>
+            <ns0:city>Factory Valley</ns0:city>
+            <ns0:state>FL</ns0:state>
+            <ns0:zip>70952</ns0:zip>
+            <ns0:yard>
+               <ns0:length>1</ns0:length>
+               <ns0:width>2</ns0:width>
+            </ns0:yard>
+            <ns0:phone>
+               <ns0:number>1000001</ns0:number>
+            </ns0:phone>
+            <ns0:phone>
+               <ns0:number>2000002</ns0:number>
+            </ns0:phone>
+         </ns0:shipTo>
+         <ns0:billTo country="CA">
+            <ns0:name>Leslie Somebody</ns0:name>
+            <ns0:street>9 Oat Avenue</ns0:street>
+            <ns0:city>Shad Valley</ns0:city>
+            <ns0:state>TX</ns0:state>
+            <ns0:zip>65819</ns0:zip>
+         </ns0:billTo>
+         <ns0:comment>results/dividend is a ComplexSingle of a Complex Single off a child</ns0:comment>
+         <ns0:comment>Stock is a ComplexMany off the root</ns0:comment>
+         <ns0:items>
+            <ns0:item partNum="901-AA">
+               <ns0:product>
+               <ns0:productName>Lawnmower</ns0:productName>
+                  <ns0:price>
+                     <ns0:dollarAmount>201.01</ns0:dollarAmount>
+                     <ns0:currency>US</ns0:currency>		
+                  </ns0:price>
+                  <ns0:price>
+                     <ns0:dollarAmount>202.02</ns0:dollarAmount>
+                     <ns0:currency>CDN</ns0:currency>
+                  </ns0:price>
+               </ns0:product>
+               <ns0:quantity>1</ns0:quantity>
+               <ns0:comment>First Item</ns0:comment>
+               <ns0:comment>First Item comment 2</ns0:comment>
+            </ns0:item>
+            <ns0:item partNum="902-AA">
+               <ns0:product>
+                  <ns0:productName>Baby Monitor</ns0:productName>
+                  <ns0:price>
+                     <ns0:dollarAmount>203.03</ns0:dollarAmount>
+                     <ns0:currency>US</ns0:currency>
+                  </ns0:price>
+                  <ns0:price>
+                     <ns0:dollarAmount>204.04</ns0:dollarAmount>
+                     <ns0:currency>CDN</ns0:currency>
+                  </ns0:price>
+               </ns0:product>
+               <ns0:quantity>2</ns0:quantity>
+               <ns0:shipDate>2007-12-12</ns0:shipDate>
+            </ns0:item>
+         </ns0:items>
+         <ns0:buyer>
+            <ns0:id>1001</ns0:id>
+            <ns0:name>Buyer1</ns0:name>
+         </ns0:buyer>
+      </ns0:purchaseOrder>
+      <ns0:purchaseOrder orderDate="1999-10-20">
+         <ns0:myChangeSummary logging="true" xmlns:sdo="commonj.sdo">
+         </ns0:myChangeSummary>
+         <ns0:shipTo country="US">
+            <ns0:name>Alice Smith</ns0:name>
+            <ns0:street>123 Maple Street</ns0:street>
+            <ns0:city>Mill Valley</ns0:city>
+            <ns0:state>CA</ns0:state>
+            <ns0:zip>90952</ns0:zip>
+            <ns0:yard>
+               <ns0:length>45</ns0:length>
+               <ns0:width>65</ns0:width>
+            </ns0:yard>
+            <ns0:phone>
+               <ns0:number>1234567</ns0:number>
+            </ns0:phone>
+            <ns0:phone>
+               <ns0:number>2345678</ns0:number>
+            </ns0:phone>
+         </ns0:shipTo>
+         <ns0:billTo country="US">
+            <ns0:name>Robert Smith</ns0:name>
+            <ns0:street>8 Oak Avenue</ns0:street>
+            <ns0:city>Mill Valley</ns0:city>
+            <ns0:state>PA</ns0:state>
+            <ns0:zip>95819</ns0:zip>
+         </ns0:billTo>
+         <ns0:comment>Hurry, my lawn is going wild!</ns0:comment>
+         <ns0:comment>blah blah blah comment2</ns0:comment>
+         <ns0:comment>yet another comment</ns0:comment>
+         <ns0:items>
+            <ns0:item partNum="872-AA">
+               <ns0:product>
+                  <ns0:productName>Lawnmower</ns0:productName>
+                  <ns0:price>
+                     <ns0:dollarAmount>148.95</ns0:dollarAmount>
+                     <ns0:currency>US</ns0:currency>
+                  </ns0:price>
+                  <ns0:price>
+                     <ns0:dollarAmount>175.95</ns0:dollarAmount>
+                     <ns0:currency>CDN</ns0:currency>
+                  </ns0:price>
+               </ns0:product>
+               <ns0:quantity>1</ns0:quantity>
+               <ns0:comment>Confirm this is electric2</ns0:comment>
+               <ns0:comment>And make it snappy</ns0:comment>
+            </ns0:item>
+            <ns0:item partNum="926-AA">
+               <ns0:product>
+                  <ns0:productName>Baby Monitor</ns0:productName>
+                  <ns0:price>
+                     <ns0:dollarAmount>39.95</ns0:dollarAmount>
+                     <ns0:currency>US</ns0:currency>
+                  </ns0:price>
+                  <ns0:price>
+                     <ns0:dollarAmount>45.95</ns0:dollarAmount>
+                     <ns0:currency>CDN</ns0:currency>
+                  </ns0:price>
+               </ns0:product>
+               <ns0:quantity>1</ns0:quantity>
+               <ns0:shipDate>1999-05-21</ns0:shipDate>
+            </ns0:item>
+         </ns0:items>
+      </ns0:purchaseOrder>
+   </ns0:sales>
+</ns0:corporation>

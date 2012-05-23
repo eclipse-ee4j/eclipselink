@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm" package-name="myPackage">
+   <java-types> 
+        <java-type name="myType">
+		      <java-attributes>
+			     <xml-element java-attribute="theJavaAttributeValue" name="elementName"/>
+			  </java-attributes>
+	    </java-type>
+   </java-types>
+</xml-bindings>

@@ -1,0 +1,61 @@
+{"root":{
+    "baseTypeThing":{
+        "type":"subType",
+	"subTypeProp":10
+    },
+   "baseTypeList":[
+       {
+          "type":"subType",
+ 	  "subTypeProp":10
+       },
+       {
+          "type":"anotherSubType"
+       },
+       {
+          "type":"subTypeLevel2",
+ 	  "baseProp":"boo",
+ 	  "subTypeProp":0
+       },
+       {
+          "type":"subType",
+ 	  "subTypeProp":10
+       },
+       {
+          "type":"anotherPackageSubType",
+ 	  "subTypeProp":0
+       }
+
+     ],
+      "objectList":[
+            {"type":"subType",
+	      "subTypeProp":10
+	    },
+	     {"type":"anotherSubType"},
+	     {
+	     "type":"subTypeLevel2",
+	      "baseProp":"boo",
+	      "subTypeProp":0
+	     },
+            {"type":"subType",
+	      "subTypeProp":10
+	    },
+	    {"type":"anotherPackageSubType",
+	      "subTypeProp":0
+	    },
+	     {"type":"string",
+	      "value":"string test"
+	    },
+	    {"type":"int",
+	      "value":500
+	    }
+      ],
+      "choice":{
+           "another-package-subtype-choice":[{"subTypeProp":0}],
+           "subtype-level2-choice":[{
+	       "baseProp":"boo",
+               "subTypeProp":0
+	   }],
+	   "string-choice":["choice string test"],
+	   "integer-choice":[500]
+       }
+}}

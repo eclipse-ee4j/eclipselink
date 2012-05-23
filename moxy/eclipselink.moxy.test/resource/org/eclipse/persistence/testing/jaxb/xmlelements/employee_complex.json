@@ -1,0 +1,8 @@
+{"employee-data":{
+   "id":10,
+   "address":{
+      "street":"123 Fake Street",
+      "city":"Ottawa"
+   }
+   }
+}

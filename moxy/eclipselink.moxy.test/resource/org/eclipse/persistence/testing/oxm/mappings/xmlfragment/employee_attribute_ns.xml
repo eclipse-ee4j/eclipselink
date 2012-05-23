@@ -1,0 +1,5 @@
+<employee xmlns:ns1="http://www.example.com/test-uri">
+   <first-name>Jane</first-name>
+   <last-name>Doe</last-name>
+   <xml-node ns1:attribute="attributevalue"/>
+</employee>

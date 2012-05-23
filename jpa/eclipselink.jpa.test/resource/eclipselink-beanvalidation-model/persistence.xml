@@ -1,0 +1,14 @@
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence persistence_2_0.xsd" version="2.0">
+    <persistence-unit name="beanvalidation" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.testing.models.jpa.beanvalidation.Employee</class>
+        <class>org.eclipse.persistence.testing.models.jpa.beanvalidation.Project</class>
+        <class>org.eclipse.persistence.testing.models.jpa.beanvalidation.Address</class>
+        <validation-mode>CALLBACK</validation-mode>
+        <!--
+        <properties>
+            <property name="eclipselink.logging.level" value="FINEST"/>
+        </properties>
+        -->
+    </persistence-unit>
+</persistence>

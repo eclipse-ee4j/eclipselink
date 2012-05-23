@@ -1,0 +1,16 @@
+{"empRoot4":{   
+   "age":35,
+   "the_id":"someID",
+   "the_employee_name":"Bob Jones",
+   "address":"123 theStreet",
+   "jobTitle":"job3",
+   "departments":[
+       "development","technical support"
+     ],
+    "contact-info":{
+       "thenumber":{
+          "num":"12345678"
+       }
+    }
+  }
+}

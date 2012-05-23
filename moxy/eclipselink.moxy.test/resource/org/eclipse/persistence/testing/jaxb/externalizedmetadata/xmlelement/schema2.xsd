@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns0="http://www.example.com/utils" targetNamespace="http://www.example.com/utils">
+   <xsd:element name="aUtilDate" type="xsd:dateTime"/>
+</xsd:schema>

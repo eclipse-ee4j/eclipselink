@@ -1,0 +1,8 @@
+{
+    "root": {
+        "vehicle":{
+            "vtype":"c:ar",
+            "numberOfDoors":2
+        }
+    }
+}

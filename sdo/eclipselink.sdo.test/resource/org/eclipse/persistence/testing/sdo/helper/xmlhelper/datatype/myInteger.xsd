@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:nist="myInteger-NS" targetNamespace="myInteger-NS">
+
+	<element name="myInteger" type="nist:myInteger-Type"/>
+
+	<simpleType name="myInteger-Type">
+		<restriction base="integer"/>
+	</simpleType>
+
+</schema>

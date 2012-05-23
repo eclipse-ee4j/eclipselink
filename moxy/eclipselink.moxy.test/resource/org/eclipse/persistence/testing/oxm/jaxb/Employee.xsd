@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="employee">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="id" type="id-type" minOccurs="0"/>
+				<xs:element name="name" type="xs:string" minOccurs="1"/>
+				<xs:element name="home-address" type="address-type" minOccurs="0"/>
+				<xs:element name="work-address" type="address-type" minOccurs="0"/>
+				<xs:element name="phone" type="phone-type" minOccurs="0"/>
+				<xs:element name="badge-id" type="xs:ID" minOccurs="0"/>
+				 <xs:element name="job"  minOccurs="0">
+				  <xs:complexType>
+				    <xs:sequence>
+					<xs:element name="title" type="xs:string" minOccurs="0"/>
+				    </xs:sequence>
+				  </xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+  
+	<xs:simpleType name="id-type">
+		<xs:restriction base = "xs:integer">
+			<xs:maxInclusive value="999999"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:simpleType name="phone-type">
+		<xs:restriction base = "xs:string">
+			<xs:maxLength value="10"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:complexType name="address-type">
+		<xs:sequence>
+			<xs:element name="street" type="xs:string"/>
+			<xs:element name="city" type="xs:string"/>
+			<xs:element name="state" type="xs:string"/>
+			<xs:element name="zip-code" type="xs:string" minOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="po-box-address-type">
+		<xs:complexContent>
+			<xs:extension base = "address-type">
+				<xs:sequence>
+					<xs:element name="rrnum" type="xs:string" minOccurs="1"/>				
+					<xs:element name="po-box" type="xs:string" minOccurs="1"/>				
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+</xs:schema>

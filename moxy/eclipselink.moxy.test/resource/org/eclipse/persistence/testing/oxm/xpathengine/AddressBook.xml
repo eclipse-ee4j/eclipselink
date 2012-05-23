@@ -1,0 +1,27 @@
+<addressbook>
+	<address id="10" type="A">
+		<addressee initial="T">John Smith</addressee>
+		<street-address>250 18th Ave SE</street-address>
+		<city>
+			<name>Rochester</name>
+			<code>72235621</code>
+		</city>		
+		<state>MN</state>
+		<postal-code>55902</postal-code>
+		<phone area-code="212">555-2442</phone>
+		<phone area-code="222">555-7298</phone>
+		<phone area-code="214">555-2711</phone>		
+	</address>
+	<address id="20" type="B">
+		<addressee initial="G" age="25">Bill Morris</addressee>
+		<street-address>1234 Center Lane NW</street-address>
+		<city>
+			<name>St. Paul</name>
+			<code>43225211</code>
+		</city>
+		<state>MN</state>
+		<postal-code>55123</postal-code>
+		<phone area-code="613">212-555-8649</phone>
+		<phone area-code="222">212-555-1530</phone>
+	</address>
+</addressbook>

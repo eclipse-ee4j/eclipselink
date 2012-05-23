@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="my.uri" xmlns="my.uri" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:include schemaLocation="WithInclude.xsd"/>
+    <xsd:complexType name="ChildType">
+        <xsd:complexContent>
+            <xsd:extension base="Root">
+                <xsd:sequence>
+                    <xsd:element name="ccc" type="xsd:string" minOccurs="0" nillable="true"/>
+                    <xsd:element name="ddd" type="xsd:string" minOccurs="0" nillable="true"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+</xsd:schema>

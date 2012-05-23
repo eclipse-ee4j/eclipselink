@@ -1,0 +1,4 @@
+<child>
+    <childProp>CHILD</childProp>
+    <parentProp>PARENT</parentProp>
+</child>

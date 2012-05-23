@@ -1,0 +1,12 @@
+<employee xmlns:email="www.example.com/some-dir/email.xsd" xmlns:mailing="www.example.com/some-dir/mailing.xsd">
+	<email:addresses>
+		<email:address xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="email:addressType">
+			<email:user-id>jane.doe</email:user-id>
+			<email:domain>example.com</email:domain>
+		</email:address>
+		<email:address>
+			<email:user-id>jdoe</email:user-id>
+			<email:domain>test.com</email:domain>
+		</email:address>
+	</email:addresses>
+</employee>

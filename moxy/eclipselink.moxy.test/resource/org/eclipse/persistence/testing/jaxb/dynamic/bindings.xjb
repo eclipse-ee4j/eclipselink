@@ -1,0 +1,17 @@
+<jxb:bindings version="1.0" xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc" xmlns:jxb="http://java.sun.com/xml/ns/jaxb" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <jxb:bindings schemaLocation="contextcreation.xsd" node="/xs:schema">
+
+        <!-- Customize the package name that is generated for each schema -->
+        <jxb:schemaBindings>
+            <jxb:package name="ext.bindings"/>
+        </jxb:schemaBindings>
+
+        <!-- Rename the 'employee-id' element to 'emp-id' -->
+        <jxb:bindings node="//xs:complexType[@name='employee']">
+            <jxb:bindings node=".//xs:element[@name='employee-id']">
+                <jxb:property name="emp-id"/>
+            </jxb:bindings>
+        </jxb:bindings>
+
+    </jxb:bindings>
+</jxb:bindings>

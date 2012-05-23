@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="org.eclipse.persistence.compdeps"
+      label="Compdeps"
+      version="@VERSION@.@QUALIFIER@"
+      provider-name="%providerName">
+
+   <description>
+      %description
+   </description>
+
+   <copyright>
+      %copyright
+   </copyright>
+
+   <license url="%licenseURL">
+      %license
+   </license>
+
+   <plugin
+         id="com.sun.xml.bind"
+         download-size="0"
+         install-size="0"
+         version="@SUN_XML_BIND_VERSION@"
+         unpack="false"/>
+
+   <plugin
+         id="com.sun.jersey"
+         download-size="0"
+         install-size="0"
+         version="@JERSEY_VERSION@"
+         unpack="false"/>
+
+   <plugin
+         id="com.sun.xml.bind.source"
+         download-size="0"
+         install-size="0"
+         version="@SUN_XML_BIND_VERSION@"
+         unpack="false"/>
+
+   <plugin
+         id="commonj.sdo"
+         download-size="0"
+         install-size="0"
+         version="@SDO_VERSION@"
+         unpack="false"/>
+
+   <plugin
+         id="javax.ejb"
+         download-size="0"
+         install-size="0"
+         version="@EJB_VERSION@"
+         unpack="false"/>
+
+   <plugin
+         id="javax.jms"
+         download-size="0"
+         install-size="0"
+         version="@JMS_VERSION@"
+         unpack="false"/>
+
+   <plugin
+         id="javax.persistence"
+         download-size="0"
+         install-size="0"
+         version="@PERSISTENCE_VERSION@"
+         unpack="false"/>
+
+   <plugin
+         id="javax.persistence.source"
+         download-size="0"
+         install-size="0"
+         version="@PERSISTENCE_VERSION@"
+         unpack="false"/>
+
+   <plugin
+         id="javax.resource"
+         download-size="0"
+         install-size="0"
+         version="@RESOURCE_VERSION@"
+         unpack="false"/>
+
+   <plugin
+         id="javax.validation"
+         download-size="0"
+         install-size="0"
+         version="@VALIDATION_VERSION@"
+         unpack="false"/>
+
+   <plugin
+         id="javax.servlet"
+         download-size="0"
+         install-size="0"
+         version="@SERVLET_VERSION@"
+         unpack="false"/>
+
+   <plugin
+         id="javax.wsdl"
+         download-size="0"
+         install-size="0"
+         version="@WSDL_VERSION@"
+         unpack="false"/>
+
+   <plugin
+         id="javax.xml.soap"
+         download-size="0"
+         install-size="0"
+         version="@XML_SOAP_VERSION@"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.persistence.antlr"
+         download-size="0"
+         install-size="0"
+         version="@ANTLR_VERSION@"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.persistence.antlr.source"
+         download-size="0"
+         install-size="0"
+         version="@ANTLR_VERSION@"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.persistence.asm"
+         download-size="0"
+         install-size="0"
+         version="@ASM_VERSION@"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.persistence.asm.source"
+         download-size="0"
+         install-size="0"
+         version="@ASM_VERSION@"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.persistence.oracleddlparser"
+         download-size="0"
+         install-size="0"
+         version="@ORACLEDDL_VERSION@"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.persistence.oracleddlparser.source"
+         download-size="0"
+         install-size="0"
+         version="@ORACLEDDL_VERSION@"
+         unpack="false"/>
+
+</feature>

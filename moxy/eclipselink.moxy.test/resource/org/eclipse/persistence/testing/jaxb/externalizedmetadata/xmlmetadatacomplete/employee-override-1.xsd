@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:nsx="http://www.example.com/xsds/real" elementFormDefault="qualified" attributeFormDefault="qualified">
+   <xsd:import schemaLocation="schema2.xsd" namespace="http://www.example.com/xsds/real"/>
+   <xsd:complexType name="employee">
+      <xsd:sequence>
+         <xsd:element ref="nsx:my-things" minOccurs="0"/>
+         <xsd:choice maxOccurs="unbounded">
+            <xsd:element ref="foo"/>
+            <xsd:element ref="bar"/>
+         </xsd:choice>
+         <xsd:element name="contact-info" minOccurs="0">
+            <xsd:complexType>
+               <xsd:sequence>
+                  <xsd:element name="name" type="xsd:string" minOccurs="0"/>
+               </xsd:sequence>
+            </xsd:complexType>
+         </xsd:element>
+      </xsd:sequence>
+      <xsd:attribute name="id" type="xsd:int" use="required"/>
+   </xsd:complexType>
+   <xsd:element name="foo" type="xsd:string"/>
+   <xsd:element name="bar" type="xsd:string"/>
+   <xsd:element name="emp" type="employee"/>
+</xsd:schema>

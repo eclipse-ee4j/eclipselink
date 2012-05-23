@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns0="parentnamespace" targetNamespace="parentnamespace">
+   <xsd:complexType name="parent">
+      <xsd:sequence>
+         <xsd:element minOccurs="0" name="parentThing" type="xsd:string"/>
+      </xsd:sequence>
+   </xsd:complexType>
+</xsd:schema>

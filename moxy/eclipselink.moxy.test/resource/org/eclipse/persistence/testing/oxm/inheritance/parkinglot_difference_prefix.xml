@@ -1,0 +1,19 @@
+<different:parking-lot xmlns:different="mynamespaceuri" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <different:unmapped xmlns:different="othernamepsaceuri">
+	      <different:nested>text</different:nested>
+	  </different:unmapped>
+	  <different:vehicles>
+		<different:vehicle xsi:type="different:car-type" >
+		   <different:model>Grand Am</different:model>
+		   <different:manufacturer>Pontiac</different:manufacturer>
+		   <different:top-speed>220</different:top-speed>
+		   <different:number-of-doors>2</different:number-of-doors>
+		   <different:miles-per-gallon>30</different:miles-per-gallon>
+		</different:vehicle>
+		<different:vehicle>
+		   <different:model>Blah Blah</different:model>
+		   <different:manufacturer>Some Place</different:manufacturer>
+		   <different:top-speed>10000</different:top-speed>
+		 </different:vehicle>
+    </different:vehicles>
+</different:parking-lot>

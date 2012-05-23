@@ -1,0 +1,317 @@
+<?xml version="1.0"?>
+<!--/*******************************************************************************
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+* which accompanies this distribution.
+* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+* and the Eclipse Distribution License is available at
+* http://www.eclipse.org/org/documents/edl-v10.php.
+*
+*   Ant naming conventions:
+*   - regardless of the actual OS platform,'/' is the directory separator
+*     (Ant will convert as appropriate).
+*   - multi-word properties use periods '.'
+*     - properties ending in .jar define jarfile names only (no path)
+*     - properties ending in .lib are fully qualified jars (path and filename)
+*     - properties ending in .dir are directory paths
+*     - properties ending in .path are path refid names (classpath fragments)
+*   - multi-word targets use hyphens '-'
+*     - targets beginning with test- are reserved for high level test targets,
+*       and are used in test results parsing
+*     - targets typically use the form <action>-<object>-<type> (ie. package-bundle-zip)
+*   - multi-word macros use underscores '_'
+*   - multi-word macro attributes are concatinated
+*     e.g. 'runpathref'
+*   - multi-word tasks (taskdef) names are concatinated
+*     e.g. 'validateconnection'
+*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
+*     e.g. ${env.XXX}.
+*   - Ant properties are lower case.
+*
+* Contributors:
+*     tware - initial API and implementation
+*     egwin - update to adopt calling standards
+#******************************************************************************/-->
+<project name="org.eclipse.persistence.core" default="build" basedir=".">
+    <available file="../${ant.project.name}" type="dir" property="core.is.local"/>
+    <!-- Test to make sure that the calling script doesn't inherit the variable -->
+    <!-- (should be set locally, and be destroyed upon return) -->
+    <fail message="Not running from '${ant.project.name}' directory" unless="core.is.local"/>
+
+    <dirname  property="core.build.location_temp" file="${ant.file.org.eclipse.persistence.core}"/>
+    <pathconvert targetos="unix" property="core.build.location">
+        <path>
+            <pathelement location="${core.build.location_temp}"/>
+        </path>
+    </pathconvert>
+    <echo message="core.build.location = '${core.build.location}'"/>
+    <condition property="core.2.base.dir" value="../.." else="..">
+        <contains string="${core.build.location}" substring="foundation/${ant.project.name}"/>
+    </condition>
+    <echo message="core.2.base.dir = '${core.2.base.dir}'"/>
+    <property name="core.2.common.plugins.dir" value="${core.2.base.dir}/plugins"/>
+    <condition property="core.2.jpa.plugins.dir" value="${core.2.base.dir}/jpa/plugins" else="../plugins">
+        <available file="${core.2.base.dir}/jpa/plugins" type="dir"/>
+    </condition>
+    <property name="core.2.buildsys.dir" value="${core.2.base.dir}/buildsystem"/>
+
+    <condition property="custom.properties.message" value="Loading ${user.home}/build.properties..."
+                                                     else="Custom properties file '${user.home}/build.properties' not found to load.">
+        <available file="${user.home}/build.properties"/>
+    </condition>
+    <echo message="${custom.properties.message}"/>
+    <property file="${user.home}/build.properties"/>
+    <property file="${core.build.location}/antbuild.properties"/>
+
+    <!-- Defaults, set var in ${user.home}/build.properties if different version required -->
+    <property name="bndtool.prefix" value="bnd"/>
+    <property name="bndtool.separator" value="-"/>
+    <property name="bndtool.criteria" value="[0.0.350,0.1.0)"/>
+
+    <!-- Primary Targets: "jar" separate for dev use -->
+    <target name="build" depends="clean, compile, jar" description="build ${ant.project.name} component"/>
+    <target name="jar"   depends="bnd-package, package" description="package ${ant.project.name} component"/>
+
+    <!-- clean -->
+    <target name="clean" description="Clean all generated content">
+        <delete includeEmptyDirs="true" failonerror="false">
+            <fileset dir="${classes.dir}"/>
+            <fileset dir="${core.2.common.plugins.dir}" includes="${ant.project.name}_*.jar, ${ant.project.name}.source_*.jar"/>
+        </delete>
+    </target>
+
+    <!-- initialize varables and paths needed for compile -->
+    <!-- the number of properties needed now is too great for lazy loading without a target -->
+    <target name="init">
+        <property name="custom.tasks.lib" value="${core.2.buildsys.dir}/ant_customizations.jar"/>
+        <property name="custom.echo.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.Say"/>
+        <property name="custom.selectbundle.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.SelectBundle"/>
+        <taskdef name="say"          classname="${custom.echo.task.class}"         classpath="${custom.tasks.lib}"/>
+        <taskdef name="selectbundle" classname="${custom.selectbundle.task.class}" classpath="${custom.tasks.lib}"/>
+        <!-- This HAS to be defined after allowing user redefinitions (which will cause the condition not to set anything) -->
+        <!-- This tests to make sure the extensions dir exists, if not sets to a existant dummy location -->
+        <condition property="extensions.depend.dir" value="${core.2.base.dir}/../extension.lib.external"
+                                                    else="${core.build.location}">
+            <available file="${core.2.base.dir}/../extension.lib.external" type="dir"/>
+        </condition>
+        <echo message="extensions.depend.dir        = '${extensions.depend.dir}'"/>
+
+        <!-- versioning -->
+        <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
+        <tstamp>
+           <format property="build.date" pattern="yyyyMMdd"/>
+           <format property="build.time" pattern="HHmm"/>
+        </tstamp>
+        <property name="build.type"            value="SNAPSHOT"/>
+        <property name="svn.revision"          value="NA"/>
+        <property name="version.qualifier"     value="qualifier"/>
+        <property name="version.string"        value="${release.version}.${version.qualifier}"/>
+        <property name="release.designation"   value="EclipseLink ${release.version} Build"/>
+        <property name="specification.vendor"  value="Eclipse.org - EclipseLink Project"/>
+        <property name="implementation.vendor" value="${specification.vendor}"/>
+
+        <!-- Check for BND library -->
+        <property name="nobndtool.manifest.dir"      value="${core.build.location}/META-INF"/>
+        <!-- extensions.depend.dir must be tested first to allow user overrides to work properly,  **
+         **  once bnd is added to the buildsystem directory.                                       -->
+        <echo message="bndtool.prefix        = '${bndtool.prefix}'"/>
+        <echo message="core.2.buildsys.dir   = '${core.2.buildsys.dir}'"/>
+        <echo message="bndtool.separator     = '${bndtool.separator}'"/>
+        <echo message="bndtool.criteria      = '${bndtool.criteria}'"/>
+        <echo message="extensions.depend.dir = '${extensions.depend.dir}'"/>
+        <selectbundle basename="${bndtool.prefix}" directory="${extensions.depend.dir}" separator="${bndtool.separator}"
+                     criterion="${bndtool.criteria}" property="bndtool.lib" includepath="true"
+        />
+        <echo message="core.2.buildsys.dir   = '${core.2.buildsys.dir}'"/>
+        <selectbundle basename="${bndtool.prefix}" directory="${core.2.buildsys.dir}" separator="${bndtool.separator}"
+                     criterion="${bndtool.criteria}" property="bndtool.lib" includepath="true"
+        />
+        <say  message="bndtool.lib           = '${bndtool.lib}'" if="bndtool.lib"/>
+        <say  message="Bnd bundle not found in '${extensions.depend.dir}' or '${core.2.buildsys.dir}'!" unless="bndtool.lib"/>
+
+        <condition property="bld">
+            <or>
+                <isset property="bndtool.lib"/>
+                <isset property="nobnd"/>
+            </or>
+        </condition>
+
+        <!-- Test for dependencies -->
+        <selectbundle basename="javax.persistence" directory="${core.build.location}/${core.2.jpa.plugins.dir}" separator="_"
+            criterion="[2.0.0,3.0.0)" property="persistence.lib" includepath="true"
+        />
+        <!-- Core has no jpa 2.0 specific compile dependency: use below instead to test assertion -->
+        <!-- selectbundle basename="javax.persistence" directory="${core.build.location}/${core.2.jpa.plugins.dir}" separator="_"
+            criterion="[1.0.0,2.0.0)" property="persistence.lib" includepath="true"
+        / -->
+        <selectbundle basename="org.eclipse.persistence.antlr" directory="${core.build.location}/${core.2.common.plugins.dir}" separator="_"
+            criterion="[2.0.0,4.0.0)" property="antlr.lib" includepath="true"
+        />
+        <selectbundle basename="org.eclipse.persistence.asm" directory="${core.build.location}/${core.2.common.plugins.dir}" separator="_"
+            criterion="[2.0.0,4.0.0)" property="asm.lib" includepath="true"
+        />
+        <selectbundle basename="org.eclipse.persistence.jpa.jpql" directory="${core.build.location}/${core.2.common.plugins.dir}" separator="_"
+            criterion="[2.0.0,3.0.0)" property="hermes.lib" includepath="true"
+        />
+        <available file="${persistence.lib}" property="persistence.bundle.exist"/>
+        <available file="${antlr.lib}"       property="antlr.bundle.exist"/>
+        <available file="${asm.lib}"         property="asm.bundle.exist"/>
+        <available file="${hermes.lib}"      property="hermes.bundle.exist"/>
+        <say  message="persistence.lib ='${persistence.lib}'" if="persistence.bundle.exist"/>
+        <say  message="antlr.lib       ='${antlr.lib}'"       if="antlr.bundle.exist"/>
+        <say  message="asm.lib         ='${asm.lib}'"         if="asm.bundle.exist"/>
+        <say  message="hermes.lib      ='${hermes.lib}'"      if="hermes.bundle.exist"/>
+        <fail message="Cannot find: '${persistence.lib}'" unless="persistence.bundle.exist"/>
+        <fail message="Cannot find: '${antlr.lib}'"       unless="antlr.bundle.exist"/>
+        <fail message="Cannot find: '${asm.lib}'"         unless="asm.bundle.exist"/>
+        <fail message="Cannot find: '${hermes.lib}'"      unless="hermes.bundle.exist"/>
+
+        <!-- Set Compile Path-->
+        <path id="core.compile.path">
+            <pathelement path="${antlr.lib}"/>
+            <pathelement path="${asm.lib}"/>
+            <pathelement path="${hermes.lib}"/>
+            <pathelement path="${persistence.lib}"/>
+            <fileset
+                dir="${core.2.common.plugins.dir}"
+                includes="${eclipselink.core.depend}"/>
+        </path>
+        <condition property="bnd.bld">
+            <and>
+                <isset property="bndtool.lib"/>
+                <not>  <isset property="nobnd"/> </not>
+            </and>
+        </condition>
+    </target>
+
+    <target name="fail-on-no-bnd" unless="bld">
+        <echo message="BND tool (${bndtool.prefix}${bndtool.separator}[version].jar) not found in either:"/>
+        <echo message="    the extensions.depend.dir: '${extensions.depend.dir}'"/>
+        <echo message="    or the buildsystem dir:    '${core.2.buildsys.dir}'"/>
+        <echo message=""/>
+        <echo message="if you have renamed it, you can define a different"/>
+        <echo message="jarname by adding 'bndtool.lib=[path]/[jarname] to your'"/>
+        <echo message="${user.home}/build.properties file."/>
+        <echo message=""/>
+        <echo message="You can download BND from http://www.aqute.biz/Code/Download"/>
+        <echo message=""/>
+        <echo message="or if you really need to build NOW, you can use '-Dnobnd=true'"/>
+        <echo message="on the ant command-line. However, the manifests used will be those"/>
+        <echo message="checked-in for development, and will likely have errors."/>
+        <fail message="Missing BND library!"/>
+    </target>
+
+    <!-- compile -->
+    <target name="compile" depends="init, fail-on-no-bnd" description="Compile bundle code">
+        <mkdir dir="${classes.dir}"/>
+        <echo message="Stamping the following values:"/>
+        <echo message="version:       '${release.version}'"/>
+        <echo message="qualifier:     '${version.qualifier}'"/>
+        <echo message="buildDate:     '${build.date}'"/>
+        <echo message="buildTime:     '${build.time}'"/>
+        <echo message="buildType:     '${build.type}'"/>
+        <echo message="buildRevision: '${svn.revision}'"/>
+        <filter token="VERSION"         value="${release.version}"/>
+        <filter token="QUALIFIER"       value="${version.qualifier}"/>
+        <filter token="BUILD_DATE"      value="${build.date}"/>
+        <filter token="BUILD_TIME"      value="${build.time}"/>
+        <filter token="BUILD_TYPE"      value="${build.type}"/>
+        <filter token="BUILD_REVISION"  value="${svn.revision}"/>
+        <copy file="${src.dir}/org/eclipse/persistence/Version.java" tofile="${basedir}/${classes.dir}/org/eclipse/persistence/Version.java" filtering="true"/>
+        <javac srcdir="${classes.dir}"
+               destdir="${classes.dir}"
+               includes="org/eclipse/persistence/Version.java"
+               debug="${javac.debug}"
+               debuglevel="${javac.debuglevel}"
+               encoding="UTF-8"
+               optimize="${javac.optimize}"
+               source="${javac.version}"
+               target="${javac.version}"
+               deprecation="${javac.deprecation}"
+               failonerror="true"
+               memoryMaximumSize="512m"
+               fork="true"
+               classpathref="core.compile.path"
+        />
+        <javac srcdir="${src.dir}"
+               destdir="${classes.dir}"
+               includes="org/eclipse/persistence/**, deprecated/**"
+               excludes="org/eclipse/persistence/Version.java"
+               debug="${javac.debug}"
+               debuglevel="${javac.debuglevel}"
+               encoding="UTF-8"
+               optimize="${javac.optimize}"
+               source="${javac.version}"
+               target="${javac.version}"
+               deprecation="${javac.deprecation}"
+               failonerror="true"
+               memoryMaximumSize="512m"
+               fork="true"
+               classpathref="core.compile.path"
+        />
+    </target>
+
+    <!-- package -->
+    <target name="package-src" depends="init">
+        <jar jarfile="${core.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar">
+             <manifest>
+                <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
+                <attribute name="Specification-Version"  value="${release.version}"/>
+                <attribute name="Implementation-Vendor"  value="${implementation.vendor}"/>
+                <attribute name="Implementation-Version" value="${version.string}"/>
+                <attribute name="Bundle-ManifestVersion" value="2"/>
+                <attribute name="Bundle-Name"            value="EclipseLink Core Source"/>
+                <attribute name="Bundle-SymbolicName"    value="${ant.project.name}.source"/>
+                <attribute name="Bundle-Vendor"          value="${implementation.vendor}"/>
+                <attribute name="Bundle-Version"         value="${version.string}"/>
+                <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${version.string}&quot;"/>
+            </manifest>
+            <fileset dir="${core.2.base.dir}">
+                <include name="about.html"/>
+                <include name="readme.html"/>
+                <include name="license.*"/>
+            </fileset>
+            <fileset dir="${classes.dir}">
+                <include name="org/eclipse/persistence/Version.java"/>
+            </fileset>
+            <fileset dir="${src.dir}">
+                <include name="org/eclipse/persistence/**/*.java"/>
+                <exclude name="org/eclipse/persistence/Version.java"/>
+            </fileset>
+            <fileset dir="${resource.dir}">
+                <include name="org/eclipse/persistence/**/*.xsd"/>
+                <include name="org/eclipse/persistence/internal/helper/VendorNameToPlatformMapping.properties"/>
+            </fileset>
+        </jar>
+        <delete file="${classes.dir}/org/eclipse/persistence/Version.java"/>
+    </target>
+
+    <target name="package" if="nobnd" depends="init, package-src" description="jar OSGI bundle">
+        <jar jarfile="${core.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" manifest="${nobndtool.manifest.dir}/MANIFEST.MF">
+            <fileset dir="${core.2.base.dir}">
+                <include name="about.html"/>
+                <include name="readme.html"/>
+                <include name="license.*"/>
+            </fileset>
+            <fileset dir="${classes.dir}">
+                <include name="org/eclipse/persistence/**/*.class"/>
+            </fileset>
+            <fileset dir="${resource.dir}">
+                <include name="org/eclipse/persistence/**/*.xsd"/>
+                <include name="org/eclipse/persistence/internal/helper/VendorNameToPlatformMapping.properties"/>
+            </fileset>
+        </jar>
+    </target>
+
+    <target name="bnd-package" if="bnd.bld" depends="init, package-src">
+        <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bndtool.lib}"/>
+        <bnd
+            classpath="${classes.dir}"
+            eclipse="false"
+            sourcepath="${src.dir}"
+            failok="false"
+            exceptions="true"
+            files="./org.eclipse.persistence.core.bnd"
+            output="${core.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar"/>
+    </target>
+</project>

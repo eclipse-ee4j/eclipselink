@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<entity-mappings
+			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_2_0.xsd"
+			xmlns="http://java.sun.com/xml/ns/persistence/orm"
+			version="2.0">
+
+  <named-query name="alias.param1">
+     <query>SELECT a.alias FROM Alias AS a WHERE (a.alias IS NULL AND :param1 IS NULL) OR a.alias = :param1</query>
+  </named-query>
+  <named-query name="customer.area">
+     <query>SELECT Distinct Object(c) From Customer c, IN(c.home.phones) p where p.area LIKE :area</query>
+  </named-query>
+  <named-query name="customer.city">
+     <query>SELECT c from Customer c where c.home.city IN :city</query>
+  </named-query>
+  <named-query name="customer.name">
+     <query>select c.firstName FROM Customer c Group By c.firstName HAVING c.firstName = concat(:fname, :lname)</query>
+  </named-query>
+  <named-query name="customer.substring">
+     <query>select count(c) FROM Customer c JOIN c.aliases a GROUP BY a.alias HAVING a.alias = SUBSTRING(:string1, :int1, :int2)</query>
+  </named-query>
+  <named-query name="employee.deptBase">
+     <query>SELECT e FROM Employee e WHERE e.department = :dept AND e.salary > :base</query>
+  </named-query>
+  <named-query name="employee.?1">
+     <query>SELECT e FROM Employee e WHERE e.name = ?1 ORDER BY e.name</query>
+  </named-query>
+  <named-query name="employee.dept">
+     <query>SELECT e FROM Employee e WHERE e.salary = (SELECT MAX(e.salary) FROM Employee a WHERE a.department = :dept)</query>
+  </named-query>
+  <named-query name="order.doubleValue">
+     <query>select object(o) FROM Order o Where SQRT(o.totalPrice) > :doubleValue</query>
+  </named-query>
+  <named-query name="product.date">
+     <query>SELECT DISTINCT p From Product p where p.shelfLife.soldDate NOT BETWEEN :date1 AND :newdate</query>
+  </named-query>
+  <named-query name="product.int1">
+     <query>Select Distinct Object(p) from Product p where (p.quantity > (500 + :int1)) AND (p.partNumber IS NULL)</query>
+  </named-query>
+  <named-query name="employee.update.positional">
+     <query>UPDATE Employee e SET e.manager = ?1 WHERE e.department = ?2</query>
+  </named-query>
+  <named-query name="employee.delete.dept">
+     <query>DELETE FROM Employee e WHERE e.department = :dept</query>
+  </named-query>
+  <named-query name="employee.deptno">
+     <query>select e from Employee e where e.dept.deptno in :deptno</query>
+  </named-query>
+  <named-query name="dept.findAll">
+     <query>select o from Dept o</query>
+  </named-query>
+  <named-query name="dept.dname">
+     <query>select o from Dept o where o.dname in (:dname1, :dname2, :dname3)</query>
+  </named-query>
+  <named-query name="employee.collection">
+     <query>SELECT e.name, d.dname FROM Employee e, Dept d</query>
+  </named-query>
+  <named-query name="address.stateField">
+     <query>SELECT c.lastName FROM Address a JOIN a.customerList AS c</query>
+  </named-query>
+  <named-query name="product.quantity">
+     <query>SELECT AVG(p.quantity) FROM Product p</query>
+  </named-query>
+  <named-query name="employee.sum">
+     <query>SELECT SUM(e.salary) FROM Employee e</query>
+  </named-query>
+  <named-query name="order.sum1">
+     <query>SELECT SUM(o.totalPrice) FROM Order o</query>
+  </named-query>
+  <named-query name="order.sum2">
+     <query>SELECT SUM(o.price) FROM Order o</query>
+  </named-query>
+  <named-query name="order.sum3">
+     <query>SELECT SUM(o.realPrice) FROM Order o</query>
+  </named-query>
+  <named-query name="employee.lower">
+     <query>SELECT LOWER(e.name) FROM Employee e</query>
+  </named-query>
+  <named-query name="employee.upper">
+     <query>SELECT UPPER(e.name) FROM Employee e</query>
+  </named-query>
+  <named-query name="product.max">
+     <query>SELECT MAX(p.quantity) FROM Product p</query>
+  </named-query>
+  <named-query name="product.min">
+     <query>SELECT MIN(p.quantity) FROM Product p</query>
+  </named-query>
+  <named-query name="employee.max">
+     <query>SELECT MAX(e.salary) FROM Employee e</query>
+  </named-query>
+  <named-query name="employee.min">
+     <query>SELECT MIN(e.salary) FROM Employee e</query>
+  </named-query>
+  <named-query name="address.concat">
+     <query>SELECT CONCAT(a.street, a.city) FROM Address a</query>
+  </named-query>
+  <named-query name="address.length">
+     <query>SELECT LENGTH(a.street) FROM Address a</query>
+  </named-query>
+  <named-query name="address.locate">
+     <query>SELECT LOCATE(a.street, 'Arco Drive') FROM Address a</query>
+  </named-query>
+  <named-query name="employee.mod">
+     <query>SELECT MOD(e.salary, e.empId) FROM Employee e</query>
+  </named-query>
+  <named-query name="address.size">
+     <query>SELECT SIZE(a.customerList) FROM Address a JOIN a.customerList c</query>
+  </named-query>
+  <named-query name="order.sqrt">
+     <query>SELECT SQRT(o.totalPrice) FROM Order o</query>
+  </named-query>
+  <named-query name="address.substring">
+     <query>SELECT SUBSTRING(a.state, 0, 1) FROM Address a</query>
+  </named-query>
+  <named-query name="employee.trim">
+     <query>SELECT TRIM(e.name) FROM Employee e</query>
+  </named-query>
+  <named-query name="order.coalesce1">
+     <query>SELECT COALESCE(o.price, o.price) FROM Order o</query>
+  </named-query>
+  <named-query name="order.coalesce2">
+     <query>SELECT COALESCE(o.totalPrice, SQRT(o.realPrice)) FROM Order o</query>
+  </named-query>
+  <named-query name="order.coalesce3">
+     <query>SELECT COALESCE(o.number, e.name) FROM Order o, Employee e</query>
+  </named-query>
+  <named-query name="order.coalesce4">
+     <query>SELECT COALESCE(o.price, o.number) FROM Order o</query>
+  </named-query>
+  <named-query name="alias.key1">
+     <query>SELECT KEY(k) FROM Alias a JOIN a.ids k</query>
+  </named-query>
+  <named-query name="alias.key2">
+     <query>SELECT KEY(e).firstName FROM Alias a JOIN a.addresses e</query>
+  </named-query>
+  <named-query name="alias.value1">
+     <query>SELECT VALUE(v) FROM Alias a JOIN a.ids v</query>
+  </named-query>
+  <named-query name="alias.value2">
+     <query>SELECT v FROM Alias a JOIN a.ids v</query>
+  </named-query>
+  <named-query name="alias.value3">
+     <query>SELECT VALUE(e).zip.code FROM Alias a JOIN a.addresses e</query>
+  </named-query>
+  <named-query name="alias.entry">
+     <query>SELECT ENTRY(e) FROM Alias a JOIN a.ids e</query>
+  </named-query>
+  <named-query name="address.collection">
+     <query>SELECT c FROM Address a JOIN a.customerList c</query>
+  </named-query>
+  <named-query name="employee.subquery1">
+     <query>SELECT e FROM Employee e WHERE EXISTS (SELECT p FROM Project p JOIN p.employees emp WHERE emp = e AND p.name = :name)</query>
+  </named-query>
+  <named-query name="employee.caseInsensitive">
+     <query>SELECT e FROM Employee E</query>
+  </named-query>
+  <named-query name="employee.func1">
+     <query>SELECT FUNC('toString', e.name) FROM Employee e</query>
+  </named-query>
+  <named-query name="employee.func2">
+     <query>SELECT FUNC('age', e.empId, e.salary) FROM Employee e</query>
+  </named-query>
+  <named-query name="employee.func3">
+     <query>SELECT FUNC('age', e.empId, e.name) FROM Employee e</query>
+  </named-query>
+  <named-query name="employee.func4">
+     <query>SELECT FUNC('age', e.empId, :name) FROM Employee e</query>
+  </named-query>
+  <named-query name="dept.floorNumber">
+     <query>select d.floorNumber from Dept d</query>
+  </named-query>
+  <named-query name="product.abs">
+     <query>SELECT ABS(p.quantity) FROM Product p</query>
+  </named-query>
+  <named-query name="order.abs">
+     <query>SELECT ABS(o.totalPrice) FROM Order o</query>
+  </named-query>
+  <named-query name="project.abs">
+     <query>SELECT ABS(p.id) FROM Project p</query>
+  </named-query>
+  <named-query name="employee.resultVariable1">
+     <query>SELECT e.name AS n From Employee e</query>
+  </named-query>
+  <named-query name="employee.resultVariable2">
+     <query>SELECT e.name n From Employee e</query>
+  </named-query>
+  <named-query name="employee.resultVariable3">
+     <query>SELECT e.salary / 1000D n From Employee e</query>
+  </named-query>
+  <named-query name="address.index">
+     <query>SELECT INDEX(c) FROM Address a JOIN a.customerList c</query>
+  </named-query>
+  <named-query name="employee.subquery.code_1">
+     <query>SELECT e FROM Employee e WHERE e.salary > (SELECT AVG(f.salary) FROM Employee f)</query>
+  </named-query>
+  <named-query name="employee.findAll">
+     <query>SELECT e FROM Employee e</query>
+  </named-query>
+  <named-query name="employee.update4">
+     <query>UPDATE Employee e SET e.manager = ?1 WHERE e.department = ?2</query>
+  </named-query>
+  <named-query name="employee.addition1">
+     <query>SELECT 2 + 2.2F FROM Employee e</query>
+  </named-query>
+  <named-query name="employee.addition2">
+     <query>SELECT AVG(e.salary) + 2E2 FROM Employee e</query>
+  </named-query>
+  <named-query name="employee.addition3">
+     <query>SELECT e.salary + 2 FROM Employee e</query>
+  </named-query>
+  <named-query name="employee.addition4">
+     <query>SELECT e.name + 2 FROM Employee e</query>
+  </named-query>
+  <named-query name="employee.substraction1">
+     <query>SELECT 2 - 2.2F FROM Employee e</query>
+  </named-query>
+  <named-query name="employee.substraction2">
+     <query>SELECT AVG(e.salary) - 2E2 FROM Employee e</query>
+  </named-query>
+  <named-query name="employee.substraction3">
+     <query>SELECT e.salary - 2 FROM Employee e</query>
+  </named-query>
+  <named-query name="employee.substraction4">
+     <query>SELECT e.name - 2 FROM Employee e</query>
+  </named-query>
+  <named-query name="employee.division1">
+     <query>SELECT 2 / 2.2F FROM Employee e</query>
+  </named-query>
+  <named-query name="employee.division2">
+     <query>SELECT AVG(e.salary) / 2E2 FROM Employee e</query>
+  </named-query>
+  <named-query name="employee.division3">
+     <query>SELECT e.salary / 2 FROM Employee e</query>
+  </named-query>
+  <named-query name="employee.division4">
+     <query>SELECT e.name / 2 FROM Employee e</query>
+  </named-query>
+  <named-query name="employee.multiplication1">
+     <query>SELECT 2 * 2.2F FROM Employee e</query>
+  </named-query>
+  <named-query name="employee.multiplication2">
+     <query>SELECT AVG(e.salary) * 2E2 FROM Employee e</query>
+  </named-query>
+  <named-query name="employee.multiplication3">
+     <query>SELECT e.salary * 2 FROM Employee e</query>
+  </named-query>
+  <named-query name="employee.multiplication4">
+     <query>SELECT e.name * 2 FROM Employee e</query>
+  </named-query>
+  <named-query name="employee.case1">
+     <query>SELECT CASE WHEN e.name = 'Java Persistence Query Language' THEN 'Java Persistence Query Language' WHEN e.salary BETWEEN 1 and 2 THEN SUBSTRING(e.name, 0, 2) ELSE e.name END FROM Employee e</query>
+  </named-query>
+  <named-query name="employee.case2">
+     <query>SELECT CASE WHEN e.name = 'JPQL' THEN e.working WHEN e.salary BETWEEN 1 and 2 THEN TRUE ELSE p.completed END FROM Employee e, Project p</query>
+  </named-query>
+  <named-query name="employee.case3">
+     <query>SELECT CASE WHEN e.name = 'JPQL' THEN e.working WHEN e.salary BETWEEN 1 and 2 THEN SUBSTRING(e.name, 0, 2) ELSE e.dept END FROM Employee e</query>
+  </named-query>
+  <named-query name="employee.date1">
+     <query>SELECT CURRENT_DATE FROM Employee e</query>
+  </named-query>
+  <named-query name="employee.date2">
+     <query>SELECT {d '2008-12-31'} FROM Employee e</query>
+  </named-query>
+  <named-query name="employee.true">
+     <query>SELECT TRUE FROM Employee e</query>
+  </named-query>
+  <named-query name="employee.false">
+     <query>SELECT FALSE FROM Employee e</query>
+  </named-query>
+  <named-query name="dept.new1">
+     <query>SELECT NEW java.util.Vector(d.dname) FROM Dept d</query>
+  </named-query>
+  <named-query name="employee.nullif1">
+     <query>SELECT NULLIF(e.name, 'JPQL') FROM Employee e</query>
+  </named-query>
+  <named-query name="employee.nullif2">
+     <query>SELECT NULLIF(2 + 2, 'JPQL') FROM Employee e</query>
+  </named-query>
+  <named-query name="employee.enum">
+     <query>SELECT CASE WHEN e.name = 'Pascal' THEN jpql.query.EnumType.FIRST_NAME WHEN e.name = 'JPQL' THEN jpql.query.EnumType.LAST_NAME ELSE jpql.query.EnumType.NAME END FROM Employee e</query>
+  </named-query>
+  <named-query name="employee.in">
+     <query>SELECT e FROM Employee e WHERE e.name IN :type</query>
+  </named-query>
+  <named-query name="address.subquery.subquery">
+     <query>SELECT e FROM Employee e WHERE 2 &lt; ALL(SELECT a FROM Address a WHERE 2 &lt; ANY(SELECT d FROM Dept WHERE a.city = ?1))</query>
+  </named-query>
+
+  <named-query name="address.addition">
+     <query>SELECT a.id + 2 FROM Address a</query>
+  </named-query>
+
+  <mapped-superclass class="jpql.query.AbstractProduct"/>
+
+  <entity class="jpql.query.Employee"/>
+  <entity class="jpql.query.Customer">
+    <attributes>
+      <many-to-one name="dept" target-entity="jpql.query.Dept"/>
+      <one-to-many name="phoneList" target-entity="jpql.query.Phone"/>
+      <one-to-many name="aliases" target-entity="jpql.query.Alias"/>
+      <one-to-one name="home" target-entity="jpql.query.Home"/>
+    </attributes>
+  </entity>
+  <entity class="jpql.query.Dept"/>
+  <entity class="jpql.query.Product"/>
+  <entity class="jpql.query.Order"/>
+  <entity class="jpql.query.Phone"/>
+  <entity class="jpql.query.Address">
+    <attributes>
+      <one-to-many name="customerList" target-entity="jpql.query.Customer"/>
+    </attributes>
+  </entity>
+  <entity class="jpql.query.Alias"/>
+  <entity class="jpql.query.Home"/>
+  <entity class="jpql.query.Project"/>
+
+  <embeddable class="jpql.query.ShelfLife"/>
+
+</entity-mappings>

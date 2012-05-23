@@ -1,0 +1,32 @@
+{"root":{
+    "employee":[{
+        "work-address-id":"wa111",
+        "name":"Joe Black",
+        "homeAddress":{
+            "primary-key":{
+	      "aid":"ha123"
+	     },
+	    "city":"Woodlawn"
+        }
+    }],
+    "address":[
+        { 
+          "primary-key":{
+	      "aid":"wa111"
+	     },
+          "city":"Ottawa"
+	},
+	 { 
+          "primary-key":{
+	      "aid":"wa112"
+	     },
+          "city":"Kanata"
+	},
+	 { 
+          "primary-key":{
+	      "aid":"wa113"
+	     },
+          "city":"Orleans"
+	}
+    ]
+}}

@@ -1,0 +1,5 @@
+<ns0:customer xmlns:ns0="http://www.example.org">
+    <address>
+        <street>A</street>
+    </address>
+</ns0:customer>

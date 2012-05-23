@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<test>
+    <attribute list="aaa bbb ccc"/>
+    <element>
+        <list>aaa bbb ccc</list>
+    </element>
+    <item type="aaa" />
+    <item type="bbb" />
+    <item type="ccc" />
+</test>

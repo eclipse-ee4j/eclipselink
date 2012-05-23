@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QuoteRequest>
+    <QuoteReq ReqId="100">
+        <Instrmt Sym="$CAD">
+            <Ordered>1997-05-12</Ordered>
+        </Instrmt>
+        <Leg Sym="CAD$">
+            <Ordered>1997-05-12T00:00:00.0</Ordered>
+        </Leg>
+    </QuoteReq>
+    <OrderDate>
+        <year>1997</year>
+        <month>4</month>
+        <day>12</day>
+    </OrderDate>
+</QuoteRequest>

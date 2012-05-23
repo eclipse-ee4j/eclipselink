@@ -1,0 +1,13 @@
+{"customer":{
+    "name":"Jane Doe",
+    "address":{
+        "street":"123 Some Street",
+	"city":"Any Town"
+    },
+    "phoneNumber":[
+       {"type":"work",
+        "value":"555-WORK"},
+	{"type":"home",
+	"value":"555-HOME"}
+	]
+}}

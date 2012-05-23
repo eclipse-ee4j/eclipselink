@@ -1,0 +1,13 @@
+{"aaa.person":{
+   "@ccc.id":10,
+   "bbb.firstName":"Jill",
+   "bbb.middleNames":["Jane", "Janice"],
+   "ccc.lastName":"MacDonald",
+   "ddd.contact":{
+      "bbb.address":{
+          "street":"The Street",
+          "city":"Ottawa"
+      }
+   }
+ }
+}

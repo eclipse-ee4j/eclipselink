@@ -1,0 +1,354 @@
+<!--/*******************************************************************************
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+* which accompanies this distribution.
+* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+* and the Eclipse Distribution License is available at
+* http://www.eclipse.org/org/documents/edl-v10.php.
+*
+*   Ant naming conventions:
+*   - regardless of the actual OS platform,'/' is the directory separator
+*     (Ant will convert as appropriate).
+*   - multi-word properties use periods '.'
+*     - properties ending in .jar define jarfile names only (no path)
+*     - properties ending in .lib are fully qualified jars (path and filename)
+*     - properties ending in .dir are directory paths
+*     - properties ending in .path are path refid names (classpath fragments)
+*   - multi-word targets use hyphens '-'
+*     - targets beginning with test- are reserved for high level test targets,
+*       and are used in test results parsing
+*     - targets typically use the form <action>-<object>-<type> (ie. package-bundle-zip)
+*   - multi-word macros use underscores '_'
+*   - multi-word macro attributes are concatinated
+*     e.g. 'runpathref'
+*   - multi-word tasks (taskdef) names are concatinated
+*     e.g. 'validateconnection'
+*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
+*     e.g. ${env.XXX}.
+*   - Ant properties are lower case.
+*
+* Contributors:
+*     eric.gwin - initial API and implementation (checked in by tware)
+#******************************************************************************/-->
+<project name="EclipseLink Bootstrap Automated Builds" basedir="." default="nightly">
+
+<!--                THIS FILE NEEDS TO BE KEPT MINIMAL                    -->
+<!--          ONLY project specific info should be defined here           -->
+<!-- Anything that may change on a future branch should be defined in the -->
+<!--                    Branch specific Autobuild.xml                     -->
+
+<echo message="---- Bootstrap ----"/>
+
+    <target name="init">
+        <condition property="_Win" value="true">
+             <or>
+                <equals arg1="${os.name}" arg2="Windows XP"/>
+                <equals arg1="${os.name}" arg2="Windows NT"/>
+            </or>
+        </condition>
+        <condition property="_Unix" value="true">
+            <os family="unix"/>
+        </condition>
+
+        <property name="build.compiler" value="javac1.6"/>
+        <tstamp>
+            <format property="run.date" pattern="yyyyMMdd"/>
+            <format property="run.time" pattern="HHmm"/>
+        </tstamp>
+        <property environment="env"/>
+        <!-- This needs to be here because if not set we need to check OS     -->
+        <!-- and define appropriate default locations for svn                 -->
+        <condition property="svn.exec"   value="${env.SVN_EXEC}">
+            <isset property="env.SVN_EXEC"/>
+        </condition>
+
+        <echo message="ANT_ARGS='${env.ANT_ARGS}'"/>
+        <echo message="ANT_OPTS='${env.ANT_OPTS}'"/>
+        <echo message=" "/>
+        <echo message="date.time       = '${run.date}.${run.time}'"/>
+        <echo message="java.version    = '${java.version}'"/>
+        <echo message="os.name         = '${os.name}'"/>
+        <echo message="os.arch         = '${os.arch}'"/>
+        <echo message="os.version      = '${os.version}'"/>
+        <echo message=" "/>
+        <echo message="ant.file        = '${ant.file}'"/>
+        <echo message="ant.version     = '${ant.version}'"/>
+        <echo message="ant.project.name= '${ant.project.name}'"/>
+        <echo message="ant.java.version= '${ant.java.version}'"/>
+        <echo message="ant.home        = '${ant.home}'"/>
+        <echo message=" "/>
+        <echo message="basedir         = '${basedir}'"/>
+        <echo message=" "/>
+        <echo message="_Win            = '${_Win}'"/>
+        <echo message="_Unix           = '${_Unix}'"/>
+    </target>
+
+    <!-- Set svn.exec to os appropriate value                                 -->
+    <!--    (fallback in case env.SVN_EXEC not set)                           -->
+    <target name="init-linux" unless="_Win" depends="init">
+        <property name="svn.exec" value="/usr/local/bin/svn"/>
+    </target>
+    <target name="init-win" if="_Win" depends="init-linux">
+        <property file="${user.home}/build.properties"/>
+        <property name="svn.exec" value="svn"/>
+        <property name="build.root.dir"  value="."/>
+        <property name="build.deps.dir"  value="${extensions.depend.dir}"/>
+        <property name="log.dir"         value="./logs"/>
+        <property name="junit.dir"       value="${build.deps.dir}/junit"/>
+        <property name="current.svnrev.file" value="${log.dir}/.current_svnrev_this_current"/>
+    </target>
+
+    <!-- Setup properties needed if testing using a local repos on RedHat     -->
+    <!--     (-D_RHB=1 defined on command-line)                              -->
+    <target name="init-test" if="_LocalRepos" depends="init">
+        <property name="svn.rw.protocol"   value="file:"/>
+        <property name="svn.base.urlpath"  value="///var/svn/repos/eclipselink"/>
+    </target>
+
+    <!-- Setup properties needed if testing using a local repos on RedHat     -->
+    <!--     (-D_RHB=1 defined on command-line)                              -->
+    <target name="init-test2" if="_RHB" depends="init-test">
+        <property name="svn.rw.protocol" value="http:"/>
+    </target>
+
+    <target name="properties-init" depends="init-win,init-test2">
+        <echo message="svn.exec        = '${svn.exec}'"/>
+
+        <!-- # Build environment definitions                                  -->
+        <!-- #  build.root.dir is the directory the branch's build            -->
+        <!-- #       files are in                                             -->
+        <!-- #  branch.name will always be specified  on command-line         -->
+        <!-- #       if used                                                  -->
+        <!-- #  junit.lib and junit.dir are only specified here because they  -->
+        <!-- #       need to be defined in ANT the same as in the CLASSPATH   -->
+        <!-- #       that ANT is invoked with. (the junit used at runtime     -->
+        <!-- #       must be defined in the classpath ANT is invoked with)    -->
+        <property name="branch.name"     value=""/>
+        <property name="build.root.dir"  value="${env.BRANCH_PATH}"/>
+        <property name="build.deps.dir"  value="${env.BLD_DEPS_DIR}"/>
+        <property name="log.dir"         value="${env.LOG_DIR}"/>
+        <property name="junit.dir"       value="${env.JUNIT_HOME}"/>
+        <property name="junit.lib"       value="${junit.dir}/junit.jar"/>
+        <property name="branch.dir"      value="${branch.name}trunk"/>
+        <property name="autobld.file"    value="autobuild.xml"/>
+
+        <!-- #  Subversion definitions   (URLs, protocols & control files)    -->
+        <!-- #                                                                -->
+        <!-- #  svn.exec is set by init and depends upon the OS               -->
+        <property name="svn.ro.protocol"     value="http:"/>
+        <property name="svn.protocol"        value="svn:"/>
+        <property name="svn.rw.protocol"     value="svn+ssh:"/>
+        <property name="svn.server.name"     value="dev.eclipse.org"/>
+        <property name="svn.base.urlpath"    value="//${svn.server.name}/svnroot/rt/org.eclipse.persistence"/>
+        <property name="svn.base.url"        value="${svn.rw.protocol}${svn.base.urlpath}"/>
+        <property name="svn.branch.url"      value="${svn.base.url}/${branch.dir}"/>
+        <property name="svn.build.url"       value="${svn.branch.url}/buildsystem"/>
+        <property name="current.svnrev.file" value="${log.dir}/.current_svnrev_${env.BRANCH_NM}_${env.TARGET}"/>
+        <property name="latest.svnrev.file"  value="${log.dir}/.latest_svnrev_${env.BRANCH_NM}_${env.TARGET}"/>
+        <echo message="env.HOME_DIR    = '${env.HOME_DIR}'"/>
+        <echo message="env.JAVA_HOME   = '${env.JAVA_HOME}'"/>
+        <echo message="env.JUNIT_HOME  = '${env.JUNIT_HOME}'"/>
+        <echo message="env.MAVENANT_DIR= '${env.MAVENANT_DIR}'"/>
+        <echo message="env.PATH        = '${env.PATH}'"/>
+        <echo message="env.CLASSPATH   = '${env.CLASSPATH}'"/>
+        <echo message="env.TARGET      = '${env.TARGET}'"/>
+        <echo message=""/>
+        <echo message="branch.name     = '${branch.name}'"/>
+        <echo message="build.root.dir  = '${build.root.dir}'"/>
+        <echo message="build.deps.dir  = '${build.deps.dir}'"/>
+        <echo message="log.dir         = '${log.dir}'"/>
+        <echo message="junit.dir       = '${junit.dir}'"/>
+        <echo message="junit.lib       = '${junit.lib}'"/>
+        <echo message="branch.dir      = '${branch.dir}'"/>
+        <echo message="autobld.file    = '${autobld.file}'"/>
+        <echo message=""/>
+        <echo message="env.CLASSPATH   = '${env.CLASSPATH}'"/>
+        <echo message=""/>
+        <echo message="svn.ro.protocol = '${svn.ro.protocol}'"/>
+        <echo message="svn.protocol    = '${svn.protocol}'"/>
+        <echo message="svn.rw.protocol = '${svn.rw.protocol}'"/>
+        <echo message="svn.base.urlpath= '${svn.base.urlpath}'"/>
+        <echo message="svn.base.url    = '${svn.base.url}'"/>
+        <echo message="svn.branch.url  = '${svn.branch.url}'"/>
+        <echo message="svn.build.url   = '${svn.build.url}'"/>
+        <echo message="current.svnrev.file= '${current.svnrev.file}'"/>
+        <echo message="latest.svnrev.file = '${latest.svnrev.file}'"/>
+    </target>
+
+    <!-- Used for Build testing:  Set if "target" in .sh appended by ".test"  -->
+    <target name="no-get-src" if="_NoUpdateSrc" depends="properties-init">
+        <echo message="Update of local source Skipped."/>
+    </target>
+
+    <target name="get-src" unless="_NoUpdateSrc" depends="no-get-src">
+        <echo message="** Begin of Source Retrieval **"/>
+        <echo message="** From: ${svn.branch.url}"/>
+        <echo message="** Root: ${build.root.dir}"/>
+        <mkdir dir="${build.root.dir}"/>
+        <!-- the following arg makes the source retrieval "quiet". We really  -->
+        <!-- should log the files that were updated, so commenting out.       -->
+        <!--    <arg value="-q"/>                                             -->
+        <exec executable="${svn.exec}" dir="${build.root.dir}/.." failonerror="true" logError="true" >
+            <arg value="co"/>
+            <arg value="${svn.branch.url}"/>
+        </exec>
+        <chmod file="${build.root.dir}/buildsystem/*.sh" perm="ug+x"/>
+        <echo message="**  End of Source Retrieval  **"/>
+    </target>
+
+    <target name="build" depends="get-src" description="Trigger an automated build without testing or publish">
+        <echo message="'build' target: Calling 'build-no-publish' target in '${build.root.dir}/${autobld.file}'"/>
+        <ant antfile="${autobld.file}" dir="${build.root.dir}" target="build-no-publish"/>
+        <!-- Untested: Possible way to call ant and specify a different logger.
+        <java
+                classname="org.apache.tools.ant.launch.Launcher"
+                fork="true"
+                maxmemory="128m"
+                failonerror="true"
+                dir="${build.root.dir}"
+                timeout="4000000"
+                taskname="startAnt"
+        >
+            <classpath>
+                <pathelement location="${ant.home}/lib/ant-launcher.jar"/>
+            </classpath>
+            <arg value="-buildfile"/>
+            <arg file="${autobld.file}"/>
+            <arg value="-logger"/>
+            <arg value="org.apache.tools.ant.listener.MailLogger"/>
+            <arg value="-DMailLogger.properties.file=${build.root.dir}/buildsystem/maillogger.properties"/>
+            <arg value="-Dbranch.name=${branch.name}"/>
+            <arg value="-Dbasedir=${build.root.dir}"/>
+            <arg value="build-no-publish"/>
+        </java -->
+    </target>
+
+    <target name="milestone" depends="get-src" description="Trigger a build promotion of a nightly build to a milestone">
+        <echo message="'milestone' target: Calling 'build-milestone' target in '${build.root.dir}/${autobld.file}'"/>
+        <ant antfile="${autobld.file}" dir="${build.root.dir}" target="build-milestone"/>
+    </target>
+
+    <target name="nightly" if="_DoBuild" depends="query-svn-changed, get-src, build-aborted" description="Trigger the nightly automated build">
+        <!-- Don't move current to latest until source sucessfully retrieved -->
+        <move file="${current.svnrev.file}" tofile="${latest.svnrev.file}"/>
+        <echo message="'nightly' target: Calling 'build-nightly' target in '${build.root.dir}/${autobld.file}'"/>
+        <ant antfile="${autobld.file}" dir="${build.root.dir}" target="build-nightly"/>
+    </target>
+
+    <target name="nightly-test" depends="properties-init" description="Trigger the nightly automated lrg tests">
+        <!-- Don't move current to latest until source sucessfully retrieved -->
+        <move file="${current.svnrev.file}" tofile="${latest.svnrev.file}"/>
+        <echo message="'nightly-test' target: Calling 'test-nightly' target in '${build.root.dir}/${autobld.file}'"/>
+        <ant antfile="${autobld.file}" dir="${build.root.dir}" target="test-nightly"/>
+    </target>
+
+    <target name="oracle-ext" depends="properties-init" description="Trigger the oracle automated build">
+        <echo message="'oracle-ext' target: Calling 'build-ora-extension' target in '${build.root.dir}/${autobld.file}'"/>
+        <ant antfile="${autobld.file}" dir="${build.root.dir}" target="build-ora-extension"/>
+    </target>
+
+    <target name="oracle-nosql" depends="properties-init" description="Trigger the oracle automated build">
+        <echo message="'oracle-nosql' target: Calling 'build-ora-nosql' target in '${build.root.dir}/${autobld.file}'"/>
+        <ant antfile="${autobld.file}" dir="${build.root.dir}" target="build-ora-nosql"/>
+    </target>
+
+    <target name="cb" if="_DoBuild" depends="query-svn-changed, get-src, build-aborted" description="Trigger an automated 'continuous build' (compile and run short verify)">
+        <!-- Don't move current to latest until source sucessfully retrieved -->
+        <move file="${current.svnrev.file}" tofile="${latest.svnrev.file}"/>
+        <echo message="'cb' target: Calling 'build-continuous' target in '${build.root.dir}/${autobld.file}'"/>
+        <ant antfile="${autobld.file}" dir="${build.root.dir}" target="build-continuous"/>
+    </target>
+
+    <!-- ============================================================================= -->
+    <!--   Continuous build Order                                                      -->
+    <!--     properties-init    = sets up various properties                           -->
+    <!--     query-svn-changed  = calls 'get-svn-headrev'                              -->
+    <!--                          sets '_DoBuild' if any condition exists where        -->
+    <!--                          the revision files don't match                       -->
+    <!--     get-svn-headrev    = creates a file that contains current head rev info   -->
+    <!--     no-cb              = if head rev unchanged, prints 'no build' message     -->
+    <!--                          otherwise does nothing                               -->
+    <!--     cb                 = if head rev changed, updates latest head rev file    -->
+    <!--                             calls 'get-src' which updates the source tree     -->
+    <!--                             calls the continuous build target                 -->
+    <!--                          otherwise does nothing                               -->
+    <!-- ============================================================================= -->
+    <target name="build-aborted" unless="_DoBuild">
+        <echo message="----------------------------------"/>
+        <echo message="  ${run.date}.${run.time} build unnecessary. No new svn transactions."/>
+        <echo message="  "/>
+    </target>
+
+    <target name="query-svn-changed" depends="get-svn-headrev">
+        <condition property="_DoBuild" value="true">
+            <not>
+                <and>
+                    <available file="${latest.svnrev.file}"/>
+                    <filesmatch file1="${current.svnrev.file}" file2="${latest.svnrev.file}"/>
+                </and>
+            </not>
+        </condition>
+        <condition property="_NoUpdateSrc" value="1">
+            <not>
+                <isset property="_DoBuild"/>
+            </not>
+        </condition>
+    </target>
+
+    <target name="get-svn-headrev" depends="properties-init">
+        <exec executable="${svn.exec}" failonerror="true" logError="true" output="${current.svnrev.file}">
+            <arg value="info"/>
+            <arg value="--revision"/>
+            <arg value="HEAD"/>
+            <arg value="${svn.branch.url}"/>
+        </exec>
+        <exec executable="grep" failonerror="true" logError="true" input="${current.svnrev.file}" output="${current.svnrev.file}">
+            <arg value="Last"/>
+        </exec>
+    </target>
+
+    <target name="publish-all" depends="properties-init" description="Manually trigger all publish targets">
+        <echo message="'publish-all' target: Calling 'publish-all' target in '${build.root.dir}/${autobld.file}'"/>
+        <ant antfile="${autobld.file}" dir="${build.root.dir}" target="publish-all"/>
+    </target>
+
+    <target name="cannot-handoff" unless="handoff.file">
+        <fail message="'handoff.file' is not set. Cannot initiate publish phase!"/>
+    </target>
+    <target name="load-handoff" if="handoff.file" depends="cannot-handoff">
+        <!-- pull in the properties stored in the handoff file -->
+        <property file="${handoff.file}"/>
+    </target>
+    <target name="publish-build" depends="load-handoff, properties-init" description="Trigger the nightly publish for a build">
+        <echo message="'publish-build' target: Calling 'publish-build' target in '${build.root.dir}/${autobld.file}'"/>
+        <ant antfile="${autobld.file}" dir="${build.root.dir}" target="publish-build"/>
+        <delete file="${handoff.file}" failonerror="false"/>
+    </target>
+    <target name="publish-test" depends="load-handoff, properties-init" description="Trigger the nightly publish for a build">
+        <echo message="'publish-test' target: Calling 'publish-tests' target in '${build.root.dir}/${autobld.file}'"/>
+        <ant antfile="${autobld.file}" dir="${build.root.dir}" target="publish-tests"/>
+        <delete file="${handoff.file}" failonerror="false"/>
+    </target>
+
+    <target name="publish-maven" depends="properties-init" description="Manually trigger just Maven publish">
+        <echo message="'publish-maven' target: Calling 'publish-maven' target in '${build.root.dir}/${autobld.file}'"/>
+        <ant antfile="autobuild.xml" dir="${build.root.dir}" target="publish-maven"/>
+    </target>
+
+    <target name="publish-web" depends="properties-init" description="Manually trigger webpublish target">
+        <echo message="'publish' target: Calling 'build-nightly' target in '${build.root.dir}/${autobld.file}'"/>
+        <ant antfile="${autobld.file}" dir="${build.root.dir}" target="publish-results"/>
+    </target>
+
+    <!-- Below target is intended to be called only by post-processing portion of build script -->
+    <target name="save-tst-results" depends="properties-init" description="Trigger saving of the test results for a failed cb">
+        <echo message="Calling 'save-tst-results' target in '${build.root.dir}/${autobld.file}'"/>
+        <ant antfile="${autobld.file}" dir="${build.root.dir}" target="save-tst-results"/>
+    </target>
+
+    <target name="custom" if="custom.target" depends="get-src" description="Trigger custom target in build.xml">
+        <echo message="'custom' target: Calling 'custom' target in '${build.root.dir}/${autobld.file}' with end-target set to ${custom.target}"/>
+        <ant antfile="${autobld.file}" dir="${build.root.dir}" target="custom"/>
+    </target>
+
+</project>

@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<xml-bindings
+    xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm"
+    package-name="org.eclipse.persistence.testing.models.jpa.jaxrs">
+    <xml-schema
+        namespace="http://www.example.com/customer"
+        element-form-default="QUALIFIED"/>
+    <java-types>
+        <java-type name="PhoneNumber">
+            <java-attributes>
+                <xml-attribute java-attribute="id"/>
+                <xml-attribute java-attribute="type"/>
+                <xml-value java-attribute="num"/>
+            </java-attributes>
+        </java-type>
+    </java-types>
+</xml-bindings>

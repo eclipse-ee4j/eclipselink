@@ -1,0 +1,12 @@
+{"team":{
+   "id":123,
+   "developer":null,
+   "developer":{
+        "id":123,
+        "first-name":"Jane",
+        "last-name":"Doe"
+     },
+   "developer":null,
+   "name":"Eng"
+ }
+}

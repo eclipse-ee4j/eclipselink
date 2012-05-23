@@ -1,0 +1,7 @@
+{"employee":{
+   "integers":{
+       "my-integer":66   
+   },
+   "my-write-only-integer":66
+   }
+}

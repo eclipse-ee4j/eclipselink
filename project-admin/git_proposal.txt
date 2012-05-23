@@ -1,0 +1,34 @@
+Instructions:
+Open a bug against Eclipse Foundation > Community > Git requesting the migration. Make sure your project lead is CC'd and add a +1 to the bug. Include detailed plans for your migration:
+- migration timeline 
+- mapping of current code to new Git repos 
+- your decision regarding existing code (archive or import) 
+- A description for each of your repositories. The description will be seen in the web view: http://git.eclipse.org/c/
+ 
+ 
+Proposed content:
+Migration timeline: Development ready late March 2012 (Post Juno M6+1: March 19)
+Archive or Import?: Import
+Mapping of current code into Git:
+    svnroot/rt/org.eclipse.persistence/incubator         -> git.eclipse.org/eclipselink/incubator.git/
+    
+    <all branches> = /svnroot/rt/org.eclipse.persistence/branches/*/trunk + /svnroot/rt/org.eclipse.persistence/trunk
+    <all branches>/examples                              -> git.eclipse.org/eclipselink/examples.git
+    <all branches>/jpa/plugins/javax.persistence         -> git.eclipse.org/eclipselink/javax.persistence.git
+    <all branches>/plugins/org.eclipse.persistence.antlr -> git.eclipse.org/eclipselink/org.eclipse.persistence.antlr.git
+    <all branches>/plugins/org.eclipse.persistence.asm   -> git.eclipse.org/eclipselink/org.eclipse.persistence.asm.git
+    <all branches>/utils/eclipselink.utils.workbench.*   -> git.eclipse.org/eclipselink/workbench.git/eclipselink.utils.workbench.*
+    <all branches>/(excluding the above)                 -> git.eclipse.org/eclipselink/product.git
+    
+    Possibilities/Questions:
+    docs  -> is there enough to merit a repo or should i be lumped into another repo?
+    project-admin (spec docs, project admin) those not in wiki/or the web cvs -> enough to merit repo?
+    utils/workbench -> should all these (other than builder/builder test) go to a utils.git, or do we need finer deliniation of them?
+                       workbench is associated with an eclipselink release (tooling for new features), but the others are almost independant.
+    
+
+Repo descriptions:
+Need to work out the repos first, but for the repos already in git:
+    git.eclipse.org/eclipselink/oracleddlparser.git:      Model classes to describe Oracle database artifacts (tables, procedures,etc.)
+    git.eclipse.org/eclipselink/oracleddlparser.test.git: JUnit tests for model classes from oracleddlparser.git repository
+    git.eclipse.org/eclipselink/sandbox.git:              Repo to 'experiment' and become familiar with git

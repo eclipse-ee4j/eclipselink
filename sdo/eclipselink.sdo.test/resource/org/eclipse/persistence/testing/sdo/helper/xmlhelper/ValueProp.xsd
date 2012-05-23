@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+	xmlns:ns1="urn:customer-example"
+	targetNamespace="urn:customer-example"
+	elementFormDefault="unqualified"
+	attributeFormDefault="unqualified">
+
+	<xs:element name="customer" type="ns1:customer-type"/>
+
+	<xs:complexType name="customer-type">
+		<xs:sequence>
+			<xs:element name="personal-info">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="first-name" type="xs:string"/>
+						<xs:element name="last-name" type="xs:string"/>
+						<xs:element ref="ns1:gender"/>
+						<xs:element name="date-of-birth" type="xs:date"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element ref="ns1:contact-info"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:element name="contact-info">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="billing-address" type="ns1:address-type"/>
+				<xs:element name="shipping-address" type="ns1:address-type"/>
+				<xs:element ref="ns1:phone-number" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="gender" type="xs:string"/>
+
+	<xs:complexType name="address-type">
+		<xs:sequence>
+			<xs:element name="street" type="xs:string" maxOccurs="2"/>
+			<xs:element name="city" type="xs:string"/>
+			<xs:element name="state" type="xs:string"/>
+			<xs:element name="zip-code" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:element name="phone-number">
+		<xs:complexType>
+			<xs:simpleContent>
+				<xs:extension base="xs:string">
+					<xs:attribute name="ptype" type="xs:string"/>
+				</xs:extension>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+
+</xs:schema>

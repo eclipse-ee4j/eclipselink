@@ -1,0 +1,11 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<testTagName xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="integerIntegerMap">
+   <entry>
+      <key>1</key>
+      <value>2</value>
+   </entry>
+   <entry>
+      <key>3</key>
+      <value>4</value>
+   </entry>
+</testTagName>

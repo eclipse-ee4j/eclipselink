@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<sessions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file://xsd/eclipselink_sessions_1.0.xsd" version="1.0">
+	<session xsi:type="server-session">
+		<name>ServerSession</name>
+		<event-listener-classes>
+			<event-listener-class>org.eclipse.persistence.testing.tests.sessionsxml.ServerSessionEventListener</event-listener-class>
+		</event-listener-classes>
+		<primary-project xsi:type="class">org.eclipse.persistence.testing.models.employee.relational.EmployeeProject</primary-project>
+		<login xsi:type="database-login">
+			<user-name>@dbUser@</user-name>
+			<password>@dbPassword@</password>
+			<driver-class>@driverClass@</driver-class>
+			<connection-url>@dbURL@</connection-url>
+		</login>
+	</session>
+	<session xsi:type="session-broker">
+		<name>SessionBroker</name>
+		<event-listener-classes>
+			<event-listener-class>org.eclipse.persistence.testing.tests.sessionsxml.SessionBrokerEventListener</event-listener-class>
+		</event-listener-classes>
+		<session-name>ServerSession</session-name>
+	</session>
+</sessions>

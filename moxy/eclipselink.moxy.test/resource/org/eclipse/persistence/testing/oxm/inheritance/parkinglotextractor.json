@@ -1,0 +1,14 @@
+{"prefix.parking-lot":{
+       "prefix.vehicles":{
+		"prefix.vehicle":[
+		   {
+		   "prefix.model":"Grand Am",
+		   "prefix.manufacturer":"Pontiac",
+ 		   "prefix.top-speed":220,
+		   "prefix.number-of-doors":2,
+		   "prefix.miles-per-gallon":30
+		   }
+		   ]
+		}
+
+}}

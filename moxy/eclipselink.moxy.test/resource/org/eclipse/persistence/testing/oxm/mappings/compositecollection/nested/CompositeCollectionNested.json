@@ -1,0 +1,71 @@
+{"project":
+{
+  "name":"secret project",
+  "employees":{  
+    "employee":[
+      {      
+      "id":123,
+      "email-addresses":{
+        "email-address":[
+      	  {
+          "user-id":"jane.doe",
+          "domain":"example.com"
+          },	        	  {
+          "user-id":"jdoe",
+          "domain":"test.com"
+          }
+
+	  ]
+       },
+  "mailing-addresses":{
+        "mailing-address":[
+           {
+           "street":"1 Any Street",
+           "city":"Ottawa",
+           "province":"Ontario",
+           "postal-code":"A1B 2C3"
+	   },
+	   {
+	      "street":"2 Autre Rue.",
+           "city":"Gatineau",
+           "province":"Quebec",
+           "postal-code":"X1Y 2Z3"
+	   }
+	]
+	}
+	},
+	{
+ "id":789,
+      "email-addresses":{
+        "email-address":[
+      	  {
+          "user-id":"jon.doe",
+          "domain":"example.com"
+          },	        	  {
+          "user-id":"jondoe",
+          "domain":"test.com"
+          }
+
+	  ]
+       },
+  "mailing-addresses":{
+        "mailing-address":[
+	  {
+	      "street":"2 Autre Rue.",
+           "city":"Gatineau",
+           "province":"Quebec",
+           "postal-code":"X1Y 2Z3"
+	   },
+           {
+           "street":"1 Any Street",
+           "city":"Ottawa",
+           "province":"Ontario",
+           "postal-code":"A1B 2C3"
+	   }	 
+	]
+	}
+	}
+	]
+	}
+   }
+}

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root attribute="A B">
+    <element>
+        <id>A</id>
+    </element>
+    <element>
+        <id>B</id>
+    </element>
+    <attribute1 id="A" />
+    <attribute1 id="B" />
+    <attribute2 ids="A B" />
+</root>

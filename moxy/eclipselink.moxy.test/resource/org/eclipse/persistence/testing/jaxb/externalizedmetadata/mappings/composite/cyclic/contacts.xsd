@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:ns1="http://www.example.com/employees" xmlns:ns0="http://www.example.com/contacts" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.example.com/contacts">
+   <xsd:import schemaLocation="schema1.xsd" namespace="http://www.example.com/employees"/>
+   <xsd:element name="contact-info">
+      <xsd:complexType>
+         <xsd:sequence>
+            <xsd:element ref="ns1:home-address" minOccurs="0"/>
+         </xsd:sequence>
+      </xsd:complexType>
+   </xsd:element>
+</xsd:schema>

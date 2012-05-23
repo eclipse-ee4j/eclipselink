@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:complexType name="a2BCDESomeTest"/>
+   <xsd:complexType name="qNameTest"/>
+   <xsd:complexType name="abbbCD"/>
+   <xsd:complexType name="abc"/>
+   <xsd:complexType name="b"/>
+   <xsd:complexType name="booleanTest"/>
+   <xsd:complexType name="c"/>
+   <xsd:complexType name="class2"/>
+   <xsd:complexType name="abcdEfgh"/>
+   <xsd:complexType name="ab2Cd3Fg4HI"/>
+   <xsd:complexType name="cdnPriceNoAnnotation"/>
+   <xsd:complexType name="usPrice"/>
+   <xsd:element name="a2BCDESomeTest" type="a2BCDESomeTest"/>
+   <xsd:element name="b" type="b"/>
+   <xsd:element name="c" type="c"/>
+   <xsd:element name="booleanTest" type="booleanTest"/>
+   <xsd:element name="USPrice" type="usPrice"/>
+   <xsd:element name="CDNPriceNoAnnotation" type="cdnPriceNoAnnotation"/>
+   <xsd:element name="ABC" type="abc"/>
+   <xsd:element name="abbbCD" type="abbbCD"/>
+   <xsd:element name="Page">
+      <xsd:complexType>
+         <xsd:all>
+            <xsd:element minOccurs="0" name="isEmailLinkRequired" type="xsd:string"/>
+         </xsd:all>
+      </xsd:complexType>
+   </xsd:element>
+   <xsd:element name="CLASS2" type="class2"/>
+   <xsd:element name="AB2cd3fg4HI" type="ab2Cd3Fg4HI"/>
+   <xsd:element name="QNameTest" type="qNameTest"/>
+   <xsd:element name="ABCDEfgh" type="abcdEfgh"/>
+</xsd:schema>

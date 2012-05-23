@@ -1,0 +1,347 @@
+<!--/*******************************************************************************
+* This program and the accompanying materials are made available under the 
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
+* which accompanies this distribution. 
+* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+* and the Eclipse Distribution License is available at 
+* http://www.eclipse.org/org/documents/edl-v10.php.
+*
+*   Ant naming conventions:
+*   - regardless of the actual OS platform,'/' is the directory separator
+*     (Ant will convert as appropriate).
+*   - multi-word properties use periods '.'
+*     - properties ending in .jar define jarfile names only (no path)
+*     - properties ending in .lib are fully qualified jars (path and filename)
+*     - properties ending in .dir are directory paths
+*     - properties ending in .path are path refid names (classpath fragments)
+*   - multi-word targets use hyphens '-'
+*     - targets beginning with test- are reserved for high level test targets,
+*       and are used in test results parsing
+*     - targets typically use the form <action>-<object>-<type> (ie. package-bundle-zip)
+*   - multi-word macros use underscores '_'
+*   - multi-word macro attributes are concatinated
+*     e.g. 'runpathref'  
+*   - multi-word tasks (taskdef) names are concatinated
+*     e.g. 'validateconnection'
+*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
+*     e.g. ${env.XXX}.
+*   - Ant properties are lower case.
+*
+* Contributors:
+*     pvijayaratnam - cache coordination test implementation
+#******************************************************************************/-->
+
+<!-- This ant project includes the following tasks:
+        ....
+-->
+
+<project name="Eclipse Persistence Services JPA WLS CacheCoordination Testing" basedir=".">
+
+    <property name="env" environment="env" value="env"/>
+    <!-- Allows a user to overide certain user specific properties. -->
+    <property file="${user.home}/weblogic.properties"/>
+    <property file="test.properties"/>
+    <property file="./weblogic.properties"/>
+    
+    <!-- WebLogic ant tasks -->
+    <taskdef name="wlserver" classname="weblogic.ant.taskdefs.management.WLServer">
+        <classpath>
+            <pathelement location="${weblogic.home}/lib/weblogic.jar"/>
+        </classpath>
+    </taskdef>
+    <taskdef name="wlconfig" classname="weblogic.ant.taskdefs.management.WLConfig">
+        <classpath>
+            <pathelement location="${weblogic.home}/lib/weblogic.jar"/>
+        </classpath>
+    </taskdef>
+    <taskdef name="wldeploy" classname="weblogic.ant.taskdefs.management.WLDeploy">
+        <classpath>
+            <pathelement location="${weblogic.home}/lib/weblogic.jar"/>
+        </classpath>
+    </taskdef>
+
+    <!-- Stop all servers. -->
+    <target name="weblogic-stop-cachecoordination" depends="weblogic-stop-server3,weblogic-stop-server2,weblogic-stop-server1"/>
+    <!-- Stop the managed server1 -->
+    <target name="weblogic-stop-server1">
+        <wlserver fork="true" failonerror="false" weblogichome="${weblogic.home}"
+            dir="${weblogic.domain}" host="${weblogic.host}" domainname="${domain.name}" servername="${rcm.wls.server1.name}" port="${rcm.wls.server1.port}"
+            username="${server.user}" password="${server.pwd}" action="shutdown">
+        </wlserver>
+    </target>
+    <!-- Stop the managed server2 -->
+    <target name="weblogic-stop-server2">
+        <wlserver fork="true" failonerror="false" weblogichome="${weblogic.home}"
+            dir="${weblogic.domain}" host="${weblogic.host}" domainname="${domain.name}" servername="${rcm.wls.server2.name}" port="${rcm.wls.server2.port}"
+            username="${server.user}" password="${server.pwd}" action="shutdown">
+        </wlserver>
+    </target>
+    <!-- Stop the admin server -->
+    <target name="weblogic-stop-server3">
+        <wlserver fork="true" failonerror="false" weblogichome="${weblogic.home}"
+            dir="${weblogic.domain}" host="${weblogic.host}" domainname="${domain.name}" servername="${rcm.wls.server3.name}" port="${rcm.wls.server3.port}"
+            username="${server.user}" password="${server.pwd}" action="shutdown">
+        </wlserver>
+    </target>
+    
+    <!--
+        Deploy the application ear to the server.
+        Note: WLS server must be running.
+    -->
+    <target name="weblogic-deploy">
+        <wldeploy action="deploy"
+            name="${application.name}" source="build/${ear.name}"
+            user="${server.user}" password="${server.pwd}"
+            adminurl="${server.url}" targets="${target.server}"
+            failonerror="false">
+        </wldeploy>
+    </target>
+
+    <!--
+        Undeploy the application ear to the server.
+        Note: WLS server must be running.
+    -->
+    <target name="weblogic-undeploy">
+        <wldeploy action="undeploy" name="${application.name}"
+            user="${server.user}" password="${server.pwd}"
+            adminurl="${server.url}" targets="${target.server}"
+            failonerror="false">
+        </wldeploy>
+    </target>
+    
+    <!-- initialize WL props for target 'run-cachecoordination-wls' -->
+    <target name="init-wls">
+        <property name="weblogic.domain" value="${weblogic.domain}"/>
+        <property name="POLICY_OPTION" value="trackchanges"/>
+        <path id="build.wls.path">
+                 <pathelement path="${weblogic.home}/lib/weblogic.jar"/>
+                 <pathelement path="${weblogic.domain}/lib/${eclipselink.jar}"/>
+         <pathelement path="${junit.lib}"/>
+         <!--pathelement path="${eclipselink.jpa.test}/weblogic.properties"/-->
+        </path>
+        <property name="SERVER_NAME" value="${rcm.wls.server1.name}"/>
+        <property name="SERVER_VERSION" value="${weblogic.version}"/>
+        <property name="is.wls" value="true"/>
+    </target>
+
+    <!-- Main target to run RCM-enabled Sessionbean tests.
+         ** This target starts all servers on preconfigured domain and DataSource.
+     -->
+    <target name="weblogic-start-cachecoordination" depends="init-wls">
+        <delete file="${weblogic.domain}/edit.lok"/>
+        <delete file="${rcm.wls.server1.name}.log"/>
+        <delete file="${rcm.wls.server2.name}.log"/>
+        <delete file="${rcm.wls.server3.name}.log"/>
+        <parallel>
+            <echo message="*** starting WebLogic AdminServer"/>
+            <java classname="weblogic.Server" 
+                fork="true"
+                failonerror="true">
+                <jvmarg value="-server"/>
+                <jvmarg value="-Xms512m"/>
+                <jvmarg value="-Xmx960m"/>
+                <!--jvmarg value="-XXjra:delay=180,recordingtime=900,filename=./jrockit-prof.xml,latency=true,tracedepth=128,sampletime=2 -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=qaott48:2124"/-->
+                <env key="PATH" value="${env.JAVA_HOME}/bin:${env.PATH}"/>
+                <sysproperty key="java.security.egd" value="file:///dev/./urandom"/>
+                <sysproperty key="eclipselink.changePolicy" value="${POLICY_OPTION}"/>
+                <sysproperty key="weblogic.Name" value="${rcm.wls.admin.name}"/>
+                <sysproperty key="bea.home" value="${bea.root.dir}"/>
+                <sysproperty key="weblogic.management.username" value="${server.user}"/>
+                <sysproperty key="weblogic.management.password" value="${server.pwd}"/>
+                <sysproperty key="java.security.police" value='"${weblogic.home}/lib/weblogic.policy"'/>
+                <sysproperty key="weblogic.RootDirectory" value="${weblogic.domain}"/>
+                <sysproperty key="weblogic.Stdout" value="${rcm.wls.admin.name}.log"/>
+                <sysproperty key="weblogic.Stderr" value="${rcm.wls.admin.name}.err"/>
+                <classpath refid="build.wls.path"/>
+            </java>
+            <sequential>
+                <waitfor>
+                    <socket server="${rcm.wls.admin.httphost}" port="${rcm.wls.admin.port}"/>
+                </waitfor>
+                <parallel>
+                    <echo message="*** starting managed server: Server1 "/>
+                    <java classname="weblogic.Server"
+                        fork="true"
+                        failonerror="true">
+                        <jvmarg value="-server"/>
+                        <jvmarg value="-Xms512m"/>
+                        <jvmarg value="-Xmx960m"/>
+                        <jvmarg value="-XX:MaxPermSize=256m"/>
+                        <env key="PATH" value="${env.JAVA_HOME}/bin:${env.PATH}"/>
+                        <sysproperty key="java.security.egd" value="file:///dev/./urandom"/>
+                        <sysproperty key="eclipselink.changePolicy" value="${POLICY_OPTION}"/>
+                        <sysproperty key="weblogic.Name" value="${rcm.wls.server1.name}"/>
+                        <sysproperty key="bea.home" value="${bea.root.dir}"/>
+                        <sysproperty key="weblogic.management.server" value="${rcm.wls.admin.httphost}:${rcm.wls.admin.port}"/>
+                        <sysproperty key="weblogic.management.username" value="${server.user}"/>
+                        <sysproperty key="weblogic.management.password" value="${server.pwd}"/>
+                        <sysproperty key="java.security.police" value='"${weblogic.home}/lib/weblogic.policy"'/>
+                        <sysproperty key="weblogic.RootDirectory" value="${weblogic.domain}"/>
+                        <sysproperty key="weblogic.Stdout" value="${rcm.wls.server1.name}.log"/>
+                        <sysproperty key="weblogic.Stderr" value="${rcm.wls.server1.name}.err"/>
+                        <sysproperty key="tangosol.coherence.clusterport" value="37373"/>
+                        <sysproperty key="tangosol.coherence.cacheconfig" value="/tang-perf-grid.xml"/>
+                        <!--sysproperty key="tangosol.coherence.log.level" value="1"/-->
+                        <!--sysproperty key="eclipselink.cache.coordination.rmi.url" value="t3://${rcm.wls.server1.httphost}:${rcm.wls.server1.port}/"/-->
+                        <classpath refid="build.wls.path"/>
+                    </java>
+                    <echo message="*** starting managed server: Server2 "/>
+                    <java classname="weblogic.Server"
+                        fork="true"
+                        failonerror="true">
+                        <jvmarg value="-server"/>
+                        <jvmarg value="-Xms512m"/>
+                        <jvmarg value="-Xmx960m"/>
+                        <jvmarg value="-XX:MaxPermSize=256m"/>
+                        <env key="PATH" value="${env.JAVA_HOME}/bin:${env.PATH}"/>
+                        <sysproperty key="java.security.egd" value="file:///dev/./urandom"/>
+                        <sysproperty key="eclipselink.changePolicy" value="${POLICY_OPTION}"/>
+                        <sysproperty key="weblogic.Name" value="${rcm.wls.server2.name}"/>
+                        <sysproperty key="bea.home" value="${bea.root.dir}"/>
+                        <sysproperty key="weblogic.management.server" value="${rcm.wls.admin.httphost}:${rcm.wls.admin.port}"/>
+                        <sysproperty key="weblogic.management.username" value="${server.user}"/>
+                        <sysproperty key="weblogic.management.password" value="${server.pwd}"/>
+                        <sysproperty key="java.security.police" value='"${weblogic.home}/lib/weblogic.policy"'/>
+                        <sysproperty key="weblogic.RootDirectory" value="${weblogic.domain}"/>
+                        <sysproperty key="weblogic.Stdout" value="${rcm.wls.server2.name}.log"/>
+                        <sysproperty key="weblogic.Stderr" value="${rcm.wls.server2.name}.err"/>
+                        <sysproperty key="tangosol.coherence.clusterport" value="37373"/>
+                        <sysproperty key="tangosol.coherence.cacheconfig" value="/tang-perf-grid.xml"/>
+                        <!--sysproperty key="tangosol.coherence.log.level" value="1"/-->
+                        <!--sysproperty key="eclipselink.cache.coordination.rmi.url" value="t3://${rcm.wls.server2.httphost}:${rcm.wls.server2.port}/"/-->
+                        <classpath refid="build.wls.path"/>
+                    </java>
+                    <echo message="*** starting managed server: Server3 "/>
+                    <java classname="weblogic.Server" 
+                        fork="true"
+                        failonerror="true">
+                        <jvmarg value="-server"/>
+                        <jvmarg value="-Xms512m"/>
+                        <jvmarg value="-Xmx960m"/>
+                        <jvmarg value="-XX:MaxPermSize=256m"/>
+                        <env key="PATH" value="${env.JAVA_HOME}/bin:${env.PATH}"/>
+                        <sysproperty key="java.security.egd" value="file:///dev/./urandom"/>
+                        <sysproperty key="eclipselink.changePolicy" value="${POLICY_OPTION}"/>
+                        <sysproperty key="weblogic.Name" value="${rcm.wls.server3.name}"/>
+                        <sysproperty key="bea.home" value="${bea.root.dir}"/>
+                        <sysproperty key="weblogic.management.server" value="${rcm.wls.admin.httphost}:${rcm.wls.admin.port}"/>
+                        <sysproperty key="weblogic.management.username" value="${server.user}"/>
+                        <sysproperty key="weblogic.management.password" value="${server.pwd}"/>
+                        <sysproperty key="java.security.police" value='"${weblogic.home}/lib/weblogic.policy"'/>
+                        <sysproperty key="weblogic.RootDirectory" value="${weblogic.domain}"/>
+                        <sysproperty key="weblogic.Stdout" value="${rcm.wls.server3.name}.log"/>
+                        <sysproperty key="weblogic.Stderr" value="${rcm.wls.server3.name}.err"/>
+                        <sysproperty key="tangosol.coherence.clusterport" value="37373"/>
+                        <sysproperty key="tangosol.coherence.cacheconfig" value="tang-perf-grid.xml"/>
+                        <!--sysproperty key="eclipselink.cache.coordination.rmi.url" value="t3://${rcm.wls.server3.httphost}:${rcm.wls.server3.port}/"/-->
+                        <classpath refid="build.wls.path"/>
+                    </java>
+                    <sequential>
+                        <waitfor>
+                            <and>
+                                <socket server="${rcm.wls.server2.httphost}" port="${rcm.wls.server2.port}"/>
+                                <socket server="${rcm.wls.server3.httphost}" port="${rcm.wls.server3.port}"/>
+                            </and>
+                        </waitfor>
+                        <sleep seconds="60"/>
+                    </sequential>
+                </parallel>
+            </sequential>
+        </parallel>  
+    </target>
+
+    <!-- This creates the server domain. -->
+    <target name="weblogic-create-cluster">
+        <delete dir="${weblogic.domain}"/>
+        <mkdir dir="${weblogic.domain}"/>
+        <wlserver fork="true" spawn="true" weblogichome="${weblogic.home}"
+                dir="${weblogic.domain}" host="${rcm.wls.admin.httphost}" servername="${rcm.wls.admin.name}" generateConfig="true" verbose="true"
+                username="${server.user}" password="${server.pwd}" action="start">
+            <classpath>
+                <fileset dir="${weblogic.home}/lib" includes="weblogic.jar,weblogic_sp.jar"/>
+                <pathelement location="${env.JAVA_HOME}/lib/tools.jar"/>
+            </classpath>
+            <jvmarg value="-Xms512m"/>
+            <jvmarg value="-Xmx960m"/>
+        </wlserver>
+        <wlconfig url="t3://${rcm.wls.admin.httphost}:${rcm.wls.admin.port}/" username="${server.user}" password="${server.pwd}">
+            <create type="Cluster" name="${rcm.wls.cluster.name}"/>
+            <query domain="mydomain" type="Cluster" name="${rcm.wls.cluster.name}" property="cluster"/>
+            <create type="Server" name="${rcm.wls.server1.name}">
+                <set attribute="ListenPort" value="${rcm.wls.server1.port}"/>
+                <set attribute="Cluster" value="${cluster}"/>
+            </create>
+            <create type="Server" name="${rcm.wls.server2.name}">
+                <set attribute="ListenPort" value="${rcm.wls.server2.port}"/>
+                <set attribute="Cluster" value="${cluster}"/>
+            </create>
+            <create type="Server" name="${rcm.wls.server3.name}">
+                <set attribute="ListenPort" value="${rcm.wls.server3.port}"/>
+                <set attribute="Cluster" value="${cluster}"/>
+            </create>
+        </wlconfig>
+        <wlserver fork="true" failonerror="false" weblogichome="${weblogic.home}"
+            dir="${weblogic.domain}" host="${rcm.wls.admin.httphost}" port="${rcm.wls.admin.port}" servername="admin"
+            username="${server.user}" password="${server.pwd}" action="shutdown">
+        </wlserver>
+    </target>
+
+    <target name="setup-cluster">
+        <wlconfig url="t3://${rcm.wls.admin.httphost}:${rcm.wls.admin.port}/" username="${server.user}" password="${server.pwd}">
+            <query domain="mydomain" type="JDBCConnectionPool" name="EclipseLinkPool">
+                <delete/>
+            </query>
+            <query domain="mydomain" type="JDBCTxDataSource" name="EclipseLinkDS">
+                <delete/>
+            </query>
+            <query domain="mydomain" type="JDBCDataSource" name="EclipseLinkLocalDS">
+                <delete/>
+            </query>
+            <query domain="mydomain" type="JMSTopic" name="EclipseLinkTopic">
+                <delete/>
+            </query>
+            <query domain="mydomain" type="JMSConnectionFactory" name="EclipseLinkTopicConnectionFactory">
+                <delete/>
+            </query>
+            <query domain="mydomain" type="JMSServer" name="EclipseLinkJMSServer">
+                <delete/>
+            </query>
+            <query domain="mydomain" type="Cluster" name="${rcm.wls.cluster.name}" property="cluster"/>
+            <query domain="mydomain" type="Server" name="${rcm.wls.server1.name}" property="server1"/>
+            <create type="JDBCConnectionPool" name="EclipseLinkPool">
+                <set attribute="CapacityIncrement" value="2"/>
+                <set attribute="DriverName" value="${db.driver}"/>
+                <set attribute="InitialCapacity" value="1"/>
+                <set attribute="MaxCapacity" value="50"/>
+                <set attribute="Password" value="${db.pwd}"/>
+                <set attribute="Properties" value="user=${db.user}"/>
+                <set attribute="URL" value="${db.url}"/>
+                <set attribute="Targets" value="${cluster}"/>
+            </create>
+            <create type="JDBCTxDataSource" name="EclipseLinkDS">
+                <set attribute="JNDIName" value="jdbc/EclipseLinkDS"/>
+                <set attribute="PoolName" value="EclipseLinkPool"/>
+                <set attribute="Targets" value="${cluster}"/>
+            </create>
+            <create type="JDBCDataSource" name="EclipseLinkLocalDS">
+                <set attribute="JNDIName" value="jdbc/EclipseLinkLocalDS"/>
+                <set attribute="PoolName" value="EclipseLinkPool"/>
+                <set attribute="Targets" value="${cluster}"/>
+            </create>
+
+            <create type="JMSConnectionFactory" name="EclipseLinkTopicConnectionFactory">
+              <set attribute="JNDIName" value="jms/EclipseLinkTopicConnectionFactory"/>
+              <set attribute="XAServerEnabled" value="false"/>
+              <set attribute="Targets" value="${cluster}"/>
+           </create>
+           <create type="JMSServer" name="EclipseLinkJMSServer">
+              <set attribute="Targets" value="${server1}"/>
+               <create type="JMSTopic" name="EclipseLinkTopic">
+                  <set attribute="JNDIName" value="jms/EclipseLinkTopic"/>
+               </create>
+           </create>
+
+        </wlconfig>
+    </target>
+
+</project>

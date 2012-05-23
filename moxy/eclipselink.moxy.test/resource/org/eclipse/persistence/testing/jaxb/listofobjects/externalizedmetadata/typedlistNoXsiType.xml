@@ -1,0 +1,6 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<ns0:root xmlns:ns0="examplenamespace">
+   <departments>1</departments>
+   <departments>2</departments>
+   <departments>3</departments>
+</ns0:root>

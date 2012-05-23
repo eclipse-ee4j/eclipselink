@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<team xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<id>123</id>
+	<developer xsi:nil="true"/>
+	<developer>
+		<id>123</id>
+		<first-name>Jane</first-name>
+		<last-name>Doe</last-name>
+	</developer>
+	<developer xsi:nil="true"/>
+	<name>Eng</name>
+</team>
+

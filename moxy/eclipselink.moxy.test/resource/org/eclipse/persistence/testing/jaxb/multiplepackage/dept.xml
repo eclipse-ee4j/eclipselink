@@ -1,0 +1,7 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<ns0:dept xmlns:ns0="somenamespace" xmlns:ns1="my.cool/namespace">
+   <id>1</id>
+   <emp>
+     <ns1:id>10</ns1:id>
+   </emp>
+</ns0:dept>

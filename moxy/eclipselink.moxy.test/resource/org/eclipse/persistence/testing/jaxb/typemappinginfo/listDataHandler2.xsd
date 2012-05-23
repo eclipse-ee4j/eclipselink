@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="someUri" xmlns:ns0="someUri" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:import schemaLocation="schema1.xsd"/>
+   <xsd:element name="testTagname" type="listOfDataHandler"/>
+</xsd:schema>

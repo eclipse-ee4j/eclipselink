@@ -1,0 +1,19 @@
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence persistence_1_0.xsd" version="1.0">
+    <persistence-unit name="%%default%%" transaction-type="%%transaction-type%%">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.testing.models.jpa.mongo.Order</class>
+        <class>org.eclipse.persistence.testing.models.jpa.mongo.Customer</class>
+        <class>org.eclipse.persistence.testing.models.jpa.mongo.Buyer</class>
+        <class>org.eclipse.persistence.testing.models.jpa.mongo.LineItem</class>
+        <class>org.eclipse.persistence.testing.models.jpa.mongo.Address</class>
+        <properties>
+            <property name="eclipselink.target-server" value="%%server-platform%%"/>
+            <property name="eclipselink.target-database" value="org.eclipse.persistence.nosql.adapters.mongo.MongoPlatform"/>
+            <property name="eclipselink.nosql.connection-spec" value="org.eclipse.persistence.nosql.adapters.mongo.MongoConnectionSpec"/>
+            <!--property name="eclipselink.nosql.property.mongo.port" value="localhost"/>
+            <property name="eclipselink.nosql.property.mongo.host" value="localhost"/>
+            <property name="eclipselink.nosql.property.mongo.db" value="mydb"/-->
+            <!--property name="eclipselink.logging.level" value="FINEST"/-->
+        </properties>
+    </persistence-unit>
+</persistence>

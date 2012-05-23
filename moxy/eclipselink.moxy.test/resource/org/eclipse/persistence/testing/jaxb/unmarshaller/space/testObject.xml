@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+
+<!--  some comment
+-->
+<testObject>
+   <theString>abc123</theString>
+</testObject>

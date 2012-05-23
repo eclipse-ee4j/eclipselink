@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:ns0="http://www.example.com/stuff" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.example.com/stuff">
+   <xsd:element name="stuff">
+      <xsd:complexType mixed="true">
+         <xsd:sequence>
+            <xsd:any processContents="skip" namespace="##other"/>
+         </xsd:sequence>
+      </xsd:complexType>
+   </xsd:element>
+</xsd:schema>

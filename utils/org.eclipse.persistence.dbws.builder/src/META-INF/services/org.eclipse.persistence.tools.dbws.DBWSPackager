@@ -1,0 +1,8 @@
+org.eclipse.persistence.tools.dbws.JavasePackager
+org.eclipse.persistence.tools.dbws.WeblogicPackager
+org.eclipse.persistence.tools.dbws.WarPackager
+org.eclipse.persistence.tools.dbws.JDevPackager
+org.eclipse.persistence.tools.dbws.EclipsePackager
+org.eclipse.persistence.tools.dbws.GlassfishPackager
+org.eclipse.persistence.tools.dbws.JBossPackager
+org.eclipse.persistence.tools.dbws.WebSpherePackager

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<descriptor type="aggregate">
+   <name>test.oracle.models.readonly.Studio</name>
+   <class-handle>
+      <type-name>test.oracle.models.readonly.Studio</type-name>
+   </class-handle>
+   <mappings>
+      <mapping type="one-to-one">
+         <name>address</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.readonly.Studio</attribute-declaring-type-name>
+            <attribute-name>address</attribute-name>
+         </attribute-handle>
+         <reference-descriptor-handle>
+            <descriptor-name>test.oracle.models.readonly.Address</descriptor-name>
+         </reference-descriptor-handle>
+         <private-owned>true</private-owned>
+         <reference-handle>
+            <reference-table-name>RO_MOVIE</reference-table-name>
+            <reference-name>RO_MOVIE_RO_ADDR</reference-name>
+         </reference-handle>
+      </mapping>
+      <mapping type="direct-to-field">
+         <name>name</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.readonly.Studio</attribute-declaring-type-name>
+            <attribute-name>name</attribute-name>
+         </attribute-handle>
+      </mapping>
+      <mapping type="direct-to-field">
+         <name>owner</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.readonly.Studio</attribute-declaring-type-name>
+            <attribute-name>owner</attribute-name>
+         </attribute-handle>
+      </mapping>
+   </mappings>
+</descriptor>

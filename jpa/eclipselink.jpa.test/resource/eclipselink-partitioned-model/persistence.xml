@@ -1,0 +1,28 @@
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence persistence_1_0.xsd" version="1.0">
+    <persistence-unit name="partitioned" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <properties>
+            <property name="javax.persistence.jdbc.driver" value="TEST_DRIVER_CLASS"/>
+            <property name="javax.persistence.jdbc.url" value="TEST_DATABASE_URL"/>
+            <property name="javax.persistence.jdbc.user" value="TEST_DATABASE_USER"/>
+            <property name="javax.persistence.jdbc.password" value="TEST_DATABASE_PASSWORD"/>
+            <property name="eclipselink.partitioning" value="default"/>
+            <!--property name="eclipselink.logging.level" value="FINEST"/-->
+        </properties>
+    </persistence-unit>
+    <persistence-unit name="partitioned-xml" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <mapping-file>META-INF/partitioned-orm.xml</mapping-file>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <properties>
+            <property name="javax.persistence.jdbc.driver" value="TEST_DRIVER_CLASS"/>
+            <property name="javax.persistence.jdbc.url" value="TEST_DATABASE_URL"/>
+            <property name="javax.persistence.jdbc.user" value="TEST_DATABASE_USER"/>
+            <property name="javax.persistence.jdbc.password" value="TEST_DATABASE_PASSWORD"/>
+            <property name="eclipselink.partitioning" value="default"/>
+            <property name="eclipselink.orm.validate.schema" value="true"/>
+            <!--property name="eclipselink.logging.level" value="FINEST"/-->
+        </properties>
+    </persistence-unit>
+</persistence>

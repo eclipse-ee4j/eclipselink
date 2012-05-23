@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:complexType name="e-type">
+      <xsd:complexContent>
+         <xsd:extension base="b-type">
+            <xsd:sequence>
+               <xsd:element name="foo" type="xsd:int"/>
+               <xsd:element name="ccc" type="xsd:int"/>
+               <xsd:element name="ddd" type="xsd:int"/>
+               <xsd:element name="eee" type="xsd:int"/>
+            </xsd:sequence>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+   <xsd:complexType name="a-type">
+      <xsd:sequence>
+         <xsd:element name="aaa" type="xsd:int"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="b-type">
+      <xsd:complexContent>
+         <xsd:extension base="a-type">
+            <xsd:sequence>
+               <xsd:element name="bbb" type="xsd:int"/>
+            </xsd:sequence>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+   <xsd:element name="a-element" type="a-type"/>
+</xsd:schema>

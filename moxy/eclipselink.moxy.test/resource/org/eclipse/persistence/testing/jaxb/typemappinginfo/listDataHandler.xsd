@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:ref="http://ws-i.org/profiles/basic/1.1/xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:import namespace="http://ws-i.org/profiles/basic/1.1/xsd" schemaLocation="http://ws-i.org/profiles/basic/1.1/swaref.xsd"/>
+   <xsd:complexType name="listOfDataHandler">
+      <xsd:sequence>
+         <xsd:element name="item" type="ref:swaRef" nillable="true" minOccurs="0" maxOccurs="unbounded" xmlns:ns0="http://www.w3.org/2005/05/xmlmime" ns0:expectedContentTypes="image/jpeg"/>
+      </xsd:sequence>
+   </xsd:complexType>
+</xsd:schema>

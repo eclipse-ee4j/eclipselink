@@ -1,0 +1,294 @@
+<project name="Ant Customizations" default="all">
+    <target name="all"   depends="build, publish, test"/>
+    <target name="stage" depends="build, publish"/>
+    <target name="build" depends="jar"/>
+
+    <target name="init">
+        <property environment="env"/>
+        <property name="ant.dir_temp"     value="${env.ANT_HOME}/lib"/>
+        <pathconvert targetos="unix" property="ant.dir">
+            <path>
+                <pathelement location="${ant.dir_temp}"/>
+            </path>
+        </pathconvert>
+        <dirname  property="ant_customizations.build.location_temp" file="${ant.file.ant_customizations}"/>
+        <pathconvert targetos="unix" property="ant_customizations.build.location">
+            <path>
+                <pathelement location="${ant_customizations.build.location_temp}"/>
+            </path>
+        </pathconvert>
+        <property file="${user.home}/build.properties"/>
+        <!-- ant_customizations.2.base.dir needs to be explicit (not relative) for antcall usage -->
+        <!-- (I think the selectbundle call reverts to calling dir - despite the antcall "dir=") -->
+        <property name="ant_customizations.2.base.dir"            value="${ant_customizations.build.location}/../.."/>
+        <property name="ant_customizations.2.common.plugins.dir"  value="${ant_customizations.2.base.dir}/plugins"/>
+        <property name="ant_customizations.2.jpa.plugins.dir"     value="${ant_customizations.2.base.dir}/jpa/plugins"/>
+        <property name="ant_customizations.2.sdo.plugins.dir"     value="${ant_customizations.2.base.dir}/sdo/plugins"/>
+        <property name="ant_customizations.2.util.plugins.dir"    value="${ant_customizations.2.base.dir}/utils/plugins"/>
+
+        <echo message="ant.project.name                         ='${ant.project.name}'"/>
+        <echo message="basedir                                  ='${basedir}'"/>
+        <echo message="ant_customizations.build.location        ='${ant_customizations.build.location}'"/>
+        <echo message="ant_customizations.2.base.dir            ='${ant_customizations.2.base.dir}'"/>
+        <echo message="ant_customizations.2.common.plugins.dir  ='${ant_customizations.2.common.plugins.dir}'"/>
+        <echo message="ant_customizations.2.jpa.plugins.dir     ='${ant_customizations.2.jpa.plugins.dir}'"/>
+        <echo message="ant_customizations.2.sdo.plugins.dir     ='${ant_customizations.2.sdo.plugins.dir}'"/>
+        <echo message="ant_customizations.2.util.plugins.dir    ='${ant_customizations.2.util.plugins.dir}'"/>
+        <echo message=" ---"/>
+
+        <property name="publish.dir" value="${ant_customizations.build.location}/.."/>
+        <property name="output.dir"  value="${ant_customizations.build.location}/output"/>
+        <property name="src.dir"     value="${ant_customizations.build.location}/src"/>
+        <property name="classes.dir" value="${output.dir}/classes"/>
+        <property name="custom.jar"  value="ant_customizations.jar"/>
+        <property name="custom.lib"  value="${output.dir}/${custom.jar}"/>
+        
+        <echo message="publish.dir                              ='${publish.dir}'"/>
+        <echo message="output.dir                               ='${output.dir}'"/>
+        <echo message="src.dir                                  ='${src.dir}'"/>
+        <echo message="classes.dir                              ='${classes.dir}'"/>
+        <echo message="custom.jar                               ='${custom.jar}'"/>
+        <echo message="custom.lib                               ='${custom.lib}'"/>
+
+        <tstamp/>
+        <echo message="ant.dir = '${ant.dir}'"/>
+        <available file="${ant.dir}" type="dir" property="ant.exists"/>
+    </target>
+
+    <target name="pub_init">
+        <available file="${publish.dir}/${custom.jar}" property="pub.jar.exists"/>
+    </target>
+
+    <target name="clean">
+        <delete dir="${output.dir}" quiet="true"/>
+    </target>
+
+    <target name="compile" depends="init, clean">
+        <mkdir dir="${classes.dir}"/>
+        <javac
+            srcdir="${src.dir}"
+            destdir="${classes.dir}"
+            debug="true"
+            debuglevel="lines,vars,source"
+            failonerror="false"
+            includes="org/eclipse/persistence/**/*.java"
+            classpath="${ant.dir}/ant.jar"
+        />
+    </target>
+
+    <target name="jar" if="ant.exists" depends="compile">
+        <delete file="${custom.lib}" quiet="true"/>
+        <jar jarfile="${custom.lib}">
+            <fileset
+                dir="${classes.dir}"
+                includes="**"
+            />
+        </jar>
+    </target>
+
+    <target name="archive-old" if="pub.jar.exists">
+        <move file="${publish.dir}/${custom.jar}" tofile="${publish.dir}/ant_customizations_bak_on_${DSTAMP}${TSTAMP}.jar"/>
+    </target>
+
+    <target name="publish" depends="init, pub_init, archive-old">
+        <copy file="${custom.lib}" todir="${publish.dir}"/>
+    </target>
+    
+    <!-- TESTING TARGETS -->
+    <target name="test" depends="test-init, test-version-class, test-selectbundle, test-cleanRevision"/>
+
+    <target name="test-init" depends="init">
+        <property name="custom.tasks.lib" value="${publish.dir}/ant_customizations.jar"/>
+        <property name="custom.echo.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.Say"/>
+        <property name="custom.selectbundle.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.SelectBundle"/>
+        <property name="custom.cleanrev.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.CleanRevision"/>
+
+        <echo message="custom.tasks.lib = '${custom.tasks.lib}'"/>
+        <available file="${custom.tasks.lib}" property="antcustomizations.lib.exist"/>
+        <fail message="Ant customizations file not found!" unless="antcustomizations.lib.exist"/>
+
+        <taskdef name="say"          classname="${custom.echo.task.class}"         classpath="${custom.tasks.lib}"/>
+        <taskdef name="selectbundle" classname="${custom.selectbundle.task.class}" classpath="${custom.tasks.lib}"/>
+        <taskdef name="cleanRevision" classname="${custom.cleanrev.task.class}"    classpath="${custom.tasks.lib}"/>
+        
+        <say message=" First test is passed. Customizations found and 'say' works!" if="antcustomizations.lib.exist"/>
+    </target>
+
+    <target name="test-version-class" depends="test-init">
+        <say message=" "/>
+        <say message="Running Version Tester class..."/>
+        <java classname="org.eclipse.persistence.buildtools.helper.Tester">
+            <classpath>
+                <pathelement location="${publish.dir}/${custom.jar}"/>
+            </classpath>
+        </java>
+        <say message="Done."/>
+    </target>
+
+    <target name="test-selectbundle" depends="test-init">
+        <condition property="bnd.search.dir" value="${ant_customizations.2.base.dir}/../extension.lib.external"
+                                                    else="${ant_customizations.2.common.plugins.dir}">
+            <available file="${ant_customizations.2.base.dir}/../extension.lib.external" type="dir"/>
+        </condition>
+        <echo message="bnd.search.dir        = '${bnd.search.dir}'"/>
+        <property name="plugin.dir"     value="${ant_customizations.2.common.plugins.dir}"/>
+
+        <property name="bnd.prefix"       value="bnd"/>
+        <property name="bnd.separator"    value="-"/>
+        <property name="bnd.criteria"     value="[0.0.350, 0.1.0)"/>
+        <property name="bnd.property"     value="selected.bnd.jar"/>
+        <property name="bnd.property2"    value="selected.bnd.lib"/>
+        
+        <property name="xmlbind.prefix"     value="javax.xml.bind"/>
+        <property name="xmlbind.criteria"   value="[2.0, 3.0)"/>
+        <property name="xmlbind.property"   value="selected.xmlbind.jar"/>
+        
+        <property name="ant.prefix"           value="org.apache.ant"/>
+        <property name="ant.criteria"         value="[1.7, 1.8)"/>
+        <property name="ant.property"         value="selected.ant.jar"/>
+        <property name="ant.version.property" value="selected.ant.version"/>
+        
+        <property name="jpa.prefix"      value="javax.persistence"/>
+        <property name="jpa.criteria"    value="[1.0, 2.2)"/>
+        <property name="jpa.property"    value="selected.jpa.jar"/>
+
+        <property name="validation.prefix"      value="javax.validation"/>
+        <property name="validation.criteria"    value="[1.0, 2.2)"/>
+        <property name="validation.property"    value="selected.validation.jar"/>
+
+        <say message=" "/>
+        <say message="Test basic find of bnd (using - separator)..."/>
+        <selectbundle
+            criterion="${bnd.criteria}"
+            basename="${bnd.prefix}"
+            directory="${bnd.search.dir}"
+            property="${bnd.property}"
+            separator="${bnd.separator}"
+        />
+        <say message="selected file: '${selected.bnd.jar}'" if="${bnd.property}"/>
+        <say message="Bnd (${bnd.prefix}) bundle not found in '${bnd.search.dir}'!" unless="${bnd.property}"/>
+
+        <say message=" "/>
+        <selectbundle
+            criterion="${bnd.criteria}"
+            basename="${bnd.prefix}"
+            directory=".."
+            property="${bnd.property}"
+            separator="${bnd.separator}"
+        />
+        <say message="selected file: '${selected.bnd.jar}'" if="${bnd.property}"/>
+        <say message="Bnd (${bnd.prefix}) bundle not found in '${bnd.search.dir}'!" unless="${bnd.property}"/>
+        <say message="If not found bdn.property was overwritten by second search in '..'"/>
+        
+        <say message=" "/>
+        <say message="Test includepath flag using bnd..."/>
+        <selectbundle
+            includepath="true"
+            criterion="${bnd.criteria}"
+            basename="${bnd.prefix}"
+            directory="${bnd.search.dir}"
+            property="${bnd.property2}"
+            separator="${bnd.separator}"
+        />
+        <say message="selected file: '${selected.bnd.lib}'" if="${bnd.property2}"/>
+        <say message="Bnd (${bnd.prefix}) bundle not found in '${bnd.search.dir}'!" unless="${bnd.property2}"/>
+        
+        <say message=" "/>
+        <say message="Test finding ${xmlbind.prefix} (using default separator)..."/>
+        <selectbundle
+            criterion="${xmlbind.criteria}"
+            basename="${xmlbind.prefix}"
+            directory="${ant_customizations.2.common.plugins.dir}"
+            property="${xmlbind.property}"
+        />
+        <say message="selected file: '${selected.xmlbind.jar}'" if="${xmlbind.property}"/>
+        <say message="Javax.xml.bind (${xmlbind.prefix}) bundle not found in '${ant_customizations.2.common.plugins.dir}'!" unless="${xmlbind.property}"/>
+
+        <say message=" "/>
+        <say message="Test finding ${ant.prefix} (using default separator)..."/>
+        <selectbundle
+            criterion="${ant.criteria}"
+            basename="${ant.prefix}"
+            directory="${ant_customizations.2.common.plugins.dir}"
+            property="${ant.property}"
+            suffix="zip"
+        />
+        <say message="selected file: '${selected.ant.jar}'" if="${ant.property}"/>
+        <say message="Ant (${ant.prefix}) bundle not found in '${ant_customizations.2.common.plugins.dir}'!" unless="${ant.property}"/>
+
+        <say message="Test finding ${ant.prefix} (using default separator, and specifying a 'zip' suffix) (version only)..."/>
+        <selectbundle
+            versiononly="true"
+            criterion="${ant.criteria}"
+            basename="${ant.prefix}"
+            directory="${ant_customizations.2.common.plugins.dir}"
+            property="${ant.version.property}"
+            suffix="zip"
+        />
+        <say message="selected file: '${selected.ant.version}'" if="${ant.version.property}"/>
+        <say message="Ant (${ant.prefix}) bundle not found in '${ant_customizations.2.common.plugins.dir}'!" unless="${ant.version.property}"/>
+
+        <say message=" "/>
+        <say message="Test finding ${jpa.prefix} (using default separator)..."/>
+        <selectbundle
+            criterion="${jpa.criteria}"
+            basename="${jpa.prefix}"
+            directory="${ant_customizations.2.common.plugins.dir}"
+            property="selected.jpa1.jar"
+        />
+        <say message="selected file: '${selected.jpa1.jar}'" if="selected.jpa1.jar"/>
+        <say message="JPA (${jpa.prefix}) bundle not found in '${ant_customizations.2.common.plugins.dir}'!" unless="selected.jpa1.jar"/>
+
+        <say message=" "/>
+        <say message="Test finding ${jpa.prefix} (using default separator)..."/>
+        <selectbundle
+            criterion="${jpa.criteria}"
+            basename="${jpa.prefix}"
+            directory="${ant_customizations.2.jpa.plugins.dir}"
+            property="${jpa.property}"
+        />
+        <say message="selected file: '${selected.jpa.jar}'" if="${jpa.property}"/>
+        <say message="JPA (${jpa.prefix}) bundle not found in '${ant_customizations.2.jpa.plugins.dir}'!" unless="${jpa.property}"/>
+
+        <say message=" "/>
+        <say message="Test finding ${validation.prefix} (using default separator)..."/>
+        <selectbundle
+            criterion="${validation.criteria}"
+            basename="${validation.prefix}"
+            directory="${ant_customizations.2.jpa.plugins.dir}"
+            property="${validation.property}"
+        />
+        <say message="selected file: '${selected.validation.jar}'" if="${validation.property}"/>
+        <say message="JPA (${validation.prefix}) bundle not found in '${ant_customizations.2.jpa.plugins.dir}'!" unless="${validation.property}"/>
+    </target>
+
+    <target name="test-cleanRevision" depends="test-init">
+        <property name="svn.exec"            value="svn"/>
+        <property name="branch.name"         value=""/>
+        <property name="branch.dir"          value="${branch.name}trunk"/>
+        <property name="svn.r.protocol"      value="http:"/>
+        <property name="svn.rw.protocol"     value="svn+ssh:"/>
+        <property name="osvn.server.name"    value="egwin@eldev"/>
+        <property name="svn.server.name"     value="dev.eclipse.org"/>
+        <property name="svn.base.urlpath"    value="//${svn.server.name}/svnroot/rt/org.eclipse.persistence"/>
+        <property name="svn.base.url"        value="${svn.r.protocol}${svn.base.urlpath}"/>
+        <property name="svn.branch.url"      value="${svn.base.url}/${branch.dir}"/>
+        
+        <exec outputproperty="svn.revision"
+            failonerror="false"
+            failifexecutionfails="false"
+            errorproperty="svnversion.failed"
+            logError="true"
+            executable="${svn.exec}">
+            <arg value="info"/>
+            <arg value="--revision"/>
+            <arg value="HEAD"/>
+            <arg value="${svn.branch.url}"/>
+        </exec>
+        <say message="SVN log command failed!" if="svnversion.failed"/>
+        <say message="b:svn.revision = '${svn.revision}'"/>
+        <cleanRevision input="${svn.revision}" property="svn.revision"/>
+        <say message="a:svn.revision = '${svn.revision}'"/>
+    </target>
+
+</project>

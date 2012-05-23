@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<class>
+   <name>test.oracle.models.employee.SmallProject</name>
+   <modifier>1</modifier>
+   <superclass-handle>
+      <type-name>test.oracle.models.employee.Project</type-name>
+   </superclass-handle>
+   <interface-handles>
+      <class-handle>
+         <type-name>test.oracle.models.employee.SmallProjectInterface</type-name>
+      </class-handle>
+   </interface-handles>
+   <methods>
+      <method>
+         <name>SmallProject</name>
+         <constructor>true</constructor>
+         <modifier>1</modifier>
+      </method>
+      <method>
+         <name>toString</name>
+         <modifier>1</modifier>
+         <return-type-declaration>
+            <type-handle>
+               <type-name>java.lang.String</type-name>
+            </type-handle>
+         </return-type-declaration>
+      </method>
+   </methods>
+</class>

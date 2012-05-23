@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<x:employee-data id="0" department="4" xmlns:x="examplenamespace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="examplenamespace schema1.xsd ">
+  <birthday>2001-01-01</birthday>
+  <age>0</age>
+  <lastName>lastName</lastName>
+  <address postal-code="">
+    <country-name>country-name</country-name>
+    <street-name>street-name</street-name>
+  </address>
+  <startTime>12:00:00</startTime>
+  <phone-number>phone-number</phone-number>
+  <phone-number>phone-number</phone-number>
+  <phone-number>phone-number</phone-number>
+  <responsibilities>responsibilities</responsibilities>
+</x:employee-data>

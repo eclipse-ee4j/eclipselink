@@ -1,0 +1,237 @@
+<!--/*******************************************************************************
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+* which accompanies this distribution.
+* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+* and the Eclipse Distribution License is available at
+* http://www.eclipse.org/org/documents/edl-v10.php.
+*
+*   Ant naming conventions:
+*   - regardless of the actual OS platform,'/' is the directory separator
+*     (Ant will convert as appropriate).
+*   - multi-word properties use periods '.'
+*   - multi-word targets use hyphens '-'
+*   - multi-word macros use underscores '_'
+*   - multi-word macro attributes are concatinated
+*     e.g. 'runpathref'
+*   - multi-word tasks (taskdef) names are concatinated
+*     e.g. 'validateconnection'
+*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
+*     e.g. ${env.XXX}.
+*   - Ant properties are lower case.
+*
+* Contributors:
+*     Oracle - initial API and implementation
+#******************************************************************************/-->
+
+<project name="eclipselink.utils.workbench.test" default="all" basedir=".">
+
+    <!-- =================================================================== -->
+    <!--  High level targets                                                 -->
+    <!-- =================================================================== -->
+
+    <target name="all"     depends="clean, build"/>
+    <target name="build"   depends="init, build-component-libs, jar-workbench"/>
+
+    <!-- =================================================================== -->
+    <!--  Initialization                                                     -->
+    <!-- =================================================================== -->
+
+    <target name="init">
+        <dirname  property="mwtest.build.location_temp" file="${ant.file.eclipselink.utils.workbench.test}"/>
+        <pathconvert targetos="unix" property="mwtest.build.location">
+            <path>
+                <pathelement location="${mwtest.build.location_temp}"/>
+            </path>
+        </pathconvert>
+        <tstamp>
+            <format property="_TodayMD" pattern="MMdd"/>
+            <format property="_TodayDMonthY" pattern="dd, MMMMM yyyy"/>
+            <format property="build.date" pattern="yyyyMMdd"/>
+            <format property="build.time" pattern="HHmm"/>
+        </tstamp>
+        <property environment="env"/>
+        <property file="${user.home}/build.properties"/>
+        <property name="extensions.depend.dir" value="../${core_test.2.base.dir}/extension.lib.external"/>
+        <property name="junit.lib"             value="${extensions.depend.dir}/junit.jar"/>
+        <echo message="user.home             ='${user.home}'"/>
+        <echo message="test.properties       ='${test.properties}'"/>
+        <echo message="extensions.depend.dir ='${extensions.depend.dir}'"/>
+        <echo message="junit.lib             ='${junit.lib}'"/>
+
+        <property file="${mwtest.build.location}/build.properties"/>
+        <property name="stop.on.error"      value="false"/>
+        <property name="optimize.code"      value="off"/>
+        <property name="report.deprecation" value="off"/>
+        <property name="javac.debug"        value="on"/>
+        <property name="javac.debuglevel"   value="lines,vars,source"/>
+        <property name="target.jvm"         value="${javac.version}"/>
+        <property name="version.string"     value="${release.version}.qualifier"/>
+
+        <echo message="mwtest.build.location   = '${mwtest.build.location}'"/>
+        <echo message="release.designation = '${release.designation}'"/>
+        <echo message="release.version     = '${release.version}'"/>
+        <echo message="BuildDate.BuildTime = '${build.date}.${build.time}'"/>
+        <echo message="java.version        = '${java.version}'"/>
+        <echo message="os.name             = '${os.name}'"/>
+        <echo message="os.arch             = '${os.arch}'"/>
+        <echo message="os.version          = '${os.version}'"/>
+        <echo message="stop.on.error       = '${stop.on.error}'"/>
+        <echo message="optimize.code       = '${optimize.code}'"/>
+        <echo message="report.deprecation  = '${report.deprecation}'"/>
+        <echo message="javac.debug         = '${javac.debug}'"/>
+        <echo message="javac.debuglevel    = '${javac.debuglevel}'"/>
+        <echo message="target.jvm          = '${target.jvm}'"/>
+        <echo message="java_home           = '${java.home}/..'"/>
+
+        <mkdir dir="${_buildLogDir}"/>
+    </target>
+
+
+    <!-- =================================================================== -->
+    <!--  Clean                                                              -->
+    <!-- =================================================================== -->
+
+    <target name="clean"  depends="init">
+        <ant antfile="build.xml" dir="${utilityDir}"         target="clean"/>
+        <ant antfile="build.xml" dir="${uitoolsDir}"         target="clean"/>
+        <ant antfile="build.xml" dir="${frameworkDir}"       target="clean"/>
+        <ant antfile="build.xml" dir="${platformspluginDir}" target="clean"/>
+        <ant antfile="build.xml" dir="${mappingspluginDir}"  target="clean"/>
+        <ant antfile="build.xml" dir="${scpluginDir}"        target="clean"/>
+        <delete file="${libDir}/${workbench.jarfile}"/>
+    </target>
+
+    <!-- =================================================================== -->
+    <!--  Build                                                              -->
+    <!-- =================================================================== -->
+
+    <target name="build-component-libs"  depends="init">
+        <ant antfile="build.xml" dir="${utilityDir}"         target="build-all" output="${_buildLogDir}\utility.log"/>
+        <ant antfile="build.xml" dir="${uitoolsDir}"         target="build-all" output="${_buildLogDir}\uitools.log"/>
+        <ant antfile="build.xml" dir="${frameworkDir}"       target="build-all" output="${_buildLogDir}\framework.log"/>
+        <ant antfile="build.xml" dir="${platformspluginDir}" target="build-all" output="${_buildLogDir}\platformsplugin.log"/>
+        <ant antfile="build.xml" dir="${mappingspluginDir}"  target="build-all" output="${_buildLogDir}\mappingsplugin.log"/>
+        <ant antfile="build.xml" dir="${scpluginDir}"        target="build-all" output="${_buildLogDir}\scplugin.log"/>
+    </target>
+
+    <!-- =================================================================== -->
+    <!--  misc                                                               -->
+    <!-- =================================================================== -->
+
+    <target name="compile-results" unless="build.failed" depends="init">
+    </target>
+
+    <!-- =================================================================== -->
+    <!--  JARs                                                               -->
+    <!-- =================================================================== -->
+
+    <target name="jar-workbench" depends="init">
+        <echo message="Implementation-Version: ${version.string}"/>
+        <jar jarfile="${libDir}/${workbench.jarfile}">
+            <manifest>
+                <attribute name="Specification-Title" value="${_productName}" />
+                <attribute name="Specification-Vendor" value="Eclipse Project" />
+                <attribute name="Specification-Version" value="${release.version}" />
+                <attribute name="Implementation-Title" value="test.org.eclipse.persistence.workbench" />
+                <attribute name="Implementation-Version" value="${version.string}"/>
+                <attribute name="Implementation-Vendor" value="Eclipse Project" />
+                <attribute name="Release-Designation" value="${release.designation}" />
+                <attribute name="Library-Designation" value="TopLink Workbench Tests" />
+            </manifest>
+            <zipgroupfileset dir="${libDir}">
+                <include name="utility_test.jar"/>
+                <include name="uitools_test.jar"/>
+                <include name="framework_test.jar"/>
+                <include name="platformsplugin_test.jar"/>
+                <include name="scplugin_test.jar"/>
+                <include name="mappingsplugin_test.jar"/>
+            </zipgroupfileset>
+        </jar>
+    </target>
+
+    <target name="jar-workbench-src" depends="init">
+        <echo message="Implementation-Version: ${version.string}"/>
+        <jar jarfile="${libDir}/${workbench.jarfile.src}">
+            <manifest>
+                <attribute name="Specification-Title" value="${_productName}" />
+                <attribute name="Specification-Vendor" value="Eclipse Project" />
+                <attribute name="Specification-Version" value="${release.version}" />
+                <attribute name="Implementation-Title" value="test.org.eclipse.persistence.workbench" />
+                <attribute name="Implementation-Version" value="${version.string}"/>
+                <attribute name="Implementation-Vendor" value="Eclipse Project" />
+                <attribute name="Release-Designation" value="${release.designation}" />
+                <attribute name="Library-Designation" value="TopLink Workbench Tests (source)" />
+            </manifest>
+            <zipgroupfileset dir="${libDir}">
+                <include name="utility_test_src.jar"/>
+                <include name="uitools_test_src.jar"/>
+                <include name="framework_test_src.jar"/>
+                <include name="platformsplugin_test_src.jar"/>
+                <include name="scplugin_test_src.jar"/>
+                <include name="mappingsplugin_test_src.jar"/>
+            </zipgroupfileset>
+        </jar>
+    </target>
+
+    <!-- =================================================================== -->
+    <!--  JUnit tests                                                        -->
+    <!-- =================================================================== -->
+
+    <target name="test-all" depends="init">
+        <junit>
+            <classpath path="${junit.classpath}" />
+            <formatter type="brief" usefile="false" />
+            <test name="test.org.eclipse.persistence.workbench.AllTests" />
+        </junit>
+    </target>
+
+    <!-- use this target to run a single test case -->
+    <target name="test-scratch" depends="init">
+        <junit>
+            <classpath path="${junit.classpath}" />
+            <formatter type="brief" usefile="false" />
+            <test name="test.org.eclipse.persistence.workbench.mappingsplugin.ExportRuntimeProjectJavaSourceCommandLineTests" />
+        </junit>
+    </target>
+
+    <!-- use this target to run a single sub-suite -->
+    <target name="test-scratch-suite" depends="test-uitools"/>
+
+    <target name="test-utility" depends="init">
+        <ant antfile="build.xml" dir="${utilityDir}" target="test-all" >
+            <property name="junit.classpath" value="${junit.classpath}" />
+        </ant>
+    </target>
+
+    <target name="test-uitools" depends="init">
+        <ant antfile="build.xml" dir="${uitoolsDir}" target="test-all" >
+            <property name="junit.classpath" value="${junit.classpath}" />
+        </ant>
+    </target>
+
+    <target name="test-framework" depends="init">
+        <ant antfile="build.xml" dir="${frameworkDir}" target="test-all" >
+            <property name="junit.classpath" value="${junit.classpath}" />
+        </ant>
+    </target>
+
+    <target name="test-platformsplugin" depends="init">
+        <ant antfile="build.xml" dir="${platformspluginDir}" target="test-all" >
+            <property name="junit.classpath" value="${junit.classpath}" />
+        </ant>
+    </target>
+
+    <target name="test-scplugin" depends="init">
+        <ant antfile="build.xml" dir="${scpluginDir}" target="test-all" >
+            <property name="junit.classpath" value="${junit.classpath}" />
+        </ant>
+    </target>
+
+    <target name="test-mappingsplugin" depends="init">
+        <ant antfile="build.xml" dir="${mappingspluginDir}" target="test-all" >
+            <property name="junit.classpath" value="${junit.classpath}" />
+        </ant>
+    </target>
+
+</project>

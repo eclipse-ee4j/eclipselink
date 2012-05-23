@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<employee id="123">
+		<responsibility>2001-01-01</responsibility>
+		<responsibility>2004-12-27</responsibility>
+		<responsibility>2002-05-06</responsibility>
+</employee>

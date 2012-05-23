@@ -1,0 +1,4 @@
+{"root":{
+    "writeOnlyString":"writeOnlyString",
+    "writeOnlyStringArray":["string1","string2","string3"]
+}}

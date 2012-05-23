@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<employee-type>
+	<a>A-String</a>
+	<b>B-string</b>
+	<g>G-String</g>
+</employee-type>

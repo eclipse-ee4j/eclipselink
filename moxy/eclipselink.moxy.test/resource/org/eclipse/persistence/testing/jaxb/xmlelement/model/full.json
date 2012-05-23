@@ -1,0 +1,50 @@
+{
+ "order" : 
+  { 
+
+ "items" : {
+      "item":
+
+
+   [ 
+      { 
+         "id" : "1", 
+         "money":{ 
+            "cost" : 5.00, 
+            "price" : 7.99
+	    },
+         "description" : [ "nice item", "comes in blue or red"]
+      }, 
+      { 
+         "id" :"2", 
+         "money":{ 
+             "cost" : 10.00, 
+             "price" : 15.99} ,
+         "description" : [ "big item", "very heavy"]
+         }
+     ] 
+     },
+
+   "customerInput":{
+       "comments" : [ "comment1", "comment2", "comment3",""]} , 
+   "someClass":"java.lang.Integer",
+   "customer" : { 
+      "id":0,
+      "firstName" : "Jane", 
+      "lastName" : "Smith", 
+      "contact":{
+      "address" : 
+         { 
+         "street" : "Main Street", 
+         "city" : "Ottawa",
+         "id" : 1
+         } 
+        }
+	 , 
+       "phoneNumbers":[],
+       "firstTimeCustomer" : false, 
+       "orderNumbers":[10,20,30]
+   } , 
+   "id" : 1  
+   } 
+}

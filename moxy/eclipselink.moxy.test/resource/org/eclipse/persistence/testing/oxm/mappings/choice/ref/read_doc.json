@@ -1,0 +1,32 @@
+{"root":{
+    "employees":{
+       "employee":[{
+	    "name":"Jane Doe",
+            "phone":{
+	       "id":"1"
+	     }
+        }]
+   },
+   "addresses":{
+      "address":[
+           {"id":"1",
+	    "street":"123 Abc Street",
+	    "zip":"123456"
+            },
+           {"id":"2",
+	    "street":"321 Cba Street",
+	    "zip":"654321"
+            }
+      ]
+   },
+   "phone-numbers":{
+      "phone":[
+         {"id":"0",
+	  "value":"234-4321"},
+         {"id":"1",
+	  "value":"123-3456"},
+         {"id":"11",
+	  "value":"555-7777"}
+      ]    
+   }
+}}

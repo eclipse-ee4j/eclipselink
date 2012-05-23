@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<employee>
+    <things>
+        <my-integer>66</my-integer>
+        <my-integer>99</my-integer>
+        <my-float>101.1</my-float>
+    </things>
+    <my-read-only-float>88.8</my-read-only-float>
+    <my-read-only-integer>77</my-read-only-integer>
+    <stuff>
+        <my-write-only-integer>3</my-write-only-integer>
+    </stuff>
+</employee>

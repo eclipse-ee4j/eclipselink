@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings version="2.0" xmlns="http://java.sun.com/xml/ns/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm orm_2_0.xsd">
+    <description>XML extended composite advanced member_2 Test Model Instance Document</description>
+    <package>org.eclipse.persistence.testing.models.jpa.xml.composite.advanced.member_2</package>
+    <entity name="XMLEmployee" class="Employee" access="PROPERTY">
+        <table name="XML_MBR2_EMPLOYEE"/>
+        <secondary-table name="XML_MBR2_SALARY">
+            <primary-key-join-column name="E_ID" referenced-column-name="EMP_ID"/>
+        </secondary-table>
+        <table-generator name="XML_MBR2_EMPLOYEE_TABLE_GENERATOR" table="XML_MBR2_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="EMPLOYEE_SEQ"/>
+        <named-query name="findAllXMLEmployeesByFirstName">
+            <query>SELECT OBJECT(employee) FROM XMLEmployee employee WHERE employee.firstName = :firstname</query>
+        </named-query>
+        <exclude-default-listeners/>
+        <exclude-superclass-listeners/>
+        <entity-listeners>
+            <entity-listener class="EmployeeListener">
+                <pre-persist method-name="prePersist"/>
+                <post-persist method-name="postPersist"/>
+                <pre-remove method-name="preRemove"/>
+                <post-remove method-name="postRemove"/>
+                <pre-update method-name="preUpdate"/>
+                <post-update method-name="postUpdate"/>
+                <post-load method-name="postLoad"/>
+            </entity-listener>
+        </entity-listeners>
+        <attributes>
+            <id name="id">
+                <column name="EMP_ID"/>
+                <generated-value strategy="TABLE" generator="XML_MBR2_EMPLOYEE_TABLE_GENERATOR"/>
+            </id>
+            <basic name="firstName" access="FIELD">
+                <column name="F_NAME"/>
+            </basic>
+            <basic name="lastName" access="FIELD">
+                <column name="L_NAME"/>
+            </basic>
+            <basic name="salary">
+                <column table="XML_MBR2_SALARY"/>
+            </basic>
+            <basic name="payScale">
+                <!--  Overridden in eclipselink-orm.xml -->
+                <column name="INVALID_PAY_SCALE"/>
+            </basic>
+            <basic name="version">
+                <column name="VERSION"/>
+            </basic>
+            <many-to-one name="address" target-entity="org.eclipse.persistence.testing.models.jpa.xml.composite.advanced.member_1.Address" fetch="LAZY">
+                <join-column name="ADDR_ID"/>
+                <cascade>
+                    <cascade-persist/>
+                </cascade>
+            </many-to-one>
+            <many-to-one name="manager" target-entity="Employee" fetch="LAZY">
+                <join-column name="MANAGER_EMP_ID" referenced-column-name="EMP_ID"/>
+                <cascade>
+                    <cascade-persist/>
+                </cascade>
+            </many-to-one>
+            <one-to-many name="phoneNumbers" target-entity="org.eclipse.persistence.testing.models.jpa.xml.composite.advanced.member_3.PhoneNumber" mapped-by="owner">
+                <cascade>
+                    <cascade-all/>
+                </cascade>
+            </one-to-many>
+            <one-to-many name="managedEmployees" target-entity="Employee" mapped-by="manager">
+                <cascade>
+                    <cascade-all/>
+                </cascade>
+            </one-to-many>
+            <one-to-many name="dealers" target-entity="org.eclipse.persistence.testing.models.jpa.xml.composite.advanced.member_3.Dealer">
+                <join-column name="FK_EMP_ID"/>
+                <cascade>
+                    <cascade-persist/>
+                    <cascade-merge/>
+                </cascade>
+            </one-to-many>
+            <many-to-many name="projects" target-entity="org.eclipse.persistence.testing.models.jpa.xml.composite.advanced.member_3.Project">
+                <order-by>name</order-by>
+                <join-table name="XML_MBR3_PROJ_EMP">
+                    <join-column name="EMP_ID" referenced-column-name="EMP_ID"/>
+                    <inverse-join-column name="PROJ_ID" referenced-column-name="PROJ_ID"/>
+                </join-table>
+                <cascade>
+                    <cascade-persist/>
+                </cascade>
+            </many-to-many>
+            <!-- This mapping is overridden in the eclipselink-orm.xml file -->
+            <element-collection name="creditLines" fetch="EAGER">
+                <map-key-column name="BANK_INVALID"/>
+                <column name="ACCOUNT_INVALID"/>
+                <collection-table name="EMP_CREDITLINES_INVALID">
+                    <join-column name="EMP_ID_INVALID"/>
+                </collection-table>
+            </element-collection>
+            <embedded name="period">
+                <attribute-override name="startDate">
+                    <column name="START_DATE" nullable="false"/>
+                </attribute-override>
+                <attribute-override name="endDate">
+                    <column name="END_DATE" nullable="true"/>
+                </attribute-override>
+            </embedded>
+        </attributes>
+    </entity>
+    <embeddable class="EmploymentPeriod" access="PROPERTY">
+        <attributes>
+            <basic name="startDate">
+                <column name="S_DATE"/>
+                <temporal>DATE</temporal>
+            </basic>
+            <basic name="endDate">
+                <column name="E_DATE"/>
+                <temporal>DATE</temporal>
+            </basic>
+        </attributes>
+    </embeddable>
+</entity-mappings>

@@ -1,0 +1,5 @@
+{"ns1.response":{
+    "xsi.type":"ns1.employee",
+    "name":"aaa",
+    "id":"123"
+}}

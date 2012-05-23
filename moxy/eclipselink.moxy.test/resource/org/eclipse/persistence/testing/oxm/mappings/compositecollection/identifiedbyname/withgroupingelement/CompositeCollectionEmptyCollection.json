@@ -1,0 +1,17 @@
+{"employee": {
+    "id":123,
+    "email-addresses":{
+       "email-address":[
+          {
+          "user-id":"jane.doe",
+           "domain":"example.com"
+           },
+	   {
+            "user-id":"jdoe",
+           "domain":"test.com"
+           }
+         ]
+     },
+     "mailing-addresses":{"mailing-address":[]}
+     }
+}

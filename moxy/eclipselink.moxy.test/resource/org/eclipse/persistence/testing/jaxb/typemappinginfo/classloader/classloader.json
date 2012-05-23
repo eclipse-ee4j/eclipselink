@@ -1,0 +1,16 @@
+{"root":{
+    "type":"employee",
+    "address":{
+       "street":"theStreet",
+       "city":"theCity"
+    },
+    "phoneNumbers":[
+       {
+          "areaCode":"613",
+	  "number":"1111111"
+	  },{
+	  "areaCode":"613",
+	  "number":"2222222"
+       }
+    ]
+}}

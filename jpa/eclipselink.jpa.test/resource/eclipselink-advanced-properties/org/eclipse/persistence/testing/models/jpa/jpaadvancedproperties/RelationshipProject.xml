@@ -1,0 +1,574 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<object-persistence version="Eclipse Persistence Services - 0.1-incubation" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.eclipse.org/eclipselink/xsds/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <name></name>
+   <class-mapping-descriptors>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.Customer</class>
+         <alias>Customer</alias>
+         <primary-key>
+            <field table="JPA_PROPS_CUSTOMER" name="CUST_ID" xsi:type="column"/>
+         </primary-key>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy">
+             <queries>
+               <query name="customerReadByName" xsi:type="read-object-query">
+                  <criteria operator="equal" xsi:type="relation-expression">
+                     <left name="name" xsi:type="query-key-expression">
+                        <base xsi:type="base-expression"/>
+                     </left>
+                     <right xsi:type="constant-expression">
+                        <value xsi:type="xsd:string">George W.</value>
+                     </right>
+                  </criteria>
+                  <arguments>
+                     <argument name="name">
+                        <type>java.lang.Object</type>
+                     </argument>
+                  </arguments>
+                  <reference-class>org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.Customer</reference-class>
+               </query>
+            </queries>
+            <timeout>0</timeout>
+            <insert-query xsi:type="insert-object-query"/>
+            <delete-query xsi:type="delete-object-query"/>
+            <does-exist-query xsi:type="does-exist-query">
+               <existence-check>check-database</existence-check>
+            </does-exist-query>
+            <read-object-query xsi:type="read-object-query">
+               <criteria operator="equal" xsi:type="relation-expression">
+                  <left xsi:type="field-expression">
+                     <field table="JPA_PROPS_CUSTOMER" name="CUST_ID" xsi:type="column"/>
+                     <base xsi:type="base-expression"/>
+                  </left>
+                  <right xsi:type="parameter-expression">
+                     <parameter table="JPA_PROPS_CUSTOMER" name="CUST_ID" xsi:type="column"/>
+                  </right>
+               </criteria>
+               <reference-class>org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.Customer</reference-class>
+            </read-object-query>
+         </querying>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>customerId</attribute-name>
+               <get-method>getCustomerId</get-method>
+               <set-method>setCustomerId</set-method>
+               <field table="JPA_PROPS_CUSTOMER" name="CUST_ID" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>name</attribute-name>
+               <get-method>getName</get-method>
+               <set-method>setName</set-method>
+               <field table="JPA_PROPS_CUSTOMER" name="NAME" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>version</attribute-name>
+               <get-method>getVersion</get-method>
+               <set-method>setVersion</set-method>
+               <field table="JPA_PROPS_CUSTOMER" name="CUST_VERSION" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>city</attribute-name>
+               <get-method>getCity</get-method>
+               <set-method>setCity</set-method>
+               <field table="JPA_PROPS_CUSTOMER" name="CITY" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="one-to-many-mapping">
+               <attribute-name>orders</attribute-name>
+               <get-method>getOrders</get-method>
+               <set-method>setOrders</set-method>
+               <reference-class>org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.Order</reference-class>
+               <cascade-persist>true</cascade-persist>
+               <cascade-merge>true</cascade-merge>
+               <cascade-refresh>true</cascade-refresh>
+               <cascade-remove>true</cascade-remove>
+               <target-foreign-key>
+                  <field-reference>
+                     <source-field table="JPA_PROPS_ORDER" name="CUSTOMER_CUST_ID" xsi:type="column"/>
+                     <target-field table="JPA_PROPS_CUSTOMER" name="CUST_ID" xsi:type="column"/>
+                  </field-reference>
+               </target-foreign-key>
+               <container xsi:type="container-policy">
+                  <collection-type>org.eclipse.persistence.indirection.IndirectList</collection-type>
+               </container>
+               <indirection xsi:type="transparent-collection-indirection-policy"/>
+               <selection-query xsi:type="read-all-query">
+                  <criteria operator="equal" xsi:type="relation-expression">
+                     <left xsi:type="field-expression">
+                        <field table="JPA_PROPS_ORDER" name="CUSTOMER_CUST_ID" xsi:type="column"/>
+                        <base xsi:type="base-expression"/>
+                     </left>
+                     <right xsi:type="parameter-expression">
+                        <parameter table="JPA_PROPS_CUSTOMER" name="CUST_ID" xsi:type="column"/>
+                     </right>
+                  </criteria>
+                  <reference-class>org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.Order</reference-class>
+                  <container xsi:type="container-policy">
+                     <collection-type>org.eclipse.persistence.indirection.IndirectList</collection-type>
+                  </container>
+               </selection-query>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="many-to-many-mapping">
+               <attribute-name>CCustomers</attribute-name>
+               <get-method>getCCustomers</get-method>
+               <set-method>setCCustomers</set-method>
+               <reference-class>org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.Customer</reference-class>
+               <relation-table>JPA_PROPS_C_C</relation-table>
+               <source-relation-foreign-key>
+                  <field-reference>
+                     <source-field table="JPA_PROPS_C_C" name="C_C_ID" xsi:type="column"/>
+                     <target-field table="JPA_PROPS_CUSTOMER" name="CUST_ID" xsi:type="column"/>
+                  </field-reference>
+               </source-relation-foreign-key>
+               <target-relation-foreign-key>
+                  <field-reference>
+                     <source-field table="JPA_PROPS_C_C" name="CC_C_ID" xsi:type="column"/>
+                     <target-field table="JPA_PROPS_CUSTOMER" name="CUST_ID" xsi:type="column"/>
+                  </field-reference>
+               </target-relation-foreign-key>
+               <container xsi:type="container-policy">
+                  <collection-type>org.eclipse.persistence.indirection.IndirectList</collection-type>
+               </container>
+               <indirection xsi:type="transparent-collection-indirection-policy"/>
+               <selection-query xsi:type="read-all-query">
+                  <criteria operator="and" xsi:type="logic-expression">
+                     <left operator="equal" xsi:type="relation-expression">
+                        <left xsi:type="field-expression">
+                           <field table="JPA_PROPS_C_C" name="C_C_ID" xsi:type="column"/>
+                           <base xsi:type="base-expression"/>
+                        </left>
+                        <right xsi:type="parameter-expression">
+                           <parameter table="JPA_PROPS_CUSTOMER" name="CUST_ID" xsi:type="column"/>
+                        </right>
+                     </left>
+                     <right operator="equal" xsi:type="relation-expression">
+                        <left xsi:type="field-expression">
+                           <field table="JPA_PROPS_CUSTOMER" name="CUST_ID" xsi:type="column"/>
+                           <base xsi:type="base-expression"/>
+                        </left>
+                        <right xsi:type="field-expression">
+                           <field table="JPA_PROPS_C_C" name="CC_C_ID" xsi:type="column"/>
+                           <base xsi:type="base-expression"/>
+                        </right>
+                     </right>
+                  </criteria>
+                  <reference-class>org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.Customer</reference-class>
+                  <container xsi:type="container-policy">
+                     <collection-type>org.eclipse.persistence.indirection.IndirectList</collection-type>
+                  </container>
+               </selection-query>
+               <insert-query xsi:type="data-modify-query"/>
+               <delete-query xsi:type="data-modify-query">
+                  <criteria operator="and" xsi:type="logic-expression">
+                     <left operator="equal" xsi:type="relation-expression">
+                        <left xsi:type="field-expression">
+                           <field table="JPA_PROPS_C_C" name="CC_C_ID" xsi:type="column"/>
+                           <base xsi:type="base-expression"/>
+                        </left>
+                        <right xsi:type="parameter-expression">
+                           <parameter table="JPA_PROPS_C_C" name="CC_C_ID" xsi:type="column"/>
+                        </right>
+                     </left>
+                     <right operator="equal" xsi:type="relation-expression">
+                        <left xsi:type="field-expression">
+                           <field table="JPA_PROPS_C_C" name="C_C_ID" xsi:type="column"/>
+                           <base xsi:type="base-expression"/>
+                        </left>
+                        <right xsi:type="parameter-expression">
+                           <parameter table="JPA_PROPS_C_C" name="C_C_ID" xsi:type="column"/>
+                        </right>
+                     </right>
+                  </criteria>
+               </delete-query>
+               <delete-all-query xsi:type="data-modify-query">
+                  <criteria operator="equal" xsi:type="relation-expression">
+                     <left xsi:type="field-expression">
+                        <field table="JPA_PROPS_C_C" name="C_C_ID" xsi:type="column"/>
+                        <base xsi:type="base-expression"/>
+                     </left>
+                     <right xsi:type="parameter-expression">
+                        <parameter table="JPA_PROPS_CUSTOMER" name="CUST_ID" xsi:type="column"/>
+                     </right>
+                  </criteria>
+               </delete-all-query>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <locking xsi:type="version-locking-policy">
+            <version-field table="JPA_PROPS_CUSTOMER" name="CUST_VERSION" xsi:type="column"/>
+            <store-version-in-cache>false</store-version-in-cache>
+         </locking>
+         <sequencing>
+            <sequence-name>JPA_PROPS_CUSTOMER_SEQ</sequence-name>
+            <sequence-field table="JPA_PROPS_CUSTOMER" name="CUST_ID" xsi:type="column"/>
+         </sequencing>
+         <caching>
+            <cache-size>500</cache-size>
+         </caching>
+         <remote-caching>
+            <cache-size>500</cache-size>
+         </remote-caching>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <change-policy xsi:type="deferred-detection-change-policy"/>
+         <tables>
+            <table name="JPA_PROPS_CUSTOMER"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.Order</class>
+         <alias>OrderBean</alias>
+         <primary-key>
+            <field table="JPA_PROPS_ORDER" name="ORDER_ID" xsi:type="column"/>
+         </primary-key>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy">
+            <timeout>0</timeout>
+            <insert-query xsi:type="insert-object-query"/>
+            <delete-query xsi:type="delete-object-query"/>
+            <does-exist-query xsi:type="does-exist-query">
+               <existence-check>check-database</existence-check>
+            </does-exist-query>
+            <read-object-query xsi:type="read-object-query">
+               <criteria operator="equal" xsi:type="relation-expression">
+                  <left xsi:type="field-expression">
+                     <field table="JPA_PROPS_ORDER" name="ORDER_ID" xsi:type="column"/>
+                     <base xsi:type="base-expression"/>
+                  </left>
+                  <right xsi:type="parameter-expression">
+                     <parameter table="JPA_PROPS_ORDER" name="ORDER_ID" xsi:type="column"/>
+                  </right>
+               </criteria>
+               <reference-class>org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.Order</reference-class>
+            </read-object-query>
+         </querying>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>orderId</attribute-name>
+               <get-method>getOrderId</get-method>
+               <set-method>setOrderId</set-method>
+               <field table="JPA_PROPS_ORDER" name="ORDER_ID" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>version</attribute-name>
+               <get-method>getVersion</get-method>
+               <set-method>setVersion</set-method>
+               <field table="JPA_PROPS_ORDER" name="ORDER_VERSION" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>shippingAddress</attribute-name>
+               <get-method>getShippingAddress</get-method>
+               <set-method>setShippingAddress</set-method>
+               <field table="JPA_PROPS_ORDER" name="SHIP_ADDR" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>quantity</attribute-name>
+               <get-method>getQuantity</get-method>
+               <set-method>setQuantity</set-method>
+               <field table="JPA_PROPS_ORDER" name="QUANTITY" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="one-to-one-mapping">
+               <attribute-name>customer</attribute-name>
+               <get-method>getCustomer</get-method>
+               <set-method>setCustomer</set-method>
+               <reference-class>org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.Customer</reference-class>
+               <foreign-key>
+                  <field-reference>
+                     <source-field table="JPA_PROPS_ORDER" name="CUSTOMER_CUST_ID" xsi:type="column"/>
+                     <target-field table="JPA_PROPS_CUSTOMER" name="CUST_ID" xsi:type="column"/>
+                  </field-reference>
+               </foreign-key>
+               <foreign-key-fields>
+                  <field table="JPA_PROPS_ORDER" name="CUSTOMER_CUST_ID" xsi:type="column"/>
+               </foreign-key-fields>
+               <selection-query xsi:type="read-object-query">
+                  <criteria operator="equal" xsi:type="relation-expression">
+                     <left xsi:type="field-expression">
+                        <field table="JPA_PROPS_CUSTOMER" name="CUST_ID" xsi:type="column"/>
+                        <base xsi:type="base-expression"/>
+                     </left>
+                     <right xsi:type="parameter-expression">
+                        <parameter table="JPA_PROPS_ORDER" name="CUSTOMER_CUST_ID" xsi:type="column"/>
+                     </right>
+                  </criteria>
+                  <reference-class>org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.Customer</reference-class>
+               </selection-query>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="one-to-one-mapping">
+               <attribute-name>salesPerson</attribute-name>
+               <get-method>getSalesPerson</get-method>
+               <set-method>setSalesPerson</set-method>
+               <reference-class>org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.SalesPerson</reference-class>
+               <foreign-key>
+                  <field-reference>
+                     <source-field table="JPA_PROPS_ORDER" name="SALESPERSON_ID" xsi:type="column"/>
+                     <target-field table="JPA_PROPS_SALESPERSON" name="ID" xsi:type="column"/>
+                  </field-reference>
+               </foreign-key>
+               <foreign-key-fields>
+                  <field table="JPA_PROPS_ORDER" name="SALESPERSON_ID" xsi:type="column"/>
+               </foreign-key-fields>
+               <selection-query xsi:type="read-object-query">
+                  <criteria operator="equal" xsi:type="relation-expression">
+                     <left xsi:type="field-expression">
+                        <field table="JPA_PROPS_SALESPERSON" name="ID" xsi:type="column"/>
+                        <base xsi:type="base-expression"/>
+                     </left>
+                     <right xsi:type="parameter-expression">
+                        <parameter table="JPA_PROPS_ORDER" name="SALESPERSON_ID" xsi:type="column"/>
+                     </right>
+                  </criteria>
+                  <reference-class>org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.SalesPerson</reference-class>
+               </selection-query>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="one-to-one-mapping">
+               <attribute-name>billedCustomer</attribute-name>
+               <get-method>getBilledCustomer</get-method>
+               <set-method>setBilledCustomer</set-method>
+               <reference-class>org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.Customer</reference-class>
+               <foreign-key>
+                  <field-reference>
+                     <source-field table="JPA_PROPS_ORDER" name="BILLEDCUSTOMER_CUST_ID" xsi:type="column"/>
+                     <target-field table="JPA_PROPS_CUSTOMER" name="CUST_ID" xsi:type="column"/>
+                  </field-reference>
+               </foreign-key>
+               <foreign-key-fields>
+                  <field table="JPA_PROPS_ORDER" name="BILLEDCUSTOMER_CUST_ID" xsi:type="column"/>
+               </foreign-key-fields>
+               <selection-query xsi:type="read-object-query">
+                  <criteria operator="equal" xsi:type="relation-expression">
+                     <left xsi:type="field-expression">
+                        <field table="JPA_PROPS_CUSTOMER" name="CUST_ID" xsi:type="column"/>
+                        <base xsi:type="base-expression"/>
+                     </left>
+                     <right xsi:type="parameter-expression">
+                        <parameter table="JPA_PROPS_ORDER" name="BILLEDCUSTOMER_CUST_ID" xsi:type="column"/>
+                     </right>
+                  </criteria>
+                  <reference-class>org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.Customer</reference-class>
+               </selection-query>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="one-to-one-mapping">
+               <attribute-name>item</attribute-name>
+               <get-method>getItem</get-method>
+               <set-method>setItem</set-method>
+               <reference-class>org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.Item</reference-class>
+               <cascade-persist>true</cascade-persist>
+               <cascade-merge>true</cascade-merge>
+               <cascade-refresh>true</cascade-refresh>
+               <cascade-remove>true</cascade-remove>
+               <foreign-key>
+                  <field-reference>
+                     <source-field table="JPA_PROPS_ORDER" name="ITEM_ID" xsi:type="column"/>
+                     <target-field table="JPA_PROPS_ITEM" name="ID" xsi:type="column"/>
+                  </field-reference>
+               </foreign-key>
+               <foreign-key-fields>
+                  <field table="JPA_PROPS_ORDER" name="ITEM_ID" xsi:type="column"/>
+               </foreign-key-fields>
+               <selection-query xsi:type="read-object-query">
+                  <criteria operator="equal" xsi:type="relation-expression">
+                     <left xsi:type="field-expression">
+                        <field table="JPA_PROPS_ITEM" name="ID" xsi:type="column"/>
+                        <base xsi:type="base-expression"/>
+                     </left>
+                     <right xsi:type="parameter-expression">
+                        <parameter table="JPA_PROPS_ORDER" name="ITEM_ID" xsi:type="column"/>
+                     </right>
+                  </criteria>
+                  <reference-class>org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.Item</reference-class>
+               </selection-query>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <locking xsi:type="version-locking-policy">
+            <version-field table="JPA_PROPS_ORDER" name="ORDER_VERSION" xsi:type="column"/>
+            <store-version-in-cache>false</store-version-in-cache>
+         </locking>
+         <sequencing>
+            <sequence-name>JPA_PROPS_ORDER_SEQ</sequence-name>
+            <sequence-field table="JPA_PROPS_ORDER" name="ORDER_ID" xsi:type="column"/>
+         </sequencing>
+         <caching>
+            <cache-size>500</cache-size>
+         </caching>
+         <remote-caching>
+            <cache-size>500</cache-size>
+         </remote-caching>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <change-policy xsi:type="deferred-detection-change-policy"/>
+         <tables>
+            <table name="JPA_PROPS_ORDER"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.Item</class>
+         <alias>Item</alias>
+         <primary-key>
+            <field table="JPA_PROPS_ITEM" name="ID" xsi:type="column"/>
+         </primary-key>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy">
+            <timeout>0</timeout>
+            <insert-query xsi:type="insert-object-query"/>
+            <delete-query xsi:type="delete-object-query"/>
+            <does-exist-query xsi:type="does-exist-query">
+               <existence-check>check-database</existence-check>
+            </does-exist-query>
+            <read-object-query xsi:type="read-object-query">
+               <criteria operator="equal" xsi:type="relation-expression">
+                  <left xsi:type="field-expression">
+                     <field table="JPA_PROPS_ITEM" name="ID" xsi:type="column"/>
+                     <base xsi:type="base-expression"/>
+                  </left>
+                  <right xsi:type="parameter-expression">
+                     <parameter table="JPA_PROPS_ITEM" name="ID" xsi:type="column"/>
+                  </right>
+               </criteria>
+               <reference-class>org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.Item</reference-class>
+            </read-object-query>
+         </querying>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>itemId</attribute-name>
+               <get-method>getItemId</get-method>
+               <set-method>setItemId</set-method>
+               <field table="JPA_PROPS_ITEM" name="ID" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>name</attribute-name>
+               <get-method>getName</get-method>
+               <set-method>setName</set-method>
+               <field table="JPA_PROPS_ITEM" name="NAME" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>version</attribute-name>
+               <get-method>getVersion</get-method>
+               <set-method>setVersion</set-method>
+               <field table="JPA_PROPS_ITEM" name="ITEM_VERSION" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>description</attribute-name>
+               <get-method>getDescription</get-method>
+               <set-method>setDescription</set-method>
+               <field table="JPA_PROPS_ITEM" name="DESCRIPTION" xsi:type="column"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <locking xsi:type="version-locking-policy">
+            <version-field table="JPA_PROPS_ITEM" name="ITEM_VERSION" xsi:type="column"/>
+            <store-version-in-cache>false</store-version-in-cache>
+         </locking>
+         <sequencing>
+            <sequence-name>ITEM_SEQ</sequence-name>
+            <sequence-field table="JPA_PROPS_ITEM" name="ID" xsi:type="column"/>
+         </sequencing>
+         <caching>
+            <cache-size>500</cache-size>
+         </caching>
+         <remote-caching>
+            <cache-size>500</cache-size>
+         </remote-caching>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <change-policy xsi:type="deferred-detection-change-policy"/>
+         <tables>
+            <table name="JPA_PROPS_ITEM"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.SalesPerson</class>
+         <alias>SalesPerson</alias>
+         <primary-key>
+            <field table="JPA_PROPS_SALESPERSON" name="ID" xsi:type="column"/>
+         </primary-key>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy">
+            <timeout>0</timeout>
+            <insert-query xsi:type="insert-object-query"/>
+            <delete-query xsi:type="delete-object-query"/>
+            <does-exist-query xsi:type="does-exist-query">
+               <existence-check>check-database</existence-check>
+            </does-exist-query>
+            <read-object-query xsi:type="read-object-query">
+               <criteria operator="equal" xsi:type="relation-expression">
+                  <left xsi:type="field-expression">
+                     <field table="JPA_PROPS_SALESPERSON" name="ID" xsi:type="column"/>
+                     <base xsi:type="base-expression"/>
+                  </left>
+                  <right xsi:type="parameter-expression">
+                     <parameter table="JPA_PROPS_SALESPERSON" name="ID" xsi:type="column"/>
+                  </right>
+               </criteria>
+               <reference-class>org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.SalesPerson</reference-class>
+            </read-object-query>
+         </querying>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>id</attribute-name>
+               <get-method>getId</get-method>
+               <set-method>setId</set-method>
+               <field table="JPA_PROPS_SALESPERSON" name="ID" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>name</attribute-name>
+               <get-method>getName</get-method>
+               <set-method>setName</set-method>
+               <field table="JPA_PROPS_SALESPERSON" name="NAME" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="one-to-many-mapping">
+               <attribute-name>orders</attribute-name>
+               <get-method>getOrders</get-method>
+               <set-method>setOrders</set-method>
+               <reference-class>org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.Order</reference-class>
+               <cascade-persist>true</cascade-persist>
+               <cascade-merge>true</cascade-merge>
+               <cascade-refresh>true</cascade-refresh>
+               <cascade-remove>true</cascade-remove>
+               <target-foreign-key>
+                  <field-reference>
+                     <source-field table="JPA_PROPS_ORDER" name="SALESPERSON_ID" xsi:type="column"/>
+                     <target-field table="JPA_PROPS_SALESPERSON" name="ID" xsi:type="column"/>
+                  </field-reference>
+               </target-foreign-key>
+               <container xsi:type="container-policy">
+                  <collection-type>org.eclipse.persistence.indirection.IndirectList</collection-type>
+               </container>
+               <indirection xsi:type="transparent-collection-indirection-policy"/>
+               <selection-query xsi:type="read-all-query">
+                  <criteria operator="equal" xsi:type="relation-expression">
+                     <left xsi:type="field-expression">
+                        <field table="JPA_PROPS_ORDER" name="SALESPERSON_ID" xsi:type="column"/>
+                        <base xsi:type="base-expression"/>
+                     </left>
+                     <right xsi:type="parameter-expression">
+                        <parameter table="JPA_PROPS_SALESPERSON" name="ID" xsi:type="column"/>
+                     </right>
+                  </criteria>
+                  <reference-class>org.eclipse.persistence.testing.models.jpa.jpaadvancedproperties.Order</reference-class>
+                  <container xsi:type="container-policy">
+                     <collection-type>org.eclipse.persistence.indirection.IndirectList</collection-type>
+                  </container>
+               </selection-query>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <sequencing>
+            <sequence-name>SALESPERSON_SEQ</sequence-name>
+            <sequence-field table="JPA_PROPS_SALESPERSON" name="ID" xsi:type="column"/>
+         </sequencing>
+         <caching>
+            <cache-size>500</cache-size>
+         </caching>
+         <remote-caching>
+            <cache-size>500</cache-size>
+         </remote-caching>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <change-policy xsi:type="deferred-detection-change-policy"/>
+         <tables>
+            <table name="JPA_PROPS_SALESPERSON"/>
+         </tables>
+      </class-mapping-descriptor>
+   </class-mapping-descriptors>
+</object-persistence>

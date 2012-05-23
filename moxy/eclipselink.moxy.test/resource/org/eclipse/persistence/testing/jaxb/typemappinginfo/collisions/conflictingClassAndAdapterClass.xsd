@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="someUri" xmlns:ns0="someUri" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <xsd:element name="testTagName6" type="xsd:string"/>
+  <xsd:element name="testTagName5" type="xsd:string"/>
+  <xsd:element name="testTagName3" type="xsd:string"/>
+  <xsd:element name="testTagName4" type="xsd:string"/>
+  <xsd:element name="testTagName2" type="xsd:string"/>
+  <xsd:element name="testTagName1" type="xsd:string"/>
+</xsd:schema>

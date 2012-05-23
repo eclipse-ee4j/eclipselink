@@ -1,0 +1,4 @@
+<customer>
+   <fieldProperty>class:field:fieldPropertyValue</fieldProperty>
+   <property>class:prop:propertyValue</property>
+</customer>

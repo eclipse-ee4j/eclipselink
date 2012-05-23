@@ -1,0 +1,82 @@
+<?xml version='1.0' encoding='US-ASCII'?>
+     <xsd:schema xmlns:xsd='http://www.w3.org/2001/XMLSchema'
+	    xmlns='http://www.example.org'
+            xmlns:sdoJava="commonj.sdo/java"
+            xmlns:sdoXML="commonj.sdo/xml"
+            xmlns:sdo="commonj.sdo"
+	    targetNamespace='http://www.example.org'
+	    elementFormDefault='unqualified'>
+	  <xsd:element name = 'Test' type = 'myTestType'/>
+ 	  <xsd:element name = 'Person' type = 'PersonType'/>
+	  <xsd:complexType name='myTestType'>
+		<xsd:sequence>
+			<xsd:element name = 'myAnySimpleTypeTest' type = 'xsd:anySimpleType'/>
+			<xsd:element name = 'myAnySimpleTypeTest2' type = 'xsd:anySimpleType'/>
+                        <xsd:element name = 'myAnyTypeTest' type = 'xsd:anyType'/>
+			<xsd:element name = 'myAnyTypeTest2' type = 'xsd:anyType'/>
+			<xsd:element name = 'myAnyTypeTest3' type = 'xsd:anyType' maxOccurs='unbounded'/>
+			<xsd:element name = 'myAnyTypeTest4' type = 'xsd:anyType' maxOccurs='unbounded'/>
+			<xsd:element name = 'myAnyURITest' type = 'xsd:anyURI'/>
+			<xsd:element name = 'myBase64BinaryTest' type = 'xsd:base64Binary'/>
+			<xsd:element name = 'myBooleanTest' type = 'xsd:boolean'/>
+			<xsd:element name = 'myByteTest' type = 'xsd:byte'/>
+			<xsd:element name = 'myDateTest' type = 'xsd:date'/>
+			<xsd:element name = 'myDateTimeTest' type = 'xsd:dateTime'/>
+			<xsd:element name = 'myDecimalTest' type = 'xsd:decimal'/>
+			<xsd:element name = 'myDoubleTest' type = 'xsd:double'/>
+			<xsd:element name = 'myDurationTest' type = 'xsd:duration'/>
+			<xsd:element name = 'myENTITIESTest' type = 'xsd:ENTITIES'/>
+			<xsd:element name = 'myENTITYTest' type = 'xsd:ENTITY'/>
+			<xsd:element name = 'myFloatTest' type = 'xsd:float'/>			
+			<xsd:element name = 'myGDayTest' type = 'xsd:gDay'/>
+			<xsd:element name = 'myGMonthTest' type = 'xsd:gMonth'/>
+			<xsd:element name = 'myGMonthDayTest' type = 'xsd:gMonthDay'/>
+			<xsd:element name = 'myGYearTest' type = 'xsd:gYear'/>
+			<xsd:element name = 'myGYearMonthTest' type = 'xsd:gYearMonth'/>
+			<xsd:element name = 'myHexBinaryTest' type = 'xsd:hexBinary'/>
+			<xsd:element name = 'myIDTest' type = 'xsd:ID'/>
+			<xsd:element name = 'myIDREFTest' type = 'xsd:IDREF'/>
+			<xsd:element name = 'myIDREFSTest' type = 'xsd:IDREFS'/>
+			<xsd:element name = 'myIntTest' type = 'xsd:int'/>
+			<xsd:element name = 'myIntegerTest' type = 'xsd:integer'/>
+			<xsd:element name = 'myLanguageTest' type = 'xsd:language'/>			
+			<xsd:element name = 'myLongTest' type = 'xsd:long'/>
+			<xsd:element name = 'myNameTest' type = 'xsd:Name'/>
+			<xsd:element name = 'myNCNameTest' type = 'xsd:NCName'/>
+			<xsd:element name = 'myNegativeIntegerTest' type = 'xsd:negativeInteger'/>
+			<xsd:element name = 'myNonNegativeIntegerTest' type = 'xsd:nonNegativeInteger'/>
+			<xsd:element name = 'myNMTOKENTest' type = 'xsd:NMTOKEN'/>
+			<xsd:element name = 'myNMTOKENSTest' type = 'xsd:NMTOKENS'/>
+			<xsd:element name = 'myNOTATIONTest' type = 'xsd:NOTATION'/>
+			<xsd:element name = 'myNormalizedStringTest' type = 'xsd:normalizedString'/>
+			<xsd:element name = 'myPositiveIntegerTest' type = 'xsd:positiveInteger'/>
+			<xsd:element name = 'myNonPositiveIntegerTest' type = 'xsd:nonPositiveInteger'/>
+			<xsd:element name = 'myQNameTest' type = 'xsd:QName'/>
+			<xsd:element name = 'myShort' type = 'xsd:short'/>
+			<xsd:element name = 'myStringTest' type = 'xsd:string'/>
+			<xsd:element name = 'myTimeTest' type = 'xsd:time'/>
+			<xsd:element name = 'myTokenTest' type = 'xsd:token'/>
+			<xsd:element name = 'myUnsignedByteTest' type = 'xsd:unsignedByte'/>
+			<xsd:element name = 'myUnsignedIntTest' type = 'xsd:unsignedInt'/>
+			<xsd:element name = 'myUnsignedLongTest' type = 'xsd:unsignedLong'/>
+			<xsd:element name = 'myUnsignedShortTest' type = 'xsd:unsignedShort'/>
+                        <!--xsd:element name = 'myLongWrapperTest' type = 'xsd:boolean' sdoXML:dataType='sdoJava:LongObject'/>
+			<xsd:element name = 'myBooleanWrapperTest' type = 'xsd:boolean' sdoXML:dataType='sdoJava:BooleanObject'/-->
+
+			<xsd:element name = 'myBooleanWrapperTest' type = 'xsd:boolean' sdoXML:dataType='sdoJava:BooleanObject'/>
+			<xsd:element name = 'myByteWrapperTest' type = 'xsd:byte' sdoXML:dataType='sdoJava:ByteObject'/>
+			<xsd:element name = 'myCharacterWrapperTest' type = 'xsd:int' sdoXML:dataType='sdoJava:CharacterObject'/>
+			<xsd:element name = 'myDoubleWrapperTest' type = 'xsd:double' sdoXML:dataType='sdoJava:DoubleObject'/>
+			<xsd:element name = 'myFloatWrapperTest' type = 'xsd:float' sdoXML:dataType='sdoJava:FloatObject'/>
+			<xsd:element name = 'myIntegerWrapperTest' type = 'xsd:int' sdoXML:dataType='sdoJava:IntObject'/>
+			<xsd:element name = 'myLongWrapperTest' type = 'xsd:long' sdoXML:dataType='sdoJava:LongObject'/>
+			<xsd:element name = 'myShortWrapperTest' type = 'xsd:short' sdoXML:dataType='sdoJava:ShortObject'/>
+		</xsd:sequence>
+	  </xsd:complexType>
+	   <xsd:complexType name='PersonType'>
+		<xsd:sequence>
+			<xsd:element name = 'firstName' type = 'xsd:string'/>
+			<xsd:element name = 'lastName' type = 'xsd:string'/>
+		</xsd:sequence>
+	  </xsd:complexType>
+     </xsd:schema>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<employee empId="101" salaries="123456.78 234567.89">
+  <projects>
+    <projectId>01</projectId>
+    <projectId/>
+    <projectId>10</projectId>
+    <projectId>11</projectId>
+  </projects>
+  <private-data>
+      <entry>This is some private data</entry>
+      <entry>This is more private data</entry>
+  </private-data>
+  <character-data>
+      <entry><![CDATA[<characters>a b c d e f g</characters>]]></entry>
+      <entry><![CDATA[<characters>h i j k l m n</characters>]]></entry>
+  </character-data>
+</employee>

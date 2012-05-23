@@ -1,0 +1,13 @@
+{"ns0.person":{
+   "@ns2.id":10,
+   "ns1.firstName":"Jill",
+   "ns1.middleNames":["Jane", "Janice"],
+   "ns2.lastName":"MacDonald",
+   "ns3.contact":{
+      "ns1.address":{
+          "street":"The Street",
+          "city":"Ottawa"
+      }
+   }
+ }
+}

@@ -1,0 +1,9 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<theRoot xmlns="namespaceA" xmlns:ns0="namespaceB">
+   <classA>
+      <id>10</id>
+   </classA>
+   <classB>
+      <ns0:id>20</ns0:id>
+   </classB>
+</theRoot>

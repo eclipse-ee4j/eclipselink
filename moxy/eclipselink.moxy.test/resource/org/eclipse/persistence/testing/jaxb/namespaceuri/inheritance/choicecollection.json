@@ -1,0 +1,14 @@
+{"ns0.root":{
+      "choice":{
+           "string-choice":["choice string test2","choice string test"],
+           "another-package-subtype-choice":[{
+                "ns5.subTypeProp":0
+	   }],
+	   "integer-choice":[400, 500],
+           "subtype-level2-choice":[{
+	       "ns5.baseProp":"boo",
+               "ns5.subTypeProp":0
+	    }]
+      }
+   }
+}

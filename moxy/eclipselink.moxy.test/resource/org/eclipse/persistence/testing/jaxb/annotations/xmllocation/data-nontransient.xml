@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data>
+   <key>dat325</key>
+   <data1>sdjfhdsaoiufhosaidufh</data1>
+   <data2>kjdfgkjdsfg8374934874</data2>
+   <data3>84376328476324XXXXXXX</data3>
+   <subData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="detailDataNT">
+      <info>name|rbarkhouse</info>
+      <locator/>
+
+
+
+   </subData>
+   <subData>
+      <info>phone|6132832684</info>
+      <locator/>
+
+
+
+   </subData>
+   <subData xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="leafDataNT">
+      <info>id|8827</info>
+      <locator/>
+
+
+
+   </subData>
+   <locator/>
+
+
+
+</data>

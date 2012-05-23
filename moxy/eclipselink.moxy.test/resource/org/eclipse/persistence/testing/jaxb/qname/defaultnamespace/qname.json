@@ -1,0 +1,5 @@
+{"root":{
+   "qname":"localPart1",
+   "listOfNames":["{myns1}localPart2","localPart3", "{myns}localPart4"]
+   }
+}

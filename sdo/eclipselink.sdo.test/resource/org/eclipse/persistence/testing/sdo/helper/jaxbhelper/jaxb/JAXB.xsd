@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="urn:jaxb" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns0="urn:jaxb">
+   <xsd:complexType name="root">
+      <xsd:sequence>
+         <xsd:element name="child1" type="ns0:child1" minOccurs="0"/>
+         <xsd:element name="child2" minOccurs="0">
+            <xsd:complexType>
+               <xsd:sequence>
+                  <xsd:element name="child1" type="ns0:child1" minOccurs="0"/>
+                  <xsd:element name="id" type="xsd:int" minOccurs="0"/>
+               </xsd:sequence>
+            </xsd:complexType>
+         </xsd:element>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="child1">
+      <xsd:sequence>
+         <xsd:element name="child2" minOccurs="0">
+            <xsd:complexType>
+               <xsd:sequence>
+                  <xsd:element name="child1" type="ns0:child1" minOccurs="0"/>
+                  <xsd:element name="id" type="xsd:int" minOccurs="0"/>
+               </xsd:sequence>
+            </xsd:complexType>
+         </xsd:element>
+         <xsd:element name="id" type="xsd:int" minOccurs="0"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="child2">
+      <xsd:complexType>
+         <xsd:sequence>
+            <xsd:element name="child1" type="ns0:child1" minOccurs="0"/>
+            <xsd:element name="id" type="xsd:int" minOccurs="0"/>
+         </xsd:sequence>
+      </xsd:complexType>
+   </xsd:element>
+</xsd:schema>

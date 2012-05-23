@@ -1,0 +1,7 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<ns0:root xmlns:ns0="rootNamespace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <item>10</item>
+   <item xsi:type="xsd:int">20</item>
+   <item xsi:type="xsd:string">30</item>
+   <item xsi:type="xsd:int">40</item>
+</ns0:root>

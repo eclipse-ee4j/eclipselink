@@ -1,0 +1,5 @@
+{ "root":{
+  "attribute":"{urn:a}a",
+  "element":"{urn:b}b",
+  "list":["{urn:c}c","{urn:d}d"]
+}}

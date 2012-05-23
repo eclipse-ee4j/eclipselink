@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:complexType name="car">
+      <xsd:complexContent>
+         <xsd:extension base="vehicle">
+            <xsd:sequence>
+               <xsd:element name="number-of-doors" type="xsd:int"/>
+               <xsd:element name="miles-per-gallon" type="xsd:int"/>
+            </xsd:sequence>
+         </xsd:extension>
+      </xsd:complexContent>
+   </xsd:complexType>
+   <xsd:complexType name="vehicle">
+      <xsd:sequence>
+         <xsd:element name="model" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="manufacturer" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="top-speed" type="xsd:int"/>
+      </xsd:sequence>
+      <xsd:attribute name="vtype" type="xsd:string"/>
+   </xsd:complexType>
+   <xsd:element name="car-data" type="car"/>
+   <xsd:element name="vehicle-data" type="vehicle"/>
+</xsd:schema>

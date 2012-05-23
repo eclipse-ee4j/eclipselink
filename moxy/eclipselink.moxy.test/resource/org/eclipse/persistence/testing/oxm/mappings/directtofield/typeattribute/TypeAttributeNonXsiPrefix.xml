@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<employee xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:non-xsi-prefix="http://www.w3.org/2001/XMLSchema-instance">
+    <identifier non-xsi-prefix:type="xsd:int">123</identifier>
+    <first-name>Jane</first-name>
+    <last-name>Doe</last-name>
+</employee>

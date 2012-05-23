@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<company>
+   <name>ACME Incorporated</name>
+   <employees>
+      <id>789</id>
+      <name>Bob Smith</name>
+      <contactInfos>
+         <address>
+            <addressString>123 Main St.</addressString>
+         </address>
+         <phoneNumber>
+            <number>5551212</number>
+         </phoneNumber>
+      </contactInfos>
+      <contactInfos>
+         <address>
+            <addressString>727 Water St.</addressString>
+         </address>
+         <phoneNumber>
+            <number>5551655</number>
+            <owningEmployee xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:int">789</owningEmployee>
+         </phoneNumber>
+      </contactInfos>
+   </employees>
+   <employees>
+      <id>1234</id>
+      <name>Jane Doe</name>
+      <contactInfos>
+         <address>
+            <addressString>711 Maple Ave.</addressString>
+         </address>
+         <phoneNumber>
+            <number>5559876</number>
+            <owningEmployee xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="employeePointer">
+               <empId>1234</empId>
+            </owningEmployee>
+         </phoneNumber>
+         <email>
+            <user>Jane.Doe</user>
+            <domain>oracle.com</domain>
+         </email>
+      </contactInfos>
+   </employees>
+</company>

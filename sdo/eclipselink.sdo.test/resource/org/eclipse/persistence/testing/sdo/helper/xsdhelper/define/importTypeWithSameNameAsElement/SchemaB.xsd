@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="windows-1252" ?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://example.org/data"
+            elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+   <xsd:complexType name="split">
+      <xsd:sequence>
+         <xsd:element name="uniqueKey" type="xsd:string" minOccurs="1" maxOccurs="1" nillable="false"/>
+         <xsd:element name="trueSetName" maxOccurs="1" type="xsd:string"/>
+         <xsd:element name="splitCondition" maxOccurs="1" type="xsd:string"/>
+      </xsd:sequence>
+   </xsd:complexType>
+</xsd:schema>

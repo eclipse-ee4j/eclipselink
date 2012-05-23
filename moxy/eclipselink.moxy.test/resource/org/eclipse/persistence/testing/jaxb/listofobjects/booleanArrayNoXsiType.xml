@@ -1,0 +1,7 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<ns0:root xmlns:ns0="examplenamespace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="booleanArray">
+   <item>false</item>
+   <item>true</item>
+   <item>false</item>
+   <item>true</item>
+</ns0:root>

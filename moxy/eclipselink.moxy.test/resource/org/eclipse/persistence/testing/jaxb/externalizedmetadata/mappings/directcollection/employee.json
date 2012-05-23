@@ -1,0 +1,13 @@
+{"employee":{
+ "empId":101,
+ "salaries":[123456.78, 234567.89],
+  "projects":{
+    "projectId":["01", null, "10", "11"]    
+  },
+  "private-data":{
+      "entry":["This is some private data", "This is more private data"]    
+  },
+  "character-data":{
+       "entry":["<characters>a b c d e f g</characters>","<characters>h i j k l m n</characters>"]
+  }
+}}

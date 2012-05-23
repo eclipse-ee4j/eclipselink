@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<my-foos>
+    <items>
+        <root>This is my root text.</root>
+        <ns0:integer-root xmlns:ns0="myns">66</ns0:integer-root>
+        some random text
+    </items>
+    <a>This is some read-only text</a>
+    <b>0</b>
+</my-foos>

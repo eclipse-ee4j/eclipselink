@@ -1,0 +1,12 @@
+<xsd:schema targetNamespace="http://example.com/hr/" xmlns="http://example.com/hr/" elementFormDefault="qualified" sdoJava:package="hr" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sdoJava="commonj.sdo/java" xmlns:ns0="http://example.com/serviceTypes">
+   <xsd:import schemaLocation="includeServiceAndServiceCS.xsd" namespace="http://example.com/serviceTypes"/>
+   <xsd:import schemaLocation="includeSdoJava.xsd" namespace="commonj.sdo/java"/>
+   <xsd:complexType name="Emp">
+      <xsd:sequence>
+         <xsd:element name="empId" type="xsd:integer" minOccurs="0"/>
+         <xsd:element name="name" type="xsd:string" minOccurs="0" nillable="true"/>
+         <xsd:element name="salary" type="xsd:decimal" minOccurs="0" nillable="true"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="emp" type="Emp"/>
+</xsd:schema>

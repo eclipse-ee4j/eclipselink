@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<datasources>
+    <local-tx-datasource>
+        <jndi-name>ELNonJTADS</jndi-name>
+        <driver-class>@driverclass@</driver-class>
+        <connection-url>@url@</connection-url>
+        <user-name>@username@</user-name>
+        <password>@password@</password>
+        <metadata>
+            <type-mapping>Oracle9i</type-mapping>
+        </metadata>
+    </local-tx-datasource>
+</datasources>
+
+

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://xmlns.oracle.com/test/xpath"
+            xmlns:ts="http://xmlns.oracle.com/test/xpath"
+            xmlns:sdo="commonj.sdo" xmlns:sdoJava="commonj.sdo/java"
+            sdoJava:package="oracle.test.xpath"
+            elementFormDefault="qualified" attributeFormDefault="unqualified">
+            
+  <xsd:import schemaLocation="classpath:/xml/sdoJava.xsd" namespace="commonj.sdo/java"/>
+  <xsd:import namespace="commonj.sdo" schemaLocation="classpath:/xml/datagraph.xsd"/>
+
+  <xsd:element name="foo" type="ts:fooType"/>
+
+  <xsd:complexType name="fooType">
+    <xsd:sequence>
+      <xsd:element name="bar" type="ts:barType" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="barType">
+     <xsd:attribute name="id" type="xsd:string" />
+     <xsd:attribute name="value" type="xsd:string" />
+  </xsd:complexType>
+</xsd:schema>

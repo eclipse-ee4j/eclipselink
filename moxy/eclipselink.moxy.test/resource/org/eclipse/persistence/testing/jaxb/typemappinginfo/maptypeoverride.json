@@ -1,0 +1,12 @@
+{"testTagName":{
+  "type":"integerIntegerMap",
+  "entry":[
+      {
+        "key":1,
+         "value":2
+      },{
+        "key":3,
+        "value":4
+      }
+   ]
+}}

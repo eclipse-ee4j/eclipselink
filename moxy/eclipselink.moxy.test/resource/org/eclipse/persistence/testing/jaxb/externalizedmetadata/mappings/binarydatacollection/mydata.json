@@ -1,0 +1,9 @@
+{"my-data":{
+  "mybytes":{
+     "bytes":["AAECAw==","AQIDBA=="],
+     "read-only-bytes":{
+         "byte":["AgMEBQ==", "AAECAw=="]
+     }
+   },
+  "write-only-bytes":["AQIDBA==", "AgMEBQ=="]
+}}

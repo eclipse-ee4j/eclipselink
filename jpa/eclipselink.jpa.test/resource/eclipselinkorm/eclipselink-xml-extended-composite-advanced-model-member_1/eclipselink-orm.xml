@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings version="2.3" xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <description>XML extended composite advanced member_1 Test Model Instance Document</description>
+    <package>org.eclipse.persistence.testing.models.jpa.xml.composite.advanced.member_1</package>
+    <mapped-superclass class="Person" access="PROPERTY">
+        <attributes>
+            <id name="id">
+                <column name="CUSTOMER_ID"/>
+                <generated-value strategy="TABLE" generator="XML_MBR1_CUSTOMER_TABLE_GENERATOR"/>
+            </id>
+        </attributes>
+    </mapped-superclass>
+    <entity class="Address">
+        <change-tracking type="DEFERRED"/>
+        <cache shared="true"/>
+        <cache-interceptor class="CacheAuditor"/>
+        <named-stored-procedure-query name="SProcXMLAddress" result-class="Address" procedure-name="SProc_Read_BR1_XMLAddress">
+            <parameter direction="IN_OUT" name="address_id_v" query-parameter="ADDRESS_ID" type="Integer"/>
+            <parameter direction="OUT" name="street_v" query-parameter="STREET" type="String"/>
+            <parameter direction="OUT" name="city_v" query-parameter="CITY" type="String"/>
+            <parameter direction="OUT" name="country_v" query-parameter="COUNTRY" type="String"/>
+            <parameter direction="OUT" name="province_v" query-parameter="PROVINCE" type="String"/>
+            <parameter direction="OUT" name="p_code_v" query-parameter="P_CODE" type="String"/> 
+        </named-stored-procedure-query>       
+        <named-stored-procedure-query name="SProcXMLInOut" result-class="Address" procedure-name="SProc_Read_BR1_XMLInOut">
+            <parameter direction="IN_OUT" name="address_id_v" query-parameter="ADDRESS_ID" type="Long"/>
+            <parameter direction="OUT" name="street_v" query-parameter="STREET" type="String"/> 
+        </named-stored-procedure-query>
+        <query-redirectors
+            all-queries="DoNotRedirect"
+            read-all="DoNotRedirect"
+            read-object="DoNotRedirect"
+            report="DoNotRedirect"
+            insert="DoNotRedirect"
+            update="DoNotRedirect"
+            delete="DoNotRedirect"
+       />
+        <attributes>
+            <basic name="province">
+                <convert>ProvinceConverter</convert>
+                <converter name="ProvinceConverter" class="ProvinceConverter"/>
+            </basic>
+            <basic name="type">
+                <convert>class-instance</convert>
+            </basic>
+        </attributes>
+    </entity>
+    <entity name="XMLCustomer" class="Customer" access="PROPERTY">
+      <table name="XML_MBR1_CUSTOMER"/>
+        <table-generator name="XML_MBR1_CUSTOMER_TABLE_GENERATOR" table="XML_MBR1_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="CUSTOMER_SEQ"/>
+        <exclude-default-listeners/>
+        <exclude-superclass-listeners/>
+        <attributes>
+            <id name="id">
+                <column name="CUSTOMER_ID"/>
+                <generated-value strategy="TABLE" generator="XML_MBR1_CUSTOMER_TABLE_GENERATOR"/>
+            </id>
+            <basic name="firstName">
+                <column name="F_NAME"/>
+            </basic>
+            <basic name="lastName">
+                <column name="L_NAME"/>
+            </basic>
+            <basic name="budget"/>
+            <version name="version">
+                <column name="VERSION"/>
+            </version>
+        </attributes>
+    </entity>
+</entity-mappings>

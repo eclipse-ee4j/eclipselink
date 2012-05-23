@@ -1,0 +1,42 @@
+#?
+org/eclipse/persistence/sessions/interceptors/CacheInterceptor::getCacheKey::(Ljava/lang/Object;)Lorg/eclipse/persistence/internal/identitymaps/CacheKey;
+org/eclipse/persistence/sessions/interceptors/CacheInterceptor::lazyRelationshipLoaded::(Ljava/lang/Object;Lorg/eclipse/persistence/indirection/ValueHolderInterface;Lorg/eclipse/persistence/mappings/ForeignReferenceMapping;)V
+
+# ?
+org/eclipse/persistence/sessions/remote/RemoteSession::acquireUnitOfWork::(Lorg/eclipse/persistence/sessions/factories/ReferenceMode;)Lorg/eclipse/persistence/internal/sessions/UnitOfWorkImpl;
+org/eclipse/persistence/sessions/remote/RemoteSession::acquireUnitOfWork::(Lorg/eclipse/persistence/sessions/factories/ReferenceMode;)Lorg/eclipse/persistence/sessions/UnitOfWork;
+
+# ?
+org/eclipse/persistence/platform/database/jdbc/JDBCTypes::translate::(Lorg/eclipse/persistence/platform/database/oracle/plsql/PLSQLargument;Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Ljava/util/Vector;Ljava/util/Vector;Ljava/util/Vector;Lorg/eclipse/persistence/queries/StoredProcedureCall;)V
+org/eclipse/persistence/platform/database/jdbc/JDBCTypes::buildOutputRow::(Lorg/eclipse/persistence/platform/database/oracle/plsql/PLSQLargument;Lorg/eclipse/persistence/internal/sessions/AbstractRecord;Lorg/eclipse/persistence/sessions/DatabaseRecord;Ljava/util/Vector;Ljava/util/Vector;)V
+
+# Updated API for Gemini to include properties
+org/eclipse/persistence/jpa/ArchiveFactory::createArchive::(Ljava/net/URL;)Lorg/eclipse/persistence/jpa/Archive;
+org/eclipse/persistence/jpa/ArchiveFactory::createArchive::(Ljava/net/URL;Ljava/lang/String;)Lorg/eclipse/persistence/jpa/Archive;
+
+# ReferenceMode move
+org/eclipse/persistence/sessions/factories/ReferenceMode
+org/eclipse/persistence/sessions/Session::getDefaultReferenceMode::()Lorg/eclipse/persistence/sessions/factories/ReferenceMode;
+org/eclipse/persistence/sessions/Session::setDefaultReferenceMode::(Lorg/eclipse/persistence/sessions/factories/ReferenceMode;)V
+org/eclipse/persistence/sessions/Session::acquireUnitOfWork::(Lorg/eclipse/persistence/sessions/factories/ReferenceMode;)Lorg/eclipse/persistence/sessions/UnitOfWork;
+
+
+# VECTOR-> LIST
+org/eclipse/persistence/queries/DeleteAllQuery::getObjects::()Ljava/util/Vector;
+org/eclipse/persistence/queries/DeleteAllQuery::setObjects::(Ljava/util/Vector;)V
+org/eclipse/persistence/tools/schemaframework/PopulationManager::addAllObjectsForClass::(Ljava/lang/Class;Ljava/util/Vector;)V
+org/eclipse/persistence/tools/profiler/PerformanceProfiler::getProfiles::()Ljava/util/Vector;
+org/eclipse/persistence/tools/schemaframework/TableDefinition::getUniqueKeys::()Ljava/util/Vector;
+org/eclipse/persistence/tools/schemaframework/TableDefinition::getPrimaryKeyFieldNames::()Ljava/util/Vector;
+org/eclipse/persistence/tools/schemaframework/TableDefinition::setFields::(Ljava/util/Vector;)V
+org/eclipse/persistence/tools/schemaframework/TableDefinition::getFields::()Ljava/util/Vector;
+org/eclipse/persistence/tools/schemaframework/TableDefinition::setForeignKeys::(Ljava/util/Vector;)V
+org/eclipse/persistence/tools/schemaframework/TableDefinition::setUniqueKeys::(Ljava/util/Vector;)V
+org/eclipse/persistence/tools/schemaframework/TableDefinition::getForeignKeys::()Ljava/util/Vector;
+org/eclipse/persistence/tools/schemaframework/ForeignKeyConstraint::setTargetFields::(Ljava/util/Vector;)V
+org/eclipse/persistence/tools/schemaframework/ForeignKeyConstraint::setSourceFields::(Ljava/util/Vector;)V
+org/eclipse/persistence/tools/schemaframework/ForeignKeyConstraint::getTargetFields::()Ljava/util/Vector;
+org/eclipse/persistence/tools/schemaframework/ForeignKeyConstraint::getSourceFields::()Ljava/util/Vector;
+
+# Deleted Helper method
+org/eclipse/persistence/jpa/JpaHelper::createEntityManagerFactory::(Ljava/lang/String;)Lorg/eclipse/persistence/internal/jpa/EntityManagerFactoryImpl;

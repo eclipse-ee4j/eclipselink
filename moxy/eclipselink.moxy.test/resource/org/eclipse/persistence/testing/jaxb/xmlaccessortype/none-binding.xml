@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<xml-bindings
+    xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm"
+    package-name="org.eclipse.persistence.testing.jaxb.xmlaccessortype.none">
+    <java-types>
+        <java-type name="Root">
+            <java-attributes>
+                <xml-element java-attribute="unmapped"/>
+            </java-attributes>
+        </java-type>
+    </java-types>
+</xml-bindings>

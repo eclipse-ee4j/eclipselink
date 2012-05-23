@@ -1,0 +1,11 @@
+{"employee":{
+  "name":"Jane Doe",
+  "street":["123 Fake Street"],
+  "integer":[12, 14],
+  "address":[{
+     "street":"45 O'Connor",
+     "city":"Ottawa"
+    }],
+   "simpleAddress":["addressString"],
+  "phone":"123-4567"
+}}

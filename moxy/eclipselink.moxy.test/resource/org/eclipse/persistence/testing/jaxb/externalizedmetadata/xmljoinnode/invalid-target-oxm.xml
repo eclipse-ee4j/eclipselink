@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm">
+    <xml-schema>
+        <xml-ns namespace-uri="http://www.example.com" prefix="x"/>
+    </xml-schema>
+    <java-types>
+        <java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmljoinnode.Company">
+            <xml-root-element/>
+            <java-attributes>
+                <xml-element java-attribute="employees" xml-path="employee-data" />
+                <xml-element java-attribute="buildingAddresses" xml-path="business-address" />
+            </java-attributes>
+        </java-type>
+        <java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmljoinnode.Employee">
+            <xml-root-element name="employee-data" />
+            <java-attributes>
+                <xml-attribute java-attribute="id" />
+                <xml-join-nodes java-attribute="workAddress">
+                    <xml-join-node xml-path="work-address/@id" referenced-xml-path="@id" />
+                    <xml-join-node xml-path="x:work-address/city/text()" referenced-xml-path="city/text()" />
+                </xml-join-nodes>
+            </java-attributes>
+        </java-type>
+        <java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmljoinnode.Address">
+            <xml-root-element name="business-address" />
+            <java-attributes>
+                <xml-attribute java-attribute="id" xml-path="@id" />
+                <xml-element java-attribute="cityName" xml-path="city/text()" />
+            </java-attributes>
+        </java-type>
+    </java-types>
+</xml-bindings>

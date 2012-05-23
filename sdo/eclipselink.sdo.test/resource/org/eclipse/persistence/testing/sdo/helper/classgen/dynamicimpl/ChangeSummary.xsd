@@ -1,0 +1,18 @@
+<xsd:schema targetNamespace="http://www.example.com"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://www.example.com"
+    xmlns:sdo="commonj.sdo"
+    xmlns:sdoj="commonj.sdo/java"
+    sdoj:package="org.eclipse.persistence.testing.sdo.helper.classgen.dynamicimpl">
+
+    <xsd:import namespace="commonj.sdo/java"
+        schemaLocation="sdoJava.xsd" />
+
+    <xsd:complexType name="ChangeSummaryA">
+        <xsd:sequence>
+            <xsd:element name="property1" type="xsd:string"/>
+            <xsd:element name="changes" type="sdo:ChangeSummaryType" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+</xsd:schema>

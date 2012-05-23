@@ -1,0 +1,9 @@
+[ {
+   "root" : {
+      "name" : "FOO"
+   }
+}, {
+   "root" : {
+      "name" : "BAR"
+   }
+} ]

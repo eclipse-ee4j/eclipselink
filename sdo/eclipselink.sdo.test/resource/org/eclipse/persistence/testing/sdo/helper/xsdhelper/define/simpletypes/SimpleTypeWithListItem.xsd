@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='US-ASCII'?>
+    <xsd:schema xmlns:xsd='http://www.w3.org/2001/XMLSchema'
+           xmlns='http://www.example.org'
+           targetNamespace='http://www.example.org'
+           elementFormDefault='qualified'>
+        <xsd:simpleType name='my-int'>
+             <xsd:list itemType='xsd:int' />
+        </xsd:simpleType>
+        
+        <xsd:complexType name='testComplexType'>
+          <xsd:sequence>
+            <xsd:element name='testElement' type='my-int'/>
+          </xsd:sequence>
+        </xsd:complexType>
+    </xsd:schema>

@@ -1,0 +1,14 @@
+{"testListOfCustomer":{
+    "item":[
+     {
+     "id":2,
+     "name":"aaa",
+     "customerId":1
+     },
+     {
+    "id":4,
+     "name":"bbb",
+     "customerId":3
+     }
+    ]
+}}

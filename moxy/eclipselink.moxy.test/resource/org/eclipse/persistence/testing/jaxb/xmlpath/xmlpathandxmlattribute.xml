@@ -1,0 +1,3 @@
+<root xmlns="myns">
+    <something theFlag="true"/>
+</root>

@@ -1,0 +1,2 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<customer><object-method><address>Ottawa</address></object-method><contact-method><address>Ottawa</address><address>Montreal</address><phone>5551111</phone>joe@example.com</contact-method></customer>

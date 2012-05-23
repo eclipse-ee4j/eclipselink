@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<employee>
+  <firstName>firstName</firstName>
+  <lastName>LastName</lastName>
+  <myInt>66</myInt>
+</employee>

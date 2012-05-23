@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:complexType name="bar">
+      <xsd:sequence>
+         <xsd:element name="id" type="xsd:string" minOccurs="0"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="fooImpl" mixed="true">
+      <xsd:sequence>
+         <xsd:choice maxOccurs="unbounded">
+            <xsd:element ref="a"/>
+            <xsd:element ref="b"/>
+            <xsd:any processContents="lax" namespace="##other"/>
+         </xsd:choice>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="b" type="xsd:int"/>
+   <xsd:element name="a" type="xsd:int"/>
+   <xsd:element name="foo" type="fooImpl"/>
+</xsd:schema>

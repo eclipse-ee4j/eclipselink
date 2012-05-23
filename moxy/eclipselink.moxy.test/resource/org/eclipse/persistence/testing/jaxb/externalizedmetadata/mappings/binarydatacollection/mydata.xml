@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<my-data>
+  <mybytes>
+    <bytes>AAECAw==</bytes>
+    <bytes>AQIDBA==</bytes>
+    <read-only-bytes>
+      <byte>AgMEBQ==</byte>
+      <byte>AAECAw==</byte>
+    </read-only-bytes>
+  </mybytes>
+  <write-only-bytes>AQIDBA==</write-only-bytes>
+  <write-only-bytes>AgMEBQ==</write-only-bytes>
+</my-data>

@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!-- Orders schema -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xsd:element name="order">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="address">
+					<xsd:complexType>
+						<xsd:attribute name="addressee" type="xsd:string"/>
+						<xsd:attribute name="street" type="xsd:string"/>
+						<xsd:attribute name="city" type="xsd:string"/>
+						<xsd:attribute name="zip" type="xsd:string"/>
+						<xsd:attribute name="state" type="xsd:string"/>
+						<xsd:attribute name="country" type="xsd:string"/>
+					</xsd:complexType>
+				</xsd:element>
+				<xsd:element name="line-item" maxOccurs="unbounded">
+					<xsd:complexType>
+						<xsd:attribute name="number" type="xsd:integer"/>
+						<xsd:attribute name="name" type="xsd:string"/>
+						<xsd:attribute name="quanity" type="xsd:integer"/>
+						<xsd:attribute name="price" type="xsd:double"/>
+					</xsd:complexType>
+				</xsd:element>
+			</xsd:sequence>				
+			<xsd:attribute name="id" type="xsd:integer"/>
+			<xsd:attribute name="ordered-by" type="xsd:string"/>
+		</xsd:complexType>
+	</xsd:element>
+</xsd:schema>

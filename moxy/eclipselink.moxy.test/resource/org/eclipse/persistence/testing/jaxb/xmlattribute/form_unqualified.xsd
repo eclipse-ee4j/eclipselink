@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns0="theNamespace" targetNamespace="theNamespace">
+   <xsd:complexType name="testObject">
+      <xsd:sequence>
+         <xsd:element form="qualified" minOccurs="0" name="theElementTestString" type="xsd:string"/>
+      </xsd:sequence>
+      <xsd:attribute ref="ns0:theTestString"/>
+   </xsd:complexType>
+   <xsd:element name="root" type="ns0:testObject"/>
+   <xsd:attribute name="theTestString" type="xsd:string"/>
+</xsd:schema>

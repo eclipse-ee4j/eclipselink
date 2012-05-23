@@ -1,0 +1,24 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<schema xmlns:eci="http://www.example.com/schema/internal"
+        targetNamespace="http://www.example.com/schema/internal"
+        xmlns:ns0="http://www.example.com/schema"
+        xmlns:sdo="commonj.sdo" xmlns:sdoJava="commonj.sdo/java"
+        sdoJava:package="com.example"
+        elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema">
+   <import namespace="http://www.example.com/schema" schemaLocation="SchemaA.xsd"/>
+   <element name="Worker" type="eci:WorkerType"/>
+   <complexType name="WorkerType">
+      <sequence>
+         <element name="classification" type="ns0:EmployeeType" minOccurs="0" maxOccurs="unbounded"/>
+      </sequence>
+   </complexType>
+   <complexType name="MySomeType">
+      <complexContent>
+         <extension base="ns0:SomeType">
+            <sequence>
+               <element name="itemName" type="string" minOccurs="0" maxOccurs="1"/>
+            </sequence>
+         </extension>
+      </complexContent>
+   </complexType>
+</schema>

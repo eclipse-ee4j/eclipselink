@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm">
+    <java-types>
+        <java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.anyattribute.XmlAnyAttributeSubTypeMapModel">
+            <xml-root-element name="subtypemap" />
+            <java-attributes>
+                <xml-any-attribute java-attribute="children">
+                    <xml-access-methods get-method="getChildren" set-method="setChildren" />
+                </xml-any-attribute>
+            </java-attributes>
+        </java-type>
+    </java-types>
+</xml-bindings>

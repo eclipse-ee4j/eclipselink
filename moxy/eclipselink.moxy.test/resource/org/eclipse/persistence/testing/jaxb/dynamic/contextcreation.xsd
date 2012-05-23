@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:myns="mynamespace" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="mynamespace"
+    attributeFormDefault="qualified" elementFormDefault="qualified">
+
+    <xs:element name="person" type="myns:person"/>
+
+    <xs:complexType name="person">
+        <xs:sequence>
+            <xs:element name="name" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="customer">
+        <xs:complexContent>
+            <xs:extension base="myns:person">
+                <xs:sequence>
+                    <xs:element name="customer-id" type="xs:int"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="employee">
+        <xs:complexContent>
+            <xs:extension base="myns:person">
+                <xs:sequence>
+                    <xs:element name="employee-id" type="xs:string"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+</xs:schema>

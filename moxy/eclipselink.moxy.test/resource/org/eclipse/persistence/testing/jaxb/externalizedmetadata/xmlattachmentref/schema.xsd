@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:ref="http://ws-i.org/profiles/basic/1.1/xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<xsd:import namespace="http://ws-i.org/profiles/basic/1.1/xsd" schemaLocation="http://ws-i.org/profiles/basic/1.1/swaref.xsd"/>
+   <xsd:complexType name="attTypes">
+      <xsd:sequence>
+         <xsd:element name="body" type="ref:swaRef" minOccurs="0"/>
+         <xsd:element name="thing" type="xsd:anyType" minOccurs="0"/>
+      </xsd:sequence>
+      <xsd:attribute name="data" type="ref:swaRef"/>
+   </xsd:complexType>
+   <xsd:element name="att-types" type="attTypes"/>
+</xsd:schema>

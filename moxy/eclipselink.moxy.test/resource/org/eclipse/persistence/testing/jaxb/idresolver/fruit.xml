@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fruitOrder>
+   <box>
+      <appleRef>
+         <ref id="a1" appleChar="M"/>
+      </appleRef>
+      <orangeRef>
+         <ref id="a1"/>
+      </orangeRef>
+      <apple id="a1" appleChar="M">
+         <type>MacIntosh</type>
+      </apple>
+      <orange id="a1" orangeCode="771">
+         <size>Small</size>
+      </orange>
+   </box>
+   <box>
+      <appleRef>
+         <ref id="a1" appleChar="G"/>
+      </appleRef>
+      <apple id="a1" appleChar="G">
+         <type>Gravenstein</type>
+      </apple>
+   </box>
+</fruitOrder>

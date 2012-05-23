@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:complexType name="beanA">
+      <xsd:sequence>
+         <xsd:element name="value" type="xsd:base64Binary"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="beanB">
+      <xsd:sequence>
+         <xsd:element name="value" type="xsd:int"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="bean-b" type="beanB"/>
+   <xsd:element name="value" type="xsd:string"/>
+</xsd:schema>

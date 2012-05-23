@@ -1,0 +1,12 @@
+{"testTagName":{
+   "type":"collectionOfObject",
+   "item":[
+       {
+         "type":"string",
+         "value":"one"
+	},{
+	 "type":"int",
+         "value":2
+	 }
+   ]
+   }}

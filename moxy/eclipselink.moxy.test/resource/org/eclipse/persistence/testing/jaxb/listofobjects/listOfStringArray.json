@@ -1,0 +1,9 @@
+{
+    "root" : {
+        "type":"listOfstringArray",
+        "item":[
+            {"item":["foo","bar"]},
+            {"item":["A","B","C"]}
+        ]
+    }
+}

@@ -1,0 +1,21 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<ns0:root xmlns:ns0="rootNamespace">
+   <item id="10">
+      <firstName>Bob</firstName>
+      <lastName>Smith</lastName>
+      <birthday>2005-05-24T16:06:53.0</birthday>
+      <responsibilities>
+         <responsibility xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema' xsi:type="xsd:string">Fix Bugs</responsibility>
+         <responsibility xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema' xsi:type="xsd:string">Write JAXB2.0 Prototype</responsibility>
+         <responsibility xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema' xsi:type="xsd:string">Write Design Spec</responsibility>
+     </responsibilities>
+   </item>
+   <item id="100">
+      <firstName>Bob2</firstName>
+      <lastName>Smith2</lastName>
+      <birthday>2006-05-24T16:06:53.0</birthday>
+      <responsibilities>
+         <responsibility xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema' xsi:type="xsd:string">Fix Bugs</responsibility>
+     </responsibilities>
+   </item>
+</ns0:root>

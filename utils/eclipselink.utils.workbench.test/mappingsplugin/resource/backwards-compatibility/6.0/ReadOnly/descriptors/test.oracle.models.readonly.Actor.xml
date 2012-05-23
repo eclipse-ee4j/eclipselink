@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<descriptor type="relational">
+   <name>test.oracle.models.readonly.Actor</name>
+   <class-handle>
+      <type-name>test.oracle.models.readonly.Actor</type-name>
+   </class-handle>
+   <transactional-policy type="relational">
+      <descriptor-alias>Actor</descriptor-alias>
+      <refresh-cache-policy/>
+      <caching-policy>
+         <cache-size>100</cache-size>
+         <cache-type>Full</cache-type>
+      </caching-policy>
+      <query-manager type="relational"/>
+      <locking-policy type="relational"/>
+      <primary-key-policy>
+         <primary-key-handles>
+            <column-handle>
+               <column-table-name>RO_ACTOR</column-table-name>
+               <column-name>ACT_ID</column-name>
+            </column-handle>
+         </primary-key-handles>
+      </primary-key-policy>
+   </transactional-policy>
+   <mappings>
+      <mapping type="direct-to-field">
+         <name>id</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.readonly.Actor</attribute-declaring-type-name>
+            <attribute-name>id</attribute-name>
+         </attribute-handle>
+         <column-handle>
+            <column-table-name>RO_ACTOR</column-table-name>
+            <column-name>ACT_ID</column-name>
+         </column-handle>
+      </mapping>
+      <mapping type="direct-to-field">
+         <name>minimumSalary</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.readonly.Actor</attribute-declaring-type-name>
+            <attribute-name>minimumSalary</attribute-name>
+         </attribute-handle>
+         <column-handle>
+            <column-table-name>RO_ACTOR</column-table-name>
+            <column-name>MIN_SAL</column-name>
+         </column-handle>
+      </mapping>
+      <mapping type="many-to-many">
+         <name>movies</name>
+         <read-only>true</read-only>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.readonly.Actor</attribute-declaring-type-name>
+            <attribute-name>movies</attribute-name>
+         </attribute-handle>
+         <reference-descriptor-handle>
+            <descriptor-name>test.oracle.models.readonly.Movie</descriptor-name>
+         </reference-descriptor-handle>
+         <reference-handle>
+            <reference-table-name>ACT_MOV</reference-table-name>
+            <reference-name>ACT_MOV_RO_ACTOR</reference-name>
+         </reference-handle>
+         <container-policy type="list">
+            <container-class>
+               <uses-default-container-class>true</uses-default-container-class>
+            </container-class>
+         </container-policy>
+         <relation-table-handle>
+            <table-name>ACT_MOV</table-name>
+         </relation-table-handle>
+         <target-reference-handle>
+            <reference-table-name>ACT_MOV</reference-table-name>
+            <reference-name>ACT_MOV_RO_MOVIE</reference-name>
+         </target-reference-handle>
+      </mapping>
+      <mapping type="direct-to-field">
+         <name>name</name>
+         <attribute-handle>
+            <attribute-declaring-type-name>test.oracle.models.readonly.Actor</attribute-declaring-type-name>
+            <attribute-name>name</attribute-name>
+         </attribute-handle>
+         <column-handle>
+            <column-table-name>RO_ACTOR</column-table-name>
+            <column-name>ACT_NAME</column-name>
+         </column-handle>
+      </mapping>
+   </mappings>
+   <primary-table-handle>
+      <table-name>RO_ACTOR</table-name>
+   </primary-table-handle>
+   <uses-sequencing>true</uses-sequencing>
+   <sequence-number-name>SEQ</sequence-number-name>
+   <sequence-number-table-handle>
+      <table-name>RO_ACTOR</table-name>
+   </sequence-number-table-handle>
+   <sequence-number-column-handle>
+      <column-table-name>RO_ACTOR</column-table-name>
+      <column-name>ACT_ID</column-name>
+   </sequence-number-column-handle>
+</descriptor>

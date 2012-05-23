@@ -1,0 +1,14 @@
+{"xml-bindings":{
+   "package-name":"myPackage",
+   "java-types":{
+        "java-type":[{
+            "name":"myType",
+            "java-attributes":{
+                  "xml-element":[{
+		      "java-attribute":"theJavaAttributeValue",
+		      "name":"elementName"
+                   }]
+	     }
+         }]
+    }
+}}

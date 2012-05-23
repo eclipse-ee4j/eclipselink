@@ -1,0 +1,27 @@
+{
+    "package-name":"org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.inputsource",
+    "xml-schema":{
+        "namespace":"input-source",
+        "xml-ns":{
+	   "prefix":"ns0",
+	   "namespace-uri":"input-source"
+	   }
+      },
+    "java-types":{
+        "java-type":[
+	    {
+	     "name":"Foo",
+             "xml-root-element":{
+	        "name":"my-foo"
+	      },
+            "java-attributes":{
+                "xml-attribute":[
+   		   {
+   	               "java-attribute":"id"
+		   }
+		 ]
+              }
+	      }
+            ]
+     }
+}

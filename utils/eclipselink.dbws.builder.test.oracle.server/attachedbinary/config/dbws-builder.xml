@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dbws-builder xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <properties>
+    <property name="projectName">@PROJECT@</property>
+    <property name="logLevel">@LOG_LEVEL@</property>
+    <property name="username">@DB_USER@</property>
+    <property name="password">@DB_PASSWORD@</property>
+    <property name="url">@DB_URL@</property>
+    <property name="driver">@DB_DRIVER@</property>
+    <property name="platformClassname">@DB_PLATFORM@</property>
+    <property name="dataSource">@DATASOURCE@</property>
+    <property name="wsdlLocationURI">@WSDL_LOCATION@</property>
+	<property name="targetNamespacePrefix">@TARGET_NS_PREFIX@</property>
+  </properties>
+  <table schemaPattern="@DB_USER@" tableNamePattern="ATTACHEDBINARY" binaryAttachment="true" attachmentType="swaref">
+    <procedure name="getBLOBById" isCollection="false" returnType="ab:attachedbinaryType" procedurePattern="GETBLOBBYID" catalogPattern="TOPLEVEL" binaryAttachment="true" attachmentType="swaref"/>
+  </table>
+</dbws-builder>

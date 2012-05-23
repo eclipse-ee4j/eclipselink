@@ -1,0 +1,10 @@
+{
+    "package-name":"org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.file",
+    "xml-schemaBBIDS":{
+        "namespace":"file",
+        "xml-ns":{
+	   "prefix":"ns0",
+	   "namespace-uri":"file"
+	   }
+      },
+}

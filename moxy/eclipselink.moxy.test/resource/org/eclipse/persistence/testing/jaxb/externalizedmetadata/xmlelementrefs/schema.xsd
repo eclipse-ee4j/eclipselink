@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:ns0="myns" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:import schemaLocation="schema2.xsd" namespace="myns"/>
+   <xsd:complexType name="foos">
+      <xsd:sequence>
+         <xsd:element name="items" minOccurs="0">
+            <xsd:complexType mixed="true">
+               <xsd:sequence>
+                  <xsd:choice maxOccurs="unbounded">
+                     <xsd:element ref="ns0:integer-root"/>
+                     <xsd:element ref="root"/>
+                  </xsd:choice>
+               </xsd:sequence>
+            </xsd:complexType>
+         </xsd:element>
+         <xsd:choice maxOccurs="unbounded">
+            <xsd:element ref="a"/>
+            <xsd:element ref="b"/>
+         </xsd:choice>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="root" type="xsd:string"/>
+   <xsd:element name="b" type="xsd:int"/>
+   <xsd:element name="a" type="xsd:string"/>
+   <xsd:element name="my-foos" type="foos"/>
+</xsd:schema>

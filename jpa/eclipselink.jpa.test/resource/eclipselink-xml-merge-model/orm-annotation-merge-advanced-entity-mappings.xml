@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm orm_1_0.xsd" version="1.0">
+    
+    <package>org.eclipse.persistence.testing.models.jpa.xml.merge.advanced</package>
+    
+    <entity name = "XMLMergeEmployee" class="Employee" access="PROPERTY" metadata-complete="true">
+      <attributes>
+        <id name="id">
+          <column name="XML_MERGE_EMP_ID"/>
+        </id>
+        <many-to-one name="address" target-entity="Address" fetch="LAZY">
+          <join-column name="XML_MERGE_ADDR_ID"/>
+          <cascade>
+            <cascade-persist/>
+          </cascade>
+        </many-to-one>
+        <many-to-one name="manager" target-entity="Employee" fetch="LAZY">
+          <join-column name="XML_MERGE_MANAGER" referenced-column-name="XML_MERGE_EMP_ID"/>
+          <cascade>
+            <cascade-persist/>
+          </cascade>
+        </many-to-one>
+        <one-to-many name="phoneNumbers" target-entity="PhoneNumber" mapped-by="owner">
+          <cascade>
+            <cascade-all/>
+          </cascade>
+        </one-to-many>
+        <one-to-many name="managedEmployees" target-entity="Employee" mapped-by="manager">
+          <cascade>
+            <cascade-all/>
+          </cascade>
+        </one-to-many>
+        <many-to-many name="projects" target-entity="Project">
+          <cascade>
+            <cascade-persist/>
+          </cascade>
+        </many-to-many>
+        <embedded name="period">
+          <attribute-override name="startDate">
+            <column name="XML_MERGE_START_DATE" nullable="false"/>
+          </attribute-override>
+          <attribute-override name="endDate">
+            <column name="XML_MERGE_END_DATE" nullable="true"/>
+          </attribute-override>
+        </embedded>
+      </attributes>
+    </entity>
+    
+    <entity name="XMLMergeAddress" class="Address" access="PROPERTY">
+      <attributes>
+        <id name="id">
+          <column name="XML_MERGE_ADDRESS_ID"/>
+          <generated-value strategy="SEQUENCE" generator="ANN_MERGE_ADDRESS_SEQUENCE_GENERATOR"/>
+          <sequence-generator name="ANN_MERGE_ADDRESS_SEQUENCE_GENERATOR" sequence-name="ANN_MERGE_ADDRESS_SEQ" allocation-size="1"/>
+        </id>
+        <one-to-many name="employees" target-entity="Employee" mapped-by="address">
+          <cascade>
+            <cascade-all/>
+          </cascade>
+        </one-to-many>
+      </attributes>
+    </entity>
+    
+    <entity name="XMLMergePhoneNumber" class="PhoneNumber" access="PROPERTY" metadata-complete="true">
+      <id-class class="PhoneNumberPK"/>
+      <attributes>
+        <id name="id">
+          <column name="XML_MERGE_OWNER_ID" insertable="false" updatable="false"/>
+        </id>
+        <id name="type">
+          <column name="XML_MERGE_TYPE"/>
+        </id>
+        <basic name="number">
+          <column name="XML_MERGE_NUMB"/>
+        </basic>
+        <many-to-one name="owner" target-entity="Employee">
+          <join-column name="XML_MERGE_OWNER_ID" referenced-column-name="XML_MERGE_EMP_ID"/>
+        </many-to-one>
+      </attributes>
+    </entity>
+    
+    <entity name="XMLMergeLargeProject" class="LargeProject" access="PROPERTY" metadata-complete="true">
+      <table name="CMP3_XML_MERGE_LPROJECT"/>
+    </entity>
+    
+    <entity name="XMLMergeSmallProject" class="SmallProject" access="PROPERTY" metadata-complete="true"/>
+    
+    <entity name="XMLMergeProject" class="Project" access="PROPERTY" metadata-complete="false">
+      <table name="CMP3_XML_MERGE_PROJECT"/>
+      <inheritance strategy="JOINED"/>
+      <discriminator-value>XML_MERGE_P</discriminator-value>
+      <discriminator-column name="XML_MERGE_PROJ_TYPE" length="0"/>
+      <pre-persist method-name="prePersist"/>
+      <attributes>
+        <id name="id">
+          <column name="XML_MERGE_PROJ_ID"/>
+        </id>
+        <one-to-one name="teamLeader" target-entity="Employee">
+          <join-column name="XML_MERGE_LEADER_ID"/>
+        </one-to-one>
+        <many-to-many name="teamMembers" target-entity="Employee" mapped-by="projects"/>
+      </attributes>
+    </entity>
+    
+    <embeddable class="EmploymentPeriod" access="PROPERTY" metadata-complete="true">
+      <attributes>
+        <basic name="startDate">
+          <column name="XML_MERGE_S_DATE"/>
+        </basic>
+        <basic name="endDate">
+          <column name="XML_MERGE_E_DATE"/>
+        </basic>
+      </attributes>
+    </embeddable>
+</entity-mappings>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="src" path="utility/source"/>
+	<classpathentry kind="src" path="uitools/source"/>
+	<classpathentry kind="src" path="framework/source"/>
+	<classpathentry kind="src" path="platformsplugin/source"/>
+	<classpathentry kind="src" path="mappingsplugin/source"/>
+	<classpathentry kind="src" path="scplugin/source"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/eclipselink.utils.workbench"/>
+	<classpathentry kind="lib" path="framework/resource"/>
+	<classpathentry kind="lib" path="mappingsplugin/resource"/>
+	<classpathentry kind="lib" path="scplugin/resource"/>
+	<classpathentry kind="lib" path="/eclipselink.utils.workbench.lib/compile/ant.jar"/>
+	<classpathentry kind="lib" path="/eclipselink.utils.workbench.lib/run/connector.jar"/>
+	<classpathentry kind="lib" path="/eclipselink.utils.workbench.lib/compile/xercesImpl.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_JAR" sourcepath="/ECLIPSELINK_SRC_JAR"/>
+	<classpathentry kind="lib" path="/extension.lib.external/mysql-connector-java-3.1.7-bin.jar"/>
+	<classpathentry kind="lib" path="/eclipselink.utils.workbench.lib/run/persistence.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="lib" path="/eclipselink.utils.workbench.lib/compile/package-rename.jar"/>
+	<classpathentry kind="output" path="class"/>
+</classpath>

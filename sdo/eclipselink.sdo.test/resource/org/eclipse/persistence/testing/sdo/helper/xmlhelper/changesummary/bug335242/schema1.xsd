@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="cz" targetNamespace="cz">
+<xsd:complexType name="InitializationMessageType">
+	<xsd:sequence>
+		<xsd:element name="lineId" type="xsd:long" minOccurs="1" maxOccurs="1" />
+		<xsd:element name="callingApplicationId" type="xsd:long" minOccurs="1" maxOccurs="1" />
+		<xsd:element name="currentProductInstance" type="xsd:anyType" minOccurs="1" maxOccurs="1" />
+	</xsd:sequence>
+</xsd:complexType>
+</xsd:schema>

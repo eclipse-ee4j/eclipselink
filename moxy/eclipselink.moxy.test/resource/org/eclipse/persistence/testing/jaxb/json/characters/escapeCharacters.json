@@ -1,0 +1,4 @@
+{"escapeCharacterHolder":{
+    "stringValue":"a\"a\\a/a\ba\fa\na\ra\t\b\u0003\u001Caaa\\TESThttp://this/is/my/test",
+    "characters":["a","\"","a","\\","a","/","a","\b","a","\f","a","\n","a","\r","a","\t","\b","\u0003","\u001C", "a","a","a","\\"]
+}}

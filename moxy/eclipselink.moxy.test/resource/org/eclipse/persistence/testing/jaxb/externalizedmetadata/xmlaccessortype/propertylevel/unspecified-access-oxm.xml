@@ -1,0 +1,10 @@
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm"
+	package-name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessortype.propertylevel">
+	<java-types>
+		<java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessortype.propertylevel.Customer">
+		   <java-attributes>
+		       <xml-element java-attribute="property"/>
+		   </java-attributes>
+		</java-type>
+	</java-types>
+</xml-bindings>

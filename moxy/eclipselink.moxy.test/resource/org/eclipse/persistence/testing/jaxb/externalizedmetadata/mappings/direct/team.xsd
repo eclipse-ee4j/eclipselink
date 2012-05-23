@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:p="http://www.example.com/personal" xmlns:a="http://www.example.com/address" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:import schemaLocation="schema2.xsd" namespace="http://www.example.com/address"/>
+   <xsd:import schemaLocation="schema3.xsd" namespace="http://www.example.com/personal"/>
+   <xsd:complexType name="team">
+      <xsd:sequence>
+         <xsd:element name="contact-info" minOccurs="0">
+            <xsd:complexType>
+               <xsd:sequence>
+                  <xsd:element ref="a:home-address" minOccurs="0"/>
+                  <xsd:element ref="p:personal-info" minOccurs="0"/>
+               </xsd:sequence>
+            </xsd:complexType>
+         </xsd:element>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="team" type="team"/>
+</xsd:schema>

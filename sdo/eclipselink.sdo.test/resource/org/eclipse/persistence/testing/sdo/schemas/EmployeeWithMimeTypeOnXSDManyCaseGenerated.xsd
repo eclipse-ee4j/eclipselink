@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://www.example.org" xmlns="http://www.example.org" elementFormDefault="qualified" sdoJava:package="defaultPackage" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sdoJava="commonj.sdo/java" xmlns:ns0="http://www.w3.org/2005/05/xmlmime">
+   <xsd:import namespace="commonj.sdo/java"/>
+   <xsd:complexType name="EmployeeType">
+      <xsd:sequence>
+         <xsd:element name="id" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="name" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="photo" type="xsd:base64Binary" minOccurs="0" maxOccurs="unbounded" ns0:expectedContentTypes="image/jpeg"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="employeeType" type="EmployeeType"/>
+</xsd:schema>

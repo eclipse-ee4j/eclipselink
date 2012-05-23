@@ -1,0 +1,29 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<toplink-sessions version="10g release 3 (10.1.3.0)" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <session xsi:type="server-session">
+      <name>Employee</name>
+      <event-listener-classes/>
+      <primary-project xsi:type="xml">../temp/mw/EmployeeProject.xml</primary-project>
+      <login xsi:type="database-login">
+         <platform-class>org.eclipse.persistence.platform.database.oracle.Oracle9Platform</platform-class>
+         <user-name>tle</user-name>
+         <password>BB742416276274A46959A54867978929</password>
+         <sequencing>
+            <default-sequence xsi:type="table-sequence">
+               <name>Default</name>
+            </default-sequence>
+         </sequencing>
+         <driver-class>com.ibm.db2.jcc.DB2Driver</driver-class>
+         <connection-url>URL.TO.OVERRIDE</connection-url>
+      </login>
+      <connection-pools>
+         <read-connection-pool>
+            <name>ReadConnectionPool</name>
+         </read-connection-pool>
+         <write-connection-pool>
+            <name>default</name>
+         </write-connection-pool>
+      </connection-pools>
+      <connection-policy/>
+   </session>
+</toplink-sessions>

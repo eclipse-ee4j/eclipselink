@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:rootType xmlns:ns0="http://www.example.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <ns0:test2>true</ns0:test2>
+   <ns0:test7>
+      <ns0:name>theChildName</ns0:name>
+   </ns0:test7>
+</ns0:rootType>

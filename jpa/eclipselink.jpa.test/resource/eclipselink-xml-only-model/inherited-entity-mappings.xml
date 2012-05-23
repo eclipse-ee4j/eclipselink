@@ -1,0 +1,483 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings version="2.0" xmlns="http://java.sun.com/xml/ns/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm orm_2_0.xsd">
+    <description>Inherited Test Model Instance Document</description>
+    <package>org.eclipse.persistence.testing.models.jpa.xml.inherited</package>
+    <table-generator name="XML_BEER_TABLE_GENERATOR" table="CMP3_XML_BEER_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="BEER_SEQ"/>
+    <table-generator name="XML_LOCATION_TABLE_GENERATOR" table="JPA2_XML_LOCATION_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="LOCATION_SEQ"/>
+    <table-generator name="XML_COMMITTEE_TABLE_GENERATOR" table="CMP3_XML_BEER_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="COMMITTEE_SEQ"/>
+    <table-generator name="XML_OFFICIAL_TABLE_GENERATOR" table="CMP3_XML_BEER_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="OFFICIAL_SEQ"/>
+    <table-generator name="XML_WITNESS_TABLE_GENERATOR" table="CMP3_XML_BEER_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="WITNESS_SEQ"/>
+    <named-native-query name="findAnySQLBeerConsumer" result-class="org.eclipse.persistence.testing.models.jpa.xml.inherited.BeerConsumer">
+        <query>SELECT * FROM CMP3_XML_CONSUMER</query>
+        <hint name="cascadeLevel" value="1"/>
+    </named-native-query>
+    <named-native-query name="findAllSQLCertifications" result-set-mapping="certificationResults">
+        <query>SELECT * FROM CMP3_XML_CERTIFICATION</query>
+    </named-native-query>
+    <sql-result-set-mapping name="certificationResults">
+        <entity-result entity-class="org.eclipse.persistence.testing.models.jpa.xml.inherited.Certification">
+            <field-result name="id" column="ID"/>
+            <field-result name="description" column="DESCRIPTION"/>
+            <field-result name="beerConsumer" column="CONSUMER_ID"/>
+        </entity-result>
+    </sql-result-set-mapping>
+    <mapped-superclass class="org.eclipse.persistence.testing.models.jpa.xml.inherited.Consumer" access="PROPERTY">
+        <exclude-default-listeners/>
+        <pre-persist method-name="prePersist"/>
+        <post-persist method-name="postPersist"/>
+        <pre-remove method-name="preRemove"/>
+        <post-remove method-name="postRemove"/>
+        <pre-update method-name="preUpdate"/>
+        <post-update method-name="postUpdate"/>
+        <post-load method-name="postLoad"/>
+    </mapped-superclass>
+    <mapped-superclass class="org.eclipse.persistence.testing.models.jpa.xml.inherited.Beverage" access="FIELD">
+        <attributes>
+            <id name="id">
+                <column name="ID"/>
+                <generated-value strategy="TABLE" generator="XML_BEER_TABLE_GENERATOR"/>
+            </id>
+        </attributes>
+    </mapped-superclass>
+    <!-- Testing a mapped superclass with no explicit access specification -->
+    <mapped-superclass class="org.eclipse.persistence.testing.models.jpa.xml.inherited.Beer">
+        <exclude-default-listeners/>
+        <exclude-superclass-listeners/>
+        <attributes>
+            <basic name="alcoholContent">
+                <column name="ALCOHOL_CONTENT"/>
+            </basic>
+            <many-to-one name="beerConsumer" target-entity="org.eclipse.persistence.testing.models.jpa.xml.inherited.BeerConsumer">
+                <join-column name="C_ID"/>
+            </many-to-one>
+        </attributes>
+    </mapped-superclass>
+    <mapped-superclass class="org.eclipse.persistence.testing.models.jpa.xml.inherited.RatedBeerConsumer" access="FIELD">
+        <attributes>
+            <basic name="IQ" access="PROPERTY">
+                <column name="CONSUMER_IQ"/>
+            </basic>
+            <many-to-many name="committees">
+                <!--  
+                    Expert beer consumer will use the join table as is here, whereas, novice
+                    beer consumer will provide an association override.    
+                -->
+                <join-table name="XML_EBC_COMMITTEE">
+                    <join-column name="XML_EBC_ID" referenced-column-name="ID"/>
+                    <inverse-join-column name="XML_COMMITTEE_ID" referenced-column-name="ID"/>
+                </join-table>
+                <cascade>
+                    <cascade-all/>
+                </cascade>
+            </many-to-many>
+            <element-collection name="acclaims">
+                <order-by>DESC</order-by>
+                <column name="ACCLAIM"/>
+            </element-collection>
+            <element-collection name="awards">
+                <map-key-column name="AWARDS_KEY"/>
+                <column name="AWARD_CODE"/>
+            </element-collection>
+            <element-collection name="designations">
+                <!-- Let it default in this case to: designations_ORDER -->
+                <order-column/>
+                <column name="DESIGNATION"/>
+            </element-collection>
+            <element-collection name="records">
+                <order-by>date ASC</order-by>
+            </element-collection>
+            <embedded name="accredidation">
+                <!--
+                    Expert beer consumer will use these overrides, whereas, novice beer 
+                    consumer will override them by defining class level overrides. 
+                 -->
+                 <attribute-override name="details">
+                    <column name="ACCREDIDATION"/>
+                 </attribute-override>
+                 <association-override name="witnesses">
+                    <join-table name="XML_EBC_ACCREDIDATION_WITNESS">
+                        <join-column name="XML_EBC_ID" referenced-column-name="ID"/>
+                        <inverse-join-column name="XML_WITNESS_ID" referenced-column-name="ID"/>
+                    </join-table>
+                 </association-override>
+                 <association-override name="officials">
+                    <join-column name="FK_EBC_ID"/>
+                 </association-override>
+            </embedded>
+        </attributes>
+    </mapped-superclass>
+    <entity name="XMLBeerConsumer" class="org.eclipse.persistence.testing.models.jpa.xml.inherited.BeerConsumer" access="PROPERTY">
+        <table name="CMP3_XML_CONSUMER"/>
+        <inheritance strategy="JOINED"/>
+        <discriminator-value>BC</discriminator-value>
+        <table-generator name="XML_BEER_CONSUMER_TABLE_GENERATOR" table="CMP3_XML_BEER_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="CONSUMER_SEQ"/>
+        <exclude-default-listeners/>
+        <attributes>
+            <id name="id">
+                <generated-value strategy="TABLE" generator="XML_BEER_CONSUMER_TABLE_GENERATOR"/>
+            </id>
+            <basic name="name"/>
+            <one-to-many name="certifications" mapped-by="beerConsumer" target-entity="org.eclipse.persistence.testing.models.jpa.xml.inherited.Certification">
+                <map-key name="mapKey"/>
+                <cascade>
+                    <cascade-all/>
+                </cascade>
+            </one-to-many>
+            <one-to-many name="alpineBeersToConsume"  fetch="EAGER" mapped-by="beerConsumer" target-entity="org.eclipse.persistence.testing.models.jpa.xml.inherited.Alpine">
+                <order-by>bestBeforeDate ASC</order-by>
+                <cascade>
+                    <cascade-all/>
+                </cascade>
+            </one-to-many>
+            <one-to-many name="becksBeersToConsume" mapped-by="beerConsumer" target-entity="org.eclipse.persistence.testing.models.jpa.xml.inherited.Becks">
+                <map-key-class class="BecksTag"/>
+                <map-key-join-column name="TAG_ID" referenced-column-name="ID"/>
+                <cascade>
+                    <cascade-all/>
+                </cascade>
+            </one-to-many>
+            <one-to-many name="canadianBeersToConsume" mapped-by="beerConsumer" target-entity="org.eclipse.persistence.testing.models.jpa.xml.inherited.Canadian">
+                <map-key/>
+                <cascade>
+                    <cascade-all/>
+                </cascade>
+            </one-to-many>
+            <one-to-many name="coronaBeersToConsume" mapped-by="beerConsumer" target-entity="org.eclipse.persistence.testing.models.jpa.xml.inherited.Corona">
+                <!-- map key class to be picked up through generics -->
+                <map-key-attribute-override name="number">
+                    <column name="TAG_NUMBER"/>
+                </map-key-attribute-override>
+                <cascade>
+                    <cascade-all/>
+                </cascade>
+            </one-to-many>
+            <one-to-many name="heinekenBeersToConsume" mapped-by="beerConsumer" target-entity="org.eclipse.persistence.testing.models.jpa.xml.inherited.Heineken">
+                <map-key-temporal>DATE</map-key-temporal>
+                <map-key-column name="BOTTLED_DATE"/>
+                <cascade>
+                    <cascade-all/>
+                </cascade>
+            </one-to-many>
+            <one-to-many name="telephoneNumbers" fetch="EAGER" mapped-by="beerConsumer" target-entity="org.eclipse.persistence.testing.models.jpa.xml.inherited.TelephoneNumber">
+                <map-key/>
+                <cascade>
+                    <cascade-all/>
+                </cascade>
+            </one-to-many>
+            <element-collection name="redStripeBeersToConsume">
+                <map-key-column name="RS_KEY"/>
+                <collection-table name="XML_CONSUMER_REDSTRIPES">
+                    <join-column name="C_ID" referenced-column-name="ID"/>
+                </collection-table>
+            </element-collection>
+            <transient name="foo"/>
+        </attributes>
+    </entity>
+    <entity name="XMLTelephoneNumber" class="org.eclipse.persistence.testing.models.jpa.xml.inherited.TelephoneNumber" access="PROPERTY">
+        <table name="CMP3_XML_TELEPHONE"/>
+                <!--comment out id-class by adding @IdClass in TelephoneNumber.java-->
+        <!--id-class class="org.eclipse.persistence.testing.models.jpa.xml.inherited.TelephoneNumberPK"/-->
+        <exclude-default-listeners/>
+        <exclude-superclass-listeners/>
+        <attributes>
+            <id name="type">
+                <column name="TYPE"/>
+            </id>
+            <id name="number">
+                <column name="TNUMBER"/>
+            </id>
+            <id name="areaCode">
+                <column name="AREA_CODE"/>
+            </id>
+            <many-to-one name="beerConsumer" target-entity="org.eclipse.persistence.testing.models.jpa.xml.inherited.BeerConsumer">
+                <!--join-column name="CONSUMER_ID" referenced-column-name="ID"/-->
+                <join-column name="CONSUMER_ID"/>
+            </many-to-one>
+        </attributes>
+    </entity>
+    <entity name="XMLCertification" class="org.eclipse.persistence.testing.models.jpa.xml.inherited.Certification" access="PROPERTY">
+        <table name="CMP3_XML_CERTIFICATION"/>
+        <table-generator name="XML_CERTIFICATION_TABLE_GENERATOR" table="CMP3_XML_BEER_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="CERTIFICATION_SEQ"/>
+        <exclude-default-listeners/>
+        <exclude-superclass-listeners/>
+        <attributes>
+            <id name="id">
+                <!--generated-value strategy="AUTO"/-->
+                <generated-value strategy="TABLE" generator="XML_CERTIFICATION_TABLE_GENERATOR"/>
+            </id>
+            <basic name="description"/>
+            <many-to-one name="beerConsumer" target-entity="org.eclipse.persistence.testing.models.jpa.xml.inherited.BeerConsumer">
+                <join-column name="CONSUMER_ID"/>
+            </many-to-one>
+        </attributes>
+    </entity>
+    <entity name="XMLAlpine" class="org.eclipse.persistence.testing.models.jpa.xml.inherited.Alpine" access="FIELD">
+        <table name="CMP3_XML_ALPINE"/>
+        <exclude-default-listeners/>
+        <exclude-superclass-listeners/>
+        <attributes>
+            <basic name="bestBeforeDate">
+                <column name="BB_DATE"/>
+                <temporal>DATE</temporal>
+            </basic>
+        </attributes>
+    </entity>
+    <entity name="XMLBecks" class="org.eclipse.persistence.testing.models.jpa.xml.inherited.Becks" access="FIELD">
+        <table name="CMP3_XML_BECKS"/>
+    </entity>
+    <entity name="XMLBecksTag" class="org.eclipse.persistence.testing.models.jpa.xml.inherited.BecksTag" access="PROPERTY">
+        <table name="CMP3_XML_BECKS_TAG"/>
+        <table-generator name="XML_BECKS_TAG_TABLE_GENERATOR" table="CMP3_XML_BECKS_TAG_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="BECKS_TAG_SEQ">
+        </table-generator>
+        <attributes>
+            <id name="id">
+                <generated-value strategy="TABLE" generator="XML_BECKS_TAG_TABLE_GENERATOR"/>
+            </id>
+            <basic name="callNumber">
+                <column name="CALL_NUMBER"/>
+            </basic>
+        </attributes>
+    </entity>
+    <entity name="XMLCanadian" class="org.eclipse.persistence.testing.models.jpa.xml.inherited.Canadian" access="FIELD">
+        <table name="CMP3_XML_CANADIAN"/>
+        <exclude-default-listeners/>
+        <exclude-superclass-listeners/>
+        <attribute-override name="id">
+            <column name="CANADIAN_ID"/>
+        </attribute-override>
+        <association-override name="beerConsumer">
+            <join-column name="CONSUMER_ID"/>
+        </association-override>
+        <attributes>
+            <basic name="bornOnDate">
+                <column name="BORN"/>
+                <temporal>DATE</temporal>
+            </basic>
+        </attributes>
+    </entity>
+    <entity name="XMLCorona" class="org.eclipse.persistence.testing.models.jpa.xml.inherited.Corona" access="FIELD">
+        <table name="CMP3_XML_CORONA"/>
+    </entity>
+    <entity name="XMLHeineken" class="org.eclipse.persistence.testing.models.jpa.xml.inherited.Heineken" access="FIELD">
+        <table name="CMP3_XML_HEINEKEN"/>
+    </entity>
+    <entity name="XMLLocation" class="org.eclipse.persistence.testing.models.jpa.xml.inherited.Location" access="FIELD">
+        <table name="JPA2_XML_LOCATION"/>
+        <attributes>
+            <id name="id">
+                <generated-value strategy="TABLE" generator="XML_LOCATION_TABLE_GENERATOR"/>
+            </id>
+            <basic name="city"/>
+            <basic name="country"/>
+        </attributes>
+    </entity>
+    <entity name="XML_NBC" class="org.eclipse.persistence.testing.models.jpa.xml.inherited.NoviceBeerConsumer" access="PROPERTY">
+        <table name="XML_NOVICE_CONSUMER"/>
+        <discriminator-value>NBC</discriminator-value>
+        <attribute-override name="accredidation.details">
+            <column name="ACCR_DETAILS"/>
+        </attribute-override>
+        <attribute-override name="records.date">
+            <column name="REC_DATE"/>
+        </attribute-override>
+        <attribute-override name="records.description">
+            <column name="DESCRIP"/>
+        </attribute-override>
+        <association-override name="records.location">
+            <join-column name="LOC_ID" referenced-column-name="ID"/>
+        </association-override>
+        <association-override name="committees">
+            <join-table name="XML_NBC_COMMITTEE">
+                <join-column name="XML_NBC_ID" referenced-column-name="ID"/>
+                <inverse-join-column name="XML_COM_ID" referenced-column-name="ID"/>
+            </join-table>
+        </association-override>
+        <association-override name="accredidation.officials">
+            <join-column name="FK_NBC_ID"/>
+        </association-override>
+        <association-override name="accredidation.witnesses">
+            <join-table name="XML_NBC_ACCREDITATION_WITNESS">
+                <join-column name="XML_NBC_ID" referenced-column-name="ID"/>
+                <inverse-join-column name="XML_WITNESSID" referenced-column-name="ID"/>
+            </join-table>
+        </association-override>
+    </entity>
+    <entity name="XML_EBC" class="org.eclipse.persistence.testing.models.jpa.xml.inherited.ExpertBeerConsumer" access="PROPERTY">
+        <table name="XML_EXPERT_CONSUMER"/>
+        <discriminator-value>EBC</discriminator-value>
+        <attribute-override name="records.date">
+            <column name="RECORD_DATE"/>
+        </attribute-override>
+        <attribute-override name="records.description">
+            <column name="DESCRIPTION"/>
+        </attribute-override>
+        <association-override name="records.location">
+            <join-column name="LOCATION_ID" referenced-column-name="ID"/>
+        </association-override>
+        <attributes>
+            <!-- audio attribute mapped on class with ElementCollection since we are testing with @Lob -->
+            <element-collection name="quotes">
+                <map-key-temporal>DATE</map-key-temporal>
+                <map-key-column name="Q_DATE"/>
+                <column name="QUOTE"/>
+                <collection-table name="EBC_QUOTES">
+                    <join-column name="EBC_ID"/>
+                </collection-table>
+            </element-collection>
+            <element-collection name="celebrations" fetch="EAGER">
+                <map-key-class class="Birthday"/>
+                <map-key-attribute-override name="day">
+                    <column name="BIRTH_DAY"/>
+                </map-key-attribute-override>
+                <map-key-attribute-override name="month">
+                    <column name="BIRTH_MONTH"/>
+                </map-key-attribute-override>
+                <map-key-attribute-override name="year">
+                    <column name="BIRTH_YEAR"/>
+                </map-key-attribute-override>
+                <column name="DETAILS"/>
+                <collection-table name="XML_EBC_CELEBRATIONS">
+                    <join-column name="XML_EBC_ID"/>            
+                </collection-table>    
+            </element-collection>    
+        </attributes>
+    </entity>
+    <entity name="XML_COMMITTEE" class="Committee" access="PROPERTY">
+        <table name="XML_COMMITTEE"/>
+        <attributes>
+            <id name="id">
+                <column name="ID"/>
+                <generated-value strategy="TABLE" generator="XML_COMMITTEE_TABLE_GENERATOR"/>
+            </id>
+            <basic name="description">
+                <column name="DESCRIP"/>
+            </basic>
+            <many-to-many name="expertBeerConsumers" mapped-by="committees"/>
+            <many-to-many name="noviceBeerConsumers" mapped-by="committees"/>
+        </attributes>
+    </entity>
+    <entity name="XML_OFFICIAL" class="Official" access="PROPERTY">
+        <secondary-table name="XML_OFFICIAL_COMPENSATION"/>
+        <named-query name="UpdateXMLOfficalName">
+            <query>UPDATE XML_OFFICIAL o set o.name = :name where o.id = :id</query>
+        </named-query>
+        <attributes>
+            <id name="id">
+                <column name="ID"/>
+                <generated-value strategy="TABLE" generator="XML_OFFICIAL_TABLE_GENERATOR"/>
+            </id>
+            <basic name="name">
+                <column name="NAME" updatable="false"/>
+            </basic>
+            <basic name="age">
+                <column name="AGE" insertable="false" updatable="true"/>
+            </basic>
+            <basic name="salary">
+                <column table="XML_OFFICIAL_COMPENSATION" insertable="true" updatable="false"/>
+            </basic>
+            <basic name="bonus">
+                <column table="XML_OFFICIAL_COMPENSATION" insertable="false" updatable="true"/>
+            </basic>
+            <embedded name="serviceTime"/>
+        </attributes>
+    </entity>
+    <entity name="XML_WITNESS" class="Witness" access="PROPERTY">
+        <attributes>
+            <id name="id">
+                <column name="ID"/>
+                <generated-value strategy="TABLE" generator="XML_WITNESS_TABLE_GENERATOR"/>
+            </id>
+            <basic name="name">
+                <column name="NAME"/>
+            </basic>
+        </attributes>
+    </entity>
+    <embeddable class="org.eclipse.persistence.testing.models.jpa.xml.inherited.Record" access="PROPERTY">
+        <attributes>
+            <basic name="description">
+                <column name="DESC"/>
+            </basic>
+            <basic name="date">
+                <column name="R_DATE"/>
+            </basic>
+            <many-to-one name="location">
+                <join-column name="L_ID"/>
+                <cascade>
+                    <cascade-persist/>
+                </cascade>
+            </many-to-one>
+        </attributes>
+    </embeddable>
+    <embeddable class="RedStripe">
+        <attributes>
+            <transient name="transientString"/>
+        </attributes>
+    </embeddable>
+    <embeddable class="org.eclipse.persistence.testing.models.jpa.xml.inherited.CoronaTag" access="PROPERTY">
+        <attributes>
+            <basic name="code">
+                <column name="TAG_CODE"/>
+            </basic>
+            <basic name="number">
+                <!-- We will specify an attribute override for this one, otherwise this is an invalid column name -->
+                <column name="INVALID_NUMBER"/>
+            </basic>
+        </attributes>
+    </embeddable>
+    <embeddable class="Birthday"/>
+    <embeddable class="Accredidation">
+        <attributes>
+            <basic name="details">
+                <!-- 
+                    Expert beer consumer will use the attribute override from the 
+                    accredidation mapping from RatedBeerConsumer, whereas, novice beer
+                    consumer will provide a class level attribute override to override
+                    the above mentioned attribute override.
+                    If these overrides are not picked up, the column name will be picked up
+                    and errors will occur.
+                 -->
+                <column name="BOGUS_COLUMN_NAME"/>
+            </basic>
+            <one-to-many name="officials">
+                <!--
+                    Expert beer consumer will use the association overrides from the 
+                    accredidation mapping from RatedBeerConsumer, whereas, novice beer
+                    consumer will provide a class level association override to override
+                    the above mentioned association override.
+                    If these overrides are not picked up, this join column will be picked up
+                    and errors will occur.            
+                 -->
+                <join-column name="BOGUS_JOIN_COLUMN_NAME"/>
+                <cascade>
+                    <cascade-persist/>
+                    <cascade-merge/>
+                </cascade>
+            </one-to-many>
+            <many-to-many name="witnesses">
+                <!-- 
+                    Expert beer consumer will use the association overrides from the 
+                    accredidation mapping from RatedBeerConsumer, whereas, novice beer
+                    consumer will provide a class level association override to override
+                    the above mentioned association override.
+                    If these overrides are not picked up, the join table will default
+                    and errors will occur.            
+                 -->
+                 <join-table name="BOGUS_JOIN_TABLE_NAME"/>
+                 <cascade>
+                    <cascade-persist/>
+                    <cascade-merge/>
+                </cascade>
+            </many-to-many>
+        </attributes>
+    </embeddable>
+    <embeddable class="ServiceTime">
+        <attributes>
+            <basic name="endDate">
+                <column name="END_DATE" insertable="false" updatable="true"/>
+            </basic>
+            <basic name="startDate">
+                <column name="START_DATE" updatable="false"/>
+            </basic>
+        </attributes>
+    </embeddable>
+</entity-mappings>

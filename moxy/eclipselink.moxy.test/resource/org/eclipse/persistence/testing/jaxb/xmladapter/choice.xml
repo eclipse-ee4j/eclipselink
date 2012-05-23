@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<foo>
+   <barA>Adapted String</barA>
+   <barB>
+      <a>adapted-a</a>
+      <b>adapted-c</b>
+   </barB>
+   <collection-string>test string</collection-string>
+   <barC>
+      <a>a</a>
+      <b>b</b>
+   </barC>
+   <int>123</int>
+</foo>
+
+

@@ -1,0 +1,13 @@
+{"person":{
+   "@id":10,
+   "firstName":"Jill",
+   "middleNames":["Jane", "Janice"],
+   "lastName":"MacDonald",
+   "contact":{
+      "address":{
+          "street":"The Street",
+          "city":"Ottawa"
+      }
+   }
+ }
+}

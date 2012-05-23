@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:ns0="http://www.example.org/customer" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.example.org/customer">
+   <xsd:complexType name="address">
+      <xsd:sequence>
+         <xsd:element name="street" type="xsd:string" minOccurs="0"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="customer">
+      <xsd:sequence>
+         <xsd:element name="address" type="ns0:address" minOccurs="0"/>
+         <xsd:element name="phoneNumber" type="ns0:phoneNumber" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="phoneNumber">
+      <xsd:simpleContent>
+         <xsd:extension base="xsd:string">
+         </xsd:extension>
+      </xsd:simpleContent>
+   </xsd:complexType>
+</xsd:schema>

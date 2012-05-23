@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<java-types>
+		<java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.binarydata.MyData">
+            <xml-root-element name="my-data" />
+            <java-attributes>
+                <xml-attribute java-attribute="bytes" xml-path="data/@mybytes">
+                    <xml-access-methods get-method="getBytes" set-method="setBytes" />
+                </xml-attribute>
+                <xml-attribute java-attribute="readOnlyBytes" xml-path="@my-read-only-bytes" read-only="true" />
+                <xml-element java-attribute="writeOnlyBytes" name="write-only-bytes" write-only="true" />
+            </java-attributes>
+		</java-type>
+	</java-types>
+</xml-bindings>

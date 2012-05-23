@@ -1,0 +1,11 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<root xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ns0="java.util" xsi:type="ns0:stringIntegerMap">
+   <entry>
+      <key>aaa</key>
+      <value>1</value>
+   </entry>
+   <entry>
+      <key>bbb</key>
+      <value>2</value>
+   </entry>
+</root>

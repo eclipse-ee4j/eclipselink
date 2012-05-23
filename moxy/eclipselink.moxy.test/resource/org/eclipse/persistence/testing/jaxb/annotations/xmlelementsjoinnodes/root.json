@@ -1,0 +1,73 @@
+{"root":{
+     "client":
+     [
+        {
+         "id":"c100",
+	 "mail":[{
+            "id":"a101",
+            "type":"home"
+	  }],
+	  "phone":[{
+            "id":"p101",
+            "type":"home"
+	  }]
+        },
+        {
+         "id":"c200",
+	 "mail":[{
+            "id":"a102",
+            "type":"home"
+	  },
+	  {
+            "id":"a100",
+            "type":"shipping"
+	  }
+	  ],
+	  "phone":[{
+            "id":"p100",
+            "type":"cell"
+	  }]	   
+        }
+      ],
+      "address":[
+         {"aid":"a100", 
+	  "type":"shipping",
+	  "value":"123 Some Street"
+	 },
+	 {"aid":"a101", 
+	  "type":"home",
+	  "value":"66 Dead End Rd."
+	 },
+	  {"aid":"a101", 
+	  "type":"work",
+	  "value":"45 O'Connor St."
+	 },
+         {"aid":"a101", 
+	  "type":"billing",
+	  "value":"101 Metcalfe St."
+	 },
+	 {"aid":"a102", 
+	  "type":"home",
+	  "value":"61 McClintock Way"
+	 }
+      ],
+      "phone-number":[
+        {"pid":"p100",
+	 "type":"work",
+	 "value":"613.288.6789"
+	},
+	 {"pid":"p100",
+	 "type":"cell",
+	 "value":"613.858.6789"
+	},
+	 {"pid":"p101",
+	 "type":"home",
+	 "value":"613.288.0000"
+	},
+	 {"pid":"p101",
+	 "type":"work",
+	 "value":"613.420.1212"
+	}
+      ]
+   }
+}

@@ -1,0 +1,72 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<object-persistence version="Eclipse Persistence Services - 0.1-incubation" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.eclipse.org/eclipselink/xsds/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <name>SimplePojoTest</name>
+   <class-mapping-descriptors>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.tests.simplepojoclient.PojoEmployee</class>
+         <alias>PojoEmployee</alias>
+         <primary-key>
+            <field table="POJO_EMPLOYEE" name="EMP_ID" xsi:type="column"/>
+         </primary-key>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>empId</attribute-name>
+               <get-method>getEmpId</get-method>
+               <set-method>setEmpId</set-method>
+               <field table="POJO_EMPLOYEE" name="EMP_ID" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>fName</attribute-name>
+               <get-method>getFName</get-method>
+               <set-method>setFName</set-method>
+               <field table="POJO_EMPLOYEE" name="F_NAME" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>gender</attribute-name>
+               <get-method>getGender</get-method>
+               <set-method>setGender</set-method>
+               <field table="POJO_EMPLOYEE" name="GENDER" xsi:type="column"/>
+               <converter xsi:type="object-type-converter">
+                  <type-mappings>
+                     <type-mapping>
+                        <object-value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">Male</object-value>
+                        <data-value xsi:type="java-character" xmlns="http://www.eclipse.org/eclipselink/xsds/persistence" xmlns:eclipselink="http://www.eclipse.org/eclipselink/xsds/persistence">M</data-value>
+                     </type-mapping>
+                     <type-mapping>
+                        <object-value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">Female</object-value>
+                        <data-value xsi:type="java-character" xmlns="http://www.eclipse.org/eclipselink/xsds/persistence" xmlns:eclipselink="http://www.eclipse.org/eclipselink/xsds/persistence">F</data-value>
+                     </type-mapping>
+                  </type-mappings>
+               </converter>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>lName</attribute-name>
+               <get-method>getLName</get-method>
+               <set-method>setLName</set-method>
+               <field table="POJO_EMPLOYEE" name="L_NAME" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>managerId</attribute-name>
+               <get-method>getManagerId</get-method>
+               <set-method>setManagerId</set-method>
+               <field table="POJO_EMPLOYEE" name="MANAGER_ID" xsi:type="column"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <tables>
+            <table name="POJO_EMPLOYEE"/>
+         </tables>
+      </class-mapping-descriptor>
+   </class-mapping-descriptors>
+   <login xsi:type="database-login">
+      <platform-class>@dbPlatform@</platform-class>
+      <user-name>@dbUser@</user-name>
+      <password>@dbPassword@</password>
+      <driver-class>@driverClass@</driver-class>
+      <connection-url>@dbURL@</connection-url>
+   </login>
+</object-persistence>

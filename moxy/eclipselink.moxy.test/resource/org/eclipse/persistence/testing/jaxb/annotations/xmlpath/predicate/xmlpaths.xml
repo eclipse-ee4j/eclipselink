@@ -1,0 +1,7 @@
+<root>
+    <item type="address">
+        <street>123 A Street</street>
+    </item>
+    <item type="string">String</item>
+    <item type="phone-number">555-1111</item>
+</root>

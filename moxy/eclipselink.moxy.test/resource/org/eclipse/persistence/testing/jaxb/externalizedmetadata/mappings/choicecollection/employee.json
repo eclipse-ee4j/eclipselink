@@ -1,0 +1,12 @@
+{"employee":{
+   "things":{
+       "my-integer":[66,99],
+       "my-float":[101.1]
+   },
+   "my-read-only-float":[88.8],
+   "my-read-only-integer":[77],
+   "stuff":{
+      "my-write-only-integer":[3]
+   }
+   }
+}

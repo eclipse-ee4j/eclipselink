@@ -1,0 +1,6 @@
+{"getPageResponse":{
+      "return":{
+          "isEmailLinkRequired":"true"
+      }
+   }
+}

@@ -1,0 +1,12 @@
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm" package-name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessortype.inheritance">
+    <java-types>
+        <java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessortype.inheritance.A" xml-accessor-type="NONE"/>
+        <java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessortype.inheritance.B">
+            <xml-root-element/>
+            <java-attributes>
+                <xml-element java-attribute="x" xml-path="a/b/c/text()"/>
+                <xml-element java-attribute="calculatedValue"/>
+            </java-attributes>
+        </java-type>
+    </java-types>
+</xml-bindings>

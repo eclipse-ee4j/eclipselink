@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:complexType name="person">
+      <xsd:sequence>
+         <xsd:element minOccurs="0" name="name" type="xsd:string"/>
+         <xsd:element minOccurs="0" name="mapTest" type="myObject"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="myObject">
+      <xsd:sequence>
+         <xsd:element minOccurs="0" name="keys">
+            <xsd:simpleType>
+               <xsd:list itemType="xsd:string"/>
+            </xsd:simpleType>
+         </xsd:element>
+         <xsd:element minOccurs="0" name="values">
+            <xsd:simpleType>
+               <xsd:list itemType="xsd:string"/>
+            </xsd:simpleType>
+         </xsd:element>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="theRoot" type="person"/>
+</xsd:schema>

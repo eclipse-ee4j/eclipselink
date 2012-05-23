@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<xml-bindings
+    xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm"
+    package-name="org.eclipse.persistence.testing.models.jpa.jaxrs">
+    <xml-schema
+        namespace="http://www.example.com/customer"
+        element-form-default="QUALIFIED"/>
+    <java-types>
+        <java-type name="Address">
+            <xml-root-element/>
+            <xml-type prop-order="street city"/>
+            <java-attributes>
+                <xml-attribute java-attribute="id" name="ID"/>
+                <xml-element java-attribute="city" xml-path="DETAILS/CITY/text()"/>
+                <xml-element java-attribute="street" xml-path="DETAILS/STREET/text()"/>
+            </java-attributes>
+        </java-type>
+    </java-types>
+</xml-bindings>

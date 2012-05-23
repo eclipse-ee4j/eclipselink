@@ -1,0 +1,14 @@
+<xsd:schema targetNamespace="http://www.example.org"
+            xmlns="http://www.example.org"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            elementFormDefault="unqualified" attributeFormDefault="unqualified">
+	<xsd:element name="employee" type="EmployeeType" />
+	<xsd:complexType name="EmployeeType">
+		<xsd:sequence>
+			<xsd:element name="id" type="xsd:int"/>
+			<xsd:element name="firstname" type="xsd:string"/>
+			<xsd:element name="task" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="lastname" type="xsd:string"/>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

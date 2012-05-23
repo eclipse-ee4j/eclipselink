@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xs:schema elementFormDefault="qualified"
+           targetNamespace="uri1"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"           
+           xmlns:tns="uri1">
+    <xs:complexType name="Employee">
+        <xs:sequence>
+            <xs:element minOccurs="0" name="name" type="xs:string"/>
+            <xs:element minOccurs="0" name="address" nillable="true" type="q1:Address"
+                        xmlns:q1="uri1"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="Address">
+        <xs:sequence>
+            <xs:element minOccurs="0" name="street" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:element name="Employee" nillable="true" type="tns:Employee"/> 
+</xs:schema>

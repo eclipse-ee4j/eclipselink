@@ -1,0 +1,8 @@
+{"employee":{
+    "address":{
+        "street":"theStreet",
+        "city":"theCity"
+     },
+     "name":"John Smith"
+  }
+}

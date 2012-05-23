@@ -1,0 +1,26 @@
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence persistence_1_0.xsd" version="1.0">
+    <persistence-unit name="%%default%%" transaction-type="%%transaction-type%%">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <%%datasource-type%%>%%data-source-name%%</%%datasource-type%%>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <properties>
+             <property name="eclipselink.target-server" value="%%server-platform%%"/>
+             <property name="eclipselink.target-database" value="%%database-platform%%"/>
+             <property name="eclipselink.sessions-xml" value="META-INF/sessions.xml"/>
+             <property name="eclipselink.session-name" value="JPASessionXML"/>
+             <property name="eclipselink.exception-handler" value="org.eclipse.persistence.testing.tests.jpa.jpaadvancedproperties.CustomizedExceptionHandler"/>
+             <property name="eclipselink.session-event-listener" value="org.eclipse.persistence.testing.tests.jpa.jpaadvancedproperties.CustomizedSessionEventListener"/>
+
+             <property name="eclipselink.jdbc.batch-writing" value="BUFFERED"/>
+             <property name="eclipselink.jdbc.native-sql" value="true"/>
+             <property name="eclipselink.jdbc.cache-statements.size" value="100"/>
+             <property name="eclipselink.jdbc.cache-statements" value="true"/>
+             <property name="eclipselink.logging.logger" value="JavaLogger"/>
+             <property name="eclipselink.logging.file" value="JPAAdvancedProperties.log"/>
+             <property name="eclipselink.session.include.descriptor.queries" value="true"/>
+             <property name="eclipselink.profiler" value="NoProfiler"/>
+             <property name="eclipselink.weaving" value="%%server-weaving%%"/>
+
+        </properties>
+    </persistence-unit>
+</persistence>

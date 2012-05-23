@@ -1,0 +1,46 @@
+{
+   "company" : {
+      "name" : "ACME Incorporated",
+      "employees" : [ {
+         "id" : 789,
+         "name" : "Bob Smith",
+         "contactInfos" : [ {
+            "address" : {
+               "addressString" : "123 Main St."
+            },
+            "phoneNumber" : {
+               "number" : 5551212
+            }
+         }, {
+            "address" : {
+               "addressString" : "727 Water St."
+            },
+            "phoneNumber" : {
+               "number" : 5551655,
+               "owningEmployee" : {
+                  "type" : "int",
+                  "value" : 789
+               }
+            }
+         } ]
+      }, {
+         "id" : 1234,
+         "name" : "Jane Doe",
+         "contactInfos" : [ {
+            "address" : {
+               "addressString" : "711 Maple Ave."
+            },
+            "phoneNumber" : {
+               "number" : 5559876,
+               "owningEmployee" : {
+                  "type" : "employeePointer",
+                  "empId" : 1234
+               }
+            },
+            "email" : {
+               "user" : "Jane.Doe",
+               "domain" : "oracle.com"
+            }
+         } ]
+      } ]
+   }}

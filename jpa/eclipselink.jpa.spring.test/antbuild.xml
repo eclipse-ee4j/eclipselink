@@ -1,0 +1,251 @@
+<!--/*******************************************************************************
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+* which accompanies this distribution.
+* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+* and the Eclipse Distribution License is available at
+* http://www.eclipse.org/org/documents/edl-v10.php.
+*
+*   Ant naming conventions:
+*   - regardless of the actual OS platform,'/' is the directory separator
+*     (Ant will convert as appropriate).
+*   - multi-word properties use periods '.'
+*     - properties ending in .jar define jarfile names only (no path)
+*     - properties ending in .lib are fully qualified jars (path and filename)
+*     - properties ending in .dir are directory paths
+*     - properties ending in .path are path refid names (classpath fragments)
+*   - multi-word targets use hyphens '-'
+*     - targets beginning with test- are reserved for high level test targets,
+*       and are used in test results parsing
+*     - targets typically use the form <action>-<object>-<type> (ie. package-bundle-zip)
+*   - multi-word macros use underscores '_'
+*   - multi-word macro attributes are concatinated
+*     e.g. 'runpathref'
+*   - multi-word tasks (taskdef) names are concatinated
+*     e.g. 'validateconnection'
+*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
+*     e.g. ${env.XXX}.
+*   - Ant properties are lower case.
+*
+* Contributors:
+*     etang - initial API and implementation
+#******************************************************************************/-->
+
+<!-- This ant project includes the following tasks:
+        - all (default) : compiles all Spring tests, packages test jar
+        - compile : compiles all Spring tests
+        - package : jars JPA persistent unit and tests jar
+        - test-jpa-spring: runs all Spring tests
+        - test-jpa-spring-local: runs Spring local tests
+        - test-jpa-spring-container: runs Spring container tests
+
+        It requires some configuration of the build.properties and test.properties to run.
+        It also requires the following third-party jars available in ../../../extension.lib.external/spring
+            spring.jar(version 2.5.3)
+            spring-agent.jar(version 2.5.3)
+            spring-mock.jar(version 2.5.3, self-built from source code)
+            cglib-nodep-2.2.jar
+            commons-logging-1.1.1.jar
+    -->
+
+<project name="Eclipse Persistence Services JPA Spring Testing" default="all" basedir=".">
+    <!-- Allows a user to overide certain user specific properties. -->
+    <property file="${user.home}/build.properties"/>
+    <property file="${user.home}/test.properties"/>
+    <property name="eclipselink.jpa.spring.test" value="."/>
+    <property file="${eclipselink.jpa.spring.test}/antbuild.properties"/>
+    <property file="${eclipselink.jpa.spring.test}/local.build.properties"/>
+    <property file="${eclipselink.jpa.spring.test}/${test.properties}"/>
+    <property file="${eclipselink.jpa.spring.test}/test.properties"/>
+
+    <!-- This checks if the trunk was checked out, or just the Eclipse projects. -->
+    <available file="${eclipselink.jpa.spring.test}/${eclipselink.core.trunk}" type="dir" property="is.trunk"/>
+
+    <!-- Configures paths for trunk checkout. -->
+    <target name="config-trunk" if="is.trunk">
+        <property name="eclipselink.core.dir" value="${eclipselink.jpa.spring.test}/${eclipselink.core.trunk}"/>
+        <property name="eclipselink.core.test.dir" value="${eclipselink.jpa.spring.test}/${eclipselink.core.test.trunk}"/>
+        <property name="eclipselink.core.lib.dir" value="${eclipselink.jpa.spring.test}/${eclipselink.plugins.trunk}"/>
+        <property name="eclipselink.extension.oracle.test.dir" value="${eclipselink.jpa.spring.test}/${eclipselink.extension.oracle.test.trunk}"/>
+        <antcall target="config-compile-path" inheritRefs="true"/>
+        <antcall target="config-run-path" inheritRefs="true"/>
+    </target>
+
+    <!-- Configures paths for Eclipse project checkout. -->
+    <target name="config-flat" unless="is.trunk">
+        <property name="eclipselink.core.dir" value="${eclipselink.core}"/>
+        <property name="eclipselink.core.test.dir" value="${eclipselink.core.test}"/>
+        <property name="eclipselink.core.lib.dir" value="${eclipselink.plugins}"/>
+        <property name="eclipselink.extension.oracle.test.dir" value="${eclipselink.extension.oracle.test}"/>
+        <antcall target="config-compile-path" inheritRefs="true"/>
+        <antcall target="config-run-path" inheritRefs="true"/>
+    </target>
+
+    <target name="config-compile-path">
+        <path id="compile.path">
+            <pathelement path="${eclipselink.core.dir}/${classes.dir}"/>
+            <pathelement path="${eclipselink.jpa}/${classes.dir}"/>
+            <pathelement path="${eclipselink.jpa.test}/${classes.dir}"/>
+            <pathelement path="${eclipselink.core.test.dir}/${classes.dir}"/>
+            <pathelement path="${eclipselink.core.lib.dir}/${unsigned.persistence10.jar}"/>
+            <fileset
+                dir="${eclipselink.core.lib.dir}"
+                includes="${eclipselink.core.depend}"/>
+            <pathelement path="../../${eclipselink.jar}"/>
+            <pathelement path="${junit.lib}"/>
+            <pathelement path="${eclipselink.plugins}/${antlr}"/>
+            <pathelement path="${eclipselink.plugins}/${asm}"/>
+            <fileset dir="${spring.jlib.dir}" includes="${spring.jlib}"/>
+        </path>
+    </target>
+
+    <!-- Default ant target, compiles and packages test jars, does not run tests. -->
+    <target name="all" depends="clean, init, compile, package" description="build EclipseLink JPA testing jars"/>
+
+    <target name="clean" description="Clean the build">
+        <delete includeEmptyDirs="true" failonerror="false">
+            <fileset dir="${eclipselink.jpa.spring.test}/${classes.dir}"/>
+            <fileset dir="${eclipselink.jpa.spring.test}/${build.dir}"/>
+            <fileset file="${eclipselink.jpa.spring.test}/${jpa.spring}.jar"/>
+        </delete>
+    </target>
+
+    <!-- Creates required directories for building. -->
+    <target name="init">
+        <mkdir dir="${eclipselink.jpa.spring.test}/${run.dir}"/>
+        <mkdir dir="${eclipselink.jpa.spring.test}/${classes.dir}"/>
+        <mkdir dir="${eclipselink.jpa.spring.test}/${build.dir}/${jpa.spring}"/>
+    </target>
+
+    <!-- Compiles all tests. -->
+    <target name="compile" depends="init, config-trunk, config-flat" description="compile EclipseLink testing">
+        <javac srcdir="${eclipselink.jpa.spring.test}/${src.dir}"
+               destdir="${eclipselink.jpa.spring.test}/${classes.dir}"
+               debug="${javac.debug}"
+               debuglevel="${javac.debuglevel}"
+               encoding="UTF-8"
+               optimize="${javac.optimize}"
+               source="${javac.version}"
+               target="${javac.version}"
+               deprecation="${javac.deprecation}"
+               failonerror="true">
+            <include name="org/eclipse/persistence/testing/**"/>
+            <classpath>
+                <path refid="compile.path"/>
+            </classpath>
+        </javac>
+    </target>
+
+    <!-- Packages JPA persistent unit test jars. -->
+    <target name="package" depends="compile">
+        <copy todir="${eclipselink.jpa.spring.test}/${build.dir}/${jpa.spring}">
+            <fileset dir="${eclipselink.jpa.spring.test}/resource/${jpa.spring}" includes="**"/>
+        </copy>
+        <replace dir="${eclipselink.jpa.spring.test}/${build.dir}/${jpa.spring}" token='%%dbURL%%' value="${db.url}">
+            <include name="**"/>
+        </replace>
+        <replace dir="${eclipselink.jpa.spring.test}/${build.dir}/${jpa.spring}" token='%%driverClass%%' value="${db.driver}">
+            <include name="**"/>
+        </replace>
+        <replace dir="${eclipselink.jpa.spring.test}/${build.dir}/${jpa.spring}" token='%%dbUser%%' value="${db.user}">
+            <include name="**"/>
+        </replace>
+        <replace dir="${eclipselink.jpa.spring.test}/${build.dir}/${jpa.spring}" token='%%dbPassword%%' value="${db.pwd}">
+            <include name="**"/>
+        </replace>
+        <replace dir="${eclipselink.jpa.spring.test}/${build.dir}/${jpa.spring}" token='%%dbPlatform%%' value="${db.platform}">
+            <include name="**"/>
+        </replace>
+        <copy todir="${eclipselink.jpa.spring.test}/${build.dir}/${jpa.spring}">
+            <fileset dir="${eclipselink.jpa.spring.test}/${classes.dir}">
+                <include name="test/org/eclipse/persistence/testing/models/jpa/spring/**"/>
+                <include name="org/eclipse/persistence/testing/tests/jpa/spring/**"/>
+            </fileset>
+        </copy>
+        <jar jarfile="${eclipselink.jpa.spring.test}/${jpa.spring}.jar">
+            <fileset dir="${eclipselink.jpa.spring.test}/${build.dir}/${jpa.spring}"/>
+        </jar>
+    </target>
+
+    <!-- Repackages JPA persistent unit test jars. -->
+    <target name="repackage">
+        <copy todir="${eclipselink.jpa.test}/${resource.dir}/eclipselink-advanced-field-access-model/">
+            <fileset dir="${eclipselink.jpa.test}/${resource.dir}/eclipselink-advanced-field-access-model/spring" includes="**"/>
+        </copy>
+        <copy todir="${eclipselink.jpa.test}/${resource.dir}/eclipselink-annotation-model/">
+            <fileset dir="${eclipselink.jpa.test}/${resource.dir}/eclipselink-annotation-model/spring" includes="**"/>
+            <fileset dir="${eclipselink.jpa.test}/${resource.dir}/eclipselink-annotation-model" includes="case-sensitive-advanced-entity-mappings.xml"/>
+        </copy>
+    </target>
+
+    <!-- Classpath used for running tests. -->
+    <target name="config-run-path">
+        <path id="run.classpath">
+            <pathelement path="${eclipselink.jpa.spring.test}/${jpa.spring}.jar"/>
+            <pathelement path="${jdbc.driver.jar}"/>
+            <path refid="compile.path"/>
+        </path>
+    </target>
+
+    <target name="clean-run" description="Clean the run">
+        <delete dir="${eclipselink.jpa.spring.test}/${run.dir}"/>
+        <delete dir="${eclipselink.jpa.spring.test}/${report.dir}"/>
+        <mkdir dir="${eclipselink.jpa.spring.test}/${run.dir}"/>
+        <mkdir dir="${eclipselink.jpa.spring.test}/${report.dir}"/>
+    </target>
+
+    <target name="test-jpa-spring" depends="test-jpa-spring-local, test-jpa-spring-container"/>
+
+    <target name="test-jpa-spring-local" depends="clean-run, config-trunk, config-flat">
+        <junit printsummary="yes" haltonfailure="no" failureproperty="junit.failed" fork="yes" forkmode="once" showoutput="true" maxmemory="512m" dir="${eclipselink.jpa.spring.test}/${run.dir}">
+            <jvmarg value="${test.agent}"/>
+            <jvmarg value="${test.weaving}"/>
+            <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
+            <jvmarg value="-Dtest.properties=${test.properties.run}"/>
+            <classpath>
+                <path refid="run.classpath"/>
+            </classpath>
+            <batchtest todir="${eclipselink.jpa.spring.test}/${report.dir}">
+                <fileset dir="${eclipselink.jpa.spring.test}/${src.dir}">
+                    <include name="**/spring/TestLocalEMF.java"/>
+                    <include name="**/spring/TestLocalEMFtransactional.java"/>
+                    <include name="**/spring/dao/TestLocalEMFwithDao.java"/>
+                </fileset>
+                <formatter type="xml"/>
+            </batchtest>
+        </junit>
+        <junitreport todir="${eclipselink.jpa.spring.test}/${report.dir}">
+            <fileset dir="${eclipselink.jpa.spring.test}/${report.dir}">
+                <include name="*.xml"/>
+            </fileset>
+            <report format="noframes" todir="${eclipselink.jpa.spring.test}/${report.dir}"/>
+        </junitreport>
+    </target>
+
+    <target name="test-jpa-spring-container" depends="clean-run, config-trunk, config-flat">
+        <junit printsummary="yes" haltonfailure="no" failureproperty="junit.failed" fork="yes" forkmode="once" showoutput="true" maxmemory="512m" dir="${eclipselink.jpa.spring.test}/${run.dir}">
+            <jvmarg value="-javaagent:../${spring.jlib.dir}/instrument.jar"/>
+            <jvmarg value="${test.weaving}"/>
+            <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
+            <jvmarg value="-Dtest.properties=${test.properties.run}"/>
+            <classpath>
+                <path refid="run.classpath"/>
+            </classpath>
+            <batchtest todir="${eclipselink.jpa.spring.test}/${report.dir}">
+                <fileset dir="${eclipselink.jpa.spring.test}/${src.dir}">
+                    <include name="**/spring/TestContainerEMF.java"/>
+                    <include name="**/spring/TestContainerEMFtransactional.java"/>
+                    <include name="**/spring/TestJtaContainerEMF.java"/>
+                    <include name="**/spring/dao/TestContainerEMFwithDao.java"/>
+                </fileset>
+                <formatter type="xml"/>
+            </batchtest>
+        </junit>
+        <junitreport todir="${eclipselink.jpa.spring.test}/${report.dir}">
+            <fileset dir="${eclipselink.jpa.spring.test}/${report.dir}">
+                <include name="*.xml"/>
+            </fileset>
+            <report format="noframes" todir="${eclipselink.jpa.spring.test}/${report.dir}"/>
+        </junitreport>
+    </target>
+</project>

@@ -1,0 +1,1 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><ns0:customer xmlns:ns0="http://www.example.org/package" xmlns:ns1="http://www.example.org/type" xmlns:ns2="http://www.example.org/property" ns1:id="6"><ns1:name>Bob</ns1:name><ns2:account>32847</ns2:account></ns0:customer>

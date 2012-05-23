@@ -1,0 +1,3 @@
+<vehicle xmlns="http://www.example.com" vtype="c:ar">
+    <numberOfDoors>2</numberOfDoors>
+</vehicle>

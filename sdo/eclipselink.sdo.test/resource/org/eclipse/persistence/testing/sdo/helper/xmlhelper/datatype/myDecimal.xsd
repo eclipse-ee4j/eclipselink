@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:nist="myDecimal-NS" targetNamespace="myDecimal-NS">
+
+	<element name="myDecimal" type="nist:myDecimal-Type"/>
+
+	<simpleType name="myDecimal-Type">
+		<restriction base="decimal"/>
+	</simpleType>
+
+</schema>

@@ -1,0 +1,94 @@
+{
+      "xml-accessor-type" : "PUBLIC_MEMBER",
+      "xml-accessor-order" : "ALPHABETICAL",
+      "xml-mapping-metadata-complete" : false,
+      "package-name" : "test.model",
+      "xml-name-transformer" : "test.someNameTransformer",
+      "xml-schema" : {
+         "attribute-form-default" : "UNQUALIFIED",
+         "element-form-default" : "UNQUALIFIED",
+         "location" : "someLocation",
+         "namespace" : "testnamespace"
+      },
+      "xml-schema-types" : {
+         "xml-schema-type" : [ {
+            "name" : "someSchemaType",
+            "namespace" : "someSchemaTypeNamespace",
+            "type" : "someSchemaType"
+         },{
+            "name" : "someSchemaType2",
+            "namespace" : "someSchemaTypeNamespace2",
+            "type" : "someSchemaType2"
+	 } ]
+      },
+      "xml-java-type-adapters" : {
+         "xml-java-type-adapter" : [ {
+            "java-attribute" : "someJavaAttribute",
+            "value" : "someAdapterValue",
+            "type" : "someAdapterType",
+            "value-type" : "somValueType"
+         } ]
+      },
+      "xml-registries" : {
+         "xml-registry" : [ {
+            "name" : "someRegistry"
+         } ]
+      },
+      "xml-enums" : {
+         "xml-enum" : [ {
+            "java-enum" : "A",
+            "value" : "A_Value"
+         }, {
+            "java-enum" : "B",
+            "value" : "B_Value"
+         } ]
+      },
+      "java-types" : {
+         "java-type" : [ {
+            "name" : "myType",
+            "xml-accessor-order" : "ALPHABETICAL",
+            "xml-discriminator-node" : "descriminator node",
+            "xml-discriminator-value" : "discriminator value",
+            "xml-inline-binary-data" : false,
+            "xml-transient" : false,
+            "xml-type" : {
+               "name" : "someName",
+               "factory-class" : "somepackage.someFactoryclass",
+               "factory-method" : "someMethod",
+               "prop-order" : "p2 p1"
+            },
+            "xml-root-element" : {
+               "name" : "someRoot",
+               "namespace" : "someNamespace"
+            },
+            "xml-class-extractor" : {
+               "class" : "a.b.c.someClass"
+            },
+            "xml-properties" : {
+               "xml-property" : [ {
+                  "name" : "prop1",
+                  "value" : "propValue",
+                  "value-type" : "propValueType"
+               } ]
+            },
+            "java-attributes" : {
+               "xml-element" : [ {
+                  "java-attribute" : "theJavaAttributeValue",
+                  "name" : "elementName"
+               } , {
+                  "java-attribute" : "theJavaAttributeValue2",
+                  "name" : "elementName2"
+               }
+	       ],
+               "xml-attribute": [ {
+	          "java-attribute":"javaAttribute",
+		  "name":"attributename1",
+		  "namespace":"somenamespace",
+		  "required":true,
+		  "read-only":true,
+		  "container-type":"someContainerType"
+		} ]
+            }
+         } ]
+      }
+   }

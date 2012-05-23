@@ -1,0 +1,396 @@
+<!--/*******************************************************************************
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+* which accompanies this distribution.
+* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+* and the Eclipse Distribution License is available at
+* http://www.eclipse.org/org/documents/edl-v10.php.
+*
+*   Ant naming conventions:
+*   - regardless of the actual OS platform,'/' is the directory separator
+*     (Ant will convert as appropriate).
+*   - multi-word properties use periods '.'
+*     - properties ending in .jar define jarfile names only (no path)
+*     - properties ending in .lib are fully qualified jars (path and filename)
+*     - properties ending in .dir are directory paths
+*     - properties ending in .path are path refid names (classpath fragments)
+*   - multi-word targets use hyphens '-'
+*     - targets beginning with test- are reserved for high level test targets,
+*       and are used in test results parsing
+*     - targets typically use the form <action>-<object>-<type> (ie. package-bundle-zip)
+*   - multi-word macros use underscores '_'
+*   - multi-word macro attributes are concatinated
+*     e.g. 'runpathref'
+*   - multi-word tasks (taskdef) names are concatinated
+*     e.g. 'validateconnection'
+*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
+*     e.g. ${env.XXX}.
+*   - Ant properties are lower case.
+*
+* Contributors:
+*     tware - initial API and implementation
+*     egwin - update to adopt calling standards
+#******************************************************************************/-->
+<!-- This ant project includes the following tasks:
+        - build (default) : cleans, compiles, and packages all tests
+        - clean           : cleans up all generated files and dirs
+        - compile         : compiles all classes
+        - package         : packages the oracle.nosql extensions OSGi bundle jar.
+-->
+<project name="org.eclipse.persistence.oracle.nosql" default="build" basedir=".">
+    <available file="../${ant.project.name}" type="dir" property="oracle.nosql.is.local"/>
+    <!-- Test to make sure that the calling script doesn't inherit the variable -->
+    <!-- (should be set locally, and be destroyed upon return)                  -->
+    <fail message="Not running from '${ant.project.name}' directory" unless="oracle.nosql.is.local"/>
+
+    <dirname  property="oracle.nosql.build.location_temp" file="${ant.file.org.eclipse.persistence.oracle.nosql}"/>
+    <pathconvert targetos="unix" property="oracle.nosql.build.location">
+        <path>
+            <pathelement location="${oracle.nosql.build.location_temp}"/>
+        </path>
+    </pathconvert>
+    <echo message="oracle.nosql.build.location = '${oracle.nosql.build.location}'"/>
+    <condition property="oracle.nosql.2.base.dir" value="../.." else="..">
+        <contains string="${oracle.nosql.build.location}" substring="foundation"/>
+    </condition>
+    <echo message="oracle.nosql.2.base.dir = '${oracle.nosql.2.base.dir}'"/>
+    <property name="oracle.nosql.2.common.plugins.dir"     value="${oracle.nosql.2.base.dir}/plugins"/>
+    <property name="oracle.nosql.2.foundation.plugins.dir" value="../plugins"/>
+    <condition property="oracle.nosql.2.jpa.plugins.dir"   value="${oracle.nosql.2.base.dir}/jpa/plugins" else="../plugins">
+        <available file="${oracle.nosql.2.base.dir}/jpa/plugins" type="dir"/>
+    </condition>
+    <property name="oracle.nosql.2.buildsys.dir"           value="${oracle.nosql.2.base.dir}/buildsystem"/>
+
+    <!-- local property overrides -->
+    <condition property="custom.properties.message" value="Loading ${user.home}/build.properties..."
+                                                     else="Custom properties file '${user.home}/build.properties' not found to load.">
+        <available file="${user.home}/build.properties"/>
+    </condition>
+    <echo message="${custom.properties.message}"/>
+    <property file="${user.home}/build.properties"/>
+    <!-- Sets default junit.lib and all extensions.depend dir locations to defaults based upon discovered dir heirarchy -->
+    <!-- Must be defined after ${user.home}/build.properties is included to allow redefinition -->
+    <condition property="oracle.extensions.depend.dir" value="../../../extension.oracle.lib.external" else="../../extension.oracle.lib.external">
+        <contains string="${oracle.nosql.build.location}" substring="foundation"/>
+    </condition>
+    <property file="${oracle.nosql.build.location}/antbuild.properties"/>
+
+    <!-- Defaults, set var in ${user.home}/build.properties if different version required -->
+    <property name="bndtool.prefix" value="bnd"/>
+    <property name="bndtool.separator" value="-"/>
+    <property name="bndtool.criteria" value="[0.0.350,0.1.0)"/>
+
+    <!-- Primary Targets -->
+    <target name="build" depends="clean, compile, jar" description="build ${ant.project.name} component"/>
+    <target name="jar"   depends="package, repackage"  description="package ${ant.project.name} component (** dev use only **)"/>
+
+    <!-- clean -->
+    <target name="clean" description="Clean all generated content">
+        <delete includeEmptyDirs="true" failonerror="false">
+            <fileset dir="${classes.dir}"/>
+            <fileset dir="${oracle.nosql.2.common.plugins.dir}" includes="${ant.project.name}_*.jar*, ${ant.project.name}.source_*.jar*"/>
+            <fileset dir="${oracle.nosql.2.foundation.plugins.dir}" includes="${ant.project.name}_*.jar.*, ${ant.project.name}.source_*.jar.*"/>
+        </delete>
+    </target>
+
+    <!-- initialize varables and paths needed for compile -->
+    <!-- the number of properties needed now is too great for lazy loading without a target -->
+    <target name="init">
+        <property name="custom.tasks.lib" value="${oracle.nosql.2.buildsys.dir}/ant_customizations.jar"/>
+        <property name="custom.echo.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.Say"/>
+        <property name="custom.selectbundle.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.SelectBundle"/>
+        <taskdef name="say"          classname="${custom.echo.task.class}"         classpath="${custom.tasks.lib}"/>
+        <taskdef name="selectbundle" classname="${custom.selectbundle.task.class}" classpath="${custom.tasks.lib}"/>
+        <!-- This HAS to be defined after allowing user redefinitions (which will cause the condition not to set anything) -->
+        <!-- This tests to make sure the extensions dir exists, if not sets to a existant dummy location -->
+        <condition property="extensions.depend.dir" value="${oracle.nosql.2.base.dir}/../extension.lib.external"
+                                                     else="${oracle.nosql.build.location}">
+            <available file="${oracle.nosql.2.base.dir}/../extension.lib.external" type="dir"/>
+        </condition>
+        <echo message="extensions.depend.dir = '${extensions.depend.dir}'"/>
+        <!-- versioning -->
+        <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
+        <tstamp>
+           <format property="build.date" pattern="yyyyMMdd"/>
+           <format property="build.time" pattern="HHmm"/>
+        </tstamp>
+        <property name="build.type"            value="SNAPSHOT"/>
+        <property name="svn.revision"          value="NA"/>
+        <property name="version.qualifier"     value="qualifier"/>
+        <property name="version.string"        value="${release.version}.${version.qualifier}"/>
+        <property name="release.designation"   value="EclipseLink ${release.version} Build"/>
+        <property name="specification.vendor"  value="Eclipse.org - EclipseLink Project"/>
+        <property name="implementation.vendor" value="${specification.vendor}"/>
+        <say  message="'nobnd' is set."        if="nobnd"/>
+
+        <!-- Check for BND library -->
+        <property name="nobndtool.manifest.dir" value="${oracle.nosql.build.location}/META-INF"/>
+        <!-- extensions.depend.dir must be tested first to allow user overrides to work properly,  **
+         **  once bnd is added to the buildsystem directory.                                       -->
+        <echo message="bndtool.prefix        = '${bndtool.prefix}'"/>
+        <echo message="bndtool.separator     = '${bndtool.separator}'"/>
+        <echo message="bndtool.criteria      = '${bndtool.criteria}'"/>
+        <selectbundle basename="${bndtool.prefix}" directory="${extensions.depend.dir}" separator="${bndtool.separator}"
+                     criterion="${bndtool.criteria}" property="bndtool.lib" includepath="true"
+        />
+        <echo message="oracle.nosql.2.buildsys.dir = '${oracle.nosql.2.buildsys.dir}'"/>
+        <selectbundle basename="${bndtool.prefix}" directory="${oracle.nosql.2.buildsys.dir}" separator="${bndtool.separator}"
+                     criterion="${bndtool.criteria}" property="bndtool.lib" includepath="true"
+        />
+        <say  message="bndtool.lib           = '${bndtool.lib}'" if="bndtool.lib"/>
+        <say message="Bnd bundle not found in '${extensions.depend.dir}' or '${core.2.buildsys.dir}'!" unless="bndtool.lib"/>
+        <say  message="'nobnd' is set."        if="nobnd"/>
+
+        <condition property="bld">
+            <or>
+                <isset property="bndtool.lib"/>
+                <isset property="nobnd"/>
+            </or>
+        </condition>
+        <say  message="'bld' is set."          if="bld"/>
+    </target>
+
+    <!-- initialize varables and paths needed for compile -->
+    <!-- the number of properties needed now is too great for lazy loading without a target -->
+    <target name="init-compile" depends="init">
+        <echo message="oracle.extensions.depend.dir = '${oracle.extensions.depend.dir}'"/>
+        <echo message="extensions.depend.dir        = '${extensions.depend.dir}'"/>
+
+        <!-- dependency properties -->
+        <property name="core.lib"         value="${oracle.nosql.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
+        <!-- "Oracle" dependency definitions from "oracle.extensions.depend.jars" -->
+        <condition property="aqapi.lib"     value="${oracle.extensions.depend.dir}/${aqapi.jar}"
+                                                    else="${extensions.depend.dir}/${aqapi.jar}">
+            <available file="${oracle.extensions.depend.dir}/${aqapi.jar}"/>
+        </condition>
+        <condition property="ojdbc.lib"     value="${oracle.extensions.depend.dir}/${ojdbc.jar}"
+                                                    else="${extensions.depend.dir}/${ojdbc.jar}">
+            <available file="${oracle.extensions.depend.dir}/${ojdbc.jar}"/>
+        </condition>
+        <condition property="orcl_nosql.lib" value="${oracle.extensions.depend.dir}/${orcl_nosql.jar}"
+                                                     else="${extensions.depend.dir}/${orcl_nosql.jar}">
+            <available file="${oracle.extensions.depend.dir}/${orcl_nosql.jar}"/>
+        </condition>
+
+        <!-- dependency tests -->
+        <available file="${core.lib}"          property="core.bundle.exist"/>
+        <!-- common dependency tests -->
+        <selectbundle basename="javax.persistence" directory="${oracle.nosql.build.location}/${oracle.nosql.2.jpa.plugins.dir}" separator="_"
+            criterion="[2.0.0,3.0.0)" property="persistence.lib" includepath="true"
+        />
+        <selectbundle basename="javax.resource" directory="${oracle.nosql.build.location}/${oracle.nosql.2.common.plugins.dir}" separator="_"
+            criterion="[1.0.0,3.0.0)" property="resource.lib" includepath="true"
+        />
+        <!-- oracle dependency tests -->
+        <available file="${aqapi.lib}"         property="aqapi.bundle.exist"/>
+        <available file="${ojdbc.lib}"         property="ojdbc.bundle.exist"/>
+        <available file="${orcl_nosql.lib}"    property="nosql.bundle.exist"/>
+        <!-- oracle extension dir test -->
+        <available file="${oracle.extensions.depend.dir}" type="dir" property="oracle.depend.dir.exist"/>
+
+        <say  message="'${oracle.extensions.depend.dir}' found."       if="oracle.depend.dir.exist"/>
+        <say  message="core.lib:             '${core.lib}'"            if="core.bundle.exist"/>
+        <say  message="persistence.lib:      '${persistence.lib}'"     if="persistence.lib"/>
+        <say  message="resource.lib:         '${resource.lib}'"        if="resource.lib"/>
+        <say  message="aqapi.lib:            '${aqapi.lib}'"           if="aqapi.bundle.exist"/>
+        <say  message="ojdbc.lib:            '${ojdbc.lib}'"           if="ojdbc.bundle.exist"/>
+        <say  message="orcl_nosql.lib:       '${orcl_nosql.lib}'"      if="nosql.bundle.exist"/>
+        <fail message="Cannot find:          '${core.lib}'"        unless="core.bundle.exist"/>
+        <fail message="Cannot find:          '${persistence.lib}'" unless="persistence.lib"/>
+        <fail message="Cannot find:          '${resource.lib}'"    unless="resource.lib"/>
+        <fail message="Cannot find:          '${aqapi.lib}'"       unless="aqapi.bundle.exist"/>
+        <fail message="Cannot find:          '${ojdbc.lib}'"       unless="ojdbc.bundle.exist"/>
+        <fail message="Cannot find:          '${orcl_nosql.lib}'"  unless="nosql.bundle.exist"/>
+
+        <!-- Set Compile Path-->
+        <path id="oracle.nosql.compile.path">
+            <pathelement path="${core.lib}"/>
+            <pathelement path="${persistence.lib}"/>
+            <pathelement path="${resource.lib}"/>
+            <pathelement path="${aqapi.lib}"/>
+            <pathelement path="${ojdbc.lib}"/>
+            <pathelement path="${orcl_nosql.lib}"/>
+        </path>
+    </target>
+
+    <!-- initialize varables and paths needed for packaging - needs to be evaluated post-compile -->
+    <target name="init-package" depends="init">
+        <!-- Test for recent compile -->
+        <available file="${classes.dir}"                  type="dir" property="classes.dir.exist"/>
+
+        <!-- Check bnd settings -->
+        <condition property="bnd.bld">
+            <and>
+                <isset property="bndtool.lib"/>
+                <not>  <isset property="nobnd"/> </not>
+            </and>
+        </condition>
+
+        <!-- Check for oracle.nosql compile dependencies -->
+        <condition property="package.ok">
+            <and>
+                <!-- isset property="oracle.depend.dir.exist"/ -->
+                <isset property="classes.dir.exist"/>
+                <isset property="nobnd"/>
+            </and>
+        </condition>
+        <condition property="bnd-package.ok">
+            <and>
+                <!-- isset property="oracle.depend.dir.exist"/ -->
+                <isset property="classes.dir.exist"/>
+                <isset property="bnd.bld"/>
+            </and>
+        </condition>
+        <say message="'nobnd' is set. (Override to use jar tool set)"               if="nobnd"/>
+        <say message="'bnd.bld' is set. (BND tool found, and override not set)"     if="bnd.bld"/>
+        <say message="'package.ok' is set. (Packaging will use jar tool)"           if="package.ok"/>
+        <say message="'bnd-package.ok' is set. (Packaging will use BND tool)"       if="bnd-package.ok"/>
+        <say message="No classes found, packaging will be skipped."             unless="classes.dir.exist"/>
+    </target>
+
+    <target name="fail-on-no-bnd" unless="bld">
+        <echo message="BND tool (${bndtool.prefix}${bndtool.separator}[version].jar) not found in either:"/>
+        <echo message="    the extensions.depend.dir: '${extensions.depend.dir}'"/>
+        <echo message="    or the buildsystem dir:    '${oracle.nosql.2.buildsys.dir}'"/>
+        <echo message=""/>
+        <echo message="if you have renamed it, you can define a different"/>
+        <echo message="jarname by adding 'bndtool.lib=[path]/[jarname] to your'"/>
+        <echo message="${user.home}/build.properties file."/>
+        <echo message=""/>
+        <echo message="You can download BND from http://www.aqute.biz/Code/Download"/>
+        <echo message=""/>
+        <echo message="or if you really need to build NOW, you can use '-Dnobnd=true'"/>
+        <echo message="on the ant command-line. However, the manifests used will be those"/>
+        <echo message="checked-in for development, and will likely have errors."/>
+        <fail message="Missing BND library!"/>
+    </target>
+
+    <!-- compile -->
+    <target name="compile" depends="init-compile, fail-on-no-bnd" description="Compile bundle code">
+        <mkdir dir="${classes.dir}"/>
+        <javac srcdir="${src.dir}"
+               destdir="${classes.dir}"
+               includes="org/eclipse/persistence/**/*.java"
+               debug="${javac.debug}"
+               debuglevel="${javac.debuglevel}"
+               optimize="${javac.optimize}"
+               source="${javac.version}"
+               target="${javac.version}"
+               deprecation="${javac.deprecation}"
+               failonerror="true"
+               memoryMaximumSize="512m"
+               fork="true"
+               classpathref="oracle.nosql.compile.path"
+        />
+    </target>
+
+    <!-- package -->
+    <target name="package-src" depends="init-package">
+        <jar jarfile="${oracle.nosql.2.foundation.plugins.dir}/${ant.project.name}.source.jar" duplicate="preserve">
+             <manifest>
+                <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
+                <attribute name="Specification-Version"  value="${release.version}"/>
+                <attribute name="Implementation-Vendor"  value="${implementation.vendor}"/>
+                <attribute name="Implementation-Version" value="${version.string}"/>
+                <attribute name="Bundle-ManifestVersion" value="2"/>
+                <attribute name="Bundle-Name"            value="EclipseLink Oracle NoSQL Extensions Source"/>
+                <attribute name="Bundle-SymbolicName"    value="${ant.project.name}.source"/>
+                <attribute name="Bundle-Vendor"          value="${implementation.vendor}"/>
+                <attribute name="Bundle-Version"         value="${version.string}"/>
+                <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${version.string}&quot;"/>
+            </manifest>
+            <fileset dir="${oracle.nosql.2.base.dir}">
+                <include name="about.html"/>
+                <include name="readme.html"/>
+                <include name="license.*"/>
+            </fileset>
+            <fileset dir="${src.dir}">
+                <include name="org/eclipse/persistence/**/*.java"/>
+            </fileset>
+        </jar>
+    </target>
+
+    <target name="package" if="package.ok" depends="init-package, package-src, bnd-package" description="jar OSGI bundle">
+        <delete file="${oracle.nosql.2.foundation.plugins.dir}/${ant.project.name}.jar*"        quiet="true" failonerror="false"/>
+        <delete file="${oracle.nosql.2.foundation.plugins.dir}/${ant.project.name}.source.jar*" quiet="true" failonerror="false"/>
+        <jar jarfile="${oracle.nosql.2.foundation.plugins.dir}/${ant.project.name}.jar" manifest="${nobndtool.manifest.dir}/MANIFEST.MF">
+            <fileset dir="${oracle.nosql.2.base.dir}">
+                <include name="about.html"/>
+                <include name="readme.html"/>
+                <include name="license.*"/>
+            </fileset>
+            <fileset dir="${classes.dir}">
+                <include name="org/eclipse/persistence/**/*.class"/>
+            </fileset>
+        </jar>
+    </target>
+
+    <target name="bnd-package" if="bnd-package.ok" depends="init-package, package-src">
+        <delete file="${oracle.nosql.2.foundation.plugins.dir}/${ant.project.name}.jar*"        quiet="true" failonerror="false"/>
+        <delete file="${oracle.nosql.2.foundation.plugins.dir}/${ant.project.name}.source.jar*" quiet="true" failonerror="false"/>
+        <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bndtool.lib}"/>
+        <bnd
+            classpath="${classes.dir}"
+            eclipse="false"
+            sourcepath="${src.dir}"
+            failok="false"
+            exceptions="true"
+            files="./org.eclipse.persistence.oracle.nosql.bnd"
+            output="${oracle.nosql.2.foundation.plugins.dir}/${ant.project.name}.jar"/>
+    </target>
+
+    <!-- repackage -->
+    <target name="repackage-src" depends="init-package">
+        <jar jarfile="${oracle.nosql.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar" duplicate="preserve">
+             <manifest>
+                <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
+                <attribute name="Specification-Version"  value="${release.version}"/>
+                <attribute name="Implementation-Vendor"  value="${implementation.vendor}"/>
+                <attribute name="Implementation-Version" value="${version.string}"/>
+                <attribute name="Bundle-ManifestVersion" value="2"/>
+                <attribute name="Bundle-Name"            value="EclipseLink Oracle NoSQL Extensions Source"/>
+                <attribute name="Bundle-SymbolicName"    value="${ant.project.name}.source"/>
+                <attribute name="Bundle-Vendor"          value="${implementation.vendor}"/>
+                <attribute name="Bundle-Version"         value="${version.string}"/>
+                <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${version.string}&quot;"/>
+            </manifest>
+            <fileset dir="${oracle.nosql.2.base.dir}">
+                <include name="about.html"/>
+                <include name="readme.html"/>
+                <include name="license.*"/>
+            </fileset>
+            <zipgroupfileset dir="${oracle.nosql.2.foundation.plugins.dir}">
+                <include name="${ant.project.name}.source.jar"/>
+            </zipgroupfileset>
+        </jar>
+    </target>
+
+    <target name="repackage" if="nobnd" depends="init-package, repackage-src, bnd-repackage" description="take existing source and classes from checked in bundles, and repackage with new manifest">
+        <delete file="${oracle.nosql.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar*"        quiet="true" failonerror="false"/>
+        <delete file="${oracle.nosql.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar*" quiet="true" failonerror="false"/>
+        <jar jarfile="${oracle.nosql.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" manifest="${nobndtool.manifest.dir}/MANIFEST.MF" duplicate="preserve">
+            <fileset dir="${oracle.nosql.2.base.dir}">
+                <include name="about.html"/>
+                <include name="readme.html"/>
+                <include name="license.*"/>
+            </fileset>
+            <zipgroupfileset dir="${oracle.nosql.2.foundation.plugins.dir}">
+                <include name="${ant.project.name}.jar"/>
+            </zipgroupfileset>
+        </jar>
+    </target>
+
+    <target name="bnd-repackage" if="bnd.bld" depends="init-package, repackage-src" description="take existing source and classes from checked in bundles, and repackage with new manifest">
+        <delete file="${oracle.nosql.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar*"        quiet="true" failonerror="false"/>
+        <delete file="${oracle.nosql.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar*" quiet="true" failonerror="false"/>
+        <taskdef resource="aQute/bnd/ant/taskdef.properties" classpath="${bndtool.lib}"/>
+        <bnd
+            classpath="${oracle.nosql.2.foundation.plugins.dir}/${ant.project.name}.jar"
+            eclipse="false"
+            sourcepath="${src.dir}"
+            failok="false"
+            exceptions="true"
+            files="./org.eclipse.persistence.oracle.nosql.bnd"
+            output="${oracle.nosql.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar"/>
+    </target>
+</project>

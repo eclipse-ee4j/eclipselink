@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns0="http://www.example.com/vehicles" targetNamespace="http://www.example.com/vehicles">
+   <xsd:element name="torque" type="xsd:string"/>
+   <xsd:element name="horsepower" type="xsd:string"/>
+</xsd:schema>

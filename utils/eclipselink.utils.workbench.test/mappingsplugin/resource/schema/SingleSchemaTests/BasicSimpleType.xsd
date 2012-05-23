@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:simpleType name="simple-type-1">
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:simpleType name="simple-type-2">
+		<xs:list>
+			<xs:simpleType>
+				<xs:restriction base="simple-type-1"/>
+			</xs:simpleType>
+		</xs:list>
+	</xs:simpleType>
+	<xs:simpleType name="simple-type-3">
+		<xs:union>
+			<xs:simpleType>
+				<xs:restriction base="simple-type-1"/>
+			</xs:simpleType>
+		</xs:union>
+	</xs:simpleType>
+</xs:schema>

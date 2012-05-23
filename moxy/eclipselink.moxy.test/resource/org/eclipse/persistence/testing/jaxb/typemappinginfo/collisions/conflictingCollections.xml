@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<testTagName xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="collectionOfObject">
+   <item xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="xsd:string">one</item>
+   <item xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="xsd:int">2</item>
+</testTagName>

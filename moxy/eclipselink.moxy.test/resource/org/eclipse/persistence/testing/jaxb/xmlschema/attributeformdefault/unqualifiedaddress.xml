@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:address xmlns:ns0="myns" ns0:street="Main Street" street2="Street2" city="Ottawa" >
+    <ns0:street3>Street3</ns0:street3>
+    <street4>Street4</street4>
+</ns0:address>

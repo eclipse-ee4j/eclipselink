@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:root xsi:type="tns:root" xmlns:tns="urn:changesummary" xmlns:ns0="ns:changesummary" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <tns:child1 id="2"/>
+   <tns:sdo-change-summary create="#/ns0:root/tns:child1" xmlns:sdo="commonj.sdo">
+      <tns:root sdo:ref="#/ns0:root" sdo:unset="child1"/>
+   </tns:sdo-change-summary>
+</ns0:root>

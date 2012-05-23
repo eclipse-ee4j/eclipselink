@@ -1,0 +1,5 @@
+<employee street="123 A St.">
+	<startDate>1970-01-01</startDate>
+	<endDate>2004-01-01</endDate>
+	<city>Any Town</city>
+</employee>

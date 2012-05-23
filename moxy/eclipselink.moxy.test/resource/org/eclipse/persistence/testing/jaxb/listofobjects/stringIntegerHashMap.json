@@ -1,0 +1,18 @@
+{"root":{
+   "type":"stringIntegerHashMap",
+   "entry":[
+      {
+      "key":"thekey",
+      "value":10
+      },
+      {
+      "key":"thekey2",
+      "value":20
+      },
+       {
+      "key":"thekey3",
+      "value":30
+      }
+   ] 
+   }
+}

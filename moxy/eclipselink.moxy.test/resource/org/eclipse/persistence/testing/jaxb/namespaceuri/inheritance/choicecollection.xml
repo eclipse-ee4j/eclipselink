@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ns0:root xmlns:ns0="rootNamespace" xmlns:ns5="uri1">
+	<choice>
+		<string-choice>choice string test2</string-choice>
+	    <another-package-subtype-choice>
+    		<ns5:subTypeProp>0</ns5:subTypeProp>
+		</another-package-subtype-choice>
+		<integer-choice>400</integer-choice>
+	    <subtype-level2-choice>
+    		<ns5:baseProp>boo</ns5:baseProp>
+	    	<ns5:subTypeProp>0</ns5:subTypeProp>
+		</subtype-level2-choice>
+		<string-choice>choice string test</string-choice>
+		<integer-choice>500</integer-choice>
+	</choice>
+</ns0:root>

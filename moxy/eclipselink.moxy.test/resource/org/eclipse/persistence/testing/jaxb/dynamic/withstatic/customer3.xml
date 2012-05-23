@@ -1,0 +1,9 @@
+<customer>
+    <name>Jane Doe</name>
+    <address street="123 Some Street">
+        <city>Any Town</city>
+        <phone type="cell">555-CELL</phone>
+    </address>
+    <phoneNumber type="work">555-WORK</phoneNumber>
+    <phoneNumber type="home">555-HOME</phoneNumber>
+</customer>

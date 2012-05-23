@@ -1,0 +1,218 @@
+<!--/*******************************************************************************
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+* which accompanies this distribution.
+* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+* and the Eclipse Distribution License is available at
+* http://www.eclipse.org/org/documents/edl-v10.php.
+*
+*   Ant naming conventions:
+*   - regardless of the actual OS platform,'/' is the directory separator
+*     (Ant will convert as appropriate).
+*   - multi-word properties use periods '.'
+*     - properties ending in .jar define jarfile names only (no path)
+*     - properties ending in .lib are fully qualified jars (path and filename)
+*     - properties ending in .dir are directory paths
+*     - properties ending in .path are path refid names (classpath fragments)
+*   - multi-word targets use hyphens '-'
+*     - targets beginning with test- are reserved for high level test targets,
+*       and are used in test results parsing
+*     - targets typically use the form <action>-<object>-<type> (ie. package-bundle-zip)
+*   - multi-word macros use underscores '_'
+*   - multi-word macro attributes are concatinated
+*     e.g. 'runpathref'
+*   - multi-word tasks (taskdef) names are concatinated
+*     e.g. 'validateconnection'
+*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
+*     e.g. ${env.XXX}.
+*   - Ant properties are lower case.
+*
+* Contributors:
+*     pvijayaratnam - cache coordination test implementation
+#******************************************************************************/-->
+
+<project name="Eclipse Persistence Services JPA WLS CacheCoordination Testing" basedir=".">
+
+    <property name="env" environment="env" value="env"/>
+    <!-- Allows a user to overide certain user specific properties. -->
+    <property name="eclipselink.jpa.test" value="."/>
+    <property file="${eclipselink.jpa.test}/antbuild.properties"/>
+    <property file="${user.home}/${server.name}.properties"/>
+    <property file="test.properties"/>
+    <property file="./${server.name}.properties"/>
+
+    <!-- *********** CacheCoordination Test Targets -->
+
+    <target name="weblogic-run-test-cachecoordination">
+        <property file="${eclipselink.jpa.test}/${server.name}.properties"/>
+        <antcall target="build-deploy-cachecoordination-wls"/>
+        <antcall target="runclient-cachecoordination-wls"/>
+        <ant antfile="${eclipselink.jpa.test}/antbuild.xml" target="generate-report" inheritRefs="true"/>
+        <antcall target="server-undeploy-cachecoordination-cluster" inheritRefs="true"/>
+        <ant antfile="${eclipselink.jpa.test}/cachecoordination_${server.name}.xml" target="${server.name}-stop-cachecoordination" inheritRefs="true"/>
+        <delete includeEmptyDirs="true" failonerror="false">
+            <fileset dir="${weblogic.domain}/servers/${rcm.wls.server3.name}/tmp"/>
+            <fileset dir="${weblogic.domain}/servers/${rcm.wls.server2.name}/tmp"/>
+            <fileset dir="${weblogic.domain}/servers/${rcm.wls.server1.name}/tmp"/>
+        </delete>
+    </target>
+
+    <target name="build-deploy-cachecoordination-wls">
+        <sequential>
+            <antcall target="config-persistence-xml"/>
+            <antcall target="cachecoordination-build-and-deploy-cluster" inheritRefs="true">
+                <param name="PERSISTENCE_UNIT_NAME" value="sessionbean"/>
+                <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/sessionbean"/>
+                <param name="MODEL_DIR2" value="org/eclipse/persistence/testing/models/jpa/fieldaccess/advanced"/>
+                <param name="MODEL_NAME" value="eclipselink-sessionbean-model"/>
+                <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/sessionbean"/>
+                <param name="TEST_NAME" value="eclipselink-sessionbean-model"/>
+                <param name="EAR_NAME" value="eclipselink-sessionbean-model-server1"/>
+                <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.sessionbean.SessionBeanTestsRCM"/>
+                <param name="eclipselink.jpa.test.dir" value="."/>
+            </antcall>
+            <copy overwrite="true" file="${eclipselink.jpa.test}/${resource.dir}/server/persistence_original.xml" tofile="${eclipselink.jpa.test}/${resource.dir}/server/persistence.xml"/>
+            <copy overwrite="true" file="${eclipselink.jpa.test}/${resource.dir}/server/persistence_cachecoordination_original.xml" tofile="${eclipselink.jpa.test}/${resource.dir}/server/persistence_cachecoordination.xml"/>
+            <delete file="${eclipselink.jpa.test}/${resource.dir}/server/persistence_original.xml"/>
+            <delete file="${eclipselink.jpa.test}/${resource.dir}/server/persistence_cachecoordination_original.xml"/>
+        </sequential>
+    </target>
+
+    <target name="runclient-cachecoordination-wls">
+        <antcall target="server-run-test-cachecoordination" inheritRefs="true">
+            <param name="PERSISTENCE_UNIT_NAME" value="sessionbean"/>
+            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/sessionbean"/>
+            <param name="MODEL_DIR2" value="org/eclipse/persistence/testing/models/jpa/fieldaccess/advanced"/>
+            <param name="MODEL_NAME" value="eclipselink-sessionbean-model"/>
+            <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/sessionbean"/>
+            <param name="TEST_NAME" value="eclipselink-sessionbean-model"/>
+            <param name="EAR_NAME" value="eclipselink-sessionbean-model-server2"/>
+            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.sessionbean.SessionBeanTestsRCM"/>
+            <param name="eclipselink.jpa.test.dir" value="."/>
+        </antcall>
+    </target>
+
+    <target name="build-deploy-concurrency-wls">
+        <sequential>
+            <copy overwrite="true" file="${eclipselink.jpa.test}/${resource.dir}/jpa-performance/server/persistence.xml" tofile="${eclipselink.jpa.test}/${resource.dir}/jpa-performance/server/persistence_original.xml"/>
+            <copy overwrite="true" file="${eclipselink.jpa.test}/${resource.dir}/server/persistence_cachecoordination.xml" tofile="${eclipselink.jpa.test}/${resource.dir}/server/persistence_cachecoordination_temp.xml"/>
+            <copy overwrite="true" file="${eclipselink.jpa.test}/${resource.dir}/jpa-performance/server/persistence.xml" tofile="${eclipselink.jpa.test}/${resource.dir}/server/persistence_cachecoordination.xml"/>
+            <delete file="${eclipselink.jpa.test}/${resource.dir}/jpa-performance/server/persistence.xml"/>
+            <antcall target="config-persistence-xml"/>
+            <antcall target="cachecoordination-build-and-deploy-cluster" inheritRefs="true">
+                <param name="PERSISTENCE_UNIT_NAME" value="performance"/>
+                <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/performance"/>
+                <param name="MODEL_DIR2" value="org/eclipse/persistence/testing/models/jpa/performance"/>
+                <param name="MODEL_NAME" value="jpa-performance"/>
+                <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/performance"/>
+                <param name="TEST_NAME" value="jpa-performance"/>
+                <param name="EAR_NAME" value="jpa-performance-server1"/>
+                <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.performance.concurrency.JPAClusteredConcurrencyComparisonModel"/>
+                <param name="eclipselink.jpa.test.dir" value="."/>
+            </antcall>
+            <copy overwrite="true" file="${eclipselink.jpa.test}/${resource.dir}/jpa-performance/server/persistence_original.xml" tofile="${eclipselink.jpa.test}/${resource.dir}/jpa-performance/server/persistence.xml"/>
+            <copy overwrite="true" file="${eclipselink.jpa.test}/${resource.dir}/server/persistence_original.xml" tofile="${eclipselink.jpa.test}/${resource.dir}/server/persistence.xml"/>
+            <copy overwrite="true" file="${eclipselink.jpa.test}/${resource.dir}/server/persistence_cachecoordination_temp.xml" tofile="${eclipselink.jpa.test}/${resource.dir}/server/persistence_cachecoordination.xml"/>
+            <delete file="${eclipselink.jpa.test}/${resource.dir}/jpa-performance/server/persistence_original.xml"/>
+            <delete file="${eclipselink.jpa.test}/${resource.dir}/server/persistence_original.xml"/>
+            <delete file="${eclipselink.jpa.test}/${resource.dir}/server/persistence_cachecoordination_original.xml"/>
+            <delete file="${eclipselink.jpa.test}/${resource.dir}/server/persistence_cachecoordination_temp.xml"/>
+        </sequential>
+    </target>
+
+    <target name="set-app-name-cachecoordination">
+        <property name="APP_NAME" value="${MODEL_NAME}"/>
+        <property name="DS_NAME" value="jdbc/EclipseLinkDS"/>
+    </target>
+
+    <condition property="is.jms">
+        <contains string="${cachecoordination.protocol}" substring="jms"/>
+    </condition>
+
+    <condition property="is.rmi">
+        <contains string="${cachecoordination.protocol}" substring="rmi"/>
+    </condition>
+
+    <!-- Build and deploy to Server1 -->
+    <target name="config-persistence-xml">
+        <copy overwrite="true" file="${eclipselink.jpa.test}/${resource.dir}/server/persistence.xml" tofile="${eclipselink.jpa.test}/${resource.dir}/server/persistence_original.xml" />
+        <copy overwrite="true" file="${eclipselink.jpa.test}/${resource.dir}/server/persistence_cachecoordination.xml" tofile="${eclipselink.jpa.test}/${resource.dir}/server/persistence_cachecoordination_original.xml"/>
+        <replace file="${eclipselink.jpa.test}/${resource.dir}/server/persistence_cachecoordination.xml" token='%%data-source-name%%' value="jdbc/EclipseLinkDS"/>
+        <replace file="${eclipselink.jpa.test}/${resource.dir}/server/persistence_cachecoordination.xml" token='%%topic-host-url%%' value="${rcm.wls.jms.topichost.url}"/>
+        <replace file="${eclipselink.jpa.test}/${resource.dir}/server/persistence_cachecoordination.xml" token='%%topic-name%%' value="${rcm.wls.jms.topicname}"/>
+        <replace file="${eclipselink.jpa.test}/${resource.dir}/server/persistence_cachecoordination.xml" token='%%topic-connection-factory%%' value="${rcm.wls.jms.topic.connectionfactory.name}"/>
+        <replace file="${eclipselink.jpa.test}/${resource.dir}/server/persistence_cachecoordination.xml" token='%%cachecoordination-protocol%%' value="${cachecoordination.protocol}"/>
+    </target>
+
+    <target name="session-customizer-rmi" if="is.rmi">
+        <replace file="${eclipselink.jpa.test}/${resource.dir}/server/persistence.xml" token='%%cachecoordination-protocol%%' value="${cachecoordination.protocol}"/>
+        <replace file="${eclipselink.jpa.test}/${resource.dir}/server/persistence.xml" token='%%current-server-url%%' value="${current.server.url}"/>
+    </target>
+
+    <target name="cachecoordination-build-and-deploy-cluster" depends="set-app-name-cachecoordination">
+        <copy overwrite="true" file="${eclipselink.jpa.test}/${resource.dir}/server/persistence_cachecoordination.xml" tofile="${eclipselink.jpa.test}/${resource.dir}/server/persistence.xml"/>
+        <antcall target="session-customizer-rmi" inheritRefs="true">
+             <param name="current.server.url" value="${rcm.wls.server1.url}"/>
+        </antcall>
+        <ant antfile="${eclipselink.jpa.test}/antbuild.xml" target="server-build" inheritRefs="true"/>
+        <delete file="${eclipselink.jpa.test}/${resource.dir}/server/persistence.xml"/>
+        <antcall target="server-deploy-cachecoordination-cluster" inheritRefs="true">
+            <param name="ear.name" value="${EAR_NAME}.ear"/>
+            <param name="application.name" value="${EAR_NAME}"/>
+        </antcall>
+    </target>
+
+    <target name="server-deploy-cachecoordination-cluster">
+        <ant antfile="${eclipselink.jpa.test}/cachecoordination_${server.name}.xml" target="${server.name}-deploy" inheritRefs="true">
+            <property name="ear.name" value="${ear.name}"/>
+            <property name="application.name" value="${application.name}"/>
+            <property name="target.server" value="${rcm.wls.cluster.name}"/>
+        </ant>
+    </target>
+
+    <target name="server-undeploy-cachecoordination-cluster">
+        <ant antfile="${eclipselink.jpa.test}/cachecoordination_${server.name}.xml" target="${server.name}-undeploy" inheritRefs="true">
+            <property name="application.name" value="${application.name}"/>
+        <property name="target.server" value="${rcm.wls.cluster.name}"/>
+        </ant>
+    </target>
+
+    <target name="server-run-test-cachecoordination" depends="config-compile-path">
+       <property file="${eclipselink.jpa.test}/${server.name}.properties"/>
+       <path id="run.path">
+            <pathelement path="${eclipselink.jpa.test}/${build.dir}/${TEST_NAME}_client.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/${build.dir}/${MODEL_NAME}_ejb.jar"/>
+            <fileset dir="${server.lib}" includes="${server.depend}"/>
+            <path refid="compile.server.path"/>
+        </path>
+        <echo>Running "** ${cachecoordination.protocol} **" Cache Coordination tests: ${EAR_NAME} on ${server.name}</echo>
+        <mkdir dir="${eclipselink.jpa.test}/${report.dir}"/>
+        <junit printsummary="yes" haltonfailure="yes" failureproperty="junit.failed" fork="yes" forkmode="once" showoutput="true" maxmemory="256m" dir="${run.dir}">
+            <sysproperty key="server.platform" value="${server.platform}"/>
+            <sysproperty key="server.user" value="${server.user}"/>
+            <sysproperty key="server.password" value="${server.pwd}"/>
+            <sysproperty key="server.url" value="${rcm.wls.server2.url}${MODEL_NAME}"/>
+            <sysproperty key="server.testrunner" value="${server.testrunner}"/>
+            <sysproperty key="server.run" value="TRUE"/>
+            <classpath refid="run.path"/>
+            <formatter type="xml"/>
+            <test name="${TEST_SUITE}" haltonfailure="no" outfile="${report.dir}/${TEST_SUITE}-test-results"/>
+        </junit>
+    </target>
+
+    <target name="config-compile-path">
+        <path id="compile.path">
+            <pathelement path="${eclipselink.jpa}/${classes.dir}"/>
+            <fileset
+                dir="${eclipselink.core.lib.dir}"
+                includes="${eclipselink.core.depend}"/>
+            <pathelement path="${eclipselink.jar}"/>
+            <pathelement path="${junit.lib}"/>
+        </path>
+        <path id="compile.server.path">
+            <path refid="compile.path"/>
+            <pathelement path="${jdbc.driver.jar}"/>
+        </path>
+    </target>
+
+</project>

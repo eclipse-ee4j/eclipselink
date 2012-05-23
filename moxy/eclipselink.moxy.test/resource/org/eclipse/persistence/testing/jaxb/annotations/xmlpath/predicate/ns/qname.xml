@@ -1,0 +1,5 @@
+<root xmlns="http://www.example.org">
+    <ns0:qname xmlns="" xmlns:ns0="http://www.example.org" classifier="single">LOCAL_ONE</ns0:qname>
+    <ns0:qname xmlns="" xmlns:ns0="http://www.example.org" classifier="many">LOCAL_TWO</ns0:qname>
+    <ns1:qname xmlns="" xmlns:ns1="http://www.example.org" classifier="many">LOCAL_THREE</ns1:qname>
+</root>

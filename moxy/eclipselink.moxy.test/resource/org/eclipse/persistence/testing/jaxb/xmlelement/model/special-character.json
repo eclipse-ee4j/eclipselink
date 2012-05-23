@@ -1,0 +1,26 @@
+{
+ "order" : 
+  { 
+   "items":{"item":[]},
+    "customerInput":{
+   "comments" : [ "com<ment1", "com&ment2", "com\"ment3"] }, 
+
+   "customer" : { 
+      "id" : 0,
+      "firstName" : "Ja<ne", 
+      "lastName" : "Smi&th", 
+      "contact":{
+      "address" : 
+         { 
+         "street" : "Main\"Street", 
+         "city" : "Ottawa"
+         } 
+	 }
+	 , 
+        "phoneNumbers":[],
+       "firstTimeCustomer" : false,
+       "orderNumbers":[]
+       } , 
+   "id" : 1
+   } 
+}

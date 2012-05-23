@@ -1,0 +1,1872 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<object-persistence version="Eclipse Persistence Services - 0.1-incubation" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.eclipse.org/eclipselink/xsds/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <name>InheritanceProject</name>
+   <class-mapping-descriptors>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.inheritance.A_1_King2</class>
+         <alias>A_1_King2</alias>
+         <primary-key>
+            <field table="A_KING2" name="INDEX_KING2" xsi:type="column"/>
+         </primary-key>
+         <inheritance xsi:type="inheritance-policy">
+            <parent-class>org.eclipse.persistence.testing.models.inheritance.A_King2</parent-class>
+            <read-subclasses-on-queries>true</read-subclasses-on-queries>
+         </inheritance>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>foo</attribute-name>
+               <get-method>getFoo</get-method>
+               <set-method>setFoo</set-method>
+               <field table="A_KING2" name="FOO" xsi:type="column"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <tables>
+            <table name="A_KING2"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.inheritance.A_2_1_King2</class>
+         <alias>A_2_1_King2</alias>
+         <primary-key>
+            <field table="A_KING2" name="INDEX_KING2" xsi:type="column"/>
+         </primary-key>
+         <inheritance xsi:type="inheritance-policy">
+            <parent-class>org.eclipse.persistence.testing.models.inheritance.A_2_King2</parent-class>
+            <read-subclasses-on-queries>true</read-subclasses-on-queries>
+         </inheritance>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>ha</attribute-name>
+               <get-method>getHa</get-method>
+               <set-method>setHa</set-method>
+               <field table="A_KING2" name="HA" xsi:type="column"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <tables>
+            <table name="A_KING2"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.inheritance.A_2_King2</class>
+         <alias>A_2_King2</alias>
+         <primary-key>
+            <field table="A_KING2" name="INDEX_KING2" xsi:type="column"/>
+         </primary-key>
+         <inheritance xsi:type="inheritance-policy">
+            <parent-class>org.eclipse.persistence.testing.models.inheritance.A_King2</parent-class>
+            <read-subclasses-on-queries>true</read-subclasses-on-queries>
+         </inheritance>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>foo</attribute-name>
+               <get-method>getFoo</get-method>
+               <set-method>setFoo</set-method>
+               <field table="A_KING2" name="FOO" xsi:type="column"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <tables>
+            <table name="A_KING2"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.inheritance.A_King2</class>
+         <alias>A_King2</alias>
+         <primary-key>
+            <field table="A_KING2" name="INDEX_KING2" xsi:type="column"/>
+         </primary-key>
+         <inheritance xsi:type="inheritance-policy">
+            <read-subclasses-on-queries>true</read-subclasses-on-queries>
+            <class-indicator-field table="A_KING2" name="TYPE" xsi:type="column"/>
+            <class-indicator-mappings>
+               <class-indicator-mapping>
+                  <class>org.eclipse.persistence.testing.models.inheritance.A_King2</class>
+                  <class-indicator xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">Q</class-indicator>
+               </class-indicator-mapping>
+               <class-indicator-mapping>
+                  <class>org.eclipse.persistence.testing.models.inheritance.A_2_1_King2</class>
+                  <class-indicator xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">Z</class-indicator>
+               </class-indicator-mapping>
+               <class-indicator-mapping>
+                  <class>org.eclipse.persistence.testing.models.inheritance.A_2_King2</class>
+                  <class-indicator xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">Y</class-indicator>
+               </class-indicator-mapping>
+               <class-indicator-mapping>
+                  <class>org.eclipse.persistence.testing.models.inheritance.A_1_King2</class>
+                  <class-indicator xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">X</class-indicator>
+               </class-indicator-mapping>
+            </class-indicator-mappings>
+         </inheritance>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>bar</attribute-name>
+               <get-method>getBar</get-method>
+               <set-method>setBar</set-method>
+               <field table="A_KING2" name="BAR" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>index</attribute-name>
+               <get-method>getIndex</get-method>
+               <set-method>setIndex</set-method>
+               <field table="A_KING2" name="INDEX_KING2" xsi:type="column"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <query-keys>
+            <query-key name="foo" xsi:type="direct-query-key">
+               <field table="A_KING2" name="FOO" xsi:type="column"/>
+            </query-key>
+         </query-keys>
+         <tables>
+            <table name="A_KING2"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.inheritance.Alligator</class>
+         <alias>Alligator</alias>
+         <primary-key>
+            <field table="ALLIGATOR" name="ID" xsi:type="column"/>
+         </primary-key>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>favoriteSwamp</attribute-name>
+               <get-method>getFavoriteSwamp</get-method>
+               <set-method>setFavoriteSwamp</set-method>
+               <field table="ALLIGATOR" name="FAVORITESWAMP" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>id</attribute-name>
+               <field table="ALLIGATOR" name="ID" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="one-to-one-mapping">
+               <attribute-name>latestVictim</attribute-name>
+               <reference-class>org.eclipse.persistence.testing.models.inheritance.Animal_Matt</reference-class>
+               <private-owned>true</private-owned>
+               <foreign-key>
+                  <field-reference>
+                     <source-field table="ALLIGATOR" name="VICTIM_ID" xsi:type="column"/>
+                     <target-field table="ANIMAL_MATT" name="ID" xsi:type="column"/>
+                  </field-reference>
+               </foreign-key>
+               <foreign-key-fields>
+                  <field table="ALLIGATOR" name="VICTIM_ID" xsi:type="column"/>
+               </foreign-key-fields>
+               <selection-query xsi:type="read-object-query"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <sequencing>
+            <sequence-name>ALLIGATOR_SEQ</sequence-name>
+            <sequence-field table="ALLIGATOR" name="ID" xsi:type="column"/>
+         </sequencing>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <tables>
+            <table name="ALLIGATOR"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.inheritance.Animal</class>
+         <alias>Animal</alias>
+         <primary-key>
+            <field table="ANIMAL" name="ID" xsi:type="column"/>
+            <field table="ANIMAL" name="TYPE" xsi:type="column"/>
+         </primary-key>
+         <inheritance xsi:type="inheritance-policy">
+            <read-subclasses-on-queries>true</read-subclasses-on-queries>
+            <class-indicator-field table="ANIMAL" name="TYPE" xsi:type="column"/>
+            <class-indicator-mappings>
+               <class-indicator-mapping>
+                  <class>org.eclipse.persistence.testing.models.inheritance.Dog</class>
+                  <class-indicator xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">d</class-indicator>
+               </class-indicator-mapping>
+               <class-indicator-mapping>
+                  <class>org.eclipse.persistence.testing.models.inheritance.LabradorRetriever</class>
+                  <class-indicator xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">l</class-indicator>
+               </class-indicator-mapping>
+               <class-indicator-mapping>
+                  <class>org.eclipse.persistence.testing.models.inheritance.Cat</class>
+                  <class-indicator xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">c</class-indicator>
+               </class-indicator-mapping>
+            </class-indicator-mappings>
+         </inheritance>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>id</attribute-name>
+               <get-method>getId</get-method>
+               <set-method>setId</set-method>
+               <field table="ANIMAL" name="ID" xsi:type="column"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <amendment>
+            <amendment-class>org.eclipse.persistence.testing.models.inheritance.Animal</amendment-class>
+            <amendment-method>addToDescriptor</amendment-method>
+         </amendment>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <tables>
+            <table name="ANIMAL"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.inheritance.Animal_Matt</class>
+         <alias>Animal_Matt</alias>
+         <primary-key>
+            <field table="ANIMAL_MATT" name="ID" xsi:type="column"/>
+         </primary-key>
+         <inheritance xsi:type="inheritance-policy">
+            <read-subclasses-on-queries>true</read-subclasses-on-queries>
+            <class-indicator-field table="ANIMAL_MATT" name="SUBCLASS" xsi:type="column"/>
+            <class-indicator-mappings>
+               <class-indicator-mapping>
+                  <class>org.eclipse.persistence.testing.models.inheritance.Programmer</class>
+                  <class-indicator xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">Programmer</class-indicator>
+               </class-indicator-mapping>
+               <class-indicator-mapping>
+                  <class>org.eclipse.persistence.testing.models.inheritance.Primate</class>
+                  <class-indicator xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">Primate</class-indicator>
+               </class-indicator-mapping>
+               <class-indicator-mapping>
+                  <class>org.eclipse.persistence.testing.models.inheritance.Mammal</class>
+                  <class-indicator xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">Mammal</class-indicator>
+               </class-indicator-mapping>
+               <class-indicator-mapping>
+                  <class>org.eclipse.persistence.testing.models.inheritance.Human</class>
+                  <class-indicator xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">Human</class-indicator>
+               </class-indicator-mapping>
+               <class-indicator-mapping>
+                  <class>org.eclipse.persistence.testing.models.inheritance.JavaProgrammer</class>
+                  <class-indicator xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">JavaProgrammer</class-indicator>
+               </class-indicator-mapping>
+               <class-indicator-mapping>
+                  <class>org.eclipse.persistence.testing.models.inheritance.Animal_Matt</class>
+                  <class-indicator xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">Animal</class-indicator>
+               </class-indicator-mapping>
+            </class-indicator-mappings>
+         </inheritance>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>id</attribute-name>
+               <field table="ANIMAL_MATT" name="ID" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>size</attribute-name>
+               <field table="ANIMAL_MATT" name="ANIMALSIZE" xsi:type="column"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <sequencing>
+            <sequence-name>ANI_SEQ</sequence-name>
+            <sequence-field table="ANIMAL_MATT" name="ID" xsi:type="column"/>
+         </sequencing>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <tables>
+            <table name="ANIMAL_MATT"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.inheritance.BaseProject</class>
+         <alias>BaseProject</alias>
+         <primary-key>
+            <field table="PROJECT_BATCH" name="PROJECT_ID" xsi:type="column"/>
+         </primary-key>
+         <inheritance xsi:type="inheritance-policy">
+            <read-subclasses-on-queries>true</read-subclasses-on-queries>
+            <class-indicator-field table="PROJECT_BATCH" name="PROJECT_TYPE" xsi:type="column"/>
+            <class-indicator-mappings>
+               <class-indicator-mapping>
+                  <class>org.eclipse.persistence.testing.models.inheritance.BudgettedProject</class>
+                  <class-indicator xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">L</class-indicator>
+               </class-indicator-mapping>
+               <class-indicator-mapping>
+                  <class>org.eclipse.persistence.testing.models.inheritance.BaseProject</class>
+                  <class-indicator xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">P</class-indicator>
+               </class-indicator-mapping>
+            </class-indicator-mappings>
+         </inheritance>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>id</attribute-name>
+               <field table="PROJECT_BATCH" name="PROJECT_ID" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>name</attribute-name>
+               <field table="PROJECT_BATCH" name="PROJECT_NAME" xsi:type="column"/>
+               <null-value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">NA</null-value>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="one-to-one-mapping">
+               <attribute-name>teamLeader</attribute-name>
+               <reference-class>org.eclipse.persistence.testing.models.inheritance.ProjectWorker</reference-class>
+               <foreign-key>
+                  <field-reference>
+                     <source-field table="PROJECT_BATCH" name="PERSON_ID" xsi:type="column"/>
+                     <target-field table="PROJECT_WORKER_BATCH" name="PERSON_ID" xsi:type="column"/>
+                  </field-reference>
+               </foreign-key>
+               <foreign-key-fields>
+                  <field table="PROJECT_BATCH" name="PERSON_ID" xsi:type="column"/>
+               </foreign-key-fields>
+               <indirection xsi:type="value-holder-indirection-policy"/>
+               <selection-query xsi:type="read-object-query"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <sequencing>
+            <sequence-name>PROJECT_SEQ</sequence-name>
+            <sequence-field table="PROJECT_BATCH" name="PROJECT_ID" xsi:type="column"/>
+         </sequencing>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <tables>
+            <table name="PROJECT_BATCH"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.inheritance.Bicycle</class>
+         <alias>Bicycle</alias>
+         <primary-key>
+            <field table="VEHICLE" name="ID" xsi:type="column"/>
+         </primary-key>
+         <inheritance xsi:type="inheritance-policy">
+            <parent-class>org.eclipse.persistence.testing.models.inheritance.NonFueledVehicle</parent-class>
+         </inheritance>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>description</attribute-name>
+               <field table="VEHICLE" name="BICY_DES" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-collection-mapping">
+               <attribute-name>partNumbers</attribute-name>
+               <container xsi:type="list-container-policy">
+                  <collection-type>java.util.Vector</collection-type>
+               </container>
+               <selection-query xsi:type="direct-read-query">
+                  <maintain-cache>false</maintain-cache>
+                  <container xsi:type="list-container-policy">
+                     <collection-type>java.util.Vector</collection-type>
+                  </container>
+               </selection-query>
+               <reference-table>PARTNUMS</reference-table>
+               <direct-field table="PARTNUMS" name="PART_NUM" xsi:type="column"/>
+               <reference-foreign-key>
+                  <field-reference>
+                     <source-field table="PARTNUMS" name="VEHIC_ID" xsi:type="column"/>
+                     <target-field table="VEHICLE" name="ID" xsi:type="column"/>
+                  </field-reference>
+               </reference-foreign-key>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <tables>
+            <table name="VEHICLE"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.inheritance.Boat</class>
+         <alias>Boat</alias>
+         <primary-key>
+            <field table="VEHICLE" name="ID" xsi:type="column"/>
+         </primary-key>
+         <inheritance xsi:type="inheritance-policy">
+            <parent-class>org.eclipse.persistence.testing.models.inheritance.NonFueledVehicle</parent-class>
+         </inheritance>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <descriptor-type>independent</descriptor-type>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <tables>
+            <table name="VEHICLE"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.inheritance.BudgettedProject</class>
+         <alias>BudgettedProject</alias>
+         <primary-key>
+            <field table="BUDGETTED_PROJECT_BATCH" name="PROJECT_ID" xsi:type="column"/>
+         </primary-key>
+         <inheritance xsi:type="inheritance-policy">
+            <parent-class>org.eclipse.persistence.testing.models.inheritance.BaseProject</parent-class>
+         </inheritance>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>budget</attribute-name>
+               <field table="BUDGETTED_PROJECT_BATCH" name="BUDGET" xsi:type="column"/>
+               <null-value xsi:type="xsd:int" xmlns:xsd="http://www.w3.org/2001/XMLSchema">-1</null-value>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>title</attribute-name>
+               <field table="BUDGETTED_PROJECT_BATCH" name="TITLE" xsi:type="column"/>
+               <null-value xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema"></null-value>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <tables>
+            <table name="BUDGETTED_PROJECT_BATCH"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.inheritance.Bus</class>
+         <alias>Bus</alias>
+         <primary-key>
+            <field table="BUS" name="ID" xsi:type="column"/>
+         </primary-key>
+         <inheritance xsi:type="inheritance-policy">
+            <parent-class>org.eclipse.persistence.testing.models.inheritance.FueledVehicle</parent-class>
+         </inheritance>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="one-to-one-mapping">
+               <attribute-name>busDriver</attribute-name>
+               <reference-class>org.eclipse.persistence.testing.models.inheritance.Person</reference-class>
+               <foreign-key>
+                  <field-reference>
+                     <source-field table="BUS" name="DRIVER_ID" xsi:type="column"/>
+                     <target-field table="PERSON2" name="ID" xsi:type="column"/>
+                  </field-reference>
+               </foreign-key>
+               <foreign-key-fields>
+                  <field table="BUS" name="DRIVER_ID" xsi:type="column"/>
+               </foreign-key-fields>
+               <selection-query xsi:type="read-object-query"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>description</attribute-name>
+               <field table="BUS" name="DESCRIP" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>fuelType</attribute-name>
+               <field table="FUEL_VEH" name="FUEL_TYP" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-collection-mapping">
+               <attribute-name>partNumbers</attribute-name>
+               <container xsi:type="list-container-policy">
+                  <collection-type>java.util.Vector</collection-type>
+               </container>
+               <selection-query xsi:type="direct-read-query">
+                  <maintain-cache>false</maintain-cache>
+                  <container xsi:type="list-container-policy">
+                     <collection-type>java.util.Vector</collection-type>
+                  </container>
+               </selection-query>
+               <reference-table>PARTNUMS</reference-table>
+               <direct-field table="PARTNUMS" name="PART_NUM" xsi:type="column"/>
+               <reference-foreign-key>
+                  <field-reference>
+                     <source-field table="PARTNUMS" name="VEHIC_ID" xsi:type="column"/>
+                     <target-field table="BUS" name="ID" xsi:type="column"/>
+                  </field-reference>
+               </reference-foreign-key>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <tables>
+            <table name="BUS"/>
+            <table name="FUEL_VEH"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.inheritance.Car</class>
+         <alias>Car</alias>
+         <primary-key>
+            <field table="CAR" name="ID" xsi:type="column"/>
+         </primary-key>
+         <inheritance xsi:type="inheritance-policy">
+            <parent-class>org.eclipse.persistence.testing.models.inheritance.FueledVehicle</parent-class>
+            <read-subclasses-on-queries>true</read-subclasses-on-queries>
+         </inheritance>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>description</attribute-name>
+               <field table="CAR" name="CDESCRIP" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>fuelCapacity</attribute-name>
+               <field table="CAR" name="FUEL_CAP" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>fuelType</attribute-name>
+               <field table="FUEL_VEH" name="FUEL_TYP" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-collection-mapping">
+               <attribute-name>partNumbers</attribute-name>
+               <container xsi:type="list-container-policy">
+                  <collection-type>java.util.Vector</collection-type>
+               </container>
+               <selection-query xsi:type="direct-read-query">
+                  <maintain-cache>false</maintain-cache>
+                  <container xsi:type="list-container-policy">
+                     <collection-type>java.util.Vector</collection-type>
+                  </container>
+               </selection-query>
+               <reference-table>PARTNUMS</reference-table>
+               <direct-field table="PARTNUMS" name="PART_NUM" xsi:type="column"/>
+               <reference-foreign-key>
+                  <field-reference>
+                     <source-field table="PARTNUMS" name="VEHIC_ID" xsi:type="column"/>
+                     <target-field table="CAR" name="ID" xsi:type="column"/>
+                  </field-reference>
+               </reference-foreign-key>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <query-keys>
+            <query-key name="preferredFuel" xsi:type="direct-query-key">
+               <field table="FUEL_VEH" name="FUEL_TYP" xsi:type="column"/>
+            </query-key>
+         </query-keys>
+         <tables>
+            <table name="CAR"/>
+            <table name="FUEL_VEH"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.inheritance.Cat</class>
+         <alias>Cat</alias>
+         <primary-key>
+            <field table="ANIMAL" name="ID" xsi:type="column"/>
+            <field table="ANIMAL" name="TYPE" xsi:type="column"/>
+         </primary-key>
+         <inheritance xsi:type="inheritance-policy">
+            <parent-class>org.eclipse.persistence.testing.models.inheritance.Animal</parent-class>
+            <read-subclasses-on-queries>true</read-subclasses-on-queries>
+         </inheritance>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>name</attribute-name>
+               <get-method>getName</get-method>
+               <set-method>setName</set-method>
+               <field table="ANIMAL" name="NAME" xsi:type="column"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <tables>
+            <table name="ANIMAL"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.inheritance.Company</class>
+         <alias>Company</alias>
+         <primary-key>
+            <field table="COMPANY" name="ID" xsi:type="column"/>
+         </primary-key>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>id</attribute-name>
+               <field table="COMPANY" name="ID" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>name</attribute-name>
+               <field table="COMPANY" name="NAME" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="one-to-many-mapping">
+               <attribute-name>workers</attribute-name>
+               <reference-class>org.eclipse.persistence.testing.models.inheritance.CompanyWorker</reference-class>
+               <private-owned>true</private-owned>
+               <target-foreign-key>
+                  <field-reference>
+                     <source-field table="WORKER2" name="COMPANY_ID" xsi:type="column"/>
+                     <target-field table="COMPANY" name="ID" xsi:type="column"/>
+                  </field-reference>
+               </target-foreign-key>
+               <container xsi:type="list-container-policy">
+                  <collection-type>java.util.Vector</collection-type>
+               </container>
+               <indirection xsi:type="value-holder-indirection-policy"/>
+               <selection-query xsi:type="read-all-query">
+                  <container xsi:type="list-container-policy">
+                     <collection-type>java.util.Vector</collection-type>
+                  </container>
+               </selection-query>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="one-to-many-mapping">
+               <attribute-name>vehicles</attribute-name>
+               <reference-class>org.eclipse.persistence.testing.models.inheritance.Vehicle</reference-class>
+               <private-owned>true</private-owned>
+               <target-foreign-key>
+                  <field-reference>
+                     <source-field table="VEHICLE" name="OWNER_ID" xsi:type="column"/>
+                     <target-field table="COMPANY" name="ID" xsi:type="column"/>
+                  </field-reference>
+               </target-foreign-key>
+               <container xsi:type="list-container-policy">
+                  <collection-type>java.util.Vector</collection-type>
+               </container>
+               <indirection xsi:type="value-holder-indirection-policy"/>
+               <selection-query xsi:type="read-all-query">
+                  <container xsi:type="list-container-policy">
+                     <collection-type>java.util.Vector</collection-type>
+                  </container>
+               </selection-query>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <sequencing>
+            <sequence-name>SEQ</sequence-name>
+            <sequence-field table="COMPANY" name="ID" xsi:type="column"/>
+         </sequencing>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <tables>
+            <table name="COMPANY"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.inheritance.Computer</class>
+         <alias>Computer</alias>
+         <primary-key>
+            <field table="INH_COMP" name="ID" xsi:type="column"/>
+         </primary-key>
+         <inheritance xsi:type="inheritance-policy">
+            <read-subclasses-on-queries>true</read-subclasses-on-queries>
+            <class-extraction-method>getClassFromRow</class-extraction-method>
+         </inheritance>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>id</attribute-name>
+               <field table="INH_COMP" name="ID" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>manufacturer</attribute-name>
+               <field table="INH_COMP" name="MANUFAC" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>memory</attribute-name>
+               <field table="INH_COMP" name="MEMORY" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>processorMake</attribute-name>
+               <field table="INH_COMP" name="MAKE" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>processorSpeed</attribute-name>
+               <field table="INH_COMP" name="SPEED" xsi:type="column"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <sequencing>
+            <sequence-name>SEQ</sequence-name>
+            <sequence-field table="INH_COMP" name="ID" xsi:type="column"/>
+         </sequencing>
+         <amendment>
+            <amendment-class>org.eclipse.persistence.testing.models.inheritance.Computer</amendment-class>
+            <amendment-method>addToDescriptor</amendment-method>
+         </amendment>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <tables>
+            <table name="INH_COMP"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.inheritance.Developer_King</class>
+         <alias>Developer_King</alias>
+         <primary-key>
+            <field table="KING_DEVELOPER" name="ID" xsi:type="column"/>
+         </primary-key>
+         <inheritance xsi:type="inheritance-policy">
+            <parent-class>org.eclipse.persistence.testing.models.inheritance.Person_King</parent-class>
+            <read-subclasses-on-queries>true</read-subclasses-on-queries>
+         </inheritance>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>codeIndex</attribute-name>
+               <get-method>getCodeIndex</get-method>
+               <set-method>setCodeIndex</set-method>
+               <field table="KING_DEVELOPER" name="CODEINDEX" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>responsibility</attribute-name>
+               <get-method>getResponsibility</get-method>
+               <set-method>setResponsibility</set-method>
+               <field table="KING_DEVELOPER" name="RESPONS" xsi:type="column"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <sequencing>
+            <sequence-name>KING_SEQUENCE</sequence-name>
+            <sequence-field table="KING_DEVELOPER" name="CODEINDEX" xsi:type="column"/>
+         </sequencing>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <tables>
+            <table name="KING_DEVELOPER"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.inheritance.Dog</class>
+         <alias>Dog</alias>
+         <primary-key>
+            <field table="ANIMAL" name="ID" xsi:type="column"/>
+            <field table="ANIMAL" name="TYPE" xsi:type="column"/>
+         </primary-key>
+         <inheritance xsi:type="inheritance-policy">
+            <parent-class>org.eclipse.persistence.testing.models.inheritance.Animal</parent-class>
+            <read-subclasses-on-queries>true</read-subclasses-on-queries>
+         </inheritance>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>name</attribute-name>
+               <get-method>getName</get-method>
+               <set-method>setName</set-method>
+               <field table="ANIMAL" name="NAME" xsi:type="column"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <tables>
+            <table name="ANIMAL"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.inheritance.Engineer</class>
+         <alias>Engineer</alias>
+         <primary-key>
+            <field table="PERSON2" name="ID" xsi:type="column"/>
+         </primary-key>
+         <inheritance xsi:type="inheritance-policy">
+            <parent-class>org.eclipse.persistence.testing.models.inheritance.Person</parent-class>
+            <read-subclasses-on-queries>true</read-subclasses-on-queries>
+         </inheritance>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <descriptor-type>independent</descriptor-type>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <tables>
+            <table name="PERSON2"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.inheritance.Entomologist</class>
+         <alias>Entomologist</alias>
+         <primary-key>
+            <field table="ENTOMOLOGIST" name="ID" xsi:type="column"/>
+         </primary-key>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>id</attribute-name>
+               <field table="ENTOMOLOGIST" name="ID" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>name</attribute-name>
+               <field table="ENTOMOLOGIST" name="NAME" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="one-to-many-mapping">
+               <attribute-name>insectCollection</attribute-name>
+               <reference-class>org.eclipse.persistence.testing.models.inheritance.Insect</reference-class>
+               <target-foreign-key>
+                  <field-reference>
+                     <source-field table="INSECT" name="ENTOMOLOGIST" xsi:type="column"/>
+                     <target-field table="ENTOMOLOGIST" name="ID" xsi:type="column"/>
+                  </field-reference>
+               </target-foreign-key>
+               <container xsi:type="list-container-policy">
+                  <collection-type>java.util.Vector</collection-type>
+               </container>
+               <indirection xsi:type="value-holder-indirection-policy"/>
+               <selection-query xsi:type="read-all-query">
+                  <container xsi:type="list-container-policy">
+                     <collection-type>java.util.Vector</collection-type>
+                  </container>
+               </selection-query>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <tables>
+            <table name="ENTOMOLOGIST"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.inheritance.FueledVehicle</class>
+         <alias>FueledVehicle</alias>
+         <primary-key>
+            <field table="FUEL_VEH" name="ID" xsi:type="column"/>
+         </primary-key>
+         <inheritance xsi:type="inheritance-policy">
+            <parent-class>org.eclipse.persistence.testing.models.inheritance.Vehicle</parent-class>
+            <read-subclasses-on-queries>false</read-subclasses-on-queries>
+         </inheritance>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>fuelCapacity</attribute-name>
+               <field table="FUEL_VEH" name="FUEL_CAP" xsi:type="column"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <tables>
+            <table name="FUEL_VEH"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.inheritance.GrassHopper</class>
+         <alias>GrassHopper</alias>
+         <primary-key>
+            <field table="GRASSHOPPER" name="GH_ID" xsi:type="column"/>
+         </primary-key>
+         <inheritance xsi:type="inheritance-policy">
+            <parent-class>org.eclipse.persistence.testing.models.inheritance.Insect</parent-class>
+            <read-subclasses-on-queries>true</read-subclasses-on-queries>
+         </inheritance>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>gh_ID</attribute-name>
+               <field table="GRASSHOPPER" name="GH_ID" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>gh_maximumJump</attribute-name>
+               <field table="GRASSHOPPER" name="GH_MAXIMUMJUMP" xsi:type="column"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <tables>
+            <table name="GRASSHOPPER"/>
+            <table name="INSECT"/>
+         </tables>
+         <foreign-keys-for-multiple-table>
+            <field-reference>
+               <source-field table="GRASSHOPPER" name="GH_ID" xsi:type="column"/>
+               <target-field table="INSECT" name="IN_ID" xsi:type="column"/>
+            </field-reference>
+         </foreign-keys-for-multiple-table>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.inheritance.Human</class>
+         <alias>Human</alias>
+         <primary-key>
+            <field table="HUMAN_M" name="ID" xsi:type="column"/>
+         </primary-key>
+         <inheritance xsi:type="inheritance-policy">
+            <parent-class>org.eclipse.persistence.testing.models.inheritance.Primate</parent-class>
+            <read-subclasses-on-queries>true</read-subclasses-on-queries>
+         </inheritance>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>id</attribute-name>
+               <field table="HUMAN_M" name="ID" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>name</attribute-name>
+               <get-method>getName</get-method>
+               <set-method>setName</set-method>
+               <field table="HUMAN_M" name="THE_NAME" xsi:type="column"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <tables>
+            <table name="HUMAN_M"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.inheritance.IBMPC</class>
+         <alias>IBMPC</alias>
+         <primary-key>
+            <field table="INH_COMP" name="ID" xsi:type="column"/>
+         </primary-key>
+         <inheritance xsi:type="inheritance-policy">
+            <parent-class>org.eclipse.persistence.testing.models.inheritance.PC</parent-class>
+         </inheritance>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>isClone</attribute-name>
+               <field table="INH_COMP" name="CLONE" xsi:type="column"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <amendment>
+            <amendment-class>org.eclipse.persistence.testing.models.inheritance.IBMPC</amendment-class>
+            <amendment-method>addToDescriptor</amendment-method>
+         </amendment>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <tables>
+            <table name="INH_COMP"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.inheritance.Insect</class>
+         <alias>Insect</alias>
+         <primary-key>
+            <field table="INSECT" name="IN_ID" xsi:type="column"/>
+         </primary-key>
+         <inheritance xsi:type="inheritance-policy">
+            <read-subclasses-on-queries>true</read-subclasses-on-queries>
+            <class-indicator-field table="INSECT" name="IN_TYPE" xsi:type="column"/>
+            <class-indicator-mappings>
+               <class-indicator-mapping>
+                  <class>org.eclipse.persistence.testing.models.inheritance.GrassHopper</class>
+                  <class-indicator xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">G</class-indicator>
+               </class-indicator-mapping>
+               <class-indicator-mapping>
+                  <class>org.eclipse.persistence.testing.models.inheritance.LadyBug</class>
+                  <class-indicator xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">L</class-indicator>
+               </class-indicator-mapping>
+            </class-indicator-mappings>
+         </inheritance>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>in_ID</attribute-name>
+               <field table="INSECT" name="IN_ID" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>in_numberOfLegs</attribute-name>
+               <field table="INSECT" name="IN_NUMBEROFLEGS" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="one-to-one-mapping">
+               <attribute-name>entomologist</attribute-name>
+               <reference-class>org.eclipse.persistence.testing.models.inheritance.Entomologist</reference-class>
+               <foreign-key>
+                  <field-reference>
+                     <source-field table="INSECT" name="ENTOMOLOGIST" xsi:type="column"/>
+                     <target-field table="ENTOMOLOGIST" name="ID" xsi:type="column"/>
+                  </field-reference>
+               </foreign-key>
+               <foreign-key-fields>
+                  <field table="INSECT" name="ENTOMOLOGIST" xsi:type="column"/>
+               </foreign-key-fields>
+               <selection-query xsi:type="read-object-query"/>
+               <join-fetch>inner-join</join-fetch>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <sequencing>
+            <sequence-name>TransKeyInh_Insect</sequence-name>
+            <sequence-field table="INSECT" name="IN_ID" xsi:type="column"/>
+         </sequencing>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <tables>
+            <table name="INSECT"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.inheritance.JavaProgrammer</class>
+         <alias>JavaProgrammer</alias>
+         <primary-key>
+            <field table="JAVAPROGRAMMER" name="ID" xsi:type="column"/>
+         </primary-key>
+         <inheritance xsi:type="inheritance-policy">
+            <parent-class>org.eclipse.persistence.testing.models.inheritance.Programmer</parent-class>
+            <read-subclasses-on-queries>true</read-subclasses-on-queries>
+         </inheritance>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>id</attribute-name>
+               <field table="JAVAPROGRAMMER" name="ID" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>numberOfSupportQuestions</attribute-name>
+               <get-method>getNumberOfSupportQuestions</get-method>
+               <set-method>setNumberOfSupportQuestions</set-method>
+               <field table="JAVAPROGRAMMER" name="NUMBER_OF_SUPPORT" xsi:type="column"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <tables>
+            <table name="JAVAPROGRAMMER"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.inheritance.LabradorRetriever</class>
+         <alias>LabradorRetriever</alias>
+         <inheritance xsi:type="inheritance-policy">
+            <parent-class>org.eclipse.persistence.testing.models.inheritance.Dog</parent-class>
+            <read-subclasses-on-queries>true</read-subclasses-on-queries>
+         </inheritance>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <descriptor-type>independent</descriptor-type>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.inheritance.LadyBug</class>
+         <alias>LadyBug</alias>
+         <primary-key>
+            <field table="INSECT" name="IN_ID" xsi:type="column"/>
+         </primary-key>
+         <inheritance xsi:type="inheritance-policy">
+            <parent-class>org.eclipse.persistence.testing.models.inheritance.Insect</parent-class>
+            <read-subclasses-on-queries>true</read-subclasses-on-queries>
+         </inheritance>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>lb_ID</attribute-name>
+               <get-method>getLb_ID</get-method>
+               <set-method>setLb_ID</set-method>
+               <field table="LADYBUG" name="LB_ID" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>lb_numberOfSpots</attribute-name>
+               <get-method>getLb_numberOfSpots</get-method>
+               <set-method>setLb_numberOfSpots</set-method>
+               <field table="LADYBUG" name="LB_NUMBEROFSPOTS" xsi:type="column"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <tables>
+            <table name="INSECT"/>
+            <table name="LADYBUG"/>
+         </tables>
+         <foreign-keys-for-multiple-table>
+            <field-reference>
+               <source-field table="LADYBUG" name="LB_ID" xsi:type="column"/>
+               <target-field table="INSECT" name="IN_ID" xsi:type="column"/>
+            </field-reference>
+         </foreign-keys-for-multiple-table>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.inheritance.Mac</class>
+         <alias>Mac</alias>
+         <primary-key>
+            <field table="INH_COMP" name="ID" xsi:type="column"/>
+         </primary-key>
+         <inheritance xsi:type="inheritance-policy">
+            <parent-class>org.eclipse.persistence.testing.models.inheritance.PC</parent-class>
+         </inheritance>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <descriptor-type>independent</descriptor-type>
+         <amendment>
+            <amendment-class>org.eclipse.persistence.testing.models.inheritance.Mac</amendment-class>
+            <amendment-method>addToDescriptor</amendment-method>
+         </amendment>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <tables>
+            <table name="INH_COMP"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.inheritance.Mainframe</class>
+         <alias>Mainframe</alias>
+         <primary-key>
+            <field table="INH_COMP" name="ID" xsi:type="column"/>
+         </primary-key>
+         <inheritance xsi:type="inheritance-policy">
+            <parent-class>org.eclipse.persistence.testing.models.inheritance.Computer</parent-class>
+         </inheritance>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>numberOfProcessors</attribute-name>
+               <field table="INH_MF" name="PROCS" xsi:type="column"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <tables>
+            <table name="INH_COMP"/>
+            <table name="INH_MF"/>
+         </tables>
+         <foreign-keys-for-multiple-table>
+            <field-reference>
+               <source-field table="INH_MF" name="MF_ID" xsi:type="column"/>
+               <target-field table="INH_COMP" name="ID" xsi:type="column"/>
+            </field-reference>
+         </foreign-keys-for-multiple-table>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.inheritance.Mammal</class>
+         <alias>Mammal</alias>
+         <primary-key>
+            <field table="MAMMAL" name="ID" xsi:type="column"/>
+         </primary-key>
+         <inheritance xsi:type="inheritance-policy">
+            <parent-class>org.eclipse.persistence.testing.models.inheritance.Animal_Matt</parent-class>
+            <read-subclasses-on-queries>true</read-subclasses-on-queries>
+         </inheritance>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>id</attribute-name>
+               <field table="MAMMAL" name="ID" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>weight</attribute-name>
+               <get-method>getWeight</get-method>
+               <set-method>setWeight</set-method>
+               <field table="MAMMAL" name="WEIGHT" xsi:type="column"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <tables>
+            <table name="MAMMAL"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.inheritance.NonFueledVehicle</class>
+         <alias>NonFueledVehicle</alias>
+         <primary-key>
+            <field table="VEHICLE" name="ID" xsi:type="column"/>
+         </primary-key>
+         <inheritance xsi:type="inheritance-policy">
+            <parent-class>org.eclipse.persistence.testing.models.inheritance.Vehicle</parent-class>
+            <read-subclasses-on-queries>true</read-subclasses-on-queries>
+         </inheritance>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <descriptor-type>independent</descriptor-type>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <tables>
+            <table name="VEHICLE"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.inheritance.PC</class>
+         <alias>PC</alias>
+         <primary-key>
+            <field table="INH_COMP" name="ID" xsi:type="column"/>
+         </primary-key>
+         <inheritance xsi:type="inheritance-policy">
+            <parent-class>org.eclipse.persistence.testing.models.inheritance.Computer</parent-class>
+            <read-subclasses-on-queries>true</read-subclasses-on-queries>
+         </inheritance>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <descriptor-type>independent</descriptor-type>
+         <amendment>
+            <amendment-class>org.eclipse.persistence.testing.models.inheritance.PC</amendment-class>
+            <amendment-method>addToDescriptor</amendment-method>
+         </amendment>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <tables>
+            <table name="INH_COMP"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.inheritance.Person</class>
+         <alias>Person</alias>
+         <primary-key>
+            <field table="PERSON2" name="ID" xsi:type="column"/>
+         </primary-key>
+         <inheritance xsi:type="inheritance-policy">
+            <read-subclasses-on-queries>false</read-subclasses-on-queries>
+            <use-class-name-as-indicator>true</use-class-name-as-indicator>
+            <class-indicator-field table="PERSON2" name="C_TYPE" xsi:type="column"/>
+         </inheritance>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="one-to-one-mapping">
+               <attribute-name>bestFriend</attribute-name>
+               <reference-class>org.eclipse.persistence.testing.models.inheritance.Engineer</reference-class>
+               <foreign-key>
+                  <field-reference>
+                     <source-field table="PERSON2" name="FRIEND_ID" xsi:type="column"/>
+                     <target-field table="PERSON2" name="ID" xsi:type="column"/>
+                  </field-reference>
+               </foreign-key>
+               <foreign-key-fields>
+                  <field table="PERSON2" name="FRIEND_ID" xsi:type="column"/>
+               </foreign-key-fields>
+               <selection-query xsi:type="read-object-query"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="one-to-one-mapping">
+               <attribute-name>car</attribute-name>
+               <reference-class>org.eclipse.persistence.testing.models.inheritance.Car</reference-class>
+               <private-owned>true</private-owned>
+               <foreign-key>
+                  <field-reference>
+                     <source-field table="PERSON2" name="CAR_ID" xsi:type="column"/>
+                     <target-field table="CAR" name="ID" xsi:type="column"/>
+                  </field-reference>
+               </foreign-key>
+               <foreign-key-fields>
+                  <field table="PERSON2" name="CAR_ID" xsi:type="column"/>
+               </foreign-key-fields>
+               <indirection xsi:type="value-holder-indirection-policy"/>
+               <selection-query xsi:type="read-object-query"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>id</attribute-name>
+               <field table="PERSON2" name="ID" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>name</attribute-name>
+               <field table="PERSON2" name="NAME" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="one-to-one-mapping">
+               <attribute-name>representitive</attribute-name>
+               <reference-class>org.eclipse.persistence.testing.models.inheritance.SalesRep</reference-class>
+               <foreign-key>
+                  <field-reference>
+                     <source-field table="PERSON2" name="REP_ID" xsi:type="column"/>
+                     <target-field table="PERSON2" name="ID" xsi:type="column"/>
+                  </field-reference>
+               </foreign-key>
+               <foreign-key-fields>
+                  <field table="PERSON2" name="REP_ID" xsi:type="column"/>
+               </foreign-key-fields>
+               <selection-query xsi:type="read-object-query"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <sequencing>
+            <sequence-name>SEQ</sequence-name>
+            <sequence-field table="PERSON2" name="ID" xsi:type="column"/>
+         </sequencing>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <tables>
+            <table name="PERSON2"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.inheritance.Person_King</class>
+         <alias>Person_King</alias>
+         <primary-key>
+            <field table="KING_PERSON" name="ID" xsi:type="column"/>
+         </primary-key>
+         <inheritance xsi:type="inheritance-policy">
+            <read-subclasses-on-queries>true</read-subclasses-on-queries>
+            <class-indicator-field table="KING_PERSON" name="PERSON_TYPE" xsi:type="column"/>
+            <class-indicator-mappings>
+               <class-indicator-mapping>
+                  <class>org.eclipse.persistence.testing.models.inheritance.SeniorDeveloper_King</class>
+                  <class-indicator xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">S</class-indicator>
+               </class-indicator-mapping>
+               <class-indicator-mapping>
+                  <class>org.eclipse.persistence.testing.models.inheritance.Developer_King</class>
+                  <class-indicator xsi:type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema">D</class-indicator>
+               </class-indicator-mapping>
+            </class-indicator-mappings>
+         </inheritance>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>id</attribute-name>
+               <get-method>getId</get-method>
+               <set-method>setId</set-method>
+               <field table="KING_PERSON" name="ID" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>name</attribute-name>
+               <get-method>getName</get-method>
+               <set-method>setName</set-method>
+               <field table="KING_PERSON" name="NAME" xsi:type="column"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <tables>
+            <table name="KING_PERSON"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.inheritance.Primate</class>
+         <alias>Primate</alias>
+         <primary-key>
+            <field table="PRIMATE" name="ID" xsi:type="column"/>
+         </primary-key>
+         <inheritance xsi:type="inheritance-policy">
+            <parent-class>org.eclipse.persistence.testing.models.inheritance.Mammal</parent-class>
+            <read-subclasses-on-queries>true</read-subclasses-on-queries>
+         </inheritance>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>gender</attribute-name>
+               <get-method>getGender</get-method>
+               <set-method>setGender</set-method>
+               <field table="PRIMATE" name="GENDER" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>id</attribute-name>
+               <field table="PRIMATE" name="ID" xsi:type="column"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <tables>
+            <table name="PRIMATE"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.inheritance.Programmer</class>
+         <alias>Programmer</alias>
+         <primary-key>
+            <field table="PROGRAMMER" name="ID" xsi:type="column"/>
+         </primary-key>
+         <inheritance xsi:type="inheritance-policy">
+            <parent-class>org.eclipse.persistence.testing.models.inheritance.Human</parent-class>
+            <read-subclasses-on-queries>true</read-subclasses-on-queries>
+         </inheritance>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>id</attribute-name>
+               <field table="PROGRAMMER" name="ID" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>salary</attribute-name>
+               <get-method>getSalary</get-method>
+               <set-method>setSalary</set-method>
+               <field table="PROGRAMMER" name="SALARY" xsi:type="column"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <tables>
+            <table name="PROGRAMMER"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.inheritance.ProjectWorker</class>
+         <alias>Person</alias>
+         <primary-key>
+            <field table="PROJECT_WORKER_BATCH" name="PERSON_ID" xsi:type="column"/>
+         </primary-key>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="one-to-one-mapping">
+               <attribute-name>headProject</attribute-name>
+               <reference-class>org.eclipse.persistence.testing.models.inheritance.BaseProject</reference-class>
+               <foreign-key>
+                  <field-reference>
+                     <source-field table="PROJECT_WORKER_BATCH" name="PROJECT_ID" xsi:type="column"/>
+                     <target-field table="PROJECT_BATCH" name="PROJECT_ID" xsi:type="column"/>
+                  </field-reference>
+               </foreign-key>
+               <foreign-key-fields>
+                  <field table="PROJECT_WORKER_BATCH" name="PROJECT_ID" xsi:type="column"/>
+               </foreign-key-fields>
+               <indirection xsi:type="value-holder-indirection-policy"/>
+               <selection-query xsi:type="read-object-query"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>p_id</attribute-name>
+               <field table="PROJECT_WORKER_BATCH" name="PERSON_ID" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>p_name</attribute-name>
+               <field table="PROJECT_WORKER_BATCH" name="PERSON_NAME" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="one-to-many-mapping">
+               <attribute-name>projects</attribute-name>
+               <reference-class>org.eclipse.persistence.testing.models.inheritance.BaseProject</reference-class>
+               <target-foreign-key>
+                  <field-reference>
+                     <source-field table="PROJECT_BATCH" name="PERSON_ID" xsi:type="column"/>
+                     <target-field table="PROJECT_WORKER_BATCH" name="PERSON_ID" xsi:type="column"/>
+                  </field-reference>
+               </target-foreign-key>
+               <container xsi:type="list-container-policy">
+                  <collection-type>java.util.Vector</collection-type>
+               </container>
+               <indirection xsi:type="value-holder-indirection-policy"/>
+               <selection-query xsi:type="read-all-query">
+                  <container xsi:type="list-container-policy">
+                     <collection-type>java.util.Vector</collection-type>
+                  </container>
+               </selection-query>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <sequencing>
+            <sequence-name>PROJECT_WOKER_SEQ</sequence-name>
+            <sequence-field table="PROJECT_WORKER_BATCH" name="PERSON_ID" xsi:type="column"/>
+         </sequencing>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <tables>
+            <table name="PROJECT_WORKER_BATCH"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.inheritance.SalesRep</class>
+         <alias>SalesRep</alias>
+         <primary-key>
+            <field table="PERSON2" name="ID" xsi:type="column"/>
+         </primary-key>
+         <inheritance xsi:type="inheritance-policy">
+            <parent-class>org.eclipse.persistence.testing.models.inheritance.Person</parent-class>
+         </inheritance>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <descriptor-type>independent</descriptor-type>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <tables>
+            <table name="PERSON2"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.inheritance.SeniorDeveloper_King</class>
+         <alias>SeniorDeveloper_King</alias>
+         <primary-key>
+            <field table="KING_DEVELOPER" name="ID" xsi:type="column"/>
+         </primary-key>
+         <inheritance xsi:type="inheritance-policy">
+            <parent-class>org.eclipse.persistence.testing.models.inheritance.Developer_King</parent-class>
+            <read-subclasses-on-queries>true</read-subclasses-on-queries>
+         </inheritance>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>officeNum</attribute-name>
+               <get-method>getOfficeNum</get-method>
+               <set-method>setOfficeNum</set-method>
+               <field table="KING_DEVELOPER" name="OFF_NUM" xsi:type="column"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <tables>
+            <table name="KING_DEVELOPER"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.inheritance.SoftwareEngineer</class>
+         <alias>SoftwareEngineer</alias>
+         <primary-key>
+            <field table="PERSON2" name="ID" xsi:type="column"/>
+         </primary-key>
+         <inheritance xsi:type="inheritance-policy">
+            <parent-class>org.eclipse.persistence.testing.models.inheritance.Engineer</parent-class>
+         </inheritance>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="one-to-one-mapping">
+               <attribute-name>boss</attribute-name>
+               <reference-class>org.eclipse.persistence.testing.models.inheritance.Engineer</reference-class>
+               <foreign-key>
+                  <field-reference>
+                     <source-field table="PERSON2" name="BOSS_ID" xsi:type="column"/>
+                     <target-field table="PERSON2" name="ID" xsi:type="column"/>
+                  </field-reference>
+               </foreign-key>
+               <foreign-key-fields>
+                  <field table="PERSON2" name="BOSS_ID" xsi:type="column"/>
+               </foreign-key-fields>
+               <selection-query xsi:type="read-object-query"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>isExperiencedInJava</attribute-name>
+               <field table="PERSON2" name="KNOWS_JAVA" xsi:type="column"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <tables>
+            <table name="PERSON2"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.inheritance.SportsCar</class>
+         <alias>SportsCar</alias>
+         <primary-key>
+            <field table="CAR" name="ID" xsi:type="column"/>
+         </primary-key>
+         <inheritance xsi:type="inheritance-policy">
+            <parent-class>org.eclipse.persistence.testing.models.inheritance.Car</parent-class>
+         </inheritance>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <descriptor-type>independent</descriptor-type>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <tables>
+            <table name="CAR"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.inheritance.Vehicle</class>
+         <alias>Vehicle</alias>
+         <primary-key>
+            <field table="VEHICLE" name="ID" xsi:type="column"/>
+         </primary-key>
+         <inheritance xsi:type="inheritance-policy">
+            <read-subclasses-on-queries>true</read-subclasses-on-queries>
+            <class-indicator-field table="VEHICLE" name="TYPE" xsi:type="column"/>
+            <class-indicator-mappings>
+               <class-indicator-mapping>
+                  <class>org.eclipse.persistence.testing.models.inheritance.Boat</class>
+                  <class-indicator xsi:type="xsd:int" xmlns:xsd="http://www.w3.org/2001/XMLSchema">7</class-indicator>
+               </class-indicator-mapping>
+               <class-indicator-mapping>
+                  <class>org.eclipse.persistence.testing.models.inheritance.Car</class>
+                  <class-indicator xsi:type="xsd:int" xmlns:xsd="http://www.w3.org/2001/XMLSchema">4</class-indicator>
+               </class-indicator-mapping>
+               <class-indicator-mapping>
+                  <class>org.eclipse.persistence.testing.models.inheritance.Bus</class>
+                  <class-indicator xsi:type="xsd:int" xmlns:xsd="http://www.w3.org/2001/XMLSchema">3</class-indicator>
+               </class-indicator-mapping>
+               <class-indicator-mapping>
+                  <class>org.eclipse.persistence.testing.models.inheritance.SportsCar</class>
+                  <class-indicator xsi:type="xsd:int" xmlns:xsd="http://www.w3.org/2001/XMLSchema">5</class-indicator>
+               </class-indicator-mapping>
+               <class-indicator-mapping>
+                  <class>org.eclipse.persistence.testing.models.inheritance.Bicycle</class>
+                  <class-indicator xsi:type="xsd:int" xmlns:xsd="http://www.w3.org/2001/XMLSchema">6</class-indicator>
+               </class-indicator-mapping>
+               <class-indicator-mapping>
+                  <class>org.eclipse.persistence.testing.models.inheritance.NonFueledVehicle</class>
+                  <class-indicator xsi:type="xsd:int" xmlns:xsd="http://www.w3.org/2001/XMLSchema">2</class-indicator>
+               </class-indicator-mapping>
+               <class-indicator-mapping>
+                  <class>org.eclipse.persistence.testing.models.inheritance.FueledVehicle</class>
+                  <class-indicator xsi:type="xsd:int" xmlns:xsd="http://www.w3.org/2001/XMLSchema">1</class-indicator>
+               </class-indicator-mapping>
+            </class-indicator-mappings>
+         </inheritance>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>id</attribute-name>
+               <field table="VEHICLE" name="ID" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="one-to-one-mapping">
+               <attribute-name>owner</attribute-name>
+               <reference-class>org.eclipse.persistence.testing.models.inheritance.Company</reference-class>
+               <foreign-key>
+                  <field-reference>
+                     <source-field table="VEHICLE" name="OWNER_ID" xsi:type="column"/>
+                     <target-field table="COMPANY" name="ID" xsi:type="column"/>
+                  </field-reference>
+               </foreign-key>
+               <foreign-key-fields>
+                  <field table="VEHICLE" name="OWNER_ID" xsi:type="column"/>
+               </foreign-key-fields>
+               <indirection xsi:type="value-holder-indirection-policy"/>
+               <selection-query xsi:type="read-object-query"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>passengerCapacity</attribute-name>
+               <field table="VEHICLE" name="CAPACITY" xsi:type="column"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <sequencing>
+            <sequence-name>SEQ</sequence-name>
+            <sequence-field table="VEHICLE" name="ID" xsi:type="column"/>
+         </sequencing>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <tables>
+            <table name="VEHICLE"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.inheritance.Worker</class>
+         <alias>Worker</alias>
+         <primary-key>
+            <field table="WORKER2" name="ID" xsi:type="column"/>
+         </primary-key>
+         <inheritance xsi:type="inheritance-policy">
+            <read-subclasses-on-queries>false</read-subclasses-on-queries>
+            <use-class-name-as-indicator>true</use-class-name-as-indicator>
+            <class-indicator-field table="WORKER2" name="W_TYPE" xsi:type="column"/>
+         </inheritance>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>id</attribute-name>
+               <field table="WORKER2" name="ID" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>name</attribute-name>
+               <field table="WORKER2" name="NAME" xsi:type="column"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <sequencing>
+            <sequence-name>SEQ</sequence-name>
+            <sequence-field table="WORKER2" name="ID" xsi:type="column"/>
+         </sequencing>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <tables>
+            <table name="WORKER2"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.inheritance.CompanyWorker</class>
+         <alias>CompanyWorker</alias>
+         <primary-key>
+            <field table="WORKER2" name="ID" xsi:type="column"/>
+         </primary-key>
+         <inheritance xsi:type="inheritance-policy">
+            <parent-class>org.eclipse.persistence.testing.models.inheritance.Worker</parent-class>
+         </inheritance>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="one-to-one-mapping">
+                <attribute-name>company</attribute-name>
+                <reference-class>org.eclipse.persistence.testing.models.inheritance.Company</reference-class>
+                <foreign-key>
+                  <field-reference>
+                     <source-field table="WORKER2" name="COMPANY_ID" xsi:type="column"/>
+                     <target-field table="COMPANY" name="ID" xsi:type="column"/>
+                  </field-reference>
+                </foreign-key>
+                <foreign-key-fields>
+                  <field table="WORKER2" name="COMPANY_ID" xsi:type="column"/>
+                </foreign-key-fields>
+                <indirection xsi:type="value-holder-indirection-policy"/>
+                <selection-query xsi:type="read-object-query"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <tables>
+            <table name="WORKER2"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.inheritance.Apple</class>
+         <alias>Apple</alias>
+         <primary-key>
+            <field table="FRUIT" name="ID" xsi:type="column"/>
+         </primary-key>
+         <inheritance>
+            <parent-class>org.eclipse.persistence.testing.models.inheritance.Fruit</parent-class>
+            <read-subclasses-on-queries>true</read-subclasses-on-queries>
+         </inheritance>
+         <events/>
+         <querying/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="one-to-one-mapping">
+               <attribute-name>teacher</attribute-name>
+               <reference-class>org.eclipse.persistence.testing.models.inheritance.Teacher</reference-class>
+               <foreign-key>
+                  <field-reference>
+                     <source-field table="FRUIT" name="TEACHER_ID" xsi:type="column"/>
+                     <target-field table="TEACHER" name="ID" xsi:type="column"/>
+                  </field-reference>
+               </foreign-key>
+               <foreign-key-fields>
+                  <field table="FRUIT" name="TEACHER_ID" xsi:type="column"/>
+               </foreign-key-fields>
+               <selection-query xsi:type="read-object-query"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <sequencing>
+            <sequence-name>fruit_seq</sequence-name>
+            <sequence-field table="FRUIT" name="ID" xsi:type="column"/>
+         </sequencing>
+         <caching>
+            <cache-size>-1</cache-size>
+         </caching>
+         <remote-caching>
+            <cache-size>-1</cache-size>
+         </remote-caching>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <tables>
+            <table name="FRUIT"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.inheritance.Fruit</class>
+         <alias>Fruit</alias>
+         <primary-key>
+            <field table="FRUIT" name="ID" xsi:type="column"/>
+         </primary-key>
+         <inheritance>
+            <read-subclasses-on-queries>true</read-subclasses-on-queries>
+            <class-indicator-field table="FRUIT" name="TYPE" xsi:type="column"/>
+            <class-indicator-mappings>
+               <class-indicator-mapping>
+                  <class>org.eclipse.persistence.testing.models.inheritance.Apple</class>
+                  <class-indicator>APPLE</class-indicator>
+               </class-indicator-mapping>
+               <class-indicator-mapping>
+                  <class>org.eclipse.persistence.testing.models.inheritance.Pear</class>
+                  <class-indicator>PEAR</class-indicator>
+               </class-indicator-mapping>
+            </class-indicator-mappings>
+         </inheritance>
+         <events/>
+         <querying/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>id</attribute-name>
+               <field table="FRUIT" name="ID" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>quality</attribute-name>
+               <field table="FRUIT" name="QUALITY" xsi:type="column"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <tables>
+            <table name="FRUIT"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.inheritance.Pear</class>
+         <alias>Pear</alias>
+         <primary-key>
+            <field table="FRUIT" name="ID" xsi:type="column"/>
+         </primary-key>
+         <inheritance>
+            <parent-class>org.eclipse.persistence.testing.models.inheritance.Fruit</parent-class>
+            <read-subclasses-on-queries>true</read-subclasses-on-queries>
+         </inheritance>
+         <events/>
+         <querying/>
+         <descriptor-type>independent</descriptor-type>
+         <sequencing>
+            <sequence-name>fruit_seq</sequence-name>
+            <sequence-field table="FRUIT" name="ID" xsi:type="column"/>
+         </sequencing>
+         <caching>
+            <cache-size>-1</cache-size>
+         </caching>
+         <remote-caching>
+            <cache-size>-1</cache-size>
+         </remote-caching>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <tables>
+            <table name="FRUIT"/>
+         </tables>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="relational-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.models.inheritance.Teacher</class>
+         <alias>Teacher</alias>
+         <primary-key>
+            <field table="TEACHER" name="ID" xsi:type="column"/>
+         </primary-key>
+         <events/>
+         <querying/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>id</attribute-name>
+               <field table="TEACHER" name="ID" xsi:type="column"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="direct-mapping">
+               <attribute-name>name</attribute-name>
+               <field table="TEACHER" name="NAME" xsi:type="column"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>independent</descriptor-type>
+         <sequencing>
+            <sequence-name>teacher_seq</sequence-name>
+            <sequence-field table="TEACHER" name="ID" xsi:type="column"/>
+         </sequencing>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <tables>
+            <table name="TEACHER"/>
+         </tables>
+      </class-mapping-descriptor>
+   </class-mapping-descriptors>
+   <login xsi:type="database-login">
+      <platform-class>org.eclipse.persistence.platform.database.OraclePlatform</platform-class>
+      <user-name>scott</user-name>
+      <password>3E20F8982C53F4ABA825E30206EC8ADE</password>
+      <driver-class>oracle.jdbc.OracleDriver</driver-class>
+      <connection-url>jdbc:oracle:thin:@localhost:1521:james</connection-url>
+   </login>
+</object-persistence>

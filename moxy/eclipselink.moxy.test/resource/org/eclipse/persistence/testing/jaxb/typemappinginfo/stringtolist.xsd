@@ -1,0 +1,6 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:element name="testTagname" type="listOfString"/>
+   <xsd:simpleType  name="listOfString">
+      <xsd:list itemType="xsd:string"/>
+   </xsd:simpleType>
+</xsd:schema>

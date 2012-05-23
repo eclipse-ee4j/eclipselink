@@ -1,0 +1,228 @@
+<!--/*******************************************************************************
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+* which accompanies this distribution.
+* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+* and the Eclipse Distribution License is available at
+* http://www.eclipse.org/org/documents/edl-v10.php.
+*
+*   Ant naming conventions:
+*   - regardless of the actual OS platform,'/' is the directory separator
+*     (Ant will convert as appropriate).
+*   - multi-word properties use periods '.'
+*   - multi-word targets use hyphens '-'
+*   - multi-word macros use underscores '_'
+*   - multi-word macro attributes are concatinated
+*     e.g. 'runpathref'
+*   - multi-word tasks (taskdef) names are concatinated
+*     e.g. 'validateconnection'
+*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
+*     e.g. ${env.XXX}.
+*   - Ant properties are lower case.
+*
+* Contributors:
+*     Oracle - initial API and implementation
+#******************************************************************************/-->
+
+<project name="eclipselink.utils.workbench" default="all" basedir=".">
+
+    <!-- =================================================================== -->
+    <!--  High level targets                                                 -->
+    <!-- =================================================================== -->
+
+    <target name="all"              depends="clean, build"/>
+    <target name="build"            depends="init, build-component-libs, build-workbench"/>
+    <target name="build-workbench"  depends="jar-mwcore, jar-workbench"/>
+
+    <!-- =================================================================== -->
+    <!--  Initialization                                                     -->
+    <!-- =================================================================== -->
+
+    <target name="init">
+        <dirname  property="mw.build.location_temp" file="${ant.file.eclipselink.utils.workbench}"/>
+        <pathconvert targetos="unix" property="mw.build.location">
+            <path>
+                <pathelement location="${mw.build.location_temp}"/>
+            </path>
+        </pathconvert>
+        <tstamp>
+            <format property="_TodayMD"      pattern="MMdd"/>
+            <format property="_TodayDMonthY" pattern="dd, MMMMM yyyy"/>
+            <format property="build.date"    pattern="yyyyMMdd"/>
+            <format property="build.time"    pattern="HHmm"/>
+            <format property="CurYear"       pattern="yyyy"/>
+        </tstamp>
+        <property environment="env"/>
+        <property file="${mw.build.location}/build.properties"/>
+
+        <property name="stop.on.error"      value="false"/>
+        <property name="optimize.code"      value="off"/>
+        <property name="report.deprecation" value="off"/>
+        <property name="javac.debug"        value="on"/>
+        <property name="javac.debuglevel"   value="lines,vars,source"/>
+        <property name="target.jvm"         value="${javac.version}"/>
+
+        <property name="build.type"          value="SNAPSHOT"/>
+        <property name="release.designation" value="EclipseLink DeveloperBuild"/>
+        <property name="version.string"      value="${release.version}.qualifier"/>
+
+        <echo message="mw.build.location   = '${mw.build.location}'"/>
+        <echo message="release.designation = '${release.designation}'"/>
+        <echo message="release.version     = '${release.version}'"/>
+        <echo message="BuildDate.BuildTime = '${build.date}.${build.time}'"/>
+        <echo message="java.version        = '${java.version}'"/>
+        <echo message="os.name             = '${os.name}'"/>
+        <echo message="os.arch             = '${os.arch}'"/>
+        <echo message="os.version          = '${os.version}'"/>
+        <echo message="stop.on.error       = '${stop.on.error}'"/>
+        <echo message="optimize.code       = '${optimize.code}'"/>
+        <echo message="report.deprecation  = '${report.deprecation}'"/>
+        <echo message="javac.debug         = '${javac.debug}'"/>
+        <echo message="javac.debuglevel    = '${javac.debuglevel}'"/>
+        <echo message="target.jvm          = '${target.jvm}'"/>
+        <echo message="java_home           = '${java.home}/..'"/>
+
+        <mkdir dir="${_buildLogDir}"/>
+    </target>
+
+    <!-- =================================================================== -->
+    <!--  Clean                                                              -->
+    <!-- =================================================================== -->
+
+    <target name="clean"  depends="init">
+        <ant antfile="build.xml" dir="${iconlibDir}"         target="clean"/>
+        <ant antfile="build.xml" dir="${utilityDir}"         target="clean"/>
+        <ant antfile="build.xml" dir="${uitoolsDir}"         target="clean"/>
+        <ant antfile="build.xml" dir="${frameworkDir}"       target="clean"/>
+        <ant antfile="build.xml" dir="${platformsmodelDir}"  target="clean"/>
+        <ant antfile="build.xml" dir="${platformspluginDir}" target="clean"/>
+        <ant antfile="build.xml" dir="${mappingsmodelDir}"   target="clean"/>
+        <ant antfile="build.xml" dir="${mappingsioDir}"      target="clean"/>
+        <ant antfile="build.xml" dir="${mappingspluginDir}"  target="clean"/>
+        <ant antfile="build.xml" dir="${scpluginDir}"        target="clean"/>
+        <delete file="${libDir}/${mwcore.jarfile}"/>
+        <delete file="${libDir}/${workbench.jarfile}"/>
+        <delete file="${libDir}/${mwcore.src.jarfile}"/>
+        <delete file="${libDir}/${workbench.src.jarfile}"/>
+    </target>
+
+    <!-- =================================================================== -->
+    <!--  Build                                                              -->
+    <!-- =================================================================== -->
+
+    <target name="build-component-libs"  depends="init">
+        <ant antfile="build.xml" dir="${iconlibDir}"         target="build-all" output="${_buildLogDir}\iconlib.log"/>
+        <ant antfile="build.xml" dir="${utilityDir}"         target="build-all" output="${_buildLogDir}\utility.log"/>
+        <ant antfile="build.xml" dir="${uitoolsDir}"         target="build-all" output="${_buildLogDir}\uitools.log"/>
+        <ant antfile="build.xml" dir="${frameworkDir}"       target="build-all" output="${_buildLogDir}\framework.log"/>
+        <ant antfile="build.xml" dir="${platformsmodelDir}"  target="build-all" output="${_buildLogDir}\platformsmodel.log"/>
+        <ant antfile="build.xml" dir="${platformspluginDir}" target="build-all" output="${_buildLogDir}\platformsplugin.log"/>
+        <ant antfile="build.xml" dir="${mappingsmodelDir}"   target="build-all" output="${_buildLogDir}\mappingsmodel.log"/>
+        <ant antfile="build.xml" dir="${mappingsioDir}"      target="build-all" output="${_buildLogDir}\mappingsio.log"/>
+        <ant antfile="build.xml" dir="${mappingspluginDir}"  target="build-all" output="${_buildLogDir}\mappingsplugin.log"/>
+        <ant antfile="build.xml" dir="${scpluginDir}"        target="build-all" output="${_buildLogDir}\scplugin.log"/>
+    </target>
+
+    <!-- =================================================================== -->
+    <!--  misc                                                               -->
+    <!-- =================================================================== -->
+
+    <target name="compile-results" unless="build.failed" depends="init">
+    </target>
+
+    <!-- =================================================================== -->
+    <!--  JARs                                                               -->
+    <!-- =================================================================== -->
+
+    <target name="jar-mwcore" depends="init, jar-mwcore-src">
+        <echo message="Implementation-Version: ${version.string}"/>
+        <jar jarfile="${libDir}/${mwcore.jarfile}">
+            <manifest>
+                <attribute name="Specification-Title" value="${_productName}" />
+                <attribute name="Specification-Vendor" value="${_VendorString}" />
+                <attribute name="Specification-Version" value="${release.version}" />
+                <attribute name="Implementation-Title" value="${workbenchcore.manifest.basepackage}" />
+                <attribute name="Implementation-Version" value="${version.string}"/>
+                <attribute name="Implementation-Vendor" value="${_VendorString}" />
+                <attribute name="Release-Designation" value="${release.designation}" />
+                <attribute name="Library-Designation" value="${workbenchcore.manifest.libraryName}" />
+            </manifest>
+            <zipgroupfileset dir="${libDir}">
+                <include name="utility.jar"/>
+                <include name="platformsmodel.jar"/>
+                <include name="mappingsmodel.jar"/>
+                <include name="mappingsio.jar"/>
+            </zipgroupfileset>
+        </jar>
+    </target>
+    <target name="jar-mwcore-src">
+        <echo message="Implementation-Version: ${version.string}"/>
+        <jar jarfile="${libDir}/${mwcore.src.jarfile}">
+            <manifest>
+                <attribute name="Specification-Title" value="${_productName}" />
+                <attribute name="Specification-Vendor" value="${_VendorString}" />
+                <attribute name="Specification-Version" value="${release.version}" />
+                <attribute name="Implementation-Title" value="${workbenchcore.manifest.basepackage}" />
+                <attribute name="Implementation-Version" value="${version.string}"/>
+                <attribute name="Implementation-Vendor" value="${_VendorString}" />
+                <attribute name="Release-Designation" value="${release.designation}" />
+                <attribute name="Library-Designation" value="${workbenchcore.manifest.libraryName}" />
+            </manifest>
+            <zipgroupfileset dir="${libDir}">
+                <include name="utility_src.jar"/>
+                <include name="platformsmodel_src.jar"/>
+                <include name="mappingsmodel_src.jar"/>
+                <include name="mappingsio_src.jar"/>
+            </zipgroupfileset>
+        </jar>
+    </target>
+
+    <target name="jar-workbench" depends="init, jar-workbench-src">
+        <echo message="Implementation-Version: ${version.string}"/>
+        <jar jarfile="${libDir}/${workbench.jarfile}">
+            <manifest>
+                <attribute name="Specification-Title" value="${_productName}" />
+                <attribute name="Specification-Vendor" value="${_VendorString}" />
+                <attribute name="Specification-Version" value="${release.version}" />
+                <attribute name="Implementation-Title" value="${workbench.manifest.basepackage}" />
+                <attribute name="Implementation-Version" value="${version.string}"/>
+                <attribute name="Implementation-Vendor" value="${_VendorString}" />
+                <attribute name="Release-Designation" value="${release.designation}" />
+                <attribute name="Library-Designation" value="${workbench.manifest.libraryName}" />
+                <attribute name="Main-Class" value="${workbench.manifest.mainclass}" />
+            </manifest>
+            <zipgroupfileset dir="${libDir}">
+                <include name="iconlib.jar"/>
+                <include name="uitools.jar"/>
+                <include name="framework.jar"/>
+                <include name="platformsplugin.jar"/>
+                <include name="mappingsplugin.jar"/>
+                <include name="scplugin.jar"/>
+            </zipgroupfileset>
+        </jar>
+    </target>
+    <target name="jar-workbench-src">
+        <echo message="Implementation-Version: ${version.string}"/>
+        <jar jarfile="${libDir}/${workbench.src.jarfile}">
+            <manifest>
+                <attribute name="Specification-Title" value="${_productName}" />
+                <attribute name="Specification-Vendor" value="${_VendorString}" />
+                <attribute name="Specification-Version" value="${release.version}" />
+                <attribute name="Implementation-Title" value="${workbench.manifest.basepackage}" />
+                <attribute name="Implementation-Version" value="${version.string}"/>
+                <attribute name="Implementation-Vendor" value="${_VendorString}" />
+                <attribute name="Release-Designation" value="${release.designation}" />
+                <attribute name="Library-Designation" value="${workbench.manifest.libraryName}" />
+                <attribute name="Main-Class" value="${workbench.manifest.mainclass}" />
+            </manifest>
+            <zipgroupfileset dir="${libDir}">
+                <include name="uitools_src.jar"/>
+                <include name="framework_src.jar"/>
+                <include name="platformsplugin_src.jar"/>
+                <include name="mappingsplugin_src.jar"/>
+                <include name="scplugin_src.jar"/>
+            </zipgroupfileset>
+        </jar>
+    </target>
+
+</project>

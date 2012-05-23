@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="examplenamespace" xmlns:x="examplenamespace" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:complexType name="address-type">
+      <xsd:sequence>
+         <xsd:element name="XCity" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="country-name" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="myInteger" type="xsd:int" minOccurs="0" default="1"/>
+         <xsd:element name="myObject" type="xsd:int" minOccurs="0"/>
+         <xsd:element name="street-name" type="xsd:string" minOccurs="0"/>
+      </xsd:sequence>
+      <xsd:attribute name="postal-code" type="xsd:string"/>
+   </xsd:complexType>
+   <xsd:complexType name="employee-type" mixed="true">
+      <xsd:sequence>
+         <xsd:element name="firstName" type="xsd:string"/>
+         <xsd:element name="birthday" type="xsd:date" minOccurs="0"/>
+         <xsd:element name="age" type="xsd:int"/>
+         <xsd:element name="lastName" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="address" type="x:address-type" minOccurs="0"/>
+         <xsd:element name="startTime" type="xsd:time" minOccurs="0"/>
+         <xsd:element name="phone-number" type="x:phone-number" minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:element name="responsibilities" minOccurs="0">
+            <xsd:simpleType>
+               <xsd:list itemType="xsd:string"/>
+            </xsd:simpleType>
+         </xsd:element>
+         <xsd:element form="qualified" maxOccurs="unbounded" minOccurs="0" name="peep" type="x:employee-type"/>
+      </xsd:sequence>
+      <xsd:attribute name="id" type="xsd:int" use="required"/>
+      <xsd:attribute name="department" type="x:department" />
+   </xsd:complexType>
+   <xsd:complexType name="myTestType">
+      <xsd:sequence>
+         <xsd:element name="id" type="xsd:int"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="employee-data" type="x:employee-type"/>
+   <xsd:simpleType name="department">
+      <xsd:restriction base="xsd:int">
+         <xsd:enumeration value="1"/>
+         <xsd:enumeration value="2"/>
+         <xsd:enumeration value="3"/>
+         <xsd:enumeration value="4"/>
+      </xsd:restriction>
+   </xsd:simpleType>
+   <xsd:simpleType name="phone-number">
+      <xsd:restriction base="xsd:string"/>
+   </xsd:simpleType>
+</xsd:schema>

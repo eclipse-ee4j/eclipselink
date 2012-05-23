@@ -1,0 +1,12 @@
+<xs:schema elementFormDefault="qualified" xmlns:ns0="http://www.example.org/emp" targetNamespace="http://www.example.org/emp" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:type="http://www.example.org/types">
+    <xs:complexType name="employee-type">
+        <xs:sequence>
+            <xs:element name="first-name" type="xs:string"/>
+	    <xs:element name="start-date" type="type:dateTime-Timestamp"/>
+	    <xs:element name="end-date" type="type:dateTime-Timestamp"/>
+	    <xs:element name="last-name" type="xs:string"/>
+	    <xs:element name="id" type="xs:int"/>
+	</xs:sequence>
+    </xs:complexType>
+    <xs:element name="employee" type="ns0:employee-type"/>
+</xs:schema>

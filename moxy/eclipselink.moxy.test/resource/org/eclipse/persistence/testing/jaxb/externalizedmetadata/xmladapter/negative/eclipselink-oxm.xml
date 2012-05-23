@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm">
+    <xml-java-type-adapters>
+        <xml-java-type-adapter value="invalid.class.name.1"/>
+    </xml-java-type-adapters>
+    <java-types>
+        <java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.negative.Customer">
+            <xml-root-element/>
+        </java-type>
+    </java-types>
+</xml-bindings>

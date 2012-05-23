@@ -1,0 +1,21 @@
+Manifest-Version: 1.0
+Export-Package: org.eclipse.persistence.jpa.jpql;version="2.0.0",
+ org.eclipse.persistence.jpa.jpql.model;version="2.0.0",
+ org.eclipse.persistence.jpa.jpql.model.query;version="2.0.0",
+ org.eclipse.persistence.jpa.jpql.parser;version="2.0.0",
+ org.eclipse.persistence.jpa.jpql.spi;version="2.0.0",
+ org.eclipse.persistence.jpa.jpql.spi.java;version="2.0.0",
+ org.eclipse.persistence.jpa.jpql.util;version="2.0.0",
+ org.eclipse.persistence.jpa.jpql.util.filter;version="2.0.0",
+ org.eclipse.persistence.jpa.jpql.util.iterator;version="2.0.0"
+Bundle-Name: EclipseLink Hermes Parser
+Created-By: 1.6.0_21 (Sun Microsystems Inc.)
+HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.jpa.j
+ pql
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-Vendor: Eclipse.org - EclipseLink Project
+Bundle-Version: 2.0.0.qualifier
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.eclipse.persistence.jpa.jpql
+Import-Package: javax.persistence;version="[1.1.0,3.0.0)"
+

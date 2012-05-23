@@ -1,0 +1,4 @@
+{"testTagName":{
+   "type":"stringArray",
+   "item":["theString","theString2","theString3"]
+}}

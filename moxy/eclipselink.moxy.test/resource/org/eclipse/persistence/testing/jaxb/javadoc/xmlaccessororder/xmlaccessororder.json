@@ -1,0 +1,7 @@
+{"employee":{
+ "firstName":"Jane",
+ "id":101,
+ "lastName":"Doe",
+ "salary":123000.0
+ }
+}

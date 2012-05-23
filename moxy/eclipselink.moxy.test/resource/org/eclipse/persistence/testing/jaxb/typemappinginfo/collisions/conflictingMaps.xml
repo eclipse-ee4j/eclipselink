@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<testTagName xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="objectObjectMap">
+   <entry>
+      <key xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="xsd:string">abc</key>
+      <value xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="xsd:int">123</value>
+   </entry>
+</testTagName>

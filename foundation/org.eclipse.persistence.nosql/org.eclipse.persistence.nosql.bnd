@@ -1,0 +1,18 @@
+Export-Package: org.eclipse.persistence*;version="${release.version}";-noimport:=true,
+Bundle-Name: EclipseLink NoSQL Extensions
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+HK2-Bundle-Name: org.eclipse.persistence:${ant.project.name}
+Bundle-Vendor: ${implementation.vendor}
+Fragment-Host: org.eclipse.persistence.core;bundle-version="${release.version}"
+Bundle-Version: ${version.string}
+Include-Resource:\
+ ${nosql.2.base.dir}/about.html,\
+ ${nosql.2.base.dir}/readme.html,\
+ ${nosql.2.base.dir}/license.html
+Import-Package:\
+ javax.naming;resolution:=optional,\
+ com.mongodb;resolution:=optional,\
+ org.bson;resolution:=optional,\
+ org.bson.types;resolution:=optional,\
+ javax.resource.*;version="1.5.0";resolution:=optional,\
+ org.eclipse.persistence.*;version="${release.version}", *

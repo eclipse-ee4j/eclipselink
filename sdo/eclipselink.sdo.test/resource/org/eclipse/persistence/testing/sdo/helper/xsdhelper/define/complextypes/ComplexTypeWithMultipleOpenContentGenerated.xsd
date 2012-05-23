@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<xsd:schema targetNamespace='http://www.example.org' xmlns='http://www.example.org' elementFormDefault='qualified' sdoJava:package="org.example" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sdoJava="commonj.sdo/java">
+   <xsd:import namespace="commonj.sdo/java"/>
+   <xsd:complexType name='myTestType5' mixed="true">
+      <xsd:choice maxOccurs='unbounded'>
+         <xsd:element name="test" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:element name="test2" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:any processContents="lax" maxOccurs="unbounded"/>
+      </xsd:choice>
+      <xsd:anyAttribute processContents="lax"/>
+   </xsd:complexType>
+   <xsd:complexType name='myTestType3' mixed="true">
+      <xsd:sequence>
+         <xsd:any processContents="lax" maxOccurs="unbounded"/>
+      </xsd:sequence>
+      <xsd:anyAttribute processContents="lax"/>
+   </xsd:complexType>
+   <xsd:complexType name='myTestType' mixed="true">
+      <xsd:sequence>
+         <xsd:any processContents="lax" maxOccurs="unbounded"/>
+      </xsd:sequence>
+      <xsd:anyAttribute processContents="lax"/>
+   </xsd:complexType>
+   <xsd:complexType name='myTestType4' mixed="true">
+      <xsd:choice maxOccurs='unbounded'>
+         <xsd:element name="test" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:element name="test2" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:any processContents="lax" maxOccurs="unbounded"/>
+      </xsd:choice>
+      <xsd:anyAttribute processContents="lax"/>
+   </xsd:complexType>
+   <xsd:complexType name='myTestType2' mixed="true">
+      <xsd:sequence>
+         <xsd:any processContents="lax" maxOccurs="unbounded"/>
+      </xsd:sequence>
+      <xsd:anyAttribute processContents="lax"/>
+   </xsd:complexType>
+   <xsd:element name="myTestType5" type="myTestType5"/>
+   <xsd:element name="myTestType3" type="myTestType3"/>
+   <xsd:element name="myTestType" type="myTestType"/>
+   <xsd:element name="myTestType4" type="myTestType4"/>
+   <xsd:element name="myTestType2" type="myTestType2"/>
+</xsd:schema>

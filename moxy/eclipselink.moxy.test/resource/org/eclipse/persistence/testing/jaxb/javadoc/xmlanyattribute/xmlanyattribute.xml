@@ -1,0 +1,4 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<xmlAnyAttributeModel ns0:any="blah" xmlns:ns0="www.example.com">
+   <title>A mixture of elements</title>
+</xmlAnyAttributeModel>

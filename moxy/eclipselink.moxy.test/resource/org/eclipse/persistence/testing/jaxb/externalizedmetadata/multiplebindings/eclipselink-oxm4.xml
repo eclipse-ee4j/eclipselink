@@ -1,0 +1,46 @@
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm"> 
+   <xml-schema attribute-form-default="QUALIFIED" element-form-default="UNQUALIFIED" namespace="">
+      <xml-ns namespace-uri="http://www.example.com/uriA" prefix="newPrefixA"/>
+      <xml-ns namespace-uri="http://www.example.com/uriB" prefix="prefixB"/>
+  </xml-schema>
+   <xml-enums>
+        <xml-enum java-enum="org.eclipse.persistence.testing.jaxb.externalizedmetadata.multiplebindings.simple.Department" value="java.lang.String">
+            <xml-enum-value java-enum-value="DEV">development</xml-enum-value>
+            <xml-enum-value java-enum-value="QA">quality assurance</xml-enum-value>
+            <xml-enum-value java-enum-value="HR">human resources</xml-enum-value>
+            <xml-enum-value java-enum-value="SUPPORT">technical support</xml-enum-value>
+        </xml-enum>
+   </xml-enums>
+   <java-types>
+      <java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.multiplebindings.simple.Employee">
+         <xml-root-element name="empRoot4"/>
+	     <java-attributes>
+	        <xml-element java-attribute="name" name="the_employee_name"/>
+	        <xml-attribute java-attribute="age"/>
+            <xml-element java-attribute="phone" xml-path="contact-info/thenumber"/>
+		  </java-attributes>
+         <xml-properties>
+                <xml-property name="7" value="G" />
+                <xml-property name="8" value="H"/>
+                <xml-property name="2" value="I"/>
+          </xml-properties>
+       </java-type>
+       <java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.multiplebindings.simple.Person">
+	      <xml-type name="person-type"/>
+	         <java-attributes>
+	             <xml-element java-attribute="id" name="the_id">
+				     <xml-properties>
+                        <xml-property name="1" value="A" />
+                        <xml-property name="2" value="66" value-type="java.lang.Integer" />
+                        <xml-property name="3" value="true" value-type="java.lang.Boolean" />
+                    </xml-properties>
+                 </xml-element>
+	         </java-attributes>
+	   </java-type>
+      <java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.multiplebindings.simple.Phone">
+     	 <java-attributes>
+	         <xml-element java-attribute="number" name="num"/>
+         </java-attributes>
+      </java-type>  
+	</java-types>
+</xml-bindings>

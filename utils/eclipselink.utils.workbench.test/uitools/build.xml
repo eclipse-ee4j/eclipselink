@@ -1,0 +1,167 @@
+<!--/*******************************************************************************
+* This program and the accompanying materials are made available under the 
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
+* which accompanies this distribution. 
+* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+* and the Eclipse Distribution License is available at 
+* http://www.eclipse.org/org/documents/edl-v10.php.
+*
+*   Ant naming conventions:
+*   - regardless of the actual OS platform,'/' is the directory separator
+*     (Ant will convert as appropriate).
+*   - multi-word properties use periods '.'
+*   - multi-word targets use hyphens '-' 
+*   - multi-word macros use underscores '_'
+*   - multi-word macro attributes are concatinated
+*     e.g. 'runpathref'  
+*   - multi-word tasks (taskdef) names are concatinated
+*     e.g. 'validateconnection'
+*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
+*     e.g. ${env.XXX}.
+*   - Ant properties are lower case.
+*
+* Contributors:
+*     Oracle - initial API and implementation
+#******************************************************************************/-->
+
+<project name="Build UITools Library Tests" default="build.all" basedir=".">
+    <!-- =================================================================== -->
+    <target name="init">
+        <tstamp>
+            <format property="build.date" pattern="yyyyMMdd"/>
+            <format property="build.time" pattern="HHmm"/>
+        </tstamp>
+        <property environment="env"/>
+
+        <property name="stop.on.error" value="false"/>
+        <property name="optimize.code"    value="off"/>
+        <property name="report.deprecation" value="off"/>
+        <property name="javac.debug"       value="on"/>
+        <property name="javac.debuglevel"  value="lines,vars,source"/>
+        <property name="target.jvm"   value="${javac.version}"/>
+        <property name="_nowarn"      value="on"/>
+        <echo message="BuildDate.BuildTime='${build.date}.${build.time}'"/>
+        <echo message="java.version='${java.version}'"/>
+        <echo message="os.name='${os.name}'"/>
+        <echo message="os.arch='${os.arch}'"/>
+        <echo message="os.version='${os.version}'"/>
+        <echo message="stop.on.error='${stop.on.error}'"/>
+        <echo message="optimize.code='${optimize.code}'"/>
+        <echo message="report.deprecation='${report.deprecation}'"/>
+        <echo message="target.jvm='${target.jvm}'"/>
+        <echo message="_nowarn='${_nowarn}'"/>
+    </target>
+
+    <!-- =================================================================== -->
+    <!-- =================================================================== -->
+
+    <target name="build-all" depends="compile-uitools, jar-uitools"/>
+
+    <!-- =================================================================== -->
+    <!--  Properties                                                         -->
+    <!-- =================================================================== -->
+    <target name="properties-init" depends="init">
+        <property file="build.properties"/>
+        <property name="build.type" value="SNAPSHOT"/>
+        <property name="release.designation" value="EclipseLink DeveloperBuild"/>
+        <property name="version.string" value="${release.version}.qualifier"/>
+        <mkdir dir="${_classesDestDir}"/>
+        <mkdir dir="${_jarDestDir}"/>
+        <condition property="junit.classpath.exist" >
+            <isset property="junit.classpath"/>
+        </condition>
+    </target>
+
+    <!-- =================================================================== -->
+    <!--  Clean                                                              -->
+    <!-- =================================================================== -->
+    <target name="clean" depends="init">
+        <property file="build.properties"/>
+
+        <delete dir="${_classesDestDir}" includeEmptyDirs="true" quiet="true"/>
+        <delete file="${_jarDestDir}/${uitools.jarfile}" quiet="true"/>
+        <delete file="${_jarDestDir}/${uitools.jarfile.src}" quiet="true"/>
+    </target>
+
+    <!-- =================================================================== -->
+    <!--  Compile                                                            -->
+    <!-- =================================================================== -->
+    <target name="compile-uitools" depends="properties-init">
+        <mkdir dir="${compile.uitools.destdir}"/>
+        <javac
+            classpath="${compile.uitools.classpath}"
+            srcdir="${compile.uitools.srcdir}"
+            destdir="${compile.uitools.destdir}"
+            debug="${javac.debug}"
+            debuglevel="${javac.debuglevel}"
+            failonerror="${stop.on.error}"
+            encoding="UTF-8"
+            optimize="${optimize.code}"
+            deprecation="${report.deprecation}"
+            source="${target.jvm}"
+            target="${target.jvm}"
+            nowarn="${_nowarn}"
+            includes="**/*.java"
+            excludes="**/*&#35;*/**, **/.ade_path/**"
+        />
+    </target>
+
+    <!-- =================================================================== -->
+    <!--  Jar                                                                -->
+    <!-- =================================================================== -->
+    <target name="jar-uitools" depends="jar-uitools-lib, jar-uitools-src"/>
+
+    <target name="jar-uitools-lib" depends="properties-init">
+        <delete file="${_jarDestDir}/${uitools.jarfile}"/>
+        <jar jarfile="${_jarDestDir}/${uitools.jarfile}">
+            <manifest>
+                <attribute name="Specification-Title" value="EclipseLink UITools Tests" />
+                <attribute name="Specification-Vendor" value="Eclipse Project" />
+                <attribute name="Specification-Version" value="${release.version}" />
+                <attribute name="Implementation-Title" value="test.org.eclipse.persistence.workbench.uitools" />
+                <attribute name="Implementation-Version" value="${version.string}"/>
+                <attribute name="Implementation-Vendor" value="Eclipse Project" />
+            </manifest>
+            <fileset
+                dir="${compile.uitools.destdir}"
+                includes="**/*.class"
+            />
+        </jar>
+    </target>
+    <target name="jar-uitools-src" depends="properties-init">
+        <delete file="${_jarDestDir}/${uitools.jarfile.src}"/>
+        <jar jarfile="${_jarDestDir}/${uitools.jarfile.src}">
+            <manifest>
+                <attribute name="Specification-Title" value="EclipseLink UITools Tests" />
+                <attribute name="Specification-Vendor" value="Eclipse Project" />
+                <attribute name="Specification-Version" value="${release.version}" />
+                <attribute name="Implementation-Title" value="test.org.eclipse.persistence.workbench.uitools" />
+                <attribute name="Implementation-Version" value="${version.string}"/>
+                <attribute name="Implementation-Vendor" value="Eclipse Project" />
+            </manifest>
+            <fileset
+                dir="${compile.uitools.srcdir}"
+                includes="**/*.java"
+                excludes="**/*&#35;*/**, **/.ade_path/**"
+            />
+        </jar>
+    </target>
+
+    <!-- =================================================================== -->
+    <!--  JUnit tests - run this target from the master build project only.  -->
+    <!-- =================================================================== -->
+
+    <target name="checkClasspath" depends="properties-init" unless="junit.classpath.exist">
+      <echo message="Run the test-all target from the master build project only." />
+        <fail>Run the master build project</fail>
+    </target>
+
+    <target name="test-all" depends="checkClasspath">
+        <junit>
+            <classpath path="${junit.classpath}" />
+            <formatter type="brief" usefile="false" />
+            <test name="test.org.eclipse.persistence.workbench.uitools.AllUIToolsTests" />
+        </junit>
+    </target>
+
+</project>

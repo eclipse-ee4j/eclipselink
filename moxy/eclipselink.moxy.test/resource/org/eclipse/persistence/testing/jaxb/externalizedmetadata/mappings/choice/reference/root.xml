@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+    <client id="c100">
+        <mail id="a101">
+            <type>home</type>
+        </mail>
+    </client>
+    <client id="c200">
+        <phone id="p100">
+            <type>cell</type>
+        </phone>
+    </client>
+
+    <address aid="a100" type="shipping">123 Some Street</address>
+    <address aid="a101" type="home">66 Dead End Rd.</address>
+    <address aid="a101" type="work">45 O'Connor St.</address>
+    <address aid="a101" type="billing">101 Metcalfe St.</address>
+    <address aid="a102" type="home">61 McClintock Way</address>
+
+    <phone-number pid="p100" type="work">613.288.6789</phone-number>
+    <phone-number pid="p100" type="cell">613.858.6789</phone-number>
+    <phone-number pid="p101" type="home">613.288.0000</phone-number>
+    <phone-number pid="p101" type="work">613.420.1212</phone-number>
+
+    <publicCompany id="1001">
+        <name>Oracle Corporation</name>
+        <stockSymbol>ORCL</stockSymbol>
+    </publicCompany>
+    <publicCompany id="1002">
+        <name>Intel Corporation</name>
+        <stockSymbol>INTC</stockSymbol>
+    </publicCompany>
+</root>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns0="myns" xmlns:xml="http://www.w3.org/XML/1998/namespace" targetNamespace="myns">
+   <xsd:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="http://www.w3.org/XML/1998/xml.xsd"/>
+   <xsd:complexType name="address">
+      <xsd:sequence>
+         <xsd:element minOccurs="0" name="street" type="xsd:string"/>
+      </xsd:sequence>
+      <xsd:attribute ref="xml:lang"/>
+   </xsd:complexType>
+   <xsd:element name="address" type="ns0:address"/>
+</xsd:schema>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema elementFormDefault="qualified" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:element name="nillable-test-object">
+      <xsd:complexType>
+         <xsd:sequence>
+            <xsd:element name="direct" type="xsd:string" minOccurs="0" nillable="true"/>
+            <xsd:element name="directCollection" type="xsd:string" minOccurs="0" maxOccurs="unbounded" nillable="true"/>
+            <xsd:element name="compositeObject" minOccurs="0" nillable="true">
+               <xsd:complexType>
+                  <xsd:sequence>
+                     <xsd:element name="value" type="xsd:string" minOccurs="0"/>
+                  </xsd:sequence>
+               </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="compositeCollection" minOccurs="0" maxOccurs="unbounded" nillable="true">
+               <xsd:complexType>
+                  <xsd:sequence>
+                     <xsd:element name="value" type="xsd:string" minOccurs="0"/>
+                  </xsd:sequence>
+               </xsd:complexType>
+            </xsd:element>
+         </xsd:sequence>
+      </xsd:complexType>
+   </xsd:element>
+</xsd:schema>

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:ns0="http://test2.org" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://test2.org">
+   <xsd:complexType name="bar"/>
+</xsd:schema>

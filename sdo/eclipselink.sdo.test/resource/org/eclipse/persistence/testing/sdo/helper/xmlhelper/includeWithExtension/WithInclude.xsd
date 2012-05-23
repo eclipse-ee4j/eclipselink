@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="my.uri" xmlns="my.uri" elementFormDefault="qualified" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:import schemaLocation="Included.xsd" namespace="my.uri"/>
+   <xsd:complexType name="Root">
+      <xsd:sequence>
+         <xsd:element name="aaa" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="bbb" type="xsd:string" minOccurs="0"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="root" type="Root"/>
+</xsd:schema>

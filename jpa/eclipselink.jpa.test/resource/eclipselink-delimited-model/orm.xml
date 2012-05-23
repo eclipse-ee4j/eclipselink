@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings version="1.0" xmlns="http://java.sun.com/xml/ns/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm orm_1_0.xsd">
+    <description>Mapping Document containing persistence unit metadata.
+                 Do not provide any class specific mapping information here.</description>
+    <persistence-unit-metadata>
+        <persistence-unit-defaults>
+            <delimited-identifiers/>
+        </persistence-unit-defaults>
+    </persistence-unit-metadata>
+    <entity name="PhoneNumber" class="org.eclipse.persistence.testing.models.jpa.delimited.PhoneNumber" access="PROPERTY" metadata-complete="true">
+      <table name="CMP_DEL_PHONENUMBER"/>
+      <id-class class="org.eclipse.persistence.testing.models.jpa.delimited.PhoneNumberPK"/>
+      <attributes>
+            <id name="id">
+                <column name="OWNER_ID" insertable="false" updatable="false"/>
+            </id>
+            <id name="type">
+                <column name="TYPE"/>
+            </id>
+            <basic name="number">
+                <column name="NUMB"/>
+            </basic>
+             <basic name="areaCode"/>
+            <many-to-one name="owner" target-entity="org.eclipse.persistence.testing.models.jpa.delimited.Employee">
+                <join-column name="OWNER_ID" referenced-column-name="EMP_ID"/>
+            </many-to-one>
+      </attributes>
+    </entity>
+</entity-mappings>

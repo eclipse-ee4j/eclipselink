@@ -1,0 +1,21 @@
+{"employee":{
+   "@name":"John Doe",
+   "home-address":{
+       "street":"123 Fake Street",
+       "city":"Ottawa",
+       "country":"Canada"
+       },    
+      "address":[{
+          "street":"123 Fake Street",
+	  "city":"Ottawa",
+	  "country":"Canada"
+      },
+      {
+          "street":"123 Fake Street",
+	  "city":"Ottawa",
+	  "country":"Canada"
+      }
+      ],
+      "jb1":["abc","def",15],
+      "jb2":[10]
+ }}

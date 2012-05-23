@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ns0:root xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ns0="rootNamespace" xmlns:ns1="someNamespace" xmlns:ns2="anotherNamespace" xmlns:ns3="someNamespaceLevel2" xmlns:ns4="uri3" xmlns:ns5="uri1">
+    <baseTypeThing xsi:type="ns1:subType">
+		<ns5:subTypeProp>10</ns5:subTypeProp>
+	</baseTypeThing>
+		<baseTypeList xsi:type="ns1:subType">
+   	    <ns5:subTypeProp>10</ns5:subTypeProp>
+  	</baseTypeList>
+	<baseTypeList xsi:type="ns2:anotherSubType">
+	</baseTypeList>
+	<baseTypeList xsi:type="ns3:subTypeLevel2">
+	    <ns5:baseProp>boo</ns5:baseProp>
+   	    <ns5:subTypeProp>0</ns5:subTypeProp>
+	</baseTypeList>
+	<baseTypeList xsi:type="ns1:subType">
+    	<ns5:subTypeProp>10</ns5:subTypeProp>
+	</baseTypeList>
+    <baseTypeList xsi:type="ns4:anotherPackageSubType">
+		<ns5:subTypeProp>0</ns5:subTypeProp>
+    </baseTypeList>
+    <objectList xsi:type="ns1:subType">
+		<ns5:subTypeProp>10</ns5:subTypeProp>
+	</objectList>
+	<objectList xsi:type="ns2:anotherSubType">
+	</objectList>
+	<objectList xsi:type="ns3:subTypeLevel2">
+	    <ns5:baseProp>boo</ns5:baseProp>
+    	<ns5:subTypeProp>0</ns5:subTypeProp>
+	</objectList>
+	<objectList xsi:type="ns1:subType">
+    	<ns5:subTypeProp>10</ns5:subTypeProp>
+	</objectList>
+	<objectList xsi:type="ns4:anotherPackageSubType">
+		<ns5:subTypeProp>0</ns5:subTypeProp>
+	</objectList>
+	<objectList xsi:type="xsd:string">string test</objectList>
+	<objectList xsi:type="xsd:int">500</objectList>
+	<choice>
+	    <another-package-subtype-choice>
+    		<ns5:subTypeProp>0</ns5:subTypeProp>
+		</another-package-subtype-choice>
+		<subtype-level2-choice>
+    		<ns5:baseProp>boo</ns5:baseProp>
+	    	<ns5:subTypeProp>0</ns5:subTypeProp>
+		</subtype-level2-choice>
+		<string-choice>choice string test</string-choice>
+		<integer-choice>500</integer-choice>
+	</choice>
+</ns0:root>

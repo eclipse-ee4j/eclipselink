@@ -1,0 +1,45 @@
+Export-Package: org.eclipse.persistence*;version="${version.string}";-noimport:=true,
+Bundle-ClassPath: .
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.core
+Require-Bundle:\
+ org.eclipse.persistence.antlr;bundle-version="${release.version}";resolution:=optional,\
+ org.eclipse.persistence.asm;bundle-version="${release.version}";resolution:=optional
+Implementation-Vendor: ${implementation.vendor}
+Implementation-Version: ${version.string}
+Specification-Vendor: ${specification.vendor}
+Bundle-Name: EclipseLink Core
+Premain-Class: org.eclipse.persistence.internal.jpa.deployment.JavaSECMPInitializerAgent
+Eclipse-ExtensibleAPI: true
+Bundle-Vendor: ${implementation.vendor}
+Bundle-Version: ${version.string}
+Include-Resource:\
+ ${core.2.base.dir}/about.html,\
+ ${core.2.base.dir}/readme.html,\
+ ${core.2.base.dir}/license.html,\
+ org/eclipse/persistence/eclipselink_persistence_map_2.3.xsd=resource/org/eclipse/persistence/eclipselink_persistence_map_1.0.xsd,\
+ org/eclipse/persistence/eclipselink_persistence_map_2.3.xsd=resource/org/eclipse/persistence/eclipselink_persistence_map_2.3.xsd,\
+ org/eclipse/persistence/eclipselink_sessions_2.1.xsd=resource/org/eclipse/persistence/eclipselink_sessions_2.1.xsd,\
+ org/eclipse/persistence/toplink-object-persistence_11_1_1.xsd=resource/org/eclipse/persistence/toplink-object-persistence_11_1_1.xsd,\
+ org/eclipse/persistence/internal/helper/VendorNameToPlatformMapping.properties=resource/org/eclipse/persistence/internal/helper/VendorNameToPlatformMapping.properties
+Import-Package:\
+ javax.activation.*;resolution:=optional,\
+ javax.crypto.*;resolution:=optional,\
+ javax.imageio.*;resolution:=optional,\
+ javax.jms.*;resolution:=optional;version="1.1.0",\
+ javax.mail;resolution:=optional,\
+ javax.mail.*;resolution:=optional,\
+ javax.management.*;resolution:=optional,\
+ javax.naming.*;resolution:=optional,\
+ javax.persistence.*;resolution:=optional;version="1.1.0";jpa="2.0",\
+ javax.rmi.*;resolution:=optional,\
+ javax.sql.*;resolution:=optional,\
+ javax.resource.*;resolution:=optional;version="1.5.0",\
+ javax.transaction.*;resolution:=optional;version="1.1.0",\
+ javax.xml.*;resolution:=optional,\
+ org.eclipse.persistence.internal.libraries.antlr.*;resolution:=optional,\
+ org.eclipse.persistence.internal.libraries.asm.*;resolution:=optional,\
+ org.omg.CORBA*;resolution:=optional,\
+ org.w3c.*;resolution:=optional,\
+ org.xml.sax.*;resolution:=optional, *
+Specification-Version: ${release.version}

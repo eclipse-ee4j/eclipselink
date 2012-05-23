@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns0:root xsi:type="ns0:Team" xmlns:ns0="http://www.example.org" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <ns0:manager>
+      <ns0:id>123</ns0:id>
+      <ns0:name>New name</ns0:name>
+      <ns0:previousLastNames>Doe Smith</ns0:previousLastNames>
+      <ns0:address>
+         <ns0:street>the street</ns0:street>
+         <ns0:city>the city</ns0:city>
+         <ns0:province>the province</ns0:province>
+      </ns0:address>
+      <ns0:phone>
+         <ns0:number>1234567</ns0:number>
+      </ns0:phone>
+      <ns0:phone>
+         <ns0:number>2345678</ns0:number>
+      </ns0:phone>
+      <ns0:phone>
+         <ns0:number>3456789</ns0:number>
+      </ns0:phone>
+      <ns0:phone>
+         <ns0:number>4567890</ns0:number>
+      </ns0:phone>
+   </ns0:manager>
+   <ns0:myChangeSummary xmlns:sdo="commonj.sdo">
+      <ns0:manager sdo:ref="#/ns0:root/ns0:manager" sdo:unset="id address previousLastNames phone">
+         <ns0:name>Old Name</ns0:name>
+      </ns0:manager>
+   </ns0:myChangeSummary>
+</ns0:root>

@@ -1,0 +1,4 @@
+<testObject stringA="stringADefault" enumA="1"> 
+   <stringB>stringBDefault</stringB>
+   <enumB>2</enumB>
+</testObject>

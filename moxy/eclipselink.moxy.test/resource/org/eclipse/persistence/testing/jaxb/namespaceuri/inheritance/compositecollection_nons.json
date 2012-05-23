@@ -1,0 +1,25 @@
+{"root":{
+     "baseTypeList":[
+       {
+          "type":"subType",
+ 	  "subTypeProp":10
+       },
+       {
+          "type":"anotherSubType"
+       },
+       {
+          "type":"subTypeLevel2",
+ 	  "baseProp":"boo",
+ 	  "subTypeProp":0
+       },
+       {
+          "type":"subType",
+ 	  "subTypeProp":10
+       },
+       {
+          "type":"anotherPackageSubType",
+ 	  "subTypeProp":0
+       }
+
+     ]
+}}

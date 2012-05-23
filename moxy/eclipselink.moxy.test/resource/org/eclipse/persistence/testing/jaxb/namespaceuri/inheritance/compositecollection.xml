@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ns0:root xmlns:ns0="rootNamespace" xmlns:ns5="uri1">  
+	<baseTypeList xmlns:ns1="someNamespace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns1:subType">
+   	    <ns5:subTypeProp>10</ns5:subTypeProp>
+  	</baseTypeList>
+	<baseTypeList xmlns:ns2="anotherNamespace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns2:anotherSubType">
+	</baseTypeList>
+	<baseTypeList xmlns:ns3="someNamespaceLevel2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns3:subTypeLevel2">
+	    <ns5:baseProp>boo</ns5:baseProp>
+   	    <ns5:subTypeProp>0</ns5:subTypeProp>
+	</baseTypeList>
+	<baseTypeList xmlns:ns1="someNamespace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns1:subType">
+    	<ns5:subTypeProp>10</ns5:subTypeProp>
+	</baseTypeList>
+    <baseTypeList xmlns:ns4="uri3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns4:anotherPackageSubType">
+		<ns5:subTypeProp>0</ns5:subTypeProp>
+    </baseTypeList>  
+</ns0:root>

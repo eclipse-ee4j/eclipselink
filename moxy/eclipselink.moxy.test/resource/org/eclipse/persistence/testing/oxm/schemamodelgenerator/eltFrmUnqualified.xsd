@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:ref="http://ws-i.org/profiles/basic/1.1/xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <xsd:import namespace="http://ws-i.org/profiles/basic/1.1/xsd" schemaLocation="http://ws-i.org/profiles/basic/1.1/swaref.xsd" />
+   <xsd:complexType name="phone-number-type">
+      <xsd:sequence>
+         <xsd:element name="number" type="xsd:string" minOccurs="0"/>
+      </xsd:sequence>
+      <xsd:anyAttribute processContents="lax"/>
+   </xsd:complexType>
+   <xsd:complexType name="address-type">
+      <xsd:sequence>
+         <xsd:element name="street" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="city" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="country" type="xsd:string" minOccurs="0"/>
+         <xsd:any processContents="lax" minOccurs="0"/>
+         <xsd:element name="occupant" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:sequence>
+      <xsd:attribute name="aid" type="xsd:int"/>
+      <xsd:attribute name="postal-code" type="xsd:string"/>
+   </xsd:complexType>
+   <xsd:complexType name="employee-type">
+      <xsd:sequence>
+         <xsd:element name="name" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="address" type="address-type" minOccurs="0"/>
+         <xsd:element name="phone-numbers" type="phone-number-type" minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:element name="project-id" type="xsd:decimal" minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:any processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+         <xsd:element name="bill-address-city" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="data" type="ref:swaRef" minOccurs="0" xmlns:ns0="http://www.w3.org/2005/05/xmlmime" ns0:expectedContentTypes="application/binary"/>
+         <xsd:element name="bytes" type="xsd:base64Binary" minOccurs="0" maxOccurs="unbounded" xmlns:ns1="http://www.w3.org/2005/05/xmlmime" ns1:expectedContentTypes="text/plain"/>
+         <xsd:element name="aUrl" type="xsd:anyURI" minOccurs="0"/>
+      </xsd:sequence>
+      <xsd:attribute name="bill-address-id" type="xsd:int"/>
+   </xsd:complexType>
+   <xsd:element name="address" type="address-type"/>
+   <xsd:element name="employee" type="employee-type"/>
+   <xsd:element name="phone-number" type="phone-number-type"/>
+</xsd:schema>

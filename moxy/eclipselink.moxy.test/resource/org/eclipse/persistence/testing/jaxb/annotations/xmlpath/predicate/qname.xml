@@ -1,0 +1,5 @@
+<root>
+    <qname classifier="single">LOCAL_ONE</qname>
+    <qname classifier="many">LOCAL_TWO</qname>
+    <qname classifier="many">LOCAL_THREE</qname>
+</root>

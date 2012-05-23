@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<my-data>
+    <bytes>
+        <xop:Include href="c_id0" xmlns:xop="http://www.w3.org/2004/08/xop/include"/>
+    </bytes>
+    <data>
+        <xop:Include href="c_id1" xmlns:xop="http://www.w3.org/2004/08/xop/include"/>
+    </data>
+</my-data>

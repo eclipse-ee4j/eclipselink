@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<object-persistence version="" xmlns="http://www.eclipse.org/eclipselink/xsds/persistence" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+   <name>DeploymentXML Schema Generation Tests</name>
+   <class-mapping-descriptors>
+      <class-mapping-descriptor xsi:type="xml-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.oxm.schemamodelgenerator.mappings.pathbased.Address</class>
+         <alias>Address</alias>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="xml-direct-mapping">
+               <attribute-name>street</attribute-name>
+               <field name="street[1]/text()" xsi:type="node"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="xml-direct-mapping">
+               <attribute-name>suite</attribute-name>
+               <field name="street[2]/text()" xsi:type="node"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="xml-direct-mapping">
+               <attribute-name>city</attribute-name>
+               <get-method>getCity</get-method>
+               <set-method>setCity</set-method>
+               <field name="city/text()" xsi:type="node"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="xml-direct-mapping">
+               <attribute-name>province</attribute-name>
+               <get-method>getProvince</get-method>
+               <set-method>setProvince</set-method>
+               <field name="state/text()" xsi:type="node"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="xml-direct-mapping">
+               <attribute-name>postalCode</attribute-name>
+               <get-method>getPostalCode</get-method>
+               <set-method>setPostalCode</set-method>
+               <field name="zip-code/text()" xsi:type="node"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>aggregate</descriptor-type>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <namespace-resolver>
+            <namespaces>
+               <namespace>
+                  <prefix>ns1</prefix>
+                  <namespace-uri>http://www.example.org/customer-example</namespace-uri>
+               </namespace>
+            </namespaces>
+         </namespace-resolver>
+         <schema xsi:type="schema-file-reference">
+            <resource>..\config\Customer.xsd</resource>
+            <schema-context>/ns1:address-type</schema-context>
+            <node-type>complex-type</node-type>
+         </schema>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="xml-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.oxm.schemamodelgenerator.mappings.pathbased.Customer</class>
+         <alias>Customer</alias>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="xml-direct-mapping">
+               <attribute-name>firstName</attribute-name>
+               <get-method>getFirstName</get-method>
+               <set-method>setFirstName</set-method>
+               <field name="personal-info/first-name/text()" xsi:type="node"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="xml-direct-mapping">
+               <attribute-name>lastName</attribute-name>
+               <field name="personal-info/last-name/text()" xsi:type="node"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="xml-direct-mapping">
+               <attribute-name>gender</attribute-name>
+               <get-method>getGender</get-method>
+               <set-method>setGender</set-method>
+               <field name="personal-info/ns1:gender/text()" xsi:type="node"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="xml-composite-object-mapping">
+               <attribute-name>billingAddress</attribute-name>
+               <get-method>getBillingAddress</get-method>
+               <set-method>setBillingAddress</set-method>
+               <reference-class>org.eclipse.persistence.testing.oxm.schemamodelgenerator.mappings.pathbased.Address</reference-class>
+               <field name="ns1:contact-info/billing-address" xsi:type="node"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="xml-composite-object-mapping">
+               <attribute-name>shippingAddress</attribute-name>
+               <get-method>getShippingAddress</get-method>
+               <set-method>setShippingAddress</set-method>
+               <reference-class>org.eclipse.persistence.testing.oxm.schemamodelgenerator.mappings.pathbased.Address</reference-class>
+               <field name="ns1:contact-info/shipping-address" xsi:type="node"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="xml-composite-collection-mapping">
+               <attribute-name>phoneNumbers</attribute-name>
+               <get-method>getPhoneNumbers</get-method>
+               <set-method>setPhoneNumbers</set-method>
+               <reference-class>org.eclipse.persistence.testing.oxm.schemamodelgenerator.mappings.pathbased.PhoneNumber</reference-class>
+               <field name="ns1:contact-info/ns1:phone-number" xsi:type="node"/>
+               <container xsi:type="list-container-policy">
+                  <collection-type>java.util.Vector</collection-type>
+               </container>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="xml-composite-direct-collection-mapping">
+               <attribute-name>stuff</attribute-name>
+               <field name="things/stuff/text()" xsi:type="node"/>
+               <container xsi:type="list-container-policy">
+                  <collection-type>java.util.List</collection-type>
+               </container>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>aggregate</descriptor-type>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <default-root-element>ns1:customer</default-root-element>
+         <default-root-element-field name="ns1:customer" xsi:type="node">
+            <leaf-element-type>ns1:customer-type</leaf-element-type>
+         </default-root-element-field>
+         <namespace-resolver>
+            <namespaces>
+               <namespace>
+                  <prefix>ns1</prefix>
+                  <namespace-uri>http://www.example.org/customer-example</namespace-uri>
+               </namespace>
+            </namespaces>
+         </namespace-resolver>
+         <schema xsi:type="schema-file-reference">
+            <resource>..\config\Customer.xsd</resource>
+            <schema-context>/ns1:customer-type</schema-context>
+            <node-type>complex-type</node-type>
+         </schema>
+      </class-mapping-descriptor>
+      <class-mapping-descriptor xsi:type="xml-class-mapping-descriptor">
+         <class>org.eclipse.persistence.testing.oxm.schemamodelgenerator.mappings.pathbased.PhoneNumber</class>
+         <alias>PhoneNumber</alias>
+         <events xsi:type="event-policy"/>
+         <querying xsi:type="query-policy"/>
+         <attribute-mappings>
+            <attribute-mapping xsi:type="xml-direct-mapping">
+               <attribute-name>numberType</attribute-name>
+               <get-method>getNumberType</get-method>
+               <set-method>setNumberType</set-method>
+               <field name="@number-type" xsi:type="node"/>
+            </attribute-mapping>
+            <attribute-mapping xsi:type="xml-direct-mapping">
+               <attribute-name>number</attribute-name>
+               <get-method>getNumber</get-method>
+               <set-method>setNumber</set-method>
+               <field name="text()" xsi:type="node"/>
+            </attribute-mapping>
+         </attribute-mappings>
+         <descriptor-type>aggregate</descriptor-type>
+         <instantiation/>
+         <copying xsi:type="instantiation-copy-policy"/>
+         <namespace-resolver>
+            <namespaces>
+               <namespace>
+                  <prefix>ns1</prefix>
+                  <namespace-uri>http://www.example.org/customer-example</namespace-uri>
+               </namespace>
+            </namespaces>
+         </namespace-resolver>
+         <schema xsi:type="schema-file-reference">
+            <resource>..\config\Customer.xsd</resource>
+            <schema-context>/ns1:phone-number</schema-context>
+            <node-type>element</node-type>
+         </schema>
+      </class-mapping-descriptor>
+   </class-mapping-descriptors>
+   <login xsi:type="xml-login">
+      <platform-class>oracle.toplink.ox.platform.SAXPlatform</platform-class>
+      <user-name></user-name>
+      <password></password>
+   </login>
+</object-persistence>

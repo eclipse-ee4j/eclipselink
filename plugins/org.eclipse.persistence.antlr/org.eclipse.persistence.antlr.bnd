@@ -1,0 +1,16 @@
+Export-Package: org.eclipse.persistence*;version="${version.string}";-noimport:=true,
+Implementation-Version: ${version.string}
+Specification-Vendor: 
+Bundle-Name: EclipseLink ANTLR
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.antlr
+Implementation-Vendor: ${implementation.vendor}
+Bundle-Vendor: ${implementation.vendor}
+Bundle-Version: ${version.string}
+Include-Resource:\
+ ${antlr.2.base.dir}/about.html,\
+ ${antlr.2.base.dir}/readme.html,\
+ ${antlr.2.base.dir}/license.html
+Import-Package: org.antlr.stringtemplate.*;resolution:=optional, *
+Specification-Version: 
+

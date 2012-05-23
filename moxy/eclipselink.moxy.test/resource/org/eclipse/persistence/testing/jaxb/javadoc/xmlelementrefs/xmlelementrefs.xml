@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<purchaseOrder>
+<air-transport airliner="Air Canada">
+<transportTypeID>101</transportTypeID>
+<transportCost>123.99</transportCost>
+</air-transport></purchaseOrder>
+

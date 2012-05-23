@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns0="http://www.example.com/projects" targetNamespace="http://www.example.com/projects">
+   <xsd:element name="project">
+      <xsd:complexType>
+         <xsd:sequence>
+            <xsd:element minOccurs="0" name="name" type="xsd:string"/>
+         </xsd:sequence>
+         <xsd:attribute ref="ns0:managerId"/>
+      </xsd:complexType>
+   </xsd:element>
+   <xsd:attribute name="managerId" type="xsd:int"/>
+</xsd:schema>

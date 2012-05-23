@@ -1,0 +1,56 @@
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence persistence_1_0.xsd" version="1.0">
+    <persistence-unit name="fieldaccess" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <mapping-file>META-INF/static-ref-orm.xml</mapping-file>
+        <!-- exclude-unlisted-classes>false</exclude-unlisted-classes-->
+        <properties>
+            <property name="javax.persistence.lock.timeout" value="5"/>
+            <!--This property is added to test 'querytimeout' property and test is
+                implemented in 'EntityManagerJUnitTestSuite.testQueryTimeOut()'-->
+            <property name="javax.persistence.query.timeout" value="100"/>
+            <!--property name="javax.persistence.jdbc.driver" value="TEST_DRIVER_CLASS"/>
+            <property name="javax.persistence.jdbc.url" value="TEST_DATABASE_URL"/>
+            <property name="javax.persistence.jdbc.user" value="TEST_DATABASE_USER"/>
+            <property name="javax.persistence.jdbc.password" value="TEST_DATABASE_PASSWORD"/-->
+            <property name="eclipselink.jdbc.read-connections.shared" value="true"/>
+            <property name="eclipselink.jdbc.write-connections.min" value="3"/>
+            <property name="eclipselink.jdbc.write-connections.max" value="8"/>
+            <property name="eclipselink.jdbc.read-connections.min" value="3"/>
+            <property name="eclipselink.jdbc.read-connections.max" value="3"/>
+            <property name="eclipselink.cache.size.default" value="500"/>
+            <property name="eclipselink.cache.size.Employee" value="550"/>
+            <property name="eclipselink.cache.size.org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Address" value="555"/>
+            <property name="eclipselink.cache.type.default" value="Full"/>
+            <property name="eclipselink.cache.type.Employee" value="Weak"/>
+            <property name="eclipselink.cache.type.org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Address" value="HardWeak"/>
+            <property name="eclipselink.cache.type.org.eclipse.persistence.testing.models.jpa.advanced.NoIdentityMap" value="None"/>
+            <property name="eclipselink.session.customizer" value="org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Customizer"/>
+            <property name="eclipselink.descriptor.customizer.Employee" value="org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Customizer"/>
+            <property name="eclipselink.descriptor.customizer.org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Address" value="org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Customizer"/>
+            <property name="eclipselink.logging.level" value="INFO"/>
+            <property name="eclipselink.logging.timestamp" value="false"/>
+            <property name="eclipselink.orm.throw.exceptions" value="false"/>
+            <!--property name="eclipselink.ddl-generation" value="drop-and-create-tables"/-->
+            <property name="eclipselink.validate-existence" value="true"/>
+            <property name="eclipselink.orm.validate.schema" value="true"/>
+            <property name="eclipselink.cache.shared.org.eclipse.persistence.testing.models.jpa.fieldaccess.relationships.IsolatedItem" value="false"/>
+        </properties>
+    </persistence-unit>
+
+	<persistence-unit name="negative1">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <!--exclude-unlisted-classes>false</exclude-unlisted-classes-->
+        <properties>
+            <property name="eclipselink.jdbc.driver" value="TEST_DRIVER_CLASS"/>
+            <property name="eclipselink.jdbc.url" value="TEST_DATABASE_URL"/>
+            <property name="eclipselink.jdbc.user" value="TEST_DATABASE_USER"/>
+            <property name="eclipselink.jdbc.password" value="TEST_DATABASE_PASSWORD"/>
+            <property name="eclipselink.logging.level" value="OFF"/>
+        </properties>
+    </persistence-unit>
+
+	<persistence-unit name="negative2" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <!--exclude-unlisted-classes>false</exclude-unlisted-classes-->
+    </persistence-unit>
+</persistence>

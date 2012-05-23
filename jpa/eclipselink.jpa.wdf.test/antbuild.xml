@@ -1,0 +1,462 @@
+<?xml version="1.0"?>
+<!--/*******************************************************************************
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+* which accompanies this distribution.
+* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+* and the Eclipse Distribution License is available at
+* http://www.eclipse.org/org/documents/edl-v10.php.
+*
+*   Ant naming conventions:
+*   - regardless of the actual OS platform,'/' is the directory separator
+*     (Ant will convert as appropriate).
+*   - multi-word properties use periods '.'
+*     - properties ending in .jar define jarfile names only (no path)
+*     - properties ending in .lib are fully qualified jars (path and filename)
+*     - properties ending in .dir are directory paths
+*     - properties ending in .path are path refid names or explicit classpath fragments
+*   - multi-word targets use hyphens '-'
+*     - targets beginning with test- are reserved for high level test targets,
+*       and are used in test results parsing
+*     - targets typically use the form <action>-<object>-<type> (ie. package-bundle-zip)
+*   - multi-word macros use underscores '_'
+*   - multi-word macro attributes are concatinated
+*     e.g. 'runpathref'
+*   - multi-word tasks (taskdef) names are concatinated
+*     e.g. 'validateconnection'
+*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
+*     e.g. ${env.XXX}.
+*   - Ant properties are lower case.
+*
+* Contributors:
+*     tware -  initial API and implementation
+*     egwin    Update and add to nightly process.
+*     agoerler prepare for server-tests
+#******************************************************************************/-->
+
+<!-- This ant project includes the following tasks:
+        - build (default) : compiles all JPA tests, packages test jars
+        - compile : compiles all JPA tests
+        - package : jars JPA persistent units and tests jars
+        - test : runs als JPA WDF tests
+
+        It requires some configuration of the build.properties and test.properties to run.
+    -->
+<project name="eclipselink.jpa.wdf.test" default="build" basedir=".">
+    <available file="../${ant.project.name}" type="dir" property="wdf_test.is.local"/>
+    <fail message="Not running from '${ant.project.name}' directory" unless="wdf_test.is.local"/>
+
+    <dirname  property="wdf_test.build.location_temp" file="${ant.file.eclipselink.jpa.wdf.test}"/>
+    <pathconvert targetos="unix" property="wdf_test.build.location">
+        <path>
+            <pathelement location="${wdf_test.build.location_temp}"/>
+        </path>
+    </pathconvert>
+    <echo message="wdf_test.build.location = '${wdf_test.build.location}'"/>
+    <condition property="wdf_test.2.trunk.dir" value="../.." else="..">
+        <contains string="${wdf_test.build.location}" substring="jpa/${ant.project.name}"/>
+    </condition>
+    <echo message="wdf_test.2.trunk.dir = '${wdf_test.2.trunk.dir}'"/>
+    <property name="wdf_test.2.common.plugins.dir" value="${wdf_test.2.trunk.dir}/plugins"/>
+    <property name="wdf_test.2.jpa.plugins.dir"    value="${wdf_test.2.trunk.dir}/jpa/plugins"/>
+    <property name="wdf_test.2.core.dir"           value="${wdf_test.2.trunk.dir}/foundation/org.eclipse.persistence.core"/>
+    <property name="wdf_test.2.jpa.dir"            value="${wdf_test.2.trunk.dir}/jpa/org.eclipse.persistence.jpa"/>
+    <property name="wdf_test.2.moxy.dir"           value="${wdf_test.2.trunk.dir}/moxy/org.eclipse.persistence.moxy"/>
+    <property name="wdf_test.2.core.test.dir"      value="${wdf_test.2.trunk.dir}/foundation/eclipselink.core.test"/>
+    <property name="wdf_test.2.jpa.test"           value="${wdf_test.build.location}/../eclipselink.jpa.test"/>
+    <property name="eclipselink.jpa.test" value="${wdf_test.2.jpa.test}"/>
+    <property name="env" environment="env"         value="env"/>
+
+    <!-- Allows a user to overide certain user specific properties. -->
+    <property file="${user.home}/build.properties"/>
+    <property file="${user.home}/test.properties"/>
+    <property file="${wdf_test.build.location}/antbuild.properties"/>
+    <property file="${wdf_test.build.location}/local.build.properties"/>
+    <property file="${wdf_test.build.location}/${test.properties}"/>
+    <property file="${wdf_test.build.location}/test.properties"/>
+
+    <!-- Default ant targets, compiles and packages test jars, does not run tests. -->
+    <target name="build-against-jar"     depends="clean, init_against_jar, compile, package"                description="build JPA WDF testing jars"/>
+    <target name="build-against-classes" depends="clean, init_against_classes, compile, package"            description="build JPA WDF testing jars"/>
+    <target name="build-against-bundles" depends="clean, init_against_bundles, compile, package"            description="build JPA WDF testing jars"/>
+    <target name="test-against-jar"      depends="clean-test, init_against_jar, init_runtime,  test-lrg"    description="run JPA WDF tests"/>
+    <target name="test-against-classes"  depends="clean-test, init_against_classes, init_runtime, test-lrg" description="run JPA WDF tests"/>
+    <target name="test-against-bundles"  depends="clean-test, init_against_bundles, init_runtime, test-lrg" description="run JPA WDF tests"/>
+    <target name="server-test"           depends="clean-test, server-test-internal" description="run JPA WDF tests on server configured by property server.name"/>
+    <!-- convienience targets -->
+    <target name="build"     depends="build-against-jar"/>
+    <target name="test"      depends="test-against-jar"/>
+
+    <target name="clean" description="Clean the build">
+        <delete includeEmptyDirs="true" failonerror="false">
+            <fileset dir="${wdf_test.build.location}/${classes.dir}"/>
+            <fileset file="${wdf_test.build.location}/${wdf.tests.jar}"/>
+            <fileset file="${wdf_test.build.location}/${eclipselink.wdf.jpa1.model}.jar"/>
+            <fileset file="${wdf_test.build.location}/${eclipselink.wdf.jpa2.model}.jar"/>
+        </delete>
+    </target>
+
+    <!-- Creates required path variables and directories for building. -->
+    <target name="init">
+        <property name="eclipselink.lib" value="${wdf_test.2.trunk.dir}/${eclipselink.jar}"/>
+        <mkdir dir="${wdf_test.build.location}/${classes.dir}"/>
+        <path id="base.compile.path">
+            <pathelement path="${wdf_test.2.core.test.dir}/${classes.dir}"/>
+            <pathelement path="${wdf_test.2.core.test.dir}/${wdf.tests.jar}"/>
+            <pathelement path="${wdf_test.2.jpa.plugins.dir}/${persistence20.jar}"/>
+            <pathelement path="${wdf_test.2.common.plugins.dir}/${ejb.jar}"/>
+            <!-- These paths are unneeded for compile or run (from core.depend) may be needed in future -->
+            <!-- pathelement path="${wdf_test.2.common.plugins.dir}/${unsigned.persistence10.jar}"/ -->
+            <!-- pathelement path="${wdf_test.2.common.plugins.dir}/${activation.jar}"/ -->
+            <!-- pathelement path="${wdf_test.2.common.plugins.dir}/${resource.jar}"/ -->
+            <!-- pathelement path="${wdf_test.2.common.plugins.dir}/${jms.jar}"/ -->
+            <!-- pathelement path="${wdf_test.2.common.plugins.dir}/${stax_api.jar}"/ -->
+            <!-- pathelement path="${wdf_test.2.common.plugins.dir}/${mail.jar}"/ -->
+            <pathelement path="${wdf_test.2.common.plugins.dir}/${transaction.jar}"/>
+            <pathelement path="${junit.lib}"/>
+            <!-- Needed for performance tests comparing with hibernate.>
+            <fileset dir="${hibernate.dir}">
+                <include name="*.jar"/>
+            </fileset-->
+            <!-- Needed for tests using coherence.>
+            <fileset dir="${coherence.dir}">
+                <include name="*.jar"/>
+            </fileset-->
+        </path>
+        <path id="product.classes.path">
+            <pathelement path="${wdf_test.2.core.dir}/${classes.dir}"/>
+            <pathelement path="${wdf_test.2.jpa.dir}/${classes.dir}"/>
+            <pathelement path="${wdf_test.2.moxy.dir}/${classes.dir}"/>
+            <pathelement path="${eclipselink.plugins}/${antlr}"/>
+            <pathelement path="${eclipselink.plugins}/${asm}"/>
+        </path>
+        <path id="product.bundles.path">
+            <fileset dir="${wdf_test.2.common.plugins.dir}"
+                includes="org.eclipse.persistence.core_*.jar,
+                          org.eclipse.persistence.jpa_*.jar,
+                          org.eclipse.persistence.moxy_*.jar,
+                          org.eclipse.persistence.asm_*.jar,
+                          org.eclipse.persistence.antlr_*.jar"
+            />
+        </path>
+        <path id="product.jar.path">
+            <pathelement path="${eclipselink.lib}"/>
+        </path>
+    </target>
+
+    <target name="init_against_jar" depends="init">
+        <path id="compile.path">
+            <path refid="product.jar.path"/>
+            <path refid="base.compile.path"/>
+        </path>
+    </target>
+
+    <target name="init_against_classes" depends="init">
+        <path id="compile.path">
+            <path refid="product.classes.path"/>
+            <path refid="base.compile.path"/>
+        </path>
+    </target>
+
+    <target name="init_against_bundles" depends="init">
+        <path id="compile.path">
+            <path refid="product.bundles.path"/>
+            <path refid="base.compile.path"/>
+        </path>
+    </target>
+
+    <!-- Compiles all tests. -->
+    <target name="compile" description="compile EclipseLink testing">
+        <javac srcdir="${src.dir}"
+               destdir="${classes.dir}"
+               debug="${javac.debug}"
+               debuglevel="${javac.debuglevel}"
+               encoding="UTF-8"
+               optimize="${javac.optimize}"
+               source="${javac.version}"
+               target="${javac.version}"
+               deprecation="${javac.deprecation}"
+               failonerror="true">
+            <include name="org/eclipse/persistence/testing/**"/>
+            <classpath>
+                <path refid="compile.path"/>
+            </classpath>
+        </javac>
+        <javac
+            srcdir="${wdf_test.2.core.test.dir}/${src.dir}"
+            destdir="${classes.dir}"
+            debug="${javac.debug}"
+            debuglevel="${javac.debuglevel}"
+            encoding="UTF-8"
+            optimize="${javac.optimize}"
+            source="${javac.version}"
+            target="${javac.version}"
+            deprecation="${javac.deprecation}"
+            failonerror="true"
+            includes="org/eclipse/persistence/testing/framework/**">
+            <classpath refid="compile.path"/>
+        </javac>
+    </target>
+
+    <target name="get-server-properties">
+        <property file="${user.home}/${server.name}.properties"/>
+        <property file="${wdf_test.2.jpa.test}/${server.name}.properties"/>
+        <echo message="server.lib=${server.lib}"/>
+        <echo message="server.depend=${server.depend}"/>
+        <echo message="server.name=${server.name}"/>
+        <echo message="server.platform=${server.platform}"/>
+    </target>
+
+    <!-- Packages JPA persistent unit test jars. -->
+    <target name="package" depends="package-tests, package-wdf-jpa2-model, package-wdf-jpa1-model" description="build EclipseLink jar"/>
+
+
+    <target name="package-tests" depends="get-server-properties">
+        <mkdir dir="${wdf_test.build.location}/stage"/>
+        <filter token="server.user" value="${server.user}"/>
+        <filter token="server.pwd" value="${server.pwd}"/>
+        <filter token="server.factory" value="${server.factory}"/>
+
+        <copy file="${wdf_test.2.jpa.test}/resource/server/jndi.properties" todir="stage" filtering="true"/>
+
+        <jar jarfile="${wdf_test.build.location}/${wdf.tests.jar}">
+           <zipfileset dir="${wdf_test.build.location}/resource/ejb" includes="*.xml" prefix="META-INF"/>
+           <fileset dir="${wdf_test.build.location}/${classes.dir}"
+                    includes="org/eclipse/persistence/testing/framework/**/*.class,
+                        org/eclipse/persistence/testing/tests/**/*.class"/>
+           <fileset dir="${wdf_test.build.location}/stage"
+                    includes="jndi.properties"/>
+        </jar>
+        <delete dir="stage"/>
+    </target>
+
+    <target name="package-model" depends="get-server-properties,set-app-name">
+        <copy overwrite="true" file="${wdf_test.build.location}/resource/${MODEL}/persistence.xml" todir="${build.dir}/META-INF"/>
+        <replace dir="${build.dir}/META-INF" token='%%database-platform%%' value="${db.platform}">
+            <include name="persistence.xml"/>
+        </replace>
+        <replace dir="${build.dir}/META-INF" token='%%data-source-name%%' value="${DS_NAME}">
+            <include name="persistence.xml"/>
+        </replace>
+
+        <condition property="SERVER-PLATFORM-PROPERTY" value="&lt;property name=&quot;eclipselink.target-server&quot; value=&quot;${server.platform}&quot;/&gt;"
+                                                       else="">
+            <isset property="server.name"/>
+        </condition>
+        <replace dir="${build.dir}/META-INF" token='%%server-platform-property%%' value="${SERVER-PLATFORM-PROPERTY}">
+            <include name="persistence.xml"/>
+        </replace>
+        <jar jarfile="${wdf_test.build.location}/${MODEL}.jar">
+            <zipfileset dir="${build.dir}/META-INF" includes="*.xml" prefix="META-INF"/>
+            <fileset dir="${wdf_test.build.location}/${classes.dir}"
+                     includes="${PACKAGE}"/>
+        </jar>
+        <delete dir="${build.dir}/META-INF"/>
+    </target>
+
+    <target name="package-wdf-jpa1-model">
+        <antcall target="package-model">
+            <param name="MODEL"   value="${eclipselink.wdf.jpa1.model}"/>
+            <param name="PACKAGE" value="org/eclipse/persistence/testing/models/wdf/jpa1/**"/>
+        </antcall>
+    </target>
+
+    <target name="package-wdf-jpa2-model">
+        <antcall target="package-model">
+            <param name="MODEL"   value="${eclipselink.wdf.jpa2.model}"/>
+            <param name="PACKAGE" value="org/eclipse/persistence/testing/models/wdf/jpa2/**"/>
+        </antcall>
+    </target>
+
+    <!-- Testing -->
+
+    <!-- Clean all build generated content. -->
+    <target name="clean-test" description="Clean the test">
+        <delete dir="${wdf_test.build.location}/${report.dir}"/>
+        <delete dir="${wdf_test.build.location}/${run.dir}"/>
+    </target>
+
+    <target name="init_runtime">
+        <mkdir dir="${wdf_test.build.location}/${report.dir}"/>
+        <mkdir dir="${wdf_test.build.location}/${run.dir}"/>
+        <path id="run.path">
+            <pathelement path="${jdbc.driver.jar}"/>
+            <path refid="compile.path"/>
+            <pathelement path="${wdf_test.build.location}/${wdf.tests.jar}"/>
+            <pathelement path="${wdf_test.build.location}/${eclipselink.wdf.jpa2.model}.jar"/>
+            <pathelement path="${wdf_test.build.location}/${eclipselink.wdf.jpa1.model}.jar"/>
+            <pathelement path="${wdf_test.build.location}"/>
+        </path>
+    </target>
+
+    <!-- Default test target, run the LRG -->
+    <target name="test-lrg">
+        <antcall target="run-test" inheritRefs="true">
+            <param name="TEST_CLASS" value="${test.class}"/>
+            <param name="TEST_AGENT" value="${test.agent}"/>
+            <param name="TEST_WEAVING" value="${test.weaving}"/>
+            <param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
+            <param name="RUN_PATH" value="run.path"/>
+            <param name="DB_URL" value="${db.url}"/>
+            <param name="SERVER" value="false"/>
+        </antcall>
+        <antcall target="generate-report" inheritRefs="true"/>
+    </target>
+
+    <!-- Generic target for running tests. -->
+    <target name="run-test">
+        <echo>Running test on ${DB_URL}</echo>
+        <condition property="jvmarg.db.platform" value="-Ddb.platform=${db.platform}">
+            <isset property="db.platform"/>
+        </condition>
+        <condition property="jvmarg.db.platform" value="-Ddummy=dummy">
+            <not>
+                <isset property="db.platform"/>
+            </not>
+        </condition>
+        <junit printsummary="yes" haltonfailure="yes" fork="yes" forkmode="once" showoutput="true" maxmemory="512m" dir="${run.dir}">
+            <jvmarg value="${TEST_AGENT}"/>
+            <jvmarg value="${TEST_WEAVING}"/>
+            <jvmarg value="${ORM_TESTING}"/>
+            <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
+            <jvmarg value="-Ddb.driver=${db.driver}"/>
+            <jvmarg value="-Ddb.url=${DB_URL}"/>
+            <jvmarg value="-Ddb.user=${db.user}"/>
+            <jvmarg value="-Ddb.pwd=${db.pwd}"/>
+            <jvmarg value="${jvmarg.db.platform}"/>
+            <jvmarg value="-Dservertest=${SERVER}"/>
+            <sysproperty key="server.url" value="${server.url}${APP_NAME}"/>
+            <sysproperty key="server.testrunner.wdf" value="${server.testrunner.wdf}"/>
+            <sysproperty key="datasource.name" value="${DS_LOOKUP_NAME}"/>
+            <classpath>
+                <path refid="${RUN_PATH}"/>
+            </classpath>
+            <formatter type="xml"/>
+            <batchtest todir="${report.dir}" haltonfailure="no">
+                <fileset dir="${src.dir}"
+                         includes="org/eclipse/persistence/testing/tests/wdf/**/*Test*.java"
+                         excludes="org/eclipse/persistence/testing/tests/wdf/jpa1/query/QueryTest.java"/>
+            </batchtest>
+        </junit>
+    </target>
+
+    <target name="generate-report">
+        <junitreport todir="${report.dir}">
+            <fileset dir="${report.dir}">
+                <include name="TEST-*.xml"/>
+            </fileset>
+            <report format="noframes" todir="${report.dir}"/>
+        </junitreport>
+    </target>
+
+
+    <!-- Build server test ear. -->
+    <target name="server-build-ear" depends="build-against-jar" >
+        <copy overwrite="true" file="./resource/ear/application.xml" todir="${build.dir}/META-INF"/>
+        <ear destfile="${wdf_test.build.location}/${build.dir}/servertest.ear" appxml="${build.dir}/META-INF/application.xml">
+            <fileset file="${wdf_test.build.location}/${wdf.tests.jar}"/>
+            <zipfileset dir="${wdf_test.build.location}" includes="${eclipselink.wdf.jpa1.model}.jar" prefix="${LIB_PREFIX}"/>
+        </ear>
+        <copy file="${wdf_test.build.location}/${build.dir}/servertest.ear" todir="${basedir}"/>
+    </target>
+
+    <target name="server-deploy">
+        <ant antfile="${wdf_test.2.jpa.test}/${server.name}.xml" target="${server.name}-deploy" inheritRefs="true">
+            <property name="ear.dir" value="${wdf_test.build.location}"/>
+            <property name="ear.name" value="${ear.name}"/>
+            <property name="application.name" value="${application.name}"/>
+        </ant>
+    </target>
+
+    <target name="server-undeploy">
+        <ant antfile="${wdf_test.2.jpa.test}/${server.name}.xml" target="${server.name}-undeploy" inheritRefs="true">
+            <property name="application.name" value="${application.name}"/>
+        </ant>
+    </target>
+
+    <!-- Allows we run websphere tests from Windows & Linux both. -->
+    <target name="detect-os">
+        <condition property="is.windows" value="true">
+            <os family="windows"/>
+        </condition>
+        <condition property="is.unix" value="true">
+            <os family="unix"/>
+        </condition>
+        <condition property="suffix" value="bat">
+            <isset property="is.windows"/>
+        </condition>
+        <condition property="suffix" value="sh">
+            <isset property="is.unix"/>
+        </condition>
+         <echo message="suffix=${suffix}"/>
+    </target>
+
+
+    <target name="set-app-name" depends="detect-os">
+        <condition property="APP_NAME" value="">
+            <contains string="${server.name}" substring="websphere"/>
+        </condition>
+        <condition property="APP_NAME" value="servertest">
+            <not>
+                <isset property="is.websphere"/>
+            </not>
+        </condition>
+
+        <condition property="DS_NAME" value="java:/EclipseLinkDS">
+            <contains string="${server.name}" substring="jboss"/>
+        </condition>
+        <condition property="DS_NAME" value="jdbc/EclipseLinkDS">
+            <not>
+                <isset property="is.jboss"/>
+            </not>
+        </condition>
+
+        <condition property="DS_LOOKUP_NAME" value="jdbc/${DS_NAME}">
+            <contains string="${server.name}" substring="netweaver"/>
+        </condition>
+        <condition property="DS_LOOKUP_NAME" value="${DS_NAME}">
+            <not>
+                <isset property="is.netweaver"/>
+            </not>
+        </condition>
+
+
+        <condition property="LIB_PREFIX" value="">
+            <contains string="${server.name}" substring="netweaver"/>
+        </condition>
+        <condition property="LIB_PREFIX" value="lib">
+            <not>
+                <isset property="is.netweaver"/>
+            </not>
+        </condition>
+    </target>
+
+    <!-- Build, deploy and run a test suite on the server. -->
+    <target name="server-test-internal" depends="get-server-properties, detect-os, set-app-name, server-build-ear, init_runtime">
+        <antcall target="server-deploy" inheritRefs="true">
+            <param name="ear.name" value="servertest.ear"/>
+            <param name="application.name" value="servertest"/>
+        </antcall>
+        <path id="run.path.server">
+            <fileset dir="${server.lib}" includes="${server.depend}"/>
+            <path refid="run.path"/>
+        </path>
+        <antcall target="run-test" inheritRefs="true">
+            <param name="TEST_CLASS" value="${test.class}"/>
+            <param name="TEST_AGENT" value="${test.agent}"/>
+            <param name="TEST_WEAVING" value="${test.weaving}"/>
+            <param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
+            <param name="RUN_PATH" value="run.path.server"/>
+            <param name="DB_URL" value="${db.url}"/>
+            <param name="SERVER" value="true"/>
+        </antcall>
+        <antcall target="generate-report" inheritRefs="true"/>
+        <antcall target="server-undeploy" inheritRefs="true">
+            <param name="application.name" value="servertest"/>
+        </antcall>
+    </target>
+
+
+</project>
+
+

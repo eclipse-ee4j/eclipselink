@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<xml-bindings
+    xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm"
+    package-name="org.eclipse.persistence.testing.jaxb.dynamic.withstatic">
+    <java-types>
+        <java-type name="Customer">
+            <xml-root-element/>
+            <java-attributes>
+                <xml-element java-attribute="name" type="java.lang.String"/>
+                <xml-element java-attribute="address" type="org.eclipse.persistence.testing.jaxb.dynamic.withstatic.AddressWithPhone"/>
+                <xml-element java-attribute="phoneNumber" type="org.eclipse.persistence.testing.jaxb.dynamic.withstatic.PhoneNumber" container-type="java.util.List"/>
+            </java-attributes>
+        </java-type>
+        <java-type name="AddressWithPhone">
+            <java-attributes>
+               <xml-element java-attribute="phone" type="org.eclipse.persistence.testing.jaxb.dynamic.withstatic.PhoneNumber"/>
+            </java-attributes>
+        </java-type>
+        <java-type name="PhoneNumber">
+            <java-attributes>
+                <xml-attribute java-attribute="type" type="java.lang.String"/>
+                <xml-value java-attribute="value" type="java.lang.String"/>
+            </java-attributes>
+        </java-type>
+    </java-types>
+</xml-bindings>
