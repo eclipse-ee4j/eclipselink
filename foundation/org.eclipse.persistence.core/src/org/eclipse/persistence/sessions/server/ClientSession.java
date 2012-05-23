@@ -822,7 +822,7 @@ public class ClientSession extends AbstractSession {
     @Override
     public void releaseReadConnection(Accessor connection) {
         // If the cursor's connection is the write connection, then do not release it.
-        if ((this.writeConnections != null) && this.writeConnections.containsKey(connection)) {
+        if ((this.writeConnections != null) && this.writeConnections.containsValue(connection)) {
             return;
         }
         //bug 4668234 -- used to only release connections on server sessions but should always release

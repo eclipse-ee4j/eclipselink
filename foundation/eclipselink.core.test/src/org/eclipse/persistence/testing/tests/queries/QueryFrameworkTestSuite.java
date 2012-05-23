@@ -208,6 +208,7 @@ public class QueryFrameworkTestSuite extends TestSuite {
 
         addTest(new GetValueFromObject());
         addTest(new CursoredStreamClientSessionTest());
+        addTest(new CursoredStreamReadWriteClientSessionTest());
 
         addTest(new QBEObjectWithAllFieldsFilled());
         addTest(new QBESpecialOperators());
