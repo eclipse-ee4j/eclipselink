@@ -471,9 +471,6 @@
                 <attribute name="Premain-Class"          value="${eclipselink.premain.class}"/>
                 <attribute name="Main-Class"             value="${eclipselink.main.class}"/>
             </manifest>
-                <!--exclude name="*jpa.jpql*.jar"/ -->
-                <!-- Kills Testing:: core:18e JPA:1e JAXB:24f:160e OXM:170e DBWS:2e DBWSU:15e  -->
-                <!-- exclude name="*nosql*.jar"/ -->
             <zipgroupfileset dir="${eclipselink.plugins}">
                 <include name="org.eclipse.persistence*${version.string}.jar"/>
                 <include name="org.eclipse.persistence.jpa.jpql*.jar"/>
@@ -483,6 +480,7 @@
                 <exclude name="*equinox*.jar"/>
                 <exclude name="*builder*.jar"/>
                 <exclude name="*jpars*.jar"/>
+                <exclude name="*nosql*.jar"/>
             </zipgroupfileset>
             <!-- JPA 1.1/2.0 concurrent dev solution: New classes from javax.persistence 2.0 -->
             <fileset
