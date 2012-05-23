@@ -52,11 +52,12 @@
     </condition>
     <echo message="moxytest.2.trunk.dir = '${moxytest.2.trunk.dir}'"/>
     <property name="moxytest.2.common.plugins.dir" value="${moxytest.2.trunk.dir}/plugins"/>
-    <property name="moxytest.2.moxy.dir" value="${moxytest.2.trunk.dir}/moxy/org.eclipse.persistence.moxy"/>
-    <property name="moxytest.2.core.dir" value="${moxytest.2.trunk.dir}/foundation/org.eclipse.persistence.core"/>
-    <property name="moxytest.plugins.dir" value="../plugins"/>
+    <property name="moxytest.2.moxy.dir"           value="${moxytest.2.trunk.dir}/moxy/org.eclipse.persistence.moxy"/>
+    <property name="moxytest.2.core.dir"           value="${moxytest.2.trunk.dir}/foundation/org.eclipse.persistence.core"/>
+    <property name="moxytest.2.buildsys.dir"       value="${moxytest.2.trunk.dir}/buildsystem"/>
+    <property name="moxytest.plugins.dir"          value="../plugins"/>
     <!-- Temporary until eclipselink.jar property is globally renamed -->
-    <property name="eclipselink.jar" value="eclipselink.jar"/>
+    <property name="eclipselink.jar"               value="eclipselink.jar"/>
 
     <!-- Allows a user to overide certain user specific properties. -->
     <property file="${user.home}/build.properties"/>
@@ -65,13 +66,22 @@
         <propertyref prefix="javax.xml"/>
     </propertyset>
 
+        <property name="custom.tasks.lib" value="${moxytest.2.buildsys.dir}/ant_customizations.jar"/>
+        <property name="custom.selectbundle.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.SelectBundle"/>
+        <taskdef name="selectbundle" classname="${custom.selectbundle.task.class}" classpath="${custom.tasks.lib}"/>
+
+        <selectbundle basename="org.eclipse.persistence.nosql" directory="${moxytest.build.location}/${moxytest.2.common.plugins.dir}" separator="_"
+            criterion="[2.0.0,9.0.0)" property="oep.nosql.lib" includepath="true"
+        />
+        <echo message="oep.nosql.lib ='${oep.nosql.lib}'"/>
+
     <property name="eclipselink.lib" value="${moxytest.2.trunk.dir}/${eclipselink.jar}"/>
     <property name="jaxb-xjc.lib"    value="${moxytest.2.common.plugins.dir}/${jaxb-xjc.jar}"/>
     <property name="jaxb-api.lib"    value="${moxytest.2.common.plugins.dir}/${jaxb-api.jar}"/>
-    <property name="jaxb-impl.lib"    value="${moxytest.2.common.plugins.dir}/${jaxb-impl.jar}"/>
+    <property name="jaxb-impl.lib"   value="${moxytest.2.common.plugins.dir}/${jaxb-impl.jar}"/>
 
     <path id="xml.parser.path">
-        <fileset 
+        <fileset
             dir="${xml.parser.jar.dir}"
             includes="${xml.parser.jar}"/>
     </path>
@@ -79,9 +89,14 @@
     <path id="jaxb.compile.path">
         <path refid="xml.parser.path"/>
         <pathelement path="${jaxb-api.lib}"/>
-        <fileset
-            dir="${moxytest.2.common.plugins.dir}"
-            includes="${eclipselink.core.depend}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${activation.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${resource.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${ejb.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${jms.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${stax_api.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${transaction.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${mail.jar}"/>
+        <pathelement path="${oep.nosql.lib}"/>
         <pathelement path="${junit.lib}"/>
         <pathelement path="${moxytest.2.moxy.dir}/${classes.dir}"/>
         <pathelement path="${moxytest.2.core.dir}/${classes.dir}"/>
@@ -91,9 +106,8 @@
     <path id="jaxb.run.path">
         <path refid="xml.parser.path"/>
         <pathelement path="${jaxb-api.lib}"/>
-        <fileset
-            dir="${moxytest.2.common.plugins.dir}"
-            includes="${activation.jar}, ${mail.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${activation.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${mail.jar}"/>
         <pathelement path="${moxytest.2.moxy.dir}/${classes.dir}"/>
         <pathelement path="${classes.dir}"/>
         <pathelement path="${resource.dir}"/>
@@ -105,18 +119,27 @@
     </path>
     <path id="oxm.compile.path">
         <path refid="xml.parser.path"/>
-        <fileset
-            dir="${moxytest.2.common.plugins.dir}"
-            includes="${eclipselink.core.depend}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${activation.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${resource.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${ejb.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${jms.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${stax_api.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${transaction.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${mail.jar}"/>
+        <pathelement path="${oep.nosql.lib}"/>
         <pathelement path="${junit.lib}"/>
         <pathelement path="${moxytest.2.moxy.dir}/${classes.dir}"/>
         <pathelement path="${moxytest.2.core.dir}/${classes.dir}"/>
     </path>
     <path id="oxm.run.path">
         <path refid="xml.parser.path"/>
-        <fileset
-            dir="${moxytest.2.common.plugins.dir}"
-            includes="${eclipselink.core.depend}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${activation.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${resource.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${ejb.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${jms.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${stax_api.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${transaction.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${mail.jar}"/>
         <pathelement path="${moxytest.2.moxy.dir}/${classes.dir}"/>
         <pathelement path="${classes.dir}"/>
         <pathelement path="${resource.dir}"/>
@@ -129,9 +152,14 @@
         <path refid="xml.parser.path"/>
         <pathelement path="${junit.lib}"/>
         <pathelement path="${jaxb-api.lib}"/>
-        <fileset
-            dir="${moxytest.2.common.plugins.dir}"
-            includes="${eclipselink.core.depend}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${activation.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${resource.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${ejb.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${jms.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${stax_api.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${transaction.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${mail.jar}"/>
+        <pathelement path="${oep.nosql.lib}"/>
         <pathelement path="${eclipselink.lib}"/>
         <pathelement path="${jaxb-xjc.lib}"/>
         <pathelement path="${jaxb-impl.lib}"/>
@@ -140,9 +168,10 @@
         <path refid="xml.parser.path"/>
         <pathelement path="${junit.lib}"/>
         <pathelement path="${jaxb-api.lib}"/>
-        <fileset
-            dir="${moxytest.2.common.plugins.dir}"
-            includes="${activation.jar}, ${mail.jar},${stax_api.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${activation.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${stax_api.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${mail.jar}"/>
+        <pathelement path="${oep.nosql.lib}"/>
         <pathelement path="${classes.dir}"/>
         <pathelement path="${resource.dir}"/>
         <pathelement path="${eclipselink.lib}"/>
@@ -153,18 +182,28 @@
         <path refid="xml.parser.path"/>
         <pathelement path="${jaxb-api.lib}"/>
         <pathelement path="${junit.lib}"/>
-        <fileset
-            dir="${moxytest.2.common.plugins.dir}"
-            includes="${eclipselink.core.depend}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${activation.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${resource.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${ejb.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${jms.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${stax_api.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${transaction.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${mail.jar}"/>
+        <pathelement path="${oep.nosql.lib}"/>
         <pathelement path="${eclipselink.lib}"/>
     </path>
     <path id="oxm.run.against.jar.path">
         <path refid="xml.parser.path"/>
         <pathelement path="${junit.lib}"/>
         <pathelement path="${jaxb-api.lib}"/>
-        <fileset
-            dir="${moxytest.2.common.plugins.dir}"
-            includes="${eclipselink.core.depend}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${activation.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${resource.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${ejb.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${jms.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${stax_api.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${transaction.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${mail.jar}"/>
+        <pathelement path="${oep.nosql.lib}"/>
         <pathelement path="${classes.dir}"/>
         <pathelement path="${resource.dir}"/>
         <pathelement path="${eclipselink.lib}"/>
@@ -327,11 +366,11 @@
                         <include name="org/eclipse/persistence/testing/jaxb/externalizedmetadata/ExternalizedMetadataTestSuite.java"/>
                         <include name="org/eclipse/persistence/testing/jaxb/javadoc/JavadocAnnotationExamplesTestSuite.java"/>
                         <include name="org/eclipse/persistence/testing/jaxb/javadoc/JavadocAnnotationExamplesTestSuite.java"/>
-						<include name="org/eclipse/persistence/testing/jaxb/typemappinginfo/TypeMappingInfoTestSuite.java"/>
-						<include name="org/eclipse/persistence/testing/jaxb/schemagen/SchemaGenTestSuite.java"/>
-   					    <include name="org/eclipse/persistence/testing/jaxb/xmladapter/XmlAdapterTestSuite.java"/>
-   					    <include name="org/eclipse/persistence/testing/jaxb/dynamic/DynamicJAXBTestSuite.java"/>
-						<include name="org/eclipse/persistence/testing/jaxb/json/JSONTestSuite.java"/>						
+                        <include name="org/eclipse/persistence/testing/jaxb/typemappinginfo/TypeMappingInfoTestSuite.java"/>
+                        <include name="org/eclipse/persistence/testing/jaxb/schemagen/SchemaGenTestSuite.java"/>
+                        <include name="org/eclipse/persistence/testing/jaxb/xmladapter/XmlAdapterTestSuite.java"/>
+                        <include name="org/eclipse/persistence/testing/jaxb/dynamic/DynamicJAXBTestSuite.java"/>
+                        <include name="org/eclipse/persistence/testing/jaxb/json/JSONTestSuite.java"/>
                     </fileset>
                     <formatter type="xml"/>
                 </batchtest>

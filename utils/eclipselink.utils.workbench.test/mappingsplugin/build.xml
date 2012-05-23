@@ -1,19 +1,19 @@
 <!--/*******************************************************************************
-* This program and the accompanying materials are made available under the 
-* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
-* which accompanies this distribution. 
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+* which accompanies this distribution.
 * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
-* and the Eclipse Distribution License is available at 
+* and the Eclipse Distribution License is available at
 * http://www.eclipse.org/org/documents/edl-v10.php.
 *
 *   Ant naming conventions:
 *   - regardless of the actual OS platform,'/' is the directory separator
 *     (Ant will convert as appropriate).
 *   - multi-word properties use periods '.'
-*   - multi-word targets use hyphens '-' 
+*   - multi-word targets use hyphens '-'
 *   - multi-word macros use underscores '_'
 *   - multi-word macro attributes are concatinated
-*     e.g. 'runpathref'  
+*     e.g. 'runpathref'
 *   - multi-word tasks (taskdef) names are concatinated
 *     e.g. 'validateconnection'
 *   - OS environment variables are in ALLCAPS and have 'env' as a prefix
@@ -70,6 +70,37 @@
         <condition property="junit.classpath.exist" >
             <isset property="junit.classpath"/>
         </condition>
+        <property name="custom.tasks.lib" value="${basedir}/../../../buildsystem/ant_customizations.jar"/>
+        <property name="custom.selectbundle.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.SelectBundle"/>
+        <taskdef name="selectbundle" classname="${custom.selectbundle.task.class}" classpath="${custom.tasks.lib}"/>
+
+        <selectbundle basename="org.eclipse.persistence.nosql" directory="${basedir}/../../../plugins" separator="_"
+            criterion="[2.0.0,9.0.0)" property="oep.nosql.lib" includepath="true"
+        />
+        <selectbundle basename="org.eclipse.persistence.oracle.nosql" directory="${basedir}/../../../plugins" separator="_"
+            criterion="[2.0.0,9.0.0)" property="oep.oracle.nosql.lib" includepath="true"
+        />
+        <echo message="oep.nosql.lib ='${oep.nosql.lib}'"/>
+        <echo message="oep.nosql.lib ='${oep.oracle.nosql.lib}'"/>
+
+        <path id="compile.mappingsplugin.path">
+            <pathelement path="${_jarDestDir}/utility_test.jar"/>
+            <pathelement path="${_jarDestDir}/framework_test.jar"/>
+            <pathelement path="${_mwdevLibDir}/mappingsplugin.jar"/>
+            <pathelement path="${_mwdevLibDir}/framework.jar"/>
+            <pathelement path="${_mwdevLibDir}/uitools.jar"/>
+            <pathelement path="${_mwdevLibDir}/cmpmigrator.jar"/>
+            <pathelement path="${_mwdevLibDir}/mappingsio.jar"/>
+            <pathelement path="${_mwdevLibDir}/mappingsmodel.jar"/>
+            <pathelement path="${_mwdevLibDir}/platformsmodel.jar"/>
+            <pathelement path="${_mwdevLibDir}/utility.jar"/>
+            <pathelement path="${_eclipselinkJar}"/>
+            <pathelement path="${_libDir}/compile/package-rename.jar"/>
+            <pathelement path="${junit.lib}"/>
+            <pathelement path="${oep.nosql.lib}"/>
+            <pathelement path="${oep.oracle.nosql.lib}"/>
+        </path>
+
     </target>
 
     <!-- =================================================================== -->
@@ -89,7 +120,6 @@
     <target name="compile-mappingsplugin" depends="properties-init">
         <mkdir dir="${compile.mappingsplugin.destdir}"/>
         <javac
-            classpath="${compile.mappingsplugin.classpath}"
             srcdir="${compile.mappingsplugin.srcdir}"
             destdir="${compile.mappingsplugin.destdir}"
             debug="${javac.debug}"
@@ -103,6 +133,7 @@
             nowarn="${_nowarn}"
             includes="**/*.java"
             excludes="**/*&#35;*/**, **/.ade_path/**"
+            classpathref="compile.mappingsplugin.path"
         />
     </target>
 
