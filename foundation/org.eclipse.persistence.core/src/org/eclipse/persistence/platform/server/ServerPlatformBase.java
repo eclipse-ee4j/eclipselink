@@ -20,7 +20,7 @@ package org.eclipse.persistence.platform.server;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.sql.SQLException;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import javax.persistence.spi.PersistenceUnitInfo;
@@ -131,7 +131,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
     /**
      * Allow pooling of threads for asynchronous processing in RCM and other areas.
      */
-    protected volatile Executor threadPool;
+    protected volatile ExecutorService threadPool;
 
     /**
      * INTERNAL:
@@ -423,7 +423,12 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      * @return void
      */
     public void launchContainerRunnable(Runnable runnable) {
-        getThreadPool().execute(runnable);
+        if (getThreadPool() == null) {
+            Thread thread = new Thread(runnable);
+            thread.start();
+        } else {
+            getThreadPool().execute(runnable);
+        }
     }
 
     /**
@@ -466,8 +471,8 @@ public abstract class ServerPlatformBase implements ServerPlatform {
     /**
      * INTERNAL: Return the thread pool, initializing if required.
      */
-    public Executor getThreadPool() {
-        if (threadPool == null) {
+    public ExecutorService getThreadPool() {
+        if ((threadPool == null) && (this.threadPoolSize > 0)) {
             threadPool = Executors.newFixedThreadPool(getThreadPoolSize());
         }
         return threadPool;
@@ -476,7 +481,7 @@ public abstract class ServerPlatformBase implements ServerPlatform {
     /**
      * INTERNAL: Set the thread pool to use.
      */
-    public void setThreadPool(Executor threadPool) {
+    public void setThreadPool(ExecutorService threadPool) {
         this.threadPool = threadPool;
     }
     
@@ -566,6 +571,16 @@ public abstract class ServerPlatformBase implements ServerPlatform {
             return;
         }
         this.serverSpecificUnregisterMBean();
+    }
+    
+    /**
+     * INTERNAL: perform any require shutdown tasks.
+     */
+    public void shutdown() {
+        unregisterMBean();
+        if (this.threadPool != null) {
+            getThreadPool().shutdownNow();
+        }
     }
 
     

@@ -395,7 +395,12 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         addDescriptor(buildNativeSequenceDescriptor());
         addDescriptor(buildTableSequenceDescriptor());
         addDescriptor(buildUnaryTableSequenceDescriptor());
-        addDescriptor(buildXMLFileSequenceDescriptor());
+        try {
+            Class.forName("org.eclipse.persistence.eis.adapters.xmlfile.XMLFileSequence");
+            addDescriptor(buildXMLFileSequenceDescriptor());
+        } catch (Exception missing) {
+            // Ignore.
+        }
         // change policy
         addDescriptor(buildChangePolicyDescriptor());
         addDescriptor(buildDeferredChangeDetectionPolicyDescriptor());

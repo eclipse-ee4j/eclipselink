@@ -3484,7 +3484,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     // Test that subselects can be used in the from clause.
     public void testSubselectInFrom() {
         EntityManager em = createEntityManager();
-        Query query = em.createQuery("Select e.firstName from Employee e, (Select count(e2), e2.firstName from Employee e2 group by e2.firstName) e3 where e.firstName = e3.firstName");
+        Query query = em.createQuery("Select avg(e3.c) from Employee e, (Select count(e2) as c, e2.firstName from Employee e2 group by e2.firstName) e3 where e.firstName = e3.firstName");
         query.getResultList();
         closeEntityManager(em);
     }
@@ -4212,7 +4212,6 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
             query = em.createQuery("select e from Employee e where e.id=:id");
             query.setParameter("id", bobId);
             query.setHint(QueryHints.PESSIMISTIC_LOCK, PessimisticLock.Lock);
-            Exception caughtException = null;
             beginTransaction(em);
             bob = (Employee) query.getSingleResult();
 
@@ -4232,7 +4231,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
                         } catch (javax.persistence.RollbackException ex) {
                             if (ex.getMessage().indexOf("org.eclipse.persistence.exceptions.DatabaseException") == -1) {
                                 ex.printStackTrace();
-                                fail("it's not the right exception");
+                                fail("it's not the right exception:" + ex);
                             }
                         }
                     }
@@ -4280,7 +4279,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     public void testComplexPathExpression() {
        EntityManager em = createEntityManager();
        Query query = em.createQuery("select e from Employee e join e.projects p where treat(p as LargeProject).budget > 10000");
-       List result = query.getResultList();
+       query.getResultList();
        closeEntityManager(em);
     }
 }

@@ -1605,104 +1605,118 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
      */
     protected void updateCacheCoordination(Map m, ClassLoader loader) {
         String protocol = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_PROTOCOL, m, this.session);
-        
-        if (protocol != null) {
-            RemoteCommandManager rcm = new RemoteCommandManager(this.session);        
-            if (protocol.equalsIgnoreCase(CacheCoordinationProtocol.JMS) || protocol.equalsIgnoreCase(CacheCoordinationProtocol.JMSPublishing)) {
-                JMSPublishingTransportManager transport = null;
-                if (protocol.equalsIgnoreCase(CacheCoordinationProtocol.JMS)){
-                     transport = new JMSTopicTransportManager(rcm);
+        String value = "";
+        String property = "";
+        try {
+            if (protocol != null) {
+                RemoteCommandManager rcm = new RemoteCommandManager(this.session);        
+                if (protocol.equalsIgnoreCase(CacheCoordinationProtocol.JMS) || protocol.equalsIgnoreCase(CacheCoordinationProtocol.JMSPublishing)) {
+                    JMSPublishingTransportManager transport = null;
+                    if (protocol.equalsIgnoreCase(CacheCoordinationProtocol.JMS)) {
+                         transport = new JMSTopicTransportManager(rcm);
+                    } else {
+                        transport = new JMSPublishingTransportManager(rcm);
+                    }
+                    rcm.setTransportManager(transport);
+                    
+                    String host = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_JMS_HOST, m, this.session);
+                    if (host != null) {
+                        transport.setTopicHostUrl(host);
+                    }
+                    String topic = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_JMS_TOPIC, m, this.session);
+                    if (topic != null) {
+                        transport.setTopicName(topic);
+                    }
+                    String factory = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_JMS_FACTORY, m, this.session);
+                    if (factory != null) {
+                        transport.setTopicConnectionFactoryName(factory);
+                    }
+                    
+                    String reuse_publisher = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_JMS_REUSE_PUBLISHER, m, this.session);
+                    if (reuse_publisher != null) {
+                        transport.setShouldReuseJMSTopicPublisher(reuse_publisher.equalsIgnoreCase("true"));
+                    }
+                    
+                } else if (protocol.equalsIgnoreCase(CacheCoordinationProtocol.RMI) || protocol.equalsIgnoreCase(CacheCoordinationProtocol.RMIIIOP)) {
+                    if (protocol.equalsIgnoreCase(CacheCoordinationProtocol.RMIIIOP)) {
+                        ((RMITransportManager)rcm.getTransportManager()).setIsRMIOverIIOP(true);
+                    }
+                    // Default protocol.
+                    String delay = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_RMI_ANNOUNCEMENT_DELAY, m, this.session);
+                    property = PersistenceUnitProperties.COORDINATION_RMI_ANNOUNCEMENT_DELAY;
+                    value = delay;
+                    if (delay != null) {
+                        rcm.getDiscoveryManager().setAnnouncementDelay(Integer.parseInt(delay));
+                    }
+                    String multicast = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_RMI_MULTICAST_GROUP, m, this.session);
+                    if (multicast != null) {
+                        rcm.getDiscoveryManager().setMulticastGroupAddress(multicast);
+                    }
+                    String port = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_RMI_MULTICAST_GROUP_PORT, m, this.session);
+                    property = PersistenceUnitProperties.COORDINATION_RMI_MULTICAST_GROUP_PORT;
+                    value = port;
+                    if (port != null) {
+                        rcm.getDiscoveryManager().setMulticastPort(Integer.parseInt(port));
+                    }
+                    String timeToLive = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_RMI_PACKET_TIME_TO_LIVE, m, this.session);
+                    property = PersistenceUnitProperties.COORDINATION_RMI_PACKET_TIME_TO_LIVE;
+                    value = timeToLive;
+                    if (timeToLive != null) {
+                        rcm.getDiscoveryManager().setPacketTimeToLive(Integer.parseInt(timeToLive));
+                    }
+                    String url = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_RMI_URL, m, this.session);
+                    if (url != null) {
+                        rcm.setUrl(url);
+                    }
                 } else {
-                    transport = new JMSPublishingTransportManager(rcm);
-                }
-                rcm.setTransportManager(transport);
-                
-                String host = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_JMS_HOST, m, this.session);
-                if (host != null) {
-                    transport.setTopicHostUrl(host);
-                }
-                String topic = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_JMS_TOPIC, m, this.session);
-                if (topic != null) {
-                    transport.setTopicName(topic);
-                }
-                String factory = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_JMS_FACTORY, m, this.session);
-                if (factory != null) {
-                    transport.setTopicConnectionFactoryName(factory);
-                }
-                
-                String reuse_publisher = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_JMS_REUSE_PUBLISHER, m, this.session);
-                if (reuse_publisher != null) {
-                    transport.setShouldReuseJMSTopicPublisher(reuse_publisher.equalsIgnoreCase("true"));
-                }
-                
-            } else if (protocol.equalsIgnoreCase(CacheCoordinationProtocol.RMI) || protocol.equalsIgnoreCase(CacheCoordinationProtocol.RMIIIOP)) {
-                if (protocol.equalsIgnoreCase(CacheCoordinationProtocol.RMIIIOP)){
-                    ((RMITransportManager)rcm.getTransportManager()).setIsRMIOverIIOP(true);
-               }
-                // Default protocol.
-                String delay = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_RMI_ANNOUNCEMENT_DELAY, m, this.session);
-                if (delay != null) {
-                    rcm.getDiscoveryManager().setAnnouncementDelay(Integer.parseInt(delay));
-                }
-                String multicast = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_RMI_MULTICAST_GROUP, m, this.session);
-                if (multicast != null) {
-                    rcm.getDiscoveryManager().setMulticastGroupAddress(multicast);
-                }
-                String port = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_RMI_MULTICAST_GROUP_PORT, m, this.session);
-                if (port != null) {
-                    rcm.getDiscoveryManager().setMulticastPort(Integer.parseInt(port));
-                }
-                String timeToLive = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_RMI_PACKET_TIME_TO_LIVE, m, this.session);
-                if (timeToLive != null) {
-                    rcm.getDiscoveryManager().setPacketTimeToLive(Integer.parseInt(timeToLive));
-                }
-                String url = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_RMI_URL, m, this.session);
-                if (url != null) {
-                    rcm.setUrl(url);
-                }
-            } else {
-                Class transportClass = findClassForProperty(protocol, PersistenceUnitProperties.COORDINATION_PROTOCOL, loader);
-                try {
+                    property = PersistenceUnitProperties.COORDINATION_PROTOCOL;
+                    value = protocol;
+                    Class transportClass = findClassForProperty(protocol, PersistenceUnitProperties.COORDINATION_PROTOCOL, loader);
                     rcm.setTransportManager((TransportManager)transportClass.newInstance());
-                } catch (Exception invalid) {
-                    // TODO: ex
-                    throw new RuntimeException(invalid);
                 }
-            }
-            String naming = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_NAMING_SERVICE, m, this.session);
-            if (naming != null) {
-                if (naming.equalsIgnoreCase("jndi")) {
-                    rcm.getTransportManager().setNamingServiceType(TransportManager.JNDI_NAMING_SERVICE);
-                } else if (naming.equalsIgnoreCase("rmi")) {
-                    rcm.getTransportManager().setNamingServiceType(TransportManager.REGISTRY_NAMING_SERVICE);
+                String naming = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_NAMING_SERVICE, m, this.session);
+                if (naming != null) {
+                    if (naming.equalsIgnoreCase("jndi")) {
+                        rcm.getTransportManager().setNamingServiceType(TransportManager.JNDI_NAMING_SERVICE);
+                    } else if (naming.equalsIgnoreCase("rmi")) {
+                        rcm.getTransportManager().setNamingServiceType(TransportManager.REGISTRY_NAMING_SERVICE);
+                    }
                 }
+                String user = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_JNDI_USER, m, this.session);
+                if (user != null) {
+                    rcm.getTransportManager().setUserName(user);
+                }
+                String password = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_JNDI_PASSWORD, m, this.session);
+                if (password != null) {
+                    rcm.getTransportManager().setPassword(password);
+                }
+                String context = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_JNDI_CONTEXT, m, this.session);
+                if (context != null) {
+                    rcm.getTransportManager().setInitialContextFactoryName(context);
+                }
+                String removeOnError = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_REMOVE_CONNECTION, m, this.session);
+                if (removeOnError != null) {
+                    rcm.getTransportManager().setShouldRemoveConnectionOnError(removeOnError.equalsIgnoreCase("true"));
+                }
+                String asynch = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_ASYNCH, m, this.session);
+                if (asynch != null) {
+                    rcm.setShouldPropagateAsynchronously(asynch.equalsIgnoreCase("true"));
+                }
+                String threadPoolSize = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_THREAD_POOL_SIZE, m, this.session);
+                property = PersistenceUnitProperties.COORDINATION_THREAD_POOL_SIZE;
+                value = threadPoolSize;
+                if (threadPoolSize != null) {
+                    this.session.getServerPlatform().setThreadPoolSize(Integer.parseInt(threadPoolSize));
+                }
+                String channel = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_CHANNEL, m, this.session);
+                if (channel != null) {
+                    rcm.setChannel(channel);
+                }
+                this.session.setCommandManager(rcm);
+                this.session.setShouldPropagateChanges(true);
             }
-            String user = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_JNDI_USER, m, this.session);
-            if (user != null) {
-                rcm.getTransportManager().setUserName(user);
-            }
-            String password = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_JNDI_PASSWORD, m, this.session);
-            if (password != null) {
-                rcm.getTransportManager().setPassword(password);
-            }
-            String context = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_JNDI_CONTEXT, m, this.session);
-            if (context != null) {
-                rcm.getTransportManager().setInitialContextFactoryName(context);
-            }
-            String removeOnError = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_REMOVE_CONNECTION, m, this.session);
-            if (removeOnError != null) {
-                rcm.getTransportManager().setShouldRemoveConnectionOnError(removeOnError.equalsIgnoreCase("true"));
-            }
-            String asynch = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_ASYNCH, m, this.session);
-            if (asynch != null) {
-                rcm.setShouldPropagateAsynchronously(asynch.equalsIgnoreCase("true"));
-            }
-            String channel = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_CHANNEL, m, this.session);
-            if (channel != null) {
-                rcm.setChannel(channel);
-            }
-            this.session.setCommandManager(rcm);
-            this.session.setShouldPropagateChanges(true);
+        } catch (Exception exception) {
+            this.session.handleException(ValidationException.invalidValueForProperty(value, property, exception));
         }
     }
         

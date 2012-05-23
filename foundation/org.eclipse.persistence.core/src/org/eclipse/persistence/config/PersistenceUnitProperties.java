@@ -2254,9 +2254,9 @@ public class PersistenceUnitProperties {
      * configures cache coordination for a clustered environment. Only used for
      * RMI coordination. Sets the URL of the host server. This is the URL that
      * other cluster member should use to connect to this host.
-     * This may not be required in a clustered enviroment where JNDI is replicated.
+     * This may not be required in a clustered environment where JNDI is replicated.
      * This can also be set as a System property or using a SessionCustomizer to avoid
-     * a seperate persistence.xml per server.
+     * a separate persistence.xml per server.
      * 
      * @see #COORDINATION_PROTOCOL
      * @see org.eclipse.persistence.sessions.coordination.RemoteCommandManager#setUrl(String)
@@ -2334,6 +2334,21 @@ public class PersistenceUnitProperties {
      */
     public static final String COORDINATION_ASYNCH = "eclipselink.cache.coordination.propagate-asynchronously";
 
+    /**
+     * the
+     * <code>"eclipselink.cache.coordination.thread.pool.size"</code>
+     * property configures thread pool size for cache coordination threads.
+     * RMI cache coordination will spawn one thread per node to send change notifications.
+     * RMI also spawns a thread to listen for new node notifications.
+     * JMS cache coordination will spawn one thread to receive JMS change notification messages (unless MDB is used).
+     * JMS also spawns a thread to process the change notificaiton (unless MDB is used).
+     * The default size is 32 threads.
+     * 
+     * @see #COORDINATION_PROTOCOL
+     * @see org.eclipse.persistence.platform.server.ServerPlatformBase#setThreadPoolSize(int)
+     */
+    public static final String COORDINATION_THREAD_POOL_SIZE = "eclipselink.cache.coordination.thread.pool.size";
+    
     /**
      * the <code>"eclipselink.cache.coordination.channel"</code> property
      * configures cache coordination for a clustered environment. Set if the

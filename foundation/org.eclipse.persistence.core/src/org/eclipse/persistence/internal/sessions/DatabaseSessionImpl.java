@@ -892,7 +892,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
             }
 
             // Unregister the JMX MBean before logout to avoid a javax.naming.NameNotFoundException
-            getServerPlatform().unregisterMBean();
+            getServerPlatform().shutdown();
         }
         
         disconnect();

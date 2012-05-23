@@ -55,7 +55,7 @@ public interface ServerPlatform {
      *
      * @return DatabaseSession
      */
-    public abstract DatabaseSession getDatabaseSession();
+    DatabaseSession getDatabaseSession();
 
     /**
      * PUBLIC: getServerNameAndVersion(): Talk to the relevant server class library, and get the server name
@@ -63,7 +63,7 @@ public interface ServerPlatform {
      *
      * @return String serverNameAndVersion
      */
-    public abstract String getServerNameAndVersion();
+    String getServerNameAndVersion();
 
     /**
      * INTERNAL: getModuleName(): Answer the name of the module (jar name) that my session
@@ -72,7 +72,7 @@ public interface ServerPlatform {
      *
      * @return String moduleName
      */
-    public abstract String getModuleName();
+    String getModuleName();
 
     /**
      * INTERNAL: getExternalTransactionControllerClass(): Answer the class of external transaction controller to use
@@ -88,7 +88,7 @@ public interface ServerPlatform {
      * @see #disableJTA()
      * @see #initializeExternalTransactionController()
      */
-    public abstract Class getExternalTransactionControllerClass();
+    Class getExternalTransactionControllerClass();
 
     /**
      * INTERNAL: setExternalTransactionControllerClass(Class newClass): Set the class of external
@@ -100,21 +100,21 @@ public interface ServerPlatform {
      * @see #disableJTA()
      * @see #initializeExternalTransactionController()
      */
-    public void setExternalTransactionControllerClass(Class newClass);
+    void setExternalTransactionControllerClass(Class newClass);
     
     /**
      * INTERNAL: initializeExternalTransactionController(): Populate the DatabaseSession's
      * external transaction controller with an instance of my transaction controller class.
      *
      * To change the external transaction controller class, we recommend creating a subclass of
-       * ServerPlatformBase, and overriding getExternalTransactionControllerClass()
-       *
-       * @see ServerPlatformBase
+     * ServerPlatformBase, and overriding getExternalTransactionControllerClass()
+     *
+     * @see ServerPlatformBase
      *
      * @return void
      *
      */
-    public abstract void initializeExternalTransactionController();
+    void initializeExternalTransactionController();
 
     /**
      * INTERNAL: isJTAEnabled(): Answer true if the DatabaseSession's external transaction controller class will
@@ -125,7 +125,7 @@ public interface ServerPlatform {
      * @see #getExternalTransactionControllerClass()
      * @see #disableJTA()
      */
-    public abstract boolean isJTAEnabled();
+    boolean isJTAEnabled();
 
     /**
      * INTERNAL: 
@@ -135,7 +135,7 @@ public interface ServerPlatform {
      * ServerPlatform. By default this is <code>false</code> but some platforms
      * can choose to have MBeans deployed by default.
      */
-    public abstract boolean isRuntimeServicesEnabledDefault();
+    boolean isRuntimeServicesEnabledDefault();
 
     /**
      * INTERNAL: disableJTA(): Configure the receiver such that my external transaction controller class will
@@ -146,7 +146,7 @@ public interface ServerPlatform {
      * @see #getExternalTransactionControllerClass()
      * @see #isJTAEnabled()
      */
-    public abstract void disableJTA();
+    void disableJTA();
 
     /**
      * INTERNAL: isRuntimeServicesEnabled(): Answer true if the JMX/MBean providing runtime services for
@@ -155,7 +155,7 @@ public interface ServerPlatform {
      * @return boolean isRuntimeServicesEnabled
      * @see #disableRuntimeServices()
      */
-    public abstract boolean isRuntimeServicesEnabled();
+    boolean isRuntimeServicesEnabled();
 
     /**
      * INTERNAL: disableRuntimeServices(): Configure the receiver such that no JMX/MBean will be registered
@@ -164,7 +164,7 @@ public interface ServerPlatform {
      * @return void
      * @see #isRuntimeServicesEnabled()
      */
-    public abstract void disableRuntimeServices();
+    void disableRuntimeServices();
 
     /**
      * INTERNAL: registerMBean(): Create and deploy the JMX MBean to provide runtime services for my
@@ -175,7 +175,7 @@ public interface ServerPlatform {
      * @see #disableRuntimeServices()
      * @see #unregisterMBean()
      */
-    public abstract void registerMBean();
+    void registerMBean();
 
     /**
      * INTERNAL: unregisterMBean(): Unregister the JMX MBean that was providing runtime services for my
@@ -186,7 +186,22 @@ public interface ServerPlatform {
      * @see #disableRuntimeServices()
      * @see #registerMBean()
      */
-    public abstract void unregisterMBean();
+    void unregisterMBean();
+    
+    /**
+     * INTERNAL: perform any require shutdown tasks.
+     */
+    void shutdown();
+    
+    /**
+     * Return the thread pool size.
+     */
+    int getThreadPoolSize();
+    
+    /**
+     * Set the thread pool size.
+     */
+    void setThreadPoolSize(int threadPoolSize);
     
     /**
      * INTERNAL:  This method is used to unwrap the oracle connection wrapped by
@@ -194,7 +209,7 @@ public interface ServerPlatform {
      * database vendor specific support.
      * This is added as a workaround for bug 4460996
      */
-    public java.sql.Connection unwrapConnection(java.sql.Connection connection);
+    java.sql.Connection unwrapConnection(java.sql.Connection connection);
     
     /**
      * INTERNAL: launchContainerRunnable(Runnable runnable): Use the container library to
@@ -205,7 +220,7 @@ public interface ServerPlatform {
      * @param Runnable runnable: the instance of runnable to be "started"
      * @return void
      */
-    public void launchContainerRunnable(Runnable runnable);
+    void launchContainerRunnable(Runnable runnable);
 
     /**
      * INTERNAL: getServerLog(): Return the ServerLog for this platform
@@ -214,14 +229,14 @@ public interface ServerPlatform {
      *
      * @return org.eclipse.persistence.logging.SessionLog
      */
-    public org.eclipse.persistence.logging.SessionLog getServerLog();
+    org.eclipse.persistence.logging.SessionLog getServerLog();
 
     /**
      * INTERNAL: shouldUseDriverManager(): Indicates whether DriverManager should be used while connecting DefaultConnector.
      *
      * @return boolean 
      */
-    public boolean shouldUseDriverManager();
+    boolean shouldUseDriverManager();
 
     /**
      * INTERNAL:
@@ -232,8 +247,7 @@ public interface ServerPlatform {
      * If this platform is unable to determine if the error was communication based it will return
      * false forcing the error to be thrown to the user.
      */
-    
-    public boolean wasFailureCommunicationBased(SQLException exception, Accessor connection, AbstractSession sessionForProfile);
+    boolean wasFailureCommunicationBased(SQLException exception, Accessor connection, AbstractSession sessionForProfile);
     
     /**
      * INTERNAL:
@@ -244,9 +258,9 @@ public interface ServerPlatform {
      * @return ClassLoaderHolder - a composite object containing the classLoader and the flag
      *     that is true if the classLoader returned is temporary
      *     
-     *  @see org.eclipse.persistence.internal.helper.ClassLoaderHolder
+     * @see org.eclipse.persistence.internal.helper.ClassLoaderHolder
      */
-    public JPAClassLoaderHolder getNewTempClassLoader(PersistenceUnitInfo puInfo);
+    JPAClassLoaderHolder getNewTempClassLoader(PersistenceUnitInfo puInfo);
     
     /**
      * INTERNAL:
@@ -256,5 +270,5 @@ public interface ServerPlatform {
      * This method is called by OracleJDBC_10_1_0_2ProxyConnectionCustomizer  
      * before opening proxy session and before closing it.
      */
-    public void clearStatementCache(java.sql.Connection connection);
+    void clearStatementCache(java.sql.Connection connection);
 }
