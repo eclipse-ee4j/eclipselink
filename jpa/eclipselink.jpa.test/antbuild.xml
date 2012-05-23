@@ -1310,6 +1310,7 @@
             <pathelement path="${eclipselink.extension.oracle.nosql.test.dir}/${classes.dir}"/>
             <pathelement path="${eclipselink.extension.oracle.nosql.dir}/${classes.dir}"/>
             <path refid="compile.path"/>
+            <fileset dir="${jpatest.2.common.plugins.dir}" includes="org.eclipse.persistence.oracle.nosql_*.jar"/>
             <pathelement path="${oracle.nosql.jar.dir}/${oracle.nosql.jar}"/>
             <pathelement path="${eclipselink.jpa.test}/${jpatest.framework.jar}"/>
             <pathelement path="${eclipselink.jpa.test}/${jpa.test.jar}"/>
