@@ -159,7 +159,7 @@ Premain-Class: org.eclipse.persistence.internal.jpa.deployment.JavaSEC
  MPInitializerAgent
 Created-By: 1.6.0_20 (Sun Microsystems Inc.)
 Bundle-Vendor: Eclipse.org - EclipseLink Project
-Bundle-Version: 2.4.0.qualifier
+Bundle-Version: 2.5.0.qualifier
 Bundle-ManifestVersion: 2
 Import-Package: javax.activation;resolution:=optional,
  javax.crypto;resolution:=optional,

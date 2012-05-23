@@ -43,7 +43,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.eclipse.persistence.core;bundle-version="2.4.0";visibility:=reexport,
  org.eclipse.persistence.asm;bundle-version="3.3.1";resolution:=optional
 Bundle-Vendor: Eclipse.org - EclipseLink Project
-Bundle-Version: 2.4.0.qualifier
+Bundle-Version: 2.5.0.qualifier
 Bundle-ManifestVersion: 2
 Import-Package: javax.persistence;jpa="2.0";version="[1.1.0,2.2)",
  javax.persistence.criteria;jpa="2.0";version="[1.1.0,2.2)",

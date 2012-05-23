@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Jpars
 Bundle-SymbolicName: org.eclipse.persistence.jpars
-Bundle-Version: 2.4.0.qualifier
+Bundle-Version: 2.5.0.qualifier
 Export-Package: org.eclipse.persistence.jpa.rs;version="2.4.0",
  org.eclipse.persistence.jpa.rs.eventlistener;version="2.4.0",
  org.eclipse.persistence.jpa.rs.metadata;version="2.4.0",
