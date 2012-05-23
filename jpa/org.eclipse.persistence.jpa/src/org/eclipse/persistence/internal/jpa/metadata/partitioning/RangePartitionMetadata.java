@@ -25,6 +25,8 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
+ * - any metadata mapped from XML to this class must be initialized in the
+ *   initXMLObject method.
  * - when loading from annotations, the constructor accepts the metadata
  *   accessor this metadata was loaded from. Used it to look up any 
  *   'companion' annotation needed for processing.
@@ -34,8 +36,6 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
  * @since EclipseLink 2.2
  */
 public class RangePartitionMetadata extends ORMetadata {
-    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
-
     protected String connectionPool;
     protected String startValue;
     protected String endValue;
@@ -59,6 +59,10 @@ public class RangePartitionMetadata extends ORMetadata {
         this.endValue = (String)annotation.getAttribute("endValue");
     }
     
+    /**
+     * INTERNAL:
+     * Used for XML merge and overriding.
+     */
     @Override
     public boolean equals(Object objectToCompare) {
         if (objectToCompare instanceof RangePartitionMetadata) {
@@ -72,27 +76,51 @@ public class RangePartitionMetadata extends ORMetadata {
         return false;
     }
     
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public String getConnectionPool() {
         return connectionPool;
     }
 
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getEndValue() {
+        return endValue;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getStartValue() {
+        return startValue;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public void setConnectionPool(String connectionPool) {
         this.connectionPool = connectionPool;
     }
 
-    public String getStartValue() {
-        return startValue;
-    }
-
-    public void setStartValue(String startValue) {
-        this.startValue = startValue;
-    }
-
-    public String getEndValue() {
-        return endValue;
-    }
-
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public void setEndValue(String endValue) {
         this.endValue = endValue;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setStartValue(String startValue) {
+        this.startValue = startValue;
     }
 }
