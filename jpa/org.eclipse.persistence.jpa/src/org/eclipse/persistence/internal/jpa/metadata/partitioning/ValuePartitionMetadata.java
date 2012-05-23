@@ -25,6 +25,8 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
+ * - any metadata mapped from XML to this class must be initialized in the
+ *   initXMLObject method.
  * - when loading from annotations, the constructor accepts the metadata
  *   accessor this metadata was loaded from. Used it to look up any 
  *   'companion' annotation needed for processing.
@@ -55,6 +57,10 @@ public class ValuePartitionMetadata extends ORMetadata {
         this.value = (String)annotation.getAttribute("value");
     }
     
+    /**
+     * INTERNAL:
+     * Used for XML merging and overriding.
+     */
     @Override
     public boolean equals(Object objectToCompare) {
         if (objectToCompare instanceof ValuePartitionMetadata) {
@@ -67,18 +73,34 @@ public class ValuePartitionMetadata extends ORMetadata {
         return false;
     }
     
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public String getConnectionPool() {
         return connectionPool;
     }
 
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getValue() {
+        return value;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public void setConnectionPool(String connectionPool) {
         this.connectionPool = connectionPool;
     }
 
-    public String getValue() {
-        return value;
-    }
-
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public void setValue(String value) {
         this.value = value;
     }
