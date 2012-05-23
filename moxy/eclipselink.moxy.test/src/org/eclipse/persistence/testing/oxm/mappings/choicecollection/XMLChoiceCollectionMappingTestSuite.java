@@ -14,6 +14,7 @@ package org.eclipse.persistence.testing.oxm.mappings.choicecollection;
 
 import org.eclipse.persistence.testing.oxm.OXTestCase;
 import org.eclipse.persistence.testing.oxm.mappings.choicecollection.ref.XMLChoiceWithReferenceOrderTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.choicecollection.ref.XMLChoiceWithInvalidRefTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.choicecollection.ref.XMLChoiceWithReferenceTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.choicecollection.reuse.ChoiceCollectionReuseTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.choicecollection.converter.ConverterTestCases;
@@ -35,6 +36,7 @@ public class XMLChoiceCollectionMappingTestSuite extends TestCase {
         if(!(platformStr.equals(OXTestCase.PLATFORM_DOC_PRES))) {
             suite.addTestSuite(XMLChoiceWithReferenceTestCases.class);
             suite.addTestSuite(XMLChoiceWithReferenceOrderTestCases.class);
+            suite.addTestSuite(XMLChoiceWithInvalidRefTestCases.class);
         }
         return suite;
     }
