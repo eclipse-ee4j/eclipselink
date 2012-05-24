@@ -86,7 +86,7 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
     protected void closeComplex() throws IOException {
         writer.write(Helper.cr());
         for (int x = 0; x < numberOfTabs; x++) {
-            writeValue(tab());
+            writeValue(tab(), false);            
         }
         writer.write('}');
     }
@@ -137,7 +137,7 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
                 } else {
                     writer.write(Helper.cr());
                     for (int x = 0; x < numberOfTabs; x++) {
-                        writeValue(tab());
+                        writeValue(tab(), false);
                     }
                 }
             }
@@ -172,7 +172,7 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
             }
             writer.write(Helper.cr());
             for (int x = 0; x < numberOfTabs; x++) {
-                writeValue(tab());
+                writeValue(tab(), false);
             }
             super.element(frag);
         } catch (IOException e) {
@@ -251,8 +251,8 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
                     this.getNamespaceResolver().put(attr.getPrefix(), attr.getNamespaceURI());
                 }
             }
-        } else if (node.getNodeType() == Node.TEXT_NODE) {
-            nonStringCharacters(node.getNodeValue());
+        } else if (node.getNodeType() == Node.TEXT_NODE) {            
+            characters(node.getNodeValue(), false, false);
         } else {
             try {
             	JSONFormattedWriterRecordContentHandler wrcHandler = new JSONFormattedWriterRecordContentHandler();
@@ -270,7 +270,7 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
     protected void writeKey(XPathFragment xPathFragment) throws IOException {
         writer.write(Helper.cr());
         for (int x = 0; x < numberOfTabs; x++) {
-            writeValue(tab());
+            writeValue(tab(), false);
         }
         super.writeKey(xPathFragment);
     }

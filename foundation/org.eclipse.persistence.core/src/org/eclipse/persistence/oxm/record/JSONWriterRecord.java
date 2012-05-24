@@ -29,6 +29,7 @@ import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.record.ExtendedContentHandler;
 import org.eclipse.persistence.internal.oxm.record.XMLFragmentReader;
+import org.eclipse.persistence.oxm.CharacterEscapeHandler;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
@@ -74,6 +75,7 @@ public class JSONWriterRecord extends MarshalRecord {
     protected boolean charactersAllowed = false;
     protected CharsetEncoder encoder;
     protected String space;
+    protected CharacterEscapeHandler characterEscapeHandler;
 
     public JSONWriterRecord(){
         super();
@@ -90,7 +92,7 @@ public class JSONWriterRecord extends MarshalRecord {
         if(marshaller.getValueWrapper() != null){
         	textWrapperFragment = new XPathFragment(marshaller.getValueWrapper());
         }
-        
+        characterEscapeHandler = marshaller.getCharacterEscapeHandler();        
     }
 
         
@@ -260,7 +262,7 @@ public class JSONWriterRecord extends MarshalRecord {
         xPathFragment.setLocalName(localName);
 
         openStartElement(xPathFragment, namespaceResolver);
-        characters(null, value, null, false);
+        characters(null, value, null, false, true);
         endElement(xPathFragment, namespaceResolver);
     }
 
@@ -353,7 +355,13 @@ public class JSONWriterRecord extends MarshalRecord {
     /**
      * INTERNAL:
      */
-     public void characters(String value) {
+    public void characters(String value) {
+    	characters(value, true, false);
+    }
+    /**
+     * INTERNAL:
+     */
+     public void characters(String value, boolean isString, boolean isAttribute) {
     	  boolean textWrapperOpened = false;
           if(!charactersAllowed){    
         	   if(textWrapperFragment != null){
@@ -365,9 +373,14 @@ public class JSONWriterRecord extends MarshalRecord {
            Level position = levels.peek();
            position.setNeedToOpenComplex(false);
            try {
-               writer.write('"');
-               writeValue(value);
-               writer.write('"');
+        	   if(isString){
+                      writer.write('"');
+                      writeValue(value, isAttribute);
+                      writer.write('"');
+        	   }else{
+        		   writer.write(value);
+        	   }
+        	     
            } catch (IOException e) {
                throw XMLMarshalException.marshalException(e);
            }        
@@ -384,11 +397,15 @@ public class JSONWriterRecord extends MarshalRecord {
          }
          xPathFragment.setAttribute(true);
          openStartElement(xPathFragment, namespaceResolver);
-         characters(schemaType, value, null, false);
+         characters(schemaType, value, null, false, true);
          endElement(xPathFragment, namespaceResolver);
      }
 
-     public void characters(QName schemaType, Object value, String mimeType, boolean isCDATA){    	     	 
+     public void characters(QName schemaType, Object value, String mimeType, boolean isCDATA){    	   
+        characters(schemaType, value, mimeType, isCDATA, false);
+     }
+     
+     public void characters(QName schemaType, Object value, String mimeType, boolean isCDATA, boolean isAttribute){    	     	 
     	
          Level position = levels.peek();
          position.setNeedToOpenComplex(false);
@@ -403,7 +420,7 @@ public class JSONWriterRecord extends MarshalRecord {
              //if schemaType is set and it's a numeric or boolean type don't treat as a string
              if(schemaType != null && isNumericOrBooleanType(schemaType)){
                  String convertedValue = ((String) ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, ClassConstants.STRING, schemaType));
-                 nonStringCharacters(convertedValue);
+                 characters(convertedValue, false, isAttribute);
              }else if(isCDATA){
                  cdata((String)value);
              }else{
@@ -413,7 +430,7 @@ public class JSONWriterRecord extends MarshalRecord {
             String convertedValue = ((String) ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, ClassConstants.STRING, schemaType));
             if(schemaType == null){
                 if(value.getClass() == ClassConstants.BOOLEAN || ClassConstants.NUMBER.isAssignableFrom(value.getClass())){
-                    nonStringCharacters(convertedValue);
+                	characters(convertedValue, false, isAttribute);
                 }else{
                     characters(convertedValue);
 
@@ -424,7 +441,7 @@ public class JSONWriterRecord extends MarshalRecord {
             } else if(isCDATA){
                 cdata(convertedValue);
             }else{
-                nonStringCharacters(convertedValue);
+            	characters(convertedValue, false, isAttribute);
             }
         }
          charactersAllowed = false;
@@ -461,7 +478,7 @@ public class JSONWriterRecord extends MarshalRecord {
          XPathFragment groupingFragment = openStartGroupingElements(namespaceResolver);
          closeStartGroupingElements(groupingFragment);
          openStartElement(xPathFragment, namespaceResolver);
-         nonStringCharacters(NULL);
+         characters(NULL, false, false);
          endElement(xPathFragment, namespaceResolver);
      }
 
@@ -469,8 +486,8 @@ public class JSONWriterRecord extends MarshalRecord {
      * INTERNAL:
      */
      public void nilSimple(NamespaceResolver namespaceResolver){
-         XPathFragment groupingFragment = openStartGroupingElements(namespaceResolver);
-         nonStringCharacters(NULL);
+         XPathFragment groupingFragment = openStartGroupingElements(namespaceResolver);         
+         characters(NULL, false, false);
          closeStartGroupingElements(groupingFragment);
      }
 
@@ -500,31 +517,6 @@ public class JSONWriterRecord extends MarshalRecord {
     	 }         
       }
       
-
-     protected void nonStringCharacters(String value){
-    	boolean textWrapperOpened = false;
-        if(!charactersAllowed){    
-           if(textWrapperFragment != null){
-        	   openStartElement(textWrapperFragment, namespaceResolver);
-        	   textWrapperOpened = true;
-           }
-    	}
-    	 
-          
-        Level position = levels.peek();
-        position.setNeedToOpenComplex(false);
-        try {
-            writer.write(value);
-         } catch (IOException e) {
-             throw XMLMarshalException.marshalException(e);
-         }
-        if(textWrapperOpened){    
-           if(textWrapperFragment != null){
-           	   endElement(textWrapperFragment, namespaceResolver);
-           }
-    	}          
-      }
-
     /**
      * INTERNAL:
      */
@@ -583,9 +575,18 @@ public class JSONWriterRecord extends MarshalRecord {
     /**
      * INTERNAL:
      */
-    protected void writeValue(String value) {
-        try {
-              char[] chars = value.toCharArray();
+    protected void writeValue(String value, boolean isAttribute) {
+        try {        	        	   
+               if (characterEscapeHandler != null) {
+                   try {
+                	   characterEscapeHandler.escape(value.toCharArray(), 0, value.length(), isAttribute, writer);
+                   } catch (IOException e) {
+                       throw XMLMarshalException.marshalException(e);
+                   }
+                   return;
+               }
+        	
+        	  char[] chars = value.toCharArray();
               for (int x = 0, charsSize = chars.length; x < charsSize; x++) {
                   char character = chars[x];
                   switch (character){
@@ -678,7 +679,7 @@ public class JSONWriterRecord extends MarshalRecord {
                 }
             }
         } else if (node.getNodeType() == Node.TEXT_NODE) {
-            nonStringCharacters(node.getNodeValue());
+        	characters(node.getNodeValue(), false, false);
         } else {
             try {
             	JSONWriterRecordContentHandler wrcHandler = new JSONWriterRecordContentHandler();
