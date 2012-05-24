@@ -48,6 +48,7 @@ import org.eclipse.persistence.oxm.IDResolver;
 import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.NamespacePrefixMapper;
 import org.eclipse.persistence.oxm.NamespaceResolver;
+import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
@@ -690,17 +691,21 @@ public class JAXBUnmarshaller implements Unmarshaller {
             } else if(value instanceof String) {
                 mType = MediaType.getMediaType((String)value);
             }
-            if(mType != null){
-               xmlUnmarshaller.setMediaType(mType);
-            }else{
-               throw new PropertyException(key, value);
+            if(mType == null){
+            	throw new PropertyException(key, XMLConstants.EMPTY_STRING);
             }
+            xmlUnmarshaller.setMediaType(mType);           
         } else if (key.equals(UnmarshallerProperties.JSON_ATTRIBUTE_PREFIX)){
         	xmlUnmarshaller.setAttributePrefix((String)value);
         } else if (UnmarshallerProperties.JSON_INCLUDE_ROOT.equals(key)) {
+        	if(value == null){
+        	    throw new PropertyException(key, XMLConstants.EMPTY_STRING);
+        	}        
         	xmlUnmarshaller.setIncludeRoot((Boolean)value);            
         } else if (UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER.equals(key)){
-            if (value instanceof Map){
+        	if (value == null){
+        		xmlUnmarshaller.setNamespaceResolver(null);
+        	} else if (value instanceof Map){
                 Map<String, String> namespaces = (Map<String, String>)value;
                 NamespaceResolver nr = new NamespaceResolver();
                 Iterator<Entry<String, String>> namesapcesIter = namespaces.entrySet().iterator();
@@ -714,12 +719,19 @@ public class JAXBUnmarshaller implements Unmarshaller {
             }
         } else if (UnmarshallerProperties.JSON_VALUE_WRAPPER.equals(key)){        	
             xmlUnmarshaller.setValueWrapper((String)value);
-        } else if (UnmarshallerProperties.JSON_NAMESPACE_SEPARATOR.equals(key)){        
+        } else if (UnmarshallerProperties.JSON_NAMESPACE_SEPARATOR.equals(key)){  
+        	if(value == null){
+        	    throw new PropertyException(key, XMLConstants.EMPTY_STRING);
+        	}
         	xmlUnmarshaller.setNamespaceSeparator((Character)value);            
         } else if (UnmarshallerProperties.ID_RESOLVER.equals(key)) {
             setIDResolver((IDResolver) value);
         } else if (SUN_ID_RESOLVER.equals(key) || SUN_JSE_ID_RESOLVER.equals(key)) {
-            setIDResolver(new IDResolverWrapper(value));
+        	if(value == null){
+          		setIDResolver(null);
+        	}else {
+                    setIDResolver(new IDResolverWrapper(value));
+        	}
         } else {
             throw new PropertyException(key, value);
         }
@@ -767,6 +779,9 @@ public class JAXBUnmarshaller implements Unmarshaller {
             return xmlUnmarshaller.getIDResolver();
         } else if (SUN_ID_RESOLVER.equals(key) || SUN_JSE_ID_RESOLVER.equals(key)) {
             IDResolverWrapper wrapper = (IDResolverWrapper) xmlUnmarshaller.getIDResolver();
+            if(wrapper == null){
+            	return null;
+            }
             return wrapper.getResolver();
         }
         throw new PropertyException(key);
