@@ -2343,6 +2343,7 @@ public class PersistenceUnitProperties {
      * JMS cache coordination will spawn one thread to receive JMS change notification messages (unless MDB is used).
      * JMS also spawns a thread to process the change notificaiton (unless MDB is used).
      * The default size is 32 threads.
+     * A size of 0 indicates no thread pool should be used, and threads will be spawned when required.
      * 
      * @see #COORDINATION_PROTOCOL
      * @see org.eclipse.persistence.platform.server.ServerPlatformBase#setThreadPoolSize(int)
