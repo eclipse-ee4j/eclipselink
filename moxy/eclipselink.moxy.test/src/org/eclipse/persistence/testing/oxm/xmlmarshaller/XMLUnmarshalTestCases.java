@@ -57,11 +57,10 @@ public class XMLUnmarshalTestCases extends OXTestCase {
         TestRunner.main(arguments);
     }
 
-    public void setUp() throws Exception {    	
+    public void setUp() throws Exception {   
         context = getXMLContext(SESSION_NAME);
         unmarshaller = context.createUnmarshaller();
-        controlObject = setupControlObject();
-        super.platform = Platform.SAX;
+        controlObject = setupControlObject();        
     }
 
     protected Employee setupControlObject() {
@@ -103,10 +102,12 @@ public class XMLUnmarshalTestCases extends OXTestCase {
     }
     
     public void testUnmarshalFromFileJSON() throws Exception {
-        File file = new File(ClassLoader.getSystemResource(JSON_RESOURCE).getFile());
-        unmarshaller.setMediaType(MediaType.APPLICATION_JSON);
-        Object unmarshalledObject = unmarshaller.unmarshal(file);
-        assertEquals(controlObject, unmarshalledObject);
+    	if(platform.equals(PLATFORM_SAX)){
+            File file = new File(ClassLoader.getSystemResource(JSON_RESOURCE).getFile());
+            unmarshaller.setMediaType(MediaType.APPLICATION_JSON);
+            Object unmarshalledObject = unmarshaller.unmarshal(file);
+            assertEquals(controlObject, unmarshalledObject);
+    	}
     }
 
     public void testUnmarshalFromFileWithClass() throws Exception {
@@ -116,10 +117,12 @@ public class XMLUnmarshalTestCases extends OXTestCase {
     }
 
     public void testUnmarshalFromFileWithClassJSON() throws Exception {
-        File file = new File(ClassLoader.getSystemResource(JSON_RESOURCE).getFile());
-        unmarshaller.setMediaType(MediaType.APPLICATION_JSON);
-        Object unmarshalledObject = unmarshaller.unmarshal(file, Employee.class);       
-        assertEquals(controlObject, unmarshalledObject);
+    	if(platform.equals(PLATFORM_SAX)){ 
+            File file = new File(ClassLoader.getSystemResource(JSON_RESOURCE).getFile());
+            unmarshaller.setMediaType(MediaType.APPLICATION_JSON);
+            Object unmarshalledObject = unmarshaller.unmarshal(file, Employee.class);       
+            assertEquals(controlObject, unmarshalledObject);
+    	}
     }
     
     public void testUnmarshalFromFileWithNullClass() throws Exception {
@@ -139,11 +142,13 @@ public class XMLUnmarshalTestCases extends OXTestCase {
     }
 
     public void testUnmarshalFromDocumentJSON() throws Exception {
-        InputStream stream = ClassLoader.getSystemResourceAsStream(XML_RESOURCE);
-        Document testDocument = getParser().parse(stream);
-        unmarshaller.setMediaType(MediaType.APPLICATION_JSON);
-        Object unmarshalledObject = unmarshaller.unmarshal(testDocument);
-        assertEquals(controlObject, unmarshalledObject);
+    	if(platform.equals(PLATFORM_SAX)){
+            InputStream stream = ClassLoader.getSystemResourceAsStream(XML_RESOURCE);
+            Document testDocument = getParser().parse(stream);
+            unmarshaller.setMediaType(MediaType.APPLICATION_JSON);
+            Object unmarshalledObject = unmarshaller.unmarshal(testDocument);
+            assertEquals(controlObject, unmarshalledObject);
+    	}
     }
     
     public void testUnmarshalFromDocumentWithClass() throws Exception {
@@ -154,12 +159,14 @@ public class XMLUnmarshalTestCases extends OXTestCase {
     }
     
     public void testUnmarshalFromDocumentWithClassJSON() throws Exception {
-        InputStream stream = ClassLoader.getSystemResourceAsStream(XML_RESOURCE);
-        Document testDocument = getParser().parse(stream);
-        unmarshaller.setMediaType(MediaType.APPLICATION_JSON);
+    	if(platform.equals(PLATFORM_SAX)){
+            InputStream stream = ClassLoader.getSystemResourceAsStream(XML_RESOURCE);
+            Document testDocument = getParser().parse(stream);
+            unmarshaller.setMediaType(MediaType.APPLICATION_JSON);
 
-        Object unmarshalledObject = unmarshaller.unmarshal(testDocument, Employee.class);
-        assertEquals(controlObject, unmarshalledObject);
+            Object unmarshalledObject = unmarshaller.unmarshal(testDocument, Employee.class);
+            assertEquals(controlObject, unmarshalledObject);
+    	}
     }
 
     public void testUnmarshalFromDocumentWithNullClass() throws Exception {
@@ -175,17 +182,18 @@ public class XMLUnmarshalTestCases extends OXTestCase {
     public void testUnmarshalFromNode() throws Exception {
         InputStream stream = ClassLoader.getSystemResourceAsStream(UNMARSHAL_FROM_NODE_RESOURCE);
         Document testDocument = getParser().parse(stream);
-        unmarshaller.setMediaType(MediaType.APPLICATION_JSON);
         Object unmarshalledObject = unmarshaller.unmarshal(testDocument.getDocumentElement().getFirstChild());
         assertEquals(controlObject, unmarshalledObject);
     }
     
     public void testUnmarshalFromNodeJSON() throws Exception {
-        InputStream stream = ClassLoader.getSystemResourceAsStream(UNMARSHAL_FROM_NODE_RESOURCE);
-        Document testDocument = getParser().parse(stream);
-        unmarshaller.setMediaType(MediaType.APPLICATION_JSON);
-        Object unmarshalledObject = unmarshaller.unmarshal(testDocument.getDocumentElement().getFirstChild());
-        assertEquals(controlObject, unmarshalledObject);
+    	if(platform.equals(PLATFORM_SAX)){
+            InputStream stream = ClassLoader.getSystemResourceAsStream(UNMARSHAL_FROM_NODE_RESOURCE);
+            Document testDocument = getParser().parse(stream);
+            unmarshaller.setMediaType(MediaType.APPLICATION_JSON);
+            Object unmarshalledObject = unmarshaller.unmarshal(testDocument.getDocumentElement().getFirstChild());
+            assertEquals(controlObject, unmarshalledObject);
+    	}
     }
 
     public void testUnmarshalFromInputStream() {
@@ -196,12 +204,13 @@ public class XMLUnmarshalTestCases extends OXTestCase {
     }
 
     public void testUnmarshalFromInputStreamJSON() {
-        InputStream stream = ClassLoader.getSystemResourceAsStream(JSON_RESOURCE);
-        unmarshaller.setMediaType(MediaType.APPLICATION_JSON);
+    	if(platform.equals(PLATFORM_SAX)){
+            InputStream stream = ClassLoader.getSystemResourceAsStream(JSON_RESOURCE);
+            unmarshaller.setMediaType(MediaType.APPLICATION_JSON);
 
-        Object unmarshalledObject = unmarshaller.unmarshal(stream);
-
-        assertEquals(controlObject, unmarshalledObject);
+            Object unmarshalledObject = unmarshaller.unmarshal(stream);
+            assertEquals(controlObject, unmarshalledObject);
+    	}
     }
     
     public void testUnmarshalFromInputStreamWithClass() {
@@ -212,12 +221,13 @@ public class XMLUnmarshalTestCases extends OXTestCase {
     }
     
     public void testUnmarshalFromInputStreamWithClassJSON() {
-        InputStream stream = ClassLoader.getSystemResourceAsStream(JSON_RESOURCE);
-        unmarshaller.setMediaType(MediaType.APPLICATION_JSON);
+    	if(platform.equals(PLATFORM_SAX)){
+            InputStream stream = ClassLoader.getSystemResourceAsStream(JSON_RESOURCE);
+            unmarshaller.setMediaType(MediaType.APPLICATION_JSON);
 
-        Object unmarshalledObject = unmarshaller.unmarshal(stream, Employee.class);
-
-        assertEquals(controlObject, unmarshalledObject);
+            Object unmarshalledObject = unmarshaller.unmarshal(stream, Employee.class);
+            assertEquals(controlObject, unmarshalledObject);
+    	}
     }
     
     public void testUnmarshalFromXMLStreamReader() throws Exception {
@@ -251,8 +261,8 @@ public class XMLUnmarshalTestCases extends OXTestCase {
     }
     
     
-    public void testUnmarshalFromXMLEventReaderJSON() throws Exception {
-    	if(XML_INPUT_FACTORY != null){
+    public void testUnmarshalFromXMLEventReaderJSON() throws Exception {    	
+    	if(XML_INPUT_FACTORY != null && platform.equals(PLATFORM_SAX)){
             InputStream stream = ClassLoader.getSystemResourceAsStream(XML_RESOURCE);
             javax.xml.stream.XMLEventReader reader = XML_INPUT_FACTORY.createXMLEventReader(stream);
             Source ss = (Source)PrivilegedAccessHelper.invokeConstructor(staxSourceEventReaderConstructor, new Object[]{reader});
@@ -273,7 +283,7 @@ public class XMLUnmarshalTestCases extends OXTestCase {
     }
 
     public void testUnmarshalFromXMLEventReaderWithClassJSON() throws Exception {
-    	if(XML_INPUT_FACTORY != null){
+    	if(XML_INPUT_FACTORY != null && platform.equals(PLATFORM_SAX)){
             InputStream stream = ClassLoader.getSystemResourceAsStream(XML_RESOURCE);
             javax.xml.stream.XMLEventReader reader = XML_INPUT_FACTORY.createXMLEventReader(stream);
             Source ss = (Source)PrivilegedAccessHelper.invokeConstructor(staxSourceEventReaderConstructor, new Object[]{reader});
@@ -302,30 +312,35 @@ public class XMLUnmarshalTestCases extends OXTestCase {
     }
 
     public void testUnmarshalFromInputSourceJSON() {
-        InputStream stream = ClassLoader.getSystemResourceAsStream(JSON_RESOURCE);
-        InputSource source = new InputSource(stream);
-        unmarshaller.setMediaType(MediaType.APPLICATION_JSON);
-        Object unmarshalledObject = unmarshaller.unmarshal(source);
+    	if(platform.equals(PLATFORM_SAX)){
+            InputStream stream = ClassLoader.getSystemResourceAsStream(JSON_RESOURCE);
+            InputSource source = new InputSource(stream);
+            unmarshaller.setMediaType(MediaType.APPLICATION_JSON);
+            Object unmarshalledObject = unmarshaller.unmarshal(source);
 
-        assertEquals(controlObject, unmarshalledObject);
+            assertEquals(controlObject, unmarshalledObject);
+    	}
     }  
     
     public void testUnmarshalFromInputSourceWithClass() {
-        InputStream stream = ClassLoader.getSystemResourceAsStream(XML_RESOURCE);
-        InputSource source = new InputSource(stream);
-        Object unmarshalledObject = unmarshaller.unmarshal(source, Employee.class);
+    	if(platform.equals(PLATFORM_SAX)){    	
+            InputStream stream = ClassLoader.getSystemResourceAsStream(XML_RESOURCE);
+            InputSource source = new InputSource(stream);
+            Object unmarshalledObject = unmarshaller.unmarshal(source, Employee.class);
 
-        assertEquals(controlObject, unmarshalledObject);
+            assertEquals(controlObject, unmarshalledObject);
+    	}
     }
 
     public void testUnmarshalFromInputSourceWithClassJSON() {
-        InputStream stream = ClassLoader.getSystemResourceAsStream(JSON_RESOURCE);
-        InputSource source = new InputSource(stream);
-        unmarshaller.setMediaType(MediaType.APPLICATION_JSON);
+    	if(platform.equals(PLATFORM_SAX)){
+            InputStream stream = ClassLoader.getSystemResourceAsStream(JSON_RESOURCE);
+            InputSource source = new InputSource(stream);
+            unmarshaller.setMediaType(MediaType.APPLICATION_JSON);
 
-        Object unmarshalledObject = unmarshaller.unmarshal(source, Employee.class);
-
-        assertEquals(controlObject, unmarshalledObject);
+            Object unmarshalledObject = unmarshaller.unmarshal(source, Employee.class);
+            assertEquals(controlObject, unmarshalledObject);
+    	}
     }
     
     public void testUnmarshalFromInputSourceWithNullClass() throws Exception {
@@ -355,23 +370,27 @@ public class XMLUnmarshalTestCases extends OXTestCase {
     }
 
     public void testUnmarshalFromReaderJSON() {
-        InputStream stream = ClassLoader.getSystemResourceAsStream(JSON_RESOURCE);
-        InputStreamReader reader = new InputStreamReader(stream);
-        unmarshaller.setMediaType(MediaType.APPLICATION_JSON);
+    	if(platform.equals(PLATFORM_SAX)){
+            InputStream stream = ClassLoader.getSystemResourceAsStream(JSON_RESOURCE);
+            InputStreamReader reader = new InputStreamReader(stream);
+            unmarshaller.setMediaType(MediaType.APPLICATION_JSON);
 
-        Object unmarshalledObject = unmarshaller.unmarshal(reader);
+            Object unmarshalledObject = unmarshaller.unmarshal(reader);
 
-        assertEquals(controlObject, unmarshalledObject);
+            assertEquals(controlObject, unmarshalledObject);
+    	}
     }
 
     public void testUnmarshalFromReaderWithClassJSON() {
-        InputStream stream = ClassLoader.getSystemResourceAsStream(JSON_RESOURCE);
-        InputStreamReader reader = new InputStreamReader(stream);
-        unmarshaller.setMediaType(MediaType.APPLICATION_JSON);
+    	if(platform.equals(PLATFORM_SAX)){
+            InputStream stream = ClassLoader.getSystemResourceAsStream(JSON_RESOURCE);
+            InputStreamReader reader = new InputStreamReader(stream);
+            unmarshaller.setMediaType(MediaType.APPLICATION_JSON);
 
-        Object unmarshalledObject = unmarshaller.unmarshal(reader, Employee.class);
+            Object unmarshalledObject = unmarshaller.unmarshal(reader, Employee.class);
 
-        assertEquals(controlObject, unmarshalledObject);
+            assertEquals(controlObject, unmarshalledObject);
+    	}
     }
     
     public void testUnmarshalFromReaderWithNullClass() throws Exception {
@@ -399,19 +418,23 @@ public class XMLUnmarshalTestCases extends OXTestCase {
     }
 
     public void testUnmarshalFromStreamSourceJSON() {
-        InputStream inputStream = ClassLoader.getSystemResourceAsStream(JSON_RESOURCE);
-        Source source = new StreamSource(inputStream);
-        unmarshaller.setMediaType(MediaType.APPLICATION_JSON);
-        Object unmarshalledObject = unmarshaller.unmarshal(source);
-        assertEquals(controlObject, unmarshalledObject);
+    	if(platform.equals(PLATFORM_SAX)){
+            InputStream inputStream = ClassLoader.getSystemResourceAsStream(JSON_RESOURCE);
+            Source source = new StreamSource(inputStream);
+            unmarshaller.setMediaType(MediaType.APPLICATION_JSON);
+            Object unmarshalledObject = unmarshaller.unmarshal(source);
+            assertEquals(controlObject, unmarshalledObject);
+    	}
     }
 
     public void testUnmarshalFromStreamSourceWithClassJSON() {
-        InputStream inputStream = ClassLoader.getSystemResourceAsStream(JSON_RESOURCE);
-        Source source = new StreamSource(inputStream);
-        unmarshaller.setMediaType(MediaType.APPLICATION_JSON);
-        Object unmarshalledObject = unmarshaller.unmarshal(source, Employee.class);
-        assertEquals(controlObject, unmarshalledObject);
+    	if(platform.equals(PLATFORM_SAX)){
+            InputStream inputStream = ClassLoader.getSystemResourceAsStream(JSON_RESOURCE);
+            Source source = new StreamSource(inputStream);
+            unmarshaller.setMediaType(MediaType.APPLICATION_JSON);
+            Object unmarshalledObject = unmarshaller.unmarshal(source, Employee.class);
+            assertEquals(controlObject, unmarshalledObject);
+    	}
     }
     public void testUnmarshalFromStreamSourceWithNullClass() throws Exception {
         try {
@@ -432,12 +455,14 @@ public class XMLUnmarshalTestCases extends OXTestCase {
     }
 
     public void testUnmarshalFromDOMSourceJSON() throws Exception {
-        InputStream inputStream = ClassLoader.getSystemResourceAsStream(XML_RESOURCE);
-        Document testDocument = getParser().parse(inputStream);
-        DOMSource source = new DOMSource(testDocument);
-        unmarshaller.setMediaType(MediaType.APPLICATION_JSON);
-        Object unmarshalledObject = unmarshaller.unmarshal(source);
-        assertEquals(controlObject, unmarshalledObject);
+    	if(platform.equals(PLATFORM_SAX)){
+            InputStream inputStream = ClassLoader.getSystemResourceAsStream(XML_RESOURCE);
+            Document testDocument = getParser().parse(inputStream);
+            DOMSource source = new DOMSource(testDocument);
+            unmarshaller.setMediaType(MediaType.APPLICATION_JSON);
+            Object unmarshalledObject = unmarshaller.unmarshal(source);
+            assertEquals(controlObject, unmarshalledObject);
+    	}
     }
     
     public void testUnmarshalFromDOMSourceWithClass() throws Exception {
@@ -449,12 +474,14 @@ public class XMLUnmarshalTestCases extends OXTestCase {
     }
     
     public void testUnmarshalFromDOMSourceWithClassJSON() throws Exception {
-        InputStream inputStream = ClassLoader.getSystemResourceAsStream(XML_RESOURCE);
-        Document testDocument = getParser().parse(inputStream);
-        DOMSource source = new DOMSource(testDocument);
-        unmarshaller.setMediaType(MediaType.APPLICATION_JSON);
-        Object unmarshalledObject = unmarshaller.unmarshal(source, Employee.class);
-        assertEquals(controlObject, unmarshalledObject);
+    	if(platform.equals(PLATFORM_SAX)){
+            InputStream inputStream = ClassLoader.getSystemResourceAsStream(XML_RESOURCE);
+            Document testDocument = getParser().parse(inputStream);
+            DOMSource source = new DOMSource(testDocument);
+            unmarshaller.setMediaType(MediaType.APPLICATION_JSON);
+            Object unmarshalledObject = unmarshaller.unmarshal(source, Employee.class);
+            assertEquals(controlObject, unmarshalledObject);
+    	}
     }
 
     public void testUnmarshalFromDOMSourceWithNullClass() throws Exception {
@@ -486,22 +513,25 @@ public class XMLUnmarshalTestCases extends OXTestCase {
 
 
     public void testUnmarshalFromSAXSourceJSON() {
-        InputStream inputStream = ClassLoader.getSystemResourceAsStream(JSON_RESOURCE);
-        InputSource inputSource = new InputSource(inputStream);        
-        SAXSource source = new SAXSource(inputSource);
-        unmarshaller.setMediaType(MediaType.APPLICATION_JSON);
-        Object unmarshalledObject = unmarshaller.unmarshal(source);
-        assertEquals(controlObject, unmarshalledObject);
+    	if(platform.equals(PLATFORM_SAX)){
+            InputStream inputStream = ClassLoader.getSystemResourceAsStream(JSON_RESOURCE);
+            InputSource inputSource = new InputSource(inputStream);        
+            SAXSource source = new SAXSource(inputSource);
+            unmarshaller.setMediaType(MediaType.APPLICATION_JSON);
+            Object unmarshalledObject = unmarshaller.unmarshal(source);
+            assertEquals(controlObject, unmarshalledObject);
+    	}
     }
 
     public void testUnmarshalFromSAXSourceWithClassJSON() {
-    	//A SAXSource with no reader goes to JSON
-        InputStream inputStream = ClassLoader.getSystemResourceAsStream(JSON_RESOURCE);
-        InputSource inputSource = new InputSource(inputStream);
-        SAXSource source = new SAXSource(inputSource);
-        unmarshaller.setMediaType(MediaType.APPLICATION_JSON);
-        Object unmarshalledObject = unmarshaller.unmarshal(source, Employee.class);
-        assertEquals(controlObject, unmarshalledObject);
+    	if(platform.equals(PLATFORM_SAX)){
+            InputStream inputStream = ClassLoader.getSystemResourceAsStream(JSON_RESOURCE);
+            InputSource inputSource = new InputSource(inputStream);
+            SAXSource source = new SAXSource(inputSource);
+            unmarshaller.setMediaType(MediaType.APPLICATION_JSON);
+            Object unmarshalledObject = unmarshaller.unmarshal(source, Employee.class);
+            assertEquals(controlObject, unmarshalledObject);
+    	}
     }
     
     public void testUnmarshalFromSAXSourceWithNullClass() throws Exception {
@@ -528,17 +558,21 @@ public class XMLUnmarshalTestCases extends OXTestCase {
     }
     
     public void testUnmarshalFromURLJSON() {
-        URL url = ClassLoader.getSystemResource(JSON_RESOURCE);
-        unmarshaller.setMediaType(MediaType.APPLICATION_JSON);
-        Object unmarshalledObject = unmarshaller.unmarshal(url);
-        assertEquals(controlObject, unmarshalledObject);
+    	if(platform.equals(PLATFORM_SAX)){
+            URL url = ClassLoader.getSystemResource(JSON_RESOURCE);
+            unmarshaller.setMediaType(MediaType.APPLICATION_JSON);
+            Object unmarshalledObject = unmarshaller.unmarshal(url);
+            assertEquals(controlObject, unmarshalledObject);
+    	}
     }
 
     public void testUnmarshalFromURLWithClassJSON() {
-        URL url = ClassLoader.getSystemResource(JSON_RESOURCE);
-        unmarshaller.setMediaType(MediaType.APPLICATION_JSON);
-        Object unmarshalledObject = unmarshaller.unmarshal(url, Employee.class);
-        assertEquals(controlObject, unmarshalledObject);
+    	if(platform.equals(PLATFORM_SAX)){
+            URL url = ClassLoader.getSystemResource(JSON_RESOURCE);
+            unmarshaller.setMediaType(MediaType.APPLICATION_JSON);
+            Object unmarshalledObject = unmarshaller.unmarshal(url, Employee.class);
+            assertEquals(controlObject, unmarshalledObject);
+    	}
     }
 
     public void testUnmarshalFromURLWithNullClass() throws Exception {
@@ -772,5 +806,27 @@ public class XMLUnmarshalTestCases extends OXTestCase {
         }
         assertTrue("An XMLValidation should have been caught but wasn't.", false);
     }
-   
+    
+    
+    public void testUnmarshalFromInputSourceDOMPlatformJSON(){
+        InputStream stream = ClassLoader.getSystemResourceAsStream(XML_RESOURCE);
+        InputStream stream2 = ClassLoader.getSystemResourceAsStream(JSON_RESOURCE);
+        
+        if(platform.equals(PLATFORM_DOM)){        
+	        assertEquals("org.eclipse.persistence.oxm.platform.DOMPlatform", unmarshaller.getXMLContext().getSession(0).getProject().getDatasourceLogin().getDatasourcePlatform().getClass().getName());
+	    	       
+	        unmarshaller.setMediaType(MediaType.APPLICATION_XML);
+	        Object unmarshalledObject = unmarshaller.unmarshal(stream);
+	        assertEquals(controlObject, unmarshalledObject);
+	
+	        unmarshaller.setMediaType(MediaType.APPLICATION_JSON);
+	        try{
+	           unmarshalledObject = unmarshaller.unmarshal(stream2);
+	        }catch(XMLMarshalException e){
+	        	assertEquals(XMLMarshalException.PLATFORM_NOT_SUPPORTED_WITH_JSON_MEDIA_TYPE,e.getErrorCode());
+	        	return;
+	        }
+	        fail("A XMLMarshalException should have been thrown");
+        }
+    }
 }
