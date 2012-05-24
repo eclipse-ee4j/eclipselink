@@ -383,6 +383,7 @@
                 dir="${eclipselink.moxy.lib.dir}"
                 includes="${eclipselink.moxy.depend}"/>
             <pathelement path="${eclipselink.jpa}/../../${eclipselink.jar}"/>
+            <fileset dir="${jpatest.2.common.plugins.dir}" includes="org.eclipse.persistence.nosql_*.jar"/>
             <pathelement path="${junit.lib}"/>
             <pathelement path="${eclipselink.plugins}/${antlr}"/>
             <pathelement path="${eclipselink.plugins}/${asm}"/>
