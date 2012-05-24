@@ -42,7 +42,8 @@ public class JavadocAnnotationExamplesTestSuite extends TestSuite {
 		suite.addTestSuite(org.eclipse.persistence.testing.jaxb.javadoc.xmlrootelement.XmlRootElementNotInheritedByDerivedTest.class);
 		suite.addTestSuite(org.eclipse.persistence.testing.jaxb.javadoc.xmlschema.XmlSchemaElementFormUnqualifiedTest.class);
 		suite.addTestSuite(org.eclipse.persistence.testing.jaxb.javadoc.xmlschematype.XmlSchemaTypeGregorianCalendarTest.class);
-		// suite.addTestSuite(org.eclipse.persistence.testing.jaxb.javadoc.xmlseealso.XmlSeeAlsoTest.class);
+		suite.addTestSuite(org.eclipse.persistence.testing.jaxb.javadoc.xmlseealso.XmlSeeAlsoTest.class);
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.javadoc.xmlseealso.XmlSeeAlsoTest2.class);
 		suite.addTestSuite(org.eclipse.persistence.testing.jaxb.javadoc.xmltransient.XmlTransientTest.class);
 		suite.addTestSuite(org.eclipse.persistence.testing.jaxb.javadoc.xmltype.XmlTypeCustomizedOrderingTest.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.javadoc.xmltype.AttributeWithAnonymousTypeTest.class);
