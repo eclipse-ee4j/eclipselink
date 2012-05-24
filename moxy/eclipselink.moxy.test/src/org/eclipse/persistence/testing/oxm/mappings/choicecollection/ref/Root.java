@@ -22,7 +22,13 @@ public class Root {
     public List<PhoneNumber> phones;
     
     public boolean equals(Object obj) {
-        Root root = (Root)obj;
+        Root root;
+        
+        try {
+            root = (Root)obj;
+        } catch (Exception x) {
+            return false;
+        }
         
         return employees.equals(root.employees) && addresses.equals(root.addresses) && phones.equals(root.phones);
     }

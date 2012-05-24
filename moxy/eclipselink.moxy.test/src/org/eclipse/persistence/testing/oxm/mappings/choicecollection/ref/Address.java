@@ -21,7 +21,12 @@ public class Address {
     public String zip;
     
     public boolean equals(Object obj) {
-        Address addr = (Address)obj;
+        Address addr;
+        try {
+            addr = (Address)obj;
+        } catch (Exception ex) {
+            return false;
+        }
         
         return id.equals(addr.id)&& street.equals(addr.street) && zip.equals(addr.zip); 
     }

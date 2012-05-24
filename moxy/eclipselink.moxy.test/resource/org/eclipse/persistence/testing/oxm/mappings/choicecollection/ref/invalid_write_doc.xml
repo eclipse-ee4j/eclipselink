@@ -1,0 +1,25 @@
+<root>
+   <employees>
+      <employee>
+	     <name>Jane Doe</name>
+		 <address>
+		    <address-id>1</address-id>
+			<zip>123456</zip>
+		 </address>
+         <phone id="1"/>
+      </employee>
+   </employees>
+   <addresses>
+      <address id="1">
+         <street>123 Abc Street</street>
+         <zip>123456</zip>
+      </address>
+      <address id="2">
+         <street>321 Cba Street</street>
+         <zip>654321</zip>
+      </address>
+   </addresses>
+   <phone-numbers>
+      <phone id="1">123-3456</phone>
+   </phone-numbers>
+</root>
