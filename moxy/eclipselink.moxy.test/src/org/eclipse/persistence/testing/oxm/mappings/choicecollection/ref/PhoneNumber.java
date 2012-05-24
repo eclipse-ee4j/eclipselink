@@ -17,7 +17,13 @@ public class PhoneNumber {
     public String number;
     
     public boolean equals(Object obj) {
-        PhoneNumber num = (PhoneNumber)obj;
+        PhoneNumber num;
+        
+        try {
+            num = (PhoneNumber)obj;
+        } catch (Exception ex) {
+            return false;
+        }
         
         return this.id.equals(num.id) && this.number.equals(num.number);
     }

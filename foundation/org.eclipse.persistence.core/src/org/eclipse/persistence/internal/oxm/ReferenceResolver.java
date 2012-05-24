@@ -118,6 +118,7 @@ public class ReferenceResolver {
                 CacheId pkVals = (CacheId) reference.getPrimaryKeyMap().get(pkFieldNameIt.next());
 
                 if (pkVals == null) {
+                    // at this point the reference does not contain the correct pk fields necessary to resolve
                     return;
                 }
                 // initialize the list of pk vectors once and only once
@@ -194,6 +195,12 @@ public class ReferenceResolver {
 
                 // create vectors of primary key values - one vector per reference instance
                 createPKVectorsFromMap(reference, mapping);
+                
+                // if the we could not generate the primary key for the reference, it will not resolve - skip it
+                if (reference.getPrimaryKey() == null) {
+                    continue;
+                }
+                
                 // loop over each pk vector and get object from cache - then add to collection and set on object
                 Object value = null;
                 if(!mapping.isWriteOnly()) {
