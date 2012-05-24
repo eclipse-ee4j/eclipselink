@@ -4170,8 +4170,8 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
             assertTrue(results.size() == 1);
             assertTrue(((Employee)results.get(0)).getFirstName().equals("Ellen"));
 
-            if (getServerSession().getPlatform().isSymfoware()){
-                getServerSession().getSessionLog().log(SessionLog.INFO, "Symfoware doesn't support the format 'NULL IS NULL'.");
+            if (getServerSession().getPlatform().isDerby() || getServerSession().getPlatform().isSymfoware()){
+                getServerSession().getSessionLog().log(SessionLog.INFO, "Derby, Symfoware do not support the format 'NULL IS NULL'.");
             } else {
                 results = em.createQuery("select e from Employee e where (e.payScale = :payScale and not :payScale IS NULL) " +
                 "or (:payScale IS NULL AND e.payScale IS NULL)").setParameter("payScale", null).getResultList();
