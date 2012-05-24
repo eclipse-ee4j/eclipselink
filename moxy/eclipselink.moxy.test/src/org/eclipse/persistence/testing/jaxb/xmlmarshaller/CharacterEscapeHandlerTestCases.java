@@ -14,15 +14,17 @@
 package org.eclipse.persistence.testing.jaxb.xmlmarshaller;
 
 import org.eclipse.persistence.jaxb.MarshallerProperties;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class CharacterEscapeHandlerTestCases extends JAXBTestCases {
+public class CharacterEscapeHandlerTestCases extends JAXBWithJSONTestCases {
 
     private final static String CHAR_ESCAPE = "org/eclipse/persistence/testing/jaxb/xmlmarshaller/charEscape.xml";
+    private final static String CHAR_ESCAPE_JSON = "org/eclipse/persistence/testing/jaxb/xmlmarshaller/charEscape.json";
 
     public CharacterEscapeHandlerTestCases(String name) throws Exception {
         super(name);
         setControlDocument(CHAR_ESCAPE);
+        setControlJSON(CHAR_ESCAPE_JSON);
         Class[] classes = new Class[1];
         classes[0] = Employee.class;
         setClasses(classes);
