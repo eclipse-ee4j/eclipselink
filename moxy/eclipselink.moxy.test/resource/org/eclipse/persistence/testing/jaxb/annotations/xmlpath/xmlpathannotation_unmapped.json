@@ -6,6 +6,9 @@
                  },
 		 "personal-info":{
 		    "extra-element":"Some Text",
+		    "extra-list":[],
+   		    "extra-list2":["aaa","vvv"],
+   		    "extra-list3":[{"aa":"bb"},{}],
 		    "first-name":"Jane",
 		    "last-name":"Doe"
 		 },

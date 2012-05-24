@@ -1141,16 +1141,18 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
                 resultNode = (XPathNode)nonAttributeChildrenMap.get(predicateFragment);
                 if (null == resultNode) {
                     predicateFragment.setIndexValue(-1);
-                    for(int x = 0, length = attributes.getLength(); x<length; x++) {
-                        XPathFragment conditionFragment = new XPathFragment();
-                        conditionFragment.setLocalName(attributes.getLocalName(x));
-                        conditionFragment.setNamespaceURI(attributes.getURI(x));
-                        conditionFragment.setAttribute(true);
-                        XPathPredicate condition = new XPathPredicate(conditionFragment, attributes.getValue(x));
-                        predicateFragment.setPredicate(condition);
-                        resultNode = (XPathNode) nonAttributeChildrenMap.get(predicateFragment);
-                        if(null != resultNode) {
-                            break;
+                    if(attributes != null){
+                        for(int x = 0, length = attributes.getLength(); x<length; x++) {
+                            XPathFragment conditionFragment = new XPathFragment();
+                            conditionFragment.setLocalName(attributes.getLocalName(x));
+                            conditionFragment.setNamespaceURI(attributes.getURI(x));
+                            conditionFragment.setAttribute(true);
+                            XPathPredicate condition = new XPathPredicate(conditionFragment, attributes.getValue(x));
+                            predicateFragment.setPredicate(condition);
+                            resultNode = (XPathNode) nonAttributeChildrenMap.get(predicateFragment);
+                            if(null != resultNode) {
+                                break;
+                            }
                         }
                     }
                     if(null == resultNode) {
