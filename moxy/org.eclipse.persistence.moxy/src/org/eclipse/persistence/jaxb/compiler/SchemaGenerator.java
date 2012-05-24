@@ -1150,6 +1150,9 @@ public class SchemaGenerator {
                         workingSchema.getNamespaceResolver().put(fragPrefix, fragUri);
                     }
                     currentElement = createRefElement(fragPrefix + COLON + frag.getLocalName(), currentParticle);
+                    if (next.isCollectionType(next.getType())) {
+                        currentElement.setMaxOccurs(Occurs.UNBOUNDED);
+                    }
                     currentElementExists = true;
                 }
                 // set the frag's schema as it may be different than the current schema

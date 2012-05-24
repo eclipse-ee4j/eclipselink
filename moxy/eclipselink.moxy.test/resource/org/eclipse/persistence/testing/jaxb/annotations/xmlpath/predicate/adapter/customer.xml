@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<customer xmlns:atom="http://www.w3.org/2005/Atom">
+   <id>101</id>
+   <name>Glen Harveston</name>
+   <atom:link rel="phone" href="4048748748"/>
+   <atom:link rel="phone" href="4215551212"/>
+</customer>
