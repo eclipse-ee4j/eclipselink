@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:ns0="http://www.w3.org/2005/Atom" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.w3.org/2005/Atom">
+   <xsd:element name="link">
+      <xsd:complexType>
+         <xsd:sequence/>
+         <xsd:attribute name="href" type="xsd:string"/>
+         <xsd:attribute name="rel" type="xsd:string"/>
+      </xsd:complexType>
+   </xsd:element>
+</xsd:schema>

@@ -1057,7 +1057,7 @@ public class SchemaGenerator {
         // don't process the last frag; that will be handled by the calling method if necessary
         // note that we may need to process the last frag if it has a namespace or is an 'any'
         boolean lastFrag = (frag.getNextFragment() == null || frag.getNextFragment().nameIsText());
-        
+        boolean isNextAttribute = (frag.getNextFragment() != null) && (frag.getNextFragment().isAttribute());
         // if the element is already in the sequence we don't want the calling method to add a second one
         if (lastFrag && (elementExistsInParticle(frag.getLocalName(), frag.getShortName(), currentParticle) != null)) {
             xpr.particle = null;
@@ -1150,6 +1150,9 @@ public class SchemaGenerator {
                         workingSchema.getNamespaceResolver().put(fragPrefix, fragUri);
                     }
                     currentElement = createRefElement(fragPrefix + COLON + frag.getLocalName(), currentParticle);
+                    if (next.isCollectionType(next.getType())) {
+                        currentElement.setMaxOccurs(Occurs.UNBOUNDED);
+                    }
                     currentElementExists = true;
                 }
                 // set the frag's schema as it may be different than the current schema
