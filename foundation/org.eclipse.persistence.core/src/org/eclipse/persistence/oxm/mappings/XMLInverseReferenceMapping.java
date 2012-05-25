@@ -113,7 +113,7 @@ public class XMLInverseReferenceMapping extends AggregateMapping implements Cont
             for(XMLMapping next:nestedMappings) {
                 if(next instanceof XMLCompositeObjectMapping) {
                     XMLCompositeObjectMapping compositeMapping = ((XMLCompositeObjectMapping)next);
-                    if(compositeMapping.getReferenceClass() == this.getDescriptor().getJavaClass()) {
+                    if(compositeMapping.getReferenceClass() == this.getDescriptor().getJavaClass() || this.getDescriptor().getJavaClass().isAssignableFrom(compositeMapping.getReferenceClass())) {
                         compositeMapping.setInverseReferenceMapping(this);
                     }
                 } else if(next instanceof XMLObjectReferenceMapping) {
@@ -131,7 +131,7 @@ public class XMLInverseReferenceMapping extends AggregateMapping implements Cont
             for(XMLMapping next:nestedMappings) {
                 if(next instanceof XMLCompositeCollectionMapping) {
                     XMLCompositeCollectionMapping compositeMapping = ((XMLCompositeCollectionMapping)next);
-                    if(compositeMapping.getReferenceClass() == this.getDescriptor().getJavaClass()) {
+                    if(compositeMapping.getReferenceClass() == this.getDescriptor().getJavaClass() || this.getDescriptor().getJavaClass().isAssignableFrom(compositeMapping.getReferenceClass())) {
                         compositeMapping.setInverseReferenceMapping(this);
                     }
                 } else if(next instanceof XMLCollectionReferenceMapping) {
