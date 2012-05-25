@@ -18,14 +18,14 @@ package org.eclipse.persistence.testing.oxm.mappings.anyobject.withgroupingeleme
  *  @author  mmacivor
  *  @since   release specific (what release of product did this appear in)
  */
-import java.util.Vector;
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 
-public class AnyObjectComplexChildNSTestCases extends XMLMappingTestCases {
+public class AnyObjectComplexChildNSTestCases extends XMLWithJSONMappingTestCases {
     public AnyObjectComplexChildNSTestCases(String name) throws Exception {
         super(name);
         setProject(new AnyObjectWithGroupingElementProjectNS());
         setControlDocument("org/eclipse/persistence/testing/oxm/mappings/anyobject/withgroupingelement/complex_child_ns.xml");
+        setControlJSON("org/eclipse/persistence/testing/oxm/mappings/anyobject/withgroupingelement/complex_child_ns.json");
     }
 
     public Object getControlObject() {
@@ -37,3 +37,4 @@ public class AnyObjectComplexChildNSTestCases extends XMLMappingTestCases {
         return root;
     }
 }
+

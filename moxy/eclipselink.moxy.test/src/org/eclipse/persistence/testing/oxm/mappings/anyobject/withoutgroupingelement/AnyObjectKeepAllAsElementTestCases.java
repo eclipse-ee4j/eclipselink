@@ -12,20 +12,16 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.mappings.anyobject.withoutgroupingelement;
 
-import java.util.Vector;
-
-import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
 import org.eclipse.persistence.oxm.XMLRoot;
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 
-public class AnyObjectKeepAllAsElementTestCases extends XMLMappingTestCases {
+public class AnyObjectKeepAllAsElementTestCases extends XMLWithJSONMappingTestCases {
     private static final String TEXT = "jim";
     private static final String CHILD = "child";
     
@@ -33,6 +29,7 @@ public class AnyObjectKeepAllAsElementTestCases extends XMLMappingTestCases {
         super(name);
         setProject(new AnyObjectKeepAllAsElementProject());
         setControlDocument("org/eclipse/persistence/testing/oxm/mappings/anyobject/withoutgroupingelement/keep_all_as_element.xml");
+        setControlJSON("org/eclipse/persistence/testing/oxm/mappings/anyobject/withoutgroupingelement/keep_all_as_element.json");        
     }
     
     public Object getControlObject() {

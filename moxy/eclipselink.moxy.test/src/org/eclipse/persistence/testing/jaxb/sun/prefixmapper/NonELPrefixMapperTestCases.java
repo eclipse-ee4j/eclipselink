@@ -12,18 +12,22 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.sun.prefixmapper;
 
-import org.eclipse.persistence.jaxb.JAXBMarshaller;
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.internal.oxm.record.namespaces.NamespacePrefixMapperWrapper;
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class NonELPrefixMapperTestCases extends JAXBTestCases {
+public class NonELPrefixMapperTestCases extends JAXBWithJSONTestCases {
 
     private static final String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/prefixmapper/employee.xml";
+    private static final String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/prefixmapper/employee.json";
     
     public NonELPrefixMapperTestCases(String name) throws Exception {
         super(name);
         setClasses(new Class[]{Employee.class, Person.class});
-        jaxbMarshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper", new NonELPrefixMapperImpl());
+        jaxbMarshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper", new NonELPrefixMapperImpl());        
+        jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER, new NamespacePrefixMapperWrapper(new NonELPrefixMapperImpl()));
         setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE);
     }
 
     @Override

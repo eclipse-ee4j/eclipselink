@@ -12,24 +12,20 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.oxm.mappings.anyobject.withoutgroupingelement;
 
-import java.util.Vector;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 
-import org.eclipse.persistence.oxm.XMLRoot;
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
-
-public class AnyObjectKeepUnknownAsElementTestCases extends XMLMappingTestCases {
+public class AnyObjectKeepUnknownAsElementTestCases extends XMLWithJSONMappingTestCases {
 
     public AnyObjectKeepUnknownAsElementTestCases(String name) throws Exception {
         super(name);
         setProject(new AnyObjectKeepUnkownAsElementProject());
         setControlDocument("org/eclipse/persistence/testing/oxm/mappings/anyobject/withoutgroupingelement/keep_unknown_as_element.xml");
+        setControlJSON("org/eclipse/persistence/testing/oxm/mappings/anyobject/withoutgroupingelement/keep_unknown_as_element.json");
     }
     
     public Object getControlObject() {
@@ -52,3 +48,4 @@ public class AnyObjectKeepUnknownAsElementTestCases extends XMLMappingTestCases 
     }
     
 }
+

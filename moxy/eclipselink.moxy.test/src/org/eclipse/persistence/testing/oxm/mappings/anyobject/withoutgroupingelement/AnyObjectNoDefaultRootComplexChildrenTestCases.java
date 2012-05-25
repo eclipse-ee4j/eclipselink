@@ -19,18 +19,20 @@ package org.eclipse.persistence.testing.oxm.mappings.anyobject.withoutgroupingel
  *  @since   10.1.3.1.0
  */
 import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.anyobject.withoutgroupingelement.Child;
 import org.eclipse.persistence.testing.oxm.mappings.anyobject.withoutgroupingelement.Root;
 
-public class AnyObjectNoDefaultRootComplexChildrenTestCases extends XMLMappingTestCases {
-    public static final String XML_RESOURCE_PATH = "org/eclipse/persistence/testing/oxm/mappings/anycollection/withgroupingelement/no_default_root_element_children.xml";
+public class AnyObjectNoDefaultRootComplexChildrenTestCases extends XMLWithJSONMappingTestCases {
+    public static final  String XML_RESOURCE_PATH = "org/eclipse/persistence/testing/oxm/mappings/anycollection/withgroupingelement/no_default_root_element_children.xml";
+     public static final String JSON_RESOURCE_PATH = "org/eclipse/persistence/testing/oxm/mappings/anycollection/withgroupingelement/no_default_root_element_children.json";
 
     public AnyObjectNoDefaultRootComplexChildrenTestCases(String name) throws Exception {
         super(name);
         Project p = new AnyObjectNoDefaultRootWithoutGroupingElementProject();
         setProject(p);
         setControlDocument(XML_RESOURCE_PATH);
+        setControlJSON(JSON_RESOURCE_PATH);
     }
 
     public boolean isUnmarshalTest() {
