@@ -27,7 +27,7 @@ public class AdapterWithInheritanceTestCases extends JAXBWithJSONTestCases {
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        Class[] classes = new Class[] {Root.class, Foo.class, Bar.class};
+        Class[] classes = new Class[] {Root.class};
         setClasses(classes);
     }
 

@@ -156,9 +156,9 @@ public class Property implements Cloneable {
         adapterClass = adapterCls;
         JavaClass newType  = helper.getJavaClass(Object.class);
         ArrayList<JavaMethod> marshalMethods = new ArrayList<JavaMethod>();
-                
+
         // look for marshal method
-        for (Iterator<JavaMethod> methodIt = adapterClass.getDeclaredMethods().iterator(); methodIt.hasNext(); ) {
+        for (Iterator<JavaMethod> methodIt = adapterClass.getMethods().iterator(); methodIt.hasNext(); ) {
             JavaMethod method = methodIt.next();
             if (method.getName().equals(MARSHAL_METHOD_NAME)) {
             	JavaClass returnType = method.getReturnType();
