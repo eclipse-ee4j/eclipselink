@@ -185,6 +185,9 @@ public class EmbeddedIdAccessor extends EmbeddedAccessor {
             // make up the composite primary key.
             addIdFieldsFromAccessors(getReferenceAccessors());
         
+            // Flag this id accessor as a JPA id mapping.
+            getMapping().setIsJPAId();                
+            
             // Set the embedded id metadata on all owning descriptors.
             for (MetadataDescriptor owningDescriptor : getOwningDescriptors()) { 
                 // Check if we already processed an Id or IdClass.
