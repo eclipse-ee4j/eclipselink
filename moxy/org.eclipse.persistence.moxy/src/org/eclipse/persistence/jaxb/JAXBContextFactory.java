@@ -46,9 +46,7 @@ import org.eclipse.persistence.jaxb.JAXBContext.TypeMappingInfoInput;
 import org.eclipse.persistence.jaxb.compiler.CompilerHelper;
 import org.eclipse.persistence.jaxb.compiler.XMLProcessor;
 import org.eclipse.persistence.jaxb.metadata.MetadataSource;
-import org.eclipse.persistence.jaxb.xmlmodel.JavaType;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
-import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.JavaTypes;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
@@ -190,8 +188,14 @@ public class JAXBContextFactory {
      */
     public static Map<String, XmlBindings> getXmlBindingsFromProperties(Map properties, ClassLoader classLoader) {
         Map<String, List<XmlBindings>> bindings = new HashMap<String, List<XmlBindings>>();
-        Object value;
-        if (properties != null && ((value = properties.get(ECLIPSELINK_OXM_XML_KEY)) != null)) {
+        Object value = null;
+        if (properties != null) {
+            if ((value = properties.get(JAXBContextProperties.OXM_METADATA_SOURCE)) == null) {
+                // try looking up the 'old' metadata source key
+                value = properties.get(ECLIPSELINK_OXM_XML_KEY);
+            }
+        }
+        if (value != null) {
             // handle Map<String, Object>
             if (value instanceof Map) {
                 Map<String, Object> metadataFiles = null;

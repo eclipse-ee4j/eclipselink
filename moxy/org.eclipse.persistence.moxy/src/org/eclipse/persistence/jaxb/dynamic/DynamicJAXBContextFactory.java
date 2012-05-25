@@ -19,6 +19,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.transform.Source;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext.MetadataContextInput;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext.SchemaContextInput;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext.SessionsXmlContextInput;
@@ -169,7 +170,10 @@ public class DynamicJAXBContextFactory {
         if (properties != null) {
             schema = properties.get(XML_SCHEMA_KEY);
             resolver = (EntityResolver) properties.get(ENTITY_RESOLVER_KEY);
-            bindings = properties.get(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY);
+            if ((bindings = properties.get(JAXBContextProperties.OXM_METADATA_SOURCE)) == null) {
+                // try looking up the 'old' metadata source key
+                bindings = properties.get(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY);
+            }
         }
 
         // First try looking for an XSD
@@ -327,7 +331,7 @@ public class DynamicJAXBContextFactory {
      *      if an error was encountered while creating the <tt>DynamicJAXBContext</tt>.
      */
     public static DynamicJAXBContext createContextFromOXM(ClassLoader classLoader, Map<String, ?> properties) throws JAXBException {
-        if (properties == null || properties.get(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY) == null) {
+        if (properties == null || (properties.get(JAXBContextProperties.OXM_METADATA_SOURCE) == null && properties.get(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY) == null)) {
             throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.oxmKeyNotFound());
         }
 

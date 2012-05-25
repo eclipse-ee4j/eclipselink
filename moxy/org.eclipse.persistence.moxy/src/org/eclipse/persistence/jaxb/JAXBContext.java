@@ -735,8 +735,14 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             String defaultTargetNamespace = null;
             AnnotationHelper annotationHelper = null;
             if(properties != null) {
-                defaultTargetNamespace = (String)properties.get(JAXBContextFactory.DEFAULT_TARGET_NAMESPACE_KEY);
-                annotationHelper = (AnnotationHelper)properties.get(JAXBContextFactory.ANNOTATION_HELPER_KEY);
+                if ((defaultTargetNamespace = (String)properties.get(JAXBContextProperties.DEFAULT_TARGET_NAMESPACE)) == null) {
+                    // try looking up the 'old' key
+                    defaultTargetNamespace = (String)properties.get(JAXBContextFactory.DEFAULT_TARGET_NAMESPACE_KEY);
+                }
+                if ((annotationHelper = (AnnotationHelper)properties.get(JAXBContextProperties.ANNOTATION_HELPER)) == null) {
+                    // try looking up the 'old' key
+                    annotationHelper = (AnnotationHelper)properties.get(JAXBContextFactory.ANNOTATION_HELPER_KEY);
+                }
             }
 
             JavaModelImpl jModel;
@@ -859,8 +865,14 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             String defaultTargetNamespace = null;
             AnnotationHelper annotationHelper = null;
             if(properties != null) {
-                defaultTargetNamespace = (String)properties.get(JAXBContextFactory.DEFAULT_TARGET_NAMESPACE_KEY);
-                annotationHelper = (AnnotationHelper)properties.get(JAXBContextFactory.ANNOTATION_HELPER_KEY);
+                if ((defaultTargetNamespace = (String)properties.get(JAXBContextProperties.DEFAULT_TARGET_NAMESPACE)) == null) {
+                    // try looking up the 'old' key
+                    defaultTargetNamespace = (String)properties.get(JAXBContextFactory.DEFAULT_TARGET_NAMESPACE_KEY);
+                }
+                if ((annotationHelper = (AnnotationHelper)properties.get(JAXBContextProperties.ANNOTATION_HELPER)) == null) {
+                    // try looking up the 'old' key
+                    annotationHelper = (AnnotationHelper)properties.get(JAXBContextFactory.ANNOTATION_HELPER_KEY);
+                }
             }
             TypeMappingInfo[] typesToBeBound = typeMappingInfo;
             for (Entry<String, XmlBindings> entry : xmlBindings.entrySet()) {

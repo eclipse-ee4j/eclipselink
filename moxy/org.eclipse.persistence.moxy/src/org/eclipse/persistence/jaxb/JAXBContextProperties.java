@@ -111,4 +111,50 @@ public class JAXBContextProperties {
      */
     public static final String SESSION_EVENT_LISTENER = "eclipselink.session-event-listener";
 
+    /**
+     * The name of the property used to specify one or more EclipseLink OXM 
+     * metadata sources.
+     * 
+     * The metadata source can be one of the following:
+     * <ul>
+     * <li>java.io.File
+     * <li>java.io.InputStream
+     * <li>java.io.Reader
+     * <li>java.lang.String
+     * <li>java.net.URL
+     * <li>javax.xml.stream.XMLEventReader
+     * <li>javax.xml.stream.XMLStreamReader
+     * <li>javax.xml.transform.Source
+     * <li>org.eclipse.persistence.jaxb.metadata.MetadataSource
+     * <li>org.w3c.dom.Node
+     * <li>org.xml.sax.InputSource
+     * </ul>
+     * 
+     * To specify multiple metadata sources, the following can be used:
+     * <ul>
+     * <li>java.util.Map<String, Object>
+     * <li>java.util.List<Object>
+     * </ul>
+     * 
+     * @since 2.4
+     */
+    public static final String OXM_METADATA_SOURCE = "eclipselink.oxm.metadata-source";
+
+    /**
+     * The name of the property used to specify a default target namespace.
+     * 
+     * @since 2.4
+     */
+    public static final String DEFAULT_TARGET_NAMESPACE = "eclipselink.default-target-namespace";
+    
+    /**
+     * The name of the property used to specify an AnnotationHelper instance.  
+     * An AnnotationHelper is responsible for returning Annotations from 
+     * AnnotatedElements.
+     * @see org.eclipse.persistence.jaxb.javamodel.reflection.AnnotationHelper
+     * @see java.lang.annotation.Annotation
+     * @see java.lang.reflect.AnnotatedElement
+     * @since 2.4
+     */
+    public static final String ANNOTATION_HELPER = "eclipselink.annotation-helper";
 }
