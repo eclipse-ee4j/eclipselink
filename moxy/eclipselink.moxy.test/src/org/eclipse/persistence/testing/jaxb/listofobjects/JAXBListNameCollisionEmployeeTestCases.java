@@ -25,6 +25,7 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 
 public class JAXBListNameCollisionEmployeeTestCases extends
 JAXBListOfObjectsNoJSONTestCases {
@@ -117,7 +118,11 @@ JAXBListOfObjectsNoJSONTestCases {
 	
 	public Map getProperties() {
 	    Map props = new HashMap();
-	    props.put(JAXBContextFactory.DEFAULT_TARGET_NAMESPACE_KEY, "listOfObjectsNamespace");
+
+	    // test override of 'old' context factory property - if the override 
+        // fails we will get errors
+	    props.put(JAXBContextFactory.DEFAULT_TARGET_NAMESPACE_KEY, "listOfObjectsNamespaceWRONG");
+        props.put(JAXBContextProperties.DEFAULT_TARGET_NAMESPACE, "listOfObjectsNamespace");
 	    return props;
 	}
 }

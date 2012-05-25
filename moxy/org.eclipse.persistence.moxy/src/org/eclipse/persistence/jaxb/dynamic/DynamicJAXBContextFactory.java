@@ -19,6 +19,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.transform.Source;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext.MetadataContextInput;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext.SchemaContextInput;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext.SessionsXmlContextInput;
@@ -104,7 +105,7 @@ public class DynamicJAXBContextFactory {
      *
      * <b>Context Creation From EclipseLink OXM:</b><p>
      *
-     * The <tt>properties</tt> map must contain the key <b>JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY</b>, which can have
+     * The <tt>properties</tt> map must contain the key <b>JAXBContextProperties.OXM_METADATA_SOURCE</b>, which can have
      * several possible values:
      *
      * <ul>
@@ -123,7 +124,7 @@ public class DynamicJAXBContextFactory {
      * InputStream iStream = classLoader.getResourceAsStream("resource/eclipselink-oxm.xml");
      *
      * Map&lt;String, Object&gt; properties = new HashMap&lt;String, Object&gt;();
-     * properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, iStream);
+     * properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, iStream);
      *
      * DynamicJAXBContext jaxbContext = (DynamicJAXBContext) JAXBContext.newInstance("org.example", classLoader, properties);
      * DynamicEntity emp = jaxbContext.newDynamicEntity("org.example.Employee");
@@ -169,7 +170,10 @@ public class DynamicJAXBContextFactory {
         if (properties != null) {
             schema = properties.get(XML_SCHEMA_KEY);
             resolver = (EntityResolver) properties.get(ENTITY_RESOLVER_KEY);
-            bindings = properties.get(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY);
+            if ((bindings = properties.get(JAXBContextProperties.OXM_METADATA_SOURCE)) == null) {
+                // try looking up the 'old' metadata source key
+                bindings = properties.get(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY);
+            }
         }
 
         // First try looking for an XSD
@@ -307,7 +311,7 @@ public class DynamicJAXBContextFactory {
      *      <tt>null</tt>, in which case <tt>Thread.currentThread().getContextClassLoader()</tt> will be used.
      * @param properties
      *      Map of properties to use when creating a new <tt>DynamicJAXBContext</tt>.  This map must
-     *      contain a key of JAXBContext.ECLIPSELINK_OXM_XML_KEY, which can have several possible values:
+     *      contain a key of JAXBContextProperties.OXM_METADATA_SOURCE, which can have several possible values:
      *
      * <ul>
      * <li>One of the following, pointing to your OXM file: <tt>java.io.File</tt>, <tt>java.io.InputStream</tt>, <tt>java.io.Reader</tt>, <tt>java.net.URL</tt>,<br>
@@ -327,7 +331,7 @@ public class DynamicJAXBContextFactory {
      *      if an error was encountered while creating the <tt>DynamicJAXBContext</tt>.
      */
     public static DynamicJAXBContext createContextFromOXM(ClassLoader classLoader, Map<String, ?> properties) throws JAXBException {
-        if (properties == null || properties.get(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY) == null) {
+        if (properties == null || (properties.get(JAXBContextProperties.OXM_METADATA_SOURCE) == null && properties.get(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY) == null)) {
             throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.oxmKeyNotFound());
         }
 

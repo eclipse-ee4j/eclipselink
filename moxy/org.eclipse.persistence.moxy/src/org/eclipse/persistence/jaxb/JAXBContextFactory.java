@@ -46,9 +46,7 @@ import org.eclipse.persistence.jaxb.JAXBContext.TypeMappingInfoInput;
 import org.eclipse.persistence.jaxb.compiler.CompilerHelper;
 import org.eclipse.persistence.jaxb.compiler.XMLProcessor;
 import org.eclipse.persistence.jaxb.metadata.MetadataSource;
-import org.eclipse.persistence.jaxb.xmlmodel.JavaType;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
-import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.JavaTypes;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
@@ -165,7 +163,7 @@ public class JAXBContextFactory {
      * Convenience method for processing a properties map and creating a map of 
      * package names to XmlBindings instances.
      *
-     * It is assumed that the given map's key will be ECLIPSELINK_OXM_XML_KEY,
+     * It is assumed that the given map's key will be JAXBContextProperties.OXM_METADATA_SOURCE,
      * and the value will be:
      * 
      * 1)  Map<String, Object>
@@ -178,20 +176,28 @@ public class JAXBContextFactory {
      *     - java.io.File
      *     - java.io.InputStream
      *     - java.io.Reader
+     *     - java.lang.String
      *     - java.net.URL
      *     - javax.xml.stream.XMLEventReader
      *     - javax.xml.stream.XMLStreamReader
      *     - javax.xml.transform.Source
+     *     - org.eclipse.persistence.jaxb.metadata.MetadataSource
      *     - org.w3c.dom.Node
      *     - org.xml.sax.InputSource
-     *      
+     *     
      *     - Bindings file must contain package-name attribute on 
      *       xml-bindings element
      */
     public static Map<String, XmlBindings> getXmlBindingsFromProperties(Map properties, ClassLoader classLoader) {
         Map<String, List<XmlBindings>> bindings = new HashMap<String, List<XmlBindings>>();
-        Object value;
-        if (properties != null && ((value = properties.get(ECLIPSELINK_OXM_XML_KEY)) != null)) {
+        Object value = null;
+        if (properties != null) {
+            if ((value = properties.get(JAXBContextProperties.OXM_METADATA_SOURCE)) == null) {
+                // try looking up the 'old' metadata source key
+                value = properties.get(ECLIPSELINK_OXM_XML_KEY);
+            }
+        }
+        if (value != null) {
             // handle Map<String, Object>
             if (value instanceof Map) {
                 Map<String, Object> metadataFiles = null;

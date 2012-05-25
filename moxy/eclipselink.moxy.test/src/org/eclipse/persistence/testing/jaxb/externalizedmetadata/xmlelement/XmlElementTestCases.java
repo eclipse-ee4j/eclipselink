@@ -26,6 +26,8 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
+import org.eclipse.persistence.jaxb.javamodel.reflection.AnnotationHelper;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
@@ -58,9 +60,14 @@ public class XmlElementTestCases extends JAXBWithJSONTestCases {
 
 			HashMap<String, Source> metadataSourceMap = new HashMap<String, Source>();
 		    metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelement", new StreamSource(inputStream));
-		    Map<String, Map<String, Source>> properties = new HashMap<String, Map<String, Source>>();
+		    Map<String, Object> properties = new HashMap<String, Object>();
 		    properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataSourceMap);		
-	        
+           
+            // test override of 'old' context factory property - if the override 
+		    // fails we will get a ClassCastException
+            properties.put(JAXBContextFactory.ANNOTATION_HELPER_KEY, "Blah");
+            properties.put(JAXBContextProperties.ANNOTATION_HELPER, new AnnotationHelper());
+
 	        return properties;
 		}
 	 
