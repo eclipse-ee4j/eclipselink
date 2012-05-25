@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2011 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -6248,6 +6248,30 @@ public class ClassDescriptor implements Cloneable, Serializable {
      */
     public void setHasMultipleTableConstraintDependecy(boolean hasMultipleTableConstraintDependecy) {
         this.hasMultipleTableConstraintDependecy = hasMultipleTableConstraintDependecy;
+    }
+    
+    /** 
+     * INTERNAL:
+     * Indicates whether descriptor has at least one target foreign key mapping
+     */
+    public boolean hasTargetForeignKeyMapping(AbstractSession session) {
+        for (DatabaseMapping mapping: getMappings()) {
+            if (mapping.isCollectionMapping() || 
+                    (mapping.isObjectReferenceMapping() && !((ObjectReferenceMapping)mapping).isForeignKeyRelationship()) || 
+                    mapping.isAbstractCompositeDirectCollectionMapping()) {
+                return true;
+            } else if (mapping.isAggregateObjectMapping()) {
+                ClassDescriptor referenceDescriptor = ((AggregateObjectMapping)mapping).getReferenceDescriptor();
+                if (referenceDescriptor == null) {
+                    // the mapping has not been initialized yet
+                    referenceDescriptor = session.getDescriptor(((AggregateObjectMapping)mapping).getReferenceClass());
+                }
+                if (referenceDescriptor.hasTargetForeignKeyMapping(session)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
     
 }

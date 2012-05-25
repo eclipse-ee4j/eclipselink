@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2011 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -1196,20 +1196,13 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         
         // disallow null for aggregates with target foreign key relationships
         if (isNullAllowed) {
-            for (DatabaseMapping mapping: getReferenceDescriptor().getMappings()){
-                if (mapping.isCollectionMapping() || 
-                        (mapping.isObjectReferenceMapping() && !((ObjectReferenceMapping)mapping).isForeignKeyRelationship()) || 
-                        mapping.isAbstractCompositeDirectCollectionMapping()) {
-                    isNullAllowed = false;
-                    Object[] args = new Object[2];
-                    args[0] = this;
-                    args[1] = mapping;
-                    session.log(SessionLog.WARNING, SessionLog.EJB_OR_METADATA, "metadata_warning_ignore_is_null_allowed", args);
-                }
+            if (getReferenceDescriptor().hasTargetForeignKeyMapping(session)) {
+                isNullAllowed = false;
+                session.log(SessionLog.WARNING, SessionLog.EJB_OR_METADATA, "metadata_warning_ignore_is_null_allowed", new Object[]{this});
             }
         }
         
-        initializeReferenceDescriptor(clonedDescriptor);
+        initializeReferenceDescriptor(clonedDescriptor, referenceSession);
         clonedDescriptor.preInitialize(referenceSession);
         clonedDescriptor.initialize(referenceSession);
         translateFields(clonedDescriptor, referenceSession);
@@ -1245,7 +1238,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
             for (ClassDescriptor child : childDescriptors) {
                 ClassDescriptor clonedChildDescriptor = (ClassDescriptor)child.clone();
                 clonedChildDescriptor.getInheritancePolicy().setParentDescriptor(parentDescriptor);
-                initializeReferenceDescriptor(clonedChildDescriptor);
+                initializeReferenceDescriptor(clonedChildDescriptor, session);
                 clonedChildDescriptor.preInitialize(session);
                 clonedChildDescriptor.initialize(session);
                 translateFields(clonedChildDescriptor, session);
@@ -1274,7 +1267,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
             initializeParentInheritance(parentToParentDescriptor, parentDescriptor, session);
         }
 
-        initializeReferenceDescriptor(clonedParentDescriptor);
+        initializeReferenceDescriptor(clonedParentDescriptor, session);
         Vector children = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
         children.addElement(childDescriptor);
         clonedParentDescriptor.getInheritancePolicy().setChildDescriptors(children);
@@ -1287,7 +1280,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * INTERNAL:
      * Initialize the cloned reference descriptor with table names and primary keys
      */
-    protected void initializeReferenceDescriptor(ClassDescriptor clonedDescriptor) {
+    protected void initializeReferenceDescriptor(ClassDescriptor clonedDescriptor, AbstractSession session) {
         if (aggregateKeyTable != null){
             clonedDescriptor.setDefaultTable(aggregateKeyTable);
             Vector<DatabaseTable> tables = new Vector<DatabaseTable>(1);
@@ -1298,15 +1291,16 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
             clonedDescriptor.setDefaultTable(getDescriptor().getDefaultTable());
             clonedDescriptor.setTables(getDescriptor().getTables());
             clonedDescriptor.setPrimaryKeyFields(getDescriptor().getPrimaryKeyFields());
-            for (DatabaseField pkField : getDescriptor().getPrimaryKeyFields()) {
-                if (!getAggregateToSourceFields().containsKey(pkField.getName())) {
-                    // pk field from the source descriptor will have its type set by source descriptor
-                    // this only could be done if there is no aggregate field with the same name as pk field.
-                    clonedDescriptor.getObjectBuilder().getFieldsMap().put(pkField, pkField);
+            if (clonedDescriptor.hasTargetForeignKeyMapping(session) && !isJPAIdNested(session)) {
+                for (DatabaseField pkField : getDescriptor().getPrimaryKeyFields()) {
+                    if (!getAggregateToSourceFields().containsKey(pkField.getName())) {
+                        // pk field from the source descriptor will have its type set by source descriptor
+                        // this only could be done if there is no aggregate field with the same name as pk field.
+                        clonedDescriptor.getObjectBuilder().getFieldsMap().put(pkField, pkField);
+                    }
                 }
             }
         }
- 
     }
     
     /**
@@ -1376,6 +1370,28 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      */
     public boolean isCascadedLockingSupported() {
         return true;
+    }
+    
+    /**
+     * INTERNAL:
+     * Flags that either this mapping or nested mapping is a JPA id mapping.
+     */
+    public boolean isJPAIdNested(AbstractSession session) {
+        if (isJPAId()) {
+            return true;
+        } else {
+            ClassDescriptor referenceDescriptor = getReferenceDescriptor();
+            if (referenceDescriptor == null) {
+                // the mapping has not been initialized yet
+                referenceDescriptor = session.getDescriptor(getReferenceClass());
+            }
+            for (DatabaseMapping mapping : referenceDescriptor.getMappings()) {
+                if (mapping.isAggregateObjectMapping() && ((AggregateObjectMapping)mapping).isJPAIdNested(session)) {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
     
     /**

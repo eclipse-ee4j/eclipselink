@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 Oracle. All rights reserved.
+ * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -18,6 +18,8 @@ import org.eclipse.persistence.testing.models.jpa.complexaggregate.CoachVitals;
 import org.eclipse.persistence.testing.models.jpa.complexaggregate.HockeyCoach;
 import org.eclipse.persistence.testing.models.jpa.complexaggregate.HockeyPlayer;
 import org.eclipse.persistence.testing.models.jpa.complexaggregate.PersonalVitals;
+import org.eclipse.persistence.testing.models.jpa.complexaggregate.TeamVitals;
+import org.eclipse.persistence.testing.models.jpa.complexaggregate.Vitals;
 import org.eclipse.persistence.testing.tests.jpa.EntityContainerTestBase;
 
 /**
@@ -44,10 +46,18 @@ public class MapKeyColumnMergeTest extends EntityContainerTestBase {
         HockeyPlayer player = new HockeyPlayer();
         player.setFirstName("Guy");
         player.setLastName("Flower");
+        // must have non null Vitals and TeamVitals because TeamVitals has a target foreign key mapping, therefore allowingNull automatically set to false
+        Vitals vitals = new Vitals();
+        vitals.setTeamVitals(new TeamVitals());
+        player.setVitals(vitals);
 
         HockeyPlayer player2 = new HockeyPlayer();
         player2.setFirstName("Power");
         player2.setLastName("Flower");
+        // must have non null Vitals and TeamVitals because TeamVitals has a target foreign key mapping, therefore allowingNull automatically set to false
+        Vitals vitals2 = new Vitals();
+        vitals2.setTeamVitals(new TeamVitals());
+        player2.setVitals(vitals2);
         
         HockeyCoach coach = new HockeyCoach();
         coach.setFirstName("Scott");

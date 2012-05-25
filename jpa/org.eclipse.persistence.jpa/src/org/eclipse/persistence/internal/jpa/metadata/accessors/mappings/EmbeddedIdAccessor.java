@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2011 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -188,6 +188,9 @@ public class EmbeddedIdAccessor extends EmbeddedAccessor {
             // make up the composite primary key.
             addIdFieldsFromAccessors(getReferenceAccessors());
         
+            // Flag this id accessor as a JPA id mapping.
+            getMapping().setIsJPAId();                
+            
             // Set the embedded id metadata on all owning descriptors.
             for (MetadataDescriptor owningDescriptor : getOwningDescriptors()) { 
                 // Check if we already processed an Id or IdClass.

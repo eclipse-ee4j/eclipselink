@@ -20,6 +20,8 @@
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Inventor</class>
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Patent</class>
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.PatentInvestigator</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Project</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.ProjectPK</class>
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.Many</class>
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.One</class>
         <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.PropertyRecord</class>
