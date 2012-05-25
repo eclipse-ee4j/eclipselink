@@ -16,7 +16,7 @@
          <xsd:element name="info" minOccurs="0">
             <xsd:complexType>
                <xsd:sequence>
-                  <xsd:element ref="c:contact-info" minOccurs="0"/>
+                  <xsd:element ref="c:contact-info" minOccurs="0" maxOccurs="unbounded"/>
                   <xsd:element name="read-only" minOccurs="0">
                      <xsd:complexType>
                         <xsd:sequence>
