@@ -6400,4 +6400,28 @@ public class ClassDescriptor implements Cloneable, Serializable {
         this.virtualAttributeMethods = virtualAttributeMethods;
     }
     
+    /** 
+     * INTERNAL:
+     * Indicates whether descriptor has at least one target foreign key mapping
+     */
+    public boolean hasTargetForeignKeyMapping(AbstractSession session) {
+        for (DatabaseMapping mapping: getMappings()) {
+            if (mapping.isCollectionMapping() || 
+                    (mapping.isObjectReferenceMapping() && !((ObjectReferenceMapping)mapping).isForeignKeyRelationship()) || 
+                    mapping.isAbstractCompositeDirectCollectionMapping()) {
+                return true;
+            } else if (mapping.isAggregateObjectMapping()) {
+                ClassDescriptor referenceDescriptor = ((AggregateObjectMapping)mapping).getReferenceDescriptor();
+                if (referenceDescriptor == null) {
+                    // the mapping has not been initialized yet
+                    referenceDescriptor = session.getDescriptor(((AggregateObjectMapping)mapping).getReferenceClass());
+                }
+                if (referenceDescriptor.hasTargetForeignKeyMapping(session)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
 }
