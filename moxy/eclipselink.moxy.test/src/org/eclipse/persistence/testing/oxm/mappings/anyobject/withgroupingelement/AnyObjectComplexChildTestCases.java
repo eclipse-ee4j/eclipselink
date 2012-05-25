@@ -18,15 +18,14 @@ package org.eclipse.persistence.testing.oxm.mappings.anyobject.withgroupingeleme
  *  @since   release specific (what release of product did this appear in)
  */
 
-import java.util.Vector;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
-
-public class AnyObjectComplexChildTestCases extends XMLMappingTestCases {
+public class AnyObjectComplexChildTestCases extends XMLWithJSONMappingTestCases {
     public AnyObjectComplexChildTestCases(String name) throws Exception {
         super(name);
         setProject(new AnyObjectWithGroupingElementProject());
         setControlDocument("org/eclipse/persistence/testing/oxm/mappings/anyobject/withgroupingelement/complex_child.xml");
+        setControlJSON("org/eclipse/persistence/testing/oxm/mappings/anyobject/withgroupingelement/complex_child.json");
     }
     
     public Object getControlObject() {

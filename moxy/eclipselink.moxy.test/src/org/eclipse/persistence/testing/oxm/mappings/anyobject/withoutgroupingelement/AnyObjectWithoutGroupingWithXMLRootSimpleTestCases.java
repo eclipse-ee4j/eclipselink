@@ -16,17 +16,17 @@ import junit.textui.TestRunner;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.mappings.XMLAnyObjectMapping;
-import org.eclipse.persistence.oxm.schema.XMLSchemaClassPathReference;
 import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 
-public class AnyObjectWithoutGroupingWithXMLRootSimpleTestCases extends XMLMappingTestCases {
+public class AnyObjectWithoutGroupingWithXMLRootSimpleTestCases extends XMLWithJSONMappingTestCases{
     public AnyObjectWithoutGroupingWithXMLRootSimpleTestCases(String name) throws Exception {
         super(name);
         Project project = new AnyObjectWithoutGroupingElementProject();
         ((XMLAnyObjectMapping)((XMLDescriptor)project.getDescriptor(Root.class)).getMappingForAttributeName("any")).setUseXMLRoot(true);                      
         setProject(project);
         setControlDocument("org/eclipse/persistence/testing/oxm/mappings/anyobject/withoutgroupingelement/simple_xmlroot.xml");
+        setControlJSON("org/eclipse/persistence/testing/oxm/mappings/anyobject/withoutgroupingelement/simple_xmlroot.json");
     }
 
     public Object getControlObject() {

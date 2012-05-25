@@ -63,7 +63,8 @@ public abstract class XMLWithJSONMappingTestCases extends XMLMappingTestCases{
     }
     
     public void testJSONUnmarshalFromInputSource() throws Exception {
-    	if(!(platform.name().equals(PLATFORM_DOC_PRES) || platform.name().equals(PLATFORM_DOM))){
+    	
+    	if(isUnmarshalTest() &&  !(platform.name().equals(PLATFORM_DOC_PRES) || platform.name().equals(PLATFORM_DOM))){
 
             InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);
             InputSource inputSource = new InputSource(inputStream);

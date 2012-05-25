@@ -14,12 +14,13 @@ package org.eclipse.persistence.testing.oxm.mappings.directcollection.converter;
 
 import java.util.Vector;
 
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.directcollection.Employee;
 
-public class DirectCollectionObjectTypeConverterTestCases extends XMLMappingTestCases {
+public class DirectCollectionObjectTypeConverterTestCases extends XMLWithJSONMappingTestCases {
 
   private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/directcollection/converter/DirectCollectionObjectTypeConverter.xml";
+  private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/directcollection/converter/DirectCollectionObjectTypeConverter.json";
   private final static int CONTROL_ID = 123;
   private final static String CONTROL_RESPONSIBILITY1 = "Cut the grass";
   private final static String CONTROL_RESPONSIBILITY2 = "Wash the dishes";
@@ -27,6 +28,7 @@ public class DirectCollectionObjectTypeConverterTestCases extends XMLMappingTest
   public DirectCollectionObjectTypeConverterTestCases(String name) throws Exception {
     super(name);
     setControlDocument(XML_RESOURCE);
+    setControlJSON(JSON_RESOURCE);
 		setProject(new DirectCollectionObjectTypeConverterProject());
   }
 

@@ -18,9 +18,9 @@ import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.mappings.XMLAnyObjectMapping;
 import org.eclipse.persistence.oxm.schema.XMLSchemaClassPathReference;
 import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 
-public class AnyObjectWithoutGroupingWithXMLRootTestCases extends XMLMappingTestCases {
+public class AnyObjectWithoutGroupingWithXMLRootTestCases extends XMLWithJSONMappingTestCases{
     public AnyObjectWithoutGroupingWithXMLRootTestCases(String name) throws Exception {
         super(name);
         Project project = new AnyObjectWithoutGroupingElementProject();
@@ -33,7 +33,10 @@ public class AnyObjectWithoutGroupingWithXMLRootTestCases extends XMLMappingTest
         setProject(project);
 
         setControlDocument("org/eclipse/persistence/testing/oxm/mappings/anyobject/withoutgroupingelement/complex_child_xmlroot.xml");
+        setControlJSON("org/eclipse/persistence/testing/oxm/mappings/anyobject/withoutgroupingelement/complex_child_xmlroot.json");
+
     }
+    
 
     public Object getControlObject() {
         Root root = new Root();
