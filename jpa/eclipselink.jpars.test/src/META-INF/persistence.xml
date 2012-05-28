@@ -34,10 +34,10 @@
         <properties>
            <property name="eclipselink.logging.level" value="FINEST"/>
            <property name="eclipselink.logging.parameters" value="true"/>
-      <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost/eclipsedb"/>
-      <property name="javax.persistence.jdbc.password" value="password"/>
-      <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>
-      <property name="javax.persistence.jdbc.user" value="eclipsetest"/>
+      <property name="javax.persistence.jdbc.url" value="@DB_URL@"/>
+      <property name="javax.persistence.jdbc.password" value="@DB_PWD@"/>
+      <property name="javax.persistence.jdbc.driver" value="@DB_DRIVER@"/>
+      <property name="javax.persistence.jdbc.user" value="@DB_USER@"/>
         </properties>
     </persistence-unit>
 </persistence>
