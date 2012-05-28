@@ -307,15 +307,21 @@ public class PersistenceContext {
      * @throws IOException
      */
     protected Map<String, Object> createJAXBProperties(Server session) throws IOException{
-        String oxmLocation = (String) emf.getProperties().get("eclipselink.jpa-rs.oxm");
-        
         Map<String, Object> properties = new HashMap<String, Object>(1);
         List<Object> metadataLocations = new ArrayList<Object>();
 
         addDynamicXMLMetadataSources(metadataLocations, session);
+        String oxmLocation = (String) emf.getProperties().get("eclipselink.jpa-rs.oxm");
+
         if (oxmLocation != null){
             metadataLocations.add(new org.eclipse.persistence.jaxb.metadata.XMLMetadataSource((new URL(oxmLocation)).openStream()));
         }
+        
+        oxmLocation = (String)emf.getProperties().get(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY);
+        if (oxmLocation != null){
+            metadataLocations.add(new org.eclipse.persistence.jaxb.metadata.XMLMetadataSource((new URL(oxmLocation)).openStream()));
+        }
+        
         metadataLocations.add(new LinkMetadataSource());
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataLocations);
         
