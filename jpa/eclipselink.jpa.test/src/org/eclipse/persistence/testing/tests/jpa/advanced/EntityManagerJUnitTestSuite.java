@@ -2634,10 +2634,15 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
     public void testCascadeDetach() {
         EntityManager em = createEntityManager();
-        Employee emp = (Employee)em.createQuery("Select e from Employee e where e.managedEmployees is not empty").getResultList().get(0);
-        emp.getManagedEmployees().size();
-        em.detach(emp);
-        assertFalse("Did not cascade detach", em.contains(emp.getManagedEmployees().iterator().next()));
+        beginTransaction(em);
+        try {
+            Employee emp = (Employee)em.createQuery("Select e from Employee e where e.managedEmployees is not empty").getResultList().get(0);
+            emp.getManagedEmployees().size();
+            em.detach(emp);
+            assertFalse("Did not cascade detach", em.contains(emp.getManagedEmployees().iterator().next()));
+        } finally {
+            closeEntityManagerAndTransaction(em);
+        }
     }
 
     //detaching an non-managed object should not throw any exception.

@@ -26,7 +26,9 @@ package org.eclipse.persistence.config;
 public class TargetServer {
     public static final String  None = "None";
     public static final String  OC4J = "OC4J";
+    @Deprecated
     public static final String  SunAS9 = "SunAS9";
+    public static final String  Glassfish = "Glassfish";
     public static final String  WebSphere = "WebSphere";
     public static final String  WebSphere_6_1 = "WebSphere_6_1";
     public static final String  WebSphere_7 = "WebSphere_7";

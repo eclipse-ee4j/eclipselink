@@ -5123,6 +5123,12 @@
              * Not required when annotated on a field/method.
              */
             String[] columnNames() default {};
+    
+            /**
+             * Specify if the indexed field is updateable.
+             * If updateable the object will be re-indexed on each update/refresh.
+             */
+            boolean updateable() default true;
         }
 
       </xsd:documentation>
@@ -5131,6 +5137,7 @@
       <xsd:element name="column-name" type="xsd:string" 
                    minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
+    <xsd:attribute name="updateable" type="xsd:boolean"/>
   </xsd:complexType>
   
   <!-- **************************************************** -->

@@ -39,6 +39,7 @@ import org.eclipse.persistence.internal.sessions.factories.model.login.LoginConf
 import org.eclipse.persistence.internal.sessions.factories.model.login.StructConverterConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.login.XMLLoginConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.platform.CustomServerPlatformConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.platform.GlassfishPlatformConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.platform.JBossPlatformConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.platform.NetWeaver_7_1_PlatformConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.platform.Oc4jPlatformConfig;
@@ -215,6 +216,7 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
         addDescriptor(buildServerPlatformConfigDescriptor());
         addDescriptor(buildCustomServerPlatformConfigDescriptor());
         addDescriptor(buildServerPlatformConfigDescriptorFor(Oc4jPlatformConfig.class));
+        addDescriptor(buildServerPlatformConfigDescriptorFor(GlassfishPlatformConfig.class));
         addDescriptor(buildServerPlatformConfigDescriptorFor(WebLogic_6_1_PlatformConfig.class));
         addDescriptor(buildServerPlatformConfigDescriptorFor(WebLogic_7_0_PlatformConfig.class));
         addDescriptor(buildServerPlatformConfigDescriptorFor(WebLogic_8_1_PlatformConfig.class));
@@ -1186,6 +1188,7 @@ public class XMLSessionConfigProject extends org.eclipse.persistence.sessions.Pr
         descriptor.getInheritancePolicy().setClassIndicatorField(new XMLField("@xsi:type"));
         descriptor.getInheritancePolicy().addClassIndicator(CustomServerPlatformConfig.class, "custom-platform");
         descriptor.getInheritancePolicy().addClassIndicator(Oc4jPlatformConfig.class, "oc4j-platform");
+        descriptor.getInheritancePolicy().addClassIndicator(GlassfishPlatformConfig.class, "glassfish-platform");
         descriptor.getInheritancePolicy().addClassIndicator(WebLogic_6_1_PlatformConfig.class, "weblogic-61-platform");
         descriptor.getInheritancePolicy().addClassIndicator(WebLogic_7_0_PlatformConfig.class, "weblogic-70-platform");
         descriptor.getInheritancePolicy().addClassIndicator(WebLogic_8_1_PlatformConfig.class, "weblogic-81-platform");

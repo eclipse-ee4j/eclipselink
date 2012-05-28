@@ -872,8 +872,8 @@ public class DefaultTableGenerator {
         for (int i=0; i < fkFields.size(); i++) {            
             fkField = fkFields.get(i);
             targetField = targetFields.get(i);
-            fkFieldNames.add(fkField.getName());
-            targetFieldNames.add(targetField.getName());
+            fkFieldNames.add(fkField.getNameDelimited(this.databasePlatform));
+            targetFieldNames.add(targetField.getNameDelimited(this.databasePlatform));
 
             FieldDefinition fkFieldDef = fieldMap.get(fkField);
             FieldDefinition targetFieldDef = fieldMap.get(targetField);

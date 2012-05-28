@@ -26,7 +26,7 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
  * @see CachePolicy
  */
 public class CacheIndex implements Cloneable, Serializable {
-    protected boolean isUpdatable = true;
+    protected boolean isUpdateable = true;
     protected boolean isInsertable = true;
 
     protected List<DatabaseField> fields;
@@ -61,16 +61,16 @@ public class CacheIndex implements Cloneable, Serializable {
     /**
      * Return if the index field can be updated.
      */
-    public boolean isUpdatable() {
-        return isUpdatable;
+    public boolean isUpdateable() {
+        return isUpdateable;
     }
     
     /**
      * Set if the index field can be updated.
      * If updateable the object will be re-indexed on each update/refresh.
      */
-    public void setIsUpdatable(boolean isUpdatable) {
-        this.isUpdatable = isUpdatable;
+    public void setIsUpdateable(boolean isUpdateable) {
+        this.isUpdateable = isUpdateable;
     }
     
     /**

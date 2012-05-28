@@ -25,6 +25,7 @@ import javax.persistence.Query;
 import javax.sql.DataSource;
 import javax.transaction.TransactionManager;
 
+import org.eclipse.persistence.platform.server.glassfish.GlassfishServerPlatform;
 import org.eclipse.persistence.platform.server.sunas.SunAS9ServerPlatform;
 import org.eclipse.persistence.platform.server.wls.WebLogicPlatform;
 import org.eclipse.persistence.sessions.DatabaseLogin;
@@ -296,7 +297,7 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
             em.persist(employee);
             em.flush();
             // https://glassfish.dev.java.net/issues/show_bug.cgi?id=14753   Oracle proxy session problems  
-            if(SunAS9ServerPlatform.class.isAssignableFrom(serverSession.getServerPlatform().getClass())) {
+            if (this.serverSession.getServerPlatform() instanceof GlassfishServerPlatform) {
                 JpaHelper.getEntityManager(em).getUnitOfWork().getParent().getAccessor().releaseCustomizer(JpaHelper.getEntityManager(em).getUnitOfWork().getParent());
             }
         } finally {

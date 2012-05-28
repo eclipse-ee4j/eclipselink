@@ -36,7 +36,6 @@ import static javax.persistence.GenerationType.*;
 
 import static org.eclipse.persistence.annotations.CacheCoordinationType.INVALIDATE_CHANGED_OBJECTS;
 import static org.eclipse.persistence.annotations.CacheType.SOFT_WEAK;
-import static org.eclipse.persistence.annotations.ChangeTrackingType.AUTO;
 import static org.eclipse.persistence.annotations.ExistenceType.CHECK_DATABASE;
 import static org.eclipse.persistence.annotations.OptimisticLockingType.VERSION_COLUMN;
 
@@ -253,7 +252,7 @@ public class Employee implements Serializable, Cloneable {
     }
     
     @BasicCollection(valueColumn=@Column(name="DESCRIPTION"))
-    @CollectionTable(name="CMP3_RESPONS")
+    @CollectionTable(name="CMP3_DEL_RESPONS")
     // generics left off the Collection on purpose ...
     @Property(name="attributeName", value="responsibilities")
     public Collection getResponsibilities() {

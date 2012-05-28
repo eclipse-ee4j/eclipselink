@@ -32,6 +32,7 @@ import org.eclipse.persistence.internal.sessions.factories.model.login.NoDocumen
 import org.eclipse.persistence.internal.sessions.factories.model.login.NodeOrderingPolicyConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.login.RelativePositionOrderingPolicyConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.login.XMLBinderPolicyConfig;
+import org.eclipse.persistence.internal.sessions.factories.model.platform.GlassfishPlatformConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.platform.Oc4jPlatformConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.platform.SunAS9PlatformConfig;
 import org.eclipse.persistence.internal.sessions.factories.model.platform.WebLogic_10_PlatformConfig;
@@ -54,7 +55,8 @@ public class XMLSessionConfigProject_11_1_1 extends XMLSessionConfigProject {
     public XMLSessionConfigProject_11_1_1() {
         super();
         addDescriptor(buildOc4jJGroupsTransportManagerConfigDescriptor());
-        addDescriptor(buildServerPlatformConfigDescriptorFor(Oc4jPlatformConfig.class));        
+        addDescriptor(buildServerPlatformConfigDescriptorFor(Oc4jPlatformConfig.class));
+        addDescriptor(buildServerPlatformConfigDescriptorFor(GlassfishPlatformConfig.class));      
     	addDescriptor(buildServerPlatformConfigDescriptorFor(SunAS9PlatformConfig.class));
         addDescriptor(buildServerPlatformConfigDescriptorFor(WebLogic_9_PlatformConfig.class));
         addDescriptor(buildServerPlatformConfigDescriptorFor(WebLogic_10_PlatformConfig.class));
@@ -162,8 +164,9 @@ public class XMLSessionConfigProject_11_1_1 extends XMLSessionConfigProject {
     
     public ClassDescriptor buildServerPlatformConfigDescriptor() {
         XMLDescriptor descriptor =(XMLDescriptor)super.buildServerPlatformConfigDescriptor();
-        descriptor.getInheritancePolicy().addClassIndicator(Oc4jPlatformConfig.class, "oc4j-platform");        
+        descriptor.getInheritancePolicy().addClassIndicator(Oc4jPlatformConfig.class, "oc4j-platform");
         descriptor.getInheritancePolicy().addClassIndicator(SunAS9PlatformConfig.class, "sunas-9-platform");
+        descriptor.getInheritancePolicy().addClassIndicator(GlassfishPlatformConfig.class, "glassfish-platform");
         descriptor.getInheritancePolicy().addClassIndicator(WebLogic_9_PlatformConfig.class, "weblogic-9-platform");
         descriptor.getInheritancePolicy().addClassIndicator(WebLogic_10_PlatformConfig.class, "weblogic-10-platform");
         descriptor.getInheritancePolicy().addClassIndicator(WebSphere_6_1_PlatformConfig.class, "websphere-61-platform");

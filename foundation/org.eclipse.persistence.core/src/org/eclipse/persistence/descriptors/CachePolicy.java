@@ -859,7 +859,7 @@ public class CachePolicy implements Cloneable, Serializable {
             return;
         }
         for (CacheIndex index : this.cacheIndexes.values()) {
-            if (!refresh || index.isUpdatable()) {
+            if (!refresh || index.isUpdateable()) {
                 List<DatabaseField> fields = index.getFields();
                 int size = fields.size();
                 Object[] values = new Object[size];
@@ -881,7 +881,7 @@ public class CachePolicy implements Cloneable, Serializable {
             return;
         }
         for (CacheIndex index : this.cacheIndexes.values()) {
-            if ((changeSet == null) || (changeSet.isNew() && index.isInsertable()) || (!changeSet.isNew() && index.isUpdatable())) {
+            if ((changeSet == null) || (changeSet.isNew() && index.isInsertable()) || (!changeSet.isNew() && index.isUpdateable())) {
                 List<DatabaseField> fields = index.getFields();
                 int size = fields.size();
                 Object[] values = new Object[size];
