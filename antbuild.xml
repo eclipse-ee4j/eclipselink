@@ -295,16 +295,19 @@
                 </fileset>
              </classpath>
         </java>
-        <copy todir="${plugins.dir}" flatten="true">
+        <!-- source jars generated with -sources in target dir - tycho P2 should name properly, but can't use due to dir structure -->
+        <!-- Below not needed as long as parent post-processing with ant used to inject common html files -->
+        <!-- copy todir="${plugins.dir}" flatten="true">
             <fileset dir="target">
                 <include name="**/*-sources.jar"/>
             </fileset>
             <mapper type="glob" from="*-sources.jar" to="*.jar"/>
-        </copy>
+        </copy -->
         <copy todir="${plugins.dir}" flatten="true">
             <fileset dir="target">
                 <include name="**/org.eclipse.persistence*.jar"/>
                 <exclude name="**/*-sources.jar"/>
+                <exclude name="**/*parent*.jar"/>
             </fileset>
         </copy>
         <!-- temporarily force dbws.builder build from ant -->

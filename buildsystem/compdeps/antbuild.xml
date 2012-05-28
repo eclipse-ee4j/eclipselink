@@ -91,7 +91,7 @@
         <echo message=" ---"/>
 
         <!-- Tool definitions -->
-        <property name="p2.SDK.install.dir"             value="D:/Indigo-gm/eclipse"/>
+        <property name="p2.SDK.install.dir"             value="D:\Juno-M7\eclipse"/>
         <property name="p2.SDK.plugin.dir"              value="${p2.SDK.install.dir}/plugins"/>
         <property name="p2.publisher.prefix"            value="org.eclipse.equinox.p2.publisher"/>
         <property name="p2.launcher.prefix"             value="org.eclipse.equinox.launcher"/>

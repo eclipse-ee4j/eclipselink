@@ -13,7 +13,7 @@
     <properties>
         <!-- TOOL Properties -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <tycho.version>0.14.1</tycho.version>
+        <tycho.version>0.15.0</tycho.version>
         <junit4-version>4.8.1</junit4-version>
         <!-- maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format -->
         <!-- PROJECT Properties -->
@@ -137,34 +137,57 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.6</version>
+                <executions>
+                    <execution>
+                        <id>inject-common-into-src-bundles</id>
+                        <phase>package</phase>
+                        <configuration>
+                            <target>
+                                <zip file="../../target/${project.artifactId}.source_${release.version}.${build.qualifier}.jar" duplicate="preserve">
+                                    <zipgroupfileset dir="../../target">
+                                        <include name="${project.artifactId}.source_${release.version}.${build.qualifier}-sources.jar"/>
+                                    </zipgroupfileset>
+                                    <fileset dir="../../buildsystem/org.eclipse.persistence.parent/resource" includes="*.html"/>
+                                </zip>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
-    <directory>../../target</directory>
-    <sourceDirectory>${src}</sourceDirectory>
-    <scriptSourceDirectory>./scripts</scriptSourceDirectory>
-    <testSourceDirectory>../${testId}/src</testSourceDirectory>
-    <outputDirectory>./target/classes</outputDirectory>
-    <testOutputDirectory>../${testId}/target/classes</testOutputDirectory>
+        <directory>../../target</directory>
+        <sourceDirectory>${src}</sourceDirectory>
+        <scriptSourceDirectory>./scripts</scriptSourceDirectory>
+        <testSourceDirectory>../${testId}/src</testSourceDirectory>
+        <outputDirectory>./target/classes</outputDirectory>
+        <testOutputDirectory>../${testId}/target/classes</testOutputDirectory>
         <resources>
             <resource>
-        <directory>../../buildsystem/org.eclipse.persistence.parent/resource</directory>
+                <directory>../../buildsystem/org.eclipse.persistence.parent/resource</directory>
             </resource>
         </resources>
         <testResources>
             <testResource>
-        <directory>../${testId}/resources</directory>
+                <directory>../${testId}/resources</directory>
             </testResource>
         </testResources>
         <finalName>${project.artifactId}_${release.version}.${build.qualifier}</finalName>
     </build>
 
     <pluginRepositories>
-    <pluginRepository>
-        <id>tycho-0.14.0-staged</id>
-        <url>https://oss.sonatype.org/content/repositories/orgeclipsetycho-004/</url>
-    </pluginRepository>
+        <pluginRepository>
+            <id>tycho-0.15.0-staged</id>
+            <url>https://oss.sonatype.org/content/repositories/orgeclipsetycho-255/</url>
+        </pluginRepository>
         <!-- pluginRepository>
-            <id>sonatype-staging</id>
-            <url>https://repository.sonatype.org/content/repositories/sonatype_org-031/</url>
+            <id>tycho-public</id>
+            <url>https://oss.sonatype.org/content/groups/public/</url>
         </pluginRepository -->
         <pluginRepository>
             <id>maven-eclipse</id>
