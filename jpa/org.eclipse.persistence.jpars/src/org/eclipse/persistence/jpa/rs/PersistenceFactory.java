@@ -25,6 +25,7 @@ import java.util.Set;
 
 import javax.ejb.Singleton;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
@@ -33,6 +34,7 @@ import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
 import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
 import org.eclipse.persistence.jpa.Archive;
 import org.eclipse.persistence.jpa.rs.util.InMemoryArchive;
+import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 
 /**
  * Factory for the creation of persistence contexts (JPA and JAXB). These
@@ -45,7 +47,7 @@ import org.eclipse.persistence.jpa.rs.util.InMemoryArchive;
 public class PersistenceFactory {    
     
     /** Holds all the PersistenceContexts available to this factory by name **/
-	private Map<String, PersistenceContext> persistenceContexts = new HashMap<String, PersistenceContext>();
+	private Map<String, PersistenceContext> dynamicPersistenceContexts = new HashMap<String, PersistenceContext>();
 	
     public PersistenceFactory(){
     }
@@ -106,16 +108,16 @@ public class PersistenceFactory {
      * @return
      */
     public PersistenceContext bootstrapPersistenceContext(String name, Archive archive, String persistenceXMLLocation, Map<String, ?> originalProperties, boolean replace){
-        PersistenceContext persistenceContext = getPersistenceContext(name);
+        PersistenceContext persistenceContext = getDynamicPersistenceContext(name);
         if (persistenceContext == null || replace){
             DynamicClassLoader dcl = new DynamicClassLoader(Thread.currentThread().getContextClassLoader());
             Map<String, Object> properties = createProperties(dcl, originalProperties);
             properties.putAll(originalProperties);
             persistenceContext = new PersistenceContext(archive, properties, dcl);
     
-            persistenceContexts.put(name, persistenceContext);
+            dynamicPersistenceContexts.put(name, persistenceContext);
         }
-        return persistenceContext;
+       return persistenceContext; 
     }
     
     /**
@@ -127,14 +129,7 @@ public class PersistenceFactory {
      * @return
      */
     public PersistenceContext bootstrapPersistenceContext(String name, EntityManagerFactory emf, URI baseURI, boolean replace){
-        PersistenceContext persistenceContext = null;
-        if (!replace){
-            persistenceContext = getPersistenceContext(name);
-        }
-        if (persistenceContext == null){
-            persistenceContext = new PersistenceContext(name, (EntityManagerFactoryImpl)emf, baseURI);
-            persistenceContexts.put(name, persistenceContext);
-        }
+        PersistenceContext persistenceContext = new PersistenceContext(name, (EntityManagerFactoryImpl)emf, baseURI);
         persistenceContext.setBaseURI(baseURI);
         return persistenceContext;
     }
@@ -144,10 +139,10 @@ public class PersistenceFactory {
      * @param name
      */
     public void closePersistenceContext(String name){
-        PersistenceContext context = persistenceContexts.get(name);
+        PersistenceContext context = dynamicPersistenceContexts.get(name);
         if (context != null){
             context.getEmf().close();
-            persistenceContexts.remove(name);
+            dynamicPersistenceContexts.remove(name);
         }
     }
     
@@ -155,8 +150,8 @@ public class PersistenceFactory {
      * Stop the factory.  Remove all the PersistenceContexts.
      */
     public void close(){
-        for (String key: persistenceContexts.keySet()){
-            persistenceContexts.get(key).stop();
+        for (String key: dynamicPersistenceContexts.keySet()){
+            dynamicPersistenceContexts.get(key).stop();
         }
     }
 
@@ -180,16 +175,43 @@ public class PersistenceFactory {
         }
         return properties;
     }
+
+    public PersistenceContext get(String persistenceUnit, URI defaultURI, Map<String, Object> initializationProperties) {
+        PersistenceContext app = getDynamicPersistenceContext(persistenceUnit);
+        if (app == null){
+            try{
+                DynamicClassLoader dcl = new DynamicClassLoader(Thread.currentThread().getContextClassLoader());
+                Map<String, Object> properties = new HashMap<String, Object>();
+                properties.put(PersistenceUnitProperties.CLASSLOADER, dcl);
+                if (initializationProperties != null){
+                    properties.putAll(initializationProperties);
+                }
+                
+                EntityManagerFactory factory =  Persistence.createEntityManagerFactory(persistenceUnit, properties);
+
+                if (factory != null){
+                    app = bootstrapPersistenceContext(persistenceUnit, factory, defaultURI, true);
+                }
+            } catch (Exception e){
+                JPARSLogger.fine("exception_creating_persistence_context", new Object[]{persistenceUnit, e.toString()});
+            }
+        } else {
+            if (app.getBaseURI() == null){
+                app.setBaseURI(defaultURI);
+            }
+        }
+        return app;
+    }
     
-    public PersistenceContext getPersistenceContext(String name){
+    public PersistenceContext getDynamicPersistenceContext(String name){
         synchronized (this) {
-            return persistenceContexts.get(name);
+            return dynamicPersistenceContexts.get(name);
         }
     }
     
     public Set<String> getPersistenceContextNames(){
         Set<String> contextNames = new HashSet<String>();
-        contextNames.addAll(persistenceContexts.keySet());
+        contextNames.addAll(dynamicPersistenceContexts.keySet());
         try{
             Set<Archive> archives = PersistenceUnitProcessor.findPersistenceArchives();
             for (Archive archive : archives){

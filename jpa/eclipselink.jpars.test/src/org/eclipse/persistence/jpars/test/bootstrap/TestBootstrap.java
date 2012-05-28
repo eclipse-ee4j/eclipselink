@@ -51,7 +51,7 @@ public class TestBootstrap {
 			fail(e.toString());
 		}
 		
-		PersistenceContext context = factory.getPersistenceContext("auction");
+		PersistenceContext context = factory.getDynamicPersistenceContext("auction");
 		
 		assertTrue(context.getEmf() != null);
 		assertTrue(context.getJAXBContext() != null);

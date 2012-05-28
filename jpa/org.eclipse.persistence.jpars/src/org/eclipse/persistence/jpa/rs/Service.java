@@ -132,7 +132,7 @@ public class Service {
    
    @POST
    @Produces(MediaType.WILDCARD)
-   public Response callSessionBean(@Context HttpHeaders hh, @Context UriInfo ui, InputStream is) throws JAXBException, ClassNotFoundException, NamingException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+   public Response callSessionBean(@Context HttpHeaders hh, @Context UriInfo ui, @Context UriInfo uriInfo, InputStream is) throws JAXBException, ClassNotFoundException, NamingException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
        SessionBeanCall call = null;
        call = unmarshallSessionBeanCall(is);
 
@@ -146,7 +146,7 @@ public class Service {
            
        PersistenceContext context = null;
        if (call.getContext() != null){
-           context = factory.getPersistenceContext(call.getContext());
+           context = factory.get(call.getContext(), uriInfo.getBaseUri(), null);
            if (context == null){
                JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[]{call.getContext()});
                return Response.status(Status.NOT_FOUND).build();
@@ -206,7 +206,7 @@ public class Service {
     @GET
     @Path("{context}/metadata")
     public Response getTypes(@PathParam("context") String persistenceUnit, @Context HttpHeaders hh, @Context UriInfo uriInfo) {
-        PersistenceContext app = get(persistenceUnit, uriInfo.getBaseUri());
+        PersistenceContext app = factory.get(persistenceUnit, uriInfo.getBaseUri(), null);
         if (app == null){
             JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[]{persistenceUnit});
             return Response.status(Status.NOT_FOUND).build();
@@ -243,7 +243,7 @@ public class Service {
     @PUT
     @Path("{context}/subscribe/{name}")
     public Response subscribe(@PathParam("context") String persistenceUnit, @PathParam("name") String name, @Context UriInfo ui) {
-        PersistenceContext app = get(persistenceUnit, ui.getBaseUri());
+        PersistenceContext app = factory.get(persistenceUnit, ui.getBaseUri(), null);
         if (app == null){
             JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[]{persistenceUnit});
             return Response.status(Status.NOT_FOUND).build();
@@ -256,7 +256,7 @@ public class Service {
     @GET
     @Path("{context}/metadata/entity/{descriptorAlias}")
     public Response getDescriptorMetadata(@PathParam("context") String persistenceUnit, @PathParam("descriptorAlias") String descriptorAlias, @Context HttpHeaders hh, @Context UriInfo uriInfo) {
-        PersistenceContext app = get(persistenceUnit, uriInfo.getBaseUri());
+        PersistenceContext app = factory.get(persistenceUnit, uriInfo.getBaseUri(), null);
         if (app == null){
             JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[]{persistenceUnit});
             return Response.status(Status.NOT_FOUND).build();
@@ -283,7 +283,7 @@ public class Service {
     @GET
     @Path("{context}/metadata/query/")
     public Response getQueriesMetadata(@PathParam("context") String persistenceUnit, @Context HttpHeaders hh, @Context UriInfo uriInfo) {
-        PersistenceContext app = get(persistenceUnit, uriInfo.getBaseUri());
+        PersistenceContext app = factory.get(persistenceUnit, uriInfo.getBaseUri(), null);
         if (app == null){
             JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[]{persistenceUnit});
             return Response.status(Status.NOT_FOUND).build();
@@ -305,7 +305,7 @@ public class Service {
     @GET
     @Path("{context}/metadata/query/{queryName}")
     public Response getQueryMetadata(@PathParam("context") String persistenceUnit, @PathParam("queryName") String queryName, @Context HttpHeaders hh, @Context UriInfo uriInfo) {
-        PersistenceContext app = get(persistenceUnit, uriInfo.getBaseUri());
+        PersistenceContext app = factory.get(persistenceUnit, uriInfo.getBaseUri(), null);
         if (app == null){
             JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[]{persistenceUnit});
             return Response.status(Status.NOT_FOUND).build();
@@ -332,7 +332,7 @@ public class Service {
     @GET
     @Path("{context}/entity/{type}/{key}")
     public Response find(@PathParam("context") String persistenceUnit, @PathParam("type") String type, @PathParam("key") String key, @Context HttpHeaders hh, @Context UriInfo ui) {
-        PersistenceContext app = get(persistenceUnit, ui.getBaseUri());
+        PersistenceContext app = factory.get(persistenceUnit, ui.getBaseUri(), null);
         if (app == null || app.getClass(type) == null){
             if (app == null){
                 JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[]{persistenceUnit});
@@ -358,7 +358,7 @@ public class Service {
     @GET
     @Path("{context}/entity/{type}/{key}/{attribute}")
     public Response findAttribute(@PathParam("context") String persistenceUnit, @PathParam("type") String type, @PathParam("key") String key, @PathParam("attribute") String attribute, @Context HttpHeaders hh, @Context UriInfo ui) {
-        PersistenceContext app = get(persistenceUnit, ui.getBaseUri());
+        PersistenceContext app = factory.get(persistenceUnit, ui.getBaseUri(), null);
         if (app == null || app.getClass(type) == null){
             if (app == null){
                 JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[]{persistenceUnit});
@@ -383,7 +383,7 @@ public class Service {
     @POST
     @Path("{context}/entity/{type}/{key}/{attribute}")
     public Response setOrAddAttribute(@PathParam("context") String persistenceUnit, @PathParam("type") String type, @PathParam("key") String key, @PathParam("attribute") String attribute, @Context HttpHeaders hh, @Context UriInfo ui, InputStream in) {
-        PersistenceContext app = get(persistenceUnit, ui.getBaseUri());
+        PersistenceContext app = factory.get(persistenceUnit, ui.getBaseUri(), null);
         if (app == null || app.getClass(type) == null){
             if (app == null){
                 JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[]{persistenceUnit});
@@ -424,7 +424,7 @@ public class Service {
     @DELETE
     @Path("{context}/entity/{type}/{key}/{attribute}")
     public Response removeAttribute(@PathParam("context") String persistenceUnit, @PathParam("type") String type, @PathParam("key") String key, @PathParam("attribute") String attribute, @Context HttpHeaders hh, @Context UriInfo ui, InputStream in) {
-        PersistenceContext app = get(persistenceUnit, ui.getBaseUri());
+        PersistenceContext app = factory.get(persistenceUnit, ui.getBaseUri(), null);
         if (app == null || app.getClass(type) == null){
             if (app == null){
                 JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[]{persistenceUnit});
@@ -464,7 +464,7 @@ public class Service {
     @PUT
     @Path("{context}/entity/{type}")
     public Response create(@PathParam("context") String persistenceUnit, @PathParam("type") String type, @Context HttpHeaders hh, @Context UriInfo uriInfo, InputStream in) throws JAXBException {
-        PersistenceContext app = get(persistenceUnit, uriInfo.getBaseUri());
+        PersistenceContext app = factory.get(persistenceUnit, uriInfo.getBaseUri(), null);
         if (app == null){
             JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[]{persistenceUnit});
             return Response.status(Status.NOT_FOUND).build();
@@ -502,7 +502,7 @@ public class Service {
     @POST
     @Path("{context}/entity/{type}")
     public Response update(@PathParam("context") String persistenceUnit, @PathParam("type") String type, @Context HttpHeaders hh, @Context UriInfo uriInfo, InputStream in) {
-        PersistenceContext app = get(persistenceUnit, uriInfo.getBaseUri());
+        PersistenceContext app = factory.get(persistenceUnit, uriInfo.getBaseUri(), null);
         if (app == null || app.getClass(type) == null){
             if (app == null){
                 JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[]{persistenceUnit});
@@ -526,7 +526,7 @@ public class Service {
     @DELETE
     @Path("{context}/entity/{type}/{key}")
     public Response delete(@PathParam("context") String persistenceUnit, @PathParam("type") String type, @PathParam("key") String key, @Context HttpHeaders hh, @Context UriInfo ui) {
-        PersistenceContext app = get(persistenceUnit, ui.getBaseUri());
+        PersistenceContext app = factory.get(persistenceUnit, ui.getBaseUri(), null);
         if (app == null || app.getClass(type) == null){
             if (app == null){
                 JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[]{persistenceUnit});
@@ -544,7 +544,7 @@ public class Service {
     @GET
     @Path("{context}/query/{name}")
     public Response namedQuery(@PathParam("context") String persistenceUnit, @PathParam("name") String name, @Context HttpHeaders hh, @Context UriInfo ui) {
-        PersistenceContext app = get(persistenceUnit, ui.getBaseUri());
+        PersistenceContext app = factory.get(persistenceUnit, ui.getBaseUri(), null);
         if (app == null){
             JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[]{persistenceUnit});
             return Response.status(Status.NOT_FOUND).build();
@@ -557,7 +557,7 @@ public class Service {
     @Path("{context}/query/{name}")
     @Produces({ MediaType.APPLICATION_OCTET_STREAM})
     public Response namedQueryUpdate(@PathParam("context") String persistenceUnit, @PathParam("name") String name, @Context HttpHeaders hh, @Context UriInfo ui) {
-        PersistenceContext app = get(persistenceUnit, ui.getBaseUri());
+        PersistenceContext app = factory.get(persistenceUnit, ui.getBaseUri(), null);
         if (app == null){
             JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[]{persistenceUnit});
             return Response.status(Status.NOT_FOUND).build();
@@ -570,7 +570,7 @@ public class Service {
     @Path("{context}/singleResultQuery/{name}")
     @Produces(MediaType.WILDCARD)
     public Response namedQuerySingleResult(@PathParam("context") String persistenceUnit, @PathParam("name") String name, @Context HttpHeaders hh, @Context UriInfo ui) {
-        PersistenceContext app = get(persistenceUnit, ui.getBaseUri());
+        PersistenceContext app = factory.get(persistenceUnit, ui.getBaseUri(), null);
         if (app == null){
             JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[]{persistenceUnit});
             return Response.status(Status.NOT_FOUND).build();
@@ -682,32 +682,6 @@ public class Service {
     @PreDestroy
     public void close() {
         factory.close();
-    }
-
-    private PersistenceContext get(String persistenceUnit, URI defaultURI) {
-        PersistenceContext app = getPersistenceFactory().getPersistenceContext(persistenceUnit);
-        if (app == null){
-            try{
-                DynamicClassLoader dcl = new DynamicClassLoader(Thread.currentThread().getContextClassLoader());
-                Map<String, Object> properties = new HashMap<String, Object>();
-                properties.put(PersistenceUnitProperties.CLASSLOADER, dcl);
-                
-                EntityManagerFactory factory = null;//(EntityManagerFactory) Naming.getInitialContext().lookup("java:comp/env/persistence/pu1")
-                if (factory == null){
-                    factory = Persistence.createEntityManagerFactory(persistenceUnit, properties);
-                }
-                if (factory != null){
-                    app = getPersistenceFactory().bootstrapPersistenceContext(persistenceUnit, factory, defaultURI, true);
-                }
-            } catch (Exception e){
-                JPARSLogger.fine("exception_creating_persistence_context", new Object[]{persistenceUnit, e.toString()});
-            }
-        } else {
-            if (app.getBaseURI() == null){
-                app.setBaseURI(defaultURI);
-            }
-        }
-        return app;
     }
     
     private static Map<String, Object> getHintMap(UriInfo info){

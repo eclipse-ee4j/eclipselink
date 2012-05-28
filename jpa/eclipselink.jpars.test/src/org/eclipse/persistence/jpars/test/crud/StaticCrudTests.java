@@ -63,7 +63,6 @@ public class StaticCrudTests {
         em.createQuery("delete from StaticUser u").executeUpdate();
         em.getTransaction().commit();
         
-        persistenceContext = factory.getPersistenceContext("auction-static");
     }
     
     @AfterClass
