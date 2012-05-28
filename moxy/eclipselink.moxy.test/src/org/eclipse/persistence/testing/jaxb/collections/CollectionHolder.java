@@ -67,9 +67,12 @@ public class CollectionHolder {
     @XmlAttribute
     protected List<String> collection12;
 
-    //@XmlElements({@XmlElement(name="root"), @XmlElementRef(name="root2")})
-    @XmlElements({@XmlElement(name="integer", type=Integer.class), @XmlElement(name="string", type=String.class)})   
+    @XmlElements({@XmlElement(name="collection13integer", type=Integer.class), @XmlElement(name="collection13string", type=String.class)})   
     protected List collection13;
+    
+    @XmlElements({@XmlElement(name="collection14integer", type=Integer.class), @XmlElement(name="collection14string", type=String.class, nillable=true)})   
+    protected List collection14;
+
     
     public CollectionHolder(){
     }
@@ -226,6 +229,9 @@ public class CollectionHolder {
     
      
      private boolean compareObjects(Object obj1, Object obj2){
+    	if(obj1 == null & obj2 == null){
+    		return true;
+    	}
      	if(obj1 instanceof JAXBElement){
      		 if(obj2 instanceof JAXBElement){
  	    		 if(! ((JAXBElement)obj1).getName().getLocalPart().equals(((JAXBElement)obj2).getName().getLocalPart())){

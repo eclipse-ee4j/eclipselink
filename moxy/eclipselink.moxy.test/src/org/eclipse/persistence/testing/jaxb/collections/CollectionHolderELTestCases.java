@@ -51,7 +51,8 @@ public class CollectionHolderELTestCases extends JAXBWithJSONTestCases{
     	ch.collection10 = new HashMap();
     	ch.collection11 = new ArrayList();
     	ch.collection12 = new ArrayList();    	
-    	ch.collection13 = new ArrayList();    	
+    	ch.collection13 = new ArrayList();
+    	ch.collection14 = new ArrayList();   
     	return ch;
     }
     

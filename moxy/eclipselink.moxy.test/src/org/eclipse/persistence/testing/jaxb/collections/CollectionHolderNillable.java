@@ -25,8 +25,6 @@ import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlList;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.eclipse.persistence.testing.jaxb.xmlidrefs.PhoneNumber;
-
 @XmlRootElement
 public class CollectionHolderNillable {
 
@@ -176,7 +174,7 @@ public class CollectionHolderNillable {
              if(compareList2 == null){
                  return false;
              }
-             return compareList1 == compareList2;
+             return compareList1.equals(compareList2);
          }
 
      }
