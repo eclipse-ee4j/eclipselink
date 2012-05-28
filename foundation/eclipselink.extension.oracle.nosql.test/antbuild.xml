@@ -114,7 +114,6 @@
 
         <!-- Give this a default value if not set in a user.home or test property file -->
         <property name="oracle.extensions.depend.dir" value="../${ora_nosql_test.2.base.dir}/extension.oracle.lib.external"/>
-        <property name="oracle.nosql.jar.dir" value="../${ora_nosql_test.2.base.dir}/extension.oracle.lib.external"/>
         <property name="extensions.depend.dir"        value="../${ora_nosql_test.2.base.dir}/extension.lib.external"/>
         <property name="junit.lib"                    value="${extensions.depend.dir}/junit.jar"/>
         <echo message="ora_nosql_test.src.dir     ='${ora_nosql_test.src.dir}'"/>
@@ -164,9 +163,9 @@
                                              else="${extensions.depend.dir}/${oracle.orai18n-mapping.jar}">
             <available file="${oracle.extensions.depend.dir}/${oracle.orai18n-mapping.jar}"/>
         </condition>
-        <condition property="oracle.nosql.lib" value="${oracle.nosql.jar.dir}/${oracle.nosql.jar}"
+        <condition property="oracle.nosql.lib" value="${oracle.extensions.depend.dir}/${oracle.nosql.jar}"
                                           else="${extensions.depend.dir}/${oracle.nosql.jar}">
-            <available file="${oracle.nosql.jar.dir}/${oracle.nosql.jar}"/>
+            <available file="${oracle.extensions.depend.dir}/${oracle.nosql.jar}"/>
         </condition>
 
         <!-- Create needed directories
