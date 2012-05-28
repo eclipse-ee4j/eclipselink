@@ -204,10 +204,12 @@ public class XMLAnyCollectionMappingNodeValue extends XMLRelationshipMappingNode
          } catch (XMLMarshalException e) {               
              return SIMPLE_FRAGMENT;
          }
-         XMLDescriptor descriptor = (XMLDescriptor) childSession.getDescriptor(value);
-         String defaultRootElementString = descriptor.getDefaultRootElement();
-         if(defaultRootElementString != null){
-        	 return new XPathFragment(defaultRootElementString);
+         if(childSession != null){
+	         XMLDescriptor descriptor = (XMLDescriptor) childSession.getDescriptor(value);
+	         String defaultRootElementString = descriptor.getDefaultRootElement();
+	         if(defaultRootElementString != null){
+	        	 return new XPathFragment(defaultRootElementString);
+	         }
          }
     	 return null;
     }

@@ -22,10 +22,12 @@ public class CollectionsTestSuite extends TestSuite {
         suite.addTestSuite(CollectionHolderTestCases.class);
         suite.addTestSuite(CollectionHolderPopulatedTestCases.class);
         suite.addTestSuite(CollectionHolderInitializedTestCases.class);
+        suite.addTestSuite(CollectionHolderInitializedWithNullsTestCases.class);
         suite.addTestSuite(CollectionHolderNillableTestCases.class);
+        suite.addTestSuite(CollectionHolderNillableWithNullsTestCases.class);        
         suite.addTestSuite(CollectionHolderWrappersTestCases.class);
         suite.addTestSuite(CollectionHolderWrappersInitializedTestCases.class);
-        suite.addTestSuite(CollectionHolderWrappersNillableTestCases.class);
+        suite.addTestSuite(CollectionHolderWrappersNillableTestCases.class);       
         suite.addTestSuite(CollectionHolderWrappersNillableInitializedTestCases.class);
         suite.addTestSuite(CollectionHolderWrappersOverrideTestCases.class);       
         suite.addTestSuite(CollectionHolderWrappersPopulatedTestCases.class);

@@ -88,6 +88,10 @@ public class CollectionHolderPopulatedTestCases extends JAXBWithJSONTestCases{
     	ch.getCollection13().add(123);
     	ch.getCollection13().add("eee");
     	ch.getCollection13().add(456);
+    	
+    	ch.collection14.add(123);
+    	ch.collection14.add("eee");
+    	ch.collection14.add(456);
     	return ch;
     }
     
@@ -141,6 +145,10 @@ public class CollectionHolderPopulatedTestCases extends JAXBWithJSONTestCases{
     	ch.getCollection13().add(123);
     	ch.getCollection13().add("eee");
     	ch.getCollection13().add(456);
+    	
+    	ch.collection14.add(123);
+    	ch.collection14.add("eee");
+    	ch.collection14.add(456);    
     	return ch;
     }
     
@@ -153,6 +161,10 @@ public class CollectionHolderPopulatedTestCases extends JAXBWithJSONTestCases{
     	obj.getCollection13().add(123);    	
     	obj.getCollection13().add(456);
     	obj.getCollection13().add("eee");
+    	
+    	obj.collection14.add(123);    	
+    	obj.collection14.add(456);
+    	obj.collection14.add("eee");
     	return obj;
     }
 

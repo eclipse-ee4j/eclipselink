@@ -9,8 +9,10 @@
       } ],
       "root" : [ "60", "70" ],
       "referenced-id" : "2 3",
-      "integer" : [ 123, 456 ],
-      "string" : [ "eee" ],
+      "collection13integer" : [ 123, 456 ],
+      "collection13string" : [ "eee" ],
+      "collection14integer" : [ 123, 456 ],
+      "collection14string" : [ "eee" ],
       "collection1" : [ 10, 20 ],
       "collection11" : [ "YWJj", "ZGVm" ],
       "collection3" : [ {

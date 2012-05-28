@@ -1,0 +1,9 @@
+{
+   "collectionHolderNillable" : {
+      "collection1" : [ null, null ],
+      "collection2" : "",
+      "collection3" : [ null, null ],
+      "collection5" : [ null, null ],
+      "collection9" : [ null, null ]
+   }
+}

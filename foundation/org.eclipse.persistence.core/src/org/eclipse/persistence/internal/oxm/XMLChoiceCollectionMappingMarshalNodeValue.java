@@ -22,6 +22,7 @@ import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.NamespaceResolver;
@@ -188,7 +189,7 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implem
 
     public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {        
         value = getConvertedValue(value, marshalRecord, session);
-        if(value.getClass() == ClassConstants.STRING && this.xmlChoiceCollectionMapping.isMixedContent()) {
+        if(value !=null && value.getClass() == ClassConstants.STRING && this.xmlChoiceCollectionMapping.isMixedContent()) {
     		marshalMixedContent(marshalRecord, (String)value);
 	        return true;
     	}
@@ -231,6 +232,34 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implem
     }
 
     private NodeValue getNodeValueForValue(Object value){
+    	if(value == null){
+    		Iterator<NodeValue> nodeValues= fieldToNodeValues.values().iterator();
+    		while(nodeValues.hasNext()) {
+    			
+    		    XMLChoiceCollectionMappingUnmarshalNodeValue unmarshalNodeValue = (XMLChoiceCollectionMappingUnmarshalNodeValue)nodeValues.next();    		    
+    		    NodeValue nextNodeValue = unmarshalNodeValue.getChoiceElementMarshalNodeValue();    		    
+    		    
+    		    if(nextNodeValue instanceof MappingNodeValue){
+	        		DatabaseMapping nextMapping = ((MappingNodeValue)nextNodeValue).getMapping();
+	        		if(nextMapping.isAbstractCompositeCollectionMapping()){
+	        			if(((XMLCompositeCollectionMapping)nextMapping).getNullPolicy().isNullRepresentedByXsiNil()){
+	        				return unmarshalNodeValue;	        				
+	        			}
+	        		}else if(nextMapping.isAbstractCompositeDirectCollectionMapping()){
+	        			if(((XMLCompositeDirectCollectionMapping)nextMapping).getNullPolicy().isNullRepresentedByXsiNil()){
+	        				return unmarshalNodeValue;
+	        			}
+	        		}else if(nextMapping instanceof XMLBinaryDataCollectionMapping){
+	        			if(((XMLBinaryDataCollectionMapping)nextMapping).getNullPolicy().isNullRepresentedByXsiNil()){
+	        				return unmarshalNodeValue;
+	        			}
+	        		}
+    		    }
+        		
+        	}
+    		return null;
+    	}
+    	
     	XMLField associatedField = null;
     	if(value instanceof XMLRoot) {
     		XMLRoot rootValue = (XMLRoot)value;

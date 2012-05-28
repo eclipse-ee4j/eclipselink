@@ -6,9 +6,12 @@
    <root>60</root>
    <root>70</root>
    <referenced-id>2 3</referenced-id>
-   <integer>123</integer>
-   <string>eee</string>
-   <integer>456</integer>
+   <collection13integer>123</collection13integer>
+   <collection13string>eee</collection13string>
+   <collection13integer>456</collection13integer>
+   <collection14integer>123</collection14integer>
+   <collection14string>eee</collection14string>
+   <collection14integer>456</collection14integer>
    <collection1>10</collection1>
    <collection1>20</collection1>
    <collection11>YWJj</collection11>

@@ -361,6 +361,9 @@ public abstract class MarshalRecord extends XMLRecord {
     }
     
     public String getValueToWrite(QName schemaType, Object value, XMLConversionManager xmlConversionManager) {
+    	if(value == null){
+    		return null;
+    	}
         if(schemaType != null && XMLConstants.QNAME_QNAME.equals(schemaType)){
             return getStringForQName((QName)value);
         }else if(value.getClass() == String.class){

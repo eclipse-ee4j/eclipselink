@@ -101,6 +101,10 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
                 xmlDescriptor = findReferenceDescriptor(xPathFragment,unmarshalRecord, atts, xmlCompositeCollectionMapping, xmlCompositeCollectionMapping.getKeepAsElementPolicy());
                 
                 if(xmlDescriptor == null){
+                   if (xmlCompositeCollectionMapping.getNullPolicy().valueIsNull(atts)) {
+                        getContainerPolicy().addInto(null, unmarshalRecord.getContainerInstance(this), unmarshalRecord.getSession());
+                        return true;
+                   }
                     if(xmlCompositeCollectionMapping.getField() != null){
                         //try leaf element type
                         QName leafType = ((XMLField)xmlCompositeCollectionMapping.getField()).getLastXPathFragment().getLeafElementType();
@@ -179,7 +183,7 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
                SAXFragmentBuilder builder = unmarshalRecord.getFragmentBuilder();
                UnmarshalKeepAsElementPolicy keepAsElementPolicy = xmlCompositeCollectionMapping.getKeepAsElementPolicy();        
                               
-               if ((((keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) || (keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT))) && (builder.getNodes().size() != 0)) {
+               if ((((keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT) || (keepAsElementPolicy == UnmarshalKeepAsElementPolicy.KEEP_ALL_AS_ELEMENT))) && (builder.getNodes().size() > 1)) {
                    if(unmarshalRecord.getTypeQName() != null){
                        Class theClass = (Class)((XMLConversionManager) unmarshalRecord.getSession().getDatasourcePlatform().getConversionManager()).getDefaultXMLTypes().get(unmarshalRecord.getTypeQName());
                        if(theClass != null){
@@ -188,8 +192,7 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
                            return;
                        }
                    }
-            	   
-                   if (builder.getDocument() != null) {
+            	   if(builder.getNodes().size() > 1) {
                        setOrAddAttributeValueForKeepAsElement(builder, (XMLMapping) xmlCompositeCollectionMapping, (XMLConverter) xmlCompositeCollectionMapping.getConverter(), unmarshalRecord, true, collection);
                        return;
                    }
