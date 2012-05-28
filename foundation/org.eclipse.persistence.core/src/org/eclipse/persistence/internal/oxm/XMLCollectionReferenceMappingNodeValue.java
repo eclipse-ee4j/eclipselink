@@ -191,7 +191,7 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
                         fieldValue = marshalRecord.getMarshaller().getXMLContext().getValueByXPath(objectValue, fkField.getXPath(), fkField.getNamespaceResolver(), Object.class);
                     }
                     if(null == fieldValue) {
-                        return false;
+                        break;
                     }
                 }
                 schemaType = getSchemaType(xmlField, fieldValue, session);

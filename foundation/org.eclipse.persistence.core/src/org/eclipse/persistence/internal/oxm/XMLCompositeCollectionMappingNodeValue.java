@@ -105,6 +105,11 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
                 xmlDescriptor = findReferenceDescriptor(xPathFragment,unmarshalRecord, atts, xmlCompositeCollectionMapping, xmlCompositeCollectionMapping.getKeepAsElementPolicy());
                 
                 if(xmlDescriptor == null){
+                    if (xmlCompositeCollectionMapping.getNullPolicy().valueIsNull(atts)) {
+                        getContainerPolicy().addInto(null, unmarshalRecord.getContainerInstance(this), unmarshalRecord.getSession());
+                        return true;
+                   }
+
                     if(xmlCompositeCollectionMapping.getField() != null){
                         //try leaf element type
                         QName leafType = ((XMLField)xmlCompositeCollectionMapping.getField()).getLastXPathFragment().getLeafElementType();

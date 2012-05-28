@@ -26,18 +26,20 @@ public class CollectionHolderInitialized extends CollectionHolder{
     public static final Map TEST_MAP = new HashMap();
 
     public CollectionHolderInitialized(){
-        collection1 = TEST_LIST;
-        collection2 = TEST_LIST;
-        collection3 = TEST_LIST;
-        collection4 = TEST_LIST;
-        collection5 = TEST_LIST;
-        collection6 = TEST_LIST;
-        collection7 = TEST_LIST;
-        collection8 = TEST_LIST;
-        collection9 = TEST_LIST;
+        collection1 = new ArrayList();
+        collection2 = new ArrayList();
+        collection3 = new ArrayList();
+        collection4 = new ArrayList();
+        collection5 = new ArrayList();
+        collection6 = new ArrayList();
+        collection7 = new ArrayList();
+        collection8 = new ArrayList();
+        collection9 = new ArrayList();
         collection10 = TEST_MAP;
-        collection11 = TEST_LIST;
-        collection12 = TEST_LIST;
+        collection11 = new ArrayList();
+        collection12 = new ArrayList();
+        collection13 = new ArrayList();
+        collection14 = new ArrayList();
     }
 
 }

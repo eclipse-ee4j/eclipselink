@@ -15,12 +15,14 @@ package org.eclipse.persistence.internal.oxm;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLField;
@@ -134,34 +136,66 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implem
     	NodeValue associatedNodeValue = null;
     	XMLField associatedField = null;
     	Object fieldValue = value;
-    	if(value instanceof XMLRoot) {
-    		XMLRoot rootValue = (XMLRoot)value;
-    		String localName = rootValue.getLocalName();
-    		String namespaceUri = rootValue.getNamespaceURI();
-    		fieldValue = rootValue.getObject();
-    		associatedField = getFieldForName(localName, namespaceUri);
-    		if(associatedField == null) {
-    			associatedField = xmlChoiceCollectionMapping.getClassToFieldMappings().get(fieldValue.getClass());
-    		}
-    	} else {
-    	    if(value.getClass() == ClassConstants.STRING && this.xmlChoiceCollectionMapping.isMixedContent()) {
-    	        marshalMixedContent(marshalRecord, (String)value);
-    	        return true;
-    	    } else {
-    	        associatedField = xmlChoiceCollectionMapping.getClassToFieldMappings().get(value.getClass());
-    	    }
-    	}
-    	if(associatedField == null) {
-    	    //check the field associations
-    	    List<XMLField> sourceFields = xmlChoiceCollectionMapping.getClassToSourceFieldsMappings().get(value.getClass());
-    	    if(sourceFields != null) {
-    	        associatedField = sourceFields.get(0);
-    	    }
-    	}
-    	if(associatedField != null) {
-			associatedNodeValue = this.fieldToNodeValues.get(associatedField);
-		}
     	
+    	if(value == null){
+    		Iterator<Entry<XMLField, NodeValue>> iter = fieldToNodeValues.entrySet().iterator();
+    		while(iter.hasNext() && associatedNodeValue == null) {
+    			Entry<XMLField, NodeValue> nextEntry = iter.next();
+    		    XMLChoiceCollectionMappingUnmarshalNodeValue unmarshalNodeValue = (XMLChoiceCollectionMappingUnmarshalNodeValue)nextEntry.getValue();    		    
+    		    NodeValue nextNodeValue = unmarshalNodeValue.getChoiceElementMarshalNodeValue();    		    
+    		    
+    		    if(nextNodeValue instanceof MappingNodeValue){
+	        		DatabaseMapping nextMapping = ((MappingNodeValue)nextNodeValue).getMapping();
+	        		if(nextMapping.isAbstractCompositeCollectionMapping()){
+	        			if(((XMLCompositeCollectionMapping)nextMapping).getNullPolicy().isNullRepresentedByXsiNil()){
+	        				associatedNodeValue = unmarshalNodeValue;
+	        				associatedField = nextEntry.getKey();    				
+	        			}
+	        		}else if(nextMapping.isAbstractCompositeDirectCollectionMapping()){
+	        			if(((XMLCompositeDirectCollectionMapping)nextMapping).getNullPolicy().isNullRepresentedByXsiNil()){
+	        				associatedNodeValue = unmarshalNodeValue;
+	        				associatedField = nextEntry.getKey();
+	        			}
+	        		}else if(nextMapping instanceof XMLBinaryDataCollectionMapping){
+	        			if(((XMLBinaryDataCollectionMapping)nextMapping).getNullPolicy().isNullRepresentedByXsiNil()){
+	        				associatedNodeValue = unmarshalNodeValue;
+	        				associatedField = nextEntry.getKey();
+	        			}
+	        		}
+    		    }        		
+        	}    
+    		if(associatedNodeValue == null){
+    			return false;
+    		}
+    	}else{
+	    	if(value instanceof XMLRoot) {
+	    		XMLRoot rootValue = (XMLRoot)value;
+	    		String localName = rootValue.getLocalName();
+	    		String namespaceUri = rootValue.getNamespaceURI();
+	    		fieldValue = rootValue.getObject();
+	    		associatedField = getFieldForName(localName, namespaceUri);
+	    		if(associatedField == null) {
+	    			associatedField = xmlChoiceCollectionMapping.getClassToFieldMappings().get(fieldValue.getClass());
+	    		}
+	    	} else {
+	    	    if(value.getClass() == ClassConstants.STRING && this.xmlChoiceCollectionMapping.isMixedContent()) {
+	    	        marshalMixedContent(marshalRecord, (String)value);
+	    	        return true;
+	    	    } else {    	    	
+	    	        associatedField = xmlChoiceCollectionMapping.getClassToFieldMappings().get(value.getClass());
+	    	    }
+	    	}
+	    	if(associatedField == null) {
+	    	    //check the field associations
+	    	    List<XMLField> sourceFields = xmlChoiceCollectionMapping.getClassToSourceFieldsMappings().get(value.getClass());
+	    	    if(sourceFields != null) {
+	    	        associatedField = sourceFields.get(0);
+	    	    }
+	    	}
+	    	if(associatedField != null) {
+				associatedNodeValue = this.fieldToNodeValues.get(associatedField);
+			}
+    	}
     	if(associatedNodeValue != null) {
     		//Find the correct fragment
     		XPathFragment frag = associatedField.getXPathFragment();

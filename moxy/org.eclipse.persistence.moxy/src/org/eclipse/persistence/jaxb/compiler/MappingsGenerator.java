@@ -763,6 +763,7 @@ public class MappingsGenerator {
         while (choiceProperties.hasNext()) {
             Property next = choiceProperties.next();
             JavaClass type = next.getType();
+            XMLField xmlField = null;
             if (next.getXmlJoinNodes() != null) {
                 // handle XmlJoinNodes
                 List<XMLField> srcFlds = new ArrayList<XMLField>();
@@ -795,7 +796,35 @@ public class MappingsGenerator {
                 } else {
                     xpath = getXPathForField(next, namespace, !(this.typeInfo.containsKey(type.getQualifiedName())));
                 }
-                mapping.addChoiceElement(xpath.getName(), type.getQualifiedName());
+                xmlField = xpath;
+                mapping.addChoiceElement(xpath.getName(), type.getQualifiedName());     
+            }
+            
+            if(xmlField !=null){
+                DatabaseMapping nestedMapping = (DatabaseMapping) mapping.getChoiceElementMappings().get(xmlField);
+                if(nestedMapping.isAbstractCompositeCollectionMapping()){                   
+                   // handle null policy set via xml metadata
+                   if (property.isSetNullPolicy()) {
+                	   ((XMLCompositeCollectionMapping)nestedMapping).setNullPolicy(getNullPolicyFromProperty(property, namespace.getNamespaceResolverForDescriptor()));
+                   } else if (property.isNillable()){
+                	   ((XMLCompositeCollectionMapping)nestedMapping).getNullPolicy().setNullRepresentedByXsiNil(true);
+                	   ((XMLCompositeCollectionMapping)nestedMapping).getNullPolicy().setMarshalNullRepresentation(XMLNullRepresentationType.XSI_NIL);
+                   }
+                } else if(nestedMapping.isAbstractCompositeDirectCollectionMapping()){   
+                	 if (next.isSetNullPolicy()) {
+                		 ((XMLCompositeDirectCollectionMapping)nestedMapping).setNullPolicy(getNullPolicyFromProperty(next, namespace.getNamespaceResolverForDescriptor()));
+                     } else if (next.isNillable()){
+                    	 ((XMLCompositeDirectCollectionMapping)nestedMapping).getNullPolicy().setNullRepresentedByXsiNil(true);
+                    	 ((XMLCompositeDirectCollectionMapping)nestedMapping).getNullPolicy().setMarshalNullRepresentation(XMLNullRepresentationType.XSI_NIL);
+                     }
+                } else if(nestedMapping instanceof XMLBinaryDataCollectionMapping){   
+               	    if (next.isSetNullPolicy()) {
+            		    ((XMLBinaryDataCollectionMapping)nestedMapping).setNullPolicy(getNullPolicyFromProperty(next, namespace.getNamespaceResolverForDescriptor()));
+                    } else if (next.isNillable()){
+                	    ((XMLBinaryDataCollectionMapping)nestedMapping).getNullPolicy().setNullRepresentedByXsiNil(true);
+                	    ((XMLBinaryDataCollectionMapping)nestedMapping).getNullPolicy().setMarshalNullRepresentation(XMLNullRepresentationType.XSI_NIL);
+                   }
+                }
             }
         }
         return mapping;
