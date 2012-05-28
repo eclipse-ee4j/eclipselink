@@ -53,7 +53,7 @@ public class DynamicXMLMetadataSource implements MetadataSource {
     
     private XmlBindings xmlBindings;
 
-    public DynamicXMLMetadataSource(String persistenceUnitName, Server session, String packageName) {
+    public DynamicXMLMetadataSource(Server session, String packageName) {
         ObjectFactory objectFactory = new ObjectFactory();
         xmlBindings = new XmlBindings();
         xmlBindings.setPackageName(packageName);

@@ -20,6 +20,7 @@ import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -163,7 +164,7 @@ public class PersistenceContext {
             transaction = new ResourceLocalTransactionWrapper();
         }
         try{
-            JAXBContext jaxbContext = createDynamicJAXBContext(persistenceUnitInfo.getPersistenceUnitName(), emf.getServerSession());
+            JAXBContext jaxbContext = createDynamicJAXBContext(emf.getServerSession());
             this.context = jaxbContext;
         } catch (JAXBException jaxbe){
             JPARSLogger.fine("exception_creating_jaxb_context", new Object[]{persistenceUnitInfo.getPersistenceUnitName(), jaxbe.toString()});
@@ -184,7 +185,7 @@ public class PersistenceContext {
             transaction = new ResourceLocalTransactionWrapper();
         }
         try{
-            JAXBContext jaxbContext = createDynamicJAXBContext(emfName, emf.getServerSession());
+            JAXBContext jaxbContext = createDynamicJAXBContext(emf.getServerSession());
             this.context = jaxbContext;
         } catch (JAXBException jaxbe){
             JPARSLogger.fine("exception_creating_jaxb_context", new Object[]{emfName, jaxbe.toString()});
@@ -206,7 +207,7 @@ public class PersistenceContext {
      * @param persistenceUnitName
      * @param session
      */
-    protected void addDynamicXMLMetadataSources(List<Object> metadataSources, String persistenceUnitName, Server session){
+    protected void addDynamicXMLMetadataSources(List<Object> metadataSources, Server session){
         Set<String> packages = new HashSet<String>();
         Iterator<Class> i = session.getDescriptors().keySet().iterator();
         while (i.hasNext()){
@@ -221,7 +222,7 @@ public class PersistenceContext {
         }
         
         for(String packageName: packages){
-            metadataSources.add(new DynamicXMLMetadataSource(persistenceUnitName, session, packageName));
+            metadataSources.add(new DynamicXMLMetadataSource(session, packageName));
         }
     }
     
@@ -258,13 +259,13 @@ public class PersistenceContext {
      * @param session
      * @return
      */
-    protected JAXBContext createDynamicJAXBContext(String persistenceUnitName, Server session) throws JAXBException, IOException {
+    protected JAXBContext createDynamicJAXBContext(Server session) throws JAXBException, IOException {
         JAXBContext jaxbContext = (JAXBContext) session.getProperty(JAXBContext.class.getName());
         if (jaxbContext != null) {
             return jaxbContext;
         }
 
-        Map<String, Object> properties = createJAXBProperties(persistenceUnitName, session);      
+        Map<String, Object> properties = createJAXBProperties(session);      
 
         ClassLoader cl = session.getPlatform().getConversionManager().getLoader();
         jaxbContext = DynamicJAXBContextFactory.createContextFromOXM(cl, properties);
@@ -305,13 +306,13 @@ public class PersistenceContext {
      * @return
      * @throws IOException
      */
-    protected Map<String, Object> createJAXBProperties(String persistenceUnitName, Server session) throws IOException{
+    protected Map<String, Object> createJAXBProperties(Server session) throws IOException{
         String oxmLocation = (String) emf.getProperties().get("eclipselink.jpa-rs.oxm");
         
         Map<String, Object> properties = new HashMap<String, Object>(1);
         List<Object> metadataLocations = new ArrayList<Object>();
 
-        addDynamicXMLMetadataSources(metadataLocations, persistenceUnitName, session);
+        addDynamicXMLMetadataSources(metadataLocations, session);
         if (oxmLocation != null){
             metadataLocations.add(new org.eclipse.persistence.jaxb.metadata.XMLMetadataSource((new URL(oxmLocation)).openStream()));
         }

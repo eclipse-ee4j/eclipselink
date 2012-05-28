@@ -59,7 +59,7 @@ public class CRUDTests {
         em.createQuery("delete from User u").executeUpdate();
         em.getTransaction().commit();
         
-        persistenceContext = factory.getPersistenceContext("auction");
+        persistenceContext = factory.getDynamicPersistenceContext("auction");
     }
     
     @AfterClass

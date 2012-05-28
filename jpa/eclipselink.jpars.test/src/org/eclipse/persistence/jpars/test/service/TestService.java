@@ -67,6 +67,7 @@ import static org.junit.Assert.*;
 public class TestService {
 
     private static PersistenceFactory factory;
+    private static URI BASE_URI;
     
     @BeforeClass
     public static void setup(){
@@ -74,20 +75,21 @@ public class TestService {
         ExamplePropertiesLoader.loadProperties(properties); 
         factory = null;
         try{
+            BASE_URI = new URI("http://localhost:8080/JPA-RS/");
             factory = new PersistenceFactory();
             FileInputStream xmlStream = new FileInputStream(XMLFilePathBuilder.getXMLFileName("auction-persistence.xml"));
 
             PersistenceContext context = factory.bootstrapPersistenceContext("auction", xmlStream, properties, true);
-            context.setBaseURI(new URI("http://localhost:8080/JPA-RS/"));
+            context.setBaseURI(BASE_URI);
             
             xmlStream = new FileInputStream(XMLFilePathBuilder.getXMLFileName("/phonebook-persistence.xml"));
             context = factory.bootstrapPersistenceContext("phonebook", xmlStream, properties, true);
-            context.setBaseURI(new URI("http://localhost:8080/JPA-RS/"));
+            context.setBaseURI(BASE_URI);
             
             properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
             properties.put(PersistenceUnitProperties.DDL_GENERATION, PersistenceUnitProperties.DROP_AND_CREATE);
-            EntityManagerFactory emf = Persistence.createEntityManagerFactory("auction-static", properties);
-            context = factory.bootstrapPersistenceContext("auction-static", emf, new URI("http://localhost:8080/JPA-RS/"), false);
+            EntityManagerFactory emf = Persistence.createEntityManagerFactory("auction-static-local", properties);
+            context = factory.bootstrapPersistenceContext("auction-static-local", emf, BASE_URI, false);
 
             StaticModelDatabasePopulator.populateDB(emf);
         } catch (Exception e){
@@ -101,14 +103,14 @@ public class TestService {
     }
     
     protected static void clearData(){
-        EntityManager em = factory.getPersistenceContext("auction").getEmf().createEntityManager();
+        EntityManager em = factory.getDynamicPersistenceContext("auction").getEmf().createEntityManager();
         em.getTransaction().begin();
         em.createQuery("delete from Bid b").executeUpdate();
         em.createQuery("delete from Auction a").executeUpdate();
         em.createQuery("delete from User u").executeUpdate();
 
         em.getTransaction().commit();
-        em = factory.getPersistenceContext("phonebook").getEmf().createEntityManager();
+        em = factory.getDynamicPersistenceContext("phonebook").getEmf().createEntityManager();
         em.getTransaction().begin();
         em.createQuery("delete from Person p").executeUpdate();
         em.getTransaction().commit();
@@ -118,7 +120,7 @@ public class TestService {
     public void testUpdateUserList(){
         Service service = new Service();
         service.setPersistenceFactory(factory);
-        PersistenceContext context = factory.getPersistenceContext("auction");
+        PersistenceContext context = factory.getDynamicPersistenceContext("auction");
         
         DynamicEntity entity = (DynamicEntity)context.newEntity("User");
         entity.set("name", "Jim");
@@ -169,7 +171,7 @@ public class TestService {
     public void testUpdatePhoneNumberList(){
         Service service = new Service();
         service.setPersistenceFactory(factory);
-        PersistenceContext context = factory.getPersistenceContext("phonebook");
+        PersistenceContext context = factory.getDynamicPersistenceContext("phonebook");
         
         DynamicEntity entity = (DynamicEntity)context.newEntity("Person");
         entity.set("firstName", "Jim");
@@ -243,7 +245,7 @@ public class TestService {
     public void testMarshallBid(){
         Service service = new Service();
         service.setPersistenceFactory(factory);
-        PersistenceContext context = factory.getPersistenceContext("auction");
+        PersistenceContext context = factory.getDynamicPersistenceContext("auction");
         
         DynamicEntity entity1 = (DynamicEntity)context.newEntity("Auction");
         entity1.set("name", "Computer");
@@ -277,7 +279,7 @@ public class TestService {
     public void testNamedQuery(){
         Service service = new Service();
         service.setPersistenceFactory(factory);
-        PersistenceContext context = factory.getPersistenceContext("auction");
+        PersistenceContext context = factory.getDynamicPersistenceContext("auction");
         
         DynamicEntity entity1 = (DynamicEntity)context.newEntity("Auction");
         entity1.set("name", "Computer");
@@ -311,7 +313,7 @@ public class TestService {
     public void testNamedQuerySingleResult(){
         Service service = new Service();
         service.setPersistenceFactory(factory);
-        PersistenceContext context = factory.getPersistenceContext("auction");
+        PersistenceContext context = factory.getDynamicPersistenceContext("auction");
         
         DynamicEntity entity1 = (DynamicEntity)context.newEntity("Auction");
         entity1.set("name", "Computer");
@@ -341,7 +343,7 @@ public class TestService {
     public void testUpdate(){
         Service service = new Service();
         service.setPersistenceFactory(factory);
-        PersistenceContext context = factory.getPersistenceContext("auction");
+        PersistenceContext context = factory.getDynamicPersistenceContext("auction");
         
         DynamicEntity entity1 = (DynamicEntity)context.newEntity("Auction");
         entity1.set("name", "Computer");
@@ -361,7 +363,7 @@ public class TestService {
     public void testUpdateRelationship(){
         Service service = new Service();
         service.setPersistenceFactory(factory);
-        PersistenceContext context = factory.getPersistenceContext("auction");
+        PersistenceContext context = factory.getDynamicPersistenceContext("auction");
         
         DynamicEntity entity1 = (DynamicEntity)context.newEntity("Auction");
         entity1.set("name", "Computer");
@@ -419,7 +421,7 @@ public class TestService {
     public void testDelete(){
         Service service = new Service();
         service.setPersistenceFactory(factory);
-        PersistenceContext context = factory.getPersistenceContext("auction");
+        PersistenceContext context = factory.getDynamicPersistenceContext("auction");
         
         DynamicEntity entity1 = (DynamicEntity)context.newEntity("Auction");
         entity1.set("name", "Computer1");
@@ -438,7 +440,7 @@ public class TestService {
     public void testWriteQuery(){
         Service service = new Service();
         service.setPersistenceFactory(factory);
-        PersistenceContext context = factory.getPersistenceContext("auction");
+        PersistenceContext context = factory.getDynamicPersistenceContext("auction");
         
         DynamicEntity entity = (DynamicEntity)context.newEntity("User");
         entity.set("name", "Bob");
@@ -459,7 +461,7 @@ public class TestService {
     public void testDynamicCompositeKey(){
         Service service = new Service();
         service.setPersistenceFactory(factory);
-        PersistenceContext context = factory.getPersistenceContext("auction");
+        PersistenceContext context = factory.getDynamicPersistenceContext("auction");
         DynamicEntity user = (DynamicEntity)context.newEntity("User");
         user.set("name", "Wes");
         DynamicEntity address = (DynamicEntity)context.newEntity("Address");
@@ -481,8 +483,11 @@ public class TestService {
     public void testStaticCompositeKey(){
         Service service = new Service();
         service.setPersistenceFactory(factory);
-
-        Response output = service.find("auction-static", "StaticAddress", StaticModelDatabasePopulator.ADDRESS1_ID + "+" + StaticModelDatabasePopulator.address1().getType(), generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo());
+        Map<String, Object> properties = new HashMap<String, Object>();
+        ExamplePropertiesLoader.loadProperties(properties); 
+        properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
+            
+        Response output = service.find("auction-static-local", "StaticAddress", StaticModelDatabasePopulator.ADDRESS1_ID + "+" + StaticModelDatabasePopulator.address1().getType(), generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo());
 
         String result = stringifyResults((StreamingOutputMarshaller)output.getEntity());
         assertTrue("home was not in the result", result.contains("home"));
@@ -494,7 +499,7 @@ public class TestService {
         Service service = new Service();
         service.setPersistenceFactory(factory);
         
-        Response output = service.find("auction-static", "StaticBid", String.valueOf(StaticModelDatabasePopulator.BID1_ID), generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo());
+        Response output = service.find("auction-static-local", "StaticBid", String.valueOf(StaticModelDatabasePopulator.BID1_ID), generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo());
 
         String result = stringifyResults((StreamingOutputMarshaller)output.getEntity());
         assertTrue("Auction was not in the result", result.contains("\"rel\":\"auction\""));
@@ -505,13 +510,15 @@ public class TestService {
     public void testUpdateStaticRelationship(){
         Service service = new Service();
         service.setPersistenceFactory(factory);
-        PersistenceContext context = factory.getPersistenceContext("auction-static");
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
+        PersistenceContext context = factory.get("auction-static-local", BASE_URI, properties);
         
         StaticUser initialUser = (StaticUser)((StaticBid)context.find("StaticBid", StaticModelDatabasePopulator.BID1_ID)).getUser();
         StaticUser user2 = (StaticUser)context.find("StaticUser", StaticModelDatabasePopulator.USER2_ID);
         
         try{
-            Response output = service.setOrAddAttribute("auction-static", "StaticBid", String.valueOf(StaticModelDatabasePopulator.BID1_ID), "user", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo(), serializeToStream(user2, context, MediaType.APPLICATION_JSON_TYPE));
+            Response output = service.setOrAddAttribute("auction-static-local", "StaticBid", String.valueOf(StaticModelDatabasePopulator.BID1_ID), "user", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo(), serializeToStream(user2, context, MediaType.APPLICATION_JSON_TYPE));
     
             String result = stringifyResults((StreamingOutputMarshaller)output.getEntity());
             context.getJpaSession().getIdentityMapAccessor().initializeAllIdentityMaps();
@@ -529,13 +536,15 @@ public class TestService {
     public void testDeleteStaticRelationship(){
         Service service = new Service();
         service.setPersistenceFactory(factory);
-        PersistenceContext context = factory.getPersistenceContext("auction-static");
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
+        PersistenceContext context = factory.get("auction-static-local", BASE_URI, properties);
         
         StaticBid bid = (StaticBid)context.find("StaticBid", StaticModelDatabasePopulator.BID1_ID);
         StaticUser user = bid.getUser();
         
         try{
-            Response output = service.removeAttribute("auction-static", "StaticBid", String.valueOf(StaticModelDatabasePopulator.BID1_ID), "user", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo(), serializeToStream(user, context, MediaType.APPLICATION_JSON_TYPE));
+            Response output = service.removeAttribute("auction-static-local", "StaticBid", String.valueOf(StaticModelDatabasePopulator.BID1_ID), "user", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo(), serializeToStream(user, context, MediaType.APPLICATION_JSON_TYPE));
     
             String result = stringifyResults((StreamingOutputMarshaller)output.getEntity());
             context.getJpaSession().getIdentityMapAccessor().initializeAllIdentityMaps();
@@ -552,7 +561,10 @@ public class TestService {
     public void testUpdateAndRemoveStaticCollectionRelationship(){
         Service service = new Service();
         service.setPersistenceFactory(factory);
-        PersistenceContext context = factory.getPersistenceContext("auction-static");
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
+        PersistenceContext context = factory.get("auction-static-local", BASE_URI, properties);
+        
         StaticAuction auction = (StaticAuction)context.find("StaticAuction", StaticModelDatabasePopulator.AUCTION1_ID);
         StaticBid bid = new StaticBid();
         bid.setBid(100);
@@ -561,7 +573,7 @@ public class TestService {
 
         TestURIInfo ui = new TestURIInfo();
         ui.addMatrixParameter("bids", "partner", "auction");
-        Response output = service.setOrAddAttribute("auction-static", "StaticAuction", String.valueOf(StaticModelDatabasePopulator.AUCTION1_ID), "bids", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), ui, serializeToStream(bid, context, MediaType.APPLICATION_JSON_TYPE));
+        Response output = service.setOrAddAttribute("auction-static-local", "StaticAuction", String.valueOf(StaticModelDatabasePopulator.AUCTION1_ID), "bids", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), ui, serializeToStream(bid, context, MediaType.APPLICATION_JSON_TYPE));
         String result = stringifyResults((StreamingOutputMarshaller)output.getEntity());
         context.getJpaSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         
@@ -578,7 +590,7 @@ public class TestService {
         
         context.getJpaSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         bid = (StaticBid)context.find("StaticBid", bid.getId());
-        output = service.removeAttribute("auction-static", "StaticAuction", String.valueOf(StaticModelDatabasePopulator.AUCTION1_ID), "bids", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), ui, serializeToStream(bid, context, MediaType.APPLICATION_JSON_TYPE));
+        output = service.removeAttribute("auction-static-local", "StaticAuction", String.valueOf(StaticModelDatabasePopulator.AUCTION1_ID), "bids", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), ui, serializeToStream(bid, context, MediaType.APPLICATION_JSON_TYPE));
         context.getJpaSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         
         auction = (StaticAuction)context.find("StaticAuction", StaticModelDatabasePopulator.AUCTION1_ID);
@@ -596,7 +608,10 @@ public class TestService {
     public void testStaticReportQuery(){
         Service service = new Service();
         service.setPersistenceFactory(factory);
-        PersistenceContext context = factory.getPersistenceContext("auction-static");
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
+        PersistenceContext context = factory.get("auction-static-local", BASE_URI, properties);
+        
         Long count = (Long)((List)context.query(null, "User.count", null)).get(0);
         
         TestHttpHeaders headers = new TestHttpHeaders();
@@ -604,7 +619,7 @@ public class TestService {
         List<String> mediaTypes = new ArrayList<String>();
         mediaTypes.add(MediaType.APPLICATION_JSON);
         TestURIInfo ui = new TestURIInfo();
-        StreamingOutput output = (StreamingOutput)service.namedQuery("auction-static", "User.count", headers, ui).getEntity();
+        StreamingOutput output = (StreamingOutput)service.namedQuery("auction-static-local", "User.count", headers, ui).getEntity();
    
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try{
@@ -622,7 +637,7 @@ public class TestService {
     public void testUnmarshallNonExistantLink(){
         Service service = new Service();
         service.setPersistenceFactory(factory);
-        PersistenceContext context = factory.getPersistenceContext("auction");
+        PersistenceContext context = factory.getDynamicPersistenceContext("auction");
         LinkAdapter adapter = new LinkAdapter("http://localhost:8080/JPA-RS/", context);
         DynamicEntity entity1 = null;
         DynamicEntity entity2 = null;
@@ -662,28 +677,30 @@ public class TestService {
     public void testMultitenant() throws JAXBException {
         Service service = new Service();
         service.setPersistenceFactory(factory);
-        PersistenceContext context = factory.getPersistenceContext("auction-static");
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
+        PersistenceContext context = factory.get("auction-static-local", BASE_URI, properties);
         
         Account account = new Account();
         account.setAccoutNumber("AAA111");
         TestURIInfo ui = new TestURIInfo();
-        ui.addMatrixParameter("auction-static", "tenant.id", "AcctOwner1");
+        ui.addMatrixParameter("auction-static-local", "tenant.id", "AcctOwner1");
 
-        StreamingOutput output = (StreamingOutput)service.update("auction-static", "Account", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), ui, serializeToStream(account, context, MediaType.APPLICATION_JSON_TYPE)).getEntity();
+        StreamingOutput output = (StreamingOutput)service.update("auction-static-local", "Account", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), ui, serializeToStream(account, context, MediaType.APPLICATION_JSON_TYPE)).getEntity();
         
         String result = stringifyResults(output);
         
         account = (Account)context.unmarshalEntity(Account.class, MediaType.APPLICATION_JSON_TYPE, new ByteArrayInputStream(result.getBytes()));
         
-        output = (StreamingOutput)service.find("auction-static", "Account", String.valueOf(account.getId()), generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), ui).getEntity();
+        output = (StreamingOutput)service.find("auction-static-local", "Account", String.valueOf(account.getId()), generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), ui).getEntity();
         result = stringifyResults(output);
         account = (Account)context.unmarshalEntity(Account.class, MediaType.APPLICATION_JSON_TYPE, new ByteArrayInputStream(result.getBytes()));
 
         assertTrue("account is null", account != null);
         TestURIInfo ui2 = new TestURIInfo();
-        ui2.addMatrixParameter("auction-static", "tenant.id", "AcctOwner2");
+        ui2.addMatrixParameter("auction-static-local", "tenant.id", "AcctOwner2");
         
-        output = (StreamingOutput)service.find("auction-static", "Account", String.valueOf(account.getId()), generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), ui2).getEntity();
+        output = (StreamingOutput)service.find("auction-static-local", "Account", String.valueOf(account.getId()), generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), ui2).getEntity();
         assertTrue("output should be null", output == null);
     }
     

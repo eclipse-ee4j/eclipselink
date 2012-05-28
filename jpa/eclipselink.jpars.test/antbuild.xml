@@ -75,7 +75,6 @@
         <delete includeEmptyDirs="true" failonerror="false">
             <fileset dir="${classes.dir}"/>
             <fileset dir="${report.dir}"/>
-            <fileset dir="${resource.dir}"/>
             <fileset dir="${run.dir}"/>
             <fileset dir="${jparstest.build.location}" includes="${jpars.test.jar}"/>
         </delete>
@@ -347,8 +346,12 @@
                     <path refid="@{compilepathref}"/>
                 </classpath>
             </javac>
-            <copy todir="classes/META-INF">
-                <fileset dir="src/META-INF" includes="**/*.xml"/>
+            <filter token="DB_URL" value="${db.url}"/>
+            <filter token="DB_USER" value="${db.user}"/>
+            <filter token="DB_PWD" value="${db.pwd}"/>
+            <filter token="DB_DRIVER" value="${db.driver}"/>
+            <copy todir="classes/META-INF" filtering="true">
+                <fileset dir="src/META-INF" includes="**/*.xml" excludes=".svn"/>
             </copy>
         </sequential>
     </macrodef>

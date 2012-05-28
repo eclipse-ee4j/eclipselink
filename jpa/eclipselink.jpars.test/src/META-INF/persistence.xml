@@ -1,22 +1,43 @@
 <persistence xmlns="http://java.sun.com/xml/ns/persistence"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence persistence_2_0.xsd"
-	version="2.0">
-	<persistence-unit name="auction-static" transaction-type="RESOURCE_LOCAL">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/persistence persistence_2_0.xsd"
+    version="2.0">
+    <persistence-unit name="auction-static" transaction-type="RESOURCE_LOCAL">
 
-		<provider>
-			org.eclipse.persistence.jpa.PersistenceProvider
-		</provider>
+        <provider>
+            org.eclipse.persistence.jpa.PersistenceProvider
+        </provider>
 
-		<class>org.eclipse.persistence.jpars.test.model.StaticUser</class>
-		<class>org.eclipse.persistence.jpars.test.model.StaticAuction</class>
-		<class>org.eclipse.persistence.jpars.test.model.StaticBid</class>
-		<class>org.eclipse.persistence.jpars.test.model.StaticAddress</class>
+        <class>org.eclipse.persistence.jpars.test.model.StaticUser</class>
+        <class>org.eclipse.persistence.jpars.test.model.StaticAuction</class>
+        <class>org.eclipse.persistence.jpars.test.model.StaticBid</class>
+        <class>org.eclipse.persistence.jpars.test.model.StaticAddress</class>
         <class>org.eclipse.persistence.jpars.test.model.multitenant.Account</class>
-	    <properties>
-	       <property name="javax.persistence.nonJtaDataSource" value="jdbc/jpa-rs"/>
-	       <property name="eclipselink.logging.level" value="FINEST"/>
-	       <property name="eclipselink.logging.parameters" value="true"/>
-	    </properties>
-	</persistence-unit>
+        <properties>
+           <property name="javax.persistence.nonJtaDataSource" value="jdbc/jpa-rs"/>
+           <property name="eclipselink.logging.level" value="FINEST"/>
+           <property name="eclipselink.logging.parameters" value="true"/>
+           <property name="eclipselink.target-server" value="SunAS9"/>
+        </properties>
+    </persistence-unit>
+    <persistence-unit name="auction-static-local" transaction-type="RESOURCE_LOCAL">
+
+        <provider>
+            org.eclipse.persistence.jpa.PersistenceProvider
+        </provider>
+
+        <class>org.eclipse.persistence.jpars.test.model.StaticUser</class>
+        <class>org.eclipse.persistence.jpars.test.model.StaticAuction</class>
+        <class>org.eclipse.persistence.jpars.test.model.StaticBid</class>
+        <class>org.eclipse.persistence.jpars.test.model.StaticAddress</class>
+        <class>org.eclipse.persistence.jpars.test.model.multitenant.Account</class>
+        <properties>
+           <property name="eclipselink.logging.level" value="FINEST"/>
+           <property name="eclipselink.logging.parameters" value="true"/>
+      <property name="javax.persistence.jdbc.url" value="@DB_URL@"/>
+      <property name="javax.persistence.jdbc.password" value="@DB_PWD@"/>
+      <property name="javax.persistence.jdbc.driver" value="@DB_DRIVER@"/>
+      <property name="javax.persistence.jdbc.user" value="@DB_USER@"/>
+        </properties>
+    </persistence-unit>
 </persistence>
