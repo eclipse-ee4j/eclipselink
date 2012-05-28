@@ -2712,7 +2712,9 @@ public class AnnotationsProcessor {
                     }
                 } else if ((onlyExplicit && hasJAXBAnnotations(getMethod)) || !onlyExplicit) {
                     boolean isTransient = helper.isAnnotationPresent(getMethod, XmlTransient.class);
-                    boolean isLocation = helper.isAnnotationPresent(getMethod, XmlLocation.class);
+                    boolean isLocation = helper.isAnnotationPresent(getMethod, XmlLocation.class) ||
+                            helper.isAnnotationPresent(setMethod, CompilerHelper.XML_LOCATION_ANNOTATION_CLASS) ||
+                            helper.isAnnotationPresent(setMethod, CompilerHelper.INTERNAL_XML_LOCATION_ANNOTATION_CLASS);
                     if (!isTransient) {
                         propertyMethod = getMethod;
                     } else {
@@ -2745,7 +2747,9 @@ public class AnnotationsProcessor {
                 if (getMethod != null && hasJAXBAnnotations(getMethod)) {
                     // use the set method if it exists and is annotated
                     boolean isTransient = helper.isAnnotationPresent(getMethod, XmlTransient.class);
-                    boolean isLocation = helper.isAnnotationPresent(getMethod, XmlLocation.class);
+                    boolean isLocation = helper.isAnnotationPresent(getMethod, XmlLocation.class) ||
+                            helper.isAnnotationPresent(setMethod, CompilerHelper.XML_LOCATION_ANNOTATION_CLASS) ||
+                            helper.isAnnotationPresent(setMethod, CompilerHelper.INTERNAL_XML_LOCATION_ANNOTATION_CLASS);
                     if (!isTransient) {
                         propertyMethod = getMethod;
                     } else {
@@ -2758,7 +2762,9 @@ public class AnnotationsProcessor {
                     }
                 } else if ((onlyExplicit && hasJAXBAnnotations(setMethod)) || !onlyExplicit) {
                     boolean isTransient = helper.isAnnotationPresent(setMethod, XmlTransient.class);
-                    boolean isLocation = helper.isAnnotationPresent(setMethod, XmlLocation.class);
+                    boolean isLocation = helper.isAnnotationPresent(setMethod, XmlLocation.class) ||
+                            helper.isAnnotationPresent(setMethod, CompilerHelper.XML_LOCATION_ANNOTATION_CLASS) ||
+                            helper.isAnnotationPresent(setMethod, CompilerHelper.INTERNAL_XML_LOCATION_ANNOTATION_CLASS);
                     if (!isTransient) {
                         propertyMethod = setMethod;
                     } else {
@@ -2806,7 +2812,9 @@ public class AnnotationsProcessor {
                 property.setMethodProperty(true);
 
                 boolean isTransient = helper.isAnnotationPresent(property.getElement(), XmlTransient.class);
-                boolean isLocation = helper.isAnnotationPresent(property.getElement(), XmlLocation.class);
+                boolean isLocation = helper.isAnnotationPresent(property.getElement(), XmlLocation.class) ||
+                        helper.isAnnotationPresent(setMethod, CompilerHelper.XML_LOCATION_ANNOTATION_CLASS) ||
+                        helper.isAnnotationPresent(setMethod, CompilerHelper.INTERNAL_XML_LOCATION_ANNOTATION_CLASS);
                 if (!isTransient || (isTransient && isLocation)) {
                     properties.add(property);
                 }
