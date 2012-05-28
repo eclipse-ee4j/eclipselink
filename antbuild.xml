@@ -367,10 +367,10 @@
 
     <!-- Compiles Oracle extensions and tests. -->
     <target name="build-oracle-nosql-extension">
-        <ant antfile="antbuild.xml" dir="${eclipselink.hermes}"           target="build"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.core}"             target="build"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.nosql}"            target="build"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.oracle.nosql}"     target="build"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.hermes}"                 target="build"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.core}"                   target="build"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.extension.nosql}"        target="build"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle.nosql}" target="build"/>
     </target>
 
     <target name="build-oracle-nosql-extension-test">
