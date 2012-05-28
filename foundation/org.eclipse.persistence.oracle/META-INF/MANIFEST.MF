@@ -1,13 +1,13 @@
 Manifest-Version: 1.0
 Export-Package: 
- org.eclipse.persistence.internal.platform.database.oracle;version="2.4.0",
- org.eclipse.persistence.internal.platform.database.oracle.xdb;version="2.4.0",
- org.eclipse.persistence.platform.database.oracle;version="2.4.0",
- org.eclipse.persistence.platform.database.oracle.converters;version="2.4.0",
- org.eclipse.persistence.platform.database.oracle.dcn;version="2.4.0",
- org.eclipse.persistence.platform.database.oracle.ucp;version="2.4.0",
- org.eclipse.persistence.platform.xml.xdk;version="2.4.0",
- org.eclipse.persistence.tools.profiler.oracle;version="2.4.0"
+ org.eclipse.persistence.internal.platform.database.oracle;version="2.5.0",
+ org.eclipse.persistence.internal.platform.database.oracle.xdb;version="2.5.0",
+ org.eclipse.persistence.platform.database.oracle;version="2.5.0",
+ org.eclipse.persistence.platform.database.oracle.converters;version="2.5.0",
+ org.eclipse.persistence.platform.database.oracle.dcn;version="2.5.0",
+ org.eclipse.persistence.platform.database.oracle.ucp;version="2.5.0",
+ org.eclipse.persistence.platform.xml.xdk;version="2.5.0",
+ org.eclipse.persistence.tools.profiler.oracle;version="2.5.0"
 Bundle-Name: EclipseLink Oracle Extensions
 Created-By: 1.6.0_26 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
