@@ -161,4 +161,11 @@ public class AQTestModel extends TestModel {
         getDatabaseSession().logout();
         getExecutor().setSession(oldSession);
     }
+
+    /**
+     * Return the JUnit suite to allow JUnit runner to find it.
+     */
+    public static junit.framework.TestSuite suite() {
+        return new AQTestModel();
+    }
 }

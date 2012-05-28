@@ -354,13 +354,6 @@
         <antcall target="run-test-prompt" inheritRefs="true">
             <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.clientserver.ClientServerTestModel"/>
         </antcall>
-        <!-- Requires EIS datasources config. -->
-        <antcall target="run-test-prompt" inheritRefs="true">
-            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.eis.cobol.CobolTestModel"/>
-        </antcall>
-        <antcall target="run-test-prompt" inheritRefs="true">
-            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.eis.xmlfile.XMLFileTestModel"/>
-        </antcall>
 
         <!--PLSQL -->
         <antcall target="run-test-prompt" inheritRefs="true">

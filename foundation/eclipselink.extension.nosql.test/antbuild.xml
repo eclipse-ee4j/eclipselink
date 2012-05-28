@@ -403,6 +403,12 @@
         <generate_report/>
     </target>
 
+    <target name="test-eis" depends="init_run">
+        <run_test testclass="org.eclipse.persistence.testing.tests.eis.xmlfile.XMLFileTestModel"  dburl="${db.url}"/>
+        <run_test testclass="org.eclipse.persistence.testing.tests.eis.cobol.CobolTestModel"  dburl="${db.url}"/>
+        <generate_report/>
+    </target>
+
     <!-- Prompt runner test target, runs test.class from test.properties (default is nosqlJPATestModel). -->
     <target name="test-prompt" depends="init_run">
         <run_test_prompt testclass="${test.class}" dburl="${db.url}"/>
