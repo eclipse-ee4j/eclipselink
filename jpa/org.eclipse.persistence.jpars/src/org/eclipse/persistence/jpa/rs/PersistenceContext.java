@@ -317,10 +317,24 @@ public class PersistenceContext {
             metadataLocations.add(new org.eclipse.persistence.jaxb.metadata.XMLMetadataSource((new URL(oxmLocation)).openStream()));
         }
         
-        oxmLocation = (String)emf.getProperties().get(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY);
-        if (oxmLocation != null){
-            metadataLocations.add(new org.eclipse.persistence.jaxb.metadata.XMLMetadataSource((new URL(oxmLocation)).openStream()));
+        Object passedOXMLocations = emf.getProperties().get(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY);
+        if (passedOXMLocations != null){
+            if (passedOXMLocations instanceof String){
+                metadataLocations.add(new org.eclipse.persistence.jaxb.metadata.XMLMetadataSource((new URL((String)passedOXMLocations)).openStream()));
+            } else if (passedOXMLocations instanceof List){
+                for (Object location: (List)passedOXMLocations){
+                    if (location instanceof String){
+                        metadataLocations.add(new org.eclipse.persistence.jaxb.metadata.XMLMetadataSource((new URL((String)location)).openStream()));
+                    }
+                }
+            }
+            oxmLocation = (String)emf.getProperties().get(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY);
+            if (oxmLocation != null){
+                metadataLocations.add(new org.eclipse.persistence.jaxb.metadata.XMLMetadataSource((new URL(oxmLocation)).openStream()));
+            }
+            
         }
+
         
         metadataLocations.add(new LinkMetadataSource());
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, metadataLocations);
