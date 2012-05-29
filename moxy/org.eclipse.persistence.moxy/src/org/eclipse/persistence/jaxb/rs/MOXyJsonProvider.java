@@ -14,7 +14,9 @@ package org.eclipse.persistence.jaxb.rs;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -29,7 +31,6 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
-import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -156,11 +157,12 @@ import org.eclipse.persistence.oxm.XMLConstants;
  * </pre>
  * @since 2.4
  */
-@Provider
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyWriter<Object>{
  
+    private static final String CHARSET = "charset";
+
     @Context
     protected Providers providers;
 
@@ -365,7 +367,18 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
             unmarshaller.setProperty(UnmarshallerProperties.JSON_NAMESPACE_SEPARATOR, namespaceSeperator);
             unmarshaller.setProperty(UnmarshallerProperties.JSON_VALUE_WRAPPER, valueWrapper);
             preReadFrom(type, genericType, annotations, mediaType, httpHeaders, unmarshaller);
-            return unmarshaller.unmarshal(new StreamSource(entityStream), domainClass).getValue();
+
+            StreamSource jsonSource;
+            Map<String, String> mediaTypeParameters = mediaType.getParameters();
+            if(mediaTypeParameters.containsKey(CHARSET)) {
+                String charSet = mediaTypeParameters.get(CHARSET);
+                Reader entityReader = new InputStreamReader(entityStream, charSet);
+                jsonSource = new StreamSource(entityReader);
+            } else {
+                jsonSource = new StreamSource(entityStream);
+            }
+
+            return unmarshaller.unmarshal(jsonSource, domainClass).getValue();
         } catch(JAXBException jaxbException) {
             throw new WebApplicationException(jaxbException);
         }
@@ -461,6 +474,13 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
             marshaller.setProperty(MarshallerProperties.JSON_NAMESPACE_SEPARATOR, namespaceSeperator);
             marshaller.setProperty(MarshallerProperties.JSON_VALUE_WRAPPER, valueWrapper);
             marshaller.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, namespacePrefixMapper);
+
+            Map<String, String> mediaTypeParameters = mediaType.getParameters();
+            if(mediaTypeParameters.containsKey(CHARSET)) {
+                String charSet = mediaTypeParameters.get(CHARSET);
+                marshaller.setProperty(Marshaller.JAXB_ENCODING, charSet);
+            }
+
             preWriteTo(object, type, genericType, annotations, mediaType, httpHeaders, marshaller);
             marshaller.marshal(object, entityStream);
         } catch(JAXBException jaxbException) {
