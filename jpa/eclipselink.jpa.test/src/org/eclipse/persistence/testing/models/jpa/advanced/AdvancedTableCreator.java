@@ -88,6 +88,9 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildRABBITFOOTTable());
         addTableDefinition(buildCMP3_ROOMTable());
         addTableDefinition(buildCMP3_DOORTable());
+        addTableDefinition(buildCMP3_SOURCETable());
+        addTableDefinition(buildCMP3_TARGET_ATable());
+        addTableDefinition(buildCMP3_TARGET_BTable());
     }
     
     public TableDefinition buildADDRESSTable() {
@@ -2570,6 +2573,120 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         foreignKeyCMP3_DOOR_CMP3_ROOM.addTargetField("ID");
         table.addForeignKeyConstraint(foreignKeyCMP3_DOOR_CMP3_ROOM);
  
+        return table;
+    }
+
+    public TableDefinition buildCMP3_SOURCETable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_SOURCE");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("VARCHAR2");
+        fieldID.setSize(32);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+        
+        FieldDefinition fieldDESCRIPTION = new FieldDefinition();
+        fieldDESCRIPTION.setName("DESCRIPTION");
+        fieldDESCRIPTION.setTypeName("VARCHAR2");
+        fieldDESCRIPTION.setSize(32);
+        fieldDESCRIPTION.setIsPrimaryKey(false);
+        fieldDESCRIPTION.setIsIdentity(false);
+        fieldDESCRIPTION.setUnique(false);
+        fieldDESCRIPTION.setShouldAllowNull(true);
+        table.addField(fieldDESCRIPTION);
+
+        FieldDefinition fieldA_ID = new FieldDefinition();
+        fieldA_ID.setName("A_ID");
+        fieldA_ID.setTypeName("VARCHAR2");
+        fieldA_ID.setSize(32);
+        fieldA_ID.setIsPrimaryKey(false);
+        fieldA_ID.setIsIdentity(false);
+        fieldA_ID.setUnique(false);
+        fieldA_ID.setShouldAllowNull(false);
+//        fieldA_ID.setForeignKeyFieldName("CMP3_TARGET_A.ID");
+        table.addField(fieldA_ID);
+
+        FieldDefinition fieldB_ID = new FieldDefinition();
+        fieldB_ID.setName("B_ID");
+        fieldB_ID.setTypeName("VARCHAR2");
+        fieldB_ID.setSize(32);
+        fieldB_ID.setIsPrimaryKey(false);
+        fieldB_ID.setIsIdentity(false);
+        fieldB_ID.setUnique(false);
+        fieldB_ID.setShouldAllowNull(false);
+//        fieldB_ID.setForeignKeyFieldName("CMP3_TARGET_B.ID");
+        table.addField(fieldB_ID);
+ 
+        return table;
+    }
+
+    public TableDefinition buildCMP3_TARGET_ATable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_TARGET_A");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("VARCHAR2");
+        fieldID.setSize(32);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+        
+        FieldDefinition fieldDESCRIPTION = new FieldDefinition();
+        fieldDESCRIPTION.setName("DESCRIPTION");
+        fieldDESCRIPTION.setTypeName("VARCHAR2");
+        fieldDESCRIPTION.setSize(32);
+        fieldDESCRIPTION.setIsPrimaryKey(false);
+        fieldDESCRIPTION.setIsIdentity(false);
+        fieldDESCRIPTION.setUnique(false);
+        fieldDESCRIPTION.setShouldAllowNull(true);
+        table.addField(fieldDESCRIPTION);
+
+        return table;
+    }
+
+    public TableDefinition buildCMP3_TARGET_BTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_TARGET_B");
+        
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("VARCHAR2");
+        fieldID.setSize(32);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+        
+        FieldDefinition fieldDESCRIPTION = new FieldDefinition();
+        fieldDESCRIPTION.setName("DESCRIPTION");
+        fieldDESCRIPTION.setTypeName("VARCHAR2");
+        fieldDESCRIPTION.setSize(32);
+        fieldDESCRIPTION.setIsPrimaryKey(false);
+        fieldDESCRIPTION.setIsIdentity(false);
+        fieldDESCRIPTION.setUnique(false);
+        fieldDESCRIPTION.setShouldAllowNull(true);
+        table.addField(fieldDESCRIPTION);
+
+        FieldDefinition fieldSOURCE_ID = new FieldDefinition();
+        fieldSOURCE_ID.setName("SOURCE_ID");
+        fieldSOURCE_ID.setTypeName("VARCHAR2");
+        fieldSOURCE_ID.setSize(32);
+        fieldSOURCE_ID.setIsPrimaryKey(false);
+        fieldSOURCE_ID.setIsIdentity(false);
+        fieldSOURCE_ID.setUnique(false);
+        fieldSOURCE_ID.setShouldAllowNull(true);
+        fieldSOURCE_ID.setForeignKeyFieldName("CMP3_SOURCE.ID");
+        table.addField(fieldSOURCE_ID);
+
         return table;
     }
 }
