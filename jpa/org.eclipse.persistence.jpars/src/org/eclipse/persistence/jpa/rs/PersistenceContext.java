@@ -35,6 +35,7 @@ import javax.persistence.spi.PersistenceUnitInfo;
 import javax.ws.rs.core.MediaType;
 
 import org.eclipse.persistence.jaxb.JAXBContext;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 
