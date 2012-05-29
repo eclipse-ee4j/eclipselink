@@ -500,6 +500,56 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
 
     /**
      * INTERNAL:
+     * Write the aggregate values into the parent row for shallow insert.
+     */
+    protected void writeToRowFromAggregateForShallowInsert(AbstractRecord record, Object object, Object attributeValue, AbstractSession session) throws DescriptorException {
+        if (attributeValue == null) {
+            if (this.isNullAllowed) {
+                writeNullReferenceRow(record);
+            } else {
+                throw DescriptorException.nullForNonNullAggregate(object, this);
+            }
+        } else {
+            if (!session.isClassReadOnly(attributeValue.getClass())) {
+                getObjectBuilder(attributeValue, session).buildRowForShallowInsert(record, attributeValue, session);
+            }
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Write the aggregate values into the parent row for update after shallow insert.
+     */
+    protected void writeToRowFromAggregateForUpdateAfterShallowInsert(AbstractRecord record, Object object, Object attributeValue, AbstractSession session, DatabaseTable table) throws DescriptorException {
+        if (attributeValue == null) {
+            if (!this.isNullAllowed) {
+                throw DescriptorException.nullForNonNullAggregate(object, this);
+            }
+        } else {
+            if (!session.isClassReadOnly(attributeValue.getClass()) && !isPrimaryKeyMapping()) {
+                getObjectBuilder(attributeValue, session).buildRowForUpdateAfterShallowInsert(record, attributeValue, session, table);
+            }
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Write the aggregate values into the parent row for update before shallow delete.
+     */
+    protected void writeToRowFromAggregateForUpdateBeforeShallowDelete(AbstractRecord record, Object object, Object attributeValue, AbstractSession session, DatabaseTable table) throws DescriptorException {
+        if (attributeValue == null) {
+            if (!this.isNullAllowed) {
+                throw DescriptorException.nullForNonNullAggregate(object, this);
+            }
+        } else {
+            if (!session.isClassReadOnly(attributeValue.getClass()) && !isPrimaryKeyMapping()) {
+                getObjectBuilder(attributeValue, session).buildRowForUpdateBeforeShallowDelete(record, attributeValue, session, table);
+            }
+        }
+    }
+    
+    /**
+     * INTERNAL:
      * Build and return a database row built with the values from
      * the specified attribute value.
      */
@@ -1833,6 +1883,44 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         writeToRowFromAggregate(databaseRow, object, getAttributeValueFromObject(object), session, writeType);
     }
 
+    /**
+     * INTERNAL:
+     * This row is built for shallow insert which happens in case of bidirectional inserts.
+     */
+    @Override
+    public void writeFromObjectIntoRowForShallowInsert(Object object, AbstractRecord row, AbstractSession session) {
+        if (isReadOnly()) {
+            return;
+        }
+        writeToRowFromAggregateForShallowInsert(row, object, getAttributeValueFromObject(object), session);
+    }
+    
+    /**
+     * INTERNAL:
+     * This row is built for update after shallow insert which happens in case of bidirectional inserts.
+     * It contains the foreign keys with non null values that were set to null for shallow insert.
+     */
+    @Override
+    public void writeFromObjectIntoRowForUpdateAfterShallowInsert(Object object, AbstractRecord row, AbstractSession session, DatabaseTable table) {
+        if (isReadOnly() || !getFields().get(0).getTable().equals(table) || isPrimaryKeyMapping()) {
+            return;
+        }
+        writeToRowFromAggregateForUpdateAfterShallowInsert(row, object, getAttributeValueFromObject(object), session, table);
+    }
+    
+    /**
+     * INTERNAL:
+     * This row is built for update before shallow delete which happens in case of bidirectional inserts.
+     * It contains the same fields as the row built by writeFromObjectIntoRowForUpdateAfterShallowInsert, but all the values are null.
+     */
+    @Override
+    public void writeFromObjectIntoRowForUpdateBeforeShallowDelete(Object object, AbstractRecord row, AbstractSession session, DatabaseTable table) {
+        if (isReadOnly() || !getFields().get(0).getTable().equals(table) || isPrimaryKeyMapping()) {
+            return;
+        }
+        writeToRowFromAggregateForUpdateBeforeShallowDelete(row, object, getAttributeValueFromObject(object), session, table);
+    }
+    
     /**
      * INTERNAL:
      * Get the attribute value from the object and add the appropriate

@@ -1718,6 +1718,24 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
     
     /**
      * INTERNAL:
+     * This row is built for update after shallow insert which happens in case of bidirectional inserts.
+     * It contains the foreign keys with non null values that were set to null for shallow insert.
+     */
+    public void writeFromObjectIntoRowForUpdateAfterShallowInsert(Object object, AbstractRecord databaseRow, AbstractSession session, DatabaseTable table) {
+        // Do nothing by default.
+    }
+    
+    /**
+     * INTERNAL:
+     * This row is built for update before shallow delete which happens in case of bidirectional inserts.
+     * It contains the same fields as the row built by writeFromObjectIntoRowForUpdateAfterShallowInsert, but all the values are null.
+     */
+    public void writeFromObjectIntoRowForUpdateBeforeShallowDelete(Object object, AbstractRecord databaseRow, AbstractSession session, DatabaseTable table) {
+        // Do nothing by default.
+    }
+    
+    /**
+     * INTERNAL:
      * A subclass should implement this method if it wants different behavior.
      * Write the attribute value from the object to the row.
      */

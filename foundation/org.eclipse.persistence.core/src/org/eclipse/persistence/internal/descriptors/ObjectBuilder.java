@@ -1234,6 +1234,39 @@ public class ObjectBuilder implements Cloneable, Serializable {
         return databaseRow;
     }
 
+    /**
+     * Build the row representation of the object that contains only the fields nullified by shallow insert.
+     */
+    public AbstractRecord buildRowForUpdateAfterShallowInsert(Object object, AbstractSession session, DatabaseTable table) {
+        return buildRowForUpdateAfterShallowInsert(createRecord(session), object, session, table);
+    }
+
+    /**
+     * Build the row representation of the object that contains only the fields nullified by shallow insert.
+     */
+    public AbstractRecord buildRowForUpdateAfterShallowInsert(AbstractRecord databaseRow, Object object, AbstractSession session, DatabaseTable table) {
+        for (DatabaseMapping mapping : this.descriptor.getMappings()) {
+            mapping.writeFromObjectIntoRowForUpdateAfterShallowInsert(object, databaseRow, session, table);
+        }
+        return databaseRow;
+    }
+
+    /**
+     * Build the row representation of the object that contains only the fields nullified by shallow insert, with all values set to null.
+     */
+    public AbstractRecord buildRowForUpdateBeforeShallowDelete(Object object, AbstractSession session, DatabaseTable table) {
+        return buildRowForUpdateBeforeShallowDelete(createRecord(session), object, session, table);
+    }
+
+    /**
+     * Build the row representation of the object that contains only the fields nullified by shallow insert, with all values set to null.
+     */
+    public AbstractRecord buildRowForUpdateBeforeShallowDelete(AbstractRecord databaseRow, Object object, AbstractSession session, DatabaseTable table) {
+        for (DatabaseMapping mapping : this.descriptor.getMappings()) {
+            mapping.writeFromObjectIntoRowForUpdateBeforeShallowDelete(object, databaseRow, session, table);
+        }
+        return databaseRow;
+    }
 
     /**
      * Build the row representation of an object.

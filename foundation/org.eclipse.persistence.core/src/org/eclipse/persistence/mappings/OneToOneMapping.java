@@ -82,6 +82,15 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     protected boolean isOneToOnePrimaryKeyRelationship = false;
     
     /**
+     * Mode for writeFromObjectIntoRowInternal method
+     */
+    protected enum ShallowMode {
+        Insert,
+        UpdateAfterInsert,
+        UpdateBeforeDelete
+    }
+    
+    /**
      * PUBLIC:
      * Default constructor.
      */
@@ -1716,13 +1725,65 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
         if (this.isReadOnly || (!this.isForeignKeyRelationship)) {
             return;
         }
+        writeFromObjectIntoRowInternal(object, databaseRow, session, null);
+    }
+
+    /**
+     * INTERNAL:
+     * Get a value from the object and set that in the respective field of the row.
+     * The fields and the values added to the row depend on ShallowMode mode:
+     *   null - all fields with their values from object;
+     *   Insert - nullable fields added with value null, non nullable fields added with their values from object;
+     *   UpdateAfterInsert - nullable fields added with with their non-null values from object, non nullable fields (and nullable with null values) are ignored;
+     *   UpdateBeforeDelete - the same fields as for UpdateAfterShallowInsert - but all values are nulls.
+     */
+    protected void writeFromObjectIntoRowInternal(Object object, AbstractRecord databaseRow, AbstractSession session, ShallowMode mode) {
+        List<DatabaseField> foreignKeyFields = getForeignKeyFields();
+        if (mode != null) {
+            List<DatabaseField> nonNullableFields = null;
+            for (DatabaseField field : foreignKeyFields) {
+                if (field.isNullable()) {
+                    if (mode == ShallowMode.Insert) {
+                        // add a nullable field with a null value
+                        databaseRow.add(field, null);
+                    }
+                } else {
+                    if (nonNullableFields == null) {
+                        nonNullableFields = new ArrayList<DatabaseField>();
+                    }
+                    nonNullableFields.add(field);
+                }
+            }
+            if (nonNullableFields == null) {
+                // all foreignKeyFields are nullable
+                if (mode == ShallowMode.Insert) {
+                    // nothing else to do
+                    return;
+                }
+                // UpdateAfterInsert or UpdateBeforeDelete: all nullable foreignKeyFields will be processed
+            } else {
+                if (mode == ShallowMode.Insert) {
+                    // all non nullable foreignKeyFields will be processed
+                    foreignKeyFields = nonNullableFields;
+                } else {
+                    // UpdateAfterInsert or UpdateBeforeDelete
+                    if (foreignKeyFields.size() == nonNullableFields.size()) {
+                        // all fields are non nullable - nothing else to do
+                        return;
+                    } else {
+                        // all nullable foreignKeyFields will be processed
+                        foreignKeyFields = new ArrayList<DatabaseField>(foreignKeyFields);
+                        foreignKeyFields.removeAll(nonNullableFields);
+                    }
+                }
+            }
+        }
         Object attributeValue = getAttributeValueFromObject(object);
         // If the value holder has the row, avoid instantiation and just use it.
         AbstractRecord referenceRow = this.indirectionPolicy.extractReferenceRow(attributeValue);
         if (referenceRow == null) {
             // Extract from object.
             Object referenceObject = getRealAttributeValueFromAttribute(attributeValue, object, session);
-            List<DatabaseField> foreignKeyFields = getForeignKeyFields();
             int size = foreignKeyFields.size();
             for (int index = 0; index < size; index++) {
                 DatabaseField sourceKey = foreignKeyFields.get(index);
@@ -1732,21 +1793,48 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
                     DatabaseField targetKey = this.sourceToTargetKeyFields.get(sourceKey);
                     referenceValue = this.referenceDescriptor.getObjectBuilder().extractValueFromObjectForField(referenceObject, targetKey, session);
                 }
-                // EL Bug 319759 - if a field is null, then the update call cache should not be used
-                if (referenceValue == null) {
-                    databaseRow.setNullValueInFields(true);
+                if (mode == null) {
+                    // EL Bug 319759 - if a field is null, then the update call cache should not be used
+                    if (referenceValue == null) {
+                        databaseRow.setNullValueInFields(true);
+                    }
+                } else {
+                    if (referenceValue == null) {
+                        if (mode != ShallowMode.Insert) {
+                            // both UpdateAfterInsert and UpdateBeforeDelete ignore null values
+                            continue;
+                        }
+                    } else {
+                        if (mode == ShallowMode.UpdateBeforeDelete) {
+                            // UpdateBeforeDelete adds nulls instead of non nulls
+                            referenceValue = null;
+                        }
+                    }
                 }
                 databaseRow.add(sourceKey, referenceValue);
             }
         } else {
-            List<DatabaseField> foreignKeyFields = getForeignKeyFields();
             int size = foreignKeyFields.size();
             for (int index = 0; index < size; index++) {
                 DatabaseField sourceKey = foreignKeyFields.get(index);
                 Object referenceValue = referenceRow.get(sourceKey);
-                // EL Bug 319759 - if a field is null, then the update call cache should not be used
-                if (referenceValue == null) {
-                    databaseRow.setNullValueInFields(true);
+                if (mode == null) {
+                    // EL Bug 319759 - if a field is null, then the update call cache should not be used
+                    if (referenceValue == null) {
+                        databaseRow.setNullValueInFields(true);
+                    }
+                } else {
+                    if (referenceValue == null) {
+                        if (mode != ShallowMode.Insert) {
+                            // both UpdateAfterInsert and UpdateBeforeDelete ignore null values
+                            continue;
+                        }
+                    } else {
+                        if (mode == ShallowMode.UpdateBeforeDelete) {
+                            // UpdateBeforeDelete adds nulls instead of non nulls
+                            referenceValue = null;
+                        }
+                    }
                 }
                 databaseRow.add(sourceKey, referenceValue);
             }
@@ -1760,17 +1848,38 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      */
     @Override
     public void writeFromObjectIntoRowForShallowInsert(Object object, AbstractRecord databaseRow, AbstractSession session) {
-        if (isReadOnly() || (!isForeignKeyRelationship())) {
+        if (this.isReadOnly || (!this.isForeignKeyRelationship)) {
             return;
         }
-
-        for (Enumeration fieldsEnum = getForeignKeyFields().elements();
-                 fieldsEnum.hasMoreElements();) {
-            DatabaseField sourceKey = (DatabaseField)fieldsEnum.nextElement();
-            databaseRow.add(sourceKey, null);
-        }
+        writeFromObjectIntoRowInternal(object, databaseRow, session, ShallowMode.Insert);
     }
 
+    /**
+     * INTERNAL:
+     * This row is built for update after shallow insert which happens in case of bidirectional inserts.
+     * It contains the foreign keys with non null values that were set to null for shallow insert.
+     */
+    @Override
+    public void writeFromObjectIntoRowForUpdateAfterShallowInsert(Object object, AbstractRecord databaseRow, AbstractSession session, DatabaseTable table) {
+        if (this.isReadOnly || (!this.isForeignKeyRelationship) || !getFields().get(0).getTable().equals(table) || isPrimaryKeyMapping()) {
+            return;
+        }
+        writeFromObjectIntoRowInternal(object, databaseRow, session, ShallowMode.UpdateAfterInsert);
+    }
+
+    /**
+     * INTERNAL:
+     * This row is built for update before shallow delete which happens in case of bidirectional inserts.
+     * It contains the same fields as the row built by writeFromObjectIntoRowForUpdateAfterShallowInsert, but all the values are null.
+     */
+    @Override
+    public void writeFromObjectIntoRowForUpdateBeforeShallowDelete(Object object, AbstractRecord databaseRow, AbstractSession session, DatabaseTable table) {
+        if (this.isReadOnly || (!this.isForeignKeyRelationship) || !getFields().get(0).getTable().equals(table) || isPrimaryKeyMapping()) {
+            return;
+        }
+        writeFromObjectIntoRowInternal(object, databaseRow, session, ShallowMode.UpdateBeforeDelete);
+    }
+    
     /**
      * INTERNAL:
      * Get a value from the object and set that in the respective field of the row.
