@@ -55,6 +55,7 @@ import org.eclipse.persistence.internal.oxm.schema.model.SimpleComponent;
 import org.eclipse.persistence.internal.oxm.schema.model.SimpleContent;
 import org.eclipse.persistence.internal.oxm.schema.model.SimpleType;
 import org.eclipse.persistence.internal.oxm.schema.model.TypeDefParticle;
+import org.eclipse.persistence.internal.oxm.schema.model.TypeDefParticleOwner;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jaxb.javamodel.Helper;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
@@ -465,6 +466,11 @@ public class SchemaGenerator {
                         continue; 
                     }
                     // now process the property as per usual, adding to the created schema component
+                    if(xpr.schema == null) {
+                        //if there's no schema, this may be a ref to an attribute in an ungenerated schema
+                        //no need to generate the attribute in the target schema
+                        continue;
+                    }
                     currentSchema = xpr.schema;
                     if(parentCompositor == null) {
                         parentType = xpr.simpleContentType;
@@ -1057,7 +1063,7 @@ public class SchemaGenerator {
         // don't process the last frag; that will be handled by the calling method if necessary
         // note that we may need to process the last frag if it has a namespace or is an 'any'
         boolean lastFrag = (frag.getNextFragment() == null || frag.getNextFragment().nameIsText());
-        boolean isNextAttribute = (frag.getNextFragment() != null) && (frag.getNextFragment().isAttribute());
+        //boolean isNextAttribute = (frag.getNextFragment() != null) && (frag.getNextFragment().isAttribute());
         // if the element is already in the sequence we don't want the calling method to add a second one
         if (lastFrag && (elementExistsInParticle(frag.getLocalName(), frag.getShortName(), currentParticle) != null)) {
             xpr.particle = null;
@@ -1088,6 +1094,36 @@ public class SchemaGenerator {
             }
             cType.setTypeDefParticle(particle);
             currentElement.setComplexType(cType);
+        } else {
+            //if the current element already exists, we may need to change it's type
+            XPathFragment nextFrag = frag.getNextFragment();
+            if(nextFrag != null && nextFrag.isAttribute()) {
+                if(currentElement.getType() != null && currentElement.getComplexType() == null) {
+                    //there's already a text mapping to this element, so 
+                    //attributes can be added by making it complex with 
+                    //simple content.
+                    SimpleType type = currentElement.getSimpleType();
+                    if(type != null) {
+                        ComplexType cType = new ComplexType();
+                        cType.setSimpleContent(new SimpleContent());
+                        Extension extension = new Extension();
+                        extension.setBaseType(type.getRestriction().getBaseType());
+                        cType.getSimpleContent().setExtension(extension);
+                        currentElement.setSimpleType(null);
+                        currentElement.setComplexType(cType);
+                    } else {
+                        String eType = currentElement.getType();
+                        ComplexType cType = new ComplexType();
+                        SimpleContent sContent = new SimpleContent();
+                        Extension extension = new Extension();
+                        extension.setBaseType(eType);
+                        sContent.setExtension(extension);
+                        cType.setSimpleContent(sContent);
+                        currentElement.setType(null);
+                        currentElement.setComplexType(cType);
+                    }                
+                }
+            }
         }
         // may need to create a ref, depending on the namespace
         Element globalElement = null;
@@ -1121,8 +1157,14 @@ public class SchemaGenerator {
                     } else {
                         attributeRefName = frag.getShortName();
                     }
-                    if (currentParticle.getOwner() instanceof ComplexType) {
-                        createRefAttribute(attributeRefName, (ComplexType)currentParticle.getOwner());
+                    TypeDefParticleOwner type;
+                    if(currentParticle != null) {
+                        type = currentParticle.getOwner();
+                    } else {
+                        type = xpr.simpleContentType;
+                    }
+                    if (type instanceof ComplexType) {
+                        createRefAttribute(attributeRefName, (ComplexType)type);
                     }
                     // set the frag's schema as it may be different than the current schema
                     xpr.schema = fragSchema;
