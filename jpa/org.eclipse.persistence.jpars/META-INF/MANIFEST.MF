@@ -1,15 +1,17 @@
 Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: Jpars
-Bundle-SymbolicName: org.eclipse.persistence.jpars
-Bundle-Version: 2.5.0.qualifier
 Export-Package: org.eclipse.persistence.jpa.rs;version="2.5.0",
  org.eclipse.persistence.jpa.rs.eventlistener;version="2.5.0",
  org.eclipse.persistence.jpa.rs.metadata;version="2.5.0",
  org.eclipse.persistence.jpa.rs.util;version="2.5.0"
+Bundle-Name: EclipseLink JPA-RS
+Created-By: 1.6.0_21 (Sun Microsystems Inc.)
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.eclipse.persistence.core;bundle-version="2.5.0",
  org.eclipse.persistence.jpa;bundle-version="2.5.0",
  org.eclipse.persistence.moxy;bundle-version="2.5.0"
+Bundle-Vendor: Eclipse.org - EclipseLink Project
+Bundle-Version: 2.5.0.qualifier
+Bundle-ManifestVersion: 2
 Import-Package: com.sun.jersey.api.core;resolution:=optional,
  javax.annotation,
  javax.ejb;version="3.1.0",
@@ -23,5 +25,5 @@ Import-Package: com.sun.jersey.api.core;resolution:=optional,
  javax.xml.bind.annotation;version="2.0",
  javax.xml.bind.annotation.adapters;version="2.0",
  javax.xml.stream
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-SymbolicName: org.eclipse.persistence.jpars
 
