@@ -637,4 +637,11 @@ public class CobolTestModel extends org.eclipse.persistence.testing.framework.Te
         }
         return false;
     }
+
+    /**
+     * Return the JUnit suite to allow JUnit runner to find it.
+     */
+    public static junit.framework.TestSuite suite() {
+        return new CobolTestModel();
+    }
 }
