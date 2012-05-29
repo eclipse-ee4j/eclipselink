@@ -259,6 +259,12 @@
         <copy todir="${eclipselink.jpars.test}/stage/WEB-INF/classes/org/eclipse/persistence/jpars/test/model/dynamic">
             <fileset dir="${eclipselink.jpars.test}/classes/org/eclipse/persistence/jpars/test/model/dynamic" includes="*.class"/>
         </copy>
+        <copy todir="${eclipselink.jpars.test}/stage/WEB-INF/classes/org/eclipse/persistence/jpars/test/model/multitenant">
+            <fileset dir="${eclipselink.jpars.test}/classes/org/eclipse/persistence/jpars/test/model/multitenant" includes="*.class"/>
+        </copy>
+        <copy todir="${eclipselink.jpars.test}/stage/WEB-INF/classes/org/eclipse/persistence/jpars/test/model/weaving">
+            <fileset dir="${eclipselink.jpars.test}/classes/org/eclipse/persistence/jpars/test/model/weaving" includes="*.class"/>
+        </copy>
         <copy todir="${eclipselink.jpars.test}/stage/WEB-INF/classes/META-INF">
             <fileset dir="${eclipselink.jpars.test}/src/META-INF" includes="*.xml"/>
         </copy>
