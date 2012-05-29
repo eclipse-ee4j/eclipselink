@@ -122,7 +122,7 @@ public class Service {
        String mediaType = StreamingOutputMarshaller.mediaType(hh.getAcceptableMediaTypes()).toString();
        while (contextIterator.hasNext()){
            String context = contextIterator.next();
-           links.add(new Link(context, mediaType, "\"href\": \"" + uriInfo.getBaseUri() + context + "/metadata\""));
+           links.add(new Link(context, mediaType, uriInfo.getBaseUri() + context + "/metadata\""));
        }
        String result = null;
        result = marshallMetadata(links, mediaType);
