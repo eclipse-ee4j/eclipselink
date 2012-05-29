@@ -39,6 +39,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 public class CacheIndexMetadata extends ORMetadata {
     
     private List<String> m_columnNames = new ArrayList();
+    private Boolean updateable;
 
     /**
      * INTERNAL:
@@ -58,6 +59,7 @@ public class CacheIndexMetadata extends ORMetadata {
             for (Object columnName : (Object[]) index.getAttributeArray("columnNames")) {
                 m_columnNames.add((String)columnName);
             }
+            this.updateable = (Boolean)index.getAttribute("updateable");
         }
     }
 
@@ -68,6 +70,9 @@ public class CacheIndexMetadata extends ORMetadata {
     public boolean equals(Object objectToCompare) {
         if (objectToCompare instanceof CacheIndexMetadata) {
             CacheIndexMetadata index = (CacheIndexMetadata) objectToCompare;
+            if (this.updateable != index.getUpdateable()) {
+                return false;
+            }
                         
             return this.m_columnNames.equals(index.getColumnNames());
         }
@@ -84,6 +89,14 @@ public class CacheIndexMetadata extends ORMetadata {
     }
     
     /**
+     * INTERNAL: 
+     * Used for OX mapping.
+     */
+    public Boolean getUpdateable() {
+        return updateable;
+    }
+    
+    /**
      * INTERNAL:
      * Process the index metadata
      */
@@ -92,6 +105,9 @@ public class CacheIndexMetadata extends ORMetadata {
             descriptor.getClassDescriptor().getCachePolicy().addCacheIndex(defaultColumnName);
         } else {
             CacheIndex index = new CacheIndex();
+            if (this.updateable != null) {
+                index.setIsUpdateable(this.updateable);
+            }
             for (String column : m_columnNames) {
                 index.addFieldName(column);
             }
@@ -105,5 +121,13 @@ public class CacheIndexMetadata extends ORMetadata {
      */
     public void setColumnNames(List<String> columnNames) {
         this.m_columnNames = columnNames;
+    }
+    
+    /**
+     * INTERNAL: 
+     * Used for OX mapping.
+     */
+    public void setUpdateable(Boolean updateable) {
+        this.updateable = updateable;
     }
 }

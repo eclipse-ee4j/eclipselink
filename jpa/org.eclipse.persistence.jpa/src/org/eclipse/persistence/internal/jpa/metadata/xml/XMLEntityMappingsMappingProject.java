@@ -1900,6 +1900,13 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(CacheIndexMetadata.class);
         
+        XMLDirectMapping updateableMapping = new XMLDirectMapping();
+        updateableMapping.setAttributeName("updateable");
+        updateableMapping.setGetMethodName("getUpdateable");
+        updateableMapping.setSetMethodName("setUpdateable");
+        updateableMapping.setXPath("@updateable");
+        descriptor.addMapping(updateableMapping);
+        
         // Element mappings - must remain in order of definition in XML.
         descriptor.addMapping(getColumnNamesMapping());
                 
