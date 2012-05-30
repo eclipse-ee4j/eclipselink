@@ -346,24 +346,21 @@ public abstract class AggregateMapping extends DatabaseMapping {
     public void convertClassNamesToClasses(ClassLoader classLoader) {
         super.convertClassNamesToClasses(classLoader);
         
-        Class referenceClass = null;
         if (getReferenceClassName() != null) {
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                     try {
-                        referenceClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(getReferenceClassName(), true, classLoader));
+                        setReferenceClass((Class)AccessController.doPrivileged(new PrivilegedClassForName(getReferenceClassName(), true, classLoader)));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(getReferenceClassName(), exception.getException());
                     }
                 } else {
-                    referenceClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(getReferenceClassName(), true, classLoader);
+                    setReferenceClass(org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(getReferenceClassName(), true, classLoader));
                 }
             } catch (ClassNotFoundException exc) {
                 throw ValidationException.classNotFoundWhileConvertingClassNames(getReferenceClassName(), exc);
             }
         }
-        
-        setReferenceClass(referenceClass);
     }
 
     /**
