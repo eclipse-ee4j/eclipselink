@@ -422,12 +422,6 @@
             <fileset dir="${ora_nosql_test.classes.dir}"
                      includes="org/eclipse/persistence/testing/models/jpa/nosql/**"/>
         </jar>
-        <!-- Package the EIS AQ model jar??? Any reason this is in the test jar and not a model jar?? -->
-        <!-- jar jarfile="${oracle.eis.model.jar}">
-            <zipfileset dir="resource/eis" includes="*.xml" prefix="META-INF"/>
-            <fileset dir="${ora_nosql_test.classes.dir}"
-                     includes="org/eclipse/persistence/testing/models/eis/**"/>
-        </jar -->
         <!-- Build tests jar. -->
         <jar jarfile="${oracle.nosql.test.jar}">
             <fileset dir="${ora_nosql_test.classes.dir}"

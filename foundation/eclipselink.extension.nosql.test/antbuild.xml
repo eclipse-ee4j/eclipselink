@@ -378,16 +378,18 @@
                      includes="org/eclipse/persistence/testing/models/jpa/mongo/**"/>
         </jar>
         <!-- Package the JPA nosql specific tests jar. -->
+        <jar jarfile="${nosql.jpa.test.jar}">
+            <fileset dir="${nosql_test.classes.dir}"
+                     includes="org/eclipse/persistence/testing/tests/jpa/**"/>
+        </jar>
+        <!-- Build tests jar. -->
         <jar jarfile="${nosql.test.jar}">
             <fileset dir="${nosql_test.classes.dir}"
                      includes="org/eclipse/persistence/**/*.class"
                      excludes="org/eclipse/persistence/testing/models/jpa/**,
                                org/eclipse/persistence/testing/tests/jpa/**"/>
-        </jar>
-        <!-- Build tests jar. -->
-        <jar jarfile="${nosql.jpa.test.jar}">
-            <fileset dir="${nosql_test.classes.dir}"
-                     includes="org/eclipse/persistence/testing/tests/jpa/**"/>
+            <fileset dir="${nosql_test.resource.dir}"
+                     includes="org/eclipse/persistence/**"/>
         </jar>
     </target>
 
