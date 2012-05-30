@@ -32,6 +32,8 @@
  *       - 348756: m_cascadeOnDelete boolean should be changed to Boolean
  *     07/06/2011-2.3.1 Guy Pelletier 
  *       - 349906: NPE while using eclipselink in the application
+ *     25/05/2012-2.4 Guy Pelletier  
+ *       - 354678: Temp classloader is still being used during metadata processing
  ******************************************************************************/ 
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -289,7 +291,10 @@ public abstract class ORMetadata {
     /**
      * INTERNAL:
      * Return the Java class for the metadata class using the metadata loader.
-     * The loader is the temp loader during predeploy, and the app loader during deploy.
+     * Callers to this method should only do so when the application loader 
+     * (from deploy) is available. This method should not be called with the 
+     * temp loader, see getJavaClassName instead which will provide a valid
+     * string class name that can be initialized at runtime instead.
      */
     public Class getJavaClass(MetadataClass metadataClass) {
         String className = metadataClass.getName();
@@ -312,6 +317,34 @@ public abstract class ORMetadata {
             return MetadataHelper.getClassForName(convertedClassName, getMetadataFactory().getLoader());
         } else {
             return primitiveClass;
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the Java class name for the metadata class. This is the class name
+     * name metadata processing should set on descriptors and mappings to be
+     * initialized during the convertClassNamesToClasses call at runtime.
+     */
+    public String getJavaClassName(MetadataClass metadataClass) {
+        String className = metadataClass.getName();
+        
+        Class primitiveClass = getPrimitiveClassForName(className);
+        
+        if (primitiveClass == null) {
+            String convertedClassName = className;
+            
+            // Array type names need to be converted so they can be used with Class.forName()
+            int index = className.indexOf('[');
+            if ((index > 0) && (className.charAt(index + 1) == ']')){
+                convertedClassName = "[L" + className.substring(0, index) + ";";
+            }
+            
+            // If we have an entity mappings object we need to append the
+            // package specification if it is specified.
+            return getFullyQualifiedClassName(convertedClassName);
+        } else {
+            return primitiveClass.getName();
         }
     }
     

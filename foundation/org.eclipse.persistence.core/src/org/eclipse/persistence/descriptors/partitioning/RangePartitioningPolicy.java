@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     James Sutherland (Oracle) - initial API and implementation
+ *     25/05/2012-2.4 Guy Pelletier  
+ *       - 354678: Temp classloader is still being used during metadata processing
  ******************************************************************************/  
 package org.eclipse.persistence.descriptors.partitioning;
 
@@ -52,6 +54,18 @@ public class RangePartitioningPolicy extends FieldPartitioningPolicy {
         this(partitionField);
         for (RangePartition partition : partitions) {
             addPartition(partition);
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Convert all the class-name-based settings to actual class-based settings. 
+     * This method is used when converting a project that has been  built with 
+     * class names to a project with classes.
+     */
+    public void convertClassNamesToClasses(ClassLoader classLoader) { 
+        for (RangePartition rangePartition : partitions) {
+            rangePartition.convertClassNamesToClasses(classLoader);
         }
     }
     

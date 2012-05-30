@@ -15,6 +15,8 @@
  *       - 337323: Multi-tenant with shared schema support (part 1)
  *     02/08/2012-2.4 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     25/05/2012-2.4 Guy Pelletier  
+ *       - 354678: Temp classloader is still being used during metadata processing
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
@@ -83,7 +85,7 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
         m_mode = (String) storedProcedureParameter.getAttribute("mode");
         m_name = (String) storedProcedureParameter.getAttribute("name");
         m_queryParameter = (String) storedProcedureParameter.getAttribute("queryParameter"); 
-        m_type = getMetadataClass((String) storedProcedureParameter.getAttributeClass("type"));
+        m_type = getMetadataClass((String) storedProcedureParameter.getAttributeClass("type", Void.class));
         m_jdbcType = (Integer) storedProcedureParameter.getAttribute("jdbcType");
         m_jdbcTypeName = (String) storedProcedureParameter.getAttribute("jdbcTypeName");
         m_optional = (Boolean) storedProcedureParameter.getAttribute("optional");

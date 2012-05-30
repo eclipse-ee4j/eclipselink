@@ -1220,7 +1220,8 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
      * @see #deploy(ClassLoader, Map)
      */
     public synchronized ClassTransformer predeploy(PersistenceUnitInfo info, Map extendedProperties) {
-        ClassLoader privateClassLoader = null;
+        //ClassLoader privateClassLoader = null;
+        ClassLoader classLoaderToUse = null;
         if (state == STATE_DEPLOY_FAILED || state == STATE_UNDEPLOYED) {
             throw new PersistenceException(EntityManagerSetupException.cannotPredeploy(persistenceUnitInfo.getPersistenceUnitName(), state, persistenceException));
         }
@@ -1287,8 +1288,6 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                         // Update loggers and settings for the singleton logger and the session logger.
                         updateLoggers(predeployProperties, true, realClassLoader);
                         // Get the temporary classLoader based on the platform
-                        JPAClassLoaderHolder privateClassLoaderHolder = session.getServerPlatform().getNewTempClassLoader(persistenceUnitInfo);
-                        privateClassLoader = privateClassLoaderHolder.getClassLoader();
                         
                         //Update performance profiler
                         updateProfiler(predeployProperties,realClassLoader);
@@ -1299,19 +1298,23 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                             ((DefaultSessionLog)session.getSessionLog()).setWriter(writer);
                         }
                         session.setLogLevel(this.staticWeaveInfo.getLogLevel());
-                        privateClassLoader = persistenceUnitInfo.getNewTempClassLoader();
                     }
                 } else {
                     // composite member
                     session.setSessionLog(this.compositeEmSetupImpl.session.getSessionLog());
                     session.setProfiler(this.compositeEmSetupImpl.session.getProfiler());
-                    privateClassLoader = persistenceUnitInfo.getNewTempClassLoader();
                 }
                 
                 // Cannot start logging until session and log and initialized, so log start of predeploy here.
                 session.log(SessionLog.FINEST, SessionLog.JPA, "predeploy_begin", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state, factoryCount});
     
                 if (isSessionLoadedFromSessionsXML) {
+                    if (this.compositeEmSetupImpl == null && this.staticWeaveInfo == null) {
+                        JPAClassLoaderHolder privateClassLoaderHolder = session.getServerPlatform().getNewTempClassLoader(persistenceUnitInfo);
+                        classLoaderToUse = privateClassLoaderHolder.getClassLoader();
+                    } else {
+                        classLoaderToUse = persistenceUnitInfo.getNewTempClassLoader();
+                    }
                     // Loading session from sessions-xml.
                     String tempSessionName = sessionName;
                     if (isCompositeMember()) {
@@ -1327,7 +1330,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     // Do not register the session with the SessionManager at this point, create temporary session using a local SessionManager and private class loader.
                     // This allows for the project to be accessed without loading any of the classes to allow weaving.
                     // Note that this method assigns sessionName to session.
-                    Session tempSession = new SessionManager().getSession(xmlLoader, tempSessionName, privateClassLoader, false, false);
+                    Session tempSession = new SessionManager().getSession(xmlLoader, tempSessionName, classLoaderToUse, false, false);
                     // Load path of sessions-xml resource before throwing error so user knows which sessions-xml file was found (may be multiple).
                     session.log(SessionLog.FINEST, SessionLog.PROPERTIES, "sessions_xml_path_where_session_load_from", xmlLoader.getSessionName(), xmlLoader.getResourcePath());
                     if (tempSession == null) {
@@ -1346,10 +1349,12 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     if (this.staticWeaveInfo == null) {
                         // Must now reset logging and server-platform on the loaded session.
                         // ServerPlatform must be set prior to setting the loggers.
-                        updateServerPlatform(predeployProperties, privateClassLoader);
+                        updateServerPlatform(predeployProperties, classLoaderToUse);
                         // Update loggers and settings for the singleton logger and the session logger.
-                        updateLoggers(predeployProperties, true, privateClassLoader);
+                        updateLoggers(predeployProperties, true, classLoaderToUse);
                     }
+                } else {
+                    classLoaderToUse = persistenceUnitInfo.getClassLoader();
                 }
                 
                 warnOldProperties(predeployProperties, session);
@@ -1432,7 +1437,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             }
             if (!isSessionLoadedFromSessionsXML ) {
                 if (isComposite) {
-                    predeployCompositeMembers(predeployProperties, privateClassLoader);
+                    predeployCompositeMembers(predeployProperties, classLoaderToUse);
                 } else {
                     MetadataProcessor compositeProcessor = null;
                     if (compositeEmSetupImpl == null) {
@@ -1451,7 +1456,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                         boolean usesMultitenantSharedCache = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.MULTITENANT_SHARED_CACHE, predeployProperties, "false", session));
     
                         // Create an instance of MetadataProcessor for specified persistence unit info
-                        processor = new MetadataProcessor(persistenceUnitInfo, session, privateClassLoader, weaveLazy, weaveEager, weaveFetchGroups, usesMultitenantSharedEmf, usesMultitenantSharedCache, predeployProperties, compositeProcessor);
+                        processor = new MetadataProcessor(persistenceUnitInfo, session, classLoaderToUse, weaveLazy, weaveEager, weaveFetchGroups, usesMultitenantSharedEmf, usesMultitenantSharedCache, predeployProperties, compositeProcessor);
                         
                         //need to use the real classloader to create the repository class
                         updateMetadataRepository(predeployProperties, persistenceUnitInfo.getClassLoader()); 
@@ -1484,8 +1489,8 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     // be returned if we we are mean to process these mappings
                     if (enableWeaving) {                
                         // build a list of entities the persistence unit represented by this EntityManagerSetupImpl will use
-                        Collection entities = PersistenceUnitProcessor.buildEntityList(processor, privateClassLoader);
-                        this.weaver = TransformerFactory.createTransformerAndModifyProject(session, entities, privateClassLoader, weaveLazy, weaveChangeTracking, weaveFetchGroups, weaveInternal);
+                        Collection entities = PersistenceUnitProcessor.buildEntityList(processor, classLoaderToUse);
+                        this.weaver = TransformerFactory.createTransformerAndModifyProject(session, entities, classLoaderToUse, weaveLazy, weaveChangeTracking, weaveFetchGroups, weaveInternal);
                     }
                 }
             } else {
@@ -1496,11 +1501,11 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     // build a list of entities the persistence unit represented by this EntityManagerSetupImpl will use
                     Collection persistenceClasses = new ArrayList();
 
-                    MetadataAsmFactory factory = new MetadataAsmFactory(new MetadataLogger(session), privateClassLoader);
+                    MetadataAsmFactory factory = new MetadataAsmFactory(new MetadataLogger(session), classLoaderToUse);
                     for (Iterator iterator = session.getProject().getDescriptors().keySet().iterator(); iterator.hasNext(); ) {
                         persistenceClasses.add(factory.getMetadataClass(((Class)iterator.next()).getName()));
                     }
-                    this.weaver = TransformerFactory.createTransformerAndModifyProject(session, persistenceClasses, privateClassLoader, weaveLazy, weaveChangeTracking, weaveFetchGroups, weaveInternal);
+                    this.weaver = TransformerFactory.createTransformerAndModifyProject(session, persistenceClasses, classLoaderToUse, weaveLazy, weaveChangeTracking, weaveFetchGroups, weaveInternal);
                 }
             }
             

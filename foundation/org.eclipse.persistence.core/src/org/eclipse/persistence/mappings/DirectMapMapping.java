@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     07/19/2011-2.2.1 Guy Pelletier 
  *       - 338812: ManyToMany mapping in aggregate object violate integrity constraint on deletion
+ *     25/05/2012-2.4 Guy Pelletier  
+ *       - 354678: Temp classloader is still being used during metadata processing
  ******************************************************************************/  
 package org.eclipse.persistence.mappings;
 
@@ -297,6 +299,22 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
         return getMappedKeyMapContainerPolicy().compareContainers(firstObjectMap, secondObjectMap);
     }
 
+    /*
+     * INTERNAL:
+     * Convert all the class-name-based settings in this mapping to actual 
+     * class-based settings. This method is implemented by subclasses as 
+     * necessary.
+     * @param classLoader 
+     */
+    @Override
+    public void convertClassNamesToClasses(ClassLoader classLoader) {
+        super.convertClassNamesToClasses(classLoader);
+        
+        if (getDirectKeyField() != null) {
+            getDirectKeyField().convertClassNamesToClasses(classLoader);
+        }           
+    }
+    
     /**
      * INTERNAL
      * Called when a DatabaseMapping is used to map the key in a collection.  Returns the key.
@@ -808,6 +826,17 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
      */
     public void setDirectKeyFieldClassification(Class fieldType) {
         getDirectKeyField().setType(fieldType);
+    }
+    
+    /**
+     * ADVANCED:
+     * Set the class type name of the field value.
+     * This can be used if field value differs from the object value,
+     * has specific typing requirements such as usage of java.sql.Blob or NChar.
+     * This must be called after the direct key field has been set.
+     */
+    public void setDirectKeyFieldClassificationName(String fieldTypeName) {
+        getDirectKeyField().setTypeName(fieldTypeName);
     }
     
     /**

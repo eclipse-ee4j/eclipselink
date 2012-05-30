@@ -12,16 +12,24 @@
  *     tware - added handling of database delimiters
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     25/05/2012-2.4 Guy Pelletier  
+ *       - 354678: Temp classloader is still being used during metadata processing
  ******************************************************************************/  
 package org.eclipse.persistence.internal.helper;
 
 //javase imports
 import java.io.Serializable;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+
 import static java.lang.Integer.MIN_VALUE;
 
 //EclipseLink imports
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 
 /**
  * INTERNAL:
@@ -161,6 +169,31 @@ public class DatabaseField implements Cloneable, Serializable {
         } catch (CloneNotSupportedException exception) {
             throw new InternalError(exception.getMessage());
         }
+    }
+    
+    /*
+     * INTERNAL:
+     * Convert all the class-name-based settings in this mapping to actual 
+     * class-based settings. This method is implemented by subclasses as 
+     * necessary.
+     * @param classLoader 
+     */
+    public void convertClassNamesToClasses(ClassLoader classLoader) {
+        if (type == null && typeName != null) {
+            try {
+                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                    try {
+                        type = (Class) AccessController.doPrivileged(new PrivilegedClassForName(typeName, true, classLoader));
+                    } catch (PrivilegedActionException e) {
+                        throw ValidationException.classNotFoundWhileConvertingClassNames(typeName, e.getException());
+                    }
+                } else {
+                    type = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(typeName, true, classLoader);
+                }
+            } catch (Exception exception) {
+                throw ValidationException.classNotFoundWhileConvertingClassNames(typeName, exception);
+            }
+        } 
     }
 
     /**
@@ -324,7 +357,8 @@ public class DatabaseField implements Cloneable, Serializable {
     
     public String getTypeName() {             
         return typeName;                      
-    }                                         
+    }                
+    
     public void setTypeName(String typeName) {
         this.typeName = typeName;             
     }                                         

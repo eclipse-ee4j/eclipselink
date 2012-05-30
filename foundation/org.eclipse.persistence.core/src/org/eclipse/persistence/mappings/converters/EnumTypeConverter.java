@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     25/05/2012-2.4 Guy Pelletier  
+ *       - 354678: Temp classloader is still being used during metadata processing
  ******************************************************************************/  
 package org.eclipse.persistence.mappings.converters;
 
@@ -104,6 +106,8 @@ public class EnumTypeConverter extends ObjectTypeConverter {
      * @param classLoader 
      */
     public void convertClassNamesToClasses(ClassLoader classLoader) {
+        super.convertClassNamesToClasses(classLoader);
+        
         // convert if enumClass is null or if different classLoader
         if (m_enumClass == null || 
             (m_enumClass != null && !m_enumClass.getClassLoader().equals(classLoader))) {

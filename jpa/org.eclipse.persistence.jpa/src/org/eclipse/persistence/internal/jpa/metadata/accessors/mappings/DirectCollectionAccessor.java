@@ -32,6 +32,8 @@
  *       - 337323: Multi-tenant with shared schema support (part 1)
  *     07/03/2011-2.3.1 Guy Pelletier 
  *       - 348756: m_cascadeOnDelete boolean should be changed to Boolean
+ *     25/05/2012-2.4 Guy Pelletier  
+ *       - 354678: Temp classloader is still being used during metadata processing
  ******************************************************************************/ 
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -481,7 +483,7 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
             // specification) we need to set the attribute classification on the 
             // mapping to ensure we do the right conversions.
             if (hasAttributeType() || getAccessibleObject().isGenericCollectionType()) {
-                mapping.setDirectKeyFieldClassification(getJavaClass(getMapKeyReferenceClass()));
+                mapping.setDirectKeyFieldClassificationName(getJavaClassName(getMapKeyReferenceClass()));
             }
             
             // Process a converter for the key column of this mapping.
@@ -496,7 +498,7 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
         // specification) we need to set the attribute classification on the 
         // mapping to ensure we do the right conversions.
         if (hasAttributeType() || getAccessibleObject().isGenericCollectionType()) {
-            mapping.setDirectFieldClassification(getJavaClass(getReferenceClass()));
+            mapping.setDirectFieldClassificationName(getJavaClassName(getReferenceClass()));
         }
         
         // Process a converter for value column of this mapping.

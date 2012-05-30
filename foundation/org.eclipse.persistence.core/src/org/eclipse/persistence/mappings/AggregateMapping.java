@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     25/05/2012-2.4 Guy Pelletier  
+ *       - 354678: Temp classloader is still being used during metadata processing
  ******************************************************************************/  
 package org.eclipse.persistence.mappings;
 
@@ -340,10 +342,13 @@ public abstract class AggregateMapping extends DatabaseMapping {
      * with class names to a project with classes.
      * @param classLoader 
      */
-    public void convertClassNamesToClasses(ClassLoader classLoader){
+    @Override
+    public void convertClassNamesToClasses(ClassLoader classLoader) {
+        super.convertClassNamesToClasses(classLoader);
+        
         Class referenceClass = null;
-        try{
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+        try {
+            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                 try {
                     referenceClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(getReferenceClassName(), true, classLoader));
                 } catch (PrivilegedActionException exception) {
@@ -352,11 +357,12 @@ public abstract class AggregateMapping extends DatabaseMapping {
             } else {
                 referenceClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(getReferenceClassName(), true, classLoader);
             }
-        } catch (ClassNotFoundException exc){
+        } catch (ClassNotFoundException exc) {
             throw ValidationException.classNotFoundWhileConvertingClassNames(getReferenceClassName(), exc);
         }
+        
         setReferenceClass(referenceClass);
-    };
+    }
 
     /**
      * INTERNAL:
