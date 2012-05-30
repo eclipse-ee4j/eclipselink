@@ -1780,6 +1780,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
     /**
      * INTERNAL:
      * This row is built for shallow insert which happens in case of bidirectional inserts.
+     * If mapping overrides this method it must override writeFromObjectIntoRowForUpdateAfterShallowInsert method, too.
      */
     public void writeFromObjectIntoRowForShallowInsert(Object object, AbstractRecord row, AbstractSession session) {
         writeFromObjectIntoRow(object, row, session, WriteType.INSERT);
@@ -1789,6 +1790,7 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * INTERNAL:
      * This row is built for update after shallow insert which happens in case of bidirectional inserts.
      * It contains the foreign keys with non null values that were set to null for shallow insert.
+     * If mapping overrides writeFromObjectIntoRowForShallowInsert method it must override this one, too.
      */
     public void writeFromObjectIntoRowForUpdateAfterShallowInsert(Object object, AbstractRecord databaseRow, AbstractSession session, DatabaseTable table) {
         // Do nothing by default.

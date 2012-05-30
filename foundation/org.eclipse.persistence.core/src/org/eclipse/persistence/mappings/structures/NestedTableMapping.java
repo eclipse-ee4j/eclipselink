@@ -387,7 +387,25 @@ public class NestedTableMapping extends CollectionMapping {
             return;
         }
 
-        record.put(getField(), null);
+        if (getField().isNullable()) {
+            record.put(getField(), null);
+        } else {
+            writeFromObjectIntoRow(object, record, session, WriteType.INSERT);
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * This row is built for update after shallow insert which happens in case of bidirectional inserts.
+     * It contains the foreign keys with non null values that were set to null for shallow insert.
+     */
+    @Override
+    public void writeFromObjectIntoRowForUpdateAfterShallowInsert(Object object, AbstractRecord record, AbstractSession session, DatabaseTable table) {
+        if (!getField().getTable().equals(table) || !getField().isNullable()) {
+            return;
+        }
+        
+        writeFromObjectIntoRow(object, record, session, WriteType.UPDATE);
     }
 
     /**
