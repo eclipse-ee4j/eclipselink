@@ -14,6 +14,8 @@
  *       accessor.attributeField is null in the absence of a MapKey annotation
  *     11/10/2011-2.4 Guy Pelletier 
  *       - 357474: Address primaryKey option from tenant discriminator column
+ *      *     30/05/2012-2.4 Guy Pelletier    
+ *       - 354678: Temp classloader is still being used during metadata processing
  ******************************************************************************/  
 package org.eclipse.persistence.mappings.foundation;
 
@@ -124,6 +126,11 @@ public abstract class AbstractColumnMapping extends DatabaseMapping {
     @Override
     public void convertClassNamesToClasses(ClassLoader classLoader){
         super.convertClassNamesToClasses(classLoader);
+        
+        // Field may have a type name that needs to be initialize.
+        if (field != null) {
+            field.convertClassNamesToClasses(classLoader);
+        }
         
         if (converter != null) {
             if (converter instanceof TypeConversionConverter) {

@@ -9,11 +9,11 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *      *     30/05/2012-2.4 Guy Pelletier    
+ *       - 354678: Temp classloader is still being used during metadata processing
  ******************************************************************************/  
 package org.eclipse.persistence.mappings.foundation;
 
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.util.*;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -22,8 +22,6 @@ import org.eclipse.persistence.internal.descriptors.*;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.queries.*;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.mappings.converters.Converter;
@@ -275,25 +273,10 @@ public abstract class AbstractCompositeCollectionMapping extends AggregateMappin
      */
     @Override
     public void convertClassNamesToClasses(ClassLoader classLoader){
-        Class referenceClass = null;
-        if(getReferenceClassName()!= null){
-	        try{        	
-		        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-		            try {
-		                referenceClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(getReferenceClassName(), true, classLoader));
-		            } catch (PrivilegedActionException exception) {
-		                throw ValidationException.classNotFoundWhileConvertingClassNames(getReferenceClassName(), exception.getException());
-		            }
-		        } else {
-		         	referenceClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(getReferenceClassName(), true, classLoader);	            
-		        }	        
-	        } catch (ClassNotFoundException exc){
-	            throw ValidationException.classNotFoundWhileConvertingClassNames(getReferenceClassName(), exc);
-	        }
-	        setReferenceClass(referenceClass);
-        }
+        super.convertClassNamesToClasses(classLoader);
+        
         containerPolicy.convertClassNamesToClasses(classLoader);
-    };
+    }
     
 
     protected ChangeRecord convertToChangeRecord(Object cloneCollection, ObjectChangeSet owner, AbstractSession session) {

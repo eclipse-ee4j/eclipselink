@@ -15,6 +15,8 @@
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *      *     30/05/2012-2.4 Guy Pelletier    
+ *       - 354678: Temp classloader is still being used during metadata processing
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -107,7 +109,7 @@ public class VersionAccessor extends BasicAccessor {
             getLogger().logConfigMessage(MetadataLogger.IGNORE_VERSION_LOCKING, this);
         } else {
             MetadataClass lockType = getRawClass();
-            getDatabaseField().setType(getJavaClass(lockType));
+            getDatabaseField().setTypeName(getJavaClassName(lockType));
 
             if (isValidVersionLockingType(lockType) || isValidTimestampVersionLockingType(lockType)) {
                 for (MetadataDescriptor owningDescriptor : getOwningDescriptors()) {

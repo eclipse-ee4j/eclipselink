@@ -69,6 +69,8 @@
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *     14/05/2012-2.4 Guy Pelletier  
  *       - 376603: Provide for table per tenant support for multitenant applications
+ *      *     30/05/2012-2.4 Guy Pelletier    
+ *       - 354678: Temp classloader is still being used during metadata processing
  *******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
@@ -1828,7 +1830,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.setJavaClass(HashPartitioningMetadata.class);
     
         descriptor.addMapping(getNameAttributeMapping());
-        descriptor.addMapping(getUnionUnpartitionableQueriesMapping());
+        descriptor.addMapping(getUnionUnpartitionableQueriesAttributeMapping());
         descriptor.addMapping(getPartitionColumnMapping());
         descriptor.addMapping(getConnectionPoolsMapping());
         
@@ -2691,7 +2693,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         descriptor.setJavaClass(PinnedPartitioningMetadata.class);
     
         descriptor.addMapping(getNameAttributeMapping());
-        descriptor.addMapping(getConnectionPoolMapping());
+        descriptor.addMapping(getConnectionPoolAttributeMapping());
         
         return descriptor;
     }
@@ -2858,6 +2860,10 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(RangePartitionMetadata.class);
 
+        // Element mappings - must remain in order of definition in XML.
+        // none currently ...
+        
+        // Attribute mappings
         XMLDirectMapping mapping = new XMLDirectMapping();
         mapping.setAttributeName("startValue");
         mapping.setGetMethodName("getStartValue");
@@ -2872,7 +2878,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         mapping.setXPath("@end-value");
         descriptor.addMapping(mapping);
         
-        descriptor.addMapping(getConnectionPoolMapping());
+        descriptor.addMapping(getConnectionPoolAttributeMapping());
         
         return descriptor;
     }
@@ -2885,24 +2891,14 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(RangePartitioningMetadata.class);
     
-        descriptor.addMapping(getNameAttributeMapping());
-        descriptor.addMapping(getUnionUnpartitionableQueriesMapping());
+        // Element mappings - must remain in order of definition in XML.
         descriptor.addMapping(getPartitionColumnMapping());
+        descriptor.addMapping(getRangePartitionMapping());
         
-        XMLDirectMapping valueMapping = new XMLDirectMapping();
-        valueMapping.setAttributeName("partitionValueType");
-        valueMapping.setGetMethodName("getPartitionValueType");
-        valueMapping.setSetMethodName("setPartitionValueType");
-        valueMapping.setXPath("@partition-value-type");
-        descriptor.addMapping(valueMapping);
-        
-        XMLCompositeCollectionMapping partitionsMapping = new XMLCompositeCollectionMapping();
-        partitionsMapping.setAttributeName("partitions");
-        partitionsMapping.setGetMethodName("getPartitions");
-        partitionsMapping.setSetMethodName("setPartitions");
-        partitionsMapping.setReferenceClass(RangePartitionMetadata.class);
-        partitionsMapping.setXPath("orm:partition");
-        descriptor.addMapping(partitionsMapping);
+        // Attribute mappings
+        descriptor.addMapping(getNameAttributeMapping());
+        descriptor.addMapping(getUnionUnpartitionableQueriesAttributeMapping());
+        descriptor.addMapping(getPartitionValueTypeAttributeMapping());
         
         return descriptor;
     }
@@ -3397,6 +3393,10 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(ValuePartitionMetadata.class);
 
+        // Element mappings - must remain in order of definition in XML.
+        // none currently ...
+        
+        // Attribute mappings
         XMLDirectMapping mapping = new XMLDirectMapping();
         mapping.setAttributeName("value");
         mapping.setGetMethodName("getValue");
@@ -3404,7 +3404,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         mapping.setXPath("@value");
         descriptor.addMapping(mapping);
         
-        descriptor.addMapping(getConnectionPoolMapping());
+        descriptor.addMapping(getConnectionPoolAttributeMapping());
         
         return descriptor;
     }
@@ -3417,31 +3417,15 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(ValuePartitioningMetadata.class);
     
-        descriptor.addMapping(getNameAttributeMapping());
-        descriptor.addMapping(getUnionUnpartitionableQueriesMapping());
+        // Element mappings - must remain in order of definition in XML.
         descriptor.addMapping(getPartitionColumnMapping());
+        descriptor.addMapping(getValuePartitionMapping());
         
-        XMLDirectMapping mapping = new XMLDirectMapping();
-        mapping.setAttributeName("partitionValueType");
-        mapping.setGetMethodName("getPartitionValueType");
-        mapping.setSetMethodName("setPartitionValueType");
-        mapping.setXPath("@partition-value-type");
-        descriptor.addMapping(mapping);
-        
-        mapping = new XMLDirectMapping();
-        mapping.setAttributeName("defaultConnectionPool");
-        mapping.setGetMethodName("getDefaultConnectionPool");
-        mapping.setSetMethodName("setDefaultConnectionPool");
-        mapping.setXPath("@default-connection-pool");
-        descriptor.addMapping(mapping);
-        
-        XMLCompositeCollectionMapping partitionsMapping = new XMLCompositeCollectionMapping();
-        partitionsMapping.setAttributeName("partitions");
-        partitionsMapping.setGetMethodName("getPartitions");
-        partitionsMapping.setSetMethodName("setPartitions");
-        partitionsMapping.setReferenceClass(ValuePartitionMetadata.class);
-        partitionsMapping.setXPath("orm:partition");
-        descriptor.addMapping(partitionsMapping);
+        // Attribute mappings
+        descriptor.addMapping(getNameAttributeMapping());
+        descriptor.addMapping(getUnionUnpartitionableQueriesAttributeMapping());
+        descriptor.addMapping(getDefaultConnectionPoolAttributeMapping());
+        descriptor.addMapping(getPartitionValueTypeAttributeMapping());
         
         return descriptor;
     }
@@ -3949,7 +3933,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     /**
      * INTERNAL:
      */
-    protected XMLDirectMapping getConnectionPoolMapping() {
+    protected XMLDirectMapping getConnectionPoolAttributeMapping() {
         XMLDirectMapping mapping = new XMLDirectMapping();
         mapping.setAttributeName("connectionPool");
         mapping.setGetMethodName("getConnectionPool");
@@ -4092,6 +4076,18 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         dataTypeMapping.setSetMethodName("setDataTypeName");
         dataTypeMapping.setXPath("@data-type");
         return dataTypeMapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    protected XMLDirectMapping getDefaultConnectionPoolAttributeMapping() {
+        XMLDirectMapping mapping = new XMLDirectMapping();
+        mapping.setAttributeName("defaultConnectionPool");
+        mapping.setGetMethodName("getDefaultConnectionPool");
+        mapping.setSetMethodName("setDefaultConnectionPool");
+        mapping.setXPath("@default-connection-pool");
+        return mapping;
     }
     
     /**
@@ -5030,6 +5026,19 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     /**
      * INTERNAL:
      */
+    protected XMLCompositeCollectionMapping getRangePartitionMapping() {
+        XMLCompositeCollectionMapping mapping = new XMLCompositeCollectionMapping();
+        mapping.setAttributeName("partitions");
+        mapping.setGetMethodName("getPartitions");
+        mapping.setSetMethodName("setPartitions");
+        mapping.setReferenceClass(RangePartitionMetadata.class);
+        mapping.setXPath("orm:partition");
+        return mapping;
+    }
+    
+    /**
+     * INTERNAL:
+     */
     protected XMLCompositeObjectMapping getPartitionColumnMapping() {
         XMLCompositeObjectMapping mapping = new XMLCompositeObjectMapping();
         mapping.setAttributeName("partitionColumn");
@@ -5068,11 +5077,11 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     /**
      * INTERNAL:
      */
-    protected XMLDirectMapping getPartitionValueTypeMapping() {
+    protected XMLDirectMapping getPartitionValueTypeAttributeMapping() {
         XMLDirectMapping mapping = new XMLDirectMapping();
-        mapping.setAttributeName("partitionValueType");
-        mapping.setGetMethodName("getPartitionValueType");
-        mapping.setSetMethodName("setPartitionValueType");
+        mapping.setAttributeName("partitionValueTypeName");
+        mapping.setGetMethodName("getPartitionValueTypeName");
+        mapping.setSetMethodName("setPartitionValueTypeName");
         mapping.setXPath("@partition-value-type");
         return mapping;
     }
@@ -5702,7 +5711,7 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
     /**
      * INTERNAL:
      */
-    protected XMLDirectMapping getUnionUnpartitionableQueriesMapping() {
+    protected XMLDirectMapping getUnionUnpartitionableQueriesAttributeMapping() {
         XMLDirectMapping mapping = new XMLDirectMapping();
         mapping.setAttributeName("unionUnpartitionableQueries");
         mapping.setGetMethodName("getUnionUnpartitionableQueries");
@@ -5796,6 +5805,19 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
         valueMapping.setSetMethodName("setValue");
         valueMapping.setXPath("text()");
         return valueMapping;
+    }
+
+    /**
+     * INTERNAL:
+     */
+    protected XMLCompositeCollectionMapping getValuePartitionMapping() {
+        XMLCompositeCollectionMapping mapping = new XMLCompositeCollectionMapping();
+        mapping.setAttributeName("partitions");
+        mapping.setGetMethodName("getPartitions");
+        mapping.setSetMethodName("setPartitions");
+        mapping.setReferenceClass(ValuePartitionMetadata.class);
+        mapping.setXPath("orm:partition");
+        return mapping;    
     }
 
     /**

@@ -9,16 +9,26 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *      *     30/05/2012-2.4 Guy Pelletier    
+ *       - 354678: Temp classloader is still being used during metadata processing
  ******************************************************************************/  
 package org.eclipse.persistence.mappings.converters;
 
+import java.lang.reflect.Constructor;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
 import java.util.*;
+
 import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.descriptors.TypeMapping;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.sessions.*;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.security.PrivilegedClassForName;
+import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;
+import org.eclipse.persistence.internal.security.PrivilegedInvokeConstructor;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
@@ -31,13 +41,23 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  * @since Toplink 10
  */
 public class ObjectTypeConverter implements Converter {
+    // String type names and values set from JPA processing.
+    protected String converterName;
+    protected Class dataType;
+    protected String dataTypeName;
+    protected Class objectType;
+    protected String objectTypeName;
+    protected Map<String, String> conversionValueStrings;
+    protected Map<String, String> addToAttributeOnlyConversionValueStrings;
+    
     protected DatabaseMapping mapping;
     protected transient Map fieldToAttributeValues;
     protected Map attributeToFieldValues;
     protected transient Object defaultAttributeValue;
+    protected transient String defaultAttributeValueString;
     protected transient Class fieldClassification;
     protected transient String fieldClassificationName;
-
+    
     /**
      * PUBLIC:
      * Default constructor.
@@ -45,6 +65,8 @@ public class ObjectTypeConverter implements Converter {
     public ObjectTypeConverter() {
         this.attributeToFieldValues = new HashMap(10);
         this.fieldToAttributeValues = new HashMap(10);
+        this.conversionValueStrings = new HashMap<String, String>(10);
+        this.addToAttributeOnlyConversionValueStrings = new HashMap<String, String>(10);
     }
 
     /**
@@ -75,6 +97,15 @@ public class ObjectTypeConverter implements Converter {
         getFieldToAttributeValues().put(fieldValue, attributeValue);
         getAttributeToFieldValues().put(attributeValue, fieldValue);
     }
+    
+    /**
+     * INTERNAL:
+     * Set from JPA processing where we deal with strings only to avoid
+     * class loader conflicts.
+     */
+    public void addConversionValueStrings(String dataValue, String objectValue) {
+        this.conversionValueStrings.put(dataValue, objectValue);
+    }
 
     /**
      * PUBLIC:
@@ -96,6 +127,15 @@ public class ObjectTypeConverter implements Converter {
 
     /**
      * INTERNAL:
+     * Set from JPA processing where we deal with strings only to avoid
+     * class loader conflicts.
+     */
+    public void addToAttributeOnlyConversionValueStrings(String dataValue, String objectValue) {
+        this.addToAttributeOnlyConversionValueStrings.put(dataValue, objectValue);
+    }
+    
+    /**
+     * INTERNAL:
      * Get the attribute to field mapping.
      */
     public Map getAttributeToFieldValues() {
@@ -110,10 +150,55 @@ public class ObjectTypeConverter implements Converter {
      * @param classLoader 
      */
     public void convertClassNamesToClasses(ClassLoader classLoader){
-        // Does nothing right now but was implemented since EnumTypeConverter
-        // is dependent on this method but we need to avoid JDK 1.5 
-        // dependencies. AbstractDirectMapping will call this method.
+        if (dataTypeName != null) {
+            dataType = loadClass(dataTypeName, classLoader);
+        }
+        
+        if (objectTypeName != null) {
+            objectType = loadClass(objectTypeName, classLoader);
+        }
+        
+        if (objectType != null && dataType != null) {
+            // Process the data to object mappings. The object and data values
+            // should be primitive wrapper types so we can initialize the 
+            // conversion values now.
+            for (String dataValue : conversionValueStrings.keySet()) {
+                String objectValue = conversionValueStrings.get(dataValue);
+                
+                addConversionValue(initObject(dataType, dataValue, true), initObject(objectType, objectValue, false));
+            }
+
+            for (String dataValue : addToAttributeOnlyConversionValueStrings.keySet()) {
+                String objectValue = addToAttributeOnlyConversionValueStrings.get(dataValue);
+                
+                addToAttributeOnlyConversionValue(initObject(dataType, dataValue, true), initObject(objectType, objectValue, false));
+            }
+            
+            if (defaultAttributeValueString != null) {
+                setDefaultAttributeValue(initObject(objectType, defaultAttributeValueString, false));
+            }
+        }
     }
+    
+    /**
+     * Load the given class name with the given loader.
+     */
+    protected Class loadClass(String className, ClassLoader classLoader) { 
+        try {
+            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                try {
+                    return (Class) AccessController.doPrivileged(new PrivilegedClassForName(className, true, classLoader));
+                } catch (PrivilegedActionException e) {
+                    throw ValidationException.classNotFoundWhileConvertingClassNames(className, e.getException());
+                }
+            } else {
+                return org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(className, true, classLoader);
+            }
+        } catch (Exception exception) {
+            throw ValidationException.classNotFoundWhileConvertingClassNames(className, exception);
+        }
+    }
+    
     
     /**
      * INTERNAL:
@@ -167,6 +252,15 @@ public class ObjectTypeConverter implements Converter {
      */
     protected void setMapping(DatabaseMapping mapping) {
         this.mapping = mapping;
+    }
+    
+    /**
+     * INTERNAL:
+     * Set from JPA processing where we deal with strings only to avoid
+     * class loader conflicts.
+     */
+    public void setObjectTypeName(String objectTypeName) {
+        this.objectTypeName = objectTypeName;
     }
 
     /**
@@ -301,6 +395,30 @@ public class ObjectTypeConverter implements Converter {
             }
         }
     }
+    
+    /**
+     * INTERNAL:
+     * Used to initialize string based conversion values set from JPA processing.
+     */    
+    private Object initObject(Class type, String value, boolean isData) {
+        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+            try {
+                Constructor constructor = (Constructor) AccessController.doPrivileged(new PrivilegedGetConstructorFor(type, new Class[] {String.class}, false));
+                return AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, new Object[] {value}));
+            } catch (PrivilegedActionException exception) {
+                throwInitObjectException(exception, type, value, isData);
+            }
+        } else {
+            try {
+                Constructor constructor = PrivilegedAccessHelper.getConstructorFor(type, new Class[] {String.class}, false);
+                return PrivilegedAccessHelper.invokeConstructor(constructor, new Object[] {value});
+            } catch (Exception exception) {
+                throwInitObjectException(exception, type, value, isData);
+            }
+        }
+        
+        return null; // keep compiler happy, will never hit.
+    }
 
     /**
      * INTERNAL:
@@ -320,12 +438,39 @@ public class ObjectTypeConverter implements Converter {
     }
 
     /**
+     * INTERNAL:
+     * Set from JPA processing where we deal with strings only to avoid
+     * class loader conflicts.
+     */
+    public void setConverterName(String converterName) {
+        this.converterName = converterName;
+    }
+    
+    /**
+     * INTERNAL:
+     * Set from JPA processing where we deal with strings only to avoid
+     * class loader conflicts.
+     */
+    public void setDataTypeName(String dataTypeName) {
+        this.dataTypeName = dataTypeName;
+    }
+    
+    /**
      * PUBLIC:
      * The default value can be used if the database can possibly store additional values then those that
      * have been mapped.  Any value retreived from the database that is not mapped will be substitued for the default value.
      */
     public void setDefaultAttributeValue(Object defaultAttributeValue) {
         this.defaultAttributeValue = defaultAttributeValue;
+    }
+    
+    /**
+     * INTERNAL:
+     * Set from JPA processing where we deal with strings only to avoid
+     * class loader conflicts.
+     */
+    public void setDefaultAttributeValueString(String defaultAttributeValueString) {
+        this.defaultAttributeValueString = defaultAttributeValueString;
     }
 
     /**
@@ -370,5 +515,16 @@ public class ObjectTypeConverter implements Converter {
      */
     public boolean isMutable() {
         return false;
+    }
+    
+    /**
+     * INTERNAL:
+     */    
+    protected void throwInitObjectException(Exception exception, Class type, String value, boolean isData) {
+        if (isData) {
+            throw ValidationException.errorInstantiatingConversionValueData(converterName, value, type, exception);
+        } else {
+            throw ValidationException.errorInstantiatingConversionValueObject(converterName, value, type, exception);
+        }
     }
 }

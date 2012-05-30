@@ -92,6 +92,8 @@
  *       - 356197: Add new VPD type to MultitenantType
  *     11/10/2011-2.4 Guy Pelletier 
  *       - 357474: Address primaryKey option from tenant discriminator column
+ *      *     30/05/2012-2.4 Guy Pelletier    
+ *       - 354678: Temp classloader is still being used during metadata processing
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -439,7 +441,7 @@ public class MetadataDescriptor {
     public void addProperty(PropertyMetadata property) {
         if (property.shouldOverride(m_properties.get(property.getName()))) {
             m_properties.put(property.getName(), property);
-            m_descriptor.getProperties().put(property.getName(), property.getConvertedValue());
+            m_descriptor.addUnconvertedProperty(property.getName(), property.getValue(), property.getJavaClassName(property.getValueType()));
         }
     }
     

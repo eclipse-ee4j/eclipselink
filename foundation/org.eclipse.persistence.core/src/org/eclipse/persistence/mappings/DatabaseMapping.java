@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     11/10/2011-2.4 Guy Pelletier 
  *       - 357474: Address primaryKey option from tenant discriminator column
+ *      *     30/05/2012-2.4 Guy Pelletier    
+ *       - 354678: Temp classloader is still being used during metadata processing
  ******************************************************************************/  
 package org.eclipse.persistence.mappings;
 
@@ -18,6 +20,8 @@ import java.beans.PropertyChangeListener;
 
 import java.io.*;
 import java.util.*;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -34,6 +38,8 @@ import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.indirection.*;
 import org.eclipse.persistence.internal.queries.*;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.sessions.remote.*;
 import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.queries.*;
@@ -98,6 +104,8 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
 
     /** Allow user defined properties. */
     protected Map properties;
+    /** Allow the user to defined un-converted properties which will be initialized at runtime. */
+    protected Map<String, List<String>> unconvertedProperties;
     
     /**
      * Used by the CMP3Policy to see if this mapping should be used in 
@@ -150,6 +158,17 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
         this.isOptional = true;
         this.isReadOnly = false;
         this.attributeAccessor = new InstanceVariableAttributeAccessor();
+    }
+    
+    /**
+     * PUBLIC:
+     * Add an unconverted property (to be initialiazed at runtime)
+     */
+    public void addUnconvertedProperty(String propertyName, String propertyValue, String propertyType) {
+        List<String> valuePair = new ArrayList<String>(2);
+        valuePair.add(propertyValue);
+        valuePair.add(propertyType);
+        getUnconvertedProperties().put(propertyName, valuePair);
     }
 
     /**
@@ -356,7 +375,35 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
      * This method is implemented by subclasses as necessary.
      * @param classLoader 
      */
-    public void convertClassNamesToClasses(ClassLoader classLoader){};
+    public void convertClassNamesToClasses(ClassLoader classLoader) {
+        if (hasUnconvertedProperties()) {
+            for (String propertyName : getUnconvertedProperties().keySet()) {
+                List<String> valuePair = getUnconvertedProperties().get(propertyName);
+                String value = valuePair.get(0);
+                String valueTypeName = valuePair.get(1);
+                Class valueType = String.class;
+                
+                // Have to initialize the valueType now
+                try {
+                    if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                        try {
+                            valueType = (Class) AccessController.doPrivileged(new PrivilegedClassForName(valueTypeName, true, classLoader));
+                        } catch (PrivilegedActionException exception) {
+                            throw ValidationException.classNotFoundWhileConvertingClassNames(valueTypeName, exception.getException());
+                        }
+                    } else {
+                        valueType = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(valueTypeName, true, classLoader);
+                    }
+                } catch (Exception exception) {
+                    throw ValidationException.classNotFoundWhileConvertingClassNames(valueTypeName, exception);
+                }
+                
+                // Add the converted property. If the value type is the same
+                // as the source (value) type, no conversion is made.
+                getProperties().put(propertyName, ConversionManager.getDefaultManager().convertObject(value, valueType));
+            }
+        }
+    }
 
     /**
      * INTERNAL:
@@ -456,6 +503,15 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
             }
         }
         return false;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used to store un-converted properties, which are subsequenctly converted
+     * at runtime (through the convertClassNamesToClasses method.
+     */
+    public boolean hasUnconvertedProperties() {
+        return unconvertedProperties != null;
     }
 
     /**
@@ -724,6 +780,19 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
             return null;
         }
         return ((MethodAttributeAccessor)getAttributeAccessor()).getSetMethodName();
+    }
+    
+    /**
+     * INTERNAL:
+     * Used to store un-converted properties, which are subsequenctly converted
+     * at runtime (through the convertClassNamesToClasses method.
+     */
+    public Map<String, List<String>> getUnconvertedProperties() {
+        if (unconvertedProperties == null) {
+            unconvertedProperties = new HashMap<String, List<String>>(5);
+        }
+        
+        return unconvertedProperties;
     }
 
     /**

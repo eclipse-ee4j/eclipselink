@@ -19,12 +19,10 @@
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *      *     30/05/2012-2.4 Guy Pelletier    
+ *       - 354678: Temp classloader is still being used during metadata processing
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.converters;
-
-import java.lang.reflect.Constructor;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,10 +35,6 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
-
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;
-import org.eclipse.persistence.internal.security.PrivilegedInvokeConstructor;
 
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.EnumTypeConverter;
@@ -129,29 +123,6 @@ public class ObjectTypeConverterMetadata extends TypeConverterMetadata {
     
     /**
      * INTERNAL:
-     */    
-    private Object initObject(Class type, String value, boolean isData) {
-        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-            try {
-                Constructor constructor = (Constructor) AccessController.doPrivileged(new PrivilegedGetConstructorFor(type, new Class[] {String.class}, false));
-                return AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, new Object[] {value}));
-            } catch (PrivilegedActionException exception) {
-                throwInitObjectException(exception, type, value, isData);
-            }
-        } else {
-            try {
-                Constructor constructor = PrivilegedAccessHelper.getConstructorFor(type, new Class[] {String.class}, false);
-                return PrivilegedAccessHelper.invokeConstructor(constructor, new Object[] {value});
-            } catch (Exception exception) {
-                throwInitObjectException(exception, type, value, isData);
-            }
-        }
-        
-        return null; // keep compiler happy, will never hit.
-    }
-    
-    /**
-     * INTERNAL:
      */
     @Override
     public void process(DatabaseMapping mapping, MappingAccessor accessor, MetadataClass referenceClass, boolean isForMapKey) {
@@ -171,6 +142,13 @@ public class ObjectTypeConverterMetadata extends TypeConverterMetadata {
             // Create an ObjectTypeConverter.
             converter = new org.eclipse.persistence.mappings.converters.ObjectTypeConverter(mapping);
         }
+        
+        // Set the converter name (for better exception handling)
+        converter.setConverterName(getName());
+        
+        // Set the type names on the converter.
+        converter.setDataTypeName(getJavaClassName(dataType));
+        converter.setObjectTypeName(getJavaClassName(objectType));
         
         // Process the conversion values.
         // Hold two-way mappings from the database to the object.
@@ -203,21 +181,18 @@ public class ObjectTypeConverterMetadata extends TypeConverterMetadata {
         for (String dataValue : dataToObjectValues.keySet()) {
             String objectValue = dataToObjectValues.get(dataValue);
             
-            Object data = initObject(getJavaClass(dataType), dataValue, true);
-            Object object = initObject(getJavaClass(objectType), objectValue, false);
-            
             if (objectToDataValues.containsKey(objectValue)) {
                 // It's a two-way mapping ...
-                converter.addConversionValue(data, object);
+                converter.addConversionValueStrings(dataValue, objectValue);
             } else {
                 // It's a one-way mapping ...
-                converter.addToAttributeOnlyConversionValue(data, object);
+                converter.addToAttributeOnlyConversionValueStrings(dataValue, objectValue);
             }
         }
         
         // Process the defaultObjectValue if one is specified.
         if (m_defaultObjectValue != null && ! m_defaultObjectValue.equals("")) {
-            converter.setDefaultAttributeValue(initObject(getJavaClass(objectType), m_defaultObjectValue, false));
+            converter.setDefaultAttributeValueString(m_defaultObjectValue);
         }
         
         // Set the converter on the mapping.
@@ -238,16 +213,5 @@ public class ObjectTypeConverterMetadata extends TypeConverterMetadata {
      */
     public void setDefaultObjectValue(String defaultObjectValue) {
         m_defaultObjectValue = defaultObjectValue;
-    }
-    
-    /**
-     * INTERNAL:
-     */    
-    protected void throwInitObjectException(Exception exception, Class type, String value, boolean isData) {
-        if (isData) {
-            throw ValidationException.errorInstantiatingConversionValueData(getName(), value, type, exception);
-        } else {
-            throw ValidationException.errorInstantiatingConversionValueObject(getName(), value, type, exception);
-        }
     }
 }

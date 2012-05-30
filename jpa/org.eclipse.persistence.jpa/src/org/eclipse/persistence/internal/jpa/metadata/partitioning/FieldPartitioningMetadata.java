@@ -11,6 +11,8 @@
  *     James Sutherland - initial API and implementation
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *      *     30/05/2012-2.4 Guy Pelletier    
+ *       - 354678: Temp classloader is still being used during metadata processing
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.partitioning;
 
@@ -19,6 +21,7 @@ import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
@@ -38,11 +41,10 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
  * @since EclipseLink 2.2
  */
 public abstract class FieldPartitioningMetadata extends AbstractPartitioningMetadata {
-    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
-
-    protected ColumnMetadata partitionColumn;
-    protected String partitionValueType;
     protected Boolean unionUnpartitionableQueries;
+    protected ColumnMetadata partitionColumn;
+    protected MetadataClass partitionValueType;
+    protected String partitionValueTypeName;
 
     /**
      * INTERNAL:
@@ -58,11 +60,13 @@ public abstract class FieldPartitioningMetadata extends AbstractPartitioningMeta
      */
     public FieldPartitioningMetadata(MetadataAnnotation annotation, MetadataAccessor accessor) {
         super(annotation, accessor);
-        MetadataAnnotation column = (MetadataAnnotation)annotation.getAttribute("partitionColumn");
+        
+        MetadataAnnotation column = (MetadataAnnotation) annotation.getAttribute("partitionColumn");
         if (column != null) {
             this.partitionColumn = new ColumnMetadata(column, accessor);
         }
-        this.partitionValueType = (String)annotation.getAttribute("partitionValueType");
+        
+        this.partitionValueType = getMetadataClass((String) annotation.getAttributeClass("partitionValueType", String.class));
         this.unionUnpartitionableQueries = (Boolean)annotation.getAttribute("unionUnpartitionableQueries");
     }
     
@@ -74,6 +78,10 @@ public abstract class FieldPartitioningMetadata extends AbstractPartitioningMeta
         super(elementName);
     }
 
+    /**
+     * INTERNAL:
+     * Used for XML merging and overriding.
+     */
     @Override
     public boolean equals(Object objectToCompare) {
         if (super.equals(objectToCompare) && (objectToCompare instanceof FieldPartitioningMetadata)) {
@@ -81,7 +89,7 @@ public abstract class FieldPartitioningMetadata extends AbstractPartitioningMeta
             
             return valuesMatch(this.partitionColumn, policy.getPartitionColumn())
                     && valuesMatch(this.unionUnpartitionableQueries, policy.getUnionUnpartitionableQueries())
-                    && valuesMatch(this.partitionValueType, policy.getPartitionValueType());
+                    && valuesMatch(this.partitionValueTypeName, policy.getPartitionValueTypeName());
         }
         
         return false;
@@ -101,36 +109,76 @@ public abstract class FieldPartitioningMetadata extends AbstractPartitioningMeta
             ((FieldPartitioningPolicy)policy).setUnionUnpartitionableQueries(this.unionUnpartitionableQueries);
         }
     }
-    
+
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public ColumnMetadata getPartitionColumn() {
         return partitionColumn;
     }
+    
+    /**
+     * INTERNAL:
+     */
+    public MetadataClass getPartitionValueType() {
+        return partitionValueType;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public String getPartitionValueTypeName() {
+        return partitionValueTypeName;
+    }
 
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public Boolean getUnionUnpartitionableQueries() {
+        return unionUnpartitionableQueries;
+    }
+    
     /**
      * INTERNAL:
      */
     @Override
     public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
         super.initXMLObject(accessibleObject, entityMappings);
+        
+        // Initialize single objects.
         initXMLObject(partitionColumn, accessibleObject);
+        
+        // Initialize the partition value type name we read from XML else default it to String.class
+        if (partitionValueTypeName != null) {
+            partitionValueType = initXMLClassName(partitionValueTypeName);
+        } else {
+            partitionValueType = getMetadataClass(String.class);
+        }
     }
     
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public void setPartitionColumn(ColumnMetadata partitionColumn) {
         this.partitionColumn = partitionColumn;
     }
-
-    public String getPartitionValueType() {
-        return partitionValueType;
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setPartitionValueTypeName(String partitionValueTypeName) {
+        this.partitionValueTypeName = partitionValueTypeName;
     }
 
-    public void setPartitionValueType(String partitionValueType) {
-        this.partitionValueType = partitionValueType;
-    }
-
-    public Boolean getUnionUnpartitionableQueries() {
-        return unionUnpartitionableQueries;
-    }
-
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public void setUnionUnpartitionableQueries(Boolean unionUnpartitionableQueries) {
         this.unionUnpartitionableQueries = unionUnpartitionableQueries;
     }

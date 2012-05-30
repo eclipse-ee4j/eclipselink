@@ -71,6 +71,8 @@
  *       - 337323: Multi-tenant with shared schema support (part 1)
  *     11/10/2011-2.4 Guy Pelletier 
  *       - 357474: Address primaryKey option from tenant discriminator column
+ *      *     30/05/2012-2.4 Guy Pelletier    
+ *       - 354678: Temp classloader is still being used during metadata processing
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -750,7 +752,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
             // type for T. A workaround for this is to detect when we are in 
             // this state and return a standard top level class. An invalid 
             // class will be of the form MetadataClass.m_name="T" 
-            if (getClassAccessor().isMappedSuperclass()) {
+            if (getDescriptor().isMappedSuperclass()) {
                 // Determine whether we are directly referencing a class or 
                 // using a parameterized generic reference by trying to load the 
                 // class and catching any validationException. If we do not get 
@@ -1753,12 +1755,12 @@ public abstract class MappingAccessor extends MetadataAccessor {
     /**
      * INTERNAL:
      * Adds properties to the mapping. They can only come from one place,
-     * therefore is we add the same one twice we know to throw an exception.
+     * therefore if we add the same one twice we know to throw an exception.
      */
     protected void processProperty(DatabaseMapping mapping, PropertyMetadata property) {
         if (property.shouldOverride(m_properties.get(property.getName()))) {
-            m_properties.put(property.getName(), property);
-            mapping.getProperties().put(property.getName(), property.getConvertedValue());
+            m_properties.put(property.getName(), property); 
+            mapping.addUnconvertedProperty(property.getName(), property.getValue(), getJavaClassName(property.getValueType()));
         }
     }
     

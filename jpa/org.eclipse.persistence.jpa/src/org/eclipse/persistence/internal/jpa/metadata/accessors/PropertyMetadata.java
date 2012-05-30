@@ -18,10 +18,11 @@
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *      *     30/05/2012-2.4 Guy Pelletier    
+ *       - 354678: Temp classloader is still being used during metadata processing
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors;
 
-import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
@@ -32,12 +33,20 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
  * INTERNAL:
  * PropertyMetadata. Each mapping may be assigned user-defined properties.
  * 
+ * Key notes:
+ * - any metadata mapped from XML to this class must be compared in the
+ *   equals method.
+ * - any metadata mapped from XML to this class must be initialized in the
+ *   initXMLObject method.
+ * - when loading from annotations, the constructor accepts the metadata
+ *   accessor this metadata was loaded from. Used it to look up any 
+ *   'companion' annotation needed for processing.
+ * - methods should be preserved in alphabetical order.
+ * 
  * @author Andrei Ilitchev
  * @since EclipseLink 1.0 
  */
 public class PropertyMetadata extends ORMetadata {
-    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
-
     private String m_name;
     private String m_value;
     private MetadataClass m_valueType;
@@ -57,9 +66,9 @@ public class PropertyMetadata extends ORMetadata {
     public PropertyMetadata(MetadataAnnotation property, MetadataAccessor accessor) {
         super(property, accessor);
         
-        m_name = (String)property.getAttributeString("name");
-        m_value = (String)property.getAttributeString("value");
-        m_valueType = getMetadataClass((String)property.getAttributeString("valueType"));
+        m_name = (String) property.getAttributeString("name");
+        m_value = (String) property.getAttributeString("value");
+        m_valueType = getMetadataClass((String) property.getAttributeClass("valueType", String.class));
     }
     
     /**
@@ -123,17 +132,6 @@ public class PropertyMetadata extends ORMetadata {
     public String getValueTypeName() {
         return m_valueTypeName;
     }
-    
-    /**
-     * INTERNAL:
-     */
-    public Object getConvertedValue() {
-        if (m_valueType.isVoid() || m_valueType.equals(String.class)) {
-            return m_value;
-        } else {
-            return ConversionManager.getDefaultManager().convertObject(m_value, getJavaClass(m_valueType));
-        }
-    }
 
     /**
      * INTERNAL:
@@ -142,7 +140,11 @@ public class PropertyMetadata extends ORMetadata {
     public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
         super.initXMLObject(accessibleObject, entityMappings);
 
-        m_valueType = initXMLClassName(m_valueTypeName);
+        if (m_valueTypeName != null) {
+            m_valueType = initXMLClassName(m_valueTypeName);
+        } else {
+            m_valueType = getMetadataClass(String.class);
+        }
     }
     
     /**

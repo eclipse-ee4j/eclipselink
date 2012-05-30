@@ -11,20 +11,18 @@
  *     James Sutherland - initial API and implementation
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *      *     30/05/2012-2.4 Guy Pelletier    
+ *       - 354678: Temp classloader is still being used during metadata processing
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.partitioning;
 
-import java.lang.reflect.Constructor;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;
-import org.eclipse.persistence.internal.security.PrivilegedInvokeConstructor;
+import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
 import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
 import org.eclipse.persistence.descriptors.partitioning.RangePartition;
@@ -37,6 +35,8 @@ import org.eclipse.persistence.descriptors.partitioning.RangePartitioningPolicy;
  * Key notes:
  * - any metadata mapped from XML to this class must be compared in the
  *   equals method.
+ * - any metadata mapped from XML to this class must be initialized in the
+ *   initXMLObject method.
  * - when loading from annotations, the constructor accepts the metadata
  *   accessor this metadata was loaded from. Used it to look up any 
  *   'companion' annotation needed for processing.
@@ -46,8 +46,6 @@ import org.eclipse.persistence.descriptors.partitioning.RangePartitioningPolicy;
  * @since EclipseLink 2.2
  */
 public class RangePartitioningMetadata extends FieldPartitioningMetadata {
-    // Note: Any metadata mapped from XML to this class must be compared in the equals method.
-
     protected List<RangePartitionMetadata> partitions;
 
     /**
@@ -64,12 +62,33 @@ public class RangePartitioningMetadata extends FieldPartitioningMetadata {
      */
     public RangePartitioningMetadata(MetadataAnnotation annotation, MetadataAccessor accessor) {
         super(annotation, accessor);
+        
         this.partitions = new ArrayList<RangePartitionMetadata>();
-        for (Object partitionAnnotation : (Object[])annotation.getAttributeArray("partitions")) {
-            this.partitions.add(new RangePartitionMetadata((MetadataAnnotation)partitionAnnotation, accessor));
+        for (Object partitionAnnotation : (Object[]) annotation.getAttributeArray("partitions")) {
+            this.partitions.add(new RangePartitionMetadata((MetadataAnnotation) partitionAnnotation, accessor));
         }
     }
 
+    /**
+     * INTERNAL:
+     * Method for processing/building the specific property.
+     */
+    @Override
+    public PartitioningPolicy buildPolicy() {
+        RangePartitioningPolicy policy = new RangePartitioningPolicy();
+        super.buildPolicy(policy);
+        
+        for (RangePartitionMetadata partition : getPartitions()) {
+            policy.addPartition(new RangePartition(partition.getConnectionPool(), getPartitionValueType().getName(), partition.getStartValue(), partition.getEndValue()));
+        }
+        
+        return policy;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for XML merging and overriding.
+     */
     @Override
     public boolean equals(Object objectToCompare) {
         if (super.equals(objectToCompare) && (objectToCompare instanceof RangePartitioningMetadata)) {
@@ -82,54 +101,28 @@ public class RangePartitioningMetadata extends FieldPartitioningMetadata {
     }
     
     /**
-     * TODO: this needs to be done at runtime.
-     */    
-    private Object initObject(Class type, String value) {
-        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-            try {
-                Constructor constructor = (Constructor) AccessController.doPrivileged(new PrivilegedGetConstructorFor(type, new Class[] {String.class}, false));
-                return AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, new Object[] {value}));
-            } catch (PrivilegedActionException exception) {
-                //throwInitObjectException(exception, type, value, isData);
-            }
-        } else {
-            try {
-                Constructor constructor = PrivilegedAccessHelper.getConstructorFor(type, new Class[] {String.class}, false);
-                return PrivilegedAccessHelper.invokeConstructor(constructor, new Object[] {value});
-            } catch (Exception exception) {
-                //throwInitObjectException(exception, type, value, isData);
-            }
-        }
-        
-        return value;
-    }
-
-    @Override
-    public PartitioningPolicy buildPolicy() {
-        RangePartitioningPolicy policy = new RangePartitioningPolicy();
-        super.buildPolicy(policy);
-        Class type = String.class;
-        if (this.partitionValueType != null) {
-            type = getJavaClass(getMetadataClass(this.partitionValueType));
-        }
-        for (RangePartitionMetadata partition : getPartitions()) {
-            Comparable startValue = null;
-            if (partition.getStartValue() != null) {
-                startValue = (Comparable)initObject(type, partition.getStartValue());
-            }
-            Comparable endValue = null;
-            if (partition.getEndValue() != null) {
-                endValue = (Comparable)initObject(type, partition.getEndValue());
-            }
-            policy.addPartition(new RangePartition(partition.getConnectionPool(), startValue, endValue));
-        }
-        return policy;
-    }
-    
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public List<RangePartitionMetadata> getPartitions() {
         return partitions;
     }
+    
+    /**
+     * INTERNAL:
+     */
+    @Override
+    public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
+        super.initXMLObject(accessibleObject, entityMappings);
+        
+        // Initialize list of objects.
+        initXMLObjects(partitions, accessibleObject);
+    }
 
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public void setPartitions(List<RangePartitionMetadata> partitions) {
         this.partitions = partitions;
     }

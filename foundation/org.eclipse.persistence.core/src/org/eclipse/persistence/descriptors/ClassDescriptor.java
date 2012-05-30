@@ -26,6 +26,8 @@
  *       - 357474: Address primaryKey option from tenant discriminator column
  *     14/05/2012-2.4 Guy Pelletier  
  *       - 376603: Provide for table per tenant support for multitenant applications
+ *      *     30/05/2012-2.4 Guy Pelletier    
+ *       - 354678: Temp classloader is still being used during metadata processing
  ******************************************************************************/  
 package org.eclipse.persistence.descriptors;
 
@@ -153,6 +155,8 @@ public class ClassDescriptor implements Cloneable, Serializable {
 
     /** Additional properties may be added. */
     protected Map properties;
+    /** Allow the user to defined un-converted properties which will be initialized at runtime. */
+    protected Map<String, List<String>> unconvertedProperties;
     
     protected transient int initializationStage;
     protected transient int interfaceInitializationStage;
@@ -601,6 +605,17 @@ public class ClassDescriptor implements Cloneable, Serializable {
      */
     public void addTableName(String tableName) {
         addTable(new DatabaseTable(tableName));
+    }
+    
+    /**
+     * PUBLIC:
+     * Add an unconverted property (to be initialiazed at runtime)
+     */
+    public void addUnconvertedProperty(String propertyName, String propertyValue, String propertyType) {
+        List<String> valuePair = new ArrayList<String>(2);
+        valuePair.add(propertyValue);
+        valuePair.add(propertyType);
+        getUnconvertedProperties().put(propertyName, valuePair);
     }
 
     /**
@@ -1610,6 +1625,34 @@ public class ClassDescriptor implements Cloneable, Serializable {
         }
         if(this.cachePolicy != null) {
             this.cachePolicy.convertClassNamesToClasses(classLoader);
+        }
+        
+        if (hasUnconvertedProperties()) {
+            for (String propertyName : getUnconvertedProperties().keySet()) {
+                List<String> valuePair = getUnconvertedProperties().get(propertyName);
+                String value = valuePair.get(0);
+                String valueTypeName = valuePair.get(1);
+                Class valueType = String.class;
+                
+                // Have to initialize the valueType now
+                try {
+                    if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                        try {
+                            valueType = (Class) AccessController.doPrivileged(new PrivilegedClassForName(valueTypeName, true, classLoader));
+                        } catch (PrivilegedActionException exception) {
+                            throw ValidationException.classNotFoundWhileConvertingClassNames(valueTypeName, exception.getException());
+                        }
+                    } else {
+                        valueType = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(valueTypeName, true, classLoader);
+                    }
+                } catch (Exception exception) {
+                    throw ValidationException.classNotFoundWhileConvertingClassNames(valueTypeName, exception);
+                }
+                
+                // Add the converted property. If the value type is the same
+                // as the source (value) type, no conversion is made.
+                getProperties().put(propertyName, ConversionManager.getDefaultManager().convertObject(value, valueType));
+            }
         }
     }
 
@@ -4497,6 +4540,19 @@ public class ClassDescriptor implements Cloneable, Serializable {
     }
     
     /**
+     * INTERNAL:
+     * Used to store un-converted properties, which are subsequenctly converted
+     * at runtime (through the convertClassNamesToClasses method.
+     */
+    public Map<String, List<String>> getUnconvertedProperties() {
+        if (unconvertedProperties == null) {
+            unconvertedProperties = new HashMap<String, List<String>>(5);
+        }
+        
+        return unconvertedProperties;
+    }
+    
+    /**
      * ADVANCED:
      * Return the unit of work cache isolation setting.
      * This setting configures how the session cache will be used in a unit of work.
@@ -6352,6 +6408,15 @@ public class ClassDescriptor implements Cloneable, Serializable {
         return hasMultitenantPolicy() && getMultitenantPolicy().isTablePerMultitenantPolicy();
     }
 
+    /**
+     * INTERNAL:
+     * Used to store un-converted properties, which are subsequenctly converted
+     * at runtime (through the convertClassNamesToClasses method.
+     */
+    public boolean hasUnconvertedProperties() {
+        return unconvertedProperties != null;
+    }
+    
     /**
      * Set if any mapping reference a field in a secondary table.
      * This is used to disable deferring multiple table writes.

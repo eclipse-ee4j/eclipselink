@@ -9,8 +9,20 @@
  *
  * Contributors:
  *     James Sutherland (Oracle) - initial API and implementation
+ *      *     30/05/2012-2.4 Guy Pelletier    
+ *       - 354678: Temp classloader is still being used during metadata processing
  ******************************************************************************/  
 package org.eclipse.persistence.descriptors.partitioning;
+
+import java.lang.reflect.Constructor;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.security.PrivilegedClassForName;
+import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;
+import org.eclipse.persistence.internal.security.PrivilegedInvokeConstructor;
 
 /**
  * PUBLIC:
@@ -20,13 +32,30 @@ package org.eclipse.persistence.descriptors.partitioning;
  * @since EclipseLink 2.2
  */
 public class RangePartition  {
-    
-    protected Comparable startValue;
-    protected Comparable endValue;
+    protected String endValueName;
+    protected String startValueName;
+    protected String partitionValueTypeName;
     protected String connectionPool;
     
-    public RangePartition() {
-        
+    protected Class partitionValueType;
+    protected Comparable startValue;
+    protected Comparable endValue;
+    
+    public RangePartition() {}
+    
+    /**
+     * INTERNAL:
+     * COnstructor used from metadata processing to avoid classloader 
+     * dependencies. Class names are converted/initialized in the 
+     * convertClassNamesToClasses method.
+     */
+    public RangePartition(String connectionPool, String partitionValueTypeName, String startValueName, String endValueName) {
+        this.connectionPool = connectionPool;
+        this.endValue = null;
+        this.endValueName = endValueName;
+        this.startValue = null;
+        this.startValueName = startValueName;
+        this.partitionValueTypeName = partitionValueTypeName;
     }
     
     /**
@@ -40,11 +69,70 @@ public class RangePartition  {
     }
     
     /**
+     * INTERNAL:
+     * Convert all the class-name-based settings to actual class-based settings. 
+     * This method is used when converting a project that has been built with 
+     * class names to a project with classes.
+     */
+    public void convertClassNamesToClasses(ClassLoader classLoader) {
+        if (partitionValueType == null && partitionValueTypeName != null) {
+            try {
+                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                    try {
+                        partitionValueType = (Class) AccessController.doPrivileged(new PrivilegedClassForName(partitionValueTypeName, true, classLoader));
+                    } catch (PrivilegedActionException e) {
+                        throw ValidationException.classNotFoundWhileConvertingClassNames(partitionValueTypeName, e.getException());
+                    }
+                } else {
+                    partitionValueType = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(partitionValueTypeName, true, classLoader);
+                }
+            } catch (Exception exception) {
+                throw ValidationException.classNotFoundWhileConvertingClassNames(partitionValueTypeName, exception);
+            }
+        } 
+        
+        // Once we know we have a partition value type we can convert our partition ranges.
+        if (partitionValueType != null) {
+            if (startValueName != null) {
+                startValue = (Comparable) initObject(partitionValueType, startValueName);
+            }
+        
+            if (endValueName != null) {
+                endValue = (Comparable) initObject(partitionValueType, endValueName);
+            } 
+        }
+    }
+    
+    /**
      * PUBLIC:
      * Return the range start value.  Values greater or equal to this value are part of this partition.
      */
     public Comparable getStartValue() {
         return startValue;
+    }
+    
+    /**
+     * INTERNAL:
+     * TODO: clean up the exception handling.
+     */    
+    protected Object initObject(Class type, String value) {
+        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+            try {
+                Constructor constructor = (Constructor) AccessController.doPrivileged(new PrivilegedGetConstructorFor(type, new Class[] {String.class}, false));
+                return AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, new Object[] {value}));
+            } catch (PrivilegedActionException exception) {
+                //throwInitObjectException(exception, type, value, isData);
+            }
+        } else {
+            try {
+                Constructor constructor = PrivilegedAccessHelper.getConstructorFor(type, new Class[] {String.class}, false);
+                return PrivilegedAccessHelper.invokeConstructor(constructor, new Object[] {value});
+            } catch (Exception exception) {
+                //throwInitObjectException(exception, type, value, isData);
+            }
+        }
+        
+        return value;
     }
     
     /**

@@ -16,6 +16,8 @@
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *      *     30/05/2012-2.4 Guy Pelletier    
+ *       - 354678: Temp classloader is still being used during metadata processing
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
@@ -129,17 +131,41 @@ public abstract class MetadataConverter extends ORMetadata {
 
     /**
      * INTERNAL:
+     * Wrapper method to make sure we always set the classification name and
+     * not class. This class name will be initialized at run time with the real
+     * class loader.
      */
     protected void setFieldClassification(DatabaseMapping mapping, Class classification, boolean isForMapKey) {
+        setFieldClassification(mapping, classification.getName(), isForMapKey);
+    }
+    
+    /**
+     * INTERNAL:
+     * Wrapper method to make sure we always set the classification name and
+     * not class. This class name will be initialized at run time with the real
+     * class loader.
+     */
+    protected void setFieldClassification(DatabaseMapping mapping, MetadataClass classification, boolean isForMapKey) {
+        setFieldClassification(mapping, getJavaClassName(classification), isForMapKey);
+    }
+    
+    /**
+     * INTERNAL:
+     * Users should call one of the wrapper methods, likely the one that accepts
+     * a MetadataClass as we want to make sure getJavaClassName is called since
+     * it does extra goodies to make sure we get a class name that can be loaded
+     * via Class.forName()
+     */
+    private void setFieldClassification(DatabaseMapping mapping, String classificationName, boolean isForMapKey) {
         if (mapping.isDirectMapMapping() && isForMapKey) {
-            ((DirectMapMapping) mapping).setDirectKeyFieldClassification(classification);
+            ((DirectMapMapping) mapping).setDirectKeyFieldClassificationName(classificationName);
         } else if (mapping.isDirectCollectionMapping()) {
-            ((DirectCollectionMapping) mapping).setDirectFieldClassification(classification);
+            ((DirectCollectionMapping) mapping).setDirectFieldClassificationName(classificationName);
         } else if (mapping.isAggregateCollectionMapping()) {
             // TODO: Future and AggregateCollections should only be able to get 
             // in here for a key converter
         } else if (mapping.isDirectToFieldMapping()) {
-            ((AbstractDirectMapping) mapping).setFieldClassificationClassName(classification.getName());
+            ((AbstractDirectMapping) mapping).setFieldClassificationClassName(classificationName);
         }
     }
 }

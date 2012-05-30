@@ -15,6 +15,8 @@
  *       - 374377: OrderBy with ElementCollection doesn't work
  *     14/05/2012-2.4 Guy Pelletier   
  *       - 376603: Provide for table per tenant support for multitenant applications
+ *      *     30/05/2012-2.4 Guy Pelletier    
+ *       - 354678: Temp classloader is still being used during metadata processing
  ******************************************************************************/  
 package org.eclipse.persistence.mappings;
 
@@ -876,45 +878,14 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
     public void convertClassNamesToClasses(ClassLoader classLoader) {
         super.convertClassNamesToClasses(classLoader);
         
-        /**
-         * 266912 DI 83: This code block sets the value parameter type so that it
-         * can be picked up by the Metamodel PluralAttributeImpl constructor.
-         * The typeName String is used instead of the type Class because of the
-         * way that converters shadow the type/typeName in bug# 289487
-         *  @since Java Persistence API 2.0 for the Metamodel API
-         */
-        if(null == this.attributeClassification) {
-            String typeName = this.directField.getTypeName();
-            if(null != typeName) {
-                // Create the Class based on the class name - no need to use the ConversionManager as we have the correct ClassLoader
-                try {
-                    if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                        try {
-                            this.attributeClassification = (Class) AccessController.doPrivileged(new PrivilegedClassForName(typeName, true, classLoader));
-                        } catch (PrivilegedActionException pae) {
-                            throw ValidationException.classNotFoundWhileConvertingClassNames(typeName, pae.getException());
-                        }
-                    } else {
-                        this.attributeClassification = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(typeName, true, classLoader);
-                    }
-                } catch (ClassNotFoundException cnfe) {
-                    throw ValidationException.classNotFoundWhileConvertingClassNames(typeName, cnfe);
-                } catch (Exception iae_or_ie) {
-                    // Catches IllegalAccessException and InstantiationException
-                    throw ValidationException.classNotFoundWhileConvertingClassNames(typeName, iae_or_ie);
-                }
-                this.attributeClassificationName = typeName;
-            }
-        }
-        if(null != this.attributeClassification) {
-            this.attributeObjectClassification = Helper.getObjectClass(this.attributeClassification);
-            this.directField.setType(this.attributeClassification);
-        }
-        
+        // Tell the direct field to convert any class names (type name).
+        directField.convertClassNamesToClasses(classLoader);
 
         if (valueConverter != null) {
             if (valueConverter instanceof TypeConversionConverter){
                 ((TypeConversionConverter)valueConverter).convertClassNamesToClasses(classLoader);
+                // Set the attribute classification from the type converter (ignoring any attribute classification name).
+                attributeClassification = ((TypeConversionConverter) valueConverter).getObjectClass();
             } else if (valueConverter instanceof ObjectTypeConverter) {
                 // To avoid 1.5 dependencies with the EnumTypeConverter check
                 // against ObjectTypeConverter.
@@ -952,6 +923,34 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
             }
             
             setValueConverter(valueConverter);
+        }
+        
+        // Check if the attribute classification is set (either directly or through a type conversion converter)
+        if (attributeClassification == null) {
+            // Look for an attribute classification name
+            if (attributeClassificationName != null) {
+                try {
+                    if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                        try {
+                            attributeClassification = (Class) AccessController.doPrivileged(new PrivilegedClassForName(attributeClassificationName, true, classLoader));
+                        } catch (PrivilegedActionException pae) {
+                            throw ValidationException.classNotFoundWhileConvertingClassNames(attributeClassificationName, pae.getException());
+                        }
+                    } else {
+                        attributeClassification = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(attributeClassificationName, true, classLoader);
+                    }
+                } catch (Exception exception) {
+                    throw ValidationException.classNotFoundWhileConvertingClassNames(attributeClassificationName, exception);
+                }
+            } else {
+                // Still nothing, default to the type from the direct field.
+                attributeClassification = getDirectField().getType();
+            }
+        }
+        
+        // This mirror attribute object classification is bizarre to me ...
+        if (attributeClassification != null) {
+            attributeObjectClassification = Helper.getObjectClass(attributeClassification);
         }
     }
 

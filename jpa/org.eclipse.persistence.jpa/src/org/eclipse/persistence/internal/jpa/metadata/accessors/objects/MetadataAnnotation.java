@@ -11,6 +11,8 @@
  *     James Sutherland - initial impl
  *     10/21/2009-2.0 Guy Pelletier 
  *       - 290567: mappedbyid support incomplete
+ *      *     30/05/2012-2.4 Guy Pelletier    
+ *       - 354678: Temp classloader is still being used during metadata processing
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 
@@ -88,11 +90,11 @@ public class MetadataAnnotation {
     
     /**
      * INTERNAL:
-     * Return the Class attribute value, or void if not set.
+     * Return the Class attribute value, or the default provided.
      */
-    public Object getAttributeClass(String name) {
+    public Object getAttributeClass(String name, Class defaultClass) {
         Object value = getAttribute(name);
-        return (value == null) ? "void" : value;
+        return (value == null) ? defaultClass.getName() : value;
     }
     
     /**

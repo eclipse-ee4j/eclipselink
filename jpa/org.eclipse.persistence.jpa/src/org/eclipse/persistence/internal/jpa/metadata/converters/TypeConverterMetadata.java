@@ -17,6 +17,8 @@
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *      *     30/05/2012-2.4 Guy Pelletier    
+ *       - 354678: Temp classloader is still being used during metadata processing
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.converters;
 
@@ -198,7 +200,7 @@ public class TypeConverterMetadata extends AbstractConverterMetadata {
         setConverter(mapping, converter, isForMapKey);
         
         // Set the field classification.
-        setFieldClassification(mapping, getJavaClass(m_dataType), isForMapKey);
+        setFieldClassification(mapping, m_dataType, isForMapKey);
     }
     
     /**
