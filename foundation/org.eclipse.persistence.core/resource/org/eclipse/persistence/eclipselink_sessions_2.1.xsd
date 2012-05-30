@@ -320,6 +320,11 @@ of this file are typically located as: 'META-INF/sessions.xml'
             <xsd:extension base="server-platform" />
         </xsd:complexContent>
     </xsd:complexType>
+    <xsd:complexType name="glassfish-platform">
+        <xsd:complexContent>
+            <xsd:extension base="server-platform" />
+        </xsd:complexContent>
+    </xsd:complexType>
     <xsd:complexType name="session-broker">
         <xsd:annotation>
             <xsd:documentation>
