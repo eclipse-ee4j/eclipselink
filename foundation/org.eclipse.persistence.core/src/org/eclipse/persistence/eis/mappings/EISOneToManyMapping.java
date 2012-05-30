@@ -30,6 +30,7 @@ import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.indirection.ValueHolder;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.indirection.EISOneToManyQueryBasedValueHolder;
 import org.eclipse.persistence.oxm.XMLField;
@@ -1087,6 +1088,28 @@ public class EISOneToManyMapping extends CollectionMapping implements EISMapping
         }
     }
 
+    /**
+     * INTERNAL:
+     * This row is built for update after shallow insert which happens in case of bidirectional inserts.
+     * It contains the foreign keys with non null values that were set to null for shallow insert.
+     * If mapping overrides writeFromObjectIntoRowForShallowInsert method it must override this one, too.
+     */
+    public void writeFromObjectIntoRowForUpdateAfterShallowInsert(Object object, AbstractRecord row, AbstractSession session, DatabaseTable table) {
+        if (isReadOnly() || !isForeignKeyRelationship()) {
+            return;
+        }
+        if (getForeignKeyGroupingElement() != null) {
+            if (!getForeignKeyGroupingElement().getTable().equals(table)) {
+                return;
+            }
+        } else if (this.getSourceForeignKeyFields().size() > 0) {
+            if (!getSourceForeignKeyFields().get(0).getTable().equals(table)) {
+                return;
+            }
+        }
+        writeFromObjectIntoRow(object, row, session, WriteType.UPDATE);
+    }
+    
     /**
      * INTERNAL:
      * This row is built for shallow insert which happens in case of bidirectional inserts.

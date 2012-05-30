@@ -311,12 +311,21 @@ public class ReferenceMapping extends ObjectReferenceMapping {
         if (isReadOnly()) {
             return;
         }
+        writeFromObjectIntoRowInternal(object, record, session, false);
+    }
 
+    /**
+     * INTERNAL:
+     * Get a value from the object and set that in the respective field of the row.
+     */
+    public void writeFromObjectIntoRowInternal(Object object, AbstractRecord record, AbstractSession session, boolean shouldIgnoreNull) {
         Object referenceObject = getRealAttributeValueFromObject(object, session);
 
         if (referenceObject == null) {
-            // Fix for 2730536, must put something in modify row, even if it is null.
-            record.put(getField(), null);
+            if (!shouldIgnoreNull) {
+                // Fix for 2730536, must put something in modify row, even if it is null.
+                record.put(getField(), null);
+            }
             return;
         }
 
@@ -358,7 +367,29 @@ public class ReferenceMapping extends ObjectReferenceMapping {
             return;
         }
 
-        record.put(getField(), null);
+        if (getField().isNullable()) {
+            record.put(getField(), null);
+        } else {
+            writeFromObjectIntoRowInternal(object, record, session, false);
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * This row is built for update after shallow insert which happens in case of bidirectional inserts.
+     * It contains the foreign keys with non null values that were set to null for shallow insert.
+     */
+    @Override
+    public void writeFromObjectIntoRowForUpdateAfterShallowInsert(Object object, AbstractRecord record, AbstractSession session, DatabaseTable table) {
+        if (this.isReadOnly) {
+            return;
+        }
+
+        if (!getField().getTable().equals(table) || !getField().isNullable()) {
+            return;
+        }
+        
+        writeFromObjectIntoRowInternal(object, record, session, true);
     }
 
     /**

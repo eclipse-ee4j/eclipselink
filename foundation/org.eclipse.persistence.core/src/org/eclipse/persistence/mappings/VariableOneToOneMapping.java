@@ -900,6 +900,19 @@ public class VariableOneToOneMapping extends ObjectReferenceMapping implements R
 
     /**
      * INTERNAL:
+     * This row is built for update after shallow insert which happens in case of bidirectional inserts.
+     * It contains the foreign keys with non null values that were set to null for shallow insert.
+     * If mapping overrides writeFromObjectIntoRowForShallowInsert method it must override this one, too.
+     */
+    public void writeFromObjectIntoRowForUpdateAfterShallowInsert(Object object, AbstractRecord row, AbstractSession session, DatabaseTable table) {
+        if (!getFields().get(0).getTable().equals(table)) {
+            return;
+        }
+        writeFromObjectIntoRow(object, row, session, WriteType.UPDATE);
+    }
+    
+    /**
+     * INTERNAL:
      * This row is built for shallow insert which happens in case of bidirectional inserts.
      * The foreign keys must be set to null to avoid constraints.
      */

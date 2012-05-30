@@ -84,7 +84,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     /**
      * Mode for writeFromObjectIntoRowInternal method
      */
-    protected enum ShallowMode {
+    protected static enum ShallowMode {
         Insert,
         UpdateAfterInsert,
         UpdateBeforeDelete
