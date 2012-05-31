@@ -337,6 +337,7 @@
             <pathelement path="${persistence.lib}"/>
             <pathelement path="${ora_nosql_test.2.common.plugins.dir}/${resource.jar}"/>
             <pathelement path="${ora_nosql_test.2.common.plugins.dir}/${jms.jar}"/>
+            <pathelement path="${ora_nosql_test.2.common.plugins.dir}/${transaction.jar}"/>
         </path>
     </target>
     <target name="init_paths" depends="init, init_eclipselink, init_bundles, init_classes, init_dependency">
