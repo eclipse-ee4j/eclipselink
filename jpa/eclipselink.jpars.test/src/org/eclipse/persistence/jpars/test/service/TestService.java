@@ -24,10 +24,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.persistence.spi.PersistenceUnitInfo;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -37,7 +39,13 @@ import javax.xml.bind.JAXBException;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
+import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.dynamic.DynamicEntity;
+import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
+import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
+import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
+import org.eclipse.persistence.jpa.Archive;
+import org.eclipse.persistence.jpa.PersistenceProvider;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.PersistenceFactory;
 import org.eclipse.persistence.jpa.rs.Service;
@@ -67,7 +75,27 @@ import static org.junit.Assert.*;
 public class TestService {
 
     private static PersistenceFactory factory;
-    private static URI BASE_URI;
+    public static URI BASE_URI;
+    
+    public static PersistenceContext getAuctionPersistenceContext(Map<String, Object> additionalProperties){
+        Map<String, Object> properties = new HashMap<String, Object>();
+        if (additionalProperties != null){
+            properties.putAll(additionalProperties);
+        }
+        properties.put(PersistenceUnitProperties.WEAVING, "static");
+        PersistenceContext context = factory.get("auction", BASE_URI, properties);
+        return context;
+    }
+    
+    public static PersistenceContext getPhoneBookPersistenceContext(Map<String, Object> additionalProperties){
+        Map<String, Object> properties = new HashMap<String, Object>();
+        if (additionalProperties != null){
+            properties.putAll(additionalProperties);
+        }
+        properties.put(PersistenceUnitProperties.WEAVING, "static");
+        PersistenceContext context = factory.get("phonebook", BASE_URI, properties);
+        return context;
+    }
     
     @BeforeClass
     public static void setup(){
@@ -77,50 +105,50 @@ public class TestService {
         try{
             BASE_URI = new URI("http://localhost:8080/JPA-RS/");
             factory = new PersistenceFactory();
-            FileInputStream xmlStream = new FileInputStream(XMLFilePathBuilder.getXMLFileName("auction-persistence.xml"));
-
-            PersistenceContext context = factory.bootstrapPersistenceContext("auction", xmlStream, properties, true);
-            context.setBaseURI(BASE_URI);
-            
-            xmlStream = new FileInputStream(XMLFilePathBuilder.getXMLFileName("/phonebook-persistence.xml"));
-            context = factory.bootstrapPersistenceContext("phonebook", xmlStream, properties, true);
-            context.setBaseURI(BASE_URI);
             
             properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
             properties.put(PersistenceUnitProperties.DDL_GENERATION, PersistenceUnitProperties.DROP_AND_CREATE);
+            properties.put(PersistenceUnitProperties.DEPLOY_ON_STARTUP, "true");
+
+            getAuctionPersistenceContext(properties);
+
+            getPhoneBookPersistenceContext(properties);
+            
             EntityManagerFactory emf = Persistence.createEntityManagerFactory("auction-static-local", properties);
-            context = factory.bootstrapPersistenceContext("auction-static-local", emf, BASE_URI, false);
+            factory.bootstrapPersistenceContext("auction-static-local", emf, BASE_URI, false);
 
             StaticModelDatabasePopulator.populateDB(emf);
+
         } catch (Exception e){
+            e.printStackTrace();
             fail(e.toString());
         }
     }
-    
     @AfterClass
     public static void teardown(){
-        clearData();
+      //  clearData();
     }
     
     protected static void clearData(){
-        EntityManager em = factory.getDynamicPersistenceContext("auction").getEmf().createEntityManager();
+        EntityManager em = getAuctionPersistenceContext(null).getEmf().createEntityManager();
         em.getTransaction().begin();
         em.createQuery("delete from Bid b").executeUpdate();
         em.createQuery("delete from Auction a").executeUpdate();
         em.createQuery("delete from User u").executeUpdate();
 
         em.getTransaction().commit();
-        em = factory.getDynamicPersistenceContext("phonebook").getEmf().createEntityManager();
+        em = getPhoneBookPersistenceContext(null).getEmf().createEntityManager();
         em.getTransaction().begin();
         em.createQuery("delete from Person p").executeUpdate();
         em.getTransaction().commit();
     }
     
+    
     @Test
     public void testUpdateUserList(){
         Service service = new Service();
         service.setPersistenceFactory(factory);
-        PersistenceContext context = factory.getDynamicPersistenceContext("auction");
+        PersistenceContext context = TestService.getAuctionPersistenceContext(null);
         
         DynamicEntity entity = (DynamicEntity)context.newEntity("User");
         entity.set("name", "Jim");
@@ -171,7 +199,7 @@ public class TestService {
     public void testUpdatePhoneNumberList(){
         Service service = new Service();
         service.setPersistenceFactory(factory);
-        PersistenceContext context = factory.getDynamicPersistenceContext("phonebook");
+        PersistenceContext context = getPhoneBookPersistenceContext(null);
         
         DynamicEntity entity = (DynamicEntity)context.newEntity("Person");
         entity.set("firstName", "Jim");
@@ -222,30 +250,11 @@ public class TestService {
         clearData();
     }
     
-  /*  @Test
-    public void testRestart(){
-        factory.close();
-        Map<String, Object> properties = new HashMap<String, Object>();
-        ExamplePropertiesLoader.loadProperties(properties); 
-        factory = null;
-        try{
-            factory = new PersistenceFactory();
-            factory.setMetadataStore(new DatabaseMetadataStore());
-            factory.getMetadataStore().setProperties(properties);
-            factory.initialize(properties);
-            factory.getPersistenceContext("auction").setBaseURI(new URI("http://localhost:8080/JPA-RS/"));
-            factory.getPersistenceContext("phonebook").setBaseURI(new URI("http://localhost:8080/JPA-RS/"));
-        } catch (Exception e){
-            fail(e.toString());
-        }
-        assertTrue("factory was not recreated at boot time.", factory.getPersistenceContext("auction") != null);
-    }*/
-    
     @Test 
     public void testMarshallBid(){
         Service service = new Service();
         service.setPersistenceFactory(factory);
-        PersistenceContext context = factory.getDynamicPersistenceContext("auction");
+        PersistenceContext context = getAuctionPersistenceContext(null);
         
         DynamicEntity entity1 = (DynamicEntity)context.newEntity("Auction");
         entity1.set("name", "Computer");
@@ -279,7 +288,7 @@ public class TestService {
     public void testNamedQuery(){
         Service service = new Service();
         service.setPersistenceFactory(factory);
-        PersistenceContext context = factory.getDynamicPersistenceContext("auction");
+        PersistenceContext context = getAuctionPersistenceContext(null);
         
         DynamicEntity entity1 = (DynamicEntity)context.newEntity("Auction");
         entity1.set("name", "Computer");
@@ -313,7 +322,7 @@ public class TestService {
     public void testNamedQuerySingleResult(){
         Service service = new Service();
         service.setPersistenceFactory(factory);
-        PersistenceContext context = factory.getDynamicPersistenceContext("auction");
+        PersistenceContext context = getAuctionPersistenceContext(null);
         
         DynamicEntity entity1 = (DynamicEntity)context.newEntity("Auction");
         entity1.set("name", "Computer");
@@ -343,7 +352,7 @@ public class TestService {
     public void testUpdate(){
         Service service = new Service();
         service.setPersistenceFactory(factory);
-        PersistenceContext context = factory.getDynamicPersistenceContext("auction");
+        PersistenceContext context = getAuctionPersistenceContext(null);
         
         DynamicEntity entity1 = (DynamicEntity)context.newEntity("Auction");
         entity1.set("name", "Computer");
@@ -363,7 +372,7 @@ public class TestService {
     public void testUpdateRelationship(){
         Service service = new Service();
         service.setPersistenceFactory(factory);
-        PersistenceContext context = factory.getDynamicPersistenceContext("auction");
+        PersistenceContext context = getAuctionPersistenceContext(null);
         
         DynamicEntity entity1 = (DynamicEntity)context.newEntity("Auction");
         entity1.set("name", "Computer");
@@ -421,7 +430,7 @@ public class TestService {
     public void testDelete(){
         Service service = new Service();
         service.setPersistenceFactory(factory);
-        PersistenceContext context = factory.getDynamicPersistenceContext("auction");
+        PersistenceContext context = getAuctionPersistenceContext(null);
         
         DynamicEntity entity1 = (DynamicEntity)context.newEntity("Auction");
         entity1.set("name", "Computer1");
@@ -440,7 +449,7 @@ public class TestService {
     public void testWriteQuery(){
         Service service = new Service();
         service.setPersistenceFactory(factory);
-        PersistenceContext context = factory.getDynamicPersistenceContext("auction");
+        PersistenceContext context = getAuctionPersistenceContext(null);
         
         DynamicEntity entity = (DynamicEntity)context.newEntity("User");
         entity.set("name", "Bob");
@@ -461,7 +470,7 @@ public class TestService {
     public void testDynamicCompositeKey(){
         Service service = new Service();
         service.setPersistenceFactory(factory);
-        PersistenceContext context = factory.getDynamicPersistenceContext("auction");
+        PersistenceContext context = getAuctionPersistenceContext(null);
         DynamicEntity user = (DynamicEntity)context.newEntity("User");
         user.set("name", "Wes");
         DynamicEntity address = (DynamicEntity)context.newEntity("Address");
@@ -483,10 +492,7 @@ public class TestService {
     public void testStaticCompositeKey(){
         Service service = new Service();
         service.setPersistenceFactory(factory);
-        Map<String, Object> properties = new HashMap<String, Object>();
-        ExamplePropertiesLoader.loadProperties(properties); 
-        properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
-            
+
         Response output = service.find("auction-static-local", "StaticAddress", StaticModelDatabasePopulator.ADDRESS1_ID + "+" + StaticModelDatabasePopulator.address1().getType(), generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo());
 
         String result = stringifyResults((StreamingOutputMarshaller)output.getEntity());
@@ -637,7 +643,7 @@ public class TestService {
     public void testUnmarshallNonExistantLink(){
         Service service = new Service();
         service.setPersistenceFactory(factory);
-        PersistenceContext context = factory.getDynamicPersistenceContext("auction");
+        PersistenceContext context = getAuctionPersistenceContext(null);
         LinkAdapter adapter = new LinkAdapter("http://localhost:8080/JPA-RS/", context);
         DynamicEntity entity1 = null;
         DynamicEntity entity2 = null;

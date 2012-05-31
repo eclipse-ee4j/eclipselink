@@ -51,7 +51,7 @@ public class StaticCrudTests {
         factory = null;
         try{
             factory = new PersistenceFactory();
-            persistenceContext = factory.bootstrapPersistenceContext("auction-static", Persistence.createEntityManagerFactory("auction-static", properties), new URI("http://localhost:8080/JPA-RS/"), true);
+            persistenceContext = factory.bootstrapPersistenceContext("auction-static-local", Persistence.createEntityManagerFactory("auction-static-local", properties), new URI("http://localhost:8080/JPA-RS/"), true);
         } catch (Exception e){
             e.printStackTrace();
             fail(e.toString());
@@ -73,7 +73,6 @@ public class StaticCrudTests {
         em.createQuery("delete from StaticAuction a").executeUpdate();
         em.createQuery("delete from StaticUser u").executeUpdate();
         em.getTransaction().commit();
-        factory.closePersistenceContext("auction-static");
     }
     
     @Test
@@ -84,7 +83,7 @@ public class StaticCrudTests {
         persistenceContext.create(null, user);
         user = (StaticUser)persistenceContext.find("StaticUser", user.getId());
         
-        assertNotNull("Entity was note persisted", user);
+        assertNotNull("Entity was not persisted", user);
         assertTrue("Entity Name was incorrect", user.getName().equals("Jim"));
         
         persistenceContext.delete(null, "StaticUser", user.getId());
@@ -128,7 +127,7 @@ public class StaticCrudTests {
         persistenceContext.merge(null, user);
         user = (StaticUser)persistenceContext.find("StaticUser", user.getId());
         assertTrue("Entity name was not correctly updated.", user.getName().equals("Thomas"));
-        
+        persistenceContext.delete(null, "StaticUser", user.getId());
     }
 
 }

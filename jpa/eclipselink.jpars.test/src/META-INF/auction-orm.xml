@@ -3,7 +3,7 @@
     xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/orm"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
  
-    <package>org.eclipse.persistence.jpars.test.model.dynamic</package>
+    <package>org.eclipse.persistence.jpars.test.model.dynamic.auction</package>
   
     <named-query name="Auction.all">
         <query>SELECT a FROM Auction a</query>
@@ -103,7 +103,7 @@
     
     <entity class="Address" access="VIRTUAL">
         <table name="AUCTION_ADDRESS" />
-        <id-class class="AddressPK"/>
+        <id-class class="org.eclipse.persistence.jpars.test.model.dynamic.AddressPK"/>
         <attributes>
             <id name="id" attribute-type="Integer">
                 <column name="ID" />
