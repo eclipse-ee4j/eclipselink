@@ -1087,7 +1087,7 @@ public class SchemaGenerator {
                 }
             } else {
                 XPathFragment nextFragment = frag.getNextFragment();
-                if(!next.isXmlList() && null != nextFragment && nextFragment.isAttribute() && next.isCollectionType(next.getType())) {
+                if (frag.containsIndex() || frag.getPredicate() != null || (!next.isXmlList() && null != nextFragment && nextFragment.isAttribute() && next.isCollectionType(next.getType()))) {
                     currentElement.setMaxOccurs(Occurs.UNBOUNDED);
                 }
                 particle = new Sequence();
@@ -1192,7 +1192,7 @@ public class SchemaGenerator {
                         workingSchema.getNamespaceResolver().put(fragPrefix, fragUri);
                     }
                     currentElement = createRefElement(fragPrefix + COLON + frag.getLocalName(), currentParticle);
-                    if (next.isCollectionType(next.getType())) {
+                    if (frag.containsIndex() || frag.getPredicate() != null || next.isCollectionType(next.getType())) {
                         currentElement.setMaxOccurs(Occurs.UNBOUNDED);
                     }
                     currentElementExists = true;
