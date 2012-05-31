@@ -33,6 +33,8 @@
  *       - 277079: EmbeddedId's fields are null when using LOB with fetchtype LAZY
  *     04/28/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 6)
+ *     31/05/2012-2.4 Guy Pelletier  
+ *       - 381196: Multitenant persistence units with a dedicated emf should allow for DDL generation.
  ******************************************************************************/   
 package org.eclipse.persistence.testing.tests.jpa.ddlgeneration;
 
@@ -59,6 +61,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.ConversionManager;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryDelegate;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -66,6 +69,12 @@ import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.models.jpa.ddlgeneration.multitenant.Candidate;
+import org.eclipse.persistence.testing.models.jpa.ddlgeneration.multitenant.Mason;
+import org.eclipse.persistence.testing.models.jpa.ddlgeneration.multitenant.Party;
+import org.eclipse.persistence.testing.models.jpa.ddlgeneration.multitenant.Riding;
+import org.eclipse.persistence.testing.models.jpa.ddlgeneration.multitenant.Supporter;
+import org.eclipse.persistence.testing.models.jpa.ddlgeneration.multitenant.Trowel;
 import org.eclipse.persistence.testing.models.jpa.ddlgeneration.multitenant.Boss;
 import org.eclipse.persistence.testing.models.jpa.ddlgeneration.multitenant.Capo;
 import org.eclipse.persistence.testing.models.jpa.ddlgeneration.multitenant.Contract;
@@ -99,6 +108,7 @@ import javax.persistence.TypedQuery;
 public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
     // the persistence unit name which is used in this test suite
     protected static String DDL_PU = "ddlGeneration";
+    private static final String DDL_TPT_PU = "ddlTablePerTenantGeneration";
     private static final String DDL_TPC_PU = "ddlTablePerClass";
 
     private static final String DDL_TABLE_CREATION_SUFFIX_PU = "ddlTableSuffix";
@@ -138,6 +148,10 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
         EntityManager emDDLTPC = createEntityManager(DDL_TPC_PU);
         closeEntityManager(emDDLTPC);
         clearCache(DDL_TPC_PU);
+        
+        EntityManager emDDLTPT = createEntityManager(DDL_TPT_PU);
+        closeEntityManager(emDDLTPT);
+        clearCache(DDL_TPT_PU);
     }
 
     /**
@@ -2065,6 +2079,69 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
         
         if (errorMsg.length() > 0) {
             fail("\n" + errorMsg);
+        }
+    }
+    
+    public void testTablePerTenant() {
+        // Test the DDL generated tenant.
+        EntityManager em = createEntityManager(DDL_TPT_PU);
+        
+        try {
+            beginTransaction(em);
+            
+            Candidate candidate = new Candidate();
+            candidate.setName("DDL");
+            
+            candidate.addHonor("Raised most money");
+            candidate.addHonor("Highest win margin");
+            
+            candidate.setSalary(9999999);
+            
+            Supporter supporter1 = new Supporter();
+            supporter1.setName("Supporter1");
+            candidate.addSupporter(supporter1);
+            
+            Supporter supporter2 = new Supporter();
+            supporter2.setName("Supporter2");
+            candidate.addSupporter(supporter2);
+            
+            Party party = new Party();
+            party.setName("Conservatives");
+            party.addCandidate(candidate);
+            
+            Riding riding = new Riding();
+            riding.setName("Ottawa");
+            candidate.setRiding(riding);
+            
+            // Persist our objects.
+            em.persist(party);
+            em.persist(candidate);
+            em.persist(supporter2);
+            em.persist(supporter1);
+            em.persist(riding);
+            
+            Mason mason = new Mason();
+            mason.setName("FromTenantDDL");
+            mason.addAward(Helper.timestampFromDate(Helper.dateFromYearMonthDate(2009, 1, 1)), "Best pointer");
+            mason.addAward(Helper.timestampFromDate(Helper.dateFromYearMonthDate(2010, 5, 9)), "Least screw-ups");
+            
+            Trowel trowel = new Trowel();
+            trowel.setType("Pointing");
+            mason.setTrowel(trowel);
+            trowel.setMason(mason);
+           
+            em.persist(mason);
+            em.persist(trowel);
+            
+            commitTransaction(em);
+        } catch (RuntimeException e) {
+            throw e;
+        } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            
+            closeEntityManager(em);
         }
     }
     

@@ -79,6 +79,29 @@
         </properties>
     </persistence-unit>
     
+    <persistence-unit name="ddlTablePerTenantGeneration" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+ 
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.multitenant.Candidate</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.multitenant.Mason</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.multitenant.Party</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.multitenant.Riding</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.multitenant.Supporter</class>
+        <class>org.eclipse.persistence.testing.models.jpa.ddlgeneration.multitenant.Trowel</class>
+        
+        <properties>
+            <property name="eclipselink.session-name" value="DDLTablePerTenant"/>
+            <property name="eclipselink.tenant-id" value="DDL"/>
+            <property name="eclipselink.multitenant.tenants-share-emf" value="false"/>
+            <property name="eclipselink.orm.throw.exceptions" value="true"/>
+            <property name="eclipselink.ddl-generation" value="drop-and-create-tables"/>
+            <property name="eclipselink.create-ddl-jdbc-file-name" value="createDDL_ddlTablePerTenantGeneration.jdbc"/>
+            <property name="eclipselink.drop-ddl-jdbc-file-name" value="dropDDL_ddlTablePerTenantGeneration.jdbc"/>
+            <property name="eclipselink.ddl-generation.output-mode" value="both"/>
+            <property name="eclipselink.orm.validate.schema" value="true"/>
+        </properties>
+    </persistence-unit>
+    
     <persistence-unit name="ddlTablePerClass" transaction-type="RESOURCE_LOCAL">
         <!-- This persistence unit is configured to use 
         name="eclipselink.ddl-generation" value="drop-and-create-tables",

@@ -20,6 +20,8 @@
  *       - 357474: Address primaryKey option from tenant discriminator column
  *     14/05/2012-2.4 Guy Pelletier   
  *       - 376603: Provide for table per tenant support for multitenant applications
+ *     31/05/2012-2.4 Guy Pelletier  
+ *       - 381196: Multitenant persistence units with a dedicated emf should allow for DDL generation.
  ******************************************************************************/  
 package org.eclipse.persistence.tools.schemaframework;
 
@@ -178,7 +180,7 @@ public class DefaultTableGenerator {
             // processed through their owning entities. Aggregate descriptors
             // can not exist on their own.
             // Table per tenant descriptors will not be initialized.
-            if (!descriptor.isDescriptorTypeAggregate() && ! descriptor.hasTablePerMultitenantPolicy()) {
+            if (!descriptor.isDescriptorTypeAggregate() && ! (descriptor.hasTablePerMultitenantPolicy() && ! project.allowTablePerMultitenantDDLGeneration())) {
                 initTableSchema(descriptor);
             }
         }
@@ -189,7 +191,7 @@ public class DefaultTableGenerator {
             // processed through their owning entities. Aggregate descriptors
             // can not exist on their own.
             // Table per tenant descriptors will not be initialized.
-            if (!descriptor.isAggregateDescriptor() && !descriptor.isAggregateCollectionDescriptor() && ! descriptor.hasTablePerMultitenantPolicy()) {
+            if (!descriptor.isAggregateDescriptor() && !descriptor.isAggregateCollectionDescriptor() && ! (descriptor.hasTablePerMultitenantPolicy() && ! project.allowTablePerMultitenantDDLGeneration())) {
                 postInitTableSchema(descriptor);
                 
                 // If VPD descriptor we need to generate some DDL for its default table.

@@ -29,6 +29,8 @@
  *       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
  *     14/05/2012-2.4 Guy Pelletier   
  *       - 376603: Provide for table per tenant support for multitenant applications
+ *     31/05/2012-2.4 Guy Pelletier  
+ *       - 381196: Multitenant persistence units with a dedicated emf should allow for DDL generation.
  ******************************************************************************/  
 package org.eclipse.persistence.sessions;
 
@@ -116,6 +118,9 @@ public class Project implements Serializable, Cloneable {
     
     /** Flag that allows native queries or not */
     protected boolean allowNativeSQLQueries = true;
+    
+    /** Flag that allows DDL generation of table per tenant multitenant descriptors */
+    protected boolean allowTablePerMultitenantDDLGeneration = false;
     
     /**
      * Mapped Superclasses (JPA 2) collection of parent non-relational descriptors keyed on MetadataClass
@@ -1149,6 +1154,14 @@ public class Project implements Serializable, Cloneable {
      * INTERNAL:
      * Return true if native sql is allowed on this project.
      */
+    public boolean allowTablePerMultitenantDDLGeneration() {
+        return this.allowTablePerMultitenantDDLGeneration;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return true if native sql is allowed on this project.
+     */
     public boolean allowNativeSQLQueries() {
         return this.allowNativeSQLQueries;
     }
@@ -1171,6 +1184,17 @@ public class Project implements Serializable, Cloneable {
      */
     public void setAliasDescriptors(Map aHashtable) {
         aliasDescriptors = aHashtable;
+    }
+    
+    /**
+     * INTERNAL:
+     * Set whether ddl generation should allowed for table per tenant 
+     * multitenant descriptors. This will only be true when a non shared emf
+     * is used and all the tenant context properties are provided at deploy 
+     * time.
+     */
+    public void setAllowTablePerMultitenantDDLGeneration(boolean allowTablePerMultitenantDDLGeneration) {
+        this.allowTablePerMultitenantDDLGeneration = allowTablePerMultitenantDDLGeneration;
     }
     
     /**
