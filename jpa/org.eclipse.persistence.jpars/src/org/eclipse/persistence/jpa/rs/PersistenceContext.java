@@ -17,10 +17,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -55,14 +53,9 @@ import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
-import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
-import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
 import org.eclipse.persistence.internal.weaving.PersistenceWeavedRest;
 import org.eclipse.persistence.internal.weaving.RelationshipInfo;
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory;
-import org.eclipse.persistence.jaxb.metadata.MetadataSource;
-import org.eclipse.persistence.jpa.Archive;
 import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.jpa.PersistenceProvider;
 import org.eclipse.persistence.jpa.dynamic.JPADynamicHelper;
@@ -83,7 +76,6 @@ import org.eclipse.persistence.jpa.rs.util.TransactionWrapper;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.ObjectReferenceMapping;
-import org.eclipse.persistence.platform.database.events.DatabaseEventListener;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.FetchGroupTracker;
@@ -131,50 +123,20 @@ public class PersistenceContext {
      * The name of the persistence context is used to look it up. By default it will be the
      * persistence unit name of the JPA persistence unit.
      */
-    private String name = null;
+    protected String name = null;
     
     /** The EntityManagerFactory used to interact using JPA **/
-    private EntityManagerFactory emf;
+    protected EntityManagerFactory emf;
     
     /** The JAXBConext used to produce JSON or XML **/
-    private JAXBContext context = null;
+    protected JAXBContext context = null;
     
     /** The URI of the Persistence context.  This is used to build Links in JSON and XML **/
-    private URI baseURI = null;
+    protected URI baseURI = null;
     
-    /** 
-     * An application provided listener that can be used if the application has a framework
-     * to listen to database events.
-     */
-    private DescriptorBasedDatabaseEventListener databaseEventListener = null;
-    
-    private TransactionWrapper transaction = null;
+    protected TransactionWrapper transaction = null;
 
-    public PersistenceContext(Archive archive, Map<String, Object> properties, ClassLoader classLoader) {
-        super();
-        List<SEPersistenceUnitInfo> persistenceUnits = PersistenceUnitProcessor.getPersistenceUnits(archive, classLoader);
-        SEPersistenceUnitInfo persistenceUnitInfo = persistenceUnits.get(0);
-        
-        this.name = persistenceUnitInfo.getPersistenceUnitName();
-
-        EntityManagerFactoryImpl emf = createEntityManagerFactory(persistenceUnitInfo, properties);
-        this.emf = emf;
-        
-        if (getJpaSession().hasExternalTransactionController()){
-            transaction = new JTATransactionWrapper();
-        } else {
-            transaction = new ResourceLocalTransactionWrapper();
-        }
-        try{
-            JAXBContext jaxbContext = createDynamicJAXBContext(emf.getServerSession());
-            this.context = jaxbContext;
-        } catch (JAXBException jaxbe){
-            JPARSLogger.fine("exception_creating_jaxb_context", new Object[]{persistenceUnitInfo.getPersistenceUnitName(), jaxbe.toString()});
-            emf.close();
-        } catch (IOException e){
-            JPARSLogger.fine("exception_creating_jaxb_context", new Object[]{persistenceUnitInfo.getPersistenceUnitName(), e.toString()});
-            emf.close();
-        }
+    protected PersistenceContext() {
     }
     
     public PersistenceContext(String emfName, EntityManagerFactoryImpl emf, URI defaultURI) {
@@ -226,17 +188,6 @@ public class PersistenceContext {
         for(String packageName: packages){
             metadataSources.add(new DynamicXMLMetadataSource(session, packageName));
         }
-    }
-    
-    /**
-     * Add a listener that can react to DatabaseChange notifications
-     */
-    public void addListener(ChangeListener listener) {
-        DescriptorBasedDatabaseEventListener changeListener = (DescriptorBasedDatabaseEventListener) getJpaSession().getProperty(CHANGE_NOTIFICATION_LISTENER);
-        if (changeListener == null) {
-            throw new JPARSException(LoggingLocalization.buildMessage("jpars_could_not_add_listener", new Object[]{}));
-        }
-        changeListener.addChangeListener(listener);
     }
     
     /**
@@ -328,7 +279,6 @@ public class PersistenceContext {
             }
             
         }
-
         
         metadataLocations.add(new LinkMetadataSource());
         properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataLocations);
@@ -736,48 +686,12 @@ public class PersistenceContext {
     /**
      * Stop the current application instance
      */
-    protected void stop() {
+    public void stop() {
         emf.close();
         this.emf = null;
         this.context = null;
     }
-    
-    /**
-     * Trigger the mechanism to allow persistence context to react to database change events.
-     * @param descriptorAlias
-     * @return
-     */
-    public DatabaseEventListener subscribeToEventNotification(String descriptorAlias) {
-        ClassDescriptor descriptor = getJpaSession().getDescriptorForAlias(descriptorAlias);
-        if (descriptor == null){
-            JPARSLogger.warning("jpars_could_not_find_descriptor", new Object[]{descriptorAlias});
-            return null;
-        }
-        return subscribeToEventNotification(emf, descriptor);
-    }
-    
-    /**
-     * Trigger the mechanism to allow persistence context to react to database change events.
-     * @param emf
-     * @param descriptor
-     * @return
-     */
-    public DatabaseEventListener subscribeToEventNotification(EntityManagerFactory emf, ClassDescriptor descriptor) {
-        ServerSession session = getJpaSession();
-        if (databaseEventListener == null){
-            if (EVENT_LISTENER_FACTORY != null){
-                databaseEventListener = EVENT_LISTENER_FACTORY.createDatabaseEventListener();
-                session.setDatabaseEventListener(databaseEventListener);
-                session.setProperty(CHANGE_NOTIFICATION_LISTENER, databaseEventListener);
-            } else {
-                JPARSLogger.warning("jpars_could_not_find_descriptor", new Object[]{descriptor.getAlias()});
-                return null;
-           }
-        }
-        databaseEventListener.initialize(descriptor, session);
-        databaseEventListener.register(session, descriptor);
-        return databaseEventListener;
-    }
+
 
     public String toString() {
         return "Application(" + getName() + ")::" + System.identityHashCode(this);
