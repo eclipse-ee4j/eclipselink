@@ -22,8 +22,6 @@ import org.eclipse.persistence.testing.oxm.mappings.compositecollection.Composit
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.CompositeObjectMappingTestSuite;
 import org.eclipse.persistence.testing.oxm.mappings.directtofield.DirectToFieldMappingTestSuite;
 import org.eclipse.persistence.testing.oxm.mappings.directcollection.DirectCollectionMappingTestSuite;
-import org.eclipse.persistence.testing.oxm.mappings.onetoone.OneToOneMappingTestSuite;
-import org.eclipse.persistence.testing.oxm.mappings.onetomany.OneToManyMappingTestSuite;
 import org.eclipse.persistence.testing.oxm.mappings.simpletypes.SimpleTypeMappingTestSuite;
 import org.eclipse.persistence.testing.oxm.mappings.transformation.TransformationMappingTestSuite;
 import org.eclipse.persistence.testing.oxm.mappings.typeddirect.TypedDirectMappingTestSuite;
@@ -49,10 +47,6 @@ public class DeploymentXMLMappingTestSuite extends TestCase {
         suite.addTest(TransformationMappingTestSuite.suite());
         suite.addTest(TypedDirectMappingTestSuite.suite());
         suite.addTest(SimpleTypeMappingTestSuite.suite());
-        if (xdkPlatform) {
-            suite.addTest(OneToOneMappingTestSuite.suite());
-            suite.addTest(OneToManyMappingTestSuite.suite());
-        }
         suite.addTest(NamespaceTestSuite.suite());
         suite.addTest(IdentifiedByNameNamespaceTestSuite.suite());
         suite.addTest(XMLAnyObjectMappingTestSuite.suite());

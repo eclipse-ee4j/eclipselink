@@ -402,6 +402,10 @@
     <!-- Default test target, runs test.class from test.properties (default is nosqlJPATestModel). -->
     <target name="test" depends="build, init_run">
         <run_test testclass="${test.class}"  dburl="${db.url}"/>
+        <run_moxy_test testclass="org.eclipse.persistence.testing.oxm.mappings.onetoone.OneToOneMappingTestSuite" platform="DOM"/>
+        <run_moxy_test testclass="org.eclipse.persistence.testing.oxm.mappings.onetomany.OneToManyMappingTestSuite" platform="DOM"/>
+        <run_moxy_test testclass="org.eclipse.persistence.testing.oxm.mappings.onetoone.OneToOneMappingTestSuite" platform="SAX"/>
+        <run_moxy_test testclass="org.eclipse.persistence.testing.oxm.mappings.onetomany.OneToManyMappingTestSuite" platform="SAX"/>
         <generate_report/>
     </target>
 
@@ -461,6 +465,23 @@
                 </classpath>
                 <formatter type="xml"/>
                 <test name="@{testclass}" haltonfailure="no" outfile="${report.dir}/@{testclass}-test-results">
+                </test>
+            </junit>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="run_moxy_test">
+        <attribute name="testclass"/>
+        <attribute name="platform"/>
+        <sequential>
+            <junit printsummary="yes" failureproperty="junit.failed" fork="yes" forkmode="once" showoutput="true" maxmemory="512m" dir="${nosql_test.resource.dir}">
+                <sysproperty key="platformType" value="@{platform}"/>
+                <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
+                <classpath>
+                    <path refid="nosql_test.run.path"/>
+                </classpath>
+                <formatter type="xml"/>
+                <test name="@{testclass}" haltonfailure="no" outfile="${report.dir}/@{testclass}-@{platform}-test-results">
                 </test>
             </junit>
         </sequential>
