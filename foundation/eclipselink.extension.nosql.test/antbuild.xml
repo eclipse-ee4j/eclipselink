@@ -403,16 +403,16 @@
     <!-- Default test target, runs test.class from test.properties (default is nosqlJPATestModel). -->
     <target name="test" depends="build, init_run">
         <run_test testclass="${test.class}"  dburl="${db.url}"/>
-        <run_moxy_test testclass="org.eclipse.persistence.testing.oxm.mappings.onetoone.OneToOneMappingTestSuite" platform="DOM"/>
-        <run_moxy_test testclass="org.eclipse.persistence.testing.oxm.mappings.onetomany.OneToManyMappingTestSuite" platform="DOM"/>
-        <run_moxy_test testclass="org.eclipse.persistence.testing.oxm.mappings.onetoone.OneToOneMappingTestSuite" platform="SAX"/>
-        <run_moxy_test testclass="org.eclipse.persistence.testing.oxm.mappings.onetomany.OneToManyMappingTestSuite" platform="SAX"/>
         <generate_report/>
     </target>
 
     <target name="test-eis" depends="init_run">
         <run_test testclass="org.eclipse.persistence.testing.tests.eis.xmlfile.XMLFileTestModel"  dburl="${db.url}"/>
         <run_test testclass="org.eclipse.persistence.testing.tests.eis.cobol.CobolTestModel"  dburl="${db.url}"/>
+        <run_moxy_test testclass="org.eclipse.persistence.testing.oxm.mappings.onetoone.OneToOneMappingTestSuite" platform="DOM"/>
+        <run_moxy_test testclass="org.eclipse.persistence.testing.oxm.mappings.onetomany.OneToManyMappingTestSuite" platform="DOM"/>
+        <run_moxy_test testclass="org.eclipse.persistence.testing.oxm.mappings.onetoone.OneToOneMappingTestSuite" platform="SAX"/>
+        <run_moxy_test testclass="org.eclipse.persistence.testing.oxm.mappings.onetomany.OneToManyMappingTestSuite" platform="SAX"/>
         <generate_report/>
     </target>
 
