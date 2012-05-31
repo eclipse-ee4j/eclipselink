@@ -445,7 +445,7 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
             // specification) we need to set the attribute classification on the 
             // mapping to ensure we do the right conversions.
             if (hasAttributeType() || getAccessibleObject().isGenericCollectionType()) {
-                directCollectionMapping.setDirectFieldClassificationName(getReferenceClassName());
+                directCollectionMapping.setDirectFieldClassificationName(getJavaClassName(getReferenceClass()));
             }
         } else if (mapping.isAbstractCompositeDirectCollectionMapping()) {
             ((AbstractCompositeDirectCollectionMapping)mapping).setField(getDatabaseField(getDescriptor().getPrimaryTable(), MetadataLogger.COLUMN));
