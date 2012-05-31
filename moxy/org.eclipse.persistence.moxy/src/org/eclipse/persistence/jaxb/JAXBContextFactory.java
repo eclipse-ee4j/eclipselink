@@ -75,8 +75,23 @@ import org.xml.sax.InputSource;
 public class JAXBContextFactory {
 
     private static final ValidationEventHandler JSON_BINDING_DOCUMENT_VEH = new DefaultValidationEventHandler();
+    /**
+     * @deprecated As of release 2.4, replaced by JAXBContextProperties.OXM_METADATA_SOURCE
+     * @see org.eclipse.persistence.jaxb.JAXBContextProperties.OXM_METADATA_SOURCE
+     */
+    @Deprecated
     public static final String ECLIPSELINK_OXM_XML_KEY = "eclipselink-oxm-xml";
+    /**
+     * @deprecated As of release 2.4, replaced by JAXBContextProperties.DEFAULT_TARGET_NAMESPACE
+     * @see org.eclipse.persistence.jaxb.JAXBContextProperties.DEFAULT_TARGET_NAMESPACE
+     */
+    @Deprecated
     public static final String DEFAULT_TARGET_NAMESPACE_KEY = "defaultTargetNamespace";
+    /**
+     * @deprecated As of release 2.4, replaced by JAXBContextProperties.ANNOTATION_HELPER
+     * @see org.eclipse.persistence.jaxb.JAXBContextProperties.ANNOTATION_HELPER
+     */
+    @Deprecated
     public static final String ANNOTATION_HELPER_KEY = "annotationHelper";
     public static final String PKG_SEPARATOR = ".";
 
