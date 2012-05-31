@@ -1,9 +1,0 @@
-<?xml version = '1.0' encoding = 'utf-8'?>
-<root>
-   <employee>
-      <first-name>Jane</first-name>
-      <last-name>Smith</last-name>
-      <project-id>3</project-id>
-      <project-id>1</project-id>
-   </employee>
-</root>
