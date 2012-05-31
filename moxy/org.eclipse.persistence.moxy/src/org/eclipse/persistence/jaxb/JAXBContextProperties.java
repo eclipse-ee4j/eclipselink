@@ -136,14 +136,14 @@ public class JAXBContextProperties {
      * <li>java.util.List<Object>
      * </ul>
      * 
-     * @since 2.4
+     * @since 2.4, replaces JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY
      */
     public static final String OXM_METADATA_SOURCE = "eclipselink.oxm.metadata-source";
 
     /**
      * The name of the property used to specify a default target namespace.
      * 
-     * @since 2.4
+     * @since 2.4, replaces JAXBContextFactory.DEFAULT_TARGET_NAMESPACE_KEY
      */
     public static final String DEFAULT_TARGET_NAMESPACE = "eclipselink.default-target-namespace";
     
@@ -154,7 +154,8 @@ public class JAXBContextProperties {
      * @see org.eclipse.persistence.jaxb.javamodel.reflection.AnnotationHelper
      * @see java.lang.annotation.Annotation
      * @see java.lang.reflect.AnnotatedElement
-     * @since 2.4
+     * 
+     * @since 2.4, replaces JAXBContextFactory.ANNOTATION_HELPER_KEY
      */
     public static final String ANNOTATION_HELPER = "eclipselink.annotation-helper";
 }
