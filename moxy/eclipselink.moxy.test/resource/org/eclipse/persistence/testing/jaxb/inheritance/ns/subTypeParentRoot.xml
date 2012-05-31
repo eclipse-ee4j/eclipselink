@@ -1,0 +1,1 @@
+<baseTypeWithRootElement xmlns:ns0="someNamespace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns0:subTypeParentRootOnly"/>
