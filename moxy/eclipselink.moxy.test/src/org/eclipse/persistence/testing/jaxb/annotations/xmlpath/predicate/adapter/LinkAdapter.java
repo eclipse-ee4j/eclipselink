@@ -15,23 +15,38 @@ package org.eclipse.persistence.testing.jaxb.annotations.xmlpath.predicate.adapt
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
+import static org.eclipse.persistence.testing.jaxb.annotations.xmlpath.predicate.adapter.CustomerTestCases.STREET;
+import static org.eclipse.persistence.testing.jaxb.annotations.xmlpath.predicate.adapter.CustomerTestCases.ALT_STREET;
+
+import org.eclipse.persistence.testing.jaxb.annotations.xmlpath.predicate.Address;
+
 public class LinkAdapter extends XmlAdapter<String, Object> {
 
     @Override
     public String marshal(Object arg0) throws Exception {
-        PhoneNumber p = (PhoneNumber) arg0;
         StringBuilder sb = new StringBuilder();
-        sb.append(p.getAreaCode());
-        sb.append(p.getNumber());
+        if (arg0 instanceof Address) {
+            Address a = (Address) arg0;
+            sb.append(a.getStreet());
+        } else {
+            PhoneNumber p = (PhoneNumber) arg0;
+            sb.append(p.getAreaCode());
+            sb.append(p.getNumber());
+        }
         return sb.toString();
     }
 
     @Override
     public Object unmarshal(String arg0) throws Exception {
-        PhoneNumber p = new PhoneNumber();
-        p.setAreaCode(Integer.valueOf(arg0.substring(0, 3)));
-        p.setNumber(Integer.valueOf(arg0.substring(3)));
-        return p;
+        if (arg0.equals(STREET) || arg0.equals(ALT_STREET)) {
+            Address a = new Address();
+            a.setStreet(arg0);
+            return a;
+        } else {
+            PhoneNumber p = new PhoneNumber();
+            p.setAreaCode(Integer.valueOf(arg0.substring(0, 3)));
+            p.setNumber(Integer.valueOf(arg0.substring(3)));
+            return p;
+        }
     }
-
 }

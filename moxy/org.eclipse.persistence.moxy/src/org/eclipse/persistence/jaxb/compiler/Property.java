@@ -20,6 +20,7 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
+import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.jaxb.javamodel.Helper;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.JavaHasAnnotations;
@@ -32,6 +33,7 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlMarshalNullRepresentation;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation;
+import org.eclipse.persistence.oxm.XMLField;
 
 /**
  *  INTERNAL:
@@ -912,12 +914,26 @@ public class Property implements Cloneable {
     }
     
     /**
-     * Indicates if this property is mapped by position, i.e. name="data[1]"
-     * 
-     * @return
+     * Indicates if this property is mapped by position, i.e. 'name="data[1]"', 
+     * or is mapped by attribute value (predicate mapping), i.e. 
+     * 'personal-info[@pi-type='last-name']/name[@name-type='surname']/text()'
+     *  
      */
     public boolean isPositional() {
-        return (getXmlPath() != null && getXmlPath().contains(OPEN_BRACKET));
+        if (getXmlPath() == null) {
+            return false;
+        }
+        XMLField field = new XMLField(getXmlPath());
+        XPathFragment frag = field.getXPathFragment();
+        // loop until we have the last non-null, non-attribute, non-text fragment
+        while (true) {
+            if (frag.getNextFragment() != null && !frag.getNextFragment().isAttribute() && !frag.getNextFragment().nameIsText()) {
+                frag = frag.getNextFragment();
+            } else {
+                break;
+            }
+        }
+        return frag.containsIndex() || frag.getPredicate() != null;
     }
 
     /**

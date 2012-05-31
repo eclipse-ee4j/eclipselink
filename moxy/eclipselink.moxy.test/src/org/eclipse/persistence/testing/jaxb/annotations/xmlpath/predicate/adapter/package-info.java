@@ -13,7 +13,8 @@
  ******************************************************************************/
 @XmlSchema(
    xmlns = {
-      @XmlNs(prefix="atom", namespaceURI="http://www.w3.org/2005/Atom")
+      @XmlNs(prefix="atom", namespaceURI="http://www.w3.org/2005/Atom"),
+      @XmlNs(prefix="atomic", namespaceURI="http://www.w3.org/2005/Atomic")
    }
 )
 package org.eclipse.persistence.testing.jaxb.annotations.xmlpath.predicate.adapter;
