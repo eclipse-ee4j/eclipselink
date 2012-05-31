@@ -12,9 +12,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpars.test;
 
-
-import org.eclipse.persistence.jpars.test.bootstrap.TestBootstrap;
-import org.eclipse.persistence.jpars.test.crud.CRUDTests;
 import org.eclipse.persistence.jpars.test.crud.StaticCrudTests;
 import org.eclipse.persistence.jpars.test.service.TestService;
 import org.junit.runner.RunWith;
@@ -22,7 +19,7 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({TestBootstrap.class, CRUDTests.class, TestService.class, StaticCrudTests.class})
+@SuiteClasses({TestService.class, StaticCrudTests.class})
 public class AllJavaSETests {
 
 }

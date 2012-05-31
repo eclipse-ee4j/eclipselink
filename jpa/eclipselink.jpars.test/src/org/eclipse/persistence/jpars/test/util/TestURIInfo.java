@@ -22,6 +22,8 @@ import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
+import org.eclipse.persistence.jpars.test.service.TestService;
+
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 import com.sun.jersey.core.util.StringKeyIgnoreCaseMultivaluedMap;
 
@@ -47,12 +49,7 @@ public class TestURIInfo implements UriInfo {
 
     @Override
     public URI getBaseUri() {
-        // TODO Auto-generated method stub
-        try{
-        return new URI("http://localhost:8080/app/jpa-rs/");
-        } catch (URISyntaxException e){
-            return null;
-        }
+        return TestService.BASE_URI;
     }
 
     @Override

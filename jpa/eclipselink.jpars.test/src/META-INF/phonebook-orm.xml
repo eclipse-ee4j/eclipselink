@@ -3,7 +3,7 @@
     xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/orm"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
  
-    <package>jpars.app.phonebook.model</package>
+    <package>org.eclipse.persistence.jpars.test.model.dynamic.phonebook</package>
   
     <named-query name="Person.all">
         <query>SELECT p FROM Person p</query>

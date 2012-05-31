@@ -13,6 +13,7 @@
         <class>org.eclipse.persistence.jpars.test.model.StaticBid</class>
         <class>org.eclipse.persistence.jpars.test.model.StaticAddress</class>
         <class>org.eclipse.persistence.jpars.test.model.multitenant.Account</class>
+        <exclude-unlisted-classes/>
         <properties>
            <property name="javax.persistence.nonJtaDataSource" value="jdbc/jpa-rs"/>
            <property name="eclipselink.logging.level" value="FINEST"/>
@@ -31,6 +32,7 @@
         <class>org.eclipse.persistence.jpars.test.model.StaticBid</class>
         <class>org.eclipse.persistence.jpars.test.model.StaticAddress</class>
         <class>org.eclipse.persistence.jpars.test.model.multitenant.Account</class>
+        <exclude-unlisted-classes/>
         <properties>
            <property name="eclipselink.logging.level" value="FINEST"/>
            <property name="eclipselink.logging.parameters" value="true"/>
@@ -40,4 +42,44 @@
       <property name="javax.persistence.jdbc.user" value="@DB_USER@"/>
         </properties>
     </persistence-unit>
+    
+    <persistence-unit name="auction" transaction-type="RESOURCE_LOCAL">
+
+        <provider>
+            org.eclipse.persistence.jpa.PersistenceProvider
+        </provider>
+
+        <class>org.eclipse.persistence.jpars.test.model.dynamic.auction.User</class>
+        <class>org.eclipse.persistence.jpars.test.model.dynamic.auction.Auction</class>
+        <class>org.eclipse.persistence.jpars.test.model.dynamic.auction.Bid</class>
+        <exclude-unlisted-classes/>
+        <properties>
+            <property name="eclipselink.metadata-source" value="XML" />
+            <property name="eclipselink.weaving" value="static"/>
+            <property name="eclipselink.metadata-source.xml.file" value="META-INF/auction-orm.xml" />
+      <property name="javax.persistence.jdbc.url" value="@DB_URL@"/>
+      <property name="javax.persistence.jdbc.password" value="@DB_PWD@"/>
+      <property name="javax.persistence.jdbc.driver" value="@DB_DRIVER@"/>
+      <property name="javax.persistence.jdbc.user" value="@DB_USER@"/>
+        </properties>
+    </persistence-unit>
+    <persistence-unit name="phonebook" transaction-type="RESOURCE_LOCAL">
+
+        <provider>
+            org.eclipse.persistence.jpa.PersistenceProvider
+        </provider>
+        
+        <class>org.eclipse.persistence.jpars.test.model.dynamic.phonebook.Person</class>
+        <exclude-unlisted-classes/>
+        <properties>
+            <property name="eclipselink.metadata-source" value="XML"/>
+            <property name="eclipselink.weaving" value="static"/>
+            <property name="eclipselink.metadata-source.xml.file" value="META-INF/phonebook-orm.xml"/>
+      <property name="javax.persistence.jdbc.url" value="@DB_URL@"/>
+      <property name="javax.persistence.jdbc.password" value="@DB_PWD@"/>
+      <property name="javax.persistence.jdbc.driver" value="@DB_DRIVER@"/>
+      <property name="javax.persistence.jdbc.user" value="@DB_USER@"/>
+        </properties>
+    </persistence-unit>
+    
 </persistence>
