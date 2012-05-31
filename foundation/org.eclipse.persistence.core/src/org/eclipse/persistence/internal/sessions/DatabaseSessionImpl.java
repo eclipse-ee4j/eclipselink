@@ -13,6 +13,8 @@
  *       - 376603: Provide for table per tenant support for multitenant applications
  *     22/05/2012-2.4 Guy Pelletier  
  *       - 380008: Multitenant persistence units with a dedicated emf should force tenant property specification up front.
+ *     31/05/2012-2.4 Guy Pelletier  
+ *       - 381196: Multitenant persistence units with a dedicated emf should allow for DDL generation.
  ******************************************************************************/  
 package org.eclipse.persistence.internal.sessions;
 
@@ -793,6 +795,9 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
                         throw ValidationException.multitenantContextPropertyForNonSharedEMFNotSpecified(property);
                     }
                 }
+                
+                // Once the properties are validated we can allow ddl generation to happen (if needed).
+                project.setAllowTablePerMultitenantDDLGeneration(true);
             }
         }
         
