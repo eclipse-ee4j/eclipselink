@@ -1099,14 +1099,16 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
     {
         boolean testPass=false;
         String ejbqlString = "SELECT emp FROM Employee emp  WHERE emp.lastName='Smith' ";
-        
-        try 
-        {
-            int result = createEntityManager().createQuery(ejbqlString).executeUpdate();
-        }
-        catch (IllegalStateException e)
-        {            
+
+        EntityManager em = createEntityManager();
+        try  {
+            beginTransaction(em);
+            em.createQuery(ejbqlString).executeUpdate();
+            commitTransaction(em);
+        } catch (IllegalStateException e) {            
             testPass = true; 
+        } finally {
+            closeEntityManagerAndTransaction(em);
         }
         Assert.assertTrue(testPass);
     }

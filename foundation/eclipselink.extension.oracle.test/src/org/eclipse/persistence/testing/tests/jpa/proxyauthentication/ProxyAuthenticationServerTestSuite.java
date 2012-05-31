@@ -25,8 +25,6 @@ import javax.persistence.Query;
 import javax.sql.DataSource;
 import javax.transaction.TransactionManager;
 
-import org.eclipse.persistence.platform.server.glassfish.GlassfishServerPlatform;
-import org.eclipse.persistence.platform.server.sunas.SunAS9ServerPlatform;
 import org.eclipse.persistence.platform.server.wls.WebLogicPlatform;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.JNDIConnector;
@@ -36,7 +34,6 @@ import org.eclipse.persistence.testing.models.jpa.proxyauthentication.*;
 import org.eclipse.persistence.transaction.JTATransactionController;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
-import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.ExclusiveConnectionMode;
 /**
@@ -297,9 +294,9 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
             em.persist(employee);
             em.flush();
             // https://glassfish.dev.java.net/issues/show_bug.cgi?id=14753   Oracle proxy session problems  
-            if (this.serverSession.getServerPlatform() instanceof GlassfishServerPlatform) {
+            /**if (this.serverSession.getServerPlatform() instanceof GlassfishPlatform) {
                 JpaHelper.getEntityManager(em).getUnitOfWork().getParent().getAccessor().releaseCustomizer(JpaHelper.getEntityManager(em).getUnitOfWork().getParent());
-            }
+            }*/
         } finally {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);

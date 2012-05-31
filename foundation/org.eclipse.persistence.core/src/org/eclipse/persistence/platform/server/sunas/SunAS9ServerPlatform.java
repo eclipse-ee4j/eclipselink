@@ -17,7 +17,7 @@
 package org.eclipse.persistence.platform.server.sunas;
 
 import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.persistence.platform.server.glassfish.GlassfishServerPlatform;
+import org.eclipse.persistence.platform.server.glassfish.GlassfishPlatform;
 
 /**
  * PUBLIC:
@@ -31,7 +31,7 @@ import org.eclipse.persistence.platform.server.glassfish.GlassfishServerPlatform
  * @deprecated since 2.5 replaced by GlassfishServerPlatform
  */
 @Deprecated
-public class SunAS9ServerPlatform extends GlassfishServerPlatform {
+public class SunAS9ServerPlatform extends GlassfishPlatform {
     
     /**
      * INTERNAL:

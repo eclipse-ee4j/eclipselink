@@ -87,6 +87,7 @@ public class ConnectionPool {
         this.minNumberOfConnections = minNumberOfConnections;
         this.initialNumberOfConnections = initialNumberOfConnections;
         this.deadCheckTime = DEAD_CHECK_TIME;
+        this.waitTimeout = WAIT_TIMEOUT;
         this.checkConnections = false;
         this.failoverConnectionPools = new ArrayList<String>();
         resetConnections();

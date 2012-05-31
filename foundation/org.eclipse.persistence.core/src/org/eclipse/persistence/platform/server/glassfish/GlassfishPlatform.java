@@ -19,7 +19,7 @@ package org.eclipse.persistence.platform.server.glassfish;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.services.glassfish.MBeanGlassfishRuntimeServices;
 import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.persistence.transaction.sunas.SunAS9TransactionController;
+import org.eclipse.persistence.transaction.glassfish.GlassfishTransactionController;
 import org.eclipse.persistence.platform.server.JMXEnabledPlatform;
 import org.eclipse.persistence.platform.server.JMXServerPlatformBase;
 import org.eclipse.persistence.platform.server.ServerPlatformBase;
@@ -41,7 +41,7 @@ import java.sql.Connection;
  * getExternalTransactionControllerClass(): to use an Glassfish controller class
  *
  */
-public class GlassfishServerPlatform extends JMXServerPlatformBase implements JMXEnabledPlatform {
+public class GlassfishPlatform extends JMXServerPlatformBase implements JMXEnabledPlatform {
 
     /**
      * The following constants and attributes are used to determine the module and application name
@@ -66,7 +66,7 @@ public class GlassfishServerPlatform extends JMXServerPlatformBase implements JM
      * INTERNAL:
      * Default Constructor: All behavior for the default constructor is inherited
      */
-    public GlassfishServerPlatform(DatabaseSession newDatabaseSession) {
+    public GlassfishPlatform(DatabaseSession newDatabaseSession) {
         super(newDatabaseSession);
         this.enableRuntimeServices();        
         // Create the JMX MBean specific to this platform for later registration
@@ -86,7 +86,7 @@ public class GlassfishServerPlatform extends JMXServerPlatformBase implements JM
      */
     public Class getExternalTransactionControllerClass() {
     	if (externalTransactionControllerClass == null){
-    		externalTransactionControllerClass = SunAS9TransactionController.class;
+    		externalTransactionControllerClass = GlassfishTransactionController.class;
     	}
         return externalTransactionControllerClass;
     }
