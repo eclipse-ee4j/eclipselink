@@ -850,6 +850,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
     public boolean addXsiTypeAndClassIndicatorIfRequired(XMLRecord record, XMLDescriptor xmlDescriptor, XMLDescriptor referenceDescriptor, XMLField xmlField, boolean addToNamespaceResolver){
     	  if(descriptor.hasInheritance() && !xsiTypeIndicatorField){
     		  xmlDescriptor.getInheritancePolicy().addClassIndicatorFieldToRow(record);
+    		  return true;
     	  }
     	
           QName leafType = null;

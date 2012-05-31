@@ -640,7 +640,17 @@ public class XMLDescriptor extends ClassDescriptor {
             defaultRootElementField.initialize();
         }
         if(schemaReference != null && schemaReference.getSchemaContext() != null && (schemaReference.getType() == XMLSchemaReference.COMPLEX_TYPE || schemaReference.getType() == XMLSchemaReference.SIMPLE_TYPE) && getDefaultRootElementType() == null){
-        	setDefaultRootElementType(schemaReference.getSchemaContextAsQName(getNamespaceResolver()));
+        	
+        	if(hasInheritance() && isChildDescriptor()){
+        		XMLField parentField = ((XMLDescriptor)getInheritancePolicy().getParentDescriptor()).getDefaultRootElementField();
+        		//if this descriptor has a root element field different than it's parent set the leaf element type of the default root field
+        		if(parentField == null || (parentField !=null && !defaultRootElementField.getXPathFragment().equals(parentField.getXPathFragment()))){
+        			setDefaultRootElementType(schemaReference.getSchemaContextAsQName(getNamespaceResolver()));
+        		}
+        	}else{
+        		setDefaultRootElementType(schemaReference.getSchemaContextAsQName(getNamespaceResolver()));
+        	}
+       
         }
 
         if(null != primaryKeyFields) {
