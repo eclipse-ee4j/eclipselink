@@ -830,11 +830,21 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
                         }
                         if (attributeNodeValue == null) {
                             attributeNodeValue = this.getAttributeChildNodeValue(attNamespace, attLocalName);
-                            if (attributeNodeValue != null) {
-                                attributeNodeValue.attribute(this, attNamespace, attLocalName, value);
-                            } else {
-                                if (xPathNode.getAnyAttributeNodeValue() != null) {
-                                    xPathNode.getAnyAttributeNodeValue().attribute(this, attNamespace, attLocalName, value);
+                            
+                            try {                              
+	                            if (attributeNodeValue != null) {
+	                                attributeNodeValue.attribute(this, attNamespace, attLocalName, value);
+	                            } else {
+	                                if (xPathNode.getAnyAttributeNodeValue() != null) {
+	                                    xPathNode.getAnyAttributeNodeValue().attribute(this, attNamespace, attLocalName, value);
+	                                }
+	                            }
+                            } catch(EclipseLinkException e) {
+                            	if ((null == xmlReader) || (null == xmlReader.getErrorHandler())) {
+                                    throw e;
+                                } else {
+                                    SAXParseException saxParseException = new SAXParseException(e.getLocalizedMessage(), documentLocator, e);
+                                    xmlReader.getErrorHandler().warning(saxParseException);
                                 }
                             }
                         }
@@ -938,8 +948,12 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
                 try {
                     xPathNode.getUnmarshalNodeValue().endElement(xPathFragment, this);
                 } catch(EclipseLinkException e) {
-                    SAXParseException saxParseException = new SAXParseException(e.getLocalizedMessage(), documentLocator, e);
-                    xmlReader.getErrorHandler().warning(saxParseException);
+                	if ((null == xmlReader) || (null == xmlReader.getErrorHandler())) {
+                        throw e;
+                    } else {
+                        SAXParseException saxParseException = new SAXParseException(e.getLocalizedMessage(), documentLocator, e);
+                        xmlReader.getErrorHandler().warning(saxParseException);
+                    }
                 }
             } else {
                 XPathNode textNode = xPathNode.getTextNode();

@@ -118,6 +118,7 @@ public class JAXBTestSuite3 extends TestCase {
         suite.addTestSuite(JAXBEmployeeTestCases.class);
         suite.addTestSuite(JAXBEmployeeNoWrapperTestCases.class);
         suite.addTestSuite(JAXBEmployeeNSTestCases.class);
+        suite.addTest(org.eclipse.persistence.testing.jaxb.eventhandler.EventHandlerTestSuite.suite());
         
         return suite;
     }
