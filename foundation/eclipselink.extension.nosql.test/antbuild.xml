@@ -319,6 +319,7 @@
             <path refid="nosql_test.public.dependency.path"/>
             <path refid="nosql_test.nosql.dependency.path"/>
             <path refid="nosql_test.test.infrastructure.path"/>
+            <pathelement path="${nosql_test.resource.dir}"/>
         </path>
         <!-- Classpath used for running tests. -->
         <path id="nosql_test.run.path">

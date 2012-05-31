@@ -316,7 +316,7 @@ public abstract class EISMappingTestCases extends OXTestCase {
     abstract protected Class getSourceClass();
 
     protected Document logTestDocument() throws Exception {
-        InputStream inputStream = ClassLoader.getSystemResourceAsStream("resource/" + getTestDocument());
+        InputStream inputStream = ClassLoader.getSystemResourceAsStream(getTestDocument());
 
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
         builderFactory.setIgnoringElementContentWhitespace(true);
@@ -330,7 +330,6 @@ public abstract class EISMappingTestCases extends OXTestCase {
     }
 
     protected void setControlDocument(String xmlResource) throws Exception {
-        xmlResource = "resource/" + xmlResource;
         InputStream inputStream = ClassLoader.getSystemResourceAsStream(xmlResource);
         resourceName = xmlResource;
         controlDocument = parser.parse(inputStream);
