@@ -16,6 +16,8 @@
  *       - 357474: Address primaryKey option from tenant discriminator column
  *     14/05/2012-2.4 Guy Pelletier  
  *       - 376603: Provide for table per tenant support for multitenant applications
+ *     01/06/2011-2.3 Guy Pelletier 
+ *       - 371453: JPA Multi-Tenancy in Bidirectional OneToOne Relation throws ArrayIndexOutOfBoundsException
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.advanced.multitenant;
 
@@ -39,6 +41,8 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildContract_SoldierTable());
         addTableDefinition(buildRewardTable());
         addTableDefinition(buildPhoneNumberTable());
+        addTableDefinition(buildCardTable());
+        addTableDefinition(buildEnvelopeTable());
         
         // Table per tenant tables.
         addTableDefinition(buildRidingTable());
@@ -1520,6 +1524,148 @@ public class AdvancedMultiTenantTableCreator extends TogglingFastTableCreator {
         fieldName.setIsIdentity(false);
         table.addField(fieldName);
         
+        return table;
+    }
+    
+    public TableDefinition buildCardTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_CARD");
+
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(true);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+
+        FieldDefinition fieldColor = new FieldDefinition();
+        fieldColor.setName("COLOR");
+        fieldColor.setTypeName("VARCHAR2");
+        fieldColor.setSize(60);
+        fieldColor.setSubSize(0);
+        fieldColor.setIsPrimaryKey(false);
+        fieldColor.setIsIdentity(false);
+        fieldColor.setUnique(false);
+        fieldColor.setShouldAllowNull(false);
+        table.addField(fieldColor);
+        
+        FieldDefinition fieldOccasion = new FieldDefinition();
+        fieldOccasion.setName("OCCASION");
+        fieldOccasion.setTypeName("VARCHAR2");
+        fieldOccasion.setSize(60);
+        fieldOccasion.setSubSize(0);
+        fieldOccasion.setIsPrimaryKey(false);
+        fieldOccasion.setIsIdentity(false);
+        fieldOccasion.setUnique(false);
+        fieldOccasion.setShouldAllowNull(false);
+        table.addField(fieldOccasion);
+        
+        FieldDefinition fieldFrontCaption = new FieldDefinition();
+        fieldFrontCaption.setName("FRONT_CAPTION");
+        fieldFrontCaption.setTypeName("VARCHAR2");
+        fieldFrontCaption.setSize(60);
+        fieldFrontCaption.setSubSize(0);
+        fieldFrontCaption.setIsPrimaryKey(false);
+        fieldFrontCaption.setIsIdentity(false);
+        fieldFrontCaption.setUnique(false);
+        fieldFrontCaption.setShouldAllowNull(false);
+        table.addField(fieldFrontCaption);
+        
+        FieldDefinition fieldInsideCaption = new FieldDefinition();
+        fieldInsideCaption.setName("INSIDE_CAPTION");
+        fieldInsideCaption.setTypeName("VARCHAR2");
+        fieldInsideCaption.setSize(60);
+        fieldInsideCaption.setSubSize(0);
+        fieldInsideCaption.setIsPrimaryKey(false);
+        fieldInsideCaption.setIsIdentity(false);
+        fieldInsideCaption.setUnique(false);
+        fieldInsideCaption.setShouldAllowNull(false);
+        table.addField(fieldInsideCaption);
+        
+        FieldDefinition fieldPrice = new FieldDefinition();
+        fieldPrice.setName("PRICE");
+        fieldPrice.setTypeName("DOUBLE");
+        fieldPrice.setSize(15);
+        fieldPrice.setIsPrimaryKey(false);
+        fieldPrice.setIsIdentity(false);
+        fieldPrice.setUnique(false);
+        fieldPrice.setShouldAllowNull(false);
+        table.addField(fieldPrice);
+        
+        FieldDefinition fieldPrintYear = new FieldDefinition();
+        fieldPrintYear.setName("PRINT_YEAR");
+        fieldPrintYear.setTypeName("NUMERIC");
+        fieldPrintYear.setSize(15);
+        fieldPrintYear.setIsPrimaryKey(false);
+        fieldPrintYear.setIsIdentity(false);
+        fieldPrintYear.setUnique(false);
+        fieldPrintYear.setShouldAllowNull(false);
+        table.addField(fieldPrintYear);
+        
+        FieldDefinition fieldEnvelopeId = new FieldDefinition();
+        fieldEnvelopeId.setName("ENVELOPE_ID");
+        fieldEnvelopeId.setTypeName("NUMERIC");
+        fieldEnvelopeId.setSize(15);
+        fieldEnvelopeId.setIsPrimaryKey(false);
+        fieldEnvelopeId.setIsIdentity(false);
+        fieldEnvelopeId.setUnique(false);
+        fieldEnvelopeId.setShouldAllowNull(false);
+        fieldEnvelopeId.setForeignKeyFieldName("JPA_ENVELOPE.ID");
+        table.addField(fieldEnvelopeId);
+        
+        FieldDefinition fieldTenantId = new FieldDefinition();
+        fieldTenantId.setName("TENANT_ID");
+        fieldTenantId.setTypeName("VARCHAR2");
+        fieldTenantId.setSize(10);
+        fieldTenantId.setSubSize(0);
+        fieldTenantId.setIsPrimaryKey(true);
+        fieldTenantId.setIsIdentity(false);
+        fieldTenantId.setUnique(true);
+        fieldTenantId.setShouldAllowNull(false);
+        table.addField(fieldTenantId);
+    
+        return table;
+    }
+    
+    public TableDefinition buildEnvelopeTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_ENVELOPE");
+
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(true);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+
+        FieldDefinition fieldColor = new FieldDefinition();
+        fieldColor.setName("COLOR");
+        fieldColor.setTypeName("VARCHAR2");
+        fieldColor.setSize(60);
+        fieldColor.setSubSize(0);
+        fieldColor.setIsPrimaryKey(false);
+        fieldColor.setIsIdentity(false);
+        fieldColor.setUnique(false);
+        fieldColor.setShouldAllowNull(true);
+        table.addField(fieldColor);
+        
+        FieldDefinition fieldTenantId = new FieldDefinition();
+        fieldTenantId.setName("TENANT_ID");
+        fieldTenantId.setTypeName("VARCHAR2");
+        fieldTenantId.setSize(10);
+        fieldTenantId.setSubSize(0);
+        fieldTenantId.setIsPrimaryKey(true);
+        fieldTenantId.setIsIdentity(false);
+        fieldTenantId.setUnique(true);
+        fieldTenantId.setShouldAllowNull(false);
+        table.addField(fieldTenantId);
+    
         return table;
     }
 }
