@@ -13,6 +13,8 @@
  *        - 323043: application.xml module ordering may cause weaving not to occur causing an NPE.
  *                       warn if expected "_persistence_*_vh" method not found
  *                       instead of throwing NPE during deploy validation.
+ *     30/05/2012-2.4 Guy Pelletier    
+ *       - 354678: Temp classloader is still being used during metadata processing
  *          
  ******************************************************************************/  
 package org.eclipse.persistence.internal.security;
@@ -52,6 +54,7 @@ public class PrivilegedAccessHelper {
         primitiveClasses.put("char", char.class);
         primitiveClasses.put("byte", byte.class);
         primitiveClasses.put("void", void.class);
+        primitiveClasses.put("short", short.class);
     }
     
     /**
