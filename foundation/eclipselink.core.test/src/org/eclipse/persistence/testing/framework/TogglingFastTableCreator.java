@@ -15,14 +15,18 @@
 package org.eclipse.persistence.testing.framework;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.tools.schemaframework.SchemaManager;
 import org.eclipse.persistence.tools.schemaframework.TableCreator;
+import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 
 /**
  * Many JPA and a few Core tests use the same tables names, so at the start of
@@ -74,24 +78,29 @@ public class TogglingFastTableCreator extends TableCreator {
                 + useFastTableCreatorAfterInitialCreate);
 
         boolean isFirstCreate = !isFastTableCreator();
-        boolean orig_FAST_TABLE_CREATOR = SchemaManager.FAST_TABLE_CREATOR;
         session.getSessionLog().log(SessionLog.FINEST, "TogglingFastTableCreator: " + getTableCreatorName()
                 + " - isFirstCreate: " + isFirstCreate);
         session.getSessionLog().log(SessionLog.FINEST, "TogglingFastTableCreator: Current fastTableCreators: "
                 + fastTableCreators);
 
         if (useFastTableCreatorAfterInitialCreate && !isFirstCreate) {
-            SchemaManager.FAST_TABLE_CREATOR = true;
             session.getSessionLog().log(SessionLog.FINEST, "TogglingFastTableCreator: " + getTableCreatorName()
                     + " - toggling true");
-        }
-        try {
-            super.replaceTables(session);
-        } finally {
-            // reset to original value
-            if (useFastTableCreatorAfterInitialCreate && !isFirstCreate) {
-                SchemaManager.FAST_TABLE_CREATOR = orig_FAST_TABLE_CREATOR;
+            String sequenceTableName = getSequenceTableName(session);
+            List<TableDefinition> tables = getTableDefinitions();
+            for (TableDefinition table : tables) {
+                if (!table.getName().equals(sequenceTableName)) {
+                    SchemaManager schemaManager = new SchemaManager(session);
+                    AbstractSession abstarctSession = schemaManager.getSession();
+                    try {
+                        abstarctSession.priviledgedExecuteNonSelectingCall(new org.eclipse.persistence.queries.SQLCall("DELETE FROM " + table.getFullName()));
+                    } catch (DatabaseException ex) {
+                        //Ignore database exception. eg. If there is no table to delete, it gives database exception. 
+                    } 
+                }
             }
+        } else { 
+            super.replaceTables(session);
         }
 
         // next time just delete the rows instead.

@@ -95,6 +95,14 @@ public class DDLGenerationExtendTablesJUnitTestSuite extends
         }
         TestSuite suite = new TestSuite();
         suite.setName("DDLCreateAndAlterTablesTestSuite");
+       
+        // 'create-or-extend-tables' cannot be tested properly if 'toggle-fast-table-creator' is set as true.
+        // DELETE FROM TABLE is executed instead of DROP TABLE / CREATE TABLE when 'toggle-fast-table-creator' is set as true. 
+        // Skip this test suite if 'toggle-fast-table-creator' is set as true. (bug 372179)
+        if (Boolean.getBoolean("eclipselink.test.toggle-fast-table-creator")) {
+            return suite;
+        }
+        
         suite.addTest(new DDLGenerationExtendTablesJUnitTestSuite("testSetup"));
         List<String> tests = new ArrayList<String>();
         tests.add("testDDLPkConstraintErrorIncludingRelationTableColumnName");

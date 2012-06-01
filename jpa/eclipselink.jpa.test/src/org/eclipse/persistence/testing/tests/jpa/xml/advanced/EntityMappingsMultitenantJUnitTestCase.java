@@ -688,6 +688,7 @@ public class EntityMappingsMultitenantJUnitTestCase extends JUnitTestCase {
             getServerSession(MULTI_TENANT_PU).logMessage("Test EntityMappingsMultiTenantJUnitTestCase partially skipped for this platform, "
                     +"which uses UpdateAll internally to check tenant-id when updating an entity using JOINED inheritance strategy. "
                     +"Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+            commitTransaction(em);
             return;
         }
         // We know what the boss's id is for the 007 family to try to update him from the 707 pu.
