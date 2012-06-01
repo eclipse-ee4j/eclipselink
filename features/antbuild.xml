@@ -537,6 +537,7 @@
                           *jms*.jar,
                           com.sun*.jar,
                           eclipselink*.jar,
+                          *ejb*.jar,
                           javax.persistence*_1.*.jar,
                           *preview*.jar,
                           *javax.resource*.jar,
