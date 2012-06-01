@@ -7,7 +7,7 @@ JVM_ARGS=-Xmx256m
 # Please do not change any of the following lines:
 CLASSPATH=`dirname $0`/javax.servlet_2.4.0.v200806031604.jar:\
 `dirname $0`/javax.wsdl_1.6.2.v201012040545.jar:\
-`dirname $0`/org.eclipse.persistence.oracleddlparser_1.0.0.v20120402-1438.jar:\
+`dirname $0`/org.eclipse.persistence.oracleddlparser_1.0.0.v20120530.jar:\
 `dirname $0`/../../jlib/eclipselink.jar:\
 `dirname $0`/eclipselink-dbwsutils.jar:\
 ${DRIVER_CLASSPATH}:\
