@@ -12,12 +12,15 @@
  *       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
  *     07/19/2011-2.2.1 Guy Pelletier 
  *       - 338812: ManyToMany mapping in aggregate object violate integrity constraint on deletion
+ *     30/05/2012-2.4 Guy Pelletier    
+ *       - 354678: Temp classloader is still being used during metadata processing
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.ddlgeneration;
 
 import java.util.Collection;
 
 import javax.persistence.AssociationOverride;
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.CollectionTable;
 import javax.persistence.ElementCollection;
@@ -28,6 +31,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinTable;
 import javax.persistence.JoinColumn;
 import javax.persistence.SecondaryTable;
+import javax.persistence.Version;
 
 import org.eclipse.persistence.annotations.Property;
 
@@ -37,6 +41,13 @@ public class Employee {
     @Id
     @GeneratedValue
     public int id;
+    
+    // This will set a type name of 'short' on the database field. This is 
+    // testing that its conversion from class name to class are runtime will
+    // succeed. Part of bug 354678.
+    @Basic
+    @Version
+    private short justToTest;
     
     public Employee() {}
    
@@ -82,6 +93,10 @@ public class Employee {
     public int getId() {
         return id;
     }
+    
+    public short getJustToTest() {
+        return justToTest;
+    }
 
     public Collection<String> getResponsibilities() {
         return responsibilities;
@@ -97,5 +112,9 @@ public class Employee {
 
     public void setResponsibilities(Collection<String> responsibilities) {
         this.responsibilities = responsibilities;
+    }
+    
+    public void setJustToTest(short justToTest) {
+        this.justToTest = justToTest;
     }
 }
