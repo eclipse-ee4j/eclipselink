@@ -25,8 +25,6 @@ import org.eclipse.persistence.testing.oxm.mappings.directcollection.DirectColle
 import org.eclipse.persistence.testing.oxm.mappings.transformation.TransformationMappingTestSuite;
 import org.eclipse.persistence.testing.oxm.mappings.typeddirect.TypedDirectMappingTestSuite;
 import org.eclipse.persistence.testing.oxm.mappings.simpletypes.SimpleTypeMappingTestSuite;
-import org.eclipse.persistence.testing.oxm.mappings.onetoone.OneToOneMappingTestSuite;
-import org.eclipse.persistence.testing.oxm.mappings.onetomany.OneToManyMappingTestSuite;
 import org.eclipse.persistence.testing.oxm.mappings.namespaces.NamespaceTestSuite;
 import org.eclipse.persistence.testing.oxm.mappings.namespaces.identifiedbyname.IdentifiedByNameNamespaceTestSuite;
 
