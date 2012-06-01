@@ -55,6 +55,13 @@ public interface MetadataSource {
      * unit is reloaded to allow customization of the persistence unit above and
      * beyond what is packaged in the persistence.xml and what is code into the
      * application.
+     * 
+     * <b>IMPORTANT</b>: This method is called during the predeploy stage
+     * that is used both for weaving and runtime EMF deployment.  Runtime 
+     * properties might not be available during weaving, and mapping options 
+     * that require weaving changes should not be used.  For example adding a 
+     * lazy OneToOne mapping after weaving has already occurred will result in 
+     * an exception if they are expected to have been woven into the class. 
      */
     public XMLEntityMappings getEntityMappings(Map<String, Object> properties, ClassLoader classLoader, SessionLog log);
 }
