@@ -13,6 +13,8 @@
  *       - 337323: Multi-tenant with shared schema support (part 2)
  *     09/09/2011-2.3.1 Guy Pelletier 
  *       - 356197: Add new VPD type to MultitenantType
+ *     01/06/2011-2.3 Guy Pelletier 
+ *       - 371453: JPA Multi-Tenancy in Bidirectional OneToOne Relation throws ArrayIndexOutOfBoundsException
  ******************************************************************************/  
 package org.eclipse.persistence.queries;
 
@@ -730,8 +732,13 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
         
         // If we have tenant discriminator fields we need to add them to the 
         // database row when doing a primary key query.
+        // Modifying the translation row here will modify it on the original 
+        // query which is not good (will append the tenant field to the sql call 
+        // for subsequent queries) The translation row must be cloned to isolate 
+        // this.
         if (getDescriptor().hasMultitenantPolicy()) {
-            getDescriptor().getMultitenantPolicy().addFieldsToRow(getTranslationRow(), getSession());            
+            this.translationRow = this.translationRow.clone();
+            getDescriptor().getMultitenantPolicy().addFieldsToRow(this.translationRow, getSession());            
         }
     }
 

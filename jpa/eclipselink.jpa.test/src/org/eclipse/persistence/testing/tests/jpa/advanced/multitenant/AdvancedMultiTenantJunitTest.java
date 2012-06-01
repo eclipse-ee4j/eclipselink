@@ -30,6 +30,8 @@
  *       - 376603: Provide for table per tenant support for multitenant applications
  *     22/05/2012-2.4 Guy Pelletier  
  *       - 380008: Multitenant persistence units with a dedicated emf should force tenant property specification up front.
+ *     01/06/2011-2.3 Guy Pelletier 
+ *       - 371453: JPA Multi-Tenancy in Bidirectional OneToOne Relation throws ArrayIndexOutOfBoundsException
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.advanced.multitenant;
 
@@ -70,6 +72,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.AdvancedM
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Boss;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Candidate;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Capo;
+import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Card;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Contract;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.MafiaFamily;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Mafioso;
@@ -85,6 +88,8 @@ import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Supporter
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Task;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Trowel;
 import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Underboss;
+import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Card;
+import org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Envelope;
 
 public class AdvancedMultiTenantJunitTest extends JUnitTestCase { 
     public static final String MULTI_TENANT_VPD_PU = "multi-tenant-vpd";
@@ -141,7 +146,7 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
         
         suite.addTest(new AdvancedMultiTenantJunitTest("testComplexMultitenantQueries"));
         suite.addTest(new AdvancedMultiTenantJunitTest("testVPDEMPerTenant"));
-        
+        suite.addTest(new AdvancedMultiTenantJunitTest("testMultitenantOneToOneReadObjectRead"));
         suite.addTest(new AdvancedMultiTenantJunitTest("testMultitenantPrimaryKeyWithIdClass"));
         
         suite.addTest(new AdvancedMultiTenantJunitTest("testTablePerTenantA"));
@@ -1224,6 +1229,57 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
             
             // This should hit the cache.
             PhoneNumber refreshedNumber = em.find(PhoneNumber.class, number.buildPK());
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            
+            throw e;
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+    
+    public void testMultitenantOneToOneReadObjectRead() {
+        EntityManager em = createEntityManager(MULTI_TENANT_PU);
+        
+        try {
+            beginTransaction(em);
+            
+            em.setProperty("tenant.id", "371453");
+        
+            Envelope envelope = new Envelope();
+            envelope.setColor("Red");
+            
+            Card card = new Card();
+            card.setPrice(2.99);
+            card.setColor("Yellow");
+            card.setPrintYear(2012);
+            card.setOccasion("Sympathy");
+            card.setFrontCaption("Get well soon");
+            card.setInsideCaption("Here's to a speedy recovery");
+            
+            card.setEnvelope(envelope);
+            envelope.setCard(card);
+            
+            // Will cascade to the envelope
+            em.persist(card);
+            commitTransaction(em);
+            
+            em.clear();
+            clearCache(MULTI_TENANT_PU);
+            
+            beginTransaction(em);
+            envelope = em.merge(envelope);
+            commitTransaction(em);
+            
+            em.clear();
+            clearCache(MULTI_TENANT_PU);
+            
+            beginTransaction(em);
+            card = em.merge(card);
+            commitTransaction(em);
+            
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);

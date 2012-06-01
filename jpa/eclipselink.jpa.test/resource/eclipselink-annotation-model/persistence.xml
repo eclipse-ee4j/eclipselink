@@ -266,6 +266,8 @@
         <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Reward</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Address</class>
         <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.PhoneNumber</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Card</class>
+        <class>org.eclipse.persistence.testing.models.jpa.advanced.multitenant.Envelope</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
             <property name="eclipselink.multitenant.tenants-share-cache" value="false"/>
