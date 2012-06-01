@@ -20,17 +20,20 @@ import javax.xml.bind.JAXBElement;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.dynamic.DynamicEntity;
+import org.eclipse.persistence.internal.descriptors.VirtualAttributeAccessor;
 import org.eclipse.persistence.internal.weaving.RelationshipInfo;
 import org.eclipse.persistence.jaxb.metadata.MetadataSource;
 import org.eclipse.persistence.jaxb.xmlmodel.JavaType;
 import org.eclipse.persistence.jaxb.xmlmodel.JavaType.JavaAttributes;
 import org.eclipse.persistence.jaxb.xmlmodel.ObjectFactory;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlAccessMethods;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlSchema;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.JavaTypes;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlSchema.XmlNs;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlElement;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlVirtualAccessMethods;
 import org.eclipse.persistence.jpa.rs.PersistenceFactory;
 import org.eclipse.persistence.jpa.rs.metadata.model.Link;
 import org.eclipse.persistence.mappings.CollectionMapping;
@@ -85,7 +88,7 @@ public class DynamicXMLMetadataSource implements MetadataSource {
         javaType.setJavaAttributes(new JavaAttributes());
         boolean isDynamic = DynamicEntity.class.isAssignableFrom(classDescriptor.getJavaClass());
         for (DatabaseMapping ormMapping : classDescriptor.getMappings()) {
-            JAXBElement<XmlElement> element = createJAXBProperty(ormMapping, objectFactory, isDynamic);
+            JAXBElement<XmlElement> element = createJAXBProperty(ormMapping, objectFactory, javaType, isDynamic);
             if (element != null){
                 javaType.getJavaAttributes().getJavaAttribute().add(element);
             }
@@ -100,8 +103,8 @@ public class DynamicXMLMetadataSource implements MetadataSource {
         return javaType;
     }
     
-    private JAXBElement<XmlElement> createJAXBProperty(DatabaseMapping mapping, ObjectFactory objectFactory, boolean isDynamic) {
-        if (!isDynamic && (mapping.isPrivateOwned() || (!mapping.isObjectReferenceMapping() &&  !mapping.isCollectionMapping()) )){
+    private JAXBElement<XmlElement> createJAXBProperty(DatabaseMapping mapping, ObjectFactory objectFactory, JavaType owningType, boolean isDynamic) {
+        if (!mapping.getAttributeAccessor().isVirtualAttributeAccessor() && !isDynamic && (mapping.isPrivateOwned() || (!mapping.isObjectReferenceMapping() &&  !mapping.isCollectionMapping()) )){
             return null;
         }
         XmlElement xmlElement = new XmlElement();
@@ -118,6 +121,21 @@ public class DynamicXMLMetadataSource implements MetadataSource {
             }
         } else {
             xmlElement.setType(mapping.getAttributeClassification().getName());
+        }
+        if (mapping.getAttributeAccessor().isVirtualAttributeAccessor()){
+            VirtualAttributeAccessor jpaAccessor = (VirtualAttributeAccessor)mapping.getAttributeAccessor();
+            if (owningType.getXmlVirtualAccessMethods() == null){
+                XmlVirtualAccessMethods virtualAccessMethods = new XmlVirtualAccessMethods();
+                virtualAccessMethods.setGetMethod(jpaAccessor.getGetMethodName());
+                virtualAccessMethods.setSetMethod(jpaAccessor.getSetMethodName());
+                owningType.setXmlVirtualAccessMethods(virtualAccessMethods);
+            } else {
+                XmlAccessMethods accessMethods = new XmlAccessMethods();
+                accessMethods.setGetMethod(jpaAccessor.getGetMethodName());
+                accessMethods.setSetMethod(jpaAccessor.getSetMethodName());
+                xmlElement.setXmlAccessMethods(accessMethods);
+            }
+
         }
         return objectFactory.createXmlElement(xmlElement);
     }
