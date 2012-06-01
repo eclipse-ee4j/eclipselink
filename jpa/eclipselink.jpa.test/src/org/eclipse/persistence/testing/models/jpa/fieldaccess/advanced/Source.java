@@ -11,7 +11,7 @@
  *     May 28, 2012 - ailitchev
  *        - Bug 341709 - Delete fails with DB constraint violation due to an internal update
  ******************************************************************************/  
-package org.eclipse.persistence.testing.models.jpa.advanced;
+package org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced;
 
 import java.io.Serializable;
 
@@ -23,12 +23,18 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "CMP3_SOURCE")
+@Table(name = "CMP3_FA_SOURCE")
 public class Source implements Serializable {
+    @Id
     private String id;
     private String description;
 
+    @OneToOne()
+    @JoinColumn(name="A_ID", nullable= false)
     private TargetA targetA;
+
+    @OneToOne(cascade=CascadeType.ALL)
+    @JoinColumn(name="B_ID", nullable = false)
     private TargetB targetB;
     
     /**
@@ -46,7 +52,6 @@ public class Source implements Serializable {
         this.description = description;
     }
 
-    @Id
     public String getId() {
         return this.id;
     }
@@ -63,8 +68,6 @@ public class Source implements Serializable {
         this.description = description;
     }
 
-    @OneToOne()
-    @JoinColumn(name="A_ID", nullable= false)
     public TargetA getTargetA() {
         return this.targetA;
     }
@@ -73,8 +76,6 @@ public class Source implements Serializable {
         this.targetA = targetA;
     }
 
-    @OneToOne(cascade=CascadeType.ALL)
-    @JoinColumn(name="B_ID", nullable = false)
     public TargetB getTargetB() {
         return this.targetB;
     }
