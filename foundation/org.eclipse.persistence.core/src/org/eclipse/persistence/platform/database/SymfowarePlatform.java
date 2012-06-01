@@ -87,11 +87,14 @@ import org.eclipse.persistence.queries.ValueReadQuery;
  * <li> The standard deviation (STDDEV) and variance (VARIANCE) functions cannot be used. (bug 304909)
  * <li> '= NULL' and '<> NULL' cannot be used for null comparisons in the WHERE clause. Use 'IS (NOT) NULL' instead.
  * <li> A scrollable cursor policy of CONCUR_UPDATABLE mode cannot be used with queries that select from multiple tables.
- * <li> Columns and literals of different type may need casting to allow them to be compared or assigned. For example: 
+ * <li> Columns and literals of different type may need casting to allow them to be compared or assigned. (bug 372178) For example: 
  *   'SELECT ... WHERE CAST(PHONE_ORDER_VARCHAR AS INTEGER) BETWEEN 0 AND 1'
  * <li> Subqueries with joins to the outer query are not supported. (see rfe 298193)
  * <li> Stored functions are not supported. (bug 342409)
+ * <li> Using subquery in select list for query specification or single-row SELECT statement is not allowed. (bug 372172)
  * <li> The CascadeOnDelete doesn't work on a relation where CascadeType.Remove or CascadeType.All is specified. (bug 342413)
+ * <li> A subquery cannot be specified on both sides of a comparison predicate or a quantified predicate. (bug 378313)
+ * <li> A base table name to be updated cannot be identical to table name in from clause in query or subquery specification (bug 381302) 
  * </ul>
  * <p/><b>Additional Notes</b><br/>
  * ----------------

@@ -2941,6 +2941,16 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         String jpqlString1 = "SELECT CONCAT(case e.firstName when 'Bob' then 'Robert' when 'Jill' then 'Gillian' else '' end, ' - full name') FROM Employee e";
         em.createQuery(jpqlString1).getResultList();
 
+        // Bug 372178 - JPQL: query fails on Symfoware
+        if (((Session) JUnitTestCase.getServerSession()).getPlatform().isSymfoware())
+        {
+            warning("The test 'caseTypeTest' is not supported on Symfoware, "  
+                  + "EclipseLink will convert some (not all) Integer into String, "
+                  + "and because Symfoware does not support implicit type conversion, " 
+                  + "we ended up with the addition between String and Integer which is illegal on Symfoware.");
+            closeEntityManager(em);
+            return;
+        }
         String jpqlString2 = "SELECT case e.firstName when 'Bob' then 1 when 'Jill' then 2 else 0 end + 1 FROM Employee e";
         em.createQuery(jpqlString2).getResultList();
 
@@ -3291,7 +3301,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
             warning("testUnion only works with Hermes");
             return;
         }
-        if (getDatabaseSession().getPlatform().isMySQL() || getDatabaseSession().getPlatform().isSybase()) {
+        if (getDatabaseSession().getPlatform().isMySQL() || getDatabaseSession().getPlatform().isSybase() || getDatabaseSession().getPlatform().isSymfoware() ) {
             warning("INTERSECT not supported on this database.");
             return;
         }
@@ -3470,6 +3480,11 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     // Bug 350597
     // Test that subselects can be used in the select clause.
     public void testSubselectInSelect() {
+        if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
+            getServerSession().logMessage("Test testSubselectInSelect is skipped on this platform, , "
+            + "Symfoware doesn't support sub-select. (see rfe 372172)");
+            return;
+        }
         if (!isHermesParser()) {
             warning("testSubselectInSelect only works with Hermes");
             return;
@@ -3492,6 +3507,14 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     // Test using parameters on the left vs right.
     public void testLeftParameters() {
         EntityManager em = createEntityManager();
+        // Bug 378313 - JPQL: query fails on Symfoware
+        if (((Session) JUnitTestCase.getServerSession()).getPlatform().isSymfoware())
+        {
+            warning("The test 'testLeftParameters' is not supported on Symfoware, "
+                        + "Symfoware doesn't support SQL left parameters. ");
+            closeEntityManager(em);
+            return;
+        }
         Query query = em.createQuery("Select e from Employee e where :id = 1");
         query.setParameter("id", 1);
         query.getResultList();

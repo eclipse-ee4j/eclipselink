@@ -530,6 +530,11 @@ public class JUnitJPQLModifyTestSuite extends JUnitTestCase {
     }
 
     public void simpleUpdateWithInputParameters() {
+       // Bug 381302 In Symfoware, a base table name to be updated cannot be identical to table name in from clause in query or subquery specification
+       if (getDatabaseSession().getPlatform().isSymfoware()) {
+          warning("INTERSECT not supported on Symfoware.");
+          return;
+       }
    	 EntityManager em = createEntityManager();
        beginTransaction(em);
        try {

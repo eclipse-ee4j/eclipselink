@@ -1003,6 +1003,7 @@ public class AdvancedMultiTenantJunitTest extends JUnitTestCase {
             getServerSession(MULTI_TENANT_PU).logMessage("Test AdvancedMultiTenantJunitTest partially skipped for this platform, "
                     +"which uses UpdateAll internally to check tenant-id when updating an entity using JOINED inheritance strategy. "
                     +"Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+            commitTransaction(em);
             return;
         }
 

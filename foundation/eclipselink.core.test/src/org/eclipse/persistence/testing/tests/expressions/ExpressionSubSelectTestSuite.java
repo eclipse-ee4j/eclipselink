@@ -800,6 +800,9 @@ public class ExpressionSubSelectTestSuite extends TestSuite {
         query.addItem("count", builder.subQuery(subQuery));
 
         ReadAllExpressionTest test = new ReadAllExpressionTest(Employee.class, 12);
+        // Symfoware does not allow specifying a subquery in the select list 
+        // for a query specification or for the single-row SELECT statement. (bug 372172)
+        test.addUnsupportedPlatform(SymfowarePlatform.class);
         test.setQuery(query);
         test.setName("SubSelectSelectClauseTest");
         test.setDescription("Test subselects in the select clause");
@@ -818,6 +821,9 @@ public class ExpressionSubSelectTestSuite extends TestSuite {
         query.addItem("count", builder.subQuery(subQuery));
 
         ReadAllExpressionTest test = new ReadAllExpressionTest(Employee.class, 12);
+        // Symfoware does not allow specifying a subquery in the select list 
+        // for a query specification or for the single-row SELECT statement. (bug 372172)
+        test.addUnsupportedPlatform(SymfowarePlatform.class);
         test.setQuery(query);
         test.setName("SubSelectSelectClauseTest2");
         test.setDescription("Test subselects in the select clause");

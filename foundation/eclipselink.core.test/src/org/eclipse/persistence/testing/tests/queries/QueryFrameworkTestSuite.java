@@ -334,7 +334,7 @@ public class QueryFrameworkTestSuite extends TestSuite {
         TestCase test = new TestCase() {
             @Override
             public void setup() {
-                if (getSession().getPlatform().isMySQL() || getSession().getPlatform().isSybase()) {
+                if (getSession().getPlatform().isMySQL() || getSession().getPlatform().isSybase() || getSession().getPlatform().isSymfoware() ) {
                     throwWarning("Database does not support INTERSECT");
                 }
             }
