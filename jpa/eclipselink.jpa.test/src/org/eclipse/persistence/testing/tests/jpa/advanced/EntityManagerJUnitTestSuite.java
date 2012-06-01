@@ -402,7 +402,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         tests.add("testSequenceObjectWithSchemaName");
         tests.add("testSharedExpressionInQueries");
         tests.add("testNestedBatchQueryHints");
-        tests.add("testCycleReferencesWithNonNullableField");
         if (!isJPA10()) {
             tests.add("testDetachNull");
             tests.add("testDetachRemovedObject");
@@ -12184,42 +12183,5 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             rollbackTransaction(em);
             closeEntityManager(em);
         }
-    }
-    
-    // Bug 341709 - Delete fails with DB constraint violation due to an internal update
-    public void testCycleReferencesWithNonNullableField() {
-        EntityManager em = createEntityManager();
-        beginTransaction(em);
-        try {
-            TargetA tA = new TargetA("1", "TargetA");
-            em.persist(tA);
-            TargetB tB = new TargetB("2", "TargetB");        
-            Source src = new Source("0", "Source");
-            src.setTargetA(tA);
-            src.setTargetB(tB);
-            tB.setSource(src);
-            em.persist(src);
-            commitTransaction(em);
-        } finally {
-            if (isTransactionActive(em)) {
-                rollbackTransaction(em);
-            }
-            closeEntityManager(em);
-        }
-        
-        em = createEntityManager();
-        beginTransaction(em);
-        try {
-            Source src = em.find(Source.class, "0");
-            TargetA tA = src.getTargetA();
-            em.remove(src);
-            em.remove(tA);
-            commitTransaction(em);
-        } finally {
-            if (isTransactionActive(em)) {
-                rollbackTransaction(em);
-            }
-            closeEntityManager(em);
-        }        
     }
 }
