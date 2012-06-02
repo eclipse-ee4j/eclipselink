@@ -10,22 +10,35 @@
     <version>2.5.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
+    <!-- tycho requires maven >= 3.0 -->
+    <prerequisites>
+        <maven>3.0</maven>
+    </prerequisites>
+
     <properties>
         <!-- TOOL Properties -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <tycho.version>0.14.1</tycho.version>
+        <tycho.version>0.15.0</tycho.version>
         <junit4-version>4.8.1</junit4-version>
         <!-- maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format -->
         <!-- PROJECT Properties -->
         <release.version>2.5.0</release.version>
+        <!-- maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format> Seems it must be in settings.xml -->
+        <!-- build.qualifier>v${maven.build.timestamp}</build.qualifier -->
+        <!-- forceContextQualifier>${build.qualifier}</forceContextQualifier -->
         <build.type>SNAPSHOT</build.type>
         <svn.revision>NA</svn.revision>
         <src>./src</src>
         <!-- BUILD Properties -->
         <!-- orbit.drop>R20120119162704</orbit.drop -->
-        <orbit.drop>S20120308061416</orbit.drop>
-        <eclipse.drop>indigo</eclipse.drop>
+        <orbit.drop>R20120526062928</orbit.drop>
+        <eclipse.drop>juno</eclipse.drop>
     </properties>
+
+    <organization>
+        <name>Eclipse.org - EclipseLink Project</name>
+        <url>http://www.eclipse.org/eclipselink</url>
+    </organization>
 
     <modules>
         <module>../../jpa/org.eclipse.persistence.jpa.jpql</module>
@@ -50,8 +63,14 @@
                 <artifactId>tycho-compiler-plugin</artifactId>
                 <version>${tycho.version}</version>
                 <configuration>
-                    <source>1.5</source>
-                    <target>1.5</target>
+                    <!-- Not needed. Compiler compatibility setting gotten from "Bundle-RequiredExecutionEnvironment" in manifest -->
+                    <!-- source>1.6</source -->
+                    <!-- target>1.6</target -->
+                    <!-- compilerArgument>-nowarn</compilerArgument> <disable all warnings -->
+                    <!-- compilerArgument>-warn:[+|-]warning_tokens_separated_by_comma - Specify the set of enabled warnings </compilerArgument -->
+                    <!-- compilerArgument>-err:warning_tokens_separated_by_comma - convert exactly the listed warnings to errors  </compilerArgument -->
+                    <!-- compilerArgument>-err:+warning_tokens_separated_by_comma - convert additional warnings to errors</compilerArgument -->
+                    <!-- compilerArgument>-err:-warning_tokens_separated_by_comma - remove specific warnings from being converted to errors </compilerArgument -->
                 </configuration>
             </plugin>
             <plugin>
@@ -137,6 +156,29 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.6</version>
+                <executions>
+                    <execution>
+                        <id>inject-common-into-src-bundles</id>
+                        <phase>package</phase>
+                        <configuration>
+                            <target>
+                                <zip file="../../target/${project.artifactId}.source_${release.version}.${build.qualifier}.jar" duplicate="preserve">
+                                    <zipgroupfileset dir="../../target">
+                                        <include name="${project.artifactId}.source_${release.version}.${build.qualifier}-sources.jar"/>
+                                    </zipgroupfileset>
+                                    <fileset dir="../../buildsystem/org.eclipse.persistence.parent/resource" includes="*.html"/>
+                                </zip>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     <directory>../../target</directory>
     <sourceDirectory>${src}</sourceDirectory>
@@ -158,14 +200,14 @@
     </build>
 
     <pluginRepositories>
-    <pluginRepository>
-        <id>tycho-0.14.0-staged</id>
-        <url>https://oss.sonatype.org/content/repositories/orgeclipsetycho-004/</url>
-    </pluginRepository>
-        <!-- pluginRepository>
-            <id>sonatype-staging</id>
-            <url>https://repository.sonatype.org/content/repositories/sonatype_org-031/</url>
-        </pluginRepository -->
+        <pluginRepository>
+            <id>tycho-0.15.0-staged</id>
+            <url>https://oss.sonatype.org/content/repositories/orgeclipsetycho-255/</url>
+        </pluginRepository>
+        <pluginRepository>
+            <id>tycho-public</id>
+            <url>https://oss.sonatype.org/content/groups/public/</url>
+        </pluginRepository>
         <pluginRepository>
             <id>maven-eclipse</id>
             <url>http://repo1.maven.org</url>

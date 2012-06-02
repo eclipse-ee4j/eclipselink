@@ -162,9 +162,26 @@
         <pathelement path="${eclipselink.plugins}/${asm}"/>
         <pathelement path="${eclipselink.plugins}/${jaxb-api.jar}"/>
         <pathelement path="${eclipselink.plugins}/${persistence10.jar}"/>
+        <pathelement path="${eclipselink.plugins}/${activation.jar}"/>
+        <pathelement path="${eclipselink.plugins}/${resource.jar}"/>
+        <pathelement path="${eclipselink.plugins}/${ejb.jar}"/>
+        <pathelement path="${eclipselink.plugins}/${jms.jar}"/>
+        <pathelement path="${eclipselink.plugins}/${stax_api.jar}"/>
+        <pathelement path="${eclipselink.plugins}/${transaction.jar}"/>
+        <pathelement path="${eclipselink.plugins}/${mail.jar}"/>
+        <pathelement path="${eclipselink.plugins}/${wsrs.jar}"/>
+    </path>
+    <path id="nosql.javadoc.path">
+        <path refid="javadoc.path"/>
         <fileset
             dir="${eclipselink.plugins}"
-            includes="${eclipselink.core.depend}"/>
+            includes="*nosql*"
+            excludes="*source*"/>
+    </path>
+    <path id="jpars.javadoc.path">
+        <path refid="javadoc.path"/>
+        <pathelement path="${eclipselink.plugins}/com.sun.jersey_1.8.0.201204181614.jar"/>
+        <pathelement path="${eclipselink.plugins}/javax.ejb_3.1.0.v201205171433.jar"/>
     </path>
 
 <!-- ================================================================================= -->
@@ -179,7 +196,7 @@
 <!-- ================================================================================= -->
 
     <!-- "top-level" target for creating the distribution archives. -->
-    <target name="package-all" depends="package-eclipselink-bundles, package-eclipselink-nosql-bundles, package-src-jar, package-example-jar, package-tst-src-zip, package-tst-jar-zip, package-javadoc-zip, package-installer-zip"/>
+    <target name="package-all" depends="package-eclipselink-bundles, package-src-jar, package-example-jar, package-tst-src-zip, package-tst-jar-zip, package-javadoc-zip, package-installer-zip, package-eclipselink-nosql-install"/>
 
     <!-- Compiles all components except tests, builds eclipselink.jar. -->
     <target name="build-eclipselink-jar" depends="build-core, package-eclipselink-jar" description="build all EclipseLink distribution files except docs and tests"/>
@@ -295,16 +312,19 @@
                 </fileset>
              </classpath>
         </java>
-        <copy todir="${plugins.dir}" flatten="true">
+        <!-- source jars generated with -sources in target dir - tycho P2 should name properly, but can't use due to dir structure -->
+        <!-- Below not needed as long as parent post-processing with ant used to inject common html files -->
+        <!-- copy todir="${plugins.dir}" flatten="true">
             <fileset dir="target">
                 <include name="**/*-sources.jar"/>
             </fileset>
             <mapper type="glob" from="*-sources.jar" to="*.jar"/>
-        </copy>
+        </copy -->
         <copy todir="${plugins.dir}" flatten="true">
             <fileset dir="target">
                 <include name="**/org.eclipse.persistence*.jar"/>
                 <exclude name="**/*-sources.jar"/>
+                <exclude name="**/*parent*.jar"/>
             </fileset>
         </copy>
         <!-- temporarily force dbws.builder build from ant -->
@@ -649,20 +669,6 @@
         </zip>
     </target>
 
-    <target name="package-eclipselink-nosql-bundles">
-        <delete file="${eclipselink.nosql.install.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
-        <zip destfile="${eclipselink.nosql.install.prefix}${eclipselink.zip.suffix}">
-            <zipfileset dir="${eclipselink.plugins}">
-                <include name="*nosql*"/>
-            </zipfileset>
-            <zipfileset dir=".">
-                <include name="${about-file}"/>
-                <include name="${readme-file}"/>
-                <include name="${license-files}"/>
-            </zipfileset>
-        </zip>
-    </target>
-
     <target name="gen-wls-shared-lib" description="call out to build a shared lib for WLS using the current build">
         <ant antfile="sharedlib.xml"    dir="."   target="create-shared-lib-install"/>
     </target>
@@ -767,9 +773,10 @@
         </zip>
     </target>
 
+    <target name="build-javadocs" depends="build-main-javadocs,build-nosql-javadocs,build-jpars-javadocs"/>
 
     <!-- Generates the Javadocs for all public EclipseLink classes. -->
-    <target name="build-javadocs">
+    <target name="build-main-javadocs">
         <!-- the following property needs to be here because the "qualifier" is generated at runtime -->
         <property name="eclipselink.javadoc.title" value="${javadoc.prefixTitle}, build '${version.qualifier}' ${javadoc.postfixTitle}"/>
         <delete dir="${build.dir}/commonj.sdo" failonerror="false"/>
@@ -811,6 +818,11 @@
                 <include name="org/eclipse/persistence/**/*.java"/>
                 <exclude name="org/eclipse/persistence/internal/**/*.java"/>
             </fileset>
+            <!-- Causes Javadoc error -->
+            <!-- fileset dir="${eclipselink.extension.oracle}/${src.dir}" defaultexcludes="yes">
+                <include name="org/eclipse/persistence/**/*.java"/>
+                <exclude name="org/eclipse/persistence/internal/**/*.java"/>
+            </fileset -->
             <fileset dir="${eclipselink.dbws}/${src.dir}" defaultexcludes="yes">
                 <include name="org/eclipse/persistence/**/*.java"/>
                 <exclude name="org/eclipse/persistence/internal/**/*.java"/>
@@ -819,7 +831,15 @@
                 <include name="org/eclipse/persistence/**/*.java"/>
                 <exclude name="org/eclipse/persistence/internal/**/*.java"/>
             </fileset>
+            <fileset dir="${eclipselink.hermes}/${src.dir}" defaultexcludes="yes">
+                <include name="org/eclipse/persistence/**/*.java"/>
+                <exclude name="org/eclipse/persistence/internal/**/*.java"/>
+            </fileset>
             <fileset dir="${eclipselink.moxy}/${src.dir}" defaultexcludes="yes">
+                <include name="org/eclipse/persistence/**/*.java"/>
+                <exclude name="org/eclipse/persistence/internal/**/*.java"/>
+            </fileset>
+            <fileset dir="${eclipselink.moxy.dynamicxjc}/${src.dir}" defaultexcludes="yes">
                 <include name="org/eclipse/persistence/**/*.java"/>
                 <exclude name="org/eclipse/persistence/internal/**/*.java"/>
             </fileset>
@@ -834,12 +854,88 @@
         </javadoc>
     </target>
 
+    <target name="build-nosql-javadocs">
+        <!-- the following property needs to be here because the "qualifier" is generated at runtime -->
+        <property name="nosql.javadoc.title" value="${nosql.javadoc.prefixTitle}, build '${version.qualifier}' ${javadoc.postfixTitle}"/>
+        <delete dir="${nosql.javadocs}" failonerror="false"/>
+        <javadoc
+            maxmemory="384m"
+            Verbose="false"
+            packagenames="org.eclipse.persistence.**"
+            destdir="${nosql.javadocs}"
+            useexternalfile="yes"
+            additionalparam="-breakiterator -quiet"
+            windowtitle="${nosql.javadoc.title}"
+            >
+            <classpath>
+                <path refid="nosql.javadoc.path"/>
+            </classpath>
+            <tag name ="author" enabled="true" description="Author:" />
+            <tag name ="since" scope="all" description="Since:" />
+            <tag name ="SBGen" scope="all" description="SBGen:" />
+            <tag name ="bug" enabled="true" description="Related Bugs:" />
+            <doctitle><![CDATA[${nosql.javadoc.title}]]></doctitle>
+            <header><![CDATA[${nosql.javadoc.title}]]></header>
+
+            <!-- *** EclipseLink modules *** -->
+            <fileset dir="${eclipselink.extension.nosql}/${src.dir}" defaultexcludes="yes">
+                <include name="org/eclipse/persistence/**/*.java"/>
+                <exclude name="org/eclipse/persistence/internal/**/*.java"/>
+            </fileset>
+            <fileset dir="${eclipselink.extension.oracle.nosql}/${src.dir}" defaultexcludes="yes">
+                <include name="org/eclipse/persistence/**/*.java"/>
+                <exclude name="org/eclipse/persistence/internal/**/*.java"/>
+            </fileset>
+        </javadoc>
+    </target>
+
+    <target name="build-jpars-javadocs">
+        <!-- the following property needs to be here because the "qualifier" is generated at runtime -->
+        <property name="jpars.javadoc.title" value="${jpars.javadoc.prefixTitle}, build '${version.qualifier}' ${javadoc.postfixTitle}"/>
+        <delete dir="${jpars.javadocs}" failonerror="false"/>
+        <javadoc
+            maxmemory="384m"
+            Verbose="false"
+            packagenames="org.eclipse.persistence.**"
+            destdir="${jpars.javadocs}"
+            useexternalfile="yes"
+            additionalparam="-breakiterator -quiet"
+            windowtitle="${jpars.javadoc.title}"
+            >
+            <classpath>
+                <path refid="jpars.javadoc.path"/>
+            </classpath>
+            <tag name ="author" enabled="true" description="Author:" />
+            <tag name ="since" scope="all" description="Since:" />
+            <tag name ="SBGen" scope="all" description="SBGen:" />
+            <tag name ="bug" enabled="true" description="Related Bugs:" />
+            <doctitle><![CDATA[${jpars.javadoc.title}]]></doctitle>
+            <header><![CDATA[${jpars.javadoc.title}]]></header>
+
+            <!-- *** EclipseLink modules *** -->
+            <fileset dir="${eclipselink.jpars}/${src.dir}" defaultexcludes="yes">
+                <include name="org/eclipse/persistence/**/*.java"/>
+                <exclude name="org/eclipse/persistence/internal/**/*.java"/>
+            </fileset>
+        </javadoc>
+    </target>
+
     <!-- Packages javadoc into a zip. -->
     <target name="package-javadoc-zip" depends="build-javadocs" description="build EclipseLink javadoc zip">
         <delete file="${eclipselink.javadoc.install.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
         <zip destfile="${eclipselink.javadoc.install.prefix}${eclipselink.zip.suffix}">
             <!-- miscellaneous files -->
             <zipfileset dir="${eclipselink.javadocs}/"/>
+        </zip>
+        <delete file="${nosql.javadoc.install.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
+        <zip destfile="${nosql.javadoc.install.prefix}${eclipselink.zip.suffix}">
+            <!-- miscellaneous files -->
+            <zipfileset dir="${nosql.javadocs}/"/>
+        </zip>
+        <delete file="${jpars.javadoc.install.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
+        <zip destfile="${jpars.javadoc.install.prefix}${eclipselink.zip.suffix}">
+            <!-- miscellaneous files -->
+            <zipfileset dir="${jpars.javadocs}/"/>
         </zip>
     </target>
 
@@ -855,6 +951,7 @@
                 <include name="${readme-file}"/>
                 <include name="${license-files}"/>
                 <include name="${eclipselink.javadoc.install.prefix}${eclipselink.zip.suffix}"/>
+                <include name="${jpars.javadoc.install.prefix}${eclipselink.zip.suffix}"/>
             </zipfileset>
             <!-- setenv and package-rename scripts -->
             <zipfileset dir="${eclipselink.core.bin}" prefix="eclipselink/bin" filemode="755">
@@ -925,6 +1022,22 @@
             <zipfileset dir="${eclipselink.util.workbench}/bin/"     includes="*"                  prefix="eclipselink/utils/workbench/bin" filemode="755"/>
         </zip>
     </target>
+
+    <target name="package-eclipselink-nosql-install">
+        <delete file="${eclipselink.nosql.install.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
+        <zip destfile="${eclipselink.nosql.install.prefix}${eclipselink.zip.suffix}">
+            <zipfileset dir="${eclipselink.plugins}">
+                <include name="*nosql*"/>
+            </zipfileset>
+            <zipfileset dir=".">
+                <include name="${about-file}"/>
+                <include name="${readme-file}"/>
+                <include name="${license-files}"/>
+                <include name="${nosql.javadoc.install.prefix}${eclipselink.zip.suffix}"/>
+            </zipfileset>
+        </zip>
+    </target>
+
 
     <!-- Testing -->
     <target name="test-srg" description="run all the SRG test suites"
