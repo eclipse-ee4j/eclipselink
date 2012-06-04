@@ -178,7 +178,7 @@ public class OracleChangeNotificationListener implements DatabaseEventListener {
             }
             if (existingIndex == null) {
                 existingIndex = new CacheIndex(fields);
-                existingIndex.setIsUpdatable(false);
+                existingIndex.setIsUpdateable(false);
                 existingIndex.setIsInsertable(false);
             }
             descriptor.getCachePolicy().addCacheIndex(existingIndex);
