@@ -68,7 +68,17 @@
     <property environment="env"/>
 
     <!-- Allows a user to overide certain user specific properties. -->
+    <condition property="custom.bld.properties.message" value="Loading ${user.home}/build.properties..."
+                                                     else="Notice: custom properties file '${user.home}/build.properties' not found to load.">
+        <available file="${user.home}/build.properties"/>
+    </condition>
+    <echo message="${custom.bld.properties.message}"/>
     <property file="${user.home}/build.properties"/>
+    <condition property="custom.tst.properties.message" value="Loading ${user.home}/test.properties..."
+                                                     else="Notice: custom properties file '${user.home}/test.properties' not found to load.">
+        <available file="${user.home}/test.properties"/>
+    </condition>
+    <echo message="${custom.tst.properties.message}"/>
     <property file="${user.home}/test.properties"/>
     <property file="${core_test.build.location}/antbuild.properties"/>
     <property file="${core_test.build.location}/${test.properties}"/>
