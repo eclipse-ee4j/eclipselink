@@ -81,6 +81,7 @@ import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 import org.eclipse.persistence.internal.libraries.asm.Label;
 import org.eclipse.persistence.internal.libraries.asm.Type;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
+import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.javamodel.AnnotationProxy;
@@ -1775,7 +1776,8 @@ public class AnnotationsProcessor {
         if (helper.isAnnotationPresent(javaHasAnnotations, XmlPath.class)) {
             XmlPath xmlPath = (XmlPath) helper.getAnnotation(javaHasAnnotations, XmlPath.class);
             property.setXmlPath(xmlPath.value());            
-            boolean isAttribute = xmlPath.value().indexOf('@') > -1;
+            XMLField tempField = new XMLField(xmlPath.value());
+            boolean isAttribute = tempField.getLastXPathFragment().isAttribute();
             property.setIsAttribute(isAttribute);
             // set schema name
             String schemaName = XMLProcessor.getNameFromXPath(xmlPath.value(), property.getPropertyName(), isAttribute);
@@ -1795,6 +1797,58 @@ public class AnnotationsProcessor {
                 }
             }
             property.setSchemaName(qName);
+            XPathFragment fragment = tempField.getXPathFragment();
+            String currentPath = "";
+            while(fragment != null && !(fragment.nameIsText()) && !(fragment.isAttribute())) {
+                if(fragment.getPredicate() != null) {
+                    //can't append xpath directly since it will contain the predicate
+                    String fragmentPath = fragment.getLocalName();
+                    if(fragment.getPrefix() != null && !(XMLConstants.EMPTY_STRING.equals(fragment.getPrefix()))) {
+                        fragmentPath = fragment.getPrefix() + ":" + fragmentPath;
+                    }
+                    currentPath += fragmentPath;
+                    String predicatePath = currentPath;
+                    TypeInfo targetInfo = info;
+                    if(fragment.getNextFragment() == null) {
+                        //if this is the last fragment, and there's no text after, then this is
+                        //complex. May need to add the attribute property to the target type.
+                        TypeInfo predicateTypeInfo = typeInfo.get(ptype.getQualifiedName());
+                        if(predicateTypeInfo == null && shouldGenerateTypeInfo(ptype)) {
+                            buildNewTypeInfo(new JavaClass[]{ptype});
+                            predicateTypeInfo = typeInfo.get(ptype.getQualifiedName());
+                        }
+                        if(predicateTypeInfo != null) {
+                            targetInfo = predicateTypeInfo;
+                            predicatePath = "";
+                        }
+                    }
+                    Property predicateProperty = new Property(helper);
+                    predicateProperty.setType(helper.getJavaClass("java.lang.String"));
+                    if(predicatePath.length() > 0) {
+                        predicatePath += "/";
+                    }
+                    predicatePath += fragment.getPredicate().getXPathFragment().getXPath();
+                    predicateProperty.setXmlPath(predicatePath);
+                    predicateProperty.setIsAttribute(true);
+
+                    String predschemaName = XMLProcessor.getNameFromXPath(predicatePath, property.getPropertyName(), true);
+                    QName predQname;
+                    if (nsInfo.isAttributeFormQualified()) {
+                        predQname = new QName(nsInfo.getNamespace(), predschemaName);
+                    } else {
+                        predQname = new QName(predschemaName);
+                    }
+                    predicateProperty.setSchemaName(predQname);
+
+                    if(!targetInfo.hasPredicateProperty(predicateProperty)) {
+                        targetInfo.getPredicateProperties().add(predicateProperty);
+                    }
+                } else {
+                    currentPath += fragment.getXPath();
+                }
+                currentPath += "/";
+                fragment = fragment.getNextFragment();
+            }
         } else {
             property.setSchemaName(getQNameForProperty(propertyName, javaHasAnnotations, getPackageInfoForPackage(cls).getNamespaceInfo(), info));
         }

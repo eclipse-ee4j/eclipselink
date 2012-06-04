@@ -18,6 +18,7 @@ import org.eclipse.persistence.testing.jaxb.annotations.xmlnametransformer.JAXBD
 import org.eclipse.persistence.testing.jaxb.annotations.xmlnametransformer.upper.JAXBUpperNameTransformerTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlnullpolicy.XmlNullPolicyTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlpath.predicate.PredicateTestSuite;
+import org.eclipse.persistence.testing.jaxb.annotations.xmlpath.predicate.adapter.CustomerTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlpaths.XmlPathsTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlpaths.override.XmlPathsOverrideTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlproperty.XmlPropertyTestCases;
@@ -72,6 +73,7 @@ public class AnnotationsTestSuite extends TestSuite {
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmlelementsjoinnodes.XmlElementsJoinNodeTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmlelementsjoinnodes.collection.XmlElementsJoinNodeTestCases.class);
         suite.addTest(PredicateTestSuite.suite());
+        suite.addTestSuite(CustomerTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmlinlinebinarydata.XmlInlineBinaryDataTestCases.class);
         suite.addTest(org.eclipse.persistence.testing.jaxb.annotations.xmltransient.XmlTransientTestSuite.suite());
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmlelementdecl.qualified.QualfiedTestCases.class);

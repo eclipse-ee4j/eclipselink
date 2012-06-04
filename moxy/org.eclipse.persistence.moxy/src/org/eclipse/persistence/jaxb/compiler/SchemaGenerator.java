@@ -560,6 +560,9 @@ public class SchemaGenerator {
                         }
                     }
                     addToSchemaType(info, props, info.getCompositor(), info.getComplexType(), info.getSchema());
+                    if(info.hasPredicateProperties()) {
+                        addToSchemaType(info, info.getPredicateProperties(), info.getCompositor(), info.getComplexType(), info.getSchema());
+                    }
                 }
             }
         }
@@ -1060,7 +1063,7 @@ public class SchemaGenerator {
                 }
             } else {
                 XPathFragment nextFragment = frag.getNextFragment();
-                if(!next.isXmlList() && null != nextFragment && nextFragment.isAttribute() && next.isCollectionType(next.getType())) {
+                if (frag.containsIndex() || frag.getPredicate() != null || (!next.isXmlList() && null != nextFragment && nextFragment.isAttribute() && next.isCollectionType(next.getType()))) {
                     currentElement.setMaxOccurs(Occurs.UNBOUNDED);
                 }
                 particle = new Sequence();
@@ -1123,6 +1126,9 @@ public class SchemaGenerator {
                         workingSchema.getNamespaceResolver().put(fragPrefix, fragUri);
                     }
                     currentElement = createRefElement(fragPrefix + COLON + frag.getLocalName(), currentParticle);
+                    if (frag.containsIndex() || frag.getPredicate() != null) {
+                        currentElement.setMaxOccurs(Occurs.UNBOUNDED);
+                    }
                     currentElementExists = true;
                 }
                 // set the frag's schema as it may be different than the current schema
