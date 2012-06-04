@@ -993,7 +993,7 @@
             <!-- jpa persistence 2.0 jars -->
             <zipfileset dir="${eclipselink.jpa.plugins}/" includes="javax.persistence_2.*.jar" excludes="*preview*" prefix="eclipselink/jlib/jpa"/>
             <!-- JPA RS jar -->
-            <zipfileset dir="${eclipselink.jpa.plugins}/" includes="org.eclipse.persistence.jpars*.jar" prefix="eclipselink/jlib/jpa"/>
+            <zipfileset dir="${eclipselink.plugins}/" includes="org.eclipse.persistence.jpars*.jar" prefix="eclipselink/jlib/jpa"/>
             <!-- moxy jar's and zips -->
             <zipfileset dir="${eclipselink.plugins}/" prefix="eclipselink/jlib/moxy">
                 <include name="${activation.jar}"/>
