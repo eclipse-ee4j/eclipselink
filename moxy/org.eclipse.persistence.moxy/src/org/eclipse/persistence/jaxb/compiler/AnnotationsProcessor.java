@@ -68,6 +68,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapters;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 
+import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.internal.descriptors.Namespace;
 import org.eclipse.persistence.internal.helper.ClassConstants;
@@ -3004,9 +3005,17 @@ public class AnnotationsProcessor {
         for (Iterator<JavaField> fieldIt = javaClass.getDeclaredFields().iterator(); fieldIt.hasNext();) {
             JavaField field = fieldIt.next();
             if (field.isEnumConstant()) {
-                String enumValue = field.getName();
+                Object enumValue = field.getName();
                 if (helper.isAnnotationPresent(field, XmlEnumValue.class)) {
                     enumValue = ((XmlEnumValue) helper.getAnnotation(field, XmlEnumValue.class)).value();
+                }
+                if(restrictionClass != null){
+                	try{
+                	    enumValue = XMLConversionManager.getDefaultXMLManager().convertObject(enumValue, restrictionClass);
+                	}catch(ConversionException e){                    	
+                    	throw org.eclipse.persistence.exceptions.JAXBException.invalidEnumValue(enumValue, restrictionClass.getName(), e);
+                    }
+
                 }
                 info.addJavaFieldToXmlEnumValuePair(field.getName(), enumValue);
             }
@@ -3016,10 +3025,6 @@ public class AnnotationsProcessor {
         if(info.getXmlRootElement() == null) {
             //process the root element and use that as the element
             ElementDeclaration elem = new ElementDeclaration(null, javaClass, javaClass.getQualifiedName(), false);
-
-            // if(this.javaClassToTypeMappingInfos.get(javaClass) != null) {
-            // elem.setTypeMappingInfo(this.javaClassToTypeMappingInfos.get(javaClass));
-            // }
             this.getLocalElements().add(elem);
         }
     }

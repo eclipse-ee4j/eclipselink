@@ -117,6 +117,7 @@ public class JAXBException extends EclipseLinkException {
     public static final int ERROR_CREATING_FIELD_ACCESSOR = 50085;
     public static final int ERROR_CREATING_PROPERTY_ACCESSOR = 50086;
     public static final int ERROR_INVOKING_ACCESSOR = 50087;
+    public static final int INVALID_ENUM_VALUE = 50088;
     
 
 
@@ -1086,6 +1087,13 @@ public class JAXBException extends EclipseLinkException {
         Object[] args = {method, accessor};
         JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, ERROR_INVOKING_ACCESSOR, args), nestedException);
         validationException.setErrorCode(ERROR_INVOKING_ACCESSOR);
+        return validationException;
+    }
+    
+    public static JAXBException invalidEnumValue(Object value, String theClassName, Exception nestedException) {
+        Object[] args = {value, theClassName};
+        JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, INVALID_ENUM_VALUE, args), nestedException);
+        validationException.setErrorCode(INVALID_ENUM_VALUE);
         return validationException;
     }
 }

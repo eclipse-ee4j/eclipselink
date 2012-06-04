@@ -24,7 +24,7 @@
          "root" : [ "abcvalue" ]
       },
       "collection6-wrapper" : {
-         "collection6" : [ "10" ]
+         "collection6" : [ 10 ]
       },
       "collection7-wrapper" : {
          "collection7" : [ "YWJj", "ZGVm" ]

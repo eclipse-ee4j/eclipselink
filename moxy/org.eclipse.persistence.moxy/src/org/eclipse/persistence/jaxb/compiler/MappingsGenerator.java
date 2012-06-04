@@ -1502,7 +1502,7 @@ public class MappingsGenerator {
     private JAXBEnumTypeConverter buildJAXBEnumTypeConverter(DatabaseMapping mapping, EnumTypeInfo enumInfo){
         JAXBEnumTypeConverter converter = new JAXBEnumTypeConverter(mapping, enumInfo.getClassName(), false);
         List<String> fieldNames = enumInfo.getFieldNames();
-        List<String> xmlEnumValues = enumInfo.getXmlEnumValues();
+        List<Object> xmlEnumValues = enumInfo.getXmlEnumValues();
         for (int i=0; i< fieldNames.size(); i++) {
             converter.addConversionValue(xmlEnumValues.get(i), fieldNames.get(i));
         }

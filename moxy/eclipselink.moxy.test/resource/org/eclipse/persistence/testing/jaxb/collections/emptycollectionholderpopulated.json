@@ -27,6 +27,6 @@
          "@type" : "collectionHolderInitialized",
          "collection2" : ""
       } ],
-      "collection9" : [ "1", "5" ]
+      "collection9" : [ 1, 5 ]
    }
 }

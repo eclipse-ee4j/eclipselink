@@ -4,11 +4,11 @@
     {
      "entry":[
      {
-        "key":"1",
+        "key":1,
         "value":"value1"
      },
           {
-        "key":"4",
+        "key":4,
         "value":"value2"
      }
 

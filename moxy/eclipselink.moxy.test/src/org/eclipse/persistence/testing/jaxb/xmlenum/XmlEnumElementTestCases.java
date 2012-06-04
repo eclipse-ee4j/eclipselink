@@ -12,6 +12,10 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.jaxb.xmlenum;
 
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class XmlEnumElementTestCases extends JAXBWithJSONTestCases {
@@ -35,5 +39,12 @@ public class XmlEnumElementTestCases extends JAXBWithJSONTestCases {
         emp.name = CONTROL_NAME;
         emp.department = Department.J2EE;
         return emp;
+    }
+    
+    public void testSchemaGen() throws Exception{
+    	List<InputStream> controlSchemas = new ArrayList();
+    	InputStream is = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/xmlenum/employee_element.xsd");
+    	controlSchemas.add(is);
+    	super.testSchemaGen(controlSchemas);
     }
 }

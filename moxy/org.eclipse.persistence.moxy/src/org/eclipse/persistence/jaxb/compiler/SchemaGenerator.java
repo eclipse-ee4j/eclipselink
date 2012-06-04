@@ -589,8 +589,8 @@ public class SchemaGenerator {
         return Introspector.decapitalize(className.substring(className.lastIndexOf(DOT_CHAR) + 1));
     }
 
-    public ArrayList<String> getEnumerationFacetsFor(EnumTypeInfo info) {
-        return (ArrayList<String>) info.getXmlEnumValues();
+    public ArrayList<Object> getEnumerationFacetsFor(EnumTypeInfo info) {
+        return (ArrayList<Object>) info.getXmlEnumValues();
     }
 
     public Property getXmlValueFieldForSimpleContent(TypeInfo info) {

@@ -12,5 +12,5 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlenum;
 
-@javax.xml.bind.annotation.XmlEnum(Integer.class)
+@javax.xml.bind.annotation.XmlEnum(String.class)
 public enum Card { CLUBS, DIAMONDS, HEARTS }
