@@ -228,7 +228,7 @@
         <repository>
             <id>EL_CompDeps</id>
             <layout>p2</layout>
-        <url>http://archive.eclipse.org/rt/eclipselink/compdep-update</url>
+        <url>http://archive.eclipse.org/rt/eclipselink/compdeps25-update</url>
         </repository>
     </repositories>
 

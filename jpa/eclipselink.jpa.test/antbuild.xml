@@ -633,11 +633,10 @@
                     excludes="org/eclipse/persistence/testing/framework/**/*.class,
                              org/eclipse/persistence/testing/tests/jpa21/**/*.class"/>
         </jar>
-        <!-- commented out because is misleading with no 21 test classes added to jar -->
-        <!-- jar jarfile="${eclipselink.jpa.test}/${jpa21.test.jar}">
+        <jar jarfile="${eclipselink.jpa.test}/${jpa21.test.jar}">
            <fileset dir="${eclipselink.jpa.test}/${classes.dir}"
                     includes="org/eclipse/persistence/testing/tests/jpa21/**/*.class"/>
-        </jar -->
+        </jar>
     </target>
 
     <!-- Copy Spring specified ***spring.xml, appContext.properties and persistence.xml to default build location-->
