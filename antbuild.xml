@@ -599,9 +599,7 @@
                     javax/persistence/criteria/Root.class,
                     javax/persistence/criteria/Selection.class,
                     javax/persistence/criteria/SetJoin.class,
-                    javax/persistence/criteria/Subquery.class
-            "/>
-            <!-- these are JPA 2.1 classes:
+                    javax/persistence/criteria/Subquery.class,
                     javax/persistence/ConstructorResult.class,
                     javax/persistence/NamedStoredProcedureQueries.class,
                     javax/persistence/NamedStoredProcedureQuery.class,
@@ -612,7 +610,8 @@
                     javax/persistence/criteria/CommonAbstractQuery.class,
                     javax/persistence/criteria/CriteriaDelete.class,
                     javax/persistence/criteria/CriteriaUpdate.class
-            -->
+
+            "/>
             <fileset
                 dir="${eclipselink.moxy.dynamicxjc}/${classes.dir}"
                 includes="**/*.class,"/>

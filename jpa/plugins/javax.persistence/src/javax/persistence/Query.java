@@ -1,18 +1,18 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2009 Sun Microsystems. All rights reserved. 
- * 
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
- * http://www.eclipse.org/org/documents/edl-v10.php.
- * 
- * Contributors:
- *     Linda DeMichiel - Java Persistence 2.0 - Version 2.0 (October 1, 2009)
- *     Specification available from http://jcp.org/en/jsr/detail?id=317
+ * Copyright (c) 2008 - 2012 Oracle Corporation. All rights reserved.
  *
- ******************************************************************************/
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * Contributors:
+ *     Linda DeMichiel - Java Persistence 2.1
+ *     Linda DeMichiel - Java Persistence 2.0
+ *
+ ******************************************************************************/ 
 package javax.persistence;
 
 import java.util.Calendar;
@@ -25,6 +25,7 @@ import java.util.Map;
  * Interface used to control query execution.
  *
  * @see TypedQuery
+ * @see StoredProcedureQuery
  * @see Parameter
  *
  * @since Java Persistence 1.0
@@ -40,8 +41,9 @@ public interface Query {
      * @throws QueryTimeoutException if the query execution exceeds
      *         the query timeout value set and only the statement is
      *         rolled back
-     * @throws TransactionRequiredException if a lock mode has
-     *         been set and there is no transaction
+     * @throws TransactionRequiredException if a lock mode other than
+     *         <code>NONE</code> has been set and there is no transaction
+     *         or the persistence context has not been joined to the transaction
      * @throws PessimisticLockException if pessimistic locking
      *         fails and the transaction is rolled back
      * @throws LockTimeoutException if pessimistic locking
@@ -62,8 +64,9 @@ public interface Query {
      * @throws QueryTimeoutException if the query execution exceeds
      *         the query timeout value set and only the statement is
      *         rolled back
-     * @throws TransactionRequiredException if a lock mode has
-     *         been set and there is no transaction
+     * @throws TransactionRequiredException if a lock mode other than
+     *         <code>NONE</code> has been set and there is no transaction
+     *         or the persistence context has not been joined to the transaction
      * @throws PessimisticLockException if pessimistic locking
      *         fails and the transaction is rolled back
      * @throws LockTimeoutException if pessimistic locking
@@ -81,7 +84,8 @@ public interface Query {
      *         Persistence query language SELECT statement or for
      *         a criteria query
      * @throws TransactionRequiredException if there is 
-     *         no transaction
+     *         no transaction or the persistence context has not
+     *         been joined to the transaction
      * @throws QueryTimeoutException if the statement execution 
      *         exceeds the query timeout value set and only 
      *         the statement is rolled back
@@ -190,7 +194,7 @@ public interface Query {
                        TemporalType temporalType);
 
     /**
-     * Bind an argument to a named parameter.
+     * Bind an argument value to a named parameter.
      * @param name  parameter name
      * @param value  parameter value
      * @return the same query instance
@@ -227,7 +231,7 @@ public interface Query {
                        TemporalType temporalType);
 
     /**
-     * Bind an argument to a positional parameter.
+     * Bind an argument value to a positional parameter.
      * @param position  position
      * @param value  parameter value
      * @return the same query instance
@@ -355,7 +359,8 @@ public interface Query {
     boolean isBound(Parameter<?> param);
 
     /**
-     * Return the value bound to the parameter.
+     * Return the input value bound to the parameter.
+     * (Note that OUT parameters are unbound.)
      * @param param parameter object
      * @return parameter value
      * @throws IllegalArgumentException if the parameter is not 
@@ -367,7 +372,8 @@ public interface Query {
     <T> T getParameterValue(Parameter<T> param);
 
     /**
-     * Return the value bound to the named parameter.
+     * Return the input value bound to the named parameter.
+     * (Note that OUT parameters are unbound.)
      * @param name  parameter name
      * @return parameter value
      * @throws IllegalStateException if the parameter has not been
@@ -379,7 +385,8 @@ public interface Query {
     Object getParameterValue(String name);
 
     /**
-     * Return the value bound to the positional parameter.
+     * Return the input value bound to the positional parameter.
+     * (Note that OUT parameters are unbound.)
      * @param position  position
      * @return parameter value
      * @throws IllegalStateException if the parameter has not been
@@ -420,7 +427,8 @@ public interface Query {
     Query setLockMode(LockModeType lockMode);
 
     /**
-     * Get the current lock mode for the query.
+     * Get the current lock mode for the query.  Returns null if a lock
+     * mode has not been set on the query object.
      * @return lock mode
      * @throws IllegalStateException if the query is found not to be
      *         a Java Persistence query language SELECT query or

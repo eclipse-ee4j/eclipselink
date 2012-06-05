@@ -1,18 +1,18 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2009 Sun Microsystems. All rights reserved. 
- * 
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
- * http://www.eclipse.org/org/documents/edl-v10.php.
- * 
- * Contributors:
- *     Linda DeMichiel - Java Persistence 2.0 - Version 2.0 (October 1, 2009)
- *     Specification available from http://jcp.org/en/jsr/detail?id=317
+ * Copyright (c) 2008 - 2012 Oracle Corporation. All rights reserved.
  *
- ******************************************************************************/
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * Contributors:
+ *     Linda DeMichiel - Java Persistence 2.1
+ *     Linda DeMichiel - Java Persistence 2.0
+ *
+ ******************************************************************************/ 
 package javax.persistence;
 
 import java.lang.annotation.Target;
@@ -24,7 +24,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static javax.persistence.FetchType.LAZY;
 
 /**
- * Defines a many-valued association with one-to-many multiplicity.
+ * Specifies a many-valued association with one-to-many multiplicity.
  * 
  * <p> If the collection is defined using generics to specify the 
  * element type, the associated target entity type need not be 

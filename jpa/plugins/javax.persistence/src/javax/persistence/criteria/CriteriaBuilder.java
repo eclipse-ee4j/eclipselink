@@ -1,18 +1,18 @@
 /*******************************************************************************
- * Copyright (c) 2008, 2009 Sun Microsystems. All rights reserved. 
- * 
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
- * http://www.eclipse.org/org/documents/edl-v10.php.
- * 
- * Contributors:
- *     Linda DeMichiel - Java Persistence 2.0 - Version 2.0 (October 1, 2009)
- *     Specification available from http://jcp.org/en/jsr/detail?id=317
+ * Copyright (c) 2008 - 2012 Oracle Corporation. All rights reserved.
  *
- ******************************************************************************/
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * Contributors:
+ *     Linda DeMichiel - Java Persistence 2.1
+ *     Linda DeMichiel - Java Persistence 2.0
+ *
+ ******************************************************************************/ 
 package javax.persistence.criteria;
 
 import java.math.BigDecimal;
@@ -54,6 +54,24 @@ public interface CriteriaBuilder {
      *  @return criteria query object
      */
     CriteriaQuery<Tuple> createTupleQuery();
+
+    // methods to construct queries for bulk updates and deletes:
+
+    /**
+     *  Create a <code>CriteriaUpdate</code> query object to perform a bulk update operation.
+     *  @param targetEntity  target type for update operation
+     *  @return the query object
+     *  @since Java Persistence 2.1
+     */
+    <T> CriteriaUpdate<T> createCriteriaUpdate(Class<T> targetEntity);
+
+    /**
+     *  Create a <code>CriteriaDelete</code> query object to perform a bulk delete operation.
+     *  @param targetEntity  target type for delete operation
+     *  @return the query object
+     *  @since Java Persistence 2.1
+     */
+    <T> CriteriaDelete<T> createCriteriaDelete(Class<T> targetEntity);
 
 
     // selection construction methods:
@@ -1439,6 +1457,73 @@ public interface CriteriaBuilder {
      */
    <T> Expression<T> function(String name, Class<T> type,
 Expression<?>... args);
+
+
+    // methods for downcasting:
+
+    /**
+     *  Downcast Join object to the specified type.
+     *  @param join  Join object
+     *  @param type type to be downcast to
+     *  @return  Join object of the specified type
+     *  @since Java Persistence 2.1
+     */
+    <X, T, V extends T> Join<X, V> treat(Join<X, T> join, Class<V> type);
+
+    /**
+     *  Downcast CollectionJoin object to the specified type.
+     *  @param join  CollectionJoin object
+     *  @param type type to be downcast to
+     *  @return  CollectionJoin object of the specified type
+     *  @since Java Persistence 2.1
+     */
+    <X, T, E extends T> CollectionJoin<X, E> treat(CollectionJoin<X, T> join, Class<E> type);
+
+    /**
+     *  Downcast SetJoin object to the specified type.
+     *  @param join  SetJoin object
+     *  @param type type to be downcast to
+     *  @return  SetJoin object of the specified type
+     *  @since Java Persistence 2.1
+     */
+    <X, T, E extends T> SetJoin<X, E> treat(SetJoin<X, T> join, Class<E> type);
+
+    /**
+     *  Downcast ListJoin object to the specified type.
+     *  @param join  ListJoin object
+     *  @param type type to be downcast to
+     *  @return  ListJoin object of the specified type
+     *  @since Java Persistence 2.1
+     */
+    <X, T, E extends T> ListJoin<X, E> treat(ListJoin<X, T> join, Class<E> type);
+
+    /**
+     *  Downcast MapJoin object to the specified type.
+     *  @param join  MapJoin object
+     *  @param type type to be downcast to
+     *  @return  MapJoin object of the specified type
+     *  @since Java Persistence 2.1
+     */
+    <X, K, T, V extends T> MapJoin<X, K, V> treat(MapJoin<X, K, T> join, Class<V> type);
+
+
+    /**
+     *  Downcast Path object to the specified type.
+     *  @param path  path
+     *  @param type type to be downcast to
+     *  @return  Path object of the specified type
+     *  @since Java Persistence 2.1
+     */
+    <X, T extends X> Path<T> treat(Path<X> path, Class<T> type);
+
+    /**
+     *  Downcast Root object to the specified type.
+     *  @param root  root
+     *  @param type type to be downcast to
+     *  @return  Root object of the specified type
+     *  @since Java Persistence 2.1
+     */
+    <X, T extends X> Root<T> treat(Root<X> root, Class<T> type);
 
 }
 
