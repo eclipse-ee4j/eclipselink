@@ -20,10 +20,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <tycho.version>0.15.0</tycho.version>
         <junit4-version>4.8.1</junit4-version>
-        <!-- maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format -->
+        <!-- maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format> Seems it must be in settings.xml -->
         <!-- PROJECT Properties -->
         <release.version>2.5.0</release.version>
-        <!-- maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format> Seems it must be in settings.xml -->
         <!-- build.qualifier>v${maven.build.timestamp}</build.qualifier -->
         <!-- forceContextQualifier>${build.qualifier}</forceContextQualifier -->
         <build.type>SNAPSHOT</build.type>
@@ -54,6 +53,58 @@
         <module>../../dbws/org.eclipse.persistence.dbws</module>
         <!-- module>../../utils/org.eclipse.persistence.dbws.builder</module -->
     </modules>
+
+    <profiles>
+        <profile>
+            <id>tycho.default</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <repositories>
+                <repository>
+                    <id>Eclipse</id>
+                    <layout>p2</layout>
+                    <url>http://download.eclipse.org/releases/${eclipse.drop}</url>
+                </repository>
+                <repository>
+                    <id>Orbit</id>
+                    <layout>p2</layout>
+                    <url>http://download.eclipse.org/tools/orbit/downloads/drops/${orbit.drop}/repository</url>
+                </repository>
+                <repository>
+                    <id>EL_CompDeps</id>
+                    <layout>p2</layout>
+                    <url>http://archive.eclipse.org/rt/eclipselink/compdeps25-update</url>
+                </repository>
+             </repositories>
+        </profile>
+        <profile>
+            <id>tycho.local.compdeps</id>
+            <activation>
+                <property>
+                    <name>local.compdeps</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <repositories>
+                <repository>
+                    <id>Eclipse</id>
+                    <layout>p2</layout>
+                    <url>http://download.eclipse.org/releases/${eclipse.drop}</url>
+                </repository>
+                <repository>
+                    <id>Orbit</id>
+                    <layout>p2</layout>
+                    <url>http://download.eclipse.org/tools/orbit/downloads/drops/${orbit.drop}/repository</url>
+                </repository>
+                <repository>
+                     <id>Local_CompDeps</id>
+                     <layout>p2</layout>
+                     <url>file:/${basedir}/../../buildsystem/compdeps/p2repo</url>
+                </repository>
+             </repositories>
+        </profile>
+    </profiles>
 
     <build>
         <defaultGoal>verify</defaultGoal>
@@ -213,28 +264,5 @@
             <url>http://repo1.maven.org</url>
         </pluginRepository>
     </pluginRepositories>
-
-    <repositories>
-        <repository>
-            <id>Eclipse</id>
-            <layout>p2</layout>
-            <url>http://download.eclipse.org/releases/${eclipse.drop}</url>
-        </repository>
-        <repository>
-            <id>Orbit</id>
-            <layout>p2</layout>
-            <url>http://download.eclipse.org/tools/orbit/downloads/drops/${orbit.drop}/repository</url>
-        </repository>
-        <repository>
-            <id>EL_CompDeps</id>
-            <layout>p2</layout>
-        <url>http://archive.eclipse.org/rt/eclipselink/compdeps25-update</url>
-        </repository>
-        <!-- repository>
-            <id>Local_CompDeps</id>
-            <layout>p2</layout>
-            <url>file:/${basedir}/../../buildsystem/compdeps/p2repo</url>
-        </repository -->
-    </repositories>
 
 </project>

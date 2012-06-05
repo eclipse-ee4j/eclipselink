@@ -91,15 +91,15 @@
         <echo message=" ---"/>
 
         <!-- Tool definitions -->
-        <property name="p2.SDK.install.dir"             value="D:\Juno-M7\eclipse"/>
-        <property name="p2.SDK.plugin.dir"              value="${p2.SDK.install.dir}/plugins"/>
+        <property name="eclipse.install.dir"            value="D:\Juno-M7\eclipse"/>
+        <property name="eclipse.plugin.dir"             value="${eclipse.install.dir}/plugins"/>
         <property name="p2.publisher.prefix"            value="org.eclipse.equinox.p2.publisher"/>
         <property name="p2.launcher.prefix"             value="org.eclipse.equinox.launcher"/>
         <property name="p2.artifact.prefix"             value="org.eclipse.equinox.artifact.repository"/>
-        <available file="${p2.SDK.plugin.dir}" property="sdk.install.exist"/>
-        <echo message="p2.SDK.install.dir             ='${p2.SDK.install.dir}'"/>
-        <say  message="p2.SDK.plugin.dir              ='${p2.SDK.plugin.dir}'"    if="sdk.install.exist"/>
-        <say  message="p2.SDK.plugin.dir:  '${p2.SDK.plugin.dir}' not found!" unless="sdk.install.exist"/>
+        <available file="${eclipse.plugin.dir}" property="eclipse.install.exist"/>
+        <echo message="eclipse.install.dir            ='${eclipse.install.dir}'"/>
+        <say  message="eclipse.plugin.dir             ='${eclipse.plugin.dir}'"    if="eclipse.install.exist"/>
+        <say  message="eclipse.plugin.dir:  '${eclipse.plugin.dir}' not found!" unless="eclipse.install.exist"/>
         <echo message="p2.publisher.jar               ='${p2.publisher.jar}'"/>
         <echo message="p2.launcher.jar                ='${p2.launcher.jar}'"/>
         <echo message="p2.artifact.jar                ='${p2.artifact.jar}'"/>
@@ -176,7 +176,7 @@
         <delete dir="${p2repo.dir}"  includeEmptyDirs="true" failonerror="false"/>
     </target>
 
-    <target name="resolve-feature-dependencies" depends="init">
+    <target name="resolve-feature-dependencies" if="eclipse.install.exist" depends="init">
         <echo message="Searching ${compdeps.2.common.plugins.dir}..."/>
         <selectbundle basename="${sun.xml.bind.prefix}"  directory="${compdeps.2.common.plugins.dir}"
                      criterion="${sun.xml.bind.criteria}" property="sun.xml.bind.version" versiononly="true"
@@ -276,7 +276,7 @@
         </jar>
     </target>
 
-    <target name="create-deployable-features" depends="resolve-feature-dependencies">
+    <target name="create-deployable-features" if="eclipse.install.exist" depends="resolve-feature-dependencies">
         <mkdir dir="${bld.src.dir}"/>
         <!--          Filters for feature.xml files                 -->
         <filter token="VERSION"              value="${compdeps.version}"/>
@@ -314,7 +314,7 @@
     </target>
 
     <!-- P2 Targets -->
-    <target name="populate-p2-site" depends="init, resolve-feature-dependencies">
+    <target name="populate-p2-site" if="eclipse.install.exist" depends="init, resolve-feature-dependencies">
         <delete dir="${p2.bundle.dir}" failonerror="false"/>
         <mkdir dir="${p2.bundle.dir}"/>
         <!-- populate bundle jars -->
@@ -353,14 +353,14 @@
         </copy>
     </target>
 
-    <target name="configure-tooling" depends="init">
-        <selectbundle basename="${p2.launcher.prefix}"   directory="${p2.SDK.plugin.dir}"
+    <target name="configure-tooling" if="eclipse.install.exist" depends="init">
+        <selectbundle basename="${p2.launcher.prefix}"   directory="${eclipse.plugin.dir}"
                      criterion="[0.0.1,9.0.0)" property="p2.launcher.jar"
         />
-        <selectbundle basename="${p2.publisher.prefix}"  directory="${p2.SDK.plugin.dir}"
+        <selectbundle basename="${p2.publisher.prefix}"  directory="${eclipse.plugin.dir}"
                      criterion="[0.0.1,9.0.0)" property="p2.publisher.jar"
         />
-        <echo message="p2.SDK.plugin.dir ='${p2.SDK.plugin.dir}'"/>
+        <echo message="eclipse.plugin.dir ='${eclipse.plugin.dir}'"/>
         <say  message="p2.launcher.jar   ='${p2.launcher.jar}'"                                               if="p2.launcher.jar"/>
         <say  message="   '${p2.launcher.prefix}_[0.0.1,9.0.0).jar' not found! P2 Generation will fail."  unless="p2.launcher.jar"/>
         <say  message="p2.publisher.jar  ='${p2.publisher.jar}'"                                              if="p2.publisher.jar"/>
@@ -394,10 +394,10 @@
         <java classname="org.eclipse.equinox.launcher.Main" fork="true" timeout="10800000" taskname="p2"
             jvm="${java.home}/bin/java" failonerror="false" maxmemory="256m">
             <classpath>
-                <fileset dir="${p2.SDK.plugin.dir}"
+                <fileset dir="${eclipse.plugin.dir}"
                     includes="${p2.launcher.jar},
                               ${p2.publisher.jar}"/>
-                <pathelement location="${p2.SDK.plugin.dir}" />
+                <pathelement location="${eclipse.plugin.dir}" />
             </classpath>
             <arg line=" -application org.eclipse.equinox.p2.publisher.UpdateSitePublisher" />
             <arg line=" -metadataRepository ${p2.repos.url}" />

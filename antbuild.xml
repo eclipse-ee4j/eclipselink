@@ -230,10 +230,25 @@
         <available file="${M2_HOME}/bin/mvn" property="use.maven"/>
         <fail message="Maven 3 not found. Build won't run if Maven 3 not installed and M2_HOME properly set!." unless="use.maven"/>
 
+        <!-- Determine whether the build could generate/use a local compdeps repo -->
+        <!--     To setup generation of local compdeps:                           -->
+        <!--        Set "eclipse.install.dir" to a valid Eclipse installation     -->
+        <!--           (Indigo or higher has been tested) by using a -D on        -->
+        <!--           the commandline, or adding it in a user properties file    -->
+        <condition property="local.compdeps" value="true" else="false">
+            <and>
+                <isset property="eclipse.install.dir"/>
+                <available file="${eclipse.install.dir}/plugins" type="dir"/>
+            </and>
+        </condition>
+        <!-- Test to see if local repo should be generated: if not exist and if can -->
         <condition property="generate.compdeps">
-            <not>
-                <available file="${eclipselink.compdeps}/p2repo" type="dir"/>
-            </not>
+            <and>
+                <not>
+                    <available file="${eclipselink.compdeps}/p2repo" type="dir"/>
+                </not>
+                <isset property="local.compdeps"/>
+            </and>
         </condition>
     </target>
 
@@ -304,6 +319,7 @@
     </target>
 
     <target name="generate-local-compdeps" if="generate.compdeps" depends="check-maven" description="Build local p2 repository of local compiler dependencies">
+        <echo message="Generating local 'Compile Dependency P2 Repository' using tools found in '${eclipse.install.dir}/plugins'."/>
         <ant antfile="antbuild.xml" dir="${eclipselink.compdeps}"  target="build"/>
     </target>
 
@@ -314,6 +330,7 @@
              <jvmarg value="-Dmaven.home=${M2_HOME}"/>
              <jvmarg value="-Dbuild.qualifier=${version.qualifier}"/>
              <jvmarg value="-DforceContextQualifier=${version.qualifier}"/>
+             <jvmarg value="-Dlocal.compdeps=${local.compdeps}"/>
              <!-- arg value="-X"/ -->
              <arg value="verify"/>
              <classpath>
@@ -1046,6 +1063,16 @@
             </zipfileset>
         </zip>
     </target>
+
+    <!-- Build Infrastructure targets -->
+    <target name="refresh-plugins" description="populate plugins with dependent jars from specified Orbit repository">
+        <ant antfile="antbuild.xml" dir="${eclipselink.bldplugins}"  target="build"/>
+    </target>
+
+    <!-- commented out because is currently above with build-core -->
+    <!-- target name="generate-local-compdeps" if="generate.compdeps" depends="check-maven" description="Build local p2 repository of local compiler dependencies">
+        <ant antfile="antbuild.xml" dir="${eclipselink.compdeps}"  target="build"/>
+    </target -->
 
 
     <!-- Testing -->
