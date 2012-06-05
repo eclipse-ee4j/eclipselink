@@ -443,7 +443,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
     public void testSetup() {
         new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession());
-
+        clearCache();
         // Force uppercase for Postgres.
         if (getServerSession().getPlatform().isPostgreSQL()) {
             getServerSession().getLogin().setShouldForceFieldNamesToUpperCase(true);

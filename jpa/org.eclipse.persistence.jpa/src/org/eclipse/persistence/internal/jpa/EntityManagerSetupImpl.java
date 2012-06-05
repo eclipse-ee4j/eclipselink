@@ -2618,9 +2618,14 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                session.getProject().getLogin().setShouldForceFieldNamesToUpperCase(true);
            } else if (insensitiveString.equalsIgnoreCase("false")) {
                project.setShouldForceFieldNamesToUpperCase(false);
+               session.getProject().getLogin().setShouldForceFieldNamesToUpperCase(false);
            } else {
                session.handleException(ValidationException.invalidBooleanValueForProperty(insensitiveString, PersistenceUnitProperties.UPPERCASE_COLUMN_NAMES));
            }
+        } else {
+            // Default to being case in-sensitive.
+            project.setShouldForceFieldNamesToUpperCase(true);
+            session.getProject().getLogin().setShouldForceFieldNamesToUpperCase(true);            
         }
     }
     

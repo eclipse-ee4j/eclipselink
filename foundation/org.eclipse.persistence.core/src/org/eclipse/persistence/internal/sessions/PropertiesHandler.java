@@ -538,7 +538,7 @@ public class PropertiesHandler {
                 {TargetServer.None, pcg + "NoServerPlatform"},
                 {TargetServer.OC4J, pcg + "oc4j.Oc4jPlatform"},
                 {TargetServer.SunAS9, pcg + "sunas.SunAS9ServerPlatform"},
-                {TargetServer.Glassfish, pcg + "glassfish.GlassfishServerPlatform"},
+                {TargetServer.Glassfish, pcg + "glassfish.GlassfishPlatform"},
                 {TargetServer.WebSphere, pcg + "was.WebSpherePlatform"},
                 {TargetServer.WebSphere_6_1, pcg + "was.WebSphere_6_1_Platform"},
                 {TargetServer.WebSphere_7, pcg + "was.WebSphere_7_Platform"},

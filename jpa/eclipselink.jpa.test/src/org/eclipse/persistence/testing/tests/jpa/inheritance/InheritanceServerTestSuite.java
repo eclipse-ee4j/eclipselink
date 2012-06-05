@@ -28,6 +28,7 @@ public class InheritanceServerTestSuite extends TestSuite {
         suite.addTest(MixedInheritanceJUnitTestCase.suite());
         suite.addTest(JoinedAttributeInheritanceJunitTest.suite());
         suite.addTest(TablePerClassInheritanceJUnitTest.suite());
+        suite.addTest(ReportQueryMultipleReturnInheritanceTestSuite.suite());
         
         return suite;
     }

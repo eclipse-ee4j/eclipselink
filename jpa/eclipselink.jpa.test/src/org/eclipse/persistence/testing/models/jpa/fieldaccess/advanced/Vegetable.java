@@ -33,7 +33,7 @@ public class Vegetable implements Serializable {
     private double cost;
     private String[] tags;
     @Column (columnDefinition="char(1)")
-    private char type;
+    private char type = '0';
     
     public Vegetable() {}
 

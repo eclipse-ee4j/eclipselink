@@ -47,6 +47,7 @@ import org.eclipse.persistence.testing.tests.jpa.inheritance.DeleteAllQueryInher
 import org.eclipse.persistence.testing.tests.jpa.inheritance.EntityManagerJUnitTestCase;
 import org.eclipse.persistence.testing.tests.jpa.inheritance.MixedInheritanceJUnitTestCase;
 import org.eclipse.persistence.testing.tests.jpa.inheritance.JoinedAttributeInheritanceJunitTest;
+import org.eclipse.persistence.testing.tests.jpa.inheritance.ReportQueryMultipleReturnInheritanceTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.inheritance.TablePerClassInheritanceJUnitTest;
 
 import org.eclipse.persistence.testing.tests.jpa.inherited.OrderedListJunitTest;
@@ -86,6 +87,7 @@ import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitNativeQueryTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.xml.EntityMappingsJUnitTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.cacheable.CacheableModelJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.cascadedeletes.CascadeDeletesJUnitTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.complexaggregate.ComplexAggregateTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.ddlgeneration.DDLGenerationExtendTablesJUnitTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.ddlgeneration.DDLGenerationJUnitTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.delimited.DelimitedPUTestSuite;
@@ -130,6 +132,7 @@ public class FullRegressionTestSuite extends TestSuite {
         suite.addTest(AdvancedMultiTenantJunitTest.suite());
         suite.addTest(PessimisticLockingExtendedScopeTestSuite.suite());
         suite.addTest(UpdateAllQueryAdvancedJunitTest.suite());
+        suite.addTest(ComplexAggregateTestSuite.suite());
         fullSuite.addTest(suite);
 
         // FieldAccess advanced model
@@ -177,6 +180,7 @@ public class FullRegressionTestSuite extends TestSuite {
         suite.addTest(MixedInheritanceJUnitTestCase.suite());
         suite.addTest(JoinedAttributeInheritanceJunitTest.suite());
         suite.addTest(TablePerClassInheritanceJUnitTest.suite());
+        suite.addTest(ReportQueryMultipleReturnInheritanceTestSuite.suite());
         fullSuite.addTest(suite);
 
         // Inherited model.

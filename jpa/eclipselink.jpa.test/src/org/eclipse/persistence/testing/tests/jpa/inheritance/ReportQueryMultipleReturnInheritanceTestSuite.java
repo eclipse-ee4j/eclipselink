@@ -36,6 +36,11 @@ public class ReportQueryMultipleReturnInheritanceTestSuite extends JUnitTestCase
     public ReportQueryMultipleReturnInheritanceTestSuite(String name) {
         super(name);
     }
+
+    public static Test suite() {
+        TestSuite suite = new TestSuite(ReportQueryMultipleReturnInheritanceTestSuite.class);        
+        return suite;
+    }
     
     public void setUp () {
         super.setUp();
@@ -87,11 +92,6 @@ public class ReportQueryMultipleReturnInheritanceTestSuite extends JUnitTestCase
         assertTrue("Failed to return Employees correctly, Not A PerformanceTireInfo", PerformanceTireInfo.class.isAssignableFrom(resultItem.getClass()));
         assertTrue("Did not populate all fields.  Missing 'pressure'", ((PerformanceTireInfo)resultItem).getPressure() != null);
         assertTrue("Did not populate all fields.  Missing 'speedrating'", ((PerformanceTireInfo)resultItem).getSpeedRating() != null);
-    }
-    
-    public static Test suite() {
-        return new TestSuite(ReportQueryMultipleReturnInheritanceTestSuite.class);
-    }
-    
+    }    
 
 }

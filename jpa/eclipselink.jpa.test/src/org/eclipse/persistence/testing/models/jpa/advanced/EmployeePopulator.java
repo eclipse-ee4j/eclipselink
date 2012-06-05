@@ -973,13 +973,9 @@ public class EmployeePopulator {
             }
             // next time it deletes the rows instead.
             isFirstCreation = false;
-        }
-        // Force uppercase for Postgres.
-        if (session.getPlatform().isPostgreSQL()) {
-            session.getLogin().setShouldForceFieldNamesToUpperCase(true);
-        }
-        
+        }        
     }
+    
     protected boolean containsObject(Class domainClass, String identifier) {
         return populationManager.containsObject(domainClass, identifier);
     }

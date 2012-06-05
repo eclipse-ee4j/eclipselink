@@ -19,7 +19,6 @@ import java.util.Set;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.indirection.IndirectList;
 import org.eclipse.persistence.indirection.IndirectSet;
-import org.eclipse.persistence.internal.indirection.TransparentIndirectionPolicy;
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.inheritance.AAA;
@@ -55,8 +54,21 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
     }
 
     public static Test suite() {
-        TestSuite suite = new TestSuite(EntityManagerJUnitTestCase.class);
-
+        TestSuite suite = new TestSuite();
+        suite.setName("EntityManagerJUnitTestCase");
+        suite.addTest(new EntityManagerJUnitTestCase("testSetup"));
+        suite.addTest(new EntityManagerJUnitTestCase("testAddToUninstantiatedSet"));
+        suite.addTest(new EntityManagerJUnitTestCase("testAssociationWithEmbeddedIdSubclassEntityInJoinedStrategy"));
+        suite.addTest(new EntityManagerJUnitTestCase("testGenericCollectionOnSuperclass"));
+        suite.addTest(new EntityManagerJUnitTestCase("testLazyListInstantiationEager"));
+        suite.addTest(new EntityManagerJUnitTestCase("testLazyListInstantiationLazy"));
+        suite.addTest(new EntityManagerJUnitTestCase("testLazySetInstantiationEager"));
+        suite.addTest(new EntityManagerJUnitTestCase("testMapKeyInheritance"));
+        suite.addTest(new EntityManagerJUnitTestCase("testPersistPolymorphicRelationship"));
+        suite.addTest(new EntityManagerJUnitTestCase("testRemoveInheritedManyToMany"));
+        suite.addTest(new EntityManagerJUnitTestCase("testUpateTireInfo"));
+        suite.addTest(new EntityManagerJUnitTestCase("testUpateTireInfo"));
+        
         return suite;
     }
     

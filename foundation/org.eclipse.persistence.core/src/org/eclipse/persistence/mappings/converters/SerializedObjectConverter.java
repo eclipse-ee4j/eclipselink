@@ -52,6 +52,9 @@ public class SerializedObjectConverter implements Converter {
      * to read in the objects.
      */
     public Object convertDataValueToObjectValue(Object fieldValue, Session session) throws DescriptorException {
+        if (fieldValue == null) {
+            return null;
+        }
         byte[] bytes;
         try {
             bytes = (byte[])((AbstractSession)session).getDatasourcePlatform().convertObject(fieldValue, ClassConstants.APBYTE);
@@ -80,6 +83,9 @@ public class SerializedObjectConverter implements Converter {
      *  Convert the object to a byte array through serialize.
      */
     public Object convertObjectValueToDataValue(Object attributeValue, Session session) {
+        if (attributeValue == null) {
+            return null;
+        }
         ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
         try {
             ObjectOutputStream objectOut = new ObjectOutputStream(byteOut);

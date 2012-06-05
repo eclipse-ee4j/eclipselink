@@ -1426,6 +1426,10 @@ public class PersistenceUnitProperties {
      * in lower case on some platforms. If the column names are upper-case in
      * the mappings (default) then they will not match. This setting allows for
      * forcing the column names from the meta-data to upper-case.
+     * <p>
+     * This setting has been replaced by UPPERCASE_COLUMN_NAMES, which should be used instead,
+     * as it ensure both sides use upper case for comparisons.
+     * @see #UPPERCASE_COLUMN_NAMES
      */
     public static final String NATIVE_QUERY_UPPERCASE_COLUMNS = "eclipselink.jdbc.uppercase-columns";
 
@@ -1439,8 +1443,8 @@ public class PersistenceUnitProperties {
      * <p>
      * Values (case insensitive):
      * <ul>
-     * <li>"true"
-     * <li>"false" (DEFAULT)
+     * <li>"true" (DEFAULT)
+     * <li>"false" 
      * </ul>
      */
     public static final String UPPERCASE_COLUMN_NAMES = "eclipselink.jpa.uppercase-column-names";

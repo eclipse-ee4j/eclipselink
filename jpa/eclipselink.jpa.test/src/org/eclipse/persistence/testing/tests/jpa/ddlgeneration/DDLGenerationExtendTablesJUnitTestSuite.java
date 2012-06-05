@@ -29,9 +29,7 @@ import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
-import org.eclipse.persistence.testing.models.jpa.ddlgeneration.Course;
 import org.eclipse.persistence.tools.schemaframework.DefaultTableGenerator;
-import org.eclipse.persistence.tools.schemaframework.SchemaManager;
 import org.eclipse.persistence.tools.schemaframework.TableCreator;
 
 public class DDLGenerationExtendTablesJUnitTestSuite extends
@@ -54,6 +52,7 @@ public class DDLGenerationExtendTablesJUnitTestSuite extends
         DatabaseSessionImpl session = this.getDatabaseSession(DDL_PU);
         
         TableCreator defaultTableCreator = new DefaultTableGenerator(session.getProject(), true).generateDefaultTableCreator();
+        defaultTableCreator.setIgnoreDatabaseException(true);
         //drop the tables using the current project
         defaultTableCreator.dropTables(session);
         

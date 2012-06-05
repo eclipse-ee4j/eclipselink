@@ -36,6 +36,7 @@ import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.platform.database.converters.StructConverter;
 import org.eclipse.persistence.platform.server.ServerPlatform;
 import org.eclipse.persistence.platform.server.NoServerPlatform;
+import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Login;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.DatabaseLogin;
@@ -841,17 +842,29 @@ public class SessionsFactory {
         } else {
             // A supported platform so instantiate an object of its type.
             String serverClassName = platformConfig.getServerClassName();
-            if(platformConfig.isSupported()) {
+            if (platformConfig.isSupported()) {
                 try {
                     Class serverClass = m_classLoader.loadClass(serverClassName);
                     if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                        Constructor constructor = (Constructor) AccessController.doPrivileged(new PrivilegedGetConstructorFor(serverClass, new Class[] { org.eclipse.persistence.sessions.DatabaseSession.class }, false));
+                        Constructor constructor = (Constructor) AccessController.doPrivileged(new PrivilegedGetConstructorFor(serverClass, new Class[] { DatabaseSession.class }, false));
                         platform = (ServerPlatform)AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, new Object[] { session }));
-                    }else{
-                        Constructor constructor = PrivilegedAccessHelper.getConstructorFor(serverClass, new Class[] { org.eclipse.persistence.sessions.DatabaseSession.class }, false);
+                    } else {
+                        Constructor constructor = PrivilegedAccessHelper.getConstructorFor(serverClass, new Class[] { DatabaseSession.class }, false);
                         platform = (ServerPlatform)PrivilegedAccessHelper.invokeConstructor(constructor, new Object[] { session });
                     }
                 } catch (Throwable e) {
+                    try {
+                        Class serverClass = getClass().getClassLoader().loadClass(serverClassName);
+                        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                            Constructor constructor = (Constructor) AccessController.doPrivileged(new PrivilegedGetConstructorFor(serverClass, new Class[] { DatabaseSession.class }, false));
+                            platform = (ServerPlatform)AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, new Object[] { session }));
+                        } else {
+                            Constructor constructor = PrivilegedAccessHelper.getConstructorFor(serverClass, new Class[] { DatabaseSession.class }, false);
+                            platform = (ServerPlatform)PrivilegedAccessHelper.invokeConstructor(constructor, new Object[] { session });
+                        }
+                    } catch (Throwable ignore) {
+                        // Ignore, throw first error.
+                    }
                     throw SessionLoaderException.failedToParseXML("Server platform class is invalid: " + serverClassName, e);
                 }
             } else {

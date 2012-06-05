@@ -26,7 +26,7 @@ public class Vegetable implements Serializable {
     private VegetablePK id;       
     private double cost;
     private String[] tags;
-    private char type;
+    private char type = '0';
     
     public Vegetable() {}
 
