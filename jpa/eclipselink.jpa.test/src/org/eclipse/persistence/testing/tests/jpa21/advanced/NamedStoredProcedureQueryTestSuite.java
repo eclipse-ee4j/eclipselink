@@ -79,7 +79,7 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
         suite.addTest(new NamedStoredProcedureQueryTestSuite("testQueryWithMultipleResultsFromAnnotations"));
         suite.addTest(new NamedStoredProcedureQueryTestSuite("testQueryUsingPositionalParameterAndSingleResultSet"));
         
-        // These rests call stored procedures that write into OUT parameters.
+        // These tests call stored procedures that write into OUT parameters.
         suite.addTest(new NamedStoredProcedureQueryTestSuite("testQueryWithResultClass"));
         suite.addTest(new NamedStoredProcedureQueryTestSuite("testQueryWithResultClassPositional"));
         suite.addTest(new NamedStoredProcedureQueryTestSuite("testQueryWithResultSetMapping"));
