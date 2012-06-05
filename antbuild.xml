@@ -229,6 +229,12 @@
         <echo message="Maven install (M2_HOME) set to: '${M2_HOME}'"/>
         <available file="${M2_HOME}/bin/mvn" property="use.maven"/>
         <fail message="Maven 3 not found. Build won't run if Maven 3 not installed and M2_HOME properly set!." unless="use.maven"/>
+
+        <condition property="generate.compdeps">
+            <not>
+                <available file="${eclipselink.compdeps}/p2repo" type="dir"/>
+            </not>
+        </condition>
     </target>
 
     <!-- Cleans all build generated files. -->
@@ -297,12 +303,12 @@
         <delete file="${eclipselink.tst.src.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
     </target>
 
-    <target name="generate-local-compdeps" description="Build local p2 repository of local compiler dependencies">
+    <target name="generate-local-compdeps" if="generate.compdeps" depends="check-maven" description="Build local p2 repository of local compiler dependencies">
         <ant antfile="antbuild.xml" dir="${eclipselink.compdeps}"  target="build"/>
     </target>
 
     <!-- Compiles all runtime components (excluding Tests, Oracle extensions). -->
-    <target name="build-core" depends="check-maven, clean-runtime-checkedin, generate-local-compdeps">
+    <target name="build-core" depends="generate-local-compdeps, clean-runtime-checkedin">
         <java dir="${eclipselink.mvn.parent}" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
              <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
              <jvmarg value="-Dmaven.home=${M2_HOME}"/>
