@@ -26,30 +26,25 @@ import javax.persistence.EntityResult;
 import javax.persistence.FieldResult;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-// TODO: JPA 2.1 reference
-//import javax.persistence.NamedStoredProcedureQueries;
-//import javax.persistence.NamedStoredProcedureQuery;
+import javax.persistence.NamedStoredProcedureQueries;
+import javax.persistence.NamedStoredProcedureQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.SqlResultSetMapping;
 import javax.persistence.SqlResultSetMappings;
-//TODO: JPA 2.1 reference
-//import javax.persistence.StoredProcedureParameter;
+import javax.persistence.StoredProcedureParameter;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
 import org.eclipse.persistence.annotations.Convert;
 
-//TODO: JPA 2.1 references
-//import static javax.persistence.ParameterMode.IN;
-//import static javax.persistence.ParameterMode.INOUT;
-//import static javax.persistence.ParameterMode.OUT;
-//import static javax.persistence.ParameterMode.REF_CURSOR;
+import static javax.persistence.ParameterMode.IN;
+import static javax.persistence.ParameterMode.INOUT;
+import static javax.persistence.ParameterMode.OUT;
+import static javax.persistence.ParameterMode.REF_CURSOR;
 
 @Entity
 @Table(name="JPA21_ADDRESS")
-// TODO: JPA 2.1 references
-/*
 @NamedStoredProcedureQueries({
         
     @NamedStoredProcedureQuery(
@@ -167,7 +162,6 @@ import org.eclipse.persistence.annotations.Convert;
         }    
     )
 })
-*/
 public class Address implements Serializable {
     private int id;
     private Integer version;
