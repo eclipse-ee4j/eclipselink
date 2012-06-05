@@ -223,12 +223,12 @@
         <repository>
             <id>Orbit</id>
             <layout>p2</layout>
-        <url>http://download.eclipse.org/tools/orbit/downloads/drops/${orbit.drop}/repository</url>
+            <url>http://download.eclipse.org/tools/orbit/downloads/drops/${orbit.drop}/repository</url>
         </repository>
         <repository>
-            <id>EL_CompDeps</id>
+            <id>Local_CompDeps</id>
             <layout>p2</layout>
-        <url>http://archive.eclipse.org/rt/eclipselink/compdeps25-update</url>
+            <url>file:/${basedir}/../../buildsystem/compdeps/p2repo</url>
         </repository>
     </repositories>
 

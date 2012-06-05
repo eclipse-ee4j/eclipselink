@@ -297,8 +297,12 @@
         <delete file="${eclipselink.tst.src.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
     </target>
 
+    <target name="generate-local-compdeps" description="Build local p2 repository of local compiler dependencies">
+        <ant antfile="antbuild.xml" dir="${eclipselink.compdeps}"  target="build"/>
+    </target>
+
     <!-- Compiles all runtime components (excluding Tests, Oracle extensions). -->
-    <target name="build-core" depends="check-maven, clean-runtime-checkedin">
+    <target name="build-core" depends="check-maven, clean-runtime-checkedin, generate-local-compdeps">
         <java dir="${eclipselink.mvn.parent}" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
              <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
              <jvmarg value="-Dmaven.home=${M2_HOME}"/>
