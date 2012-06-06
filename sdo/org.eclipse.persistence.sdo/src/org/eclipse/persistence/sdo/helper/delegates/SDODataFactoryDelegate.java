@@ -12,6 +12,9 @@
 ******************************************************************************/
 package org.eclipse.persistence.sdo.helper.delegates;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.persistence.exceptions.SDOException;
 import org.eclipse.persistence.sdo.SDODataObject;
 import org.eclipse.persistence.sdo.SDOType;
@@ -60,7 +63,13 @@ public class SDODataFactoryDelegate implements SDODataFactory {
         boolean loadersAreRelated = false;
 
         // check the hierarchy to see if the interface loader is a parent of the context loader
+        List<ClassLoader> visitedLoaders = new ArrayList<ClassLoader>();
         while (contextLoader != null && !loadersAreRelated) {
+            if(visitedLoaders.contains(contextLoader)) {
+                //if we encounter a loader we've already checked, break out
+                break;
+            }
+            visitedLoaders.add(contextLoader);
             if (contextLoader == interfaceLoader) {
                 loadersAreRelated = true;
             }
