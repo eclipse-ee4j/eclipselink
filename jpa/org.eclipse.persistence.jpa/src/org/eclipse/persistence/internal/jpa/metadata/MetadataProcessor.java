@@ -98,6 +98,12 @@ public class MetadataProcessor {
 
     /**
      * INTERNAL:
+     * Empty processor to be used as a composite processor.
+     */
+    public MetadataProcessor() {}
+    
+    /**
+     * INTERNAL:
      * Called from EntityManagerSetupImpl. The 'real' EJB 3.0 processing
      * that includes XML and annotations.
      */
@@ -115,9 +121,13 @@ public class MetadataProcessor {
     
     /**
      * INTERNAL:
-     * Empty processor to be used as a composite processor.
+     * Add containedProcessor to compositeProcessor.
      */
-    public MetadataProcessor() {        
+    public void addCompositeMemberProcessor(MetadataProcessor compositeMemberProcessor) {
+        if (m_compositeMemberProcessors == null) {
+            m_compositeMemberProcessors = new HashSet();
+        }
+        m_compositeMemberProcessors.add(compositeMemberProcessor);
     }
     
     /**
@@ -141,6 +151,8 @@ public class MetadataProcessor {
      * This call is made from the EntityManagerSetup deploy call.
      */
     public void addNamedQueries() {
+        // TODO: The loader doesn't need to be passed here. All ORMetadata 
+        // objects have access to the factory which has the loader.
         m_project.processQueries(m_loader);
     }
     
@@ -155,15 +167,43 @@ public class MetadataProcessor {
     
     /**
      * INTERNAL:
+     * Return compositeProcessor.
+     */
+    public MetadataProcessor getCompositeProcessor() {
+        return m_compositeProcessor;
+    }
+    
+    /**
+     * INTERNAL:
      */
     public MetadataFactory getMetadataFactory() {
         return m_factory;
     }
 
+    /**
+     * INTERNAL:
+     */
     public MetadataSource getMetadataSource(){
         return m_metadataSource;
     }
 
+    /**
+     * INTERNAL:
+     * Returns projects owned by compositeProcessor minus the passed project.
+     */
+    public Set<MetadataProject> getPearProjects(MetadataProject project) {
+        Set<MetadataProject> pearProjects = new HashSet();
+        if (m_compositeMemberProcessors != null) {
+            for(MetadataProcessor processor : m_compositeMemberProcessors) {
+                MetadataProject pearProject = processor.getProject();
+                if(pearProject != project) {
+                    pearProjects.add(pearProject);
+                }
+            }
+        }
+        return pearProjects;
+    }
+    
     /**
      * INTERNAL:
      * Return a set of class names for each entity, embeddable and mapped 
@@ -549,42 +589,6 @@ public class MetadataProcessor {
         for (XMLEntityMappings entityMappings : m_project.getEntityMappings()) {
             entityMappings.setLoader(m_loader);
         }
-    }
-    
-    /**
-     * INTERNAL:
-     * Return compositeProcessor.
-     */
-    public MetadataProcessor getCompositeProcessor() {
-        return this.m_compositeProcessor;
-    }
-
-    /**
-     * INTERNAL:
-     * Add containedProcessor to compositeProcessor.
-     */
-    public void addCompositeMemberProcessor(MetadataProcessor compositeMemberProcessor) {
-        if (m_compositeMemberProcessors == null) {
-            m_compositeMemberProcessors = new HashSet();
-        }
-        m_compositeMemberProcessors.add(compositeMemberProcessor);
-    }
-    
-    /**
-     * INTERNAL:
-     * Returns projects owned by compositeProcessor minus the passed project.
-     */
-    public Set<MetadataProject> getPearProjects(MetadataProject project) {
-        Set<MetadataProject> pearProjects = new HashSet();
-        if (m_compositeMemberProcessors != null) {
-            for(MetadataProcessor processor : m_compositeMemberProcessors) {
-                MetadataProject pearProject = processor.getProject();
-                if(pearProject != project) {
-                    pearProjects.add(pearProject);
-                }
-            }
-        }
-        return pearProjects;
     }
 
     /**
