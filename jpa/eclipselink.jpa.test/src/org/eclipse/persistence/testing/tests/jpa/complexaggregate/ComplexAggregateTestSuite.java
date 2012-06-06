@@ -24,7 +24,6 @@ import junit.framework.TestSuite;
 
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.testing.framework.JoinedAttributeTestHelper;
 import org.eclipse.persistence.testing.framework.TestErrorException;
@@ -187,7 +186,8 @@ public class ComplexAggregateTestSuite extends JUnitTestCase {
             commitTransaction(em);
         
             // Clear the cache.
-            ((EntityManagerImpl)em).getActiveSession().getIdentityMapAccessor().initializeAllIdentityMaps();            
+            clearCache();           
+            em.clear();
             
             // Now read them back in and delete them.
             beginTransaction(em);
@@ -287,7 +287,8 @@ public class ComplexAggregateTestSuite extends JUnitTestCase {
             commitTransaction(em);
             
             // Clear the cache.
-            ((EntityManagerImpl)em).getActiveSession().getIdentityMapAccessor().initializeAllIdentityMaps();            
+            clearCache();           
+            em.clear();            
             
             // Now read them back in and delete them.
             beginTransaction(em);
@@ -693,7 +694,7 @@ public class ComplexAggregateTestSuite extends JUnitTestCase {
             throw new TestErrorException("Unable to read back the persisted body");
         }
 
-        ClassDescriptor descriptor = ((EntityManagerImpl) em).getServerSession().getClassDescriptor(Body.class);
+        ClassDescriptor descriptor = getDatabaseSession().getClassDescriptor(Body.class);
         Object pks = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(m_refreshedBody, m_session);
         Torso createdTorso = (Torso) descriptor.getCMPPolicy().createPrimaryKeyInstanceFromId(pks, m_session);        
         assertTrue("PK's do not match.", m_refreshedBody.getTorso().equals(createdTorso));
@@ -742,8 +743,9 @@ public class ComplexAggregateTestSuite extends JUnitTestCase {
         
         Object playerId = player.getPlayerId();
         Object coachId = coach.getId();
-        
-        ((EntityManagerImpl)em).getActiveSession().getIdentityMapAccessor().initializeAllIdentityMaps();            
+
+        clearCache();           
+        em.clear();          
 
         beginTransaction(em);
         player = em.find(HockeyPlayer.class, player.getPlayerId());
