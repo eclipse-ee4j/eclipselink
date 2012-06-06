@@ -89,10 +89,18 @@ public class ComplexAggregateTestSuite extends JUnitTestCase {
             HockeyPlayer player = new HockeyPlayer();
             player.setFirstName("Guy");
             player.setLastName("Flower");
+            // must have non null Vitals and TeamVitals because TeamVitals has a target foreign key mapping, therefore allowingNull automatically set to false
+            Vitals vitals = new Vitals();
+            vitals.setTeamVitals(new TeamVitals());
+            player.setVitals(vitals);
     
             HockeyPlayer player2 = new HockeyPlayer();
             player2.setFirstName("Power");
-            player2.setLastName("Flower");
+            player2.setLastName("Flower");;
+            // must have non null Vitals and TeamVitals because TeamVitals has a target foreign key mapping, therefore allowingNull automatically set to false
+            Vitals vitals2 = new Vitals();
+            vitals2.setTeamVitals(new TeamVitals());
+            player2.setVitals(vitals2);
             
             HockeyCoach coach = new HockeyCoach();
             coach.setFirstName("Scott");
