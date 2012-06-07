@@ -1918,9 +1918,10 @@ public class DescriptorException extends ValidationException {
     }
 
     public static DescriptorException errorUsingPrimaryKey(Object primaryKey, ClassDescriptor descriptor, Exception underlying) {
-        Object[] args = { String.valueOf(INTERNAL_ERROR_ACCESSING_PKFIELD), primaryKey };
+        Object[] args = { primaryKey };
 
         DescriptorException exception = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, INTERNAL_ERROR_ACCESSING_PKFIELD, args), descriptor, underlying);
+        exception.setErrorCode(INTERNAL_ERROR_ACCESSING_PKFIELD);
         return exception;
     }
 
