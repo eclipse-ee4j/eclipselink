@@ -207,6 +207,7 @@ public class InheritanceTestModel extends TestModel {
 
         suite.addTest(new QueryInheritanceTest());
         suite.addTest(new JoinWithSecondaryTableTest());
+        suite.addTest(new PaginationInheritanceTest());
         
         // Add new tests here...
         return suite;

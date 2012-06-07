@@ -532,14 +532,17 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
 
         ObjectLevelReadQuery query = ((ObjectLevelReadQuery)getQuery());
         // Case, normal read for branch inheritance class that reads subclasses all in its own table(s).
+        boolean includeAllSubclassesFields = true;
         if (getDescriptor().hasInheritance()) {
             getDescriptor().getInheritancePolicy().appendWithAllSubclassesExpression(selectStatement);
             if ((!query.isReportQuery()) && query.shouldOuterJoinSubclasses()) {
                 selectStatement.getExpressionBuilder().setShouldUseOuterJoinForMultitableInheritance(true);
             }
+            // Bug 380929 - Find whether to include all subclass fields or not.
+            includeAllSubclassesFields = shouldIncludeAllSubclassFields(selectStatement);
         }
-
-        selectStatement.setFields(getSelectionFields(selectStatement, true));
+        
+        selectStatement.setFields(getSelectionFields(selectStatement, includeAllSubclassesFields));
         selectStatement.normalize(getSession(), getDescriptor(), clonedExpressions);
         // Allow for joining indexes to be computed to ensure distinct rows.
         if (((ObjectLevelReadQuery)getQuery()).hasJoining()) {
@@ -547,6 +550,28 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         }
 
         return selectStatement;
+    }
+    
+    /**
+     * Return whether to include all subclass fields in select statement or not.
+     */
+    protected boolean shouldIncludeAllSubclassFields(SQLSelectStatement selectStatement) {
+        ExpressionBuilder builder = selectStatement.getBuilder();
+        if (builder == null) {
+            if (selectStatement.getWhereClause() == null) {
+                return true;
+            } else {
+                builder = selectStatement.getWhereClause().getBuilder();
+            }
+        }
+        
+        if (!builder.doesNotRepresentAnObjectInTheQuery()) {
+            if (getDescriptor() != null && getDescriptor().hasInheritance()) {
+                return !builder.isDowncast(getDescriptor(), getSession());
+            }
+        }
+        
+        return true;
     }
 
     /**
