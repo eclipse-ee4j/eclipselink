@@ -306,7 +306,7 @@
 
                 <batchtest todir="${report.dir}">
                     <fileset dir="${src.dir}">
-                        <include name="org/eclipse/persistence/jpars/test/AllJavaSETests.java"/>
+                        <include name="${jpars.test.class}"/>
                     </fileset>
                     <formatter type="xml"/>
                 </batchtest>

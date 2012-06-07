@@ -322,6 +322,16 @@
         <contains string="${MODEL_NAME}" substring="eclipselink-jaxrs-model"/>
     </condition>
 
+    <condition property="is.jpars.testing">
+        <contains string="${MODEL_NAME}" substring="eclipselink-jpars-model"/>
+    </condition>
+
+    <condition property="is.jaxrs.or.jpars.testing">
+        <or>
+                <contains string="${MODEL_NAME}" substring="eclipselink-jaxrs-model"/>
+                <contains string="${MODEL_NAME}" substring="eclipselink-jpars-model"/>
+        </or>
+    </condition>
     <condition property="is.jaxrs.testing.on.glassfish">
         <and>
             <isset property="is.jaxrs.testing"/>
@@ -2705,8 +2715,18 @@
         </ear>
         <copy file="${eclipselink.jpa.test}/${build.dir}/${EAR_NAME}.ear" todir="."/>
     </target>
+    <!-- Build server test ear file specific to JPA-RS -->
+    <target name="server-build-ear-jpars" if="is.jpars.testing" depends="set-server-properties">
+        <ant antfile="antbuild.xml" dir="${eclipselink.jpa.test}/../eclipselink.jpars.test"  target="create-jpars-war-file"/>
+        <copy overwrite="true" file="./resource/${MODEL_NAME}/server/application.xml" todir="${build.dir}/META-INF"/>
+        <copy file="${eclipselink.jpa.test}/../eclipselink.jpars.test/eclipselink.jpars.test.war" todir="${eclipselink.jpa.test}/${build.dir}"/>
+        <ear destfile="${eclipselink.jpa.test}/${build.dir}/${EAR_NAME}.ear" appxml="${build.dir}/META-INF/application.xml">
+            <fileset dir="${eclipselink.jpa.test}/${build.dir}" includes ="*.war"/>
+        </ear>
+        <copy file="${eclipselink.jpa.test}/${build.dir}/${EAR_NAME}.ear" todir="."/>
+    </target>
     <!-- Build server test ear. -->
-    <target name="server-build-ear" unless="is.jaxrs.testing">
+    <target name="server-build-ear" unless="is.jaxrs.or.jpars.testing">
         <copy overwrite="true" file="./resource/server/application.xml" todir="${build.dir}/META-INF"/>
         <replace dir="${build.dir}/META-INF" token='%%modelname%%' value="${MODEL_NAME}">
             <include name="*.xml"/>
@@ -2718,7 +2738,7 @@
     </target>
 
     <!-- Build the client jar, ejb jar, and ear. -->
-    <target name="server-build" depends="prepare-non-jta-ds-servertest,prepare-server-sessionbeans,server-build-client-jar,server-build-ejb-jar,server-build-ear,server-build-ear-jaxrs"/>
+    <target name="server-build" depends="prepare-non-jta-ds-servertest,prepare-server-sessionbeans,server-build-client-jar,server-build-ejb-jar,server-build-ear,server-build-ear-jaxrs, server-build-ear-jpars"/>
 
     <target name="server-build-composite-advanced" depends="prepare-non-jta-ds-servertest,prepare-server-sessionbeans,server-build-client-jar,server-build-ejb-composite-advanced-jar,server-build-composite-advanced-ear"/>
 
@@ -3306,6 +3326,24 @@
                <fileset dir="${eclipselink.jpa.test}" includes="*TestCases.java"/>
         </delete>
         <delete file="${eclipselink.jpa.test}/resource/eclipselink-jaxrs-model/server/persistence.xml"/>
+    </target>
+
+    <target name="server-test-jpars" depends="clean-test" if="is.glassfish">
+        <property name="MODEL_NAME" value="eclipselink-jpars-model"/>
+        <property name="EAR_NAME" value="${MODEL_NAME}"/>
+        <antcall target="server-build-ear-jpars" inheritRefs="true"/>
+        <antcall target="server-deploy" inheritRefs="true">
+            <param name="ear.name" value="${EAR_NAME}.ear"/>
+            <param name="application.name" value="${EAR_NAME}"/>
+        </antcall>
+        <ant antfile="antbuild.xml" dir="${eclipselink.jpa.test}/../eclipselink.jpars.test"  target="test" inheritAll="false"/>
+        <antcall target="server-undeploy" inheritRefs="true">
+            <param name="ear.name" value="${EAR_NAME}.ear"/>
+            <param name="application.name" value="${EAR_NAME}"/>
+        </antcall>
+        <copy todir="${eclipselink.jpa.test}/${report.dir}">
+            <fileset dir="${eclipselink.jpa.test}/../eclipselink.jpars.test/reports" includes="*.*"/>
+        </copy>
     </target>
 
     <target name="server-test-plsql">
