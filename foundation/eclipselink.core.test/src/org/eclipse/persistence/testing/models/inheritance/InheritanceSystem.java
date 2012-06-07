@@ -236,8 +236,9 @@ public class InheritanceSystem extends TestSystem {
         bugguy.setId((int)System.currentTimeMillis());
         bugguy.setName("Gary");
         bugguy = (Entomologist)unitOfWork.registerObject(bugguy);
-        Insect insect = new GrassHopper();
+        GrassHopper insect = new GrassHopper();
         insect.setIn_numberOfLegs(4);
+        insect.setGh_maximumJump(5);
         insect.setEntomologist(bugguy);
         bugguy.getInsectCollection().add(insect);
         unitOfWork.commit();

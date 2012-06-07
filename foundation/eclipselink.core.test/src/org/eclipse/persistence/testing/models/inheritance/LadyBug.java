@@ -12,7 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.inheritance;
 
-public class LadyBug {
+public class LadyBug extends Insect {
     protected Integer lb_ID;
     protected Integer lb_numberOfSpots;
 

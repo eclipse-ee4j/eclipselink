@@ -206,6 +206,39 @@ public abstract class ObjectExpression extends DataExpression {
     
     /**
      * INTERNAL
+     * Return true if it uses a cast class and query is downcasting. It will
+     * look into inheritance hierarchy of the root descriptor.
+     */
+    public boolean isDowncast(ClassDescriptor rootDescriptor, AbstractSession session) {
+        if (castClass == null){
+            return false;
+        }
+        
+        if (rootDescriptor.getJavaClass() == castClass){
+            return false;
+        }
+
+        ClassDescriptor castDescriptor = session.getClassDescriptor(castClass);
+        
+        if (castDescriptor == null){
+            throw QueryException.couldNotFindCastDescriptor(castClass, getBaseExpression());
+        }
+        if (castDescriptor.getInheritancePolicy() == null){
+            throw QueryException.castMustUseInheritance(getBaseExpression());
+        }
+        ClassDescriptor parentDescriptor = castDescriptor.getInheritancePolicy().getParentDescriptor();
+        while (parentDescriptor != null){
+            if (parentDescriptor == rootDescriptor){
+                return true;
+            }
+            parentDescriptor = parentDescriptor.getInheritancePolicy().getParentDescriptor();
+        }
+        
+        throw QueryException.couldNotFindCastDescriptor(castClass, getBaseExpression());
+    }
+    
+    /**
+     * INTERNAL
      * Return the descriptor which contains this query key, look in the inheritance hierarchy 
      * of rootDescriptor for the descriptor.
      */
