@@ -23,7 +23,7 @@ import org.eclipse.persistence.testing.jaxb.inheritance.ns.JAXBInheritanceNSTest
 import org.eclipse.persistence.testing.jaxb.inheritance.ns.JAXBInheritanceSubTypeNoParentRootTestCases;
 import org.eclipse.persistence.testing.jaxb.inheritance.ns.JAXBInheritanceSubTypeParentRootOnlyTestCases;
 import org.eclipse.persistence.testing.jaxb.inheritance.ns.JAXBInheritanceSubTypeTestCases;
-
+import org.eclipse.persistence.testing.jaxb.inheritance.simple.XmlValueInheritanceTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbcontext.withjaxbindex.JAXBContextByClassArrayWithIndexTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbcontext.withjaxbindex.JAXBContextByClassArrayWithRefInBindingsTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbcontext.withjaxbindex.JAXBContextByClassArrayWithRefTestCases;
@@ -109,6 +109,7 @@ public class JAXBTestSuite2 extends TestCase {
         suite.addTestSuite(RootWithCompositeObjectTestCases.class);
         suite.addTestSuite(JAXBElementEnumTestCases.class);
         suite.addTestSuite(JAXBInheritanceTestCases.class);
+        suite.addTestSuite(XmlValueInheritanceTestCases.class);
         suite.addTestSuite(JAXBInheritanceNSTestCases.class);
         suite.addTestSuite(JAXBInheritanceSubTypeTestCases.class);
         suite.addTestSuite(JAXBInheritanceSubTypeNoParentRootTestCases.class);

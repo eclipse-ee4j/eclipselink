@@ -212,8 +212,7 @@ public class SchemaGenerator {
         }
 
         ArrayList<String> propertyNames = info.getPropertyNames();
-        Property xmlValueProperty = info.getXmlValueProperty();
-        if (info.isEnumerationType() || (propertyNames.size() == 1 && xmlValueProperty != null)) {
+        if(isSimpleType(info)){
             SimpleType type = new SimpleType();
             //simple type case, we just need the name and namespace info
             if (typeName.equals(EMPTY_STRING)) {
@@ -331,7 +330,15 @@ public class SchemaGenerator {
         }
     }
 
+    private boolean isSimpleType(TypeInfo info){
+    	if(info.isEnumerationType()){
+    		return true;
+    	}
+        ArrayList<String> propertyNames = info.getPropertyNames();
+        Property xmlValueProperty = info.getXmlValueProperty();
+        return (propertyNames.size() == 1 && xmlValueProperty != null);
     
+      }
     private ComplexType createComplexTypeForClass(JavaClass myClass, TypeInfo info) {
 
         Schema schema = getSchemaForNamespace(info.getClassNamespace());
@@ -355,9 +362,18 @@ public class SchemaGenerator {
                 } else {
                     extension.setBaseType(parentTypeInfo.getSchemaTypeName());
                 }
-                ComplexContent content = new ComplexContent();
-                content.setExtension(extension);
-                type.setComplexContent(content);
+                
+                if(isSimpleType(parentTypeInfo)){
+                	SimpleContent content = new SimpleContent();
+                    content.setExtension(extension);
+                    type.setSimpleContent(content);	
+                    return type;
+                }else{
+                	ComplexContent content = new ComplexContent();
+                    content.setExtension(extension);
+                    type.setComplexContent(content);
+                }
+                
             }
         }
         
