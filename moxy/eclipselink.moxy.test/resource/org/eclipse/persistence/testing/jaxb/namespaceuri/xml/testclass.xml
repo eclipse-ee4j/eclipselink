@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="US-ASCII" standalone="no"?>
+<ns0:testClass xmlns:ns0="myns">
+   <foo xml:lang="lang">foo</foo>
+</ns0:testClass>

@@ -56,6 +56,7 @@ import org.eclipse.persistence.internal.oxm.schema.model.SimpleComponent;
 import org.eclipse.persistence.internal.oxm.schema.model.SimpleContent;
 import org.eclipse.persistence.internal.oxm.schema.model.SimpleType;
 import org.eclipse.persistence.internal.oxm.schema.model.TypeDefParticle;
+import org.eclipse.persistence.internal.oxm.schema.model.TypeDefParticleOwner;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jaxb.javamodel.Helper;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
@@ -468,12 +469,19 @@ public class SchemaGenerator {
                     // create schema components based on the XmlPath
                     AddToSchemaResult xpr = addXPathToSchema(next, parentCompositor, currentSchema, isChoice, type);
                     // if the returned object or schema component is null there is nothing to do
-                    if (xpr == null || (parentCompositor = xpr.particle) == null) {
+                    if (xpr == null || ((parentCompositor = xpr.particle) == null && xpr.simpleContentType == null)) {
                         continue;
                     }
                     // now process the property as per usual, adding to the created schema component
+                    if(xpr.schema == null) {
+                        //if there's no schema, this may be a ref to an attribute in an ungenerated schema
+                        //no need to generate the attribute in the target schema
+                        continue;
+                    }
                     currentSchema = xpr.schema;
-                    if (parentCompositor.getOwner() instanceof ComplexType) {
+                    if(parentCompositor == null) {
+                        parentType = xpr.simpleContentType;
+                    } else if (parentCompositor.getOwner() instanceof ComplexType) {
                         parentType = ((ComplexType)parentCompositor.getOwner());
                     }
                 // deal with the XmlElementWrapper case
@@ -940,6 +948,10 @@ public class SchemaGenerator {
                 }
                 sourceSchema.getImports().add(schemaImport);
                 if (schemaImport.getNamespace() != null) {
+                    if(schemaImport.getNamespace().equals(XMLConstants.XML_NAMESPACE_URL)) {
+                        //make sure xml namespace is in the resolver so it gets declared
+                        sourceSchema.getNamespaceResolver().put(XMLConstants.XML_NAMESPACE_PREFIX, XMLConstants.XML_NAMESPACE_URL);
+                    }
                     String prefix = sourceSchema.getNamespaceResolver().resolveNamespaceURI(importNamespace);
                     //Don't need to generate prefix for default namespace
                     if (prefix == null && !importNamespace.equals(EMPTY_STRING)) {
@@ -1051,12 +1063,15 @@ public class SchemaGenerator {
         Schema workingSchema = xpr.schema;
         
         // each nested choice on a collection will be unbounded
-        boolean isUnbounded = (currentParticle.getMaxOccurs() != null && currentParticle.getMaxOccurs()==Occurs.UNBOUNDED);
+        boolean isUnbounded = false;
+        if(currentParticle != null) {
+            isUnbounded = (currentParticle.getMaxOccurs() != null && currentParticle.getMaxOccurs()==Occurs.UNBOUNDED);
+        }
         
         // don't process the last frag; that will be handled by the calling method if necessary
         // note that we may need to process the last frag if it has a namespace or is an 'any'
         boolean lastFrag = (frag.getNextFragment() == null || frag.getNextFragment().nameIsText());
-        
+        //boolean isNextAttribute = (frag.getNextFragment() != null) && (frag.getNextFragment().isAttribute());
         // if the element is already in the sequence we don't want the calling method to add a second one
         if (lastFrag && (elementExistsInParticle(frag.getLocalName(), frag.getShortName(), currentParticle) != null)) {
             xpr.particle = null;
@@ -1086,6 +1101,36 @@ public class SchemaGenerator {
             }
             cType.setTypeDefParticle(particle);
             currentElement.setComplexType(cType);
+        } else {
+            //if the current element already exists, we may need to change it's type
+            XPathFragment nextFrag = frag.getNextFragment();
+            if(nextFrag != null && nextFrag.isAttribute()) {
+                if(currentElement.getType() != null && currentElement.getComplexType() == null) {
+                    //there's already a text mapping to this element, so 
+                    //attributes can be added by making it complex with 
+                    //simple content.
+                    SimpleType type = currentElement.getSimpleType();
+                    if(type != null) {
+                        ComplexType cType = new ComplexType();
+                        cType.setSimpleContent(new SimpleContent());
+                        Extension extension = new Extension();
+                        extension.setBaseType(type.getRestriction().getBaseType());
+                        cType.getSimpleContent().setExtension(extension);
+                        currentElement.setSimpleType(null);
+                        currentElement.setComplexType(cType);
+                    } else {
+                        String eType = currentElement.getType();
+                        ComplexType cType = new ComplexType();
+                        SimpleContent sContent = new SimpleContent();
+                        Extension extension = new Extension();
+                        extension.setBaseType(eType);
+                        sContent.setExtension(extension);
+                        cType.setSimpleContent(sContent);
+                        currentElement.setType(null);
+                        currentElement.setComplexType(cType);
+                    }                
+                }
+            }
         }
         // may need to create a ref, depending on the namespace
         Element globalElement = null;
@@ -1097,13 +1142,19 @@ public class SchemaGenerator {
             
             // handle Attribute case
             if (frag.isAttribute()) {
-                if ((fragSchema.isAttributeFormDefault() && !fragUri.equals(targetNS)) || (!fragSchema.isAttributeFormDefault() && fragUri.length() > 0)) {
+                if (fragSchema == null || (fragSchema.isAttributeFormDefault() && !fragUri.equals(targetNS)) || (!fragSchema.isAttributeFormDefault() && fragUri.length() > 0)) {
                     // must generate a global attribute and create a reference to it
                     // if the global attribute exists, use it; otherwise create a new one
-                    Attribute globalAttribute = null;
-                    globalAttribute = (Attribute) fragSchema.getTopLevelAttributes().get(frag.getLocalName());
-                    if (globalAttribute == null) {
-                        globalAttribute = createGlobalAttribute(frag, workingSchema, fragSchema, next);
+                    // if fragSchema is null, just generate the ref
+                    if(fragSchema != null) {
+                        Attribute globalAttribute = null;
+                        globalAttribute = (Attribute) fragSchema.getTopLevelAttributes().get(frag.getLocalName());
+                        if (globalAttribute == null) {
+                            globalAttribute = createGlobalAttribute(frag, workingSchema, fragSchema, next);
+                        }
+                    } else {
+                        //may need to add an import
+                        addImportIfRequired(workingSchema, fragSchema, fragUri);
                     }
                     // add the attribute ref to the current element
                     String attributeRefName;
@@ -1113,8 +1164,14 @@ public class SchemaGenerator {
                     } else {
                         attributeRefName = frag.getShortName();
                     }
-                    if (currentParticle.getOwner() instanceof ComplexType) {
-                        createRefAttribute(attributeRefName, (ComplexType)currentParticle.getOwner());
+                    TypeDefParticleOwner type;
+                    if(currentParticle != null) {
+                        type = currentParticle.getOwner();
+                    } else {
+                        type = xpr.simpleContentType;
+                    }
+                    if (type instanceof ComplexType) {
+                        createRefAttribute(attributeRefName, (ComplexType)type);
                     }
                     // set the frag's schema as it may be different than the current schema
                     xpr.schema = fragSchema;
@@ -1174,7 +1231,43 @@ public class SchemaGenerator {
                 currentParticle.addElement(currentElement);
             }
             // set the correct particle to use/return
-            xpr.particle = currentElement.getComplexType().getTypeDefParticle();
+            if(currentElement.getComplexType() != null) {
+                if(currentElement.getComplexType().getTypeDefParticle() == null) {
+                    //complexType with simple-content
+                    xpr.simpleContentType = currentElement.getComplexType();
+                    xpr.particle = null;
+                } else {
+                    xpr.particle = currentElement.getComplexType().getTypeDefParticle();
+                }
+            } else {
+                //If there's no complex type, we're building the path through an element with
+                //a simple type. In order to build the path through this
+                //element, switch to a complex type with simple content.
+                SimpleType type = currentElement.getSimpleType();
+                if(type != null) {
+                    ComplexType cType = new ComplexType();
+                    cType.setSimpleContent(new SimpleContent());
+                    Extension extension = new Extension();
+                    extension.setBaseType(type.getRestriction().getBaseType());
+                    cType.getSimpleContent().setExtension(extension);
+                    currentElement.setSimpleType(null);
+                    currentElement.setComplexType(cType);
+                    xpr.particle = null;
+                    xpr.simpleContentType = cType;
+                } else {
+                    String eType = currentElement.getType();
+                    ComplexType cType = new ComplexType();
+                    SimpleContent sContent = new SimpleContent();
+                    Extension extension = new Extension();
+                    extension.setBaseType(eType);
+                    sContent.setExtension(extension);
+                    cType.setSimpleContent(sContent);
+                    currentElement.setType(null);
+                    currentElement.setComplexType(cType);
+                    xpr.particle = null;
+                    xpr.simpleContentType = cType;
+                }
+            }
         }
         // if we're on the last fragment, we're done
         if (lastFrag) {
@@ -1198,7 +1291,7 @@ public class SchemaGenerator {
      * @return
      */
     protected Element elementExistsInParticle(String elementName, String refString, TypeDefParticle particle) {
-        if (particle.getElements() == null || particle.getElements().size() == 0) { 
+        if (particle == null || particle.getElements() == null || particle.getElements().size() == 0) { 
             return null;
         }
         java.util.List existingElements = particle.getElements();
@@ -1345,6 +1438,7 @@ public class SchemaGenerator {
         ComplexType type;
         TypeDefParticle particle;
         Schema schema;
+        ComplexType simpleContentType;
 
         AddToSchemaResult(TypeDefParticle particle, Schema schema) {
             this.particle = particle;
