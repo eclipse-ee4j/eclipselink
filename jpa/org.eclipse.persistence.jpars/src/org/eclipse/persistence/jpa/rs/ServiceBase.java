@@ -600,7 +600,7 @@ public class ServiceBase {
          return  returnQuery;
      }
      
-     private static Map<String, Object> getHintMap(UriInfo info){
+     protected static Map<String, Object> getHintMap(UriInfo info){
          Map<String, Object> hints = new HashMap<String, Object>();
           for(String key :  info.getQueryParameters().keySet()) { 
              hints.put(key, info.getQueryParameters().getFirst(key));  
@@ -616,7 +616,7 @@ public class ServiceBase {
       * @param info
       * @return
       */
-     private static Map<String, String> getParameterMap(UriInfo info, String segment){
+     protected static Map<String, String> getParameterMap(UriInfo info, String segment){
          Map<String, String> parameters = new HashMap<String, String>();
          for (PathSegment pathSegment: info.getPathSegments()){
              if (pathSegment.getPath() != null && pathSegment.getPath().equals(segment)){
