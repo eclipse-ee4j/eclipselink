@@ -412,7 +412,17 @@ public final class InExpression extends AbstractExpression {
 		hasRightParenthesis = wordParser.startsWith(RIGHT_PARENTHESIS);
 
 		if (hasRightParenthesis) {
-			wordParser.moveForward(1);
+
+			// Temporarily change the state so isSingleInputParameter() return the right info
+			hasRightParenthesis = false;
+
+			// If it's a single input parameter that is not encapsulated by parenthesis, then
+			// we'll ignore the right parenthesis, it could be part of an encapsulated subquery,
+			// example: ... WHERE (SELECT e FROM Employee e WHERE e.name IN :input_1) = :input_2
+			if (hasLeftParenthesis || !isSingleInputParameter()) {
+				hasRightParenthesis = true;
+				wordParser.moveForward(1);
+			}
 		}
 	}
 

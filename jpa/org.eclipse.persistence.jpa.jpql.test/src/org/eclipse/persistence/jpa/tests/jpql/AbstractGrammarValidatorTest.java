@@ -6093,6 +6093,14 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	}
 
 	@Test
+	public final void test_ValidQuery_04() throws Exception {
+
+		String jpqlQuery = "SELECT r FROM RuleCondition r WHERE r.ruleType = :ruleType AND r.operator = :operator AND (SELECT Count(rcc) FROM r.components rcc ) = :componentCount  AND (SELECT Count(rc2) FROM r.components rc2 WHERE rc2.componentId IN :componentIds) = :componentCount";
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+		testHasNoProblems(problems);
+	}
+
+	@Test
 	public final void test_ValueExpression_InvalidExpression() throws Exception {
 
 		String jpqlQuery  = "SELECT VALUE(e.name) FROM Employee e";

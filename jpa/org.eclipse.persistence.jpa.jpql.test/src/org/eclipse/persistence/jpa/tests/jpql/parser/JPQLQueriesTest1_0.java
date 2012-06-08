@@ -4307,4 +4307,49 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 
 		testQuery(query_213(), selectStatement);
 	}
+
+	@Test
+	public final void test_Query_214() {
+
+		// SELECT r
+		// FROM RuleCondition r
+		// WHERE     r.ruleType = :ruleType
+		//       AND r.operator = :operator
+		//       AND (SELECT Count(rcc) FROM r.components rcc ) = :componentCount
+		//       AND (SELECT Count(rc2) FROM r.components rc2 WHERE rc2.componentId IN :componentIds) = :componentCount
+
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("r")),
+			from("RuleCondition", "r"),
+			where(
+					path("r.ruleType").equal(inputParameter(":ruleType"))
+				.and(
+					path("r.operator").equal(inputParameter(":operator"))
+				)
+				.and(
+					sub(subquery(
+						subSelect(count(variable("rcc"))),
+						subFrom(fromCollection("r.components", "rcc"))
+					))
+					.equal(
+						inputParameter(":componentCount")
+					)
+				)
+				.and(
+					sub(subquery(
+						subSelect(count(variable("rc2"))),
+						subFrom(fromCollection("r.components", "rc2")),
+						where(
+							path("rc2.componentId").in(":componentIds")
+						)
+					))
+					.equal(
+						inputParameter(":componentCount")
+					)
+				)
+			)
+		);
+
+		testQuery(query_214(), selectStatement);
+	}
 }
