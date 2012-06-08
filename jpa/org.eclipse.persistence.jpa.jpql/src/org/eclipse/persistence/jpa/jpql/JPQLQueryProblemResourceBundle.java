@@ -377,10 +377,10 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
 			{"LOCATE_EXPRESSION_THIRD_EXPRESSION_WRONG_TYPE",  "The third encapsulated expression is not of numeric type."},
 
 			// LogicalExpression - Grammar
-			{"LOGICAL_EXPRESSION_INVALID_LEFT_EXPRESSION",  "The left expression is missing from the logical expression."},
-			{"LOGICAL_EXPRESSION_INVALID_RIGHT_EXPRESSION", "The right expression is missing from the logical expression."},
-			{"LOGICAL_EXPRESSION_MISSING_LEFT_EXPRESSION",  "The left expression is not a valid expression."},
-			{"LOGICAL_EXPRESSION_MISSING_RIGHT_EXPRESSION", "The right expression is not a valid expression."},
+			{"LOGICAL_EXPRESSION_INVALID_LEFT_EXPRESSION",  "The left expression is not a valid expression."},
+			{"LOGICAL_EXPRESSION_INVALID_RIGHT_EXPRESSION", "The right expression is not a valid expression."},
+			{"LOGICAL_EXPRESSION_MISSING_LEFT_EXPRESSION",  "The left expression is missing from the logical expression."},
+			{"LOGICAL_EXPRESSION_MISSING_RIGHT_EXPRESSION", "The right expression is missing from the logical expression."},
 
 			// LowerExpression - Grammar
 			{"LOWER_EXPRESSION_INVALID_EXPRESSION",        "The encapsulated expression is not a valid expression."},

@@ -1358,4 +1358,13 @@ public final class JPQLQueries1_0 {
 		       "                                                         )" +
 		       "                           )";
 	}
+
+	public static String query_214() {
+		return "SELECT r " +
+		       "FROM RuleCondition r " +
+		       "WHERE     r.ruleType = :ruleType " +
+		       "      AND r.operator = :operator " +
+		       "      AND (SELECT Count(rcc) FROM r.components rcc ) = :componentCount  " +
+		       "      AND (SELECT Count(rc2) FROM r.components rc2 WHERE rc2.componentId IN :componentIds) = :componentCount";
+	}
 }
