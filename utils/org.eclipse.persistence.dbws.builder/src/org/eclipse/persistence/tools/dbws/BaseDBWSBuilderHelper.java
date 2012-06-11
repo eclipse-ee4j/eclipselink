@@ -1266,7 +1266,7 @@ public abstract class BaseDBWSBuilderHelper {
             String typeName = dType.getTypeName();
             // for %ROWTYPE, the compatible JDBC type name cannot contain '%'
             String compatibleType = typeName.contains(PERCENT) ? typeName.replace(PERCENT, UNDERSCORE) : typeName;
-            String javaTypeName = (dType.getTypeName()).toLowerCase();
+            String javaTypeName = compatibleType.toLowerCase();
 
             // handle PL/SQL types
             if (dType.isPLSQLType()) {
