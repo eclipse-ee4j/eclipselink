@@ -737,33 +737,37 @@ public class ComplexAggregateTestSuite extends JUnitTestCase {
 
         EntityManager em = createEntityManager();
         beginTransaction(em);
-        em.persist(player);
-        em.persist(coach);
-        commitTransaction(em);
-        
-        Object playerId = player.getPlayerId();
-        Object coachId = coach.getId();
-
-        clearCache();           
-        em.clear();          
-
-        beginTransaction(em);
-        player = em.find(HockeyPlayer.class, player.getPlayerId());
-        coach = em.find(HockeyCoach.class, coach.getId());
-        
-        coach.addFavouritePlayer(player);
-        commitTransaction(em);
-
-        player = em.find(HockeyPlayer.class, playerId);
-        coach = em.find(HockeyCoach.class, coachId);
-        beginTransaction(em);
-        if (player != null){
-            em.remove(player);
+        try {
+            em.persist(player);
+            em.persist(coach);
+            commitTransaction(em);
+            
+            Object playerId = player.getPlayerId();
+            Object coachId = coach.getId();
+    
+            clearCache();           
+            em.clear();          
+    
+            beginTransaction(em);
+            player = em.find(HockeyPlayer.class, player.getPlayerId());
+            coach = em.find(HockeyCoach.class, coach.getId());
+            
+            coach.addFavouritePlayer(player);
+            commitTransaction(em);
+            
+            beginTransaction(em);
+            player = em.find(HockeyPlayer.class, playerId);
+            coach = em.find(HockeyCoach.class, coachId);
+            if (player != null){
+                em.remove(player);
+            }
+            if (coach != null){
+                em.remove(coach);
+            }
+            commitTransaction(em);
+        } finally {
+            closeEntityManagerAndTransaction(em);
         }
-        if (coach != null){
-            em.remove(coach);
-        }
-        commitTransaction(em);
     }
 
     public void testComplexAggregateJoin() {
