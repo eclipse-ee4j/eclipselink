@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2011 Oracle. All rights reserved.
+ * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -533,8 +533,10 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
      */
     protected void prepareReportQueryItems(){
         //calculate indexes after normalize to insure expressions are set up correctly
-        int itemOffset = 0;
-        for (Iterator items = ((ReportQuery)getQuery()).getItems().iterator(); items.hasNext();) {
+        //take into account any field expressions added to the ReportQuery
+        ReportQuery query = (ReportQuery)getQuery();
+        int itemOffset = query.getQueryExpressions().size();
+        for (Iterator items = query.getItems().iterator(); items.hasNext();) {
             ReportItem item = (ReportItem) items.next();
             item.setResultIndex(itemOffset);
             if (item.getAttributeExpression() != null) {
