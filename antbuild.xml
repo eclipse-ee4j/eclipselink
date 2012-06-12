@@ -750,6 +750,7 @@
             <zipfileset dir="${basedir}">
                 <include name="*build.xml"/>
                 <include name="*build.properties"/>
+                <include name="buildsystem/*custom*jar"/>
                 <include name="${eclipselink.core.test}/**"/>
                 <include name="${eclipselink.core.base}/eclipselink.extension.oracle.test/**"/>
                 <include name="${eclipselink.core.base}/eclipselink.extension.nosql.test/**"/>
