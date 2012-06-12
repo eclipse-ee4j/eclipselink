@@ -623,6 +623,8 @@ public class ComplexAggregateTestSuite extends JUnitTestCase {
         clearCache();
 
         em = createEntityManager();
+        em.clear();
+        
         checkTeam(teamIDs[0], em);
         checkTeam(teamIDs[1], em);
         checkTeam(teamIDs[2], em);
@@ -631,7 +633,7 @@ public class ComplexAggregateTestSuite extends JUnitTestCase {
         HockeyTeam team = em.find(HockeyTeam.class, teamIDs[0]);
 
         if (team.getCoaches().get(0).getVitals().getPersonalVitals().getAge() != 67) {
-            throw new TestErrorException("The order by specification on age for hockey coaches was not observed.");
+            throw new TestErrorException("The order by specification on age for hockey coaches was not observed: " + team.getCoaches());
         }
     }
     
