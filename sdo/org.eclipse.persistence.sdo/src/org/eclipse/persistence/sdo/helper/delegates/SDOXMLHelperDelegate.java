@@ -360,10 +360,13 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
     }
 
     public void serialize(XMLDocument xmlDocument, OutputStream outputStream, Object options) throws IOException {
-        OutputStreamWriter writer = new OutputStreamWriter(outputStream, getXmlMarshaller().getEncoding());
-        XMLMarshaller xmlMarshaller = getXmlContext().createMarshaller();
-        xmlMarshaller.setMarshalListener(new SDOMarshalListener(xmlMarshaller, (SDOTypeHelper) aHelperContext.getTypeHelper()));
-        save(xmlDocument, writer, xmlMarshaller);
+    	XMLMarshaller xmlMarshaller = getXmlMarshaller();    	
+    	XMLAttachmentMarshaller attachmentMarshaller = xmlMarshaller.getAttachmentMarshaller();
+    	//temporarily null out the attachment marshaller as it should not be used during serialization
+    	xmlMarshaller.setAttachmentMarshaller(null);
+    	OutputStreamWriter writer = new OutputStreamWriter(outputStream, xmlMarshaller.getEncoding());    	
+        save(xmlDocument, writer, xmlMarshaller);    	
+        xmlMarshaller.setAttachmentMarshaller(attachmentMarshaller);
     }
 
     /**
