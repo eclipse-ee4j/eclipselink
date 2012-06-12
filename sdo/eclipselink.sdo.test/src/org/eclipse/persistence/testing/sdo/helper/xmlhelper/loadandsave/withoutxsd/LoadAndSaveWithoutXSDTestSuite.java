@@ -35,6 +35,7 @@ public class LoadAndSaveWithoutXSDTestSuite {
         suite.addTestSuite(NotOpenWithUnknownContentTestCases.class);
         suite.addTestSuite(NotOpenWithUnknownContentNestedTestCases.class);
         suite.addTestSuite(LoadAndSaveNestedSchemaTypeTestCases.class);
+        suite.addTestSuite(LoadAndSaveWithSimpleTypeTestCases.class);
 
         return suite;
     }

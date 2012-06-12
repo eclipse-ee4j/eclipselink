@@ -45,6 +45,7 @@ import org.eclipse.persistence.sdo.helper.SDOMarshalListener;
 import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
 import org.eclipse.persistence.sdo.helper.SDOUnmarshalListener;
 import org.eclipse.persistence.sdo.helper.SDOXMLHelper;
+import org.eclipse.persistence.sdo.types.SDODataType;
 import org.eclipse.persistence.sdo.types.SDOPropertyType;
 import org.eclipse.persistence.sdo.types.SDOTypeType;
 import org.eclipse.persistence.exceptions.SDOException;
@@ -199,7 +200,14 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
                     SDOType theType = (SDOType)optionsDataObject.get(SDOConstants.TYPE_LOAD_OPTION);
                     try{
                         if (theType != null) {
-                            unmarshalledObject = anXMLUnmarshaller.unmarshal(inputSource, theType.getImplClass());
+                            if(theType.isDataType()) {
+                                theType = (SDOType)((SDOTypeHelper)this.aHelperContext.getTypeHelper()).getWrappersHashMap().get(theType.getQName());
+                            }  
+                            if(theType != null) {
+                                unmarshalledObject = anXMLUnmarshaller.unmarshal(inputSource, theType.getImplClass());
+                            } else {
+                                unmarshalledObject = anXMLUnmarshaller.unmarshal(inputSource);
+                            }
                         }else{
                             unmarshalledObject = anXMLUnmarshaller.unmarshal(inputSource);
                         }
@@ -273,7 +281,14 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
                     SDOType theType = (SDOType)optionsDataObject.get(SDOConstants.TYPE_LOAD_OPTION);
                     try{
                         if (theType != null) {
-                            unmarshalledObject = anXMLUnmarshaller.unmarshal(source, theType.getImplClass());
+                            if(theType.isDataType()) {
+                                theType = (SDOType)((SDOTypeHelper)this.aHelperContext.getTypeHelper()).getWrappersHashMap().get(theType.getQName());
+                            }  
+                            if(theType != null) {
+                                unmarshalledObject = anXMLUnmarshaller.unmarshal(source, theType.getImplClass());
+                            } else {
+                                unmarshalledObject = anXMLUnmarshaller.unmarshal(source);
+                            }
                         }else{
                             unmarshalledObject = anXMLUnmarshaller.unmarshal(source);
                         }
