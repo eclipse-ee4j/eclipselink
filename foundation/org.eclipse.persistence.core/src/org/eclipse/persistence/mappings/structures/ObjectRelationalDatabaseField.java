@@ -34,16 +34,14 @@ public class ObjectRelationalDatabaseField extends DatabaseField {
     protected DatabaseField nestedTypeField;
 
     public ObjectRelationalDatabaseField(DatabaseField field) {
-        this.setIndex(field.getIndex());
-        this.setName(field.getName());
-        this.setTable(field.getTable());
-        this.setType(field.getType());
-        this.setUseDelimiters(field.shouldUseDelimiters());
-        this.useUpperCaseForComparisons(field.getUseUpperCaseForComparisons());
-        this.setNameForComparisons(field.getNameForComparisons());
-        if (field.getType() != null) {
-            this.setTypeName(field.getType().getName());
-        }
+        this.index = field.index;
+        this.name = field.getName();
+        this.table = field.getTable();
+        this.type = field.type;
+        this.useDelimiters = field.shouldUseDelimiters();
+        this.useUpperCaseForComparisons = field.getUseUpperCaseForComparisons();
+        this.nameForComparisons = field.getNameForComparisons();
+        this.typeName = field.getTypeName();
         this.sqlTypeName = "";
     }
 

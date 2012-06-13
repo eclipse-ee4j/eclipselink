@@ -180,7 +180,7 @@ public abstract class AbstractRecord implements Record, Cloneable, Serializable,
      */
     public boolean containsKey(DatabaseField key) {
         // Optimize check.
-        int index = key.getIndex();
+        int index = key.index;
         if ((index >= 0) && (index < this.size)) {
             DatabaseField field = (DatabaseField)this.fields.get(index);
             if ((field == key) || field.equals(key)) {
@@ -273,7 +273,7 @@ public abstract class AbstractRecord implements Record, Cloneable, Serializable,
         // PERF: Direct variable access.
         // ** Code duplicated in getIndicatingNoEntry, ensure kept in synch **
         // Optimize check.
-        int index = key.getIndex();
+        int index = key.index;
         if ((index >= 0) && (index < this.size)) {
             DatabaseField field = (DatabaseField)this.fields.get(index);
             if ((field == key) || field.equals(key)) {
@@ -311,7 +311,7 @@ public abstract class AbstractRecord implements Record, Cloneable, Serializable,
         // PERF: Direct variable access.
         // ** Code duplicated in get, ensure kept in synch **
         // Optimize check.
-        int index = key.getIndex();
+        int index = key.index;
         if ((index >= 0) && (index < this.size)) {
             DatabaseField field = (DatabaseField)this.fields.get(index);
             if ((field == key) || field.equals(key)) {
@@ -336,7 +336,7 @@ public abstract class AbstractRecord implements Record, Cloneable, Serializable,
      */
     public DatabaseField getField(DatabaseField key) {
         // Optimize check.
-        int index = key.getIndex();
+        int index = key.index;
         if ((index >= 0) && (index < getFields().size())) {
             DatabaseField field = (DatabaseField)getFields().elementAt(index);
             if ((field == key) || field.equals(key)) {

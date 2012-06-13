@@ -348,10 +348,10 @@ public class IdentityMapManager implements Serializable, Cloneable {
         // Remote session has its own setting.
         if (this.session.isRemoteSession()) {
             return buildNewIdentityMap(descriptor.getRemoteIdentityMapClass(), descriptor.getRemoteIdentityMapSize(), descriptor, true);
-        } else if (this.session.isServerSession()){
-            return buildNewIdentityMap(descriptor.getIdentityMapClass(), descriptor.getIdentityMapSize(), descriptor, false);
-        }else{
+        } else if (this.session.isIsolatedClientSession()){
             return buildNewIdentityMap(descriptor.getIdentityMapClass(), descriptor.getIdentityMapSize(), descriptor, true);
+        }else{
+            return buildNewIdentityMap(descriptor.getIdentityMapClass(), descriptor.getIdentityMapSize(), descriptor, false);
         }
     }
     
@@ -1256,7 +1256,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
             for (Iterator cacheKeys = ((HashSet)threadCollection.get(activeThread)).iterator();
                      cacheKeys.hasNext();) {
                 CacheKey cacheKey = (CacheKey)cacheKeys.next();
-                if (cacheKey.isAcquired() && cacheKey.getMutex().getActiveThread() == activeThread){
+                if (cacheKey.isAcquired() && cacheKey.getActiveThread() == activeThread){
                     parameters[0] = cacheKey.getObject();
                     writer.write(TraceLocalization.buildMessage("locked_object", parameters) + Helper.cr());
                     writer.write("PK: " + cacheKey.getKey() + Helper.cr());

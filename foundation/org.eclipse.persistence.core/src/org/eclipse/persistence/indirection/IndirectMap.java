@@ -20,12 +20,11 @@ import org.eclipse.persistence.descriptors.changetracking.*;
  * IndirectMap allows a domain class to take advantage of TopLink indirection
  * without having to declare its instance variable as a ValueHolderInterface.
  * <p>To use an IndirectMap:<ul>
- * <li> Declare the appropriate instance variable with type Hashtable (jdk1.1)
- * or Map (jdk1.2).
+ * <li> Declare the appropriate instance variable with type Map or Hashtable
  * <li> Send the message #useTransparentMap(String) to the appropriate
  * CollectionMapping.
  * </ul>
- * TopLink will place an
+ * EclipseLink will place an
  * IndirectMap in the instance variable when the containing domain object is read from
  * the datatabase. With the first message sent to the IndirectMap, the contents
  * are fetched from the database and normal Hashtable/Map behavior is resumed.

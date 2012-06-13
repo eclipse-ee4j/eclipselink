@@ -23,12 +23,11 @@ import org.eclipse.persistence.descriptors.changetracking.*;
  * IndirectList allows a domain class to take advantage of TopLink indirection
  * without having to declare its instance variable as a ValueHolderInterface.
  * <p>To use an IndirectList:<ul>
- * <li> Declare the appropriate instance variable with type IndirectList (jdk1.1)
- * or Collection/List/Vector (jdk1.2).
+ * <li> Declare the appropriate instance variable with type Collection/List/Vector (jdk1.2).
  * <li> Send the message #useTransparentCollection() to the appropriate
  * CollectionMapping.
  * </ul>
- * TopLink will place an
+ * EclipseLink will place an
  * IndirectList in the instance variable when the containing domain object is read from
  * the datatabase. With the first message sent to the IndirectList, the contents
  * are fetched from the database and normal Collection/List/Vector behavior is resumed.

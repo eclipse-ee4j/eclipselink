@@ -109,8 +109,8 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
             container = (IndirectContainer)getContainerPolicy().containerInstance();
         }
         if (container instanceof IndirectCollection){
-            if (useLazyInstantiation != null){
-                ((IndirectCollection)container).setUseLazyInstantiation(useLazyInstantiation.booleanValue());
+            if (this.useLazyInstantiation != null){
+                ((IndirectCollection)container).setUseLazyInstantiation(this.useLazyInstantiation.booleanValue());
             }
         }
         return container;

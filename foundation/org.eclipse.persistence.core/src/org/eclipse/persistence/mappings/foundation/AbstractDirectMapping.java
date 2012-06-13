@@ -76,6 +76,9 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
     protected DatabaseTable keyTableForMapKey = null;
     
     protected String fieldClassificationClassName = null;
+    
+    /** PERF: Avoid default null value conversion check if not default null value set in conversion manager. */
+    protected boolean bypassDefaultNullValueCheck;
 
     /**
      * PERF: Indicates if this mapping's attribute is a simple atomic value and cannot be modified, only replaced.
@@ -616,15 +619,17 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
         }
 
         // Allow for user defined conversion to the object value.
-        if (hasConverter()) {
-            attributeValue = getConverter().convertDataValueToObjectValue(attributeValue, session);
+        if (this.converter != null) {
+            attributeValue = this.converter.convertDataValueToObjectValue(attributeValue, session);
         } else {
             // PERF: Avoid conversion check when not required.
             if ((attributeValue == null) || (attributeValue.getClass() != this.attributeObjectClassification)) {
-                try {
-                    attributeValue = session.getDatasourcePlatform().convertObject(attributeValue, this.attributeClassification);
-                } catch (ConversionException e) {
-                    throw ConversionException.couldNotBeConverted(this, getDescriptor(), e);
+                if ((attributeValue != null) || !this.bypassDefaultNullValueCheck) {                    
+                    try {
+                        attributeValue = session.getDatasourcePlatform().convertObject(attributeValue, this.attributeClassification);
+                    } catch (ConversionException e) {
+                        throw ConversionException.couldNotBeConverted(this, getDescriptor(), e);
+                    }
                 }
             }
         }
@@ -742,17 +747,22 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
         }
 
         // Allow for user defined conversion to the object value.
-        if (hasConverter()) {
-            fieldValue = getConverter().convertObjectValueToDataValue(fieldValue, session);
+        if (this.converter != null) {
+            fieldValue = this.converter.convertObjectValueToDataValue(fieldValue, session);
         }
-        Class fieldClassification = getFieldClassification(getField());
+        Class fieldClassification = this.field.type;
+        if (fieldClassification == null) {
+            fieldClassification = getFieldClassification(this.field);
+        }
         // PERF: Avoid conversion if not required.
         // EclipseLink bug 240407 - nulls not translated when writing to database
         if ((fieldValue == null) || (fieldClassification != fieldValue.getClass())) {
-            try {
-                fieldValue = session.getPlatform(this.descriptor.getJavaClass()).convertObject(fieldValue, fieldClassification);
-            } catch (ConversionException exception) {
-                throw ConversionException.couldNotBeConverted(this, this.descriptor, exception);
+            if ((fieldValue != null) || !this.bypassDefaultNullValueCheck) {
+                try {
+                    fieldValue = session.getPlatform(this.descriptor.getJavaClass()).convertObject(fieldValue, fieldClassification);
+                } catch (ConversionException exception) {
+                    throw ConversionException.couldNotBeConverted(this, this.descriptor, exception);
+                }
             }
         }
         return fieldValue;
@@ -896,6 +906,10 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
                 setIsMutable(session.getProject().getDefaultTemporalMutable());
             }
         }
+        
+        Map nullValues = session.getPlatform(this.descriptor.getJavaClass()).getConversionManager().getDefaultNullValues();
+        bypassDefaultNullValueCheck = (!this.attributeClassification.isPrimitive()) &&
+                ((nullValues == null) || (!nullValues.containsKey(this.attributeClassification)));
     }
     
     /**

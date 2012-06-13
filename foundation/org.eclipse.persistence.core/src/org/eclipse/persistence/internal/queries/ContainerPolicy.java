@@ -45,6 +45,8 @@ import org.eclipse.persistence.annotations.CacheKeyType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
 import org.eclipse.persistence.indirection.IndirectCollection;
+import org.eclipse.persistence.indirection.IndirectList;
+import org.eclipse.persistence.indirection.IndirectSet;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -598,18 +600,31 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
      * A ValidationException is thrown on error.
      */
     public Object containerInstance() {
+        Class containerClass = getContainerClass();
+        // PERF: Avoid reflection for common cases.
+        if (containerClass == ClassConstants.IndirectList_Class) {
+            return new IndirectList();
+        } else if (containerClass == ClassConstants.IndirectSet_Class) {
+            return new IndirectSet();
+        } else if (containerClass == ClassConstants.ArrayList_class) {
+            return new ArrayList();
+        } else if (containerClass == ClassConstants.Vector_class) {
+            return new Vector();
+        } else if (containerClass == ClassConstants.HashSet_class) {
+            return new HashSet();
+        }
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    return AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(getContainerClass()));
+                    return AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(containerClass));
                 } catch (PrivilegedActionException exception) {
-                    throw QueryException.couldNotInstantiateContainerClass(getContainerClass(), exception.getException());
+                    throw QueryException.couldNotInstantiateContainerClass(containerClass, exception.getException());
                 }
             } else {
-                return PrivilegedAccessHelper.newInstanceFromClass(getContainerClass());
+                return PrivilegedAccessHelper.newInstanceFromClass(containerClass);
             }
         } catch (Exception ex) {
-            throw QueryException.couldNotInstantiateContainerClass(getContainerClass(), ex);
+            throw QueryException.couldNotInstantiateContainerClass(containerClass, ex);
         }
     }
 
@@ -620,25 +635,37 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
      * A ValidationException is thrown on error.
      */
     public Object containerInstance(int initialCapacity) {
-        if (getConstructor() == null) {
+        if (this.constructor == null) {
             return containerInstance();
         }
+        Class containerClass = getContainerClass();
         try {
+            // PERF: Avoid reflection for common cases.
+            if (containerClass == ClassConstants.IndirectList_Class) {
+                return new IndirectList(initialCapacity);
+            } else if (containerClass == ClassConstants.IndirectSet_Class) {
+                return new IndirectSet(initialCapacity);
+            } else if (containerClass == ClassConstants.ArrayList_class) {
+                return new ArrayList(initialCapacity);
+            } else if (containerClass == ClassConstants.Vector_class) {
+                return new Vector(initialCapacity);
+            } else if (containerClass == ClassConstants.HashSet_class) {
+                return new HashSet(initialCapacity);
+            }
             Object[] arguments = new Object[1];
-
             //Code change for 3732.  No longer need to add 1 as this was for JDK 1.1
             arguments[0] = Integer.valueOf(initialCapacity);
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    return AccessController.doPrivileged(new PrivilegedInvokeConstructor(getConstructor(), arguments));
+                    return AccessController.doPrivileged(new PrivilegedInvokeConstructor(this.constructor, arguments));
                 } catch (PrivilegedActionException exception) {
-                    throw QueryException.couldNotInstantiateContainerClass(getContainerClass(), exception.getException());
+                    throw QueryException.couldNotInstantiateContainerClass(containerClass, exception.getException());
                 }
             } else {
-                return PrivilegedAccessHelper.invokeConstructor(getConstructor(), arguments);
+                return PrivilegedAccessHelper.invokeConstructor(this.constructor, arguments);
             }
         } catch (Exception ex) {
-            throw QueryException.couldNotInstantiateContainerClass(getContainerClass(), ex);
+            throw QueryException.couldNotInstantiateContainerClass(containerClass, ex);
         }
     }
 

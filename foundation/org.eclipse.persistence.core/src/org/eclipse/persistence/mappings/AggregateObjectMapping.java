@@ -391,6 +391,9 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * @return
      */
     protected CacheKey buildWrapperCacheKeyForAggregate(CacheKey owningCacheKey, boolean targetIsProtected) {
+        if (!this.descriptor.getCachePolicy().isProtectedIsolation()) {
+            return owningCacheKey;
+        }
         if (!targetIsProtected || this.isMapKeyMapping || (owningCacheKey == null)) {
             return owningCacheKey;
         }

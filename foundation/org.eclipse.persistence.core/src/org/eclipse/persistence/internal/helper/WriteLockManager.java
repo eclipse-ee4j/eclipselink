@@ -312,8 +312,8 @@ public class WriteLockManager {
                                     synchronized (activeCacheKey.getMutex()) {
                                         // verify that the cache key is still locked before we wait on it, as
                                         //it may have been released since we tried to acquire it.
-                                        if (activeCacheKey.getMutex().isAcquired() && (activeCacheKey.getMutex().getActiveThread() != Thread.currentThread())) {
-                                                Thread thread = activeCacheKey.getMutex().getActiveThread();
+                                        if (activeCacheKey.getMutex().isAcquired() && (activeCacheKey.getActiveThread() != Thread.currentThread())) {
+                                                Thread thread = activeCacheKey.getActiveThread();
                                                 if (thread.isAlive()){
                                                     long time = System.currentTimeMillis();
                                                     activeCacheKey.getMutex().wait(MAX_WAIT);
@@ -390,7 +390,7 @@ public class WriteLockManager {
             lockedCacheKey = session.getIdentityMapAccessorInstance().acquireDeferredLock(primaryKey, descriptor.getJavaClass(), descriptor);
             Object cachedObject = lockedCacheKey.getObject();
             if (cachedObject == null) {
-                if (lockedCacheKey.getMutex().getActiveThread() == Thread.currentThread()) {
+                if (lockedCacheKey.getActiveThread() == Thread.currentThread()) {
                     lockedCacheKey.setObject(objectToLock);
                 } else {
                     cachedObject = lockedCacheKey.waitForObject();

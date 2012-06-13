@@ -83,7 +83,7 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
         CacheKey cacheKey = getCacheKey(primaryKey, false);
         if (cacheKey == null) {
             // Create and lock a new cacheKey.
-            CacheKey newCacheKey = createCacheKey(primaryKey, null, null);
+            CacheKey newCacheKey = createCacheKey(primaryKey, null, null, 0);
             newCacheKey.acquireDeferredLock();
             // PERF: To avoid synchronization, getIfAbsentPut is used.
             cacheKey = putCacheKeyIfAbsent(newCacheKey);
@@ -107,7 +107,7 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
         CacheKey cacheKey = getCacheKey(primaryKey, forMerge);
         if (cacheKey == null) {
             // Create and lock a new cacheKey.
-            CacheKey newCacheKey = createCacheKey(primaryKey, null, null);
+            CacheKey newCacheKey = createCacheKey(primaryKey, null, null, 0);
             newCacheKey.acquire(forMerge);
             // PERF: To avoid synchronization, getIfAbsentPut is used.
             cacheKey = putCacheKeyIfAbsent(newCacheKey);
@@ -131,7 +131,7 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
         CacheKey cacheKey = getCacheKey(primaryKey, forMerge);
         if (cacheKey == null) {
             // Create and lock a new cacheKey.
-            CacheKey newCacheKey = createCacheKey(primaryKey, null, null);
+            CacheKey newCacheKey = createCacheKey(primaryKey, null, null, 0);
             newCacheKey.acquire(forMerge);
             // PERF: To avoid synchronization, getIfAbsentPut is used.
             cacheKey = putCacheKeyIfAbsent(newCacheKey);
@@ -158,7 +158,7 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
         CacheKey cacheKey = getCacheKey(primaryKey, forMerge);
         if (cacheKey == null) {
             // Create and lock a new cacheKey.
-            CacheKey newCacheKey = createCacheKey(primaryKey, null, null);
+            CacheKey newCacheKey = createCacheKey(primaryKey, null, null, 0);
             newCacheKey.acquire(forMerge);
             // PERF: To avoid synchronization, getIfAbsentPut is used.
             cacheKey = putCacheKeyIfAbsent(newCacheKey);
@@ -185,7 +185,7 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
     public CacheKey acquireReadLockOnCacheKey(Object primaryKey) {
         CacheKey cacheKey = getCacheKey(primaryKey, false);
         if (cacheKey == null) {
-            CacheKey newCacheKey = createCacheKey(primaryKey, null, null);
+            CacheKey newCacheKey = createCacheKey(primaryKey, null, null, 0);
             // Lock new cacheKey.
             newCacheKey.acquireReadLock();
             // Create one but not put it in the cache, as we are only reading
@@ -206,7 +206,7 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
     public CacheKey acquireReadLockOnCacheKeyNoWait(Object primaryKey) {
         CacheKey cacheKey = getCacheKey(primaryKey, false);
         if (cacheKey == null) {
-            CacheKey newCacheKey = createCacheKey(primaryKey, null, null);
+            CacheKey newCacheKey = createCacheKey(primaryKey, null, null, 0);
             // Lock new cacheKey.
             newCacheKey.acquireReadLock();
             // Create one but not put it in the cache, as we are only reading
@@ -251,15 +251,8 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
     /**
      * Create the correct type of CacheKey for this map.
      */
-    public CacheKey createCacheKey(Object primaryKey, Object object, Object writeLockValue) {
-        return createCacheKey(primaryKey, object, writeLockValue, 0);
-    }
-
-    /**
-     * Create the correct type of CacheKey for this map.
-     */
     public CacheKey createCacheKey(Object primaryKey, Object object, Object writeLockValue, long readTime) {
-        return new CacheKey(primaryKey, object, writeLockValue, readTime, isIsolated);
+        return new CacheKey(primaryKey, object, writeLockValue, readTime, this.isIsolated);
     }
 
     /**

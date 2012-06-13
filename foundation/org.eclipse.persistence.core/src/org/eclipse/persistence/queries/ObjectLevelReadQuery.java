@@ -901,7 +901,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
                         setIsPrePrepared(true);// MUST not set prepare until done as other thread may hit before finishing the prePrepare.
                     }
                 }
-            } else {        
+            } else if (this.descriptor == null) {        
                 // Must always check descriptor as transient for remote.
                 checkDescriptor(session);
             }

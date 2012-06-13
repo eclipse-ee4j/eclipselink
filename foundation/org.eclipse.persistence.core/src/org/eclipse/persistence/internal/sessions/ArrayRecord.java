@@ -84,7 +84,7 @@ public class ArrayRecord extends DatabaseRecord {
     public boolean containsKey(DatabaseField key) {
         if (this.fieldsArray != null) {
             // Optimize check.
-            int index = key.getIndex();
+            int index = key.index;
             if ((index >= 0) && (index < this.size)) {
                 DatabaseField field = this.fieldsArray[index];
                 if ((field == key) || field.equals(key)) {
@@ -126,7 +126,7 @@ public class ArrayRecord extends DatabaseRecord {
     public Object get(DatabaseField key) {
         if (this.fieldsArray != null) {
             // Optimize check.
-            int index = key.getIndex();
+            int index = key.index;
             if ((index >= 0) && (index < this.size)) {
                 DatabaseField field = this.fieldsArray[index];
                 if ((field == key) || field.equals(key)) {
@@ -156,7 +156,7 @@ public class ArrayRecord extends DatabaseRecord {
     public Object getIndicatingNoEntry(DatabaseField key) {
         if (this.fieldsArray != null) {
             // Optimize check.
-            int index = key.getIndex();
+            int index = key.index;
             if ((index >= 0) && (index < this.size)) {
                 DatabaseField field = this.fieldsArray[index];
                 if ((field == key) || field.equals(key)) {
@@ -186,7 +186,7 @@ public class ArrayRecord extends DatabaseRecord {
     public DatabaseField getField(DatabaseField key) {
         if (this.fieldsArray != null) {
             // Optimize check.
-            int index = key.getIndex();
+            int index = key.index;
             if ((index >= 0) && (index < this.size)) {
                 DatabaseField field = this.fieldsArray[index];
                 if ((field == key) || field.equals(key)) {

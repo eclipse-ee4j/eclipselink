@@ -4780,7 +4780,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
 
            int counter = 0;
            while ((cacheKey.getObject() == null) && (counter < 1000)) {
-               if (cacheKey.getMutex().getActiveThread() == Thread.currentThread()) {
+               if (cacheKey.getActiveThread() == Thread.currentThread()) {
                    break;
                }
                //must release lock here to prevent acquiring multiple deferred locks but only
@@ -4797,7 +4797,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
                counter++;
            }
            if (counter == 1000) {
-               throw ConcurrencyException.maxTriesLockOnBuildObjectExceded(cacheKey.getMutex().getActiveThread(), Thread.currentThread());
+               throw ConcurrencyException.maxTriesLockOnBuildObjectExceded(cacheKey.getActiveThread(), Thread.currentThread());
            }
        } else {
            cacheKey = this.getIdentityMapAccessorInstance().acquireLock(primaryKey, concreteDescriptor.getJavaClass(), concreteDescriptor);

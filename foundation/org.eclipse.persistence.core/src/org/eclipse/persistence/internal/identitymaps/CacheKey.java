@@ -83,9 +83,14 @@ public class CacheKey implements Serializable, Cloneable {
     protected AbstractRecord protectedForeignKeys;
     
     /**
-     * Set to true if this CacheKey comes from an IsolatedClientSession
+     * Set to true if this CacheKey comes from an IsolatedClientSession, or DatabaseSessionImpl.
      */
     protected boolean isIsolated;
+    
+    /**
+     * Store if locked for isolated (not really locked, but needs to know state).
+     */
+    protected boolean hasIsolatedLock;
     
     /**
      * The ID of the database transaction that last wrote the object.
@@ -129,6 +134,10 @@ public class CacheKey implements Serializable, Cloneable {
      * Acquire the lock on the cache key object.
      */
     public void acquire() {
+        if (this.isIsolated) {
+            this.hasIsolatedLock = true;
+            return;
+        }
         getMutex().acquire(false);
     }
 
@@ -137,6 +146,10 @@ public class CacheKey implements Serializable, Cloneable {
      * called with true from the merge process, if true then the refresh will not refresh the object
      */
     public void acquire(boolean forMerge) {
+        if (this.isIsolated) {
+            this.hasIsolatedLock = true;
+            return;
+        }
         getMutex().acquire(forMerge);
     }
 
@@ -145,6 +158,13 @@ public class CacheKey implements Serializable, Cloneable {
      * Added for CR 2317
      */
     public boolean acquireNoWait() {
+        if (this.isIsolated) {
+            if (this.hasIsolatedLock) {
+                return false;
+            }
+            this.hasIsolatedLock = true;
+            return true;
+        }
         return getMutex().acquireNoWait(false);
     }
 
@@ -155,6 +175,13 @@ public class CacheKey implements Serializable, Cloneable {
      */
 
     public boolean acquireIfUnownedNoWait() {
+        if (this.isIsolated) {
+            if (this.hasIsolatedLock) {
+                return false;
+            }
+            this.hasIsolatedLock = true;
+            return true;
+        }
         return getMutex().acquireIfUnownedNoWait(false);
     }
 
@@ -164,6 +191,13 @@ public class CacheKey implements Serializable, Cloneable {
      * called with true from the merge process, if true then the refresh will not refresh the object
      */
     public boolean acquireNoWait(boolean forMerge) {
+        if (this.isIsolated) {
+            if (this.hasIsolatedLock) {
+                return false;
+            }
+            this.hasIsolatedLock = true;
+            return true;
+        }
         return getMutex().acquireNoWait(forMerge);
     }
 
@@ -173,6 +207,10 @@ public class CacheKey implements Serializable, Cloneable {
      * called with true from the merge process, if true then the refresh will not refresh the object
      */
     public boolean acquireWithWait(boolean forMerge, int wait) {
+        if (this.isIsolated) {
+            this.hasIsolatedLock = true;
+            return true;
+        }
         return getMutex().acquireWithWait(forMerge, wait);
     }
 
@@ -180,6 +218,10 @@ public class CacheKey implements Serializable, Cloneable {
      * Acquire the deferred lock.
      */
     public void acquireDeferredLock() {
+        if (this.isIsolated) {
+            this.hasIsolatedLock = true;
+            return;
+        }
         getMutex().acquireDeferredLock();
     }
     
@@ -189,6 +231,9 @@ public class CacheKey implements Serializable, Cloneable {
      * It does not hold a lock, so the object could be refreshed afterwards.
      */
     public void checkReadLock() {
+        if (this.isIsolated) {
+            return;
+        }
         getMutex().checkReadLock();
     }
         
@@ -198,6 +243,9 @@ public class CacheKey implements Serializable, Cloneable {
      * It does not hold a lock, so the object could be refreshed afterwards.
      */
     public void checkDeferredLock() {
+        if (this.isIsolated) {
+            return;
+        }
         getMutex().checkDeferredLock();
     }
     
@@ -205,6 +253,9 @@ public class CacheKey implements Serializable, Cloneable {
      * Acquire the read lock on the cache key object.
      */
     public void acquireReadLock() {
+        if (this.isIsolated) {
+            return;
+        }
         getMutex().acquireReadLock();
     }
 
@@ -212,6 +263,9 @@ public class CacheKey implements Serializable, Cloneable {
      * Acquire the read lock on the cache key object.  Return true if acquired.
      */
     public boolean acquireReadLockNoWait() {
+        if (this.isIsolated) {
+            return true;
+        }
         return getMutex().acquireReadLockNoWait();
     }
 
@@ -268,6 +322,16 @@ public class CacheKey implements Serializable, Cloneable {
 
     public Object getKey() {
         return key;
+    }
+
+    /**
+     * Return the active thread.
+     */
+    public Thread getActiveThread() {
+        if (this.isIsolated) {
+            return Thread.currentThread();
+        }
+        return getMutex().getActiveThread();
     }
 
     /**
@@ -331,6 +395,9 @@ public class CacheKey implements Serializable, Cloneable {
      * Return if the lock is acquired
      */
     public boolean isAcquired() {
+        if (this.isIsolated) {
+            return this.hasIsolatedLock;
+        }
         return getMutex().isAcquired();
     }
 
@@ -375,6 +442,10 @@ public class CacheKey implements Serializable, Cloneable {
      * Release the lock on the cache key object.
      */
     public void release() {
+        if (this.isIsolated) {
+            this.hasIsolatedLock = false;
+            return;
+        }
         getMutex().release();
     }
 
@@ -382,6 +453,10 @@ public class CacheKey implements Serializable, Cloneable {
      * Release the deferred lock
      */
     public void releaseDeferredLock() {
+        if (this.isIsolated) {
+            this.hasIsolatedLock = false;
+            return;
+        }
         getMutex().releaseDeferredLock();
     }
 
@@ -389,6 +464,9 @@ public class CacheKey implements Serializable, Cloneable {
      * Release the read lock on the cache key object.
      */
     public void releaseReadLock() {
+        if (this.isIsolated) {
+            return;
+        }
         getMutex().releaseReadLock();
     }
 

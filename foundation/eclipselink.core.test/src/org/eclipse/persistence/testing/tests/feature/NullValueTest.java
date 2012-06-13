@@ -13,6 +13,8 @@
 package org.eclipse.persistence.testing.tests.feature;
 
 import java.util.*;
+
+import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.queries.SQLCall;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.testing.models.employee.domain.*;
@@ -37,6 +39,12 @@ public class NullValueTest extends AutoVerifyTestCase {
         getSession().getLogin().getPlatform().getConversionManager().setDefaultNullValues(new Hashtable());
         getSession().getLogin().setDefaultNullValue(String.class, "null");
         getSession().getLogin().setDefaultNullValue(int.class, new Integer(-1));
+        // Reinit mappings.
+        for (DatabaseMapping mapping : getSession().getDescriptor(Address.class).getMappings()) {
+            if (mapping.isDirectToFieldMapping()) {
+                mapping.preInitialize(getAbstractSession());
+            }
+        }
         getAbstractSession().beginTransaction();
 
         employee = new Employee();

@@ -33,7 +33,7 @@ import org.eclipse.persistence.tools.schemaframework.TableCreator;
 public class DCNTestSuite extends JUnitTestCase {
 
     public static String DCN2 = "dcn2";
-    public static int SLEEP = 2000;
+    public static int SLEEP = 5000;
     
     public static boolean supported = false;
 

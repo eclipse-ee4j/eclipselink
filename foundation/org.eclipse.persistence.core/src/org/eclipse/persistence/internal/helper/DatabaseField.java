@@ -88,13 +88,13 @@ public class DatabaseField implements Cloneable, Serializable {
      * If this is set, it will be used in determining equality (unless delimiters are used) and the hashcode.  
      * @see getNameForComparisons
      */
-    private String nameForComparisons;
+    protected String nameForComparisons;
     
     /**
      * setting to true will cause getNameForComparisons to lazy initialize nameForComparisons using
      * the value from getName().toUpperCase().  
      */
-    private boolean useUpperCaseForComparisons = false;
+    protected boolean useUpperCaseForComparisons = false;
 
     /**
      * used to represent the value when it has not being defined

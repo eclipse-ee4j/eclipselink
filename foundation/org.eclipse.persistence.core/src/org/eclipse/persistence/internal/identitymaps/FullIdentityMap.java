@@ -77,7 +77,7 @@ public class FullIdentityMap extends AbstractIdentityMap {
         while (cacheKeyIterator.hasNext()) {
             CacheKey cacheKey = (CacheKey)cacheKeyIterator.next();
             if (cacheKey.isAcquired()) {
-                Thread activeThread = cacheKey.getMutex().getActiveThread();
+                Thread activeThread = cacheKey.getActiveThread();
                 Set set = (Set)threadList.get(activeThread);
                 if (set == null) {
                     set = new HashSet();

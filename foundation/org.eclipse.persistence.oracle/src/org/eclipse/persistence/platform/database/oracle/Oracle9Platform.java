@@ -305,6 +305,9 @@ public class Oracle9Platform extends Oracle8Platform {
         if ((javaClass == null) || ((sourceObject != null) && (sourceObject.getClass() == javaClass))) {
             return sourceObject;
         }
+        if (sourceObject == null) {
+            return super.convertObject(sourceObject, javaClass);
+        }
 
         Object valueToConvert = sourceObject;
 
@@ -313,8 +316,8 @@ public class Oracle9Platform extends Oracle8Platform {
             return sourceObject;
         }
         
-        if(javaClass == TIMESTAMPTypes.TIMESTAMPTZ_CLASS) {
-            if(sourceObject instanceof java.util.Date) {
+        if (javaClass == TIMESTAMPTypes.TIMESTAMPTZ_CLASS) {
+            if (sourceObject instanceof java.util.Date) {
                 Calendar cal = Calendar.getInstance();
                 cal.setTimeInMillis(((java.util.Date)sourceObject).getTime());
                 return cal;

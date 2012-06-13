@@ -46,6 +46,7 @@ public class ClassConstants {
     public static final Class URL_Class = URL.class;
     public static final Class Vector_class = Vector.class;
     public static final Class ArrayList_class = ArrayList.class;
+    public static final Class HashSet_class = HashSet.class;
     public static final Class Void_Class = void.class;
     public static final Class PropertyChangeEvent_Class = java.beans.PropertyChangeEvent.class;
 
@@ -63,6 +64,7 @@ public class ClassConstants {
     public static final Class ArgumentListFunctionExpression_Class = org.eclipse.persistence.internal.expressions.ArgumentListFunctionExpression.class;
     public static final Class IndirectContainer_Class = org.eclipse.persistence.indirection.IndirectContainer.class;
     public static final Class IndirectList_Class = org.eclipse.persistence.indirection.IndirectList.class;
+    public static final Class IndirectSet_Class = org.eclipse.persistence.indirection.IndirectSet.class;
     public static final Class IndirectMap_Class = org.eclipse.persistence.indirection.IndirectMap.class;
     public static final Class LogicalExpression_Class = org.eclipse.persistence.internal.expressions.LogicalExpression.class;
     public static final Class PublicInterfaceDatabaseSession_Class = DatabaseSessionImpl.class;
