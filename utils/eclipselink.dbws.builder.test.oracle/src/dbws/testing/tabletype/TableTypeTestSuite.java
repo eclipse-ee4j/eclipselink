@@ -922,7 +922,6 @@ public class TableTypeTestSuite extends DBWSTestSuite {
         "</tabletypeType>";
     */
 
-    // TODO:  'rO0ABXA=' comes back for non-set/null binary types
     protected static final String NEW_PERSON_XML =
         REGULAR_XML_HEADER +
         "<tabletypeType xmlns=\"urn:tabletype\">" +
@@ -934,11 +933,11 @@ public class TableTypeTestSuite extends DBWSTestSuite {
             "<sal>19000.0</sal>" +
             "<commission>333.0</commission>" +
             "<sales>1.0</sales>" +
-            "<binid>rO0ABXA=</binid>" +
-            "<b>rO0ABXA=</b>" +
+            "<binid xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/>" +
+            "<b xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/>" +
             "<c>adadadadadadadadadadadadadadad</c>" +
-            "<r>rO0ABXA=</r>" +
-            "<lr>rO0ABXA=</lr>" +
+            "<r xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/>" +
+            "<lr xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:nil=\"true\"/>" +
         "</tabletypeType>";
 
     protected static final String ALL_PEOPLE_XML =
