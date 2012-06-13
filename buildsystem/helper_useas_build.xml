@@ -206,6 +206,11 @@
                 <include name="**/*.jar"/>
             </patternset>
         </unzip>
+        <unzip dest="${p2.bundle.dir}" src="${nosql.install.file}">
+            <patternset>
+                <include name="**/*.jar"/>
+            </patternset>
+        </unzip>
         <!-- Remove jars we are not including in features at this time (needs to be separate because exclude in unzip does not seem to work) -->
         <delete>
             <fileset
@@ -214,15 +219,16 @@
                           *jms*.jar,
                           com.sun*.jar,
                           eclipselink*.jar,
+                          *ejb*.jar,
                           javax.persistence*_1.*.jar,
                           *preview*.jar,
                           *javax.resource*.jar,
                           *javax.transaction*.jar,
                           javax.xml.bind.source*.jar,
                           *modelgen*.jar,
-                          *servlet*.jar,
                           *soap*.jar,
-                          *xml.ws*.jar"
+                          *xml.ws*.jar,
+                          *jpars*.jar"
             />
         </delete>
         <unzip dest="${p2.feature.dir}" src="${p2.archive.zip}">
