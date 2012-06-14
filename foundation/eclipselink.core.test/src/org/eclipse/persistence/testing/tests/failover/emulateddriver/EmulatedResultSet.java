@@ -95,7 +95,7 @@ public class EmulatedResultSet implements ResultSet {
 	}
 
 	public BigDecimal getBigDecimal(int columnIndex, int scale) {
-		return (BigDecimal) getObject(columnIndex);
+                return new BigDecimal(String.valueOf(getObject(columnIndex)));
 	}
 
 	public byte[] getBytes(int columnIndex) {
@@ -233,11 +233,11 @@ public class EmulatedResultSet implements ResultSet {
 	}
 
 	public BigDecimal getBigDecimal(int columnIndex) {
-		return (BigDecimal) getObject(columnIndex);
+		return new BigDecimal(String.valueOf(getObject(columnIndex)));
 	}
 
 	public BigDecimal getBigDecimal(String columnName) {
-		return (BigDecimal) getObject(columnName);
+                return new BigDecimal(String.valueOf(getObject(columnName)));
 	}
 
 	// ---------------------------------------------------------------------
