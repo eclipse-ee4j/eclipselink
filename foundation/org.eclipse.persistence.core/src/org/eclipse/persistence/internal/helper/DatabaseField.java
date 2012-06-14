@@ -458,9 +458,6 @@ public class DatabaseField implements Cloneable, Serializable {
     
     /**
      * Set the unqualified name of the field.
-     * 
-     * If the name contains database delimiters, they will be stripped and a flag will be set to have them 
-     * added when the DatabaseField is written to SQL
      */
     public void setName(String name) {
         setName(name, null, null);
@@ -483,7 +480,6 @@ public class DatabaseField implements Cloneable, Serializable {
      * added when the DatabaseField is written to SQL
      */
     public void setName(String name, String startDelimiter, String endDelimiter) {
-        
         if ((startDelimiter != null) && (endDelimiter != null) && !startDelimiter.equals("")&& !endDelimiter.equals("") && name.startsWith(startDelimiter) && name.endsWith(endDelimiter)){
             this.name = name.substring(startDelimiter.length(), name.length() - endDelimiter.length());
             this.useDelimiters = true;

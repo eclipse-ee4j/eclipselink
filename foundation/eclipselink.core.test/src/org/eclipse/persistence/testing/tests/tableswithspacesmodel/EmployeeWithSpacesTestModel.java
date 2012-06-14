@@ -39,6 +39,8 @@ public class EmployeeWithSpacesTestModel extends TestModel {
         addTest(getUpdateObjectTestSuite());
         addTest(getInsertObjectTestSuite());
         addTest(getDeleteObjectTestSuite());
+        // EL bug 382420
+        addTest(new QuotedTableNameInitializationTest());        
     }
     //SRG test set is maintained by QA only, do NOT add any new tests into it.
 
