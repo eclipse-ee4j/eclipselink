@@ -173,7 +173,6 @@ public interface JPQLQueryProblemMessages {
 	String FunctionExpression_InvalidJPAVersion = "FUNCTION_EXPRESSION_INVALID_JPA_VERSION";
 	String FunctionExpression_MissingExpression = "FUNCTION_EXPRESSION_MISSING_EXPRESSION";
 	String FunctionExpression_MissingFunctionName = "FUNCTION_EXPRESSION_MISSING_FUNCTION_NAME";
-	String FunctionExpression_MissingLeftParenthesis = "FUNCTION_EXPRESSION_MISSING_LEFT_PARENTHESIS";
 	String FunctionExpression_MissingOneExpression = "FUNCTION_EXPRESSION_MISSING_ONE_EXPRESSION";
 	String FunctionExpression_MissingRightParenthesis = "FUNCTION_EXPRESSION_MISSING_RIGHT_PARENTHESIS";
 	String FunctionExpression_MoreThanOneExpression = "FUNCTION_EXPRESSION_MORE_THAN_ONE_EXPRESSION";

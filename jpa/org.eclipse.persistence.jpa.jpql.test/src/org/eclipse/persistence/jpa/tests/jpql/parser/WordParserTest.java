@@ -1335,4 +1335,43 @@ public final class WordParserTest {
 		assertEquals(".endDate", word);
 		assertSame(WordType.WORD, wordParser.getWordType());
 	}
+
+	@Test
+	public void testWord_93() {
+
+		String query = "Update Employee e WHERE column!='value'";
+
+		WordParser wordParser = new WordParser(query);
+		wordParser.moveForward("Update Employee e WHERE ");
+
+		CharSequence  word = wordParser.word();
+		assertEquals("column", word);
+		assertSame(WordType.WORD, wordParser.getWordType());
+	}
+
+	@Test
+	public void testWord_94() {
+
+		String query = "Update Employee e WHERE column!='value'";
+
+		WordParser wordParser = new WordParser(query);
+		wordParser.moveForward("Update Employee e WHERE column");
+
+		CharSequence  word = wordParser.word();
+		assertEquals("!=", word);
+		assertSame(WordType.WORD, wordParser.getWordType());
+	}
+
+	@Test
+	public void testWord_95() {
+
+		String query = "Update Employee e WHERE column!='value'";
+
+		WordParser wordParser = new WordParser(query);
+		wordParser.moveForward("Update Employee e WHERE column!=");
+
+		CharSequence  word = wordParser.word();
+		assertEquals("'value'", word);
+		assertSame(WordType.STRING_LITERAL, wordParser.getWordType());
+	}
 }

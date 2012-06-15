@@ -57,7 +57,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * simple_cond_expression ::= regexp_expression |
  *                            ...
  *
- * function_expression ::= { FUNC | FUNCTION | OEPRATOR | SQL | COLUMN } (string_literal {, function_arg}*)
+ * function_expression ::= { FUNC | FUNCTION | OPERATOR | SQL | COLUMN } (string_literal {, function_arg}*)
  *
  * regexp_expression ::= string_expression REGEXP pattern_value
  *

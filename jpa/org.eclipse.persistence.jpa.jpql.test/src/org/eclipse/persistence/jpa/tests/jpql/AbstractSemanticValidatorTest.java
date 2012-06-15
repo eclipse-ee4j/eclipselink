@@ -1635,6 +1635,14 @@ public abstract class AbstractSemanticValidatorTest extends AbstractValidatorTes
 		testHasNoProblems(problems);
 	}
 
+	@Test
+	public final void test_ValidQuery_02() throws Exception {
+
+		String jpqlQuery = "SELECT p FROM Product p WHERE TYPE(p.project) <> SmallProject";
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+		testHasNoProblems(problems);
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */

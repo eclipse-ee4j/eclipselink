@@ -402,7 +402,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 
 		String variable = collectionPath.substring(0, dotIndex);
-		String path = collectionPath.substring(dotIndex);
+		String path = collectionPath.substring(dotIndex + 1);
 		return collectionPath(variable(variable), false, path);
 	}
 
@@ -2566,7 +2566,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 	protected static StateFieldPathExpressionTester path(ExpressionTester identificationVariable,
 	                                                     String pathExpression) {
 
-		return path(identificationVariable, true, pathExpression);
+		return path(identificationVariable, false, pathExpression);
 	}
 
 	protected static StateFieldPathExpressionTester path(String pathExpression) {
@@ -2578,7 +2578,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 
 		String variable = pathExpression.substring(0, dotIndex);
-		String path = pathExpression.substring(dotIndex);
+		String path = pathExpression.substring(dotIndex + 1);
 		return path(variable(variable), false, path);
 	}
 
@@ -2964,9 +2964,8 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 				newValue
 			);
 		}
-		else {
-			return set(path(pathExpression), newValue);
-		}
+
+		return set(path(pathExpression), newValue);
 	}
 
 	protected static SizeExpressionTester size(ExpressionTester collectionPath) {
@@ -3617,14 +3616,25 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		if (identificationVariable.startsWith("{")) {
 			return virtualVariable(identificationVariable);
 		}
-		return new IdentificationVariableTester(identificationVariable, false);
+		return new IdentificationVariableTester(identificationVariable, false, nullExpression());
 	}
 
 	protected static IdentificationVariableTester virtualVariable(String identificationVariable) {
 		if (identificationVariable.startsWith("{")) {
 			identificationVariable = identificationVariable.substring(1, identificationVariable.length() - 1);
 		}
-		return new IdentificationVariableTester(identificationVariable, true);
+		return new IdentificationVariableTester(identificationVariable, true, nullExpression());
+	}
+
+	protected static IdentificationVariableTester virtualVariable(String identificationVariable,
+	                                                              String pathExpression) {
+
+		StateFieldPathExpressionTester path = path(
+			virtualVariable(identificationVariable),
+			pathExpression
+		);
+
+		return new IdentificationVariableTester(pathExpression, true, path);
 	}
 
 	protected static WhenClauseTester when(ExpressionTester conditionalExpression,
@@ -4319,7 +4329,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 
 			this.value                  = value;
 			this.identificationVariable = identificationVariable;
-			this.startsWithDot          = identificationVariable.isNull() && (value.indexOf(DOT) > -1);
+			this.startsWithDot          = (identificationVariable.toString().length() == 0) && (value.indexOf(DOT) > -1);
 
 			if (value.length() > 1) {
 				endsWithDot = value.charAt(value.length() - 1) == DOT;
@@ -4343,6 +4353,9 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		public String toString() {
 			StringBuilder sb = new StringBuilder();
 			sb.append(identificationVariable);
+			if (startsWithDot || (sb.length() > 0)) {
+				sb.append(DOT);
+			}
 			sb.append(value);
 			return sb.toString();
 		}
@@ -5956,16 +5969,20 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 
 		private String identificationVariable;
 		private boolean virtual;
+		private ExpressionTester virtualPathExpression;
 
-		protected IdentificationVariableTester(String identificationVariable, boolean virtual) {
+		protected IdentificationVariableTester(String identificationVariable,
+		                                       boolean virtual,
+		                                       ExpressionTester virtualPathExpression) {
 			super();
 			this.virtual                = virtual;
 			this.identificationVariable = identificationVariable;
+			this.virtualPathExpression  = virtualPathExpression;
 		}
 
 		@Override
 		public boolean isNull() {
-			return virtual;
+			return virtual && virtualPathExpression.isNull();
 		}
 
 		public void test(Expression expression) {
@@ -5974,11 +5991,19 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 			IdentificationVariable identificationVariable = (IdentificationVariable) expression;
 			assertEquals(this.identificationVariable, identificationVariable.toParsedText());
 			assertEquals(virtual,                     identificationVariable.isVirtual());
+
+			if (virtual) {
+				StateFieldPathExpression pathExpression = identificationVariable.getStateFieldPathExpression();
+				assertEquals(virtualPathExpression.isNull(), pathExpression == null);
+				if (pathExpression != null) {
+					virtualPathExpression.test(pathExpression);
+				}
+			}
 		}
 
 		@Override
 		public String toString() {
-			return virtual ? ExpressionTools.EMPTY_STRING : identificationVariable;
+			return virtual ? virtualPathExpression.toString() : identificationVariable;
 		}
 	}
 

@@ -100,7 +100,7 @@ public final class UpdateItem extends AbstractExpression {
 			children.add(stateFieldExpression);
 		}
 
-		if (hasSpaceAfterStateFieldPathExpression) {
+		if (hasSpaceAfterStateFieldPathExpression()) {
 			children.add(buildStringExpression(SPACE));
 		}
 
@@ -209,33 +209,32 @@ public final class UpdateItem extends AbstractExpression {
 
 		// Parse state field
 		if (tolerant) {
-			stateFieldExpression = parse(
-				wordParser,
-				UpdateItemStateFieldPathExpressionBNF.ID,
-				tolerant
-			);
+			stateFieldExpression = parse(wordParser, UpdateItemStateFieldPathExpressionBNF.ID, tolerant);
 		}
 		else {
-			stateFieldExpression = new StateFieldPathExpression(
-				this,
-				wordParser.word()
-			);
-
+			stateFieldExpression = new StateFieldPathExpression(this, wordParser.word());
 			stateFieldExpression.parse(wordParser, tolerant);
 		}
 
 		hasSpaceAfterStateFieldPathExpression = wordParser.skipLeadingWhitespace() > 0;
 
 		// Parse '='
-		hasEqualSign = wordParser.startsWith('=');
+		hasEqualSign = wordParser.startsWith(EQUAL);
 
 		if (hasEqualSign) {
 			wordParser.moveForward(1);
 			hasSpaceAfterEqualSign = wordParser.skipLeadingWhitespace() > 0;
+			if (stateFieldExpression != null) {
+				hasSpaceAfterStateFieldPathExpression = true;
+			}
 		}
 
 		// Parse new value
 		newValue = parse(wordParser, NewValueBNF.ID, tolerant);
+
+		if (!hasSpaceAfterEqualSign && hasNewValue()) {
+			hasSpaceAfterEqualSign = true;
+		}
 	}
 
 	/**
@@ -249,7 +248,7 @@ public final class UpdateItem extends AbstractExpression {
 			stateFieldExpression.toParsedText(writer, actual);
 		}
 
-		if (hasSpaceAfterStateFieldPathExpression) {
+		if (hasSpaceAfterStateFieldPathExpression()) {
 			writer.append(SPACE);
 		}
 

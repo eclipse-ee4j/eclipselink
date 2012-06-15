@@ -194,4 +194,49 @@ public final class EclipseLinkJPQLParserTests2_4 extends JPQLParserTest {
 
 		testQuery(query_015(), selectStatement);
 	}
+
+	@Test
+	public final void test_Query_016() {
+
+		// Update Employee set name='JPQL' WHERE column!='value'
+
+		ExpressionTester updateStatement = updateStatement(
+			update(
+				"Employee",
+				set("{employee}.name", string("'JPQL'"))
+			),
+			where(
+				virtualVariable("employee", "column").notEqual(string("'value'"))
+			)
+		);
+
+		testQuery(query_016(), updateStatement);
+	}
+
+	@Test
+	public final void test_Query_017() {
+
+		// select DISTINCT NEW com.ca.waae.dbaccess.dao.MetaPropDef(p.id.metaId, p.jilName, p.dbTable, p.dbColumn, p.dbType)
+		// FROM UjoMetaProperty p
+		// WHERE p.dbTable!='tablename'
+		// ORDER BY p.id.metaId
+
+		ExpressionTester selectStatement = selectStatement(
+			selectDistinct(
+				new_(
+					"com.ca.waae.dbaccess.dao.MetaPropDef",
+					path("p.id.metaId"),
+					path("p.jilName"),
+					path("p.dbTable"),
+					path("p.dbColumn"),
+					path("p.dbType")
+				)
+			),
+			from("UjoMetaProperty", "p"),
+			where(path("p.dbTable").notEqual(string("'tablename'"))),
+			orderBy(orderByItem("p.id.metaId"))
+		);
+
+		testQuery(query_017(), selectStatement);
+	}
 }

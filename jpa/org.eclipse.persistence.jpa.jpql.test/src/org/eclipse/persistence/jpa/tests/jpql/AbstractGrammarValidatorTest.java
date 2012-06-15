@@ -5708,17 +5708,8 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	public final void test_TypeExpression_InvalidExpression() throws Exception {
 
 		String jpqlQuery  = "SELECT TYPE(e.name) FROM Employee e";
-		int startPosition = "SELECT TYPE(".length();
-		int endPosition   = "SELECT TYPE(e.name".length();
-
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
-
-		testHasOnlyOneProblem(
-			problems,
-			TypeExpression_InvalidExpression,
-			startPosition,
-			endPosition
-		);
+		testDoesNotHaveProblem(problems, TypeExpression_InvalidExpression);
 	}
 
 	@Test
@@ -6096,6 +6087,14 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 	public final void test_ValidQuery_04() throws Exception {
 
 		String jpqlQuery = "SELECT r FROM RuleCondition r WHERE r.ruleType = :ruleType AND r.operator = :operator AND (SELECT Count(rcc) FROM r.components rcc ) = :componentCount  AND (SELECT Count(rc2) FROM r.components rc2 WHERE rc2.componentId IN :componentIds) = :componentCount";
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+		testHasNoProblems(problems);
+	}
+
+	@Test
+	public final void test_ValidQuery_05() throws Exception {
+
+		String jpqlQuery = "SELECT p FROM Product p WHERE TYPE(p.project) <> SmallProject";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
 		testHasNoProblems(problems);
 	}

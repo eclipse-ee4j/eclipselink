@@ -489,7 +489,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 				}
 			}
 			public String leftParenthesisMissingKey(FunctionExpression expression) {
-				return FunctionExpression_MissingLeftParenthesis;
+				return null; // never happens
 			}
 			@Override
 			protected int lengthBeforeEncapsulatedExpression(FunctionExpression expression) {

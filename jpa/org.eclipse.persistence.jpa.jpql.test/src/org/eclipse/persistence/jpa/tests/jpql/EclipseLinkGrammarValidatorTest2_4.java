@@ -1130,31 +1130,6 @@ public class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarValidator
 	}
 
 	@Test
-	public final void test_FunctionExpression_MissingLeftParenthesis_1() throws Exception {
-
-		String jpqlQuery = "SELECT FUNCTION 'getName', 'String') FROM Employee e";
-		int startPosition = "SELECT FUNCTION".length();
-		int endPosition   = startPosition;
-
-		List<JPQLQueryProblem> problems = validate(jpqlQuery);
-
-		testHasOnlyOneProblem(
-			problems,
-			FunctionExpression_MissingLeftParenthesis,
-			startPosition,
-			endPosition
-		);
-	}
-
-	@Test
-	public final void test_FunctionExpression_MissingLeftParenthesis_2() throws Exception {
-
-		String jpqlQuery = "SELECT FUNCTION('getName', 'String') FROM Employee e";
-		List<JPQLQueryProblem> problems = validate(jpqlQuery);
-		testDoesNotHaveProblem(problems, FunctionExpression_MissingLeftParenthesis);
-	}
-
-	@Test
 	public final void test_FunctionExpression_MissingOneExpression_1() throws Exception {
 
 		String jpqlQuery = "select e from Employee e where column('city', e.address) = 'Ottawa'";
