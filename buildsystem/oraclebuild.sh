@@ -4,9 +4,17 @@ THIS=$0
 PROGNAME=`basename ${THIS}`
 CUR_DIR=`dirname ${THIS}`
 umask 0002
-TARGET=oracleext
-TARG_NM="oracleext"
 BRANCH=$1
+# if branch is not blank, 2.4 or trunk then use old target name
+if [ "$BRANCH" = "" -o "$BRANCH" = "trunk" -o "$BRANCH" = "2.4" ] ; then
+    TARGET=oracle-ext
+    TARG_NM="oracle-ext"
+else
+    TARGET=oracle
+    TARG_NM="oracle"
+fi
+echo "Target: '$TARGET'"
+
 # What if both are empty, or worse $1 is actually target?
 #TARGET=$2
 #if [ ! "${TARGET}" = "" ] ; then
@@ -54,19 +62,20 @@ tmp=$tmp/somedir.$RANDOM.$RANDOM.$RANDOM.$$
 echo "results stored in: '${tmp}'"
 
 #Execution dependent settings
-if [ ! "${TARGET}" = "oracleext" ] ; then
+if [ "${TARGET}" = "oracle-ext" -o "${TARGET}" = "oracle" ] ; then
     HOME_DIR=/shared/el_oracleext
     ORACLE_ROOT=foundation/org.eclipse.persistence.oracle
     ORACLE_CI_DIR=foundation/plugins
 fi
-if [ ! "${TARGET}" = "oraclenosql" ] ; then
+if [ "${TARGET}" = "oracle-nosql" ] ; then
     HOME_DIR=/shared/el_oraclenosql
     ORACLE_ROOT=foundation/org.eclipse.persistence.oracle.nosql
     ORACLE_CI_DIR=foundation/plugins
 fi
-if [ ! "${HOME_DIR}" = "" ] ; then
+if [ "${HOME_DIR}" = "" ] ; then
     echo "Invalid argument set for 'TARGET'!"
     echo "Valid options are 'oracleext' or 'oraclenosql'"
+    exit
 fi
 
 #Define common variables
