@@ -4,14 +4,17 @@ THIS=$0
 PROGNAME=`basename ${THIS}`
 CUR_DIR=`dirname ${THIS}`
 umask 0002
-TARGET=$1
-BRANCH=$2
-if [ ! "${TARGET}" = "" ] ; then
-    TARG_NM=${TARGET}
-else
-    TARGET=oracleext
-    TARG_NM="oracleext"
-fi
+TARGET=oracleext
+TARG_NM="oracleext"
+BRANCH=$1
+# What if both are empty, or worse $1 is actually target?
+#TARGET=$2
+#if [ ! "${TARGET}" = "" ] ; then
+#    TARG_NM=${TARGET}
+#else
+#    TARGET=oracleext
+#    TARG_NM="oracleext"
+#fi
 
 ##-- Convert "BRANCH" to BRANCH_NM (version or trunk) and BRANCH (svn branch path)
 #    BRANCH_NM is used for reporting and naming purposes
@@ -62,7 +65,7 @@ if [ ! "${TARGET}" = "oraclenosql" ] ; then
     ORACLE_CI_DIR=foundation/plugins
 fi
 if [ ! "${HOME_DIR}" = "" ] ; then
-    echo "Invalid argument set for \$1!"
+    echo "Invalid argument set for 'TARGET'!"
     echo "Valid options are 'oracleext' or 'oraclenosql'"
 fi
 
@@ -210,6 +213,7 @@ fi
 if [ "${PREV_REV}" = "" ]; then PREV_REV=${DEFAULT_PREVREV}; fi
 if [ "${PREV_COMMIT}" = "" ]; then PREV_COMMIT=${DEFAULT_PREVCOMMIT}; fi
 # Test to make sure noone else checked in a new version of the oracle jars independant of this process
+echo "Temp File = ${TEMP_FILE}"
 svn log -q -r HEAD:${PREV_REV} svn+ssh://${SVN_SERVER}/${BRANCH_URL}/${ORACLE_CI_DIR} > ${TEMP_FILE}
 PREV_COMMIT=`cat ${TEMP_FILE} | grep -m1 -v "\-\-\-" | cut -d' ' -f1 | cut -c 2-`
 echo "    previous Revs (Proj:Commit): '${PREV_REV}:${PREV_COMMIT}'" >> ${DATED_LOG}
@@ -218,8 +222,7 @@ svn log -q -r HEAD:${PREV_REV} svn+ssh://${SVN_SERVER}/${BRANCH_URL}/${ORACLE_RO
 CURRENT_REV=`cat ${TEMP_FILE} | grep -m1 -v "\-\-\-" | cut -d' ' -f1 | cut -c 2-`
 echo "    curProjRev: '${CURRENT_REV}'" >> ${DATED_LOG}
 echo "    curProjRev: '${CURRENT_REV}'"
-if [ "${CURRENT_REV}" -gt "${PREV_REV}" ]
-then
+if [ "${CURRENT_REV}" -gt "${PREV_REV}" ] ; then
     # Get Current view revision for later use
     svn info ${BRANCH_PATH} > ${TEMP_FILE}
     VIEW_REV=`cat ${TEMP_FILE} | grep -m1 Revision | cut -d: -f2 | tr -d ' '`
