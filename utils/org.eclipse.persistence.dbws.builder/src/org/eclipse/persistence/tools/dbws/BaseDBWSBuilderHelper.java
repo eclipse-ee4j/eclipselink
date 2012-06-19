@@ -176,6 +176,7 @@ import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLCollectionType;
 import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLCursorType;
 import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLPackageType;
 import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLRecordType;
+import org.eclipse.persistence.tools.oracleddl.metadata.PLSQLType;
 import org.eclipse.persistence.tools.oracleddl.metadata.PrecisionType;
 import org.eclipse.persistence.tools.oracleddl.metadata.ProcedureType;
 import org.eclipse.persistence.tools.oracleddl.metadata.ROWTYPEType;
@@ -1242,6 +1243,12 @@ public abstract class BaseDBWSBuilderHelper {
      */
     @SuppressWarnings("rawtypes")
 	protected org.eclipse.persistence.internal.helper.DatabaseType buildDatabaseTypeFromMetadataType(DatabaseType dType, String catalog) {
+        // argument could be from a different package
+        if (dType.isPLSQLType()) {
+            PLSQLType pType = (PLSQLType) dType;
+            catalog = pType.getParentType().getPackageName();
+        }
+        
         // handle cursors
         if (dType.isPLSQLCursorType()) {
             if (dType.isArgumentType()) {

@@ -33,6 +33,7 @@ import static org.junit.Assert.assertTrue;
 import org.eclipse.persistence.internal.xr.Invocation;
 import org.eclipse.persistence.internal.xr.Operation;
 import org.eclipse.persistence.oxm.XMLMarshaller;
+import org.eclipse.persistence.oxm.XMLUnmarshaller;
 
 //test imports
 import dbws.testing.DBWSTestSuite;
@@ -47,11 +48,28 @@ public class PrependedPackageTestSuite extends DBWSTestSuite {
     static {
         username = System.getProperty(DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
     }
-
+    
+    static final String CREATE_REF_CURSOR_PKG3 =
+        "CREATE OR REPLACE PACKAGE REF_CURSOR_PKG3 AS" +
+            "\nTYPE QTAB IS TABLE OF NUMBER INDEX BY BINARY_INTEGER;" +
+            "\nTYPE QRECORD IS RECORD (" +
+                "\nQ1 NUMBER," +
+                "\nQ2 QTAB" +
+            "\n);" +
+        "\nEND REF_CURSOR_PKG3;";
+    
     static final String CREATE_REF_CURSOR_PKG2 =
-        "CREATE OR REPLACE PACKAGE REF_CURSOR_PKG2 as" +
+        "CREATE OR REPLACE PACKAGE REF_CURSOR_PKG2 AS" +
           "\nTYPE typecursor IS REF CURSOR;" +
           "\nTYPE blahcursor IS REF CURSOR;" +
+          "\nPROCEDURE getSomething(PARAM1 IN REF_CURSOR_PKG3.QTAB, PARAM2 OUT REF_CURSOR_PKG3.QTAB);" +
+        "\nEND REF_CURSOR_PKG2;";
+    static final String CREATE_REF_CURSOR_PKG2_BODY =
+        "CREATE OR REPLACE PACKAGE BODY REF_CURSOR_PKG2 AS" +
+            "\nPROCEDURE getSomething(PARAM1 IN REF_CURSOR_PKG3.QTAB, PARAM2 OUT REF_CURSOR_PKG3.QTAB) AS" +
+            "\nBEGIN" + 
+              "\nPARAM2 := PARAM1;" +
+            "\nEND getSomething;" +
         "\nEND REF_CURSOR_PKG2;";
 
     static final String CREATE_REF_CURSOR_PKG =
@@ -60,7 +78,7 @@ public class PrependedPackageTestSuite extends DBWSTestSuite {
           "\nPROCEDURE getEmpDataProc(PARAM1 OUT REF_CURSOR_PKG.typecursor);" +
           "\nFUNCTION getEmpData RETURN  REF_CURSOR_PKG.typecursor  ;" +
           "\nFUNCTION getEmpData2 RETURN REF_CURSOR_PKG2.typecursor;" +
-          "\nFUNCTION getEmpData3 RETURN REF_CURSOR_PKG2.blahcursor;" +
+          "\nFUNCTION getEmpData3(EMP_NUM NUMBER) RETURN REF_CURSOR_PKG2.blahcursor;" +
         "\nEND REF_CURSOR_PKG  ;";
 
     static final String CREATE_REF_CURSOR_BODY =
@@ -84,11 +102,11 @@ public class PrependedPackageTestSuite extends DBWSTestSuite {
             "\nSELECT empno, ename, job, deptno FROM ref_cursor_emp;" +
             "\nRETURN c_temp;" +
           "\nEND getEmpData2;" +
-          "\nFUNCTION getEmpData3 RETURN REF_CURSOR_PKG2.blahcursor AS" +
+          "\nFUNCTION getEmpData3(EMP_NUM NUMBER) RETURN REF_CURSOR_PKG2.blahcursor AS" +
           "\nc_temp REF_CURSOR_PKG2.blahcursor;" +
           "\nBEGIN" +
             "\nOPEN c_temp FOR" +
-            "\nSELECT empno, ename, job, deptno FROM ref_cursor_emp;" +
+            "\nSELECT empno, ename, job, deptno FROM ref_cursor_emp WHERE empno = EMP_NUM;" +
             "\nRETURN c_temp;" +
           "\nEND getEmpData3;" +
         "\nEND REF_CURSOR_PKG;";
@@ -112,8 +130,12 @@ public class PrependedPackageTestSuite extends DBWSTestSuite {
         "DROP PACKAGE BODY REF_CURSOR_PKG";
     static final String DROP_REF_CURSOR_PKG =
         "DROP PACKAGE REF_CURSOR_PKG";
+    static final String DROP_REF_CURSOR_PKG2_BODY =
+        "DROP PACKAGE BODY REF_CURSOR_PKG2";
     static final String DROP_REF_CURSOR_PKG2 =
         "DROP PACKAGE REF_CURSOR_PKG2";
+    static final String DROP_REF_CURSOR_PKG3 =
+        "DROP PACKAGE REF_CURSOR_PKG3";
     static final String DROP_EMP_TABLE =
         "DROP TABLE ref_cursor_emp";
 
@@ -153,7 +175,9 @@ public class PrependedPackageTestSuite extends DBWSTestSuite {
                 stmt.executeBatch();
             }
             catch (SQLException e) {/*e.printStackTrace();*/}
+            runDdl(conn, CREATE_REF_CURSOR_PKG3, ddlDebug);
             runDdl(conn, CREATE_REF_CURSOR_PKG2, ddlDebug);
+            runDdl(conn, CREATE_REF_CURSOR_PKG2_BODY, ddlDebug);
             runDdl(conn, CREATE_REF_CURSOR_PKG, ddlDebug);
             runDdl(conn, CREATE_REF_CURSOR_BODY, ddlDebug);
         }
@@ -196,6 +220,18 @@ public class PrependedPackageTestSuite extends DBWSTestSuite {
                   "isCollection=\"true\" " +
                   "isSimpleXMLFormat=\"true\" " +
               "/>" +
+              "<plsql-procedure " +
+                  "name=\"TestGetEmpData3\" " +
+                  "catalogPattern=\"REF_CURSOR_PKG\" " +
+                  "procedurePattern=\"getEmpData3\" " +
+                  "isCollection=\"true\" " +
+                  "isSimpleXMLFormat=\"true\" " +
+              "/>" +
+              "<plsql-procedure " +
+                  "name=\"TestPLSQLTypesFromAnotherPackage\" " +
+                  "catalogPattern=\"REF_CURSOR_PKG2\" " +
+                  "procedurePattern=\"getSomething\" " +
+              "/>" +
             "</dbws-builder>";
           builder = null;
           DBWSTestSuite.setUp(".");
@@ -224,7 +260,9 @@ public class PrependedPackageTestSuite extends DBWSTestSuite {
         if (ddlDrop) {
             runDdl(conn, DROP_REF_CURSOR_BODY, ddlDebug);
             runDdl(conn, DROP_REF_CURSOR_PKG, ddlDebug);
+            runDdl(conn, DROP_REF_CURSOR_PKG2_BODY, ddlDebug);
             runDdl(conn, DROP_REF_CURSOR_PKG2, ddlDebug);
+            runDdl(conn, DROP_REF_CURSOR_PKG3, ddlDebug);
         	runDdl(conn, DROP_EMP_TABLE, ddlDebug);
         }
     }
@@ -268,16 +306,33 @@ public class PrependedPackageTestSuite extends DBWSTestSuite {
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
 
-    //@Test
+    @Test
     public void testCursorFromOtherPkgFunc() {
         Invocation invocation = new Invocation("TestGetEmpData3");
+        invocation.setParameter("EMP_NUM", 101);
         Operation op = xrService.getOperation(invocation.getName());
         Object result = op.invoke(xrService, invocation);
         assertNotNull("result is null", result);
         Document doc = xmlPlatform.createDocument();
         XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
         marshaller.marshal(result, doc);
-        Document controlDoc = xmlParser.parse(new StringReader(EMP_TABLE_XML));
+        Document controlDoc = xmlParser.parse(new StringReader(EMP_101_XML));
+        assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+    }
+
+    @Test
+    public void testPLSQLTypesFromAnotherPackage() {
+        Invocation invocation = new Invocation("TestPLSQLTypesFromAnotherPackage");
+        XMLUnmarshaller unmarshaller = xrService.getXMLContext().createUnmarshaller();
+        Object inputRec = unmarshaller.unmarshal(new StringReader(Q_TABLE_XML));
+        invocation.setParameter("PARAM1", inputRec);
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(Q_TABLE_XML));
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
 
@@ -303,4 +358,20 @@ public class PrependedPackageTestSuite extends DBWSTestSuite {
               "<DEPTNO>24</DEPTNO>" +
            "</simple-xml>" +
         "</simple-xml-format>";
+    public static final String EMP_101_XML =
+        STANDALONE_XML_HEADER +
+        "<simple-xml-format>" +
+           "<simple-xml>" +
+              "<EMPNO>101</EMPNO>" +
+              "<ENAME>jack</ENAME>" +
+              "<JOB>delivery</JOB>" +
+              "<DEPTNO>4</DEPTNO>" +
+           "</simple-xml>" +
+        "</simple-xml-format>";
+
+    public static final String Q_TABLE_XML =
+        STANDALONE_XML_HEADER +
+        "<REF_CURSOR_PKG3_QTAB xmlns=\"urn:PrependedPackage\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+          "<item>101</item>" +
+        "</REF_CURSOR_PKG3_QTAB>";
 }
