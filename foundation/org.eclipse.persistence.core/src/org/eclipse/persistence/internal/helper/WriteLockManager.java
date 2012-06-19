@@ -79,10 +79,10 @@ public class WriteLockManager {
                     ((CacheKey)lockedList.next()).releaseReadLock();
                     lockedList.remove();
                 }
-                synchronized (toWaitOn.getMutex()) {
+                synchronized (toWaitOn) {
                     try {
                         if (toWaitOn.isAcquired()) {//last minute check to insure it is still locked.
-                            toWaitOn.getMutex().wait();// wait for lock on object to be released
+                            toWaitOn.wait();// wait for lock on object to be released
                         }
                     } catch (InterruptedException ex) {
                         // Ignore exception thread should continue.
@@ -309,14 +309,14 @@ public class WriteLockManager {
                             try {
                                 if (activeCacheKey != null){
                                     //wait on the lock of the object that we couldn't get.
-                                    synchronized (activeCacheKey.getMutex()) {
+                                    synchronized (activeCacheKey) {
                                         // verify that the cache key is still locked before we wait on it, as
                                         //it may have been released since we tried to acquire it.
-                                        if (activeCacheKey.getMutex().isAcquired() && (activeCacheKey.getActiveThread() != Thread.currentThread())) {
+                                        if (activeCacheKey.isAcquired() && (activeCacheKey.getActiveThread() != Thread.currentThread())) {
                                                 Thread thread = activeCacheKey.getActiveThread();
                                                 if (thread.isAlive()){
                                                     long time = System.currentTimeMillis();
-                                                    activeCacheKey.getMutex().wait(MAX_WAIT);
+                                                    activeCacheKey.wait(MAX_WAIT);
                                                     if (System.currentTimeMillis() - time >= MAX_WAIT){
                                                         Object[] params = new Object[]{MAX_WAIT /1000, descriptor.getJavaClassName(), activeCacheKey.getKey(), thread.getName()};
                                                         StringBuilder buffer = new StringBuilder(TraceLocalization.buildMessage("max_time_exceeded_for_acquirerequiredlocks_wait", params));
@@ -405,7 +405,7 @@ public class WriteLockManager {
                 // for others to find an prevent cycles
             }
             if (mergeManager.isTransitionedToDeferredLocks()){
-                lockedCacheKey.getMutex().getDeferredLockManager(Thread.currentThread()).getActiveLocks().add(lockedCacheKey.getMutex());
+                lockedCacheKey.getDeferredLockManager(Thread.currentThread()).getActiveLocks().add(lockedCacheKey);
             }else{
                  mergeManager.getAcquiredLocks().add(lockedCacheKey);
             }

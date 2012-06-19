@@ -5877,7 +5877,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                     log(SessionLog.FINER, AbstractSessionLog.CACHE, "active_thread_is_different_from_current_thread", 
                             lockThread, getMergeManager(), currentThread);
                     while (locksIterator.hasNext()) {
-                        ConcurrencyManager lockMutex = locksIterator.next().getMutex();
+                        ConcurrencyManager lockMutex = locksIterator.next();
                         if (null != lockMutex) {
                             Thread activeThread = lockMutex.getActiveThread();
                             // check for different acquire and release threads

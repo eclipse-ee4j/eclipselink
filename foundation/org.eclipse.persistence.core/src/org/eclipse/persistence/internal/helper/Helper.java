@@ -44,7 +44,7 @@ import org.eclipse.persistence.exceptions.*;
 public class Helper implements Serializable {
 
     /** Used to configure JDBC level date optimization. */
-    protected static boolean shouldOptimizeDates = false;
+    public static boolean shouldOptimizeDates = false;
 
     /** Used to store null values in hashtables, is helper because need to be serializable. */
     public static final Object NULL_VALUE = new Helper();

@@ -18,7 +18,7 @@ package org.eclipse.persistence.internal.sessions.factories.model.platform;
  */
 public class WebLogic_6_1_PlatformConfig extends ServerPlatformConfig {
     public WebLogic_6_1_PlatformConfig() {
-        super("org.eclipse.persistence.platform.server.wls.WebLogic_6_1_Platform");
+        super("org.eclipse.persistence.platform.server.wls.WebLogicPlatform");
         isSupported = false;
     }
 }

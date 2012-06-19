@@ -262,7 +262,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
         // in which GC could remove the object and we would end up with a null pointer
         // as well we must inspect the cacheKey without locking on it.
         if ((cacheKey != null) && (shouldReturnInvalidatedObjects || !descriptor.getCacheInvalidationPolicy().isInvalidated(cacheKey))) {
-            synchronized (cacheKey.getMutex()) {
+            synchronized (cacheKey) {
                 //if the object in the cachekey is null but the key is acquired then
                 //someone must be rebuilding it or creating a new one.  Sleep until
                 // it's finished. A plain wait here would be more efficient but we may not
@@ -271,7 +271,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
                 objectFromCache = cacheKey.getObject();
                 try {
                     while (cacheKey.isAcquired() && (objectFromCache == null)) {
-                        cacheKey.getMutex().wait(5);
+                        cacheKey.wait(5);
                     }
                 } catch (InterruptedException ex) {
                 }

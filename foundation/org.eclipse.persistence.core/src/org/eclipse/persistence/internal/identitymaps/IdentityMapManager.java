@@ -1260,9 +1260,9 @@ public class IdentityMapManager implements Serializable, Cloneable {
                     parameters[0] = cacheKey.getObject();
                     writer.write(TraceLocalization.buildMessage("locked_object", parameters) + Helper.cr());
                     writer.write("PK: " + cacheKey.getKey() + Helper.cr());
-                    parameters[0] = new Integer(cacheKey.getMutex().getDepth());
+                    parameters[0] = new Integer(cacheKey.getDepth());
                     writer.write(TraceLocalization.buildMessage("depth", parameters) + Helper.cr());
-                    Exception stack = cacheKey.getMutex().getStack();
+                    Exception stack = cacheKey.getStack();
                     if (stack != null) stack.printStackTrace(new PrintWriter(writer));
                 } else{
                     writer.write(TraceLocalization.buildMessage("cachekey_released", new Object[]{}));
@@ -1307,7 +1307,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
                 CacheKey cacheKey = (CacheKey)cacheKeys.next();
                 parameters[0] = cacheKey.getObject();
                 writer.write(TraceLocalization.buildMessage("locked_object", parameters) + Helper.cr());
-                parameters[0] = Integer.valueOf(cacheKey.getMutex().getDepth());
+                parameters[0] = Integer.valueOf(cacheKey.getDepth());
                 writer.write(TraceLocalization.buildMessage("depth", parameters) + Helper.cr());
             }
             DeferredLockManager deferredLockManager = ConcurrencyManager.getDeferredLockManager(activeThread);

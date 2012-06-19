@@ -12,9 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.sessions.interceptors;
 
-import java.util.Vector;
-
-import org.eclipse.persistence.internal.helper.ConcurrencyManager;
 import org.eclipse.persistence.internal.identitymaps.AbstractIdentityMap;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.identitymaps.IdentityMap;
@@ -126,10 +123,6 @@ public class CacheKeyInterceptor extends CacheKey{
             return wrappedKey.getKey();
         }
 
-        public ConcurrencyManager getMutex() {
-            return wrappedKey.getMutex();
-        }
-
         public Object getObject() {
             return wrappedKey.getObject();
         }
@@ -217,12 +210,8 @@ public class CacheKeyInterceptor extends CacheKey{
             wrappedKey.setLastUpdatedQueryId(id);
         }
 
-        public void setKey(Vector key) {
+        public void setKey(Object key) {
             wrappedKey.setKey(key);
-        }
-
-        public void setMutex(ConcurrencyManager mutex) {
-            wrappedKey.setMutex(mutex);
         }
 
         public void setObject(Object object) {

@@ -1597,6 +1597,7 @@ public class PersistenceUnitProperties {
      * @see org.eclipse.persistence.annotations.IdValidation
      * 
      * @deprecated replaced by ID_VALIDATION property with value "NULL".
+     * @see #ID_VALIDATION
      */
     public static final String ALLOW_ZERO_ID = "eclipselink.allow-zero-id";
 

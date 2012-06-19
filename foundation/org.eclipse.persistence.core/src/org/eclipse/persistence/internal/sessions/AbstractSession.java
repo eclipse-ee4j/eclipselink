@@ -2498,10 +2498,10 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
                cacheKey.acquireDeferredLock();
                original = cacheKey.getObject();
                if (original == null) {
-                   synchronized (cacheKey.getMutex()) {
+                   synchronized (cacheKey) {
                        if (cacheKey.isAcquired()) {
                            try {
-                               cacheKey.getMutex().wait();
+                               cacheKey.wait();
                            } catch (InterruptedException e) {
                                //ignore and return
                            }

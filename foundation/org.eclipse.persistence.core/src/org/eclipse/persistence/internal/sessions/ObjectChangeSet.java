@@ -473,10 +473,10 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
                 cacheKey.acquireDeferredLock();
                 domainObject = cacheKey.getObject();
                 if (domainObject == null) {
-                    synchronized (cacheKey.getMutex()) {
+                    synchronized (cacheKey) {
                         if (cacheKey.isAcquired()) {
                             try {
-                                cacheKey.getMutex().wait();
+                                cacheKey.wait();
                             } catch (InterruptedException e) {
                                 //ignore and return
                             }

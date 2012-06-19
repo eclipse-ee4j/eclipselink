@@ -29,10 +29,12 @@ import java.sql.SQLException;
 import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.annotations.CacheKeyType;
 import org.eclipse.persistence.annotations.IdValidation;
+import org.eclipse.persistence.descriptors.CachePolicy;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.DescriptorEventManager;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
+import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
 import org.eclipse.persistence.descriptors.changetracking.ObjectChangePolicy;
 import org.eclipse.persistence.exceptions.*;
@@ -553,7 +555,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * Return an instance of the receivers javaClass. Set the attributes of an instance
      * from the values stored in the database row.
      */
-    public Object buildObject(ObjectLevelReadQuery query, AbstractRecord databaseRow) throws DatabaseException, QueryException {
+    public Object buildObject(ObjectLevelReadQuery query, AbstractRecord databaseRow) {
         // PERF: Avoid lazy init of join manager if no joining.
         JoinedAttributeManager joinManager = null;
         if (query.hasJoining()) {
@@ -566,54 +568,68 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * Return an instance of the receivers javaClass. Set the attributes of an instance
      * from the values stored in the database row.
      */
-    public Object buildObject(ObjectBuildingQuery query, AbstractRecord databaseRow, JoinedAttributeManager joinManager) throws DatabaseException, QueryException {
-        // Profile object building.
+    public Object buildObject(ObjectBuildingQuery query, AbstractRecord databaseRow, JoinedAttributeManager joinManager) {
+        InheritancePolicy inheritancePolicy = null;
+        if (this.descriptor.hasInheritance()) {
+            inheritancePolicy = this.descriptor.getInheritancePolicy();
+        }
         AbstractSession session = query.getSession();
         session.startOperationProfile(SessionProfiler.ObjectBuilding, query, SessionProfiler.ALL);
         Object domainObject = null;
         try {
-            Object primaryKey = extractPrimaryKeyFromRow(databaseRow, session);
-            // Check for null primary key, this is not allowed.
-            if ((primaryKey == null) && (!query.hasPartialAttributeExpressions()) && (!this.descriptor.isAggregateCollectionDescriptor())) {
-                //BUG 3168689: EJBQL: "Select Distinct s.customer from SpouseBean s"
-                //BUG 3168699: EJBQL: "Select s.customer from SpouseBean s where s.id = '6'"
-                //If we return either a single null, or a Collection containing at least 
-                //one null, then we want the nulls returned/included if the indicated 
-                //property is set in the query. (As opposed to throwing an Exception).
-                if (query.shouldBuildNullForNullPk()) {
-                    return null;
-                } else {
-                    throw QueryException.nullPrimaryKeyInBuildingObject(query, databaseRow);
-                }
-            }
-            ClassDescriptor concreteDescriptor = this.descriptor;
-            if (concreteDescriptor.hasInheritance() && concreteDescriptor.getInheritancePolicy().shouldReadSubclasses()) {
-                Class classValue = concreteDescriptor.getInheritancePolicy().classFromRow(databaseRow, session);
-                concreteDescriptor = concreteDescriptor.getInheritancePolicy().getDescriptor(classValue);
-                if ((concreteDescriptor == null) && query.hasPartialAttributeExpressions()) {
-                    concreteDescriptor = this.descriptor;
-                }
-                if (concreteDescriptor == null) {
-                    throw QueryException.noDescriptorForClassFromInheritancePolicy(query, classValue);
-                }
-            }
-            if (session.isUnitOfWork()) {
-                // Do not wrap yet if in UnitOfWork, as there is still much more
-                // processing ahead.
-                domainObject = buildObjectInUnitOfWork(query, joinManager, databaseRow, (UnitOfWorkImpl)session, primaryKey, concreteDescriptor);
-            } else {
-                domainObject = buildObject(false, query, databaseRow, session, primaryKey, concreteDescriptor, joinManager);
-                if (query.shouldCacheQueryResults()) {
-                    query.cacheResult(domainObject);
-                }
-
-                // wrap the object if the query requires it.
-                if (query.shouldUseWrapperPolicy()) {
-                    domainObject = concreteDescriptor.getObjectBuilder().wrapObject(domainObject, session);
-                }
-            }
+            domainObject = buildObject(query, databaseRow, joinManager, session, this.descriptor, inheritancePolicy, session.isUnitOfWork(), query.shouldCacheQueryResults(), query.shouldUseWrapperPolicy());
         } finally {
             session.endOperationProfile(SessionProfiler.ObjectBuilding, query, SessionProfiler.ALL);
+        }
+        return domainObject;
+    }
+
+    /**
+     * Return an instance of the receivers javaClass. Set the attributes of an instance
+     * from the values stored in the database row.
+     */
+    public Object buildObject(ObjectBuildingQuery query, AbstractRecord databaseRow, JoinedAttributeManager joinManager,
+            AbstractSession session, ClassDescriptor concreteDescriptor, InheritancePolicy inheritancePolicy, boolean isUnitOfWork,
+            boolean shouldCacheQueryResults, boolean shouldUseWrapperPolicy) {
+        Object domainObject = null;
+        Object primaryKey = extractPrimaryKeyFromRow(databaseRow, session);
+        // Check for null primary key, this is not allowed.
+        if ((primaryKey == null) && (!query.hasPartialAttributeExpressions()) && (!this.descriptor.isAggregateCollectionDescriptor())) {
+            //BUG 3168689: EJBQL: "Select Distinct s.customer from SpouseBean s"
+            //BUG 3168699: EJBQL: "Select s.customer from SpouseBean s where s.id = '6'"
+            //If we return either a single null, or a Collection containing at least 
+            //one null, then we want the nulls returned/included if the indicated 
+            //property is set in the query. (As opposed to throwing an Exception).
+            if (query.shouldBuildNullForNullPk()) {
+                return null;
+            } else {
+                throw QueryException.nullPrimaryKeyInBuildingObject(query, databaseRow);
+            }
+        }
+        if ((inheritancePolicy != null) && inheritancePolicy.shouldReadSubclasses()) {
+            Class classValue = inheritancePolicy.classFromRow(databaseRow, session);
+            concreteDescriptor = inheritancePolicy.getDescriptor(classValue);
+            if ((concreteDescriptor == null) && query.hasPartialAttributeExpressions()) {
+                concreteDescriptor = this.descriptor;
+            }
+            if (concreteDescriptor == null) {
+                throw QueryException.noDescriptorForClassFromInheritancePolicy(query, classValue);
+            }
+        }
+        if (isUnitOfWork) {
+            // Do not wrap yet if in UnitOfWork, as there is still much more
+            // processing ahead.
+            domainObject = buildObjectInUnitOfWork(query, joinManager, databaseRow, (UnitOfWorkImpl)session, primaryKey, concreteDescriptor);
+        } else {
+            domainObject = buildObject(false, query, databaseRow, session, primaryKey, concreteDescriptor, joinManager);
+            if (shouldCacheQueryResults) {
+                query.cacheResult(domainObject);
+            }
+
+            // wrap the object if the query requires it.
+            if (shouldUseWrapperPolicy) {
+                domainObject = concreteDescriptor.getObjectBuilder().wrapObject(domainObject, session);
+            }
         }
         return domainObject;
     }
@@ -655,11 +671,12 @@ public class ObjectBuilder implements Cloneable, Serializable {
         // and so do not want to corrupt the shared cache with dirty objects.
         // Hence we build and refresh clones directly from the database row.
         // PERF: Allow the session cached to still be used after early transaction if isolation setting has been set.
-        if (!concreteDescriptor.shouldUseSessionCacheInUnitOfWorkEarlyTransaction()) {
+        CachePolicy cachePolicy = concreteDescriptor.getCachePolicy();
+        if (!cachePolicy.shouldUseSessionCacheInUnitOfWorkEarlyTransaction()) {
             if (((unitOfWork.hasCommitManager() && unitOfWork.getCommitManager().isActive())
                     || unitOfWork.wasTransactionBegunPrematurely()
-                    || concreteDescriptor.getCachePolicy().shouldIsolateObjectsInUnitOfWork()
-                    || concreteDescriptor.shouldIsolateProtectedObjectsInUnitOfWork()
+                    || cachePolicy.shouldIsolateObjectsInUnitOfWork()
+                    || cachePolicy.shouldIsolateProtectedObjectsInUnitOfWork()
                     || query.shouldStoreBypassCache())
                         && (!unitOfWork.isClassReadOnly(concreteDescriptor.getJavaClass(), concreteDescriptor))) {
                 // It is easier to switch once to the correct builder here.
@@ -825,7 +842,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
                 //if the concurrency manager is locked by the merge process then no refresh is required.
                 // bug # 3388383 If this thread does not have the active lock then someone is building the object so in order to maintain data integrity this thread will not
                 // fight to overwrite the object ( this also will avoid potential deadlock situations
-                if ((cacheKey.getActiveThread() == Thread.currentThread()) && ((query.shouldRefreshIdentityMapResult() || concreteDescriptor.shouldAlwaysRefreshCache() || isInvalidated ) && ((cacheKey.getLastUpdatedQueryId() != query.getQueryId()) && !cacheKey.getMutex().isLockedByMergeManager()))) {
+                if ((cacheKey.getActiveThread() == Thread.currentThread()) && ((query.shouldRefreshIdentityMapResult() || concreteDescriptor.shouldAlwaysRefreshCache() || isInvalidated ) && ((cacheKey.getLastUpdatedQueryId() != query.getQueryId()) && !cacheKey.isLockedByMergeManager()))) {
                     cacheHit = refreshObjectIfRequired(concreteDescriptor, cacheKey, cacheKey.getObject(), query, joinManager, databaseRow, session, false);
                 } else if (concreteDescriptor.hasFetchGroupManager() && (concreteDescriptor.getFetchGroupManager().isPartialObject(domainObject) && (!concreteDescriptor.getFetchGroupManager().isObjectValidForFetchGroup(domainObject, query.getEntityFetchGroup())))) {
                     cacheHit = false;
@@ -960,7 +977,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
                 //if the concurrency manager is locked by the merge process then no refresh is required.
                 // bug # 3388383 If this thread does not have the active lock then someone is building the object so in order to maintain data integrity this thread will not
                 // fight to overwrite the object ( this also will avoid potential deadlock situations
-                if ((sharedCacheKey.getActiveThread() == Thread.currentThread()) && ((query.shouldRefreshIdentityMapResult() || concreteDescriptor.shouldAlwaysRefreshCache() || isInvalidated) && ((sharedCacheKey.getLastUpdatedQueryId() != query.getQueryId()) && !sharedCacheKey.getMutex().isLockedByMergeManager()))) {
+                if ((sharedCacheKey.getActiveThread() == Thread.currentThread()) && ((query.shouldRefreshIdentityMapResult() || concreteDescriptor.shouldAlwaysRefreshCache() || isInvalidated) && ((sharedCacheKey.getLastUpdatedQueryId() != query.getQueryId()) && !sharedCacheKey.isLockedByMergeManager()))) {
                     
                     //need to refresh. shared cache instance
                     cacheHit = refreshObjectIfRequired(concreteDescriptor, sharedCacheKey, cachedObject, query, joinManager, databaseRow, session.getParent(), true);
@@ -1060,38 +1077,52 @@ public class ObjectBuilder implements Cloneable, Serializable {
         int size = databaseRows.size();
         if (size > 0) {
             AbstractSession session = query.getSession();
-            // PERF: Avoid lazy init of join manager if no joining.
-            JoinedAttributeManager joinManager = null;
-            if (query.hasJoining()) {
-                joinManager = query.getJoinedAttributeManager();
-            }
-            ContainerPolicy policy = query.getContainerPolicy();
-            if (policy.shouldAddAll()) {
-                List domainObjectsIn = new ArrayList(size);
-                List<AbstractRecord> databaseRowsIn = new ArrayList(size);
-                for (int index = 0; index < size; index++) {
-                    AbstractRecord databaseRow = (AbstractRecord)databaseRows.get(index);
-                    // PERF: 1-m joining nulls out duplicate rows.
-                    if (databaseRow != null) {
-                        domainObjectsIn.add(buildObject(query, databaseRow, joinManager));
-                        databaseRowsIn.add(databaseRow);
-                    }
+            session.startOperationProfile(SessionProfiler.ObjectBuilding, query, SessionProfiler.ALL);
+            try {
+                InheritancePolicy inheritancePolicy = null;
+                if (this.descriptor.hasInheritance()) {
+                    inheritancePolicy = this.descriptor.getInheritancePolicy();
                 }
-                policy.addAll(domainObjectsIn, domainObjects, session, databaseRowsIn, query, (CacheKey)null, true);
-            } else {
-                boolean quickAdd = (domainObjects instanceof Collection) && !this.hasWrapperPolicy;
-                for (int index = 0; index < size; index++) {
-                    AbstractRecord databaseRow = (AbstractRecord)databaseRows.get(index);
-                    // PERF: 1-m joining nulls out duplicate rows.
-                    if (databaseRow != null) {
-                        Object domainObject = buildObject(query, databaseRow, joinManager);
-                        if (quickAdd) {
-                            ((Collection)domainObjects).add(domainObject);
-                        } else {
-                            policy.addInto(domainObject, domainObjects, session, databaseRow, query, (CacheKey)null, true);
+                boolean isUnitOfWork = session.isUnitOfWork();
+                boolean shouldCacheQueryResults = query.shouldCacheQueryResults();
+                boolean shouldUseWrapperPolicy = query.shouldUseWrapperPolicy();            
+                // PERF: Avoid lazy init of join manager if no joining.
+                JoinedAttributeManager joinManager = null;
+                if (query.hasJoining()) {
+                    joinManager = query.getJoinedAttributeManager();
+                }
+                ContainerPolicy policy = query.getContainerPolicy();
+                if (policy.shouldAddAll()) {
+                    List domainObjectsIn = new ArrayList(size);
+                    List<AbstractRecord> databaseRowsIn = new ArrayList(size);
+                    for (int index = 0; index < size; index++) {
+                        AbstractRecord databaseRow = (AbstractRecord)databaseRows.get(index);
+                        // PERF: 1-m joining nulls out duplicate rows.
+                        if (databaseRow != null) {
+                            domainObjectsIn.add(buildObject(query, databaseRow, joinManager, session, this.descriptor, inheritancePolicy,
+                                    isUnitOfWork, shouldCacheQueryResults, shouldUseWrapperPolicy));
+                            databaseRowsIn.add(databaseRow);
+                        }
+                    }
+                    policy.addAll(domainObjectsIn, domainObjects, session, databaseRowsIn, query, (CacheKey)null, true);
+                } else {
+                    boolean quickAdd = (domainObjects instanceof Collection) && !this.hasWrapperPolicy;
+                    for (int index = 0; index < size; index++) {
+                        AbstractRecord databaseRow = (AbstractRecord)databaseRows.get(index);
+                        // PERF: 1-m joining nulls out duplicate rows.
+                        if (databaseRow != null) {
+                            Object domainObject = buildObject(query, databaseRow, joinManager, session, this.descriptor, inheritancePolicy,
+                                    isUnitOfWork, shouldCacheQueryResults, shouldUseWrapperPolicy);
+                            if (quickAdd) {
+                                ((Collection)domainObjects).add(domainObject);
+                            } else {
+                                policy.addInto(domainObject, domainObjects, session, databaseRow, query, (CacheKey)null, true);
+                            }
                         }
                     }
                 }
+            } finally {
+                session.endOperationProfile(SessionProfiler.ObjectBuilding, query, SessionProfiler.ALL);
             }
         }
         return domainObjects;

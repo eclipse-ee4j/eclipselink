@@ -93,6 +93,17 @@ public abstract class AbstractRecord implements Record, Cloneable, Serializable,
         this.nullValueInFields = false;
         resetSize();
     }
+
+    /**
+     * INTERNAL:
+     *  converts JDBC results to collections of rows.
+     */
+    public AbstractRecord(Vector fields, Vector values, int size) {
+        this.fields = fields;
+        this.values = values;
+        this.nullValueInFields = false;
+        this.size = size;
+    }
     
     /**
      * Reset the row size.

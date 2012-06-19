@@ -26,10 +26,9 @@ public class ArrayRecord extends DatabaseRecord {
     protected Object[] valuesArray;
 
     public ArrayRecord(Vector fields, DatabaseField[] fieldsArray, Object[] valuesArray) {
-        super(fields, null);
+        super(fields, null, fieldsArray.length);
         this.fieldsArray = fieldsArray;
         this.valuesArray = valuesArray;
-        this.size = fieldsArray.length;
     }
     
     /**

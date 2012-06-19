@@ -44,8 +44,8 @@ public class Runner1 implements Runnable {
                 }
             }
             CacheKey cacheKey = uow.getParent().getParent().getIdentityMapAccessorInstance().getCacheKeyForObject(dept);
-            synchronized (cacheKey.getMutex()) {
-                cacheKey.getMutex().notify();
+            synchronized (cacheKey) {
+                cacheKey.notify();
             }
             try {
                 Thread.currentThread().sleep(4000);

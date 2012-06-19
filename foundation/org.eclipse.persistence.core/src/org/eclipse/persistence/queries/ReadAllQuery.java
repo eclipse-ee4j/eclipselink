@@ -773,13 +773,18 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
                 }
                 cp.addAll(clonesIn, clones, unitOfWork, rowsIn, this, null, true);
             } else {
+                boolean quickAdd = (clones instanceof Collection) && !this.descriptor.getObjectBuilder().hasWrapperPolicy();
                 for (int index = 0; index < size; index++) {
                     AbstractRecord row = rows.get(index);
 
                     // null is placed in the row collection for 1-m joining to filter duplicate rows.
                     if (row != null) {
                         Object clone = buildObject(row);
-                        cp.addInto(clone, clones, unitOfWork, row, this, null, true);
+                        if (quickAdd) {
+                            ((Collection)clones).add(clone);
+                        } else {
+                            cp.addInto(clone, clones, unitOfWork, row, this, null, true);
+                        }
                     }
                 }
             }

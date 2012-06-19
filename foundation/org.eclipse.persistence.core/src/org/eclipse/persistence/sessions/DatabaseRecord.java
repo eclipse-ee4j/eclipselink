@@ -13,6 +13,7 @@
 package org.eclipse.persistence.sessions;
 
 import java.util.*;
+
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 
@@ -58,5 +59,17 @@ public class DatabaseRecord extends AbstractRecord {
      */
     public DatabaseRecord(Vector fields, Vector values) {
         super(fields, values);
+    }
+
+    /**
+     * INTERNAL:
+     * Builds row from database result fields and values.
+     * Note: the entire database result will share the same fields vector.
+     * @param fields Vector of fields
+     * @param values Vector of values
+     * @param size of record
+     */
+    public DatabaseRecord(Vector fields, Vector values, int size) {
+        super(fields, values, size);
     }
 }

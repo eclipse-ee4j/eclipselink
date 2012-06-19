@@ -18,7 +18,7 @@ package org.eclipse.persistence.internal.sessions.factories.model.platform;
  */
 public class WebSphere_5_1_PlatformConfig extends ServerPlatformConfig {
     public WebSphere_5_1_PlatformConfig() {
-        super("org.eclipse.persistence.platform.server.was.WebSphere_5_1_Platform");
+        super("org.eclipse.persistence.platform.server.was.WebSpherePlatform");
         isSupported = false;
     }
 }

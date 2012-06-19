@@ -12,8 +12,6 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.identitymaps;
 
-import java.io.*;
-
 import org.eclipse.persistence.exceptions.ConcurrencyException;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
@@ -28,7 +26,7 @@ import org.eclipse.persistence.sessions.Record;
  * </ul>
  * @since TOPLink/Java 1.0
  */
-public class CacheKey implements Serializable, Cloneable {
+public class CacheKey extends ConcurrencyManager implements Cloneable {
 
     /** The key holds the vector of primary key values for the object. */
     protected Object key;
@@ -45,9 +43,6 @@ public class CacheKey implements Serializable, Cloneable {
 
     /** The cached wrapper for the object, used in EJB. */
     protected Object wrapper;
-
-    /** The cache key hold a reference to the concurrency manager to perform the cache key level locking. */
-    protected ConcurrencyManager mutex;
 
     /** This is used for Document Preservation to cache the record that this object was built from */
     protected Record record;
@@ -86,12 +81,7 @@ public class CacheKey implements Serializable, Cloneable {
      * Set to true if this CacheKey comes from an IsolatedClientSession, or DatabaseSessionImpl.
      */
     protected boolean isIsolated;
-    
-    /**
-     * Store if locked for isolated (not really locked, but needs to know state).
-     */
-    protected boolean hasIsolatedLock;
-    
+        
     /**
      * The ID of the database transaction that last wrote the object.
      * This is used for database change notification.
@@ -135,10 +125,10 @@ public class CacheKey implements Serializable, Cloneable {
      */
     public void acquire() {
         if (this.isIsolated) {
-            this.hasIsolatedLock = true;
+            this.depth++;
             return;
         }
-        getMutex().acquire(false);
+        super.acquire(false);
     }
 
     /**
@@ -147,10 +137,10 @@ public class CacheKey implements Serializable, Cloneable {
      */
     public void acquire(boolean forMerge) {
         if (this.isIsolated) {
-            this.hasIsolatedLock = true;
+            this.depth++;
             return;
         }
-        getMutex().acquire(forMerge);
+        super.acquire(forMerge);
     }
 
     /**
@@ -159,13 +149,13 @@ public class CacheKey implements Serializable, Cloneable {
      */
     public boolean acquireNoWait() {
         if (this.isIsolated) {
-            if (this.hasIsolatedLock) {
+            if (this.depth > 0) {
                 return false;
             }
-            this.hasIsolatedLock = true;
+            this.depth++;
             return true;
         }
-        return getMutex().acquireNoWait(false);
+        return super.acquireNoWait(false);
     }
 
     /**
@@ -176,13 +166,13 @@ public class CacheKey implements Serializable, Cloneable {
 
     public boolean acquireIfUnownedNoWait() {
         if (this.isIsolated) {
-            if (this.hasIsolatedLock) {
+            if (this.depth > 0) {
                 return false;
             }
-            this.hasIsolatedLock = true;
+            this.depth++;
             return true;
         }
-        return getMutex().acquireIfUnownedNoWait(false);
+        return super.acquireIfUnownedNoWait(false);
     }
 
     /**
@@ -192,13 +182,13 @@ public class CacheKey implements Serializable, Cloneable {
      */
     public boolean acquireNoWait(boolean forMerge) {
         if (this.isIsolated) {
-            if (this.hasIsolatedLock) {
+            if (this.depth > 0) {
                 return false;
             }
-            this.hasIsolatedLock = true;
+            this.depth++;
             return true;
         }
-        return getMutex().acquireNoWait(forMerge);
+        return super.acquireNoWait(forMerge);
     }
 
     /**
@@ -208,10 +198,10 @@ public class CacheKey implements Serializable, Cloneable {
      */
     public boolean acquireWithWait(boolean forMerge, int wait) {
         if (this.isIsolated) {
-            this.hasIsolatedLock = true;
+            this.depth++;
             return true;
         }
-        return getMutex().acquireWithWait(forMerge, wait);
+        return super.acquireWithWait(forMerge, wait);
     }
 
     /**
@@ -219,10 +209,10 @@ public class CacheKey implements Serializable, Cloneable {
      */
     public void acquireDeferredLock() {
         if (this.isIsolated) {
-            this.hasIsolatedLock = true;
+            this.depth++;
             return;
         }
-        getMutex().acquireDeferredLock();
+        super.acquireDeferredLock();
     }
     
     /**
@@ -234,7 +224,7 @@ public class CacheKey implements Serializable, Cloneable {
         if (this.isIsolated) {
             return;
         }
-        getMutex().checkReadLock();
+        super.checkReadLock();
     }
         
     /**
@@ -246,7 +236,7 @@ public class CacheKey implements Serializable, Cloneable {
         if (this.isIsolated) {
             return;
         }
-        getMutex().checkDeferredLock();
+        super.checkDeferredLock();
     }
     
     /**
@@ -256,7 +246,7 @@ public class CacheKey implements Serializable, Cloneable {
         if (this.isIsolated) {
             return;
         }
-        getMutex().acquireReadLock();
+        super.acquireReadLock();
     }
 
     /**
@@ -266,7 +256,7 @@ public class CacheKey implements Serializable, Cloneable {
         if (this.isIsolated) {
             return true;
         }
-        return getMutex().acquireReadLockNoWait();
+        return super.acquireReadLockNoWait();
     }
 
     /**
@@ -329,23 +319,13 @@ public class CacheKey implements Serializable, Cloneable {
      */
     public Thread getActiveThread() {
         if (this.isIsolated) {
-            return Thread.currentThread();
-        }
-        return getMutex().getActiveThread();
-    }
-
-    /**
-     * Return the concurrency manager.
-     */
-    public ConcurrencyManager getMutex() {
-        if (mutex == null) {
-            synchronized (this) {
-                if (mutex == null) {
-                    mutex = new ConcurrencyManager(this);
-                }
+            if (this.depth > 0) {
+                return Thread.currentThread();
+            } else {
+                return null;
             }
         }
-        return mutex;
+        return super.getActiveThread();
     }
 
     public Object getObject() {
@@ -392,16 +372,6 @@ public class CacheKey implements Serializable, Cloneable {
     }
 
     /**
-     * Return if the lock is acquired
-     */
-    public boolean isAcquired() {
-        if (this.isIsolated) {
-            return this.hasIsolatedLock;
-        }
-        return getMutex().isAcquired();
-    }
-
-    /**
      * Returns true if this CacheKey is from an IsolatedClientSession
      */
     public boolean isIsolated() {
@@ -443,10 +413,10 @@ public class CacheKey implements Serializable, Cloneable {
      */
     public void release() {
         if (this.isIsolated) {
-            this.hasIsolatedLock = false;
+            this.depth--;
             return;
         }
-        getMutex().release();
+        super.release();
     }
 
     /**
@@ -454,10 +424,10 @@ public class CacheKey implements Serializable, Cloneable {
      */
     public void releaseDeferredLock() {
         if (this.isIsolated) {
-            this.hasIsolatedLock = false;
+            this.depth--;
             return;
         }
-        getMutex().releaseDeferredLock();
+        super.releaseDeferredLock();
     }
 
     /**
@@ -467,7 +437,7 @@ public class CacheKey implements Serializable, Cloneable {
         if (this.isIsolated) {
             return;
         }
-        getMutex().releaseReadLock();
+        super.releaseReadLock();
     }
 
     /**
@@ -504,13 +474,6 @@ public class CacheKey implements Serializable, Cloneable {
 
     public void setKey(Object key) {
         this.key = key;
-    }
-
-    /**
-     * Set the concurrency manager.
-     */
-    public void setMutex(ConcurrencyManager mutex) {
-        this.mutex = mutex;
     }
 
     public void setObject(Object object) {
@@ -554,10 +517,6 @@ public class CacheKey implements Serializable, Cloneable {
 
         return "[" + getKey() + ": " + hashCode + ": " + getWriteLockValue() + ": " + getReadTime() + ": " + getObject() + "]";
     }
-    
-    public void transitionToDeferredLock(){
-        getMutex().transitionToDeferredLock();
-    }
 
     /**
      * Notifies that cache key that it has been accessed.
@@ -583,20 +542,18 @@ public class CacheKey implements Serializable, Cloneable {
         this.transactionId = transactionId;
     }
     
-    public Object waitForObject(){
-        synchronized (getMutex()) {
-            try{
-                int count = 0;
-                while(this.object == null && this.isAcquired()){
-                    if (count > MAX_WAIT_TRIES)
-                        throw ConcurrencyException.maxTriesLockOnBuildObjectExceded(getMutex().getActiveThread(), Thread.currentThread());
-                    getMutex().wait(10);
-                    ++count;
-                }
-            }catch(InterruptedException ex){
-                //ignore as the loop is broken
+    public synchronized Object waitForObject(){
+        try {
+            int count = 0;
+            while (this.object == null && isAcquired()) {
+                if (count > MAX_WAIT_TRIES)
+                    throw ConcurrencyException.maxTriesLockOnBuildObjectExceded(getActiveThread(), Thread.currentThread());
+                wait(10);
+                ++count;
             }
-            return this.object;
+        } catch(InterruptedException ex) {
+            //ignore as the loop is broken
         }
+        return this.object;
     }
 }

@@ -452,18 +452,12 @@ public class TableCreator {
                                         if (checkSchema) {
                                             if (qualifier.equalsIgnoreCase(schema)) {
                                                 schemaMatchFound = true;
+                                                // Remove unmatched columns from other schemas.
+                                                columns.clear();
                                             }
                                         }
+                                        // If none of the schemas match what is expected, assume what is expected is wrong, and use all columns.
                                         columns.put(column,  record);
-                                    }
-                                }
-                            }
-                            // If a schema match was found, then ignore column from other schemas (otherwise use all of the columns).
-                            if (schemaMatchFound) {
-                                for (Iterator<Map.Entry<DatabaseField, DatabaseRecord>> iterator = columns.entrySet().iterator(); iterator.hasNext(); ) {
-                                    Map.Entry<DatabaseField, DatabaseRecord> entry = iterator.next();
-                                    if (!qualifier.equalsIgnoreCase((String)entry.getValue().get(schemaLookupField))) {
-                                        iterator.remove();
                                     }
                                 }
                             }

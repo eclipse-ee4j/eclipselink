@@ -1254,19 +1254,23 @@ public class DatabaseAccessor extends DatasourceAccessor {
     protected Object getObjectThroughOptimizedDataConversion(ResultSet resultSet, DatabaseField field, int type, int columnNumber, DatabasePlatform platform, AbstractSession session) throws SQLException {
         Object value = this;// Means no optimization, need to distinguish from null.
         Class fieldType = field.type;
-        boolean isPrimitive = false;
-
-        // Optimize numeric values to avoid conversion into big-dec and back to primitives.
-        if ((fieldType == ClassConstants.PLONG) || (fieldType == ClassConstants.LONG)) {
-            value = Long.valueOf(resultSet.getLong(columnNumber));
-            isPrimitive = ((Long)value).longValue() == 0l;
-        } else if ((type == Types.VARCHAR) || (type == Types.CHAR)) {
+        if ((type == Types.VARCHAR) || (type == Types.CHAR)) {
             // CUSTOM PATCH for oracle drivers because they don't respond to getObject() when using scrolling result sets. 
             // Chars may require blanks to be trimmed.
             value = resultSet.getString(columnNumber);
             if ((type == Types.CHAR) && (value != null) && platform.shouldTrimStrings()) {
                 value = Helper.rightTrimString((String)value);
             }
+            return value;
+        } else if (fieldType == null) {
+            return this;            
+        }
+        boolean isPrimitive = false;
+
+        // Optimize numeric values to avoid conversion into big-dec and back to primitives.
+        if ((fieldType == ClassConstants.PLONG) || (fieldType == ClassConstants.LONG)) {
+            value = Long.valueOf(resultSet.getLong(columnNumber));
+            isPrimitive = ((Long)value).longValue() == 0l;
         } else if ((fieldType == ClassConstants.INTEGER) || (fieldType == ClassConstants.PINT)) {
             value = Integer.valueOf(resultSet.getInt(columnNumber));
             isPrimitive = ((Integer)value).intValue() == 0;
@@ -1279,7 +1283,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
         } else if ((fieldType == ClassConstants.SHORT) || (fieldType == ClassConstants.PSHORT)) {
             value = Short.valueOf(resultSet.getShort(columnNumber));
             isPrimitive = ((Short)value).shortValue() == 0;
-        } else if (Helper.shouldOptimizeDates() && (fieldType != null) && ((type == Types.TIME) || (type == Types.DATE) || (type == Types.TIMESTAMP))) {
+        } else if (Helper.shouldOptimizeDates && (fieldType != null) && ((type == Types.TIME) || (type == Types.DATE) || (type == Types.TIMESTAMP))) {
             // Optimize dates by avoid conversion to timestamp then back to date or time or util.date.
             String dateString = resultSet.getString(columnNumber);
             value = platform.convertObject(dateString, fieldType);
