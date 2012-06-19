@@ -149,9 +149,6 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
      */
     public boolean acquireNoWait() {
         if (this.isIsolated) {
-            if (this.depth > 0) {
-                return false;
-            }
             this.depth++;
             return true;
         }
@@ -182,9 +179,6 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
      */
     public boolean acquireNoWait(boolean forMerge) {
         if (this.isIsolated) {
-            if (this.depth > 0) {
-                return false;
-            }
             this.depth++;
             return true;
         }

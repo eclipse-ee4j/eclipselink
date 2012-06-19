@@ -23,7 +23,7 @@ import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="TMP_COURSE")
+@Table(name="DDL_COURSE")
 public class Course {
     private long courseId;
     private Material material;

@@ -180,7 +180,7 @@ public class DDLGenerationExtendTablesJUnitTestSuite extends
             
             // SECTION: TABLE
             tabledefinition = new org.eclipse.persistence.tools.schemaframework.TableDefinition();
-            tabledefinition.setName("TMP_COURSE");
+            tabledefinition.setName("DDL_COURSE");
     
             // SECTION: ID FIELD
             field = new org.eclipse.persistence.tools.schemaframework.FieldDefinition();
