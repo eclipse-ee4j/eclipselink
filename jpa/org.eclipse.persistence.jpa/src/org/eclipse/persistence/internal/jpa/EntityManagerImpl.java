@@ -25,6 +25,8 @@
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *     14/05/2012-2.4 Guy Pelletier  
  *       - 376603: Provide for table per tenant support for multitenant applications
+ *     06/20/2012-2.5 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa;
 
@@ -1536,6 +1538,106 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         query.setSelectionCriteria(expression);
         return query;
     }
+    
+    /**
+     * Create an instance of <code>StoredProcedureQuery</code> for executing a
+     * stored procedure in the database.
+     * <p>Parameters must be registered before the stored procedure can be 
+     * executed.
+     * <p>If the stored procedure returns one or more result sets, any result 
+     * set will be returned as a list of type Object[].
+     * 
+     * @param procedureName name of the stored procedure in the database
+     * @return the new stored procedure query instance
+     * @throws IllegalArgumentException if a stored procedure of the given name 
+     *         does not exist (or the query execution will fail)
+     * @since EclipseLink 2.5/Java Persistence 2.1
+     */
+    public StoredProcedureQuery createStoredProcedureQuery(String procedureName) {
+        try {
+            verifyOpen();
+            StoredProcedureCall call = new StoredProcedureCall();
+            call.setProcedureName(procedureName);
+            return new StoredProcedureQueryImpl(StoredProcedureQueryImpl.buildResultSetMappingQuery(new ArrayList<SQLResultSetMapping>(), call), this);
+        } catch (RuntimeException e) {
+            setRollbackOnly();
+            throw e;
+        }
+    }
+    
+    /**
+     * Create an instance of <code>StoredProcedureQuery</code> for executing a
+     * stored procedure in the database.
+     * <p>Parameters must be registered before the stored procedure can be 
+     * executed.
+     * <p>The <code>resultClass</code> arguments must be specified in the order 
+     * in which the result sets will be returned by the stored procedure
+     * invocation.
+     * 
+     * @param procedureName name of the stored procedure in the database
+     * @param resultClasses classes to which the result sets produced by the 
+     *        stored procedure are to be mapped
+     * @return the new stored procedure query instance
+     * @throws IllegalArgumentException if a stored procedure of the given name 
+     *         does not exist (or the query execution will fail)
+     * @since EclipseLink 2.5/Java Persistence 2.1
+     */
+    public StoredProcedureQuery createStoredProcedureQuery(String procedureName, Class... resultClasses) {
+        try {
+            verifyOpen();
+            StoredProcedureCall call = new StoredProcedureCall();
+            call.setProcedureName(procedureName);
+            call.setHasMultipleResultSets(resultClasses.length > 1);
+            
+            List<SQLResultSetMapping> sqlResultSetMappings = new ArrayList<SQLResultSetMapping>();
+            for (Class resultClass : resultClasses) {
+                sqlResultSetMappings.add(new SQLResultSetMapping(resultClass));
+            }
+           
+            return new StoredProcedureQueryImpl(StoredProcedureQueryImpl.buildResultSetMappingQuery(sqlResultSetMappings, call), this);
+        } catch (RuntimeException e) {
+            setRollbackOnly();
+            throw e;
+        }
+    }
+
+    /**
+     * Create an instance of <code>StoredProcedureQuery</code> for executing a
+     * stored procedure in the database.
+     * <p>Parameters must be registered before the stored procedure can be 
+     * executed.
+     * <p>The <code>resultSetMapping</code> arguments must be specified in the 
+     * order in which the result sets will be returned by the stored procedure 
+     * invocation.
+     * 
+     * @param procedureName name of the stored procedure in the database
+     * @param resultSetMappings the names of the result set mappings
+     *        to be used in mapping result sets
+     *        returned by the stored procedure
+     * @return the new stored procedure query instance
+     * @throws IllegalArgumentException if a stored procedure or
+     *         result set mapping of the given name does not exist
+     *         (or the query execution will fail)
+     * @since EclipseLink 2.5/Java Persistence 2.1
+     */
+    public StoredProcedureQuery createStoredProcedureQuery(String procedureName, String... resultSetMappings) {
+        try {
+            verifyOpen();
+            StoredProcedureCall call = new StoredProcedureCall();
+            call.setProcedureName(procedureName);
+            call.setHasMultipleResultSets(resultSetMappings.length > 1);
+            
+            List<String> sqlResultSetMappingNames = new ArrayList<String>();
+            for (String resultSetMapping : resultSetMappings) {
+                sqlResultSetMappingNames.add(resultSetMapping);
+            }
+           
+            return new StoredProcedureQueryImpl(StoredProcedureQueryImpl.buildResultSetMappingNameQuery(sqlResultSetMappingNames, call), this);
+        } catch (RuntimeException e) {
+            setRollbackOnly();
+            throw e;
+        }
+    }
 
     /**
      * <p>
@@ -2615,21 +2717,6 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     }
 
     public Query createQuery(CriteriaDelete deleteQuery) {
-        // TODO: implement
-        throw new RuntimeException("Not implemented ... WIP ...");
-    }
-
-    public StoredProcedureQuery createStoredProcedureQuery(String procedureName) {
-        // TODO: implement
-        throw new RuntimeException("Not implemented ... WIP ...");
-    }
-
-    public StoredProcedureQuery createStoredProcedureQuery(String procedureName, Class... resultClasses) {
-        // TODO: implement
-        throw new RuntimeException("Not implemented ... WIP ...");
-    }
-
-    public StoredProcedureQuery createStoredProcedureQuery(String procedureName, String... resultSetMappings) {
         // TODO: implement
         throw new RuntimeException("Not implemented ... WIP ...");
     }

@@ -10,6 +10,8 @@
  * Contributors:
  *     02/08/2012-2.4 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     06/20/2012-2.5 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa21.advanced;
 
@@ -123,7 +125,7 @@ import static javax.persistence.ParameterMode.REF_CURSOR;
                     @FieldResult(name="city", column="3"),
                     @FieldResult(name="country", column="4"),
                     @FieldResult(name="province", column="5"),
-                    @FieldResult(name="p_code", column="6")
+                    @FieldResult(name="postalCode", column="6")
                 }
             )
         }),

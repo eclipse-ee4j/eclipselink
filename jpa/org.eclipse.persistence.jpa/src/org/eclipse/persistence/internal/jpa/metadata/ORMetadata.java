@@ -34,6 +34,8 @@
  *       - 349906: NPE while using eclipselink in the application
  *      *     30/05/2012-2.4 Guy Pelletier    
  *       - 354678: Temp classloader is still being used during metadata processing
+ *     06/20/2012-2.5 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/ 
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -137,12 +139,25 @@ public abstract class ORMetadata {
     
     /**
      * INTERNAL:
+     * Used for defaulting. At minimum, all metadata should have this 
+     * information available to them at process time (to ensure no errors during
+     * processing).  Depending on the metadata processing needs you can get away 
+     * with not having them set, however, any dependencies on the loader, 
+     * metadata logger or the metadata project etc. will require these.
+     */
+    protected ORMetadata(MetadataAccessibleObject accessibleObject, MetadataProject project, Object location) {
+        m_location = location;
+        m_accessibleObject = accessibleObject;
+        m_project = project;
+    }
+    
+    /**
+     * INTERNAL:
      * Used for annotation loading of metadata objects.
      */
     public ORMetadata(MetadataAnnotation annotation, MetadataAccessor accessor) {
-        m_location = accessor.getLocation();
-        m_accessibleObject = accessor.getAccessibleObject();
-        m_project = accessor.getProject();
+        this(accessor.getAccessibleObject(), accessor.getProject(), accessor.getLocation());
+
         m_annotation = annotation;
     }
     
@@ -151,18 +166,9 @@ public abstract class ORMetadata {
      * Used for annotation loading of class and mapping accessors.
      */
     public ORMetadata(MetadataAnnotation annotation, MetadataAccessibleObject accessibleObject, MetadataProject project) {
-        m_location = accessibleObject;
-        m_project = project;
-        m_accessibleObject = accessibleObject;
+        this(accessibleObject, project, accessibleObject);
+
         m_annotation = annotation;
-    }
-    
-    /**
-     * INTERNAL:
-     * Used for defaulting.
-     */
-    protected ORMetadata(MetadataProject project) {
-        m_project = project;
     }
     
     /**
@@ -218,6 +224,15 @@ public abstract class ORMetadata {
         }
         
         return (boxedTypes.containsKey(type)) ? boxedTypes.get(type) : type;
+    }
+    
+    /**
+     * INTERNAL:
+     * This method will return the current loader from the metadata factory used 
+     * to created this ORMetadata.
+     */
+    public ClassLoader getLoader() {
+        return getMetadataFactory().getLoader();
     }
     
     /**
@@ -296,7 +311,7 @@ public abstract class ORMetadata {
      * temp loader, see getJavaClassName instead which will provide a valid
      * string class name that can be initialized at runtime instead.
      */
-    public Class getJavaClass(MetadataClass metadataClass) {
+    protected Class getJavaClass(MetadataClass metadataClass) {
         String className = metadataClass.getName();
         
         Class primitiveClass = getPrimitiveClassForName(className);
@@ -314,7 +329,7 @@ public abstract class ORMetadata {
             // package specification if it is specified.
             convertedClassName = getFullyQualifiedClassName(convertedClassName);
             
-            return MetadataHelper.getClassForName(convertedClassName, getMetadataFactory().getLoader());
+            return MetadataHelper.getClassForName(convertedClassName, getLoader());
         } else {
             return primitiveClass;
         }

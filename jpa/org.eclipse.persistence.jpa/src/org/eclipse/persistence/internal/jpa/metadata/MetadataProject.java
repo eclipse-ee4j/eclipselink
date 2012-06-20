@@ -83,6 +83,8 @@
  *       - 357476: Change caching default to ISOLATED for multitenant's using a shared EMF.
  *     02/08/2012-2.4 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     06/20/2012-2.5 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -1527,16 +1529,16 @@ public class MetadataProject {
      * Process the named native queries we found and add them to the given
      * session.
      */
-    public void processQueries(ClassLoader loader) {
+    public void processQueries() {
         // Step 1 - process the sql result set mappings first.
         for (SQLResultSetMappingMetadata sqlResultSetMapping : m_sqlResultSetMappings.values()) {
-            m_session.getProject().addSQLResultSetMapping(sqlResultSetMapping.process(loader));
+            m_session.getProject().addSQLResultSetMapping(sqlResultSetMapping.process());
         }
         
         // Step 2 - process the named queries second, some may need to validate
         // a sql result set mapping specification.
         for (NamedQueryMetadata query : m_queries.values()) {
-            query.process(m_session, loader);
+            query.process(m_session);
         }
     }
     

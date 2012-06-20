@@ -16,6 +16,8 @@
  *       - 329089: PERF: EJBQueryImpl.setParamenterInternal() move indexOf check inside non-native block
  *     02/08/2012-2.4 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     06/20/2012-2.5 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa;
 
@@ -82,15 +84,25 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
      * This is called from a named stored procedure that employs result set
      * mapping name(s) which should be available from the session.
      */
-    public static DatabaseQuery buildResultSetMappingNameQuery(List<String> resultSetMappingNames, StoredProcedureCall call, Map<String, Object> hints, ClassLoader classLoader, AbstractSession session) {
+    public static DatabaseQuery buildResultSetMappingNameQuery(List<String> resultSetMappingNames, StoredProcedureCall call) {
         ResultSetMappingQuery query = new ResultSetMappingQuery();
         call.setReturnMultipleResultSetCollections(call.hasMultipleResultSets());
         query.setCall(call);
         query.setIsUserDefined(true);
         query.setSQLResultSetMappingNames(resultSetMappingNames);
-        
+        return query;
+    }
+    
+    /**
+     * Build a ResultSetMappingQuery from a sql result set mapping name and a
+     * stored procedure call.
+     * 
+     * This is called from a named stored procedure that employs result set
+     * mapping name(s) which should be available from the session.
+     */
+    public static DatabaseQuery buildResultSetMappingNameQuery(List<String> resultSetMappingNames, StoredProcedureCall call, Map<String, Object> hints, ClassLoader classLoader, AbstractSession session) {
         // apply any query hints
-        DatabaseQuery hintQuery = applyHints(hints, query, classLoader, session);
+        DatabaseQuery hintQuery = applyHints(hints, buildResultSetMappingNameQuery(resultSetMappingNames, call) , classLoader, session);
 
         // apply any query arguments
         applyArguments(call, hintQuery);
@@ -106,15 +118,26 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
      * class name(s). The resultSetMappings are build from these class name(s)
      * and are not available from the session.
      */
-    public static DatabaseQuery buildResultSetMappingQuery(List<SQLResultSetMapping> resultSetMappings, StoredProcedureCall call, Map<String, Object> hints, ClassLoader classLoader, AbstractSession session) {
+    public static DatabaseQuery buildResultSetMappingQuery(List<SQLResultSetMapping> resultSetMappings, StoredProcedureCall call) {
         ResultSetMappingQuery query = new ResultSetMappingQuery();
         call.setReturnMultipleResultSetCollections(call.hasMultipleResultSets());
         query.setCall(call);
         query.setIsUserDefined(true);
         query.setSQLResultSetMappings(resultSetMappings);
-
+        return query;
+    }
+    
+    /**
+     * Build a ResultSetMappingQuery from the sql result set mappings given
+     *  a stored procedure call.
+     * 
+     * This is called from a named stored procedure query that employs result
+     * class name(s). The resultSetMappings are build from these class name(s)
+     * and are not available from the session.
+     */
+    public static DatabaseQuery buildResultSetMappingQuery(List<SQLResultSetMapping> resultSetMappings, StoredProcedureCall call, Map<String, Object> hints, ClassLoader classLoader, AbstractSession session) {
         // apply any query hints
-        DatabaseQuery hintQuery = applyHints(hints, query, classLoader, session);
+        DatabaseQuery hintQuery = applyHints(hints, buildResultSetMappingQuery(resultSetMappings, call), classLoader, session);
 
         // apply any query arguments
         applyArguments(call, hintQuery);
@@ -138,7 +161,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
 
         return query;
     }
-
+    
     /**
      * Build a ResultSetMappingQuery from a sql result set mapping name and a
      * stored procedure call.
@@ -240,7 +263,11 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             resultList = super.getResultList();
         }
         
-        return (List) resultList.remove(0);
+        if (resultList.get(0) instanceof List) {
+            return (List) resultList.remove(0);
+        } else {
+            return resultList;
+        }
     }
     
     /**
@@ -278,30 +305,88 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     }
     
     /**
-     * Register a positional parameter.
-     * All positional parameters must be registered.
+     * Register a positional parameter. All positional parameters must be 
+     * registered.
+     * 
      * @param position parameter position
      * @param type type of the parameter
      * @param mode parameter mode
      * @return the same query instance
      */
     public StoredProcedureQuery registerStoredProcedureParameter(int position, Class type, ParameterMode mode) {
-        return null;
+        StoredProcedureCall call = (StoredProcedureCall) getDatabaseQuery().getCall();
+        
+        if (mode.equals(ParameterMode.IN)) {
+            call.addUnamedArgument(String.valueOf(position), type);
+        } else if (mode.equals(ParameterMode.OUT)) {
+            call.addUnamedOutputArgument(String.valueOf(position), type);
+        } else if (mode.equals(ParameterMode.INOUT)) {
+            call.addUnamedInOutputArgument(String.valueOf(position), String.valueOf(position), type);
+        } else if (mode.equals(ParameterMode.REF_CURSOR)) {
+            boolean multipleCursors = call.getParameterTypes().contains(call.OUT_CURSOR);
+            
+            call.useUnnamedCursorOutputAsResultSet();
+            
+            // There are multiple cursor output parameters, then do not use the 
+            // cursor as the result set. This will be set to true in the calls
+            // above so we must do the multiple cursor call before hand.
+            if (multipleCursors) {
+                call.setIsCursorOutputProcedure(false);
+            }
+        }
+        
+        return this;
     }
 
     /**
-     * Register a named parameter.
-     * When using parameter names, all parameters must be registered
-     * in the order in which they occur in the parameter list of the
-     * stored procedure.
+     * Register a named parameter. When using parameter names, all parameters 
+     * must be registered in the order in which they occur in the parameter list 
+     * of the stored procedure.
+     * 
      * @param parameterName name of the parameter as registered or
-     * specified in metadata
+     *        specified in metadata
      * @param type type of the parameter
-     * @param mode parameter mode
+     * @param mode parameter mode  
      * @return the same query instance
      */
     public StoredProcedureQuery registerStoredProcedureParameter(String parameterName, Class type, ParameterMode mode) {
-        return null;
+        StoredProcedureCall call = (StoredProcedureCall) getDatabaseQuery().getCall();
+
+        if (mode.equals(ParameterMode.IN)) {
+            call.addNamedArgument(parameterName, parameterName, type);
+        } else if (mode.equals(ParameterMode.OUT)) {
+            call.addNamedOutputArgument(parameterName, parameterName, type);
+        } else if (mode.equals(ParameterMode.INOUT)) {
+            call.addNamedInOutputArgument(parameterName, parameterName, parameterName, type);
+        } else if (mode.equals(ParameterMode.REF_CURSOR)) {
+            boolean multipleCursors = call.getParameterTypes().contains(call.OUT_CURSOR);
+            
+            call.useNamedCursorOutputAsResultSet(parameterName);
+            
+            // There are multiple cursor output parameters, then do not use the 
+            // cursor as the result set. This will be set to true in the calls
+            // above so we must do the multiple cursor call before hand.
+            if (multipleCursors) {
+                call.setIsCursorOutputProcedure(false);
+            }
+        }
+
+        return this;
+    }
+    
+    /**
+     * Internal method to change the wrapped query to a DataModifyQuery. When
+     * a stored procedure query is created, the internal query is a result set
+     * mapping query since it is unknown if the stored procedure will do a 
+     * SELECT or UPDATE. Note that this prevents the original named query from 
+     * ever being prepared.
+     */
+    @Override
+    protected void setAsSQLModifyQuery() {
+        // TODO: probably could check if their are entity results or the likes
+        // on the query?! Likely don't want to convert it to a data modify query
+        // at the point and let an exception be thrown (from executeUpdate)
+        setAsDataModifyQuery();
     }
     
     /**

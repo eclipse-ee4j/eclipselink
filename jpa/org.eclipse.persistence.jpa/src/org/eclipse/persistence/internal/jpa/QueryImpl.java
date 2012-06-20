@@ -16,6 +16,8 @@
  *       - 329089: PERF: EJBQueryImpl.setParamenterInternal() move indexOf check inside non-native block
  *     02/08/2012-2.4 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     06/20/2012-2.5 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa;
 
@@ -107,7 +109,20 @@ public class QueryImpl {
         this(entityManager);
         this.databaseQuery = query;
     }
-
+    
+    /**
+     * INTERNAL:
+     * Change the internal query to data modify query.
+     */
+    protected void setAsDataModifyQuery() {
+        DataModifyQuery query = new DataModifyQuery();
+        query.setIsUserDefined(this.databaseQuery.isUserDefined());
+        query.copyFromQuery(this.databaseQuery);
+        // Need to clone call, in case was executed as read.
+        query.setDatasourceCall((Call) this.databaseQuery.getDatasourceCall().clone());
+        this.databaseQuery = query;
+    }
+    
     /**
      * Internal method to change the wrapped query to a DataModifyQuery if
      * necessary. When created, the query is created as a DataReadQuery as it is
@@ -116,12 +131,7 @@ public class QueryImpl {
      */
     protected void setAsSQLModifyQuery() {
         if (getDatabaseQueryInternal().isDataReadQuery()) {
-            DataModifyQuery query = new DataModifyQuery();
-            query.setIsUserDefined(this.databaseQuery.isUserDefined());
-            query.copyFromQuery(this.databaseQuery);
-            // Need to clone call, in case was executed as read.
-            query.setDatasourceCall((Call) this.databaseQuery.getDatasourceCall().clone());
-            this.databaseQuery = query;
+            setAsDataModifyQuery();
         }
     }
 

@@ -10,6 +10,8 @@
  * Contributors:
  *     02/08/2012-2.4 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     06/20/2012-2.5 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
@@ -118,7 +120,7 @@ public class ColumnResultMetadata extends ORMetadata {
      * INTERNAL:
      * Process the column result for the caller.
      */
-    public ColumnResult process(ClassLoader loader) {
+    public ColumnResult process() {
         DatabaseField field = new DatabaseField();
         
         // Process the name (taking into consideration delimiters etc.)
@@ -126,7 +128,7 @@ public class ColumnResultMetadata extends ORMetadata {
         
         // Set the type name.
         if (! getType().isVoid()) {
-            field.setType(MetadataHelper.getClassForName(getType().getName(), loader));
+            field.setType(getJavaClass(getType()));
         }
         
         // Return a column result to the mapping.

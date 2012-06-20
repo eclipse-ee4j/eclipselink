@@ -27,6 +27,8 @@
  *       - 337323: Multi-tenant with shared schema support (part 2)
  *     09/20/2011-2.3.1 Guy Pelletier 
  *       - 357476: Change caching default to ISOLATED for multitenant's using a shared EMF.
+ *     06/20/2012-2.5 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -151,9 +153,7 @@ public class MetadataProcessor {
      * This call is made from the EntityManagerSetup deploy call.
      */
     public void addNamedQueries() {
-        // TODO: The loader doesn't need to be passed here. All ORMetadata 
-        // objects have access to the factory which has the loader.
-        m_project.processQueries(m_loader);
+        m_project.processQueries();
     }
     
     /**

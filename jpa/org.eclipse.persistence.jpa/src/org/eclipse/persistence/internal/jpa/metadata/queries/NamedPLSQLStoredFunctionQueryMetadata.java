@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation
  *     02/08/2012-2.4 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     06/20/2012-2.5 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
@@ -100,7 +102,7 @@ public class NamedPLSQLStoredFunctionQueryMetadata extends NamedPLSQLStoredProce
      * INTERNAL:
      */
     @Override
-    public void process(AbstractSession session, ClassLoader loader) {
+    public void process(AbstractSession session) {
         // Build the stored procedure call.
         PLSQLStoredFunctionCall call = new PLSQLStoredFunctionCall();
         
@@ -123,13 +125,13 @@ public class NamedPLSQLStoredFunctionQueryMetadata extends NamedPLSQLStoredProce
         // Process the result class.
         if (getResultClass().isVoid()) {
             if (hasResultSetMapping(session)) {
-                session.addQuery(getName(), StoredProcedureQueryImpl.buildStoredProcedureQuery(getResultSetMapping(), call, hints, loader, session));
+                session.addQuery(getName(), StoredProcedureQueryImpl.buildStoredProcedureQuery(getResultSetMapping(), call, hints, getLoader(), session));
             } else {
                 // Neither a resultClass or resultSetMapping is specified so place in a temp query on the session
-                session.addQuery(getName(), StoredProcedureQueryImpl.buildStoredProcedureQuery(call, hints, loader, session));
+                session.addQuery(getName(), StoredProcedureQueryImpl.buildStoredProcedureQuery(call, hints, getLoader(), session));
             }
         } else {
-            session.addQuery(getName(), StoredProcedureQueryImpl.buildStoredProcedureQuery(MetadataHelper.getClassForName(getResultClass().getName(), loader), call, hints, loader, session));
+            session.addQuery(getName(), StoredProcedureQueryImpl.buildStoredProcedureQuery(getJavaClass(getResultClass()), call, hints, getLoader(), session));
         }
     }
 

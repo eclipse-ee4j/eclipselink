@@ -15,6 +15,8 @@
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     06/20/2012-2.5 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
@@ -153,18 +155,18 @@ public class NamedNativeQueryMetadata extends NamedQueryMetadata {
      * INTERNAL:
      */
     @Override
-    public void process(AbstractSession session, ClassLoader loader) {
+    public void process(AbstractSession session) {
         Map<String, Object> hints = processQueryHints(session);
 
         if (m_resultClass.isVoid()) {
             if (hasResultSetMapping(session)) {
-                session.addQuery(getName(), EJBQueryImpl.buildSQLDatabaseQuery(m_resultSetMapping, getQuery(), hints, loader, session));
+                session.addQuery(getName(), EJBQueryImpl.buildSQLDatabaseQuery(m_resultSetMapping, getQuery(), hints, getLoader(), session));
             } else {
                 // Neither a resultClass or resultSetMapping is specified so place in a temp query on the session
-                session.addQuery(getName(), EJBQueryImpl.buildSQLDatabaseQuery(getQuery(), hints, loader, session));  
+                session.addQuery(getName(), EJBQueryImpl.buildSQLDatabaseQuery(getQuery(), hints, getLoader(), session));  
             }
         } else { 
-            session.addQuery(getName(), EJBQueryImpl.buildSQLDatabaseQuery(MetadataHelper.getClassForName(m_resultClass.getName(), loader), getQuery(), hints, loader, session));
+            session.addQuery(getName(), EJBQueryImpl.buildSQLDatabaseQuery(getJavaClass(m_resultClass), getQuery(), hints, getLoader(), session));
         }
     }
     

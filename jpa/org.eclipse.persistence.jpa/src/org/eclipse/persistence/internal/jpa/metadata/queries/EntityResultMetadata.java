@@ -15,6 +15,8 @@
  *       - 337323: Multi-tenant with shared schema support (part 1)
  *     02/08/2012-2.4 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     06/20/2012-2.5 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
@@ -81,8 +83,9 @@ public class EntityResultMetadata extends ORMetadata {
      * INTERNAL:
      * Used for result class processing.
      */
-    public EntityResultMetadata(MetadataClass entityClass) {
+    public EntityResultMetadata(MetadataClass entityClass, MetadataAccessibleObject accessibleObject) {
         m_entityClass = entityClass;
+        setAccessibleObject(accessibleObject);
     }
     
     /**
@@ -155,9 +158,9 @@ public class EntityResultMetadata extends ORMetadata {
      * INTERNAL:
      * Process the entity result for the given sql result set mapping.
      */
-    public EntityResult process(ClassLoader loader) {
+    public EntityResult process() {
         // Create a new entity result.
-        EntityResult entityResult = new EntityResult(MetadataHelper.getClassForName(getEntityClass().getName(), loader));
+        EntityResult entityResult = new EntityResult(getJavaClass(getEntityClass()));
     
         // Process the field results.
         for (FieldResultMetadata fieldResult : getFieldResults()) {

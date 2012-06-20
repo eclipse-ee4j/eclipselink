@@ -13,6 +13,8 @@
  *       - 218084: Implement metadata merging functionality between mapping files
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     06/20/2012-2.5 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
@@ -151,7 +153,7 @@ public class NamedQueryMetadata extends ORMetadata {
     /**
      * INTERNAL:
      */
-    public void process(AbstractSession session, ClassLoader loader) {
+    public void process(AbstractSession session) {
         try {
             Map<String, Object> hints = processQueryHints(session);
             session.addJPAQuery(new JPAQuery(getName(), getQuery(), getLockMode(), hints));

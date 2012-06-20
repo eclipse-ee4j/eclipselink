@@ -15,6 +15,8 @@
  *       - 337323: Multi-tenant with shared schema support (part 1)
  *     02/08/2012-2.4 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     06/20/2012-2.5 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
@@ -237,7 +239,7 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
      * INTERNAL:
      */
     @Override
-    public void process(AbstractSession session, ClassLoader loader) {
+    public void process(AbstractSession session) {
         // Build the stored procedure call.
         StoredProcedureCall call = new StoredProcedureCall();
         
@@ -259,7 +261,7 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
         // Process the procedure name.
         call.setProcedureName(m_procedureName);
         
-        // Process the returns result set.
+        // Process the returns result set. 
         call.setReturnsResultSet(returnsResultSet(hasOutParameters));
         
         // Process the multiple result sets.
@@ -273,26 +275,26 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
             List<SQLResultSetMapping> resultSetMappings = new ArrayList<SQLResultSetMapping>();
             
             for (MetadataClass resultClass : m_resultClasses) {
-                resultSetMappings.add(new SQLResultSetMappingMetadata(resultClass).process(loader)); 
+                resultSetMappings.add(new SQLResultSetMappingMetadata(resultClass, getAccessibleObject(), getProject(), getLocation()).process()); 
             }
             
-            session.addQuery(getName(), StoredProcedureQueryImpl.buildResultSetMappingQuery(resultSetMappings, call, hints, loader, session));
+            session.addQuery(getName(), StoredProcedureQueryImpl.buildResultSetMappingQuery(resultSetMappings, call, hints, getLoader(), session));
         } else if (! m_resultSetMappings.isEmpty()) {
             // Process the multiple result set mapping.
-            session.addQuery(getName(), StoredProcedureQueryImpl.buildResultSetMappingNameQuery(m_resultSetMappings, call, hints, loader, session));
+            session.addQuery(getName(), StoredProcedureQueryImpl.buildResultSetMappingNameQuery(m_resultSetMappings, call, hints, getLoader(), session));
         } else {            
             // Legacy support (EclipseLink @NamedStoreProcedureQuery).
             if (getResultClass().isVoid()) {
                 // Process the single result set mapping.
                 if (hasResultSetMapping(session)) {
-                    session.addQuery(getName(), StoredProcedureQueryImpl.buildStoredProcedureQuery(getResultSetMapping(), call, hints, loader, session));
+                    session.addQuery(getName(), StoredProcedureQueryImpl.buildStoredProcedureQuery(getResultSetMapping(), call, hints, getLoader(), session));
                 } else {
                     // Neither a resultClass or resultSetMapping is specified so place in a temp query on the session
-                    session.addQuery(getName(), StoredProcedureQueryImpl.buildStoredProcedureQuery(call, hints, loader, session));
+                    session.addQuery(getName(), StoredProcedureQueryImpl.buildStoredProcedureQuery(call, hints, getLoader(), session));
                 }
             } else {
                 // Process the single result class.
-                session.addQuery(getName(), StoredProcedureQueryImpl.buildStoredProcedureQuery(MetadataHelper.getClassForName(getResultClass().getName(), loader), call, hints, loader, session));
+                session.addQuery(getName(), StoredProcedureQueryImpl.buildStoredProcedureQuery(getJavaClass(getResultClass()), call, hints, getLoader(), session));
             }
         }
     }

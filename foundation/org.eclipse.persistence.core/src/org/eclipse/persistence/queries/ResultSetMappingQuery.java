@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     02/08/2012-2.4 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     06/20/2012-2.5 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/  
 package org.eclipse.persistence.queries;
 import java.util.*;
@@ -282,8 +284,12 @@ public class ResultSetMappingQuery extends ObjectBuildingQuery {
      * the database results
      */
     public SQLResultSetMapping getSQLResultSetMapping() {
-        if (resultSetMappings.isEmpty() && ! resultSetMappingNames.isEmpty()) {
-            return getSession().getProject().getSQLResultSetMapping(resultSetMappingNames.get(0));
+        if (resultSetMappings.isEmpty()) {
+            if (resultSetMappingNames.isEmpty()) {
+                return null;
+            } else {
+                return getSession().getProject().getSQLResultSetMapping(resultSetMappingNames.get(0));
+            }
         }
         
         return resultSetMappings.get(0);

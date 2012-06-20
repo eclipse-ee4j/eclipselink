@@ -10,6 +10,8 @@
  * Contributors:
  *     02/08/2012-2.4 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     06/20/2012-2.5 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
@@ -126,13 +128,13 @@ public class ConstructorResultMetadata extends ORMetadata {
      * INTERNAL:
      * Process the constructor result for the caller.
      */
-    public ConstructorResult process(ClassLoader loader) {
+    public ConstructorResult process() {
         // Create a new constructor result with the target class.
-        ConstructorResult constructorResult = new ConstructorResult(MetadataHelper.getClassForName(getTargetClass().getName(), loader));
+        ConstructorResult constructorResult = new ConstructorResult(getJavaClass(getTargetClass()));
         
         // Process the column results.
         for (ColumnResultMetadata columnResult : getColumnResults()) {
-            constructorResult.addColumnResult(columnResult.process(loader));
+            constructorResult.addColumnResult(columnResult.process());
         }
 
         return constructorResult;

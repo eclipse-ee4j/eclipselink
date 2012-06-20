@@ -15,12 +15,15 @@
  *       - 337323: Multi-tenant with shared schema support (part 1)
  *     02/08/2012-2.4 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     06/20/2012-2.5 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
@@ -87,12 +90,13 @@ public class SQLResultSetMappingMetadata extends ORMetadata {
      * INTERNAL:
      * Used for result class processing.
      */
-    public SQLResultSetMappingMetadata(MetadataClass entityClass) {
+    public SQLResultSetMappingMetadata(MetadataClass entityClass, MetadataAccessibleObject accessibleObject, MetadataProject project, Object location) {
+        super(accessibleObject, project, location);
+        
         // Since a result set mapping requires a name, set it to the entity 
         // class name.
         m_name = entityClass.getName();
-        
-        m_entityResults.add(new EntityResultMetadata(entityClass));
+        m_entityResults.add(new EntityResultMetadata(entityClass, accessibleObject));
     }
     
     /**
@@ -186,23 +190,23 @@ public class SQLResultSetMappingMetadata extends ORMetadata {
      * rely on convert class names to classes to be called (it's already been 
      * called)
      */
-    public SQLResultSetMapping process(ClassLoader loader) {        
+    public SQLResultSetMapping process() {        
         // Initialize a new SqlResultSetMapping (with the metadata name)
         SQLResultSetMapping mapping = new SQLResultSetMapping(getName());
         
         // Process the entity results first.
         for (EntityResultMetadata entityResult : m_entityResults) {
-            mapping.addResult(entityResult.process(loader));
+            mapping.addResult(entityResult.process());
         }
             
         // Process the constructor results second.
         for (ConstructorResultMetadata constructorResult : m_constructorResults) {
-            mapping.addResult(constructorResult.process(loader));
+            mapping.addResult(constructorResult.process());
         }
         
         // Process the column results third.
         for (ColumnResultMetadata columnResult : m_columnResults) {
-            mapping.addResult(columnResult.process(loader));
+            mapping.addResult(columnResult.process());
         }
         
         return mapping;
