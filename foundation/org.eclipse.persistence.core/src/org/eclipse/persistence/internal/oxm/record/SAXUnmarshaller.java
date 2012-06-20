@@ -384,9 +384,8 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         if (inputSource != null) {
             inputSource.setSystemId(this.systemId);
         }
-        boolean isPrimitiveWrapper = isPrimitiveWrapper(clazz);
         
-        UnmarshalRecord unmarshalRecord;
+        UnmarshalRecord unmarshalRecord =null;
         XMLDescriptor xmlDescriptor = null;
 
         // for XMLObjectReferenceMappings we need a non-shared cache, so
@@ -397,10 +396,8 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         // need to use the conversion manager to convert the node's value to the primitive 
         // wrapper class, then create, populate and return an XMLRoot.  This will be done
         // via XMLRootRecord.
-        if (isPrimitiveWrapper) {
-            unmarshalRecord = new XMLRootRecord(clazz);
-            unmarshalRecord.setSession((AbstractSession) xmlUnmarshaller.getXMLContext().getSession(0));
-        } else if(clazz == ClassConstants.OBJECT) {
+        boolean isPrimitiveWrapper = false;
+        if(clazz == ClassConstants.OBJECT) {
     	    try{
                 SAXUnmarshallerHandler saxUnmarshallerHandler = new SAXUnmarshallerHandler(xmlUnmarshaller.getXMLContext());
                 saxUnmarshallerHandler.setXMLReader(xmlReader);
@@ -420,9 +417,27 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         } else {
             // for XMLObjectReferenceMappings we need a non-shared cache, so
             // try and get a Unit Of Work from the XMLContext
+        	try{
             session = xmlUnmarshaller.getXMLContext().getReadSession(clazz);
             xmlDescriptor = (XMLDescriptor) session.getDescriptor(clazz);
             unmarshalRecord = (UnmarshalRecord) xmlDescriptor.getObjectBuilder().createRecord(session);
+
+            
+        	}catch(XMLMarshalException xme){
+        		if(xme.getErrorCode() == XMLMarshalException.DESCRIPTOR_NOT_FOUND_IN_PROJECT){            			 
+ 	                isPrimitiveWrapper = isPrimitiveWrapper(clazz);
+ 	                if (isPrimitiveWrapper) {
+ 	                       unmarshalRecord = new XMLRootRecord(clazz);
+ 	                       unmarshalRecord.setSession((AbstractSession) xmlUnmarshaller.getXMLContext().getSession(0));
+ 	                }else{
+ 	                	throw xme;
+ 	                }
+ 	                
+        		}else{
+        		   throw xme;
+        		}
+               
+        	}           
         }
 
         try {
@@ -478,8 +493,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     }
 
     public Object unmarshal(DOMReader domReader, Node node, Class clazz) {
-        boolean isPrimitiveWrapper = isPrimitiveWrapper(clazz);
-        UnmarshalRecord unmarshalRecord;
+        UnmarshalRecord unmarshalRecord = null;
         XMLDescriptor xmlDescriptor = null;
 
         AbstractSession session = null;
@@ -488,10 +502,8 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         // need to use the conversion manager to convert the node's value to the primitive 
         // wrapper class, then create, populate and return an XMLRoot.  This will be done
         // via XMLRootRecord.
-        if (isPrimitiveWrapper) {
-            unmarshalRecord = new XMLRootRecord(clazz);
-            unmarshalRecord.setSession((AbstractSession)xmlUnmarshaller.getXMLContext().getSession(0));
-        } else if(clazz == ClassConstants.OBJECT) {
+        boolean isPrimitiveWrapper = false;
+if(clazz == ClassConstants.OBJECT) {
             SAXUnmarshallerHandler saxUnmarshallerHandler = new SAXUnmarshallerHandler(xmlUnmarshaller.getXMLContext());
             saxUnmarshallerHandler.setXMLReader(domReader);
             saxUnmarshallerHandler.setUnmarshaller(xmlUnmarshaller);
@@ -509,9 +521,26 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         } else {
             // for XMLObjectReferenceMappings we need a non-shared cache, so
             // try and get a Unit Of Work from the XMLContext
+        	try{
             session = xmlUnmarshaller.getXMLContext().getReadSession(clazz);
             xmlDescriptor = (XMLDescriptor) session.getDescriptor(clazz);
             unmarshalRecord = (UnmarshalRecord) xmlDescriptor.getObjectBuilder().createRecord(session);
+        	}catch(XMLMarshalException xme){
+        		if(xme.getErrorCode() == XMLMarshalException.DESCRIPTOR_NOT_FOUND_IN_PROJECT){            			 
+ 	                isPrimitiveWrapper = isPrimitiveWrapper(clazz);
+ 	                if (isPrimitiveWrapper) {
+ 	                       unmarshalRecord = new XMLRootRecord(clazz);
+ 	                       unmarshalRecord.setSession((AbstractSession) xmlUnmarshaller.getXMLContext().getSession(0));
+ 	                }else{
+ 	                	throw xme;
+ 	                }
+ 	                
+        		}else{
+        		   throw xme;
+        		}
+               
+        	}    
+                      
         }
         try {
             unmarshalRecord.setXMLReader(domReader);
@@ -708,8 +737,8 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     }
 
     public Object unmarshal(String systemId, Class clazz) {
-        boolean isPrimitiveWrapper = isPrimitiveWrapper(clazz);
-        UnmarshalRecord unmarshalRecord;
+        UnmarshalRecord unmarshalRecord = null;
+        boolean isPrimitiveWrapper = false;
         XMLDescriptor xmlDescriptor = null;
 
         AbstractSession session = null;
@@ -718,9 +747,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         // need to use the conversion manager to convert the node's value to the primitive 
         // wrapper class, then create, populate and return an XMLRoot.  This will be done
         // via XMLRootRecord.
-        if (isPrimitiveWrapper) {
-            unmarshalRecord = new XMLRootRecord(clazz);
-        } else if(clazz == ClassConstants.OBJECT) {
+if(clazz == ClassConstants.OBJECT) {
            
             SAXUnmarshallerHandler saxUnmarshallerHandler = new SAXUnmarshallerHandler(xmlUnmarshaller.getXMLContext());
             try {
@@ -743,9 +770,26 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         } else {
             // for XMLObjectReferenceMappings we need a non-shared cache, so
             // try and get a Unit Of Work from the XMLContext
+        	try{
             session = xmlUnmarshaller.getXMLContext().getReadSession(clazz);
             xmlDescriptor = (XMLDescriptor) session.getDescriptor(clazz);
             unmarshalRecord = (UnmarshalRecord) xmlDescriptor.getObjectBuilder().createRecord(session);
+        	}catch(XMLMarshalException xme){
+        		if(xme.getErrorCode() == XMLMarshalException.DESCRIPTOR_NOT_FOUND_IN_PROJECT){            			 
+ 	                isPrimitiveWrapper = isPrimitiveWrapper(clazz);
+ 	                if (isPrimitiveWrapper) {
+ 	                       unmarshalRecord = new XMLRootRecord(clazz);
+ 	                       unmarshalRecord.setSession((AbstractSession) xmlUnmarshaller.getXMLContext().getSession(0));
+ 	                }else{
+ 	                	throw xme;
+ 	                }
+ 	                
+        		}else{
+        		   throw xme;
+        		}
+        		
+        	}
+            
         }
 
         try {
@@ -815,20 +859,17 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
                 xmlReader.parse(inputSource);
                 return unmarshal(saxDocumentBuilder.getDocument().getDocumentElement(), clazz);
             }
-            boolean isPrimitiveWrapper = isPrimitiveWrapper(clazz);
-            UnmarshalRecord unmarshalRecord;
+            
+            UnmarshalRecord unmarshalRecord = null;
             XMLDescriptor xmlDescriptor = null;
 
             AbstractSession session = null;
-
+            boolean isPrimitiveWrapper = false;
             // check for case where the reference class is a primitive wrapper - in this case, we 
             // need to use the conversion manager to convert the node's value to the primitive 
             // wrapper class, then create, populate and return an XMLRoot.  This will be done
             // via XMLRootRecord.
-            if (isPrimitiveWrapper) {
-                unmarshalRecord = new XMLRootRecord(clazz);
-                unmarshalRecord.setSession((AbstractSession) xmlUnmarshaller.getXMLContext().getSession(0));
-            } else if(clazz == ClassConstants.OBJECT) {
+if(clazz == ClassConstants.OBJECT) {
                 SAXUnmarshallerHandler saxUnmarshallerHandler = new SAXUnmarshallerHandler(xmlUnmarshaller.getXMLContext());
                 saxUnmarshallerHandler.setXMLReader((XMLReader)xmlReader);
                 saxUnmarshallerHandler.setUnmarshaller(xmlUnmarshaller);
@@ -842,9 +883,25 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
             } else {
                 // for XMLObjectReferenceMappings we need a non-shared cache, so
                 // try and get a Unit Of Work from the XMLContext
+            	try{
                 session = xmlContext.getReadSession(clazz);
                 xmlDescriptor = (XMLDescriptor) session.getDescriptor(clazz);
                 unmarshalRecord = (UnmarshalRecord) xmlDescriptor.getObjectBuilder().createRecord(session);
+            	}catch(XMLMarshalException xme){            		
+            		if(xme.getErrorCode() == XMLMarshalException.DESCRIPTOR_NOT_FOUND_IN_PROJECT){            			 
+     	                isPrimitiveWrapper = isPrimitiveWrapper(clazz);
+     	                if (isPrimitiveWrapper) {
+     	                       unmarshalRecord = new XMLRootRecord(clazz);
+     	                       unmarshalRecord.setSession((AbstractSession) xmlUnmarshaller.getXMLContext().getSession(0));
+     	                }else{
+     	                	throw xme;
+     	                }
+     	                
+            		}else{
+            		   throw xme;
+            		}
+	               
+            	}
             }
             XMLReader extendedXMLReader;
             if(xmlReader instanceof XMLReader) {
