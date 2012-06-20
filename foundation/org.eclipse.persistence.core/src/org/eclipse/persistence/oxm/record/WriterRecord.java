@@ -155,13 +155,6 @@ public class WriterRecord extends MarshalRecord {
 
     /**
      * INTERNAL:
-     * override so we don't iterate over namespaces when endPrefixMapping doesn't do anything
-     */
-    public void endPrefixMappings(NamespaceResolver namespaceResolver) {
-    }
-
-    /**
-     * INTERNAL:
      */
     public void attribute(String namespaceURI, String localName, String qName, String value) {
         try {

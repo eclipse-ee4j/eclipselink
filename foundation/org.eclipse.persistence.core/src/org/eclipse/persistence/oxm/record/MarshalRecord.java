@@ -203,11 +203,6 @@ public abstract class MarshalRecord extends XMLRecord {
     }
 
     public void endPrefixMappings(NamespaceResolver namespaceResolver) {
-        if (namespaceResolver != null && namespaceResolver.hasPrefixesToNamespaces()) {
-            for(Entry<String, String> entry: namespaceResolver.getPrefixesToNamespaces().entrySet()) {
-                endPrefixMapping(entry.getKey());
-            }
-        }
     }
 
     /**

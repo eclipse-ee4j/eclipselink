@@ -158,10 +158,6 @@ public class ContentHandlerRecord extends MarshalRecord {
         }
     }
 
-    @Override
-    public void endPrefixMappings(NamespaceResolver namespaceResolver) {
-    }
-
     /**
      * INTERNAL:
      */
