@@ -374,12 +374,7 @@
     </target>
 
     <target name="config-compile-path">
-        <echo message="core.classes='${eclipselink.core.dir}/${classes.dir}'"/>
-        <echo message="coretest.classes='${eclipselink.core.test.dir}/${classes.dir}'"/>
-
         <path id="compile.path">
-            <pathelement path="${eclipselink.core.dir}/${classes.dir}"/>
-            <pathelement path="${eclipselink.jpa}/${classes.dir}"/>
             <pathelement path="${eclipselink.core.test.dir}/${classes.dir}"/>
             <pathelement path="${eclipselink.core.test.dir}/${coretest.framework.jar}"/>
             <fileset dir="${eclipselink.jpa}/../${plugins.dir}"
@@ -388,7 +383,6 @@
             <fileset
                 dir="${eclipselink.core.lib.dir}"
                 includes="${eclipselink.core.depend}"/>
-            <pathelement path="${eclipselink.moxy.dir}/${classes.dir}"/>
             <fileset
                 dir="${eclipselink.moxy.lib.dir}"
                 includes="${eclipselink.moxy.depend}"/>
@@ -396,8 +390,7 @@
             <fileset dir="${jpatest.2.common.plugins.dir}" includes="org.eclipse.persistence.nosql_*.jar"/>
             <pathelement path="${junit.lib}"/>
             <pathelement path="${eclipselink.plugins}/${antlr}"/>
-            <pathelement path="${eclipselink.plugins}/${asm}"/>
-        <pathelement path="${eclipselink.jpa.test}/../../plugins/javax.ws.rs_1.1.1.v20101004-1200.jar"/>
+            <pathelement path="${eclipselink.jpa.test}/../../plugins/javax.ws.rs_1.1.1.v20101004-1200.jar"/>
             <!-- Needed for performance tests comparing with hibernate.>
             <fileset dir="${hibernate.dir}">
                 <include name="*.jar"/>
