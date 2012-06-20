@@ -160,7 +160,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
                 unmarshalRecord.setTypeQName(new QName(namespaceURI, type));
             }
 
-            if (xmlCompositeDirectCollectionMapping.getNullPolicy().isNullRepresentedByXsiNil() && xmlCompositeDirectCollectionMapping.getNullPolicy().valueIsNull(atts)) {
+            if (xmlCompositeDirectCollectionMapping.getNullPolicy().isNullRepresentedByXsiNil() && unmarshalRecord.isNil()) {
                 getContainerPolicy().addInto(null, unmarshalRecord.getContainerInstance(this), unmarshalRecord.getSession());
             }
 
@@ -224,7 +224,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
         }
 
         if (xmlCompositeDirectCollectionMapping.getNullPolicy().isNullRepresentedByXsiNil()){
-            if(unmarshalRecord.isNil() || xmlCompositeDirectCollectionMapping.getNullPolicy().valueIsNull(unmarshalRecord.getAttributes())){
+            if(unmarshalRecord.isNil()){
         	    return;
         	}
         }

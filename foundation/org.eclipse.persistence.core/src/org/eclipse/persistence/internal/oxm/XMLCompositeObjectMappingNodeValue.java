@@ -313,8 +313,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
                     xmlReader.setLexicalHandler(aHandler);
                 }
             } else {
-                boolean isNull = xmlCompositeObjectMapping.getNullPolicy().valueIsNull(atts);
-                if (isNull) {
+                if (xmlCompositeObjectMapping.getNullPolicy().isNullRepresentedByXsiNil() && unmarshalRecord.isNil()) {
                     xmlCompositeObjectMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), null);
                 } else {
                     XMLField xmlFld = (XMLField)this.xmlCompositeObjectMapping.getField();

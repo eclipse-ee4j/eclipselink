@@ -105,11 +105,15 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
                 xmlDescriptor = findReferenceDescriptor(xPathFragment,unmarshalRecord, atts, xmlCompositeCollectionMapping, xmlCompositeCollectionMapping.getKeepAsElementPolicy());
                 
                 if(xmlDescriptor == null){
-                    if (xmlCompositeCollectionMapping.getNullPolicy().valueIsNull(atts)) {
-                        getContainerPolicy().addInto(null, unmarshalRecord.getContainerInstance(this), unmarshalRecord.getSession());
-                        return true;
-                   }
-
+                	if (xmlCompositeCollectionMapping.getNullPolicy().isNullRepresentedByXsiNil()){
+                		if(unmarshalRecord.isNil()){
+                            getContainerPolicy().addInto(null, unmarshalRecord.getContainerInstance(this), unmarshalRecord.getSession());
+                            return true;
+                		}
+                    } else if(xmlCompositeCollectionMapping.getNullPolicy().valueIsNull(atts)){ 
+                    	 getContainerPolicy().addInto(null, unmarshalRecord.getContainerInstance(this), unmarshalRecord.getSession());
+                         return true;
+                    }
                     if(xmlCompositeCollectionMapping.getField() != null){
                         //try leaf element type
                         QName leafType = ((XMLField)xmlCompositeCollectionMapping.getField()).getLastXPathFragment().getLeafElementType();
@@ -161,7 +165,7 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
                     xmlReader.setContentHandler(aHandler);
                     xmlReader.setLexicalHandler(aHandler);
                 }
-            } else if (xmlCompositeCollectionMapping.getNullPolicy().valueIsNull(atts)) {
+            } else if (xmlCompositeCollectionMapping.getNullPolicy().isNullRepresentedByXsiNil() && unmarshalRecord.isNil()) {
                 getContainerPolicy().addInto(null, unmarshalRecord.getContainerInstance(this), unmarshalRecord.getSession());
             } else {
                 XMLField xmlFld = (XMLField) this.xmlCompositeCollectionMapping.getField();

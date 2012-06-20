@@ -275,10 +275,7 @@ public abstract class AbstractNullPolicy {
             if(null == attributes) {
                 return false;
             }
-            int index = attributes.getIndex(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_NIL_ATTRIBUTE);
-            if (index >= 0) {
-                return true;
-            }
+            return attributes.getValue(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_NIL_ATTRIBUTE) != null;            
         } else {
             // EMPTY_NODE - Required
             if (isNullRepresentedByEmptyNode() && (null == attributes || attributes.getLength() == 0)) {
