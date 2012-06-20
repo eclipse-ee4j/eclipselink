@@ -305,13 +305,6 @@ public class NodeRecord extends MarshalRecord {
     }
 
     /**
-     * INTERNAL:
-     * override so we don't iterate over namespaces when endPrefixMapping doesn't do anything
-     */
-    public void endPrefixMappings(NamespaceResolver namespaceResolver) {
-    }
-
-    /**
      * This class will typically be used in conjunction with an XMLFragmentReader.
      * The XMLFragmentReader will walk a given XMLFragment node and report events
      * to this class - the event's data is then used to create required attributes
