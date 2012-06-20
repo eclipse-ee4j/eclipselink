@@ -924,7 +924,8 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         CacheKey unitOfWorkCacheKey = null;
         if (parentCacheKey.getKey() == null) {
             // The primary key may be null for nested units of work with new parent objects.
-            unitOfWorkCacheKey = new UnitOfWorkCacheKey(null);
+            unitOfWorkCacheKey = new CacheKey(null);
+            unitOfWorkCacheKey.setIsolated(true);
             unitOfWorkCacheKey.acquire();
         } else {
             unitOfWorkCacheKey = getIdentityMapAccessorInstance().acquireLock(parentCacheKey.getKey(), original.getClass(), descriptor);

@@ -4778,26 +4778,28 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
        if (requiresDeferredLocks) {
            cacheKey = this.getIdentityMapAccessorInstance().acquireDeferredLock(primaryKey, concreteDescriptor.getJavaClass(), concreteDescriptor);
 
-           int counter = 0;
-           while ((cacheKey.getObject() == null) && (counter < 1000)) {
-               if (cacheKey.getActiveThread() == Thread.currentThread()) {
-                   break;
+           if (cacheKey.getActiveThread() != Thread.currentThread()) {
+               int counter = 0;
+               while ((cacheKey.getObject() == null) && (counter < 1000)) {
+                   //must release lock here to prevent acquiring multiple deferred locks but only
+                   //releasing one at the end of the build object call.
+                   //bug 5156075
+                   cacheKey.releaseDeferredLock();
+                   //sleep and try again if we are not the owner of the lock for CR 2317
+                   // prevents us from modifying a cache key that another thread has locked.
+                   try {
+                       Thread.sleep(10);
+                   } catch (InterruptedException exception) {
+                   }
+                   cacheKey = this.getIdentityMapAccessorInstance().acquireDeferredLock(primaryKey, concreteDescriptor.getJavaClass(), concreteDescriptor);
+                   if (cacheKey.getActiveThread() == Thread.currentThread()) {
+                       break;
+                   }
+                   counter++;
                }
-               //must release lock here to prevent acquiring multiple deferred locks but only
-               //releasing one at the end of the build object call.
-               //bug 5156075
-               cacheKey.releaseDeferredLock();
-               //sleep and try again if we are not the owner of the lock for CR 2317
-               // prevents us from modifying a cache key that another thread has locked.
-               try {
-                   Thread.sleep(10);
-               } catch (InterruptedException exception) {
+               if (counter == 1000) {
+                   throw ConcurrencyException.maxTriesLockOnBuildObjectExceded(cacheKey.getActiveThread(), Thread.currentThread());
                }
-               cacheKey = this.getIdentityMapAccessorInstance().acquireDeferredLock(primaryKey, concreteDescriptor.getJavaClass(), concreteDescriptor);
-               counter++;
-           }
-           if (counter == 1000) {
-               throw ConcurrencyException.maxTriesLockOnBuildObjectExceded(cacheKey.getActiveThread(), Thread.currentThread());
            }
        } else {
            cacheKey = this.getIdentityMapAccessorInstance().acquireLock(primaryKey, concreteDescriptor.getJavaClass(), concreteDescriptor);

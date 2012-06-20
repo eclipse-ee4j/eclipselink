@@ -39,7 +39,7 @@ public class UnitOfWorkIdentityMap extends FullIdentityMap {
     
     @Override
     public CacheKey createCacheKey(Object primaryKey, Object object, Object writeLockValue, long readTime) {
-        return new UnitOfWorkCacheKey(primaryKey, object, writeLockValue, readTime, this.isIsolated);
+        return new CacheKey(primaryKey, object, writeLockValue, readTime, true);
     }
 
     /**
