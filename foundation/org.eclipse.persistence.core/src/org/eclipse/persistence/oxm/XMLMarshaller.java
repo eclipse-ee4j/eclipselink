@@ -1071,9 +1071,11 @@ public class XMLMarshaller implements Cloneable {
         if (isXMLRoot) {
             String xmlRootUri = ((XMLRoot) object).getNamespaceURI();
             String xmlRootLocalName = ((XMLRoot) object).getLocalName();
-            rootFragment = new XPathFragment(xmlRootLocalName, marshalRecord.getNamespaceSeparator(),marshalRecord.isNamespaceAware());
-           
+            rootFragment = new XPathFragment();
+            rootFragment.setLocalName(xmlRootLocalName);           
             rootFragment.setNamespaceURI(xmlRootUri);
+            rootFragment.setNamespaceAware(marshalRecord.isNamespaceAware());
+            rootFragment.setNamespaceSeparator(marshalRecord.getNamespaceSeparator());           
             
             if (xmlRootUri != null) {
                 if (descriptor != null) {
