@@ -152,6 +152,12 @@
         <contains string="${server.name}" substring="glassfish"/>
     </condition>
 
+    <condition property="is.glassfish.or.weblogic">
+        <or>
+            <contains string="${server.name}" substring="glassfish"/>
+            <contains string="${server.name}" substring="weblogic"/>
+        </or>
+    </condition>
     <!-- This checks if the Apllication Server is JBoss -->
     <condition property="is.jboss">
         <contains string="${server.name}" substring="jboss"/>
@@ -345,6 +351,13 @@
             <isset property="is.weblogic"/>
         </and>
         </condition>
+    <condition property="jpars.url" value="http://${weblogic.host}:${weblogic.port}">
+            <contains string="${server.name}" substring="weblogic"/>
+    </condition>
+
+    <condition property="jpars.url" value="http://${glassfish.host}:8080">
+            <contains string="${server.name}" substring="glassfish"/>
+    </condition>
     </target>
 
     <!-- Configures paths for trunk checkout. -->
@@ -3322,6 +3335,9 @@
     </target>
 
     <target name="server-test-jpars" depends="clean-test" if="is.glassfish">
+        <echo message="jpars url is ${jpars.url}"/>
+        <copy file="${eclipselink.jpa.test}/../eclipselink.jpars.test/src/META-INF/persistence.xml" tofile="${eclipselink.jpa.test}/../eclipselink.jpars.test/src/META-INF/persistence.xml.original" overwrite="true"/>
+        <replace file="${eclipselink.jpa.test}/../eclipselink.jpars.test/src/META-INF/persistence.xml" token='Glassfish' value="${server.platform}"/>
         <property name="MODEL_NAME" value="eclipselink-jpars-model"/>
         <property name="EAR_NAME" value="${MODEL_NAME}"/>
         <antcall target="server-build-ear-jpars" inheritRefs="true"/>
@@ -3329,7 +3345,9 @@
             <param name="ear.name" value="${EAR_NAME}.ear"/>
             <param name="application.name" value="${EAR_NAME}"/>
         </antcall>
-        <ant antfile="antbuild.xml" dir="${eclipselink.jpa.test}/../eclipselink.jpars.test"  target="test" inheritAll="false"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.jpa.test}/../eclipselink.jpars.test"  target="test" inheritAll="false">
+            <property name="SERVER_URL" value="${jpars.url}"/>
+        </ant>
         <antcall target="server-undeploy" inheritRefs="true">
             <param name="ear.name" value="${EAR_NAME}.ear"/>
             <param name="application.name" value="${EAR_NAME}"/>
@@ -3337,6 +3355,7 @@
         <copy todir="${eclipselink.jpa.test}/${report.dir}">
             <fileset dir="${eclipselink.jpa.test}/../eclipselink.jpars.test/reports" includes="*.*"/>
         </copy>
+        <move file="${eclipselink.jpa.test}/../eclipselink.jpars.test/src/META-INF/persistence.xml.original" tofile="${eclipselink.jpa.test}/../eclipselink.jpars.test/src/META-INF/persistence.xml" overwrite="true"/>
     </target>
 
     <target name="server-test-plsql">
