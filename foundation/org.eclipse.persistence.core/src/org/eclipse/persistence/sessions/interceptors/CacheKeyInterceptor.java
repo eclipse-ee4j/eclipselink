@@ -104,6 +104,13 @@ public class CacheKeyInterceptor extends CacheKey{
             return wrappedKey.acquireReadLockNoWait();
         }
 
+        /**
+         * Return the active thread.
+         */
+        public Thread getActiveThread() {
+            return wrappedKey.getActiveThread();
+        }
+        
         public Object clone() {
             return new CacheKeyInterceptor((CacheKey)wrappedKey.clone());
         }
