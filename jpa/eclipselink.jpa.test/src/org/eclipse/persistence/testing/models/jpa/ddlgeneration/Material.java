@@ -21,7 +21,7 @@ import javax.persistence.PrePersist;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="TMP_MATERIAL")
+@Table(name="MATERIAL")
 public class Material {
     private long courseId;
     private Course course;
