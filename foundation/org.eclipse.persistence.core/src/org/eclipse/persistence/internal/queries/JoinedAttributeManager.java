@@ -775,7 +775,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
         List groupedExpressionList = new ArrayList(getJoinedAttributeExpressions().size());
         for (int index = 0; index < getJoinedAttributeExpressions().size(); index++) {
             Expression expression = getJoinedAttributeExpressions().get(index);
-            prepareJoinExpression(expression, session);
+            expression = prepareJoinExpression(expression, session);
             //EL bug 307497: break base expressions out onto the list and sort/group expressions by base expression  
             lastJoinedAttributeBaseExpression = addExpressionAndBaseToGroupedList(expression, groupedExpressionList, lastJoinedAttributeBaseExpression);
         }
@@ -783,7 +783,8 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
         this.setJoinedAttributeExpressions_(groupedExpressionList);
         for (int index = 0; index < getJoinedMappingExpressions().size(); index++) {
             Expression expression = getJoinedMappingExpressions().get(index);
-            prepareJoinExpression(expression, session);
+            expression = prepareJoinExpression(expression, session);
+            getJoinedMappingExpressions().set(index, expression);
         }
     }
     
@@ -834,7 +835,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
     /**
      * Validate and prepare the join expression.
      */
-    protected void prepareJoinExpression(Expression expression, AbstractSession session) {
+    protected Expression prepareJoinExpression(Expression expression, AbstractSession session) {
         // Must be query key expression.
         if (!expression.isQueryKeyExpression()) {
             throw QueryException.mappingForExpressionDoesNotSupportJoining(expression);
@@ -842,10 +843,15 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
         QueryKeyExpression objectExpression = (QueryKeyExpression)expression;
 
         // Expression may not have been initialized.
-        objectExpression.getBuilder().setSession(session.getRootSession(null));
-        if (objectExpression.getBuilder().getQueryClass() == null){
-            objectExpression.getBuilder().setQueryClass(this.descriptor.getJavaClass());
+        if (objectExpression.getBuilder().getQueryClass() == null) {
+            objectExpression = (QueryKeyExpression)objectExpression.rebuildOn(this.baseExpressionBuilder);
+            
+            if (objectExpression.getBuilder().getQueryClass() == null) {
+                objectExpression.getBuilder().setQueryClass(this.descriptor.getJavaClass());
+            }
         }
+        objectExpression.getBuilder().setSession(session.getRootSession(null));
+        
         // Can only join relationships.
         if ((objectExpression.getMapping() == null) || (!objectExpression.getMapping().isJoiningSupported())) {
             throw QueryException.mappingForExpressionDoesNotSupportJoining(objectExpression);
@@ -865,6 +871,8 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
             }
             baseExpression = (ObjectExpression)baseExpression.getBaseExpression();
         }
+        
+        return objectExpression;
     }
 
     /**
@@ -884,10 +892,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
                 for (int i = 0; i < mappingJoinedAttributes.size(); i++) {
                     ForeignReferenceMapping mapping = (ForeignReferenceMapping) mappingJoinedAttributes.get(i);
                     if(fetchGroupAttributes == null || fetchGroupAttributes.contains(mapping.getAttributeName())) {
-                        Expression expression = addJoinedMapping(mapping);
-                        if (expression != null) {
-                            prepareJoinExpression(expression, session);
-                        }
+                        addAndPrepareJoinedMapping(mapping, session);
                     }
                 }
             } else {
@@ -895,10 +900,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
                     ForeignReferenceMapping mapping = (ForeignReferenceMapping) mappingJoinedAttributes.get(i);
                     if (!isAttributeExpressionJoined(mapping)) {
                         if(fetchGroupAttributes == null || fetchGroupAttributes.contains(mapping.getAttributeName())) {
-                            Expression expression = addJoinedMapping(mapping);
-                            if (expression != null) {
-                                prepareJoinExpression(expression, session);
-                            }
+                            addAndPrepareJoinedMapping(mapping, session);
                         }
                     }
                 }
@@ -907,9 +909,9 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
     }
     
     /**
-     * Add the mapping for join fetch and return the expression being used.  
+     * Add the mapping for join fetch, prepare and return the join expression being used.  
      */
-    public Expression addJoinedMapping(ForeignReferenceMapping mapping) {
+    public Expression addAndPrepareJoinedMapping(ForeignReferenceMapping mapping, AbstractSession session) {
         Expression joinMappingExpression = null;
         if (mapping.isCollectionMapping()) {
             if (mapping.isInnerJoinFetched()) {
@@ -917,15 +919,15 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
             } else if (mapping.isOuterJoinFetched()) {
                 joinMappingExpression = getBaseExpressionBuilder().anyOfAllowingNone(mapping.getAttributeName(), false);
             }
-            if (joinMappingExpression != null) {
-                addJoinedMappingExpression(joinMappingExpression);
-            }
         } else {
             if (mapping.isInnerJoinFetched()) {
                 joinMappingExpression = getBaseExpressionBuilder().get(mapping.getAttributeName());
             } else if (mapping.isOuterJoinFetched()) {
                 joinMappingExpression = getBaseExpressionBuilder().getAllowingNull(mapping.getAttributeName());
             }
+        }
+        if (joinMappingExpression != null) {
+            joinMappingExpression = prepareJoinExpression(joinMappingExpression, session);
             addJoinedMappingExpression(joinMappingExpression);
         }
         return joinMappingExpression;
