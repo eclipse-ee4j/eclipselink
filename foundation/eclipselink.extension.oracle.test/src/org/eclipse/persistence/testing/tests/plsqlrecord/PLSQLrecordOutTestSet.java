@@ -1,4 +1,4 @@
-// Copyright (c) 2011 Oracle. All rights reserved.
+// Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
 
 package org.eclipse.persistence.testing.tests.plsqlrecord;
 
