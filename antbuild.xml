@@ -634,6 +634,10 @@
                     javax/persistence/StoredProcedureParameter.class,
                     javax/persistence/StoredProcedureQuery.class,
                     javax/persistence/SynchronizationType.class,
+		            javax/persistence/AttributeConverter.class,
+                    javax/persistence/Convert.class,
+                    javax/persistence/Converter.class,
+                    javax/persistence/Converts.class,
                     javax/persistence/criteria/CommonAbstractQuery.class,
                     javax/persistence/criteria/CriteriaDelete.class,
                     javax/persistence/criteria/CriteriaUpdate.class
