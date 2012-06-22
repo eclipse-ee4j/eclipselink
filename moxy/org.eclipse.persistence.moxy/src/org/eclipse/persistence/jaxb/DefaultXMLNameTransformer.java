@@ -12,8 +12,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.jaxb;
 
-import java.beans.Introspector;
-
 import org.eclipse.persistence.oxm.XMLNameTransformer;
 
 /**
@@ -35,9 +33,9 @@ public class DefaultXMLNameTransformer implements XMLNameTransformer {
     public String transformRootElementName(String className) {
         String elementName = null;
         if (className.indexOf(DOLLAR_SIGN_CHAR) != -1) {
-            elementName = Introspector.decapitalize(className.substring(className.lastIndexOf(DOLLAR_SIGN_CHAR) + 1));
+            elementName = decapitalize(className.substring(className.lastIndexOf(DOLLAR_SIGN_CHAR) + 1));
         } else {
-            elementName = Introspector.decapitalize(className.substring(className.lastIndexOf(DOT_CHAR) + 1));
+            elementName = decapitalize(className.substring(className.lastIndexOf(DOT_CHAR) + 1));
         }
           
         //the following satisfies a TCK requirement
