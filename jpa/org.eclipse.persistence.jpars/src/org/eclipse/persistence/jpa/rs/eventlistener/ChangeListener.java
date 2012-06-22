@@ -20,9 +20,9 @@ package org.eclipse.persistence.jpa.rs.eventlistener;
  */
 public interface ChangeListener {
 
-    void objectUpdated(String entityName, String transactionId, String rowId); 
+    void objectUpdated(String queryName, String entityName, String transactionId, String rowId); 
 
-    void objectInserted(String entityName, String transactionId, String rowId);
+    void objectInserted(String queryName, String entityName, String transactionId, String rowId);
     
     void register();
     

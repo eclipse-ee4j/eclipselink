@@ -19,6 +19,6 @@ package org.eclipse.persistence.jpa.rs.eventlistener;
  */
 public interface DatabaseEventListenerFactory {
     
-    public DescriptorBasedDatabaseEventListener createDatabaseEventListener();
+    public DescriptorBasedDatabaseEventListener createDatabaseEventListener(int connectionId);
 
 }

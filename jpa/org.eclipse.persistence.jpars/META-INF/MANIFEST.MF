@@ -19,6 +19,7 @@ Bundle-ManifestVersion: 2
 Import-Package: com.sun.jersey.api.core;resolution:=optional,
  javax.annotation,
  javax.ejb;version="3.1.0",
+ javax.naming,
  javax.persistence,
  javax.persistence.metamodel,
  javax.persistence.spi,
@@ -28,6 +29,7 @@ Import-Package: com.sun.jersey.api.core;resolution:=optional,
  javax.xml.bind;version="2.0",
  javax.xml.bind.annotation;version="2.0",
  javax.xml.bind.annotation.adapters;version="2.0",
- javax.xml.stream
+ javax.xml.stream,
+ javax.xml.transform
 Bundle-SymbolicName: org.eclipse.persistence.jpars
 
