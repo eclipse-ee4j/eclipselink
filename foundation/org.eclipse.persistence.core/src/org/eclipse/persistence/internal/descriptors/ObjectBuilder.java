@@ -506,9 +506,10 @@ public class ObjectBuilder implements Cloneable, Serializable {
     /**
      * Build and return the expression to use as the where clause to delete an object.
      * The row is passed to allow the version number to be extracted from it.
+     * If called with usesOptimisticLocking==true the caller should make sure that descriptor uses optimistic locking policy.
      */
-    public Expression buildDeleteExpression(DatabaseTable table, AbstractRecord row) {
-        if (this.descriptor.usesOptimisticLocking() && (this.descriptor.getTables().firstElement().equals(table))) {
+    public Expression buildDeleteExpression(DatabaseTable table, AbstractRecord row, boolean usesOptimisticLocking) {
+        if (usesOptimisticLocking && (this.descriptor.getTables().firstElement().equals(table))) {
             return this.descriptor.getOptimisticLockingPolicy().buildDeleteExpression(table, primaryKeyExpression, row);
         } else {
             return buildPrimaryKeyExpression(table);

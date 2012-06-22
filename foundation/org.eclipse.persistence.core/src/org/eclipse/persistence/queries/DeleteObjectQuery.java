@@ -24,6 +24,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.DescriptorEventManager;
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
+import org.eclipse.persistence.descriptors.FetchGroupManager;
 import org.eclipse.persistence.tools.profiler.QueryMonitor;
 
 /**
@@ -38,6 +39,9 @@ import org.eclipse.persistence.tools.profiler.QueryMonitor;
 public class DeleteObjectQuery extends ObjectLevelModifyQuery {
     /** PERF: By default only the translation row is used for deletes, the full row can be requested for custom deletes. */
     protected boolean isFullRowRequired = false;
+    
+    /** Indicates whether the query should use optimistic locking. */
+    protected boolean usesOptimisticLocking;
     
     public DeleteObjectQuery() {
         super();
@@ -220,7 +224,7 @@ public class DeleteObjectQuery extends ObjectLevelModifyQuery {
                 }
             }
 
-            if (descriptor.usesOptimisticLocking()) {
+            if (this.usesOptimisticLocking) {
                 descriptor.getOptimisticLockingPolicy().validateDelete(rowCount, object, this);
             }
 
@@ -273,12 +277,56 @@ public class DeleteObjectQuery extends ObjectLevelModifyQuery {
     }
 
     /**
+     * PUBLIC: (REQUIRED)
+     * Set the object required for modification.
+     */
+    @Override
+    public void setObject(Object object) {
+        if (isPrepared()) {
+            if (this.usesOptimisticLocking != shouldUseOptimisticLocking(object)) {
+                setIsPrepared(false);
+            }
+        }
+        super.setObject(object);
+    }
+    
+    /**
+     * INTERNAL:
+     * Determines whether the query should use optimistic locking with the passed object.
+     */
+    protected boolean shouldUseOptimisticLocking(Object object) {
+        if (this.descriptor.usesOptimisticLocking()) {
+            if (object != null) {
+                FetchGroupManager fetchGroupManager = this.descriptor.getFetchGroupManager();
+                if (fetchGroupManager != null) {
+                    FetchGroup fetchGroup = fetchGroupManager.getObjectFetchGroup(object);
+                    if (fetchGroup == fetchGroupManager.getIdEntityFetchGroup()) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Indicating whether the query should use optimistic locking.
+     */
+    public boolean usesOptimisticLocking() {
+        return this.usesOptimisticLocking; 
+    }
+    
+    /**
      * INTERNAL:
      * Prepare the receiver for execution in a session.
      */
     protected void prepare() {
         super.prepare();
 
+        this.usesOptimisticLocking = shouldUseOptimisticLocking(this.object);
         getQueryMechanism().prepareDeleteObject();
     }
 
@@ -314,7 +362,7 @@ public class DeleteObjectQuery extends ObjectLevelModifyQuery {
         }
 
         // Add the write lock field if required		
-        if (this.descriptor.usesOptimisticLocking()) {
+        if (this.usesOptimisticLocking) {
             this.descriptor.getOptimisticLockingPolicy().addLockValuesToTranslationRow(this);
         }
     }

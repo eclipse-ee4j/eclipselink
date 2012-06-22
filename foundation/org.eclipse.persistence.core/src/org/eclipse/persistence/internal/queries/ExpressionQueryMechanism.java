@@ -497,7 +497,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
     protected SQLDeleteStatement buildDeleteStatement(DatabaseTable table) {
         SQLDeleteStatement deleteStatement = new SQLDeleteStatement();
         Expression whereClause;
-        whereClause = getDescriptor().getObjectBuilder().buildDeleteExpression(table, getTranslationRow());
+        whereClause = getDescriptor().getObjectBuilder().buildDeleteExpression(table, getTranslationRow(), ((DeleteObjectQuery)getQuery()).usesOptimisticLocking());
 
         deleteStatement.setWhereClause(whereClause);
         deleteStatement.setTable(table);

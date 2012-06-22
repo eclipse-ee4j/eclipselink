@@ -49,6 +49,7 @@ import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.relationships.Auditor;
+import org.eclipse.persistence.testing.models.jpa.relationships.Customer2;
 import org.eclipse.persistence.testing.models.jpa.relationships.CustomerCollection;
 import org.eclipse.persistence.testing.models.jpa.relationships.CustomerServiceRepresentative;
 import org.eclipse.persistence.testing.models.jpa.relationships.Lego;
@@ -99,6 +100,7 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new RelationshipModelJUnitTestSuite("testNamedQueryDoesNotExistTest"));
         suite.addTest(new RelationshipModelJUnitTestSuite("testExcludeDefaultMappings"));
         suite.addTest(new RelationshipModelJUnitTestSuite("testChangeSetForNewObject"));
+        suite.addTest(new RelationshipModelJUnitTestSuite("testRemoveReference"));
         
         return suite;
     }
@@ -835,4 +837,36 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
         }
     }
 
+    public void testRemoveReference() {
+        EntityManager em = createEntityManager();
+        
+        try {
+            
+            beginTransaction(em);
+            Customer2 customer = new Customer2();
+            em.persist(customer);
+            
+            int id = customer.getCustomerId();
+            
+            commitTransaction(em);
+            
+            em.clear();
+            closeEntityManager(em);
+            clearCache();
+            
+            em = createEntityManager();
+            Customer2 customerReference = em.getReference(Customer2.class, id);
+            
+            beginTransaction(em);
+            em.remove(customerReference);
+            commitTransaction(em);
+            
+            assertNull("Customer was not removed", em.find(Customer2.class, id));
+        } finally {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
+    }
 }
