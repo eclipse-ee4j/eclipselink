@@ -728,8 +728,21 @@ public class FetchGroupManager implements Cloneable {
             }
             this.fullFetchGroup.addAttribute(name);
         }
-        // currently minimalFetchGroup contains only PrimaryKey - that's what idEntityFetchGroup will consist of. 
-        this.idEntityFetchGroup = getEntityFetchGroup(this.minimalFetchGroup);
+        this.idEntityFetchGroup = null;
+        if (this.descriptor.isChildDescriptor()) {
+            FetchGroupManager parentManager = this.descriptor.getInheritancePolicy().getParentDescriptor().getFetchGroupManager();
+            if (parentManager != null) {
+                // copy idEntityFetchGroup from the parent
+                this.idEntityFetchGroup = parentManager.getIdEntityFetchGroup();
+            }
+        }
+        if (this.idEntityFetchGroup != null) {
+            // insert the copied idEntityFetchGroup into the map
+            this.entityFetchGroups.put(this.idEntityFetchGroup.getAttributeNames(), this.idEntityFetchGroup);
+        } else {
+            // currently minimalFetchGroup contains only PrimaryKey - that's what idEntityFetchGroup will consist of. 
+            this.idEntityFetchGroup = getEntityFetchGroup(this.minimalFetchGroup);
+        }
         if(this.descriptor.usesOptimisticLocking()) {
             DatabaseField lockField = this.descriptor.getOptimisticLockingPolicy().getWriteLockField();
             if (lockField != null) {
