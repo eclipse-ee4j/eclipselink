@@ -58,6 +58,23 @@ public interface EntityManagerFactory {
     public EntityManager createEntityManager(Map map);
 
     /**
+     * Create a new JTA application-managed <code>EntityManager</code> with the 
+     * specified synchronization type and map of properties. 
+     * This method returns a new <code>EntityManager</code> instance each time
+     * it is invoked. 
+     * The <code>isOpen</code> method will return true on the returned instance.
+     * @param synchronizationType  how and when the entity manager should be 
+     * synchronized with the current JTA transaction
+     * @param map properties for entity manager; may be null
+     * @return entity manager instance
+     * @throws IllegalStateException if the entity manager factory
+     * has been configured for resource-local entity managers or is closed
+     *
+     * @since Java Persistence 2.1
+     */
+    public EntityManager createEntityManager(SynchronizationType synchronizationType, Map map);
+
+    /**
      * Return an instance of <code>CriteriaBuilder</code> for the creation of
      * <code>CriteriaQuery</code> objects.
      * @return CriteriaBuilder instance

@@ -23,6 +23,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceUnitUtil;
 import javax.persistence.Query;
+import javax.persistence.SynchronizationType;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.metamodel.Metamodel;
 
@@ -598,5 +599,11 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
     public <T> T unwrap(Class<T> cls) {
         // TODO: implement
         throw new RuntimeException("Not implemented ... WIP ...");
+    }
+
+    public EntityManager createEntityManager(
+            SynchronizationType synchronizationType, Map map) {
+        // TODO: implement
+        return null;
     }
 }

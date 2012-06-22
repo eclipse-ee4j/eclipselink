@@ -56,6 +56,9 @@ public interface PersistenceProvider {
      * If a Bean Validation provider is present in the classpath,
      * the container must pass the <code>ValidatorFactory</code> instance in
      * the map with the key <code>"javax.persistence.validation.factory"</code>.
+     * If the containing archive is a bean archive, the container
+     * must pass the BeanManager instance in the map with the key
+     * <code>"javax.persistence.bean.manager"</code>.
      * @return EntityManagerFactory for the persistence unit 
      * specified by the metadata
      */

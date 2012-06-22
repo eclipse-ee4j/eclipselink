@@ -166,7 +166,8 @@ public interface PersistenceUnitInfo {
 
     /**
      * Returns a properties object. Each property corresponds to a
-     * <code>property</code> element in the <code>persistence.xml</code> file.
+     * <code>property</code> element in the <code>persistence.xml</code> file
+     * or to a property set by the container.
      * @return Properties object 
      */
     public Properties getProperties();

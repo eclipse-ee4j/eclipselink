@@ -704,4 +704,10 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
         // TODO: implement
         throw new RuntimeException("Not implemented ... WIP ...");
     }
+
+    public EntityManager createEntityManager(
+            SynchronizationType synchronizationType, Map map) {
+        // TODO: implement
+        return null;
+    }
 }

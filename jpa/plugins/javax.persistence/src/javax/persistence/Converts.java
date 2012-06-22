@@ -13,25 +13,29 @@
  *     Linda DeMichiel - Java Persistence 2.0
  *
  ******************************************************************************/
-package javax.persistence.criteria;
+package javax.persistence;
+
+import java.lang.annotation.Target;
+import java.lang.annotation.Retention;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Defines the three types of joins.
+ * Used to group <code>Convert</code> annotations.  Multiple converters
+ * must not be applied to the same basic attribute.
  *
- * Right outer joins and right outer fetch joins are not required 
- * to be supported in Java Persistence 2.1.  Applications that use
- * <code>RIGHT</code> join types will not be portable.
- *
- * @since Java Persistence 2.0
+ * @see Convert
+ * @since Java Persistence 2.1
  */
-public enum JoinType {
+@Target({METHOD, FIELD, TYPE})
+@Retention(RUNTIME)
+public @interface Converts {
 
-    /** Inner join. */
-    INNER, 
-
-    /** Left outer join. */
-    LEFT, 
-
-    /** Right outer join. */
-    RIGHT
+  /**
+   * The <code>Convert</code> mappings that are to be applied.
+   *
+   */
+  Convert[] value();
 }
