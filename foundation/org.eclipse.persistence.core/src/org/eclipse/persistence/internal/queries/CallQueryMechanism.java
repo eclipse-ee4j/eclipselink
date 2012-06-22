@@ -213,17 +213,18 @@ public class CallQueryMechanism extends DatasourceCallQueryMechanism {
      * Pre-build configure the SQL call.
      */
     public void prepareDeleteObject() {
+        boolean usesOptimisticLocking = ((DeleteObjectQuery)getQuery()).usesOptimisticLocking();
         if (hasMultipleCalls()) {
             for (Enumeration callsEnum = getCalls().elements(); callsEnum.hasMoreElements();) {
                 DatabaseCall call = (DatabaseCall)callsEnum.nextElement();
                 call.returnNothing();
-                if (getQuery().getDescriptor().usesOptimisticLocking()) {
+                if (usesOptimisticLocking) {
                     call.setHasOptimisticLock(true);
                 }
             }
         } else {
             getCall().returnNothing();
-            if (getQuery().getDescriptor().usesOptimisticLocking()) {
+            if (usesOptimisticLocking) {
                 getDatabaseCall().setHasOptimisticLock(true);
             }
         }
