@@ -30,6 +30,7 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
         //addTableDefinition(buildCMP3_ORDER_SEQTable());
         addTableDefinition(buildCMP3_SALESPERSONTable());
         addTableDefinition(buildCUSTOMER_CUSTOMERTable());
+        addTableDefinition(buildCMP3_CUSTOMER2Table());
     }
         
     public static TableCreator getCreator(){
@@ -362,6 +363,45 @@ public class RelationshipsTableManager extends TogglingFastTableCreator {
         field1.setIsIdentity(false);
         field1.setForeignKeyFieldName("CMP3_FIELDACCESS_CUSTOMER.CUST_ID");
         table.addField(field1);
+
+        return table;
+    }
+
+    public static TableDefinition buildCMP3_CUSTOMER2Table() {
+        TableDefinition table = new TableDefinition();
+        table.setName("CMP3_FIELDACCESS_CUSTOMER2");
+
+        FieldDefinition fieldCUST_ID = new FieldDefinition();
+        fieldCUST_ID.setName("CUST_ID");
+        fieldCUST_ID.setTypeName("NUMBER");
+        fieldCUST_ID.setSize(15);
+        fieldCUST_ID.setSubSize(0);
+        fieldCUST_ID.setIsPrimaryKey(true);
+        fieldCUST_ID.setIsIdentity(false);
+        fieldCUST_ID.setUnique(false);
+        fieldCUST_ID.setShouldAllowNull(false);
+        table.addField(fieldCUST_ID);
+
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("NAME");
+        fieldNAME.setTypeName("VARCHAR2");
+        fieldNAME.setSize(80);
+        fieldNAME.setSubSize(0);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setIsIdentity(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setShouldAllowNull(true);
+        table.addField(fieldNAME);
+
+        FieldDefinition field10 = new FieldDefinition();
+        field10.setName("CUST_VERSION");
+        field10.setTypeName("NUMBER");
+        field10.setSize(15);
+        field10.setShouldAllowNull(true );
+        field10.setIsPrimaryKey(false );
+        field10.setUnique(false );
+        field10.setIsIdentity(false );
+        table.addField(field10);
 
         return table;
     }
