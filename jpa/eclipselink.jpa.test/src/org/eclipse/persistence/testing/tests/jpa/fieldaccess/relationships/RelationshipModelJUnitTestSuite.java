@@ -63,6 +63,7 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
         suite.addTest(new RelationshipModelJUnitTestSuite("testGetSingleResultTest"));
         suite.addTest(new RelationshipModelJUnitTestSuite("testNamedQueryDoesNotExistTest"));
         suite.addTest(new RelationshipModelJUnitTestSuite("testNamedQueryDoesNotExistTest"));
+        suite.addTest(new RelationshipModelJUnitTestSuite("testRemoveReference"));
         
         return suite;
     }
@@ -688,6 +689,37 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
                 fail("Should have been 2 queries but was: " + counter.getSqlStatements().size());
             }
             commitTransaction(em);
+        } finally {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
+    }
+
+    public void testRemoveReference() {
+        EntityManager em = createEntityManager("fieldaccess");
+        
+        try {
+            
+            beginTransaction(em);
+            Customer2 customer = new Customer2();
+            em.persist(customer);
+            
+            int id = customer.getCustomerId();
+            
+            commitTransaction(em);
+            
+            closeEntityManager(em);
+            clearCache("fieldaccess");
+            
+            em = createEntityManager("fieldaccess");
+            beginTransaction(em);
+            Customer2 customerReference = em.getReference(Customer2.class, id);            
+            em.remove(customerReference);
+            commitTransaction(em);
+            
+            assertNull("Customer was not removed", em.find(Customer2.class, id));
         } finally {
             if (isTransactionActive(em)) {
                 rollbackTransaction(em);
