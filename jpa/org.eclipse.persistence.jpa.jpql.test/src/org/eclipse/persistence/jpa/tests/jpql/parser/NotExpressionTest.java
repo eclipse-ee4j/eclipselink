@@ -84,4 +84,80 @@ public final class NotExpressionTest extends JPQLParserTest {
 
 		testQuery(query, selectStatement);
 	}
+
+	@Test
+	public void testBuildExpression_05() {
+
+		String query = "SELECT e FROM Employee e WHERE NOT (e.adult > 17) OR (e.name = 'JPQL')";
+
+		SelectStatementTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(
+					not(sub(path("e.adult").greaterThan(numeric(17))))
+				.or(
+					sub(path("e.name").equal(string("'JPQL'")))
+				)
+			)
+		);
+
+		testQuery(query, selectStatement);
+	}
+
+	@Test
+	public void testBuildExpression_06() {
+
+		String query = "SELECT e FROM Employee e WHERE NOT (e.adult > 17) AND (e.name = 'JPQL')";
+
+		SelectStatementTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(
+					not(sub(path("e.adult").greaterThan(numeric(17))))
+				.and(
+					sub(path("e.name").equal(string("'JPQL'")))
+				)
+			)
+		);
+
+		testQuery(query, selectStatement);
+	}
+
+	@Test
+	public void testBuildExpression_07() {
+
+		String query = "SELECT e FROM Employee e WHERE NOT (e.adult > 17) OR NOT (e.name = 'JPQL')";
+
+		SelectStatementTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(
+					not(sub(path("e.adult").greaterThan(numeric(17))))
+				.or(
+					not(sub(path("e.name").equal(string("'JPQL'"))))
+				)
+			)
+		);
+
+		testQuery(query, selectStatement);
+	}
+
+	@Test
+	public void testBuildExpression_08() {
+
+		String query = "SELECT e FROM Employee e WHERE NOT (e.adult > 17) AND NOT (e.name = 'JPQL')";
+
+		SelectStatementTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(
+					not(sub(path("e.adult").greaterThan(numeric(17))))
+				.and(
+					not(sub(path("e.name").equal(string("'JPQL'"))))
+				)
+			)
+		);
+
+		testQuery(query, selectStatement);
+	}
 }
