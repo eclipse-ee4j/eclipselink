@@ -109,8 +109,8 @@ public class TableExpression extends DataExpression {
      * INTERNAL:
      */
     @Override
-    public Vector getOwnedTables() {
-        Vector result = new Vector(1);
+    public List<DatabaseTable> getOwnedTables() {
+        List<DatabaseTable> result = new ArrayList(1);
         result.add(getTable());
         return result;
     }

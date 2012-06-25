@@ -474,16 +474,16 @@ public class QueryKeyExpression extends ObjectExpression {
      * INTERNAL:
      */
     @Override
-    public Vector getOwnedTables() {
+    public List<DatabaseTable> getOwnedTables() {
         if ((getMapping() != null) && getMapping().isNestedTableMapping()) {
-            Vector nestedTable = null;
+            List<DatabaseTable> nestedTable = null;
             if (shouldQueryToManyRelationship()) {
-                nestedTable = (Vector)super.getOwnedTables().clone();
+                nestedTable = new ArrayList(super.getOwnedTables());
             } else {
-                nestedTable = new Vector(1);
+                nestedTable = new ArrayList(1);
             }
 
-            nestedTable.addElement(new NestedTable(this));
+            nestedTable.add(new NestedTable(this));
             return nestedTable;
         }
         if ((getMapping() != null) && (getMapping().isReferenceMapping() || getMapping().isStructureMapping())) {

@@ -44,9 +44,9 @@ import org.eclipse.persistence.queries.*;
 public class HistoryPolicy implements Cloneable, Serializable {
     protected ClassDescriptor descriptor;
     protected DatabaseMapping mapping;
-    protected Vector historicalTables;
-    protected Vector startFields;
-    protected Vector endFields;
+    protected List<DatabaseTable> historicalTables;
+    protected List<DatabaseField> startFields;
+    protected List<DatabaseField> endFields;
     protected boolean shouldHandleWrites = true;
     protected boolean usesLocalTime = true;
 
@@ -94,7 +94,7 @@ public class HistoryPolicy implements Cloneable, Serializable {
                     return null;
                 }
                 TableExpression tableExp = null;
-                DatabaseTable historicalTable = (DatabaseTable)getHistoricalTables().elementAt(0);
+                DatabaseTable historicalTable = getHistoricalTables().get(0);
                 tableExp = (TableExpression)((ObjectExpression)base).existingDerivedTable(historicalTable);
 
                 start = tableExp.getField(getStart());
@@ -140,19 +140,19 @@ public class HistoryPolicy implements Cloneable, Serializable {
         } catch (CloneNotSupportedException ignore) {
         }
         if (startFields != null) {
-            clone.setStartFields(org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(startFields.size()));
-            for (Enumeration enumtr = startFields.elements(); enumtr.hasMoreElements();) {
-                clone.getStartFields().addElement(((DatabaseField)enumtr.nextElement()).clone());
+            clone.setStartFields(new ArrayList(startFields.size()));
+            for (DatabaseField field : startFields) {
+                clone.getStartFields().add(field.clone());
             }
         }
         if (endFields != null) {
-            clone.setEndFields(org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(endFields.size()));
-            for (Enumeration enumtr = endFields.elements(); enumtr.hasMoreElements();) {
-                clone.getEndFields().addElement(((DatabaseField)enumtr.nextElement()).clone());
+            clone.setEndFields(new ArrayList(endFields.size()));
+            for (DatabaseField field : endFields) {
+                clone.getEndFields().add(field.clone());
             }
         }
         if (historicalTables != null) {
-            clone.setHistoricalTables((Vector)historicalTables.clone());
+            clone.setHistoricalTables(new ArrayList(historicalTables));
         }
         return clone;
     }
@@ -199,7 +199,7 @@ public class HistoryPolicy implements Cloneable, Serializable {
     /**
      * INTERNAL:
      */
-    public final Vector getHistoricalTables() {
+    public final List<DatabaseTable> getHistoricalTables() {
         if (historicalTables == null) {
             historicalTables = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
         }
@@ -209,11 +209,10 @@ public class HistoryPolicy implements Cloneable, Serializable {
     /**
      * PUBLIC:
      */
-    public Vector getHistoryTableNames() {
-        Vector names = new Vector(getHistoricalTables().size());
-        for (Enumeration enumtr = getHistoricalTables().elements(); enumtr.hasMoreElements();) {
-            HistoricalDatabaseTable table = (HistoricalDatabaseTable)enumtr.nextElement();
-            names.addElement(table.getQualifiedName());// / getSecretName().
+    public List<String> getHistoryTableNames() {
+        List<String> names = new ArrayList(getHistoricalTables().size());
+        for (DatabaseTable table : getHistoricalTables()) {
+            names.add(table.getQualifiedName());
         }
         return names;
     }
@@ -230,7 +229,7 @@ public class HistoryPolicy implements Cloneable, Serializable {
      */
     protected DatabaseField getStart() {
         if (startFields != null) {
-            return (DatabaseField)startFields.elementAt(0);
+            return startFields.get(0);
         } else {
             return null;
         }
@@ -240,7 +239,7 @@ public class HistoryPolicy implements Cloneable, Serializable {
      * INTERNAL:
      */
     protected DatabaseField getStart(int i) {
-        return (DatabaseField)startFields.elementAt(i);
+        return startFields.get(i);
     }
 
     /**
@@ -259,7 +258,7 @@ public class HistoryPolicy implements Cloneable, Serializable {
     /**
      * INTERNAL:
      */
-    public Vector getStartFields() {
+    public List<DatabaseField> getStartFields() {
         return startFields;
     }
 
@@ -268,7 +267,7 @@ public class HistoryPolicy implements Cloneable, Serializable {
      */
     protected DatabaseField getEnd() {
         if (endFields != null) {
-            return (DatabaseField)endFields.elementAt(0);
+            return endFields.get(0);
         } else {
             return null;
         }
@@ -278,7 +277,7 @@ public class HistoryPolicy implements Cloneable, Serializable {
      * INTERNAL:
      */
     protected DatabaseField getEnd(int i) {
-        return (DatabaseField)endFields.elementAt(i);
+        return endFields.get(i);
     }
 
     /**
@@ -295,7 +294,7 @@ public class HistoryPolicy implements Cloneable, Serializable {
     /**
      * INTERNAL:
      */
-    public Vector getEndFields() {
+    public List<DatabaseField> getEndFields() {
         return endFields;
     }
 
@@ -315,14 +314,14 @@ public class HistoryPolicy implements Cloneable, Serializable {
             setDescriptor(getMapping().getDescriptor());
             if (getMapping().isDirectCollectionMapping()) {
                 DatabaseTable refTable = ((DirectCollectionMapping)getMapping()).getReferenceTable();
-                DatabaseTable histTable = (DatabaseTable)getHistoricalTables().elementAt(0);
+                DatabaseTable histTable = getHistoricalTables().get(0);
                 histTable.setName(refTable.getName());
                 histTable.setTableQualifier(refTable.getTableQualifier());
                 getStart().setTable(histTable);
                 getEnd().setTable(histTable);
             } else if (getMapping().isManyToManyMapping()) {
                 DatabaseTable relationTable = ((ManyToManyMapping)getMapping()).getRelationTable();
-                DatabaseTable histTable = (DatabaseTable)getHistoricalTables().elementAt(0);
+                DatabaseTable histTable = getHistoricalTables().get(0);
                 histTable.setName(relationTable.getName());
                 histTable.setTableQualifier(relationTable.getTableQualifier());
                 getStart().setTable(histTable);
@@ -337,18 +336,18 @@ public class HistoryPolicy implements Cloneable, Serializable {
 
         // In this configuration descriptor tables, history tables, and start/end fields
         // are all in the same order.
-        if (!getHistoricalTables().isEmpty() && ((DatabaseTable)getHistoricalTables().elementAt(0)).getName().equals("")) {
+        if (!getHistoricalTables().isEmpty() && getHistoricalTables().get(0).getName().equals("")) {
             for (int i = 0; i < getHistoricalTables().size(); i++) {
-                HistoricalDatabaseTable table = (HistoricalDatabaseTable)getHistoricalTables().elementAt(i);
+                DatabaseTable table = getHistoricalTables().get(i);
                 if (table.getName().equals("")) {
-                    DatabaseTable mirrored = getDescriptor().getTables().elementAt(i + offset);
+                    DatabaseTable mirrored = getDescriptor().getTables().get(i + offset);
                     table.setName(mirrored.getName());
                     table.setTableQualifier(mirrored.getTableQualifier());
                 }
                 if (getStartFields().size() < (i + 1)) {
                     DatabaseField startField = getStart(0).clone();
                     startField.setTable(table);
-                    getStartFields().addElement(startField);
+                    getStartFields().add(startField);
                 } else {
                     DatabaseField startField = getStart(i);
                     startField.setTable(table);
@@ -356,7 +355,7 @@ public class HistoryPolicy implements Cloneable, Serializable {
                 if (getEndFields().size() < (i + 1)) {
                     DatabaseField endField = getEnd(0).clone();
                     endField.setTable(table);
-                    getEndFields().addElement(endField);
+                    getEndFields().add(endField);
                 } else {
                     DatabaseField endField = getEnd(i);
                     endField.setTable(table);
@@ -365,25 +364,25 @@ public class HistoryPolicy implements Cloneable, Serializable {
         } else {
             // The user did not specify history tables/fields in order, so
             // initialize will take a little longer.
-            Vector unsortedTables = getHistoricalTables();
-            Vector sortedTables = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(unsortedTables.size());
-            Vector sortedStartFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(unsortedTables.size());
-            Vector sortedEndFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(unsortedTables.size());
-            boolean universalStartField = ((getStartFields().size() == 1) && (!((DatabaseField)getStartFields().get(0)).hasTableName()));
-            boolean universalEndField = ((getEndFields().size() == 1) && (!((DatabaseField)getEndFields().get(0)).hasTableName()));
+            List<DatabaseTable> unsortedTables = getHistoricalTables();
+            List<DatabaseTable> sortedTables = new ArrayList(unsortedTables.size());
+            List<DatabaseField> sortedStartFields = new ArrayList(unsortedTables.size());
+            List<DatabaseField> sortedEndFields = new ArrayList(unsortedTables.size());
+            boolean universalStartField = ((getStartFields().size() == 1) && (!(getStartFields().get(0)).hasTableName()));
+            boolean universalEndField = ((getEndFields().size() == 1) && (!(getEndFields().get(0)).hasTableName()));
             DatabaseTable descriptorTable = null;
-            HistoricalDatabaseTable historicalTable = null;
+            DatabaseTable historicalTable = null;
             DatabaseField historyField = null;
 
-            Vector descriptorTables = getDescriptor().getTables();
+            List<DatabaseTable> descriptorTables = getDescriptor().getTables();
             for (int i = offset; i < descriptorTables.size(); i++) {
-                descriptorTable = (DatabaseTable)descriptorTables.elementAt(i);
+                descriptorTable = descriptorTables.get(i);
 
                 int index = unsortedTables.indexOf(descriptorTable);
                 if (index == -1) {
                     // this is a configuration error!
                 }
-                historicalTable = (HistoricalDatabaseTable)unsortedTables.elementAt(index);
+                historicalTable = unsortedTables.get(index);
                 historicalTable.setTableQualifier(descriptorTable.getTableQualifier());
                 sortedTables.add(historicalTable);
 
@@ -392,15 +391,10 @@ public class HistoryPolicy implements Cloneable, Serializable {
                     historyField.setTable(historicalTable);
                     sortedStartFields.add(historyField);
                 } else {
-                    for (Enumeration enumtr = getStartFields().elements();
-                             enumtr.hasMoreElements();) {
-                        historyField = (DatabaseField)enumtr.nextElement();
-                        if (historyField.getTable().equals(historicalTable)) {
-                            sortedStartFields.add(historyField);
+                    for (DatabaseField field : getStartFields()) {
+                        if (field.getTable().equals(historicalTable)) {
+                            sortedStartFields.add(field);
                             break;
-                        }
-                        if (!enumtr.hasMoreElements()) {
-                            // throw exception here...
                         }
                     }
                 }
@@ -409,14 +403,10 @@ public class HistoryPolicy implements Cloneable, Serializable {
                     historyField.setTable(historicalTable);
                     sortedEndFields.add(historyField);
                 } else {
-                    for (Enumeration enumtr = getEndFields().elements(); enumtr.hasMoreElements();) {
-                        historyField = (DatabaseField)enumtr.nextElement();
-                        if (historyField.getTable().equals(historicalTable)) {
-                            sortedEndFields.add(historyField);
+                    for (DatabaseField field : getEndFields()) {
+                        if (field.getTable().equals(historicalTable)) {
+                            sortedEndFields.add(field);
                             break;
-                        }
-                        if (!enumtr.hasMoreElements()) {
-                            // throw exception here...
                         }
                     }
                 }
@@ -437,9 +427,9 @@ public class HistoryPolicy implements Cloneable, Serializable {
             if (parentDescriptor != null) {
                 // Unique is required because the builder can add the same table many times.
                 // This is done after init properties to make sure the default table is the first local one.
-                setHistoricalTables(Helper.concatenateUniqueVectors(parentDescriptor.getHistoryPolicy().getHistoricalTables(), getHistoricalTables()));
-                setStartFields(Helper.concatenateUniqueVectors(parentDescriptor.getHistoryPolicy().getStartFields(), getStartFields()));
-                setEndFields(Helper.concatenateUniqueVectors(parentDescriptor.getHistoryPolicy().getEndFields(), getEndFields()));
+                setHistoricalTables(Helper.concatenateUniqueLists(parentDescriptor.getHistoryPolicy().getHistoricalTables(), getHistoricalTables()));
+                setStartFields(Helper.concatenateUniqueLists(parentDescriptor.getHistoryPolicy().getStartFields(), getStartFields()));
+                setEndFields(Helper.concatenateUniqueLists(parentDescriptor.getHistoryPolicy().getEndFields(), getEndFields()));
             }
         }
     }
@@ -486,7 +476,7 @@ public class HistoryPolicy implements Cloneable, Serializable {
     /**
      * INTERNAL:
      */
-    public void setHistoricalTables(Vector historicalTables) {
+    public void setHistoricalTables(List<DatabaseTable> historicalTables) {
         this.historicalTables = historicalTables;
     }
 
@@ -500,7 +490,7 @@ public class HistoryPolicy implements Cloneable, Serializable {
     /**
      * INTERNAL:
      */
-    protected void setStartFields(Vector startFields) {
+    protected void setStartFields(List<DatabaseField> startFields) {
         this.startFields = startFields;
     }
 
@@ -521,18 +511,17 @@ public class HistoryPolicy implements Cloneable, Serializable {
 
         if (startFields == null) {
             startFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
-            startFields.addElement(startField);
+            startFields.add(startField);
             return;
         }
 
-        for (Enumeration enumtr = startFields.elements(); enumtr.hasMoreElements();) {
-            DatabaseField existing = (DatabaseField)enumtr.nextElement();
+        for (DatabaseField existing : startFields) {
             if (startField.getTableName().equals(existing.getTableName())) {
                 existing.setName(startField.getName());
                 return;
             }
         }
-        startFields.addElement(startField);
+        startFields.add(startField);
     }
 
     /**
@@ -541,8 +530,7 @@ public class HistoryPolicy implements Cloneable, Serializable {
      * of Timestamp is assumed.
      */
     public void setStartFieldType(Class type) {
-        for (Enumeration enumtr = startFields.elements(); enumtr.hasMoreElements();) {
-            DatabaseField existing = (DatabaseField)enumtr.nextElement();
+        for (DatabaseField existing : startFields) {
             existing.setType(type);
         }
     }
@@ -550,7 +538,7 @@ public class HistoryPolicy implements Cloneable, Serializable {
     /**
      * INTERNAL:
      */
-    protected void setEndFields(Vector endFields) {
+    protected void setEndFields(List<DatabaseField> endFields) {
         this.endFields = endFields;
     }
 
@@ -563,19 +551,18 @@ public class HistoryPolicy implements Cloneable, Serializable {
         endField.setType(ClassConstants.TIMESTAMP);
 
         if (endFields == null) {
-            endFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
-            endFields.addElement(endField);
+            endFields = new ArrayList();
+            endFields.add(endField);
             return;
         }
 
-        for (Enumeration enumtr = endFields.elements(); enumtr.hasMoreElements();) {
-            DatabaseField existing = (DatabaseField)enumtr.nextElement();
+        for (DatabaseField existing : endFields) {
             if (endField.getTableName().equals(existing.getTableName())) {
                 existing.setName(endField.getName());
                 return;
             }
         }
-        endFields.addElement(endField);
+        endFields.add(endField);
     }
 
     /**
@@ -583,8 +570,7 @@ public class HistoryPolicy implements Cloneable, Serializable {
      * @see #setStartFieldType
      */
     public void setEndFieldType(String fieldName, Class type) {
-        for (Enumeration enumtr = endFields.elements(); enumtr.hasMoreElements();) {
-            DatabaseField existing = (DatabaseField)enumtr.nextElement();
+        for (DatabaseField existing : endFields) {
             existing.setType(type);
         }
     }
@@ -678,23 +664,18 @@ public class HistoryPolicy implements Cloneable, Serializable {
      * <p>A similar method exists on ClassDescriptor.
      */
     protected void verifyTableQualifiers(DatasourcePlatform platform) {
-        HistoricalDatabaseTable table;
-        DatabaseTable scratchTable;
-        Enumeration tableEnumeration;
         String tableQualifier = platform.getTableQualifier();
 
         if (tableQualifier.length() == 0) {
             return;
         }
 
-        tableEnumeration = getHistoricalTables().elements();
-        while (tableEnumeration.hasMoreElements()) {
-            table = (HistoricalDatabaseTable)tableEnumeration.nextElement();
+        for (DatabaseTable table : getHistoricalTables()) {
             // Build a scratch table to see if history table name has a qualifier.
-            scratchTable = new DatabaseTable(table.getQualifiedName());
+            DatabaseTable scratchTable = new DatabaseTable(table.getQualifiedName());
             if (scratchTable.getTableQualifier().length() == 0) {
                 scratchTable.setTableQualifier(tableQualifier);
-                table.setHistoricalName(scratchTable.getQualifiedNameDelimited(platform));
+                ((HistoricalDatabaseTable)table).setHistoricalName(scratchTable.getQualifiedNameDelimited(platform));
             }
         }
     }
@@ -768,7 +749,7 @@ public class HistoryPolicy implements Cloneable, Serializable {
         StatementQueryMechanism insertMechanism = new StatementQueryMechanism(writeQuery);
 
         for (int i = 0; i < getHistoricalTables().size(); i++) {
-            DatabaseTable table = (DatabaseTable)getHistoricalTables().elementAt(i);
+            DatabaseTable table = getHistoricalTables().get(i);
             if (isUpdate && !checkWastedVersioning(originalModifyRow, table)) {
                 continue;
             }
@@ -795,7 +776,7 @@ public class HistoryPolicy implements Cloneable, Serializable {
     public void mappingLogicalInsert(DataModifyQuery originalQuery, AbstractRecord arguments, AbstractSession session) {
         DataModifyQuery historyQuery = new DataModifyQuery();
         SQLInsertStatement historyStatement = new SQLInsertStatement();
-        DatabaseTable histTable = (DatabaseTable)getHistoricalTables().elementAt(0);
+        DatabaseTable histTable = getHistoricalTables().get(0);
 
         historyStatement.setTable(histTable);
         AbstractRecord modifyRow = originalQuery.getModifyRow().clone();
@@ -834,7 +815,7 @@ public class HistoryPolicy implements Cloneable, Serializable {
         Object currentTime = getCurrentTime(writeQuery.getSession());
 
         for (int i = 0; i < getHistoricalTables().size(); i++) {
-            DatabaseTable table = (DatabaseTable)getHistoricalTables().elementAt(i);
+            DatabaseTable table = getHistoricalTables().get(i);
 
             if (isUpdate && !checkWastedVersioning(originalModifyRow, table)) {
                 continue;
@@ -887,7 +868,7 @@ public class HistoryPolicy implements Cloneable, Serializable {
 
         DataModifyQuery historyQuery = new DataModifyQuery();
         SQLUpdateStatement historyStatement = new SQLUpdateStatement();
-        DatabaseTable histTable = (DatabaseTable)getHistoricalTables().elementAt(0);
+        DatabaseTable histTable = getHistoricalTables().get(0);
 
         historyStatement.setTable(histTable);
         Expression whereClause = (Expression)originalStatement.getWhereClause().clone();

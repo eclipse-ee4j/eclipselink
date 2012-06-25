@@ -13,6 +13,8 @@
 package org.eclipse.persistence.internal.expressions;
 
 import java.util.*;
+
+import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.mappings.querykeys.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -67,7 +69,7 @@ public class ManualQueryKeyExpression extends QueryKeyExpression {
      * aggregate isn't participating (and even if it is, we can't
      * know which node it is, so *DO* use the aggregate's parents tables
      */
-    public Vector getOwnedTables() {
+    public List<DatabaseTable> getOwnedTables() {
         if (getDescriptor() == null) {
             return null;
         } else {

@@ -1973,7 +1973,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * INTERNAL:
      * Return the tables that this node owns for purposes of table aliasing.
      */
-    public Vector getOwnedTables() {
+    public List<DatabaseTable> getOwnedTables() {
         return null;
     }
 

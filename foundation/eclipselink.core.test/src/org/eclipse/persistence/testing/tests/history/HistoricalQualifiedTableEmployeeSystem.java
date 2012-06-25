@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.history;
 
+import java.util.List;
 import java.util.Vector;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
 import org.eclipse.persistence.testing.models.employee.relational.*;
@@ -43,7 +44,7 @@ public class HistoricalQualifiedTableEmployeeSystem extends EmployeeSystem {
 
         ManyToManyMapping mapping = (ManyToManyMapping)empDescriptor.getMappingForAttributeName("projects");
         String oldRelationTableName = mapping.getRelationTableName();
-        Vector oldHistoricalTableNames = mapping.getHistoryPolicy().getHistoryTableNames();
+        List oldHistoricalTableNames = mapping.getHistoryPolicy().getHistoryTableNames();
         mapping.getHistoryPolicy().setHistoricalTables(new Vector(1));
         for (int i = 0; i < oldHistoricalTableNames.size(); i++) {
             mapping.getHistoryPolicy().addHistoryTableName(user + "." + oldHistoricalTableNames.get(i));
@@ -64,7 +65,7 @@ public class HistoricalQualifiedTableEmployeeSystem extends EmployeeSystem {
 
         DirectCollectionMapping dcmapping = (DirectCollectionMapping)empDescriptor.getMappingForAttributeName("responsibilitiesList");
         String oldReferenceTableName = dcmapping.getReferenceTableName();
-        Vector oldDCHistoricalTableNames = dcmapping.getHistoryPolicy().getHistoryTableNames();
+        List oldDCHistoricalTableNames = dcmapping.getHistoryPolicy().getHistoryTableNames();
         dcmapping.getHistoryPolicy().setHistoricalTables(new Vector(1));
         for (int i = 0; i < oldDCHistoricalTableNames.size(); i++) {
             dcmapping.getHistoryPolicy().addHistoryTableName(user + "." + oldDCHistoricalTableNames.get(i));

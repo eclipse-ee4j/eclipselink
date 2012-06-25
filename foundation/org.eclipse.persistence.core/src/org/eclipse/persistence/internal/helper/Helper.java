@@ -673,6 +673,23 @@ public class Helper implements Serializable {
 
     }
 
+    /**
+      * Return a new List with no duplicated values.
+      */
+    public static List concatenateUniqueLists(List first, List second) {
+        List concatenation = new ArrayList(first.size() + second.size());
+        concatenation.addAll(first);
+
+        for (Object element : second) {
+            if (!concatenation.contains(element)) {
+                concatenation.add(element);
+            }
+        }
+
+        return concatenation;
+
+    }
+
     public static Vector concatenateVectors(Vector first, Vector second) {
         Vector concatenation;
 

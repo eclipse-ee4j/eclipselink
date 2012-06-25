@@ -276,7 +276,7 @@ public class FieldExpression extends DataExpression {
     public void validateNode() {
         DataExpression base = (DataExpression)getBaseExpression();
         if (getField().getTable().hasName()) {
-            Vector tables = base.getOwnedTables();
+            List<DatabaseTable> tables = base.getOwnedTables();
             if ((tables != null) && (!tables.contains((getField().getTable())))) {
                 throw QueryException.invalidTableForFieldInExpression(getField());
             }

@@ -602,15 +602,6 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      * INTERNAL:
      * Allows for subclasses to convert the attribute value.
      */
-    @Deprecated
-    public Object getAttributeValue(Object fieldValue, Session session) {
-        return getObjectValue(fieldValue, session);
-    }
-
-    /**
-     * INTERNAL:
-     * Allows for subclasses to convert the attribute value.
-     */
     public Object getObjectValue(Object fieldValue, Session session) {
         // PERF: Direct variable access.
         Object attributeValue = fieldValue;

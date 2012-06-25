@@ -14,6 +14,7 @@ package org.eclipse.persistence.internal.expressions;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.util.List;
 import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -133,7 +134,7 @@ public class MapEntryExpression extends QueryKeyExpression {
      * Exclude any tables defined by base.
      */
     @Override
-    public Vector getOwnedTables() {
+    public List<DatabaseTable> getOwnedTables() {
         return null;
     }
 

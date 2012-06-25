@@ -507,15 +507,15 @@ public abstract class ObjectExpression extends DataExpression {
      * Return any tables that are defined by this expression (and not its base).
      */
     @Override
-    public Vector getOwnedTables() {
+    public List<DatabaseTable> getOwnedTables() {
         ClassDescriptor descriptor = getDescriptor();
-        Vector tables = null;
+        List<DatabaseTable> tables = null;
         if (descriptor == null) {
             List additionalTables = getAdditionalTables();
             if (additionalTables == null) {
                 return null;
             } else {
-                return new Vector(additionalTables);
+                return new ArrayList(additionalTables);
             }
         } else if (descriptor.isAggregateDescriptor()) {
             return null;
@@ -529,7 +529,7 @@ public abstract class ObjectExpression extends DataExpression {
         List additionalTables = getAdditionalTables();
         if (additionalTables != null) {
             tables = new Vector(tables);
-            Helper.addAllUniqueToVector(tables, additionalTables);
+            Helper.addAllUniqueToList(tables, additionalTables);
             return tables;
         }
         return tables;

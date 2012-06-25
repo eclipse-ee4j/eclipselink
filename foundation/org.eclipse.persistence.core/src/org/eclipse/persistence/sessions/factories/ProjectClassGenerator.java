@@ -24,7 +24,6 @@ import org.eclipse.persistence.history.*;
 import org.eclipse.persistence.internal.descriptors.*;
 import org.eclipse.persistence.internal.expressions.*;
 import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.internal.history.*;
 import org.eclipse.persistence.internal.indirection.*;
 import org.eclipse.persistence.internal.expressions.ExpressionJavaPrinter;
 import org.eclipse.persistence.internal.queries.ReportItem;
@@ -560,9 +559,7 @@ public class ProjectClassGenerator {
         method.addLine("// History Policy");
 
         method.addLine("HistoryPolicy " + policyName + " = new HistoryPolicy();");
-        for (Enumeration enumtr = policy.getHistoricalTables().elements();
-                 enumtr.hasMoreElements();) {
-            HistoricalDatabaseTable table = (HistoricalDatabaseTable)enumtr.nextElement();
+        for (DatabaseTable table : policy.getHistoricalTables()) {
             String sourceName = null;
             if (table.getTableQualifier().equals("")) {
                 sourceName = table.getName();
@@ -572,15 +569,13 @@ public class ProjectClassGenerator {
             String historyName = table.getQualifiedName();
             method.addLine(policyName + ".addHistoryTableName(\"" + sourceName + "\", \"" + historyName + "\");");
         }
-        for (Enumeration enumtr = policy.getStartFields().elements(); enumtr.hasMoreElements();) {
-            DatabaseField field = (DatabaseField)enumtr.nextElement();
+        for (DatabaseField field : policy.getStartFields()) {
             method.addLine(policyName + ".addStartFieldName(\"" + field.getQualifiedName() + "\");");
 
             // Field classifications don't seem to be supported in workbench integration.
             //method.addLine(policyName + ".setStartFieldType(\"" + field.getQualifiedName() + "\", " + field.getType().getName() + ".class);");
         }
-        for (Enumeration enumtr = policy.getEndFields().elements(); enumtr.hasMoreElements();) {
-            DatabaseField field = (DatabaseField)enumtr.nextElement();
+        for (DatabaseField field : policy.getEndFields()) {
             method.addLine(policyName + ".addEndFieldName(\"" + field.getQualifiedName() + "\");");
             //method.addLine(policyName + ".setEndFieldType(\"" + field.getQualifiedName() + "\", " + field.getType().getName() + ".class);");
         }

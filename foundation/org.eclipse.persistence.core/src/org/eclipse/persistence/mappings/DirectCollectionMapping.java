@@ -3144,7 +3144,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
                 Expression temporalExpression = getHistoryPolicy().additionalHistoryExpression(builder, builder);
                 statement.setWhereClause(statement.getWhereClause().and(temporalExpression));
                 if (builder.hasAsOfClause()) {
-                    statement.getTables().set(0, (DatabaseTable)getHistoryPolicy().getHistoricalTables().elementAt(0));
+                    statement.getTables().set(0, getHistoryPolicy().getHistoricalTables().get(0));
                 }
             }
             statement.normalize(sourceQuery.getSession(), null);
