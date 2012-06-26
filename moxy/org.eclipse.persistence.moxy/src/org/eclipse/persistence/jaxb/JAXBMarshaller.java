@@ -517,7 +517,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
     	if(jaxbContext.getTypeMappingInfoToGeneratedType().size() > 0){
 	        Class generatedClass = jaxbContext.getTypeMappingInfoToGeneratedType().get(typeMappingInfo);
 	        if(generatedClass != null && object == null && wrapperElement != null) {
-            return wrapObjectInXMLRoot(wrapperElement, object);
+            return wrapObjectInXMLRoot(wrapperElement, object, typeMappingInfo);
 	        }
     	
 	        if (generatedClass != null && WrappedValue.class.isAssignableFrom(generatedClass)) {
@@ -546,10 +546,10 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             return xmlRoot;
 
         }
-        return wrapObjectInXMLRoot(wrapperElement, object);
+        return wrapObjectInXMLRoot(wrapperElement, object, typeMappingInfo);
     }
 
-    private XMLRoot wrapObjectInXMLRoot(JAXBElement wrapperElement, Object value) {
+    private XMLRoot wrapObjectInXMLRoot(JAXBElement wrapperElement, Object value, TypeMappingInfo typeMappingInfo) {
         XMLRoot xmlroot = new XMLRoot();
         Object objectValue = value;
         xmlroot.setObject(objectValue);
@@ -557,7 +557,9 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         xmlroot.setLocalName(qname.getLocalPart());
         xmlroot.setNamespaceURI(qname.getNamespaceURI());
         xmlroot.setDeclaredType(wrapperElement.getDeclaredType());
-        if(value != null) {
+        if(typeMappingInfo != null){
+        	xmlroot.setSchemaType(typeMappingInfo.getSchemaType());
+        } else if(value != null) {
             if (value.getClass() == ClassConstants.ABYTE || value.getClass() == ClassConstants.APBYTE || 
                     value.getClass().getCanonicalName().equals("javax.activation.DataHandler")) {
                 xmlroot.setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
