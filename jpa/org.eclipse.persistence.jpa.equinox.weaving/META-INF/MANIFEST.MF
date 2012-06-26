@@ -1,12 +1,12 @@
 Manifest-Version: 1.0
-Export-Package: org.eclipse.persistence.jpa.equinox.weaving;version="2.4.0";x-internal:=true
+Export-Package: org.eclipse.persistence.jpa.equinox.weaving;version="2.4.1";x-internal:=true
 Private-Package: .
 Bundle-Name: Dynamic Weaving Fragment for Equinox
 Created-By: 1.6.0_26 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Vendor: Eclipse.org - EclipseLink Project
 Fragment-Host: org.eclipse.osgi;bundle-version="3.4.0";extension:=framework
-Bundle-Version: 2.4.0.qualifier
+Bundle-Version: 2.4.1.qualifier
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.eclipse.persistence.jpa.equinox.weaving
 
