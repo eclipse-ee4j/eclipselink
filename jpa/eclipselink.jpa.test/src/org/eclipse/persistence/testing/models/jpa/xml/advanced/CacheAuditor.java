@@ -30,6 +30,8 @@ public class CacheAuditor extends CacheInterceptor {
     protected boolean shouldThrow;
     
     protected int accessCount;
+    
+    protected Boolean lastAcquireNoWait = null;
 
     public CacheAuditor(IdentityMap targetIdentityMap, AbstractSession interceptedSession) {
         super(targetIdentityMap, interceptedSession);
@@ -76,6 +78,15 @@ public class CacheAuditor extends CacheInterceptor {
     }
 
     /* (non-Javadoc)
+     * @see org.eclipse.persistence.sessions.interceptors.CacheInterceptor#acquireLockNoWait(java.lang.Object, boolean)
+     */
+    @Override
+    public CacheKey acquireLockNoWait(Object primaryKey, boolean forMerge) {
+        this.lastAcquireNoWait = forMerge;
+        return super.acquireLockNoWait(primaryKey, forMerge);
+    }
+
+    /* (non-Javadoc)
      * @see org.eclipse.persistence.sessions.interceptors.CacheInterceptor#getCacheKey(java.lang.Object, boolean)
      */
     @Override
@@ -112,10 +123,18 @@ public class CacheAuditor extends CacheInterceptor {
     }
 
     /**
+     * @return the lastAcquireNoWait
+     */
+    public Boolean getLastAcquireNoWait() {
+        return lastAcquireNoWait;
+    }
+
+    /**
      * @param accessCount the accessCount to set
      */
     public void resetAccessCount() {
         this.accessCount = 0;
+        this.lastAcquireNoWait = null;
     }
 
     @Override

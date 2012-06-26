@@ -63,6 +63,7 @@ public class AdvancedJunitTest extends JUnitTestCase {
             suite.addTest(new AdvancedJunitTest("testForRedirectorsAndInterceptors", persistenceUnit));
             suite.addTest(new AdvancedJunitTest("testForExceptionsFromInterceptors", persistenceUnit));
             suite.addTest(new AdvancedJunitTest("testCacheAccessCount", persistenceUnit));
+            suite.addTest(new AdvancedJunitTest("testCacheAccessAppendLock", persistenceUnit));
         }
         
         return suite;
@@ -211,6 +212,36 @@ public class AdvancedJunitTest extends JUnitTestCase {
                 rollbackTransaction(em);
             }
             
+            closeEntityManager(em);
+        }
+    }
+
+    public void testCacheAccessAppendLock() {
+        ClassDescriptor descriptor = getServerSession(m_persistenceUnit).getDescriptor(Address.class);
+        EntityManager em = createEntityManager(m_persistenceUnit);
+        beginTransaction(em);
+        Employee emp = new Employee();
+        em.persist(emp);
+        Address address = new Address("SomeStreet", "SomeCity", "SomeProvince", "SomeCountry", "S0M1O1");
+        em.persist(address);
+        Address address2 = new Address("SomeStreet2", "SomeCity2", "SomeProvince2", "SomeCountry2", "S0M2O2");
+        em.persist(address2);
+        emp.setAddress(address);
+        commitTransaction(em);
+        closeEntityManager(em);
+        em = createEntityManager(m_persistenceUnit);
+        CacheAuditor interceptor = (CacheAuditor) getServerSession(m_persistenceUnit).getIdentityMapAccessorInstance().getIdentityMap(descriptor);
+        interceptor.resetAccessCount();
+        try{
+            emp = em.find(Employee.class, emp.getId());
+            address2 = em.find(Address.class, address2.getId());
+            interceptor.remove(address2.getId(), address2);
+            beginTransaction(em);
+            emp.setAddress(address2);
+            commitTransaction(em);
+            assertTrue("AppendLock identified as merge", interceptor.getLastAcquireNoWait() != null && !interceptor.getLastAcquireNoWait());
+        }finally{
+            interceptor.resetAccessCount();
             closeEntityManager(em);
         }
     }
