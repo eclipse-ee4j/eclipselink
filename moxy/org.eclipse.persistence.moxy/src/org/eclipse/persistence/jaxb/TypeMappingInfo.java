@@ -18,6 +18,7 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.oxm.XMLConstants;
+import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.w3c.dom.Element;
 
 /**
@@ -35,6 +36,7 @@ public class TypeMappingInfo {
     private Annotation[] annotations;
     private Element xmlElement;
     private boolean nillable;
+    private XMLDescriptor xmlDescriptor;
   
     private QName schemaType;
 
@@ -116,6 +118,24 @@ public class TypeMappingInfo {
     public enum ElementScope {
         Global,
         Local;
+    }
+
+    /**
+     * INTERNAL
+     * Returns the XMLDescriptor associated with this TypeMappingInfo.  This is
+     * set when the metadata is initialized.
+     */
+    public XMLDescriptor getXmlDescriptor() {
+        return xmlDescriptor;
+    }
+
+    /**
+     * INTERNAL
+     * Sets the XMLDescriptor associated with this TypeMappingInfo.  This is
+     * set when the metadata is initialized.
+     */
+    public void setXmlDescriptor(XMLDescriptor xmlDescriptor) {
+        this.xmlDescriptor = xmlDescriptor;
     }
 
     /**

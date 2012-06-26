@@ -42,7 +42,10 @@ import javax.xml.transform.Source;
 import javax.xml.validation.Schema;
 
 import org.w3c.dom.Node;
+import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
 import org.eclipse.persistence.oxm.IDResolver;
 import org.eclipse.persistence.oxm.MediaType;
@@ -52,6 +55,7 @@ import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
+import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
@@ -61,6 +65,7 @@ import org.eclipse.persistence.internal.oxm.record.XMLEventReaderInputSource;
 import org.eclipse.persistence.internal.oxm.record.XMLEventReaderReader;
 import org.eclipse.persistence.internal.oxm.record.XMLStreamReaderInputSource;
 import org.eclipse.persistence.internal.oxm.record.XMLStreamReaderReader;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jaxb.JAXBErrorHandler;
 import org.eclipse.persistence.jaxb.JAXBUnmarshallerHandler;
 import org.eclipse.persistence.jaxb.JAXBContext.RootLevelXmlAdapter;
@@ -301,7 +306,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
         }
     }
 
-    public JAXBElement unmarshal(Source source, Class javaClass) throws JAXBException {
+    public <T> JAXBElement<T> unmarshal(Source source, Class<T> javaClass) throws JAXBException {
         if(null == javaClass) {
             throw new IllegalArgumentException();
         }
@@ -404,15 +409,21 @@ public class JAXBUnmarshaller implements Unmarshaller {
         }
     }
 
-    public JAXBElement unmarshal(XMLStreamReader streamReader, Class javaClass) throws JAXBException {
+    public <T> JAXBElement<T> unmarshal(XMLStreamReader streamReader, Class<T> javaClass) throws JAXBException {
         if(null == streamReader || null == javaClass) {
             throw new IllegalArgumentException();
         }
         try {
-            Class classToUnmarshalTo = getClassToUnmarshalTo(javaClass);
             XMLStreamReaderReader staxReader = new XMLStreamReaderReader(xmlUnmarshaller);
             staxReader.setErrorHandler(xmlUnmarshaller.getErrorHandler());
             XMLStreamReaderInputSource inputSource = new XMLStreamReaderInputSource(streamReader);
+            if(XMLConversionManager.getDefaultJavaTypes().get(javaClass) != null ||ClassConstants.XML_GREGORIAN_CALENDAR.isAssignableFrom(javaClass) ||ClassConstants.DURATION.isAssignableFrom(javaClass)) {
+                PrimitiveContentHandler<T> primitiveContentHandler = new PrimitiveContentHandler<T>(javaClass);
+                staxReader.setContentHandler(primitiveContentHandler);
+                staxReader.parse(inputSource);
+                return primitiveContentHandler.getJaxbElement();
+            }
+            Class classToUnmarshalTo = getClassToUnmarshalTo(javaClass);
             JAXBElement unmarshalled = buildJAXBElementFromObject(xmlUnmarshaller.unmarshal(staxReader, inputSource, classToUnmarshalTo), javaClass);
 
             if(classToUnmarshalTo != javaClass){
@@ -422,6 +433,8 @@ public class JAXBUnmarshaller implements Unmarshaller {
             return unmarshalled;
         } catch (XMLMarshalException xmlMarshalException) {
             throw handleXMLMarshalException(xmlMarshalException);
+        } catch (Exception e) {
+            throw new JAXBException(e);
         }
     }
 
@@ -464,6 +477,24 @@ public class JAXBUnmarshaller implements Unmarshaller {
      */
     public JAXBElement unmarshal(XMLStreamReader streamReader, TypeMappingInfo type) throws JAXBException {
         try {
+            XMLDescriptor xmlDescriptor = type.getXmlDescriptor();
+            if(null != xmlDescriptor && null == getSchema()) {
+                UnmarshalRecord unmarshalRecord = (UnmarshalRecord) xmlDescriptor.getObjectBuilder().createRecord((AbstractSession) xmlUnmarshaller.getXMLContext().getSession(0));
+                XMLStreamReaderReader staxReader = new XMLStreamReaderReader(xmlUnmarshaller);
+                unmarshalRecord.setUnmarshaller(xmlUnmarshaller);
+                unmarshalRecord.setXMLReader(staxReader);
+                staxReader.setErrorHandler(xmlUnmarshaller.getErrorHandler());
+                XMLStreamReaderInputSource inputSource = new XMLStreamReaderInputSource(streamReader);
+                staxReader.setContentHandler(unmarshalRecord);
+                staxReader.parse(inputSource);
+                Object value = null;
+                if(unmarshalRecord.isNil()) {
+                    value = null;
+                } else {
+                    value = unmarshalRecord.getCurrentObject();
+                }
+                return new JAXBElement(new QName(unmarshalRecord.getRootElementNamespaceUri(), unmarshalRecord.getLocalName()), (Class) type.getType(), value);
+            }
             if(jaxbContext.getTypeMappingInfoToGeneratedType() == null) {
                 return unmarshal(streamReader, type.getType());
             }
@@ -512,6 +543,8 @@ public class JAXBUnmarshaller implements Unmarshaller {
             return null;
         } catch (XMLMarshalException xmlMarshalException) {
             throw handleXMLMarshalException(xmlMarshalException);
+        } catch (SAXException e) {
+            throw new JAXBException(e);
         }
     }
 
@@ -530,7 +563,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
         }
     }
 
-    public JAXBElement unmarshal(XMLEventReader eventReader, Class javaClass) throws JAXBException {
+    public <T> JAXBElement<T> unmarshal(XMLEventReader eventReader, Class<T> javaClass) throws JAXBException {
         if(null == eventReader || null == javaClass) {
             throw new IllegalArgumentException();
         }
@@ -977,6 +1010,82 @@ public class JAXBUnmarshaller implements Unmarshaller {
      */
     public void setIDResolver(IDResolver idResolver) {
         getXMLUnmarshaller().setIDResolver(idResolver);
+    }
+
+    private static class PrimitiveContentHandler<T> extends DefaultHandler {
+
+        private Class<T> clazz;
+        private JAXBElement<T> jaxbElement;
+        private Map<String, String> namespaces = new HashMap<String, String>(3);
+        private StringBuilder stringBuilder = new StringBuilder();
+        private String xsiType;
+        private boolean xsiNil;
+
+        public PrimitiveContentHandler(Class<T> clazz) {
+            this.clazz = clazz;
+        }
+
+        public void characters(char[] ch, int start, int length) throws SAXException {
+            stringBuilder.append(ch, start, length);
+        }
+
+        @Override
+        public void endElement(String namespaceURI, String localName, String qualifiedName) throws SAXException {
+            XMLConversionManager xcm = XMLConversionManager.getDefaultXMLManager();
+            T value;
+            if(xsiNil) {
+                value = null;
+            } else if(null == xsiType) {
+                if (clazz == ClassConstants.ABYTE || clazz == ClassConstants.APBYTE || clazz.getCanonicalName().equals("javax.activation.DataHandler")) {
+                    value = (T) xcm.convertObject(stringBuilder.toString(), clazz, XMLConstants.BASE_64_BINARY_QNAME);
+                } else {
+                    value = (T) xcm.convertObject(stringBuilder.toString(), clazz);
+                }
+            } else {
+                int colonIndex = xsiType.indexOf(':');
+                
+                String typePrefix;
+                String typeName;
+                if(colonIndex == -1) {
+                    typePrefix = XMLConstants.EMPTY_STRING;
+                    typeName = xsiType;
+                } else {
+                    typePrefix = xsiType.substring(0, colonIndex);
+                    typeName = xsiType.substring(colonIndex + 1);
+                }
+                String typeNamespace = namespaces.get(typePrefix);
+                QName typeQName = new QName(typeNamespace, typeName);
+                value = (T) xcm.convertObject(stringBuilder.toString(), clazz, typeQName);
+                
+            }
+
+            QName qName;
+            if(namespaceURI != null && namespaceURI.length() == 0) {
+                qName = new QName(qualifiedName);
+            } else {
+                qName = new QName(namespaceURI, localName);
+            }
+            jaxbElement = new JAXBElement<T>(qName, clazz, value);
+        }
+
+        public JAXBElement<T> getJaxbElement() {
+            return jaxbElement;
+        }
+
+        @Override
+        public void startElement(String namespaceURI, String localName, String qualifiedName, Attributes attributes) throws SAXException {
+            xsiNil = attributes.getValue(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_NIL_ATTRIBUTE) != null;
+            if(!xsiNil) {
+                xsiType = attributes.getValue(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
+            }
+        }
+
+        @Override
+        public void startPrefixMapping(String prefix, String uri)
+                throws SAXException {
+            namespaces.put(prefix, uri);
+        }
+
     }
 
 }
