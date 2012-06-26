@@ -242,9 +242,14 @@
         <ant antfile="${autobld.file}" dir="${build.root.dir}" target="test-nightly"/>
     </target>
 
-    <target name="oracle" depends="properties-init" description="Trigger the oracle automated build">
-        <echo message="'oracle' target: Calling 'build-oracle' target in '${build.root.dir}/${autobld.file}'"/>
-        <ant antfile="${autobld.file}" dir="${build.root.dir}" target="build-oracle"/>
+    <target name="oracle-ext" depends="properties-init" description="Trigger the oracle automated build">
+        <echo message="'oracle-ext' target: Calling 'build-ora-extension' target in '${build.root.dir}/${autobld.file}'"/>
+        <ant antfile="${autobld.file}" dir="${build.root.dir}" target="build-ora-extension"/>
+    </target>
+
+    <target name="oracle-nosql" depends="properties-init" description="Trigger the oracle automated build">
+        <echo message="'oracle-nosql' target: Calling 'build-ora-nosql' target in '${build.root.dir}/${autobld.file}'"/>
+        <ant antfile="${autobld.file}" dir="${build.root.dir}" target="build-ora-nosql"/>
     </target>
 
     <target name="cb" if="_DoBuild" depends="query-svn-changed, get-src, build-aborted" description="Trigger an automated 'continuous build' (compile and run short verify)">

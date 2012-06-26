@@ -79,6 +79,10 @@
             depends="init, build-oracle-extension, publish-oracle-extension"
     />
 
+    <target name="build-ora-nosql" description="Placeholder: has to be here due to changes in bootstrap"
+            depends="init"
+    />
+
     <target name="init" depends="pre-init, common-init"/>
 
     <target name="get-svn-rev" unless="svn.revision">
@@ -328,6 +332,10 @@
         <ant antfile="build.xml" dir="${build.root.dir}" target="build-oracle-extension"/>
     </target>
 
+    <target name="build-oracle-nosql">
+        <!-- Do Nothing placeholder: Is here in case it ever gets called from bootstrap -->
+    </target>
+
     <target name="build-no-javadoc" depends="get-dependencies">
         <ant antfile="build.xml" dir="${build.root.dir}" target="build"/>
     </target>
@@ -485,6 +493,10 @@
             <arg value="${build.root.dir}/foundation/plugins/org.eclipse.persistence.oracle.jar"/>
             <arg value="${build.root.dir}/foundation/plugins/org.eclipse.persistence.oracle.source.jar"/>
         </exec>
+    </target>
+
+    <target name="publish-oracle-nosql">
+        <!-- Another placeholder to prevent broken automation -->
     </target>
 
     <target name="fix-permission">
