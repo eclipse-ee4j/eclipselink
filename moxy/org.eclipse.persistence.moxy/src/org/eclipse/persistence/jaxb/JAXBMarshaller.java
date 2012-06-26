@@ -430,15 +430,19 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
                 element = (JAXBElement) object;
                 value = element.getValue();
             }
-            RootLevelXmlAdapter adapter = jaxbContext.getTypeMappingInfoToJavaTypeAdapters().get(type);
-            if (adapter != null) {
-                try {
-                    value = adapter.getXmlAdapter().marshal(value);
-                } catch (Exception ex) {
-                    throw new JAXBException(XMLMarshalException.marshalException(ex));
-                }
+
+            if(jaxbContext.getTypeMappingInfoToJavaTypeAdapters().size() > 0){
+                RootLevelXmlAdapter adapter = jaxbContext.getTypeMappingInfoToJavaTypeAdapters().get(type);
+           
+	            if (adapter != null) {
+	                try {
+	                    value = adapter.getXmlAdapter().marshal(value);
+	                } catch (Exception ex) {
+	                    throw new JAXBException(XMLMarshalException.marshalException(ex));
+	                }
+	            }
             }
-            value = wrapObject(value, element, type);
+            value = wrapObject(value, element, type);            
             marshal(value, result);
         }
     }
@@ -493,14 +497,15 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
                 element = (JAXBElement) object;
                 value = element.getValue();
             }
-
-            RootLevelXmlAdapter adapter = jaxbContext.getTypeMappingInfoToJavaTypeAdapters().get(type);
-            if (adapter != null) {
-                try {
-                    value = adapter.getXmlAdapter().marshal(value);
-                } catch (Exception ex) {
-                    throw new JAXBException(XMLMarshalException.marshalException(ex));
-                }
+            if(jaxbContext.getTypeMappingInfoToJavaTypeAdapters().size() > 0){
+                RootLevelXmlAdapter adapter = jaxbContext.getTypeMappingInfoToJavaTypeAdapters().get(type);
+	            if (adapter != null) {
+	                try {
+	                    value = adapter.getXmlAdapter().marshal(value);
+	                } catch (Exception ex) {
+	                    throw new JAXBException(XMLMarshalException.marshalException(ex));
+	                }
+	            }
             }
 
             value = wrapObject(value, element, type);
@@ -509,23 +514,25 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
     }
 
     private Object wrapObject(Object object, JAXBElement wrapperElement, TypeMappingInfo typeMappingInfo) {
-    	
-        Class generatedClass = jaxbContext.getTypeMappingInfoToGeneratedType().get(typeMappingInfo);
-        if(generatedClass != null && object == null && wrapperElement != null) {
+    	if(jaxbContext.getTypeMappingInfoToGeneratedType().size() > 0){
+	        Class generatedClass = jaxbContext.getTypeMappingInfoToGeneratedType().get(typeMappingInfo);
+	        if(generatedClass != null && object == null && wrapperElement != null) {
             return wrapObjectInXMLRoot(wrapperElement, object);
-        }
-        if (generatedClass != null && WrappedValue.class.isAssignableFrom(generatedClass)) {
-            ClassDescriptor desc = xmlMarshaller.getXMLContext().getSession(generatedClass).getDescriptor(generatedClass);
-            Object newObject = desc.getInstantiationPolicy().buildNewInstance();
-            ((WrappedValue) newObject).setValue(object);
-            object = newObject;
-        } else if (generatedClass != null) {
-            // should be a many value
-            ClassDescriptor desc = xmlMarshaller.getXMLContext().getSession(generatedClass).getDescriptor(generatedClass);
-            Object newObject = desc.getInstantiationPolicy().buildNewInstance();
-            ((ManyValue) newObject).setItem(object);
-            object = newObject;
-        }
+	        }
+    	
+	        if (generatedClass != null && WrappedValue.class.isAssignableFrom(generatedClass)) {
+	            ClassDescriptor desc = xmlMarshaller.getXMLContext().getSession(generatedClass).getDescriptor(generatedClass);
+	            Object newObject = desc.getInstantiationPolicy().buildNewInstance();
+	            ((WrappedValue) newObject).setValue(object);
+	            object = newObject;
+	        } else if (generatedClass != null) {
+	            // should be a many value
+	            ClassDescriptor desc = xmlMarshaller.getXMLContext().getSession(generatedClass).getDescriptor(generatedClass);
+	            Object newObject = desc.getInstantiationPolicy().buildNewInstance();
+	            ((ManyValue) newObject).setItem(object);
+	            object = newObject;
+	        }
+    	}
 
         if (null == wrapperElement) {
             XMLRoot xmlRoot = new XMLRoot();

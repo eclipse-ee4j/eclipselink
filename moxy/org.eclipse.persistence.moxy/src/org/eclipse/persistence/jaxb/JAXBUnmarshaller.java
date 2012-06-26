@@ -878,7 +878,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
         XPathQName xpathQName = new XPathQName(xmlRoot.getNamespaceURI(), xmlRoot.getLocalName(), xmlUnmarshaller.getMediaType() == MediaType.APPLICATION_XML);
     
         Map<QName, Class> qNamesToDeclaredClasses = jaxbContext.getQNamesToDeclaredClasses();
-        if(qNamesToDeclaredClasses != null){
+        if(qNamesToDeclaredClasses != null && qNamesToDeclaredClasses.size() >0){
         	Class declaredClass = qNamesToDeclaredClasses.get(qname);    
             if(declaredClass != null){
                 return createJAXBElement(qname, declaredClass, value);

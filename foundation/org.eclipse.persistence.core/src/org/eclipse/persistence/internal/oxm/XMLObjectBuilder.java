@@ -898,26 +898,23 @@ public class XMLObjectBuilder extends ObjectBuilder {
 
               XMLSchemaReference xmlRef = xmlDescriptor.getSchemaReference();
               if (xmlRef != null) {
-            	   if(leafType == null && xmlRef.getType() == XMLSchemaReference.ELEMENT ){
-            		   return false;
-            	   }
-                   if(leafType == null && referenceDescriptor == null){
-                       QName typeValueQName = getTypeValueToWriteAsQName(record, xmlDescriptor, xmlRef, addToNamespaceResolver);
-                       writeXsiTypeAttribute(xmlDescriptor, record, typeValueQName, addToNamespaceResolver);
-                       return true;
-                   }
-
-                  if (((xmlRef.getType() == XMLSchemaReference.COMPLEX_TYPE) || (xmlRef.getType() == XMLSchemaReference.SIMPLE_TYPE)) && xmlRef.getSchemaContext()!=null && xmlRef.isGlobalDefinition()) {
-                      if(leafType != null){
-                    	QName ctxQName = xmlRef.getSchemaContextAsQName(xmlDescriptor.getNamespaceResolver());
-                        if (!ctxQName.equals(leafType)) {
-                            QName typeValueQName = getTypeValueToWriteAsQName(record, xmlDescriptor, xmlRef, addToNamespaceResolver);
-                            writeXsiTypeAttribute(xmlDescriptor, record, typeValueQName, addToNamespaceResolver);
+            	   if(leafType == null){
+            		   if(xmlRef.getType() == XMLSchemaReference.ELEMENT){
+            			   return false;
+            		   }
+            		   if(referenceDescriptor == null){
+            			   QName typeValueQName = getTypeValueToWriteAsQName(record, xmlDescriptor, xmlRef, addToNamespaceResolver);
+                           writeXsiTypeAttribute(xmlDescriptor, record, typeValueQName, addToNamespaceResolver);
                            return true;
-                        }
-                      }
-                  }
-
+            		   }
+            	   }else if (((xmlRef.getType() == XMLSchemaReference.COMPLEX_TYPE) || (xmlRef.getType() == XMLSchemaReference.SIMPLE_TYPE)) && xmlRef.getSchemaContext()!=null && xmlRef.isGlobalDefinition()) {
+            		   QName ctxQName = xmlRef.getSchemaContextAsQName(xmlDescriptor.getNamespaceResolver());
+                       if (!ctxQName.equals(leafType)) {
+                           QName typeValueQName = getTypeValueToWriteAsQName(record, xmlDescriptor, xmlRef, addToNamespaceResolver);
+                           writeXsiTypeAttribute(xmlDescriptor, record, typeValueQName, addToNamespaceResolver);
+                          return true;
+                       }            		   
+            	   }            	  
               }
           }
 
