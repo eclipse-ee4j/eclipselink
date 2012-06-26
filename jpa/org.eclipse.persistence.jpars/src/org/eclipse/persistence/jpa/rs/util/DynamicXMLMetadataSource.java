@@ -128,7 +128,7 @@ public class DynamicXMLMetadataSource implements MetadataSource {
                 virtualAccessMethods.setGetMethod(jpaAccessor.getGetMethodName());
                 virtualAccessMethods.setSetMethod(jpaAccessor.getSetMethodName());
                 owningType.setXmlVirtualAccessMethods(virtualAccessMethods);
-            } else if (!owningType.getXmlVirtualAccessMethods().getGetMethod().equals(jpaAccessor.getGetMethod())){
+            } else if (!owningType.getXmlVirtualAccessMethods().getGetMethod().equals(jpaAccessor.getGetMethodName())){
                 XmlAccessMethods accessMethods = new XmlAccessMethods();
                 accessMethods.setGetMethod(jpaAccessor.getGetMethodName());
                 accessMethods.setSetMethod(jpaAccessor.getSetMethodName());

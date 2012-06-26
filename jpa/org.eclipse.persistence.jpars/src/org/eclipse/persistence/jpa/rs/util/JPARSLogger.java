@@ -19,7 +19,7 @@ import org.eclipse.persistence.jpa.rs.logging.LoggingLocalization;
 
 public class JPARSLogger {
     
-    static final Logger logger = Logger.getLogger("org.eclipse.persistence.jpars");    
+    static final Logger logger = Logger.getLogger("org.eclipse.persistence.jpars");
     
     /**
      * INTERNAL:
