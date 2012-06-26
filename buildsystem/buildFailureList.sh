@@ -12,8 +12,7 @@ curmonth=`date +%m`
 curdate=`date +%y%m`
 curdir=`pwd`
 
-if [ "${curmonth}" -eq 1 ]
-then
+if [ "${curmonth}" -eq 1 ] ; then
    prevmonth=12
    decyear=true
 else
@@ -21,8 +20,7 @@ else
 fi
 #echo "prevmonth=${prevmonth}"
 
-if [ "${decyear}" = "true" ]
-then
+if [ "${decyear}" = "true" ] ; then
     prevyear=`expr "${curyear}" - 1`
 else
     prevyear=${curyear}
@@ -105,7 +103,7 @@ for file in `ls | grep log | sort -t_ -k3 -r` ; do
                 echo "            <td align=\"center\"> <a href=\"${NightlyBuildyURL}\"> Results on Nightly Site </a> </td>" >> $tmp/index.xml
                 echo "            <td align=\"center\"> N/A </td>"                                                           >> $tmp/index.xml
             else
-                # Red to indicate a problem 
+                # Red to indicate a problem
                 echo "            <font color=\"#cc0000\">"                                                     >> $tmp/index.xml
                 echo "                <td align=\"center\"> Not Available </td>"                                >> $tmp/index.xml
                 echo "                <td align=\"center\"> N/A </td>"                                          >> $tmp/index.xml
