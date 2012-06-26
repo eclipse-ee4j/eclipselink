@@ -99,7 +99,11 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
      */
     @Override
     public Object getFromIdentityMapWithDeferredLock(Object primaryKey, Class theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
-        return super.getFromIdentityMapWithDeferredLock(primaryKey, theClass, true, descriptor);
+        Object objectFromCache = super.getFromIdentityMapWithDeferredLock(primaryKey, theClass, true, descriptor);
+        if (objectFromCache != null){
+            return objectFromCache;
+        }
+        return getAndCloneCacheKeyFromParent(primaryKey, null, theClass, shouldReturnInvalidatedObjects, descriptor);
     }
 
     /**

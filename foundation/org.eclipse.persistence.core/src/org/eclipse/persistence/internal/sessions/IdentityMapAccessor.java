@@ -71,8 +71,8 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Deferred lock the identity map for the object, this is used for avoiding deadlock
      * The return cacheKey should be used to release the deferred lock.
      */
-    public CacheKey acquireDeferredLock(Object primarKey, Class javaClass, ClassDescriptor descriptor) {
-        return getIdentityMapManager().acquireDeferredLock(primarKey, javaClass, descriptor);
+    public CacheKey acquireDeferredLock(Object primarKey, Class javaClass, ClassDescriptor descriptor, boolean isCacheCheckComplete) {
+        return getIdentityMapManager().acquireDeferredLock(primarKey, javaClass, descriptor, isCacheCheckComplete);
     }
 
     /**
@@ -80,8 +80,8 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Lock the identity map for the object, this must be done when building objects.
      * The return cacheKey should be used to release the lock.
      */
-    public CacheKey acquireLock(Object primarKey, Class javaClass, ClassDescriptor descriptor) {
-        return acquireLock(primarKey, javaClass, false, descriptor);
+    public CacheKey acquireLock(Object primarKey, Class javaClass, ClassDescriptor descriptor, boolean isCacheCheckComplete) {
+        return acquireLock(primarKey, javaClass, false, descriptor, isCacheCheckComplete);
     }
 
     /**
@@ -89,8 +89,8 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Provides access for setting a concurrency lock on an object in the IdentityMap.
      * Called with true from the merge process, if true then the refresh will not refresh the object.
      */
-    public CacheKey acquireLock(Object primaryKey, Class domainClass, boolean forMerge, ClassDescriptor descriptor) {
-        return getIdentityMapManager().acquireLock(primaryKey, domainClass, forMerge, descriptor);
+    public CacheKey acquireLock(Object primaryKey, Class domainClass, boolean forMerge, ClassDescriptor descriptor, boolean isCacheCheckComplete) {
+        return getIdentityMapManager().acquireLock(primaryKey, domainClass, forMerge, descriptor, isCacheCheckComplete);
     }
 
     /**
@@ -416,6 +416,15 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      */
     public Object getFromLocalIdentityMap(Object primaryKey, Class theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor) {
         return getIdentityMapManager().getFromIdentityMap(primaryKey, theClass, shouldReturnInvalidatedObjects, descriptor);
+    }
+
+    /**
+     * INTERNAL:
+     * Return the object from the local identity map with the primary and class.
+     * This avoids checking the parent cache for the unit of work.
+     */
+    public Object getFromLocalIdentityMapWithDeferredLock(Object primaryKey, Class theClass, boolean shouldReturnInvalidatedObjects, ClassDescriptor descriptor){
+        return getIdentityMapManager().getFromIdentityMapWithDeferredLock(primaryKey, theClass, shouldReturnInvalidatedObjects, descriptor);
     }
 
     /**

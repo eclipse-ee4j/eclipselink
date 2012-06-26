@@ -650,7 +650,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
                                 pk.set(x, getUnmarshaller().getXMLContext().getValueByXPath(currentObject, pkField.getXPath(), pkField.getNamespaceResolver(), Object.class));
                             }
                         }
-                        CacheKey key = session.getIdentityMapAccessorInstance().acquireDeferredLock(pk, xmlDescriptor.getJavaClass(), xmlDescriptor);
+                        CacheKey key = session.getIdentityMapAccessorInstance().acquireDeferredLock(pk, xmlDescriptor.getJavaClass(), xmlDescriptor, false);
                         key.setRecord(this);
                         key.setObject(currentObject);
                         key.releaseDeferredLock();

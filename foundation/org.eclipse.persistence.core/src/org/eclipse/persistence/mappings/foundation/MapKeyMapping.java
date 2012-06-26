@@ -83,7 +83,7 @@ public interface MapKeyMapping extends MapComponentMapping {
      * @param isExisting
      * @return
      */
-    public Object buildElementClone(Object element, Object parent, CacheKey cacheKey, Integer refreshCascade, AbstractSession cloningSession, boolean isExisting);
+    public Object buildElementClone(Object element, Object parent, CacheKey cacheKey, Integer refreshCascade, AbstractSession cloningSession, boolean isExisting, boolean isFromSharedCache);
 
     /**
      * INTERNAL:

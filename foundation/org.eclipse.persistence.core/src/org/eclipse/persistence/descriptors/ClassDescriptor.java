@@ -282,6 +282,12 @@ public class ClassDescriptor implements Cloneable, Serializable {
     protected List<AttributeAccessor> accessorTree;
     
     /**
+     * This flag controls if a UOW should acquire locks for clone or simple clone the instance passed to registerExistingObject.  If the IdentityMap type does not
+     * have concurrent access this can save a return to the identity map for cloning.
+     */
+    protected boolean shouldLockForClone = true;
+
+    /**
      * PUBLIC:
      * Return a new descriptor.
      */
@@ -3526,6 +3532,15 @@ public class ClassDescriptor implements Cloneable, Serializable {
     }
 
     /**
+     * ADVANCED:
+     * When set to false, this setting will allow the UOW to avoid locking the shared cache instance in order to perform a clone.
+     * Caution should be taken as setting this to false may allow cloning of partial updates
+     */
+    public boolean shouldLockForClone() {
+        return this.shouldLockForClone;
+    }
+
+    /**
      * INTERNAL:
      * Return if change sets are required for new objects.
      */
@@ -4962,6 +4977,15 @@ public class ClassDescriptor implements Cloneable, Serializable {
      */
     public void setShouldDisableCacheHitsOnRemote(boolean shouldDisableCacheHitsOnRemote) {
         getCachePolicy().setShouldDisableCacheHitsOnRemote(shouldDisableCacheHitsOnRemote);
+    }
+
+    /**
+     * ADVANCED:
+     * When set to false, this setting will allow the UOW to avoid locking the shared cache instance in order to perform a clone.
+     * Caution should be taken as setting this to false may allow cloning of partial updates
+     */
+     public void setShouldLockForClone(boolean shouldLockForClone) {
+        this.shouldLockForClone = shouldLockForClone;
     }
 
     /**

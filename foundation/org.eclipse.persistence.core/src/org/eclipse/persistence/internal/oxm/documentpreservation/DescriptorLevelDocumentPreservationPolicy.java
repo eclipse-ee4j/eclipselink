@@ -70,7 +70,7 @@ public class DescriptorLevelDocumentPreservationPolicy extends DocumentPreservat
             if ((pk == null) || (((CacheId)pk).getPrimaryKey().length == 0)) {
                 pk = new CacheId(new Object[]{ new WeakObjectWrapper(obj) });
             }
-            CacheKey key = session.getIdentityMapAccessorInstance().acquireDeferredLock(pk, xmlDescriptor.getJavaClass(), xmlDescriptor);
+            CacheKey key = session.getIdentityMapAccessorInstance().acquireDeferredLock(pk, xmlDescriptor.getJavaClass(), xmlDescriptor, false);
             if ((xmlDescriptor).shouldPreserveDocument()) {
                 key.setRecord(row);
             }

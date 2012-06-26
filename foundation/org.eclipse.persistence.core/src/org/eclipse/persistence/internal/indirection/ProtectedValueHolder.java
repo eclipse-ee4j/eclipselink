@@ -48,7 +48,7 @@ public class ProtectedValueHolder extends DatabaseValueHolder implements Wrappin
         if (wrappedValueHolder instanceof QueryBasedValueHolder){
             refreshCascade = ((QueryBasedValueHolder)getWrappedValueHolder()).getRefreshCascadePolicy();
         }
-        return mapping.buildCloneForPartObject(this.wrappedValueHolder.getValue(),null, null, null, this.session, refreshCascade, true);
+        return mapping.buildCloneForPartObject(this.wrappedValueHolder.getValue(),null, null, null, this.session, refreshCascade, true, true);
     }
 
     @Override

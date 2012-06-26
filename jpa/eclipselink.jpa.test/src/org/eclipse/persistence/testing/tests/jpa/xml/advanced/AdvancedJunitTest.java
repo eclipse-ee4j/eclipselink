@@ -62,6 +62,7 @@ public class AdvancedJunitTest extends JUnitTestCase {
         if (persistenceUnit.equals("extended-advanced")) {            
             suite.addTest(new AdvancedJunitTest("testForRedirectorsAndInterceptors", persistenceUnit));
             suite.addTest(new AdvancedJunitTest("testForExceptionsFromInterceptors", persistenceUnit));
+            suite.addTest(new AdvancedJunitTest("testCacheAccessCount", persistenceUnit));
         }
         
         return suite;
@@ -210,6 +211,43 @@ public class AdvancedJunitTest extends JUnitTestCase {
                 rollbackTransaction(em);
             }
             
+            closeEntityManager(em);
+        }
+    }
+
+    public void testCacheAccessCount() {
+        ClassDescriptor descriptor = getServerSession(m_persistenceUnit).getDescriptor(Address.class);
+        EntityManager em = createEntityManager(m_persistenceUnit);
+        beginTransaction(em);
+        Employee emp = new Employee();
+        em.persist(emp);
+        Address address = new Address("SomeStreet", "SomeCity", "SomeProvince", "SomeCountry", "S0M1O1");
+        em.persist(address);
+        emp.setAddress(address);
+        commitTransaction(em);
+        closeEntityManager(em);
+        clearCache(m_persistenceUnit);
+        em = createEntityManager(m_persistenceUnit);
+        CacheAuditor interceptor = (CacheAuditor) getServerSession(m_persistenceUnit).getIdentityMapAccessorInstance().getIdentityMap(descriptor);
+        interceptor.resetAccessCount();
+        try{
+            em.find(Address.class, Integer.valueOf((int) System.currentTimeMillis()));
+            assertTrue("To many calls to cache for missing Entity", interceptor.getAccessCount() == 1);
+        }finally{
+            interceptor.resetAccessCount();
+            closeEntityManager(em);
+        }
+        clearCache(m_persistenceUnit);
+        interceptor = (CacheAuditor) getServerSession(m_persistenceUnit).getIdentityMapAccessorInstance().getIdentityMap(descriptor);
+        em = createEntityManager(m_persistenceUnit);
+        descriptor.setShouldLockForClone(false);
+        try{
+            Employee localEmp = em.find(Employee.class, emp.getId());
+            localEmp.getAddress().getCity();
+            assertTrue("To many calls to cache for loading relationship ", interceptor.getAccessCount() == 1);
+        }finally{
+            interceptor.resetAccessCount();
+            descriptor.setShouldLockForClone(true);
             closeEntityManager(em);
         }
     }

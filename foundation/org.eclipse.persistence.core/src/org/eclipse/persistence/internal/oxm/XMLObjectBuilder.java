@@ -291,7 +291,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
             if ((pk == null) || (((CacheId)pk).getPrimaryKey().length == 0)) {
                 pk = new CacheId(new Object[]{ new WeakObjectWrapper(domainObject) });
             }
-            CacheKey key = query.getSession().getIdentityMapAccessorInstance().acquireDeferredLock(pk, concreteDescriptor.getJavaClass(), concreteDescriptor);
+            CacheKey key = query.getSession().getIdentityMapAccessorInstance().acquireDeferredLock(pk, concreteDescriptor.getJavaClass(), concreteDescriptor, query.isCacheCheckComplete());
             if (((XMLDescriptor)concreteDescriptor).shouldPreserveDocument()) {
                 key.setRecord(databaseRow);
             }

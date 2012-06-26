@@ -241,6 +241,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
                 && (!(session.isRemoteSession() && (shouldRefreshRemoteIdentityMapResult() || this.descriptor.shouldDisableCacheHitsOnRemote())))
                 && (!(shouldCheckDescriptorForCacheUsage() && this.descriptor.shouldDisableCacheHits())) && (!this.descriptor.isDescriptorForInterface())) {
             Object cachedObject = getQueryMechanism().checkCacheForObject(translationRow, session);
+            this.isCacheCheckComplete = true;
 
             // Optimization: If find deleted object by exact primary
             // key expression or selection object/key just abort.
@@ -689,6 +690,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
      * stores a predefined query for this query to avoid having to re-prepare and allow for customization.
      */
     protected void prepareCustomQuery(DatabaseQuery customQuery) {
+        super.prepareCustomQuery(customQuery);
         ReadObjectQuery customReadQuery = (ReadObjectQuery)customQuery;
         customReadQuery.shouldRefreshIdentityMapResult = this.shouldRefreshIdentityMapResult;
         customReadQuery.cascadePolicy = this.cascadePolicy;

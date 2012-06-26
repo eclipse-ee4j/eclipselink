@@ -163,7 +163,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
                 throw DescriptorException.attemptToRegisterDeadIndirection(original, this.mapping);
             }
             if (this.mapping.getRelationshipPartner() == null) {
-                container = this.mapping.buildCloneForPartObject(attributeValue, original, cacheKey, clone, cloningSession, refreshCascade, false);
+                container = this.mapping.buildCloneForPartObject(attributeValue, original, cacheKey, clone, cloningSession, refreshCascade, false, false);
             } else {
                 if (indirectContainer == null) {
                     valueHolder = new ValueHolder(attributeValue);
@@ -180,7 +180,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
                 //  Goes through it's own instantiation process.
                 DatabaseValueHolder newValueHolder = this.mapping.createCloneValueHolder(valueHolder, original, clone, row, cloningSession, buildDirectlyFromRow);
                 container = buildIndirectContainer(newValueHolder);
-                Object cloneCollection = this.mapping.buildCloneForPartObject(attributeValue, original, cacheKey, clone, cloningSession, refreshCascade, false);
+                Object cloneCollection = this.mapping.buildCloneForPartObject(attributeValue, original, cacheKey, clone, cloningSession, refreshCascade, false, false);
                 newValueHolder.privilegedSetValue(cloneCollection);
                 newValueHolder.setInstantiated();
             }

@@ -166,10 +166,10 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      * into the toCollection.  Since this ContainerPolicy represents a Map, the key and the value are extracted and added.
      */
     @Override
-    public void addNextValueFromIteratorInto(Object valuesIterator, Object parent, CacheKey parentCacheKey, Object toCollection, CollectionMapping mapping, Integer refreshCascade, AbstractSession cloningSession, boolean isExisting) {
+    public void addNextValueFromIteratorInto(Object valuesIterator, Object parent, CacheKey parentCacheKey, Object toCollection, CollectionMapping mapping, Integer refreshCascade, AbstractSession cloningSession, boolean isExisting, boolean isFromSharedCache) {
         Map.Entry entry = ((MapContainerPolicyIterator)valuesIterator).next();
-        Object clonedKey = buildCloneForKey(entry.getKey(), parent, parentCacheKey, refreshCascade, cloningSession, isExisting);
-        Object clonedValue = buildCloneForValue(entry.getValue(), parent, parentCacheKey, mapping, refreshCascade, cloningSession, isExisting);
+        Object clonedKey = buildCloneForKey(entry.getKey(), parent, parentCacheKey, refreshCascade, cloningSession, isExisting, isFromSharedCache);
+        Object clonedValue = buildCloneForValue(entry.getValue(), parent, parentCacheKey, mapping, refreshCascade, cloningSession, isExisting, isFromSharedCache);
         // add the object to the uow list of private owned objects if it is a candidate and the
         // uow should discover new objects
         if (cloningSession.isUnitOfWork() && mapping.isCandidateForPrivateOwnedRemoval() && ((UnitOfWorkImpl) cloningSession).shouldDiscoverNewObjects()) {
@@ -234,8 +234,8 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
     /**
      * Build a clone for the value in a mapping.
      */
-    protected Object buildCloneForValue(Object value, Object parent, CacheKey parentCacheKey, CollectionMapping mapping, Integer refreshCascade, AbstractSession cloningSession, boolean isExisting){
-        return mapping.buildElementClone(value, parent, parentCacheKey, refreshCascade, cloningSession, isExisting);
+    protected Object buildCloneForValue(Object value, Object parent, CacheKey parentCacheKey, CollectionMapping mapping, Integer refreshCascade, AbstractSession cloningSession, boolean isExisting, boolean isFromSharedCache){
+        return mapping.buildElementClone(value, parent, parentCacheKey, refreshCascade, cloningSession, isExisting, isFromSharedCache);
         
     }
     

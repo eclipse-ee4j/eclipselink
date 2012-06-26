@@ -302,7 +302,7 @@ public class ProxyIndirectionPolicy extends BasicIndirectionPolicy {
     public Object cloneAttribute(Object attributeValue, Object original, CacheKey cacheKey, Object clone, Integer refreshCascade, AbstractSession cloningSession, boolean buildDirectlyFromRow) {
         if (!(attributeValue instanceof Proxy)) {
             boolean isExisting = !cloningSession.isUnitOfWork() || (((UnitOfWorkImpl)cloningSession).isObjectRegistered(clone) && (!((UnitOfWorkImpl)cloningSession).isOriginalNewObject(original)));
-            return this.getMapping().buildCloneForPartObject(attributeValue, original, null, clone, cloningSession, refreshCascade, isExisting);
+            return this.getMapping().buildCloneForPartObject(attributeValue, original, null, clone, cloningSession, refreshCascade, isExisting, !buildDirectlyFromRow);
         }
 
         ValueHolderInterface newValueHolder;
@@ -319,7 +319,7 @@ public class ProxyIndirectionPolicy extends BasicIndirectionPolicy {
                 throw DescriptorException.attemptToRegisterDeadIndirection(original, getMapping());
             }
             newValueHolder = new ValueHolder();
-            newValueHolder.setValue(this.getMapping().buildCloneForPartObject(oldValueHolder.getValue(), original, null, clone, cloningSession, refreshCascade, false));
+            newValueHolder.setValue(this.getMapping().buildCloneForPartObject(oldValueHolder.getValue(), original, null, clone, cloningSession, refreshCascade, false, false));
         } else {
         	AbstractRecord row = null;
             if (oldValueHolder instanceof DatabaseValueHolder) {

@@ -443,7 +443,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * are immutable.
      */
     @Override
-    public Object buildElementClone(Object element, Object parent, CacheKey parentCacheKey, Integer refreshCascade, AbstractSession cloningSession, boolean isExisting) {
+    public Object buildElementClone(Object element, Object parent, CacheKey parentCacheKey, Integer refreshCascade, AbstractSession cloningSession, boolean isExisting, boolean isFromSharedCache) {
         Object cloneValue = element;
         if ((getValueConverter() != null) && getValueConverter().isMutable()) {
             cloneValue = getValueConverter().convertDataValueToObjectValue(getValueConverter().convertObjectValueToDataValue(cloneValue, cloningSession), cloningSession);

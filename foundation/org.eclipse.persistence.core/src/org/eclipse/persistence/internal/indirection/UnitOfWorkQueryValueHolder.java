@@ -53,7 +53,7 @@ public class UnitOfWorkQueryValueHolder extends UnitOfWorkValueHolder {
         if (wrappedValueHolder instanceof QueryBasedValueHolder){
             refreshCascade = ((QueryBasedValueHolder)getWrappedValueHolder()).getRefreshCascadePolicy();
         }
-        return this.mapping.buildCloneForPartObject(originalAttributeValue, null, null, this.relationshipSourceObject, getUnitOfWork(), refreshCascade, true);
+        return this.mapping.buildCloneForPartObject(originalAttributeValue, null, null, this.relationshipSourceObject, getUnitOfWork(), refreshCascade, true, true);
     }
 
     /**

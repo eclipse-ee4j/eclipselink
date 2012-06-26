@@ -269,7 +269,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
     /**
      * Build a clone of the given element in a unitOfWork.
      */
-    public Object buildElementClone(Object attributeValue, Object parent, CacheKey cacheKey, Integer refreshCascade, AbstractSession cloningSession, boolean isExisting){
+    public Object buildElementClone(Object attributeValue, Object parent, CacheKey cacheKey, Integer refreshCascade, AbstractSession cloningSession, boolean isExisting, boolean isFromSharedCache){
         return buildCloneValue(attributeValue, cloningSession);
     }
     

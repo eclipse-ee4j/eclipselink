@@ -149,7 +149,7 @@ public class AppendLockTest extends AutoVerifyTestCase {
                 }
             }
             try{
-                 cacheKey = ((AbstractSession)this.session).getIdentityMapAccessorInstance().acquireLock(this.address.getId(), this.address.getClass(), this.session.getClassDescriptor(this.address));
+                 cacheKey = ((AbstractSession)this.session).getIdentityMapAccessorInstance().acquireLock(this.address.getId(), this.address.getClass(), this.session.getClassDescriptor(this.address), false);
                 synchronized (this.session) {
                     this.session.notifyAll();
                     try {

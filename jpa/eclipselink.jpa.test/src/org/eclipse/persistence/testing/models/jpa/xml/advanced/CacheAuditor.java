@@ -28,23 +28,12 @@ import org.eclipse.persistence.sessions.interceptors.CacheKeyInterceptor;
 public class CacheAuditor extends CacheInterceptor {
     
     protected boolean shouldThrow;
-
-    /**
-     * @return the shouldThrow
-     */
-    public boolean isShouldThrow() {
-        return shouldThrow;
-    }
-
-    /**
-     * @param shouldThrow the shouldThrow to set
-     */
-    public void setShouldThrow(boolean shouldThrow) {
-        this.shouldThrow = shouldThrow;
-    }
+    
+    protected int accessCount;
 
     public CacheAuditor(IdentityMap targetIdentityMap, AbstractSession interceptedSession) {
         super(targetIdentityMap, interceptedSession);
+        this.accessCount = 0;
     }
 
     @Override
@@ -68,10 +57,65 @@ public class CacheAuditor extends CacheInterceptor {
     public void release() {
     }
     
+    /* (non-Javadoc)
+     * @see org.eclipse.persistence.sessions.interceptors.CacheInterceptor#acquireDeferredLock(java.lang.Object)
+     */
+    @Override
+    public CacheKey acquireDeferredLock(Object primaryKey, boolean isCacheCheckComplete) {
+        ++accessCount;
+        return super.acquireDeferredLock(primaryKey, isCacheCheckComplete);
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.persistence.sessions.interceptors.CacheInterceptor#acquireLock(java.lang.Object, boolean)
+     */
+    @Override
+    public CacheKey acquireLock(Object primaryKey, boolean forMerge, boolean isCacheCheckComplete) {
+        ++accessCount;
+        return super.acquireLock(primaryKey, forMerge, isCacheCheckComplete);
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.persistence.sessions.interceptors.CacheInterceptor#getCacheKey(java.lang.Object, boolean)
+     */
+    @Override
+    public CacheKey getCacheKey(Object primaryKey, boolean forMerge) {
+        ++accessCount;
+        return super.getCacheKey(primaryKey, forMerge);
+    }
+
+    /**
+     * @return the shouldThrow
+     */
+    public boolean isShouldThrow() {
+        return shouldThrow;
+    }
+
+    /**
+     * @param shouldThrow the shouldThrow to set
+     */
+    public void setShouldThrow(boolean shouldThrow) {
+        this.shouldThrow = shouldThrow;
+    }
+
     @Override
     public void lazyRelationshipLoaded(Object rootEntity, ValueHolderInterface valueHolder, ForeignReferenceMapping mapping) {
         // TODO Auto-generated method stub
         
+    }
+
+    /**
+     * @return the accessCount
+     */
+    public int getAccessCount() {
+        return accessCount;
+    }
+
+    /**
+     * @param accessCount the accessCount to set
+     */
+    public void resetAccessCount() {
+        this.accessCount = 0;
     }
 
     @Override

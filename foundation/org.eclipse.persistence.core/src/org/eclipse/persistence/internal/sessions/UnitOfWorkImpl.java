@@ -928,7 +928,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             unitOfWorkCacheKey.setIsolated(true);
             unitOfWorkCacheKey.acquire();
         } else {
-            unitOfWorkCacheKey = getIdentityMapAccessorInstance().acquireLock(parentCacheKey.getKey(), original.getClass(), descriptor);
+            unitOfWorkCacheKey = getIdentityMapAccessorInstance().acquireLock(parentCacheKey.getKey(), original.getClass(), descriptor, false);
         }
         try {
             return cloneAndRegisterObject(original, parentCacheKey, unitOfWorkCacheKey, descriptor);
@@ -3846,6 +3846,19 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Editing the original is not allowed in the unit of work.
      */
     public Object registerExistingObject(Object existingObject) {
+        return this.registerExistingObject(existingObject, false);
+    }
+
+    /**
+     * ADVANCED:
+     * Register the existing object with the unit of work.
+     * This is a advanced API that can be used if the application can guarantee the object exists on the database.
+     * When registerObject is called the unit of work determines existence through the descriptor's doesExist setting.
+     *
+     * @return The clone of the original object, the return value must be used for editing.
+     * Editing the original is not allowed in the unit of work.
+     */
+    public Object registerExistingObject(Object existingObject, boolean isFromSharedCache) {
         if (existingObject == null) {
             return null;
         }
@@ -3859,7 +3872,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
 
         ObjectBuilder builder = descriptor.getObjectBuilder();
         Object implementation = builder.unwrapObject(existingObject, this);
-        Object registeredObject = this.registerExistingObject(implementation, descriptor, null);
+        Object registeredObject = this.registerExistingObject(implementation, descriptor, null, isFromSharedCache);
 
         // Bug # 3212057 - workaround JVM bug (MWN)
         if (implementation != existingObject) {
@@ -3878,7 +3891,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * @return The clone of the original object, the return value must be used for editing.
      * Editing the original is not allowed in the unit of work.
      */
-    public Object registerExistingObject(Object objectToRegister, ClassDescriptor descriptor, Object queryPrimaryKey) {
+    public Object registerExistingObject(Object objectToRegister, ClassDescriptor descriptor, Object queryPrimaryKey, boolean isFromSharedCache) {
         if (this.isClassReadOnly(descriptor.getJavaClass(), descriptor)) {
             return objectToRegister;
         }
@@ -3901,10 +3914,20 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 if (primaryKey == null){
                     primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(objectToRegister, this, true);
                 }
+                if (descriptor.shouldLockForClone() || !isFromSharedCache){
                 // The primary key may be null for a new object in a nested unit of work (is existing in nested, new in parent).
-                if (primaryKey != null) {
-                    // Always check the cache first.
-                    registeredObject = getIdentityMapAccessorInstance().getFromIdentityMap(primaryKey, objectToRegister, objectToRegister.getClass(), true, descriptor);
+                    if (primaryKey != null) {
+                        // Always check the cache first.
+                        registeredObject = getIdentityMapAccessorInstance().getFromIdentityMap(primaryKey, objectToRegister, objectToRegister.getClass(), true, descriptor);
+                    }
+                } else {
+                    // perform a check of the UOW identitymap.  This would be done by getFromIdentityMap
+                    // but that method also calls back up to the shared cache in case it is not found locally.
+                    // and we wish to avoid checking the shared cache twice.
+                    CacheKey localCacheKey = getIdentityMapAccessorInstance().getCacheKeyForObject(primaryKey, objectToRegister.getClass(), descriptor, false);
+                    if (localCacheKey != null){
+                        registeredObject = localCacheKey.getObject();
+                    }
                 }
                 if (registeredObject == null) {
                     // This is a case where the object is not in the session cache,

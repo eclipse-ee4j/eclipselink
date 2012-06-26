@@ -929,7 +929,7 @@ public class MergeManager {
 
         // Must ensure the get and put of the cache occur as a single operation.
         // Cache key hold a reference to a concurrency manager which is used for the lock/release operation
-        CacheKey cacheKey = unitOfWork.getParent().getIdentityMapAccessorInstance().acquireLock(primaryKey, original.getClass(), descriptor);
+        CacheKey cacheKey = unitOfWork.getParent().getIdentityMapAccessorInstance().acquireLock(primaryKey, original.getClass(), descriptor, false);
         try {
             if (descriptor.usesOptimisticLocking()) {
                 cacheKey.setObject(original);
@@ -1286,7 +1286,7 @@ public class MergeManager {
             if (cacheKey == null || !cacheKey.isAcquired()) {
                 Object primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(original, unitOfWork);
                 
-                cacheKey = unitOfWork.getParent().getIdentityMapAccessorInstance().acquireLockNoWait(primaryKey, original.getClass(), true, descriptor);
+                cacheKey = unitOfWork.getParent().getIdentityMapAccessorInstance().acquireLockNoWait(primaryKey, original.getClass(), false, descriptor);
                 locked = cacheKey != null;
             }
             if (cacheKey != null){ // only work if we are locked.

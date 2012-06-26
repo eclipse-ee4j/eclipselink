@@ -272,7 +272,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * aggregates collection so that the referenced objects will be cloned correctly
      */
     @Override
-    public Object buildCloneForPartObject(Object attributeValue, Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession, Integer refreshCascade, boolean isExisting) {
+    public Object buildCloneForPartObject(Object attributeValue, Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession, Integer refreshCascade, boolean isExisting, boolean isFromSharedCache) {
         ContainerPolicy containerPolicy = getContainerPolicy();
         if (attributeValue == null) {
             return containerPolicy.containerInstance(1);
@@ -300,8 +300,8 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
             if (cloningSession.isUnitOfWork() && ((UnitOfWorkImpl)cloningSession).isOriginalNewObject(original)) {
                 ((UnitOfWorkImpl)cloningSession).addNewAggregate(originalElement);
             }
-            Object cloneValue = buildElementClone(originalElement, clone, cacheKey, refreshCascade, cloningSession, isExisting);
-            Object clonedKey = containerPolicy.buildCloneForKey(containerPolicy.keyFromIterator(valuesIterator), clone, cacheKey, refreshCascade, cloningSession, isExisting);
+            Object cloneValue = buildElementClone(originalElement, clone, cacheKey, refreshCascade, cloningSession, isExisting, isFromSharedCache);
+            Object clonedKey = containerPolicy.buildCloneForKey(containerPolicy.keyFromIterator(valuesIterator), clone, cacheKey, refreshCascade, cloningSession, isExisting, isFromSharedCache);
             containerPolicy.addInto(clonedKey, cloneValue, clonedAttributeValue, cloningSession);
         }
         if(temporaryCollection instanceof IndirectList) {
@@ -330,7 +330,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      * INTERNAL:
      * Clone the aggregate collection, if necessary.
      */
-    public Object buildElementClone(Object element, Object parent, CacheKey parentCacheKey, Integer refreshCascade, AbstractSession cloningSession, boolean isExisting) {
+    public Object buildElementClone(Object element, Object parent, CacheKey parentCacheKey, Integer refreshCascade, AbstractSession cloningSession, boolean isExisting, boolean isFromSharedCache) {
         // Do not clone for read-only.
         if (cloningSession.isUnitOfWork() && cloningSession.isClassReadOnly(element.getClass(), getReferenceDescriptor())) {
             return element;

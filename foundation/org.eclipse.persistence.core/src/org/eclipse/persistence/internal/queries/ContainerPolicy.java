@@ -212,8 +212,8 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
      * @param unitOfWork
      * @param isExisting
      */
-    public void addNextValueFromIteratorInto(Object valuesIterator, Object parent, CacheKey parentCacheKey, Object toCollection, CollectionMapping mapping, Integer refreshCascade, AbstractSession cloningSession, boolean isExisting){
-        Object cloneValue = mapping.buildElementClone(next(valuesIterator, cloningSession), parent, parentCacheKey, refreshCascade, cloningSession, isExisting);
+    public void addNextValueFromIteratorInto(Object valuesIterator, Object parent, CacheKey parentCacheKey, Object toCollection, CollectionMapping mapping, Integer refreshCascade, AbstractSession cloningSession, boolean isExisting, boolean isFromSharedCache){
+        Object cloneValue = mapping.buildElementClone(next(valuesIterator, cloningSession), parent, parentCacheKey, refreshCascade, cloningSession, isExisting, isFromSharedCache);
         // add the object to the uow list of private owned objects if it is a candidate and the
         // uow should discover new objects
         if (cloningSession.isUnitOfWork() && !isExisting && mapping.isCandidateForPrivateOwnedRemoval() && ((UnitOfWorkImpl) cloningSession).shouldDiscoverNewObjects() && cloneValue != null && ((UnitOfWorkImpl) cloningSession).isCloneNewObject(cloneValue)) {
@@ -231,7 +231,7 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
      * @param isExisting
      * @return
      */
-    public Object buildCloneForKey(Object key, Object parent , CacheKey parentCacheKey, Integer refreshCascade, AbstractSession cloningSession, boolean isExisting){
+    public Object buildCloneForKey(Object key, Object parent , CacheKey parentCacheKey, Integer refreshCascade, AbstractSession cloningSession, boolean isExisting, boolean isCacheCheckComplete){
         return key;
         
     }

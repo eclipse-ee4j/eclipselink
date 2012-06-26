@@ -79,7 +79,7 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
      * This first thread will get an active lock.
      * Other threads will get deferred locks, all threads will wait until all other threads are complete before releasing their locks.
      */
-    public CacheKey acquireDeferredLock(Object primaryKey) {
+    public CacheKey acquireDeferredLock(Object primaryKey, boolean isCacheCheckComplete) {
         CacheKey cacheKey = getCacheKey(primaryKey, false);
         if (cacheKey == null) {
             // Create and lock a new cacheKey.
@@ -103,7 +103,7 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
      * Acquire an active lock on the object.
      * This is used by reading (when using indirection or no relationships) and by merge.
      */
-    public CacheKey acquireLock(Object primaryKey, boolean forMerge) {
+    public CacheKey acquireLock(Object primaryKey, boolean forMerge, boolean isCacheCheckComplete) {
         CacheKey cacheKey = getCacheKey(primaryKey, forMerge);
         if (cacheKey == null) {
             // Create and lock a new cacheKey.
