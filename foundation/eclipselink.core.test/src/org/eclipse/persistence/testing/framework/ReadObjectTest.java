@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.framework;
 
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.queries.*;
 
 /**
@@ -29,6 +30,7 @@ public class ReadObjectTest extends AutoVerifyTestCase {
     protected ReadObjectQuery query;
     protected Object originalObject;
     protected Object objectFromDatabase;
+    protected int logLevel;
 
     /**
      * This is required to allow subclassing.
@@ -72,6 +74,10 @@ public class ReadObjectTest extends AutoVerifyTestCase {
     }
 
     protected void setup() {
+        this.logLevel = getSession().getLogLevel();
+        if (getName().indexOf("Joining") != -1) {
+            getSession().setLogLevel(SessionLog.FINEST);
+        }
         // Flush the cache to ensure that the query is actually executed
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
 
@@ -83,6 +89,12 @@ public class ReadObjectTest extends AutoVerifyTestCase {
         }
     }
 
+    public void reset() throws Throwable {
+        if (getName().indexOf("Joining") != -1) {
+            getSession().setLogLevel(this.logLevel);
+        }
+    }
+    
     protected void test() {
         this.objectFromDatabase = getSession().executeQuery(getQuery());
     }
