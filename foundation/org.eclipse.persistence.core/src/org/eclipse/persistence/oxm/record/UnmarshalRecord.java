@@ -777,7 +777,8 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
                 unmarshalContext.startElement(this);
                 levelIndex++;
 
-                isXsiNil = atts.getIndex(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_NIL_ATTRIBUTE) >= 0;
+                isXsiNil = atts.getValue(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_NIL_ATTRIBUTE) != null;
+                
                 NodeValue nodeValue = node.getUnmarshalNodeValue();
                 if (null != nodeValue) {
                     if (!nodeValue.startElement(xPathFragment, this, atts)) {
