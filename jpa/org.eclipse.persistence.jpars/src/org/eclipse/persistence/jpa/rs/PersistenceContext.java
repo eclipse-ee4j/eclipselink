@@ -101,7 +101,7 @@ public class PersistenceContext {
      *  Setting this provides a hook to allow applications that are capable of receiving
      *  events from the database to do so.
      */
-    public static DatabaseEventListenerFactory EVENT_LISTENER_FACTORY = null;
+    public DatabaseEventListenerFactory eventListenerFactory = null;
     
     /** This internal property is used to save a change listener on the session for later retreival.**/
     public static final String CHANGE_NOTIFICATION_LISTENER = "jpars.change-notification-listener";
@@ -114,9 +114,9 @@ public class PersistenceContext {
      * Part of the mechanism for plugging in code that can react to database events
      * @param eventListenerFactory
      */
-    public static void setEventListenerFactory(
+    public void setEventListenerFactory(
             DatabaseEventListenerFactory eventListenerFactory) {
-        EVENT_LISTENER_FACTORY = eventListenerFactory;
+        this.eventListenerFactory = eventListenerFactory;
     }
     
     /**

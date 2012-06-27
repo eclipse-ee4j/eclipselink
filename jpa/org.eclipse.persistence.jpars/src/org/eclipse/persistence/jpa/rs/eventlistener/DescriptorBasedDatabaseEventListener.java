@@ -33,7 +33,7 @@ public interface DescriptorBasedDatabaseEventListener extends DatabaseEventListe
      * @param session
      * @param descriptor
      */
-    public void register(Session session, ClassDescriptor descriptor);
+    public void register(Session session, String queryName);
     
     public void addChangeListener(ChangeListener listener);
     

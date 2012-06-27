@@ -34,7 +34,6 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.JavaTypes;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlSchema.XmlNs;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlElement;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlVirtualAccessMethods;
-import org.eclipse.persistence.jpa.rs.PersistenceFactory;
 import org.eclipse.persistence.jpa.rs.metadata.model.Link;
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -129,7 +128,7 @@ public class DynamicXMLMetadataSource implements MetadataSource {
                 virtualAccessMethods.setGetMethod(jpaAccessor.getGetMethodName());
                 virtualAccessMethods.setSetMethod(jpaAccessor.getSetMethodName());
                 owningType.setXmlVirtualAccessMethods(virtualAccessMethods);
-            } else {
+            } else if (!owningType.getXmlVirtualAccessMethods().getGetMethod().equals(jpaAccessor.getGetMethodName())){
                 XmlAccessMethods accessMethods = new XmlAccessMethods();
                 accessMethods.setGetMethod(jpaAccessor.getGetMethodName());
                 accessMethods.setSetMethod(jpaAccessor.getSetMethodName());
