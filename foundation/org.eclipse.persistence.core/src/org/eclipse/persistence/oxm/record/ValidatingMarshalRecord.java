@@ -51,6 +51,12 @@ public class ValidatingMarshalRecord extends MarshalRecord {
         Schema schema = xmlMarshaller.getSchema();
         ValidatorHandler validatorHandler = schema.newValidatorHandler();
         validatorHandler.setErrorHandler(new ValidatingMarshalRecordErrorHandler(marshalRecord, xmlMarshaller.getErrorHandler()));
+        if(xmlMarshaller.isFragment()) {
+            try {
+                validatorHandler.startDocument();
+            } catch (SAXException e) {
+            }
+        }
         validatingRecord = new ContentHandlerRecord();
         validatingRecord.setMarshaller(xmlMarshaller);
         validatingRecord.setContentHandler(validatorHandler);
