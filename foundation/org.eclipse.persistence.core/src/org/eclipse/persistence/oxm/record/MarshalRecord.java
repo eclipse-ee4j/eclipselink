@@ -254,12 +254,7 @@ public abstract class MarshalRecord extends XMLRecord {
     public void endPrefixMapping(String prefix) {
     }
 
-    public void endPrefixMappings(NamespaceResolver namespaceResolver) {
-        if (namespaceResolver != null && namespaceResolver.hasPrefixesToNamespaces()) {
-            for(Entry<String, String> entry: namespaceResolver.getPrefixesToNamespaces().entrySet()) {
-                endPrefixMapping(entry.getKey());
-            }
-        }
+    public void endPrefixMappings(NamespaceResolver namespaceResolver) {      
     }
 
     /**
