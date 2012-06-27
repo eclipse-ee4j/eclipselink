@@ -1,5 +1,5 @@
 #!/bin/sh
-. `dirname $0`../../bin/setenv.sh
+. `dirname $0`/../../bin/setenv.sh
 
 # Please do not change any of the following lines:
 SRC_DIR=$1
