@@ -2704,14 +2704,6 @@
         </java>
     </target>
 
-    <target name="generate-servertest-report">
-        <!-- WebLogic and WebSphere servers require specific jaxp.properties for generating report -->
-        <delete file="${env.JAVA_HOME}/jre/lib/jaxp.properties" failonerror="false"/>
-        <copy todir="${env.JAVA_HOME}/jre/lib" file="${eclipselink.jpa.test}/resource/${server.name}/jaxp.properties" failonerror="false"/>
-        <antcall target="generate-report" inheritRefs="true"/>
-        <delete file="${env.JAVA_HOME}/jre/lib/jaxp.properties" failonerror="false"/>
-    </target>
-
     <!-- Server Tests -->
     <!-- Run the LRG -->
     <target name="server-test">
@@ -2756,7 +2748,7 @@
         <antcall target="server-test-struct-converter" inheritRefs="true"/>
         <!-- Oracle proxy authentication needs to be setup properly for the following model -->
         <antcall target="server-test-proxy-authentication" inheritRefs="true"/>
-        <antcall target="generate-servertest-report" inheritRefs="true"/>
+        <antcall target="generate-report" inheritRefs="true"/>
     </target>
 
     <target name="server-test-performance">
@@ -2811,7 +2803,7 @@
             <param name="eclipselink.jpa.test.dir" value="."/>
         </antcall>
         <ant antfile="${eclipselink.jpa.test}/weblogic.xml" target="weblogic-domain-reset" inheritRefs="true"/>
-        <antcall target="generate-servertest-report" inheritRefs="true"/>
+        <antcall target="generate-report" inheritRefs="true"/>
     </target>
 
     <target name="server-test-cacheable">
@@ -3257,7 +3249,7 @@
             <param name="eclipselink.jpa.test.dir" value="."/>
         </antcall>
         <ant antfile="${eclipselink.jpa.test}/weblogic.xml" target="weblogic-composite-reset" inheritRefs="true"/>
-        <antcall target="generate-servertest-report" inheritRefs="true"/>
+        <antcall target="generate-report" inheritRefs="true"/>
     </target>
 
     <target name="server-test-xml-composite-advanced" depends="clean-test">
@@ -3271,7 +3263,7 @@
             <param name="eclipselink.jpa.test.dir" value="."/>
         </antcall>
         <ant antfile="${eclipselink.jpa.test}/weblogic.xml" target="weblogic-composite-reset" inheritRefs="true"/>
-        <antcall target="generate-servertest-report" inheritRefs="true"/>
+        <antcall target="generate-report" inheritRefs="true"/>
     </target>
 
     <target name="server-test-xml-extended-composite-advanced" depends="clean-test">
@@ -3285,7 +3277,7 @@
             <param name="eclipselink.jpa.test.dir" value="."/>
         </antcall>
         <ant antfile="${eclipselink.jpa.test}/weblogic.xml" target="weblogic-composite-reset" inheritRefs="true"/>
-        <antcall target="generate-servertest-report" inheritRefs="true"/>
+        <antcall target="generate-report" inheritRefs="true"/>
     </target>
 
     <target name="server-test-oracle-timestamptz" if="is.oracle">
