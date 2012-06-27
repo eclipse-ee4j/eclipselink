@@ -780,6 +780,8 @@ public class ConversionManager implements Serializable, Cloneable {
             return ((Calendar)sourceObject).getTime();
         } else if (sourceObject instanceof Long) {
             date = Helper.utilDateFromLong((Long)sourceObject);
+        } else if (sourceObject instanceof java.util.Date) {
+            date = new java.util.Date(((java.util.Date) sourceObject).getTime());
         } else {
             throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.UTILDATE);
         }

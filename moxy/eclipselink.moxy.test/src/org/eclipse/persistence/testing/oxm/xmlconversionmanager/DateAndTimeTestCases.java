@@ -3609,4 +3609,44 @@ public class DateAndTimeTestCases extends OXTestCase {
         assertEquals(controlString, s);
     }
 
+    public void testExtendedUtilDateToUtilDate() {
+        java.util.Date control = new ExtendedUtilDate(CONTROL_DATE_TIME_1MS);
+        java.util.Date test = (java.util.Date)xcm.convertObject(control, java.util.Date.class);
+        this.assertEquals(control, test);
+    }
+
+    public void testExtendedUtilDateToString_default_100ms() {
+        java.util.Date utilDate = new ExtendedUtilDate(CONTROL_DATE_TIME_100MS);
+        String control = "1975-02-21T07:47:15.1";
+        String test = (String)xcm.convertObject(utilDate, String.class);
+        this.assertEquals(control, test);
+    }
+
+    public void testExtendedUtilDateToString_date() {
+        java.util.Date utilDate = new ExtendedUtilDate(CONTROL_DATE_TIME_0MS);
+        String control = "1975-02-21";
+        String test = (String)xcm.convertObject(utilDate, String.class, XMLConstants.DATE_QNAME);
+        this.assertEquals(control, test);
+    }
+
+    public void testExtendedUtilDateToString_time_10ms() {
+        java.util.Date utilDate = new ExtendedUtilDate(CONTROL_DATE_TIME_10MS);
+        String control = "07:47:15.01";
+        String test = (String)xcm.convertObject(utilDate, String.class, XMLConstants.TIME_QNAME);
+        this.assertEquals(control, test);
+    }
+
+    public void testExtendedUtilDateToString_dateTime_1ms() {
+        java.util.Date utilDate = new ExtendedUtilDate(CONTROL_DATE_TIME_1MS);
+        String control = "1975-02-21T07:47:15.001";
+        String test = (String)xcm.convertObject(utilDate, String.class, XMLConstants.DATE_TIME_QNAME);
+        this.assertEquals(control, test);
+    }
+
+    private static class ExtendedUtilDate extends java.util.Date {
+        public ExtendedUtilDate(long time) {
+            super(time);
+        }
+    }
+
 }
