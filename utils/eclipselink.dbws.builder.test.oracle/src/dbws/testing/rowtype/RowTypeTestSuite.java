@@ -45,6 +45,47 @@ import dbws.testing.DBWSTestSuite;
  */
 public class RowTypeTestSuite extends DBWSTestSuite {
 
+    static final String WSDL_REF = "ref=\"ns1:RTYPE_TABLE_ROWTYPE\"";
+    static final String XSD = 
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+        "<xsd:schema xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" targetNamespace=\"urn:rowtype\" xmlns=\"urn:rowtype\" elementFormDefault=\"qualified\">" +
+           "<xsd:complexType name=\"RTYPE_TABLE_ROWTYPE\">" +
+              "<xsd:sequence>" + 
+                 "<xsd:element name=\"id\" type=\"xsd:decimal\" nillable=\"true\"/>" +
+                 "<xsd:element name=\"name\" type=\"xsd:string\" nillable=\"true\"/>" +
+                 "<xsd:element name=\"since\" type=\"xsd:date\" nillable=\"true\"/>" +
+              "</xsd:sequence>" +
+           "</xsd:complexType>" +
+           "<xsd:element name=\"RTYPE_TABLE_ROWTYPE\" type=\"RTYPE_TABLE_ROWTYPE\"/>" +
+        "</xsd:schema>";
+    static final String SERVICE = 
+       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+       "<dbws xmlns:ns1=\"urn:rowtype\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+          "<name>rowtype</name>" +
+          "<sessions-file>eclipselink-dbws-sessions.xml</sessions-file>" +
+          "<query>" +
+             "<name>rowtypeTest</name>" +
+             "<parameter>" +
+                "<name>PARAM1</name>" +
+                "<type>xsd:int</type>" +
+             "</parameter>" +
+             "<result>" +
+                "<type>ns1:RTYPE_TABLE_ROWTYPE</type>" +
+             "</result>" +
+          "</query>" +
+          "<query>" +
+            "<name>rowtypeTest2</name>" +
+             "<parameter>" +
+                "<name>PARAM1</name>" +
+                "<type>xsd:int</type>" +
+             "</parameter>" +
+            "<result>" +
+               "<type>ns1:RTYPE_TABLE_ROWTYPE</type>" +
+            "</result>" +
+         "</query>" +
+      "</dbws>";
+    
+    
     static final String ROWTYPE_TEST_TABLE = "RTYPE_TABLE";
     static final String CREATE_ROWTYPE_TEST_TABLE = "CREATE TABLE " + ROWTYPE_TEST_TABLE + " (" +
         "\nID NUMBER NOT NULL," +
@@ -218,4 +259,39 @@ public class RowTypeTestSuite extends DBWSTestSuite {
             "<name>Conky</name>" +
             "<since>2001-12-25</since>" +
         "</RTYPE_TABLE_ROWTYPE>";
+
+    /**
+     * Test element/complex type names do not contain '%'
+     */
+    @Test
+    public void compareXSD() {
+        assertNotNull("Schema stream is null", DBWS_SCHEMA_STREAM);
+        Document controlDoc = xmlParser.parse(new StringReader(XSD));
+        removeEmptyTextNodes(controlDoc);
+        Document testDoc = xmlParser.parse(new StringReader(DBWS_SCHEMA_STREAM.toString()));
+        removeEmptyTextNodes(testDoc);
+        assertTrue("Schema comparison failed.  Expected:\n" + documentToString(controlDoc) + "\nActual\n" + documentToString(testDoc), comparer.isNodeEqual(controlDoc, testDoc));
+    }
+    
+    /**
+     * Test type names do not contain '%'
+     */
+    @Test
+    public void compareSessions() {
+        assertNotNull("Service stream is null", DBWS_SERVICE_STREAM);
+        Document controlDoc = xmlParser.parse(new StringReader(SERVICE));
+        removeEmptyTextNodes(controlDoc);
+        Document testDoc = xmlParser.parse(new StringReader(DBWS_SERVICE_STREAM.toString()));
+        removeEmptyTextNodes(testDoc);
+        assertTrue("Service file comparison failed.  Expected:\n" + documentToString(controlDoc) + "\nActual\n" + documentToString(testDoc), comparer.isNodeEqual(controlDoc, testDoc));
+    }
+    
+    /**
+     * Test element ref name does not contain '%'
+     */
+    @Test
+    public void compareWSDLElementRef() {
+        assertNotNull("WSDL stream is null", DBWS_WSDL_STREAM);
+        assertTrue("Expected to find:\n" + WSDL_REF + "\nbut did not.  WSDL:\n" + DBWS_WSDL_STREAM.toString(), DBWS_WSDL_STREAM.toString().contains(WSDL_REF));
+    }
 }

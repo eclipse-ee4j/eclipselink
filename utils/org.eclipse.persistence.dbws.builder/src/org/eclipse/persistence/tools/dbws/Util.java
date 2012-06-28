@@ -547,6 +547,11 @@ public class Util {
     }
 
     public static QName buildCustomQName(String typeString, DBWSBuilder builder) {
+        // for %TYPE and %ROWTYPE we'll need to replace the '%' with '_' 
+        if (typeString.contains(PERCENT)) {
+            typeString = typeString.replace(PERCENT, UNDERSCORE);
+        }
+        
         QName qName = null;
         String nsURI = null;
         String prefix = null;

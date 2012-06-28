@@ -698,6 +698,11 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                     targetTypeName = catalogPattern + UNDERSCORE + dbType.getTypeName();
                 }
                 alias = targetTypeName.toLowerCase();
+                
+                // remove '%' from target and name
+                name = name.replace(PERCENT, UNDERSCORE);
+                targetTypeName = targetTypeName.replace(PERCENT, UNDERSCORE);
+                
                 // handle PL/SQL record type
                 if (dbType.isPLSQLRecordType()) {
                     addToOXProjectForPLSQLRecordArg(dbType, oxProject, name, alias, targetTypeName, catalogPattern);
@@ -1645,12 +1650,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
         NamespaceResolver nr = new NamespaceResolver();
         nr.setDefaultNamespaceURI(targetNamespace);
         xdesc.setNamespaceResolver(nr);
-        // default root element cannot have '%' (as in the case of %ROWTYPE), so replace with '_'
-        if (userType.contains(PERCENT)) {
-            xdesc.setDefaultRootElement(userType.replace(PERCENT, UNDERSCORE));
-        } else {
-            xdesc.setDefaultRootElement(userType);
-        }
+        xdesc.setDefaultRootElement(userType);
         return xdesc;
     }
 
