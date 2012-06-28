@@ -399,9 +399,6 @@
           <param name="feature.name" value="org.eclipse.persistence.jpa"/>
         </antcall>
         <antcall target="jar-feature">
-          <param name="feature.name" value="org.eclipse.persistence.jpars"/>
-        </antcall>
-        <antcall target="jar-feature">
           <param name="feature.name" value="org.eclipse.persistence.nosql"/>
         </antcall>
         <antcall target="jar-feature">
@@ -418,9 +415,6 @@
         </antcall>
         <antcall target="jar-feature">
           <param name="feature.name" value="org.eclipse.persistence.jpa.source"/>
-        </antcall>
-        <antcall target="jar-feature">
-          <param name="feature.name" value="org.eclipse.persistence.jpars.source"/>
         </antcall>
         <antcall target="jar-feature">
           <param name="feature.name" value="org.eclipse.persistence.nosql.source"/>
@@ -498,6 +492,12 @@
             <available file="${p2.archive.presigned.zip}"/>
         </condition>
         <available file="${p2.archive.zip}" property="signing.archive.exist"/>
+        <say  message="p2.archive.zip      ='${p2.archive.zip}'"                 if="signing.archive.exist"/>
+        <say  message="p2.archive.zip:      '${p2.archive.zip}' not found!"  unless="signing.archive.exist"/>
+        <say  message="nosql.install.file  ='${nosql.install.file}'"                 if="nosql.installer.exist"/>
+        <say  message="nosql.install.file:  '${nosql.install.file}' not found!"  unless="nosql.installer.exist"/>
+        <say  message="bundle.install.file ='${bundle.install.file}'"                if="bundle.installer.exist"/>
+        <say  message="bundle.install.file: '${bundle.install.file}' not found!" unless="bundle.installer.exist"/>
         <condition property="ready-to-go">
             <and>
                 <isset property="signing.archive.exist"/>
@@ -507,7 +507,7 @@
     </target>
 
     <target name="not-ready-to-go" unless="ready-to-go" depends="test-ready-to-go">
-        <fail message="Bundle Installer or p2 archive not found! Skipping P2 repos generation."/>
+        <fail message="Bundle Installer (${bundle.install.file}) or p2 archive (${p2.archive.zip})not found! Skipping P2 repos generation."/>
     </target>
 
     <target name="clear-p2-loc" if="ready-to-go" depends="not-ready-to-go">
@@ -537,6 +537,7 @@
                           *jms*.jar,
                           com.sun*.jar,
                           eclipselink*.jar,
+                          *ejb*.jar,
                           javax.persistence*_1.*.jar,
                           *preview*.jar,
                           *javax.resource*.jar,
@@ -544,7 +545,8 @@
                           javax.xml.bind.source*.jar,
                           *modelgen*.jar,
                           *soap*.jar,
-                          *xml.ws*.jar"
+                          *xml.ws*.jar,
+                          *jpars*.jar"
             />
         </delete>
         <unzip dest="${p2.feature.dir}" src="${p2.archive.zip}">

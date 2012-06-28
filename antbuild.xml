@@ -634,14 +634,13 @@
                     javax/persistence/StoredProcedureParameter.class,
                     javax/persistence/StoredProcedureQuery.class,
                     javax/persistence/SynchronizationType.class,
-		            javax/persistence/AttributeConverter.class,
+                    javax/persistence/AttributeConverter.class,
                     javax/persistence/Convert.class,
                     javax/persistence/Converter.class,
                     javax/persistence/Converts.class,
                     javax/persistence/criteria/CommonAbstractQuery.class,
                     javax/persistence/criteria/CriteriaDelete.class,
                     javax/persistence/criteria/CriteriaUpdate.class
-
             "/>
             <fileset
                 dir="${eclipselink.moxy.dynamicxjc}/${classes.dir}"
@@ -802,6 +801,158 @@
                 <include name="${eclipselink.jpa.test}/eclipselink-xml-only-model.jar"/>
             </zipfileset>
         </zip>
+    </target>
+
+    <!-- Unified Javadoc tasks: Packages javadoc into a zip. -->
+    <target name="package-unified-javadoc-zip" depends="build-unified-javadocs" description="build EclipseLink web javadoc zip">
+        <delete file="${unified.javadoc.install.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
+        <zip destfile="${unified.javadoc.install.prefix}${eclipselink.zip.suffix}">
+            <!-- miscellaneous files -->
+            <zipfileset dir="${unified.javadocs}/"/>
+        </zip>
+    </target>
+
+    <target name="check-oracle-dependencies">
+        <condition property="ojdbc.lib"     value="${oracle.extensions.depend.dir}/${ojdbc.jar}"
+                                                    else="${extensions.depend.dir}/${ojdbc.jar}">
+            <available file="${oracle.extensions.depend.dir}/${ojdbc.jar}"/>
+        </condition>
+        <condition property="sdoapi.lib"    value="${oracle.extensions.depend.dir}/${sdoapi.jar}"
+                                                    else="${extensions.depend.dir}/${sdoapi.jar}">
+            <available file="${oracle.extensions.depend.dir}/${sdoapi.jar}"/>
+        </condition>
+        <condition property="xdb.lib"       value="${oracle.extensions.depend.dir}/${xdb.jar}"
+                                                    else="${extensions.depend.dir}/${xdb.jar}">
+            <available file="${oracle.extensions.depend.dir}/${xdb.jar}"/>
+        </condition>
+        <condition property="xmlparser.lib" value="${oracle.extensions.depend.dir}/${xmlparser.jar}"
+                                                    else="${extensions.depend.dir}/${xmlparser.jar}">
+            <available file="${oracle.extensions.depend.dir}/${xmlparser.jar}"/>
+        </condition>
+        <condition property="ucp.lib"       value="${oracle.extensions.depend.dir}/${ucp.jar}"
+                                                    else="${extensions.depend.dir}/${ucp.jar}">
+            <available file="${oracle.extensions.depend.dir}/${ucp.jar}"/>
+        </condition>
+        <condition property="dms.lib"       value="${oracle.extensions.depend.dir}/${dms.jar}"
+                                                    else="${extensions.depend.dir}/${dms.jar}">
+            <available file="${oracle.extensions.depend.dir}/${dms.jar}"/>
+        </condition>
+
+        <!-- oracle dependency tests -->
+        <available file="${ojdbc.lib}"         property="ojdbc.bundle.exist"/>
+        <available file="${sdoapi.lib}"        property="sdoapi.bundle.exist"/>
+        <available file="${xdb.lib}"           property="xdb.bundle.exist"/>
+        <available file="${xmlparser.lib}"     property="xmlparser.bundle.exist"/>
+        <available file="${ucp.lib}"           property="ucp.bundle.exist"/>
+        <available file="${dms.lib}"           property="dms.bundle.exist"/>
+        <fail message="Cannot find:          '${ojdbc.lib}'"       unless="ojdbc.bundle.exist"/>
+        <fail message="Cannot find:          '${sdoapi.lib}'"      unless="sdoapi.bundle.exist"/>
+        <fail message="Cannot find:          '${xdb.lib}'"         unless="xdb.bundle.exist"/>
+        <fail message="Cannot find:          '${xmlparser.lib}'"   unless="xmlparser.bundle.exist"/>
+        <fail message="Cannot find:          '${ucp.lib}'"         unless="ucp.bundle.exist"/>
+        <fail message="Cannot find:          '${dms.lib}'"         unless="dms.bundle.exist"/>
+    </target>
+
+    <target name="build-unified-javadocs" depends="check-oracle-dependencies">
+        <!-- the following property needs to be here because the "qualifier" is generated at runtime -->
+        <path id="unified.javadoc.path">
+            <path refid="javadoc.path"/>
+            <path refid="nosql.javadoc.path"/>
+            <path refid="jpars.javadoc.path"/>
+            <pathelement path="${ojdbc.lib}"/>
+            <pathelement path="${sdoapi.lib}"/>
+            <pathelement path="${xdb.lib}"/>
+            <pathelement path="${xmlparser.lib}"/>
+            <pathelement path="${ucp.lib}"/>
+            <pathelement path="${dms.lib}"/>
+        </path>
+        <property name="eclipselink.javadoc.title" value="${javadoc.prefixTitle}, build '${version.qualifier}' ${javadoc.postfixTitle}"/>
+        <delete dir="${build.dir}/commonj.sdo" failonerror="false"/>
+        <delete dir="${build.dir}/javax.xml.bind" failonerror="false"/>
+        <delete dir="${unified.javadocs}" failonerror="false"/>
+        <unzip src="${eclipselink.sdo.plugins}/${commonj.sdo.src.zip}" dest="${build.dir}/commonj.sdo/src"/>
+        <unzip src="${eclipselink.plugins}/${jaxb-api.src.jar}" dest="${build.dir}/javax.xml.bind/src"/>
+        <javadoc
+            maxmemory="384m"
+            Verbose="false"
+            packagenames="org.eclipse.persistence.**"
+            destdir="${unified.javadocs}"
+            useexternalfile="yes"
+            additionalparam="-breakiterator -quiet"
+            windowtitle="${eclipselink.javadoc.title}"
+            >
+            <classpath>
+                <path refid="unified.javadoc.path"/>
+            </classpath>
+            <tag name ="author" enabled="true" description="Author:" />
+            <tag name ="since" scope="all" description="Since:" />
+            <tag name ="SBGen" scope="all" description="SBGen:" />
+            <tag name ="bug" enabled="true" description="Related Bugs:" />
+            <doctitle><![CDATA[${eclipselink.javadoc.title}]]></doctitle>
+            <header><![CDATA[${eclipselink.javadoc.title}]]></header>
+
+            <!-- *** include Dependent APIs in Javadoc  *** -->
+            <fileset dir="${jpa.prototype}/${src.dir}" defaultexcludes="yes">
+                <include name="javax/persistence/**/*.java"/>
+            </fileset>
+            <fileset dir="${build.dir}/javax.xml.bind/src" defaultexcludes="yes">
+                <include name="**/*.java"/>
+            </fileset>
+            <fileset dir="${build.dir}/commonj.sdo/src" defaultexcludes="yes">
+                <include name="commonj/sdo/**/*.java"/>
+            </fileset>
+            <!-- *** EclipseLink modules *** -->
+            <fileset dir="${eclipselink.core}/${src.dir}" defaultexcludes="yes">
+                <include name="org/eclipse/persistence/**/*.java"/>
+                <exclude name="org/eclipse/persistence/internal/**/*.java"/>
+            </fileset>
+            <fileset dir="${eclipselink.extension.oracle}/${src.dir}" defaultexcludes="yes">
+                <include name="org/eclipse/persistence/**/*.java"/>
+                <exclude name="org/eclipse/persistence/internal/**/*.java"/>
+            </fileset>
+            <fileset dir="${eclipselink.dbws}/${src.dir}" defaultexcludes="yes">
+                <include name="org/eclipse/persistence/**/*.java"/>
+                <exclude name="org/eclipse/persistence/internal/**/*.java"/>
+            </fileset>
+            <fileset dir="${eclipselink.jpa}/${src.dir}" defaultexcludes="yes">
+                <include name="org/eclipse/persistence/**/*.java"/>
+                <exclude name="org/eclipse/persistence/internal/**/*.java"/>
+            </fileset>
+            <fileset dir="${eclipselink.hermes}/${src.dir}" defaultexcludes="yes">
+                <include name="org/eclipse/persistence/**/*.java"/>
+                <exclude name="org/eclipse/persistence/internal/**/*.java"/>
+            </fileset>
+            <fileset dir="${eclipselink.moxy}/${src.dir}" defaultexcludes="yes">
+                <include name="org/eclipse/persistence/**/*.java"/>
+                <exclude name="org/eclipse/persistence/internal/**/*.java"/>
+            </fileset>
+            <fileset dir="${eclipselink.moxy.dynamicxjc}/${src.dir}" defaultexcludes="yes">
+                <include name="org/eclipse/persistence/**/*.java"/>
+                <exclude name="org/eclipse/persistence/internal/**/*.java"/>
+            </fileset>
+            <fileset dir="${eclipselink.sdo}/${src.dir}" defaultexcludes="yes">
+                <include name="org/eclipse/persistence/**/*.java"/>
+                <exclude name="org/eclipse/persistence/internal/**/*.java"/>
+            </fileset>
+            <fileset dir="${eclipselink.util.rename}/${src.dir}" defaultexcludes="yes">
+                <include name="org/eclipse/persistence/**/*.java"/>
+                <exclude name="org/eclipse/persistence/internal/**/*.java"/>
+            </fileset>
+            <!-- *** NoSQL modules *** -->
+            <fileset dir="${eclipselink.extension.nosql}/${src.dir}" defaultexcludes="yes">
+                <include name="org/eclipse/persistence/**/*.java"/>
+                <exclude name="org/eclipse/persistence/internal/**/*.java"/>
+            </fileset>
+            <fileset dir="${eclipselink.extension.oracle.nosql}/${src.dir}" defaultexcludes="yes">
+                <include name="org/eclipse/persistence/**/*.java"/>
+                <exclude name="org/eclipse/persistence/internal/**/*.java"/>
+            </fileset>
+            <!-- *** JPA-RS modules *** -->
+            <fileset dir="${eclipselink.jpars}/${src.dir}" defaultexcludes="yes">
+                <include name="org/eclipse/persistence/**/*.java"/>
+                <exclude name="org/eclipse/persistence/internal/**/*.java"/>
+            </fileset>
+        </javadoc>
     </target>
 
     <target name="build-javadocs" depends="build-main-javadocs,build-nosql-javadocs,build-jpars-javadocs"/>
@@ -1078,7 +1229,6 @@
     <!-- target name="generate-local-compdeps" if="generate.compdeps" depends="check-maven" description="Build local p2 repository of local compiler dependencies">
         <ant antfile="antbuild.xml" dir="${eclipselink.compdeps}"  target="build"/>
     </target -->
-
 
     <!-- Testing -->
     <target name="test-srg" description="run all the SRG test suites"

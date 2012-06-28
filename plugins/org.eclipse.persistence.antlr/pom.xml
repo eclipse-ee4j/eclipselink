@@ -11,6 +11,6 @@
   </parent>
   <groupId>org.eclipse.persistence</groupId>
   <artifactId>org.eclipse.persistence.antlr</artifactId>
-  <version>3.2.0.v201107111232</version>
+  <version>3.2.0.v201206041011</version>
   <packaging>eclipse-plugin</packaging>
 </project>

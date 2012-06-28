@@ -12,8 +12,7 @@ curmonth=`date +%m`
 curdate=`date +%y%m`
 curdir=`pwd`
 
-if [ "${curmonth}" -eq 1 ]
-then
+if [ "${curmonth}" -eq 1 ] ; then
    prevmonth=12
    decyear=true
 else
@@ -21,8 +20,7 @@ else
 fi
 #echo "prevmonth=${prevmonth}"
 
-if [ "${decyear}" = "true" ]
-then
+if [ "${decyear}" = "true" ] ; then
     prevyear=`expr "${curyear}" - 1`
 else
     prevyear=${curyear}

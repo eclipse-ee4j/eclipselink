@@ -1,16 +1,16 @@
 Manifest-Version: 1.0
-Export-Package: org.eclipse.persistence.internal.libraries.antlr.runtime;version="3.2.0.v201107111232",
- org.eclipse.persistence.internal.libraries.antlr.runtime.debug;version="3.2.0.v201107111232",
- org.eclipse.persistence.internal.libraries.antlr.runtime.misc;version="3.2.0.v201107111232",
- org.eclipse.persistence.internal.libraries.antlr.runtime.tree;version="3.2.0.v201107111232"
-Implementation-Version: 3.2.0.v201107111232
+Export-Package: org.eclipse.persistence.internal.libraries.antlr.runtime;version="3.2.0",
+ org.eclipse.persistence.internal.libraries.antlr.runtime.debug;version="3.2.0",
+ org.eclipse.persistence.internal.libraries.antlr.runtime.misc;version="3.2.0",
+ org.eclipse.persistence.internal.libraries.antlr.runtime.tree;version="3.2.0"
+Implementation-Version: 3.2.0.v201206041011
 Bundle-Name: EclipseLink ANTLR
 Created-By: 1.6.0_21 (Sun Microsystems Inc.)
 HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.antlr
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Implementation-Vendor: Eclipse.org - EclipseLink Project
 Bundle-Vendor: Eclipse.org - EclipseLink Project
-Bundle-Version: 3.2.0.v201107111232
+Bundle-Version: 3.2.0.v201206041011
 Bundle-ManifestVersion: 2
 Import-Package: org.antlr.stringtemplate;resolution:=optional
 Bundle-SymbolicName: org.eclipse.persistence.antlr

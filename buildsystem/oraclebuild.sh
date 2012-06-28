@@ -5,24 +5,8 @@ PROGNAME=`basename ${THIS}`
 CUR_DIR=`dirname ${THIS}`
 umask 0002
 BRANCH=$1
-# if branch is not blank, 2.4 or trunk then use old target name
-if [ "$BRANCH" = "" -o "$BRANCH" = "trunk" -o "$BRANCH" = "2.4" ] ; then
-    TARGET=oracle-ext
-    TARG_NM="oracle-ext"
-else
-    TARGET=oracle
-    TARG_NM="oracle"
-fi
-echo "Target: '$TARGET'"
-
-# What if both are empty, or worse $1 is actually target?
-#TARGET=$2
-#if [ ! "${TARGET}" = "" ] ; then
-#    TARG_NM=${TARGET}
-#else
-#    TARGET=oracleext
-#    TARG_NM="oracleext"
-#fi
+TARGET=oracle-ext
+TARG_NM="oracle-ext"
 
 ##-- Convert "BRANCH" to BRANCH_NM (version or trunk) and BRANCH (svn branch path)
 #    BRANCH_NM is used for reporting and naming purposes
