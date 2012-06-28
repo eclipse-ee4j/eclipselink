@@ -229,6 +229,27 @@
         <echo message="Maven install (M2_HOME) set to: '${M2_HOME}'"/>
         <available file="${M2_HOME}/bin/mvn" property="use.maven"/>
         <fail message="Maven 3 not found. Build won't run if Maven 3 not installed and M2_HOME properly set!." unless="use.maven"/>
+
+        <!-- Determine whether the build could generate/use a local compdeps repo -->
+        <!--     To setup generation of local compdeps:                           -->
+        <!--        Set "eclipse.install.dir" to a valid Eclipse installation     -->
+        <!--           (Indigo or higher has been tested) by using a -D on        -->
+        <!--           the commandline, or adding it in a user properties file    -->
+        <condition property="local.compdeps" value="true" else="false">
+            <and>
+                <isset property="eclipse.install.dir"/>
+                <available file="${eclipse.install.dir}/plugins" type="dir"/>
+            </and>
+        </condition>
+        <!-- Test to see if local repo should be generated: if not exist and if can -->
+        <condition property="generate.compdeps">
+            <and>
+                <not>
+                    <available file="${eclipselink.compdeps}/p2repo" type="dir"/>
+                </not>
+                <isset property="local.compdeps"/>
+            </and>
+        </condition>
     </target>
 
     <!-- Cleans all build generated files. -->
@@ -297,13 +318,19 @@
         <delete file="${eclipselink.tst.src.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
     </target>
 
+    <target name="generate-local-compdeps" if="generate.compdeps" depends="check-maven" description="Build local p2 repository of local compiler dependencies">
+        <echo message="Generating local 'Compile Dependency P2 Repository' using tools found in '${eclipse.install.dir}/plugins'."/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.compdeps}"  target="build"/>
+    </target>
+
     <!-- Compiles all runtime components (excluding Tests, Oracle extensions). -->
-    <target name="build-core" depends="check-maven, clean-runtime-checkedin">
+    <target name="build-core" depends="generate-local-compdeps, clean-runtime-checkedin">
         <java dir="${eclipselink.mvn.parent}" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
              <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
              <jvmarg value="-Dmaven.home=${M2_HOME}"/>
              <jvmarg value="-Dbuild.qualifier=${version.qualifier}"/>
              <jvmarg value="-DforceContextQualifier=${version.qualifier}"/>
+             <jvmarg value="-Dlocal.compdeps=${local.compdeps}"/>
              <!-- arg value="-X"/ -->
              <arg value="verify"/>
            <classpath>
@@ -724,6 +751,7 @@
             <zipfileset dir="${basedir}">
                 <include name="*build.xml"/>
                 <include name="*build.properties"/>
+                <include name="buildsystem/*custom*jar"/>
                 <include name="${eclipselink.core.test}/**"/>
                 <include name="${eclipselink.core.base}/eclipselink.extension.oracle.test/**"/>
                 <include name="${eclipselink.core.base}/eclipselink.extension.nosql.test/**"/>
@@ -773,7 +801,7 @@
         </zip>
     </target>
 
-        <!-- Packages javadoc into a zip. -->
+    <!-- Unified Javadoc tasks: Packages javadoc into a zip. -->
     <target name="package-unified-javadoc-zip" depends="build-unified-javadocs" description="build EclipseLink web javadoc zip">
         <delete file="${unified.javadoc.install.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
         <zip destfile="${unified.javadoc.install.prefix}${eclipselink.zip.suffix}">
@@ -822,7 +850,6 @@
         <fail message="Cannot find:          '${ucp.lib}'"         unless="ucp.bundle.exist"/>
         <fail message="Cannot find:          '${dms.lib}'"         unless="dms.bundle.exist"/>
     </target>
-
 
     <target name="build-unified-javadocs" depends="check-oracle-dependencies">
         <!-- the following property needs to be here because the "qualifier" is generated at runtime -->
@@ -1191,6 +1218,15 @@
         </zip>
     </target>
 
+    <!-- Build Infrastructure targets -->
+    <target name="refresh-plugins" description="populate plugins with dependent jars from specified Orbit repository">
+        <ant antfile="antbuild.xml" dir="${eclipselink.bldplugins}"  target="build"/>
+    </target>
+
+    <!-- commented out because is currently above with build-core -->
+    <!-- target name="generate-local-compdeps" if="generate.compdeps" depends="check-maven" description="Build local p2 repository of local compiler dependencies">
+        <ant antfile="antbuild.xml" dir="${eclipselink.compdeps}"  target="build"/>
+    </target -->
 
     <!-- Testing -->
     <target name="test-srg" description="run all the SRG test suites"
