@@ -44,6 +44,7 @@ import dbws.testing.prependedschema.PrependedSchemaTestSuite;
 import dbws.testing.rowtype.RowTypeTestSuite;
 import dbws.testing.secondarysql.SecondarySQLTestSuite;
 import dbws.testing.shadowddlgeneration.ShadowDDLGenerationTestSuite;
+import dbws.testing.simplenestedtable.SimpleNestedTableTestSuite;
 import dbws.testing.simpleplsqlsf.SimplePLSQLSFTestSuite;
 import dbws.testing.simpleplsqlsp.SimplePLSQLSPTestSuite;
 import dbws.testing.simplesf.SimpleSFTestSuite;
@@ -80,6 +81,7 @@ import static dbws.testing.DBWSTestSuite.buildConnection;
     RowTypeTestSuite.class,
     SecondarySQLTestSuite.class,
     ShadowDDLGenerationTestSuite.class,
+    SimpleNestedTableTestSuite.class,
     SimplePLSQLSFTestSuite.class,
     SimplePLSQLSPTestSuite.class,
     SimpleSFTestSuite.class,
