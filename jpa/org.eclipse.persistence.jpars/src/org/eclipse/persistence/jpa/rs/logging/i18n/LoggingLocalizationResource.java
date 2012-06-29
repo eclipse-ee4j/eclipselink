@@ -41,7 +41,9 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "jpars_could_not_find_descriptor", "JPARS could not find the descriptor for [{0}] while subscribing for event notification."},
         { "jpars_caught_exception", "An exception was thrown in JPA RS."},
         { "jpars_could_not_add_listener", "JPA RS was unable to add a change listener"},
-        { "weaving_required_for_relationships", "JPA RS can only handle relationships if your persistence unit is weaved.  Ensure weaving is not disabled and either deploy on a Java EE compliant server of statically weave your classes."}
+        { "weaving_required_for_relationships", "JPA RS can only handle relationships if your persistence unit is weaved.  Ensure weaving is not disabled and either deploy on a Java EE compliant server of statically weave your classes."},
+        { "jersey.container.cant.load", "Unable to instantiate Jersey ServletContainer."},
+        { "jersey.not.available", "No Jersey runtime found on the application classpath"}
     };
     
     @Override

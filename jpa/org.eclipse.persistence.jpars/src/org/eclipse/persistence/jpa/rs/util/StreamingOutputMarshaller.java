@@ -115,7 +115,7 @@ public class StreamingOutputMarshaller implements StreamingOutput {
      *             values are found.
      */
     public static MediaType mediaType(List<?> types) {
-        if (contains(types, MediaType.APPLICATION_JSON_TYPE)) {
+        if (contains(types, MediaType.APPLICATION_JSON_TYPE) || contains(types, MediaType.WILDCARD_TYPE)) {
             return MediaType.APPLICATION_JSON_TYPE;
         }
         if (contains(types, MediaType.APPLICATION_XML_TYPE)) {
@@ -130,7 +130,7 @@ public class StreamingOutputMarshaller implements StreamingOutput {
                 if (((String) mt).contains(type.toString())) {
                     return true;
                 }
-            } else if (((MediaType) mt).equals(type)) {
+            } else if ((((MediaType) mt).toString()).equals(type.toString())) {
                 return true;
             }
         }

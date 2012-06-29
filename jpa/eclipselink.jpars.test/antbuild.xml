@@ -121,6 +121,9 @@
         <selectbundle basename="javax.ejb" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
             criterion="[3.0.0,4.0.0)" property="javax.ejb.lib" includepath="true"
         />
+        <selectbundle basename="javax.servlet" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
+            criterion="[2.0.0,3.0.0)" property="javax.servlet.lib" includepath="true"
+        />
         <available file="${jaxb-api.lib}"      property="jaxb-api.lib.exist"/>
         <available file="${persistence20.lib}" property="persistence20.lib.exist"/>
         <available file="${jersey.lib}"        property="jersey.lib.exist"/>
@@ -185,6 +188,7 @@
             <pathelement path="${javax.ws.rs.lib}"/>
             <pathelement path="${jdbc.driver.jar}"/>
             <pathelement path="${javax.ejb.lib}"/>
+            <pathelement path="${javax.servlet.lib}"/>
         </path>
         <!-- Run path without product components -->
         <path id="jparstest.thirdparty.run.path">

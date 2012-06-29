@@ -10,8 +10,10 @@
  * Contributors:
  *      tware - initial 
  ******************************************************************************/
-package org.eclipse.persistence.jpa.rs;
+package org.eclipse.persistence.jpa.rs.jersey;
 
+import org.eclipse.persistence.jpa.rs.PersistenceFactory;
+import org.eclipse.persistence.jpa.rs.Service;
 import org.eclipse.persistence.jpa.rs.exceptions.ClassNotFoundExceptionMapper;
 import org.eclipse.persistence.jpa.rs.exceptions.IOExceptionMapper;
 import org.eclipse.persistence.jpa.rs.exceptions.IllegalAccessExceptionMapper;
@@ -28,9 +30,11 @@ import org.eclipse.persistence.jpa.rs.exceptions.NonUniqueResultExceptionExcepti
 
 import com.sun.jersey.api.core.DefaultResourceConfig;
 
-public class JparsResourceConfig extends DefaultResourceConfig {
-    public JparsResourceConfig() {
+public class Jersey1ResourceConfig extends DefaultResourceConfig {
+    
+    public Jersey1ResourceConfig() {
         getExplicitRootResources().put("/", Service.class);
+        getClasses().add(PersistenceFactory.class);
         getClasses().add(ClassNotFoundExceptionMapper.class);
         getClasses().add(IllegalAccessExceptionMapper.class);
         getClasses().add(IllegalArgumentExceptionMapper.class);

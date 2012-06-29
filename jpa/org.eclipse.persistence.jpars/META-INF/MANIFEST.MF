@@ -1,11 +1,11 @@
 Manifest-Version: 1.0
 Export-Package: org.eclipse.persistence.jpa.rs;version="2.5.0",
  org.eclipse.persistence.jpa.rs.eventlistener;version="2.5.0",
- org.eclipse.persistence.jpa.rs.exceptions,
- org.eclipse.persistence.jpa.rs.logging,
- org.eclipse.persistence.jpa.rs.logging.i18n,
+ org.eclipse.persistence.jpa.rs.exceptions;version="2.5.0",
+ org.eclipse.persistence.jpa.rs.logging;version="2.5.0",
+ org.eclipse.persistence.jpa.rs.logging.i18n;version="2.5.0",
  org.eclipse.persistence.jpa.rs.metadata;version="2.5.0",
- org.eclipse.persistence.jpa.rs.metadata.model,
+ org.eclipse.persistence.jpa.rs.metadata.model;version="2.5.0",
  org.eclipse.persistence.jpa.rs.util;version="2.5.0"
 Bundle-Name: EclipseLink JPA-RS
 Created-By: 1.6.0_21 (Sun Microsystems Inc.)
@@ -23,6 +23,7 @@ Import-Package: com.sun.jersey.api.core;resolution:=optional,
  javax.persistence,
  javax.persistence.metamodel,
  javax.persistence.spi,
+ javax.servlet;version="[2.4.0,2.5.0)",
  javax.ws.rs,
  javax.ws.rs.core,
  javax.ws.rs.ext,
