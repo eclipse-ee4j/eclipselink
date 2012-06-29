@@ -287,18 +287,23 @@ public class DatabaseTable implements Cloneable, Serializable {
     }
 
     /**
-     * This method will set the table name regardless if the name has
-     * a qualifier. Used when aliasing table names.
-     * 
-     * If the name contains database delimiters, they will be stripped and a flag will be set to have them 
-     * added when the DatabaseTable is written to SQL
-     * 
+     * Set the table name. 
+     * Used when aliasing table names.
      * @param name
      */
     public void setName(String name) {
         setName(name, null, null);
     }
     
+    /**
+     * Set the table name.
+     * Used when aliasing table names.
+     * 
+     * If the name contains database delimiters, they will be stripped and a flag will be set to have them 
+     * added when the DatabaseTable is written to SQL
+     * 
+     * @param name
+     */
     public void setName(String name, String startDelimiter, String endDelimiter) {
         if (name != null && (startDelimiter != null) && (endDelimiter != null) && !startDelimiter.equals("")&& !endDelimiter.equals("") && name.startsWith(startDelimiter) && name.endsWith(endDelimiter)){
             this.name = name.substring(startDelimiter.length(), name.length() - endDelimiter.length());

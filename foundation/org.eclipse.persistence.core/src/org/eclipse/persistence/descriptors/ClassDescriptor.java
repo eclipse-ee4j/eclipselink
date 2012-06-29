@@ -3763,13 +3763,8 @@ public class ClassDescriptor implements Cloneable, Serializable {
         while(tables.hasNext()) {
             DatabaseTable next = (DatabaseTable)tables.next();
             if(next.getName().indexOf(' ') != -1) {
-                //table names contains a space so needs to be quoted.
-                String startDelimiter = ((DatasourcePlatform)session.getDatasourcePlatform()).getStartDelimiter();
-                String endDelimiter = ((DatasourcePlatform)session.getDatasourcePlatform()).getEndDelimiter();
-                //Ensure this tablename hasn't already been quoted.
-                if(next.getName().indexOf(startDelimiter) == -1) {
-                    next.setName(startDelimiter + next.getName() + endDelimiter);
-                }
+                // EL Bug 382420 - set use delimiters to true if table name contains a space
+                next.setUseDelimiters(true);
             }
         }
         
