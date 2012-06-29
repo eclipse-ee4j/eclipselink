@@ -454,6 +454,10 @@ public class DatasourcePlatform implements Platform {
     public boolean isDB2() {
         return false;
     }
+    
+     public boolean isHANA() {
+         return false;
+     }
 
     public boolean isH2() {
         return false;
