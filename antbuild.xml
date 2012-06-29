@@ -247,7 +247,7 @@
                 <not>
                     <available file="${eclipselink.compdeps}/p2repo" type="dir"/>
                 </not>
-                <isset property="local.compdeps"/>
+                <equals arg1="${local.compdeps}" arg2="true"/>
             </and>
         </condition>
         <echo message="Compdeps Settings:"/>
