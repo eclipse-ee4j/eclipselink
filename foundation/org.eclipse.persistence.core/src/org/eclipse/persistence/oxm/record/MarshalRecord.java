@@ -703,32 +703,49 @@ public abstract class MarshalRecord extends XMLRecord {
     }
 
     // === Inner Classes ======================================================
+
+    private static final Object[] EMPTY_CYCLE_DATA = new Object[8];
     
     /**
      * A Stack-like List, used to detect object cycles during marshal operations.
      */
-    public class CycleDetectionStack<E> extends AbstractList<E> {
+    public class CycleDetectionStack<E> extends AbstractList<Object> {
 
-        private ArrayList<E> data = new ArrayList<E>(16);
+        private Object[] data = EMPTY_CYCLE_DATA;
+        
+        int currentIndex = 0;
 
         public void push(E item) {
-            data.add(item);
+            if (currentIndex == data.length) {
+                growArray();
+            }
+            data[currentIndex] = item;
+            currentIndex++;
         }
 
-        public E pop() {
-            return data.remove(data.size() - 1);
+        private void growArray() {
+            Object[] newArray = new Object[data.length * 2];
+            System.arraycopy(data, 0, newArray, 0, data.length);
+            data = newArray;
+        }
+
+        public Object pop() {
+            Object o = data[currentIndex - 1];
+            data[currentIndex - 1] = null;
+            currentIndex--;
+            return o;
         }
 
         public boolean contains(Object item, boolean equalsUsingIdentity) {
             if (equalsUsingIdentity) {
-                for (E e : data) {
-                    if (e == item) {
+                for (int i = 0; i < currentIndex; i++) {
+                    if (data[i] == item) {
                         return true;
                     }
                 }
             } else {
-                for (E e : data) {
-                    if (e.equals(item)) {
+                for (int i = 0; i < currentIndex; i++) {
+                    if (data[i] != null && data[i].equals(item)) {
                         return true;
                     }
                 }
@@ -739,9 +756,9 @@ public abstract class MarshalRecord extends XMLRecord {
         public String getCycleString() {
             StringBuilder sb = new StringBuilder();
             int i = size() - 1;
-            E obj = get(i);
+            Object obj = get(i);
             sb.append(obj);
-            E x;
+            Object x;
             do {
                 sb.append(" -> ");
                 x = get(--i);
@@ -752,13 +769,13 @@ public abstract class MarshalRecord extends XMLRecord {
         }
 
         @Override
-        public E get(int index) {
-            return data.get(index);
+        public Object get(int index) {
+            return data[index];
         }
 
         @Override
         public int size() {
-            return data.size();
+            return data.length;
         }
 
     }
