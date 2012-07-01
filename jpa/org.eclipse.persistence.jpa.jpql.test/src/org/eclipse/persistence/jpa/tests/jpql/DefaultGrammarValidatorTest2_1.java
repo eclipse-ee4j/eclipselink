@@ -82,35 +82,6 @@ public class DefaultGrammarValidatorTest2_1 extends AbstractGrammarValidatorTest
 	}
 
 	@Test
-	public final void test_FunctionExpression_MissingLeftParenthesis_1() throws Exception {
-
-		String query = "SELECT FUNCTION 'getName', 'String') FROM Employee e";
-		int startPosition = "SELECT FUNCTION".length();
-		int endPosition   = startPosition;
-
-		List<JPQLQueryProblem> problems = validate(query);
-
-		testHasOnlyOneProblem(
-			problems,
-			JPQLQueryProblemMessages.FunctionExpression_MissingLeftParenthesis,
-			startPosition,
-			endPosition
-		);
-	}
-
-	@Test
-	public final void test_FunctionExpression_MissingLeftParenthesis_2() throws Exception {
-
-		String query = "SELECT FUNCTION('getName', 'String') FROM Employee e";
-		List<JPQLQueryProblem> problems = validate(query);
-
-		testDoesNotHaveProblem(
-			problems,
-			JPQLQueryProblemMessages.FunctionExpression_MissingLeftParenthesis
-		);
-	}
-
-	@Test
 	public final void test_FunctionExpression_MissingRightParenthesis_1() throws Exception {
 
 		String query = "SELECT FUNCTION('getName', 'String' FROM Employee e";

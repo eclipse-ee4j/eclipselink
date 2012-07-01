@@ -43,7 +43,7 @@ public final class SingleValuedObjectPathExpressionBNF extends JPQLQueryBNF {
 	@Override
 	protected void initialize() {
 		super.initialize();
-
 		registerChild(GeneralIdentificationVariableBNF.ID);
+		registerChild(StateFieldPathExpressionBNF.ID);
 	}
 }

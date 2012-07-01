@@ -108,7 +108,7 @@ public final class ComparisonExpressionFactory extends ExpressionFactory {
 		// Now look for additional identifiers
 		if (operator == null) {
 			for (String identifier : identifiers()) {
-				if (wordParser.startsWithIdentifier(identifier)) {
+				if (wordParser.startsWith(identifier)) {
 					operator = identifier;
 					break;
 				}

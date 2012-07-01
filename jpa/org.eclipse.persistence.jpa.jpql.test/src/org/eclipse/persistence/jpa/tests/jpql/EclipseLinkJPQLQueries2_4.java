@@ -106,4 +106,15 @@ public final class EclipseLinkJPQLQueries2_4 {
 	public static String query_015() {
 		return "Select e from Employee e, table('TENANTS') t where e.tenant = t.TENANT and t.ACTIVE = true";
 	}
+
+	public static String query_016() {
+		return "Update Employee set name='JPQL' WHERE column!='value'";
+	}
+
+	public static String query_017() {
+		return "select DISTINCT NEW com.ca.waae.dbaccess.dao.MetaPropDef(p.id.metaId, p.jilName, p.dbTable, p.dbColumn, p.dbType) " +
+		       "FROM UjoMetaProperty p " +
+		       "WHERE p.dbTable!='tablename' " +
+		       "ORDER BY p.id.metaId";
+	}
 }

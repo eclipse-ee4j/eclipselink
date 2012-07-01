@@ -18,7 +18,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  *
  * <div nowrap><b>BNF:</b> <code>conditional_primary ::= simple_cond_expression | (conditional_expression)</code><p>
  *
- * @version 2.4
+ * @version 2.4.1
  * @since 2.3
  * @author Pascal Filion
  */
@@ -44,6 +44,7 @@ public final class ConditionalPrimaryBNF extends JPQLQueryBNF {
 	protected void initialize() {
 		super.initialize();
 
+		setFallbackBNFId(PreLiteralExpressionBNF.ID);
 		registerChild(SimpleConditionalExpressionBNF.ID);
 		registerChild(ConditionalExpressionBNF.ID);
 	}

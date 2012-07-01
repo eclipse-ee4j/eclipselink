@@ -77,7 +77,7 @@ public final class NotExpressionFactory extends ExpressionFactory {
 		}
 		// 'NOT'
 		else {
-			expression = new NotExpression(parent, queryBNF);
+			expression = new NotExpression(parent);
 		}
 
 		expression.parse(wordParser, tolerant);

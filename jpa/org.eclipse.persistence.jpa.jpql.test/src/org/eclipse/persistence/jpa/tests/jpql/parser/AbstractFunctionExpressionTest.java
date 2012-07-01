@@ -37,6 +37,22 @@ public abstract class AbstractFunctionExpressionTest extends JPQLParserTest {
 		};
 	}
 
+	private JPQLQueryStringFormatter buildQueryStringFormatter_3(final String jpqlQuery) {
+		return new JPQLQueryStringFormatter() {
+			public String format(String query) {
+				return jpqlQuery;
+			}
+		};
+	}
+
+	private JPQLQueryStringFormatter buildQueryStringFormatter_4(final String jpqlQuery) {
+		return new JPQLQueryStringFormatter() {
+			public String format(String query) {
+				return jpqlQuery.replaceAll("=", " = ").replaceAll("\\s+", " ");
+			}
+		};
+	}
+
 	protected abstract String functionName(int index);
 
 	protected abstract String identifier(int index);
@@ -64,38 +80,33 @@ public abstract class AbstractFunctionExpressionTest extends JPQLParserTest {
 		String functionName = functionName(index);
 
 		// SELECT FUNCTION('FUNCTION_NAME') FROM Employee e
-		String query = "SELECT " + identifier + "(" + functionName + ") " +
-		               "FROM Employee e";
+		String jpqlQuery = "SELECT " + identifier + "(" + functionName + ") " +
+		                   "FROM Employee e";
 
 		ExpressionTester selectStatement = selectStatement(
 			select(function(identifier, functionName)),
 			from("Employee", "e")
 		);
 
-		testQuery(query, selectStatement);
+		testQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_02() {
 
 		String identifier = identifier(index);
-		String functionName = ExpressionTools.EMPTY_STRING;
+		String variable = identifier.toLowerCase();
+		String entityName = Character.toUpperCase(identifier.charAt(0)) + identifier.toLowerCase().substring(1);
 
-		// SELECT FUNCTION FROM Employee e
-		String query = "SELECT " + identifier + " FROM Employee e";
-
-		FunctionExpressionTester function = function(identifier, functionName);
-		function.hasComma = false;
-		function.hasLeftParenthesis = false;
-		function.hasRightParenthesis = false;
-		function.hasSpaceAfterComma = false;
+		// SELECT FUNCTION FROM Employee FUNCTION
+		String jpqlQuery = "SELECT " + variable + " FROM " + entityName + " " + variable;
 
 		ExpressionTester selectStatement = selectStatement(
-			select(function),
-			from("Employee", "e")
+			select(variable(variable)),
+			from(entityName, variable)
 		);
 
-		testInvalidQuery(query, selectStatement);
+		testQuery(jpqlQuery, selectStatement, buildQueryStringFormatter_3(jpqlQuery));
 	}
 
 	@Test
@@ -105,7 +116,7 @@ public abstract class AbstractFunctionExpressionTest extends JPQLParserTest {
 		String functionName = ExpressionTools.EMPTY_STRING;
 
 		// SELECT FUNCTION( FROM Employee e
-		String query = "SELECT " + identifier + "( FROM Employee e";
+		String jpqlQuery = "SELECT " + identifier + "( FROM Employee e";
 
 		FunctionExpressionTester function = function(identifier, functionName);
 		function.hasComma = false;
@@ -118,7 +129,7 @@ public abstract class AbstractFunctionExpressionTest extends JPQLParserTest {
 			from("Employee", "e")
 		);
 
-		testInvalidQuery(query, selectStatement);
+		testInvalidQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
@@ -128,7 +139,7 @@ public abstract class AbstractFunctionExpressionTest extends JPQLParserTest {
 		String functionName = ExpressionTools.EMPTY_STRING;
 
 		// SELECT FUNCTION(, FROM Employee e
-		String query = "SELECT " + identifier + "(, FROM Employee e";
+		String jpqlQuery = "SELECT " + identifier + "(, FROM Employee e";
 
 		FunctionExpressionTester function = function(identifier, functionName);
 		function.hasComma = true;
@@ -141,7 +152,7 @@ public abstract class AbstractFunctionExpressionTest extends JPQLParserTest {
 			from("Employee", "e")
 		);
 
-		testInvalidQuery(query, selectStatement);
+		testInvalidQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
@@ -151,7 +162,7 @@ public abstract class AbstractFunctionExpressionTest extends JPQLParserTest {
 		String functionName = ExpressionTools.EMPTY_STRING;
 
 		// SELECT FUNCTION(,) FROM Employee e
-		String query = "SELECT " + identifier + "(,) FROM Employee e";
+		String jpqlQuery = "SELECT " + identifier + "(,) FROM Employee e";
 
 		FunctionExpressionTester function = function(identifier, functionName);
 		function.hasComma = true;
@@ -164,7 +175,7 @@ public abstract class AbstractFunctionExpressionTest extends JPQLParserTest {
 			from("Employee", "e")
 		);
 
-		testInvalidQuery(query, selectStatement);
+		testInvalidQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
@@ -174,7 +185,7 @@ public abstract class AbstractFunctionExpressionTest extends JPQLParserTest {
 		String functionName = ExpressionTools.EMPTY_STRING;
 
 		// SELECT FUNCTION(, ) FROM Employee e
-		String query = "SELECT " + identifier + "(, ) FROM Employee e";
+		String jpqlQuery = "SELECT " + identifier + "(, ) FROM Employee e";
 
 		FunctionExpressionTester function = function(identifier, functionName);
 		function.hasComma = true;
@@ -187,7 +198,7 @@ public abstract class AbstractFunctionExpressionTest extends JPQLParserTest {
 			from("Employee", "e")
 		);
 
-		testInvalidQuery(query, selectStatement, buildQueryStringFormatter_1());
+		testInvalidQuery(jpqlQuery, selectStatement, buildQueryStringFormatter_1());
 	}
 
 	@Test
@@ -197,7 +208,7 @@ public abstract class AbstractFunctionExpressionTest extends JPQLParserTest {
 		String functionName = ExpressionTools.EMPTY_STRING;
 
 		// SELECT FUNCTION(, e) FROM Employee e
-		String query = "SELECT " + identifier + "(, e) FROM Employee e";
+		String jpqlQuery = "SELECT " + identifier + "(, e) FROM Employee e";
 
 		FunctionExpressionTester function = function(identifier, functionName, variable("e"));
 		function.hasComma = true;
@@ -210,7 +221,7 @@ public abstract class AbstractFunctionExpressionTest extends JPQLParserTest {
 			from("Employee", "e")
 		);
 
-		testInvalidQuery(query, selectStatement);
+		testInvalidQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
@@ -220,7 +231,7 @@ public abstract class AbstractFunctionExpressionTest extends JPQLParserTest {
 		String functionName = ExpressionTools.EMPTY_STRING;
 
 		// SELECT FUNCTION(e) FROM Employee e
-		String query = "SELECT " + identifier + "(e) FROM Employee e";
+		String jpqlQuery = "SELECT " + identifier + "(e) FROM Employee e";
 
 		FunctionExpressionTester function = function(identifier, functionName, variable("e"));
 		function.hasComma = false;
@@ -233,7 +244,7 @@ public abstract class AbstractFunctionExpressionTest extends JPQLParserTest {
 			from("Employee", "e")
 		);
 
-		testInvalidQuery(query, selectStatement);
+		testInvalidQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
@@ -243,7 +254,7 @@ public abstract class AbstractFunctionExpressionTest extends JPQLParserTest {
 		String functionName = ExpressionTools.EMPTY_STRING;
 
 		// SELECT FUNCTION(e FROM Employee e
-		String query = "SELECT " + identifier + "(e FROM Employee e";
+		String jpqlQuery = "SELECT " + identifier + "(e FROM Employee e";
 
 		FunctionExpressionTester function = function(identifier, functionName, variable("e"));
 		function.hasComma = false;
@@ -256,7 +267,7 @@ public abstract class AbstractFunctionExpressionTest extends JPQLParserTest {
 			from("Employee", "e")
 		);
 
-		testInvalidQuery(query, selectStatement);
+		testInvalidQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
@@ -266,7 +277,7 @@ public abstract class AbstractFunctionExpressionTest extends JPQLParserTest {
 		String functionName = functionName(index);
 
 		// SELECT FUNCTION('functionName' FROM Employee e
-		String query = "SELECT " + identifier + "(" + functionName + " FROM Employee e";
+		String jpqlQuery = "SELECT " + identifier + "(" + functionName + " FROM Employee e";
 
 		FunctionExpressionTester function = function(identifier, functionName);
 		function.hasComma = false;
@@ -279,7 +290,7 @@ public abstract class AbstractFunctionExpressionTest extends JPQLParserTest {
 			from("Employee", "e")
 		);
 
-		testInvalidQuery(query, selectStatement);
+		testInvalidQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
@@ -289,7 +300,7 @@ public abstract class AbstractFunctionExpressionTest extends JPQLParserTest {
 		String functionName = functionName(index);
 
 		// SELECT FUNCTION('functionName', FROM Employee e
-		String query = "SELECT " + identifier + "(" + functionName + ", FROM Employee e";
+		String jpqlQuery = "SELECT " + identifier + "(" + functionName + ", FROM Employee e";
 
 		FunctionExpressionTester function = function(identifier, functionName);
 		function.hasComma = true;
@@ -302,7 +313,7 @@ public abstract class AbstractFunctionExpressionTest extends JPQLParserTest {
 			from("Employee", "e")
 		);
 
-		testInvalidQuery(query, selectStatement);
+		testInvalidQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
@@ -312,7 +323,7 @@ public abstract class AbstractFunctionExpressionTest extends JPQLParserTest {
 		String functionName = functionName(index);
 
 		// SELECT FUNCTION('functionName',) FROM Employee e
-		String query = "SELECT " + identifier + "(" + functionName + ",) FROM Employee e";
+		String jpqlQuery = "SELECT " + identifier + "(" + functionName + ",) FROM Employee e";
 
 		FunctionExpressionTester function = function(identifier, functionName);
 		function.hasComma = true;
@@ -325,7 +336,7 @@ public abstract class AbstractFunctionExpressionTest extends JPQLParserTest {
 			from("Employee", "e")
 		);
 
-		testInvalidQuery(query, selectStatement);
+		testInvalidQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
@@ -335,7 +346,7 @@ public abstract class AbstractFunctionExpressionTest extends JPQLParserTest {
 		String functionName = functionName(index);
 
 		// SELECT FUNCTION('functionName', ) FROM Employee e
-		String query = "SELECT " + identifier + "(" + functionName + ", ) FROM Employee e";
+		String jpqlQuery = "SELECT " + identifier + "(" + functionName + ", ) FROM Employee e";
 
 		FunctionExpressionTester function = function(identifier, functionName);
 		function.hasComma = true;
@@ -348,7 +359,7 @@ public abstract class AbstractFunctionExpressionTest extends JPQLParserTest {
 			from("Employee", "e")
 		);
 
-		testInvalidQuery(query, selectStatement, buildQueryStringFormatter_2());
+		testInvalidQuery(jpqlQuery, selectStatement, buildQueryStringFormatter_2());
 	}
 
 	@Test
@@ -358,7 +369,7 @@ public abstract class AbstractFunctionExpressionTest extends JPQLParserTest {
 		String functionName = functionName(index);
 
 		// SELECT FUNCTION('functionName', LENGTH(e.name)) FROM Employee e
-		String query = "SELECT " + identifier + "(" + functionName + ", LENGTH(e.name)) FROM Employee e";
+		String jpqlQuery = "SELECT " + identifier + "(" + functionName + ", LENGTH(e.name)) FROM Employee e";
 
 		FunctionExpressionTester function = function(
 			identifier,
@@ -376,7 +387,7 @@ public abstract class AbstractFunctionExpressionTest extends JPQLParserTest {
 			from("Employee", "e")
 		);
 
-		testInvalidQuery(query, selectStatement);
+		testInvalidQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
@@ -386,9 +397,12 @@ public abstract class AbstractFunctionExpressionTest extends JPQLParserTest {
 		String functionName1 = functionName(index++);
 		String functionName2 = functionName(index);
 
-		String query = "SELECT " + identifier + "(" + functionName1 + ", e.firstName, 'NoFirstName')," +
-		               "       " + identifier + "(" + functionName2 + ", e.lastName,  'NoLastName' ) " +
-		               "FROM Employee e";
+		// SELECT FUNCTION('functionName', e.firstName, 'NoFirstName'),
+		//        FUNCTION('functionName', e.lastName, 'NoLastName')
+		// FROM Employee e
+		String jpqlQuery = "SELECT " + identifier + "(" + functionName1 + ", e.firstName, 'NoFirstName')," +
+		                   "       " + identifier + "(" + functionName2 + ", e.lastName,  'NoLastName' ) " +
+		                   "FROM Employee e";
 
 		ExpressionTester selectStatement = selectStatement(
 			select(
@@ -398,7 +412,7 @@ public abstract class AbstractFunctionExpressionTest extends JPQLParserTest {
 			from("Employee", "e")
 		);
 
-		testQuery(query, selectStatement);
+		testQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
@@ -407,11 +421,11 @@ public abstract class AbstractFunctionExpressionTest extends JPQLParserTest {
 		String identifier = identifier(index);
 		String functionName = functionName(index);
 
-		String query = "SELECT a " +
-		               "FROM Asset a, Geography selectedGeography " +
-		               "WHERE selectedGeography.id = :id AND " +
-		               "      a.id IN :id_list AND " +
-		               "      " + identifier + "(" + functionName + ", a.geometry, selectedGeography.geometry) = 'TRUE'";
+		String jpqlQuery = "SELECT a " +
+		                   "FROM Asset a, Geography selectedGeography " +
+		                   "WHERE selectedGeography.id = :id AND " +
+		                   "      a.id IN :id_list AND " +
+		                   "      " + identifier + "(" + functionName + ", a.geometry, selectedGeography.geometry) = 'TRUE'";
 
 		ExpressionTester selectStatement = selectStatement(
 			select(variable("a")),
@@ -428,6 +442,41 @@ public abstract class AbstractFunctionExpressionTest extends JPQLParserTest {
 			)
 		);
 
-		testQuery(query, selectStatement);
+		testQuery(jpqlQuery, selectStatement);
+	}
+
+	@Test
+	public void testBuildExpression_17() {
+
+		String identifier = identifier(index);
+		String functionName = functionName(index);
+		String variable = identifier.toLowerCase();
+		String entityName = Character.toUpperCase(identifier.charAt(0)) + identifier.toLowerCase().substring(1);
+
+		// SELECT function FROM Function function
+		// WHERE     function.function=FUNCTION('functionName')
+		//       AND
+		//           function=function
+		// ORDER BY e.name
+		String jpqlQuery = "SELECT " + variable + " " +
+		                   "FROM " + entityName + " " + variable + " " +
+		                   "WHERE " + variable + "." + variable + " = " + identifier + "(" + functionName + ") " +
+		                   "      AND" +
+		                   "      " + variable + "=" + variable + " " +
+		                   "ORDER BY e.name";
+
+		ExpressionTester selectStatement = selectStatement(
+			select(variable(variable)),
+			from(entityName, variable),
+			where(
+					path(variable + "." + variable).equal(function(identifier, functionName))
+				.and(
+					variable(variable).equal(variable(variable))
+				)
+			),
+			orderBy(orderByItem("e.name"))
+		);
+
+		testQuery(jpqlQuery, selectStatement, buildQueryStringFormatter_4(jpqlQuery));
 	}
 }

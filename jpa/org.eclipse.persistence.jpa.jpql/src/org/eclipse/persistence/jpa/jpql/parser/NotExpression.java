@@ -20,7 +20,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
 /**
  * <div nowrap><b>BNF:</b> <code>expression ::= NOT conditional_primary</code><p>
  *
- * @version 2.4
+ * @version 2.4.1
  * @since 2.3
  * @author Pascal Filion
  */
@@ -42,19 +42,13 @@ public final class NotExpression extends AbstractExpression {
 	private String identifier;
 
 	/**
-	 * The BNF coming from the parent expression that was used to parse the query.
-	 */
-	private JPQLQueryBNF queryBNF;
-
-	/**
 	 * Creates a new <code>NotExpression</code>.
 	 *
 	 * @param parent The parent of this expression
 	 * @param queryBNF The BNF coming from the parent expression that was used to parse the query
 	 */
-	public NotExpression(AbstractExpression parent, JPQLQueryBNF queryBNF) {
+	public NotExpression(AbstractExpression parent) {
 		super(parent, NOT);
-		this.queryBNF = queryBNF;
 	}
 
 	/**
@@ -122,7 +116,7 @@ public final class NotExpression extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	public JPQLQueryBNF getQueryBNF() {
-		return queryBNF;
+		return getQueryBNF(ConditionalPrimaryBNF.ID);
 	}
 
 	/**
@@ -150,10 +144,20 @@ public final class NotExpression extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
+	protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
+		return wordParser.startsWithIdentifier(AND) ||
+		       wordParser.startsWithIdentifier(OR)  ||
+		       super.isParsingComplete(wordParser, word, expression);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	protected void parse(WordParser wordParser, boolean tolerant) {
 		identifier = wordParser.moveForward(NOT);
 		hasSpaceAfterNot = wordParser.skipLeadingWhitespace() > 0;
-		expression = parse(wordParser, queryBNF.getId(), tolerant);
+		expression = parse(wordParser, ConditionalPrimaryBNF.ID, tolerant);
 	}
 
 	/**

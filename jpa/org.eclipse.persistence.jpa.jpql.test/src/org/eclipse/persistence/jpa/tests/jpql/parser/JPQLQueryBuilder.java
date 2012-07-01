@@ -407,18 +407,36 @@ public final class JPQLQueryBuilder {
 
 					whitespaceParsed = 0;
 				}
-				// Add a whitespace before and after <, <=, =, >=, >, <>
+				// !=
+				else if (character == '!') {
+
+					if (index + 1 < count) {
+						char nextCharacter = jpqlQuery.charAt(index + 1);
+
+						// != needs to have whitespace around it
+						if ((nextCharacter == '=') && (whitespaceParsed == 0)) {
+							sb.append(' ');
+						}
+					}
+
+					whitespaceParsed = 0;
+				}
+				// Add a whitespace before and after <, <=, =, >=, >, <>, !=
 				else if ((character == '=') ||
 				         (character == '<') ||
 				         (character == '>')) {
 
 					char previousCharacter = jpqlQuery.charAt(index - 1);
 
+					if (character == '=' &&
+					    previousCharacter == '!') {
+
+						// Don't do anything for !=
+					}
 					// Add a whitespace before
-					if ((previousCharacter != '>') &&
-					    (previousCharacter != '<') &&
-					    (previousCharacter != '!') && /* Add support for something like !"#%/ */
-					    (whitespaceParsed == 0)) {
+					else if ((previousCharacter != '>') &&
+					         (previousCharacter != '<') &&
+					         (whitespaceParsed == 0)) {
 
 						sb.append(' ');
 					}
@@ -427,7 +445,7 @@ public final class JPQLQueryBuilder {
 					if (index + 1 < count) {
 						char nextCharacter = jpqlQuery.charAt(index + 1);
 
-						// Don't add a whitespace if it's <=, >= or <>
+						// Don't add a whitespace if it's <=, >=, <>, !=
 						if ((nextCharacter != '=') &&
 						    (nextCharacter != '>') &&
 						    !Character.isWhitespace(nextCharacter)) {
