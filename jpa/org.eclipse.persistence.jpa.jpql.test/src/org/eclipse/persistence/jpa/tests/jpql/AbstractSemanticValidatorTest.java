@@ -1120,6 +1120,23 @@ public abstract class AbstractSemanticValidatorTest extends AbstractValidatorTes
 	}
 
 	@Test
+	public final void test_InvalidQuery_03() throws Exception {
+
+		String jpqlQuery  = "SELECT i FROM Product i WHERE i.enumType=:category ORDER BY i.id\"";
+		int startPosition = "SELECT i FROM Product i WHERE i.enumType = :category ORDER BY ".length();
+		int endPosition   = "SELECT i FROM Product i WHERE i.enumType = :category ORDER BY i.id\"".length();
+
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+
+		testHasOnlyOneProblem(
+			problems,
+			StateFieldPathExpression_NotResolvable,
+			startPosition,
+			endPosition
+		);
+	}
+
+	@Test
 	public final void test_StateFieldPathExpression_AssociationField_01() throws Exception {
 
 		String jpqlQuery  = "SELECT MIN(e.managerEmployee) FROM Employee e";
@@ -1639,6 +1656,14 @@ public abstract class AbstractSemanticValidatorTest extends AbstractValidatorTes
 	public final void test_ValidQuery_02() throws Exception {
 
 		String jpqlQuery = "SELECT p FROM Product p WHERE TYPE(p.project) <> SmallProject";
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+		testHasNoProblems(problems);
+	}
+
+	@Test
+	public final void test_ValidQuery_03() throws Exception {
+
+		String jpqlQuery = "SELECT i FROM Customer i WHERE i.home=:category ORDER BY i.id";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
 		testHasNoProblems(problems);
 	}
