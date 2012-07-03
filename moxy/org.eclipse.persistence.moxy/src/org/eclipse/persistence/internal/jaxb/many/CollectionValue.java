@@ -16,6 +16,8 @@ import java.util.Collection;
 
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+
 /**
  * 
  * This abstract class is used to support JAXBContext creation with a List class.
@@ -24,6 +26,13 @@ import javax.xml.bind.annotation.XmlTransient;
 
 @XmlTransient
 public abstract class CollectionValue<T> extends ManyValue<T, Object> {
+
+    public CollectionValue() {
+        try {
+            setItem(PrivilegedAccessHelper.newInstanceFromClass(containerClass()));
+        } catch (Exception e) {
+        }
+    }
 
     @Override
     public boolean isArray() {

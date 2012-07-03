@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.json.rootlevellist;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 
@@ -26,6 +27,24 @@ public class WithXmlRootElementJAXBElementSetTestCases extends WithXmlRootElemen
 
     @Override
     protected Collection<JAXBElement<WithXmlRootElementRoot>> getControlObject() {
+        Collection<JAXBElement<WithXmlRootElementRoot>> set = new ArrayList<JAXBElement<WithXmlRootElementRoot>>(2);
+
+        WithXmlRootElementRoot foo = new WithXmlRootElementRoot();
+        foo.setName("FOO");
+        JAXBElement<WithXmlRootElementRoot> jbe1 = new JAXBElement<WithXmlRootElementRoot>(new QName("roottest1"), WithXmlRootElementRoot.class, foo);
+        set.add(jbe1);
+
+        WithXmlRootElementRoot bar = new WithXmlRootElementRoot();
+        bar.setName("BAR");
+        JAXBElement<WithXmlRootElementRoot> jbe2 = new JAXBElement<WithXmlRootElementRoot>(new QName("roottest2"), WithXmlRootElementRoot.class, bar);
+
+        set.add(jbe2);
+
+        return set;
+    }
+
+    @Override
+    public Collection<JAXBElement<WithXmlRootElementRoot>> getWriteControlObject() {
     	Collection<JAXBElement<WithXmlRootElementRoot>> set = new LinkedHashSet<JAXBElement<WithXmlRootElementRoot>>(2);
 
         WithXmlRootElementRoot foo = new WithXmlRootElementRoot();

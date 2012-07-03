@@ -13,6 +13,7 @@
 package org.eclipse.persistence.testing.jaxb.json.rootlevellist;
 
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -32,9 +33,27 @@ public class WithXmlRootElementJAXBElementTestCases extends JSONMarshalUnmarshal
         setClasses(new Class[] {WithXmlRootElementRoot.class});
         setControlJSON(CONTROL_JSON);
     }
-  
+
     @Override
     protected Collection<JAXBElement<WithXmlRootElementRoot>> getControlObject() {
+        Collection<JAXBElement<WithXmlRootElementRoot>> list = new ArrayList<JAXBElement<WithXmlRootElementRoot>>(2);
+
+        WithXmlRootElementRoot foo = new WithXmlRootElementRoot();
+        foo.setName("FOO");
+        JAXBElement<WithXmlRootElementRoot> jbe1 = new JAXBElement<WithXmlRootElementRoot>(new QName("roottest1"), WithXmlRootElementRoot.class, foo);
+        list.add(jbe1);
+
+        WithXmlRootElementRoot bar = new WithXmlRootElementRoot();
+        bar.setName("BAR");
+        JAXBElement<WithXmlRootElementRoot> jbe2 = new JAXBElement<WithXmlRootElementRoot>(new QName("roottest2"), WithXmlRootElementRoot.class, bar);
+
+        list.add(jbe2);
+
+        return list;
+    }
+
+    @Override
+    public Collection<JAXBElement<WithXmlRootElementRoot>> getWriteControlObject() {
         Collection<JAXBElement<WithXmlRootElementRoot>> list = new LinkedHashSet<JAXBElement<WithXmlRootElementRoot>>(2);
 
         WithXmlRootElementRoot foo = new WithXmlRootElementRoot();

@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.json.rootlevellist;
 
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.Collection;
 
@@ -25,7 +26,7 @@ public class WithoutXmlRootElementJAXBElementSetTestCases extends WithoutXmlRoot
     }
 
     @Override
-    protected Collection<JAXBElement<WithoutXmlRootElementRoot>> getControlObject() {
+    public Collection<JAXBElement<WithoutXmlRootElementRoot>> getWriteControlObject() {
         Collection<JAXBElement<WithoutXmlRootElementRoot>> list = new LinkedHashSet<JAXBElement<WithoutXmlRootElementRoot>>(2);
 
         WithoutXmlRootElementRoot foo = new WithoutXmlRootElementRoot();
@@ -41,7 +42,25 @@ public class WithoutXmlRootElementJAXBElementSetTestCases extends WithoutXmlRoot
         list.add(jbe2);
 
         return list;
-       
+    }
+
+    @Override
+    public Collection<JAXBElement<WithoutXmlRootElementRoot>> getControlObject() {
+        Collection<JAXBElement<WithoutXmlRootElementRoot>> list = new ArrayList<JAXBElement<WithoutXmlRootElementRoot>>(2);
+
+        WithoutXmlRootElementRoot foo = new WithoutXmlRootElementRoot();
+        foo.setName("FOO");
+        JAXBElement<WithoutXmlRootElementRoot> jbe1 = new JAXBElement<WithoutXmlRootElementRoot>(new QName("roottest1"), WithoutXmlRootElementRoot.class, foo);
+
+        list.add(jbe1);
+
+        WithoutXmlRootElementRoot bar = new WithoutXmlRootElementRoot();
+        bar.setName("BAR");
+        JAXBElement<WithoutXmlRootElementRoot> jbe2 = new JAXBElement<WithoutXmlRootElementRoot>(new QName("roottest2"), WithoutXmlRootElementRoot.class, bar);
+
+        list.add(jbe2);
+
+        return list;
     }
 
 }

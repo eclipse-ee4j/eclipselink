@@ -372,6 +372,7 @@ public abstract class OXTestCase extends XMLTestCase {
             Collection testCollection = (Collection)testValue;
             Iterator<Object> controlIter = controlCollection.iterator();
             Iterator<Object> testIter = testCollection.iterator();
+            assertEquals(controlCollection.getClass(), testCollection.getClass());
             assertEquals(controlCollection.size(), testCollection.size());
             while(controlIter.hasNext()){
                 Object nextControl = controlIter.next();
