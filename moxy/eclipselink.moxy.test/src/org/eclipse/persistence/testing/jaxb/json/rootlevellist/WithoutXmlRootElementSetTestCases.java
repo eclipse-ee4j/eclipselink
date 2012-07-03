@@ -14,6 +14,7 @@ package org.eclipse.persistence.testing.jaxb.json.rootlevellist;
 
 import java.io.InputStream;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -58,7 +59,7 @@ public class WithoutXmlRootElementSetTestCases extends JSONMarshalUnmarshalTestC
 
     @Override
 	public Object getReadControlObject() {
-    	JAXBElement elem = new JAXBElement(new QName(""),WithoutXmlRootElementRoot.class, getControlObject() );
+    	JAXBElement elem = new JAXBElement(new QName(""),WithoutXmlRootElementRoot.class, new ArrayList<WithoutXmlRootElementRoot>(getControlObject()) );
     	
     	return elem;
     }
