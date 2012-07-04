@@ -343,7 +343,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     }
 
     public Object unmarshal(InputSource inputSource) {
-        if (inputSource != null) {
+        if (inputSource != null && null == inputSource.getSystemId()) {
             inputSource.setSystemId(this.systemId);
         }
         return unmarshal(getXMLReader(), inputSource);
@@ -351,7 +351,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
 
     public Object unmarshal(InputSource inputSource, XMLReader xmlReader) {
         try {
-            if (inputSource != null) {
+            if (inputSource != null && null == inputSource.getSystemId()) {
                 inputSource.setSystemId(this.systemId);
             }
 
@@ -374,14 +374,14 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     }
 
     public Object unmarshal(InputSource inputSource, Class clazz) {
-        if (inputSource != null) {
+        if (inputSource != null && null == inputSource.getSystemId()) {
             inputSource.setSystemId(this.systemId);
         }
         return unmarshal(getXMLReader(clazz), inputSource, clazz);
     }
 
     public Object unmarshal(InputSource inputSource, Class clazz, XMLReader xmlReader) {
-        if (inputSource != null) {
+        if (inputSource != null && null == inputSource.getSystemId()) {
             inputSource.setSystemId(this.systemId);
         }
         boolean isPrimitiveWrapper = isPrimitiveWrapper(clazz);

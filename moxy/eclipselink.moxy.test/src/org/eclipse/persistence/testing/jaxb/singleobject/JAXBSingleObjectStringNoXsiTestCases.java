@@ -89,68 +89,9 @@ public class JAXBSingleObjectStringNoXsiTestCases extends JAXBWithJSONTestCases 
 		return XML_RESOURCE;
 	}
 
-    public void testXMLToObjectFromXMLStreamReader() throws Exception {
-        if(null != XML_INPUT_FACTORY) {
-            InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
-            XMLStreamReader xmlStreamReader = XML_INPUT_FACTORY.createXMLStreamReader(instream);
-            Object testObject = jaxbUnmarshaller.unmarshal(xmlStreamReader, String.class);
-            instream.close();
-            xmlToObjectTest(testObject);
-        }
-    }
-
-    @Override
-    public void testXMLToObjectFromXMLStreamReaderEx() throws Exception {
-        if(null != XML_INPUT_FACTORY) {
-            InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
-            XMLStreamReader xmlStreamReader = XML_INPUT_FACTORY.createXMLStreamReader(instream);
-
-            ExtendedXMLStreamReaderReader xmlStreamReaderReaderEx = new ExtendedXMLStreamReaderReader();
-            XMLStreamReaderInputSource xmlStreamReaderInputSource = new XMLStreamReaderInputSource(xmlStreamReader);
-            SAXSource saxSource = new SAXSource(xmlStreamReaderReaderEx, xmlStreamReaderInputSource);
-
-            Object testObject = jaxbUnmarshaller.unmarshal(saxSource, String.class);
-            instream.close();
-            xmlToObjectTest(testObject);
-        }
-    }
-    
-
-    public void testXMLToObjectFromXMLEventReader() throws Exception {
-        if(null != XML_INPUT_FACTORY) {
-            InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
-            XMLEventReader xmlEventReader = XML_INPUT_FACTORY.createXMLEventReader(instream);
-            Object testObject = jaxbUnmarshaller.unmarshal(xmlEventReader, String.class);
-            instream.close();
-            xmlToObjectTest(testObject);
-        }
-    }
-
-    public void testXMLToObjectFromNode() throws Exception {
-        InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
-        InputSource inputSource = new InputSource(instream);
-        Document testDocument = parser.parse(inputSource);
-        Object testObject = getJAXBUnmarshaller().unmarshal(testDocument, String.class);
-        instream.close();
-        xmlToObjectTest(testObject);
-    }
-    
-    
-    public void testXMLToObjectFromURL() throws Exception {
-    }
-    
-    
     public void testUnmarshallerHandler() throws Exception {
     }
 
-    
-    public void testXMLToObjectFromInputStream() throws Exception {
-        InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
-        Object testObject = jaxbUnmarshaller.unmarshal(new StreamSource(instream), String.class);
-        instream.close();
-        xmlToObjectTest(testObject);
-    }
-    
     public void testRoundTrip() throws Exception{
     	if(isUnmarshalTest()) {
     		InputStream instream = null;
@@ -167,22 +108,9 @@ public class JAXBSingleObjectStringNoXsiTestCases extends JAXBWithJSONTestCases 
         }    	
     }
     
-    public void testJSONUnmarshalFromInputStream() throws Exception {
-    	jaxbUnmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, "application/json");
-        InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);
-        Object testObject = jaxbUnmarshaller.unmarshal(new StreamSource(inputStream), String.class);
-        inputStream.close();
-        jsonToObjectTest(testObject);
-    }
-
-    public void testJSONUnmarshalFromInputSource() throws Exception {
-        
-    }
-
-    public void testJSONUnmarshalFromReader() throws Exception {
-    }
-
-    public void testJSONUnmarshalFromURL() throws Exception {     
+    @Override
+    public Class getUnmarshalClass() {
+        return String.class;
     }
 
 }
