@@ -18,7 +18,7 @@ import java.util.ListResourceBundle;
 /**
  * The resource bundle containing the problems encountered in a JPQL query.
  *
- * @version 2.4
+ * @version 2.4.1
  * @since 2.3
  * @author Pascal Filion
  */
@@ -523,8 +523,8 @@ public final class JPQLQueryProblemResourceBundle extends ListResourceBundle {
 			{"SUBSTRING_EXPRESSION_MISSING_THIRD_EXPRESSION",     "The third argument is missing from the SUBSTRING expression."},
 			// SubstringExpression - Semantic
 			{"SUBSTRING_EXPRESSION_FIRST_EXPRESSION_WRONG_TYPE",  "The first argument is not a String value."},
-			{"SUBSTRING_EXPRESSION_SECOND_EXPRESSION_WRONG_TYPE", "The first argument is not an integer value."},
-			{"SUBSTRING_EXPRESSION_THIRD_EXPRESSION_WRONG_TYPE",  "The first argument is not an integer value."},
+			{"SUBSTRING_EXPRESSION_SECOND_EXPRESSION_WRONG_TYPE", "The second argument is not an integer value."},
+			{"SUBSTRING_EXPRESSION_THIRD_EXPRESSION_WRONG_TYPE",  "The third argument is not an integer value."},
 
 			// SumFunction - Grammar
 			{"SUM_FUNCTION_INVALID_EXPRESSION",        "The encapsulated expression is not a valid expression."},
