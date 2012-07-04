@@ -2025,23 +2025,24 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
      * Replaces any CR, Tab or LF characters in the string with a single ' ' character.
      */
     public String normalizeStringValue(String value) {
-        int i = 0;
+        int i = 0;        
+        int length = value.length();
         
         //check for the first whitespace
-        while(i < value.length()) {
+        while(i < length) {
             if(isWhitespace(value.charAt(i), false)) {
                 break;
             }
             i++;
         }
-        if(i == value.length()) {
+        if(i == length) {
             return value;
         }
         
         char[] buffer = value.toCharArray();
         buffer[i] = ' ';
         i++;
-        for(; i < value.length(); i++) {
+        for(; i < length; i++) {
             if(isWhitespace(buffer[i], false)) {
                 buffer[i] = ' ';
             }

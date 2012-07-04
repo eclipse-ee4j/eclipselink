@@ -254,8 +254,8 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
     public Object getAttributeValue(Object fieldValue, AbstractSession session, XMLRecord record) {
     	// Unmarshal DOM
         // If attribute is empty string representing (null) then return the nullValue
-        boolean isNullRepresentedByEmptyNode = getNullPolicy().isNullRepresentedByEmptyNode();
-        boolean isNullRepresentedByXsiNil = getNullPolicy().isNullRepresentedByXsiNil();
+        boolean isNullRepresentedByEmptyNode = nullPolicy.isNullRepresentedByEmptyNode();
+        boolean isNullRepresentedByXsiNil = nullPolicy.isNullRepresentedByXsiNil();
         if (XMLConstants.EMPTY_STRING.equals(fieldValue) && isNullRepresentedByEmptyNode) {
            fieldValue = null;
         } else if (null == fieldValue && !isNullRepresentedByEmptyNode) {
@@ -280,11 +280,11 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
         }
 
         // Allow for user defined conversion to the object value.       
-        if (hasConverter()) {
-            if (getConverter() instanceof XMLConverter) {
-                attributeValue = ((XMLConverter)getConverter()).convertDataValueToObjectValue(attributeValue, session, record.getUnmarshaller());
+        if (converter != null) {
+            if (converter instanceof XMLConverter) {
+                attributeValue = ((XMLConverter)converter).convertDataValueToObjectValue(attributeValue, session, record.getUnmarshaller());
             } else {
-                attributeValue = getConverter().convertDataValueToObjectValue(attributeValue, session);
+                attributeValue = converter.convertDataValueToObjectValue(attributeValue, session);
             }
         } else {
             // PERF: Avoid conversion check when not required.
@@ -313,19 +313,19 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
         // PERF: This method is a major performance code point,
         // so has been micro optimized and uses direct variable access.
         Object fieldValue = attributeValue;
-        if ((this.nullValue != null) && (this.nullValue.equals(fieldValue)) && !((XMLField)getField()).isRequired()) {
+        if ((this.nullValue != null) && (this.nullValue.equals(fieldValue)) && !((XMLField)field).isRequired()) {
             return null;
         }
 
         // Allow for user defined conversion to the object value.       
-        if (hasConverter()) {
-            if (getConverter() instanceof XMLConverter) {
-                fieldValue = ((XMLConverter)getConverter()).convertObjectValueToDataValue(fieldValue, session, record.getMarshaller());
+        if (converter != null) {
+            if (converter instanceof XMLConverter) {
+                fieldValue = ((XMLConverter)converter).convertObjectValueToDataValue(fieldValue, session, record.getMarshaller());
             } else {
-                fieldValue = getConverter().convertObjectValueToDataValue(fieldValue, session);
+                fieldValue = converter.convertObjectValueToDataValue(fieldValue, session);
             }
         }
-        Class fieldClassification = getFieldClassification(getField());
+        Class fieldClassification = getFieldClassification(field);
         // PERF: Avoid conversion if not required.
         if ((fieldValue != null) && (fieldClassification != fieldValue.getClass())) {
             try {
