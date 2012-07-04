@@ -9,17 +9,20 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     04/07/2012-2.5 Guy Pelletier    
+ *       - 384275: Customizer from a mapped superclass is not overridden by an entity customizer
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.inheritance;
-
 
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.indirection.IndirectList;
 import org.eclipse.persistence.indirection.IndirectSet;
 import org.eclipse.persistence.mappings.CollectionMapping;
+import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.inheritance.AAA;
 import org.eclipse.persistence.testing.models.jpa.inheritance.Bus;
@@ -32,6 +35,7 @@ import org.eclipse.persistence.testing.models.jpa.inheritance.SportsCar;
 import org.eclipse.persistence.testing.models.jpa.inheritance.Car;
 import org.eclipse.persistence.testing.models.jpa.inheritance.Person;
 import org.eclipse.persistence.testing.models.jpa.inheritance.Engineer;
+import org.eclipse.persistence.testing.models.jpa.inheritance.Computer;
 import org.eclipse.persistence.testing.models.jpa.inheritance.ComputerPK;
 import org.eclipse.persistence.testing.models.jpa.inheritance.Desktop;
 import org.eclipse.persistence.testing.models.jpa.inheritance.Laptop;
@@ -57,6 +61,7 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
         TestSuite suite = new TestSuite();
         suite.setName("EntityManagerJUnitTestCase");
         suite.addTest(new EntityManagerJUnitTestCase("testSetup"));
+        suite.addTest(new EntityManagerJUnitTestCase("testOverriddenCustomizer"));
         suite.addTest(new EntityManagerJUnitTestCase("testAddToUninstantiatedSet"));
         suite.addTest(new EntityManagerJUnitTestCase("testAssociationWithEmbeddedIdSubclassEntityInJoinedStrategy"));
         suite.addTest(new EntityManagerJUnitTestCase("testGenericCollectionOnSuperclass"));
@@ -105,6 +110,16 @@ public class EntityManagerJUnitTestCase extends JUnitTestCase {
         }
     }
 
+    /**
+     * Verifies that alias name is not customized from an invalid customizer.
+     */
+    public void testOverriddenCustomizer() {
+        ServerSession session = JUnitTestCase.getServerSession();
+        
+        ClassDescriptor computerDescriptor = session.getDescriptor(Computer.class);
+        assertFalse("Computer alias was incorrect", computerDescriptor.getAlias().equals("InvalidAliasName"));
+    }
+    
     // test if we can associate with a subclass entity 
     // whose root entity has EmbeddedId in Joined inheritance strategy
     // Issue: GF#1153 && GF#1586 (desktop amendment)

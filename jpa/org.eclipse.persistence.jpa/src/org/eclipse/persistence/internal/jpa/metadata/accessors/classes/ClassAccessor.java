@@ -69,6 +69,8 @@
  *       - 337323: Multi-tenant with shared schema support (part 1)
  *     04/04/2012-2.3.3 Guy Pelletier 
  *       - 362180: ConcurrentModificationException on predeploy for AttributeOverride
+ *     04/07/2012-2.5 Guy Pelletier    
+ *       - 384275: Customizer from a mapped superclass is not overridden by an entity customizer
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -1458,6 +1460,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
                     }
                 }
                 
+                getDescriptor().setHasCustomizer();
                 getProject().addAccessorWithCustomizer(this);
             }
         }

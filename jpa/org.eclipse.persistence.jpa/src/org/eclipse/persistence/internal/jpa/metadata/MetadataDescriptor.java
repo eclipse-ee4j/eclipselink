@@ -92,8 +92,10 @@
  *       - 356197: Add new VPD type to MultitenantType
  *     11/10/2011-2.4 Guy Pelletier 
  *       - 357474: Address primaryKey option from tenant discriminator column
- *      *     30/05/2012-2.4 Guy Pelletier    
+ *     30/05/2012-2.4 Guy Pelletier    
  *       - 354678: Temp classloader is still being used during metadata processing
+ *     04/07/2012-2.5 Guy Pelletier    
+ *       - 384275: Customizer from a mapped superclass is not overridden by an entity customizer 
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -1624,6 +1626,15 @@ public class MetadataDescriptor {
      */
     public void setHasCacheInterceptor() {
         m_hasCacheInterceptor = true;
+    }
+    
+    /**
+     * INTERNAL:
+     * Indicates that we have processed a customizer annotation or customizer
+     * xml element.
+     */
+    public void setHasCustomizer() {
+        m_hasCustomizer = true;
     }
     
     /**
