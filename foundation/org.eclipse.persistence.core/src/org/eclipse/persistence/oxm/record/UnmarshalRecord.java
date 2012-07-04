@@ -401,10 +401,10 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
 
     public Object get(DatabaseField key) {
         XMLField xmlField = this.convertToXMLField(key);
-        XPathFragment lastFragment = xmlField.getLastXPathFragment();
-        NamespaceResolver namespaceResolver = xmlField.getNamespaceResolver();
+        XPathFragment lastFragment = xmlField.getLastXPathFragment();        
         String namespaceURI = lastFragment.getNamespaceURI();
         if(namespaceURI == null){
+        	NamespaceResolver namespaceResolver = xmlField.getNamespaceResolver();
             namespaceURI = XMLConstants.EMPTY_STRING;
             if (null != namespaceResolver && !(lastFragment.isAttribute() && lastFragment.getPrefix() == null)) {
                 namespaceURI = namespaceResolver.resolveNamespacePrefix(lastFragment.getPrefix());
@@ -493,8 +493,8 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
             }
             this.setCurrentObject(object);
 
-            if (getParentRecord() != null && getParentRecord().getDocumentLocator() != null) {
-                this.documentLocator = getParentRecord().getDocumentLocator();
+            if (parentRecord != null && parentRecord.getDocumentLocator() != null) {
+                this.documentLocator = parentRecord.getDocumentLocator();
             }
 
             if (documentLocator != null) {
@@ -554,8 +554,8 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
     }
 
     public void endDocument() throws SAXException {
-        if (getUnmarshaller().getIDResolver() != null && getParentRecord() == null) {
-            getUnmarshaller().getIDResolver().endDocument();
+        if (unmarshaller.getIDResolver() != null && parentRecord == null) {
+        	unmarshaller.getIDResolver().endDocument();
         }
         if (null != selfRecords) {
             for (int x = 0, selfRecordsSize = selfRecords.size(); x < selfRecordsSize; x++) {
@@ -607,11 +607,11 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
                 }
             }
 
-            if (getUnmarshaller().getUnmarshalListener() != null) {
+            if (unmarshaller.getUnmarshalListener() != null) {
                 if (this.parentRecord != null) {
-                    getUnmarshaller().getUnmarshalListener().afterUnmarshal(currentObject, parentRecord.getCurrentObject());
+                	unmarshaller.getUnmarshalListener().afterUnmarshal(currentObject, parentRecord.getCurrentObject());
                 } else {
-                    getUnmarshaller().getUnmarshalListener().afterUnmarshal(currentObject, null);
+                	unmarshaller.getUnmarshalListener().afterUnmarshal(currentObject, null);
                 }
             }
 

@@ -324,27 +324,27 @@ public class XPathFragment {
                 return true;
             }
             XPathFragment xPathFragment = (XPathFragment)object;
-            if(null == predicate && null != xPathFragment.getPredicate()) {
+            if(null == predicate && null != xPathFragment.predicate) {
                 return false;
             }
-            if(null != predicate && !predicate.equals(xPathFragment.getPredicate())) {
+            if(null != predicate && !predicate.equals(xPathFragment.predicate)) {
                 return false;
             }
             
            if(namespaceAware && xPathFragment.isNamespaceAware()){
 	            if(namespaceURI == null){
-	            	if(xPathFragment.getNamespaceURI() != null){
+	            	if(xPathFragment.namespaceURI != null){
 	            		return false;
 	            	}
 	            }else{
-	            	if(xPathFragment.getNamespaceURI() == null){
+	            	if(xPathFragment.namespaceURI == null){
 	            		return false;
-	            	}else if(namespaceURI != xPathFragment.getNamespaceURI() && !(namespaceURI.equals(xPathFragment.getNamespaceURI()))){
+	            	}else if(namespaceURI != xPathFragment.namespaceURI && !(namespaceURI.equals(xPathFragment.namespaceURI))){
 	            		return false;
 	            	}
 	            }
             }
-            return ((nameIsText && xPathFragment.nameIsText()) || (getLocalName() == xPathFragment.getLocalName()) || ((getLocalName() != null) && getLocalName().equals(xPathFragment.getLocalName()))) && (this.indexValue == xPathFragment.getIndexValue()) && (nameIsText == xPathFragment.nameIsText());
+            return ((nameIsText && xPathFragment.nameIsText) || (localName == xPathFragment.localName) || ((localName != null) && localName.equals(xPathFragment.localName))) && (this.indexValue == xPathFragment.indexValue) && (nameIsText == xPathFragment.nameIsText);
             
         } catch (ClassCastException e) {
             return false;
@@ -357,7 +357,7 @@ public class XPathFragment {
                 return true;
             }
             XPathFragment xPathFragment = (XPathFragment)object;
-            return ((localName == xPathFragment.getLocalName()) || ((localName != null) && localName.equals(xPathFragment.getLocalName()))) && ((namespaceURI == xPathFragment.getNamespaceURI()) || ((namespaceURI != null) && namespaceURI.equals(xPathFragment.getNamespaceURI()))) && (nameIsText == xPathFragment.nameIsText());
+            return ((localName == xPathFragment.localName) || ((localName != null) && localName.equals(xPathFragment.localName))) && ((namespaceURI == xPathFragment.namespaceURI) || ((namespaceURI != null) && namespaceURI.equals(xPathFragment.namespaceURI))) && (nameIsText == xPathFragment.nameIsText);
         } catch (ClassCastException e) {
             return false;
         }
@@ -376,7 +376,7 @@ public class XPathFragment {
     }
 
     public boolean hasLeafElementType() {
-        return getLeafElementType() != null;
+        return leafElementType != null;
     }
 
     public void setLeafElementType(QName type) {

@@ -67,7 +67,6 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
             return false;
         }
 
-        ContainerPolicy cp = getContainerPolicy();
         Object collection = xmlCompositeCollectionMapping.getAttributeAccessor().getAttributeValueFromObject(object);
         if (null == collection) {
             AbstractNullPolicy wrapperNP = xmlCompositeCollectionMapping.getWrapperNullPolicy();
@@ -78,6 +77,7 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
                 return false;
             }
         }
+        ContainerPolicy cp = getContainerPolicy();
         Object iterator = cp.iteratorFor(collection);
         if (null != iterator && cp.hasNext(iterator)) {
             XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
@@ -255,13 +255,11 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
     }
     
 	public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
-        if (xPathFragment.hasLeafElementType()) {
-            marshalRecord.setLeafElementType(xPathFragment.getLeafElementType());
-        }
+      
         XMLMarshaller marshaller = marshalRecord.getMarshaller();
         // convert the value - if necessary
-        if (xmlCompositeCollectionMapping.hasConverter()) {
-            Converter converter = xmlCompositeCollectionMapping.getConverter();
+        Converter converter = xmlCompositeCollectionMapping.getConverter();
+        if (null != converter) {
             if (converter instanceof XMLConverter) {
                 value = ((XMLConverter)converter).convertObjectValueToDataValue(value, session, marshaller);
             } else {
@@ -271,7 +269,9 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
         if (null == value) {
         	   return xmlCompositeCollectionMapping.getNullPolicy().compositeObjectMarshal(xPathFragment, marshalRecord, object, session, namespaceResolver);
         }
-
+        if (xPathFragment.hasLeafElementType()) {
+            marshalRecord.setLeafElementType(xPathFragment.getLeafElementType());
+        }
         XMLDescriptor descriptor = (XMLDescriptor)xmlCompositeCollectionMapping.getReferenceDescriptor();
         if(descriptor == null || (descriptor.hasInheritance() && !(descriptor.getJavaClass() == value.getClass()))){
         	descriptor = (XMLDescriptor)session.getDescriptor(value.getClass());
