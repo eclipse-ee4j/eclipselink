@@ -22,6 +22,7 @@ import java.net.URL;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.MarshallerProperties;
@@ -151,7 +152,21 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
 	        jsonToObjectTest(testObject);
     	}
     }
+
+    public void testJSONUnmarshalFromSource() throws Exception {
+        if(isUnmarshalTest()){
+            getJSONUnmarshaller().setProperty(UnmarshallerProperties.MEDIA_TYPE, "application/json");
     
+            Source source = new StreamSource(controlJSONLocation);
+            Object testObject = null;
+            if(getUnmarshalClass() != null){
+                testObject = getJSONUnmarshaller().unmarshal(source, getUnmarshalClass());
+            }else{
+                testObject = getJSONUnmarshaller().unmarshal(source);
+            }
+            jsonToObjectTest(testObject);
+        }
+    }
 
     public void testJSONUnmarshalFromURL() throws Exception {
     	if(isUnmarshalTest()){

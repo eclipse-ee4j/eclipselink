@@ -12,8 +12,11 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.oxm.record.json;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -23,6 +26,7 @@ import java.util.Properties;
 
 import javax.xml.namespace.QName;
 
+import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.libraries.antlr.runtime.ANTLRInputStream;
 import org.eclipse.persistence.internal.libraries.antlr.runtime.ANTLRReaderStream;
 import org.eclipse.persistence.internal.libraries.antlr.runtime.CharStream;
@@ -95,8 +99,16 @@ public class JSONReader extends XMLReaderAdapter {
             } else if (null != input.getCharacterStream()){
                 charStream = new ANTLRReaderStream(input.getCharacterStream());
             } else {
-                URL url = new URL(input.getSystemId());
-                inputStream = url.openStream();
+                try {
+                    URL url = new URL(input.getSystemId());
+                    inputStream = url.openStream();
+                } catch(MalformedURLException malformedURLException) {
+                    try {
+                        inputStream = new FileInputStream(input.getSystemId());
+                    } catch(FileNotFoundException fileNotFoundException) {
+                        throw malformedURLException;
+                    }
+                }
                 charStream = new ANTLRInputStream(inputStream);
             }
             JSONLexer lexer = new JSONLexer(charStream);
@@ -114,6 +126,17 @@ public class JSONReader extends XMLReaderAdapter {
     	   throw e.getCause();
         }
        }
+
+    @Override
+    public void parse(String systemId) {
+        try {
+            parse(new InputSource(systemId));
+        } catch (IOException e) {
+            throw XMLMarshalException.unmarshalException(e);
+        } catch (SAXException e) {
+            throw XMLMarshalException.unmarshalException(e);
+        }
+    }
 
     private void parseRoot(Tree tree) throws SAXException {
     	
