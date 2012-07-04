@@ -144,10 +144,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
     }
 
     public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object objectValue, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
-        if (xPathFragment.hasLeafElementType()) {
-            marshalRecord.setLeafElementType(xPathFragment.getLeafElementType());
-        }
-
+    	
         XMLMarshaller marshaller = marshalRecord.getMarshaller();
         Converter converter = xmlCompositeObjectMapping.getConverter();
         if (null != converter) {
@@ -159,6 +156,10 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
         }
         if (null == objectValue) {
             return xmlCompositeObjectMapping.getNullPolicy().compositeObjectMarshal(xPathFragment, marshalRecord, object, session, namespaceResolver);
+        }
+        
+        if (xPathFragment.hasLeafElementType()) {
+            marshalRecord.setLeafElementType(xPathFragment.getLeafElementType());
         }
 
         XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);

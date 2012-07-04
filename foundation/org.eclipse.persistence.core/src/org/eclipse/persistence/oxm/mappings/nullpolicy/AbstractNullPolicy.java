@@ -150,7 +150,7 @@ public abstract class AbstractNullPolicy {
         // Handle attributes - XSI_NIL, ABSENT_NODE have the same behavior
         if (xPathFragment.isAttribute()) {
             // Write out an empty attribute
-            if (getMarshalNullRepresentation().equals(XMLNullRepresentationType.EMPTY_NODE)) {
+            if (marshalNullRepresentation.equals(XMLNullRepresentationType.EMPTY_NODE)) {
                 XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
                 // We mutate the null into an empty string 
                 marshalRecord.attribute(xPathFragment, namespaceResolver, XMLConstants.EMPTY_STRING);
@@ -163,7 +163,7 @@ public abstract class AbstractNullPolicy {
             }
         } else {
             // Nillable: write out xsi:nil="true" attribute in empty element    	
-            if (getMarshalNullRepresentation().equals(XMLNullRepresentationType.XSI_NIL)) {
+            if (marshalNullRepresentation.equals(XMLNullRepresentationType.XSI_NIL)) {
                 XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
                 String xsiPrefix = processNamespaceResolverForXSIPrefix(namespaceResolver, marshalRecord);
                 StringBuilder qName = new StringBuilder(XMLConstants.ATTRIBUTE); // Unsynchronized
@@ -175,7 +175,7 @@ public abstract class AbstractNullPolicy {
                 return true;
             } else {
                 // EMPTY_NODE - Write out empty element
-                if (getMarshalNullRepresentation().equals(XMLNullRepresentationType.EMPTY_NODE)) {
+                if (marshalNullRepresentation.equals(XMLNullRepresentationType.EMPTY_NODE)) {                
                     XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
                     marshalRecord.closeStartGroupingElements(groupingFragment);
                     return true;
@@ -201,7 +201,7 @@ public abstract class AbstractNullPolicy {
     public boolean compositeObjectMarshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, //
             Object object, Session session, NamespaceResolver namespaceResolver) {
         // Nillable
-        if (getMarshalNullRepresentation().equals(XMLNullRepresentationType.XSI_NIL)) {
+        if (marshalNullRepresentation.equals(XMLNullRepresentationType.XSI_NIL)) {
             XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
             marshalRecord.closeStartGroupingElements(groupingFragment);
             marshalRecord.openStartElement(xPathFragment, namespaceResolver);
@@ -218,7 +218,7 @@ public abstract class AbstractNullPolicy {
             // Write out empty element - we need to differentiate between
             // object=null and object=new Object() with null fields and 0-numeric primitive values
             // EMPTY_NODE - Write out empty element - Required
-            if (getMarshalNullRepresentation().equals(XMLNullRepresentationType.EMPTY_NODE)) {
+            if (marshalNullRepresentation.equals(XMLNullRepresentationType.EMPTY_NODE)) {
                 XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
                 marshalRecord.closeStartGroupingElements(groupingFragment);
                 marshalRecord.openStartElement(xPathFragment, namespaceResolver);
@@ -242,14 +242,14 @@ public abstract class AbstractNullPolicy {
      * @return true if this method caused any objects to be marshaled, else false.
      */
     public boolean compositeObjectMarshal(XMLRecord record, Object object, XMLField field, AbstractSession session) {
-        if (getMarshalNullRepresentation().equals(XMLNullRepresentationType.XSI_NIL)) {
+        if (marshalNullRepresentation.equals(XMLNullRepresentationType.XSI_NIL)) {
             Node root = record.getDOM();
             Element nested = (Element) XPathEngine.getInstance().create(field, root, session);
             nested.setAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XSI_NIL_ATTRIBUTE, TRUE);
             return true;
         } else {
             // EMPTY_NODE - Write out empty element - Required
-            if (getMarshalNullRepresentation().equals(XMLNullRepresentationType.EMPTY_NODE)) {
+            if (marshalNullRepresentation.equals(XMLNullRepresentationType.EMPTY_NODE)) {
                 Node root = record.getDOM();
                 XPathEngine.getInstance().create(field, root, session);
                 return true;
@@ -385,11 +385,11 @@ public abstract class AbstractNullPolicy {
     
     public void directMarshal(DatabaseField field, XMLRecord record, Object object) {
         Object fieldValue = null;
-        if(getMarshalNullRepresentation() == XMLNullRepresentationType.EMPTY_NODE) {
+        if(marshalNullRepresentation == XMLNullRepresentationType.EMPTY_NODE) {
             fieldValue = XMLConstants.EMPTY_STRING;
         } else {
             if(!(((XMLField)field).getLastXPathFragment().isAttribute())) {
-                if(getMarshalNullRepresentation() == XMLNullRepresentationType.XSI_NIL) {
+                if(marshalNullRepresentation == XMLNullRepresentationType.XSI_NIL) {
                     fieldValue = XMLRecord.NIL;
                 }
             }
