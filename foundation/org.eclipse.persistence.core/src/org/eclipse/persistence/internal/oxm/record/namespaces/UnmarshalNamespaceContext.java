@@ -34,7 +34,7 @@ public class UnmarshalNamespaceContext implements UnmarshalNamespaceResolver {
     
     public UnmarshalNamespaceContext(XMLStreamReader anXMLStreamReader) {
         this.xmlStreamReader = anXMLStreamReader;
-        this.prefixes = new HashSet();
+        this.prefixes = new HashSet(4);
     }
 
     public String getNamespaceURI(String prefix) {

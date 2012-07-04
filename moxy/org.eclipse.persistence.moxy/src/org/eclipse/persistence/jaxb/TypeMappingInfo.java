@@ -17,6 +17,8 @@ import java.lang.reflect.Type;
 import javax.xml.namespace.QName;
 
 import org.w3c.dom.Element;
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.oxm.XMLConstants;
 
 /**
  * <p><b>Purpose</b>:  Provides a wrapper for a java type to be used when creating a JAXB context. This allows for
@@ -33,7 +35,17 @@ public class TypeMappingInfo {
     private Annotation[] annotations;
     private Element xmlElement;
     private boolean nillable;
-  
+    private QName schemaType;
+    
+	
+	/**
+     * INTERNAL:
+     * Indicates the schema type to be used during marshal
+     */
+    public QName getSchemaType() {
+        return schemaType;
+    }    
+    
 	/**
      * Indicates if a global element should be generated for this type.
      */
@@ -81,6 +93,12 @@ public class TypeMappingInfo {
 
     public void setType(Type t) {
         this.type = t;
+        if(type instanceof Class){
+            if (((Class)type) == ClassConstants.ABYTE || ((Class)type) == ClassConstants.APBYTE || 
+        	   ((Class)type).getCanonicalName().equals("javax.activation.DataHandler")) {
+        	   schemaType = XMLConstants.BASE_64_BINARY_QNAME;
+        	}
+        }
     }
 
     /**
