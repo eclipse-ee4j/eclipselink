@@ -307,14 +307,60 @@ public class XMLMarshaller implements Cloneable {
         if ((object == null) || (result == null)) {
             throw XMLMarshalException.nullArgumentException();
         }
-
+        XMLDescriptor xmlDescriptor = null;
+        AbstractSession session = null;
+        
         boolean isXMLRoot = (object instanceof XMLRoot);
-        XMLDescriptor xmlDescriptor = getDescriptor(object, isXMLRoot);
+        
+        if(isXMLRoot){
+            try{
+    	        session = xmlContext.getSession(((XMLRoot)object).getObject());
+    	        if(session != null){
+    	            xmlDescriptor = getDescriptor(((XMLRoot)object).getObject(), session);
+        	    }
+           }catch (XMLMarshalException marshalException) {
+                if (!isSimpleXMLRoot((XMLRoot) object)) {
+                	throw marshalException;    
+                }                
+            }
+        }else{
+        	session = xmlContext.getSession(object.getClass());
+        	xmlDescriptor = getDescriptor(object, session);        	
+        }
 
-        AbstractSession session = xmlContext.getSession(xmlDescriptor);
+       
         //if this is a simple xml root, the session and descriptor will be null
         if (!(isXMLRoot && ((XMLRoot)object).getObject() instanceof Node) && ((session == null) || !xmlContext.getDocumentPreservationPolicy(session).shouldPreserveDocument())) {
-            if (result instanceof DOMResult) {
+            if (result instanceof StreamResult) {
+                StreamResult streamResult = (StreamResult) result;
+                Writer writer = streamResult.getWriter();
+                if (writer != null) {
+                    marshal(object, writer, session, xmlDescriptor);
+                } else if (streamResult.getOutputStream() != null) {
+                    marshal(object, streamResult.getOutputStream(), session, xmlDescriptor);
+                } else {
+                    try {
+                        File f;
+                        try {
+                            f = new File(new URL(streamResult.getSystemId()).toURI());
+                        } catch(MalformedURLException malformedURLException) {
+                            try {
+                                f = new File(streamResult.getSystemId());
+                            } catch(Exception e) {
+                                throw malformedURLException;
+                            }
+                        }
+                        writer = new FileWriter(f);
+                        try {
+                        	marshal(object, writer, session, xmlDescriptor);
+                        } finally {
+                            writer.close();
+                        }
+                    } catch (Exception e) {
+                        throw XMLMarshalException.marshalException(e);
+                    }
+                }
+            }else if (result instanceof DOMResult) {
                 DOMResult domResult = (DOMResult) result;
                 // handle case where the node is null
                 if (domResult.getNode() == null) {
@@ -325,35 +371,6 @@ public class XMLMarshaller implements Cloneable {
             } else if (result instanceof SAXResult) {
                 SAXResult saxResult = (SAXResult) result;
                 marshal(object, saxResult.getHandler());
-            } else if (result instanceof StreamResult) {
-                StreamResult streamResult = (StreamResult) result;
-                Writer writer = streamResult.getWriter();
-                if (writer != null) {
-                    marshal(object, writer);
-                } else if (streamResult.getOutputStream() != null) {
-                    marshal(object, streamResult.getOutputStream());
-                } else {
-                    try {
-                        File f;
-                        try {
-                            f = new File(new URL(streamResult.getSystemId()).toURI());
-                        } catch (MalformedURLException malformedURLException) {
-                            try {
-                                f = new File(streamResult.getSystemId());
-                            } catch (Exception e) {
-                                throw malformedURLException;
-                            }
-                        }
-                        writer = new FileWriter(f);
-                        try {
-                            marshal(object, writer);
-                        } finally {
-                            writer.close();
-                        }
-                    } catch (Exception e) {
-                        throw XMLMarshalException.marshalException(e);
-                    }
-                }
             } else {
                 if (result.getClass().equals(staxResultClass)) {
                     try {
@@ -458,6 +475,10 @@ public class XMLMarshaller implements Cloneable {
     * @throws XMLMarshalException if an error occurred during marshalling
     */
     public void marshal(Object object, OutputStream outputStream) throws XMLMarshalException {
+    	marshal (object, outputStream, null, null);
+    }
+    
+    private void marshal(Object object, OutputStream outputStream, AbstractSession session, XMLDescriptor xmlDescriptor) throws XMLMarshalException {
         if ((object == null) || (outputStream == null)) {
             throw XMLMarshalException.nullArgumentException();
         }
@@ -473,24 +494,23 @@ public class XMLMarshaller implements Cloneable {
             }
             
             if(encoding.equals(XMLConstants.DEFAULT_XML_ENCODING)){
-                AbstractSession session = null;
-                XMLDescriptor xmlDescriptor = null;
-                if(isXMLRoot){
-                    try{
-            	        session = xmlContext.getSession(((XMLRoot)object).getObject());
-            	        if(session != null){
-            	            xmlDescriptor = getDescriptor(((XMLRoot)object).getObject(), session);
-                	    }
-                   }catch (XMLMarshalException marshalException) {
-                        if (!isSimpleXMLRoot((XMLRoot) object)) {
-                        	throw marshalException;    
-                        }                
-                    }
-                }else{
-                	session = xmlContext.getSession(object.getClass());
-                	xmlDescriptor = getDescriptor(object.getClass(), session);
-                }
-            
+            	if(session == null || xmlDescriptor == null){             
+	                if(isXMLRoot){
+	                    try{
+	            	        session = xmlContext.getSession(((XMLRoot)object).getObject());
+	            	        if(session != null){
+	            	            xmlDescriptor = getDescriptor(((XMLRoot)object).getObject(), session);
+	                	    }
+	                   }catch (XMLMarshalException marshalException) {
+	                        if (!isSimpleXMLRoot((XMLRoot) object)) {
+	                        	throw marshalException;    
+	                        }                
+	                    }
+	                }else{
+	                	session = xmlContext.getSession(object.getClass());
+	                	xmlDescriptor = getDescriptor(object.getClass(), session);
+	                }
+            	}
                 OutputStreamRecord record;
                 if (isFormattedOutput()) {
                 	record = new FormattedOutputStreamRecord();                	
@@ -545,6 +565,10 @@ public class XMLMarshaller implements Cloneable {
     * @throws XMLMarshalException if an error occurred during marshalling
     */
     public void marshal(Object object, Writer writer) throws XMLMarshalException {
+    	marshal(object, writer, null, null);        
+    }
+
+    private void marshal(Object object, Writer writer, AbstractSession session, XMLDescriptor xmlDescriptor) throws XMLMarshalException {
         if ((object == null) || (writer == null)) {
             throw XMLMarshalException.nullArgumentException();
         }
@@ -559,22 +583,24 @@ public class XMLMarshaller implements Cloneable {
         }
 
         
-        AbstractSession session = null;
-        XMLDescriptor xmlDescriptor = null;
         if(isXMLRoot){
-        	try{
-        	    session = xmlContext.getSession(((XMLRoot)object).getObject());
-        	    if(session != null){
-        	        xmlDescriptor = getDescriptor(((XMLRoot)object).getObject(), session);
-        	    }
-        	}catch (XMLMarshalException marshalException) {
-                if (!isSimpleXMLRoot((XMLRoot) object)) {
-                	throw marshalException;    
-                }                
-            }
+        	if(session == null || xmlDescriptor == null){
+	            try{
+	                session = xmlContext.getSession(((XMLRoot)object).getObject());
+	                if(session != null){
+	                    xmlDescriptor = getDescriptor(((XMLRoot)object).getObject(), session);
+	                }
+	            }catch (XMLMarshalException marshalException) {
+	                if (!isSimpleXMLRoot((XMLRoot) object)) {
+	                    throw marshalException;
+	                }
+	            }
+        	}
         }else{
-        	session = xmlContext.getSession(object.getClass());
-        	xmlDescriptor = getDescriptor(object.getClass(), session);
+            if(session == null || xmlDescriptor == null){
+                session = xmlContext.getSession(object.getClass());
+                xmlDescriptor = getDescriptor(object.getClass(), session);
+            }
         }
 
         WriterRecord writerRecord;
@@ -828,7 +854,7 @@ public class XMLMarshaller implements Cloneable {
             }
         }else{
         	session = xmlContext.getSession(object);
-        	xmlDescriptor = getDescriptor(object, session);
+        	xmlDescriptor = getDescriptor(object.getClass(), session);
         }
         
         marshal(object, marshalRecord, session, xmlDescriptor, isXMLRoot);
