@@ -17,9 +17,10 @@ import java.util.Vector;
 
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ScrollableCursor;
-
 import org.eclipse.persistence.testing.framework.TestCase;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
+
+import org.eclipse.persistence.testing.framework.TestWarningException;
 
 /**
  * Test using a ScrollableCursor with a simple joined attribute.
@@ -36,6 +37,10 @@ public class ScrollableCursorJoinedAttributeTest extends TestCase {
     }
     
     public void test() {
+        if (getSession().getPlatform().isHANA()) {
+            throw new TestWarningException("ScrollableCursor is not supported on this platform");
+        }
+
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         
         cursoredResults = new Vector();

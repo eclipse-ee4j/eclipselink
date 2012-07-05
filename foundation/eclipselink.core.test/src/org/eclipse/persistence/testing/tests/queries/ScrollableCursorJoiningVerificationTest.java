@@ -21,6 +21,7 @@ import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ScrollableCursor;
 
 import org.eclipse.persistence.testing.framework.TestCase;
+import org.eclipse.persistence.testing.framework.TestWarningException;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
 import org.eclipse.persistence.testing.models.employee.domain.PhoneNumber;
 
@@ -40,6 +41,10 @@ public class ScrollableCursorJoiningVerificationTest extends TestCase {
     }
     
     public void test() {
+        if (getSession().getPlatform().isHANA()) {
+            throw new TestWarningException("ScrollableCursor is not supported on this platform");
+        }
+        
         // non-cursored results
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         

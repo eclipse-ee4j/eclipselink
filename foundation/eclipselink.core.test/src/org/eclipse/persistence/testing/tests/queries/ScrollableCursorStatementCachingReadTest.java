@@ -40,7 +40,7 @@ public class ScrollableCursorStatementCachingReadTest extends TestCase {
         this.origionalBindingState = this.getSession().getPlatform().shouldBindAllParameters();
 
         if (getSession().getPlatform().isDB2() || getSession().getPlatform().isAccess() || 
-            getSession().getPlatform().isTimesTen()) {
+            getSession().getPlatform().isTimesTen() || getSession().getPlatform().isHANA()) {
             throw new TestWarningException("ScrollableCursor is not supported on this platform");
         }
         TYPE_SCROLL_INSENSITIVE_isSupported = true;

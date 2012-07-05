@@ -34,7 +34,8 @@ public class Jdk12ScrollableCursorTest extends TestCase {
     }
 
     protected void setup() {
-        if (getSession().getPlatform().isAccess() || getSession().getPlatform().isTimesTen()) {
+        if (getSession().getPlatform().isAccess() || getSession().getPlatform().isTimesTen() ||
+                getSession().getPlatform().isHANA()) {
             throw new TestWarningException("ScrollableCursor is not supported on this platform");
         }
         if (getSession().getPlatform().isDB2()) {

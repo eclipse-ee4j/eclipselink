@@ -108,7 +108,14 @@ public class ClearQueryOptionsOnStatementTest extends AutoVerifyTestCase {
         }
         // Resultset fetch size
         ReadAllQuery query = new ReadAllQuery(QueryOptionEmployee.class);
-        if(TYPE_SCROLL_INSENSITIVE_isSupported && CONCUR_UPDATABLE_isSupported) {
+        // HANA supports only TYPE_FORWARD_ONLY and CONCUR_READ_ONLY
+        if (getSession().getPlatform().isHANA()) {
+            ScrollableCursorPolicy policy = new ScrollableCursorPolicy();
+            policy.setResultSetType(ScrollableCursorPolicy.TYPE_FORWARD_ONLY);
+            policy.setResultSetConcurrency(ScrollableCursorPolicy.CONCUR_READ_ONLY);
+            policy.setPageSize(10);
+            query.useScrollableCursor(policy);
+        } else if(TYPE_SCROLL_INSENSITIVE_isSupported && CONCUR_UPDATABLE_isSupported) {
             query.useScrollableCursor(2);
         } else {
             ScrollableCursorPolicy policy = new ScrollableCursorPolicy();

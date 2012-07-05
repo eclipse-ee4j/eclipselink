@@ -48,7 +48,7 @@ public class ScrollableCursorNavigationAPITest extends TestCase {
 
     protected void setup() {
         if (getSession().getPlatform().isDB2() || getSession().getPlatform().isAccess() || 
-            getSession().getPlatform().isTimesTen()) {
+            getSession().getPlatform().isTimesTen() || getSession().getPlatform().isHANA()) {
             throw new TestWarningException("ScrollableCursor is not supported on this platform");
         }
         //MySQL ResultSet.relative(int) does not work when attempting to move beyond the first-1/last+1 row.  Seems a bug
