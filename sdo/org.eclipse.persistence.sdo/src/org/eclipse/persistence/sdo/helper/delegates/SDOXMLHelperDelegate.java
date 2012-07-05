@@ -641,6 +641,7 @@ public class SDOXMLHelperDelegate implements SDOXMLHelper {
     public Project getTopLinkProject() {
         if (topLinkProject == null) {
             topLinkProject = new Project();
+            topLinkProject.setJPQLParseCacheMaxSize(0);
             XMLLogin xmlLogin = new XMLLogin();
             xmlLogin.setEqualNamespaceResolvers(false);
             topLinkProject.setDatasourceLogin(xmlLogin);
