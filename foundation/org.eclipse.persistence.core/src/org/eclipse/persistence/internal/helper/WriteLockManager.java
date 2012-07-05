@@ -387,7 +387,7 @@ public class WriteLockManager {
         CacheKey lockedCacheKey = session.getIdentityMapAccessorInstance().acquireLockNoWait(primaryKey, descriptor.getJavaClass(), false, descriptor);
         if (lockedCacheKey == null) {
             session.getIdentityMapAccessorInstance().getWriteLockManager().transitionToDeferredLocks(mergeManager);
-            lockedCacheKey = session.getIdentityMapAccessorInstance().acquireDeferredLock(primaryKey, descriptor.getJavaClass(), descriptor);
+            lockedCacheKey = session.getIdentityMapAccessorInstance().acquireDeferredLock(primaryKey, descriptor.getJavaClass(), descriptor, true);
             Object cachedObject = lockedCacheKey.getObject();
             if (cachedObject == null) {
                 if (lockedCacheKey.getMutex().getActiveThread() == Thread.currentThread()) {

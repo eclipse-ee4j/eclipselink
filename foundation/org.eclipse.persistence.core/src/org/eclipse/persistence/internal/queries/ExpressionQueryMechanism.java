@@ -823,7 +823,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                 query.setSelectionId(selectionKey);
             }
             if (query.requiresDeferredLocks()) {
-                cachedObject = session.getIdentityMapAccessorInstance().getFromIdentityMapWithDeferredLock(selectionKey, query.getReferenceClass(), false, descriptor);
+                cachedObject = session.getIdentityMapAccessorInstance().getFromLocalIdentityMapWithDeferredLock(selectionKey, query.getReferenceClass(), false, descriptor);
             } else {
                 cachedObject = session.getIdentityMapAccessorInstance().getFromLocalIdentityMap(selectionKey, query.getReferenceClass(), false, descriptor);
             }
@@ -849,7 +849,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                             return selectionKey;
                         }
                         if (query.requiresDeferredLocks()) {
-                            cachedObject = session.getIdentityMapAccessorInstance().getFromIdentityMapWithDeferredLock(selectionKey, query.getReferenceClass(), false, descriptor);
+                            cachedObject = session.getIdentityMapAccessorInstance().getFromLocalIdentityMapWithDeferredLock(selectionKey, query.getReferenceClass(), false, descriptor);
                         } else {
                             cachedObject = session.getIdentityMapAccessorInstance().getFromLocalIdentityMap(selectionKey, query.getReferenceClass(), false, descriptor);
                         }
@@ -867,7 +867,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                         }
                         // PERF: Only use deferred lock when required.
                         if (query.requiresDeferredLocks()) {
-                            cachedObject = session.getIdentityMapAccessorInstance().getFromIdentityMapWithDeferredLock(inexactSelectionKey, query.getReferenceClass(), false, descriptor);
+                            cachedObject = session.getIdentityMapAccessorInstance().getFromLocalIdentityMapWithDeferredLock(inexactSelectionKey, query.getReferenceClass(), false, descriptor);
                         } else {
                             cachedObject = session.getIdentityMapAccessorInstance().getFromLocalIdentityMap(inexactSelectionKey, query.getReferenceClass(), false, descriptor);
                         }

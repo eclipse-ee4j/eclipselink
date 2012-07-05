@@ -232,7 +232,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      */
     @Override
     public Object buildBackupCloneForPartObject(Object attributeValue, Object clone, Object backup, UnitOfWorkImpl unitOfWork) {
-        return buildCloneForPartObject(attributeValue, clone, null, backup, unitOfWork, null, true);
+        return buildCloneForPartObject(attributeValue, clone, null, backup, unitOfWork, null, true, true);
     }
  
     /**
@@ -285,7 +285,7 @@ public abstract class AbstractTransformationMapping extends DatabaseMapping {
      * Require for cloning, the part must be cloned.
      * Ignore the attribute value, go right to the object itself.
      */
-    public Object buildCloneForPartObject(Object attributeValue, Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession, Integer refreshCascade, boolean isExisting) {
+    public Object buildCloneForPartObject(Object attributeValue, Object original, CacheKey cacheKey, Object clone, AbstractSession cloningSession, Integer refreshCascade, boolean isExisting, boolean isFromSharedCache) {
         if (isReadOnly() || !isMutable()) {
             return attributeValue;
         }

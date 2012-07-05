@@ -46,7 +46,7 @@ public class UnitOfWorkIdentityMap extends FullIdentityMap {
      * Avoid acquiring any lock as uow is single threaded.
      */
     @Override
-    public CacheKey acquireDeferredLock(Object primaryKey) {
+    public CacheKey acquireDeferredLock(Object primaryKey, boolean isCacheCheckComplete) {
         CacheKey cacheKey = getCacheKey(primaryKey, false);
         if (cacheKey == null) {
             CacheKey newCacheKey = createCacheKey(primaryKey, null, null);
@@ -62,7 +62,7 @@ public class UnitOfWorkIdentityMap extends FullIdentityMap {
      * Avoid acquiring any lock as uow is single threaded.
      */
     @Override
-    public CacheKey acquireLock(Object primaryKey, boolean forMerge) {
+    public CacheKey acquireLock(Object primaryKey, boolean forMerge, boolean isCacheCheckComplete) {
         CacheKey cacheKey = getCacheKey(primaryKey, forMerge);
         if (cacheKey == null) {
             CacheKey newCacheKey = createCacheKey(primaryKey, null, null);

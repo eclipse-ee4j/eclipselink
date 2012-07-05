@@ -55,11 +55,11 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      * The return cacheKey should be used to release the deferred lock
      */
     @Override
-    public CacheKey acquireDeferredLock(Object primaryKey, Class javaClass, ClassDescriptor descriptor) {
+    public CacheKey acquireDeferredLock(Object primaryKey, Class javaClass, ClassDescriptor descriptor, boolean isCacheCheckComplete) {
         if (!descriptor.getCachePolicy().isSharedIsolation()) {
-            return getIdentityMapManager().acquireDeferredLock(primaryKey, javaClass, descriptor);
+            return getIdentityMapManager().acquireDeferredLock(primaryKey, javaClass, descriptor, isCacheCheckComplete);
         } else {
-            return ((IsolatedClientSession)session).getParent().getIdentityMapAccessorInstance().acquireDeferredLock(primaryKey, javaClass, descriptor);
+            return ((IsolatedClientSession)session).getParent().getIdentityMapAccessorInstance().acquireDeferredLock(primaryKey, javaClass, descriptor, isCacheCheckComplete);
         }
     }
 
@@ -69,11 +69,11 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
      * called with true from the merge process, if true then the refresh will not refresh the object.
      */
     @Override
-    public CacheKey acquireLock(Object primaryKey, Class domainClass, boolean forMerge, ClassDescriptor descriptor) {
+    public CacheKey acquireLock(Object primaryKey, Class domainClass, boolean forMerge, ClassDescriptor descriptor, boolean isCacheCheckComplete) {
         if (!descriptor.getCachePolicy().isSharedIsolation()) {
-            return getIdentityMapManager().acquireLock(primaryKey, domainClass, forMerge, descriptor);
+            return getIdentityMapManager().acquireLock(primaryKey, domainClass, forMerge, descriptor, isCacheCheckComplete);
         } else {
-            return ((IsolatedClientSession)session).getParent().getIdentityMapAccessorInstance().acquireLock(primaryKey, domainClass, forMerge, descriptor);
+            return ((IsolatedClientSession)session).getParent().getIdentityMapAccessorInstance().acquireLock(primaryKey, domainClass, forMerge, descriptor, isCacheCheckComplete);
         }
     }
 
@@ -323,7 +323,7 @@ public class IsolatedClientSessionIdentityMapAccessor extends org.eclipse.persis
             if (workingClone instanceof PersistenceEntity) {
                 ((PersistenceEntity)workingClone)._persistence_setId(cacheKey.getKey());
             }
-            CacheKey localCacheKey = acquireLock(primaryKey, theClass, descriptor);
+            CacheKey localCacheKey = acquireLock(primaryKey, theClass, descriptor, false);
             try{
                 localCacheKey.setObject(workingClone);
                 localCacheKey.setReadTime(cacheKey.getReadTime());

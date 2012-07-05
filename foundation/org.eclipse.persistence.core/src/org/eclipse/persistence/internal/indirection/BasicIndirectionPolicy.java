@@ -104,7 +104,7 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
             }
             if (this.mapping.getRelationshipPartner() == null) {
                 result = new ValueHolder();
-                result.setValue(this.mapping.buildCloneForPartObject(valueHolder.getValue(), original, null, clone, cloningSession, refreshCascade, false));
+                result.setValue(this.mapping.buildCloneForPartObject(valueHolder.getValue(), original, null, clone, cloningSession, refreshCascade, false, false));
             } else {
                 //if I have a relationship partner trigger the indirection so that the value will be inserted
                 // because of this call the entire tree should be recursively cloned
@@ -114,7 +114,7 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
                 }
                 result = this.mapping.createCloneValueHolder(valueHolder, original, clone, row, cloningSession, buildDirectlyFromRow);
 
-                Object newObject = this.mapping.buildCloneForPartObject(valueHolder.getValue(), original, cacheKey, clone, cloningSession, refreshCascade, false);
+                Object newObject = this.mapping.buildCloneForPartObject(valueHolder.getValue(), original, cacheKey, clone, cloningSession, refreshCascade, false, false);
                 ((UnitOfWorkValueHolder)result).privilegedSetValue(newObject);
                 ((UnitOfWorkValueHolder)result).setInstantiated();
             }

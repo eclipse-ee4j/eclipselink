@@ -73,7 +73,7 @@ public class NoIndirectionPolicy extends IndirectionPolicy {
             return mapping.buildContainerClone(attributeValue, cloningSession);
         }
         boolean isExisting = !cloningSession.isUnitOfWork() || (((UnitOfWorkImpl) cloningSession).isObjectRegistered(clone) && (!(((UnitOfWorkImpl)cloningSession).isOriginalNewObject(original))));
-        return this.getMapping().buildCloneForPartObject(attributeValue, original, cacheKey, clone, cloningSession, refreshCascade, isExisting);
+        return this.getMapping().buildCloneForPartObject(attributeValue, original, cacheKey, clone, cloningSession, refreshCascade, isExisting, isExisting);// only assume from shared cache if it is existing
     }
 
     /**

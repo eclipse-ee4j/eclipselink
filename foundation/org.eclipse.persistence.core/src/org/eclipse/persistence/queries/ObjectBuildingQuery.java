@@ -19,6 +19,7 @@ import org.eclipse.persistence.internal.expressions.*;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
@@ -93,12 +94,36 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
      */
     protected Boolean requiresDeferredLocks = null;
     
+    /** was a check early return completed */
+    protected boolean isCacheCheckComplete;
+
     /**
      * INTERNAL:
      * Initialize the state of the query
      */
     public ObjectBuildingQuery() {
         this.shouldRefreshIdentityMapResult = false;
+        this.isCacheCheckComplete = false;
+    }
+
+    /**
+     * INTERNAL:
+     * Clone the query
+     */
+    public Object clone() {
+        ObjectBuildingQuery cloneQuery = (ObjectBuildingQuery) super.clone();
+        cloneQuery.isCacheCheckComplete = this.isCacheCheckComplete;
+        return cloneQuery;
+    }
+    /**
+     * INTERNAL
+     * Used to give the subclasses opportunity to copy aspects of the cloned query
+     * to the original query.
+     */
+    protected void clonedQueryExecutionComplete(DatabaseQuery query, AbstractSession session) {
+        super.clonedQueryExecutionComplete(query, session);
+        //reset cache check flag for next execution.
+        this.isCacheCheckComplete = false;
     }
 
     /**
@@ -173,6 +198,16 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
         }
     }
     
+    /**
+     * INTERNAL:
+     * Set the properties needed to be cascaded into the custom query including the translation row.
+     * This is used only for primary key queries, as the descriptor query manager
+     * stores a predefined query for this query to avoid having to re-prepare and allow for customization.
+     */
+    protected void prepareCustomQuery(DatabaseQuery customQuery) {
+        ((ObjectBuildingQuery)customQuery).isCacheCheckComplete = this.isCacheCheckComplete;
+    }
+
     /**
      * INTERNAL:
      * Prepare the query from the prepared query.
@@ -397,7 +432,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
             //it is from a parent unit of work and this unit of work does not need to know if it is new
             //or not.  It will query the parent unit of work to determine newness.
            
-            clone = unitOfWork.registerExistingObject(result, concreteDescriptor, getQueryPrimaryKey());
+            clone = unitOfWork.registerExistingObject(result, concreteDescriptor, getQueryPrimaryKey(), true);
         }
         postRegisterIndividualResult(clone, result, primaryKey, unitOfWork, joinManager, concreteDescriptor);
         return clone;
@@ -667,6 +702,14 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
      */
     public boolean isAttributeJoined(ClassDescriptor mappingDescriptor, String attributeName) {
         return false;
+    }
+
+    /**
+     * INTERNAL:
+     * Returns true if an early return cache check was completed
+     */
+    public boolean isCacheCheckComplete(){
+        return this.isCacheCheckComplete;
     }
 
     /**

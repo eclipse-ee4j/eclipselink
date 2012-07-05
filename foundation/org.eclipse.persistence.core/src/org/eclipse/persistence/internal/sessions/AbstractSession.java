@@ -4769,14 +4769,14 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
        }
    }
 
-   public CacheKey retrieveCacheKey(Object primaryKey, ClassDescriptor concreteDescriptor, JoinedAttributeManager joinManager, boolean requiresDeferredLocks){
+   public CacheKey retrieveCacheKey(Object primaryKey, ClassDescriptor concreteDescriptor, JoinedAttributeManager joinManager, ObjectBuildingQuery query){
        
        CacheKey cacheKey;
        //lock the object in the IM     
        // PERF: Only use deferred locking if required.
        // CR#3876308 If joining is used, deferred locks are still required.
-       if (requiresDeferredLocks) {
-           cacheKey = this.getIdentityMapAccessorInstance().acquireDeferredLock(primaryKey, concreteDescriptor.getJavaClass(), concreteDescriptor);
+       if (query.requiresDeferredLocks()) {
+           cacheKey = this.getIdentityMapAccessorInstance().acquireDeferredLock(primaryKey, concreteDescriptor.getJavaClass(), concreteDescriptor, query.isCacheCheckComplete());
 
            int counter = 0;
            while ((cacheKey.getObject() == null) && (counter < 1000)) {
@@ -4793,14 +4793,14 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
                    Thread.sleep(10);
                } catch (InterruptedException exception) {
                }
-               cacheKey = this.getIdentityMapAccessorInstance().acquireDeferredLock(primaryKey, concreteDescriptor.getJavaClass(), concreteDescriptor);
+               cacheKey = this.getIdentityMapAccessorInstance().acquireDeferredLock(primaryKey, concreteDescriptor.getJavaClass(), concreteDescriptor, query.isCacheCheckComplete());
                counter++;
            }
            if (counter == 1000) {
                throw ConcurrencyException.maxTriesLockOnBuildObjectExceded(cacheKey.getMutex().getActiveThread(), Thread.currentThread());
            }
        } else {
-           cacheKey = this.getIdentityMapAccessorInstance().acquireLock(primaryKey, concreteDescriptor.getJavaClass(), concreteDescriptor);
+           cacheKey = this.getIdentityMapAccessorInstance().acquireLock(primaryKey, concreteDescriptor.getJavaClass(), concreteDescriptor, query.isCacheCheckComplete());
        }
        return  cacheKey;
    }

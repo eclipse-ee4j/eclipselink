@@ -100,14 +100,14 @@ public class IdentityMapManager implements Serializable, Cloneable {
     /**
      * Provides access for setting a deferred lock on an object in the IdentityMap.
      */
-    public CacheKey acquireDeferredLock(Object primaryKey, Class domainClass, ClassDescriptor descriptor) {
+    public CacheKey acquireDeferredLock(Object primaryKey, Class domainClass, ClassDescriptor descriptor, boolean isCacheCheckComplete) {
         CacheKey cacheKey = null;
         if (this.isCacheAccessPreCheckRequired) {
             this.session.startOperationProfile(SessionProfiler.Caching);
             acquireReadLock();
             IdentityMap identityMap = getIdentityMap(descriptor, false);
             try {
-                cacheKey = identityMap.acquireDeferredLock(primaryKey);
+                cacheKey = identityMap.acquireDeferredLock(primaryKey, isCacheCheckComplete);
             } finally {
                 releaseReadLock();
             }
@@ -116,7 +116,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
                 this.session.updateProfile(MONITOR_PREFIX + domainClass.getSimpleName(), identityMap.getSize());
             }
         } else {
-            cacheKey = getIdentityMap(descriptor, false).acquireDeferredLock(primaryKey);
+            cacheKey = getIdentityMap(descriptor, false).acquireDeferredLock(primaryKey, isCacheCheckComplete);
         }
 
         return cacheKey;
@@ -126,7 +126,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
      * Provides access for setting a concurrency lock on an object in the IdentityMap.
      * called with true from the merge process, if true then the refresh will not refresh the object.
      */
-    public CacheKey acquireLock(Object primaryKey, Class domainClass, boolean forMerge, ClassDescriptor descriptor) {
+    public CacheKey acquireLock(Object primaryKey, Class domainClass, boolean forMerge, ClassDescriptor descriptor, boolean isCacheCheckComplete) {
         if (primaryKey == null) {
             CacheKey cacheKey = new CacheKey(primaryKey);
             cacheKey.acquire();
@@ -138,7 +138,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
             acquireReadLock();
             IdentityMap identityMap = getIdentityMap(descriptor, false);
             try {
-                cacheKey = identityMap.acquireLock(primaryKey, forMerge);
+                cacheKey = identityMap.acquireLock(primaryKey, forMerge, isCacheCheckComplete);
             } finally {
                 releaseReadLock();
             }
@@ -147,7 +147,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
                 this.session.updateProfile(MONITOR_PREFIX + domainClass.getSimpleName(), identityMap.getSize());
             }
         } else {
-            cacheKey = getIdentityMap(descriptor, false).acquireLock(primaryKey, forMerge);
+            cacheKey = getIdentityMap(descriptor, false).acquireLock(primaryKey, forMerge, isCacheCheckComplete);
         }
 
         return cacheKey;

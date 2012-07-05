@@ -64,16 +64,16 @@ public abstract class CacheInterceptor implements IdentityMap {
      * This first thread will get an active lock.
      * Other threads will get deferred locks, all threads will wait until all other threads are complete before releasing their locks.
      */
-    public CacheKey acquireDeferredLock(Object primaryKey){
-        return createCacheKeyInterceptor(this.targetIdentityMap.acquireDeferredLock(primaryKey));
+    public CacheKey acquireDeferredLock(Object primaryKey, boolean isCacheCheckComplete){
+        return createCacheKeyInterceptor(this.targetIdentityMap.acquireDeferredLock(primaryKey, isCacheCheckComplete));
     }
 
     /**
      * Acquire an active lock on the object.
      * This is used by reading (when using indirection or no relationships) and by merge.
      */
-    public CacheKey acquireLock(Object primaryKey, boolean forMerge){
-        return createCacheKeyInterceptor(this.targetIdentityMap.acquireLock(primaryKey, forMerge));
+    public CacheKey acquireLock(Object primaryKey, boolean forMerge, boolean isCacheCheckComplete){
+        return createCacheKeyInterceptor(this.targetIdentityMap.acquireLock(primaryKey, forMerge, isCacheCheckComplete));
     }
 
     /**

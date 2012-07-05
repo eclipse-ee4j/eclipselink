@@ -188,6 +188,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
                 allCachedVector = ((UnitOfWorkImpl)session).registerAllObjects(allCachedVector);
             }
 
+            this.isCacheCheckComplete = true;
             return getContainerPolicy().buildContainerFromVector(allCachedVector, session);
         } else {
             return null;
@@ -376,7 +377,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
                         Object resultCollection = policy.containerInstance(results.size());
                         Object iterator = policy.iteratorFor(results);
                         while (policy.hasNext(iterator)) {
-                            Object result = ((UnitOfWorkImpl)session).registerExistingObject(policy.next(iterator, session), this.descriptor, null);
+                            Object result = ((UnitOfWorkImpl)session).registerExistingObject(policy.next(iterator, session), this.descriptor, null, true);
                             policy.addInto(result, resultCollection, session);
                         }
                         return resultCollection;
@@ -684,6 +685,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
      */
     @Override
     protected void prepareCustomQuery(DatabaseQuery customQuery) {
+        super.prepareCustomQuery(customQuery);
         ReadAllQuery customReadQuery = (ReadAllQuery)customQuery;
         customReadQuery.containerPolicy = this.containerPolicy;
         customReadQuery.cascadePolicy = this.cascadePolicy;

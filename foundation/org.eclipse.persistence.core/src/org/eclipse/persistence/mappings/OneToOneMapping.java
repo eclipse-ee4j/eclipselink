@@ -233,8 +233,8 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     /**
      * Build a clone of the given element in a unitOfWork.
      */
-    public Object buildElementClone(Object attributeValue, Object parent, CacheKey cacheKey, Integer refreshCascade, AbstractSession cloningSession, boolean isExisting){
-        return buildCloneForPartObject(attributeValue, null, cacheKey, parent, cloningSession, refreshCascade, isExisting);
+    public Object buildElementClone(Object attributeValue, Object parent, CacheKey cacheKey, Integer refreshCascade, AbstractSession cloningSession, boolean isExisting, boolean isFromSharedCache){
+        return buildCloneForPartObject(attributeValue, null, cacheKey, parent, cloningSession, refreshCascade, isExisting, isFromSharedCache);
     }
     
     /**

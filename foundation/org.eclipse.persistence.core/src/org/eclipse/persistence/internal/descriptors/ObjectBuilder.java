@@ -37,6 +37,7 @@ import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
 import org.eclipse.persistence.descriptors.changetracking.ObjectChangePolicy;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
+import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
@@ -686,7 +687,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
      */
     protected Object buildWorkingCopyCloneNormally(ObjectBuildingQuery query, AbstractRecord databaseRow, UnitOfWorkImpl unitOfWork, Object primaryKey, ClassDescriptor concreteDescriptor, JoinedAttributeManager joinManager) throws DatabaseException, QueryException {
         // First check local unit of work cache.
-        CacheKey unitOfWorkCacheKey = unitOfWork.getIdentityMapAccessorInstance().acquireLock(primaryKey, concreteDescriptor.getJavaClass(), concreteDescriptor);
+        CacheKey unitOfWorkCacheKey = unitOfWork.getIdentityMapAccessorInstance().acquireLock(primaryKey, concreteDescriptor.getJavaClass(), concreteDescriptor, query.isCacheCheckComplete());
         Object clone = unitOfWorkCacheKey.getObject();
         boolean found = clone != null;
         Object original = null;
@@ -773,7 +774,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
         try {
             // Check if the objects exists in the identity map.
             if (query.shouldMaintainCache() && (! query.shouldRetrieveBypassCache() || ! query.shouldStoreBypassCache())) {
-                cacheKey = session.retrieveCacheKey(primaryKey, concreteDescriptor, joinManager, query.requiresDeferredLocks());
+                cacheKey = session.retrieveCacheKey(primaryKey, concreteDescriptor, joinManager, query);
                 domainObject = cacheKey.getObject();
                 domainWasMissing = domainObject == null;
             }
@@ -894,7 +895,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
         try {
             // Check if the objects exists in the identity map.
             if (query.shouldMaintainCache() &&  (!query.shouldRetrieveBypassCache() || !query.shouldStoreBypassCache())) {
-                cacheKey = session.retrieveCacheKey(primaryKey, concreteDescriptor, joinManager, query.requiresDeferredLocks());
+                cacheKey = session.retrieveCacheKey(primaryKey, concreteDescriptor, joinManager, query);
                 protectedObject = cacheKey.getObject();
             }
             
@@ -923,7 +924,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
                 
                 // The object must be registered before building its attributes to resolve circular dependencies.
                 if (query.shouldMaintainCache() && ! query.shouldStoreBypassCache()) {
-                    sharedCacheKey = session.getParent().retrieveCacheKey(primaryKey, concreteDescriptor, joinManager, query.requiresDeferredLocks());
+                    sharedCacheKey = session.getParent().retrieveCacheKey(primaryKey, concreteDescriptor, joinManager, query);
                     if (sharedCacheKey.getObject() == null){
                         sharedCacheKey = (CacheKey) buildObject(true, query, databaseRow, session.getParent(), primaryKey, concreteDescriptor, joinManager);
                         cachedObject = sharedCacheKey.getObject();
@@ -947,7 +948,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
                     copyInto(protectedObject, ((ReadObjectQuery)query).getSelectionObject());
                     protectedObject = ((ReadObjectQuery)query).getSelectionObject();
                 }
-                sharedCacheKey = session.getParent().retrieveCacheKey(primaryKey, concreteDescriptor, joinManager, query.requiresDeferredLocks());
+                sharedCacheKey = session.getParent().retrieveCacheKey(primaryKey, concreteDescriptor, joinManager, query);
                 cachedObject = sharedCacheKey.getObject();
                 if (cachedObject == null){
                     sharedCacheKey = (CacheKey) buildObject(true, query, databaseRow, session.getParent(), primaryKey, concreteDescriptor, joinManager);
@@ -1641,7 +1642,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
         // We call directly on the identity map to avoid going to the parent,
         // registering if found, and wrapping the result.
         // Acquire or create the cache key as is need once the object is build anyway.
-        CacheKey unitOfWorkCacheKey = unitOfWork.getIdentityMapAccessorInstance().getIdentityMapManager().acquireLock(primaryKey, descriptor.getJavaClass(), false, descriptor);
+        CacheKey unitOfWorkCacheKey = unitOfWork.getIdentityMapAccessorInstance().getIdentityMapManager().acquireLock(primaryKey, descriptor.getJavaClass(), false, descriptor, true);
         Object workingClone = unitOfWorkCacheKey.getObject();
         try {
             // If there is a clone, and it is not a refresh then just return it.
@@ -1782,7 +1783,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
             unitOfWork = (UnitOfWorkImpl)executionSession;
         }
         
-        CacheKey cacheKey = session.getIdentityMapAccessorInstance().getIdentityMapManager().acquireLock(primaryKey, descriptor.getJavaClass(), false, descriptor);
+        CacheKey cacheKey = session.getIdentityMapAccessorInstance().getIdentityMapManager().acquireLock(primaryKey, descriptor.getJavaClass(), false, descriptor, query.isCacheCheckComplete());
         CacheKey parentCacheKey = null;
         Object object = cacheKey.getObject();
         try {
@@ -1793,7 +1794,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
             if ((unitOfWork != null) && !isolated) {
                 // Need to lookup in the session.
                 session = unitOfWork.getParentIdentityMapSession(query);
-                parentCacheKey = session.getIdentityMapAccessorInstance().getIdentityMapManager().acquireLock(primaryKey, descriptor.getJavaClass(), false, descriptor);
+                parentCacheKey = session.getIdentityMapAccessorInstance().getIdentityMapManager().acquireLock(primaryKey, descriptor.getJavaClass(), false, descriptor, query.isCacheCheckComplete());
                 object = parentCacheKey.getObject();
             }
             // If the object is not in the cache, it needs to be built, this is building in the unit of work if isolated.
@@ -3602,7 +3603,9 @@ public class ObjectBuilder implements Cloneable, Serializable {
                     // Bug 4230655 - do not replace instantiated valueholders.
                     Object attributeValue = mapping.getAttributeValueFromObject(sourceObject);
                     if ((attributeValue != null) && mapping.isForeignReferenceMapping() && ((ForeignReferenceMapping)mapping).usesIndirection() && (!((ForeignReferenceMapping)mapping).getIndirectionPolicy().objectIsInstantiated(attributeValue))) {
+                        AbstractSession session = query.getExecutionSession();
                         mapping.readFromRowIntoObject(databaseRow, joinManager, sourceObject, cacheKey, query, query.getExecutionSession(),isTargetProtected);
+                        session.getIdentityMapAccessorInstance().getIdentityMap(concreteDescriptor).lazyRelationshipLoaded(sourceObject, (ValueHolderInterface) ((ForeignReferenceMapping)mapping).getIndirectionPolicy().getOriginalValueHolder(attributeValue, session), (ForeignReferenceMapping)mapping);
                     }
                 }
             }
@@ -3627,8 +3630,9 @@ public class ObjectBuilder implements Cloneable, Serializable {
                     // Bug 4230655 - do not replace instantiated valueholders.
                     Object attributeValue = mapping.getAttributeValueFromObject(intermediateValue);
                     if ((attributeValue != null) && mapping.isForeignReferenceMapping() && ((ForeignReferenceMapping)mapping).usesIndirection() && (!((ForeignReferenceMapping)mapping).getIndirectionPolicy().objectIsInstantiated(attributeValue))) {
+                        AbstractSession session = query.getExecutionSession();
                         mapping.readFromRowIntoObject(databaseRow, joinManager, intermediateValue, cacheKey, query, query.getExecutionSession(), isTargetProtected);
-                    }
+                        session.getIdentityMapAccessorInstance().getIdentityMap(concreteDescriptor).lazyRelationshipLoaded(intermediateValue, (ValueHolderInterface) ((ForeignReferenceMapping)mapping).getIndirectionPolicy().getOriginalValueHolder(attributeValue, session), (ForeignReferenceMapping)mapping);                    }
                 }
             }
         }

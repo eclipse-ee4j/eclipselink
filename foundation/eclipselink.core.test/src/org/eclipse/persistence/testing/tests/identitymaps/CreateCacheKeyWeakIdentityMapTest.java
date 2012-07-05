@@ -45,8 +45,8 @@ public class CreateCacheKeyWeakIdentityMapTest extends TestCase {
     public void test() {
         Vector primaryKeys = new Vector();
         primaryKeys.add(new java.math.BigDecimal(4));
-        CacheKey cacheKey = getAbstractSession().getIdentityMapAccessorInstance().acquireDeferredLock(primaryKeys, Employee.class, getSession().getDescriptor(Employee.class));
-        CacheKey cacheKey2 = getAbstractSession().getIdentityMapAccessorInstance().acquireDeferredLock(primaryKeys, Employee.class, getSession().getDescriptor(Employee.class));
+        CacheKey cacheKey = getAbstractSession().getIdentityMapAccessorInstance().acquireDeferredLock(primaryKeys, Employee.class, getSession().getDescriptor(Employee.class), false);
+        CacheKey cacheKey2 = getAbstractSession().getIdentityMapAccessorInstance().acquireDeferredLock(primaryKeys, Employee.class, getSession().getDescriptor(Employee.class), false);
         if (cacheKey != cacheKey2) {
             throw new TestErrorException("WeakIdentityMap failed to return same cachkey for successive calls for same primary key and class");
         }

@@ -226,6 +226,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         this.cacheUsage = UseDescriptorSetting;
         this.shouldIncludeData = false;
         this.inMemoryQueryIndirectionPolicy = InMemoryQueryIndirectionPolicy.SHOULD_THROW_INDIRECTION_EXCEPTION;
+        this.isCacheCheckComplete = false;
     }
     
     /**
