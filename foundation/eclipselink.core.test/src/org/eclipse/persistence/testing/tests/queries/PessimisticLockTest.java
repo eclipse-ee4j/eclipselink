@@ -43,6 +43,10 @@ public class PessimisticLockTest extends RefreshTest {
 
     public void test() throws Exception {
         checkSelectForUpateSupported();
+        // HANA supports SELECT FOR UPDATE but not with queries that select from multiple tables
+        if (getSession().getPlatform().isHANA()) {
+            throw new TestWarningException("This database does not support FOR UPDATE on multiple tables");
+        }
 
         if (this.lockMode == ObjectBuildingQuery.LOCK_NOWAIT) {
             checkNoWaitSupported();

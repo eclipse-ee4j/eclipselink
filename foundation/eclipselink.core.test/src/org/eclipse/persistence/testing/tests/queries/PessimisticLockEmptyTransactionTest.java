@@ -48,6 +48,11 @@ public class PessimisticLockEmptyTransactionTest extends AutoVerifyTestCase {
 
     public void setup() {
         checkSelectForUpateSupported();
+        // HANA supports SELECT FOR UPDATE but not with queries that select from multiple tables
+        if (getSession().getPlatform().isHANA()) {
+            throw new TestWarningException("This database does not support FOR UPDATE on multiple tables");
+        }
+
         getSession().getEventManager().addListener(eventAdapter);
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         stillInTransaction = false;
