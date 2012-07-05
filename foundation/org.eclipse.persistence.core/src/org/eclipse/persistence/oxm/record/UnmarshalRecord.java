@@ -491,16 +491,6 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
             List containerValues = treeObjectBuilder.getContainerValues();
             if (null != containerValues) {
             	containerInstances = new Object[containerValues.size()];
-            	
-                for (int x = 0, containerValuesSize = containerValues.size(); x < containerValuesSize; x++) {
-                    ContainerValue containerValue = (ContainerValue)containerValues.get(x);
-                    if(containerValue.getReuseContainer() && !(containerValue.getMapping().getAttributeAccessor().isReadOnly())) {
-                        getContainerInstance(containerValue, false);
-                    }
-                    if(containerValue.isDefaultEmptyContainer()) {
-                        getContainerInstance(containerValue, true);
-                    }
-                }
             }
 
             if (null != xPathNode.getSelfChildren()) {
@@ -552,7 +542,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
             if(null != treeObjectBuilder.getContainerValues()){
                 for(int i=0; i<treeObjectBuilder.getContainerValues().size(); i++){
             	    ContainerValue cv =((ContainerValue)treeObjectBuilder.getContainerValues().get(i));
-            	       cv.setContainerInstance(currentObject, containerInstances[cv.getIndex()]);
+            	    cv.setContainerInstance(currentObject,getContainerInstance(cv, cv.isDefaultEmptyContainer()));
                 }
             }
 

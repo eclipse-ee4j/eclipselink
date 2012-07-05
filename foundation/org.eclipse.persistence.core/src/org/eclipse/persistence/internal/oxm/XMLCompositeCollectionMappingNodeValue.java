@@ -324,7 +324,7 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
     }
 
     public boolean getReuseContainer() {
-        return getMapping().getReuseContainer();
+        return xmlCompositeCollectionMapping.getReuseContainer();
     }
     
     /**
@@ -351,7 +351,7 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
      * @since EclipseLink 2.3.3
      */
     public boolean isDefaultEmptyContainer() {
-        return getMapping().isDefaultEmptyContainer();
+        return xmlCompositeCollectionMapping.isDefaultEmptyContainer();
     }
 
 }

@@ -327,6 +327,7 @@ public class XMLField extends DatabaseField {
            initializeXPathFragment(xPathFragment);
         }
         isInitialized = true;
+        
     }
 
     private void initializeXPathFragment(XPathFragment xPathFragment) {
@@ -785,8 +786,8 @@ public class XMLField extends DatabaseField {
     }
     
 	public QName getLeafElementType() {
-        if (hasLastXPathFragment()) {
-            return getLastXPathFragment().getLeafElementType();
+        if (lastXPathFragment != null) {
+            return lastXPathFragment.getLeafElementType();
         }
         return leafElementType; 
     }
