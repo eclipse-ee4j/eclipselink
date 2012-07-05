@@ -1,0 +1,17 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:complexType name="employeeSingleDepartment">
+      <xsd:sequence>
+         <xsd:element minOccurs="0" name="name" type="xsd:string"/>
+         <xsd:element minOccurs="0" name="department-number" type="department"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="employee" type="employeeSingleDepartment"/>
+   <xsd:simpleType name="department">
+      <xsd:restriction base="xsd:int">
+         <xsd:enumeration value="1"/>
+         <xsd:enumeration value="2"/>
+         <xsd:enumeration value="3"/>
+         <xsd:enumeration value="4"/>
+      </xsd:restriction>
+   </xsd:simpleType>
+</xsd:schema>

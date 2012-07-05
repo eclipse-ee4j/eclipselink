@@ -1,6 +1,6 @@
 {"testObject":{
    "stringA":"stringADefault",
-   "enumA":"1",
+   "enumA":1,
    "stringB":"stringBDefault",
-   "enumB":"2"
+   "enumB":2
 }}

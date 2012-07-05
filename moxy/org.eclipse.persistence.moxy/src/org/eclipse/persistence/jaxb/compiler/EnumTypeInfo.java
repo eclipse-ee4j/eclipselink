@@ -36,12 +36,12 @@ public class EnumTypeInfo extends TypeInfo {
     private String m_className;
     private QName m_restrictionBase;
     private List<String> m_fieldNames;
-    private List<String> m_xmlEnumValues;
+    private List<Object> m_xmlEnumValues;
     
     public EnumTypeInfo(Helper helper) {
         super(helper);
         m_fieldNames = new ArrayList<String>();
-        m_xmlEnumValues = new ArrayList<String>();
+        m_xmlEnumValues = new ArrayList<Object>();
     }
     
     public boolean isEnumerationType() {
@@ -70,7 +70,7 @@ public class EnumTypeInfo extends TypeInfo {
      * @param fieldName
      * @param xmlEnumValue
      */
-    public void addJavaFieldToXmlEnumValuePair(String fieldName, String xmlEnumValue) {
+    public void addJavaFieldToXmlEnumValuePair(String fieldName, Object xmlEnumValue) {
     	m_fieldNames.add(fieldName);
     	m_xmlEnumValues.add(xmlEnumValue);
     }
@@ -85,7 +85,7 @@ public class EnumTypeInfo extends TypeInfo {
      * @param fieldName
      * @param xmlEnumValue
      */
-    public void addJavaFieldToXmlEnumValuePair(boolean override, String fieldName, String xmlEnumValue) {
+    public void addJavaFieldToXmlEnumValuePair(boolean override, String fieldName, Object xmlEnumValue) {
         if (!override) {
             addJavaFieldToXmlEnumValuePair(fieldName, xmlEnumValue);
         } else {
@@ -105,7 +105,7 @@ public class EnumTypeInfo extends TypeInfo {
         return m_fieldNames;
     }
 
-    public List<String> getXmlEnumValues() {
+    public List<Object> getXmlEnumValues() {
 		return m_xmlEnumValues;
 	}
     

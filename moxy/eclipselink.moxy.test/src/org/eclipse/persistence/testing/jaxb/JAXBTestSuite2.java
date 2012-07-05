@@ -33,6 +33,7 @@ import org.eclipse.persistence.testing.jaxb.jaxbelement.simple.JAXBElementSimple
 import org.eclipse.persistence.testing.jaxb.jaxbelement.subclass.JAXBElementSubclassEnumTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbelement.subclass.JAXBElementSubclassTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbelement.enumeration.JAXBElementEnumTestCases;
+import org.eclipse.persistence.testing.jaxb.xmlenum.InvalidEnumValueTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlenum.XmlEnumRootElemTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlidref.XmlIdRefTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlidref.inheritance.XmlIdRefInheritanceTestCases;
@@ -66,6 +67,7 @@ public class JAXBTestSuite2 extends TestCase {
         suite.addTestSuite(InlineDataHandlerCollectionTestCases.class);
         suite.addTestSuite(LargeInlineBinaryTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlenum.EnumSwitchTestCases.class);
+        suite.addTestSuite(InvalidEnumValueTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlenum.XmlEnumElementTestCases.class);
         suite.addTestSuite(XmlEnumRootElemTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlenum.XmlEnumAttributeTestCases.class);
