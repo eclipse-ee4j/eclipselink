@@ -118,6 +118,39 @@ public class EmployeeSystem extends TestSystem {
                 } catch (Exception e) {
                 }
             }
+        } else {
+            try {
+                session.executeNonSelectingCall(new SQLCall("DELETE FROM PHONE"));
+            } catch (Exception e) {
+            }
+            try {
+                session.executeNonSelectingCall(new SQLCall("DELETE FROM RESPONS"));
+            } catch (Exception e) {
+            }
+            try {
+                session.executeNonSelectingCall(new SQLCall("DELETE FROM SALARY"));
+            } catch (Exception e) {
+            }
+            try {
+                session.executeNonSelectingCall(new SQLCall("DELETE FROM PROJ_EMP"));
+            } catch (Exception e) {
+            }
+            try {
+                session.executeNonSelectingCall(new SQLCall("DELETE FROM LPROJECT"));
+            } catch (Exception e) {
+            }
+            try {
+                session.executeNonSelectingCall(new SQLCall("DELETE FROM PROJECT"));
+            } catch (Exception e) {
+            }
+            try {
+                session.executeNonSelectingCall(new SQLCall("DELETE FROM EMPLOYEE"));
+            } catch (Exception e) {
+            }
+            try {
+                session.executeNonSelectingCall(new SQLCall("DELETE FROM ADDRESS"));
+            } catch (Exception e) {
+            }
         }
     }
 
