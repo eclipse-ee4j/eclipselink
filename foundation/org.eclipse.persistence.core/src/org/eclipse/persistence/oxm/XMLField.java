@@ -786,8 +786,8 @@ public class XMLField extends DatabaseField {
     }
     
 	public QName getLeafElementType() {
-        if (hasLastXPathFragment()) {
-            return getLastXPathFragment().getLeafElementType();
+        if (lastXPathFragment != null) {
+            return lastXPathFragment.getLeafElementType();
         }
         return leafElementType; 
     }
