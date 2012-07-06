@@ -106,7 +106,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
             // Optimize registration to knowledge of existence.
             Object registeredObject = null;
             if (isExisting) {
-                registeredObject = unitOfWork.registerExistingObject(attributeValue);
+                registeredObject = unitOfWork.registerExistingObject(attributeValue, true);
             } else {
                 // Not known whether existing or not.
                 registeredObject = unitOfWork.registerObject(attributeValue);
