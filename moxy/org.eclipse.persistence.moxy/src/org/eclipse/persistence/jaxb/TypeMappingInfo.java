@@ -19,6 +19,7 @@ import javax.xml.namespace.QName;
 import org.w3c.dom.Element;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.oxm.XMLConstants;
+import org.eclipse.persistence.oxm.XMLDescriptor;
 
 /**
  * <p><b>Purpose</b>:  Provides a wrapper for a java type to be used when creating a JAXB context. This allows for
@@ -35,6 +36,7 @@ public class TypeMappingInfo {
     private Annotation[] annotations;
     private Element xmlElement;
     private boolean nillable;
+    private XMLDescriptor xmlDescriptor;
     private QName schemaType;
     
 	
@@ -119,6 +121,24 @@ public class TypeMappingInfo {
     }
 
     /**
+     * INTERNAL
+     * Returns the XMLDescriptor associated with this TypeMappingInfo.  This is
+     * set when the metadata is initialized.
+     */
+    public XMLDescriptor getXmlDescriptor() {
+        return xmlDescriptor;
+    }
+
+    /**
+     * INTERNAL
+     * Sets the XMLDescriptor associated with this TypeMappingInfo.  This is
+     * set when the metadata is initialized.
+     */
+    public void setXmlDescriptor(XMLDescriptor xmlDescriptor) {
+        this.xmlDescriptor = xmlDescriptor;
+    }
+
+    /**
      * Returns the xml-element as a <code>Element</code> which represents the
      * parameter level annotations that should be applied to this type.
      * 
@@ -152,4 +172,5 @@ public class TypeMappingInfo {
     public void setXmlElement(Element xmlElement) {
         this.xmlElement = xmlElement;
     }
+
 }
