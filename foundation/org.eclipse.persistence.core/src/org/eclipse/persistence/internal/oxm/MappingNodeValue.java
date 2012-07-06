@@ -39,17 +39,14 @@ public abstract class MappingNodeValue extends NodeValue {
     }
 
     protected QName getSchemaType(XMLField xmlField, Object value, AbstractSession session) {
-        QName schemaType = null;
         if(xmlField.getLeafElementType() != null){
-            schemaType = xmlField.getLeafElementType();
+            return xmlField.getLeafElementType();
         }else if (xmlField.isTypedTextField()) {
-            schemaType = xmlField.getXMLType(value.getClass());
+            return xmlField.getXMLType(value.getClass());
         } else if (xmlField.isUnionField()) {
             return getSingleValueToWriteForUnion((XMLUnionField) xmlField, value, session);
-        } else if (xmlField.getSchemaType() != null) {
-            schemaType = xmlField.getSchemaType();
         }
-        return schemaType;
+        return xmlField.getSchemaType();        
     }
 
     protected QName getSingleValueToWriteForUnion(XMLUnionField xmlField, Object value, AbstractSession session) {
