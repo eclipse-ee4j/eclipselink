@@ -43,7 +43,9 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "jpars_could_not_add_listener", "JPA RS was unable to add a change listener"},
         { "weaving_required_for_relationships", "JPA RS can only handle relationships if your persistence unit is weaved.  Ensure weaving is not disabled and either deploy on a Java EE compliant server of statically weave your classes."},
         { "jersey.container.cant.load", "Unable to instantiate Jersey ServletContainer."},
-        { "jersey.not.available", "No Jersey runtime found on the application classpath"}
+        { "jersey.not.available", "No Jersey runtime found on the application classpath"},
+        { "jpars_could_marshal_requested_result_to_requested_type", "JPA RS could not marshall object [{0}] to the requested type."},
+        { "jpars_requested_type", "You are requesting types [{0}] from JPA RS."}
     };
     
     @Override

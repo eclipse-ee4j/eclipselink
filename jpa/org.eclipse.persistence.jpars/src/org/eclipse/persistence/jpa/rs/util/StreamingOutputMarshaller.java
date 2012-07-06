@@ -24,6 +24,7 @@ import java.util.List;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -60,7 +61,7 @@ public class StreamingOutputMarshaller implements StreamingOutput {
     }
 
     public void write(OutputStream output) throws IOException, WebApplicationException {
-        if (result instanceof byte[]){
+        if (result instanceof byte[] && this.mediaType.equals(MediaType.APPLICATION_OCTET_STREAM_TYPE)){
             output.write((byte[])result);
         } else if (result instanceof String){
             OutputStreamWriter writer = new OutputStreamWriter(output);
@@ -68,7 +69,7 @@ public class StreamingOutputMarshaller implements StreamingOutput {
             writer.flush();
             writer.close();
         } else {
-            if (this.context != null && this.context.getJAXBContext() != null && this.result != null ) {
+            if (this.context != null && this.context.getJAXBContext() != null && this.result != null && (this.mediaType.equals(MediaType.APPLICATION_JSON_TYPE) || this.mediaType.equals(MediaType.APPLICATION_XML_TYPE))) {
                 try {
                     context.marshallEntity(result, mediaType, output);
                     return;
@@ -89,17 +90,20 @@ public class StreamingOutputMarshaller implements StreamingOutput {
                             JPARSLogger.fine("jaxb_exception_while_marshalling", new Object[]{ex.toString()});
                         }
                     }
-                    initialException.printStackTrace();
                     JPARSLogger.fine("jpars_could_not_marshal_serializing", new Object[]{initialException});
                 }
             }
-            // could not marshall, try serializing
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ObjectOutputStream oos = new ObjectOutputStream(baos);
-            oos.writeObject(result);
-            oos.flush();
-            oos.close();
-            output.write(baos.toByteArray());
+            if (this.mediaType.equals(MediaType.APPLICATION_OCTET_STREAM_TYPE)){
+                // could not marshall, try serializing
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                ObjectOutputStream oos = new ObjectOutputStream(baos);
+                oos.writeObject(result);
+                oos.flush();
+                oos.close();
+                output.write(baos.toByteArray());
+            } else {
+                JPARSLogger.fine("jpars_could_marshal_requested_result_to_requested_type", new Object[]{result});
+            }
         }
     }
     
@@ -115,22 +119,45 @@ public class StreamingOutputMarshaller implements StreamingOutput {
      *             values are found.
      */
     public static MediaType mediaType(List<?> types) {
-        if (contains(types, MediaType.APPLICATION_JSON_TYPE) || contains(types, MediaType.WILDCARD_TYPE)) {
-            return MediaType.APPLICATION_JSON_TYPE;
+        JPARSLogger.fine("jpars_requested_type", new Object[]{types});
+        for (int i=0;i<types.size();i++){
+            if (isCompatible(types.get(i), new MediaType[]{MediaType.APPLICATION_JSON_TYPE})){
+                return MediaType.APPLICATION_JSON_TYPE;
+            }
+            if (isCompatible(types.get(i), new MediaType[]{MediaType.APPLICATION_XML_TYPE})){
+                return MediaType.APPLICATION_XML_TYPE;
+            }
+            if (isCompatible(types.get(i), new MediaType[]{MediaType.APPLICATION_OCTET_STREAM_TYPE})){
+                return MediaType.APPLICATION_OCTET_STREAM_TYPE;
+            }
         }
-        if (contains(types, MediaType.APPLICATION_XML_TYPE)) {
-            return MediaType.APPLICATION_XML_TYPE;
-        }
-        return MediaType.WILDCARD_TYPE;
+        throw new WebApplicationException(Status.UNSUPPORTED_MEDIA_TYPE);
     }
-
+    
+    protected static boolean isCompatible(Object type, MediaType[] types){
+        if (type instanceof String){
+            for (MediaType comparisonType:types){
+                if (comparisonType.toString().equals((String)type)){
+                    return true;
+                }
+            }
+        } else {
+            for (MediaType comparisonType:types){
+                if (comparisonType.isCompatible((MediaType)type)){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
     private static boolean contains(List<?> types, MediaType type) {
         for (Object mt : types) {
             if (mt instanceof String) {
                 if (((String) mt).contains(type.toString())) {
                     return true;
                 }
-            } else if ((((MediaType) mt).toString()).equals(type.toString())) {
+            } else if (((MediaType) mt).isCompatible(type)) {
                 return true;
             }
         }
