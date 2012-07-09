@@ -339,7 +339,9 @@ public class FunctionExpression extends BaseExpression {
         }
 
         Expression base = getBaseExpression();
-        return (base.isObjectExpression() && (!((ObjectExpression)base).isAttribute()));
+        //bug 384641 - check that directCollections are not treated as object comparisons
+        return (base.isObjectExpression() && (!((ObjectExpression)base).isAttribute()) && 
+                !((ObjectExpression)base).isDirectCollection() );
     }
 
     /**
