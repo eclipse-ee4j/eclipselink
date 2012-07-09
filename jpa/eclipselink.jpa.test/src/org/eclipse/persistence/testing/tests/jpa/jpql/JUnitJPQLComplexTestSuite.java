@@ -277,6 +277,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         tests.add("testRegexp");
         tests.add("testUnion");
         tests.add("testComplexPathExpression");
+        tests.add("testDirectColletionInSubquery");
 
         Collections.sort(tests);
         for (String test : tests) {
@@ -3576,6 +3577,16 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         if ((count * count) != count2) {
             fail("Incorrect count returned from parralel, got: " + count2 + " expected: n^2 " + count);
         }
+        closeEntityManager(em);
+    }
+
+    // Bug 384641
+    // Tests that direct collections work with InSubQuery expressions
+    public void testDirectColletionInSubquery() {
+        EntityManager em = createEntityManager();
+        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp LEFT JOIN emp.responsibilities respons WHERE (emp.responsibilities IS EMPTY) OR (respons IN (SELECT rs FROM Employee empx join empx.responsibilities rs WHERE 1 = 0))";
+
+        List result = em.createQuery(ejbqlString).getResultList();
         closeEntityManager(em);
     }
 
