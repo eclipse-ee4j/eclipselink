@@ -539,10 +539,12 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
 
         try {
             // PROCESS COLLECTION MAPPINGS
-            if(null != treeObjectBuilder.getContainerValues()){
-                for(int i=0; i<treeObjectBuilder.getContainerValues().size(); i++){
-            	    ContainerValue cv =((ContainerValue)treeObjectBuilder.getContainerValues().get(i));
-            	    cv.setContainerInstance(currentObject,getContainerInstance(cv, cv.isDefaultEmptyContainer()));
+            List containterValues = treeObjectBuilder.getContainerValues();
+            if (null != containterValues) {
+                int size = containterValues.size();
+                for (int i = 0; i < size; i++) {
+                    ContainerValue cv = ((ContainerValue) containterValues.get(i));
+            	    cv.setContainerInstance(currentObject, getContainerInstance(cv, cv.isDefaultEmptyContainer()));
                 }
             }
 
