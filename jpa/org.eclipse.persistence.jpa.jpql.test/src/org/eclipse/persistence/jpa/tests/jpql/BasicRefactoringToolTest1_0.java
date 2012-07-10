@@ -19,7 +19,7 @@ import org.junit.Test;
 
 /**
  * The abstract definition of a unit-test that tests {@link org.eclipse.persistence.jpa.jpql.
- * RefactoringTool RefactoringTool} when the JPA version is 1.0.
+ * BasicRefactoringTool BasicRefactoringTool} when the JPA version is 1.0.
  *
  * @version 2.4
  * @since 2.4
@@ -30,6 +30,52 @@ public final class BasicRefactoringToolTest1_0 extends AbstractBasicRefactoringT
 
 	private BasicRefactoringTool buildRefactoringTool(String jpqlQuery) throws Exception {
 		return new DefaultBasicRefactoringTool(jpqlQuery, getGrammar(), getPersistenceUnit());
+	}
+
+	@Test
+	public void test_RenameAttribute_1() throws Exception {
+
+		String jpqlQuery = "SELECT e.address.zip FROM Employee e";
+		BasicRefactoringTool refactoringTool = buildRefactoringTool(jpqlQuery);
+
+		int offset = "SELECT e.".length();
+		String typeName = "jpql.query.Employee";
+		String oldValue = "address";
+		String newValue = "addr";
+		refactoringTool.renameAttribute(typeName, oldValue, newValue);
+
+		String expected = "SELECT e.addr.zip FROM Employee e";
+		testChange(refactoringTool, jpqlQuery, expected, offset, oldValue, newValue);
+	}
+
+	@Test
+	public void test_RenameAttribute_2() throws Exception {
+
+		String jpqlQuery = "SELECT e.address.zipcode FROM Employee e";
+		BasicRefactoringTool refactoringTool = buildRefactoringTool(jpqlQuery);
+
+		String typeName = "jpql.query.Address";
+		String oldValue = "zip";
+		String newValue = "postalcode";
+		refactoringTool.renameAttribute(typeName, oldValue, newValue);
+
+		testHasNoChanges(refactoringTool);
+	}
+
+	@Test
+	public void test_RenameAttribute_3() throws Exception {
+
+		String jpqlQuery = "SELECT e.address.zip FROM Employee e";
+		BasicRefactoringTool refactoringTool = buildRefactoringTool(jpqlQuery);
+
+		int offset = "SELECT e.address.".length();
+		String typeName = "jpql.query.Address";
+		String oldValue = "zip";
+		String newValue = "postalcode";
+		refactoringTool.renameAttribute(typeName, oldValue, newValue);
+
+		String expected = "SELECT e.address.postalcode FROM Employee e";
+		testChange(refactoringTool, jpqlQuery, expected, offset, oldValue, newValue);
 	}
 
 	@Test
@@ -184,36 +230,6 @@ public final class BasicRefactoringToolTest1_0 extends AbstractBasicRefactoringT
 		String oldValue = "javax.persistence.AccessType.FIELD";
 		String newValue = "javax.persistence.AccessType.PROPERTY";
 		refactoringTool.renameEnumConstant(oldValue, newValue);
-
-		testHasNoChanges(refactoringTool);
-	}
-
-	@Test
-	public void test_RenameFieldName_1() throws Exception {
-
-		String jpqlQuery = "SELECT e.address.zip FROM Employee e";
-		BasicRefactoringTool refactoringTool = buildRefactoringTool(jpqlQuery);
-
-		int offset = "SELECT e.".length();
-		String typeName = "jpql.query.Employee";
-		String oldValue = "address";
-		String newValue = "addr";
-		refactoringTool.renameField(typeName, oldValue, newValue);
-
-		String expected = "SELECT e.addr.zip FROM Employee e";
-		testChange(refactoringTool, jpqlQuery, expected, offset, oldValue, newValue);
-	}
-
-	@Test
-	public void test_RenameFieldName_2() throws Exception {
-
-		String jpqlQuery = "SELECT e.address.zipcode FROM Employee e";
-		BasicRefactoringTool refactoringTool = buildRefactoringTool(jpqlQuery);
-
-		String typeName = "jpql.query.Address";
-		String oldValue = "zip";
-		String newValue = "zipcode";
-		refactoringTool.renameField(typeName, oldValue, newValue);
 
 		testHasNoChanges(refactoringTool);
 	}

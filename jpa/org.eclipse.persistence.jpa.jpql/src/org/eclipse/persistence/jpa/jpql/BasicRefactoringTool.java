@@ -111,6 +111,22 @@ public abstract class BasicRefactoringTool extends AbstractRefactoringTool {
 
 	/**
 	 * Creates the visitor that will traverse the {@link } representation of the JPQL
+	 * query and will rename a type's attribute name.
+	 *
+	 * @param typeName The fully qualified name of the type that got one of its attributes renamed
+	 * @param oldAttributeName The current name of the attribute to rename
+	 * @param newAttributeName The new name of the attribute
+	 * @return A new {@link AttributeNameRenamer}
+	 */
+	protected AttributeNameRenamer buildAttributeNameRenamer(String typeName,
+	                                                         String oldAttributeName,
+	                                                         String newAttributeName) {
+
+		return new AttributeNameRenamer(getQueryContext(), typeName, oldAttributeName, newAttributeName);
+	}
+
+	/**
+	 * Creates the visitor that will traverse the {@link } representation of the JPQL
 	 * query and will rename the fully qualified class name.
 	 *
 	 * @param oldClassName The current name of the class to rename
@@ -143,22 +159,6 @@ public abstract class BasicRefactoringTool extends AbstractRefactoringTool {
 	 */
 	protected EnumConstantRenamer buildEnumConstantRenamer(String oldClassName, String newClassName) {
 		return new EnumConstantRenamer(getManagedTypeProvider(), oldClassName, newClassName);
-	}
-
-	/**
-	 * Creates the visitor that will traverse the {@link } representation of the JPQL
-	 * query and will rename a type's attribute name.
-	 *
-	 * @param typeName The fully qualified name of the type that got one of its attributes renamed
-	 * @param oldFieldName The current name of the attribute to rename
-	 * @param newFieldName The new name of the attribute
-	 * @return A new {@link FieldNameRenamer}
-	 */
-	protected FieldNameRenamer buildFieldNameRenamer(String typeName,
-	                                                 String oldFieldName,
-	                                                 String newFieldName) {
-
-		return new FieldNameRenamer(getQueryContext(), typeName, oldFieldName, newFieldName);
 	}
 
 	/**
@@ -251,6 +251,41 @@ public abstract class BasicRefactoringTool extends AbstractRefactoringTool {
 	}
 
 	/**
+	 * Renames the attribute (persistent field or persistent property) from the given type.
+	 *
+	 * @param type The Java class from which the change originate
+	 * @param oldAttributeName The current name of the attribute to rename
+	 * @param newAttributeName The new name of the attribute
+	 */
+	public void renameAttribute(Class<?> type, String oldAttributeName, String newAttributeName) {
+		renameAttribute(type.getName(), oldAttributeName, newAttributeName);
+	}
+
+	/**
+	 * Renames the attribute (persistent field or persistent property) from the given type.
+	 *
+	 * @param type The {@link IType} from which the change originate
+	 * @param oldAttributeName The current name of the attribute to rename
+	 * @param newAttributeName The new name of the attribute
+	 */
+	public void renameAttribute(IType type, String oldAttributeName, String newAttributeName) {
+		renameAttribute(type.getName(), oldAttributeName, newAttributeName);
+	}
+
+	/**
+	 * Renames the attribute (persistent field or persistent property) from the given type.
+	 *
+	 * @param typeName The fully qualified name of the type that got one of its attributes renamed
+	 * @param oldAttributeName The current name of the attribute to rename
+	 * @param newAttributeName The new name of the attribute
+	 */
+	public void renameAttribute(String typeName, String oldAttributeName, String newAttributeName) {
+		AbstractRenamer renamer = buildAttributeNameRenamer(typeName, oldAttributeName, newAttributeName);
+		getExpression().accept(renamer);
+		delta.addTextEdits(renamer.textEdits);
+	}
+
+	/**
 	 * Renames a fully qualified class name.
 	 *
 	 * @param oldClassName The current fully qualified class name of the class to rename
@@ -282,41 +317,6 @@ public abstract class BasicRefactoringTool extends AbstractRefactoringTool {
 	 */
 	public void renameEnumConstant(String oldEnumConstant, String newEnumConstant) {
 		AbstractRenamer renamer = buildEnumConstantRenamer(oldEnumConstant, newEnumConstant);
-		getExpression().accept(renamer);
-		delta.addTextEdits(renamer.textEdits);
-	}
-
-	/**
-	 * Renames a field from the given type.
-	 *
-	 * @param type The Java class from which the change originate
-	 * @param oldFieldName The current name of the attribute to rename
-	 * @param newFieldName The new name of the attribute
-	 */
-	public void renameField(Class<?> type, String oldFieldName, String newFieldName) {
-		renameField(type.getName(), oldFieldName, newFieldName);
-	}
-
-	/**
-	 * Renames a field from the given type.
-	 *
-	 * @param type The {@link IType} from which the change originate
-	 * @param oldFieldName The current name of the attribute to rename
-	 * @param newFieldName The new name of the attribute
-	 */
-	public void renameField(IType type, String oldFieldName, String newFieldName) {
-		renameField(type.getName(), oldFieldName, newFieldName);
-	}
-
-	/**
-	 * Renames a field from the given type.
-	 *
-	 * @param typeName The fully qualified name of the type that got one of its attributes renamed
-	 * @param oldFieldName The current name of the attribute to rename
-	 * @param newFieldName The new name of the attribute
-	 */
-	public void renameField(String typeName, String oldFieldName, String newFieldName) {
-		AbstractRenamer renamer = buildFieldNameRenamer(typeName, oldFieldName, newFieldName);
 		getExpression().accept(renamer);
 		delta.addTextEdits(renamer.textEdits);
 	}
@@ -433,6 +433,125 @@ public abstract class BasicRefactoringTool extends AbstractRefactoringTool {
 	}
 
 	/**
+	 * This visitor renames any segment of a path expression.
+	 */
+	protected class AttributeNameRenamer extends AbstractRenamer {
+
+		/**
+		 * The new name of the attribute.
+		 */
+		protected final String newAttributeName;
+
+		/**
+		 * The current name of the attribute to rename.
+		 */
+		protected final String oldAttributeName;
+
+		/**
+		 * The context used to query information about the JPQL query.
+		 */
+		private final JPQLQueryContext queryContext;
+
+		/**
+		 * The fully qualified name of the type that got one of its attributes renamed.
+		 */
+		protected final String typeName;
+
+		/**
+		 * Creates a new <code>AttributeNameRenamer</code>.
+		 *
+		 * @param queryContext The context used to query information about the JPQL query
+		 * @param typeName The fully qualified name of the type that got one of its attributes renamed
+		 * @param oldAttributeName The current name of the attribute to rename
+		 * @param newAttributeName The new name of the attribute
+		 */
+		public AttributeNameRenamer(JPQLQueryContext queryContext,
+		                            String typeName,
+		                            String oldAttributeName,
+		                            String newAttributeName) {
+
+			super();
+			this.typeName         = typeName;
+			this.queryContext     = queryContext;
+			this.oldAttributeName = oldAttributeName;
+			this.newAttributeName = newAttributeName;
+		}
+
+		/**
+		 * Performs the rename on the path expression.
+		 *
+		 * @param expression The {@link AbstractPathExpression} being visited, which may have to have
+		 * its path renamed
+		 */
+		protected void rename(AbstractPathExpression expression) {
+
+			if (!expression.hasIdentificationVariable() ||
+			     expression.startsWithDot()) {
+
+				return;
+			}
+
+			Resolver resolver = queryContext.getResolver(expression.getIdentificationVariable());
+
+			// Can't continue to resolve the path expression
+			if (resolver == null) {
+				return;
+			}
+
+			// Now traverse the path expression after the identification variable
+			for (int index = expression.hasVirtualIdentificationVariable() ? 0 : 1, count = expression.pathSize(); index < count; index++) {
+
+				// Retrieve the mapping for the path at the current position
+				String path = expression.getPath(index);
+				Resolver childResolver = resolver.getChild(path);
+
+				if (childResolver == null) {
+					childResolver = new StateFieldResolver(resolver, path);
+					resolver.addChild(path, childResolver);
+				}
+
+				IMapping mapping = childResolver.getMapping();
+
+				// Invalid path expression
+				if (mapping == null) {
+					break;
+				}
+
+				// The name matches
+				if (mapping.getName().equals(oldAttributeName)) {
+
+					// Make sure the field name is from the right type
+					String parentTypeName = mapping.getParent().getType().getName();
+
+					if (parentTypeName.equals(typeName)) {
+						int extraOffset = expression.toParsedText(0, index).length() + 1 /* '.' */;
+						addTextEdit(expression, extraOffset, oldAttributeName, newAttributeName);
+						break;
+					}
+				}
+
+				resolver = childResolver;
+			}
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(CollectionValuedPathExpression expression) {
+			rename(expression);
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(StateFieldPathExpression expression) {
+			rename(expression);
+		}
+	}
+
+	/**
 	 * This visitor renames a fully qualified class name.
 	 */
 	protected class ClassNameRenamer extends AbstractRenamer {
@@ -457,6 +576,17 @@ public abstract class BasicRefactoringTool extends AbstractRefactoringTool {
 			super();
 			this.oldClassName = oldClassName;
 			this.newClassName = newClassName;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void visit(CollectionValuedPathExpression expression) {
+			// Test for a fully qualified class name in a range variable declaration
+			if (!expression.startsWithDot()) {
+				visit(expression, expression.toActualText(), 0);
+			}
 		}
 
 		/**
@@ -665,122 +795,6 @@ public abstract class BasicRefactoringTool extends AbstractRefactoringTool {
 		@Override
 		public void visit(StateFieldPathExpression expression) {
 			renameEnumConstant(expression);
-		}
-	}
-
-	/**
-	 * This visitor renames any segment of a path expression.
-	 */
-	protected class FieldNameRenamer extends AbstractRenamer {
-
-		/**
-		 * The new name of the attribute.
-		 */
-		protected final String newFieldName;
-
-		/**
-		 * The current name of the attribute to rename.
-		 */
-		protected final String oldFieldName;
-
-		/**
-		 * The context used to query information about the JPQL query.
-		 */
-		private final JPQLQueryContext queryContext;
-
-		/**
-		 * The fully qualified name of the type that got one of its attributes renamed.
-		 */
-		protected final String typeName;
-
-		/**
-		 * Creates a new <code>FieldNameRenamer</code>.
-		 *
-		 * @param queryContext The context used to query information about the JPQL query
-		 * @param typeName The fully qualified name of the type that got one of its attributes renamed
-		 * @param oldFieldName The current name of the attribute to rename
-		 * @param newFieldName The new name of the attribute
-		 */
-		public FieldNameRenamer(JPQLQueryContext queryContext,
-		                        String typeName,
-		                        String oldFieldName,
-		                        String newFieldName) {
-
-			super();
-			this.typeName     = typeName;
-			this.oldFieldName = oldFieldName;
-			this.newFieldName = newFieldName;
-			this.queryContext = queryContext;
-		}
-
-		/**
-		 * Performs the rename on the path expression.
-		 *
-		 * @param expression The {@link AbstractPathExpression} being visited, which may have to have
-		 * its path renamed
-		 */
-		protected void rename(AbstractPathExpression expression) {
-
-			if (!expression.hasIdentificationVariable()) {
-				return;
-			}
-
-			Resolver resolver = queryContext.getResolver(expression.getIdentificationVariable());
-
-			// Can't continue to resolve the path expression
-			if (resolver == null) {
-				return;
-			}
-
-			// Now traverse the path expression after the identification variable
-			for (int index = expression.hasVirtualIdentificationVariable() ? 0 : 1, count = expression.pathSize(); index < count; index++) {
-
-				// Retrieve the mapping for the path at the current position
-				String path = expression.getPath(index);
-				Resolver childResolver = resolver.getChild(path);
-
-				if (childResolver == null) {
-					childResolver = new StateFieldResolver(resolver, path);
-					resolver.addChild(path, childResolver);
-					resolver = childResolver;
-				}
-
-				IMapping mapping = resolver.getMapping();
-
-				// Invalid path expression
-				if (mapping == null) {
-					break;
-				}
-
-				// The name matches
-				if (mapping.getName().equals(oldFieldName)) {
-
-					// Make sure the field name is from the right type
-					String parentTypeName = mapping.getParent().getType().getName();
-
-					if (parentTypeName.equals(typeName)) {
-						int extraOffset = expression.toParsedText(0, index).length() + 1 /* '.' */;
-						addTextEdit(expression, extraOffset, oldFieldName, newFieldName);
-						break;
-					}
-				}
-			}
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(CollectionValuedPathExpression expression) {
-			rename(expression);
-		}
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public void visit(StateFieldPathExpression expression) {
-			rename(expression);
 		}
 	}
 

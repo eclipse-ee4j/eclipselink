@@ -22,7 +22,7 @@ import org.eclipse.persistence.jpa.jpql.util.iterator.IterableListIterator;
  * The default implementation of {@link RefactoringDelta} which contains the {@link TextEdit} that
  * were creating during the refactoring of a JPQL query.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -165,5 +165,13 @@ public class DefaultRefactoringDelta implements RefactoringDelta {
 	 */
 	public IterableListIterator<TextEdit> textEdits() {
 		return new CloneListIterator<TextEdit>(textEdits);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String toString() {
+		return textEdits.toString();
 	}
 }

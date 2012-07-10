@@ -19,9 +19,9 @@ import org.junit.Test;
 
 /**
  * The abstract definition of a unit-test that tests {@link org.eclipse.persistence.jpa.jpql.
- * RefactoringTool RefactoringTool} when the JPA version is 2.1.
+ * BasicRefactoringTool BasicRefactoringTool} when the JPA version is 2.1.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -30,6 +30,21 @@ public final class BasicRefactoringToolTest2_1 extends AbstractBasicRefactoringT
 
 	private BasicRefactoringTool buildRefactoringTool(String jpqlQuery) throws Exception {
 		return new DefaultBasicRefactoringTool(jpqlQuery, getGrammar(), getPersistenceUnit());
+	}
+
+	@Test
+	public void test_RenameClassName_1() throws Exception {
+
+		String jpqlQuery = "SELECT e FROM test.oracle.employee.Employee e";
+		BasicRefactoringTool refactoringTool = buildRefactoringTool(jpqlQuery);
+
+		int offset = "SELECT e FROM ".length();
+		String oldValue = "test.oracle.employee.Employee";
+		String newValue = "oracle.project.Employee";
+		refactoringTool.renameClassName(oldValue, newValue);
+
+		String expected = "SELECT e FROM oracle.project.Employee e";
+		testChange(refactoringTool, jpqlQuery, expected, offset, oldValue, newValue);
 	}
 
 	@Test

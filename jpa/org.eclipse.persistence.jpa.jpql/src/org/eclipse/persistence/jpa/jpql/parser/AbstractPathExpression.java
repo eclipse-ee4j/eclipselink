@@ -158,8 +158,8 @@ public abstract class AbstractPathExpression extends AbstractExpression {
 				// Skip the first '.' so an empty path isn't added
 				if ((index == 0)       &&
 				    (character == DOT) &&
-				    (identificationVariable != null))
-				{
+				    (identificationVariable != null)) {
+
 					continue;
 				}
 

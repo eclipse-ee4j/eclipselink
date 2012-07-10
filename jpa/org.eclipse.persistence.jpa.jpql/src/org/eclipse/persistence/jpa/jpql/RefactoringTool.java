@@ -147,7 +147,7 @@ public abstract class RefactoringTool extends AbstractRefactoringTool {
 	 * @param typeName The fully qualified name of the type that got one of its attributes renamed
 	 * @param oldFieldName The current name of the attribute to rename
 	 * @param newFieldName The new name of the attribute
-	 * @return A new {@link FieldNameRenamer}
+	 * @return A new {@link AttributeNameRenamer}
 	 */
 	protected FieldNameRenamer buildFieldNameRenamer(String typeName,
 	                                                 String oldFieldName,
@@ -684,7 +684,7 @@ public abstract class RefactoringTool extends AbstractRefactoringTool {
 		protected final String typeName;
 
 		/**
-		 * Creates a new <code>FieldNameRenamer</code>.
+		 * Creates a new <code>AttributeNameRenamer</code>.
 		 *
 		 * @param typeName The fully qualified name of the type that got one of its attributes renamed
 		 * @param oldFieldName The current name of the attribute to rename

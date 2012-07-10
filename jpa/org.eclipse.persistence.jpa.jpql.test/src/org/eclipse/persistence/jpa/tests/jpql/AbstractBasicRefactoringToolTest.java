@@ -25,7 +25,7 @@ import static org.junit.Assert.*;
 
 /**
  * The abstract definition of a unit-test that tests {@link org.eclipse.persistence.jpa.jpql.
- * RefactoringTool RefactoringTool}.
+ * BasicRefactoringTool BasicRefactoringTool}.
  *
  * @version 2.4
  * @since 2.4
@@ -62,8 +62,6 @@ public abstract class AbstractBasicRefactoringToolTest extends JPQLCoreTest {
 		assertEquals(oldValue.length(), textEdit.getLength());
 		assertEquals(oldValue,          textEdit.getOldValue());
 		assertEquals(newValue,          textEdit.getNewValue());
-
-		assertTrue("The TextEdit's range is invalid", offset + oldValue.length() < expectedJPQLQuery.length());
 
 		assertEquals(expectedJPQLQuery, delta.applyChanges());
 		assertFalse(delta.hasTextEdits());

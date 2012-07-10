@@ -31,13 +31,10 @@ import org.eclipse.persistence.jpa.jpql.spi.ITypeRepository;
 /**
  * This helper can perform the following operations over a JPQL query:
  * <ul>
- * <li>Calculates the result type of a query: {@link #getResultType()};
- * </li>
- * <li>Calculates the type of an input parameter: {@link #getParameterType(String)}.
- * </li>
+ * <li>Calculates the result type of a query: {@link #getResultType()};</li>
+ * <li>Calculates the type of an input parameter: {@link #getParameterType(String)}.</li>
  * <li>Calculates the possible choices to complete the query from a given
- *     position (used for content assist): {@link #buildContentAssistProposals(int)}.
- * </li>
+ *     position (used for content assist): {@link #buildContentAssistProposals(int)}.</li>
  * <li>Validates the query by introspecting it grammatically and semantically:
  *     <ul>
  *     <li>{@link #validate()},</li>
@@ -57,13 +54,13 @@ import org.eclipse.persistence.jpa.jpql.spi.ITypeRepository;
  *     </ul>
  * </li>
  * </ul>
- *
+ * <p>
  * Provisional API: This interface is part of an interim API that is still under development and
  * expected to change significantly before reaching stability. It is available at this early stage
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
  * API will almost certainly be broken (repeatedly) as the API evolves.<p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -131,9 +128,8 @@ public abstract class AbstractJPQLQueryHelper {
 	 * @return The concrete instance of {@link RefactoringTool}
 	 * @see #buildRefactoringTool
 	 * @since 2.5
-	 * NOTE: This was commented because Dali API can't change at this point
 	 */
-//	public abstract BasicRefactoringTool buildBasicRefactoringTool();
+	public abstract BasicRefactoringTool buildBasicRefactoringTool();
 
 	/**
 	 * Retrieves the possibles choices that can complete the query from the given position within
@@ -180,11 +176,8 @@ public abstract class AbstractJPQLQueryHelper {
 	 *
 	 * @param queryContext The context used to query information about the JPQL query
 	 * @return A new concrete instance of {@link AbstractGrammarValidator}
-	 * @deprecated Eventually this method should change to accept {@link JPQLGrammar} and not
-	 * {@link JPQLQueryContext} anymore
 	 */
-	@Deprecated
-	protected abstract AbstractGrammarValidator buildGrammarValidator(JPQLQueryContext queryContext);
+	protected abstract AbstractGrammarValidator buildGrammarValidator(JPQLGrammar jpqlGrammar);
 
 	/**
 	 * Creates a context that will be used to store and retrieve information about the JPQL query.
@@ -259,7 +252,7 @@ public abstract class AbstractJPQLQueryHelper {
 
 	protected AbstractGrammarValidator getGrammarValidator() {
 		if (grammarValidator == null) {
-			grammarValidator = buildGrammarValidator(getQueryContext());
+			grammarValidator = buildGrammarValidator(jpqlGrammar);
 		}
 		return grammarValidator;
 	}
@@ -479,7 +472,7 @@ public abstract class AbstractJPQLQueryHelper {
 	 * JPQLQueryProblem problems} if any was found
 	 */
 	public void validateGrammar(Expression expression, List<JPQLQueryProblem> problems) {
-		AbstractGrammarValidator visitor = buildGrammarValidator(getQueryContext());
+		AbstractGrammarValidator visitor = getGrammarValidator();
 		try {
 			visitor.setProblems(problems);
 			expression.accept(visitor);

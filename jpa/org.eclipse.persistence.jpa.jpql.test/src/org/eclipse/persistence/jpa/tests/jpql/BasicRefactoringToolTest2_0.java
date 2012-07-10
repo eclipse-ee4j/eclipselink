@@ -21,9 +21,9 @@ import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries2_0.*;
 
 /**
  * The abstract definition of a unit-test that tests {@link org.eclipse.persistence.jpa.jpql.
- * RefactoringTool RefactoringTool} when the JPA version is 2.0.
+ * BasicRefactoringTool BasicRefactoringTool} when the JPA version is 2.0.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -103,6 +103,22 @@ public final class BasicRefactoringToolTest2_0 extends AbstractBasicRefactoringT
 	@Test
 	public void test_RenameEntityName_3() throws Exception {
 
+		// SELECT e FROM Employee e WHERE TYPE(e) IN (Exempt, Contractor)
+		String jpqlQuery = query_004();
+		BasicRefactoringTool refactoringTool = buildRefactoringTool(jpqlQuery);
+
+		int offset = "SELECT e FROM Employee e WHERE TYPE(e) IN (Exempt, ".length();
+		String oldValue = "Contractor";
+		String newValue = "GeneralContractor";
+		refactoringTool.renameEntityName(oldValue, newValue);
+
+		String expected = "SELECT e FROM Employee e WHERE TYPE(e) IN (Exempt, GeneralContractor)";
+		testChange(refactoringTool, jpqlQuery, expected, offset, oldValue, newValue);
+	}
+
+	@Test
+	public void test_RenameEntityName_4() throws Exception {
+
 		// SELECT TYPE(employee) FROM Employee employee WHERE TYPE(employee) <> Exempt
 		String jpqlQuery = query_007();
 		BasicRefactoringTool refactoringTool = buildRefactoringTool(jpqlQuery);
@@ -113,6 +129,21 @@ public final class BasicRefactoringToolTest2_0 extends AbstractBasicRefactoringT
 		refactoringTool.renameEntityName(oldValue, newValue);
 
 		String expected = "SELECT TYPE(employee) FROM Address employee WHERE TYPE(employee) <> Exempt";
+		testChange(refactoringTool, jpqlQuery, expected, offset, oldValue, newValue);
+	}
+
+	@Test
+	public void test_RenameEntityName_5() throws Exception {
+
+		String jpqlQuery = "SELECT p FROM Project p WHERE TYPE(p) <> LargeProject";
+		BasicRefactoringTool refactoringTool = buildRefactoringTool(jpqlQuery);
+
+		int offset = "SELECT p FROM Project p WHERE TYPE(p) <> ".length();
+		String oldValue = "LargeProject";
+		String newValue = "LProject";
+		refactoringTool.renameEntityName(oldValue, newValue);
+
+		String expected = "SELECT p FROM Project p WHERE TYPE(p) <> LProject";
 		testChange(refactoringTool, jpqlQuery, expected, offset, oldValue, newValue);
 	}
 

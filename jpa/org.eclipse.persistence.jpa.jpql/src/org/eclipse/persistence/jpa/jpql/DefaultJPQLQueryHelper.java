@@ -32,18 +32,30 @@ import org.eclipse.persistence.jpa.jpql.spi.IQuery;
  *     <li>{@link #validate()},</li>
  *     <li>{@link #validateGrammar()},</li>
  *     <li>{@link #validateSemantic()}.</li>
- *     </ul></li>
+ *     </ul>
+ * </li>
+ * <li>Refactoring support:
+ *     <ul>
+ *     <li>{@link #buildBasicRefactoringTool()} provides support for generating the delta of the
+ *     refactoring operation through a collection of {@link TextEdit} objects.</li>
+ *     <li>{@link #buildRefactoringTool()} provides support for refactoring the JPQL query through
+ *     the editable {@link org.eclipse.persistence.jpa.jpql.model.query.StateObject StateObject} and
+ *     once all refactoring operations have been executed, the {@link org.eclipse.persistence.jpa.
+ *     jpql.model.IJPQLQueryFormatter IJPQLQueryFormatter} will generate a new string representation
+ *     of the JPQL query.</li>
+ *     </ul>
+ * </li>
  * </ul>
  *
  * This helper should be used when the JPQL query is written using the JPQL grammar defined in the
  * Java Persistence functional specification 1.0 or 2.x.<p>
- *
+ * <p>
  * Provisional API: This interface is part of an interim API that is still under development and
  * expected to change significantly before reaching stability. It is available at this early stage
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
  * API will almost certainly be broken (repeatedly) as the API evolves.<p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -70,6 +82,7 @@ public class DefaultJPQLQueryHelper extends AbstractJPQLQueryHelper {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public BasicRefactoringTool buildBasicRefactoringTool() {
 		return new DefaultBasicRefactoringTool(
 			getQuery().getExpression(),
@@ -90,8 +103,8 @@ public class DefaultJPQLQueryHelper extends AbstractJPQLQueryHelper {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected DefaultGrammarValidator buildGrammarValidator(JPQLQueryContext queryContext) {
-		return new DefaultGrammarValidator(queryContext.getGrammar());
+	protected DefaultGrammarValidator buildGrammarValidator(JPQLGrammar jpqlGrammar) {
+		return new DefaultGrammarValidator(jpqlGrammar);
 	}
 
 	/**

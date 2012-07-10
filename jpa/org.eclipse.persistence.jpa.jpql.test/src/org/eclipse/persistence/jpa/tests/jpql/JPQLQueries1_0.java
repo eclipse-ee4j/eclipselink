@@ -1367,4 +1367,40 @@ public final class JPQLQueries1_0 {
 		       "      AND (SELECT Count(rcc) FROM r.components rcc ) = :componentCount  " +
 		       "      AND (SELECT Count(rc2) FROM r.components rc2 WHERE rc2.componentId IN :componentIds) = :componentCount";
 	}
+
+	public static String query_215() {
+		return "SELECT a.UUID " +
+		       "FROM AnyType a LEFT JOIN a.groupUUIDs group39db547fe413463e96c740b6dd6ae178 " +
+		       "WHERE " +
+		       "          ((a.UUID IN('2b7667fa-57d0-42ff-964b-fe16b96936d1')))" +
+		       "      AND " +
+		       "          ((" +
+		       "               (" +
+		       "                    a.groupUUIDs IS EMPTY " +
+		       "                AND " +
+		       "                    (a.UUID NOT IN(SELECT nongov0group39db547fe413463e96c740b6dd6ae178t.UUID" +
+		       "                                   FROM core_AnyEntityType_v1 nongov0group39db547fe413463e96c740b6dd6ae178t " +
+		       "                                   WHERE     ((nongov0group39db547fe413463e96c740b6dd6ae178t.typeUUID IN('681ee316-a263-4a67-ad35-9fb3d5ae61e6', " +
+		       "                                                                                                         '67f6d771-d3fd-40c8-860c-f6dfa958fbc1', " +
+		       "                                                                                                         '8481d0d1-41b7-4b7e-93dd-683a5e17f348', " +
+		       "                                                                                                         '48cfb0d6-0f81-4cd7-bbf4-585f7285b9bc')))) " +
+		       "                                         AND " +
+		       "                                             (a.UUID NOT IN(SELECT nongov0group39db547fe413463e96c740b6dd6ae178p.UUID " +
+		       "                                                            FROM policy_Policy_v1 nongov0group39db547fe413463e96c740b6dd6ae178p " +
+		       "                                                            WHERE (nongov0group39db547fe413463e96c740b6dd6ae178p.policyType NOT IN('STATIC_CODE', " +
+		       "                                                                                                                                   'METADATA', " +
+		       "                                                                                                                                   'SECURITY', " +
+		       "                                                                                                                                   'ACTION'))" +
+		       "                                                           )" +
+		       "                                             )" +
+		       "                    )" +
+		       "               ) " +
+		       "            OR " +
+		       "               (((group39db547fe413463e96c740b6dd6ae178 IN(SELECT grant0_g.UUID " +
+		       "                                                           FROM governance_Governable_v1 grant0_g " +
+		       "                                                           WHERE 1 = 0" +
+		       "                                                          )" +
+		       "               )))" +
+		       "          ))";
+	}
 }

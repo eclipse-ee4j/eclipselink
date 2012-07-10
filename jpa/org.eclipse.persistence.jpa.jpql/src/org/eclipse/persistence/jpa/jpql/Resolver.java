@@ -32,7 +32,7 @@ import org.eclipse.persistence.jpa.jpql.spi.ITypeRepository;
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
  * API will almost certainly be broken (repeatedly) as the API evolves.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -90,7 +90,7 @@ public abstract class Resolver {
 	 * @param variableName The key used to cache the given {@link Resolver}
 	 * @param resolver The {@link Resolver} to cache
 	 */
-	protected final void addChild(String variableName, Resolver resolver) {
+	public final void addChild(String variableName, Resolver resolver) {
 
 		if (resolvers == null) {
 			resolvers = new HashMap<String, Resolver>();
@@ -129,7 +129,7 @@ public abstract class Resolver {
 	 * @param variableName The name of the property that was cached
 	 * @return The cached {@link Resolver} mapped with the given property name; otherwise <code>null</code>
 	 */
-	protected final Resolver getChild(String variableName) {
+	public final Resolver getChild(String variableName) {
 		return (resolvers != null) ? resolvers.get(variableName) : null;
 	}
 
