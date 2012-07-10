@@ -32,6 +32,7 @@ import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.oxm.XMLLogin;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
@@ -212,8 +213,11 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
                 xPathNode.startElement(marshalRecord, xPathFragment, object, session, namespaceResolver, objectBuilder, objectValue);
             }
 
-            List extraNamespaces = objectBuilder.addExtraNamespacesToNamespaceResolver(descriptor, marshalRecord, session);
-            writeExtraNamespaces(extraNamespaces, marshalRecord, session);
+            List extraNamespaces = null;
+            if (!(((XMLLogin)session.getDatasourceLogin()).hasEqualNamespaceResolvers())) {
+                extraNamespaces = objectBuilder.addExtraNamespacesToNamespaceResolver(descriptor, marshalRecord, session, true, false);
+                writeExtraNamespaces(extraNamespaces, marshalRecord, session);
+            }
             if(!isSelfFragment) {
                 objectBuilder.addXsiTypeAndClassIndicatorIfRequired(marshalRecord, descriptor, (XMLDescriptor) xmlCompositeObjectMapping.getReferenceDescriptor(), (XMLField)xmlCompositeObjectMapping.getField(), false);
             }
