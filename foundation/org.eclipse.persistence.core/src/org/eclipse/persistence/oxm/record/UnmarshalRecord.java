@@ -569,13 +569,15 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
         ClassDescriptor xmlDescriptor = treeObjectBuilder.getDescriptor();
 
         try {
-            // PROCESS COLLECTION MAPPINGS           
-           if(null != treeObjectBuilder.getContainerValues()){
-                for(int i=0; i<treeObjectBuilder.getContainerValues().size(); i++){
-            	     ContainerValue cv =((ContainerValue)treeObjectBuilder.getContainerValues().get(i));
-            	    cv.setContainerInstance(currentObject,getContainerInstance(cv, cv.isDefaultEmptyContainer()));
+            // PROCESS COLLECTION MAPPINGS
+            List containerValues = treeObjectBuilder.getContainerValues();
+            if (null != containerValues) {
+                int size = containerValues.size();
+                for (int i = 0; i < size; i++) {
+                    ContainerValue cv = ((ContainerValue) containerValues.get(i));
+                    cv.setContainerInstance(currentObject, getContainerInstance(cv, cv.isDefaultEmptyContainer()));
                 }
-           }
+            }
 
             // PROCESS NULL CAPABLE VALUES
             // This must be done because the node may not have existed to
