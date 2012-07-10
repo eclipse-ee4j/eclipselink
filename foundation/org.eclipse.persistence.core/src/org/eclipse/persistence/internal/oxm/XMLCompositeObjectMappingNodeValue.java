@@ -210,8 +210,11 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
                 xPathNode.startElement(marshalRecord, xPathFragment, object, session, namespaceResolver, objectBuilder, objectValue);
             }
 
-            List extraNamespaces = objectBuilder.addExtraNamespacesToNamespaceResolver(descriptor, marshalRecord, session);
-            writeExtraNamespaces(extraNamespaces, marshalRecord, session);
+            List extraNamespaces = null;
+            if (!(((XMLLogin)session.getDatasourceLogin()).hasEqualNamespaceResolvers())) {
+                extraNamespaces = objectBuilder.addExtraNamespacesToNamespaceResolver(descriptor, marshalRecord, session, true, false);
+                writeExtraNamespaces(extraNamespaces, marshalRecord, session);
+            }
             if(!isSelfFragment) {
                 objectBuilder.addXsiTypeAndClassIndicatorIfRequired(marshalRecord, descriptor, (XMLDescriptor) xmlCompositeObjectMapping.getReferenceDescriptor(), (XMLField)xmlCompositeObjectMapping.getField(), false);
             }
