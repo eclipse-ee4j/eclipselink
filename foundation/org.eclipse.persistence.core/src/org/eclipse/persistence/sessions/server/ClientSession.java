@@ -236,7 +236,7 @@ public class ClientSession extends AbstractSession {
      */
     @Override
     public Object executeCall(Call call, AbstractRecord translationRow, DatabaseQuery query) throws DatabaseException {
-        if (!isInTransaction() && !isExclusiveIsolatedClientSession()) {
+        if ((!isInTransaction() || (query.isObjectLevelReadQuery() && ((ObjectLevelReadQuery)query).isReadOnly())) && !isExclusiveIsolatedClientSession() ) {
             return this.parent.executeCall(call, translationRow, query);
         }
         boolean shouldReleaseConnection = false;
