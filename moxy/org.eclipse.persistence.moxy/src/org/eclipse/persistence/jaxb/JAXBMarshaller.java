@@ -122,8 +122,6 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         xmlMarshaller = newXMLMarshaller;
         xmlMarshaller.setEncoding("UTF-8");
         xmlMarshaller.setFormattedOutput(false);
-        JAXBMarshalListener listener = new JAXBMarshalListener(this);
-        xmlMarshaller.setMarshalListener(listener);
         xmlMarshaller.getProperties().put(XMLConstants.JAXB_MARSHALLER, this);
     }
 
@@ -650,10 +648,19 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
     }
 
     public void setListener(Marshaller.Listener listener) {
+        if(xmlMarshaller.getMarshalListener() == null) {
+            xmlMarshaller.setMarshalListener(new JAXBMarshalListener(this));
+        }
         ((JAXBMarshalListener) xmlMarshaller.getMarshalListener()).setListener(listener);
     }
 
     public void setMarshalCallbacks(java.util.HashMap callbacks) {
+        if(callbacks == null || callbacks.isEmpty()) {
+            return;
+        }
+        if(xmlMarshaller.getMarshalListener() == null) {
+            xmlMarshaller.setMarshalListener(new JAXBMarshalListener(this));
+        }
         ((JAXBMarshalListener) xmlMarshaller.getMarshalListener()).setClassBasedMarshalEvents(callbacks);
     }
 
