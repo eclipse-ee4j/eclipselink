@@ -262,6 +262,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         tests.add("testPersistOnNonEntity");
         tests.add("testWRITELock");
         tests.add("testOPTIMISTIC_FORCE_INCREMENTLock");
+        tests.add("testReadOnlyTransactionalData");
         tests.add("testReadTransactionIsolation_OriginalInCache_UpdateAll_Refresh_Flush");
         tests.add("testReadTransactionIsolation_OriginalInCache_UpdateAll_Refresh");
         tests.add("testReadTransactionIsolation_OriginalInCache_UpdateAll_Flush");
@@ -429,6 +430,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             tests.add("testNestedFetchQueryHints");
             tests.add("testInheritanceFetchJoinSecondCall");
         }
+
         Collections.sort(tests);
         for (String test : tests) {
             suite.addTest(new EntityManagerJUnitTestSuite(test));
@@ -4236,6 +4238,25 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         } finally {
             closeEntityManager(em);
         }
+    }
+    
+    public void testReadOnlyTransactionalData(){
+        if (isOnServer()) {
+            return;
+        }
+        EntityManager em = createEntityManager();
+        em.getTransaction().begin();
+        Employee emp = new Employee("Bob", String.valueOf(System.currentTimeMillis()));
+        em.persist(emp);
+        em.flush();
+        try{
+            Employee result = (Employee) em.createQuery("Select e from Employee e where e.lastName = :lName").setHint(QueryHints.READ_ONLY, true).setParameter("lName", emp.getLastName()).getSingleResult();
+        }catch (NoResultException ex){
+            // this exception should be thrown because the read only query should not read txnal data
+        }
+        em.getTransaction().rollback();
+        em.clear();
+        assertNull("Uncommitted Data loaded into cache", em.find(Employee.class, emp.getId()));
     }
     
     public void testReadTransactionIsolation_CustomUpdate() {
