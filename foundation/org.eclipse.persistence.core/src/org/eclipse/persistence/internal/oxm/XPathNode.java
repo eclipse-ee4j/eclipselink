@@ -47,10 +47,11 @@ import org.eclipse.persistence.oxm.record.MarshalRecord;
 public class XPathNode {
     private NodeValue unmarshalNodeValue;
     private NodeValue marshalNodeValue;
+    private boolean isMarshalOnlyNodeValue;
     private XPathFragment xPathFragment;
     private XPathNode parent;
     private List<XPathNode> attributeChildren;
-    private List<XPathNode> nonAttributeChildren;
+    private List<XPathNode> nonAttributeChildren; 
     private List<XPathNode> selfChildren;
     private Map<XPathFragment, XPathNode> attributeChildrenMap;
     private Map<XPathFragment, XPathNode> nonAttributeChildrenMap;
@@ -59,6 +60,7 @@ public class XPathNode {
     private XPathNode textNode;
     private XPathNode anyNode;
 
+    
     public XPathFragment getXPathFragment() {
         return xPathFragment;
     }
@@ -76,6 +78,7 @@ public class XPathNode {
         this.unmarshalNodeValue = nodeValue;
         if (null != nodeValue) {
             nodeValue.setXPathNode(this);
+            isMarshalOnlyNodeValue =  nodeValue.isMarshalOnlyNodeValue();
         }
     }
     
@@ -99,6 +102,7 @@ public class XPathNode {
             nodeValue.setXPathNode(this);
         }
         this.marshalNodeValue = nodeValue;
+        isMarshalOnlyNodeValue =  marshalNodeValue.isMarshalOnlyNodeValue();
     }
     
     public XPathNode getParent() {
@@ -301,7 +305,7 @@ public class XPathNode {
     }
 
     public boolean marshal(MarshalRecord marshalRecord, Object object, AbstractSession session, NamespaceResolver namespaceResolver, XMLMarshaller marshaller, MarshalContext marshalContext, XPathFragment rootFragment) {
-        if ((null == marshalNodeValue) || marshalNodeValue.isMarshalOnlyNodeValue()) {
+        if ((null == marshalNodeValue) || isMarshalOnlyNodeValue) {
             marshalRecord.addGroupingElement(this);
 
             boolean hasValue = false;
@@ -333,7 +337,7 @@ public class XPathNode {
             }
 
             return hasValue;
-        } else {
+        } else {        	
             return marshalContext.marshal(marshalNodeValue, xPathFragment, marshalRecord, object, session, namespaceResolver, rootFragment);
         }
     }

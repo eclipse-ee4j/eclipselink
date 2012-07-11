@@ -291,7 +291,7 @@ public class XMLBinaryDataMapping extends XMLDirectMapping {
                 Object obj = record.getIndicatingNoEntry(incField);
                 if (!prefixAlreadyDefined && obj != null && obj instanceof DOMRecord) {
                     if (((DOMRecord) obj).getDOM().getNodeType() == Node.ELEMENT_NODE) {
-                        ((Element) ((DOMRecord) obj).getDOM()).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + ":" + prefix, XMLConstants.XOP_URL);
+                        ((Element) ((DOMRecord) obj).getDOM()).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + XMLConstants.COLON + prefix, XMLConstants.XOP_URL);
                     }
                 }
             }

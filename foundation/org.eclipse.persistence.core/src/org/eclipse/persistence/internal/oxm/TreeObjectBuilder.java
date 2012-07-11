@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.InheritancePolicy;
@@ -49,6 +50,7 @@ import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLFragmentCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLFragmentMapping;
 import org.eclipse.persistence.oxm.mappings.XMLInverseReferenceMapping;
+import org.eclipse.persistence.oxm.mappings.XMLMapping;
 import org.eclipse.persistence.oxm.mappings.XMLObjectReferenceMapping;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.NodeRecord;
@@ -287,16 +289,18 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
                         continue;
                     } else if(xmlMapping instanceof XMLChoiceCollectionMapping) {
                         XMLChoiceCollectionMapping xmlChoiceMapping = (XMLChoiceCollectionMapping)xmlMapping;
-                        Iterator fields = xmlChoiceMapping.getChoiceElementMappings().keySet().iterator();
-                        XMLField firstField;
-                        firstField = (XMLField)fields.next();
+
+                        Iterator<Entry<XMLField, XMLMapping>> fields = xmlChoiceMapping.getChoiceElementMappings().entrySet().iterator();
+                        Entry<XMLField, XMLMapping> firstEntry = fields.next();
+                        XMLField firstField = firstEntry.getKey();
+
                         XMLChoiceCollectionMappingUnmarshalNodeValue unmarshalValue = new XMLChoiceCollectionMappingUnmarshalNodeValue(xmlChoiceMapping, firstField);
                         XMLChoiceCollectionMappingMarshalNodeValue marshalValue = new XMLChoiceCollectionMappingMarshalNodeValue(xmlChoiceMapping, firstField);
                         HashMap<XMLField, NodeValue> fieldToNodeValues = new HashMap<XMLField, NodeValue>();
                         unmarshalValue.setContainerNodeValue(unmarshalValue);
                         marshalValue.setFieldToNodeValues(fieldToNodeValues);
                         unmarshalValue.setFieldToNodeValues(fieldToNodeValues);
-                        if(xmlChoiceMapping.isMixedContent() && (xmlChoiceMapping.getMixedContentMapping() == xmlChoiceMapping.getChoiceElementMappings().get(firstField))) {
+                        if(xmlChoiceMapping.isMixedContent() && (xmlChoiceMapping.getMixedContentMapping() == firstEntry.getValue())) {
                             unmarshalValue.setIsMixedNodeValue(true);
                             marshalValue.setIsMixedNodeValue(true);
                         }
@@ -306,13 +310,14 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
                         addChild(firstField.getXPathFragment(), unmarshalValue, xmlDescriptor.getNamespaceResolver());
                         addChild(firstField.getXPathFragment(), marshalValue, xmlDescriptor.getNamespaceResolver());
                         while(fields.hasNext()) {
-                            XMLField next = (XMLField)fields.next();
-                            XMLChoiceCollectionMappingUnmarshalNodeValue nodeValue = new XMLChoiceCollectionMappingUnmarshalNodeValue(xmlChoiceMapping, next);
+                            Entry<XMLField, XMLMapping> nextEntry = fields.next();
+                            XMLField nextField = nextEntry.getKey();
+                            XMLChoiceCollectionMappingUnmarshalNodeValue nodeValue = new XMLChoiceCollectionMappingUnmarshalNodeValue(xmlChoiceMapping, nextField);
                             nodeValue.setContainerNodeValue(unmarshalValue);
                             ((ContainerValue)nodeValue.getChoiceElementNodeValue()).setIndex(unmarshalValue.getIndex());
-                            addChild(next.getXPathFragment(), nodeValue, xmlDescriptor.getNamespaceResolver());
-                            fieldToNodeValues.put(next, nodeValue);
-                            if(xmlChoiceMapping.isMixedContent() && (xmlChoiceMapping.getMixedContentMapping() == xmlChoiceMapping.getChoiceElementMappings().get(next))) {
+                            addChild(nextField.getXPathFragment(), nodeValue, xmlDescriptor.getNamespaceResolver());
+                            fieldToNodeValues.put(nextField, nodeValue);
+                            if(xmlChoiceMapping.isMixedContent() && (xmlChoiceMapping.getMixedContentMapping() == nextEntry.getValue())) {
                                 nodeValue.setIsMixedNodeValue(true);
                             }
                         }
@@ -380,7 +385,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
             textNode.marshal((MarshalRecord)record, object, session, namespaceResolver, marshaller, marshalContext, rootFragment);
         } else {
             for (int x = 0, size = marshalContext.getNonAttributeChildrenSize(rootXPathNode); x < size; x++) {
-                XPathNode xPathNode = (XPathNode)marshalContext.getNonAttributeChild(x, rootXPathNode);
+                XPathNode xPathNode = (XPathNode)marshalContext.getNonAttributeChild(x, rootXPathNode);                
                 xPathNode.marshal((MarshalRecord)record, object, session, namespaceResolver, marshaller, marshalContext.getMarshalContext(x), rootFragment);
             }
         }

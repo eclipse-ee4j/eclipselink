@@ -1006,8 +1006,8 @@ public class XMLMarshaller implements Cloneable {
                         	  marshalRecord.attribute(XMLConstants.XMLNS_URL, xsiPrefix, XMLConstants.XMLNS + ':' + xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
                           }
                     	  
-                          marshalRecord.attribute(XMLConstants.XMLNS_URL, XMLConstants.SCHEMA_PREFIX, XMLConstants.XMLNS + ':' + XMLConstants.SCHEMA_PREFIX, XMLConstants.SCHEMA_URL);
-                          marshalRecord.attribute(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE, xsiPrefix + ":" + XMLConstants.SCHEMA_TYPE_ATTRIBUTE, "xsd:" + type.getLocalPart());
+                          marshalRecord.attribute(XMLConstants.XMLNS_URL, XMLConstants.SCHEMA_PREFIX, XMLConstants.XMLNS + XMLConstants.COLON + XMLConstants.SCHEMA_PREFIX, XMLConstants.SCHEMA_URL);
+                          marshalRecord.attribute(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE, xsiPrefix + XMLConstants.COLON + XMLConstants.SCHEMA_TYPE_ATTRIBUTE, "xsd:" + type.getLocalPart());
                       }
             	 }
             	

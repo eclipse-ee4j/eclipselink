@@ -19,6 +19,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.Vector;
 import java.util.ArrayList;
 import java.util.Map.Entry;
@@ -648,8 +649,13 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements XMLMa
     public ArrayList getChoiceFieldToClassAssociations() {
         ArrayList associations = new ArrayList();
         if(this.fieldToClassNameMappings.size() > 0) {
-            for(XMLField xmlField:this.fieldToClassNameMappings.keySet()) {
-                String className = this.fieldToClassNameMappings.get(xmlField);
+        	
+        	Set<Entry<XMLField, String>> entries = fieldToClassNameMappings.entrySet();
+        	Iterator<Entry<XMLField, String>> iter = entries.iterator();
+        	while(iter.hasNext()){
+        		Entry<XMLField, String> nextEntry = iter.next();
+        		XMLField xmlField = nextEntry.getKey();        	            
+                String className = nextEntry.getValue();        	            
                 XMLChoiceFieldToClassAssociation association = new XMLChoiceFieldToClassAssociation(xmlField, className);
                 associations.add(association);
             }

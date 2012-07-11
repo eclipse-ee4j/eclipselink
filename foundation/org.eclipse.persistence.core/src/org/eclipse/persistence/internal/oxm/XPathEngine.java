@@ -503,7 +503,7 @@ public class XPathEngine {
                         newElement = (Element) createElement(parent, fragment, xmlField, values.get(index), session);
                     } else {
                         newElement = (Element) createElement(parent, fragment, xmlField, XMLConstants.EMPTY_STRING, session);
-                        newElement.setAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_INSTANCE_PREFIX + ":" + XMLConstants.SCHEMA_NIL_ATTRIBUTE, XMLConstants.BOOLEAN_STRING_TRUE);
+                        newElement.setAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_INSTANCE_PREFIX + XMLConstants.COLON + XMLConstants.SCHEMA_NIL_ATTRIBUTE, XMLConstants.BOOLEAN_STRING_TRUE);
                     }
                     XPathPredicate predicate = fragment.getPredicate();
                     if(predicate != null) {
@@ -530,7 +530,7 @@ public class XPathEngine {
                     newElement = (Element)createElement(parent, fragment, xmlField, value, session);
                 } else {
                     newElement = (Element) createElement(parent, fragment, xmlField, XMLConstants.EMPTY_STRING, session);
-                    newElement.setAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_INSTANCE_PREFIX + ":" + XMLConstants.SCHEMA_NIL_ATTRIBUTE, XMLConstants.BOOLEAN_STRING_TRUE);
+                    newElement.setAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_INSTANCE_PREFIX + XMLConstants.COLON + XMLConstants.SCHEMA_NIL_ATTRIBUTE, XMLConstants.BOOLEAN_STRING_TRUE);
                 }
                 XPathPredicate predicate = fragment.getPredicate();
                 if(predicate != null) {
@@ -581,7 +581,7 @@ public class XPathEngine {
             String elementName = fragment.getShortName();
             if(existingPrefix != null) {
                 if(existingPrefix.length() > 0) {
-                    elementName = existingPrefix + ":" + fragment.getLocalName();
+                    elementName = existingPrefix + XMLConstants.COLON + fragment.getLocalName();
                 } else {
                     elementName = fragment.getLocalName();
                 }
@@ -622,7 +622,7 @@ public class XPathEngine {
         String elementName = lastFragment.getShortName();
         if(existingPrefix != null) {
             if(existingPrefix.length() > 0) {
-                elementName = existingPrefix + ":" + lastFragment.getLocalName();
+                elementName = existingPrefix + XMLConstants.COLON + lastFragment.getLocalName();
             } else {
                 elementName = lastFragment.getLocalName();
             }
@@ -901,7 +901,7 @@ public class XPathEngine {
                                 }
                                 parentElement.setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + XMLConstants.COLON + schemaInstancePrefix, XMLConstants.SCHEMA_INSTANCE_URL);
                             }
-                            parentElement.setAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_INSTANCE_PREFIX + ":" + XMLConstants.SCHEMA_NIL_ATTRIBUTE, XMLConstants.BOOLEAN_STRING_TRUE);
+                            parentElement.setAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_INSTANCE_PREFIX + XMLConstants.COLON + XMLConstants.SCHEMA_NIL_ATTRIBUTE, XMLConstants.BOOLEAN_STRING_TRUE);
                             parentElement.removeChild(node);
                         } else {
                             String stringValue = (String)((XMLConversionManager)session.getDatasourcePlatform().getConversionManager()).convertObject(value, ClassConstants.STRING);

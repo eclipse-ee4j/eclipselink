@@ -17,6 +17,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Map.Entry;
+
 import org.eclipse.persistence.internal.oxm.StrBuffer;
 import org.eclipse.persistence.internal.oxm.record.ExtendedContentHandler;
 import org.eclipse.persistence.oxm.XMLConstants;
@@ -112,12 +114,14 @@ public class SAXDocumentBuilder implements ExtendedContentHandler {
         nodes.add(element);
 
         if (namespaceDeclarations != null) {
-            Iterator namespacePrefixes = namespaceDeclarations.keySet().iterator();
+        	
+        	Iterator<Entry<String, String>> namespaceEntries = namespaceDeclarations.entrySet().iterator();
             String prefix;
             String uri;
-            while (namespacePrefixes.hasNext()) {
-                prefix = (String)namespacePrefixes.next();
-                uri = (String)namespaceDeclarations.get(prefix);
+            while (namespaceEntries.hasNext()) {
+            	Entry<String, String> nextEntry = namespaceEntries.next();
+            	prefix = nextEntry.getKey();
+            	uri = nextEntry.getValue();
 
                 boolean prefixEmpty = prefix.length() == 0;
                 String elemNamespaceURI = element.getNamespaceURI();

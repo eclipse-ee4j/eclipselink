@@ -17,7 +17,10 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
+import java.util.Map.Entry;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -433,8 +436,11 @@ public class WriterRecord extends MarshalRecord {
         protected void writePrefixMappings() {
             try {
                 if (!prefixMappings.isEmpty()) {
-                    for (java.util.Iterator<String> keys = prefixMappings.keySet().iterator(); keys.hasNext();) {
-                        String prefix = keys.next();
+                	Set<Entry<String, String>> entries = prefixMappings.entrySet();
+                	Iterator<Entry<String, String>> iter = entries.iterator();
+                	while(iter.hasNext()){
+                		Entry<String, String> nextEntry = iter.next();
+                        String prefix = nextEntry.getKey();
                         writer.write(' ');
                         writer.write(XMLConstants.XMLNS);
                         if(null != prefix && prefix.length() > 0) {
@@ -443,9 +449,9 @@ public class WriterRecord extends MarshalRecord {
                         }
                         writer.write('=');
                         writer.write('"');
-                        String uri = prefixMappings.get(prefix);
+                        String uri = nextEntry.getValue();
                         if(null != uri) {
-                            writer.write(prefixMappings.get(prefix));
+                            writer.write(uri);
                         }
                         writer.write('"');
                     }

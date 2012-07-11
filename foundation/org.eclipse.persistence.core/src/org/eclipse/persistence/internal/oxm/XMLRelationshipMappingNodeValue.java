@@ -58,7 +58,8 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
 
         if (xmlDescriptor.hasInheritance()) {
             unmarshalRecord.setAttributes(atts);
-            Class classValue = xmlDescriptor.getInheritancePolicy().classFromRow(unmarshalRecord, unmarshalRecord.getSession());
+            AbstractSession session = unmarshalRecord.getSession();
+            Class classValue = xmlDescriptor.getInheritancePolicy().classFromRow(unmarshalRecord, session);
             if (classValue == null) {
                 // no xsi:type attribute - look for type indicator on the default root element
                 QName leafElementType = unmarshalRecord.getLeafElementType();
@@ -72,7 +73,7 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
                 }
             }
             if (classValue != null) {
-                xmlDescriptor = (XMLDescriptor)unmarshalRecord.getSession().getDescriptor(classValue);
+                xmlDescriptor = (XMLDescriptor)session.getDescriptor(classValue);
             } else {
                 // since there is no xsi:type attribute, use the reference descriptor set
                 // on the mapping -  make sure it is non-abstract
@@ -84,7 +85,6 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
         }
         TreeObjectBuilder targetObjectBuilder = (TreeObjectBuilder)xmlDescriptor.getObjectBuilder();
         UnmarshalRecord childRecord = unmarshalRecord.getChildUnmarshalRecord(targetObjectBuilder);
-        unmarshalRecord.setChildRecord(childRecord);
         childRecord.setAttributes(atts);
         childRecord.startDocument();
         childRecord.initializeRecord(null);

@@ -42,7 +42,7 @@ public abstract class XMLRecord extends AbstractRecord {
     private NamespaceResolver namespaceResolver;
     protected AbstractSession session;
     private boolean isXOPPackage;
-    private boolean hasCustomNamespaceMapper;
+    protected boolean hasCustomNamespaceMapper;
     
 
     /**

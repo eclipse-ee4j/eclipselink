@@ -45,18 +45,27 @@ public class XMLStreamReaderReader extends XMLReaderAdapter {
     }
 
     @Override
-    public void setContentHandler (ContentHandler handler) {
-        super.setContentHandler(handler);
-        Class handlerClass = handler.getClass();
-        if(handlerClass == UnmarshalRecord.class){
+    public void setContentHandler (ContentHandler handler) {   
+        if(handler instanceof UnmarshalRecord){
             ((UnmarshalRecord)handler).setUnmarshalNamespaceResolver(unmarshalNamespaceContext);
             qNameAware = false;
-        }else if(handlerClass == SAXUnmarshallerHandler.class){
+            if(null == validatingContentHandler) {
+            	this.contentHandler = (UnmarshalRecord) handler;
+            }else{
+            	 validatingContentHandler.setContentHandler(handler);
+            }
+        }else if(handler instanceof SAXUnmarshallerHandler){
             ((SAXUnmarshallerHandler)handler).setUnmarshalNamespaceResolver(unmarshalNamespaceContext);
             qNameAware = true;
+            if(null == validatingContentHandler) {
+            	this.contentHandler = (SAXUnmarshallerHandler) handler;
+            }else{
+            	 validatingContentHandler.setContentHandler(handler);
+            }
         } else {
+        	super.setContentHandler(handler);
             qNameAware = true;
-        }
+        }               
     }
 
     @Override

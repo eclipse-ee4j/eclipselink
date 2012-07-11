@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
+
 import javax.xml.namespace.QName;
 import javax.xml.transform.Result;
 
@@ -156,11 +158,12 @@ public class Schema {
 
     public void setAttributesMap(Map attributesMap) {
         this.attributesMap = attributesMap;
-        Iterator iter = attributesMap.keySet().iterator();
+        Iterator<Entry> iter = attributesMap.entrySet().iterator();       
         while (iter.hasNext()) {
-            QName key = (QName)iter.next();
+        	Entry nextEntry = iter.next();
+            QName key = (QName)nextEntry.getKey();
             if (key.getNamespaceURI().equals(XMLConstants.XMLNS_URL)) {
-                String value = (String)attributesMap.get(key);
+                String value = (String)nextEntry.getValue();
                 String prefix = key.getLocalPart();
                 int index = prefix.indexOf(':');
                 if (index > -1) {

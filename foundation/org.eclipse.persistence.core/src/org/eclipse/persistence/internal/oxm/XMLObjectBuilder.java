@@ -561,10 +561,6 @@ public class XMLObjectBuilder extends ObjectBuilder {
         super.setDescriptor(aDescriptor);
         isXMLDescriptor = null;
     }
-
-    protected List addExtraNamespacesToNamespaceResolver(XMLDescriptor desc, XMLRecord marshalRecord, AbstractSession session) {
-        return addExtraNamespacesToNamespaceResolver(desc, marshalRecord, session, true, false);
-    }
     
     protected List addExtraNamespacesToNamespaceResolver(XMLDescriptor desc, XMLRecord marshalRecord, AbstractSession session, boolean allowOverride, boolean ignoreEqualResolvers) {
         if (((XMLLogin)session.getDatasourceLogin()).hasEqualNamespaceResolvers() && !ignoreEqualResolvers) {
