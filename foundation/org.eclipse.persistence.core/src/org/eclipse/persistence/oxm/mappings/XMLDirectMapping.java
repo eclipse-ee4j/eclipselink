@@ -325,14 +325,17 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
                 fieldValue = converter.convertObjectValueToDataValue(fieldValue, session);
             }
         }
-        Class fieldClassification = getFieldClassification(field);
-        // PERF: Avoid conversion if not required.
-        if ((fieldValue != null) && (fieldClassification != fieldValue.getClass())) {
-            try {
-                fieldValue = session.getPlatform(descriptor.getJavaClass()).convertObject(fieldValue, fieldClassification);
-            } catch (ConversionException exception) {
-                throw ConversionException.couldNotBeConverted(this, descriptor, exception);
-            }
+   
+        if (fieldValue != null) {
+        	 Class fieldClassification = getFieldClassification(field);
+             // PERF: Avoid conversion if not required.
+        	 if(fieldClassification != fieldValue.getClass()){
+        		 try {
+                     fieldValue = session.getPlatform(descriptor.getJavaClass()).convertObject(fieldValue, fieldClassification);
+                 } catch (ConversionException exception) {
+                     throw ConversionException.couldNotBeConverted(this, descriptor, exception);
+                 }
+        	 }
         }
         return fieldValue;
     }

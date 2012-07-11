@@ -40,6 +40,7 @@ import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.oxm.mappings.XMLInverseReferenceMapping;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
 import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
@@ -164,7 +165,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
         }
 
         XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
-        if(xPathFragment.isAttribute()) {
+        if(xPathFragment.hasAttribute) {
             TreeObjectBuilder tob = (TreeObjectBuilder) xmlCompositeObjectMapping.getReferenceDescriptor().getObjectBuilder();
             MappingNodeValue textMappingNodeValue = (MappingNodeValue) tob.getRootXPathNode().getTextNode().getMarshalNodeValue();
             DatabaseMapping textMapping = textMappingNodeValue.getMapping();
@@ -209,7 +210,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
             marshalRecord.beforeContainmentMarshal(objectValue);
             TreeObjectBuilder objectBuilder = (TreeObjectBuilder)descriptor.getObjectBuilder();
 
-            if (!(isSelfFragment || xPathFragment.nameIsText())) {
+            if (!(isSelfFragment || xPathFragment.nameIsText)) {
                 xPathNode.startElement(marshalRecord, xPathFragment, object, session, namespaceResolver, objectBuilder, objectValue);
             }
 
@@ -303,7 +304,8 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
             //   Object creation was deferred to the DeferredContentHandler
             //
             // Check if we need to create the DeferredContentHandler based on policy state
-            if(xmlCompositeObjectMapping.getNullPolicy().isNullRepresentedByEmptyNode()) {
+            AbstractNullPolicy nullPolicy = xmlCompositeObjectMapping.getNullPolicy();
+            if(nullPolicy.isNullRepresentedByEmptyNode()) {
                 String qnameString = xPathFragment.getLocalName();
                 if(xPathFragment.getPrefix() != null) {
                     qnameString = xPathFragment.getPrefix()  + XMLConstants.COLON + qnameString;
@@ -319,7 +321,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
                     xmlReader.setLexicalHandler(aHandler);
                 }
             } else {
-                if (xmlCompositeObjectMapping.getNullPolicy().isNullRepresentedByXsiNil() && unmarshalRecord.isNil()) {
+                if (nullPolicy.isNullRepresentedByXsiNil() && unmarshalRecord.isNil()) {
                     xmlCompositeObjectMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), null);
                 } else {
                     XMLField xmlFld = (XMLField)this.xmlCompositeObjectMapping.getField();

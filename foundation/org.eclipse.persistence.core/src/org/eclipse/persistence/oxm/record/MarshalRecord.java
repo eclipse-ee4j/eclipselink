@@ -103,7 +103,7 @@ public abstract class MarshalRecord extends XMLRecord {
      */
     public void addGroupingElement(XPathNode xPathNode) {
         if (null == groupingElements) {
-            groupingElements = new ArrayList();
+            groupingElements = new ArrayList(2);
         }
         groupingElements.add(xPathNode);
     }
@@ -644,7 +644,7 @@ public abstract class MarshalRecord extends XMLRecord {
         if(xPathFragment.getNamespaceURI() != null && xPathFragment.getNamespaceURI().length() > 0) {
             String prefix = this.getPrefixForFragment(xPathFragment);
             if(prefix != null && prefix.length() > 0) {
-                return prefix + ":" + xPathFragment.getLocalName();
+                return prefix + XMLConstants.COLON + xPathFragment.getLocalName();
             }
         }
         return xPathFragment.getLocalName();
@@ -658,7 +658,7 @@ public abstract class MarshalRecord extends XMLRecord {
         if(xPathFragment.getNamespaceURI() != null && xPathFragment.getNamespaceURI().length() > 0) {
             String prefix = this.getPrefixForFragment(xPathFragment);
             if(prefix != null && prefix.length() > 0) {
-                name = prefix + ":" + xPathFragment.getLocalName();
+                name = prefix + XMLConstants.COLON + xPathFragment.getLocalName();
             }
         }
         byte[] bytes = null;
@@ -669,7 +669,7 @@ public abstract class MarshalRecord extends XMLRecord {
     }    
     
     protected String getPrefixForFragment(XPathFragment xPathFragment) {
-        if(!this.hasCustomNamespaceMapper()) {
+        if(!hasCustomNamespaceMapper) { 
             return xPathFragment.getPrefix();
         }
         String uri = xPathFragment.getNamespaceURI();

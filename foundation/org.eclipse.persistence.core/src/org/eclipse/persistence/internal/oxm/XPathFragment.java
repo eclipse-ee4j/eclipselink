@@ -40,7 +40,7 @@ public class XPathFragment {
     private XPathFragment nextFragment;
     private XMLField xmlField;
     private String xpath;
-    private boolean hasAttribute = false;
+    protected boolean hasAttribute = false;
     private boolean hasText = false;
     private boolean hasNamespace = false;
     private boolean containsIndex = false;

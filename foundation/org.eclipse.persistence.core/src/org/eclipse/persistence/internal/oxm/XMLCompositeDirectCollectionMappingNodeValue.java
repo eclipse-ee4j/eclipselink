@@ -308,7 +308,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
                     //require adjusting the namespace of the current fragment.
                     if(namespaceResolver.getDefaultNamespaceURI().equals(xPathFragment.getNamespaceURI()) && xPathFragment.getPrefix() == null) {
                         String prefix = namespaceResolver.generatePrefix();
-                        String xPath = prefix + ":" + xPathFragment.getShortName(); 
+                        String xPath = prefix + XMLConstants.COLON + xPathFragment.getShortName(); 
                         XPathFragment newFragment = new XPathFragment(xPath);
                         newFragment.setNamespaceURI(namespaceResolver.getDefaultNamespaceURI());
                         newFragment.setNextFragment(xPathFragment.getNextFragment());
