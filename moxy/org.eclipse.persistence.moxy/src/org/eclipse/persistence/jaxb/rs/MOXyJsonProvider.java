@@ -46,7 +46,16 @@ import org.eclipse.persistence.oxm.XMLConstants;
 /**
  * <p>This is an implementation of <i>MessageBodyReader</i>/<i>MessageBodyWriter
  * </i> that can be used to enable EclipseLink JAXB (MOXy) as the the JSON 
- * provider. Below are some different usage options.</p>
+ * provider.</p>
+ * <p>
+ * <b>Supported Media Type Patterns</b>
+ * <ul>
+ * <li>*&#47;json (i.e. application/json and text/json)</li>
+ * <li>*&#47;*+json</li>
+ * </ul>
+ * </p>
+ * 
+ * <p>Below are some different usage options.</p>
  * 
  * <b>Option #1 - <i>MOXyJsonProvider</i> Default Behavior</b>
  * <p>You can use the <i>Application</i> class to specify that 
@@ -157,11 +166,13 @@ import org.eclipse.persistence.oxm.XMLConstants;
  * </pre>
  * @since 2.4
  */
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.WILDCARD)
+@Consumes(MediaType.WILDCARD)
 public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyWriter<Object>{
  
     private static final String CHARSET = "charset";
+    private static final String JSON = "json";
+    private static final String PLUS_JSON = "+json";
 
     @Context
     protected Providers providers;
@@ -301,7 +312,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
      * @return true
      */
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return true;
+        return supportsMediaType(mediaType);
     }
  
     /**
@@ -310,7 +321,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
      * @return true
      */
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return true;
+        return supportsMediaType(mediaType);
     }
 
     /**
@@ -456,6 +467,11 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
      */
     public void setValueWrapper(String valueWrapper) {
         this.valueWrapper = valueWrapper;
+    }
+
+    private boolean supportsMediaType(MediaType mediaType) {
+        String subtype = mediaType.getSubtype();
+        return subtype.equals(JSON) || subtype.endsWith(PLUS_JSON);
     }
 
     /*
