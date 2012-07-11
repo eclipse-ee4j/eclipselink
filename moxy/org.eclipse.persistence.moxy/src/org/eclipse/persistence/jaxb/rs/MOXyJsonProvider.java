@@ -21,6 +21,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Map;
 
 import javax.ws.rs.Consumes;
@@ -40,6 +42,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
@@ -415,7 +418,20 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
             if(type.isAssignableFrom(JAXBElement.class)) {
                 return jaxbElement;
             } else {
-                return jaxbElement.getValue();
+                Object value = jaxbElement.getValue();
+                if(value instanceof ArrayList) {
+                    if(type.isAssignableFrom(value.getClass())) {
+                        return value;
+                    }
+                    ContainerPolicy containerPolicy = ContainerPolicy.buildPolicyFor(type);
+                    Object container = containerPolicy.containerInstance();
+                    for(Object element : (Collection) value) {
+                        containerPolicy.addInto(element, container, null);
+                    }
+                    return container;
+                } else {
+                    return value;
+                }
             }
         } catch(JAXBException jaxbException) {
             throw new WebApplicationException(jaxbException);
