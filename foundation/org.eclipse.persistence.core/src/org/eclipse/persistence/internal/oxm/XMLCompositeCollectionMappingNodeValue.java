@@ -289,7 +289,7 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
             TreeObjectBuilder objectBuilder = (TreeObjectBuilder)descriptor.getObjectBuilder();
             getXPathNode().startElement(marshalRecord, xPathFragment, object, session, namespaceResolver, objectBuilder, value);
 
-            List extraNamespaces = objectBuilder.addExtraNamespacesToNamespaceResolver(descriptor, marshalRecord, session);
+            List extraNamespaces = objectBuilder.addExtraNamespacesToNamespaceResolver(descriptor, marshalRecord, session,true, false);
             writeExtraNamespaces(extraNamespaces, marshalRecord, session);
 
             objectBuilder.addXsiTypeAndClassIndicatorIfRequired(marshalRecord, descriptor, (XMLDescriptor) xmlCompositeCollectionMapping.getReferenceDescriptor(), (XMLField)xmlCompositeCollectionMapping.getField(), false);

@@ -17,7 +17,9 @@ import java.io.OutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -478,8 +480,11 @@ public class OutputStreamRecord extends MarshalRecord {
         protected void writePrefixMappings() {
             try {
                 if (!prefixMappings.isEmpty()) {
-                    for (java.util.Iterator<String> keys = prefixMappings.keySet().iterator(); keys.hasNext();) {
-                        String prefix = keys.next();
+                	Set<Entry<String, String>> entries = prefixMappings.entrySet();
+                	Iterator<Entry<String, String>> iter = entries.iterator();
+                	while(iter.hasNext()){
+                		Entry<String, String> nextEntry = iter.next();
+                        String prefix = nextEntry.getKey();
                         outputStreamWrite(SPACE);
                         outputStreamWrite(XMLConstants.XMLNS.getBytes(XMLConstants.DEFAULT_XML_ENCODING));
                         if(null != prefix && prefix.length() > 0) {
@@ -488,9 +493,9 @@ public class OutputStreamRecord extends MarshalRecord {
                         }
                         outputStreamWrite((byte)'=');
                         outputStreamWrite((byte)'"');
-                        String uri = prefixMappings.get(prefix);
+                        String uri = nextEntry.getValue();
                         if(null != uri) {
-                            outputStreamWrite(prefixMappings.get(prefix).getBytes(XMLConstants.DEFAULT_XML_ENCODING));
+                            outputStreamWrite(uri.getBytes(XMLConstants.DEFAULT_XML_ENCODING));
                         }
                         outputStreamWrite(CLOSE_ATTRIBUTE_VALUE);
                     }

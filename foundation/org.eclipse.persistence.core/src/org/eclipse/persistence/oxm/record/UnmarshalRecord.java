@@ -130,14 +130,12 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
     private Locator xmlLocation;
 
 
-    protected List<UnmarshalRecord> childRecordPool;
     protected XPathFragment textWrapperFragment;    
 
     public UnmarshalRecord(TreeObjectBuilder treeObjectBuilder) {
         super();
         this.xPathFragment = new XPathFragment();
         xPathFragment.setNamespaceAware(isNamespaceAware());
-        this.childRecordPool = new ArrayList<UnmarshalRecord>();
         initialize(treeObjectBuilder);
     }
 
@@ -171,7 +169,6 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
         isSelfRecord = false;
         unmarshalContext = null;
         isXsiNil = false;
-        this.childRecordPool.add(this);
         unmappedLevel = -1;
     }
 
@@ -297,9 +294,10 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
         Object containerInstance = containerInstances[c.getIndex()];
 
         if (containerInstance == null) {
-            //don't attempt to do a get on a readOnly property.
-            if(c.getReuseContainer() && !(c.getMapping().getAttributeAccessor().isReadOnly())) {
-                containerInstance = c.getMapping().getAttributeAccessor().getAttributeValueFromObject(getCurrentObject());
+        	DatabaseMapping mapping = c.getMapping();
+            //don't attempt to do a get on a readOnly property.        	
+            if(c.getReuseContainer() && !(mapping.isReadOnly())) {
+            	containerInstance = mapping.getAttributeValueFromObject(currentObject);                
             }
             if(null == containerInstance && createContainerIfNecessary) {
                 containerInstance = c.getContainerInstance();
@@ -363,11 +361,11 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
     }
 
     protected StrBuffer getStringBuffer() {
-        return getUnmarshaller().getStringBuffer();
+        return unmarshaller.getStringBuffer();
     }
 
     public CharSequence getCharacters() {
-        return getUnmarshaller().getStringBuffer();
+        return unmarshaller.getStringBuffer();
     }
 
     public Attributes getAttributes() {
@@ -444,8 +442,8 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
     }
 
     public void startDocument() throws SAXException {
-        if (getUnmarshaller().getIDResolver() != null && getParentRecord() == null) {
-            getUnmarshaller().getIDResolver().startDocument(getUnmarshaller().getErrorHandler());
+        if (unmarshaller.getIDResolver() != null && getParentRecord() == null) {
+        	unmarshaller.getIDResolver().startDocument(unmarshaller.getErrorHandler());
         }
     }
     
@@ -487,11 +485,10 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
                 unmarshalContext = ObjectUnmarshalContext.getInstance();
             }
 
-            Object object = this.xmlReader.getCurrentObject(session, selfRecordMapping);
-            if (object == null) {
-                object = treeObjectBuilder.buildNewInstance();
+            currentObject = this.xmlReader.getCurrentObject(session, selfRecordMapping);
+            if (currentObject == null) {
+            	currentObject = treeObjectBuilder.buildNewInstance();
             }
-            this.setCurrentObject(object);
 
             if (parentRecord != null && parentRecord.getDocumentLocator() != null) {
                 this.documentLocator = parentRecord.getDocumentLocator();
@@ -508,15 +505,15 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
             XMLUnmarshalListener xmlUnmarshalListener = unmarshaller.getUnmarshalListener();
             if (null != xmlUnmarshalListener) {
                 if (null == this.parentRecord) {
-                    xmlUnmarshalListener.beforeUnmarshal(object, null);
+                    xmlUnmarshalListener.beforeUnmarshal(currentObject, null);
                 } else {
-                    xmlUnmarshalListener.beforeUnmarshal(object, parentRecord.getCurrentObject());
+                    xmlUnmarshalListener.beforeUnmarshal(currentObject, parentRecord.getCurrentObject());
                 }
             }
             if (null == parentRecord) {
-                this.xmlReader.newObjectEvent(object, null, selfRecordMapping);
+                this.xmlReader.newObjectEvent(currentObject, null, selfRecordMapping);
             } else {
-                this.xmlReader.newObjectEvent(object, parentRecord.getCurrentObject(), selfRecordMapping);
+                this.xmlReader.newObjectEvent(currentObject, parentRecord.getCurrentObject(), selfRecordMapping);
             }
             List containerValues = treeObjectBuilder.getContainerValues();
             if (null != containerValues) {
@@ -526,10 +523,10 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
             if (null != xPathNode.getSelfChildren()) {
                 int selfChildrenSize = xPathNode.getSelfChildren().size();
                 selfRecords = new ArrayList<UnmarshalRecord>(selfChildrenSize);
-                for (int x = 0; x < selfChildrenSize; x++) {
-                    XPathNode selfNode = xPathNode.getSelfChildren().get(x);
-                    if (null != selfNode.getNodeValue()) {
-                        selfRecords.add(selfNode.getNodeValue().buildSelfRecord(this, attributes));
+                for (int x = 0; x < selfChildrenSize; x++) {                    
+                    NodeValue nv = xPathNode.getSelfChildren().get(x).getNodeValue();
+                    if (null != nv) {
+                        selfRecords.add(nv.buildSelfRecord(this, attributes));
                     }
                 }
             }
@@ -639,7 +636,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
                             Object value = pk.getPrimaryKey()[x];
                             if (null == value) {
                                 XMLField pkField = (XMLField) xmlDescriptor.getPrimaryKeyFields().get(x);
-                                pk.set(x, getUnmarshaller().getXMLContext().getValueByXPath(currentObject, pkField.getXPath(), pkField.getNamespaceResolver(), Object.class));
+                                pk.set(x, unmarshaller.getXMLContext().getValueByXPath(currentObject, pkField.getXPath(), pkField.getNamespaceResolver(), Object.class));
                             }
                         }
                         CacheKey key = session.getIdentityMapAccessorInstance().acquireDeferredLock(pk, xmlDescriptor.getJavaClass(), xmlDescriptor, false);
@@ -647,7 +644,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
                         key.setObject(currentObject);
                         key.releaseDeferredLock();
 
-                        if (getUnmarshaller().getIDResolver() != null) {
+                        if (unmarshaller.getIDResolver() != null) {
                             try {
                                 if (primaryKeyFieldsSize > 1) {
                                     Map<String, Object> idWrapper = new HashMap<String, Object>();
@@ -656,9 +653,9 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
                                         Object idValue = pk.getPrimaryKey()[x];
                                         idWrapper.put(idName, idValue);
                                     }
-                                    getUnmarshaller().getIDResolver().bind(idWrapper, currentObject);
+                                    unmarshaller.getIDResolver().bind(idWrapper, currentObject);
                                 } else {
-                                    getUnmarshaller().getIDResolver().bind(pk.getPrimaryKey()[0], currentObject);
+                                	unmarshaller.getIDResolver().bind(pk.getPrimaryKey()[0], currentObject);
                                 }
                             } catch (SAXException e) {
                                 throw XMLMarshalException.unmarshalException(e);
@@ -690,7 +687,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
     }
 
     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
-    	if(getCurrentObject() == null){
+    	if(currentObject == null){
     		initializeRecord(atts);
     	}
     	
@@ -896,7 +893,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
             }
             return;
         }
-        Class unmappedContentHandlerClass = getUnmarshaller().getUnmappedContentHandlerClass();
+        Class unmappedContentHandlerClass = unmarshaller.getUnmappedContentHandlerClass();
         UnmappedContentHandler unmappedContentHandler;
         if (null == unmappedContentHandlerClass) {
             unmappedContentHandler = DEFAULT_UNMAPPED_CONTENT_HANDLER;
@@ -1027,7 +1024,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
     }
 
     public void characters(char[] ch, int start, int length) throws SAXException {
-    	if(getCurrentObject() == null){
+    	if(currentObject == null){
     		return;
     	}
         try {
@@ -1217,11 +1214,8 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
         Map attributeChildrenMap = xPathNode.getAttributeChildrenMap();
         if (attributeChildrenMap != null) {
             xPathFragment.setLocalName(localName);
-            if(namespace != null && namespace.length() == 0){
-                xPathFragment.setNamespaceURI(null);
-            } else {
-                xPathFragment.setNamespaceURI(namespace);
-            }
+            xPathFragment.setNamespaceURI(namespace);
+           
             XPathNode node = (XPathNode)attributeChildrenMap.get(xPathFragment);
             if (node != null) {
                 return node.getUnmarshalNodeValue();
@@ -1322,18 +1316,20 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
     }
 
     public UnmarshalRecord getChildUnmarshalRecord(TreeObjectBuilder treeObjectBuilder) {
-        if(childRecordPool.isEmpty()) {
-            UnmarshalRecord childRecord = (UnmarshalRecord) treeObjectBuilder.createRecord(session);
-            childRecord.setUnmarshaller(unmarshaller);
-            childRecord.session = this.session;
-            childRecord.setXMLReader(this.xmlReader);
-            childRecord.setFragmentBuilder(fragmentBuilder);
-            childRecord.setUnmarshalNamespaceResolver(this.getUnmarshalNamespaceResolver());
-            childRecord.childRecordPool = this.childRecordPool;
-            return childRecord;
-        } else {
-            return childRecordPool.remove(childRecordPool.size() - 1).initialize(treeObjectBuilder);
-        }
+    	if(childRecord != null && !childRecord.isSelfRecord){
+    		childRecord.initialize(treeObjectBuilder);
+	        childRecord.setParentRecord(this);        
+	        return childRecord;
+    	}else{
+	    	childRecord = (UnmarshalRecord) treeObjectBuilder.createRecord(session);
+	        childRecord.setUnmarshaller(unmarshaller);
+	        childRecord.session = this.session;
+	        childRecord.setXMLReader(this.xmlReader);
+	        childRecord.setFragmentBuilder(fragmentBuilder);
+	        childRecord.setUnmarshalNamespaceResolver(this.getUnmarshalNamespaceResolver());
+	        childRecord.setParentRecord(this);        
+    	}
+        return childRecord;    	
     }
     
     /**

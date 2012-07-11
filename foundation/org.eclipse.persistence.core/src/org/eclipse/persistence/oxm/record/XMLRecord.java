@@ -47,7 +47,7 @@ public abstract class XMLRecord extends AbstractRecord {
     private boolean isXOPPackage;
     protected boolean namespaceAware;
     
-    private boolean hasCustomNamespaceMapper;
+    protected boolean hasCustomNamespaceMapper;
     
 
     /**

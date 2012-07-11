@@ -702,15 +702,15 @@ public class XMLField extends DatabaseField {
     * Called from DOMRecord and XMLReader.  MappingNodeValues call XMLReader which calls this method so that other XMLReader subclasses can override.
     */
     public Object convertValueBasedOnSchemaType(Object value, XMLConversionManager xmlConversionManager, XMLRecord record) {
-        if (getSchemaType() != null) { 
-        	if(XMLConstants.QNAME_QNAME.equals(getSchemaType())){
+        if (schemaType != null) { 
+        	if(XMLConstants.QNAME_QNAME.equals(schemaType)){
         		return xmlConversionManager.buildQNameFromString((String)value, record);        		
         	}else{
 	            Class fieldType = getType();
 	            if (fieldType == null) {
-	                fieldType = getJavaClass(getSchemaType());
+	                fieldType = getJavaClass(schemaType);
 	            }            
-	            return xmlConversionManager.convertObject(value, fieldType, getSchemaType());
+	            return xmlConversionManager.convertObject(value, fieldType, schemaType);
         	}
         }
         return value;
@@ -797,7 +797,7 @@ public class XMLField extends DatabaseField {
      * @return
      */
     public boolean hasLastXPathFragment() {
-        return getLastXPathFragment() != null;
+        return lastXPathFragment != null;
     }
 
     /**
