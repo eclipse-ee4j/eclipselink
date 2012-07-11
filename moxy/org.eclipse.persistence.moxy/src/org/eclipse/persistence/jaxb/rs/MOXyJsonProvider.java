@@ -20,6 +20,7 @@ import java.io.Reader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.WildcardType;
 import java.util.Map;
 
 import javax.ws.rs.Consumes;
@@ -33,6 +34,7 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Providers;
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
@@ -198,17 +200,37 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
 
     /**
      * A convenience method to get the domain class (i.e. <i>Customer</i>) from 
-     * the parameter/return type (i.e. <i>Customer</i> or <i>List&lt;Customer></i>).
+     * the parameter/return type (i.e. <i>Customer</i>, <i>List&lt;Customer></i>,
+     * <i>JAXBElement&lt;Customer></i>, <i>JAXBElement&lt;? extends Customer></i>, 
+     * <i>List&lt;JAXBElement&lt;Customer>></i>, or 
+     * <i>List&lt;JAXBElement&lt;? extends Customer>></i>).
      * @param genericType - The parameter/return type of the JAX-RS operation.
      * @return The corresponding domain class.
      */
     protected Class<?> getDomainClass(Type genericType) {
-        if(genericType instanceof Class) {
-            return (Class<?>) genericType;
+        if(genericType instanceof Class && genericType != JAXBElement.class) {
+             return (Class<?>) genericType;
         } else if(genericType instanceof ParameterizedType) {
-            return (Class<?>) ((ParameterizedType) genericType).getActualTypeArguments()[0];
+            Type type = ((ParameterizedType) genericType).getActualTypeArguments()[0];
+            if(type instanceof ParameterizedType) {
+                Type rawType = ((ParameterizedType) type).getRawType();
+                if(rawType == JAXBElement.class) {
+                    return getDomainClass(type);
+                }
+            } else if(type instanceof WildcardType) {
+                Type[] upperTypes = ((WildcardType)type).getUpperBounds();
+                if(upperTypes.length > 0){
+                    Type upperType = upperTypes[0];
+                    if(upperType instanceof Class){
+                        return (Class<?>) upperType;
+                    }
+                }
+            } else if(JAXBElement.class == type) {
+                return Object.class;
+            }
+            return (Class<?>) type;
         } else {
-            return null;
+            return Object.class;
         }
     }
 
@@ -389,7 +411,12 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
                 jsonSource = new StreamSource(entityStream);
             }
 
-            return unmarshaller.unmarshal(jsonSource, domainClass).getValue();
+            JAXBElement<?> jaxbElement = unmarshaller.unmarshal(jsonSource, domainClass);
+            if(type.isAssignableFrom(JAXBElement.class)) {
+                return jaxbElement;
+            } else {
+                return jaxbElement.getValue();
+            }
         } catch(JAXBException jaxbException) {
             throw new WebApplicationException(jaxbException);
         }
