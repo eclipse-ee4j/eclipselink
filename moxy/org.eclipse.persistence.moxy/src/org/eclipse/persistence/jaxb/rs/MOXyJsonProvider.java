@@ -401,7 +401,9 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
             unmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, includeRoot);
             unmarshaller.setProperty(UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER, namespacePrefixMapper);
             unmarshaller.setProperty(UnmarshallerProperties.JSON_NAMESPACE_SEPARATOR, namespaceSeperator);
-            unmarshaller.setProperty(UnmarshallerProperties.JSON_VALUE_WRAPPER, valueWrapper);
+            if(null != valueWrapper) {
+                unmarshaller.setProperty(UnmarshallerProperties.JSON_VALUE_WRAPPER, valueWrapper);
+            }
             preReadFrom(type, genericType, annotations, mediaType, httpHeaders, unmarshaller);
 
             StreamSource jsonSource;
@@ -531,7 +533,9 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
             marshaller.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, includeRoot);
             marshaller.setProperty(MarshallerProperties.JSON_MARSHAL_EMPTY_COLLECTIONS, marshalEmptyCollections);
             marshaller.setProperty(MarshallerProperties.JSON_NAMESPACE_SEPARATOR, namespaceSeperator);
-            marshaller.setProperty(MarshallerProperties.JSON_VALUE_WRAPPER, valueWrapper);
+            if(null != valueWrapper) {
+                marshaller.setProperty(MarshallerProperties.JSON_VALUE_WRAPPER, valueWrapper);
+            }
             marshaller.setProperty(MarshallerProperties.NAMESPACE_PREFIX_MAPPER, namespacePrefixMapper);
 
             Map<String, String> mediaTypeParameters = mediaType.getParameters();
