@@ -687,10 +687,10 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
     }
 
     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
-    	if(currentObject == null){
-    		initializeRecord(atts);
-    	}
-    	
+        if (currentObject == null) {
+            initializeRecord(atts);
+        }
+
         if((null != xPathNode.getXPathFragment() && xPathNode.getXPathFragment().nameIsText()) || xpathNodeIsMixedContent) {
             xpathNodeIsMixedContent = false;
             NodeValue xPathNodeUnmarshalNodeValue = xPathNode.getUnmarshalNodeValue();
@@ -731,10 +731,10 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
 
             XPathNode node = getNonAttributeXPathNode(namespaceURI, localName, qName, atts);            
 
-            if(null == node && xPathNode.getTextNode() != null){            	
-            	if(textWrapperFragment != null && localName.equals(textWrapperFragment.getLocalName())){
-            	   node = xPathNode.getTextNode();
-            	}
+            if(null == node && xPathNode.getTextNode() != null){
+                if(textWrapperFragment != null && localName.equals(textWrapperFragment.getLocalName())){
+                   node = xPathNode.getTextNode();
+                }
             }
             if (null == node) {
                 NodeValue parentNodeValue = xPathNode.getUnmarshalNodeValue();
@@ -789,18 +789,21 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
                         // attributes
                         if ((attLocalName == null) || (attLocalName.length() == 0)) {
                             String qname = atts.getQName(i);
-                            if ((qname != null) && (qname.length() > 0)) {
-                                int idx = qname.indexOf(XMLConstants.COLON);
-                                if(idx > 0){
-                                    attLocalName = qname.substring(idx + 1, qname.length());
-                                    String attPrefix = qname.substring(0, idx);
-                                    if (attPrefix.equals(XMLConstants.XMLNS)){
-                                        attNamespace = XMLConstants.XMLNS_URL;
-                                    }
-                                }else{
-                                    attLocalName = qname;
-                                    if(attLocalName.equals(XMLConstants.XMLNS)){
-                                        attNamespace = XMLConstants.XMLNS_URL;
+                            if (qname != null) {
+                                int qnameLength = qname.length();
+                                if (qnameLength > 0) {
+                                    int idx = qname.indexOf(XMLConstants.COLON);
+                                    if (idx > 0) {
+                                        attLocalName = qname.substring(idx + 1, qnameLength);
+                                        String attPrefix = qname.substring(0, idx);
+                                        if (attPrefix.equals(XMLConstants.XMLNS)) {
+                                            attNamespace = XMLConstants.XMLNS_URL;
+                                        }
+                                    } else {
+                                        attLocalName = qname;
+                                        if (attLocalName.equals(XMLConstants.XMLNS)) {
+                                            attNamespace = XMLConstants.XMLNS_URL;
+                                        }
                                     }
                                 }
                             }
@@ -820,17 +823,17 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
                         }
                         if (attributeNodeValue == null) {
                             attributeNodeValue = this.getAttributeChildNodeValue(attNamespace, attLocalName);
-                            
-                            try {                              
-	                            if (attributeNodeValue != null) {
-	                                attributeNodeValue.attribute(this, attNamespace, attLocalName, value);
-	                            } else {
-	                                if (xPathNode.getAnyAttributeNodeValue() != null) {
-	                                    xPathNode.getAnyAttributeNodeValue().attribute(this, attNamespace, attLocalName, value);
-	                                }
-	                            }
+
+                            try {
+                                if (attributeNodeValue != null) {
+                                    attributeNodeValue.attribute(this, attNamespace, attLocalName, value);
+                                } else {
+                                    if (xPathNode.getAnyAttributeNodeValue() != null) {
+                                        xPathNode.getAnyAttributeNodeValue().attribute(this, attNamespace, attLocalName, value);
+                                    }
+                                }
                             } catch(EclipseLinkException e) {
-                            	if ((null == xmlReader) || (null == xmlReader.getErrorHandler())) {
+                                if ((null == xmlReader) || (null == xmlReader.getErrorHandler())) {
                                     throw e;
                                 } else {
                                     SAXParseException saxParseException = new SAXParseException(e.getLocalizedMessage(), documentLocator, e);
