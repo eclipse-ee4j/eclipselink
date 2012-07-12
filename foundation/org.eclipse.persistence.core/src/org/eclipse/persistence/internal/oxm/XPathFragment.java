@@ -302,35 +302,47 @@ public class XPathFragment {
     }
 
     public boolean equals(Object object) {
+        if (null == object) {
+            return false;
+        } else if (this == object) {
+            return true;
+        }
         try {
-            if(null == object) {
-                return false;
-            } else if (this == object) {
+            XPathFragment xPathFragment = (XPathFragment) object;
+            if (nameIsText && xPathFragment.nameIsText) {
                 return true;
             }
-            XPathFragment xPathFragment = (XPathFragment)object;
-            if(null == predicate && null != xPathFragment.predicate) {
+            if (nameIsText != xPathFragment.nameIsText) {
                 return false;
             }
-            if(null != predicate && !predicate.equals(xPathFragment.predicate)) {
+            if (null == localName) {
+                if (null != xPathFragment.localName) {
+                    return false;
+                }
+            } else if (!localName.equals(xPathFragment.localName)) {
                 return false;
             }
-            return ((nameIsText && xPathFragment.nameIsText) || (localName == xPathFragment.localName) || ((localName != null) && localName.equals(xPathFragment.localName))) && ((namespaceURI == xPathFragment.namespaceURI) || ((namespaceURI != null) && namespaceURI.equals(xPathFragment.namespaceURI))) && (this.indexValue == xPathFragment.indexValue) && (nameIsText == xPathFragment.nameIsText);
+            if (null == namespaceURI) {
+                if (null != xPathFragment.namespaceURI) {
+                    return false;
+                }
+            } else if (!namespaceURI.equals(xPathFragment.namespaceURI)) {
+                return false;
+            }
+            if (indexValue != xPathFragment.indexValue) {
+                return false;
+            }
+            if (null == predicate) {
+                if (null != xPathFragment.predicate) {
+                    return false;
+                }
+            } else if (!predicate.equals(xPathFragment.predicate)) {
+                return false;
+            }
         } catch (ClassCastException e) {
             return false;
         }
-    }
-
-    public boolean qNameEquals(Object object) {
-        try {
-            if (this == object) {
-                return true;
-            }
-            XPathFragment xPathFragment = (XPathFragment)object;
-            return ((localName == xPathFragment.localName) || ((localName != null) && localName.equals(xPathFragment.localName))) && ((namespaceURI == xPathFragment.namespaceURI) || ((namespaceURI != null) && namespaceURI.equals(xPathFragment.namespaceURI))) && (nameIsText == xPathFragment.nameIsText);
-        } catch (ClassCastException e) {
-            return false;
-        }
+        return true;
     }
 
     public int hashCode() {
