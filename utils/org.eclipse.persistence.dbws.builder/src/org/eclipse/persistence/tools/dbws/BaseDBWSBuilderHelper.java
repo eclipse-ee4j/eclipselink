@@ -385,8 +385,8 @@ public abstract class BaseDBWSBuilderHelper {
     }
 
     /**
-     * Complete project configuration.  Build descriptors for secondary SQL and
-     * complex arguments.  Set the projects on the DBWSBuilder instance.
+     * Complete project configuration.  Build descriptors for secondary SQL
+     * and complex arguments. Set the projects on the DBWSBuilder instance.
      */
     protected void finishUpProjects(Project orProject, Project oxProject, List<CompositeDatabaseType> typeList) {
         // handle build SQL
@@ -397,31 +397,20 @@ public abstract class BaseDBWSBuilderHelper {
         }
         // create OR/OX projects, descriptors/mappings for the types
         addToOROXProjectsForComplexTypes(typeList, orProject, oxProject);
+        
         // build queries for procedures with complex arguments
         for (OperationModel opModel : dbwsBuilder.operations) {
             if (opModel.isProcedureOperation()) {
                 ProcedureOperationModel procedureOperation = (ProcedureOperationModel)opModel;
-                if (procedureOperation.isPLSQLProcedureOperation() ||
-                    procedureOperation.isAdvancedJDBCProcedureOperation()) {
                     for (ProcedureType procType : procedureOperation.getDbStoredProcedures()) {
                         // build list of arguments to process (i.e. build descriptors for)
                         List<ArgumentType> args = getArgumentListForProcedureType(procType);
-                        boolean hasComplexArgs = hasComplexArgs(args);
                         boolean hasPLSQLArgs = hasPLSQLArgs(args);
-                        
-                        // set 'complex' flag on model to indicate complex arg processing is required
-                        // TODO: don't overwrite previously set to TRUE, as not all proc/funcs in the
-                        //       model necessarily have complex args, but we will need to know to
-                        //       process the ones that do
-                        if (!procedureOperation.hasComplexArguments) {
-                            procedureOperation.setHasComplexArguments(hasComplexArgs);
-                        }
-                        if (hasComplexArgs || hasPLSQLArgs) {
+                        if (hasComplexArgs(args) || hasPLSQLArgs) {
                             // build a query for this ProcedureType as it has one or more complex arguments
                             buildQueryForProcedureType(procType, orProject, oxProject, procedureOperation, hasPLSQLArgs);
                         }
                     }
-                }
             }
         }
         

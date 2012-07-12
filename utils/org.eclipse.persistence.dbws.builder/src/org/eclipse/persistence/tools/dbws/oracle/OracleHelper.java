@@ -233,7 +233,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                 qo.setQueryHandler(qh);
             }
 
-           String returnType = procedureOperationModel.getReturnType();
+            String returnType = procedureOperationModel.getReturnType();
             boolean isCollection = procedureOperationModel.isCollection();
             boolean isSimpleXMLFormat = procedureOperationModel.isSimpleXMLFormat();
 
@@ -267,11 +267,6 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                         result.setType(SXF_QNAME);
                     }
                 }
-            }
-            if (procedureOperationModel.getBinaryAttachment()) {
-                Attachment attachment = new Attachment();
-                attachment.setMimeType(APP_OCTET_STREAM);
-                result.setAttachment(attachment);
             }
             for (ArgumentType arg : storedProcedure.getArguments()) {
                 String argName = arg.getArgumentName();
@@ -407,6 +402,11 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                         qo.getParameters().add(parm);
                     }
                 }
+            }
+            if (procedureOperationModel.getBinaryAttachment()) {
+                Attachment attachment = new Attachment();
+                attachment.setMimeType(APP_OCTET_STREAM);
+                result.setAttachment(attachment);
             }
             // the user may want simpleXMLFormat
             handleSimpleXMLFormat(isSimpleXMLFormat, result, procedureOperationModel);
@@ -1225,7 +1225,13 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                     }
                 } else {
                     call = new StoredFunctionCall();
-                    ((StoredFunctionCall) call).setResult(null, ClassConstants.OBJECT);
+                    if (returnArg.getEnclosedType().isBlobType()) {
+                        // handle BLOBs
+                        ((StoredFunctionCall) call).setResult(null, ClassConstants.BLOB);
+                    } else {
+                        // default to OBJECT
+                        ((StoredFunctionCall) call).setResult(null, ClassConstants.OBJECT);
+                    }
                 }
             } else {
                 call = new StoredProcedureCall();
