@@ -268,14 +268,38 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implem
     		Object fieldValue = rootValue.getObject();
     		associatedField = getFieldForName(localName, namespaceUri);
     		if(associatedField == null) {
-    			associatedField = xmlChoiceCollectionMapping.getClassToFieldMappings().get(fieldValue.getClass());
+    		    Class theClass = fieldValue.getClass();
+    		    while(associatedField == null) {
+                    associatedField = xmlChoiceCollectionMapping.getClassToFieldMappings().get(theClass);
+                    if(theClass.getSuperclass() != null) {
+                        theClass = theClass.getSuperclass();
+                    } else {
+                        break;
+                    }
+    		    }
     		}
     	} else {
-    		associatedField = xmlChoiceCollectionMapping.getClassToFieldMappings().get(value.getClass());    		  
+            Class theClass = value.getClass();
+            while(associatedField == null) {
+                associatedField = xmlChoiceCollectionMapping.getClassToFieldMappings().get(theClass);
+                if(theClass.getSuperclass() != null) {
+                    theClass = theClass.getSuperclass();
+                } else {
+                    break;
+                }
+            }
     	}
     	if(associatedField == null) {
     	    //check the field associations
-    	    List<XMLField> sourceFields = xmlChoiceCollectionMapping.getClassToSourceFieldsMappings().get(value.getClass());
+    	    List<XMLField> sourceFields = null;
+    	    Class theClass = value.getClass();
+    	    while(theClass != null) {
+    	        sourceFields = xmlChoiceCollectionMapping.getClassToSourceFieldsMappings().get(theClass);
+    	        if(sourceFields != null) {
+    	            break;
+    	        }
+    	        theClass = theClass.getSuperclass();
+    	    }
     	    if(sourceFields != null) {
     	        associatedField = sourceFields.get(0);
     	    }
