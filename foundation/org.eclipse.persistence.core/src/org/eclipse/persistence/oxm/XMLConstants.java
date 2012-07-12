@@ -86,6 +86,10 @@ public class XMLConstants {
     public static final String LONG = "long";
     public static final String NAME = "Name";
     public static final String NCNAME = "NCName";
+    public static final String NEGATIVE_INTEGER = "negativeInteger";
+    public static final String NON_NEGATIVE_INTEGER = "nonNegativeInteger";
+    public static final String NON_POSITIVE_INTEGER = "nonPositiveInteger";
+    public static final String POSITIVE_INTEGER = "positiveInteger";
     public static final String NORMALIZED_STRING = "normalizedString";
     public static final String QNAME = "QName";
     public static final String QUALIFIED = "qualified";
@@ -96,6 +100,7 @@ public class XMLConstants {
     public static final String UNSIGNED_BYTE = "unsignedByte";
     public static final String UNSIGNED_INT = "unsignedInt";
     public static final String UNSIGNED_SHORT = "unsignedShort";
+    public static final String UNSIGNED_LONG = "unsignedLong";
     public static final String ANY_SIMPLE_TYPE = "anySimpleType";
     public static final String ANY_TYPE = "anyType";
     public static final String ANY_URI = "anyURI";
@@ -127,6 +132,10 @@ public class XMLConstants {
     public static final QName LONG_QNAME = new QName(SCHEMA_URL, LONG);
     public static final QName NAME_QNAME = new QName(SCHEMA_URL, NAME);
     public static final QName NCNAME_QNAME = new QName(SCHEMA_URL, NCNAME);
+    public static final QName NEGATIVE_INTEGER_QNAME = new QName(SCHEMA_URL, NEGATIVE_INTEGER);
+    public static final QName NON_NEGATIVE_INTEGER_QNAME = new QName(SCHEMA_URL, NON_NEGATIVE_INTEGER);
+    public static final QName NON_POSITIVE_INTEGER_QNAME = new QName(SCHEMA_URL, NON_POSITIVE_INTEGER);
+    public static final QName POSITIVE_INTEGER_QNAME = new QName(SCHEMA_URL, POSITIVE_INTEGER);    
     public static final QName NORMALIZEDSTRING_QNAME = new QName(SCHEMA_URL, NORMALIZED_STRING);
     public static final QName QNAME_QNAME = new QName(SCHEMA_URL, QNAME);
     public static final QName SHORT_QNAME = new QName(SCHEMA_URL, SHORT);
@@ -134,6 +143,7 @@ public class XMLConstants {
     public static final QName UNSIGNED_BYTE_QNAME = new QName(SCHEMA_URL, UNSIGNED_BYTE);
     public static final QName UNSIGNED_INT_QNAME = new QName(SCHEMA_URL, UNSIGNED_INT);
     public static final QName UNSIGNED_SHORT_QNAME = new QName(SCHEMA_URL, UNSIGNED_SHORT);
+    public static final QName UNSIGNED_LONG_QNAME = new QName(SCHEMA_URL, UNSIGNED_LONG);
     public static final QName SWA_REF_QNAME = new QName(REF_URL, SWA_REF);
     public static final QName EXPECTED_CONTENT_TYPES_QNAME = new QName(XML_MIME_URL, EXPECTED_CONTENT_TYPES);
 

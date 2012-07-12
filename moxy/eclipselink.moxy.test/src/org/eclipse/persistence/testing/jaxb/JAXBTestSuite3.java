@@ -84,6 +84,9 @@ public class JAXBTestSuite3 extends TestCase {
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlaccessortype.none.NoneTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlaccessortype.FieldAndPropertyTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlvirtualaccessmethods.XmlVirtualAccessMethodsTestCases.class);
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlschematype.XmlSchemaTypeDateTestCases.class);
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlschematype.XmlSchemaTypeTwoDatesTestCases.class);
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlschematype.NonNegativeIntegerSchemaTypeTestCases.class);
         suite.addTest(RefreshTestSuite.suite());
         
         suite.addTestSuite(JAXBContextByClassArrayWithIndexTestCases.class);
