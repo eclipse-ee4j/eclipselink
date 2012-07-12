@@ -412,11 +412,11 @@ public class JSONWriterRecord extends MarshalRecord {
          if(mimeType != null) {
              value = XMLBinaryDataHelper.getXMLBinaryDataHelper().getBytesForBinaryValue(//
                      value, marshaller, mimeType).getData();
-         }
+         }         
          if(schemaType != null && XMLConstants.QNAME_QNAME.equals(schemaType)){
              String convertedValue = getStringForQName((QName)value);
              characters((String)convertedValue);
-         } else if(value.getClass() == String.class){
+         } else if(value.getClass() == String.class){        	
              //if schemaType is set and it's a numeric or boolean type don't treat as a string
              if(schemaType != null && isNumericOrBooleanType(schemaType)){
                  String convertedValue = ((String) ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, ClassConstants.STRING, schemaType));
@@ -428,7 +428,9 @@ public class JSONWriterRecord extends MarshalRecord {
              }
         }else{
             String convertedValue = ((String) ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, ClassConstants.STRING, schemaType));
-            if(schemaType == null){
+            Class theClass = (Class) ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).getDefaultXMLTypes().get(schemaType);        	
+
+            if(schemaType == null || theClass == null){
                 if(value.getClass() == ClassConstants.BOOLEAN || ClassConstants.NUMBER.isAssignableFrom(value.getClass())){
                 	characters(convertedValue, false, isAttribute);
                 }else{
@@ -455,10 +457,20 @@ public class JSONWriterRecord extends MarshalRecord {
          }else if(schemaType.equals(XMLConstants.BOOLEAN_QNAME)
                  || schemaType.equals(XMLConstants.INTEGER_QNAME)
                  || schemaType.equals(XMLConstants.INT_QNAME)
+                 || schemaType.equals(XMLConstants.BYTE_QNAME)
                  || schemaType.equals(XMLConstants.DECIMAL_QNAME)
                  || schemaType.equals(XMLConstants.FLOAT_QNAME)
                  || schemaType.equals(XMLConstants.DOUBLE_QNAME)
                  || schemaType.equals(XMLConstants.SHORT_QNAME)
+                 || schemaType.equals(XMLConstants.LONG_QNAME)
+                 || schemaType.equals(XMLConstants.NEGATIVE_INTEGER_QNAME)
+                 || schemaType.equals(XMLConstants.NON_NEGATIVE_INTEGER_QNAME)
+                 || schemaType.equals(XMLConstants.NON_POSITIVE_INTEGER_QNAME)
+                 || schemaType.equals(XMLConstants.POSITIVE_INTEGER_QNAME)
+                 || schemaType.equals(XMLConstants.UNSIGNED_BYTE_QNAME)
+                 || schemaType.equals(XMLConstants.UNSIGNED_INT_QNAME)
+                 || schemaType.equals(XMLConstants.UNSIGNED_LONG_QNAME)
+                 || schemaType.equals(XMLConstants.UNSIGNED_SHORT_QNAME)                 
          ){
              return true;
          }

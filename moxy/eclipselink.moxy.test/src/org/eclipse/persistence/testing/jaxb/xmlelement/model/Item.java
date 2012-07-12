@@ -22,7 +22,7 @@ import org.eclipse.persistence.oxm.annotations.XmlPath;
 
 public class Item {
 
-   @XmlSchemaType(name="String")
+   @XmlSchemaType(name="string")
    private int id;
    private String[] description;
    @XmlPath(value="money/cost/text()")
