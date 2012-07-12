@@ -121,10 +121,27 @@ public class XMLChoiceObjectMappingNodeValue extends NodeValue implements NullCa
             if(valueClass == null) {
                 valueClass = value.getClass();
             }
-            if (xmlChoiceMapping.getClassToFieldMappings().get(valueClass) == this.xmlField) {
+            XMLField fieldForClass = null;
+            Class theClass = valueClass;
+            while(theClass != null) {
+                fieldForClass = xmlChoiceMapping.getClassToFieldMappings().get(valueClass);
+                if(fieldForClass != null) {
+                    break;
+                }
+                theClass = theClass.getSuperclass();
+            }
+            if (fieldForClass == this.xmlField) {
                 return this.choiceElementNodeValue.marshalSingleValue(xPathFragment, marshalRecord, object, value, session, namespaceResolver, marshalContext);
             }
-            List<XMLField> sourceFields = xmlChoiceMapping.getClassToSourceFieldsMappings().get(valueClass);
+            List<XMLField> sourceFields = null;
+            theClass = valueClass;
+            while(theClass != null) {
+                sourceFields = xmlChoiceMapping.getClassToSourceFieldsMappings().get(theClass);
+                if(sourceFields != null) {
+                    break;
+                }
+                theClass = theClass.getSuperclass();
+            }
             if (sourceFields != null && sourceFields.contains(this.xmlField)) {
                 return this.choiceElementNodeValue.marshalSingleValue(xPathFragment, marshalRecord, object, value, session, namespaceResolver, marshalContext);
             }

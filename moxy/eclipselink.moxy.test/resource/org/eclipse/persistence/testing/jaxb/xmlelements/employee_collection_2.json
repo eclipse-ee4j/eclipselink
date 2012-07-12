@@ -1,0 +1,12 @@
+{"employee-data":{
+   "id":10,
+   "integer":[12,5],
+   "string":["String Value"],
+   "address":[{
+      "type":"canadian-address",
+      "street":"123 Fake Street",
+      "city":"Ottawa",
+      "postalCode":"A1A 1A1"
+   }]
+   }
+}

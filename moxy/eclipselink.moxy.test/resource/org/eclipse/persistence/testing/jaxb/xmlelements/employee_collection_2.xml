@@ -1,0 +1,12 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<employee-data>
+  <id>10</id>
+  <integer>12</integer>
+  <string>String Value</string>
+  <address xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="canadian-address">
+    <street>123 Fake Street</street>
+    <city>Ottawa</city>
+    <postalCode>A1A 1A1</postalCode>
+  </address>
+  <integer>5</integer>
+</employee-data>
