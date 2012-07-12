@@ -750,7 +750,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
                                 if (qnameLength > 0) {
                                     int idx = qname.indexOf(XMLConstants.COLON);
                                     if (idx > 0) {
-                                        attLocalName = qname.substring(idx + 1, qname.length());
+                                        attLocalName = qname.substring(idx + 1, qnameLength);
                                         String attPrefix = qname.substring(0, idx);
                                         if (attPrefix.equals(XMLConstants.XMLNS)) {
                                             attNamespace = XMLConstants.XMLNS_URL;
