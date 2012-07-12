@@ -25,6 +25,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 //testing imports
 import dbws.testing.advancedjdbcpackage.AdvancedJDBCPackageTestSuite;
+import dbws.testing.blobtype.BlobTypeTestSuite;
 import dbws.testing.complexplsqlsf.ComplexPLSQLSFTestSuite;
 import dbws.testing.complexplsqlsp.ComplexPLSQLSPTestSuite;
 import dbws.testing.customsql.CustomSQLTestSuite;
@@ -62,6 +63,7 @@ import static dbws.testing.DBWSTestSuite.buildConnection;
 @RunWith(Suite.class)
 @SuiteClasses({
     AdvancedJDBCPackageTestSuite.class,
+    //BlobTypeTestSuite.class,
     ComplexPLSQLSFTestSuite.class,
     ComplexPLSQLSPTestSuite.class,
     CustomSQLTestSuite.class,

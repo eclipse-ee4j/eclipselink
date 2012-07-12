@@ -620,6 +620,7 @@ public class Util {
                 || (dbType.isPLSQLCursorType() && !((PLSQLCursorType)dbType).isWeaklyTyped())
                 || dbType.isVArrayType()
                 || dbType.isObjectType()
+                || dbType.isBlobType()
                 || dbType.isObjectTableType();
     }
     

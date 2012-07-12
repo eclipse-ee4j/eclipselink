@@ -17,6 +17,7 @@ package org.eclipse.persistence.internal.xr;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Blob;
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -37,6 +38,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.DBWSException;
 import org.eclipse.persistence.internal.descriptors.InstantiationPolicy;
+import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
@@ -335,54 +337,57 @@ public class QueryOperation extends Operation {
         if (value != null) {
             if (isSimpleXMLFormat()) {
                 value = createSimpleXMLFormat(xrService, value);
-            }
-            else {
+            } else {
                 QName resultType = getResultType();
                 if (resultType != null) {
-	                // handle binary content
-	                if (isAttachment() ||
-	                    (!isCollection() && resultType.equals(BASE_64_BINARY_QNAME))) {
-	                    String mimeType = DEFAULT_ATTACHMENT_MIMETYPE;
-	                    if (isAttachment() && result.getAttachment().getMimeType() != null) {
-	                        mimeType = result.getAttachment().getMimeType();
-	                    }
-	                    return AttachmentHelper.buildAttachmentHandler((byte[])value, mimeType);
-	                }
-                	if (resultType.getNamespaceURI().equals(W3C_XML_SCHEMA_NS_URI)) {
+                    // handle binary content
+                    if (isAttachment() ||
+                        (!isCollection() && resultType.equals(BASE_64_BINARY_QNAME))) {
+                        String mimeType = DEFAULT_ATTACHMENT_MIMETYPE;
+                        if (isAttachment() && result.getAttachment().getMimeType() != null) {
+                            mimeType = result.getAttachment().getMimeType();
+                        }
+                        // handle BLOB types
+                        if (value instanceof Blob) {
+                            value = ((XMLConversionManager) xrService.getOXSession().
+                                    getDatasourcePlatform().getConversionManager()).
+                                    convertObject((Blob) value, ClassConstants.APBYTE);
+                        }
+                        return AttachmentHelper.buildAttachmentHandler((byte[])value, mimeType);
+                    }
+                    if (resultType.getNamespaceURI().equals(W3C_XML_SCHEMA_NS_URI)) {
                         // handle primitive types
                         ValueObject vo = new ValueObject();
                         vo.value = value;
                         value = vo;
-                	}
-                	else {
-                		Object targetObject = value;
-                		if (xrService.descriptorsByQName.containsKey(resultType)) {
-                			XMLDescriptor xdesc = xrService.descriptorsByQName.get(resultType);
-                    		ClassDescriptor desc = xrService.getORSession().getDescriptorForAlias(
-                    			xdesc.getAlias());
-                    		if (desc.isAggregateDescriptor() && !desc.isObjectRelationalDataTypeDescriptor()) {
-                    			if (isCollection()) {
-                        			XRDynamicEntity_CollectionWrapper xrCollWrapper =
-                        				new XRDynamicEntity_CollectionWrapper();
-                        			Vector<AbstractRecord> results = (Vector<AbstractRecord>)value;
-                        			for (int i = 0, len = results.size(); i < len; i++) {
-                        				Object o = desc.getObjectBuilder().buildNewInstance();
-                            			populateTargetObjectFromRecord(desc.getMappings(),
-                            				results.get(i), o, (AbstractSession)xrService.getORSession());
-                            			xrCollWrapper.add(o);
-                        			}
-                        			targetObject = xrCollWrapper;
-                        		}
-                        		else {
-                        			targetObject = desc.getObjectBuilder().buildNewInstance();
-                        			populateTargetObjectFromRecord(desc.getMappings(),
-                        				(AbstractRecord)((Vector)value).get(0), targetObject,
-                        					(AbstractSession)xrService.getORSession());
-                        		}
-                    		}
-                		}
-            			value = targetObject;
-                	}
+                    } else {
+                        Object targetObject = value;
+                        if (xrService.descriptorsByQName.containsKey(resultType)) {
+                            XMLDescriptor xdesc = xrService.descriptorsByQName.get(resultType);
+                            ClassDescriptor desc = xrService.getORSession().getDescriptorForAlias(
+                                    xdesc.getAlias());
+                            if (desc.isAggregateDescriptor() && !desc.isObjectRelationalDataTypeDescriptor()) {
+                                if (isCollection()) {
+                                    XRDynamicEntity_CollectionWrapper xrCollWrapper =
+                                            new XRDynamicEntity_CollectionWrapper();
+                                    Vector<AbstractRecord> results = (Vector<AbstractRecord>)value;
+                                    for (int i = 0, len = results.size(); i < len; i++) {
+                                        Object o = desc.getObjectBuilder().buildNewInstance();
+                                        populateTargetObjectFromRecord(desc.getMappings(),
+                                                results.get(i), o, (AbstractSession)xrService.getORSession());
+                                        xrCollWrapper.add(o);
+                                    }
+                                    targetObject = xrCollWrapper;
+                                } else {
+                                    targetObject = desc.getObjectBuilder().buildNewInstance();
+                                    populateTargetObjectFromRecord(desc.getMappings(),
+                                            (AbstractRecord)((Vector)value).get(0), targetObject,
+                                            (AbstractSession)xrService.getORSession());
+                                }
+                            }
+                        }
+                        value = targetObject;
+                    }
                 }
             }
         }
@@ -390,10 +395,10 @@ public class QueryOperation extends Operation {
     }
 
     protected void populateTargetObjectFromRecord(Vector<DatabaseMapping> mappings,
-    	AbstractRecord record, Object targetObject, AbstractSession session) {
-		for (DatabaseMapping dm : mappings) {
-			dm.readFromRowIntoObject(record, null, targetObject, null, null, session, true);
-		}
+        AbstractRecord record, Object targetObject, AbstractSession session) {
+        for (DatabaseMapping dm : mappings) {
+            dm.readFromRowIntoObject(record, null, targetObject, null, null, session, true);
+        }
     }
 
     public Object createSimpleXMLFormat(XRServiceAdapter xrService, Object value) {
@@ -437,16 +442,16 @@ public class QueryOperation extends Operation {
                         Date dValue = (Date)fieldValue;
                         fieldValue = conversionManager.convertObject(dValue, STRING,
                           DATE_QNAME);
-                    }
-                    else if (fieldValue instanceof Time) {
+                    } else if (fieldValue instanceof Time) {
                         Time tValue = (Time)fieldValue;
                         fieldValue = conversionManager.convertObject(tValue, STRING,
                           TIME_QNAME);
-                    }
-                    else if (fieldValue instanceof Timestamp) {
+                    } else if (fieldValue instanceof Timestamp) {
                         Timestamp tsValue = (Timestamp)fieldValue;
                         fieldValue = conversionManager.convertObject(tsValue, STRING,
                           DATE_TIME_QNAME);
+                    } else if (fieldValue instanceof Blob) {
+                        fieldValue = conversionManager.convertObject((Blob) fieldValue, ClassConstants.APBYTE);
                     }
                     String elementName = sqlToXmlName(field.getName());
                     Element columnElement = TEMP_DOC.createElement(elementName);
