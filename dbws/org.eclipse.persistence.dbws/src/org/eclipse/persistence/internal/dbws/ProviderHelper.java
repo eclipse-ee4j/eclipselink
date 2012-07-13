@@ -105,7 +105,7 @@ import static org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy.
  *          +---classes
  *          |   +---META-INF
  *          |   |    eclipselink-dbws.xml
- *          |   |    eclipselink-dbws-sessions.xml -- name can be overriden by <sessions-file> entry in eclipselink-dbws.xml
+ *          |   |    eclipselink-dbws-sessions.xml -- name can be overridden by <sessions-file> entry in eclipselink-dbws.xml
  *          |   |    eclipselink-dbws-or.xml
  *          |   |    eclipselink-dbws-ox.xml
  *          |   |
@@ -119,7 +119,7 @@ import static org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy.
  *          |             Employee.class
  *          |             PhoneNumber.class
  *          \---wsdl
- *                 swaref.xsd                  -- optional to handle attachements
+ *                 swaref.xsd                  -- optional to handle attachments
  *                 eclipselink-dbws.wsdl
  *                 eclipselink-dbws-schema.xsd
  * </pre>
@@ -683,14 +683,13 @@ public class ProviderHelper extends XRServiceFactory {
     }
 
     public static SOAPElement getSOAPBodyElement(SOAPEnvelope envelope) throws SOAPException {
-        NodeList nodes = envelope.getBody().getChildNodes();
-        for (int i = 0; i < nodes.getLength(); i++) {
-            Node node = nodes.item(i);
+        for (@SuppressWarnings("rawtypes")
+        Iterator it = envelope.getBody().getChildElements(); it.hasNext();) {
+            Object node = it.next();
             if (node instanceof SOAPBodyElement) {
-                return (SOAPElement)node;
+                return (SOAPElement) node;
             }
         }
         return null;
-    }
-
+    }   
 }
