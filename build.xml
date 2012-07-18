@@ -525,9 +525,6 @@
             <fileset
                 dir="${eclipselink.util.jaxb}/${classes.dir}"
                 includes="**/*.class,"/>
-            <fileset
-                dir="${eclipselink.util.jaxb}/${resource.dir}"
-                includes="**/*.*,"/>
         </jar>
     </target>
 
