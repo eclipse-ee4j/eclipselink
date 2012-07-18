@@ -371,6 +371,7 @@
         </copy>
         <!-- temporarily force dbws.builder build from ant -->
         <ant antfile="antbuild.xml" dir="${eclipselink.dbws.builder}"           target="build"/>
+        <!-- build rest of core -->
         <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle}"       target="repackage"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle.nosql}" target="repackage"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.modelgen}"               target="build"/>
@@ -663,9 +664,6 @@
             <fileset
                 dir="${eclipselink.util.jaxb}/${classes.dir}"
                 includes="**/*.class,"/>
-            <fileset
-                dir="${eclipselink.util.jaxb}/${resource.dir}"
-                includes="**/*.*,"/>
         </jar>
     </target>
 
