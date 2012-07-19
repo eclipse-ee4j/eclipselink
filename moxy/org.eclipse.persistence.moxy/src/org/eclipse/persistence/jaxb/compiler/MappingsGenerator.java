@@ -1299,6 +1299,10 @@ public class MappingsGenerator {
             mapping.setNullValue(property.getDefaultValue());
         }
 
+        if (property.isXmlId()) {
+            mapping.setCollapsingStringValues(true);
+        }
+
         // handle null policy set via xml metadata
         if (property.isSetNullPolicy()) {
             mapping.setNullPolicy(getNullPolicyFromProperty(property, namespaceInfo.getNamespaceResolverForDescriptor()));
