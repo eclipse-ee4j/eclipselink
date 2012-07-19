@@ -358,7 +358,7 @@ public class PersistenceContext {
             if (mapping == null){
                 return null;
             }
-            return mapping.getAttributeValueFromObject(object);
+            return mapping.getRealAttributeValueFromAttribute(mapping.getAttributeValueFromObject(object), object, getJpaSession());
         } finally {
             em.close();
         }
