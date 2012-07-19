@@ -2,10 +2,10 @@
 <web-fragment xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.0" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-fragment_3_0.xsd">
   <servlet>
     <servlet-name>JPA-RS Service</servlet-name>
-    <servlet-class>org.eclipse.persistence.jpa.rs.jersey.PortableServletContainer</servlet-class>
+    <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
     <init-param>
-      <param-name>jersey1#javax.ws.rs.Application</param-name>
-      <param-value>org.eclipse.persistence.jpa.rs.jersey.Jersey1ResourceConfig</param-value>
+      <param-name> com.sun.jersey.config.property.resourceConfigClass</param-name>
+      <param-value>org.eclipse.persistence.jpa.rs.JparsResourceConfig</param-value>
     </init-param>
     <load-on-startup>1</load-on-startup>
   </servlet>
