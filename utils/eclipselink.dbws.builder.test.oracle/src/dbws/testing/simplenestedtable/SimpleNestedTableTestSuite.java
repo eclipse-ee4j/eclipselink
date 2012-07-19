@@ -46,6 +46,42 @@ import dbws.testing.DBWSTestSuite;
  */
 public class SimpleNestedTableTestSuite extends DBWSTestSuite {
 
+    static final String CREATE_NUMBER_TABLE =
+	    "CREATE OR REPLACE TYPE NUMTAB IS TABLE OF NUMBER";
+	
+    static final String CREATE_NUMBER_WRAPPER =
+	    "CREATE OR REPLACE TYPE WRAPPER_NUMTAB AS OBJECT (" +
+            "\nNUMBTABLIST NUMTAB" +
+	    "\n);";
+
+    static final String CREATE_TEST_NUMBER_PACKAGE =
+	    "CREATE OR REPLACE PACKAGE TEST_NUMBER_LIST_PKG AS" +
+	        "\nFUNCTION TEST_NUM RETURN WRAPPER_NUMTAB;" +
+	    "\nEND TEST_NUMBER_LIST_PKG;";
+
+    static final String CREATE_TEST_NUMBER_PACKAGE_BODY =
+	    "CREATE OR REPLACE PACKAGE BODY TEST_NUMBER_LIST_PKG AS" +
+	        "\nFUNCTION TEST_NUM RETURN WRAPPER_NUMTAB IS" +
+            "\nL_WRAPPER_NUMTAB WRAPPER_NUMTAB;" +
+            "\nL_NUMTAB NUMTAB;" +
+            "\nBEGIN" +
+                "\nL_NUMTAB := NUMTAB();" +
+                "\nL_NUMTAB.EXTEND(1);" +
+                "\nL_NUMTAB(1) := 115;" +
+                "\nL_WRAPPER_NUMTAB := WRAPPER_NUMTAB(L_NUMTAB);" +
+                "\nRETURN L_WRAPPER_NUMTAB;" +
+            "\nEND;" +
+	    "\nEND TEST_NUMBER_LIST_PKG;";
+	
+    static final String DROP_TEST_NUMBER_BODY =
+        "DROP PACKAGE BODY TEST_NUMBER_LIST_PKG";
+    static final String DROP_TEST_NUMBER_PACKAGE =
+        "DROP PACKAGE TEST_NUMBER_LIST_PKG";
+    static final String DROP_NUMBER_WRAPPER_TYPE =
+        "DROP TYPE WRAPPER_NUMTAB";
+    static final String DROP_NUMTAB_TYPE =
+        "DROP TYPE NUMTAB";
+    
     static final String CREATE_USERS_TABLE =
         "CREATE TABLE USERS_TABLE(" +
             "\nU_ID VARCHAR2(8)," +
@@ -122,6 +158,10 @@ public class SimpleNestedTableTestSuite extends DBWSTestSuite {
             ddlDebug = true;
         }
         if (ddlCreate) {
+            runDdl(conn, CREATE_NUMBER_TABLE, ddlDebug);
+            runDdl(conn, CREATE_NUMBER_WRAPPER, ddlDebug);
+            runDdl(conn, CREATE_TEST_NUMBER_PACKAGE, ddlDebug);
+            runDdl(conn, CREATE_TEST_NUMBER_PACKAGE_BODY, ddlDebug);
             runDdl(conn, CREATE_USERS_TABLE, ddlDebug);
             runDdl(conn, CREATE_USERS_ID_LIST_TYPE, ddlDebug);
             runDdl(conn, CREATE_USERS_PKG, ddlDebug);
@@ -160,6 +200,12 @@ public class SimpleNestedTableTestSuite extends DBWSTestSuite {
                  "catalogPattern=\"USERS_PKG\" " +
                  "procedurePattern=\"GET_USERS_NAME_TEST\" " +
               "/>" +
+              "<plsql-procedure " +
+                 "name=\"NumberTableTest\" " +
+                 "catalogPattern=\"TEST_NUMBER_LIST_PKG\" " +
+                 "procedurePattern=\"TEST_NUM\" " +
+                 //"returnType=\"wrapper_numtabType\" " +
+              "/>" +
             "</dbws-builder>";
           builder = new DBWSBuilder();
           OracleHelper builderHelper = new OracleHelper(builder);
@@ -174,6 +220,11 @@ public class SimpleNestedTableTestSuite extends DBWSTestSuite {
             runDdl(conn, DROP_USERS_PKG, ddlDebug);
             runDdl(conn, DROP_USERS_ID_LIST_TYPE, ddlDebug);
             runDdl(conn, DROP_USERS_TABLE, ddlDebug);
+
+            runDdl(conn, DROP_TEST_NUMBER_BODY, ddlDebug);
+            runDdl(conn, DROP_TEST_NUMBER_PACKAGE, ddlDebug);
+            runDdl(conn, DROP_NUMBER_WRAPPER_TYPE, ddlDebug);
+            runDdl(conn, DROP_NUMTAB_TYPE, ddlDebug);
         }
     }
 
@@ -202,4 +253,22 @@ public class SimpleNestedTableTestSuite extends DBWSTestSuite {
     public static final String OUTPUT_USERS_LIST_XML =
         STANDALONE_XML_HEADER +
         "<value>Bubbles, Lahey, Julian</value>";
+
+    @Test
+    public void testNumberTable() {
+        Invocation invocation = new Invocation("NumberTableTest");
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(NUMBERS_XML));
+        assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+    }
+    public static final String NUMBERS_XML =
+        STANDALONE_XML_HEADER +
+        "<wrapper_numtabType xmlns=\"urn:SimpleNestedTableTest\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+          "<numbtablist>115</numbtablist>" +
+        "</wrapper_numtabType>";
 }

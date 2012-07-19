@@ -49,7 +49,6 @@ import org.eclipse.persistence.internal.xr.QueryOperation;
 import org.eclipse.persistence.internal.xr.Result;
 import org.eclipse.persistence.internal.xr.StoredFunctionQueryHandler;
 import org.eclipse.persistence.internal.xr.StoredProcedureQueryHandler;
-import org.eclipse.persistence.mappings.DirectCollectionMapping;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.mappings.structures.ArrayMapping;
 import org.eclipse.persistence.mappings.structures.ObjectArrayMapping;
@@ -779,11 +778,15 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                             buildAndAddXMLCompositeDirectCollectionMapping(xdesc, lFieldName, lFieldName + SLASH + ITEM_MAPPING_NAME + SLASH + TEXT, getAttributeClassForDatabaseType(fType.getEnclosedType()));
                         }
                     } else if (fType.getEnclosedType().isObjectTableType()) {
-                        // assumes ObjectTableType has an enclosed ObjectType type
-                        String nestedTypeAlias = ((ObjectTableType) fType.getEnclosedType()).getEnclosedType().getTypeName().toLowerCase();
-                        String nestedTypeName = getGeneratedJavaClassName(nestedTypeAlias, dbwsBuilder.getProjectName());
-                        // ObjectType is composite
-                        buildAndAddXMLCompositeCollectionMapping(xdesc, lFieldName, lFieldName + SLASH + ITEM_MAPPING_NAME, nestedTypeName);
+                    	ObjectTableType nestedType = (ObjectTableType) fType.getEnclosedType();
+                    	if (nestedType.getEnclosedType().isComposite()) {
+	                        String nestedTypeAlias = nestedType.getEnclosedType().getTypeName().toLowerCase();
+	                        String nestedTypeName = getGeneratedJavaClassName(nestedTypeAlias, dbwsBuilder.getProjectName());
+	                        // ObjectType is composite
+	                        buildAndAddXMLCompositeCollectionMapping(xdesc, lFieldName, lFieldName + SLASH + ITEM_MAPPING_NAME, nestedTypeName);
+                    	} else {
+                            buildAndAddXMLCompositeDirectCollectionMapping(xdesc, lFieldName, lFieldName + SLASH + TEXT, getAttributeClassForDatabaseType(nestedType));
+                    	}
                     }
                 } else {
                     // direct mapping
@@ -844,12 +847,16 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                             buildAndAddArrayMapping(ordtDesc, lFieldName, fieldName, getStructureNameForField(fType, null));
                         }
                     } else if (fType.getEnclosedType().isObjectTableType()) {
-                        // assumes ObjectTableType has an enclosed ObjectType type
-                        ObjectType nestedType = (ObjectType)((ObjectTableType) fType.getEnclosedType()).getEnclosedType();
-                        String nestedTypeAlias = nestedType.getTypeName().toLowerCase();
-                        String nestedTypeName = getGeneratedJavaClassName(nestedTypeAlias, dbwsBuilder.getProjectName());
-                        // ObjectType is composite
-                        buildAndAddObjectArrayMapping(ordtDesc, lFieldName, fieldName, nestedTypeName, nestedTypeAlias.toUpperCase());
+                    	ObjectTableType nestedType = (ObjectTableType) fType.getEnclosedType();
+                    	if (nestedType.getEnclosedType().isComposite()) {
+                    		ObjectType oType = (ObjectType) nestedType.getEnclosedType();
+	                        String oTypeAlias = oType.getTypeName().toLowerCase();
+	                        String oTypeName = getGeneratedJavaClassName(oTypeAlias, dbwsBuilder.getProjectName());
+	                        // ObjectType is composite
+	                        buildAndAddObjectArrayMapping(ordtDesc, lFieldName, fieldName, oTypeName, oTypeAlias.toUpperCase());
+                    	} else {
+                            buildAndAddArrayMapping(ordtDesc, lFieldName, fieldName, nestedType.getTypeName().toUpperCase());
+                    	}
                     }
                 } else {
                     // direct mapping
@@ -1026,10 +1033,14 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                             // make sure the descriptor is built for the enclosed ObjectType
                             addToOXProjectForObjectTableTypeArg(field.getEnclosedType(), oxProject, targetTypeName2, alias);
                         }
-                        // assumes ObjectTableType has an enclosed ObjectType type
-                        String nestedTypeAlias = ((ObjectTableType) field.getEnclosedType()).getEnclosedType().getTypeName().toLowerCase();
-                        String nestedTypeName = getGeneratedJavaClassName(nestedTypeAlias, dbwsBuilder.getProjectName());
-                        buildAndAddXMLCompositeCollectionMapping(xdesc, lFieldName, lFieldName + SLASH + ITEM_MAPPING_NAME, nestedTypeName);
+                        ObjectTableType tableType = (ObjectTableType) field.getEnclosedType();
+                        if (tableType.getEnclosedType().isComposite()) {
+	                        String nestedTypeAlias = ((ObjectTableType) field.getEnclosedType()).getEnclosedType().getTypeName().toLowerCase();
+	                        String nestedTypeName = getGeneratedJavaClassName(nestedTypeAlias, dbwsBuilder.getProjectName());
+	                        buildAndAddXMLCompositeCollectionMapping(xdesc, lFieldName, lFieldName + SLASH + ITEM_MAPPING_NAME, nestedTypeName);
+                        } else {
+                            buildAndAddXMLCompositeDirectCollectionMapping(xdesc, lFieldName, lFieldName + SLASH + TEXT, getAttributeClassForDatabaseType(tableType));
+                        }
                     }
                 } else {
                     // direct mapping
@@ -1096,17 +1107,20 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                         }
                         buildAndAddArrayMapping(ordt, lFieldName, fieldName, getStructureNameForField(fType, null));
                     } else if (fType.getEnclosedType().isObjectTableType()) {
-                        // assumes ObjectTableType has an enclosed ObjectType type
                         if (buildDescriptor) {
                             // need to update the java class name on the descriptor to include package (project) name
                             ordt2.setJavaClassName(getGeneratedJavaClassName(alias, dbwsBuilder.getProjectName()));
                             // make sure the descriptor is built for the enclosed ObjectType
                             addToORProjectForObjectTableTypeArg(fType.getEnclosedType(), orProject, targetTypeName2, alias);
                         }
-                        ObjectType nestedType = (ObjectType)((ObjectTableType) fType.getEnclosedType()).getEnclosedType();
-                        String nestedTypeAlias = nestedType.getTypeName().toLowerCase();
-                        String nestedTypeName = getGeneratedJavaClassName(nestedTypeAlias, dbwsBuilder.getProjectName());
-                        buildAndAddObjectArrayMapping(ordt, lFieldName, fieldName, nestedTypeName, nestedTypeAlias.toUpperCase());
+                        if (((ObjectTableType) fType.getEnclosedType()).getEnclosedType().isComposite()) {
+	                        ObjectType nestedType = (ObjectType)((ObjectTableType) fType.getEnclosedType()).getEnclosedType();
+	                        String nestedTypeAlias = nestedType.getTypeName().toLowerCase();
+	                        String nestedTypeName = getGeneratedJavaClassName(nestedTypeAlias, dbwsBuilder.getProjectName());
+	                        buildAndAddObjectArrayMapping(ordt, lFieldName, fieldName, nestedTypeName, nestedTypeAlias.toUpperCase());
+                        } else {
+                            buildAndAddArrayMapping(ordt, lFieldName, fieldName, alias.toUpperCase());
+                        }
                     }
                 } else {
                     // direct mapping
