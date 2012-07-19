@@ -635,7 +635,7 @@ public class TestService {
         }
         String resultString = outputStream.toString();
         
-        assertTrue("Incorrect result", resultString.contains("[{\"value\":\"" + count.toString() + "\"}]"));
+        assertTrue("Incorrect result", resultString.contains("[{\"value\":" + count.toString() + "}]"));
         clearData();
     }
     
