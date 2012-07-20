@@ -38,6 +38,7 @@ import org.eclipse.persistence.testing.jaxb.xmlenum.XmlEnumRootElemTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlidref.XmlIdRefTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlidref.inheritance.XmlIdRefInheritanceTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlidref.object.XmlIdRefObjectTestCases;
+import org.eclipse.persistence.testing.jaxb.xmlidref.object.XmlIdRefObjectWhitespaceTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlidref.xmlelements.XmlElementsIdRefTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlidref.xmlelements.XmlElementsSingleIdRefTestCases;
 import org.eclipse.persistence.testing.jaxb.xmlidrefs.XmlIdRefsTestCases;
@@ -52,12 +53,13 @@ public class JAXBTestSuite2 extends TestCase {
 
     public static Test suite() {
         TestSuite suite = new TestSuite("JAXB20 Compiler Test Suite2");
-		
+
         // jaxb-mats bug due to time/timestamp changes to TopLink after 070609
         // suite.addTestSuite(XmlSchemaTypeDateTestCases.class);
         // suite.addTestSuite(XmlSchemaTypeTwoDatesTestCases.class);
         suite.addTestSuite(XmlIdRefTestCases.class);
         suite.addTestSuite(XmlIdRefObjectTestCases.class);
+        suite.addTestSuite(XmlIdRefObjectWhitespaceTestCases.class);
         suite.addTestSuite(XmlIdRefInheritanceTestCases.class);
         suite.addTestSuite(XmlIdRefsTestCases.class);
         suite.addTestSuite(XmlIdRefsObjectTestCases.class);
