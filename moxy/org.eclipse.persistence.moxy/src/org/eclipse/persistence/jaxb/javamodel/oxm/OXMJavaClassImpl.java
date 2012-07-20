@@ -424,11 +424,11 @@ public class OXMJavaClassImpl implements JavaClass {
      * @return <code>JavaClass</code> representing the super class of this <code>JavaClass</code>.
      */
     public JavaClass getSuperclass() {
+        if (this.javaModel == null) {
+            return null;
+        }
         if (this.javaType != null) {
             if (!(this.javaType.getSuperType().equals(XMLProcessor.DEFAULT))) {
-                if (javaModel != null) {
-                    return this.javaModel.getClass(javaType.getSuperType());
-                }
                 return this.javaModel.getClass(javaType.getSuperType());
             }
         }
