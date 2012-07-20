@@ -341,6 +341,9 @@
             name="dbws.testing.inlinebinary.InlineBinaryTestSuite"
           />
           <test
+            name="dbws.testing.invalidinput.InvalidInputTestSuite"
+          />
+          <test
             name="dbws.testing.loglevelvalidation.LogLevelValidationTestSuite"
           />
           <test

@@ -326,6 +326,11 @@
           <test
             name="dbws.testing.advancedjdbcpackage.AdvancedJDBCPackageTestSuite"
           />
+		  <!--
+          <test
+            name="dbws.testing.blobtype.BlobTypeTestSuite"
+          />
+		  -->
           <test
             name="dbws.testing.complexplsqlsf.ComplexPLSQLSFTestSuite"
           />
@@ -335,14 +340,26 @@
           <test
             name="dbws.testing.customsql.CustomSQLTestSuite"
           />
-          <test
+		  <test
+            name="dbws.testing.invalidinput.InvalidInputTestSuite"
+          />
+		  <test
+            name="dbws.testing.invalidpackage.InvalidPackageTestSuite"
+          />
+		  <test
             name="dbws.testing.iottype.IOTTypeTestSuite"
+          />
+          <test
+            name="dbws.testing.nonassociativeplsql.NonAssociativePLSQLCollectionTestSuite"
           />
           <test
             name="dbws.testing.objecttabletype.ObjectTableTypeTestSuite"
           />
           <test
             name="dbws.testing.objecttype.ObjectTypeTestSuite"
+          />
+          <test
+            name="dbws.testing.optionalarguments.OptionalArgumentTestSuite"
           />
           <test
             name="dbws.testing.ordescriptor.ORDescriptorTestSuite"
@@ -356,8 +373,23 @@
           <test
             name="dbws.testing.plsqlrecord.PLSQLRecordTestSuite"
           />
+		  <test
+            name="dbws.testing.prependedpackage.PrependedPackageTestSuite"
+          />
+		  <test
+            name="dbws.testing.prependedschema.PrependedSchemaTestSuite"
+          />
+		  <test
+            name="dbws.testing.rowtype.RowTypeTestSuite"
+          />
           <test
             name="dbws.testing.secondarysql.SecondarySQLTestSuite"
+          />
+          <test
+            name="dbws.testing.shadowddlgeneration.ShadowDDLGenerationTestSuite"
+          />
+          <test
+            name="dbws.testing.simplenestedtable.SimpleNestedTableTestSuite"
           />
           <test
             name="dbws.testing.simpleplsqlsf.SimplePLSQLSFTestSuite"
@@ -375,6 +407,9 @@
             name="dbws.testing.simpletablewithnestedsql.SimpleTableWithNestedSQLTestSuite"
           />
           <test
+            name="dbws.testing.strongrefcursor.StrongRefCursorTestSuite"
+          />
+          <test
             name="dbws.testing.tabletype.TableTypeTestSuite"
           />
           <test
@@ -385,6 +420,12 @@
           />
           <test
             name="dbws.testing.varray.VArrayTestSuite"
+          />
+          <test
+            name="dbws.testing.verylongidentifier.VeryLongIdentifierTestSuite"
+          />
+          <test
+            name="dbws.testing.weakrefcursor.WeakRefCursorTestSuite"
           />
         </junit>
         <junitreport
