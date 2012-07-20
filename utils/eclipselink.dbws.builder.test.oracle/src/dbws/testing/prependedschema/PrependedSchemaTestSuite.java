@@ -49,7 +49,7 @@ public class PrependedSchemaTestSuite extends DBWSTestSuite {
     }
 
     static final String CREATE_TESMAN_TABLE2 =
-        "CREATE TABLE TESMAN_TABLE2(SRNO NUMBER, DETAIL "+username+".TESMAN_TYPE2)" +
+        "CREATE TABLE XTESMAN_TABLE2(SRNO NUMBER, DETAIL "+username+".XTESMAN_TYPE2)" +
           "\nLOGGING" +
           "\nTABLESPACE USERS" +
           "\nPCTFREE 10" +
@@ -62,7 +62,7 @@ public class PrependedSchemaTestSuite extends DBWSTestSuite {
             "\nBUFFER_POOL DEFAULT" +
           "\n)";
     static final String CREATE_TESMAN_TYPE1 =
-        "CREATE TYPE TESMAN_TYPE1 AS OBJECT" +
+        "CREATE TYPE XTESMAN_TYPE1 AS OBJECT" +
           "\n(" +
             "\nACCT NUMBER, " +
             "\nSTATE VARCHAR2(30)," + 
@@ -70,33 +70,33 @@ public class PrependedSchemaTestSuite extends DBWSTestSuite {
             "\nCOUNTRY VARCHAR2(30)" +
           "\n);";
     static final String CREATE_TESMAN_TYPE2 =
-        "CREATE TYPE TESMAN_TYPE2 AS OBJECT" +
+        "CREATE TYPE XTESMAN_TYPE2 AS OBJECT" +
           "\n(" +
             "\nPNR NUMBER, " +
             "\nCOMPANY VARCHAR2(30)," +
             "\nSE VARCHAR2(30)," +
             "\nSCRIP VARCHAR2(30)," +
-            "\nTT "+username+".TESMAN_TYPE1" +
+            "\nTT "+username+".XTESMAN_TYPE1" +
           "\n);";
     
     static final String[] POPULATE_TESMAN_TABLE2 = new String[] {
-        "INSERT INTO TESMAN_TABLE2 (SRNO, DETAIL) VALUES (1, " +
-            "TESMAN_TYPE2(11, 'SOMECOMPANY', 'SEVAL', 'SCRIPVAL'," +
-            "TESMAN_TYPE1(45, 'SOMESTATE', 'SOMEDIV', 'CANADA')))",
-        "INSERT INTO TESMAN_TABLE2 (SRNO, DETAIL) VALUES (666, " +
-            "TESMAN_TYPE2(12, 'SOMECO', 'SECKS', 'SCRIPPER'," +
-            "TESMAN_TYPE1(46, 'COMASTATE', 'MYDIV', 'CANADA')))"};
+        "INSERT INTO XTESMAN_TABLE2 (SRNO, DETAIL) VALUES (1, " +
+            "XTESMAN_TYPE2(11, 'SOMECOMPANY', 'SEVAL', 'SCRIPVAL'," +
+            "XTESMAN_TYPE1(45, 'SOMESTATE', 'SOMEDIV', 'CANADA')))",
+        "INSERT INTO XTESMAN_TABLE2 (SRNO, DETAIL) VALUES (666, " +
+            "XTESMAN_TYPE2(12, 'SOMECO', 'SECKS', 'SCRIPPER'," +
+            "XTESMAN_TYPE1(46, 'COMASTATE', 'MYDIV', 'CANADA')))"};
 
     static final String CREATE_TESMAN_PACK = 
-        "create or replace PACKAGE TESMANPACK AS" +
-          "\nFUNCTION TESMANFUNC17( param1 in INTEGER) return "+username+".TESMAN_TABLE2%ROWTYPE;" +
-        "\nEND TESMANPACK;";
+        "create or replace PACKAGE XTESMANPACK AS" +
+          "\nFUNCTION TESMANFUNC17( param1 in INTEGER) return "+username+".XTESMAN_TABLE2%ROWTYPE;" +
+        "\nEND XTESMANPACK;";
     static final String CREATE_TESMAN_BODY =
-        "create or replace PACKAGE BODY TESMANPACK AS" +
-          "\nFUNCTION TESMANFUNC17(param1 in INTEGER) return "+username+".TESMAN_TABLE2%ROWTYPE AS" +
-            "\nl_data1 "+username+".TESMAN_TABLE2%ROWTYPE;" +
+        "create or replace PACKAGE BODY XTESMANPACK AS" +
+          "\nFUNCTION TESMANFUNC17(param1 in INTEGER) return "+username+".XTESMAN_TABLE2%ROWTYPE AS" +
+            "\nl_data1 "+username+".XTESMAN_TABLE2%ROWTYPE;" +
             "\nCURSOR c_emp(paramtemp in INTEGER) IS" +
-              "\nselect * from TESMAN_TABLE2 te WHERE te.srno=paramtemp;" +
+              "\nselect * from XTESMAN_TABLE2 te WHERE te.srno=paramtemp;" +
           "\nbegin" + 
             "\nopen c_emp(param1);" +
             "\nLOOP" +
@@ -105,18 +105,18 @@ public class PrependedSchemaTestSuite extends DBWSTestSuite {
             "\nEND LOOP;" +
             "\nRETURN l_data1;" +
           "\nEND TESMANFUNC17;" +
-        "\nEND TESMANPACK;";
+        "\nEND XTESMANPACK;";
     
     static final String DROP_TESMAN_BODY =
-        "DROP PACKAGE BODY TESMANPACK";
+        "DROP PACKAGE BODY XTESMANPACK";
     static final String DROP_TESMAN_PACK =
-        "DROP PACKAGE TESMANPACK";
+        "DROP PACKAGE XTESMANPACK";
     static final String DROP_TESMAN_TABLE2 =
-        "DROP TABLE TESMAN_TABLE2";
+        "DROP TABLE XTESMAN_TABLE2";
     static final String DROP_TESMAN_TYPE2 =
-        "DROP TYPE TESMAN_TYPE2";
+        "DROP TYPE XTESMAN_TYPE2";
     static final String DROP_TESMAN_TYPE1 =
-        "DROP TYPE TESMAN_TYPE1";
+        "DROP TYPE XTESMAN_TYPE1";
 
     static boolean ddlCreate = false;
     static boolean ddlDrop = false;
@@ -179,7 +179,7 @@ public class PrependedSchemaTestSuite extends DBWSTestSuite {
               "</properties>" +
               "<plsql-procedure " +
                   "name=\"TestFunc17\" " +
-                  "catalogPattern=\"TESMANPACK\" " +
+                  "catalogPattern=\"XTESMANPACK\" " +
                   "procedurePattern=\"TESMANFUNC17\" " +
               "/>" +
             "</dbws-builder>";
@@ -232,7 +232,7 @@ public class PrependedSchemaTestSuite extends DBWSTestSuite {
 
     public static final String TESMAN_TABLE2_ROWTYPE =
         STANDALONE_XML_HEADER +
-        "<TESMAN_TABLE2_ROWTYPE xmlns=\"urn:PrependedSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+        "<XTESMAN_TABLE2_ROWTYPE xmlns=\"urn:PrependedSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
            "<srno>666</srno>" +
            "<detail>" +
               "<pnr>12</pnr>" +
@@ -246,5 +246,5 @@ public class PrependedSchemaTestSuite extends DBWSTestSuite {
                  "<country>CANADA</country>" +
               "</tt>" +
            "</detail>" +
-        "</TESMAN_TABLE2_ROWTYPE>";
+        "</XTESMAN_TABLE2_ROWTYPE>";
 }
