@@ -306,7 +306,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
         }
     }
 
-    public <T> JAXBElement<T> unmarshal(Source source, Class<T> javaClass) throws JAXBException {
+    public JAXBElement unmarshal(Source source, Class javaClass) throws JAXBException {
         if(null == javaClass) {
             throw new IllegalArgumentException();
         }
@@ -409,7 +409,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
         }
     }
 
-    public <T> JAXBElement<T> unmarshal(XMLStreamReader streamReader, Class<T> javaClass) throws JAXBException {
+    public JAXBElement unmarshal(XMLStreamReader streamReader, Class javaClass) throws JAXBException {
         if(null == streamReader || null == javaClass) {
             throw new IllegalArgumentException();
         }
@@ -418,7 +418,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
             staxReader.setErrorHandler(xmlUnmarshaller.getErrorHandler());
             XMLStreamReaderInputSource inputSource = new XMLStreamReaderInputSource(streamReader);
             if(XMLConversionManager.getDefaultJavaTypes().get(javaClass) != null ||ClassConstants.XML_GREGORIAN_CALENDAR.isAssignableFrom(javaClass) ||ClassConstants.DURATION.isAssignableFrom(javaClass)) {
-                PrimitiveContentHandler<T> primitiveContentHandler = new PrimitiveContentHandler<T>(javaClass);
+                PrimitiveContentHandler primitiveContentHandler = new PrimitiveContentHandler(javaClass);
                 staxReader.setContentHandler(primitiveContentHandler);
                 staxReader.parse(inputSource);
                 return primitiveContentHandler.getJaxbElement();
@@ -563,7 +563,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
         }
     }
 
-    public <T> JAXBElement<T> unmarshal(XMLEventReader eventReader, Class<T> javaClass) throws JAXBException {
+    public JAXBElement unmarshal(XMLEventReader eventReader, Class javaClass) throws JAXBException {
         if(null == eventReader || null == javaClass) {
             throw new IllegalArgumentException();
         }
