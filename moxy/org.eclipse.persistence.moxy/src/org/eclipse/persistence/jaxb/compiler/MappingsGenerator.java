@@ -16,14 +16,20 @@ import java.awt.Image;
 import java.beans.Introspector;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Deque;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.NavigableSet;
+import java.util.Queue;
 import java.util.Set;
 import java.util.Map.Entry;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -148,6 +154,8 @@ public class MappingsGenerator {
     private JavaClass jotArrayList;
     private JavaClass jotHashSet;
     private JavaClass jotHashMap;
+    private JavaClass jotLinkedList;
+    private JavaClass jotTreeSet;
     private HashMap<String, PackageInfo> packageToPackageInfoMappings;
     private HashMap<String, TypeInfo> typeInfo;
     private HashMap<QName, Class> qNamesToGeneratedClasses;
@@ -167,6 +175,8 @@ public class MappingsGenerator {
         jotArrayList = helper.getJavaClass(ArrayList.class);
         jotHashSet = helper.getJavaClass(HashSet.class);
         jotHashMap = helper.getJavaClass(HashMap.class);
+        jotLinkedList = helper.getJavaClass(LinkedList.class);
+        jotTreeSet = helper.getJavaClass(TreeSet.class);
         qNamesToGeneratedClasses = new HashMap<QName, Class>();
         qNamesToDeclaredClasses = new HashMap<QName, Class>();
         classToGeneratedClasses = new HashMap<String, Class>();
@@ -641,11 +651,7 @@ public class MappingsGenerator {
 
         if (isCollectionType(property.getType())) {
             JavaClass collectionType = property.getType();
-            if (areEquals(collectionType, Collection.class) || areEquals(collectionType, List.class)) {
-                collectionType = jotArrayList;
-            } else if (areEquals(collectionType, Set.class)) {
-                collectionType = jotHashSet;
-            }
+            collectionType = containerClassImpl(collectionType);
             invMapping.useCollectionClass(helper.getClassForJavaClass(collectionType));
         }
         return invMapping;
@@ -819,11 +825,7 @@ public class MappingsGenerator {
             }
         }
         JavaClass collectionType = property.getType();
-        if (collectionType.isArray() || areEquals(collectionType, Collection.class) || areEquals(collectionType, List.class)) {
-            collectionType = jotArrayList;
-        } else if (areEquals(collectionType, Set.class)) {
-            collectionType = jotHashSet;
-        }
+        collectionType = containerClassImpl(collectionType);
         mapping.useCollectionClassName(collectionType.getRawName());
 
         if (property.isSetXmlElementWrapper()) {
@@ -933,11 +935,7 @@ public class MappingsGenerator {
             mapping = new XMLChoiceCollectionMapping();
             initializeXMLContainerMapping((XMLChoiceCollectionMapping) mapping);
             JavaClass collectionType = property.getType();
-            if (collectionType.isArray() || areEquals(collectionType, Collection.class) || areEquals(collectionType, List.class)) {
-                collectionType = jotArrayList;
-            } else if (areEquals(collectionType, Set.class)) {
-                collectionType = jotHashSet;
-            }
+            collectionType = containerClassImpl(collectionType);
             ((XMLChoiceCollectionMapping) mapping).useCollectionClassName(collectionType.getRawName());
             JAXBElementRootConverter jaxbERConverter = new JAXBElementRootConverter(Object.class);
             if (property.isSetXmlJavaTypeAdapter()) {
@@ -1171,12 +1169,8 @@ public class MappingsGenerator {
                 accessor.setComponentClassName(componentType.getQualifiedName());
             }
             mapping.setAttributeAccessor(accessor);
-            collectionType = jotArrayList;
-        } else if (areEquals(collectionType, Collection.class) || areEquals(collectionType, List.class)) {
-            collectionType = jotArrayList;
-        } else if (areEquals(collectionType, Set.class)) {
-            collectionType = jotHashSet;
         }
+        collectionType = containerClassImpl(collectionType);
         mapping.useCollectionClass(helper.getClassForJavaClass(collectionType));
         
         return mapping;
@@ -1468,11 +1462,7 @@ public class MappingsGenerator {
             }catch (Exception e) {
             }
         }
-        if (collectionType.isArray() || areEquals(collectionType, Collection.class) || areEquals(collectionType, List.class)) {
-            collectionType = jotArrayList;
-        } else if (areEquals(collectionType, Set.class)) {
-            collectionType = jotHashSet;
-        }
+        collectionType = containerClassImpl(collectionType);
         mapping.useCollectionClassName(collectionType.getRawName());
         return mapping;
     }
@@ -1905,13 +1895,8 @@ public class MappingsGenerator {
                 accessor.setComponentClassName(componentType.getQualifiedName());
             }
             mapping.setAttributeAccessor(accessor);
-            collectionType = jotArrayList;
-        } else if (areEquals(collectionType, Collection.class) || areEquals(collectionType, List.class)) {
-            collectionType = jotArrayList;
-        } else if (areEquals(collectionType, Set.class)) {
-            collectionType = jotHashSet;
         }
-
+        collectionType = containerClassImpl(collectionType);
         mapping.useCollectionClassName(collectionType.getRawName());
 
         // if the XPath is set (via xml-path) use it; otherwise figure it out
@@ -2002,7 +1987,6 @@ public class MappingsGenerator {
                     mapping.setAttributeElementClass(declaredClass);
                 }catch (Exception e) {}
             }
-    		collectionType = jotArrayList;
         } else if (isCollectionType(collectionType)){
         	if (collectionType.hasActualTypeArguments()){
         		JavaClass itemType = (JavaClass)collectionType.getActualTypeArguments().toArray()[0];
@@ -2012,11 +1996,7 @@ public class MappingsGenerator {
         		} catch (Exception e) {}
         	}
         }
-        if (areEquals(collectionType, Collection.class) || areEquals(collectionType, List.class)) {
-            collectionType = jotArrayList;
-        } else if (areEquals(collectionType, Set.class)) {
-            collectionType = jotHashSet;
-        }
+        collectionType = containerClassImpl(collectionType);
         mapping.useCollectionClassName(collectionType.getRawName());
 
         // if the XPath is set (via xml-path) use it; otherwise figure it out
@@ -2383,11 +2363,7 @@ public class MappingsGenerator {
         mapping.setReferenceClassName(referenceClass.getQualifiedName());
 
         JavaClass collectionType = property.getType();
-        if (collectionType.isArray() || areEquals(collectionType, Collection.class) || areEquals(collectionType, List.class)) {
-            collectionType = jotArrayList;
-        } else if (areEquals(collectionType, Set.class)) {
-            collectionType = jotHashSet;
-        }
+        collectionType = containerClassImpl(collectionType);
         mapping.useCollectionClassName(collectionType.getRawName());
         
         // here we need to setup source/target key field associations
@@ -3202,6 +3178,20 @@ public class MappingsGenerator {
     private void initializeXMLContainerMapping(XMLContainerMapping xmlContainerMapping) {
         xmlContainerMapping.setReuseContainer(true);
         xmlContainerMapping.setDefaultEmptyContainer(false);
+    }
+
+    private JavaClass containerClassImpl(JavaClass collectionType) {
+        if (areEquals(collectionType, List.class) || areEquals(collectionType, Collection.class) || collectionType.isArray()) {
+            return jotArrayList;
+        } else if (areEquals(collectionType, Set.class)) {
+            return jotHashSet;
+        } else if (areEquals(collectionType, Deque.class) || areEquals(collectionType, Queue.class)) {
+            return jotLinkedList;
+        } else if (areEquals(collectionType, NavigableSet.class) || areEquals(collectionType, SortedSet.class)) {
+            return jotTreeSet;
+        } else {
+            return collectionType;
+        }
     }
 
 }
