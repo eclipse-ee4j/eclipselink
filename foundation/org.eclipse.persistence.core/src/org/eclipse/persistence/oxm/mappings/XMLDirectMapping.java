@@ -256,7 +256,7 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
         // If attribute is empty string representing (null) then return the nullValue
         boolean isNullRepresentedByEmptyNode = nullPolicy.isNullRepresentedByEmptyNode();
         boolean isNullRepresentedByXsiNil = nullPolicy.isNullRepresentedByXsiNil();
-        if (XMLConstants.EMPTY_STRING.equals(fieldValue) && isNullRepresentedByEmptyNode) {
+        if (isNullRepresentedByEmptyNode && XMLConstants.EMPTY_STRING.equals(fieldValue)) {
            fieldValue = null;
         } else if (null == fieldValue && !isNullRepresentedByEmptyNode) {
             fieldValue = XMLConstants.EMPTY_STRING;

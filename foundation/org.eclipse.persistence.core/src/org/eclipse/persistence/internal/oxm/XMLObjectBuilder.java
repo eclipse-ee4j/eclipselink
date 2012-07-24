@@ -21,6 +21,7 @@ import java.util.Map.Entry;
 
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.QueryException;
@@ -811,15 +812,17 @@ public class XMLObjectBuilder extends ObjectBuilder {
             if(descriptor != null){
                 XMLRoot xr = (XMLRoot) originalObject;
 
-                if (xmlDescriptor.getSchemaReference() == null) {
+                if (xmlRef == null) {
                     return false;
                 }
+                String xmlRootLocalName = xr.getLocalName();
+                String xmlRootUri = xr.getNamespaceURI();
 
-                XPathQName qName = new XPathQName(xr.getNamespaceURI(),xr.getLocalName(), record.isNamespaceAware());
+                XPathQName qName = new XPathQName(xmlRootUri,xmlRootLocalName, record.isNamespaceAware());
                 XMLDescriptor xdesc = record.getMarshaller().getXMLContext().getDescriptor(qName);
                 if (xdesc != null) {
                     boolean writeTypeAttribute = xdesc.getJavaClass() != descriptor.getJavaClass();
-                    if(writeTypeAttribute && xmlRef != null){
+                    if(writeTypeAttribute){
                     	QName typeValueQName = getTypeValueToWriteAsQName(record, xdesc, xmlRef, addToNamespaceResolver);
                     	writeXsiTypeAttribute(xmlDescriptor, record, typeValueQName, addToNamespaceResolver);
                         return true;
@@ -831,11 +834,10 @@ public class XMLObjectBuilder extends ObjectBuilder {
      	       if(xr.getDeclaredType() != null && xr.getDeclaredType() == xr.getObject().getClass()){
                    return false;
     	        } 
-
-                String xmlRootLocalName = xr.getLocalName();
-                String xmlRootUri = xr.getNamespaceURI();
+              
                 boolean writeTypeAttribute = true;
-                for (int i = 0; i < descriptor.getTableNames().size(); i++) {
+                int tableSize = descriptor.getTableNames().size();
+                for (int i = 0; i <tableSize; i++) {
                     if (!writeTypeAttribute) {
                         return false;
                     }
@@ -918,15 +920,16 @@ public class XMLObjectBuilder extends ObjectBuilder {
               return false;
           }         
             if (xmlDescriptor.hasInheritance() && !xmlDescriptor.getInheritancePolicy().isRootParentDescriptor()) {
-                XMLField indicatorField = (XMLField) xmlDescriptor.getInheritancePolicy().getClassIndicatorField();
+            	InheritancePolicy inheritancePolicy = xmlDescriptor.getInheritancePolicy();
+                XMLField indicatorField = (XMLField) inheritancePolicy.getClassIndicatorField();
                    if(indicatorField != null && xsiTypeIndicatorField){
-                       Object  classIndicatorValueObject = xmlDescriptor.getInheritancePolicy().getClassIndicatorMapping().get(xmlDescriptor.getJavaClass());
+                       Object  classIndicatorValueObject = inheritancePolicy.getClassIndicatorMapping().get(xmlDescriptor.getJavaClass());
                        QName classIndicatorQName = null;
                        if(classIndicatorValueObject instanceof QName){
                            classIndicatorQName = (QName)classIndicatorValueObject;
                 		   
                        }else{
-                           String classIndicatorValue = (String) xmlDescriptor.getInheritancePolicy().getClassIndicatorMapping().get(xmlDescriptor.getJavaClass());
+                           String classIndicatorValue = (String) inheritancePolicy.getClassIndicatorMapping().get(xmlDescriptor.getJavaClass());
                            int nsindex = classIndicatorValue.indexOf(XMLConstants.COLON);
                            String localName = null;
                            String prefix = null;
@@ -940,8 +943,8 @@ public class XMLObjectBuilder extends ObjectBuilder {
                                classIndicatorQName  = new QName(namespaceURI, localName);
                 	   }
                            if(leafType == null || !classIndicatorQName.equals(leafType)){
-                               if(xmlDescriptor.getInheritancePolicy().hasClassExtractor()){
-                               xmlDescriptor.getInheritancePolicy().addClassIndicatorFieldToRow(record);
+                               if(inheritancePolicy.hasClassExtractor()){
+                            	   inheritancePolicy.addClassIndicatorFieldToRow(record);
                 	   }else{
                                writeXsiTypeAttribute(xmlDescriptor, record, classIndicatorQName, addToNamespaceResolver);
                 	   }

@@ -69,7 +69,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
         Object collection = xmlCompositeDirectCollectionMapping.getAttributeAccessor().getAttributeValueFromObject(object);
         if (null == collection) {
             AbstractNullPolicy wrapperNP = xmlCompositeDirectCollectionMapping.getWrapperNullPolicy();
-            if (wrapperNP != null && wrapperNP.getMarshalNullRepresentation().equals(XMLNullRepresentationType.XSI_NIL)) {
+            if (wrapperNP != null && wrapperNP.getMarshalNullRepresentation() == XMLNullRepresentationType.XSI_NIL) {
                 marshalRecord.nilSimple(namespaceResolver);
                 return true;
             } else {
@@ -105,8 +105,9 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
                     } else {
                         objectValue = xmlCompositeDirectCollectionMapping.getValueConverter().convertObjectValueToDataValue(objectValue, session);
                     }
-                }
-                schemaType = getSchemaType((XMLField) xmlCompositeDirectCollectionMapping.getField(), objectValue, session);
+                }                
+                schemaType = ((XMLField) xmlCompositeDirectCollectionMapping.getField()).getSchemaTypeForValue(objectValue, session);
+
                 newValue = marshalRecord.getValueToWrite(schemaType, objectValue, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager());
                 if (null != newValue) {
                     stringValueStringBuilder.append(newValue);
@@ -298,8 +299,9 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
         }        
         
         XMLField xmlField = (XMLField) xmlCompositeDirectCollectionMapping.getField();
-        if (null != value) {
-            QName schemaType = getSchemaType(xmlField, value, session);
+        if (null != value) {            
+            QName schemaType = xmlField.getSchemaTypeForValue(value, session);
+
             boolean isElementOpen = false;
             if(XMLConstants.QNAME_QNAME.equals(schemaType)) {
                 QName fieldValue = (QName)value;
