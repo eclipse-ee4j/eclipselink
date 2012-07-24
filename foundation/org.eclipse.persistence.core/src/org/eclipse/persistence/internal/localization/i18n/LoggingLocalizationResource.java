@@ -453,6 +453,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "jpars_could_not_find_persistence_context", "A JPA-RS call is requesting persistence context: [{0}].  That persistence context is not found."},
         { "jpars_could_not_find_class_in_persistence_unit", "Type: [{0}] cannot be found in persistence unit: [{1}]."},
         { "jpars_could_bootstrap_persistence_context", "Persistence Context: [{0}] could not be bootstrapped."},
+        { "entity_not_available_during_merge", "Max tries exceeded.  Unable to find value of locked cacheKey.  Class [{0}] ID:[{1}] This Thread: [{2}] Owning Thread:[{3}]"},
 
         // MESSAGES end
         
@@ -739,7 +740,8 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "jmx_unable_to_unregister_mbean.MSGID", "TOP-50249" },
         // 338837:
         { "metamodel_type_collection_empty.MSGID", "TOP-50250" },                                            
-        { "metamodel_type_collection_empty_during_lookup.MSGID", "TOP-50251" }        
+        { "metamodel_type_collection_empty_during_lookup.MSGID", "TOP-50251" },        
+        { "entity_not_available_during_merge.MSGID", "TOP-50247"},
 
         /**
          * Note: Each MSGID and TOP-NNNNN key above must have a corresponding 
