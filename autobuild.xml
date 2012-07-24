@@ -82,7 +82,8 @@
         <property name="git.exec" value="/usr/bin/git"/>
         <property name="build.deps.dir"  value="${extensions.depend.dir}"/>
         <property name="junit.dir"       value="${build.deps.dir}/junit"/>
-        <property file="db-${branch}.properties"/>
+        <property name="build.tool.root" value="${build.location}"/>
+        <property file="${build.tool.root}/db-${branch}.properties"/>
     </target>
 
     <target name="get-git-hash" unless="git.hash" depends="set-defaults">
@@ -171,6 +172,7 @@
         <echo message="basedir        ='${basedir}'"/>
         <echo message="build.deps.dir ='${build.deps.dir}'"/>
         <echo message="build.location ='${build.location}'"/>
+        <echo message="build.tool.root='${build.tool.root}'"/>
         <echo message="log.dir        ='${log.dir}'"/>
         <echo message="junit.dir      ='${junit.dir}'"/>
         <echo message="junit.lib      ='${junit.lib}'"/>
