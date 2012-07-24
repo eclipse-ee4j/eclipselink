@@ -62,7 +62,6 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
     private XMLCompositeObjectMapping xmlCompositeObjectMapping;
 
     public XMLCompositeObjectMappingNodeValue(XMLCompositeObjectMapping xmlCompositeObjectMapping) {
-        super();
         this.xmlCompositeObjectMapping = xmlCompositeObjectMapping;
     }
 
@@ -160,19 +159,17 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
             return xmlCompositeObjectMapping.getNullPolicy().compositeObjectMarshal(xPathFragment, marshalRecord, object, session, namespaceResolver);
         }
         
-        if (xPathFragment.hasLeafElementType()) {
-            marshalRecord.setLeafElementType(xPathFragment.getLeafElementType());
-        }
 
         XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
-        if(xPathFragment.isAttribute()) {
+        if(xPathFragment.hasAttribute) {
             TreeObjectBuilder tob = (TreeObjectBuilder) xmlCompositeObjectMapping.getReferenceDescriptor().getObjectBuilder();
             MappingNodeValue textMappingNodeValue = (MappingNodeValue) tob.getRootXPathNode().getTextNode().getMarshalNodeValue();
             DatabaseMapping textMapping = textMappingNodeValue.getMapping();
             if(textMapping.isDirectToFieldMapping()) {
                 XMLDirectMapping xmlDirectMapping = (XMLDirectMapping) textMapping;
                 Object fieldValue = xmlDirectMapping.getFieldValue(xmlDirectMapping.valueFromObject(objectValue, xmlDirectMapping.getField(), session), session, marshalRecord);
-                QName schemaType = getSchemaType((XMLField) xmlDirectMapping.getField(), fieldValue, session);
+                QName schemaType = ((XMLField) xmlDirectMapping.getField()).getSchemaTypeForValue(fieldValue, session);
+
                 String stringValue = textMappingNodeValue.getMapping().valueFromObject(objectValue, null, session).toString();
                 marshalRecord.attribute(xPathFragment, namespaceResolver, stringValue);
                 marshalRecord.closeStartGroupingElements(groupingFragment);
@@ -200,10 +197,14 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
                 return true;
             }
         }
-        XMLDescriptor descriptor = (XMLDescriptor)xmlCompositeObjectMapping.getReferenceDescriptor();
-        Class objectValueClass = objectValue.getClass();
-        if (descriptor == null || (descriptor.hasInheritance() && !(objectValueClass == descriptor.getJavaClass()))) {
-            descriptor = (XMLDescriptor) session.getDescriptor(objectValueClass);
+        XMLDescriptor descriptor = (XMLDescriptor)xmlCompositeObjectMapping.getReferenceDescriptor();  
+        if(descriptor == null){
+        	descriptor = (XMLDescriptor) session.getDescriptor(objectValue.getClass());
+        }else if(descriptor.hasInheritance()){
+        	Class objectValueClass = objectValue.getClass();
+        	if(!(objectValueClass == descriptor.getJavaClass())){
+        		descriptor = (XMLDescriptor) session.getDescriptor(objectValueClass);
+        	}
         }
 
         if(descriptor != null){
@@ -234,8 +235,8 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
             if (!(isSelfFragment || xPathFragment.nameIsText())) {
                 xPathNode.startElement(marshalRecord, xPathFragment, object, session, namespaceResolver, null, objectValue);
             }
+            QName schemaType = ((XMLField) xmlCompositeObjectMapping.getField()).getSchemaTypeForValue(objectValue, session);
 
-            QName schemaType = getSchemaType((XMLField) xmlCompositeObjectMapping.getField(), objectValue, session);
             String stringValue = getValueToWrite(schemaType, objectValue, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager(), marshalRecord);
             updateNamespaces(schemaType, marshalRecord,((XMLField)xmlCompositeObjectMapping.getField()));
             marshalRecord.characters(stringValue);

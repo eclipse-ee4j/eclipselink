@@ -70,7 +70,7 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
         Object collection = xmlCompositeCollectionMapping.getAttributeAccessor().getAttributeValueFromObject(object);
         if (null == collection) {
             AbstractNullPolicy wrapperNP = xmlCompositeCollectionMapping.getWrapperNullPolicy();
-            if (wrapperNP != null && wrapperNP.getMarshalNullRepresentation().equals(XMLNullRepresentationType.XSI_NIL)) {
+            if (wrapperNP != null && wrapperNP.getMarshalNullRepresentation() == XMLNullRepresentationType.XSI_NIL) {
                 marshalRecord.nilSimple(namespaceResolver);
                 return true;
             } else {
@@ -272,12 +272,14 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
         if (null == value) {
             return xmlCompositeCollectionMapping.getNullPolicy().compositeObjectMarshal(xPathFragment, marshalRecord, object, session, namespaceResolver);
         }
-        if (xPathFragment.hasLeafElementType()) {
-            marshalRecord.setLeafElementType(xPathFragment.getLeafElementType());
-        }
         XMLDescriptor descriptor = (XMLDescriptor)xmlCompositeCollectionMapping.getReferenceDescriptor();
-        if(descriptor == null || (descriptor.hasInheritance() && !(descriptor.getJavaClass() == value.getClass()))){
-        	descriptor = (XMLDescriptor)session.getDescriptor(value.getClass());
+        if(descriptor == null){
+        	descriptor = (XMLDescriptor) session.getDescriptor(value.getClass());
+        }else if(descriptor.hasInheritance()){
+        	Class objectValueClass = value.getClass();
+        	if(!(objectValueClass == descriptor.getJavaClass())){
+        		descriptor = (XMLDescriptor) session.getDescriptor(objectValueClass);
+        	}
         }
         
         UnmarshalKeepAsElementPolicy keepAsElementPolicy = xmlCompositeCollectionMapping.getKeepAsElementPolicy();
@@ -290,7 +292,7 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
             marshalRecord.beforeContainmentMarshal(value);
 
             TreeObjectBuilder objectBuilder = (TreeObjectBuilder)descriptor.getObjectBuilder();
-            getXPathNode().startElement(marshalRecord, xPathFragment, object, session, namespaceResolver, objectBuilder, value);            
+            xPathNode.startElement(marshalRecord, xPathFragment, object, session, namespaceResolver, objectBuilder, value);            
     
             List extraNamespaces = objectBuilder.addExtraNamespacesToNamespaceResolver(descriptor, marshalRecord, session,true, false);
             writeExtraNamespaces(extraNamespaces, marshalRecord, session);
@@ -303,9 +305,10 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
             objectBuilder.removeExtraNamespacesFromNamespaceResolver(marshalRecord, extraNamespaces, session);    
            
         } else {
-            getXPathNode().startElement(marshalRecord, xPathFragment, object, session, namespaceResolver, null, value);
+            xPathNode.startElement(marshalRecord, xPathFragment, object, session, namespaceResolver, null, value);
             
-            QName schemaType = getSchemaType((XMLField) xmlCompositeCollectionMapping.getField(), value, session);
+            QName schemaType = ((XMLField) xmlCompositeCollectionMapping.getField()).getSchemaTypeForValue(value, session);
+
             String stringValue = getValueToWrite(schemaType, value, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager(), marshalRecord);
             updateNamespaces(schemaType, marshalRecord,((XMLField)xmlCompositeCollectionMapping.getField()));
 

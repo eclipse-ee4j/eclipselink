@@ -150,9 +150,11 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
      * @param javaClass - the class that the object must be converted to
      * @return - the newly converted object
      */
-    public Object convertObject(Object sourceObject, Class javaClass) throws ConversionException {
+    public Object convertObject(Object sourceObject, Class javaClass) throws ConversionException {    	
         if (sourceObject == null) {//Let the parent handle default null values
             return super.convertObject(sourceObject, javaClass);
+        } else if ((sourceObject.getClass() == javaClass) || (javaClass == null) || (javaClass == ClassConstants.OBJECT)) {
+            return sourceObject;
         } else if (javaClass == ClassConstants.STRING) {
            if(sourceObject instanceof List){
         	   return convertListToString(sourceObject);
@@ -207,6 +209,8 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
 
         if (sourceObject == null) {
             return super.convertObject(sourceObject, javaClass);
+        } else if ((sourceObject.getClass() == javaClass) || (javaClass == null) || (javaClass == ClassConstants.OBJECT)) {
+            return sourceObject;
         } else if ((javaClass == ClassConstants.CALENDAR) || (javaClass == ClassConstants.GREGORIAN_CALENDAR)) {
             return convertObjectToCalendar(sourceObject, schemaTypeQName);
         } else if (javaClass == ClassConstants.ABYTE) {
@@ -648,6 +652,11 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
            String sourceString = (String) sourceObject;
            if(sourceString.length() == 0) {
                return null;
+           }
+           try {
+               return new BigDecimal(sourceString);
+           } catch (NumberFormatException exception) {
+               throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.BIGDECIMAL, exception);
            }
        }
        return super.convertObjectToBigDecimal(sourceObject);

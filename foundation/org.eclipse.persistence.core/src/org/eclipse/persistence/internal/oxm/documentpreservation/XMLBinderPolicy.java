@@ -13,7 +13,6 @@
 package org.eclipse.persistence.internal.oxm.documentpreservation;
 
 import java.util.IdentityHashMap;
-import java.util.WeakHashMap;
 
 import org.w3c.dom.Node;
 

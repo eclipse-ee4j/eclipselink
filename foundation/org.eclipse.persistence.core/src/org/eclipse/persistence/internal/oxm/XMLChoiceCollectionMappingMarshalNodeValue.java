@@ -94,7 +94,7 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends NodeValue implem
         Object value = xmlChoiceCollectionMapping.getAttributeValueFromObject(object);
         if(value == null) {
             AbstractNullPolicy wrapperNP = xmlChoiceCollectionMapping.getWrapperNullPolicy();
-            if (wrapperNP != null && wrapperNP.getMarshalNullRepresentation().equals(XMLNullRepresentationType.XSI_NIL)) {
+            if (wrapperNP != null && wrapperNP.getMarshalNullRepresentation() == XMLNullRepresentationType.XSI_NIL) {
                 marshalRecord.nilSimple(namespaceResolver);
                 return true;
             } else {

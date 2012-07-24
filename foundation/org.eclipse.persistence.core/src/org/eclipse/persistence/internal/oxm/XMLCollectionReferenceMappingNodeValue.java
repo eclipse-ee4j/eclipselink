@@ -175,13 +175,12 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
         } else {
             return false;
         }
-
         Object objectValue;
-        StringBuilder stringValueStringBuilder = new StringBuilder();
-        String newValue;
-        QName schemaType;
 
-        if (xmlCollectionReferenceMapping.usesSingleNode()) {
+        if (xmlCollectionReferenceMapping.usesSingleNode()) {       	  
+            StringBuilder stringValueStringBuilder = new StringBuilder();
+            String newValue;
+            QName schemaType;
             while (cp.hasNext(iterator)) {
                 objectValue = cp.next(iterator, session);
                 Object fieldValue = xmlCollectionReferenceMapping.buildFieldValue(objectValue, xmlField, session);
@@ -193,8 +192,9 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
                     if(null == fieldValue) {
                         break;
                     }
-                }
-                schemaType = getSchemaType(xmlField, fieldValue, session);
+                }                
+                schemaType = xmlField.getSchemaTypeForValue(fieldValue, session);
+
                 newValue = getValueToWrite(schemaType, fieldValue, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager(), marshalRecord);
                 if (newValue != null) {
                     stringValueStringBuilder.append(newValue);
@@ -252,7 +252,7 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
             if (fieldValue == null) {
                 return false;
             }
-            schemaType = getSchemaType(xmlField, fieldValue, session);
+            schemaType = xmlField.getSchemaTypeForValue(fieldValue, session);
             String stringValue = getValueToWrite(schemaType, fieldValue, (XMLConversionManager) session.getDatasourcePlatform().getConversionManager(), marshalRecord);
             if (stringValue != null) {
                 marshalRecord.openStartElement(xPathFragment, namespaceResolver);

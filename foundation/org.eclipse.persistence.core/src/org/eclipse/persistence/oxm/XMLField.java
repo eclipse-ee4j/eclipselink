@@ -26,6 +26,7 @@ import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XMLConversionPair;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.XPathPredicate;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 
 /**
@@ -302,8 +303,8 @@ public class XMLField extends DatabaseField {
     // used if the user has made any modifications to the pairs
     protected HashMap userXMLTypes;
     protected HashMap userJavaTypes;
-    private boolean isTypedTextField;
-    private QName leafElementType;
+    protected boolean isTypedTextField;
+    protected QName leafElementType;
 
     /**
      * Default constructor, create a new XMLField
@@ -800,6 +801,19 @@ public class XMLField extends DatabaseField {
         return lastXPathFragment != null;
     }
 
+    /**
+     * INTERNAL:
+     */
+    public QName getSchemaTypeForValue(Object value, AbstractSession session) {
+        if(leafElementType != null){
+            return leafElementType;
+        }else if (isTypedTextField) {
+            return getXMLType(value.getClass());
+        } 
+        return schemaType;        
+    }
+
+    
     /**
      * INTERNAL:
      * @param CDATA
