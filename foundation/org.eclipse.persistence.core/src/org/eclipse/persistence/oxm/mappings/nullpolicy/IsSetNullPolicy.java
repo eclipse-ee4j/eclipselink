@@ -137,7 +137,7 @@ public class IsSetNullPolicy extends AbstractNullPolicy {
 
     public void xPathNode(XPathNode xPathNode, NullCapableValue nullCapableValue) {
         // isset optional only    	
-        if (!(isNullRepresentedByXsiNil() || marshalNullRepresentation.equals(XMLNullRepresentationType.XSI_NIL))) {
+        if (!(isNullRepresentedByXsiNil() || marshalNullRepresentation == XMLNullRepresentationType.XSI_NIL)) {
             if (xPathNode.getXPathFragment().isAttribute()) {
                 return;
             }
@@ -147,7 +147,7 @@ public class IsSetNullPolicy extends AbstractNullPolicy {
         XPathNode parentNode = xPathNode.getParent();
 
         // isset nillable only        
-        if (isNullRepresentedByXsiNil() || marshalNullRepresentation.equals(XMLNullRepresentationType.XSI_NIL)) {
+        if (isNullRepresentedByXsiNil() || marshalNullRepresentation == XMLNullRepresentationType.XSI_NIL) {
             XPathFragment xPathFragment = new XPathFragment();
             xPathFragment.setXPath('@' + XMLConstants.SCHEMA_NIL_ATTRIBUTE);
             xPathFragment.setNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);

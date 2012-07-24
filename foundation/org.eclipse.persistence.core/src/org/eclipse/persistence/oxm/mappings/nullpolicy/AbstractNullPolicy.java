@@ -150,7 +150,7 @@ public abstract class AbstractNullPolicy {
         // Handle attributes - XSI_NIL, ABSENT_NODE have the same behavior
         if (xPathFragment.isAttribute()) {
             // Write out an empty attribute
-            if (marshalNullRepresentation.equals(XMLNullRepresentationType.EMPTY_NODE)) {
+            if (marshalNullRepresentation == XMLNullRepresentationType.EMPTY_NODE) {
             	marshalRecord.emptyAttribute(xPathFragment, namespaceResolver);               
                 return true;
             } else {
@@ -160,12 +160,12 @@ public abstract class AbstractNullPolicy {
             }
         } else {
             // Nillable: write out xsi:nil="true" attribute in empty element    	
-            if (marshalNullRepresentation.equals(XMLNullRepresentationType.XSI_NIL)) {
+            if (marshalNullRepresentation == XMLNullRepresentationType.XSI_NIL) {
             	marshalRecord.nilSimple(namespaceResolver);
                 return true;
             } else {
                 // EMPTY_NODE - Write out empty element
-                if (marshalNullRepresentation.equals(XMLNullRepresentationType.EMPTY_NODE)) {                
+                if (marshalNullRepresentation == XMLNullRepresentationType.EMPTY_NODE) {                
                 	marshalRecord.emptySimple(namespaceResolver);
                     return true;
                 } else {
@@ -189,24 +189,23 @@ public abstract class AbstractNullPolicy {
      */
     public boolean compositeObjectMarshal(XPathFragment xPathFragment, MarshalRecord marshalRecord, //
     	      Object object, Session session, NamespaceResolver namespaceResolver) {    
+    	if (marshalNullRepresentation == XMLNullRepresentationType.ABSENT_NODE){
+    		return false;
+    	}
         // Nillable
-        if (marshalNullRepresentation.equals(XMLNullRepresentationType.XSI_NIL)) {
+    	else if (marshalNullRepresentation == XMLNullRepresentationType.XSI_NIL) {
         	marshalRecord.nilComplex(xPathFragment, namespaceResolver);
             return true;
-        } else {
+        } else if (marshalNullRepresentation == XMLNullRepresentationType.EMPTY_NODE) {
             // Optional and Required
             // This call is really only valid when using DOM - TBD false
             // Write out empty element - we need to differentiate between
             // object=null and object=new Object() with null fields and 0-numeric primitive values
-            // EMPTY_NODE - Write out empty element - Required
-            if (marshalNullRepresentation.equals(XMLNullRepresentationType.EMPTY_NODE)) {
+            // EMPTY_NODE - Write out empty element - Required           
             	marshalRecord.emptyComplex(xPathFragment, namespaceResolver);
                 return true;
-            } else {
-                // ABSENT_NODE - Write out nothing - Optional
-                return false;
-            }
         }
+    	return false;
     }
 
     /**
@@ -219,12 +218,12 @@ public abstract class AbstractNullPolicy {
      * @return true if this method caused any objects to be marshaled, else false.
      */
     public boolean compositeObjectMarshal(XMLRecord record, Object object, XMLField field, AbstractSession session) {
-        if (marshalNullRepresentation.equals(XMLNullRepresentationType.XSI_NIL)) {
+        if (marshalNullRepresentation == XMLNullRepresentationType.XSI_NIL) {
             record.put(field, XMLRecord.NIL);
             return true;
         } else {
             // EMPTY_NODE - Write out empty element - Required
-            if (marshalNullRepresentation.equals(XMLNullRepresentationType.EMPTY_NODE)) {
+            if (marshalNullRepresentation == XMLNullRepresentationType.EMPTY_NODE) {
                 Node element = XPathEngine.getInstance().createUnownedElement(record.getDOM(), field);
                 DOMRecord nestedRow = new DOMRecord(element);
                 record.put(field, nestedRow);
@@ -250,11 +249,8 @@ public abstract class AbstractNullPolicy {
             // Ignore any other attributes that are in addition to xsi:nil
             if(null == attributes) {
                 return false;
-            }    
-            if(attributes.getValue(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_NIL_ATTRIBUTE) != null){
-                return true;
             }
-
+            return attributes.getValue(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_NIL_ATTRIBUTE) != null;            
         } else {
             // EMPTY_NODE - Required
             if (isNullRepresentedByEmptyNode() && (null == attributes || attributes.getLength() == 0)) {
