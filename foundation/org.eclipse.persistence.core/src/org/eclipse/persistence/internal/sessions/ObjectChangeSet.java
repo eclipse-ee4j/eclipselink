@@ -21,6 +21,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
 import org.eclipse.persistence.descriptors.VersionLockingPolicy;
 import org.eclipse.persistence.descriptors.TimestampLockingPolicy;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
@@ -85,6 +86,10 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
     
     /** return whether this change set should be recalculated after an event changes the object */
     protected boolean shouldRecalculateAfterUpdateEvent = true;
+    
+    //This controls how long the thread can wait for other thread to put Entity instance in cache
+    //This is not final to allow a way for the value to be changed without supporting API
+    public static int MAX_TRIES = 18000;
     
     /**
      * The default constructor.
@@ -472,11 +477,17 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
                 }
                 cacheKey.acquireDeferredLock();
                 domainObject = cacheKey.getObject();
-                if (domainObject == null) {
+                int tries = 0;
+                while (domainObject == null) {
+                    ++tries;
+                    if (tries > MAX_TRIES){
+                        session.getParent().log(SessionLog.SEVERE, SessionLog.CACHE, "entity_not_available_during_merge", new Object[]{descriptor.getJavaClassName(), cacheKey.getKey(), Thread.currentThread().getName(), cacheKey.getActiveThread()});
+                        break;
+                    }
                     synchronized (cacheKey.getMutex()) {
                         if (cacheKey.isAcquired()) {
                             try {
-                                cacheKey.getMutex().wait();
+                                cacheKey.getMutex().wait(10);
                             } catch (InterruptedException e) {
                                 //ignore and return
                             }
