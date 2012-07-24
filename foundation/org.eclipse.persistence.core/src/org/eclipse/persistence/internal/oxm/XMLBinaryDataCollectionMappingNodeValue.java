@@ -78,7 +78,7 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
         Object collection = xmlBinaryDataCollectionMapping.getAttributeAccessor().getAttributeValueFromObject(object);
         if (null == collection) {
             AbstractNullPolicy wrapperNP = xmlBinaryDataCollectionMapping.getWrapperNullPolicy();
-            if (wrapperNP != null && wrapperNP.getMarshalNullRepresentation().equals(XMLNullRepresentationType.XSI_NIL)) {
+            if (wrapperNP != null && wrapperNP.getMarshalNullRepresentation() == XMLNullRepresentationType.XSI_NIL) {
                 marshalRecord.nilSimple(namespaceResolver);
                 return true;
             } else {

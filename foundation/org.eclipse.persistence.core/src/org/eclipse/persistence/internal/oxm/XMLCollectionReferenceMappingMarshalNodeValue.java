@@ -164,7 +164,7 @@ public class XMLCollectionReferenceMappingMarshalNodeValue extends MappingNodeVa
                     return false;
                 }
             }
-            QName schemaType = getSchemaType(xmlField, fieldValue, session);
+            QName schemaType = xmlField.getSchemaTypeForValue(fieldValue, session);
             if (xPathFragment.isAttribute()) {                    
                 marshalRecord.attribute(xPathFragment, namespaceResolver, fieldValue, schemaType);
                 marshalRecord.closeStartElement();

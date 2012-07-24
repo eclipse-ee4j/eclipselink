@@ -29,7 +29,7 @@ public class UnmarshalNamespaceContext implements UnmarshalNamespaceResolver {
     private Set<String> prefixes;
 
     public UnmarshalNamespaceContext() {        
-        this.prefixes = new HashSet();
+        this.prefixes = new HashSet(4);
     }
     
     public UnmarshalNamespaceContext(XMLStreamReader anXMLStreamReader) {
