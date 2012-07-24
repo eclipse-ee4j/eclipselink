@@ -171,7 +171,7 @@ public class XMLObjectReferenceMappingNodeValue extends MappingNodeValue {
             }
         }
 
-        QName schemaType = getSchemaType(xmlField, fieldValue, session);
+        QName schemaType = xmlField.getSchemaTypeForValue(fieldValue, session);
         XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
 
         if (xPathFragment.isAttribute()) {

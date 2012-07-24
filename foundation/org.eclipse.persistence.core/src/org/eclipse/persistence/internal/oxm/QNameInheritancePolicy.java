@@ -20,7 +20,9 @@ import java.util.Vector;
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.InheritancePolicy;
+import org.eclipse.persistence.descriptors.MultitenantPolicy;
 import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -80,6 +82,71 @@ public class QNameInheritancePolicy extends InheritancePolicy {
             getDescriptor().setInternalDefaultTable(uniqueTables.get(uniqueTables.indexOf(childTables.get(0))));
         }
     }
+    
+    /**
+     * INTERNAL:
+     * Allow the inheritance properties of the descriptor to be initialized.
+     * The descriptor's parent must first be initialized.
+     */
+    @Override
+    public void preInitialize(AbstractSession session) throws DescriptorException {
+        // Override for OXM inheritence to avoid initializing unrequired fields
+        // on the descriptor
+        if (isChildDescriptor()) {
+            updateTables();
+            
+            // Clone the multitenant policy and set on child descriptor.
+            if (getParentDescriptor().hasMultitenantPolicy()) {
+                MultitenantPolicy clonedMultitenantPolicy = (MultitenantPolicy) getParentDescriptor().getMultitenantPolicy().clone(getDescriptor());
+                getDescriptor().setMultitenantPolicy(clonedMultitenantPolicy);
+            }
+            
+            setClassIndicatorMapping(getParentDescriptor().getInheritancePolicy().getClassIndicatorMapping());
+            setShouldUseClassNameAsIndicator(getParentDescriptor().getInheritancePolicy().shouldUseClassNameAsIndicator());
+
+            // Initialize properties.
+            getDescriptor().setPrimaryKeyFields(getParentDescriptor().getPrimaryKeyFields());
+            getDescriptor().setAdditionalTablePrimaryKeyFields(Helper.concatenateMaps(getParentDescriptor().getAdditionalTablePrimaryKeyFields(), getDescriptor().getAdditionalTablePrimaryKeyFields()));
+
+            setClassIndicatorField(getParentDescriptor().getInheritancePolicy().getClassIndicatorField());
+
+            //if child has sequencing setting, do not bother to call the parent
+            if (!getDescriptor().usesSequenceNumbers()) {
+                getDescriptor().setSequenceNumberField(getParentDescriptor().getSequenceNumberField());
+                getDescriptor().setSequenceNumberName(getParentDescriptor().getSequenceNumberName());
+            }
+        } else {
+            // This must be done now before any other initialization occurs. 
+            getDescriptor().setInternalDefaultTable();
+        }
+
+        initializeClassExtractor(session);
+
+        if (!isChildDescriptor()) {
+            // build abstract class indicator field.
+            if ((getClassIndicatorField() == null) && (!hasClassExtractor())) {
+                session.getIntegrityChecker().handleError(DescriptorException.classIndicatorFieldNotFound(getDescriptor(), getDescriptor()));
+            }
+            if (getClassIndicatorField() != null) {
+                setClassIndicatorField(getDescriptor().buildField(getClassIndicatorField()));
+                // Determine and set the class indicator classification.
+                if (shouldUseClassNameAsIndicator()) {
+                    getClassIndicatorField().setType(ClassConstants.STRING);
+                } else if (!getClassIndicatorMapping().isEmpty()) {
+                    Class type = null;
+                    Iterator fieldValuesEnum = getClassIndicatorMapping().values().iterator();
+                    while (fieldValuesEnum.hasNext() && (type == null)) {
+                        Object value = fieldValuesEnum.next();
+                        if (value.getClass() != getClass().getClass()) {
+                            type = value.getClass();
+                        }
+                    }
+                    getClassIndicatorField().setType(type);
+                }
+                getDescriptor().getFields().addElement(getClassIndicatorField());
+            }
+        }
+    }    
 
     /**
      * INTERNAL:

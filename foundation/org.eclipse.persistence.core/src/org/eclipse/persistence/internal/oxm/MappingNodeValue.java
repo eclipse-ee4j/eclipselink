@@ -12,16 +12,11 @@
 ******************************************************************************/
 package org.eclipse.persistence.internal.oxm;
 
-import java.util.ArrayList;
-
 import javax.xml.namespace.QName;
 
-import org.eclipse.persistence.exceptions.ConversionException;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
-import org.eclipse.persistence.oxm.XMLUnionField;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 
 /**
@@ -36,38 +31,6 @@ public abstract class MappingNodeValue extends NodeValue {
     
     public boolean isMappingNodeValue() {
         return true;
-    }
-
-    protected QName getSchemaType(XMLField xmlField, Object value, AbstractSession session) {
-        if(xmlField.getLeafElementType() != null){
-            return xmlField.getLeafElementType();
-        }else if (xmlField.isTypedTextField()) {
-            return xmlField.getXMLType(value.getClass());
-        } else if (xmlField.isUnionField()) {
-            return getSingleValueToWriteForUnion((XMLUnionField) xmlField, value, session);
-        }
-        return xmlField.getSchemaType();        
-    }
-
-    protected QName getSingleValueToWriteForUnion(XMLUnionField xmlField, Object value, AbstractSession session) {
-        ArrayList schemaTypes = xmlField.getSchemaTypes();
-        QName schemaType = null;
-        for (int i = 0, schemaTypesSize = schemaTypes.size(); i < schemaTypesSize; i++) {
-            QName nextQName = (QName) (xmlField).getSchemaTypes().get(i);
-            try {
-                if (nextQName != null) {
-                    Class javaClass = xmlField.getJavaClass(nextQName);
-                    value = ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, javaClass, nextQName);
-                    schemaType = nextQName;
-                    break;
-                }
-            } catch (ConversionException ce) {
-                if (i == (schemaTypes.size() - 1)) {
-                    schemaType = nextQName;
-                }
-            }
-        }
-        return schemaType;
     }
 
     protected void updateNamespaces(QName qname, MarshalRecord marshalRecord, XMLField xmlField){
