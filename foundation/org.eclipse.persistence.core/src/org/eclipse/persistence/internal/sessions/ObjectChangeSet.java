@@ -87,6 +87,10 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
     /** return whether this change set should be recalculated after an event changes the object */
     protected boolean shouldRecalculateAfterUpdateEvent = true;
     
+    //This controls how long the thread can wait for other thread to put Entity instance in cache
+    //This is not final to allow a way for the value to be changed without supporting API
+    public static int MAX_TRIES = 18000;
+    
     /**
      * The default constructor.
      */
@@ -473,7 +477,6 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
                 }
                 cacheKey.acquireDeferredLock();
                 domainObject = cacheKey.getObject();
-                int MAX_TRIES = 18000;
                 int tries = 0;
                 while (domainObject == null) {
                     ++tries;
