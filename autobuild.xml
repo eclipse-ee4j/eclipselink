@@ -284,6 +284,7 @@
     <target name="generate-handoff" if="procedure" depends="cannot-generate-handoff" description="generate the publishing handoff file">
         <property name="handoff.file" value="${build.tool.root}/handoff-file-${procedure}-${branch}-${version.qualifier}.dat"/>
         <echo message="host=Eclipse" file="${handoff.file}" append="false"/>
+        <echo message="WORKSPACE=${WORKSPACE}" file="${handoff.file}" append="true"/>
     </target>
 
     <!-- Helper target for cb processing -->
