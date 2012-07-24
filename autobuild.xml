@@ -282,7 +282,7 @@
         <fail message="'procedure' not set. Cannot generate handoff file!"/>
     </target>
     <target name="generate-handoff" if="procedure" depends="cannot-generate-handoff" description="generate the publishing handoff file">
-        <property name="handoff.file" value="${env.HOME_DIR}/handoff-file-${procedure}-${env.BRANCH_NM}-${version.qualifier}.dat"/>
+        <property name="handoff.file" value="${build.tool.root}/handoff-file-${procedure}-${branch}-${version.qualifier}.dat"/>
         <echo message="host=Eclipse" file="${handoff.file}" append="false"/>
     </target>
 
