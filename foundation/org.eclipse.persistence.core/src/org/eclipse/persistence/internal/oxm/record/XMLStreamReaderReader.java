@@ -219,21 +219,6 @@ public class XMLStreamReaderReader extends XMLReaderAdapter {
                     attributes = NO_ATTRIBUTES;
                 } else {
                     attributes = new Attribute[attributeCount + namespaceCount];
-
-                    for(int x=0; x<namespaceCount; x++) {
-                        String uri = XMLConstants.XMLNS_URL;
-                        String localName = xmlStreamReader.getNamespacePrefix(x);
-                        String qName;
-                        if(null == localName || localName.length() == 0) {
-                            localName = XMLConstants.XMLNS;
-                            qName = XMLConstants.XMLNS;
-                        } else {
-                            qName = XMLConstants.XMLNS + XMLConstants.COLON + localName;
-                        }
-                        String value = xmlStreamReader.getNamespaceURI(x);
-                        attributes[x] = new Attribute(uri, localName, qName, value);
-                    }
-
                     for(int x=0; x<attributeCount; x++) {
                         String uri = xmlStreamReader.getAttributeNamespace(x);
                         String localName = xmlStreamReader.getAttributeLocalName(x);
@@ -245,8 +230,22 @@ public class XMLStreamReaderReader extends XMLReaderAdapter {
                             qName = prefix + XMLConstants.COLON + localName;
                         }
                         String value = xmlStreamReader.getAttributeValue(x);
-                        attributes[x + namespaceCount] = new Attribute(uri, localName, qName, value);
+                        attributes[x] = new Attribute(uri, localName, qName, value);
                     }
+                    for(int x=0; x<namespaceCount; x++) {
+                        String uri = XMLConstants.XMLNS_URL;
+                        String localName = xmlStreamReader.getNamespacePrefix(x);
+                        String qName;
+                        if(null == localName || localName.length() == 0) {
+                            localName = XMLConstants.XMLNS;
+                            qName = XMLConstants.XMLNS;
+                        } else {
+                            qName = XMLConstants.XMLNS + XMLConstants.COLON + localName;
+                        }
+                        String value = xmlStreamReader.getNamespaceURI(x);
+                        attributes[x + attributeCount] = new Attribute(uri, localName, qName, value);
+                    }               
+
                 }
             }
             return attributes;

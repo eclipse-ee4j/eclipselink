@@ -28,7 +28,7 @@ import org.eclipse.persistence.queries.ReportQuery;
  * This visitor visits the select expression in order to create the correct {@link ReadAllQuery},
  * which is either a {@link ReportQuery} or a {@link ReadAllQuery}.
  *
- * @version 2.4
+ * @version 2.4.1
  * @since 2.3
  * @author Pascal Filion
  * @author John Bracken
@@ -103,10 +103,13 @@ final class ReadAllQueryBuilder extends EclipseLinkAnonymousExpressionVisitor {
 		// Use ReadAllQuery if the variable of the SELECT clause expression is the base variable
 		// Example: ReadAllQuery = SELECT e FROM Employee e
 		// Example: ReportQuery  = SELECT e FROM Department d JOIN d.employees e
-		if (queryContext.isRangeIdentificationVariable(expression.getVariableName())) {
+		String variableName = expression.getVariableName();
+
+		if (queryContext.isRangeIdentificationVariable(variableName)) {
 
 			if (selectStatement.hasGroupByClause() ||
-			    selectStatement.hasHavingClause()) {
+			    selectStatement.hasHavingClause()  ||
+			    variableName != queryContext.getFirstDeclaration().getVariableName()) {
 
 				initializeReportQuery();
 			}

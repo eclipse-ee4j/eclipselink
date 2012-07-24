@@ -196,7 +196,7 @@
 <!-- ================================================================================= -->
 
     <!-- "top-level" target for creating the distribution archives. -->
-    <target name="package-all" depends="package-eclipselink-bundles, package-src-jar, package-example-jar, package-tst-src-zip, package-tst-jar-zip, package-javadoc-zip, package-installer-zip, package-eclipselink-nosql-install"/>
+    <target name="package-all" depends="package-eclipselink-bundles, package-src-jar, package-tst-src-zip, package-tst-jar-zip, package-javadoc-zip, package-installer-zip, package-eclipselink-nosql-install"/>
 
     <!-- Compiles all components except tests, builds eclipselink.jar. -->
     <target name="build-eclipselink-jar" depends="build-core, package-eclipselink-jar" description="build all EclipseLink distribution files except docs and tests"/>
@@ -737,23 +737,6 @@
                 <exclude name="*jpars*.jar"/>
                 <exclude name="*nosql*.jar"/>
             </zipgroupfileset>
-        </jar>
-    </target>
-
-    <!-- Packages the eclipselink examples jar. -->
-    <target name="package-example-jar" description="build EclipseLink Examples jar">
-        <delete file="${eclipselink.example.install.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
-        <jar jarfile="${eclipselink.example.install.prefix}${eclipselink.zip.suffix}" duplicate="preserve">
-             <manifest>
-                <attribute name="Specification-Title"    value="${eclipselink.specification.title} Source"/>
-                <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
-                <attribute name="Specification-Version"  value="${release.version}"/>
-                <attribute name="Implementation-Title"   value="${eclipselink.implementation.title}"/>
-                <attribute name="Implementation-Vendor"  value="${implementation.vendor}"/>
-                <attribute name="Implementation-Version" value="${version.string}"/>
-                <attribute name="Release-Designation"    value="${release.designation}"/>
-            </manifest>
-            <zipfileset dir="examples" includes="**" excludes="**/.svn/**" prefix="examples_${release.version}" />
         </jar>
     </target>
 

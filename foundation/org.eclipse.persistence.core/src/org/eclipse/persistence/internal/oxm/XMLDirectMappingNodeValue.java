@@ -35,7 +35,6 @@ public class XMLDirectMappingNodeValue extends MappingNodeValue implements NullC
     private XMLDirectMapping xmlDirectMapping;
 
     public XMLDirectMappingNodeValue(XMLDirectMapping xmlDirectMapping) {
-        super();
         this.xmlDirectMapping = xmlDirectMapping;
     }
 
@@ -67,8 +66,9 @@ public class XMLDirectMappingNodeValue extends MappingNodeValue implements NullC
         if (null == fieldValue) {
             // Perform marshal operations based on the null policy
             return xmlDirectMapping.getNullPolicy().directMarshal(xPathFragment, marshalRecord, object, session, namespaceResolver);
-        } else {
-            QName schemaType = getSchemaType((XMLField) xmlDirectMapping.getField(), fieldValue, session);
+        } else {            
+            QName schemaType = ((XMLField) xmlDirectMapping.getField()).getSchemaTypeForValue(fieldValue, session);
+
             XPathFragment groupingFragment = null;    
             boolean isQName = false;
             if(XMLConstants.QNAME_QNAME.equals(schemaType)) {

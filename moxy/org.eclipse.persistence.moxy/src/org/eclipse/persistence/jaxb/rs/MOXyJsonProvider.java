@@ -23,7 +23,15 @@ import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.NavigableSet;
+import java.util.Queue;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -42,6 +50,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 
+import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
@@ -425,7 +434,16 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
                     if(type.isAssignableFrom(value.getClass())) {
                         return value;
                     }
-                    ContainerPolicy containerPolicy = ContainerPolicy.buildPolicyFor(type);
+                    ContainerPolicy containerPolicy;
+                    if(type.isAssignableFrom(Set.class)) {
+                        containerPolicy = new CollectionContainerPolicy(HashSet.class);
+                    } else if(type.isAssignableFrom(Deque.class) || type.isAssignableFrom(Queue.class)) {
+                        containerPolicy = new CollectionContainerPolicy(LinkedList.class);
+                    } else if(type.isAssignableFrom(NavigableSet.class) || type.isAssignableFrom(SortedSet.class)) {
+                        containerPolicy = new CollectionContainerPolicy(TreeSet.class);
+                    } else {
+                        containerPolicy = new CollectionContainerPolicy(type);
+                    }
                     Object container = containerPolicy.containerInstance();
                     for(Object element : (Collection) value) {
                         containerPolicy.addInto(element, container, null);
