@@ -30,6 +30,9 @@ public class RootLevelListTestCases extends TestSuite {
         suite.addTestSuite(WithXmlRootElementJAXBElementSetTestCases.class);
         suite.addTestSuite(WithoutXmlRootElementJAXBElementSetTestCases.class);
         
+        suite.addTestSuite(WithoutXmlRootElementArrayTestCases.class);
+        suite.addTestSuite(WithXmlRootElementArrayTestCases.class);
+
         return suite;
     }
 

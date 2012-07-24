@@ -18,6 +18,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Array;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;
@@ -222,7 +223,11 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
      */
     protected Class<?> getDomainClass(Type genericType) {
         if(genericType instanceof Class && genericType != JAXBElement.class) {
-             return (Class<?>) genericType;
+            Class<?> clazz = (Class<?>) genericType;
+            if(clazz.isArray()) {
+                return clazz.getComponentType();
+            }
+            return clazz;
         } else if(genericType instanceof ParameterizedType) {
             Type type = ((ParameterizedType) genericType).getActualTypeArguments()[0];
             if(type instanceof ParameterizedType) {
@@ -432,35 +437,45 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
             } else {
                 Object value = jaxbElement.getValue();
                 if(value instanceof ArrayList) {
-                    ContainerPolicy containerPolicy;
-                    if(type.isAssignableFrom(List.class) || type.isAssignableFrom(ArrayList.class) || type.isAssignableFrom(Collection.class)) {
-                        containerPolicy = new CollectionContainerPolicy(ArrayList.class);
-                    } else if(type.isAssignableFrom(Set.class)) {
-                        containerPolicy = new CollectionContainerPolicy(HashSet.class);
-                    } else if(type.isAssignableFrom(Deque.class) || type.isAssignableFrom(Queue.class)) {
-                        containerPolicy = new CollectionContainerPolicy(LinkedList.class);
-                    } else if(type.isAssignableFrom(NavigableSet.class) || type.isAssignableFrom(SortedSet.class)) {
-                        containerPolicy = new CollectionContainerPolicy(TreeSet.class);
+                    if(type.isArray()) {
+                        ArrayList<JAXBElement> arrayList = (ArrayList<JAXBElement>) value;
+                        int arrayListSize = arrayList.size();
+                        Object array = Array.newInstance(domainClass, arrayListSize);
+                        for(int x=0; x<arrayListSize; x++) {
+                            Array.set(array, x, arrayList.get(x).getValue());
+                        }
+                        return array;
                     } else {
-                        containerPolicy = new CollectionContainerPolicy(type);
-                    }
-                    Object container = containerPolicy.containerInstance();
-                    boolean wrapItemInJAXBElement = false;
-                    if(genericType instanceof ParameterizedType) {
-                        Type actualType = ((ParameterizedType) genericType).getActualTypeArguments()[0];
-                        if(actualType instanceof ParameterizedType) {
-                            Type rawType = ((ParameterizedType) actualType).getRawType();
-                            wrapItemInJAXBElement = rawType == JAXBElement.class;
-                        }
-                    }
-                    for(JAXBElement element : (Collection<JAXBElement>) value) {
-                        if(wrapItemInJAXBElement) {
-                            containerPolicy.addInto(element, container, null);
+                        ContainerPolicy containerPolicy;
+                        if(type.isAssignableFrom(List.class) || type.isAssignableFrom(ArrayList.class) || type.isAssignableFrom(Collection.class)) {
+                            containerPolicy = new CollectionContainerPolicy(ArrayList.class);
+                        } else if(type.isAssignableFrom(Set.class)) {
+                            containerPolicy = new CollectionContainerPolicy(HashSet.class);
+                        } else if(type.isAssignableFrom(Deque.class) || type.isAssignableFrom(Queue.class)) {
+                            containerPolicy = new CollectionContainerPolicy(LinkedList.class);
+                        } else if(type.isAssignableFrom(NavigableSet.class) || type.isAssignableFrom(SortedSet.class)) {
+                            containerPolicy = new CollectionContainerPolicy(TreeSet.class);
                         } else {
-                            containerPolicy.addInto(element.getValue(), container, null);
+                            containerPolicy = new CollectionContainerPolicy(type);
                         }
+                        Object container = containerPolicy.containerInstance();
+                        boolean wrapItemInJAXBElement = false;
+                        if(genericType instanceof ParameterizedType) {
+                            Type actualType = ((ParameterizedType) genericType).getActualTypeArguments()[0];
+                            if(actualType instanceof ParameterizedType) {
+                                Type rawType = ((ParameterizedType) actualType).getRawType();
+                                wrapItemInJAXBElement = rawType == JAXBElement.class;
+                            }
+                        }
+                        for(JAXBElement element : (Collection<JAXBElement>) value) {
+                            if(wrapItemInJAXBElement) {
+                                containerPolicy.addInto(element, container, null);
+                            } else {
+                                containerPolicy.addInto(element.getValue(), container, null);
+                            }
+                        }
+                        return container;
                     }
-                    return container;
                 } else {
                     return value;
                 }
