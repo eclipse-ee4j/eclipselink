@@ -225,7 +225,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
         if(genericType instanceof Class && genericType != JAXBElement.class) {
             Class<?> clazz = (Class<?>) genericType;
             if(clazz.isArray()) {
-                return clazz.getComponentType();
+                return getDomainClass(clazz.getComponentType());
             }
             return clazz;
         } else if(genericType instanceof ParameterizedType) {
