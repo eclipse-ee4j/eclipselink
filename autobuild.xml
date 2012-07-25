@@ -74,7 +74,7 @@
     <target name="init" depends="pre-init, common-init"/>
 
     <target name="set-defaults">
-        <property name="branch" value="master"/>
+        <property name="branch" value="2.4"/>
 
         <condition property="git.exec"   value="${env.GIT_EXEC}">
             <isset property="env.GIT_EXEC"/>
@@ -87,7 +87,7 @@
     </target>
 
     <target name="get-git-hash" unless="git.hash" depends="set-defaults">
-        <!-- get svn.revision    NOTE: if get fails defaulted to "NA"              -->
+        <!-- get git.hash    NOTE: if get fails defaulted to "NA" -->
         <exec outputproperty="git.hash"
             failonerror="false"
             failifexecutionfails="false"
@@ -97,6 +97,27 @@
             <arg value="log"/>
             <arg value="-1"/>
             <arg value="--format=%h"/>
+        </exec>
+        <property name="git.hash" value="NA"/>
+    </target>
+    
+    <target name="get-git-branch" unless="branch" depends="set-defaults">
+        <!-- get git branch (parse results of "git branch")           -->
+        <exec outputproperty="git.output"
+            failonerror="false"
+            failifexecutionfails="false"
+            errorproperty="gitbranch.failed"
+            logError="true"
+            executable="${git.exec}">
+            <arg value="branch"/>
+        </exec>
+        <exec outputproperty="branch"
+            failonerror="false"
+            failifexecutionfails="false"
+            errorproperty="echo.failed"
+            logError="true"
+            executable="echo">
+            <arg value="$git.output"/>
         </exec>
         <property name="git.hash" value="NA"/>
     </target>
@@ -140,7 +161,7 @@
         <property name="version.string" value="${release.version}.${version.qualifier}"/>
 
         <!-- Set extract.dir appropriately for this build                         -->
-        <property name="extract.dir" value="${build.tool.root}/${release.version}/${version.string}"/>
+        <property name="extract.dir" value="${build.tool.root}/exported_builds/${release.version}/${version.qualifier}"/>
 
         <!-- For signed archive name need "version.string" defined first -->
         <property name="p2.archive.presigned.zip" value="eclipselink-P2-${version.string}.zip"/>
@@ -298,7 +319,8 @@
         </copy>
         <!-- Generate proper handoff file -->
         <antcall target="generate-handoff">
-            <param name="procedure" value="build"/>
+            <param name="procedure"   value="build"/>
+            <param name="host"        value="Eclipse"/>
             <param name="extract.loc" value="${extract.dir}"/>
         </antcall>
     </target>
@@ -322,7 +344,8 @@
         <copy file="${hudson.workspace}/${eclipselink.dbws.builder.test}/${report.dir}/junit-noframes.html" tofile="${result.host.dir}/eclipselink-dbws-util-lrg-${version.string}.html" failonerror="false"/>
         <!-- Generate proper handoff file -->
         <antcall target="generate-handoff">
-            <param name="procedure" value="test"/>
+            <param name="procedure"   value="test"/>
+            <param name="host"        value="Eclipse"/>
             <param name="extract.loc" value="${result.host.dir}"/>
         </antcall>
     </target>
@@ -332,8 +355,7 @@
     </target>
     <target name="generate-handoff" if="procedure" depends="cannot-generate-handoff" description="generate the publishing handoff file">
         <property name="handoff.file" value="${build.tool.root}/handoff-file-${procedure}-${branch}-${version.qualifier}.dat"/>
-        <echo message="extract.loc=${extract.loc}" file="${handoff.file}" append="false"/>
-        <echo message="*host=${host}" file="${handoff.file}" append="true"/>
+        <echo message="extract.loc=${extract.loc} host=${host}" file="${handoff.file}" append="false"/>
     </target>
 
 
