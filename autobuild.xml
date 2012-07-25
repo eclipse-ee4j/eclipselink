@@ -313,7 +313,7 @@
         <condition property="p2.repos.dir" value="${p2.composite.root.dir}/${version.string}">
             <equals arg1="${build.type}" arg2="RELEASE"/>
         </condition>
-        <property name="p2.repos.dir" value="${p2.composite.root.dir}/${version.string}_${build.type}"/ -->
+        <property name="p2.repos.dir" value="${p2.composite.root.dir}/${version.string}_${build.type}"/>
 
         <!-- specify location of eclipse SDK install to use                       -->
         <property name="p2.SDK.install.dir"  value="${build.deps.dir}/eclipse"/>
