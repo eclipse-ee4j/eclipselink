@@ -481,7 +481,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
                 while (domainObject == null) {
                     ++tries;
                     if (tries > MAX_TRIES){
-                        session.getParent().log(SessionLog.SEVERE, SessionLog.CACHE, "entity_not_available_during_merge", new Object[]{descriptor.getJavaClassName(), cacheKey.getKey(), Thread.currentThread().getName(), cacheKey.getActiveThread()});
+                        session.getParent().log(SessionLog.SEVERE, SessionLog.CACHE, "entity_not_available_during_merge", new Object[]{descriptor.getJavaClassName(), cacheKey.getKey(), Thread.currentThread().getName(), cacheKey.getMutex().getActiveThread()});
                         break;
                     }
                     synchronized (cacheKey.getMutex()) {
