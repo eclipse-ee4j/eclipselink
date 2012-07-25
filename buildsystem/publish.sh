@@ -15,6 +15,7 @@
 
 #Define common variables
 THIS=$0
+ARG1=$1
 PROGNAME=`basename ${THIS}`
 CUR_DIR=`dirname ${THIS}`
 umask 0002
@@ -28,14 +29,10 @@ ANT_HOME=/shared/common/apache-ant-1.7.0
 HOME_DIR=/shared/rt/eclipselink
 LOG_DIR=${HOME_DIR}/logs
 
-#Files
-BOOTSTRAP_BLDFILE=bootstrap.xml
-UD2M_BLDFILE=uploadDepsToMaven.xml
-
 PATH=${JAVA_HOME}/bin:${ANT_HOME}/bin:/usr/bin:/usr/local/bin:${PATH}
 
 # Export necessary global environment variables
-export ANT_ARGS ANT_OPTS ANT_HOME HOME_DIR JAVA_HOME JUNIT_HOME LOG_DIR PATH BLD_DEPS_DIR JUNIT_HOME SVN_EXEC
+export ANT_ARGS ANT_OPTS ANT_HOME HOME_DIR JAVA_HOME JUNIT_HOME LOG_DIR PATH BLD_DEPS_DIR JUNIT_HOME
 
 #==========================
 #   Functions Definitions
@@ -90,7 +87,7 @@ parseHandoff() {
     handoff_file=$1
     handoff_error_string="Error: Invalid handoff_filename: '${handoff_file}'! Should be 'handoff-file-<PROC>-<BRANCH>-<QUALIFIER>.dat'"
 
-    ## Parse handoff_file for BRANCH, QUALIFIER, TARGET, and HOST
+    ## Parse handoff_file for BRANCH, QUALIFIER, and HOST
     BRANCH=`echo ${handoff_file} | cut -s -d'-' -f4`
     if [ "${BRANCH}" = "" ] ; then
         echo "BRANCH ${handoff_error_string}"
@@ -106,7 +103,9 @@ parseHandoff() {
         echo "PROC ${handoff_error_string}"
         exit 2
     fi
-#    echo "BRANCH='${BRANCH}' QUALIFIER='${QUALIFIER}' PROC='${PROC}'"
+    if [ "${DEBUG}" = "true" ] ; then
+        echo "BRANCH='${BRANCH}' QUALIFIER='${QUALIFIER}' PROC='${PROC}'"
+    fi
 }
 
 unset runAnt
@@ -116,8 +115,8 @@ runAnt() {
     QUALIFIER=$2
     PROC=$3
 
-    if [ ! "${BRANCH}" = "trunk" ] ; then
-        BRANCH_NM=${BRANCH}
+    if [ ! "${BRANCH}" = "master" ] ; then
+        BRANCH=${BRANCH}
         BRANCH=branches/${BRANCH}/
     else
         BRANCH_NM="trunk"
@@ -125,7 +124,7 @@ runAnt() {
     fi
 
     #Directories
-    BRANCH_PATH=${HOME_DIR}/${BRANCH}trunk
+    BRANCH_PATH=${WORKSPACE}
     BLD_DEPS_DIR=${HOME_DIR}/bld_deps/${BRANCH_NM}
     JUNIT_HOME=${BLD_DEPS_DIR}/junit
 
@@ -149,14 +148,14 @@ runAnt() {
     fi
 
     ## Parse $QUALIFIER for SVN revision value
-    SVNREV=`echo ${QUALIFIER} | cut -s -d'-' -f2 | cut -s -dr -f2`
-    if [ "${SVNREV}" = "" ] ; then
-        echo "SVNREV Error: There is something wrong with QUALIFIER. ('$QUALIFIER' should be vDATE-rREV)!"
+    GITHASH=`echo ${QUALIFIER} | cut -s -d'-' -f2`
+    if [ "${GITHASH}" = "" ] ; then
+        echo "GITHASH Error: There is something wrong with QUALIFIER. ('$QUALIFIER' should be vDATE-rREV)!"
         exit 2
     fi
 
     # Setup parameters for Ant build
-    ANT_BASEARG="-f \"${BOOTSTRAP_BLDFILE}\" -Dbranch.name=\"${BRANCH}\" ${ANT_BASEARG} -Dsvn.revision=${SVNREV}"
+    ANT_BASEARG="-f \"${BOOTSTRAP_BLDFILE}\" -Dbranch.name=\"${BRANCH}\" ${ANT_BASEARG} -Dgit.hash=${GITHASH}"
     ANT_BASEARG="${ANT_BASEARG} -Dbuild.date=${BLDDATE} -Dhandoff.file=${handoff}"
 
     cd ${HOME_DIR}
@@ -168,8 +167,11 @@ runAnt() {
     echo "${PROC} publish started at: '`date`' for ${BRANCH} build:${QUALIFIER} from '`pwd`'..." >> ${DATED_LOG}
     echo "   ant ${ANT_BASEARG} publish-${PROC}"
     echo "ant ${ANT_BASEARG} publish-${PROC}" >> ${DATED_LOG}
-    ant ${ANT_BASEARG} publish-${PROC} >> ${DATED_LOG} 2>&1
-    echo "Publish completed at: `date`" >> ${DATED_LOG}
+    if [ ! "$DEBUG" = "true" ] ; then
+        #ant ${ANT_BASEARG} publish-${PROC} >> ${DATED_LOG} 2>&1
+        echo "Not running: ant ${ANT_BASEARG} publish-${PROC}"
+    fi
+    echo "Publish completed (skipped) at: `date`" >> ${DATED_LOG}
     echo "Publish complete."
 }
 
@@ -188,9 +190,17 @@ postProcess() {
 #   Main Begins
 #
 #==========================
+#  If anything is in ARG1 then do a dummy "DEBUG"
+#  run (Don't call ant, don't remove handoff, do report variable states
+DEBUG=false
+if [ ! "$ARG1" = "" ] ; then
+    DEBUG=true
+    echo "Debug is on!"
+fi
+
+#==========================
 #     Test for handoff
 #        if not exit with minimal work done.
-
 curdir=`pwd`
 cd $HOME_DIR
 for handoff in `ls handoff-file*.dat` ; do

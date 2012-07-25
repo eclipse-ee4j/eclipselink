@@ -196,7 +196,7 @@
 <!-- ================================================================================= -->
 
     <!-- "top-level" target for creating the distribution archives. -->
-    <target name="package-all" depends="package-eclipselink-bundles, package-src-jar, package-example-jar, package-tst-src-zip, package-tst-jar-zip, package-javadoc-zip, package-installer-zip, package-eclipselink-nosql-install"/>
+    <target name="package-all" depends="package-eclipselink-bundles, package-src-jar, package-tst-src-zip, package-tst-jar-zip, package-javadoc-zip, package-installer-zip, package-eclipselink-nosql-install"/>
 
     <!-- Compiles all components except tests, builds eclipselink.jar. -->
     <target name="build-eclipselink-jar" depends="build-core, package-eclipselink-jar" description="build all EclipseLink distribution files except docs and tests"/>
@@ -247,9 +247,14 @@
                 <not>
                     <available file="${eclipselink.compdeps}/p2repo" type="dir"/>
                 </not>
-                <isset property="local.compdeps"/>
+                <equals arg1="${local.compdeps}" arg2="true"/>
             </and>
         </condition>
+        <echo message="Compdeps Settings:"/>
+        <echo message="    Whether to use a local compdeps p2 repo:"/>
+        <echo message="        local.compdeps: '${local.compdeps}'"/>
+        <echo message="    Whether a local p2epo needs generating (only true if using local and repo not found):"/>
+        <echo message="        generate.compdeps: '${generate.compdeps}'"/>
     </target>
 
     <!-- Cleans all build generated files. -->
@@ -319,12 +324,22 @@
     </target>
 
     <target name="generate-local-compdeps" if="generate.compdeps" depends="check-maven" description="Build local p2 repository of local compiler dependencies">
+        <!-- a bit redundant, but here as a failsafe. -->
+        <available file="${eclipse.install.dir}/plugins" type="dir" property="eclipse.dir.exist"/>
+        <fail message="Specified Eclipse installation (${eclipse.install.dir}/plugins) not found. Exiting..." unless="eclipse.dir.exist"/>
         <echo message="Generating local 'Compile Dependency P2 Repository' using tools found in '${eclipse.install.dir}/plugins'."/>
         <ant antfile="antbuild.xml" dir="${eclipselink.compdeps}"  target="build"/>
     </target>
 
     <!-- Compiles all runtime components (excluding Tests, Oracle extensions). -->
     <target name="build-core" depends="generate-local-compdeps, clean-runtime-checkedin">
+        <echo message="Launching Maven build with the following parameters:"/>
+        <echo message="    -Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
+        <echo message="    -Dmaven.home=${M2_HOME}"/>
+        <echo message="    -Dbuild.qualifier=${version.qualifier}"/>
+        <echo message="    -DforceContextQualifier=${version.qualifier}"/>
+        <echo message="    -Dlocal.compdeps=${local.compdeps}"/>
+        <echo message="    verify"/>
         <java dir="${eclipselink.mvn.parent}" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
              <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
              <jvmarg value="-Dmaven.home=${M2_HOME}"/>
@@ -719,23 +734,6 @@
                 <exclude name="*jpars*.jar"/>
                 <exclude name="*nosql*.jar"/>
             </zipgroupfileset>
-        </jar>
-    </target>
-
-    <!-- Packages the eclipselink examples jar. -->
-    <target name="package-example-jar" description="build EclipseLink Examples jar">
-        <delete file="${eclipselink.example.install.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
-        <jar jarfile="${eclipselink.example.install.prefix}${eclipselink.zip.suffix}" duplicate="preserve">
-             <manifest>
-                <attribute name="Specification-Title"    value="${eclipselink.specification.title} Source"/>
-                <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
-                <attribute name="Specification-Version"  value="${release.version}"/>
-                <attribute name="Implementation-Title"   value="${eclipselink.implementation.title}"/>
-                <attribute name="Implementation-Vendor"  value="${implementation.vendor}"/>
-                <attribute name="Implementation-Version" value="${version.string}"/>
-                <attribute name="Release-Designation"    value="${release.designation}"/>
-            </manifest>
-            <zipfileset dir="examples" includes="**" excludes="**/.svn/**" prefix="examples_${release.version}" />
         </jar>
     </target>
 
