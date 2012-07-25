@@ -281,9 +281,9 @@
     <target name="extract-build-artifacts" depends="common-init">
         <!-- New Publish Architecture -->
         <mkdir dir="${extract.dir}"/>
-        <echo "Extracting build artifacts..."/>
-        <echo "   from '${hudson.workspace}'"/>
-        <echo "     to '${extract.dir}'"/>
+        <echo message="Extracting build artifacts..."/>
+        <echo message="   from '${hudson.workspace}'"/>
+        <echo message="     to '${extract.dir}'"/>
         <copy file="${hudson.workspace}/features/${p2.archive.presigned.zip}"                           tofile="${extract.dir}/${p2.archive.presigned.zip}" failonerror="false"/>
         <copy file="${hudson.workspace}/${eclipselink.install.prefix}${eclipselink.zip.suffix}"         tofile="${extract.dir}/${eclipselink.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
         <copy file="${hudson.workspace}/${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"     tofile="${extract.dir}/${eclipselink.src.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
@@ -308,9 +308,9 @@
         <property name="host" value="Eclipse"/>
         <property name="result.host.dir" value="${extract.dir}/${host}"/>
         <mkdir dir="${result.host.dir}"/>
-        <echo "Extracting test artifacts..."/>
-        <echo "   from '${hudson.workspace}'"/>
-        <echo "     to '${result.host.dir}'"/>
+        <echo message="Extracting test artifacts..."/>
+        <echo message="   from '${hudson.workspace}'"/>
+        <echo message="     to '${result.host.dir}'"/>
         <copy file="${hudson.workspace}/${eclipselink.core.test}/${report.dir}/junit-noframes.html"         tofile="${result.host.dir}/eclipselink-core-lrg-${version.string}.html"      failonerror="false"/>
         <copy file="${hudson.workspace}/${eclipselink.jpa.test}/${report.dir}/junit-noframes.html"          tofile="${result.host.dir}/eclipselink-jpa-lrg-${version.string}.html"       failonerror="false"/>
         <copy file="${hudson.workspace}/${eclipselink.jpa.wdf.test}/${report.dir}/junit-noframes.html"      tofile="${result.host.dir}/eclipselink-jpa-wdf-lrg-${version.string}.html"   failonerror="false"/>
@@ -332,8 +332,8 @@
     </target>
     <target name="generate-handoff" if="procedure" depends="cannot-generate-handoff" description="generate the publishing handoff file">
         <property name="handoff.file" value="${build.tool.root}/handoff-file-${procedure}-${branch}-${version.qualifier}.dat"/>
-        <echo message="extract.loc=${extract.loc}" file="${handoff.file}" append="true"/>
-        <echo message="*host=${host}" file="${handoff.file}" append="false"/>
+        <echo message="extract.loc=${extract.loc}" file="${handoff.file}" append="false"/>
+        <echo message="*host=${host}" file="${handoff.file}" append="true"/>
     </target>
 
 
@@ -399,6 +399,7 @@
         <echo message="download.dir         ='${download.dir}'"/>
         <echo message="p2.composite.root.dir='${p2.composite.root.dir}'"/>
         <echo message="p2.repos.dir         ='${p2.repos.dir}'"/>
+        <echo message="release.designation  ='${release.designation}'"/>
         <echo message="p2.SDK.install.dir   ='${p2.SDK.install.dir}'"/>
         <echo message="metadata.repos.name  ='${metadata.repos.name}'"/>
         <echo message="artifact.repos.name  ='${artifact.repos.name}'"/>
