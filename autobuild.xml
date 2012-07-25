@@ -75,7 +75,7 @@
 
     <target name="set-defaults">
         <property name="branch" value="master"/>
-        
+
         <condition property="git.exec"   value="${env.GIT_EXEC}">
             <isset property="env.GIT_EXEC"/>
         </condition>
@@ -147,7 +147,7 @@
         <property name="release.designation" value="EclipseLink ${release.version}"/>
 
         <!-- Now that all our overrides are complete, pull in the rest of the build properties -->
-        <!-- property file="${build.location}/antbuild.properties"/ -->
+        <property file="${build.location}/antbuild.properties"/>
 
         <echo message="ANT_ARGS='${env.ANT_ARGS}'"/>
         <echo message="ANT_OPTS='${env.ANT_OPTS}'"/>
@@ -167,15 +167,16 @@
         <echo message="os.arch        ='${os.arch}'"/>
         <echo message="os.version     ='${os.version}'"/>
         <echo message=" "/>
-        <echo message="branch.name    ='${branch.name}'"/>
-        <echo message="branch         ='${branch}'"/>
-        <echo message="basedir        ='${basedir}'"/>
-        <echo message="build.deps.dir ='${build.deps.dir}'"/>
-        <echo message="build.location ='${build.location}'"/>
-        <echo message="build.tool.root='${build.tool.root}'"/>
-        <echo message="log.dir        ='${log.dir}'"/>
-        <echo message="junit.dir      ='${junit.dir}'"/>
-        <echo message="junit.lib      ='${junit.lib}'"/>
+        <echo message="branch.name     ='${branch.name}'"/>
+        <echo message="branch          ='${branch}'"/>
+        <echo message="basedir         ='${basedir}'"/>
+        <echo message="build.deps.dir  ='${build.deps.dir}'"/>
+        <echo message="build.location  ='${build.location}'"/>
+        <echo message="build.tool.root ='${build.tool.root}'"/>
+        <echo message="hudson.workspace='${hudson.workspace}'"/>
+        <echo message="log.dir         ='${log.dir}'"/>
+        <echo message="junit.dir       ='${junit.dir}'"/>
+        <echo message="junit.lib       ='${junit.lib}'"/>
         <echo message=" "/>
         <echo message="git.exec       ='${git.exec}'"/>
         <echo message=" "/>
@@ -191,8 +192,6 @@
         <echo message="db.user        ='${db.user}'"/>
         <echo message="db.pwd         ='${db.pwd}'"/>
         <echo message="db.platform    ='${db.platform}'"/>
-
-        <!-- echo message="svn.revision   ='${svn.revision}'"/ -->
     </target>
 
     <target name="clean" depends="init">
@@ -284,8 +283,185 @@
     <target name="generate-handoff" if="procedure" depends="cannot-generate-handoff" description="generate the publishing handoff file">
         <property name="handoff.file" value="${build.tool.root}/handoff-file-${procedure}-${branch}-${version.qualifier}.dat"/>
         <echo message="host=Eclipse" file="${handoff.file}" append="false"/>
-        <echo message="WORKSPACE=${WORKSPACE}" file="${handoff.file}" append="true"/>
+        <echo message="hudson.workspace=${hudson.workspace}" file="${handoff.file}" append="true"/>
     </target>
+
+
+    <!--  =====  #####              Publishing Targets               #####  =====  -->
+
+    <target name="publish-init" depends="common-init">
+        <!-- Set download.dir appropriately depending upon build target          -->
+        <condition property="download.dir" value="${eclipselink.root.download.dir}/nightly/${release.version}/${build.date}">
+            <equals arg1="${build.type}" arg2="SNAPSHOT"/>
+        </condition>
+        <condition property="download.dir" value="${eclipselink.root.download.dir}/releases/${release.version}">
+            <equals arg1="${build.type}" arg2="RELEASE"/>
+        </condition>
+        <property name="download.dir" value="${eclipselink.root.download.dir}/milestones/${release.version}/${build.type}"/>
+
+        <!-- Set p2 repository path appropriately depending upon build target     -->
+        <condition property="p2.composite.root.dir" value="${eclipselink.root.download.dir}/nightly-updates">
+            <equals arg1="${build.type}" arg2="SNAPSHOT"/>
+        </condition>
+        <condition property="p2.composite.root.dir" value="${eclipselink.root.download.dir}/updates">
+            <equals arg1="${build.type}" arg2="RELEASE"/>
+        </condition>
+        <property name="p2.composite.root.dir" value="${eclipselink.root.download.dir}/milestone-updates"/>
+        <condition property="p2.repos.dir" value="${p2.composite.root.dir}/${version.string}">
+            <equals arg1="${build.type}" arg2="SNAPSHOT"/>
+        </condition>
+        <condition property="p2.repos.dir" value="${p2.composite.root.dir}/${version.string}">
+            <equals arg1="${build.type}" arg2="RELEASE"/>
+        </condition>
+        <property name="p2.repos.dir" value="${p2.composite.root.dir}/${version.string}_${build.type}"/ -->
+
+        <!-- specify location of eclipse SDK install to use                       -->
+        <property name="p2.SDK.install.dir"  value="${build.deps.dir}/eclipse"/>
+        <!-- verify location of eclipse SDK install exists before proceeding...   -->
+        <available file="${p2.SDK.install.dir}" type="dir" property="p2.SDK.install.dir.exist"/>
+        <fail message="${p2.SDK.install.dir} dir not found. Build will fail, aborting now." unless="p2.SDK.install.dir.exist"/>
+
+        <!-- generate P2 repository labels                                        -->
+        <condition property="metadata.repos.name" value="&quot;${p2.nightly.repos.name}&quot;">
+            <equals arg1="${build.type}" arg2="SNAPSHOT"/>
+        </condition>
+        <condition property="metadata.repos.name" value="&quot;${p2.release.repos.name}&quot;">
+            <equals arg1="${build.type}" arg2="RELEASE"/>
+        </condition>
+        <property name="metadata.repos.name" value="&quot;${p2.milestone.repos.name}&quot;"/>
+
+        <condition property="artifact.repos.name" value="&quot;EclipseLink Incremental Artifacts&quot;">
+            <equals arg1="${build.type}" arg2="SNAPSHOT"/>
+        </condition>
+        <condition property="artifact.repos.name" value="&quot;EclipseLink Release Artifacts&quot;">
+            <equals arg1="${build.type}" arg2="RELEASE"/>
+        </condition>
+        <property name="artifact.repos.name" value="&quot;EclipseLink Milestone Artifacts&quot;"/>
+
+        <!-- generate string for tag creation (only used if milestone, or release build)  -->
+        <condition property="milestone.tag" value="${release.version}">
+            <equals arg1="${build.type}" arg2="RELEASE"/>
+        </condition>
+        <property name="milestone.tag" value="${release.version}-${build.type}"/>
+
+        <echo message="download.dir         ='${download.dir}'"/>
+        <echo message="p2.composite.root.dir='${p2.composite.root.dir}'"/>
+        <echo message="p2.repos.dir         ='${p2.repos.dir}'"/>
+        <echo message="p2.SDK.install.dir   ='${p2.SDK.install.dir}'"/>
+        <echo message="metadata.repos.name  ='${metadata.repos.name}'"/>
+        <echo message="artifact.repos.name  ='${artifact.repos.name}'"/>
+        <echo message="milestone.tag        ='${milestone.tag}'"/>
+    </target>
+
+    <!--  =====  Build Publish Targets -->
+    <target name="publish-build" depends="publish-init, publish-artifacts, publish-maven, publish-p2-site, cleanup-old-builds"/>
+    <target name="publish-artifacts">
+        <!-- New Publish Architecture -->
+        <mkdir dir="${download.dir}"/>
+        <copy file="${hudson.workspace}/features/${p2.archive.presigned.zip}"                            tofile="${download.dir}/${p2.archive.presigned.zip}" failonerror="false"/>
+        <copy file="${hudson.workspace}/${eclipselink.install.prefix}${eclipselink.zip.suffix}"          tofile="${download.dir}/${eclipselink.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
+        <copy file="${hudson.workspace}/${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"      tofile="${download.dir}/${eclipselink.src.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
+        <copy file="${hudson.workspace}/${eclipselink.tst.src.prefix}${eclipselink.zip.suffix}"          tofile="${download.dir}/${eclipselink.tst.src.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
+        <copy file="${hudson.workspace}/${eclipselink.tst.jar.prefix}${eclipselink.zip.suffix}"          tofile="${download.dir}/${eclipselink.tst.jar.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
+        <copy file="${hudson.workspace}/${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}"  tofile="${download.dir}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
+        <copy file="${hudson.workspace}/${eclipselink.nosql.install.prefix}${eclipselink.zip.suffix}"  tofile="${download.dir}/${eclipselink.nosql.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
+        <copy todir="${download.dir}" failonerror="false">
+            <fileset  dir="${hudson.workspace}">
+                <include name="${eclipselink.install.prefix}*${version.qualifier}-shared-lib.zip"/>
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="publish-maven" depends="init">
+        <ant antfile="uploadToMaven.xml" dir="${hudson.workspace}" target="upload-maven-all"/>
+    </target>
+
+    <target name="publish-p2-site" depends="fix-permission">
+        <!-- has to be run after publish, so it can be generic for nightly, or milestone builds -->
+        <condition property="p2.archive.to.use" value="${hudson.workspace}/features/${p2.archive.presigned.zip}"
+                                                 else="${download.dir}/${p2.archive.signed.zip}">
+            <equals arg1="${build.type}" arg2="SNAPSHOT"/>
+        </condition>
+        <!-- Clean existing repos if it exists (should only be true of a release redo, or the latest milestone or nightly) -->
+        <delete dir="${p2.repos.dir}" failonerror="false"/>
+        <mkdir dir="${p2.repos.dir}"/>
+        <!-- populate update site with feature and bundle jars, then publish repository -->
+        <ant antfile="antbuild.xml" dir="${hudson.workspace}/features" target="assemble-repos">
+            <property name="do.composite"        value="true"/>
+            <property name="ready-to-go"         value="true"/>
+            <property name="bundle.install.file" value="${download.dir}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}"/>
+            <property name="nosql.install.file"  value="${download.dir}/${eclipselink.nosql.install.prefix}-${version.string}${eclipselink.zip.suffix}"/>
+            <property name="p2.archive.zip"      value="${p2.archive.to.use}"/>
+        </ant>
+        <!-- Regenerate Composite Repos metadata -->
+        <echo message="p2.composite.root.dir = '${p2.composite.root.dir}'"/>
+        <echo message="metadata.repos.name   = '${metadata.repos.name}'"/>
+        <exec executable="/bin/sh" failonerror="false" logError="true" >
+            <arg value="${hudson.workspace}/buildsystem/buildCompositeP2.sh"/>
+            <arg value="${p2.composite.root.dir}"/>
+            <arg value="${metadata.repos.name}"/>
+        </exec>
+        <!-- Can clean-up temp dir now -->
+        <delete dir="${temp.rebuild.dir}" failonerror="false"/>
+    </target>
+
+    <!-- Antified "cleanNightly.sh" -->
+    <target name="cleanup-old-builds" depends="fix-permission">
+        <exec executable="/bin/sh" failonerror="true" logError="true" >
+            <arg value="${hudson.workspace}/buildsystem/cleanNightly.sh"/>
+        </exec>
+    </target>
+
+    <!--  =====  Test Publish Targets -->
+    <target name="cannot-publish-tests" unless="host" depends="init">
+        <fail message="'host' is not set. Cannot initiate publication of test results!"/>
+    </target>
+    <target name="publish-tests" if="host" depends="cannot-publish-tests">
+        <!-- New Publish Architecture -->
+        <property name="host.dir" value="${download.dir}/${host}"/>
+        <mkdir dir="${host.dir}"/>
+        <copy file="${hudson.workspace}/${eclipselink.core.test}/${report.dir}/junit-noframes.html"         tofile="${host.dir}/eclipselink-core-lrg-${version.string}.html"      failonerror="false"/>
+        <copy file="${hudson.workspace}/${eclipselink.jpa.test}/${report.dir}/junit-noframes.html"          tofile="${host.dir}/eclipselink-jpa-lrg-${version.string}.html"       failonerror="false"/>
+        <copy file="${hudson.workspace}/${eclipselink.jpa.wdf.test}/${report.dir}/junit-noframes.html"      tofile="${host.dir}/eclipselink-jpa-wdf-lrg-${version.string}.html"   failonerror="false"/>
+        <copy file="${hudson.workspace}/${eclipselink.jpars.test}/${report.dir}/junit-noframes.html"        tofile="${host.dir}/eclipselink-jpars-lrg-${version.string}.html"     failonerror="false"/>
+        <copy file="${hudson.workspace}/${eclipselink.moxy.test}/${report.dir}/jaxb/junit-noframes.html"    tofile="${host.dir}/eclipselink-jaxb-lrg-${version.string}.html"      failonerror="false"/>
+        <copy file="${hudson.workspace}/${eclipselink.moxy.test}/${report.dir}/oxm/junit-noframes.html"     tofile="${host.dir}/eclipselink-oxm-lrg-${version.string}.html"       failonerror="false"/>
+        <copy file="${hudson.workspace}/${eclipselink.sdo.test}/${report.dir}/true/junit-noframes.html"     tofile="${host.dir}/eclipselink-sdo-lrg-${version.string}.html"       failonerror="false"/>
+        <copy file="${hudson.workspace}/${eclipselink.dbws.test}/${report.dir}/junit-noframes.html"         tofile="${host.dir}/eclipselink-dbws-lrg-${version.string}.html"      failonerror="false"/>
+        <copy file="${hudson.workspace}/${eclipselink.dbws.builder.test}/${report.dir}/junit-noframes.html" tofile="${host.dir}/eclipselink-dbws-util-lrg-${version.string}.html" failonerror="false"/>
+        <!-- Remove any old results summary file, if it exists -->
+        <delete file="${host.dir}/ResultsSummary.dat" failonerror="false"/>
+        <!-- Run gen summary dat script -->
+    </target>
+
+    <!-- target name="publish-oracle-extension">
+        <echo message="oracle-extension commit in progress..."/>
+        <exec executable="${svn.exec}" failonerror="false" logError="true">
+            <arg value="commit"/>
+            <arg value="-m ${version.string}"/>
+            <arg value="${hudson.workspace}/foundation/plugins/org.eclipse.persistence.oracle.jar"/>
+            <arg value="${hudson.workspace}/foundation/plugins/org.eclipse.persistence.oracle.source.jar"/>
+        </exec>
+    </target>
+
+    <target name="publish-oracle-nosql">
+        <echo message="oracle-nosql commit in progress..."/>
+        <exec executable="${svn.exec}" failonerror="false" logError="true">
+            <arg value="commit"/>
+            <arg value="-m ${version.string}"/>
+            <arg value="${hudson.workspace}/foundation/plugins/org.eclipse.persistence.oracle.nosql.jar"/>
+            <arg value="${hudson.workspace}/foundation/plugins/org.eclipse.persistence.oracle.nosql.source.jar"/>
+        </exec>
+    </target -->
+
+    <target name="fix-permission">
+        <chmod perm="ug+x">
+            <fileset dir="${hudson.workspace}/buildsystem">
+                <include name="*.sh"/>
+            </fileset>
+        </chmod>
+    </target>
+
 
     <!-- Helper target for cb processing -->
     <!--   Is intendended only to be called by build post-processing if a cb fails tests -->
