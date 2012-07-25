@@ -46,7 +46,7 @@ public class JavaMethodImpl implements JavaMethod {
 
     protected Method jMethod;
     private JavaModelImpl javaModelImpl;
-    protected Boolean isMetadataComplete;
+    protected boolean isMetadataComplete;
 
     public JavaMethodImpl(Method javaMethod, JavaModelImpl javaModelImpl) {
         this(javaMethod, javaModelImpl, false);
@@ -55,7 +55,9 @@ public class JavaMethodImpl implements JavaMethod {
     public JavaMethodImpl(Method javaMethod, JavaModelImpl javaModelImpl, Boolean isMetadataComplete) {
         this.jMethod = javaMethod;
         this.javaModelImpl = javaModelImpl;
-        this.isMetadataComplete = isMetadataComplete;
+        if(isMetadataComplete != null){
+            this.isMetadataComplete = isMetadataComplete;
+        }
     }
 
     public Collection getActualTypeArguments() {
