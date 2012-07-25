@@ -167,7 +167,8 @@ runAnt() {
     echo "   ant ${ANT_BASEARG} publish-${PROC}"
     echo "ant ${ANT_BASEARG} publish-${PROC}" >> ${DATED_LOG}
     if [ ! "$DEBUG" = "true" ] ; then
-        ant ${ANT_BASEARG} publish-${PROC} >> ${DATED_LOG} 2>&1
+        #ant ${ANT_BASEARG} publish-${PROC} >> ${DATED_LOG} 2>&1
+        echo "Not running: ant ${ANT_BASEARG} publish-${PROC}"
     fi
     echo "Publish completed (skipped) at: `date`" >> ${DATED_LOG}
     echo "Publish complete."
