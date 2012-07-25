@@ -13,6 +13,7 @@
 package org.eclipse.persistence.oxm;
 
 import java.io.*;
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
@@ -656,6 +657,19 @@ public class XMLMarshaller implements Cloneable {
                     writerRecord.startCollection();
                     for(Object o : (Collection) object) {
                         marshal(o, writerRecord);
+                    }
+                    writerRecord.endCollection();
+                    writer.flush();
+                } catch(IOException e) {
+                    throw XMLMarshalException.marshalException(e);
+                }
+                return;
+            } else if(object.getClass().isArray()) {
+                try {
+                    writerRecord.startCollection();
+                    int arrayLength = Array.getLength(object);
+                    for(int x=0; x<arrayLength; x++) {
+                        marshal(Array.get(object, x), writerRecord);
                     }
                     writerRecord.endCollection();
                     writer.flush();
