@@ -36,6 +36,7 @@ import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.Result;
 import javax.xml.validation.Schema;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 
 import org.w3c.dom.Node;
@@ -468,6 +469,13 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
     			newList.add(modifySingleObjectIfNeeded(o));
     		} 
     		return newList;
+        }else if(obj.getClass().isArray()){
+            int arraySize = Array.getLength(obj);
+            List newList = new ArrayList(arraySize);
+            for(int x=0; x<arraySize; x++) {
+                newList.add(modifySingleObjectIfNeeded(Array.get(obj, x)));
+            }
+            return newList;
         }else{
     		return modifySingleObjectIfNeeded(obj);
     	}    	
