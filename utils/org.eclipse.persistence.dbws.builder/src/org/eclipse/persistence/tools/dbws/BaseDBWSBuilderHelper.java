@@ -1379,7 +1379,7 @@ public abstract class BaseDBWSBuilderHelper {
      * to the OXProject if none exists.
      */
     protected void handleSimpleXMLFormat(boolean isSimpleXMLFormat, Result result, ProcedureOperationModel procedureOperationModel) {
-        if (isSimpleXMLFormat) {
+    	if (isSimpleXMLFormat || result.getType() == Util.SXF_QNAME) {
             SimpleXMLFormat sxf = new SimpleXMLFormat();
             String simpleXMLFormatTag = procedureOperationModel.getSimpleXMLFormatTag();
             if (simpleXMLFormatTag != null && simpleXMLFormatTag.length() > 0) {
