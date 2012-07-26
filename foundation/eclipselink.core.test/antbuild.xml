@@ -285,16 +285,37 @@
         <filter token="loglevel" value="${logging.level}"/>
         <filter token="boolvalue" value="${logging.boolvalue}"/>
         <filter token="dbPlatform" value="${db.platform}"/>
+        <echo message="Setup filtering values:"/>
+        <echo message="dbUser:      '${db.user}'"/>
+        <echo message="dbPassword:  ********"/>
+        <echo message="driverClass: '${db.driver}'"/>
+        <echo message="dbURL        '${db.url}'"/>
+        <echo message="loglevel:    '${logging.level}'"/>
+        <echo message="boolvalue:   '${logging.boolvalue}'"/>
+        <echo message="dbPlatform:  '${db.platform}'"/>
+        <echo message=" "/>
+
+        <echo message="Filter copying Resources (all but below) (default encoding):"/>
+        <echo message="   from '${core_test.resource.dir}'"/>
+        <echo message="     to '${core_test.run.dir}'"/>
         <copy todir="${core_test.run.dir}" filtering="true" overwrite="true">
             <fileset dir="${core_test.resource.dir}"
                 excludes="**/Employee_utf16.xml, **/NLSJapaneseMWIntegrationTestEmployeeProject.xml"/>
-         </copy>
-         <copy todir="${core_test.run.dir}" filtering="true" overwrite="true" encoding="UTF-16">
+        </copy>
+
+        <echo message="Filter copying Resources '**/Employee_utf16.xml' (UTF-16 encoding)"/>
+        <echo message="   from '${core_test.resource.dir}'"/>
+        <echo message="     to '${core_test.run.dir}'"/>
+        <copy todir="${core_test.run.dir}" filtering="true" overwrite="true" encoding="UTF-16">
             <fileset dir="${core_test.resource.dir}" includes="**/Employee_utf16.xml"/>
-         </copy>
-          <copy todir="${core_test.run.dir}" filtering="true" overwrite="true" encoding="Shift_JIS">
+        </copy>
+
+        <echo message="Filter copying Resources '**/NLSJapaneseMWIntegrationTestEmployeeProject.xml' (Shift_JIS encoding)"/>
+        <echo message="   from '${core_test.resource.dir}'"/>
+        <echo message="     to '${core_test.run.dir}'"/>
+        <copy todir="${core_test.run.dir}" filtering="true" overwrite="true" encoding="Shift_JIS">
             <fileset dir="${core_test.resource.dir}" includes="**/NLSJapaneseMWIntegrationTestEmployeeProject.xml"/>
-         </copy>
+        </copy>
     </target>
 
 
