@@ -392,6 +392,9 @@
             todir="./${report.dir}"
           />
         </junitreport>
+        <delete>
+          <fileset dir="." includes="TEST-*xml"/>
+        </delete>
     </target>
 
     <!-- MACRO and SCRIPT definitions -->
