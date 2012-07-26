@@ -527,31 +527,4 @@
     </target>
 
 
-    <!-- Helper target for cb processing -->
-    <!--   Is intendended only to be called by build post-processing if a cb fails tests -->
-    <!--   Variables used defined only on command-line of script:                        -->
-    <!--       test.result.zip      - name of zip containing test result files           -->
-    <!--       test.result.dest.dir - location of "failed build" result dir              -->
-    <!--                                                                                 -->
-    <target name="save-tst-results" depends="init">
-        <echo message="build.location=${build.location}"/>
-        <echo message="${eclipselink.core.test}/${report.dir}/junit-noframes.html"/>
-        <echo message="${eclipselink.jpa.test}/${report.dir}/junit-noframes.html"/>
-        <echo message="${eclipselink.moxy.test}/${report.dir}/jaxb/junit-noframes.html"/>
-        <echo message="${eclipselink.moxy.test}/${report.dir}/oxm/junit-noframes.html"/>
-        <echo message="${eclipselink.sdo.test}/${report.dir}/true/junit-noframes.html"/>
-        <echo message="${eclipselink.dbws.test}/${report.dir}/junit-noframes.html"/>
-        <echo message="${eclipselink.dbws.builder.test}/${report.dir}/junit-noframes.html"/>
-        <zip destfile="${basedir}/${test.result.zip}">
-            <zipfileset dir="${build.location}">
-                <include name="${eclipselink.core.test}/${report.dir}/junit-noframes.html"/>
-                <include name="${eclipselink.jpa.test}/${report.dir}/junit-noframes.html"/>
-                <include name="${eclipselink.moxy.test}/${report.dir}/**/junit-noframes.html"/>
-                <include name="${eclipselink.sdo.test}/${report.dir}/**/junit-noframes.html"/>
-                <include name="${eclipselink.dbws.test}/${report.dir}/junit-noframes.html"/>
-                <include name="${eclipselink.dbws.builder.test}/${report.dir}/junit-noframes.html"/>
-            </zipfileset>
-        </zip>
-    </target>
-
 </project>
