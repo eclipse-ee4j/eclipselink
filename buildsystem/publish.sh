@@ -85,6 +85,7 @@ unset parseHandoff
 parseHandoff() {
     handoff_file=$1
     handoff_error_string="Error: Invalid handoff_filename: '${handoff_file}'! Should be 'handoff-file-<PROC>-<BRANCH>-<QUALIFIER>.dat'"
+    handoff_content_error="Error: Invalid handoff_file contents: '`cat ${handoff_file}`'! Should be 'extract.loc=<BUILD_ARCHIVE_LOC> host=<HOST>'"
 
     ## Parse handoff_file for BRANCH, QUALIFIER, and HOST
     BRANCH=`echo ${handoff_file} | cut -s -d'-' -f4`
@@ -100,6 +101,16 @@ parseHandoff() {
     PROC=`echo ${handoff_file} | cut -s -d'-' -f3`
     if [ !  \( \( "${PROC}" = "test" \) -o \( "${PROC}" = "build" \) \) ] ; then
         echo "PROC ${handoff_error_string}"
+        exit 2
+    fi
+    BUILD_ARCHIVE_LOC=`cat ${handoff_file} | cut -d' ' -f1 | cut -d'=' -f2`
+    if [ "${BUILD_ARCHIVE_LOC}" = "" ] ; then
+        echo "BUILD_ARCHIVE_LOC ${handoff_content_error}"
+        exit 2
+    fi
+    HOST=`cat ${handoff_file} | cut -d' ' -f2 | cut -d'=' -f2`
+    if [ "${HOST}" = "" ] ; then
+        echo "HOST ${handoff_content_error}"
         exit 2
     fi
     if [ "${DEBUG}" = "true" ] ; then
@@ -191,8 +202,10 @@ postProcess() {
 #==========================
 #  If anything is in ARG1 then do a dummy "DEBUG"
 #  run (Don't call ant, don't remove handoff, do report variable states
-DEBUG=false
-if [ ! "$ARG1" = "" ] ; then
+if [ -z "$ARG1" ] ; then
+    DEBUG=false
+    echo "Debug is off!"
+else
     DEBUG=true
     echo "Debug is on!"
 fi
@@ -206,7 +219,7 @@ for handoff in `ls handoff-file*.dat` ; do
     echo "Detected handoff file:'${handoff}'. Process starting..."
     # Do stuff
     parseHandoff ${handoff}
-    runAnt ${BRANCH} ${QUALIFIER} ${PROC}
+    echo "runAnt ${BRANCH} ${QUALIFIER} ${PROC} ${BUILD_ARCHIVE_LOC}"
     postProcess
 done
 
