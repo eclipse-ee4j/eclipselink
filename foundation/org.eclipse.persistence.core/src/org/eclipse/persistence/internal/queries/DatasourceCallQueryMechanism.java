@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     07/13/2012-2.5 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/  
 package org.eclipse.persistence.internal.queries;
 
@@ -185,6 +187,15 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
         }
     }
 
+    /**
+     * INTERNAL:
+     * Execute a call.
+     * @exception  DatabaseException - an error has occurred on the database
+     */
+    public Object execute() throws DatabaseException {
+        return executeCall();
+    }
+    
     /**
      * Execute the call.  It is assumed the call has been fully prepared.
      * @exception  DatabaseException - an error has occurred on the database.
@@ -492,6 +503,17 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
         prepareCall();
     }
 
+    /**
+     * Pre-build configure the call. This method assumes the query was built
+     * using a stored procedure query which is a single call.
+     * 
+     * The return type on the call will already be set and 
+     */
+    public void prepareExecute() {
+        getCall().returnExecute();
+        prepareCall();
+    }
+    
     /**
      * Pre-build configure the call.
      */

@@ -21,6 +21,8 @@
  *       - 345962: Join fetch query when using tenant discriminator column fails.
  *     06/30/2011-2.3.1 Guy Pelletier 
  *       - 341940: Add disable/enable allowing native queries 
+ *     07/13/2012-2.5 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/
 package org.eclipse.persistence.queries;
 
@@ -1662,6 +1664,13 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * PUBLIC: Return true if this is a report query.
      */
     public boolean isReportQuery() {
+        return false;
+    }
+    
+    /**
+     * PUBLIC: Return true if this is a result set mapping query.
+     */
+    public boolean isResultSetMappingQuery() {
         return false;
     }
 

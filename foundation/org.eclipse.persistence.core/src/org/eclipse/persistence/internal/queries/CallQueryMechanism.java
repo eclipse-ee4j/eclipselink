@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     07/13/2012-2.5 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/  
 package org.eclipse.persistence.internal.queries;
 
@@ -242,6 +244,16 @@ public class CallQueryMechanism extends DatasourceCallQueryMechanism {
         prepareCall();
     }
 
+    /**
+     * Pre-build configure the SQL call for an execute call.
+     */
+    public void prepareExecute() {
+        DatabaseCall call = getDatabaseCall();
+        call.returnExecute();
+        call.setIsFieldMatchingRequired(isCallQueryMechanism());
+        prepareCall();
+    }
+    
     /**
      * Pre-build configure the SQL call.
      */
