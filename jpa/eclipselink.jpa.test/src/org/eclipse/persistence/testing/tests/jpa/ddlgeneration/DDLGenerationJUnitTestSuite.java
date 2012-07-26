@@ -131,8 +131,53 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
     }
 
     public static Test suite() {
-        TestSuite suite = new TestSuite(DDLGenerationJUnitTestSuite.class);
-        
+        TestSuite suite = new TestSuite();
+        suite.setName("DDLGenerationExtendTablesJUnitTestSuite");
+        suite.addTest(new DDLGenerationExtendTablesJUnitTestSuite("testSetup"));
+        List<String> tests = new ArrayList<String>();
+        //Some of these tests need to be run in a particular order.
+
+        tests.add("testDDLTableCreationWithSuffix");
+        tests.add("testDDLTablePerClassModel");
+        tests.add("testDDLTablePerClassModelQuery");
+        tests.add("testDDLPkConstraintErrorIncludingRelationTableColumnName");
+        tests.add("testOptionalPrimaryKeyJoinColumnRelationship");
+        tests.add("testPrimaryKeyJoinColumns");
+        tests.add("testDDLEmbeddableMapKey");
+        tests.add("testDDLAttributeOverrides");
+        tests.add("testDDLAttributeOverridesOnElementCollection");
+        tests.add("testDDLUniqueKeysAsJoinColumns");
+        tests.add("testCreateMafiaFamily707");
+        tests.add("testCreateMafiaFamily007");
+        tests.add("testValidateMafiaFamily707");
+        tests.add("testValidateMafiaFamily007");
+        tests.add("testLazyBlob");
+        tests.add("testSimpleSelectFoo");
+        tests.add("testElementMapOnEmbedded");
+        tests.add("testTablePerTenant");
+        tests.add("testDDLUniqueConstraintsByAnnotations");
+        tests.add("testDDLUniqueConstraintsByXML");
+        tests.add("testDDLSubclassEmbeddedIdPkColumnsInJoinedStrategy");
+        tests.add("testBug241308");
+        tests.add("testDDLUnidirectionalOneToMany");
+        tests.add("testCascadeMergeOnManagedEntityWithOrderedList");
+        tests.add("testDirectCollectionMapping");
+        tests.add("testAggregateCollectionMapping");
+        tests.add("testOneToManyMapping");
+        tests.add("testUnidirectionalOneToManyMapping");
+        tests.add("testManyToManyMapping");
+        tests.add("testManyToManyWithMultipleJoinColumns");
+        tests.add("testEmbeddedManyToMany");
+        tests.add("testEmbeddedOneToOne");
+        tests.add("testAssociationOverrideToEmbeddedManyToMany");
+        tests.add("testDeleteObjectWithEmbeddedManyToMany");
+        tests.add("testTPCMappedKeyMapQuery");
+        tests.add("testLAZYLOBWithEmbeddedId");
+
+        for (String test : tests) {
+            suite.addTest(new DDLGenerationExtendTablesJUnitTestSuite(test));
+        }
+
         return suite;
     }
     
@@ -385,15 +430,14 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             em.persist(zipArea);
             em.persist(zip);
             
-            commitTransaction(em);
+            em.flush();
             
         } catch (RuntimeException e) {
+            fail("Error persisting new country with city, states and zips : " + e);
+        } finally {
             if (isTransactionActive(em)) {
                 rollbackTransaction(em);
             }
-
-            fail("Error persisting new country with city, states and zips : " + e);
-        } finally {
             closeEntityManager(em);
         }
     }
@@ -1236,7 +1280,6 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             employee.addPhoneNumber(phoneNumber);
             em.persist(employee);
             
-            getServerSession(DDL_PU).setLogLevel(0);
             commitTransaction(em);
 
             // Force the read to hit the database and make sure the phone number is read back.
@@ -1512,7 +1555,6 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             pk.setVersionid(new BigInteger(new Long(System.currentTimeMillis()).toString()));
             lobtest.setLobtestPK(pk);
                 
-            getServerSession(DDL_PU).setLogLevel(0);
             em.persist(lobtest);
             commitTransaction(em);
         } catch (RuntimeException e) {
