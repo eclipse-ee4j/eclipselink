@@ -51,11 +51,9 @@
 
     <!-- Define custom task to "cleanup" the revision information -->
     <property name="custom.tasks.lib" value="${build.location}/buildsystem/ant_customizations.jar"/>
-    <!-- property name="custom.cleanrev.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.CleanRevision"/ -->
     <property name="custom.echo.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.Say"/>
     <available file="${custom.tasks.lib}" property="ant_customizations.exist"/>
     <fail unless="ant_customizations.exist" message="Cannot find custom tasks library: '${custom.tasks.lib}' directory"/>
-    <!-- taskdef  name="cleanRevision" classname="${custom.cleanrev.task.class}" classpath="${custom.tasks.lib}"/ -->
     <taskdef  name="say"           classname="${custom.echo.task.class}"     classpath="${custom.tasks.lib}"/>
 
     <target name="build-nightly"    description="Trigger the nightly automated build and lrg tests"
@@ -100,8 +98,29 @@
         </exec>
         <property name="git.hash" value="NA"/>
     </target>
+    
+    <target name="get-git-branch" unless="branch" depends="set-defaults">
+        <!-- get git branch (parse results of "git branch")           -->
+        <exec outputproperty="git.output"
+            failonerror="false"
+            failifexecutionfails="false"
+            errorproperty="gitbranch.failed"
+            logError="true"
+            executable="${git.exec}">
+            <arg value="branch"/>
+        </exec>
+        <exec outputproperty="branch"
+            failonerror="false"
+            failifexecutionfails="false"
+            errorproperty="echo.failed"
+            logError="true"
+            executable="echo">
+            <arg value="$git.output"/>
+        </exec>
+        <property name="git.hash" value="NA"/>
+    </target>
 
-    <target name="pre-init" depends="get-git-hash"> <!-- depends="get-svn-rev" -->
+    <target name="pre-init" depends="get-git-hash">
         <tstamp>
             <format property="build.date" pattern="yyyyMMdd"/>
             <format property="build.time" pattern="HHmm"/>
@@ -140,7 +159,7 @@
         <property name="version.string" value="${release.version}.${version.qualifier}"/>
 
         <!-- Set extract.dir appropriately for this build                         -->
-        <property name="extract.dir" value="${build.tool.root}/${release.version}/${version.string}"/>
+        <property name="extract.dir" value="${build.tool.root}/exported_builds/${release.version}/${version.qualifier}"/>
 
         <!-- For signed archive name need "version.string" defined first -->
         <property name="p2.archive.presigned.zip" value="eclipselink-P2-${version.string}.zip"/>
@@ -206,7 +225,7 @@
         <ant antfile="antbuild.xml" dir="${build.location}"          target="build-all-but-ext"/>
         <ant antfile="antbuild.xml" dir="${build.location}/features" target="build-features-create-signzip"/>
         <ant antfile="antbuild.xml" dir="${build.location}"          target="package-all"/>
-        <!-- Generate proper handoff file -->
+        <!-- Extract build artifacts from Hudson Workspace and make them accessible to publish -->
         <antcall target="extract-build-artifacts"/>
     </target>
 
@@ -298,7 +317,8 @@
         </copy>
         <!-- Generate proper handoff file -->
         <antcall target="generate-handoff">
-            <param name="procedure" value="build"/>
+            <param name="procedure"   value="build"/>
+            <param name="host"        value="Eclipse"/>
             <param name="extract.loc" value="${extract.dir}"/>
         </antcall>
     </target>
@@ -322,7 +342,8 @@
         <copy file="${hudson.workspace}/${eclipselink.dbws.builder.test}/${report.dir}/junit-noframes.html" tofile="${result.host.dir}/eclipselink-dbws-util-lrg-${version.string}.html" failonerror="false"/>
         <!-- Generate proper handoff file -->
         <antcall target="generate-handoff">
-            <param name="procedure" value="test"/>
+            <param name="procedure"   value="test"/>
+            <param name="host"        value="Eclipse"/>
             <param name="extract.loc" value="${result.host.dir}"/>
         </antcall>
     </target>
@@ -332,12 +353,11 @@
     </target>
     <target name="generate-handoff" if="procedure" depends="cannot-generate-handoff" description="generate the publishing handoff file">
         <property name="handoff.file" value="${build.tool.root}/handoff-file-${procedure}-${branch}-${version.qualifier}.dat"/>
-        <echo message="extract.loc=${extract.loc}" file="${handoff.file}" append="false"/>
-        <echo message="*host=${host}" file="${handoff.file}" append="true"/>
+        <echo message="extract.loc=${extract.loc} host=${host}" file="${handoff.file}" append="false"/>
     </target>
 
 
-    <!--  =====  #####              Publishing Targets               #####  =====  -->
+    <!--  =====  #####           Public Publishing Targets               #####  =====  -->
 
     <target name="publish-init" depends="common-init">
         <!-- Set download.dir appropriately depending upon build target          -->
@@ -502,34 +522,6 @@
                 <include name="*.sh"/>
             </fileset>
         </chmod>
-    </target>
-
-
-    <!-- Helper target for cb processing -->
-    <!--   Is intendended only to be called by build post-processing if a cb fails tests -->
-    <!--   Variables used defined only on command-line of script:                        -->
-    <!--       test.result.zip      - name of zip containing test result files           -->
-    <!--       test.result.dest.dir - location of "failed build" result dir              -->
-    <!--                                                                                 -->
-    <target name="save-tst-results" depends="init">
-        <echo message="build.location=${build.location}"/>
-        <echo message="${eclipselink.core.test}/${report.dir}/junit-noframes.html"/>
-        <echo message="${eclipselink.jpa.test}/${report.dir}/junit-noframes.html"/>
-        <echo message="${eclipselink.moxy.test}/${report.dir}/jaxb/junit-noframes.html"/>
-        <echo message="${eclipselink.moxy.test}/${report.dir}/oxm/junit-noframes.html"/>
-        <echo message="${eclipselink.sdo.test}/${report.dir}/true/junit-noframes.html"/>
-        <echo message="${eclipselink.dbws.test}/${report.dir}/junit-noframes.html"/>
-        <echo message="${eclipselink.dbws.builder.test}/${report.dir}/junit-noframes.html"/>
-        <zip destfile="${basedir}/${test.result.zip}">
-            <zipfileset dir="${build.location}">
-                <include name="${eclipselink.core.test}/${report.dir}/junit-noframes.html"/>
-                <include name="${eclipselink.jpa.test}/${report.dir}/junit-noframes.html"/>
-                <include name="${eclipselink.moxy.test}/${report.dir}/**/junit-noframes.html"/>
-                <include name="${eclipselink.sdo.test}/${report.dir}/**/junit-noframes.html"/>
-                <include name="${eclipselink.dbws.test}/${report.dir}/junit-noframes.html"/>
-                <include name="${eclipselink.dbws.builder.test}/${report.dir}/junit-noframes.html"/>
-            </zipfileset>
-        </zip>
     </target>
 
 </project>
