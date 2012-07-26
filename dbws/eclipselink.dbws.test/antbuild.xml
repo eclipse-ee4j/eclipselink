@@ -120,11 +120,9 @@
         </and>
     </condition>
 
-    <!-- all -->
+    <!-- Primary Targets: "jar" separate for dev use -->
     <target name="build" depends="clean, compile, package" description="build dbws test jar"/>
-
-    <!-- test -->
-    <target name="test" depends="compile-common, run-tests" description="run tests after building"/>
+    <target name="test" depends="build, compile-common, run-tests" description="run tests after building"/>
 
     <!-- MACRO and SCRIPT definitions -->
   <presetdef name="javac">
@@ -264,6 +262,9 @@
           todir="./${report.dir}"
         />
       </junitreport>
+      <delete>
+        <fileset dir="." includes="TEST-*xml"/>
+      </delete>
     </sequential>
   </macrodef>
   <macrodef
