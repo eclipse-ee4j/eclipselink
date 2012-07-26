@@ -47,7 +47,7 @@ public class NestedBatchReadingNPETest extends TestCase {
         Expression expression = query.getExpressionBuilder();
         Expression expression2List = expression.anyOfAllowingNone("orders");
         query.addBatchReadAttribute(expression2List);
-        query.addBatchReadAttribute(expression2List.getAllowingNull("employee"));
+        query.addBatchReadAttribute(expression2List.getAllowingNull("employee").getAllowingNull("computer"));
         result = (Vector)getSession().executeQuery(query);
     }
 
