@@ -25,6 +25,8 @@ import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredMethods;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.converters.Converter;
+import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.jaxb.JAXBMarshaller;
@@ -49,6 +51,7 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
     protected XmlAdapter xmlAdapter;
     protected QName schemaType;
     protected DatabaseMapping mapping;
+    protected Converter nestedConverter;
 
     /**
      * The default constructor.  This constructor should be used
@@ -126,14 +129,19 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
                 }
             }
             Object toConvert = dataValue;
-            if ((dataValue != null) && !(dataValue.getClass() == this.valueType)) {
-                if (this.mapping instanceof XMLBinaryDataMapping) {
-                    toConvert = XMLBinaryDataHelper.getXMLBinaryDataHelper().convertObject(dataValue, valueType, (AbstractSession) session);
-                } else {
-                    if (getSchemaType() != null) {
-                        toConvert = ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(dataValue, valueType, getSchemaType());
+            //apply nested converter first
+            if(nestedConverter != null) {
+                toConvert = nestedConverter.convertDataValueToObjectValue(toConvert, session);
+            } else {
+                if ((dataValue != null) && !(dataValue.getClass() == this.valueType)) {
+                    if (this.mapping instanceof XMLBinaryDataMapping) {
+                        toConvert = XMLBinaryDataHelper.getXMLBinaryDataHelper().convertObject(dataValue, valueType, (AbstractSession) session);
                     } else {
-                        toConvert = session.getDatasourcePlatform().getConversionManager().convertObject(dataValue, valueType);
+                        if (getSchemaType() != null) {
+                            toConvert = ((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(dataValue, valueType, getSchemaType());
+                        } else {
+                            toConvert = session.getDatasourcePlatform().getConversionManager().convertObject(dataValue, valueType);
+                        }
                     }
                 }
             }
@@ -158,8 +166,13 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
                     }
                 }
             }
-            return adapter.marshal(objectValue);
+            Object dataValue = adapter.marshal(objectValue);
+            if(nestedConverter != null) {
+                dataValue = nestedConverter.convertObjectValueToDataValue(dataValue, session);
+            }
+            return dataValue;
         } catch (Exception ex) {
+            ex.printStackTrace();
             throw ConversionException.couldNotBeConverted(objectValue, valueType, ex);
         }
     }
@@ -203,8 +216,8 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
      */
     public void initialize(DatabaseMapping mapping, Session session) {
         // if the adapter class is null, try the adapter class name
+        ClassLoader loader = session.getDatasourceLogin().getDatasourcePlatform().getConversionManager().getLoader();
         if (xmlAdapterClass == null) {
-            ClassLoader loader = session.getDatasourceLogin().getDatasourcePlatform().getConversionManager().getLoader();
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                     xmlAdapterClass = (Class) AccessController.doPrivileged(new PrivilegedClassForName(getXmlAdapterClassName(), true, loader));
@@ -255,6 +268,12 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
         } catch (Exception ex) {
             throw JAXBException.adapterClassCouldNotBeInstantiated(getXmlAdapterClassName(), ex);
         }
+        if(nestedConverter != null) {
+            if(nestedConverter instanceof ObjectTypeConverter) {
+                ((ObjectTypeConverter)nestedConverter).convertClassNamesToClasses(loader);
+            }
+            nestedConverter.initialize(mapping, session);
+        }
     }
 
     /**
@@ -289,4 +308,12 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
     public void setXmlAdapterClassName(String xmlAdapterClassName) {
         this.xmlAdapterClassName = xmlAdapterClassName;
     }
+    
+    public Converter getNestedConverter() {
+        return nestedConverter;
+    }
+
+    public void setNestedConverter(Converter nestedConverter) {
+        this.nestedConverter = nestedConverter;
+    }    
 }
