@@ -37,9 +37,7 @@
 *  process using Hudson for EclipseLink at Eclipse and is intended to be called by
 *  Hudson (generic user).
 *
-*  For simplicity publishing commands are also included at the bottom. though whether
-*  milestone tasks will also remain or be in a separate xml file (publishbuild.xml) is
-*  undetermined at this time.
+*  All publishing commands are now in a separate xml file (publishbuild.xml)
 *================================================================================= -->
 <project name="AutoBuild" basedir="." default="build-nightly">
 <echo message="---- AutoBuild.xml ----"/>
@@ -100,7 +98,7 @@
         </exec>
         <property name="git.hash" value="NA"/>
     </target>
-    
+
     <target name="get-git-branch" unless="branch" depends="set-defaults">
         <!-- get git branch (parse results of "git branch")           -->
         <exec outputproperty="git.output"
@@ -146,6 +144,29 @@
                                                 else="v${build.date}-${git.hash}">
             <equals arg1="${git.hash}" arg2="NA"/>
         </condition>
+        <echo message="ANT_ARGS='${env.ANT_ARGS}'"/>
+        <echo message="ANT_OPTS='${env.ANT_OPTS}'"/>
+        <echo message=" "/>
+        <echo message="env.JAVA_HOME   = '${env.JAVA_HOME}'"/>
+        <echo message="env.ANT_HOME    = '${env.ANT_HOME}'"/>
+        <echo message="env.JUNIT_HOME  = '${env.JUNIT_HOME}'"/>
+        <echo message="env.MAVENANT_DIR= '${env.MAVENANT_DIR}'"/>
+        <echo message="env.PATH        = '${env.PATH}'"/>
+        <echo message="env.CLASSPATH   = '${env.CLASSPATH}'"/>
+        <echo message="env.GIT_EXEC    = '${env.GIT_EXEC}'"/>
+        <echo message="env.TARGET      = '${env.TARGET}'"/>
+        <echo message=" "/>
+        <echo message="java.version   ='${java.version}'"/>
+        <echo message="os.name        ='${os.name}'"/>
+        <echo message="os.arch        ='${os.arch}'"/>
+        <echo message="os.version     ='${os.version}'"/>
+        <echo message=" "/>
+        <echo message="builddate.buildtime='${build.date}.${build.time}'"/>
+        <echo message="coretest.prop.file='${coretest.prop.file}'"/>
+        <echo message="test.properties.run='${test.properties.run}'"/>
+        <echo message="build.type='${build.type}'"/>
+        <echo message="version.qualifier='${version.qualifier}'"/>
+        <echo message=" "/>
     </target>
 
     <target name="common-init">
@@ -173,24 +194,6 @@
         <!-- Now that all our overrides are complete, pull in the rest of the build properties -->
         <property file="${build.location}/antbuild.properties"/>
 
-        <echo message="ANT_ARGS='${env.ANT_ARGS}'"/>
-        <echo message="ANT_OPTS='${env.ANT_OPTS}'"/>
-        <echo message=" "/>
-        <echo message="env.JAVA_HOME   = '${env.JAVA_HOME}'"/>
-        <echo message="env.ANT_HOME    = '${env.ANT_HOME}'"/>
-        <echo message="env.JUNIT_HOME  = '${env.JUNIT_HOME}'"/>
-        <echo message="env.MAVENANT_DIR= '${env.MAVENANT_DIR}'"/>
-        <echo message="env.PATH        = '${env.PATH}'"/>
-        <echo message="env.CLASSPATH   = '${env.CLASSPATH}'"/>
-        <echo message="env.GIT_EXEC    = '${env.GIT_EXEC}'"/>
-        <echo message="env.TARGET      = '${env.TARGET}'"/>
-        <echo message=" "/>
-        <echo message="builddate.buildtime='${build.date}.${build.time}'"/>
-        <echo message="java.version   ='${java.version}'"/>
-        <echo message="os.name        ='${os.name}'"/>
-        <echo message="os.arch        ='${os.arch}'"/>
-        <echo message="os.version     ='${os.version}'"/>
-        <echo message=" "/>
         <echo message="branch.name     ='${branch.name}'"/>
         <echo message="branch          ='${branch}'"/>
         <echo message="basedir         ='${basedir}'"/>
@@ -215,12 +218,31 @@
         <echo message="db.driver      ='${db.driver}'"/>
         <echo message="db.url         ='${db.url}'"/>
         <echo message="db.user        ='${db.user}'"/>
-        <echo message="db.pwd         ='${db.pwd}'"/>
+        <echo message="db.pwd         = **********"/>
         <echo message="db.platform    ='${db.platform}'"/>
     </target>
 
     <target name="clean" depends="init">
         <ant antfile="antbuild.xml" dir="${build.location}" target="clean"/>
+    </target>
+
+    <target name="cleanSchema" depends="common-init">
+        <echo message="Cleaning the db schema for '${db.name}'..."/>
+        <echo message="drop schema ${DB_NAME};" file="sql.sql" append="false"/>
+        <echo message="create schema ${DB_NAME};" file="sql.sql" append="true"/>
+        <exec outputproperty="dbclean.result"
+            failonerror="false"
+            failifexecutionfails="false"
+            errorproperty="dbclean.failed"
+            logError="true"
+            executable="mysql">
+            <arg value="-u${db.user}"/>
+            <arg value="-p${db.pwd}"/>
+            <arg value="-e'drop schema ${DB_NAME}; create schema ${DB_NAME};'"/>
+        </exec>
+        <!-- does -e"drop schema ${DB_NAME}; create schema ${DB_NAME};" work??? -->
+        <delete file="sql.sql" failonerror="false"/>
+        <echo message="done."/>
     </target>
 
     <target name="build" depends="init">
@@ -299,19 +321,43 @@
     </target>
 
     <!--  =====  #####        Post 'build' Processing Targets            #####  =====  -->
-    <target name="extract-build-artifacts" depends="common-init">
+    <target name="generate-nightly-p2-site" depends="common-init">
+        <!-- has to be run before publish, so publish can operate independent of branches -->
+        <property name="p2.archive.to.use"       value="${hudson.workspace}/features/${p2.archive.presigned.zip}"/>
+        <property name="p2.repos.dir"            value="${extract.dir}/p2repo"/>
+        <property name="metadata.repos.name"     value="&quot;${p2.nightly.repos.name}&quot;"/>
+        <property name="artifact.repos.name"     value="&quot;EclipseLink Incremental Artifacts&quot;"/>
+        <property name="milestone.tag"           value="${release.version}-${build.type}"/>
+        <property name="p2.SDK.install.dir"      value="${build.deps.dir}/eclipse"/>
+        <available file="${p2.SDK.install.dir}" type="dir" property="p2.SDK.install.dir.exist"/>
+        <fail message="${p2.SDK.install.dir} dir not found. Build will fail, aborting now." unless="p2.SDK.install.dir.exist"/>
+        <!-- Clean existing repos if it exists (should only be true of a release redo, or the latest milestone or nightly) -->
+        <delete dir="${p2.repos.dir}" failonerror="false"/>
+        <mkdir dir="${p2.repos.dir}"/>
+        <!-- populate update site with feature and bundle jars, then publish repository -->
+        <ant antfile="antbuild.xml" dir="${hudson.workspace}/features" target="assemble-repos">
+            <property name="do.composite"        value="true"/>
+            <property name="ready-to-go"         value="true"/>
+            <property name="bundle.install.file" value="${hudson.workspace}/${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}"/>
+            <property name="nosql.install.file"  value="${hudson.workspace}/${eclipselink.nosql.install.prefix}${eclipselink.zip.suffix}"/>
+            <property name="p2.archive.zip"      value="${p2.archive.to.use}"/>
+        </ant>
+    </target>
+
+    <target name="extract-build-artifacts" depends="generate-nightly-p2-site">
         <!-- New Publish Architecture -->
         <mkdir dir="${extract.dir}"/>
         <echo message="Extracting build artifacts..."/>
         <echo message="   from '${hudson.workspace}'"/>
         <echo message="     to '${extract.dir}'"/>
-        <copy file="${hudson.workspace}/features/${p2.archive.presigned.zip}"                           tofile="${extract.dir}/${p2.archive.presigned.zip}" failonerror="false"/>
-        <copy file="${hudson.workspace}/${eclipselink.install.prefix}${eclipselink.zip.suffix}"         tofile="${extract.dir}/${eclipselink.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
-        <copy file="${hudson.workspace}/${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"     tofile="${extract.dir}/${eclipselink.src.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
-        <copy file="${hudson.workspace}/${eclipselink.tst.src.prefix}${eclipselink.zip.suffix}"         tofile="${extract.dir}/${eclipselink.tst.src.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
-        <copy file="${hudson.workspace}/${eclipselink.tst.jar.prefix}${eclipselink.zip.suffix}"         tofile="${extract.dir}/${eclipselink.tst.jar.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
+        <copy file="${hudson.workspace}/eclipselink.jar"                                                tofile="${extract.dir}/eclipselink.jar"                                                               failonerror="false"/>
+        <copy file="${hudson.workspace}/features/${p2.archive.presigned.zip}"                           tofile="${extract.dir}/${p2.archive.presigned.zip}"                                                   failonerror="false"/>
+        <copy file="${hudson.workspace}/${eclipselink.install.prefix}${eclipselink.zip.suffix}"         tofile="${extract.dir}/${eclipselink.install.prefix}-${version.string}${eclipselink.zip.suffix}"      failonerror="false"/>
+        <copy file="${hudson.workspace}/${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"     tofile="${extract.dir}/${eclipselink.src.install.prefix}-${version.string}${eclipselink.zip.suffix}"  failonerror="false"/>
+        <copy file="${hudson.workspace}/${eclipselink.tst.src.prefix}${eclipselink.zip.suffix}"         tofile="${extract.dir}/${eclipselink.tst.src.prefix}-${version.string}${eclipselink.zip.suffix}"      failonerror="false"/>
+        <copy file="${hudson.workspace}/${eclipselink.tst.jar.prefix}${eclipselink.zip.suffix}"         tofile="${extract.dir}/${eclipselink.tst.jar.prefix}-${version.string}${eclipselink.zip.suffix}"      failonerror="false"/>
         <copy file="${hudson.workspace}/${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}" tofile="${extract.dir}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
-        <copy file="${hudson.workspace}/${eclipselink.nosql.install.prefix}${eclipselink.zip.suffix}"   tofile="${extract.dir}/${eclipselink.nosql.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
+        <copy file="${hudson.workspace}/${eclipselink.nosql.install.prefix}${eclipselink.zip.suffix}"   tofile="${extract.dir}/${eclipselink.nosql.install.prefix}-${version.string}${eclipselink.zip.suffix}"   failonerror="false"/>
         <copy todir="${extract.dir}" failonerror="false">
             <fileset  dir="${hudson.workspace}">
                 <include name="${eclipselink.install.prefix}*${version.qualifier}-shared-lib.zip"/>
@@ -355,7 +401,7 @@
     </target>
     <target name="generate-handoff" if="procedure" depends="cannot-generate-handoff" description="generate the publishing handoff file">
         <property name="handoff.file" value="${build.tool.root}/handoff-file-${procedure}-${branch}-${version.qualifier}.dat"/>
-        <echo message="extract.loc=${extract.loc} host=${host}" file="${handoff.file}" append="false"/>
+        <echo message="extract.loc=${extract.loc} host=${host} maven.tag=${milestone.tag}" file="${handoff.file}" append="false"/>
     </target>
 
 
@@ -525,6 +571,5 @@
             </fileset>
         </chmod>
     </target>
-
 
 </project>
