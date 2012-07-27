@@ -172,7 +172,6 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
             }
             return dataValue;
         } catch (Exception ex) {
-            ex.printStackTrace();
             throw ConversionException.couldNotBeConverted(objectValue, valueType, ex);
         }
     }
@@ -309,10 +308,18 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
         this.xmlAdapterClassName = xmlAdapterClassName;
     }
     
+    /**
+     * Get the nested converter to that is used in conjunction with the adapter.
+     */
     public Converter getNestedConverter() {
         return nestedConverter;
     }
 
+    /**
+     * Set a nested converter to be used in conjunction with the adapter. On marshal, 
+     * the nested converter is invoked after the adapter. On umarshal it is invoked before.
+     * Primarily used to support enumerations with adapters. 
+     */
     public void setNestedConverter(Converter nestedConverter) {
         this.nestedConverter = nestedConverter;
     }    
