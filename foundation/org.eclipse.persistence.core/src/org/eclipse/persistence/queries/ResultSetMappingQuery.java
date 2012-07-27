@@ -13,12 +13,16 @@
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *     06/20/2012-2.5 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     07/13/2012-2.5 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/  
 package org.eclipse.persistence.queries;
+
 import java.util.*;
 
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.sessions.DatabaseRecord;
@@ -37,9 +41,8 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
  * @author Gordon Yorke
  * @since TopLink Java Essentials
  */
-
 public class ResultSetMappingQuery extends ObjectBuildingQuery {
-    
+    protected boolean isExecuteCall;
     protected Vector resultRows;
     
     protected List<String> resultSetMappingNames = new ArrayList<String>();
@@ -168,7 +171,7 @@ public class ResultSetMappingQuery extends ObjectBuildingQuery {
      * This method is used to build the results. Interpreting the 
      * SQLResultSetMapping(s).
      */
-    protected List buildObjectsFromRecords(List databaseRecords){
+    public List buildObjectsFromRecords(List databaseRecords){
         // TODO: validate the number of database records with the number of sql
         // result set mappings??
         
@@ -184,6 +187,15 @@ public class ResultSetMappingQuery extends ObjectBuildingQuery {
         } else {
             return buildObjectsFromRecords(databaseRecords, getSQLResultSetMapping());
         }
+    }
+    
+    /**
+     * INTERNAL:
+     * This method is used to build the results with the SQLResultSetMapping
+     * at the given index.
+     */
+    public List buildObjectsFromRecords(List databaseRecords, int index){
+        return buildObjectsFromRecords(databaseRecords, getSQLResultSetMappings().get(index));
     }
     
     /**
@@ -257,10 +269,23 @@ public class ResultSetMappingQuery extends ObjectBuildingQuery {
             setQueryId(getSession().getNextQueryId());
         }
 
-        Vector rows = getQueryMechanism().executeSelect();
-        setExecutionTime(System.currentTimeMillis());
-        // If using 1-m joins, must set all rows.
-        return buildObjectsFromRecords(rows);
+        if (getCall().isExecuteReturn()) {
+            DatabaseCall call = ((StoredProcedureCall) getQueryMechanism().execute());
+            setExecutionTime(System.currentTimeMillis());
+            return call;
+        } else {
+            Vector rows = getQueryMechanism().executeSelect();
+            setExecutionTime(System.currentTimeMillis());
+            // If using 1-m joins, must set all rows.
+            return buildObjectsFromRecords(rows);
+        }
+    }
+    
+    /**
+     * PUBLIC: Return true if this is a result set mapping query.
+     */
+    public boolean isResultSetMappingQuery() {
+        return true;
     }
     
     /**
@@ -275,7 +300,11 @@ public class ResultSetMappingQuery extends ObjectBuildingQuery {
 
         getQueryMechanism().prepare();
 
-        getQueryMechanism().prepareExecuteSelect();
+        if (isExecuteCall) {
+            getQueryMechanism().prepareExecute();
+        } else {
+            getQueryMechanism().prepareExecuteSelect();
+        }
     }
 
     /**
@@ -327,5 +356,14 @@ public class ResultSetMappingQuery extends ObjectBuildingQuery {
      */
     public List<String> getSQLResultSetMappingNames() {
         return this.resultSetMappingNames;
+    }
+    
+    /**
+     * PUBLIC:
+     * Set to true if you the actualy jdbc result set returned from query
+     * execution.
+     */
+    public void setIsExecuteCall() {
+        isExecuteCall = true;
     }
 }

@@ -846,9 +846,26 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             }
         }
 
-        // Computed nested batch attribute expressions.
-        List<Expression> nestedExpressions = extractNestedExpressions(query.getBatchReadAttributeExpressions(), batchQuery.getExpressionBuilder(), false);
-        batchQuery.getBatchReadAttributeExpressions().addAll(nestedExpressions);
+        // Bug 385700 - Populate session & query class if not initialized by 
+        // ObjectLevelReadQuery.computeBatchReadMappingQueries() in case batch query
+        // has been using inheritance and child descriptors can have different mappings.
+        if (query.hasBatchReadAttributes()) {
+            for (Expression expression : query.getBatchReadAttributeExpressions()) {
+                ObjectExpression batchReadExpression = (ObjectExpression) expression;
+                
+                // Batch Read Attribute Expressions may not have initialized.
+                ExpressionBuilder expressionBuilder = batchReadExpression.getBuilder();
+                if (expressionBuilder.getQueryClass() == null) {
+                    expressionBuilder.setSession(query.getSession().getRootSession(null));
+                    expressionBuilder.setQueryClass(query.getReferenceClass());
+                }
+            }
+            
+            // Computed nested batch attribute expressions, and add them to batch query.
+            List<Expression> nestedExpressions = extractNestedExpressions(query.getBatchReadAttributeExpressions(), batchQuery.getExpressionBuilder(), false);
+            batchQuery.getBatchReadAttributeExpressions().addAll(nestedExpressions);
+        }
+
         batchQuery.setBatchFetchType(batchType);
         batchQuery.setBatchFetchSize(query.getBatchFetchPolicy().getSize());
         // Allow subclasses to further prepare.

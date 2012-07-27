@@ -14,77 +14,40 @@
 #
 
 #Define common variables
-THIS=$0
 ARG1=$1
-PROGNAME=`basename ${THIS}`
-CUR_DIR=`dirname ${THIS}`
 umask 0002
 ANT_ARGS=" "
 ANT_OPTS="-Xmx512m"
 START_DATE=`date '+%y%m%d-%H%M'`
 
 #Directories
-JAVA_HOME=/shared/common/jdk-1.6.x86_64
 ANT_HOME=/shared/common/apache-ant-1.7.0
 HOME_DIR=/shared/rt/eclipselink
+JAVA_HOME=/shared/common/jdk-1.6.x86_64
 LOG_DIR=${HOME_DIR}/logs
+
+#Files
+ant.buildfile=
+
+# Need to export after parsing:
+# BLD_DEPS_DIR
+BRANCH
+GITHASH
+BLDDATE
+handoff
 
 PATH=${JAVA_HOME}/bin:${ANT_HOME}/bin:/usr/bin:/usr/local/bin:${PATH}
 
 # Export necessary global environment variables
-export ANT_ARGS ANT_OPTS ANT_HOME HOME_DIR JAVA_HOME JUNIT_HOME LOG_DIR PATH BLD_DEPS_DIR JUNIT_HOME
+export ANT_ARGS ANT_OPTS ANT_HOME HOME_DIR JAVA_HOME LOG_DIR PATH
 #==========================
 #   Functions Definitions
 #
-unset Usage
-Usage() {
-    echo "ERROR: Invalid usage detected!"
-    echo "USAGE: ./${PROGNAME} [\> LOGFILE 2\>\&1]"
-}
-
-unset CreatePath
-CreatePath() {
-    #echo "Running CreateHome!"
-    newdir=
-    for directory in `echo $1 | tr '/' ' '`
-    do
-        newdir=${newdir}/${directory}
-        if [ ! -d "/${newdir}" ] ; then
-            #echo "creating ${newdir}"
-            mkdir ${newdir}
-            if [ $? -ne 0 ]
-            then
-                echo "    Create failed!"
-                exit
-            fi
-        fi
-    done
-}
-
-unset genSafeTmpDir
-genSafeTmpDir() {
-    tmp=${TMPDIR-/tmp}
-    tmp=$tmp/somedir.$RANDOM.$RANDOM.$RANDOM.$$
-    (umask 077 && mkdir $tmp) || {
-      echo "Could not create temporary directory! Exiting." 1>&2
-      exit 1
-    }
-    echo "results stored in: '${tmp}'"
-}
-
-unset getHandoff
-getHandoff() {
-    curdir=`pwd`
-    cd $HOME_DIR
-
-    handoff=`ls handoff-file*.dat | grep -m1 *`
-
-}
-
 unset parseHandoff
 parseHandoff() {
     handoff_file=$1
     handoff_error_string="Error: Invalid handoff_filename: '${handoff_file}'! Should be 'handoff-file-<PROC>-<BRANCH>-<QUALIFIER>.dat'"
+    handoff_content_error="Error: Invalid handoff_file contents: '`cat ${handoff_file}`'! Should be 'extract.loc=<BUILD_ARCHIVE_LOC> host=<HOST>'"
 
     ## Parse handoff_file for BRANCH, QUALIFIER, and HOST
     BRANCH=`echo ${handoff_file} | cut -s -d'-' -f4`
@@ -102,8 +65,18 @@ parseHandoff() {
         echo "PROC ${handoff_error_string}"
         exit 2
     fi
+    BUILD_ARCHIVE_LOC=`cat ${handoff_file} | cut -d' ' -f1 | cut -d'=' -f2`
+    if [ "${BUILD_ARCHIVE_LOC}" = "" ] ; then
+        echo "BUILD_ARCHIVE_LOC ${handoff_content_error}"
+        exit 2
+    fi
+    HOST=`cat ${handoff_file} | cut -d' ' -f2 | cut -d'=' -f2`
+    if [ "${HOST}" = "" ] ; then
+        echo "HOST ${handoff_content_error}"
+        exit 2
+    fi
     if [ "${DEBUG}" = "true" ] ; then
-        echo "BRANCH='${BRANCH}' QUALIFIER='${QUALIFIER}' PROC='${PROC}'"
+        echo "BRANCH='${BRANCH}' QUALIFIER='${QUALIFIER}' PROC='${PROC}' HOST='${HOST}' BUILD_ARCHIVE_LOC='${BUILD_ARCHIVE_LOC}'"
     fi
 }
 
@@ -113,28 +86,29 @@ runAnt() {
     BRANCH=$1
     QUALIFIER=$2
     PROC=$3
+    HOST=$4
+    BUILD_ARCHIVE_LOC=$5
 
     if [ ! "${BRANCH}" = "master" ] ; then
-        BRANCH=${BRANCH}
-        BRANCH=branches/${BRANCH}/
+        # Need to figure out version
     else
-        BRANCH_NM="trunk"
-        BRANCH=
+        $Need to figure out version
+        BRANCH=$Version
     fi
 
     #Directories
-    BRANCH_PATH=${WORKSPACE}
-    BLD_DEPS_DIR=${HOME_DIR}/bld_deps/${BRANCH_NM}
-    JUNIT_HOME=${BLD_DEPS_DIR}/junit
+#    BRANCH_PATH=${WORKSPACE}
+#    BLD_DEPS_DIR=${HOME_DIR}/bld_deps/${BRANCH}
+#    JUNIT_HOME=${BLD_DEPS_DIR}/junit
 
     #Files
-    JDBC_LOGIN_INFO_FILE=${HOME_DIR}/db-${BRANCH_NM}.dat
+#    JDBC_LOGIN_INFO_FILE=${HOME_DIR}/db-${BRANCH_NM}.dat
     LOGFILE_NAME=bsb-${BRANCH_NM}_pub${PROC}_${START_DATE}.log
     DATED_LOG=${LOG_DIR}/${LOGFILE_NAME}
 
     # Define build dependency paths (build needs em, NOT compile dependencies)
-    OLD_CLASSPATH=${CLASSPATH}
-    CLASSPATH=${JUNIT_HOME}/junit.jar:${ANT_HOME}/lib/ant-junit.jar
+#    OLD_CLASSPATH=${CLASSPATH}
+#   CLASSPATH=${JUNIT_HOME}/junit.jar:${ANT_HOME}/lib/ant-junit.jar
 
     # Export run specific variables
     export BLD_DEPS_DIR BRANCH_NM BRANCH_PATH CLASSPATH JUNIT_HOME TARGET
@@ -154,7 +128,7 @@ runAnt() {
     fi
 
     # Setup parameters for Ant build
-    ANT_BASEARG="-f \"${BOOTSTRAP_BLDFILE}\" -Dbranch.name=\"${BRANCH}\" ${ANT_BASEARG} -Dgit.hash=${GITHASH}"
+    ANT_BASEARG="-f \"${ant.buildfile}\" -Dbranch.name=\"${BRANCH}\" -Dgit.hash=${GITHASH}"
     ANT_BASEARG="${ANT_BASEARG} -Dbuild.date=${BLDDATE} -Dhandoff.file=${handoff}"
 
     cd ${HOME_DIR}
@@ -174,17 +148,6 @@ runAnt() {
     echo "Publish complete."
 }
 
-unset postProcess
-postProcess() {
-    #genSafeTmpDir
-    echo "PostProcessing..."
-    echo "   Generating notification for ${PROC} publishing for ${BRANCH} build ${QUALIFIER}..."
-    echo "   Not sent..."
-    # cleanup
-    #rm -r ${tmp}
-    echo "Done."
-}
-
 #==========================
 #   Main Begins
 #
@@ -192,7 +155,7 @@ postProcess() {
 #  If anything is in ARG1 then do a dummy "DEBUG"
 #  run (Don't call ant, don't remove handoff, do report variable states
 DEBUG=false
-if [ ! "$ARG1" = "" ] ; then
+if [ -n "$ARG1" ] ; then
     DEBUG=true
     echo "Debug is on!"
 fi
@@ -206,7 +169,7 @@ for handoff in `ls handoff-file*.dat` ; do
     echo "Detected handoff file:'${handoff}'. Process starting..."
     # Do stuff
     parseHandoff ${handoff}
-    runAnt ${BRANCH} ${QUALIFIER} ${PROC}
-    postProcess
+    runAnt ${BRANCH} ${QUALIFIER} ${PROC} ${BUILD_ARCHIVE_LOC} ${HOST}
+    echo "Done."
 done
 
