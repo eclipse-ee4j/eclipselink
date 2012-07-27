@@ -170,8 +170,8 @@
     </target>
 
     <target name="common-init">
-        <!-- M2_HOME defaults the value maven 3.0.3 install location on the build  -->
-        <!--   server, this is brittle, but easier for now                         -->
+        <!-- M2_HOME defaults the value maven 3.0.3 install location on the build -->
+        <!--   server, this is brittle, but easier for now                        -->
         <property name="M2_HOME" value="/shared/common/apache-maven-3.0.3"/>
         <echo message="'M2_HOME' set to: '${M2_HOME}'"/>
 
@@ -238,7 +238,7 @@
             executable="mysql">
             <arg value="-u${db.user}"/>
             <arg value="-p${db.pwd}"/>
-            <arg line="< sql.sql"/>
+            <arg value="-e'drop schema ${DB_NAME}; create schema ${DB_NAME};'"/>
         </exec>
         <!-- does -e"drop schema ${DB_NAME}; create schema ${DB_NAME};" work??? -->
         <delete file="sql.sql" failonerror="false"/>
@@ -321,19 +321,41 @@
     </target>
 
     <!--  =====  #####        Post 'build' Processing Targets            #####  =====  -->
-    <target name="extract-build-artifacts" depends="common-init">
+    <target name="generate-nightly-p2-site" depends="common-init">
+        <!-- has to be run before publish, so publish can operate independent of branches -->
+        <property name="p2.archive.to.use"       value="${hudson.workspace}/features/${p2.archive.presigned.zip}"/>
+        <!-- property name="p2.composite.root.dir"   value="${extract.dir}" -->
+        <property name="p2.repos.dir"            value="${extract.dir}/p2repo"/>
+        <property name="metadata.repos.name"     value="&quot;${p2.nightly.repos.name}&quot;"/>
+        <property name="artifact.repos.name"     value="&quot;EclipseLink Incremental Artifacts&quot;"/>
+        <property name="milestone.tag"           value="${release.version}-${build.type}"/>
+        <!-- Clean existing repos if it exists (should only be true of a release redo, or the latest milestone or nightly) -->
+        <delete dir="${p2.repos.dir}" failonerror="false"/>
+        <mkdir dir="${p2.repos.dir}"/>
+        <!-- populate update site with feature and bundle jars, then publish repository -->
+        <ant antfile="antbuild.xml" dir="${hudson.workspace}/eatures" target="assemble-repos">
+            <property name="do.composite"        value="true"/>
+            <property name="ready-to-go"         value="true"/>
+            <property name="bundle.install.file" value="${hudson.workspace}/${eclipselink.install.prefix}${eclipselink.zip.suffix}"/>
+            <property name="nosql.install.file"  value="${hudson.workspace}/${eclipselink.nosql.install.prefix}${eclipselink.zip.suffix}"/>
+            <property name="p2.archive.zip"      value="${p2.archive.to.use}"/>
+        </ant>
+    </target>
+
+    <target name="extract-build-artifacts" depends="generate-nightly-p2-site">
         <!-- New Publish Architecture -->
         <mkdir dir="${extract.dir}"/>
         <echo message="Extracting build artifacts..."/>
         <echo message="   from '${hudson.workspace}'"/>
         <echo message="     to '${extract.dir}'"/>
-        <copy file="${hudson.workspace}/features/${p2.archive.presigned.zip}"                           tofile="${extract.dir}/${p2.archive.presigned.zip}" failonerror="false"/>
-        <copy file="${hudson.workspace}/${eclipselink.install.prefix}${eclipselink.zip.suffix}"         tofile="${extract.dir}/${eclipselink.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
-        <copy file="${hudson.workspace}/${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"     tofile="${extract.dir}/${eclipselink.src.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
-        <copy file="${hudson.workspace}/${eclipselink.tst.src.prefix}${eclipselink.zip.suffix}"         tofile="${extract.dir}/${eclipselink.tst.src.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
-        <copy file="${hudson.workspace}/${eclipselink.tst.jar.prefix}${eclipselink.zip.suffix}"         tofile="${extract.dir}/${eclipselink.tst.jar.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
+        <copy file="${hudson.workspace}/eclipselink.jar"                                                tofile="${extract.dir}/eclipselink.jar"                                                               failonerror="false"/>
+        <copy file="${hudson.workspace}/features/${p2.archive.presigned.zip}"                           tofile="${extract.dir}/${p2.archive.presigned.zip}"                                                   failonerror="false"/>
+        <copy file="${hudson.workspace}/${eclipselink.install.prefix}${eclipselink.zip.suffix}"         tofile="${extract.dir}/${eclipselink.install.prefix}-${version.string}${eclipselink.zip.suffix}"      failonerror="false"/>
+        <copy file="${hudson.workspace}/${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"     tofile="${extract.dir}/${eclipselink.src.install.prefix}-${version.string}${eclipselink.zip.suffix}"  failonerror="false"/>
+        <copy file="${hudson.workspace}/${eclipselink.tst.src.prefix}${eclipselink.zip.suffix}"         tofile="${extract.dir}/${eclipselink.tst.src.prefix}-${version.string}${eclipselink.zip.suffix}"      failonerror="false"/>
+        <copy file="${hudson.workspace}/${eclipselink.tst.jar.prefix}${eclipselink.zip.suffix}"         tofile="${extract.dir}/${eclipselink.tst.jar.prefix}-${version.string}${eclipselink.zip.suffix}"      failonerror="false"/>
         <copy file="${hudson.workspace}/${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}" tofile="${extract.dir}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
-        <copy file="${hudson.workspace}/${eclipselink.nosql.install.prefix}${eclipselink.zip.suffix}"   tofile="${extract.dir}/${eclipselink.nosql.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
+        <copy file="${hudson.workspace}/${eclipselink.nosql.install.prefix}${eclipselink.zip.suffix}"   tofile="${extract.dir}/${eclipselink.nosql.install.prefix}-${version.string}${eclipselink.zip.suffix}"   failonerror="false"/>
         <copy todir="${extract.dir}" failonerror="false">
             <fileset  dir="${hudson.workspace}">
                 <include name="${eclipselink.install.prefix}*${version.qualifier}-shared-lib.zip"/>
@@ -377,7 +399,7 @@
     </target>
     <target name="generate-handoff" if="procedure" depends="cannot-generate-handoff" description="generate the publishing handoff file">
         <property name="handoff.file" value="${build.tool.root}/handoff-file-${procedure}-${branch}-${version.qualifier}.dat"/>
-        <echo message="extract.loc=${extract.loc} host=${host}" file="${handoff.file}" append="false"/>
+        <echo message="extract.loc=${extract.loc} host=${host} maven.tag=${milestone.tag}" file="${handoff.file}" append="false"/>
     </target>
 
 
