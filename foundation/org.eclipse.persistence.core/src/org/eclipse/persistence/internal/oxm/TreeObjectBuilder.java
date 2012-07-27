@@ -73,6 +73,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
     private List transformationMappings;
     private List containerValues;
     private List nullCapableValues;
+    private List defaultEmptyContainerValues; //a list of container values that have isDefaultEmptyContainer() set to true
     private volatile boolean initialized = false;
     private int counter = 0;
     
@@ -118,17 +119,30 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
         return this.containerValues;
     }
 
+    public void addDefaultEmptyContainerValue(ContainerValue containerValue){
+        if (null == this.defaultEmptyContainerValues) {        	
+            this.defaultEmptyContainerValues = new ArrayList();            
+        }
+        this.defaultEmptyContainerValues.add(containerValue);
+    }
+   
     public void addContainerValue(ContainerValue containerValue) {
         if (null == this.containerValues) {        	
-            this.containerValues = new ArrayList();            
+            this.containerValues = new ArrayList();     
         }
         containerValue.setIndex(counter++);
         this.containerValues.add(containerValue);
+        
+        if(containerValue.isDefaultEmptyContainer()){
+        	addDefaultEmptyContainerValue(containerValue);
+        }
     }
     public List getNullCapableValues() {
         return this.nullCapableValues;
     }
-
+    public List getDefaultEmptyContainerValues() {
+        return this.defaultEmptyContainerValues;
+    }
     public void addNullCapableValue(NullCapableValue nullCapableValue) {
         if (null == this.nullCapableValues) {
             this.nullCapableValues = new ArrayList();
