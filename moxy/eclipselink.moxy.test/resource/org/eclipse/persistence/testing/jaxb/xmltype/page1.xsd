@@ -16,9 +16,9 @@
    <xsd:element name="b" type="b"/>
    <xsd:element name="c" type="c"/>
    <xsd:element name="booleanTest" type="booleanTest"/>
-   <xsd:element name="USPrice" type="usPrice"/>
-   <xsd:element name="CDNPriceNoAnnotation" type="cdnPriceNoAnnotation"/>
-   <xsd:element name="ABC" type="abc"/>
+   <xsd:element name="usPrice" type="usPrice"/>
+   <xsd:element name="cdnPriceNoAnnotation" type="cdnPriceNoAnnotation"/>
+   <xsd:element name="abc" type="abc"/>
    <xsd:element name="abbbCD" type="abbbCD"/>
    <xsd:element name="Page">
       <xsd:complexType>
@@ -27,8 +27,8 @@
          </xsd:all>
       </xsd:complexType>
    </xsd:element>
-   <xsd:element name="CLASS2" type="class2"/>
-   <xsd:element name="AB2cd3fg4HI" type="ab2Cd3Fg4HI"/>
-   <xsd:element name="QNameTest" type="qNameTest"/>
-   <xsd:element name="ABCDEfgh" type="abcdEfgh"/>
+   <xsd:element name="class2" type="class2"/>
+   <xsd:element name="ab2cd3fg4HI" type="ab2Cd3Fg4HI"/>
+   <xsd:element name="qNameTest" type="qNameTest"/>
+   <xsd:element name="abcdEfgh" type="abcdEfgh"/>
 </xsd:schema>
