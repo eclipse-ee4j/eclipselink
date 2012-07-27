@@ -333,7 +333,7 @@
         <delete dir="${p2.repos.dir}" failonerror="false"/>
         <mkdir dir="${p2.repos.dir}"/>
         <!-- populate update site with feature and bundle jars, then publish repository -->
-        <ant antfile="antbuild.xml" dir="${hudson.workspace}/eatures" target="assemble-repos">
+        <ant antfile="antbuild.xml" dir="${hudson.workspace}/features" target="assemble-repos">
             <property name="do.composite"        value="true"/>
             <property name="ready-to-go"         value="true"/>
             <property name="bundle.install.file" value="${hudson.workspace}/${eclipselink.install.prefix}${eclipselink.zip.suffix}"/>
