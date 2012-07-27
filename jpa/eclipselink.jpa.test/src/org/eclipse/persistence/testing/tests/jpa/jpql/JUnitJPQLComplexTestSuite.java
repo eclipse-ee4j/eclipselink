@@ -279,7 +279,6 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         tests.add("testComplexPathExpression");
         tests.add("testDirectColletionInSubquery");
 
-        Collections.sort(tests);
         for (String test : tests) {
             suite.addTest(new JUnitJPQLComplexTestSuite(test));
         }
