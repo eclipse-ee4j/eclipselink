@@ -105,6 +105,8 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
     private Map<XPathFragment, Integer> indexMap;
     private List<NullCapableValue> nullCapableValues;
     private Object[] containerInstances;
+    private List<ContainerValue> defaultEmptyContainerValues;
+    private List<ContainerValue> populatedContainerValues;
     private boolean isBufferCDATA;
     private Attributes attributes;
     private QName typeQName;
@@ -147,6 +149,9 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
             this.xPathNode = treeObjectBuilder.getRootXPathNode();
             if (null != treeObjectBuilder.getNullCapableValues()) {
                 this.nullCapableValues = new ArrayList<NullCapableValue>(treeObjectBuilder.getNullCapableValues());
+            }
+            if (null != treeObjectBuilder.getDefaultEmptyContainerValues()){
+            	this.defaultEmptyContainerValues = new ArrayList<ContainerValue>(treeObjectBuilder.getDefaultEmptyContainerValues());
             }
         }
         isSelfRecord = false;
@@ -304,6 +309,10 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
                 containerInstance = c.getContainerInstance();
             }
             containerInstances[c.getIndex()] = containerInstance;    
+            populatedContainerValues.add(c);
+            if(defaultEmptyContainerValues != null){
+            	defaultEmptyContainerValues.remove(c);
+            }
         }
 
         return containerInstance;
@@ -519,7 +528,9 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
             }
             List containerValues = treeObjectBuilder.getContainerValues();
             if (null != containerValues) {
-            	containerInstances = new Object[containerValues.size()];
+            	int containerSize = containerValues.size();
+            	containerInstances = new Object[containerSize];
+            	populatedContainerValues = new ArrayList(containerSize);
             }
 
             if (null != xPathNode.getSelfChildren()) {
@@ -569,15 +580,22 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
 
         try {
             // PROCESS COLLECTION MAPPINGS
-            List containerValues = treeObjectBuilder.getContainerValues();
-            if (null != containerValues) {
-                int size = containerValues.size();
-                for (int i = 0; i < size; i++) {
-                    ContainerValue cv = ((ContainerValue) containerValues.get(i));
-                    cv.setContainerInstance(currentObject, getContainerInstance(cv, cv.isDefaultEmptyContainer()));
-                }
-            }
+        	//All populated containerValues need to be set on the object
+        	if(null != populatedContainerValues){
+                for (int populatedCVSize=populatedContainerValues.size(), i = populatedCVSize-1; i>=0; i--) {       			
+        			ContainerValue cv = ((ContainerValue) populatedContainerValues.get(i));
+        			cv.setContainerInstance(currentObject, getContainerInstance(cv, cv.isDefaultEmptyContainer()));
+        		}
+        	}
 
+        	//Additionally if any containerValues are defaultEmptyContainerValues they need to be set to a new empty container
+        	if(null != defaultEmptyContainerValues){
+                 for (int defaultEmptyCVSize=defaultEmptyContainerValues.size(),i = defaultEmptyCVSize-1; i>=0; i--) {       			
+                     ContainerValue cv = ((ContainerValue) defaultEmptyContainerValues.get(i));
+                     cv.setContainerInstance(currentObject, getContainerInstance(cv, cv.isDefaultEmptyContainer()));
+                 }
+        		
+        	}
             // PROCESS NULL CAPABLE VALUES
             // This must be done because the node may not have existed to
             // trigger the mapping.
