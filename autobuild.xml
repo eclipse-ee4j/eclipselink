@@ -338,7 +338,7 @@
         <ant antfile="antbuild.xml" dir="${hudson.workspace}/features" target="assemble-repos">
             <property name="do.composite"        value="true"/>
             <property name="ready-to-go"         value="true"/>
-            <property name="bundle.install.file" value="${hudson.workspace}/${eclipselink.install.prefix}${eclipselink.zip.suffix}"/>
+            <property name="bundle.install.file" value="${hudson.workspace}/${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}"/>
             <property name="nosql.install.file"  value="${hudson.workspace}/${eclipselink.nosql.install.prefix}${eclipselink.zip.suffix}"/>
             <property name="p2.archive.zip"      value="${p2.archive.to.use}"/>
         </ant>
