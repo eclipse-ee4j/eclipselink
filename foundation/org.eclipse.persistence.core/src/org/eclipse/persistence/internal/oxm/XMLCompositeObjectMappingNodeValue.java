@@ -32,7 +32,6 @@ import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
-import org.eclipse.persistence.oxm.XMLLogin;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
@@ -197,14 +196,14 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
                 return true;
             }
         }
-        XMLDescriptor descriptor = (XMLDescriptor)xmlCompositeObjectMapping.getReferenceDescriptor();  
-        if(descriptor == null){
-        	descriptor = (XMLDescriptor) session.getDescriptor(objectValue.getClass());
-        }else if(descriptor.hasInheritance()){
-        	Class objectValueClass = objectValue.getClass();
-        	if(!(objectValueClass == descriptor.getJavaClass())){
-        		descriptor = (XMLDescriptor) session.getDescriptor(objectValueClass);
-        	}
+        XMLDescriptor descriptor = (XMLDescriptor)xmlCompositeObjectMapping.getReferenceDescriptor();
+        if (descriptor == null) {
+            descriptor = (XMLDescriptor) session.getDescriptor(objectValue.getClass());
+        } else if (descriptor.hasInheritance()) {
+            Class objectValueClass = objectValue.getClass();
+            if (!(objectValueClass == descriptor.getJavaClass())) {
+                descriptor = (XMLDescriptor) session.getDescriptor(objectValueClass);
+            }
         }
 
         if(descriptor != null){
@@ -216,7 +215,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
             }
 
             List extraNamespaces = null;
-            if (!(((XMLLogin)session.getDatasourceLogin()).hasEqualNamespaceResolvers())) {
+            if (!marshalRecord.hasEqualNamespaceResolvers()) {
                 extraNamespaces = objectBuilder.addExtraNamespacesToNamespaceResolver(descriptor, marshalRecord, session, true, false);
                 writeExtraNamespaces(extraNamespaces, marshalRecord, session);
             }

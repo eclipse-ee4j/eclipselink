@@ -59,6 +59,7 @@ public class ValidatingMarshalRecord extends MarshalRecord {
         validatingRecord = new ContentHandlerRecord();
         validatingRecord.setMarshaller(xmlMarshaller);
         validatingRecord.setContentHandler(validatorHandler);
+        validatingRecord.setEqualNamespaceResolvers(marshalRecord.hasEqualNamespaceResolvers());
     }
 
     @Override
@@ -341,7 +342,7 @@ public class ValidatingMarshalRecord extends MarshalRecord {
 
     @Override
     public void setSession(AbstractSession session) {
-    	this.session = session;
+        super.setSession(session);
         validatingRecord.setSession(session);
         marshalRecord.setSession(session);
     }
