@@ -13,6 +13,8 @@
  *       - 325167: Make reserved # bind parameter char generic to enable native SQL pass through
  *     05/24/2011-2.3 Guy Pelletier 
  *       - 345962: Join fetch query when using tenant discriminator column fails.
+ *     07/13/2012-2.5 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/  
 package org.eclipse.persistence.internal.databaseaccess;
 
@@ -68,6 +70,7 @@ public abstract class DatasourceCall implements Call {
     protected static final int RETURN_ONE_ROW = 2;
     protected static final int RETURN_MANY_ROWS = 3;
     protected static final int RETURN_CURSOR = 4;
+    protected static final int RETURN_EXECUTE = 5;
 
     public DatasourceCall() {
         this.isPrepared = false;
@@ -262,6 +265,14 @@ public abstract class DatasourceCall implements Call {
      */
     public void returnCursor() {
         setReturnType(RETURN_CURSOR);
+    }
+    
+    /**
+     * Indicates that this call will return a boolean value from an execute()
+     * call.
+     */
+    public void returnExecute() {
+        setReturnType(RETURN_EXECUTE);
     }
 
     /**

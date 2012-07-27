@@ -9,14 +9,25 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     07/13/2012-2.5 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.transaction;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.RollbackException;
 
+import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.TransactionException;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.jpa.transaction.EntityTransactionWrapper;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.queries.DatabaseQuery;
 
 /**
  * JDK 1.5 version of the EntityTransaction.  Differs from base version only in that
@@ -25,6 +36,8 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
  * @see org.eclipse.persistence.internal.jpa.transaction.EntityTransactionImpl
  */
 public class EntityTransactionImpl implements javax.persistence.EntityTransaction {
+    protected List<DatabaseCall> openCalls;
+    
     protected EntityTransactionWrapper wrapper;
     
     protected boolean active = false;
@@ -33,6 +46,14 @@ public class EntityTransactionImpl implements javax.persistence.EntityTransactio
 
     public EntityTransactionImpl(EntityTransactionWrapper wrapper) {
         this.wrapper = wrapper;
+    }
+    
+    public void addOpenCall(DatabaseCall openCall) {
+        if (openCalls == null) {
+            openCalls = new ArrayList<DatabaseCall>();
+        }
+        
+        openCalls.add(openCall);
     }
     
     /**
@@ -76,6 +97,30 @@ public class EntityTransactionImpl implements javax.persistence.EntityTransactio
     if (!isActive()){
       throw new IllegalStateException(TransactionException.transactionNotActive().getMessage());
     }
+    
+    // Need to ensure we close any openCalls from stored procedure query execute.
+    if (openCalls != null) {
+        for (DatabaseCall openCall : openCalls) {
+            DatabaseQuery query = openCall.getQuery();
+            AbstractSession session = query.getSession();
+            DatabaseAccessor accessor = (DatabaseAccessor) query.getAccessor();
+            
+            try {    
+                accessor.releaseStatement(openCall.getStatement(), query.getSQLString(), openCall, session);
+            } catch (SQLException exception) {
+              // With an external connection pool the connection may be null 
+              // after this call, if it is we will be unable to determine if 
+              // it is a connection based exception so treat it as if it wasn't.
+              DatabaseException commException = accessor.processExceptionForCommError(session, exception, null);
+              if (commException != null) {
+                  throw commException;
+              }
+              
+              throw DatabaseException.sqlException(exception, openCall, accessor, session, false);
+            }
+        }
+    } 
+    
     try {
         if (this.wrapper.localUOW != null){
             this.wrapper.localUOW.setShouldTerminateTransaction(true);

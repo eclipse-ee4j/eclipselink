@@ -32,7 +32,6 @@ import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
-import org.eclipse.persistence.oxm.XMLLogin;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.mappings.UnmarshalKeepAsElementPolicy;
 import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
@@ -62,7 +61,6 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
     private XMLCompositeObjectMapping xmlCompositeObjectMapping;
 
     public XMLCompositeObjectMappingNodeValue(XMLCompositeObjectMapping xmlCompositeObjectMapping) {
-        super();
         this.xmlCompositeObjectMapping = xmlCompositeObjectMapping;
     }
 
@@ -160,10 +158,6 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
             return xmlCompositeObjectMapping.getNullPolicy().compositeObjectMarshal(xPathFragment, marshalRecord, object, session, namespaceResolver);
         }
         
-        if (xPathFragment.hasLeafElementType()) {
-            marshalRecord.setLeafElementType(xPathFragment.getLeafElementType());
-        }
-
         XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
         if(xPathFragment.hasAttribute) {
             TreeObjectBuilder tob = (TreeObjectBuilder) xmlCompositeObjectMapping.getReferenceDescriptor().getObjectBuilder();
@@ -172,7 +166,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
             if(textMapping.isDirectToFieldMapping()) {
                 XMLDirectMapping xmlDirectMapping = (XMLDirectMapping) textMapping;
                 Object fieldValue = xmlDirectMapping.getFieldValue(xmlDirectMapping.valueFromObject(objectValue, xmlDirectMapping.getField(), session), session, marshalRecord);
-                QName schemaType = getSchemaType((XMLField) xmlDirectMapping.getField(), fieldValue, session);
+                QName schemaType = ((XMLField) xmlDirectMapping.getField()).getSchemaTypeForValue(fieldValue, session);
                 marshalRecord.attribute(xPathFragment, namespaceResolver, fieldValue, schemaType);
                 marshalRecord.closeStartGroupingElements(groupingFragment);
                 return true;
@@ -199,11 +193,14 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
                 return true;
             }
         }
-
-        XMLDescriptor descriptor = (XMLDescriptor)xmlCompositeObjectMapping.getReferenceDescriptor();
-        Class objectValueClass = objectValue.getClass();
-        if (descriptor == null || (descriptor.hasInheritance() && !(objectValueClass == descriptor.getJavaClass()))) {
-            descriptor = (XMLDescriptor) session.getDescriptor(objectValueClass);
+        XMLDescriptor descriptor = (XMLDescriptor)xmlCompositeObjectMapping.getReferenceDescriptor();  
+        if(descriptor == null){
+        	descriptor = (XMLDescriptor) session.getDescriptor(objectValue.getClass());
+        }else if(descriptor.hasInheritance()){
+        	Class objectValueClass = objectValue.getClass();
+        	if(!(objectValueClass == descriptor.getJavaClass())){
+        		descriptor = (XMLDescriptor) session.getDescriptor(objectValueClass);
+        	}
         }
 
         if(descriptor != null){
@@ -215,7 +212,7 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
             }
 
             List extraNamespaces = null;
-            if (!(((XMLLogin)session.getDatasourceLogin()).hasEqualNamespaceResolvers())) {
+            if (!marshalRecord.hasEqualNamespaceResolvers()) {
                 extraNamespaces = objectBuilder.addExtraNamespacesToNamespaceResolver(descriptor, marshalRecord, session, true, false);
                 writeExtraNamespaces(extraNamespaces, marshalRecord, session);
             }
@@ -234,8 +231,8 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
             if (!(isSelfFragment || xPathFragment.nameIsText())) {
                 xPathNode.startElement(marshalRecord, xPathFragment, object, session, namespaceResolver, null, objectValue);
             }
+            QName schemaType = ((XMLField) xmlCompositeObjectMapping.getField()).getSchemaTypeForValue(objectValue, session);
 
-            QName schemaType = getSchemaType((XMLField) xmlCompositeObjectMapping.getField(), objectValue, session);
             updateNamespaces(schemaType, marshalRecord,((XMLField)xmlCompositeObjectMapping.getField()));
             marshalRecord.characters(schemaType, objectValue, null, false);
 

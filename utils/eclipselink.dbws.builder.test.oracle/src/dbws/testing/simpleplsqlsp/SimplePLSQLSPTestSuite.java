@@ -36,7 +36,7 @@ import org.eclipse.persistence.tools.dbws.DBWSBuilder;
 import dbws.testing.DBWSTestSuite;
 
 /**
- * Tests PL/SQL procedures with simple arguments.
+ * Tests PL/SQL procedures with simple arguments .
  *
  */
 public class SimplePLSQLSPTestSuite extends DBWSTestSuite {
@@ -125,13 +125,11 @@ public class SimplePLSQLSPTestSuite extends DBWSTestSuite {
                   "name=\"VarcharTest\" " +
                   "catalogPattern=\"SIMPLEPACKAGE1\" " +
                   "procedurePattern=\"VARCHARPLSQLSP\" " +
-                  "returnType=\"xsd:int\" " +
               "/>" +
               "<plsql-procedure " +
                   "name=\"NoArgsTest\" " +
                   "catalogPattern=\"SIMPLEPACKAGE1\" " +
                   "procedurePattern=\"NOARGPLSQLSP\" " +
-                  "returnType=\"xsd:int\" " +
               "/>" +
               "<plsql-procedure " +
                   "name=\"InOutArgsTest\" " +
@@ -167,13 +165,10 @@ public class SimplePLSQLSPTestSuite extends DBWSTestSuite {
         Document doc = xmlPlatform.createDocument();
         XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
         marshaller.marshal(result, doc);
-        Document controlDoc = xmlParser.parse(new StringReader(VALUE_1_XML));
+        Document controlDoc = xmlParser.parse(new StringReader(SIMPLE_XML_RESULT));
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
-    public static final String VALUE_1_XML =
-        REGULAR_XML_HEADER +
-        "<value>1</value>";
-
+    
     @Test
     public void noargsTest() {
         Invocation invocation = new Invocation("NoArgsTest");
@@ -183,9 +178,16 @@ public class SimplePLSQLSPTestSuite extends DBWSTestSuite {
         Document doc = xmlPlatform.createDocument();
         XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
         marshaller.marshal(result, doc);
-        Document controlDoc = xmlParser.parse(new StringReader(VALUE_1_XML));
+        Document controlDoc = xmlParser.parse(new StringReader(SIMPLE_XML_RESULT));
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
+    public static final String SIMPLE_XML_RESULT =
+        REGULAR_XML_HEADER +
+    	"<simple-xml-format>" +
+    	   "<simple-xml>" +
+    	      "<result>1</result>" +
+    	   "</simple-xml>" +
+    	"</simple-xml-format>";
 
     @Test
     public void inOutArgsTest() {

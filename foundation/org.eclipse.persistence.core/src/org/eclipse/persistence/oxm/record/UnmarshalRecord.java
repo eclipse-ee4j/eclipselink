@@ -23,6 +23,7 @@ import javax.xml.namespace.QName;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.DescriptorEventManager;
+import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -455,7 +456,8 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
     		initializeRecord((XMLMapping)null);
         	return;
         }
-    	Class classValue = xmlDescriptor.getInheritancePolicy().classFromRow(this, session);
+    	InheritancePolicy inheritancePolicy = xmlDescriptor.getInheritancePolicy();
+    	Class classValue = inheritancePolicy.classFromRow(this, session);
     	 if (classValue == null) {
              // no xsi:type attribute - look for type indicator on the default root element
              QName leafElementType = xmlDescriptor.getDefaultRootElementType();
@@ -463,7 +465,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
              // if we have a user-set type, try to get the class from the inheritance policy
              if (leafElementType != null) {
                	 XPathQName xpathQName = new XPathQName(leafElementType, isNamespaceAware());
-                 Object indicator = xmlDescriptor.getInheritancePolicy().getClassIndicatorMapping().get(xpathQName);
+                 Object indicator = inheritancePolicy.getClassIndicatorMapping().get(xpathQName);
                  if(indicator != null) {
                      classValue = (Class)indicator;
                  }

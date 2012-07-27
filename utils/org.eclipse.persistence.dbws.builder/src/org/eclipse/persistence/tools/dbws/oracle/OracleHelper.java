@@ -441,17 +441,20 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             }
             switch (rargJdbcType) {
                 case OTHER:
+                    String returnTypeName;
                     // if user overrides returnType, assume they're right
-                    if (returnType == null || returnType.length() == 0) {
+                    if (returnType != null && returnType.length() > 0) {
+                    	returnTypeName = returnType;
+                    } else {
                         returnType = rargDataType.getTypeName();
+                        // packages only apply to PL/SQL types
+                        String packageName = null;
+                        if (rargDataType.isPLSQLType()) {
+                            packageName = ((PLSQLType) rargDataType).getParentType().getPackageName();
+                        }
+                        returnTypeName = (packageName != null && packageName.length() > 0) ?
+                                packageName + UNDERSCORE + returnType : returnType;
                     }
-                    // packages only apply to PL/SQL types
-                    String packageName = null;
-                    if (rargDataType.isPLSQLType()) {
-                        packageName = ((PLSQLType) rargDataType).getParentType().getPackageName();
-                    }
-                    String returnTypeName = (packageName != null && packageName.length() > 0) ?
-                            packageName + UNDERSCORE + returnType : returnType;
                     result.setType(buildCustomQName(returnTypeName, dbwsBuilder));
                     break;
                 case STRUCT:

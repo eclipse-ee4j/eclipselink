@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     07/13/2012-2.5 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/  
 package org.eclipse.persistence.internal.queries;
 
@@ -179,6 +181,13 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
      */
     public abstract Integer deleteObject() throws DatabaseException;
 
+    /**
+     * Return the jdbc result set.
+     */
+    public Object execute() throws DatabaseException {
+        return null;
+    }
+    
     /**
      * Execute a non selecting SQL call
      * This should be overridden by subclasses.
@@ -607,6 +616,12 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
      */
     public abstract void prepareExecuteNoSelect() throws QueryException;
 
+    /**
+     * Prepare for a raw execute call.
+     * This is sent to the original query before cloning.
+     */
+    public abstract void prepareExecute() throws QueryException;
+    
     /**
      * Prepare for a raw (non-object) select call.
      * This is sent to the original query before cloning.

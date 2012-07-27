@@ -18,12 +18,22 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Array;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.NavigableSet;
+import java.util.Queue;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -42,6 +52,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 
+import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
@@ -212,7 +223,11 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
      */
     protected Class<?> getDomainClass(Type genericType) {
         if(genericType instanceof Class && genericType != JAXBElement.class) {
-             return (Class<?>) genericType;
+            Class<?> clazz = (Class<?>) genericType;
+            if(clazz.isArray()) {
+                return getDomainClass(clazz.getComponentType());
+            }
+            return clazz;
         } else if(genericType instanceof ParameterizedType) {
             Type type = ((ParameterizedType) genericType).getActualTypeArguments()[0];
             if(type instanceof ParameterizedType) {
@@ -422,15 +437,45 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
             } else {
                 Object value = jaxbElement.getValue();
                 if(value instanceof ArrayList) {
-                    if(type.isAssignableFrom(value.getClass())) {
-                        return value;
+                    if(type.isArray()) {
+                        ArrayList<JAXBElement> arrayList = (ArrayList<JAXBElement>) value;
+                        int arrayListSize = arrayList.size();
+                        Object array = Array.newInstance(domainClass, arrayListSize);
+                        for(int x=0; x<arrayListSize; x++) {
+                            Array.set(array, x, arrayList.get(x).getValue());
+                        }
+                        return array;
+                    } else {
+                        ContainerPolicy containerPolicy;
+                        if(type.isAssignableFrom(List.class) || type.isAssignableFrom(ArrayList.class) || type.isAssignableFrom(Collection.class)) {
+                            containerPolicy = new CollectionContainerPolicy(ArrayList.class);
+                        } else if(type.isAssignableFrom(Set.class)) {
+                            containerPolicy = new CollectionContainerPolicy(HashSet.class);
+                        } else if(type.isAssignableFrom(Deque.class) || type.isAssignableFrom(Queue.class)) {
+                            containerPolicy = new CollectionContainerPolicy(LinkedList.class);
+                        } else if(type.isAssignableFrom(NavigableSet.class) || type.isAssignableFrom(SortedSet.class)) {
+                            containerPolicy = new CollectionContainerPolicy(TreeSet.class);
+                        } else {
+                            containerPolicy = new CollectionContainerPolicy(type);
+                        }
+                        Object container = containerPolicy.containerInstance();
+                        boolean wrapItemInJAXBElement = false;
+                        if(genericType instanceof ParameterizedType) {
+                            Type actualType = ((ParameterizedType) genericType).getActualTypeArguments()[0];
+                            if(actualType instanceof ParameterizedType) {
+                                Type rawType = ((ParameterizedType) actualType).getRawType();
+                                wrapItemInJAXBElement = rawType == JAXBElement.class;
+                            }
+                        }
+                        for(JAXBElement element : (Collection<JAXBElement>) value) {
+                            if(wrapItemInJAXBElement) {
+                                containerPolicy.addInto(element, container, null);
+                            } else {
+                                containerPolicy.addInto(element.getValue(), container, null);
+                            }
+                        }
+                        return container;
                     }
-                    ContainerPolicy containerPolicy = ContainerPolicy.buildPolicyFor(type);
-                    Object container = containerPolicy.containerInstance();
-                    for(Object element : (Collection) value) {
-                        containerPolicy.addInto(element, container, null);
-                    }
-                    return container;
                 } else {
                     return value;
                 }

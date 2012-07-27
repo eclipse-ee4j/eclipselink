@@ -12,6 +12,8 @@
  *     Vikram Bhatia - bug fix for releasing temporary LOBs after conversion
  *     02/08/2012-2.4 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     07/13/2012-2.5 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/  
 package org.eclipse.persistence.internal.databaseaccess;
 
@@ -600,27 +602,34 @@ public class DatabaseAccessor extends DatasourceAccessor {
                     // Bug 2804663 - LOBValueWriter is no longer a singleton
                     getLOBWriter().addCall(dbCall);
                 }
-            } else if (!dbCall.getReturnsResultSet() || (dbCall.getReturnsResultSet() && dbCall.shouldBuildOutputRow())) {
+            } else if ((!dbCall.getReturnsResultSet() || (dbCall.getReturnsResultSet() && dbCall.shouldBuildOutputRow())) && ! dbCall.isExecuteReturn()) {
                 result = session.getPlatform().executeStoredProcedure(dbCall, (PreparedStatement)statement, this, session);
                 if (!isInBatchWritingMode(session)) {
                     this.storedProcedureStatementsCount++;
                 }
             } else {
-                resultSet = executeSelect(dbCall, statement, session);
-                if (!isInBatchWritingMode(session)) {
-                    this.readStatementsCount++;
-                }
-                if (!dbCall.shouldIgnoreFirstRowSetting() && dbCall.getFirstResult() != 0) {
-                    resultSet.absolute(dbCall.getFirstResult());
-                }
-                dbCall.matchFieldOrder(resultSet, this, session);
-
-                if (dbCall.isCursorReturned()) {
+                if (dbCall.isExecuteReturn()) {
+                    dbCall.setExecuteReturnValue(execute(dbCall, statement, session));
                     dbCall.setStatement(statement);
-                    dbCall.setResult(resultSet);
                     return dbCall;
+                } else {
+                    resultSet = executeSelect(dbCall, statement, session);
+                
+                    if (!isInBatchWritingMode(session)) {
+                        this.readStatementsCount++;
+                    }
+                    if (!dbCall.shouldIgnoreFirstRowSetting() && dbCall.getFirstResult() != 0) {
+                        resultSet.absolute(dbCall.getFirstResult());
+                    }
+                    dbCall.matchFieldOrder(resultSet, this, session);
+
+                    if (dbCall.isCursorReturned()) {
+                        dbCall.setStatement(statement);
+                        dbCall.setResult(resultSet);
+                        return dbCall;
+                    }
+                    result = processResultSet(resultSet, dbCall, statement, session);
                 }
-                result = processResultSet(resultSet, dbCall, statement, session);                
             }
             // Log any warnings on finest.
             if (session.shouldLog(SessionLog.FINEST, SessionLog.SQL)) {// Avoid printing if no logging required.
@@ -927,6 +936,26 @@ public class DatabaseAccessor extends DatasourceAccessor {
     /**
      * Execute the statement.
      */
+    public boolean execute(DatabaseCall call, Statement statement, AbstractSession session) throws SQLException {
+        boolean result;
+        
+        session.startOperationProfile(SessionProfiler.StatementExecute, call.getQuery(), SessionProfiler.ALL);
+        try {
+            if (call.isDynamicCall(session)) {
+                result = statement.execute(call.getSQLString());
+            } else {
+                result = ((PreparedStatement)statement).execute();
+            }
+        } finally {
+            session.endOperationProfile(SessionProfiler.StatementExecute, call.getQuery(), SessionProfiler.ALL);
+        }
+    
+        return result;
+    }
+    
+    /**
+     * Execute the statement.
+     */
     public ResultSet executeSelect(DatabaseCall call, Statement statement, AbstractSession session) throws SQLException {
         ResultSet resultSet;
 
@@ -993,7 +1022,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
      * match the number of column names available on the database.
      * PERF: This method must be highly optimized.
      */
-    protected AbstractRecord fetchRow(Vector fields, DatabaseField[] fieldsArray, ResultSet resultSet, ResultSetMetaData metaData, AbstractSession session) throws DatabaseException {
+    public AbstractRecord fetchRow(Vector fields, DatabaseField[] fieldsArray, ResultSet resultSet, ResultSetMetaData metaData, AbstractSession session) throws DatabaseException {
         int size = fieldsArray.length;
         Object[] values = new Object[size];
         // PERF: Pass platform and optimize data flag.

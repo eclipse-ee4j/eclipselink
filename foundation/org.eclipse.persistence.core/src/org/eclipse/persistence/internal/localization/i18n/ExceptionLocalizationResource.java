@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     02/08/2012-2.4 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     07/13/2012-2.5 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/  
 package org.eclipse.persistence.internal.localization.i18n;
 
@@ -87,6 +89,7 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "wrap_ejbql_exception", "An exception occurred while creating a query in EntityManager"},
                                            { "cant_refresh_not_managed_object", "Can not refresh not managed object: {0}." },
                                            { "entity_no_longer_exists_in_db", "Entity no longer exists in the database: {0}." },
+                                           { "incorrect_query_for_execute", "You cannot call execute() on this query.  It is the incorrect query type." },
                                            { "incorrect_query_for_get_result_list", "You cannot call getResultList() on this query.  It is the incorrect query type." },
                                            { "incorrect_query_for_get_result_collection", "You cannot call getResultCollection() on this query.  It is the incorrect query type." },
                                            { "incorrect_query_for_get_single_result", "You cannot call getSingleResult() on this query.  It is the incorrect query type." },
@@ -171,7 +174,7 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "criteria_no_constructor_found", "An exception occured looking on class: {0} for constructor using selection criteria types as arguments.  If this CriteriaQuery was not intended to be a constructor query please verify that the selection matches the return type."},
                                            { "MULTIPLE_SELECTIONS_PASSED_TO_QUERY_WITH_PRIMITIVE_RESULT", "'multiSelect' was invoked on a CriteriaQuery with a primitive result type.  Either the return type is incorrect or 'select' should be used instead."},
                                            { "CRITERIA_NON_LITERAL_PASSED_TO_IN", "'in(Expression<?>... values)' was invoked with an expression type: {0} that was neither a literal nor a parameter.  This is not supported."},
-                                           { "NO_PARAMETER_WITH_NAME", "No paramter with name : {0} was found within the query: {1}."},
+                                           { "NO_PARAMETER_WITH_NAME", "No parameter with name : {0} was found within the query: {1}."},
                                            { "NO_PARAMETER_WITH_INDEX", "No parameter with index : {0} was found within the query: {1}."},
                                            { "PARAMETER_NILL_NOT_FOUND", "Null parameter passed to getParameterValue()"},
                                            { "NO_VALUE_BOUND", "No value was bound to parameter named: {0}"},
@@ -183,7 +186,9 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "cache_impl_object_descriptor_has_no_cmppolicy_set", "The object [{0}] with descriptor [{1}] does not have a CMPPolicy set, we are unable to return an Id."}, //
                                            { "cache_descriptor_has_no_cmppolicy_set_cannot_create_primary_key", "The class [{0}] with descriptor [{1}] does not have a CMPPolicy set, we are unable create a primary key instance for the id type [{2}]."},                                           
                                            { "cannot_update_entity_fetch-group", "Attempt to add or remove attribute [{1}] to {0} - EntityFetchGroup object is immutable."},                                           
-                                           { "cannot_get_unfetched_attribute", "Cannot get unfetched attribute [{1}] from detached object {0}."}
+                                           { "cannot_get_unfetched_attribute", "Cannot get unfetched attribute [{1}] from detached object {0}."},
+                                           { "jpa21_invalid_parameter_name", "Invalid output parameter name : {0}. {1}"},
+                                           { "jpa21_invalid_parameter_position", "Invalid output parameter position : {0}. {1}."}
                                         };
     /**
      * Return the lookup table.

@@ -176,6 +176,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         suite.addTest(new JUnitJPQLSimpleTestSuite("selectFromClauseWithJoin"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("testMultipleSubqueries"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("testDirectCollectionComparison"));
+        suite.addTest(new JUnitJPQLSimpleTestSuite("simpleQueryWithFirstUnusedEntity"));
 
         return suite;
     }
@@ -2216,5 +2217,16 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
                                      "     Employee as e join b.creditLines as logicalName " +
                                      "where logicalName = e.firstName");
         query.getResultList();
+    }
+
+    /** Test for bug#385629 */
+    public void simpleQueryWithFirstUnusedEntity() {
+   	 EntityManager em = createEntityManager();
+   	 Query query = em.createQuery("select b from Employee e, Buyer b");
+   	 List<?> resultList = query.getResultList();
+   	 assertFalse(resultList.isEmpty());
+   	 for (Object item : resultList) {
+   		 assertTrue(item instanceof org.eclipse.persistence.testing.models.jpa.advanced.Buyer);
+   	 }
     }
 }

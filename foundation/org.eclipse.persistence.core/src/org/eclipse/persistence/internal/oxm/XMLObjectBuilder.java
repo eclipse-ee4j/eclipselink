@@ -21,6 +21,7 @@ import java.util.Map.Entry;
 
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.QueryException;
@@ -43,7 +44,6 @@ import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
-import org.eclipse.persistence.oxm.XMLLogin;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
@@ -228,7 +228,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
      */
     @Override
     public Object buildObject(ObjectBuildingQuery query, AbstractRecord databaseRow, JoinedAttributeManager joinManager) throws DatabaseException, QueryException {
-        XMLRecord row = (XMLRecord)databaseRow;
+        XMLRecord row = (XMLRecord) databaseRow;
         row.setSession(query.getSession());
 
         XMLUnmarshaller unmarshaller = row.getUnmarshaller();
@@ -246,19 +246,20 @@ public class XMLObjectBuilder extends ObjectBuilder {
         // in the mapping
         if (concreteDescriptor.hasInheritance() && (parent == null)) {
             // look for an xsi:type attribute in the xml document
-            Class classValue = concreteDescriptor.getInheritancePolicy().classFromRow(databaseRow, query.getSession());
+            InheritancePolicy inheritancePolicy = concreteDescriptor.getInheritancePolicy();
+            Class classValue = inheritancePolicy.classFromRow(databaseRow, query.getSession());
             if ((classValue == null) && isXmlDescriptor()) {
                 // no xsi:type attribute - look for type indicator on the
                 // default root element
-                QName leafElementType = ((XMLDescriptor)concreteDescriptor).getDefaultRootElementType();
+                QName leafElementType = ((XMLDescriptor) concreteDescriptor).getDefaultRootElementType();
 
                 // if we have a user-set type, try to get the class from the
                 // inheritance policy
                 if (leafElementType != null) {
-                	XPathQName xpathQName = new XPathQName(leafElementType, row.isNamespaceAware());
-                    Object indicator = concreteDescriptor.getInheritancePolicy().getClassIndicatorMapping().get(xpathQName);
-                    if(indicator != null) {
-                        classValue = (Class)indicator;
+                    XPathQName xpathQName = new XPathQName(leafElementType, row.isNamespaceAware());
+                    Object indicator = inheritancePolicy.getClassIndicatorMapping().get(xpathQName);
+                    if (indicator != null) {
+                        classValue = (Class) indicator;
                     }
                 }
             }
@@ -277,7 +278,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
                 // make sure the class is non-abstract
                 if (Modifier.isAbstract(concreteDescriptor.getJavaClass().getModifiers())) {
                     // throw an exception
-                    throw DescriptorException.missingClassIndicatorField(databaseRow, concreteDescriptor.getInheritancePolicy().getDescriptor());
+                    throw DescriptorException.missingClassIndicatorField(databaseRow, inheritancePolicy.getDescriptor());
                 }
             }
         }
@@ -287,21 +288,21 @@ public class XMLObjectBuilder extends ObjectBuilder {
             unmarshaller.getUnmarshalListener().beforeUnmarshal(domainObject, parent);
         }
         concreteDescriptor.getObjectBuilder().buildAttributesIntoObject(domainObject, null, databaseRow, query, joinManager, false, query.getSession());
-        if (isXmlDescriptor() && ((XMLDescriptor)concreteDescriptor).getPrimaryKeyFieldNames().size() > 0) {
-            if ((pk == null) || (((CacheId)pk).getPrimaryKey().length == 0)) {
-                pk = new CacheId(new Object[]{ new WeakObjectWrapper(domainObject) });
+        if (isXmlDescriptor() && ((XMLDescriptor) concreteDescriptor).getPrimaryKeyFieldNames().size() > 0) {
+            if ((pk == null) || (((CacheId) pk).getPrimaryKey().length == 0)) {
+                pk = new CacheId(new Object[] { new WeakObjectWrapper(domainObject) });
             }
             CacheKey key = query.getSession().getIdentityMapAccessorInstance().acquireDeferredLock(pk, concreteDescriptor.getJavaClass(), concreteDescriptor, query.isCacheCheckComplete());
-            if (((XMLDescriptor)concreteDescriptor).shouldPreserveDocument()) {
+            if (((XMLDescriptor) concreteDescriptor).shouldPreserveDocument()) {
                 key.setRecord(databaseRow);
             }
             key.setObject(domainObject);
             key.releaseDeferredLock();
         }
-        DocumentPreservationPolicy docPresPolicy = ((DOMRecord)row).getDocPresPolicy();
-        if(docPresPolicy != null) {
-            //EIS XML Cases won't have a doc pres policy set
-            ((DOMRecord)row).getDocPresPolicy().addObjectToCache(domainObject, ((DOMRecord)row).getDOM());
+        DocumentPreservationPolicy docPresPolicy = ((DOMRecord) row).getDocPresPolicy();
+        if (docPresPolicy != null) {
+            // EIS XML Cases won't have a doc pres policy set
+            ((DOMRecord) row).getDocPresPolicy().addObjectToCache(domainObject, ((DOMRecord) row).getDOM());
         }
         query.getSession().endOperationProfile(SessionProfiler.ObjectBuilding, query, SessionProfiler.ALL);
         if ((unmarshaller != null) && (unmarshaller.getUnmarshalListener() != null)) {
@@ -603,7 +604,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
     }
     
     protected List addExtraNamespacesToNamespaceResolver(XMLDescriptor desc, XMLRecord marshalRecord, AbstractSession session, boolean allowOverride, boolean ignoreEqualResolvers) {
-        if (((XMLLogin)session.getDatasourceLogin()).hasEqualNamespaceResolvers() && !ignoreEqualResolvers) {
+        if (marshalRecord.hasEqualNamespaceResolvers() && !ignoreEqualResolvers) {
             return null;
         }
 
@@ -804,45 +805,46 @@ public class XMLObjectBuilder extends ObjectBuilder {
      * @param wasXMLRoot boolean if the originalObject was an XMLRoot
      * @param addToNamespaceResolver boolean if we should add generated namespaces to the NamespaceResolver
      */
-    public boolean addXsiTypeAndClassIndicatorIfRequired(XMLRecord record, XMLDescriptor xmlDescriptor, XMLDescriptor referenceDescriptor, XMLField xmlField, Object originalObject, Object obj, boolean wasXMLRoot, boolean addToNamespaceResolver){
-        if(wasXMLRoot){
+    public boolean addXsiTypeAndClassIndicatorIfRequired(XMLRecord record, XMLDescriptor xmlDescriptor, XMLDescriptor referenceDescriptor, XMLField xmlField, Object originalObject, Object obj, boolean wasXMLRoot, boolean addToNamespaceResolver) {
+        if (wasXMLRoot) {
             XMLSchemaReference xmlRef = xmlDescriptor.getSchemaReference();
 
-            if(descriptor != null){
+            if (descriptor != null) {
                 XMLRoot xr = (XMLRoot) originalObject;
 
-                if (xmlDescriptor.getSchemaReference() == null) {
+                if (xmlRef == null) {
                     return false;
                 }
+                String xmlRootLocalName = xr.getLocalName();
+                String xmlRootUri = xr.getNamespaceURI();
 
-                XPathQName qName = new XPathQName(xr.getNamespaceURI(),xr.getLocalName(), record.isNamespaceAware());
+                XPathQName qName = new XPathQName(xmlRootUri, xmlRootLocalName, record.isNamespaceAware());
                 XMLDescriptor xdesc = record.getMarshaller().getXMLContext().getDescriptor(qName);
                 if (xdesc != null) {
                     boolean writeTypeAttribute = xdesc.getJavaClass() != descriptor.getJavaClass();
-                    if(writeTypeAttribute && xmlRef != null){
-                    	QName typeValueQName = getTypeValueToWriteAsQName(record, xdesc, xmlRef, addToNamespaceResolver);
-                    	writeXsiTypeAttribute(xmlDescriptor, record, typeValueQName, addToNamespaceResolver);
+                    if (writeTypeAttribute) {
+                        QName typeValueQName = getTypeValueToWriteAsQName(record, xdesc, xmlRef, addToNamespaceResolver);
+                        writeXsiTypeAttribute(xmlDescriptor, record, typeValueQName, addToNamespaceResolver);
                         return true;
                     }
                     return false;
 
                 }
-     	        
-     	       if(xr.getDeclaredType() != null && xr.getDeclaredType() == xr.getObject().getClass()){
-                   return false;
-    	        } 
 
-                String xmlRootLocalName = xr.getLocalName();
-                String xmlRootUri = xr.getNamespaceURI();
+                if (xr.getDeclaredType() != null && xr.getDeclaredType() == xr.getObject().getClass()) {
+                    return false;
+                }
+
                 boolean writeTypeAttribute = true;
-                for (int i = 0; i < descriptor.getTableNames().size(); i++) {
+                int tableSize = descriptor.getTableNames().size();
+                for (int i = 0; i < tableSize; i++) {
                     if (!writeTypeAttribute) {
                         return false;
                     }
                     String defaultRootQualifiedName = (String) xmlDescriptor.getTableNames().get(i);
                     if (defaultRootQualifiedName != null) {
                         String defaultRootLocalName = null;
-                         String defaultRootUri = null;
+                        String defaultRootUri = null;
                         int colonIndex = defaultRootQualifiedName.indexOf(XMLConstants.COLON);
                         if (colonIndex > 0) {
                             String defaultRootPrefix = defaultRootQualifiedName.substring(0, colonIndex);
@@ -855,103 +857,104 @@ public class XMLObjectBuilder extends ObjectBuilder {
                         }
 
                         if (xmlRootLocalName != null) {
-                                if ((((defaultRootLocalName == null) && (xmlRootLocalName == null)) || (defaultRootLocalName.equals(xmlRootLocalName)))
-                                        && (((defaultRootUri == null) && (xmlRootUri == null)) || ((xmlRootUri != null) && (defaultRootUri != null) && (defaultRootUri.equals(xmlRootUri))))) {
-                                    //if both local name and uris are equal then don't need to write type attribute
-                                    return false;
-                                }
-                            }
-                        } else {
-                            // no default rootElement was set
-                            // if xmlRootName = null then writeTypeAttribute = false
-                            if (xmlRootLocalName == null) {
+                            if ((((defaultRootLocalName == null) && (xmlRootLocalName == null)) || (defaultRootLocalName.equals(xmlRootLocalName)))
+                                && (((defaultRootUri == null) && (xmlRootUri == null)) || ((xmlRootUri != null) && (defaultRootUri != null) && (defaultRootUri.equals(xmlRootUri))))) {
+                                // if both local name and uris are equal then don't need to write type attribute
                                 return false;
                             }
                         }
-                    }
-                    if(writeTypeAttribute && xmlRef != null ){
-                    	QName typeValueQName = getTypeValueToWriteAsQName(record, xmlDescriptor, xmlRef, addToNamespaceResolver);
-                    	writeXsiTypeAttribute(xmlDescriptor, record, typeValueQName, addToNamespaceResolver);
-                    			
-                        return true;
+                    } else {
+                        // no default rootElement was set
+                        // if xmlRootName = null then writeTypeAttribute = false
+                        if (xmlRootLocalName == null) {
+                            return false;
+                        }
                     }
                 }
+                if (writeTypeAttribute && xmlRef != null) {
+                    QName typeValueQName = getTypeValueToWriteAsQName(record, xmlDescriptor, xmlRef, addToNamespaceResolver);
+                    writeXsiTypeAttribute(xmlDescriptor, record, typeValueQName, addToNamespaceResolver);
+
+                    return true;
+                }
+            }
             return false;
-        }else{
+        } else {
             return addXsiTypeAndClassIndicatorIfRequired(record, xmlDescriptor, referenceDescriptor, xmlField, addToNamespaceResolver);
         }
     }
 
-    public boolean addXsiTypeAndClassIndicatorIfRequired(XMLRecord record, XMLDescriptor xmlDescriptor, XMLDescriptor referenceDescriptor, XMLField xmlField, boolean addToNamespaceResolver){
-    	  if(descriptor.hasInheritance() && !xsiTypeIndicatorField){
-    		  xmlDescriptor.getInheritancePolicy().addClassIndicatorFieldToRow(record);
-    		  return true;
-    	  }
-    	
-          QName leafType = null;
-          if(xmlField != null){
-              leafType = xmlField.getLeafElementType();
+    public boolean addXsiTypeAndClassIndicatorIfRequired(XMLRecord record, XMLDescriptor xmlDescriptor, XMLDescriptor referenceDescriptor, XMLField xmlField, boolean addToNamespaceResolver) {
+        if (descriptor.hasInheritance() && !xsiTypeIndicatorField) {
+            xmlDescriptor.getInheritancePolicy().addClassIndicatorFieldToRow(record);
+            return true;
+        }
 
-              XMLSchemaReference xmlRef = xmlDescriptor.getSchemaReference();
-              if (xmlRef != null) {
-            	   if(leafType == null){
-            		   if(xmlRef.getType() == XMLSchemaReference.ELEMENT){
-            			   return false;
-            		   }
-            		   if(referenceDescriptor == null){
-            			   QName typeValueQName = getTypeValueToWriteAsQName(record, xmlDescriptor, xmlRef, addToNamespaceResolver);
-                           writeXsiTypeAttribute(xmlDescriptor, record, typeValueQName, addToNamespaceResolver);
-                           return true;
-            		   }
-            	   }else if (((xmlRef.getType() == XMLSchemaReference.COMPLEX_TYPE) || (xmlRef.getType() == XMLSchemaReference.SIMPLE_TYPE)) && xmlRef.getSchemaContext()!=null && xmlRef.isGlobalDefinition()) {
-            		   QName ctxQName = xmlRef.getSchemaContextAsQName(xmlDescriptor.getNamespaceResolver());
-                       if (!ctxQName.equals(leafType)) {
-                           QName typeValueQName = getTypeValueToWriteAsQName(record, xmlDescriptor, xmlRef, addToNamespaceResolver);
-                           writeXsiTypeAttribute(xmlDescriptor, record, typeValueQName, addToNamespaceResolver);
-                          return true;
-                       }            		   
-            	   }            	  
-              }
-          }
+        QName leafType = null;
+        if (xmlField != null) {
+            leafType = xmlField.getLeafElementType();
 
-          if(referenceDescriptor != null && referenceDescriptor == xmlDescriptor){
-              return false;
-          }         
-            if (xmlDescriptor.hasInheritance() && !xmlDescriptor.getInheritancePolicy().isRootParentDescriptor()) {
-                XMLField indicatorField = (XMLField) xmlDescriptor.getInheritancePolicy().getClassIndicatorField();
-                   if(indicatorField != null && xsiTypeIndicatorField){
-                       Object  classIndicatorValueObject = xmlDescriptor.getInheritancePolicy().getClassIndicatorMapping().get(xmlDescriptor.getJavaClass());
-                       QName classIndicatorQName = null;
-                       if(classIndicatorValueObject instanceof QName){
-                           classIndicatorQName = (QName)classIndicatorValueObject;
-                		   
-                       }else{
-                           String classIndicatorValue = (String) xmlDescriptor.getInheritancePolicy().getClassIndicatorMapping().get(xmlDescriptor.getJavaClass());
-                           int nsindex = classIndicatorValue.indexOf(XMLConstants.COLON);
-                           String localName = null;
-                           String prefix = null;
-                           if (nsindex != -1) {
-                               localName = classIndicatorValue.substring(nsindex + 1);
-                               prefix = classIndicatorValue.substring(0, nsindex);
-                           } else {
-                               localName = classIndicatorValue;
-                           }
-                               String namespaceURI = xmlDescriptor.getNonNullNamespaceResolver().resolveNamespacePrefix(prefix);
-                               classIndicatorQName  = new QName(namespaceURI, localName);
-                	   }
-                           if(leafType == null || !classIndicatorQName.equals(leafType)){
-                               if(xmlDescriptor.getInheritancePolicy().hasClassExtractor()){
-                               xmlDescriptor.getInheritancePolicy().addClassIndicatorFieldToRow(record);
-                	   }else{
-                               writeXsiTypeAttribute(xmlDescriptor, record, classIndicatorQName, addToNamespaceResolver);
-                	   }
-                       return true;
-                   }
-                   return false;
-               }
+            XMLSchemaReference xmlRef = xmlDescriptor.getSchemaReference();
+            if (xmlRef != null) {
+                if (leafType == null) {
+                    if (xmlRef.getType() == XMLSchemaReference.ELEMENT) {
+                        return false;
+                    }
+                    if (referenceDescriptor == null) {
+                        QName typeValueQName = getTypeValueToWriteAsQName(record, xmlDescriptor, xmlRef, addToNamespaceResolver);
+                        writeXsiTypeAttribute(xmlDescriptor, record, typeValueQName, addToNamespaceResolver);
+                        return true;
+                    }
+                } else if (((xmlRef.getType() == XMLSchemaReference.COMPLEX_TYPE) || (xmlRef.getType() == XMLSchemaReference.SIMPLE_TYPE)) && xmlRef.getSchemaContext() != null && xmlRef.isGlobalDefinition()) {
+                    QName ctxQName = xmlRef.getSchemaContextAsQName(xmlDescriptor.getNamespaceResolver());
+                    if (!ctxQName.equals(leafType)) {
+                        QName typeValueQName = getTypeValueToWriteAsQName(record, xmlDescriptor, xmlRef, addToNamespaceResolver);
+                        writeXsiTypeAttribute(xmlDescriptor, record, typeValueQName, addToNamespaceResolver);
+                        return true;
+                    }
+                }
+            }
+        }
 
-          }
-          return false;
+        if (referenceDescriptor != null && referenceDescriptor == xmlDescriptor) {
+            return false;
+        }
+        if (xmlDescriptor.hasInheritance() && !xmlDescriptor.getInheritancePolicy().isRootParentDescriptor()) {
+            InheritancePolicy inheritancePolicy = xmlDescriptor.getInheritancePolicy();
+            XMLField indicatorField = (XMLField) inheritancePolicy.getClassIndicatorField();
+            if (indicatorField != null && xsiTypeIndicatorField) {
+                Object classIndicatorValueObject = inheritancePolicy.getClassIndicatorMapping().get(xmlDescriptor.getJavaClass());
+                QName classIndicatorQName = null;
+                if (classIndicatorValueObject instanceof QName) {
+                    classIndicatorQName = (QName) classIndicatorValueObject;
+
+                } else {
+                    String classIndicatorValue = (String) inheritancePolicy.getClassIndicatorMapping().get(xmlDescriptor.getJavaClass());
+                    int nsindex = classIndicatorValue.indexOf(XMLConstants.COLON);
+                    String localName = null;
+                    String prefix = null;
+                    if (nsindex != -1) {
+                        localName = classIndicatorValue.substring(nsindex + 1);
+                        prefix = classIndicatorValue.substring(0, nsindex);
+                    } else {
+                        localName = classIndicatorValue;
+                    }
+                    String namespaceURI = xmlDescriptor.getNonNullNamespaceResolver().resolveNamespacePrefix(prefix);
+                    classIndicatorQName = new QName(namespaceURI, localName);
+                }
+                if (leafType == null || !classIndicatorQName.equals(leafType)) {
+                    if (inheritancePolicy.hasClassExtractor()) {
+                        inheritancePolicy.addClassIndicatorFieldToRow(record);
+                    } else {
+                        writeXsiTypeAttribute(xmlDescriptor, record, classIndicatorQName, addToNamespaceResolver);
+                    }
+                    return true;
+                }
+                return false;
+            }
+
+        }
+        return false;
     }
 
     private QName getTypeValueToWriteAsQName(XMLRecord record, XMLDescriptor descriptorToWrite, XMLSchemaReference xmlRef, boolean addToNamespaceResolver){
