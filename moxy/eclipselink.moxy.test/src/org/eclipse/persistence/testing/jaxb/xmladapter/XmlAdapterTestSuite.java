@@ -32,6 +32,7 @@ import org.eclipse.persistence.testing.jaxb.xmladapter.direct.XmlAdapterDirectTe
 import org.eclipse.persistence.testing.jaxb.xmladapter.direct.objectlist.ObjectListTestCases;
 import org.eclipse.persistence.testing.jaxb.xmladapter.elementref.XmlAdapterElementRefListTestCases;
 import org.eclipse.persistence.testing.jaxb.xmladapter.elementref.XmlAdapterElementRefTestCases;
+import org.eclipse.persistence.testing.jaxb.xmladapter.enumeration.AdapterEnumTestCases;
 import org.eclipse.persistence.testing.jaxb.xmladapter.generics.AdapterWithGenericsTestCases;
 import org.eclipse.persistence.testing.jaxb.xmladapter.hexbinary.XmlAdapterHexBinaryTestCases;
 import org.eclipse.persistence.testing.jaxb.xmladapter.inheritance.AdapterWithInheritanceTestCases;
@@ -76,6 +77,7 @@ public class XmlAdapterTestSuite extends TestCase {
         suite.addTestSuite(NormalizedStringListTestCases.class);
         suite.addTestSuite(NormalizedStringTestCases.class);
         suite.addTestSuite(AdapterWithInheritanceTestCases.class);
+        suite.addTestSuite(AdapterEnumTestCases.class);
         return suite;
     }
 }
