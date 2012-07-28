@@ -283,7 +283,7 @@ public abstract class XMLRecord extends AbstractRecord {
 
     public void setSession(AbstractSession session) {
         this.session = session;
-        if (session != null) {
+        if (session != null && session.getDatasourceLogin() instanceof XMLLogin) {
             this.equalNamespaceResolvers = ((XMLLogin) session.getDatasourceLogin()).hasEqualNamespaceResolvers();
         }
     }

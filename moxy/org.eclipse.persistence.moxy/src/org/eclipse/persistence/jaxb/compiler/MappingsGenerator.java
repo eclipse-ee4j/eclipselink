@@ -486,12 +486,27 @@ public class MappingsGenerator {
             // if the value type is something we have a descriptor for, create
             // a composite mapping
             if (typeInfo.containsKey(valueType.getQualifiedName())) {
+                TypeInfo reference = typeInfo.get(valueType.getQualifiedName());
                 if (isCollectionType(property)) {
-                    mapping = generateCompositeCollectionMapping(property, descriptor, namespaceInfo, valueType.getQualifiedName());
-                    ((XMLCompositeCollectionMapping) mapping).setConverter(new XMLJavaTypeConverter(adapterClass.getQualifiedName()));
+                    if (reference.isEnumerationType()) {
+                        mapping = generateEnumCollectionMapping(property, descriptor, namespaceInfo, (EnumTypeInfo) reference);
+                        XMLJavaTypeConverter converter = new XMLJavaTypeConverter(adapterClass.getQualifiedName());
+                        converter.setNestedConverter(((XMLCompositeDirectCollectionMapping)mapping).getValueConverter());
+                        ((XMLCompositeDirectCollectionMapping)mapping).setValueConverter(converter);
+                    } else {                    
+                        mapping = generateCompositeCollectionMapping(property, descriptor, namespaceInfo, valueType.getQualifiedName());
+                        ((XMLCompositeCollectionMapping) mapping).setConverter(new XMLJavaTypeConverter(adapterClass.getQualifiedName()));
+                    }
                 } else {
-                    mapping = generateCompositeObjectMapping(property, descriptor, namespaceInfo, valueType.getQualifiedName());
-                    ((XMLCompositeObjectMapping) mapping).setConverter(new XMLJavaTypeConverter(adapterClass.getQualifiedName()));
+                    if (reference.isEnumerationType()) {
+                        mapping = generateDirectEnumerationMapping(property, descriptor, namespaceInfo, (EnumTypeInfo) reference);
+                        XMLJavaTypeConverter converter = new XMLJavaTypeConverter(adapterClass.getQualifiedName());
+                        converter.setNestedConverter(((XMLDirectMapping)mapping).getConverter());
+                        ((XMLDirectMapping)mapping).setConverter(converter);
+                    } else {                    
+                        mapping = generateCompositeObjectMapping(property, descriptor, namespaceInfo, valueType.getQualifiedName());
+                        ((XMLCompositeObjectMapping) mapping).setConverter(new XMLJavaTypeConverter(adapterClass.getQualifiedName()));
+                    }
                 }
             } else {
                 // no descriptor for value type
