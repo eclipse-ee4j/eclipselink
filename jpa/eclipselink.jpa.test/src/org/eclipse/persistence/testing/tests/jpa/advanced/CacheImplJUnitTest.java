@@ -708,6 +708,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
                 assertEquals(((Integer)anId).intValue(), ID);
                 assertEquals(anId, originalId);
             } finally {
+                cdesc.setCMPPolicy(policy);
                 closeEntityManager(em1);
             }
         }
@@ -744,9 +745,9 @@ public class CacheImplJUnitTest extends JUnitTestCase {
                 assertNotNull("Id instance should not be null", anId);
                 assertTrue("Id instance should be of type Integer", anId instanceof Integer);            
                 assertEquals(anId, originalId);
+            } finally {
                 // set the CMPPolicy back for out of order testing
                 cdesc.setCMPPolicy(policy);
-            } finally {
                 closeEntityManager(em1);
             }
         }
@@ -787,9 +788,9 @@ public class CacheImplJUnitTest extends JUnitTestCase {
                 assertTrue("Id instance should be of type Integer", anId instanceof Integer);            
                 assertEquals(anId, ID);
                 assertEquals(anId, originalId);
-                // set the CMPPolicy back for out of order testing
-                cdesc.setCMPPolicy(policy);
             } finally {
+             // set the CMPPolicy back for out of order testing
+                cdesc.setCMPPolicy(policy);
                 closeEntityManager(em1);
                 closeEntityManager(em);
             }

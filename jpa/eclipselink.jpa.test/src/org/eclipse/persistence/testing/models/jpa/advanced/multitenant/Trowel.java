@@ -13,19 +13,11 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.advanced.multitenant;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.persistence.CollectionTable;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.MapKeyColumn;
-import javax.persistence.MapKeyTemporal;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 

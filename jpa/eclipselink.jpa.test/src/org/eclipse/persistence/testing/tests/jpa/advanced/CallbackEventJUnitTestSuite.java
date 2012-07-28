@@ -33,7 +33,7 @@ import junit.framework.Test;
  */
 public class CallbackEventJUnitTestSuite extends JUnitTestCase {
     protected boolean m_reset = false;    // reset gets called twice on error
-    protected Employee new_emp =null;
+
     protected int m_beforeEvent, m_afterEvent;
     
         
@@ -64,30 +64,7 @@ public class CallbackEventJUnitTestSuite extends JUnitTestCase {
      */
     public void testSetup() {
         new AdvancedTableCreator().replaceTables(JUnitTestCase.getServerSession());
-        
-        clearCache();
-    }
-    
-    public void setUp () {
-        m_reset = true;
-        super.setUp();
-        //populate
-        EntityManager em = createEntityManager();
-        beginTransaction(em);
-        try{
-            new_emp = new Employee();
-            new_emp.setFirstName("New");
-            new_emp.setLastName("Guy");
-            em.persist(new_emp);
-            commitTransaction(em);
-        }catch (RuntimeException ex){
-            if (isTransactionActive(em)){
-                rollbackTransaction(em);
-            }
-            closeEntityManager(em);
-            throw ex;
-        }
-            
+
         clearCache();
     }
     
@@ -192,6 +169,27 @@ public class CallbackEventJUnitTestSuite extends JUnitTestCase {
     // PreUpdate event support must change to allow data modifications in event[PreUpdate]
     protected void internalTestPreUpdateEvent(boolean shouldUseOriginalName) {
         EntityManager em = createEntityManager();
+        //moved from setUp so that it doesn't prevent the testSetup from running when the tables do not exist.
+        Employee new_emp =null;
+        beginTransaction(em);
+        try{
+            new_emp = new Employee();
+            new_emp.setFirstName("New");
+            new_emp.setLastName("Guy");
+            em.persist(new_emp);
+            commitTransaction(em);
+        }catch (RuntimeException ex){
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+            //rethrow since the test cannot run without the employee persisted
+            throw ex;
+        }
+        clearCache();
+        
+        em = createEntityManager();
+        
         Employee emp = null;
         int originalVersion = 0;
         String firstNameExpectedAfterCommit = "";

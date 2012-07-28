@@ -13,7 +13,6 @@
 package org.eclipse.persistence.testing.tests.queries;
 
 import java.util.*;
-import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.server.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.testing.models.employee.domain.*;

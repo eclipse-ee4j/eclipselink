@@ -89,7 +89,7 @@ public class StoredProcedureVARRAYParametersTest extends StoredProcedureObjectRe
         if ((addressOut==null)||(! (addressOut instanceof Struct))){
             throw new TestErrorException("Address returned by SProc_Read_PHolders was null or not a Struct :"+addressOut);
         }
-        Object addressInOut = ((DatabaseRecord)results2.get(0)).get("address");
+        Object addressInOut = ((DatabaseRecord)results3.get(0)).get("address");
         if ((addressInOut==null)||(! (addressInOut instanceof Struct))){
             throw new TestErrorException("Address returned by SProc_Delete_PHolders was null or not a Struct "+addressInOut);
         }
