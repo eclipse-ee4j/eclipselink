@@ -221,6 +221,8 @@
         <echo message="build.number   ='${build.date}'"/>
         <echo message="git.hash       ='${git.hash}'"/>
         <echo message=" "/>
+        <echo message="milestone.tag  ='${milestone.tag}'"/>
+        <echo message=" "/>
         <echo message="jdbc.driver.jar='${jdbc.driver.jar}'"/>
         <echo message="db.driver      ='${db.driver}'"/>
         <echo message="db.url         ='${db.url}'"/>
