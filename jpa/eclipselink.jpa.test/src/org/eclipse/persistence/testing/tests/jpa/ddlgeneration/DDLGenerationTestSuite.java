@@ -94,7 +94,7 @@ public class DDLGenerationTestSuite extends DDLGenerationJUnitTestSuite {
             tests.add("testValidateMafiaFamily707");
             tests.add("testValidateMafiaFamily007");
         }
-        Collections.sort(tests);
+
         for (String test : tests) {
             suite.addTest(new DDLGenerationTestSuite(test));
         }

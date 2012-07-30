@@ -4918,49 +4918,49 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         
         String sessionName = ss.getName();
         if(!sessionName.equals("default-session")) {
-            fail("sessionName is wrong");
+            fail("sessionName is wrong: "+sessionName);
         }
         
         int defaultCacheSize = ss.getDescriptor(Project.class).getIdentityMapSize();
         if(defaultCacheSize != 500) {
-            fail("defaultCacheSize is wrong");
+            fail("defaultCacheSize is wrong: "+defaultCacheSize);
         }
         
         int employeeCacheSize = ss.getDescriptor(Employee.class).getIdentityMapSize();
         if(employeeCacheSize != 550) {
-            fail("employeeCacheSize is wrong");
+            fail("employeeCacheSize is wrong: "+employeeCacheSize);
         }
         
         int addressCacheSize = ss.getDescriptor(Address.class).getIdentityMapSize();
         if(addressCacheSize != 555) {
-            fail("addressCacheSize is wrong");
+            fail("addressCacheSize is wrong: "+addressCacheSize);
         }
         
         // Department cache size specified in @Cache annotation - that should override default property
         int departmentCacheSize = ss.getDescriptor(Department.class).getIdentityMapSize();
         if(departmentCacheSize != 777) {
-            fail("departmentCacheSize is wrong");
+            fail("departmentCacheSize is wrong: "+departmentCacheSize);
         }
         
         Class defaultCacheType = ss.getDescriptor(Project.class).getIdentityMapClass();
         if(! Helper.getShortClassName(defaultCacheType).equals("FullIdentityMap")) {
-            fail("defaultCacheType is wrong");
+            fail("defaultCacheType is wrong: "+Helper.getShortClassName(defaultCacheType));
         }
         
         Class employeeCacheType = ss.getDescriptor(Employee.class).getIdentityMapClass();
         if(! Helper.getShortClassName(employeeCacheType).equals("WeakIdentityMap")) {
-            fail("employeeCacheType is wrong");
+            fail("employeeCacheType is wrong: "+Helper.getShortClassName(employeeCacheType));
         }
         
         Class addressCacheType = ss.getDescriptor(Address.class).getIdentityMapClass();
         if(! Helper.getShortClassName(addressCacheType).equals("HardCacheWeakIdentityMap")) {
-            fail("addressCacheType is wrong");
+            fail("addressCacheType is wrong: "+Helper.getShortClassName(addressCacheType));
         }
         
         // Department cache type specified in @Cache annotation - that should override default property
         Class departmentCacheType = ss.getDescriptor(Department.class).getIdentityMapClass();
         if(! Helper.getShortClassName(departmentCacheType).equals("SoftCacheWeakIdentityMap")) {
-            fail("departmentCacheType is wrong");
+            fail("departmentCacheType is wrong: "+Helper.getShortClassName(departmentCacheType));
         }
         
         int numSessionCalls = Customizer.getNumberOfCallsForSession(ss.getName());
@@ -5551,7 +5551,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
      * This test ensures that the eclipselink.batch query hint works.
      * It tests two things. 
      * 
-     * 1. That the batch read attribute is properly added to the queyr
+     * 1. That the batch read attribute is properly added to the query
      * 2. That the query will execute
      * 
      * It does not do any verification that the batch reading feature actually works.  That is
@@ -5594,11 +5594,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         emp.addPhoneNumber(number);
         em.persist(emp);
         
-        commitTransaction(em);
+        em.flush();//use flush and rollback the transaction for test cleanup
         em.clear();
 
-        //org.eclipse.persistence.jpa.JpaQuery query = (org.eclipse.persistence.jpa.JpaQuery)em.createQuery("SELECT e FROM Employee e WHERE e.lastName = 'Malone' order by e.firstName");
-        org.eclipse.persistence.jpa.JpaQuery query = (org.eclipse.persistence.jpa.JpaQuery)getEntityManagerFactory().createEntityManager().createQuery("SELECT e FROM Employee e WHERE e.lastName = 'Malone' order by e.firstName");
+        org.eclipse.persistence.jpa.JpaQuery query = (org.eclipse.persistence.jpa.JpaQuery)em.createQuery("SELECT e FROM Employee e WHERE e.lastName = 'Malone' order by e.firstName");
         query.setHint(QueryHints.BATCH, "e.phoneNumbers");
         query.setHint(QueryHints.BATCH, "e.manager.phoneNumbers");
         query.setHint(QueryHints.BATCH_TYPE, "IN");
@@ -5622,18 +5621,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
         emp = (Employee)resultList.get(1);
         emp.getPhoneNumbers().hashCode();
-        
-        beginTransaction(em);
-        emp = em.find(Employee.class, id1);
-        Iterator it = emp.getManagedEmployees().iterator();
-        while (it.hasNext()){
-            Employee managedEmp = (Employee)it.next();
-            it.remove();
-            managedEmp.setManager(null);
-            em.remove(managedEmp);
-        }
-        em.remove(emp);
-        commitTransaction(em);
+
+        rollbackTransaction(em);
     }
     
     /**
@@ -5683,11 +5672,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         emp.addPhoneNumber(number);
         em.persist(emp);
         
-        commitTransaction(em);
+        em.flush();
         em.clear();
 
-        //org.eclipse.persistence.jpa.JpaQuery query = (org.eclipse.persistence.jpa.JpaQuery)em.createQuery("SELECT e FROM Employee e WHERE e.lastName = 'Malone' order by e.firstName");
-        org.eclipse.persistence.jpa.JpaQuery query = (org.eclipse.persistence.jpa.JpaQuery)getEntityManagerFactory().createEntityManager().createQuery("SELECT e FROM Employee e WHERE e.lastName = 'Malone' order by e.firstName");
+        org.eclipse.persistence.jpa.JpaQuery query = (org.eclipse.persistence.jpa.JpaQuery)em.createQuery("SELECT e FROM Employee e WHERE e.lastName = 'Malone' order by e.firstName");
         query.setHint(QueryHints.LEFT_FETCH, "e.manager");
         ReadAllQuery raq = (ReadAllQuery)query.getDatabaseQuery();
         List expressions = raq.getJoinedAttributeExpressions();
@@ -5699,19 +5687,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
         List resultList = query.getResultList();
         emp = (Employee)resultList.get(0);
-        
-        beginTransaction(em);
-        emp = em.find(Employee.class, id1);
-        Iterator it = emp.getManagedEmployees().iterator();
-        while (it.hasNext()){
-            Employee managedEmp = (Employee)it.next();
-            it.remove();
-            managedEmp.setManager(null);
-            em.remove(managedEmp);
-        }
-        em.remove(emp);
 
-        commitTransaction(em);
+        this.rollbackTransaction(em);
     }
     
     // Bug 366458 - Query hint eclipselink.join-fetch can cause wrongly populated data
@@ -7309,8 +7286,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         beginTransaction(em);
         try {
             em.createQuery("DELETE FROM PhoneNumber ph WHERE ph.owner IS NULL").executeUpdate();
-        } catch (Exception e) {
-            fail("Exception thrown: " + e.getClass());
         } finally {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -8119,7 +8094,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             Query ejbQuery = ((org.eclipse.persistence.jpa.JpaEntityManager)em.getDelegate()).createDescriptorNamedQuery("findByFNameLName", Employee.class);
             List results = ejbQuery.setParameter("fName", "Melvin").setParameter("lName", "Malone").getResultList();
             
-            assertTrue(results.size() == 1);
+            assertTrue("returned collection size was "+results.size(), results.size() == 1);
             emp = (Employee)results.get(0);
             assertTrue(emp.getFirstName().equals("Melvin"));
             assertTrue(emp.getLastName().equals("Malone"));
