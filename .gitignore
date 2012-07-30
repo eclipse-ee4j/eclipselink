@@ -4,3 +4,4 @@ bin/
 target/
 class/
 build/
+foundation/org.eclipse.persistence.core/src/org/eclipse/persistence/Version.java
