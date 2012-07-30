@@ -1,0 +1,23 @@
+{
+   "container" : {
+      "@attribute-referenced-id" : "4",
+      "@collection12" : "abc",
+      "collection2" : "one",
+      "referenced-id" : "2",
+      "collection13integer" : [ 123 ],
+      "collection14integer" : [ 123 ],
+      "referenced" : [ {
+         "id" : "2"
+      }, {
+         "id" : "4"
+      } ],
+      "collection1" : [ 10 ],
+      "collection3" : [ {
+         "@type" : "int",
+         "value" : 20
+      } ],
+      "collection5" : [ {
+      } ],
+      "collection9" : [ 1 ]
+   }
+}

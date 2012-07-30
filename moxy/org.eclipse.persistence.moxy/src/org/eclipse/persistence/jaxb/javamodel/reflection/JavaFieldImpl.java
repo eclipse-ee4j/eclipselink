@@ -46,7 +46,7 @@ public class JavaFieldImpl implements JavaField {
 
     protected Field jField;
     private JavaModelImpl javaModelImpl;
-    protected Boolean isMetadataComplete;
+    protected boolean isMetadataComplete;
 
     public JavaFieldImpl(Field javaField, JavaModelImpl javaModelImpl) {
         this(javaField, javaModelImpl, false);
@@ -55,7 +55,9 @@ public class JavaFieldImpl implements JavaField {
     public JavaFieldImpl(Field javaField, JavaModelImpl javaModelImpl, Boolean isMetadataComplete) {
         this.jField = javaField;
         this.javaModelImpl = javaModelImpl;
-        this.isMetadataComplete = isMetadataComplete;
+        if(isMetadataComplete != null){
+            this.isMetadataComplete = isMetadataComplete;
+        }
     }
 
     public JavaAnnotation getAnnotation(JavaClass arg0) {

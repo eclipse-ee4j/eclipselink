@@ -191,6 +191,13 @@
         <!-- generate Release Designation string for manifest                     -->
         <property name="release.designation" value="EclipseLink ${release.version}"/>
 
+        <!-- generate string for tag creation (used for maven publish anf handoff-version as well)  -->
+        <condition property="milestone.tag" value="${release.version}">
+            <equals arg1="${build.type}" arg2="RELEASE"/>
+        </condition>
+        <property name="milestone.tag" value="${release.version}-${build.type}"/>
+        <echo message="milestone.tag        ='${milestone.tag}'"/>
+
         <!-- Now that all our overrides are complete, pull in the rest of the build properties -->
         <property file="${build.location}/antbuild.properties"/>
 
@@ -213,6 +220,8 @@
         <echo message="version.string ='${version.string}'"/>
         <echo message="build.number   ='${build.date}'"/>
         <echo message="git.hash       ='${git.hash}'"/>
+        <echo message=" "/>
+        <echo message="milestone.tag  ='${milestone.tag}'"/>
         <echo message=" "/>
         <echo message="jdbc.driver.jar='${jdbc.driver.jar}'"/>
         <echo message="db.driver      ='${db.driver}'"/>
@@ -327,7 +336,6 @@
         <property name="p2.repos.dir"            value="${extract.dir}/p2repo"/>
         <property name="metadata.repos.name"     value="&quot;${p2.nightly.repos.name}&quot;"/>
         <property name="artifact.repos.name"     value="&quot;EclipseLink Incremental Artifacts&quot;"/>
-        <property name="milestone.tag"           value="${release.version}-${build.type}"/>
         <property name="p2.SDK.install.dir"      value="${build.deps.dir}/eclipse"/>
         <available file="${p2.SDK.install.dir}" type="dir" property="p2.SDK.install.dir.exist"/>
         <fail message="${p2.SDK.install.dir} dir not found. Build will fail, aborting now." unless="p2.SDK.install.dir.exist"/>
@@ -458,12 +466,6 @@
         </condition>
         <property name="artifact.repos.name" value="&quot;EclipseLink Milestone Artifacts&quot;"/>
 
-        <!-- generate string for tag creation (only used if milestone, or release build)  -->
-        <condition property="milestone.tag" value="${release.version}">
-            <equals arg1="${build.type}" arg2="RELEASE"/>
-        </condition>
-        <property name="milestone.tag" value="${release.version}-${build.type}"/>
-
         <echo message="download.dir         ='${download.dir}'"/>
         <echo message="p2.composite.root.dir='${p2.composite.root.dir}'"/>
         <echo message="p2.repos.dir         ='${p2.repos.dir}'"/>
@@ -471,7 +473,6 @@
         <echo message="p2.SDK.install.dir   ='${p2.SDK.install.dir}'"/>
         <echo message="metadata.repos.name  ='${metadata.repos.name}'"/>
         <echo message="artifact.repos.name  ='${artifact.repos.name}'"/>
-        <echo message="milestone.tag        ='${milestone.tag}'"/>
     </target>
 
     <!--  =====  Build Publish Targets -->

@@ -29,8 +29,8 @@ import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class SortedSetHolderTestCases extends JAXBWithJSONTestCases {
 
-    private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/collections/containertype.xml";
-    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/collections/containertype.json";
+    private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/collections/containertype2.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/collections/containertype2.json";
 
     public SortedSetHolderTestCases(String name) throws Exception {
         super(name);
@@ -56,17 +56,8 @@ public class SortedSetHolderTestCases extends JAXBWithJSONTestCases {
         ch.setCollection3(newContainer());
         ch.getCollection3().add(20);
 
-        ReferencedObject ref1 = new ReferencedObject();
-        ref1.id = "1";
-        ch.setCollection4(newContainer());
-        ch.getCollection4().add(ref1);
-        ch.getReferenced().add(ref1);
-
         ch.setCollection5(newContainer());
         ch.getCollection5().add(new SortedSetHolder());
-
-        ch.setCollection6(newContainer());
-        ch.getCollection6().add(new JAXBElement<String>(new QName("root"), String.class, "60"));
 
         ReferencedObject ref2 = new ReferencedObject();
         ref2.id = "2";
@@ -82,9 +73,6 @@ public class SortedSetHolderTestCases extends JAXBWithJSONTestCases {
 
         ch.setCollection9(newContainer());
         ch.getCollection9().add(CoinEnum.PENNY);
-
-        ch.setCollection11(newContainer());
-        ch.getCollection11().add("abc".getBytes());
 
         ch.setCollection12(newContainer());
         ch.getCollection12().add("abc");

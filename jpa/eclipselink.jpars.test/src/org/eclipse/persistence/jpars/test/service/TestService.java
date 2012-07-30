@@ -47,7 +47,7 @@ import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
 import org.eclipse.persistence.jpa.Archive;
 import org.eclipse.persistence.jpa.PersistenceProvider;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
-import org.eclipse.persistence.jpa.rs.PersistenceFactory;
+import org.eclipse.persistence.jpa.rs.PersistenceFactoryBase;
 import org.eclipse.persistence.jpa.rs.Service;
 import org.eclipse.persistence.jpa.rs.util.LinkAdapter;
 import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
@@ -74,7 +74,7 @@ import static org.junit.Assert.*;
  */
 public class TestService {
 
-    private static PersistenceFactory factory;
+    private static PersistenceFactoryBase factory;
     public static URI BASE_URI;
     
     public static PersistenceContext getAuctionPersistenceContext(Map<String, Object> additionalProperties){
@@ -104,7 +104,7 @@ public class TestService {
         factory = null;
         try{
             BASE_URI = new URI("http://localhost:8080/JPA-RS/");
-            factory = new PersistenceFactory();
+            factory = new PersistenceFactoryBase();
             
             properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
             properties.put(PersistenceUnitProperties.DDL_GENERATION, PersistenceUnitProperties.DROP_AND_CREATE);

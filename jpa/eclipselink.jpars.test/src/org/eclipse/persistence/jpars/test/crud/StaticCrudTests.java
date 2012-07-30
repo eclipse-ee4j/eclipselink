@@ -25,7 +25,7 @@ import javax.persistence.Persistence;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
-import org.eclipse.persistence.jpa.rs.PersistenceFactory;
+import org.eclipse.persistence.jpa.rs.PersistenceFactoryBase;
 import org.eclipse.persistence.jpars.test.model.StaticUser;
 import org.eclipse.persistence.jpars.test.util.ExamplePropertiesLoader;
 import org.junit.AfterClass;
@@ -40,7 +40,7 @@ import org.junit.Test;
 public class StaticCrudTests {
 
     private static PersistenceContext persistenceContext;
-    private static PersistenceFactory factory;
+    private static PersistenceFactoryBase factory;
     
     @BeforeClass
     public static void setup(){
@@ -50,7 +50,7 @@ public class StaticCrudTests {
         properties.put(PersistenceUnitProperties.DDL_GENERATION, PersistenceUnitProperties.DROP_AND_CREATE);
         factory = null;
         try{
-            factory = new PersistenceFactory();
+            factory = new PersistenceFactoryBase();
             persistenceContext = factory.bootstrapPersistenceContext("auction-static-local", Persistence.createEntityManagerFactory("auction-static-local", properties), new URI("http://localhost:8080/JPA-RS/"), true);
         } catch (Exception e){
             e.printStackTrace();

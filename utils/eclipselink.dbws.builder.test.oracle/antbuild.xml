@@ -445,6 +445,7 @@
         </junitreport>
         <delete>
           <fileset dir="." includes="TEST-*xml"/>
+          <fileset dir="." includes="junit*.properties"/>
         </delete>
     </target>
 

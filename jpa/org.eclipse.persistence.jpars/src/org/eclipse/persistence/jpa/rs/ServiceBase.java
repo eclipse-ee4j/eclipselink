@@ -79,6 +79,9 @@ public class ServiceBase {
     protected PersistenceFactoryBase factory;
     
     public PersistenceFactoryBase getPersistenceFactory() {
+        if (factory == null){
+            factory = new PersistenceFactoryBase();
+        }
         return factory;
     }
     
@@ -88,7 +91,7 @@ public class ServiceBase {
     }
         
     public Response getContexts(HttpHeaders hh, URI baseURI) throws JAXBException {
-        Set<String> contexts = factory.getPersistenceContextNames();
+        Set<String> contexts = getPersistenceFactory().getPersistenceContextNames();
         Iterator<String> contextIterator = contexts.iterator();
         List<Link> links = new ArrayList<Link>();
         String mediaType = StreamingOutputMarshaller.mediaType(hh.getAcceptableMediaTypes()).toString();
@@ -122,7 +125,7 @@ public class ServiceBase {
             
         PersistenceContext context = null;
         if (call.getContext() != null){
-            context = factory.get(call.getContext(), baseURI, null);
+            context = getPersistenceFactory().get(call.getContext(), baseURI, null);
             if (context == null){
                 JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[]{call.getContext()});
                 return Response.status(Status.NOT_FOUND).build();
@@ -160,7 +163,7 @@ public class ServiceBase {
      }
      
      public Response getTypes(String persistenceUnit, HttpHeaders hh, URI baseURI) {
-         PersistenceContext app = factory.get(persistenceUnit, baseURI, null);
+         PersistenceContext app = getPersistenceFactory().get(persistenceUnit, baseURI, null);
          if (app == null){
              JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[]{persistenceUnit});
              return Response.status(Status.NOT_FOUND).build();
@@ -195,7 +198,7 @@ public class ServiceBase {
      }
          
      public Response getDescriptorMetadata(String persistenceUnit, String descriptorAlias, HttpHeaders hh, URI baseURI) {
-         PersistenceContext app = factory.get(persistenceUnit, baseURI, null);
+         PersistenceContext app = getPersistenceFactory().get(persistenceUnit, baseURI, null);
          if (app == null){
              JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[]{persistenceUnit});
              return Response.status(Status.NOT_FOUND).build();
@@ -226,7 +229,7 @@ public class ServiceBase {
      }
          
      public Response getQueriesMetadata(String persistenceUnit, HttpHeaders hh, URI baseURI) {
-         PersistenceContext app = factory.get(persistenceUnit, baseURI, null);
+         PersistenceContext app = getPersistenceFactory().get(persistenceUnit, baseURI, null);
          if (app == null){
              JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[]{persistenceUnit});
              return Response.status(Status.NOT_FOUND).build();
@@ -252,7 +255,7 @@ public class ServiceBase {
      }
      
      public Response getQueryMetadata(String persistenceUnit, String queryName, HttpHeaders hh, URI baseURI) {
-         PersistenceContext app = factory.get(persistenceUnit, baseURI, null);
+         PersistenceContext app = getPersistenceFactory().get(persistenceUnit, baseURI, null);
          if (app == null){
              JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[]{persistenceUnit});
              return Response.status(Status.NOT_FOUND).build();
@@ -283,7 +286,7 @@ public class ServiceBase {
      }
      
      public Response find(String persistenceUnit, String type, String key, HttpHeaders hh, UriInfo ui, URI baseURI) {
-         PersistenceContext app = factory.get(persistenceUnit, baseURI, null);
+         PersistenceContext app = getPersistenceFactory().get(persistenceUnit, baseURI, null);
          if (app == null || app.getClass(type) == null){
              if (app == null){
                  JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[]{persistenceUnit});
@@ -313,7 +316,7 @@ public class ServiceBase {
      }
      
      public Response findAttribute(String persistenceUnit, String type, String key, String attribute, HttpHeaders hh, UriInfo ui, URI baseURI) {
-         PersistenceContext app = factory.get(persistenceUnit, baseURI, null);
+         PersistenceContext app = getPersistenceFactory().get(persistenceUnit, baseURI, null);
          if (app == null || app.getClass(type) == null){
              if (app == null){
                  JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[]{persistenceUnit});
@@ -342,7 +345,7 @@ public class ServiceBase {
      }
      
      public Response setOrAddAttribute(String persistenceUnit, String type, String key, String attribute, HttpHeaders hh, UriInfo ui, URI baseURI, InputStream in) {
-         PersistenceContext app = factory.get(persistenceUnit, baseURI, null);
+         PersistenceContext app = getPersistenceFactory().get(persistenceUnit, baseURI, null);
          if (app == null || app.getClass(type) == null){
              if (app == null){
                  JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[]{persistenceUnit});
@@ -387,7 +390,7 @@ public class ServiceBase {
      }
          
      public Response removeAttribute(String persistenceUnit, String type, String key, String attribute, HttpHeaders hh, UriInfo ui, URI baseURI, InputStream in) {
-         PersistenceContext app = factory.get(persistenceUnit, baseURI, null);
+         PersistenceContext app = getPersistenceFactory().get(persistenceUnit, baseURI, null);
          if (app == null || app.getClass(type) == null){
              if (app == null){
                  JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[]{persistenceUnit});
@@ -431,7 +434,7 @@ public class ServiceBase {
      }
      
      public Response create(String persistenceUnit, String type, HttpHeaders hh, UriInfo uriInfo, URI baseURI, InputStream in) throws JAXBException {
-         PersistenceContext app = factory.get(persistenceUnit, baseURI, null);
+         PersistenceContext app = getPersistenceFactory().get(persistenceUnit, baseURI, null);
          if (app == null){
              JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[]{persistenceUnit});
              return Response.status(Status.NOT_FOUND).build();
@@ -473,7 +476,7 @@ public class ServiceBase {
      }
      
      public Response update(@PathParam("context") String persistenceUnit, @PathParam("type") String type, @Context HttpHeaders hh, @Context UriInfo uriInfo, URI baseURI, InputStream in) {
-         PersistenceContext app = factory.get(persistenceUnit, baseURI, null);
+         PersistenceContext app = getPersistenceFactory().get(persistenceUnit, baseURI, null);
          if (app == null || app.getClass(type) == null){
              if (app == null){
                  JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[]{persistenceUnit});
@@ -501,7 +504,7 @@ public class ServiceBase {
      }
      
      public Response delete(String persistenceUnit, String type, String key, HttpHeaders hh, UriInfo ui, URI baseURI) {
-         PersistenceContext app = factory.get(persistenceUnit, baseURI, null);
+         PersistenceContext app = getPersistenceFactory().get(persistenceUnit, baseURI, null);
          if (app == null || app.getClass(type) == null){
              if (app == null){
                  JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[]{persistenceUnit});
@@ -523,7 +526,7 @@ public class ServiceBase {
      }
      
      public Response namedQuery(String persistenceUnit, String name, HttpHeaders hh, UriInfo ui, URI baseURI) {
-         PersistenceContext app = factory.get(persistenceUnit, baseURI, null);
+         PersistenceContext app = getPersistenceFactory().get(persistenceUnit, baseURI, null);
          if (app == null){
              JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[]{persistenceUnit});
              return Response.status(Status.NOT_FOUND).build();
@@ -540,7 +543,7 @@ public class ServiceBase {
      }
      
      public Response namedQueryUpdate(String persistenceUnit, String name, HttpHeaders hh, UriInfo ui, URI baseURI) {
-         PersistenceContext app = factory.get(persistenceUnit, baseURI, null);
+         PersistenceContext app = getPersistenceFactory().get(persistenceUnit, baseURI, null);
          if (app == null){
              JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[]{persistenceUnit});
              return Response.status(Status.NOT_FOUND).build();
@@ -557,7 +560,7 @@ public class ServiceBase {
      }
 
      public Response namedQuerySingleResult(String persistenceUnit, String name, HttpHeaders hh, UriInfo ui, URI baseURI) {
-         PersistenceContext app = factory.get(persistenceUnit, baseURI, null);
+         PersistenceContext app = getPersistenceFactory().get(persistenceUnit, baseURI, null);
          if (app == null){
              JPARSLogger.fine("jpars_could_not_find_persistence_context", new Object[]{persistenceUnit});
              return Response.status(Status.NOT_FOUND).build();
