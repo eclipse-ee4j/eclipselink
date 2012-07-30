@@ -148,6 +148,7 @@ public class PLSQLCollectionTestSuite extends DBWSTestSuite {
                   "name=\"CopyTableTest\" " +
                   "catalogPattern=\"PACKAGE2\" " +
                   "procedurePattern=\"COPYTABLE\" " +
+                  "returnType=\"PACKAGE2_TAB1\" " +  // note that returnType is not required
               "/>" +
               "<plsql-procedure " +
                   "name=\"CopyTableTest2\" " +
@@ -163,6 +164,7 @@ public class PLSQLCollectionTestSuite extends DBWSTestSuite {
                   "name=\"SetRecordTest2\" " +
                   "catalogPattern=\"PACKAGE2\" " +
                   "procedurePattern=\"SETRECORD2\" " +
+                  "returnType=\"PACKAGE2_TAB2\" " +  // note that returnType is not required
               "/>" +
             "</dbws-builder>";
           builder = null;
@@ -269,4 +271,128 @@ public class PLSQLCollectionTestSuite extends DBWSTestSuite {
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
 
+    /**
+     * WSDL generation test.
+     */
+    @Test
+    public void testWSDLGeneration() {
+    	assertNotNull("No WSDL was generated", DBWS_WSDL_STREAM);
+        Document doc = xmlParser.parse(new StringReader(DBWS_WSDL_STREAM.toString()));
+        removeEmptyTextNodes(doc);
+        Document controlDoc = xmlParser.parse(new StringReader(WSDL_XML));
+        removeEmptyTextNodes(controlDoc);
+        assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+    }
+
+    public static final String WSDL_XML =
+        STANDALONE_XML_HEADER +
+        "<wsdl:definitions name=\"PLSQLCollectionService\" targetNamespace=\"urn:PLSQLCollectionService\" xmlns:ns1=\"urn:PLSQLCollection\" xmlns:wsdl=\"http://schemas.xmlsoap.org/wsdl/\" xmlns:tns=\"urn:PLSQLCollectionService\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/wsdl/soap/\">" +
+        "<wsdl:types>" +
+          "<xsd:schema xmlns:tns=\"urn:PLSQLCollectionService\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" targetNamespace=\"urn:PLSQLCollectionService\" elementFormDefault=\"qualified\"><xsd:import schemaLocation=\"eclipselink-dbws-schema.xsd\" namespace=\"urn:PLSQLCollection\"/><xsd:complexType name=\"SetRecordTestRequestType\"><xsd:sequence><xsd:element name=\"INREC\" type=\"ns1:PACKAGE2_ORECORD\"/></xsd:sequence></xsd:complexType><xsd:complexType name=\"CopyTableTestResponseType\"><xsd:sequence><xsd:element name=\"result\"><xsd:complexType><xsd:sequence><xsd:element ref=\"ns1:PACKAGE2_TAB1\" minOccurs=\"0\"/></xsd:sequence></xsd:complexType></xsd:element></xsd:sequence></xsd:complexType><xsd:complexType name=\"CopyTableTest2ResponseType\"><xsd:sequence><xsd:element name=\"result\"><xsd:complexType><xsd:sequence><xsd:element ref=\"ns1:PACKAGE2_TAB1\" minOccurs=\"0\"/></xsd:sequence></xsd:complexType></xsd:element></xsd:sequence></xsd:complexType><xsd:complexType name=\"SetRecordTest2RequestType\"><xsd:sequence><xsd:element name=\"INREC\" type=\"ns1:PACKAGE2_ORECORD\"/></xsd:sequence></xsd:complexType><xsd:complexType name=\"CopyTableTestRequestType\"><xsd:sequence><xsd:element name=\"OLDTAB\" type=\"ns1:PACKAGE2_TAB1\"/></xsd:sequence></xsd:complexType><xsd:complexType name=\"SetRecordTestResponseType\"><xsd:sequence><xsd:element name=\"result\"><xsd:complexType><xsd:sequence><xsd:element ref=\"ns1:PACKAGE2_TAB2\" minOccurs=\"0\"/></xsd:sequence></xsd:complexType></xsd:element></xsd:sequence></xsd:complexType><xsd:complexType name=\"CopyTableTest2RequestType\"><xsd:sequence><xsd:element name=\"OLDTAB\" type=\"ns1:PACKAGE2_TAB1\"/></xsd:sequence></xsd:complexType><xsd:complexType name=\"SetRecordTest2ResponseType\"><xsd:sequence><xsd:element name=\"result\"><xsd:complexType><xsd:sequence><xsd:element ref=\"ns1:PACKAGE2_TAB2\" minOccurs=\"0\"/></xsd:sequence></xsd:complexType></xsd:element></xsd:sequence></xsd:complexType><xsd:element name=\"CopyTableTestResponse\" type=\"tns:CopyTableTestResponseType\"/><xsd:element name=\"CopyTableTest\" type=\"tns:CopyTableTestRequestType\"/><xsd:element name=\"SetRecordTest\" type=\"tns:SetRecordTestRequestType\"/><xsd:element name=\"CopyTableTest2Response\" type=\"tns:CopyTableTest2ResponseType\"/><xsd:element name=\"SetRecordTest2\" type=\"tns:SetRecordTest2RequestType\"/><xsd:element name=\"SetRecordTest2Response\" type=\"tns:SetRecordTest2ResponseType\"/><xsd:element name=\"SetRecordTestResponse\" type=\"tns:SetRecordTestResponseType\"/><xsd:element name=\"CopyTableTest2\" type=\"tns:CopyTableTest2RequestType\"/></xsd:schema>" +
+        "</wsdl:types>" +
+        "<wsdl:message name=\"SetRecordTest2Response\">" +
+          "<wsdl:part name=\"SetRecordTest2Response\" element=\"tns:SetRecordTest2Response\">" +
+          "</wsdl:part>" +
+        "</wsdl:message>" +
+        "<wsdl:message name=\"SetRecordTestRequest\">" +
+          "<wsdl:part name=\"SetRecordTestRequest\" element=\"tns:SetRecordTest\">" +
+          "</wsdl:part>" +
+        "</wsdl:message>" +
+        "<wsdl:message name=\"SetRecordTestResponse\">" +
+          "<wsdl:part name=\"SetRecordTestResponse\" element=\"tns:SetRecordTestResponse\">" +
+          "</wsdl:part>" +
+        "</wsdl:message>" +
+        "<wsdl:message name=\"CopyTableTestRequest\">" +
+          "<wsdl:part name=\"CopyTableTestRequest\" element=\"tns:CopyTableTest\">" +
+          "</wsdl:part>" +
+        "</wsdl:message>" +
+        "<wsdl:message name=\"CopyTableTestResponse\">" +
+          "<wsdl:part name=\"CopyTableTestResponse\" element=\"tns:CopyTableTestResponse\">" +
+          "</wsdl:part>" +
+        "</wsdl:message>" +
+        "<wsdl:message name=\"CopyTableTest2Response\">" +
+          "<wsdl:part name=\"CopyTableTest2Response\" element=\"tns:CopyTableTest2Response\">" +
+          "</wsdl:part>" +
+        "</wsdl:message>" +
+        "<wsdl:message name=\"CopyTableTest2Request\">" +
+          "<wsdl:part name=\"CopyTableTest2Request\" element=\"tns:CopyTableTest2\">" +
+          "</wsdl:part>" +
+        "</wsdl:message>" +
+        "<wsdl:message name=\"SetRecordTest2Request\">" +
+          "<wsdl:part name=\"SetRecordTest2Request\" element=\"tns:SetRecordTest2\">" +
+          "</wsdl:part>" +
+        "</wsdl:message>" +
+        "<wsdl:portType name=\"PLSQLCollectionService_Interface\">" +
+          "<wsdl:operation name=\"CopyTableTest\">" +
+            "<wsdl:input message=\"tns:CopyTableTestRequest\">" +
+          "</wsdl:input>" +
+            "<wsdl:output message=\"tns:CopyTableTestResponse\">" +
+          "</wsdl:output>" +
+          "</wsdl:operation>" +
+          "<wsdl:operation name=\"SetRecordTest\">" +
+            "<wsdl:input message=\"tns:SetRecordTestRequest\">" +
+          "</wsdl:input>" +
+            "<wsdl:output message=\"tns:SetRecordTestResponse\">" +
+          "</wsdl:output>" +
+          "</wsdl:operation>" +
+          "<wsdl:operation name=\"SetRecordTest2\">" +
+            "<wsdl:input message=\"tns:SetRecordTest2Request\">" +
+          "</wsdl:input>" +
+            "<wsdl:output message=\"tns:SetRecordTest2Response\">" +
+          "</wsdl:output>" +
+          "</wsdl:operation>" +
+          "<wsdl:operation name=\"CopyTableTest2\">" +
+            "<wsdl:input message=\"tns:CopyTableTest2Request\">" +
+          "</wsdl:input>" +
+            "<wsdl:output message=\"tns:CopyTableTest2Response\">" +
+          "</wsdl:output>" +
+          "</wsdl:operation>" +
+        "</wsdl:portType>" +
+        "<wsdl:binding name=\"PLSQLCollectionService_SOAP_HTTP\" type=\"tns:PLSQLCollectionService_Interface\">" +
+          "<soap:binding style=\"document\" transport=\"http://schemas.xmlsoap.org/soap/http\"/>" +
+          "<wsdl:operation name=\"CopyTableTest\">" +
+            "<soap:operation soapAction=\"urn:PLSQLCollectionService:CopyTableTest\"/>" +
+            "<wsdl:input>" +
+              "<soap:body use=\"literal\"/>" +
+            "</wsdl:input>" +
+            "<wsdl:output>" +
+              "<soap:body use=\"literal\"/>" +
+            "</wsdl:output>" +
+          "</wsdl:operation>" +
+          "<wsdl:operation name=\"SetRecordTest\">" +
+            "<soap:operation soapAction=\"urn:PLSQLCollectionService:SetRecordTest\"/>" +
+            "<wsdl:input>" +
+              "<soap:body use=\"literal\"/>" +
+            "</wsdl:input>" +
+            "<wsdl:output>" +
+              "<soap:body use=\"literal\"/>" +
+            "</wsdl:output>" +
+          "</wsdl:operation>" +
+          "<wsdl:operation name=\"SetRecordTest2\">" +
+            "<soap:operation soapAction=\"urn:PLSQLCollectionService:SetRecordTest2\"/>" +
+            "<wsdl:input>" +
+              "<soap:body use=\"literal\"/>" +
+            "</wsdl:input>" +
+            "<wsdl:output>" +
+              "<soap:body use=\"literal\"/>" +
+            "</wsdl:output>" +
+          "</wsdl:operation>" +
+          "<wsdl:operation name=\"CopyTableTest2\">" +
+            "<soap:operation soapAction=\"urn:PLSQLCollectionService:CopyTableTest2\"/>" +
+            "<wsdl:input>" +
+              "<soap:body use=\"literal\"/>" +
+            "</wsdl:input>" +
+            "<wsdl:output>" +
+              "<soap:body use=\"literal\"/>" +
+            "</wsdl:output>" +
+          "</wsdl:operation>" +
+        "</wsdl:binding>" +
+        "<wsdl:service name=\"PLSQLCollectionService\">" +
+          "<wsdl:port name=\"PLSQLCollectionServicePort\" binding=\"tns:PLSQLCollectionService_SOAP_HTTP\">" +
+            "<soap:address location=\"REPLACE_WITH_ENDPOINT_ADDRESS\"/>" +
+          "</wsdl:port>" +
+        "</wsdl:service>" +
+      "</wsdl:definitions>";
+
+    
 }

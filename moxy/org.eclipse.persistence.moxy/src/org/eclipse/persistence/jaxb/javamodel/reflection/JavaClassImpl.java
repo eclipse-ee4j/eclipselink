@@ -54,7 +54,7 @@ public class JavaClassImpl implements JavaClass {
     protected ParameterizedType jType;
     protected Class jClass;
     protected JavaModelImpl javaModelImpl;
-    protected Boolean isMetadataComplete;
+    protected boolean isMetadataComplete;
     protected JavaClass superClassOverride;
 
     protected static String XML_REGISTRY_CLASS_NAME = "javax.xml.bind.annotation.XmlRegistry";
@@ -500,7 +500,9 @@ public class JavaClassImpl implements JavaClass {
      * @param isMetadataComplete
      */
     void setIsMetadataComplete(Boolean isMetadataComplete) {
-        this.isMetadataComplete = isMetadataComplete;
+       if(isMetadataComplete != null){
+            this.isMetadataComplete = isMetadataComplete;
+        }      
     }
 
     //---------------- unimplemented methods ----------------//
