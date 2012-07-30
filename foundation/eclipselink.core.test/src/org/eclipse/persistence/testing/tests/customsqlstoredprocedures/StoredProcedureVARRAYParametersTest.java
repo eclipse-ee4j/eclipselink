@@ -22,6 +22,7 @@ import org.eclipse.persistence.queries.SQLCall;
 import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.models.insurance.Address;
 import org.eclipse.persistence.testing.models.insurance.Phone;
 
 /**
@@ -89,12 +90,12 @@ public class StoredProcedureVARRAYParametersTest extends StoredProcedureObjectRe
         if ((addressOut==null)||(! (addressOut instanceof Struct))){
             throw new TestErrorException("Address returned by SProc_Read_PHolders was null or not a Struct :"+addressOut);
         }
-        Object addressInOut = ((DatabaseRecord)results3.get(0)).get("address");
-        if ((addressInOut==null)||(! (addressInOut instanceof Struct))){
-            throw new TestErrorException("Address returned by SProc_Delete_PHolders was null or not a Struct "+addressInOut);
+        //This is an Address instance instead of struct since it picks up the address class from the value passed in. 
+        Address addressInOut = ((Address)((DatabaseRecord)results3.get(0)).get("address"));
+        if ((addressInOut==null)|| !originalAddress.getStreet().equals(addressInOut.getStreet())){
+            throw new TestErrorException("Address in did not equal the address returned out by SProc_Delete_PHolders "+addressInOut);
         }
-        
-        
+
         Vector childrenRead = ((Vector)((DatabaseRecord)results2.get(0)).get("childrenNames"));
         if ( (childrenNames.size() != childrenRead.size()) && 
                 (!childrenNames.get(0).equals(childrenRead.get(0))) ){
