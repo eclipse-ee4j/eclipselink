@@ -16,14 +16,24 @@ import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class ReferencedObject {
-     @XmlID
-     public String id;
+public class ReferencedObject implements Comparable {
 
-     public boolean equals(Object obj){
-    	 if(obj instanceof ReferencedObject){
-    		 return id.equals(((ReferencedObject)obj).id);
-    	 }
-    	 return false;
-     }
+    @XmlID
+    public String id;
+
+    public boolean equals(Object obj) {
+        if (obj instanceof ReferencedObject) {
+            return id.equals(((ReferencedObject) obj).id);
+        }
+        return false;
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        if (this.equals(o)) {
+            return 0;
+        }
+        return 1;
+    }
+
 }
