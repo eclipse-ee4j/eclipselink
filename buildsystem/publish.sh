@@ -23,6 +23,7 @@ START_DATE=`date '+%y%m%d-%H%M'`
 #Directories
 ANT_HOME=/shared/common/apache-ant-1.7.0
 HOME_DIR=/shared/rt/eclipselink
+EXEC_DIR=${HOME_DIR}
 DNLD_DIR=/home/data/httpd/download.eclipse.org/rt/eclipselink
 JAVA_HOME=/shared/common/jdk-1.6.x86_64
 LOG_DIR=${HOME_DIR}/logs
@@ -261,24 +262,6 @@ publishBuildArtifacts() {
     fi
 }
 
-unset publishMavenRepo
-publishMavenRepo() {
-    #Need handoff_loc, download location, version, date/time
-    src=$1
-    dest=$2
-    version=$3
-    timestamp=$4
-
-    #Mk download destination dir (DNLD_DIR/nightly/<version>/<date>
-    createPath ${dest}
-
-    #force <date> dir's date attribute to date of handoff
-    touch -t$timestamp ${dest}
-    #verify eclipselink.jar exist, copy preserving timestamp if it does
-    #count number of zrchives (zips) exported, and copy them preserving date
-    #verify everything copied
-}
-
 unset publishP2Repo
 publishP2Repo() {
     #Need handoff_loc, download location, version, date/time, qualifier
@@ -324,14 +307,6 @@ publishP2Repo() {
             #verify everything copied correctly
             if [ "${destP2Count}" -gt 0 ] ; then
                 echo "    Published ${destP2Count} repo successfully."
-                # run scrip tthat cleans pld builds from repo.
-
-
-                #regen composite repo after new child copied.
-                echo "TODO: regen composite at ${downloadDest}"
-                if [ -f ./buildCompositeP2.sh ] ; then
-                    ./buildCompositeP2.sh ${rootDest} "&quot;EclipseLink Nightly Build Repository&quot;"
-                fi
             else
                 echo "    Publish failed for P2 Repo."
                 rm -r ${downloadDest}
@@ -352,6 +327,99 @@ publishP2Repo() {
     fi
 }
 
+unset publishMavenRepo
+publishMavenRepo() {
+    #Need handoff_loc, branch, date, version
+    src=$1
+    branch=$2
+    blddate=$3
+    version=$4
+
+    # Define SYSTEM variables needed
+    CLASSPATH
+
+    # verify latest git repo, if none exist, create it.
+    if [ -d ${RUNTIME_REPO} ] ; then
+       cd ${RUNTIME_REPO}
+       git pull
+    else
+       git clone http://git.eclipse.org/gitroot/eclipselink/eclipselink.runtime.git ${RUNTIME_REPO}
+       cd ${RUNTIME_REPO}
+    fi
+
+    # checkout branch from runtime git repo
+    git checkout ${branch}
+
+    # unzip necessary files to 'upload dir'/plugins
+    #unzip ${handoff_loc}/ # better in ant task??? (autobuild? - populate variables, then invoke?
+
+    #Invoke Antscript for Maven upload
+    arguments="-Drelease.version=${version} -Dbuild.date=${blddate} -Dbuild.type=SNAPSHOT"
+
+    # Run Ant from ${exec_location} using ${buildfile} ${arguments}
+    runAnt ${exec_location} ${upload_src_dir}/uploadToMaven.xml "${arguments}"
+
+    if encountered error, increment error_cnt, otherwise, cleanup ${upload_src_dir},
+    if [ "${local_err}" = "true" ] ; then
+       error_cnt=`expr ${error_cnt} + 1`
+    else
+       #rm -r ${upload_src_dir}
+    fi
+
+    # return to HOME_DIR
+    cd $HOME_DIR
+}
+
+unset runAnt
+runAnt() {
+    #Define run specific variables
+    run_dir=$1
+    buildfile=$2
+    args=$3
+
+    # Store current location
+
+    # Change to run_dir
+
+    # Invoke Ant
+
+    #Directories
+#    BRANCH_PATH=${WORKSPACE}
+#    BLD_DEPS_DIR=${HOME_DIR}/bld_deps/${BRANCH}
+#    JUNIT_HOME=${BLD_DEPS_DIR}/junit
+
+    #Files
+#    JDBC_LOGIN_INFO_FILE=${HOME_DIR}/db-${BRANCH_NM}.dat
+    LOGFILE_NAME=bsb-${BRANCH_NM}_pub${PROC}_${START_DATE}.log
+    DATED_LOG=${LOG_DIR}/${LOGFILE_NAME}
+
+    # Define build dependency paths (build needs em, NOT compile dependencies)
+#    OLD_CLASSPATH=${CLASSPATH}
+#   CLASSPATH=${JUNIT_HOME}/junit.jar:${ANT_HOME}/lib/ant-junit.jar
+
+    # Export run specific variables
+    export BLD_DEPS_DIR BRANCH_NM BRANCH_PATH CLASSPATH JUNIT_HOME TARGET
+
+    # Setup parameters for Ant build
+    ANT_BASEARG="-f \"${ant.buildfile}\" -Dbranch.name=\"${BRANCH}\" -Dgit.hash=${GITHASH}"
+    ANT_BASEARG="${ANT_BASEARG} -Dbuild.date=${BLDDATE} -Dhandoff.file=${handoff}"
+
+    cd ${HOME_DIR}
+    echo "Results logged to: ${DATED_LOG}"
+    touch ${DATED_LOG}
+
+    echo ""
+    echo "${PROC} publish starting for ${BRANCH} build:${QUALIFIER} from '`pwd`'..."
+    echo "${PROC} publish started at: '`date`' for ${BRANCH} build:${QUALIFIER} from '`pwd`'..." >> ${DATED_LOG}
+    echo "   ant ${ANT_BASEARG} publish-${PROC}"
+    echo "ant ${ANT_BASEARG} publish-${PROC}" >> ${DATED_LOG}
+    if [ ! "${DEBUG}" = "true" ] ; then
+        #ant ${ANT_BASEARG} publish-${PROC} >> ${DATED_LOG} 2>&1
+        echo "Not running: ant ${ANT_BASEARG} publish-${PROC}"
+    fi
+    echo "Publish completed (skipped) at: `date`" >> ${DATED_LOG}
+    echo "Publish complete."
+}
 
 unset publishTestArtifacts
 publishTestArtifacts() {
@@ -415,59 +483,7 @@ publishTestArtifacts() {
     fi
 }
 
-unset runAnt
-runAnt() {
-    #Define run specific variables
-    BRANCH=$1
-    QUALIFIER=$2
-    PROC=$3
-    HOST=$4
-    BUILD_ARCHIVE_LOC=$5
 
-    if [ ! "${BRANCH}" = "master" ] ; then
-        # Need to figure out version
-    #else
-        $Need to figure out version
-        BRANCH=$Version
-    fi
-
-    #Directories
-#    BRANCH_PATH=${WORKSPACE}
-#    BLD_DEPS_DIR=${HOME_DIR}/bld_deps/${BRANCH}
-#    JUNIT_HOME=${BLD_DEPS_DIR}/junit
-
-    #Files
-#    JDBC_LOGIN_INFO_FILE=${HOME_DIR}/db-${BRANCH_NM}.dat
-    LOGFILE_NAME=bsb-${BRANCH_NM}_pub${PROC}_${START_DATE}.log
-    DATED_LOG=${LOG_DIR}/${LOGFILE_NAME}
-
-    # Define build dependency paths (build needs em, NOT compile dependencies)
-#    OLD_CLASSPATH=${CLASSPATH}
-#   CLASSPATH=${JUNIT_HOME}/junit.jar:${ANT_HOME}/lib/ant-junit.jar
-
-    # Export run specific variables
-    export BLD_DEPS_DIR BRANCH_NM BRANCH_PATH CLASSPATH JUNIT_HOME TARGET
-
-    # Setup parameters for Ant build
-    ANT_BASEARG="-f \"${ant.buildfile}\" -Dbranch.name=\"${BRANCH}\" -Dgit.hash=${GITHASH}"
-    ANT_BASEARG="${ANT_BASEARG} -Dbuild.date=${BLDDATE} -Dhandoff.file=${handoff}"
-
-    cd ${HOME_DIR}
-    echo "Results logged to: ${DATED_LOG}"
-    touch ${DATED_LOG}
-
-    echo ""
-    echo "${PROC} publish starting for ${BRANCH} build:${QUALIFIER} from '`pwd`'..."
-    echo "${PROC} publish started at: '`date`' for ${BRANCH} build:${QUALIFIER} from '`pwd`'..." >> ${DATED_LOG}
-    echo "   ant ${ANT_BASEARG} publish-${PROC}"
-    echo "ant ${ANT_BASEARG} publish-${PROC}" >> ${DATED_LOG}
-    if [ ! "${DEBUG}" = "true" ] ; then
-        #ant ${ANT_BASEARG} publish-${PROC} >> ${DATED_LOG} 2>&1
-        echo "Not running: ant ${ANT_BASEARG} publish-${PROC}"
-    fi
-    echo "Publish completed (skipped) at: `date`" >> ${DATED_LOG}
-    echo "Publish complete."
-}
 
 #==========================
 #   Main Begins
@@ -486,7 +502,10 @@ fi
 #        if not exit with minimal work done.
 curdir=`pwd`
 cd $HOME_DIR
+NEW_RESULTS=false
+handoff_cnt=0
 for handoff in `ls handoff-file*.dat` ; do
+    handoff_cnt=`expr ${handoff_cnt} + 1`
     echo "Detected handoff file:'${handoff}'. Process starting..."
     # Do stuff
     parseHandoff ${handoff}
@@ -498,9 +517,6 @@ for handoff in `ls handoff-file*.dat` ; do
        publishTestArtifacts ${BUILD_ARCHIVE_LOC} ${DNLD_DIR} ${VERSION} ${BLDDATE} ${HOST}
     fi
     #runAnt ${BRANCH} ${QUALIFIER} ${PROC} ${BUILD_ARCHIVE_LOC} ${HOST}
-    echo "Done."
-done
-
  # ${DNLD_DIR}
  # ${BRANCH}
  # ${QUALIFIER}
@@ -512,3 +528,35 @@ done
  # ${MAVEN_TAG}
  # ${VERSION}
  # ${TIMESTAMP}
+    if [ "${ERROR}" = "false" ] ; then
+        echo "Processing of '${handoff}' complete."
+        # remove handoff
+        #rm ${handoff}
+        echo "   Removing '${handoff}'. (not!)"
+        # remove exported artifacts
+        #rm -r ${BUILD_ARCHIVE_LOC} # Currently cannot because build/test are not separate locations (build would delete tests before published...
+        #rm ${BUILD_ARCHIVE_LOC}/*  # Gets rid of the bulk of the artifacts, but will leave the dir heirarchy
+        echo "   Removing '${BUILD_ARCHIVE_LOC}/*'. (not!)"
+    else
+        # Repost error
+        echo "Error processing of '${handoff}'."
+        echo "    Deletion aborted..."
+    fi
+    echo "   Finished."
+done
+echo "Completed processing of all (${handoff_cnt}) handoff files."
+if [ "${NEW_RESULTS}" = "true" ] ; then
+    # clean up old artifacts
+    echo "Could now run '${EXEC_DIR}/cleanNightly.sh' to remove old artifacts."
+    # regen web
+    echo "Could now run '${EXEC_DIR}/buildNightlyList-cron.sh' to regenerate nightly download page."
+    # regen P2 composite
+    echo "Could now run '${EXEC_DIR}/buildCompositeP2.sh' to rebuild composite P2."
+    #regen composite repo after new child copied.
+    echo "TODO: regen composite at ${downloadDest}"
+    if [ -f ${EXEC_DIR}/buildCompositeP2.sh ] ; then
+        ./buildCompositeP2.sh ${rootDest} "&quot;EclipseLink Nightly Build Repository&quot;"
+    fi
+fi
+echo "Publish complete."
+
