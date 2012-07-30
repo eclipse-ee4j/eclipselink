@@ -783,7 +783,7 @@ public class MappingsGenerator {
                 if (next.getXmlPath() != null) {
                     xpath = new XMLField(next.getXmlPath());
                 } else {
-                    xpath = getXPathForField(next, namespace, (!(this.typeInfo.containsKey(type.getQualifiedName()))) || next.isMtomAttachment());
+                    xpath = getXPathForField(next, namespace, (!(this.typeInfo.containsKey(type.getQualifiedName()))) || next.isMtomAttachment() || type.isEnum());
                 }
                 mapping.addChoiceElement(xpath, type.getQualifiedName());
                 if(!originalType.getQualifiedName().equals(type.getQualifiedName())) {
@@ -792,6 +792,12 @@ public class MappingsGenerator {
                     }
                     mapping.addConverter(xpath, converter);
                 }
+                if (type.isEnum()) {
+                    DatabaseMapping nestedMapping = (DatabaseMapping) mapping.getChoiceElementMappings().get(xpath);
+                    if(nestedMapping.isAbstractDirectMapping()) {
+                        ((XMLDirectMapping)nestedMapping).setConverter(buildJAXBEnumTypeConverter(nestedMapping, (EnumTypeInfo)info));
+                    }
+                }                
             }
         }
         return mapping;
@@ -882,7 +888,7 @@ public class MappingsGenerator {
                 if (next.getXmlPath() != null) {
                     xpath = new XMLField(next.getXmlPath());
                 } else {
-                    xpath = getXPathForField(next, namespace, !(this.typeInfo.containsKey(type.getQualifiedName())));
+                    xpath = getXPathForField(next, namespace, (!(this.typeInfo.containsKey(type.getQualifiedName()))) || type.isEnum());
                 }
                 xmlField = xpath;
                 mapping.addChoiceElement(xpath.getName(), type.getQualifiedName());
@@ -912,14 +918,17 @@ public class MappingsGenerator {
                     	 ((XMLCompositeDirectCollectionMapping)nestedMapping).getNullPolicy().setNullRepresentedByXsiNil(true);
                     	 ((XMLCompositeDirectCollectionMapping)nestedMapping).getNullPolicy().setMarshalNullRepresentation(XMLNullRepresentationType.XSI_NIL);
                      }
+                     if (type.isEnum()) {
+                         ((XMLCompositeDirectCollectionMapping)nestedMapping).setValueConverter(buildJAXBEnumTypeConverter(nestedMapping, (EnumTypeInfo)info));
+                     }
                 } else if(nestedMapping instanceof XMLBinaryDataCollectionMapping){   
                	    if (next.isSetNullPolicy()) {
             		    ((XMLBinaryDataCollectionMapping)nestedMapping).setNullPolicy(getNullPolicyFromProperty(next, namespace.getNamespaceResolverForDescriptor()));
                     } else if (next.isNillable()){
                 	    ((XMLBinaryDataCollectionMapping)nestedMapping).getNullPolicy().setNullRepresentedByXsiNil(true);
                 	    ((XMLBinaryDataCollectionMapping)nestedMapping).getNullPolicy().setMarshalNullRepresentation(XMLNullRepresentationType.XSI_NIL);
-                 }
-            }
+                    }
+                }
             }
         }
         return mapping;
