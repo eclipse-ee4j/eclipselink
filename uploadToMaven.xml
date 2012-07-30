@@ -37,7 +37,14 @@
 *         build.type      - should be set to "SNAPSHOT, "M##", or "RELEASE"
 *
 *********************************************************************************-->
-
+<!-- Build Assumptions:
+*         running from a "view"
+*            Needs:
+*               ${mavenant.dir}/maven-ant-tasks-2.0.8.jar (assumes: ${build.deps.dir}/mavenant)
+*               build.properties
+*               ./buildsystem/ant_customizations.jar
+*
+*********************************************************************************-->
 <project name="Upload2Maven"  basedir="." xmlns:artifact="urn:maven-artifact-ant" default="upload-maven-all">
     <property file="${user.home}/build.properties"/>
     <property file="build.properties"/>
