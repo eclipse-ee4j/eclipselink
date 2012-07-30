@@ -11,7 +11,7 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     egwin  - Changed buildNumber to buildDate. Added buildRevision,
  *              buildType, getBuildDate(), getBuildRevision(), getBuildType(),
- *              getVersionString(), printVersionString(), and main()  
+ *              getVersionString(), printVersionString(), and main()
  ******************************************************************************/
 package org.eclipse.persistence;
 
@@ -23,7 +23,7 @@ package org.eclipse.persistence;
  */
 public class Version {
     // The current copyright info for EclipseLink.
-    private static final String CopyrightString = "Copyright (c) 1998, 2011 Oracle.  All rights reserved.";
+    private static final String CopyrightString = "Copyright (c) 1998, 2012 Oracle.  All rights reserved.";
 
     // The current version of EclipseLink.
     // This will be used by all product components and included in exceptions.
@@ -40,7 +40,7 @@ public class Version {
     private static final String buildRevision = "@BUILD_REVISION@";
     // Typically SNAPSHOT, Milestone name (M1,M2,etc), or RELEASE
     private static final String buildType = "@BUILD_TYPE@";
- 
+
     /** Keep track of JDK version in order to make some decisions about data structures. **/
     public static final int JDK_VERSION_NOT_SET = 0;
     public static final int JDK_1_5 = 1;
@@ -73,7 +73,7 @@ public class Version {
     public static String getBuildNumber() {
         return getBuildDate();
     }
-    
+
     public static String getBuildDate() {
         return buildDate;
     }
@@ -124,7 +124,7 @@ public class Version {
     }
 
     public static void printVersion ( ) {
-        System.out.println( getVersionString() );          
+        System.out.println( getVersionString() );
     }
 
     public static void main ( String[] args ) {
