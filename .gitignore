@@ -1,0 +1,16 @@
+.DS_Store
+*.class
+*test.jar
+*model.jar
+eclipselink*.jar
+org.eclipse.persistence*jar
+bin/
+target/
+class/
+classes/
+run/
+build/
+foundation/org.eclipse.persistence.core/src/org/eclipse/persistence/Version.java
+/utils/eclipselink.utils.rename/package-rename.jar
+/jpa/eclipselink.jpa.test/jpa-performance.jar
+/jpa/eclipselink.jpa.test/jpa-performance2.jar
