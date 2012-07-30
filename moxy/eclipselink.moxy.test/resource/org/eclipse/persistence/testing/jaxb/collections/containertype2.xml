@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<container attribute-referenced-id="4" collection12="abc">
+   <collection2>one</collection2>
+   <referenced-id>2</referenced-id>
+   <collection13integer>123</collection13integer>
+   <collection14integer>123</collection14integer>
+   <referenced>
+      <id>2</id>
+   </referenced>
+   <referenced>
+      <id>4</id>
+   </referenced>
+   <collection1>10</collection1>
+   <collection3 xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:int">20</collection3>
+   <collection5/>
+   <collection9>1</collection9>
+</container>
