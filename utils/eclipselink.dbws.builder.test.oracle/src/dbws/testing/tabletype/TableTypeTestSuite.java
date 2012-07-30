@@ -73,17 +73,30 @@ public class TableTypeTestSuite extends DBWSTestSuite {
             "\nB BLOB," +
             "\nC CLOB," +
             "\nR RAW(3)," +
-            "\nLR LONG RAW," +
             "\nPRIMARY KEY (ID)" +
         "\n)";
     static final String[] POPULATE_TABLETYPE_TABLE = new String[] {
-        "INSERT INTO TABLETYPE (ID, NAME, DEPTNO, DEPTNAME, SECTION, SAL, COMMISSION, SALES, BINID, B, C, R, LR) VALUES (1, 'mike', 99, 'sales', 'a', 100000.80, 450.80, 10000.80, '1010', '010101010101010101010101010101', 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', '010101', '010101010101010101')",
-        "INSERT INTO TABLETYPE (ID, NAME, DEPTNO, DEPTNAME, SECTION, SAL, COMMISSION, SALES, BINID, B, C, R, LR) VALUES (2, 'merrick', 98, 'delivery', 'f', 20000, 0, 0, '0101', '020202020202020202020202020202', 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb', '020202', '020202020202020202')",
-        "INSERT INTO TABLETYPE (ID, NAME, DEPTNO, DEPTNAME, SECTION, SAL, COMMISSION, SALES, BINID, B, C, R, LR) VALUES (3, 'rick', 99, 'sales', 'b', 98000.20, 150.20, 2000.20, '1110', '030303030303030303030303030303', 'cccccccccccccccccccccccccccccc', '030303', '030303030303030303')"
+        "INSERT INTO TABLETYPE (ID, NAME, DEPTNO, DEPTNAME, SECTION, SAL, COMMISSION, SALES, BINID, B, C, R) VALUES (1, 'mike', 99, 'sales', 'a', 100000.80, 450.80, 10000.80, '1010', '010101010101010101010101010101', 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', '010101')",
+        "INSERT INTO TABLETYPE (ID, NAME, DEPTNO, DEPTNAME, SECTION, SAL, COMMISSION, SALES, BINID, B, C, R) VALUES (2, 'merrick', 98, 'delivery', 'f', 20000, 0, 0, '0101', '020202020202020202020202020202', 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb', '020202')",
+        "INSERT INTO TABLETYPE (ID, NAME, DEPTNO, DEPTNAME, SECTION, SAL, COMMISSION, SALES, BINID, B, C, R) VALUES (3, 'rick', 99, 'sales', 'b', 98000.20, 150.20, 2000.20, '1110', '030303030303030303030303030303', 'cccccccccccccccccccccccccccccc', '030303')"
     };
     static final String DROP_TABLETYPE_TABLE =
         "DROP TABLE TABLETYPE";
 
+    static final String CREATE_TABLETYPE2_TABLE =
+        "CREATE TABLE TABLETYPE2 (" +
+            "\nID NUMERIC(4) NOT NULL," +
+            "\nLR LONG RAW," +
+            "\nPRIMARY KEY (ID)" +
+        "\n)";
+    static final String[] POPULATE_TABLETYPE2_TABLE = new String[] {
+        "INSERT INTO TABLETYPE2 (ID, LR) VALUES (66, '010101010101010101')",
+        "INSERT INTO TABLETYPE2 (ID, LR) VALUES (67, '020202020202020202')",
+        "INSERT INTO TABLETYPE2 (ID, LR) VALUES (68, '030303030303030303')"
+    };
+    static final String DROP_TABLETYPE2_TABLE =
+        "DROP TABLE TABLETYPE2";
+    
     static boolean ddlCreate = false;
     static boolean ddlDrop = false;
     static boolean ddlDebug = false;
@@ -113,10 +126,16 @@ public class TableTypeTestSuite extends DBWSTestSuite {
         }
         if (ddlCreate) {
             runDdl(conn, CREATE_TABLETYPE_TABLE, ddlDebug);
+            runDdl(conn, CREATE_TABLETYPE2_TABLE, ddlDebug);
             try {
                 Statement stmt = conn.createStatement();
                 for (int i = 0; i < POPULATE_TABLETYPE_TABLE.length; i++) {
                     stmt.addBatch(POPULATE_TABLETYPE_TABLE[i]);
+                }
+                stmt.executeBatch();
+                stmt = conn.createStatement();
+                for (int i = 0; i < POPULATE_TABLETYPE2_TABLE.length; i++) {
+                    stmt.addBatch(POPULATE_TABLETYPE2_TABLE[i]);
                 }
                 stmt.executeBatch();
             }
@@ -146,6 +165,10 @@ public class TableTypeTestSuite extends DBWSTestSuite {
               "schemaPattern=\"%\" " +
               "tableNamePattern=\"TABLETYPE\" " +
             "/>" +
+            "<table " +
+		      "schemaPattern=\"%\" " +
+		       "tableNamePattern=\"TABLETYPE2\" " +
+		    "/>" +
           "</dbws-builder>";
         builder = new DBWSBuilder();
         OracleHelper builderHelper = new OracleHelper(builder);
@@ -172,6 +195,7 @@ public class TableTypeTestSuite extends DBWSTestSuite {
     public static void tearDown() {
         if (ddlDrop) {
             runDdl(conn, DROP_TABLETYPE_TABLE, ddlDebug);
+            runDdl(conn, DROP_TABLETYPE2_TABLE, ddlDebug);
         }
     }
 
@@ -204,6 +228,24 @@ public class TableTypeTestSuite extends DBWSTestSuite {
             marshaller.marshal(r, ec);
         }
         Document controlDoc = xmlParser.parse(new StringReader(ALL_PEOPLE_XML));
+        assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+    }
+
+    @SuppressWarnings("rawtypes")
+    @Test
+    public void getLongRawTest() {
+        Invocation invocation = new Invocation("findAll_tabletype2Type");
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        Element ec = doc.createElement("tabletype2-collection");
+        doc.appendChild(ec);
+        for (Object r : (Vector)result) {
+            marshaller.marshal(r, ec);
+        }
+        Document controlDoc = xmlParser.parse(new StringReader(LONG_RAW_XML));
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
 
@@ -298,7 +340,7 @@ public class TableTypeTestSuite extends DBWSTestSuite {
         Document controlDoc = xmlParser.parse(new StringReader(XSD));
         removeEmptyTextNodes(testDoc);
         removeEmptyTextNodes(controlDoc);
-        assertTrue("Schema validation failed:\nExpected:" + XSD + "\nbut was:\n" + DBWS_SCHEMA_STREAM.toString(), comparer.isNodeEqual(controlDoc, testDoc));
+        assertTrue("Schema validation failed:\nExpected:" + documentToString(controlDoc) + "\nbut was:\n" + documentToString(testDoc), comparer.isNodeEqual(controlDoc, testDoc));
     }
 
     @Test
@@ -307,7 +349,7 @@ public class TableTypeTestSuite extends DBWSTestSuite {
         Document controlDoc = xmlParser.parse(new StringReader(WSDL));
         removeEmptyTextNodes(testDoc);
         removeEmptyTextNodes(controlDoc);
-        assertTrue("WSDL validation failed:\nExpected:" + WSDL + "\nbut was:\n" + DBWS_WSDL_STREAM.toString(), comparer.isNodeEqual(controlDoc, testDoc));
+        assertTrue("WSDL validation failed:\nExpected:" + documentToString(controlDoc) + "\nbut was:\n" + documentToString(testDoc), comparer.isNodeEqual(controlDoc, testDoc));
     }
 
     @Test
@@ -316,7 +358,7 @@ public class TableTypeTestSuite extends DBWSTestSuite {
         Document controlDoc = xmlParser.parse(new StringReader(OR_PROJECT));
         removeEmptyTextNodes(testDoc);
         removeEmptyTextNodes(controlDoc);
-        assertTrue("OR Project validation failed:\nExpected:" + OR_PROJECT + "\nbut was:\n" + DBWS_OR_STREAM.toString(), comparer.isNodeEqual(controlDoc, testDoc));
+        assertTrue("OR Project validation failed:\nExpected:" + documentToString(controlDoc) + "\nbut was:\n" + documentToString(testDoc), comparer.isNodeEqual(controlDoc, testDoc));
     }
 
     @Test
@@ -325,12 +367,18 @@ public class TableTypeTestSuite extends DBWSTestSuite {
         Document controlDoc = xmlParser.parse(new StringReader(OX_PROJECT));
         removeEmptyTextNodes(testDoc);
         removeEmptyTextNodes(controlDoc);
-        assertTrue("OX Project validation failed:\nExpected:" + OX_PROJECT + "\nbut was:\n" + DBWS_OX_STREAM.toString(), comparer.isNodeEqual(controlDoc, testDoc));
+        assertTrue("OX Project validation failed:\nExpected:" + documentToString(controlDoc) + "\nbut was:\n" + documentToString(testDoc), comparer.isNodeEqual(controlDoc, testDoc));
     }
 
     protected static final String XSD =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
         "<xsd:schema xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" targetNamespace=\"urn:tabletype\" xmlns=\"urn:tabletype\" elementFormDefault=\"qualified\">\n" +
+           "<xsd:complexType name=\"tabletype2Type\">\n" +
+              "<xsd:sequence>\n" +
+                "<xsd:element name=\"id\" type=\"xsd:decimal\"/>\n" +
+                "<xsd:element name=\"lr\" type=\"xsd:base64Binary\" minOccurs=\"0\" nillable=\"true\"/>\n" +
+              "</xsd:sequence>\n" +
+           "</xsd:complexType>\n" +
            "<xsd:complexType name=\"tabletypeType\">\n" +
               "<xsd:sequence>\n" +
                  "<xsd:element name=\"id\" type=\"xsd:decimal\"/>\n" +
@@ -345,9 +393,9 @@ public class TableTypeTestSuite extends DBWSTestSuite {
                  "<xsd:element name=\"b\" type=\"xsd:base64Binary\" minOccurs=\"0\" nillable=\"true\"/>\n" +
                  "<xsd:element name=\"c\" type=\"xsd:string\" minOccurs=\"0\" nillable=\"true\"/>\n" +
                  "<xsd:element name=\"r\" type=\"xsd:base64Binary\" minOccurs=\"0\" nillable=\"true\"/>\n" +
-                 "<xsd:element name=\"lr\" type=\"xsd:base64Binary\" minOccurs=\"0\" nillable=\"true\"/>\n" +
               "</xsd:sequence>\n" +
            "</xsd:complexType>\n" +
+           "<xsd:element name=\"tabletype2Type\" type=\"tabletype2Type\"/>\n" +
            "<xsd:element name=\"tabletypeType\" type=\"tabletypeType\"/>\n" +
         "</xsd:schema>";
 
@@ -366,6 +414,40 @@ public class TableTypeTestSuite extends DBWSTestSuite {
                 "<xsd:schema elementFormDefault=\"qualified\" targetNamespace=\"urn:tabletypeService\" xmlns:tns=\"urn:tabletypeService\"\n" +
                 "xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n" +
                 "<xsd:import namespace=\"urn:tabletype\" schemaLocation=\"eclipselink-dbws-schema.xsd\"/>\n" +
+                "<xsd:complexType name=\"findByPrimaryKey_tabletype2TypeResponseType\">\n" +
+                   "<xsd:sequence>\n" +
+                      "<xsd:element name=\"result\">\n" +
+                         "<xsd:complexType>\n" +
+                            "<xsd:sequence>\n" +
+                               "<xsd:element ref=\"ns1:tabletype2Type\" minOccurs=\"0\"/>\n" +
+                            "</xsd:sequence>\n" +
+                         "</xsd:complexType>\n" +
+                      "</xsd:element>\n" +
+                   "</xsd:sequence>\n" +
+                "</xsd:complexType>\n" +
+                "<xsd:complexType name=\"create_tabletype2TypeRequestType\">\n" +
+                   "<xsd:sequence>\n" +
+                      "<xsd:element name=\"theInstance\">\n" +
+                         "<xsd:complexType>\n" +
+                            "<xsd:sequence>\n" +
+                               "<xsd:element ref=\"ns1:tabletype2Type\"/>\n" +
+                            "</xsd:sequence>\n" +
+                         "</xsd:complexType>\n" +
+                      "</xsd:element>\n" +
+                   "</xsd:sequence>\n" +
+                "</xsd:complexType>\n" +
+                "<xsd:complexType name=\"findByPrimaryKey_tabletype2TypeRequestType\">\n" +
+                   "<xsd:sequence>\n" +
+                      "<xsd:element name=\"id\" type=\"xsd:decimal\"/>\n" +
+                   "</xsd:sequence>\n" +
+                "</xsd:complexType>\n" +
+                "<xsd:complexType name=\"findAll_tabletype2TypeRequestType\"/>\n" +
+                "<xsd:complexType name=\"findAll_tabletypeTypeRequestType\"/>\n" +
+                "<xsd:complexType name=\"delete_tabletype2TypeRequestType\">\n" +
+                   "<xsd:sequence>\n" +
+                      "<xsd:element name=\"id\" type=\"xsd:decimal\"/>\n" +
+                   "</xsd:sequence>\n" +
+                "</xsd:complexType>\n" +
                 "<xsd:complexType name=\"update_tabletypeTypeRequestType\">\n" +
                    "<xsd:sequence>\n" +
                       "<xsd:element name=\"theInstance\">\n" +
@@ -404,7 +486,28 @@ public class TableTypeTestSuite extends DBWSTestSuite {
                       "</xsd:element>\n" +
                    "</xsd:sequence>\n" +
                 "</xsd:complexType>\n" +
-                "<xsd:complexType name=\"findAll_tabletypeTypeRequestType\"/>\n" +
+                "<xsd:complexType name=\"findAll_tabletype2TypeResponseType\">\n" +
+                   "<xsd:sequence>\n" +
+                      "<xsd:element name=\"result\">\n" +
+                         "<xsd:complexType>\n" +
+                            "<xsd:sequence>\n" +
+                               "<xsd:element ref=\"ns1:tabletype2Type\" minOccurs=\"0\" maxOccurs=\"unbounded\"/>\n" +
+                            "</xsd:sequence>\n" +
+                         "</xsd:complexType>\n" +
+                      "</xsd:element>\n" +
+                   "</xsd:sequence>\n" +
+                "</xsd:complexType>\n" +
+                "<xsd:complexType name=\"update_tabletype2TypeRequestType\">\n" +
+                   "<xsd:sequence>\n" +
+                      "<xsd:element name=\"theInstance\">\n" +
+                         "<xsd:complexType>\n" +
+                            "<xsd:sequence>\n" +
+                               "<xsd:element ref=\"ns1:tabletype2Type\"/>\n" +
+                            "</xsd:sequence>\n" +
+                         "</xsd:complexType>\n" +
+                      "</xsd:element>\n" +
+                   "</xsd:sequence>\n" +
+                "</xsd:complexType>\n" +
                 "<xsd:complexType name=\"findByPrimaryKey_tabletypeTypeRequestType\">\n" +
                    "<xsd:sequence>\n" +
                       "<xsd:element name=\"id\" type=\"xsd:decimal\"/>\n" +
@@ -422,11 +525,16 @@ public class TableTypeTestSuite extends DBWSTestSuite {
                    "</xsd:sequence>\n" +
                 "</xsd:complexType>\n" +
                 "<xsd:element name=\"update_tabletypeType\" type=\"tns:update_tabletypeTypeRequestType\"/>\n" +
-                "<xsd:element name=\"create_tabletypeType\" type=\"tns:create_tabletypeTypeRequestType\"/>\n" +
+                "<xsd:element name=\"create_tabletype2Type\" type=\"tns:create_tabletype2TypeRequestType\"/>\n" +
                 "<xsd:element name=\"findAll_tabletypeTypeResponse\" type=\"tns:findAll_tabletypeTypeResponseType\"/>\n" +
+                "<xsd:element name=\"update_tabletype2Type\" type=\"tns:update_tabletype2TypeRequestType\"/>\n" +
+                "<xsd:element name=\"findByPrimaryKey_tabletypeType\" type=\"tns:findByPrimaryKey_tabletypeTypeRequestType\"/>\n" +
+                "<xsd:element name=\"findAll_tabletype2TypeResponse\" type=\"tns:findAll_tabletype2TypeResponseType\"/>\n" +
+                "<xsd:element name=\"delete_tabletype2Type\" type=\"tns:delete_tabletype2TypeRequestType\"/>\n" +
+                "<xsd:element name=\"findAll_tabletype2Type\" type=\"tns:findAll_tabletype2TypeRequestType\"/>\n" +
+                "<xsd:element name=\"create_tabletypeType\" type=\"tns:create_tabletypeTypeRequestType\"/>\n" +
                 "<xsd:element name=\"findAll_tabletypeType\" type=\"tns:findAll_tabletypeTypeRequestType\"/>\n" +
                 "<xsd:element name=\"findByPrimaryKey_tabletypeTypeResponse\" type=\"tns:findByPrimaryKey_tabletypeTypeResponseType\"/>\n" +
-                "<xsd:element name=\"findByPrimaryKey_tabletypeType\" type=\"tns:findByPrimaryKey_tabletypeTypeRequestType\"/>\n" +
                 "<xsd:element name=\"FaultType\">\n" +
                    "<xsd:complexType>\n" +
                       "<xsd:sequence>\n" +
@@ -435,29 +543,55 @@ public class TableTypeTestSuite extends DBWSTestSuite {
                       "</xsd:sequence>\n" +
                    "</xsd:complexType>\n" +
                 "</xsd:element>\n" +
+                "<xsd:element name=\"findByPrimaryKey_tabletype2Type\" type=\"tns:findByPrimaryKey_tabletype2TypeRequestType\"/>\n" +
                 "<xsd:element name=\"EmptyResponse\">\n" +
                    "<xsd:complexType/>\n" +
                 "</xsd:element>\n" +
+                "<xsd:element name=\"findByPrimaryKey_tabletype2TypeResponse\" type=\"tns:findByPrimaryKey_tabletype2TypeResponseType\"/>\n" +
                 "<xsd:element name=\"delete_tabletypeType\" type=\"tns:delete_tabletypeTypeRequestType\"/>\n" +
-                 "</xsd:schema>\n" +
+                "</xsd:schema>\n" +
               "</wsdl:types>\n" +
+              "<wsdl:message name=\"delete_tabletype2TypeRequest\">\n" +
+                 "<wsdl:part name=\"delete_tabletype2TypeRequest\" element=\"tns:delete_tabletype2Type\">\n" +"</wsdl:part>\n" +
+              "</wsdl:message>\n" +
+              "<wsdl:message name=\"update_tabletypeTypeRequest\">\n" +
+                 "<wsdl:part name=\"update_tabletypeTypeRequest\" element=\"tns:update_tabletypeType\">\n" +"</wsdl:part>\n" +
+              "</wsdl:message>\n" +
+              "<wsdl:message name=\"findByPrimaryKey_tabletypeTypeRequest\">\n" +
+                 "<wsdl:part name=\"findByPrimaryKey_tabletypeTypeRequest\" element=\"tns:findByPrimaryKey_tabletypeType\">\n" +"</wsdl:part>\n" +
+              "</wsdl:message>\n" +
+              "<wsdl:message name=\"create_tabletypeTypeRequest\">\n" +
+                 "<wsdl:part name=\"create_tabletypeTypeRequest\" element=\"tns:create_tabletypeType\">\n" +"</wsdl:part>\n" +
+              "</wsdl:message>\n" +
+              "<wsdl:message name=\"findAll_tabletype2TypeRequest\">\n" +
+                 "<wsdl:part name=\"findAll_tabletype2TypeRequest\" element=\"tns:findAll_tabletype2Type\">\n" +"</wsdl:part>\n" +
+              "</wsdl:message>\n" +
+              "<wsdl:message name=\"update_tabletype2TypeRequest\">\n" +
+                 "<wsdl:part name=\"update_tabletype2TypeRequest\" element=\"tns:update_tabletype2Type\">\n" +"</wsdl:part>\n" +
+              "</wsdl:message>\n" +
+              "<wsdl:message name=\"create_tabletype2TypeRequest\">\n" +
+                 "<wsdl:part name=\"create_tabletype2TypeRequest\" element=\"tns:create_tabletype2Type\">\n" +"</wsdl:part>\n" +
+              "</wsdl:message>\n" +
+              "<wsdl:message name=\"findAll_tabletypeTypeResponse\">\n" +
+                 "<wsdl:part name=\"findAll_tabletypeTypeResponse\" element=\"tns:findAll_tabletypeTypeResponse\">\n" +"</wsdl:part>\n" +
+              "</wsdl:message>\n" +
               "<wsdl:message name=\"FaultType\">\n" +
                  "<wsdl:part name=\"fault\" element=\"tns:FaultType\">\n" +"</wsdl:part>\n" +
               "</wsdl:message>\n" +
               "<wsdl:message name=\"findByPrimaryKey_tabletypeTypeResponse\">\n" +
                  "<wsdl:part name=\"findByPrimaryKey_tabletypeTypeResponse\" element=\"tns:findByPrimaryKey_tabletypeTypeResponse\">\n" +"</wsdl:part>\n" +
               "</wsdl:message>\n" +
-              "<wsdl:message name=\"findByPrimaryKey_tabletypeTypeRequest\">\n" +
-                 "<wsdl:part name=\"findByPrimaryKey_tabletypeTypeRequest\" element=\"tns:findByPrimaryKey_tabletypeType\">\n" +"</wsdl:part>\n" +
+              "<wsdl:message name=\"findByPrimaryKey_tabletype2TypeRequest\">\n" +
+                 "<wsdl:part name=\"findByPrimaryKey_tabletype2TypeRequest\" element=\"tns:findByPrimaryKey_tabletype2Type\">\n" +"</wsdl:part>\n" +
               "</wsdl:message>\n" +
-              "<wsdl:message name=\"update_tabletypeTypeRequest\">\n" +
-                 "<wsdl:part name=\"update_tabletypeTypeRequest\" element=\"tns:update_tabletypeType\">\n" +"</wsdl:part>\n" +
+              "<wsdl:message name=\"findByPrimaryKey_tabletype2TypeResponse\">\n" +
+                 "<wsdl:part name=\"findByPrimaryKey_tabletype2TypeResponse\" element=\"tns:findByPrimaryKey_tabletype2TypeResponse\">\n" +"</wsdl:part>\n" +
               "</wsdl:message>\n" +
               "<wsdl:message name=\"EmptyResponse\">\n" +
                  "<wsdl:part name=\"emptyResponse\" element=\"tns:EmptyResponse\">\n" +"</wsdl:part>\n" +
               "</wsdl:message>\n" +
-              "<wsdl:message name=\"create_tabletypeTypeRequest\">\n" +
-                 "<wsdl:part name=\"create_tabletypeTypeRequest\" element=\"tns:create_tabletypeType\">\n" +"</wsdl:part>\n" +
+              "<wsdl:message name=\"findAll_tabletype2TypeResponse\">\n" +
+                 "<wsdl:part name=\"findAll_tabletype2TypeResponse\" element=\"tns:findAll_tabletype2TypeResponse\">\n" +"</wsdl:part>\n" +
               "</wsdl:message>\n" +
               "<wsdl:message name=\"findAll_tabletypeTypeRequest\">\n" +
                  "<wsdl:part name=\"findAll_tabletypeTypeRequest\" element=\"tns:findAll_tabletypeType\">\n" +"</wsdl:part>\n" +
@@ -465,33 +599,53 @@ public class TableTypeTestSuite extends DBWSTestSuite {
               "<wsdl:message name=\"delete_tabletypeTypeRequest\">\n" +
                  "<wsdl:part name=\"delete_tabletypeTypeRequest\" element=\"tns:delete_tabletypeType\">\n" +"</wsdl:part>\n" +
               "</wsdl:message>\n" +
-              "<wsdl:message name=\"findAll_tabletypeTypeResponse\">\n" +
-                 "<wsdl:part name=\"findAll_tabletypeTypeResponse\" element=\"tns:findAll_tabletypeTypeResponse\">\n" +"</wsdl:part>\n" +
-              "</wsdl:message>\n" +
               "<wsdl:portType name=\"tabletypeService_Interface\">\n" +
                  "<wsdl:operation name=\"update_tabletypeType\">\n" +
                     "<wsdl:input message=\"tns:update_tabletypeTypeRequest\">\n" +"</wsdl:input>\n" +
                     "<wsdl:output name=\"update_tabletypeTypeEmptyResponse\" message=\"tns:EmptyResponse\">\n" +"</wsdl:output>\n" +
                     "<wsdl:fault name=\"FaultException\" message=\"tns:FaultType\">\n" +"</wsdl:fault>\n" +
-                "</wsdl:operation>\n" +
-                "<wsdl:operation name=\"create_tabletypeType\">\n" +
-                   "<wsdl:input message=\"tns:create_tabletypeTypeRequest\">\n" +"</wsdl:input>\n" +
-                   "<wsdl:output name=\"create_tabletypeTypeEmptyResponse\" message=\"tns:EmptyResponse\">\n" +"</wsdl:output>\n" +
-                   "<wsdl:fault name=\"FaultException\" message=\"tns:FaultType\">\n" +"</wsdl:fault>\n" +
-                "</wsdl:operation>\n" +
-                "<wsdl:operation name=\"findAll_tabletypeType\">\n" +
-                   "<wsdl:input message=\"tns:findAll_tabletypeTypeRequest\">\n" +"</wsdl:input>\n" +
-                   "<wsdl:output message=\"tns:findAll_tabletypeTypeResponse\">\n" +"</wsdl:output>\n" +
-                "</wsdl:operation>\n" +
-                "<wsdl:operation name=\"findByPrimaryKey_tabletypeType\">\n" +
-                   "<wsdl:input message=\"tns:findByPrimaryKey_tabletypeTypeRequest\">\n" +"</wsdl:input>\n" +
-                   "<wsdl:output message=\"tns:findByPrimaryKey_tabletypeTypeResponse\">\n" +"</wsdl:output>\n" +
-                "</wsdl:operation>\n" +
-                "<wsdl:operation name=\"delete_tabletypeType\">\n" +
-                   "<wsdl:input message=\"tns:delete_tabletypeTypeRequest\">\n" +"</wsdl:input>\n" +
-                   "<wsdl:output name=\"delete_tabletypeTypeEmptyResponse\" message=\"tns:EmptyResponse\">\n" +"</wsdl:output>\n" +
-                   "<wsdl:fault name=\"FaultException\" message=\"tns:FaultType\">\n" +"</wsdl:fault>\n" +
-                "</wsdl:operation>\n" +
+                 "</wsdl:operation>\n" +
+                 "<wsdl:operation name=\"delete_tabletype2Type\">\n" +
+                    "<wsdl:input message=\"tns:delete_tabletype2TypeRequest\">\n" +"</wsdl:input>\n" +
+                    "<wsdl:output name=\"delete_tabletype2TypeEmptyResponse\" message=\"tns:EmptyResponse\">\n" +"</wsdl:output>\n" +
+                    "<wsdl:fault name=\"FaultException\" message=\"tns:FaultType\">\n" +"</wsdl:fault>\n" +
+                 "</wsdl:operation>\n" +
+                 "<wsdl:operation name=\"create_tabletype2Type\">\n" +
+                    "<wsdl:input message=\"tns:create_tabletype2TypeRequest\">\n" +"</wsdl:input>\n" +
+                    "<wsdl:output name=\"create_tabletype2TypeEmptyResponse\" message=\"tns:EmptyResponse\">\n" +"</wsdl:output>\n" +
+                    "<wsdl:fault name=\"FaultException\" message=\"tns:FaultType\">\n" +"</wsdl:fault>\n" +
+                 "</wsdl:operation>\n" +
+                 "<wsdl:operation name=\"findAll_tabletype2Type\">\n" +
+                    "<wsdl:input message=\"tns:findAll_tabletype2TypeRequest\">\n" +"</wsdl:input>\n" +
+                    "<wsdl:output message=\"tns:findAll_tabletype2TypeResponse\">\n" +"</wsdl:output>\n" +
+                 "</wsdl:operation>\n" +
+                 "<wsdl:operation name=\"create_tabletypeType\">\n" +
+                    "<wsdl:input message=\"tns:create_tabletypeTypeRequest\">\n" +"</wsdl:input>\n" +
+                    "<wsdl:output name=\"create_tabletypeTypeEmptyResponse\" message=\"tns:EmptyResponse\">\n" +"</wsdl:output>\n" +
+                    "<wsdl:fault name=\"FaultException\" message=\"tns:FaultType\">\n" +"</wsdl:fault>\n" +
+                 "</wsdl:operation>\n" +
+                 "<wsdl:operation name=\"findAll_tabletypeType\">\n" +
+                    "<wsdl:input message=\"tns:findAll_tabletypeTypeRequest\">\n" +"</wsdl:input>\n" +
+                    "<wsdl:output message=\"tns:findAll_tabletypeTypeResponse\">\n" +"</wsdl:output>\n" +
+                 "</wsdl:operation>\n" +
+                 "<wsdl:operation name=\"update_tabletype2Type\">\n" +
+                    "<wsdl:input message=\"tns:update_tabletype2TypeRequest\">\n" +"</wsdl:input>\n" +
+                    "<wsdl:output name=\"update_tabletype2TypeEmptyResponse\" message=\"tns:EmptyResponse\">\n" +"</wsdl:output>\n" +
+                    "<wsdl:fault name=\"FaultException\" message=\"tns:FaultType\">\n" +"</wsdl:fault>\n" +
+                 "</wsdl:operation>\n" +
+                 "<wsdl:operation name=\"findByPrimaryKey_tabletypeType\">\n" +
+                    "<wsdl:input message=\"tns:findByPrimaryKey_tabletypeTypeRequest\">\n" +"</wsdl:input>\n" +
+                    "<wsdl:output message=\"tns:findByPrimaryKey_tabletypeTypeResponse\">\n" +"</wsdl:output>\n" +
+                 "</wsdl:operation>\n" +
+                 "<wsdl:operation name=\"findByPrimaryKey_tabletype2Type\">\n" +
+                    "<wsdl:input message=\"tns:findByPrimaryKey_tabletype2TypeRequest\">\n" +"</wsdl:input>\n" +
+                    "<wsdl:output message=\"tns:findByPrimaryKey_tabletype2TypeResponse\">\n" +"</wsdl:output>\n" +
+                 "</wsdl:operation>\n" +
+                 "<wsdl:operation name=\"delete_tabletypeType\">\n" +
+                    "<wsdl:input message=\"tns:delete_tabletypeTypeRequest\">\n" +"</wsdl:input>\n" +
+                    "<wsdl:output name=\"delete_tabletypeTypeEmptyResponse\" message=\"tns:EmptyResponse\">\n" +"</wsdl:output>\n" +
+                    "<wsdl:fault name=\"FaultException\" message=\"tns:FaultType\">\n" +"</wsdl:fault>\n" +
+                 "</wsdl:operation>\n" +
              "</wsdl:portType>\n" +
              "<wsdl:binding name=\"tabletypeService_SOAP_HTTP\" type=\"tns:tabletypeService_Interface\">\n" +
                 "<soap:binding style=\"document\" transport=\"http://schemas.xmlsoap.org/soap/http\"/>\n" +
@@ -506,6 +660,39 @@ public class TableTypeTestSuite extends DBWSTestSuite {
                    "<wsdl:fault name=\"FaultException\">\n" +
                        "<soap:fault name=\"FaultException\" use=\"literal\"/>\n" +
                    "</wsdl:fault>\n" +
+                "</wsdl:operation>\n" +
+                "<wsdl:operation name=\"delete_tabletype2Type\">\n" +
+                   "<soap:operation soapAction=\"urn:tabletypeService:delete_tabletype2Type\"/>\n" +
+                   "<wsdl:input>\n" +
+                      "<soap:body use=\"literal\"/>\n" +
+                   "</wsdl:input>\n" +
+                   "<wsdl:output>\n" +
+                      "<soap:body use=\"literal\"/>\n" +
+                   "</wsdl:output>\n" +
+                   "<wsdl:fault name=\"FaultException\">\n" +
+                      "<soap:fault name=\"FaultException\" use=\"literal\"/>\n" +
+                   "</wsdl:fault>\n" +
+                "</wsdl:operation>\n" +
+                "<wsdl:operation name=\"create_tabletype2Type\">\n" +
+                   "<soap:operation soapAction=\"urn:tabletypeService:create_tabletype2Type\"/>\n" +
+                   "<wsdl:input>\n" +
+                      "<soap:body use=\"literal\"/>\n" +
+                   "</wsdl:input>\n" +
+                   "<wsdl:output>\n" +
+                      "<soap:body use=\"literal\"/>\n" +
+                   "</wsdl:output>\n" +
+                   "<wsdl:fault name=\"FaultException\">\n" +
+                      "<soap:fault name=\"FaultException\" use=\"literal\"/>\n" +
+                   "</wsdl:fault>\n" +
+                "</wsdl:operation>\n" +
+                "<wsdl:operation name=\"findAll_tabletype2Type\">\n" +
+                   "<soap:operation soapAction=\"urn:tabletypeService:findAll_tabletype2Type\"/>\n" +
+                   "<wsdl:input>\n" +
+                      "<soap:body use=\"literal\"/>\n" +
+                   "</wsdl:input>\n" +
+                   "<wsdl:output>\n" +
+                      "<soap:body use=\"literal\"/>\n" +
+                   "</wsdl:output>\n" +
                 "</wsdl:operation>\n" +
                 "<wsdl:operation name=\"create_tabletypeType\">\n" +
                    "<soap:operation soapAction=\"urn:tabletypeService:create_tabletypeType\"/>\n" +
@@ -528,8 +715,29 @@ public class TableTypeTestSuite extends DBWSTestSuite {
                       "<soap:body use=\"literal\"/>\n" +
                    "</wsdl:output>\n" +
                 "</wsdl:operation>\n" +
+                "<wsdl:operation name=\"update_tabletype2Type\">\n" +
+                   "<soap:operation soapAction=\"urn:tabletypeService:update_tabletype2Type\"/>\n" +
+                   "<wsdl:input>\n" +
+                      "<soap:body use=\"literal\"/>\n" +
+                   "</wsdl:input>\n" +
+                   "<wsdl:output>\n" +
+                      "<soap:body use=\"literal\"/>\n" +
+                   "</wsdl:output>\n" +
+                   "<wsdl:fault name=\"FaultException\">\n" +
+                       "<soap:fault name=\"FaultException\" use=\"literal\"/>\n" +
+                   "</wsdl:fault>\n" +
+                "</wsdl:operation>\n" +
                 "<wsdl:operation name=\"findByPrimaryKey_tabletypeType\">\n" +
                    "<soap:operation soapAction=\"urn:tabletypeService:findByPrimaryKey_tabletypeType\"/>\n" +
+                   "<wsdl:input>\n" +
+                      "<soap:body use=\"literal\"/>\n" +
+                   "</wsdl:input>\n" +
+                   "<wsdl:output>\n" +
+                      "<soap:body use=\"literal\"/>\n" +
+                   "</wsdl:output>\n" +
+                "</wsdl:operation>\n" +
+                "<wsdl:operation name=\"findByPrimaryKey_tabletype2Type\">\n" +
+                   "<soap:operation soapAction=\"urn:tabletypeService:findByPrimaryKey_tabletype2Type\"/>\n" +
                    "<wsdl:input>\n" +
                       "<soap:body use=\"literal\"/>\n" +
                    "</wsdl:input>\n" +
@@ -657,9 +865,65 @@ public class TableTypeTestSuite extends DBWSTestSuite {
                        "<field table=\"TABLETYPE\" name=\"R\" sql-typecode=\"-3\" xsi:type=\"column\"/>\n" +
                        "<attribute-classification>[B</attribute-classification>\n" +
                     "</attribute-mapping>\n" +
+                 "</attribute-mappings>\n" +
+                 "<descriptor-type>independent</descriptor-type>\n" +
+                 "<caching>\n" +
+                    "<cache-type>weak-reference</cache-type>\n" +
+                    "<cache-size>-1</cache-size>\n" +
+                 "</caching>\n" +
+                 "<remote-caching>\n" +
+                    "<cache-type>weak-reference</cache-type>\n" +
+                    "<cache-size>-1</cache-size>\n" +
+                 "</remote-caching>\n" +
+                 "<instantiation/>\n" +
+                 "<copying xsi:type=\"instantiation-copy-policy\"/>\n" +
+                 "<tables>\n" +
+                    "<table name=\"TABLETYPE\"/>\n" +
+                 "</tables>\n" +
+              "</class-mapping-descriptor>\n" +
+              "<class-mapping-descriptor xsi:type=\"relational-class-mapping-descriptor\">\n" +
+                 "<class>tabletype.Tabletype2</class>\n" +
+                 "<alias>tabletype2Type</alias>\n" +
+                 "<primary-key>\n" +
+                    "<field table=\"TABLETYPE2\" name=\"ID\" sql-typecode=\"2\" xsi:type=\"column\"/>\n" +
+                 "</primary-key>\n" +
+                 "<events/>\n" +
+                 "<querying>\n" +
+                    "<queries>\n" +
+                       "<query name=\"findByPrimaryKey\" xsi:type=\"read-object-query\">\n" +
+                          "<criteria operator=\"equal\" xsi:type=\"relation-expression\">\n" +
+                             "<left xsi:type=\"field-expression\">\n" +
+                                "<field table=\"TABLETYPE2\" name=\"ID\" sql-typecode=\"2\" xsi:type=\"column\"/>\n" +
+                                "<base xsi:type=\"base-expression\"/>\n" +
+                             "</left>\n" +
+                             "<right xsi:type=\"parameter-expression\">\n" +
+                                "<parameter name=\"id\" xsi:type=\"column\"/>\n" +
+                             "</right>\n" +
+                          "</criteria>\n" +
+                          "<arguments>\n" +
+                             "<argument name=\"id\">" +
+                                "<type>java.lang.Object</type>\n" +
+                             "</argument>\n" +
+                          "</arguments>\n" +
+                          "<reference-class>tabletype.Tabletype2</reference-class>\n" +
+                       "</query>\n" +
+                       "<query name=\"findAll\" xsi:type=\"read-all-query\">\n" +
+                          "<reference-class>tabletype.Tabletype2</reference-class>\n" +
+                          "<container xsi:type=\"list-container-policy\">\n" +
+                             "<collection-type>java.util.Vector</collection-type>\n" +
+                          "</container>\n" +
+                       "</query>\n" +
+                    "</queries>\n" +
+                 "</querying>\n" +
+                 "<attribute-mappings>\n" +
+                    "<attribute-mapping xsi:type=\"direct-mapping\">\n" +
+                       "<attribute-name>id</attribute-name>\n" +
+                       "<field table=\"TABLETYPE2\" name=\"ID\" sql-typecode=\"2\" xsi:type=\"column\"/>\n" +
+                       "<attribute-classification>java.math.BigInteger</attribute-classification>\n" +
+                    "</attribute-mapping>\n" +
                     "<attribute-mapping xsi:type=\"direct-mapping\">\n" +
                        "<attribute-name>lr</attribute-name>\n" +
-                       "<field table=\"TABLETYPE\" name=\"LR\" sql-typecode=\"-4\" xsi:type=\"column\"/>\n" +
+                       "<field table=\"TABLETYPE2\" name=\"LR\" sql-typecode=\"-4\" xsi:type=\"column\"/>\n" +
                        "<attribute-classification>[B</attribute-classification>\n" +
                     "</attribute-mapping>\n" +
                  "</attribute-mappings>\n" +
@@ -675,7 +939,7 @@ public class TableTypeTestSuite extends DBWSTestSuite {
                  "<instantiation/>\n" +
                  "<copying xsi:type=\"instantiation-copy-policy\"/>\n" +
                  "<tables>\n" +
-                    "<table name=\"TABLETYPE\"/>\n" +
+                    "<table name=\"TABLETYPE2\"/>\n" +
                  "</tables>\n" +
               "</class-mapping-descriptor>\n" +
            "</class-mapping-descriptors>\n" +
@@ -831,6 +1095,38 @@ public class TableTypeTestSuite extends DBWSTestSuite {
                           "<null-representation-for-xml>XSI_NIL</null-representation-for-xml>\n" +
                        "</null-policy>\n" +
                     "</attribute-mapping>\n" +
+                 "</attribute-mappings>\n" +
+                 "<descriptor-type>aggregate</descriptor-type>\n" +
+                 "<instantiation/>\n" +
+                 "<copying xsi:type=\"instantiation-copy-policy\"/>\n" +
+                 "<default-root-element>tabletypeType</default-root-element>\n" +
+                 "<default-root-element-field name=\"tabletypeType\"/>\n" +
+                 "<namespace-resolver>\n" +
+                    "<default-namespace-uri>urn:tabletype</default-namespace-uri>\n" +
+                 "</namespace-resolver>\n" +
+                 "<schema xsi:type=\"schema-url-reference\">\n" +
+                    "<resource></resource>\n" +
+                    "<schema-context>/tabletypeType</schema-context>\n" +
+                    "<node-type>complex-type</node-type>\n" +
+                 "</schema>\n" +
+              "</class-mapping-descriptor>\n" +
+              "<class-mapping-descriptor xsi:type=\"xml-class-mapping-descriptor\">\n" +
+                 "<class>tabletype.Tabletype2</class>\n" +
+                 "<alias>tabletype2Type</alias>\n" +
+                 "<events/>\n" +
+                 "<querying/>\n" +
+                 "<attribute-mappings>\n" +
+                    "<attribute-mapping xsi:type=\"xml-direct-mapping\">\n" +
+                       "<attribute-name>id</attribute-name>\n" +
+                       "<field name=\"id/text()\" is-required=\"true\" xsi:type=\"node\">\n" +
+                          "<schema-type>{http://www.w3.org/2001/XMLSchema}decimal</schema-type>\n" +
+                       "</field>\n" +
+                       "<attribute-classification>java.math.BigInteger</attribute-classification>\n" +
+                       "<null-policy xsi:type=\"null-policy\">\n" +
+                          "<empty-node-represents-null>true</empty-node-represents-null>\n" +
+                          "<null-representation-for-xml>ABSENT_NODE</null-representation-for-xml>\n" +
+                       "</null-policy>\n" +
+                    "</attribute-mapping>\n" +
                     "<attribute-mapping xsi:type=\"xml-direct-mapping\">\n" +
                        "<attribute-name>lr</attribute-name>\n" +
                        "<field name=\"lr/text()\" xsi:type=\"node\">\n" +
@@ -847,14 +1143,14 @@ public class TableTypeTestSuite extends DBWSTestSuite {
                  "<descriptor-type>aggregate</descriptor-type>\n" +
                  "<instantiation/>\n" +
                  "<copying xsi:type=\"instantiation-copy-policy\"/>\n" +
-                 "<default-root-element>tabletypeType</default-root-element>\n" +
-                 "<default-root-element-field name=\"tabletypeType\"/>\n" +
+                 "<default-root-element>tabletype2Type</default-root-element>\n" +
+                 "<default-root-element-field name=\"tabletype2Type\"/>\n" +
                  "<namespace-resolver>\n" +
                     "<default-namespace-uri>urn:tabletype</default-namespace-uri>\n" +
                  "</namespace-resolver>\n" +
                  "<schema xsi:type=\"schema-url-reference\">\n" +
                     "<resource></resource>\n" +
-                    "<schema-context>/tabletypeType</schema-context>\n" +
+                    "<schema-context>/tabletype2Type</schema-context>\n" +
                     "<node-type>complex-type</node-type>\n" +
                  "</schema>\n" +
               "</class-mapping-descriptor>\n" +
@@ -879,7 +1175,6 @@ public class TableTypeTestSuite extends DBWSTestSuite {
           "<b>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAPAQEBAQEBAQEBAQEBAQEB</b>" +
           "<c>aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</c>" +
           "<r>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAADAQEB</r>" +
-          "<lr>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAJAQEBAQEBAQEB</lr>" +
         "</tabletypeType>";
 
     protected static final String UPDATED_PERSON_XML =
@@ -897,7 +1192,6 @@ public class TableTypeTestSuite extends DBWSTestSuite {
           "<b>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAPAQEBAQEBAQEBAQEBAQEB</b>" +
           "<c>ababababababababababababababab</c>" +
           "<r>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAADAQEB</r>" +
-          "<lr>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAJAQEBAQEBAQEB</lr>" +
         "</tabletypeType>";
 
 
@@ -922,7 +1216,6 @@ public class TableTypeTestSuite extends DBWSTestSuite {
         "</tabletypeType>";
     */
 
-    // TODO:  'rO0ABXA=' comes back for non-set/null binary types
     protected static final String NEW_PERSON_XML =
         REGULAR_XML_HEADER +
         "<tabletypeType xmlns=\"urn:tabletype\">" +
@@ -938,7 +1231,6 @@ public class TableTypeTestSuite extends DBWSTestSuite {
             "<b>rO0ABXA=</b>" +
             "<c>adadadadadadadadadadadadadadad</c>" +
             "<r>rO0ABXA=</r>" +
-            "<lr>rO0ABXA=</lr>" +
         "</tabletypeType>";
 
     protected static final String ALL_PEOPLE_XML =
@@ -957,7 +1249,6 @@ public class TableTypeTestSuite extends DBWSTestSuite {
                 "<b>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAPAQEBAQEBAQEBAQEBAQEB</b>" +
                 "<c>aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</c>" +
                 "<r>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAADAQEB</r>" +
-                "<lr>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAJAQEBAQEBAQEB</lr>" +
             "</tabletypeType>" +
             "<tabletypeType xmlns=\"urn:tabletype\">" +
                 "<id>2</id>" +
@@ -972,7 +1263,6 @@ public class TableTypeTestSuite extends DBWSTestSuite {
                 "<b>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAPAgICAgICAgICAgICAgIC</b>" +
                 "<c>bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb</c>" +
                 "<r>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAADAgIC</r>" +
-                "<lr>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAJAgICAgICAgIC</lr>" +
             "</tabletypeType>" +
             "<tabletypeType xmlns=\"urn:tabletype\">" +
                 "<id>3</id>" +
@@ -987,7 +1277,23 @@ public class TableTypeTestSuite extends DBWSTestSuite {
                 "<b>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAPAwMDAwMDAwMDAwMDAwMD</b>" +
                 "<c>cccccccccccccccccccccccccccccc</c>" +
                 "<r>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAADAwMD</r>" +
-                "<lr>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAJAwMDAwMDAwMD</lr>" +
             "</tabletypeType>" +
         "</tabletype-collection>";
+
+    protected static final String LONG_RAW_XML =
+        REGULAR_XML_HEADER +
+    	"<tabletype2-collection>" +
+    	   "<tabletype2Type xmlns=\"urn:tabletype\">" +
+    	      "<id>66</id>" +
+    	      "<lr>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAJAQEBAQEBAQEB</lr>" +
+    	   "</tabletype2Type>" +
+    	   "<tabletype2Type xmlns=\"urn:tabletype\">" +
+    	      "<id>67</id>" +
+    	      "<lr>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAJAgICAgICAgIC</lr>" +
+    	   "</tabletype2Type>" +
+    	   "<tabletype2Type xmlns=\"urn:tabletype\">" +
+    	      "<id>68</id>" +
+    	      "<lr>rO0ABXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAJAwMDAwMDAwMD</lr>" +
+    	   "</tabletype2Type>" +
+    	"</tabletype2-collection>";
 }
