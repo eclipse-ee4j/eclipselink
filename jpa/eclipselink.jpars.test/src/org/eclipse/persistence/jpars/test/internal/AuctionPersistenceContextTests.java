@@ -24,7 +24,7 @@ import junit.framework.Assert;
 
 import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
-import org.eclipse.persistence.jpa.rs.PersistenceFactory;
+import org.eclipse.persistence.jpa.rs.PersistenceFactoryBase;
 import org.eclipse.persistence.jpars.test.util.ExamplePropertiesLoader;
 import org.eclipse.persistence.sessions.server.Server;
 import org.junit.BeforeClass;
@@ -65,7 +65,7 @@ public class AuctionPersistenceContextTests {
     public static void createContext() throws Exception {
         Map<String, Object> properties = new HashMap<String, Object>();
         ExamplePropertiesLoader.loadProperties(properties);
-        PersistenceFactory factory = new PersistenceFactory();
+        PersistenceFactoryBase factory = new PersistenceFactoryBase();
         InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream("xmldocs/auction-persistence.xml"); 
         PersistenceContext context = factory.get("auction", new URI("http://localhost:8080/JPA-RS/"), properties);
     }
