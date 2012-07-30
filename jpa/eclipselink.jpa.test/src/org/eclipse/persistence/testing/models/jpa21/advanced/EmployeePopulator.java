@@ -12,6 +12,8 @@
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *     06/20/2012-2.5 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     07/13/2012-2.5 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa21.advanced;
 
@@ -785,15 +787,20 @@ public class EmployeePopulator {
         
         proc.addArgument("new_p_code_v", String.class);
         proc.addArgument("old_p_code_v", String.class);
+        proc.addOutputArgument("employee_count_v", Integer.class);
         
         String statement = null;
         if (session.getPlatform().isSQLServer() || session.getPlatform().isSybase()) {
             // 260263: SQLServer 2005/2008 requires parameter matching in the select clause for stored procedures
-            proc.addStatement("UPDATE JPA21_ADDRESS SET P_CODE = @new_p_code_v WHERE P_CODE = @old_p_code_v");
             proc.addStatement("SELECT A.* FROM JPA21_ADDRESS A WHERE A.P_CODE = @new_p_code_v");
-        } else {            
-            proc.addStatement("UPDATE JPA21_ADDRESS SET P_CODE = new_p_code_v WHERE P_CODE = old_p_code_v");
+            proc.addStatement("SELECT E.*, S.* FROM JPA21_EMPLOYEE E, JPA21_SALARY S WHERE E.EMP_ID = S.EMP_ID");
+            proc.addStatement("SELECT COUNT(E.EMP_ID) INTO @employee_count_v FROM JPA21_EMPLOYEE E, JPA21_SALARY S WHERE E.EMP_ID = S.EMP_ID");
+            proc.addStatement("UPDATE JPA21_ADDRESS SET P_CODE = @new_p_code_v WHERE P_CODE = @old_p_code_v");
+        } else {
             proc.addStatement("SELECT A.* FROM JPA21_ADDRESS A WHERE A.P_CODE = new_p_code_v");
+            proc.addStatement("SELECT E.*, S.* FROM JPA21_EMPLOYEE E, JPA21_SALARY S WHERE E.EMP_ID = S.EMP_ID");
+            proc.addStatement("SELECT COUNT(E.EMP_ID) INTO employee_count_v FROM JPA21_EMPLOYEE E, JPA21_SALARY S WHERE E.EMP_ID = S.EMP_ID");
+            proc.addStatement("UPDATE JPA21_ADDRESS SET P_CODE = new_p_code_v WHERE P_CODE = old_p_code_v");
         }
         
         return proc;

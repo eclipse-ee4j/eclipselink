@@ -13,6 +13,8 @@
  *       - 345962: Join fetch query when using tenant discriminator column fails.
  *     02/08/2012-2.4 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     07/13/2012-2.5 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/  
 package org.eclipse.persistence.internal.databaseaccess;
 
@@ -37,6 +39,11 @@ import org.eclipse.persistence.mappings.structures.ObjectRelationalDataTypeDescr
  * A call is an SQL string or procedure call with parameters.
  */
 public abstract class DatabaseCall extends DatasourceCall {
+    /** 
+     * JPA 2.1 NamedStoredProcedureQuery execute API implementation. 
+     */
+    protected boolean executeReturnValue;
+    
     /**
      * Following fields are used to bind MaxResults and FirstRow settings into 
      * the query instead of using the values stored in the call.
@@ -366,6 +373,13 @@ public abstract class DatabaseCall extends DatasourceCall {
     }
 
     /**
+     * After an execute call the return value can be retrieved here. 
+     */
+    public boolean getExecuteReturnValue() {
+        return executeReturnValue;
+    }
+    
+    /**
      * get first result
      */
     public int getFirstResult() {
@@ -547,6 +561,13 @@ public abstract class DatabaseCall extends DatasourceCall {
     public boolean isCursorReturned() {
         return this.returnType == RETURN_CURSOR;
     }
+    
+    /**
+     * Returns true if this call returns from a statement.execute call.
+     */
+    public boolean isExecuteReturn() {
+        return this.returnType == RETURN_EXECUTE;
+    }
 
     /**
      * Return if field matching is required.
@@ -560,7 +581,7 @@ public abstract class DatabaseCall extends DatasourceCall {
      * Return whether all the results of the call have been returned.
      */
     public boolean isFinished() {
-        return !isCursorReturned();
+        return !isCursorReturned() && !isExecuteReturn();
     }
 
     /**
@@ -1207,6 +1228,13 @@ public abstract class DatabaseCall extends DatasourceCall {
         this.contexts = contexts;
     }
 
+    /**
+     * An execute return value will be set here after the call.
+     */
+    public void setExecuteReturnValue(boolean value) {
+        executeReturnValue = value;
+    }
+    
     /**
      * PUBLIC:
      * Used for Oracle result sets through procedures.

@@ -284,7 +284,7 @@
         />
       </junit>
       <junitreport
-        todir="${run.dir}"
+        todir="./${report.dir}"
         >
         <fileset
           dir="."
@@ -295,9 +295,12 @@
         </fileset>
         <report
           format="noframes"
-          todir="${run.dir}"
+          todir="./${report.dir}"
         />
       </junitreport>
+      <delete>
+        <fileset dir="." includes="TEST-*xml"/>
+      </delete>
     </sequential>
   </macrodef>
   <macrodef
@@ -347,7 +350,9 @@
     </sequential>
   </macrodef>
 
+  <!-- Primary Targets: "jar" separate for dev use -->
   <target name="build" depends="clean, compile, package" if="support.test"/>
+  <target name="test"  depends="build, run-tests" description="run tests after building"/>
 
   <target
     name="clean"
@@ -355,8 +360,6 @@
     >
     <DeleteDirQuietly dir="${classes.dir}"/>
     <mkdir dir="${classes.dir}"/>
-    <DeleteDirQuietly dir="${run.dir}"/>
-    <mkdir dir="${run.dir}"/>
     <DeleteFileQuietly file="${eclipselink.dbws.oracle.test.jar}"/>
   </target>
 
@@ -388,6 +391,8 @@
     if="support.test"
     depends="build"
     >
+    <DeleteDirQuietly dir="./${report.dir}"/>
+    <mkdir dir="./${report.dir}"/>
     <SetupRunTeardown testsuite-name="OracleObjecttype"/>
     <SetupRunTeardown testsuite-name="PLSQLcollection"/>
     <SetupRunTeardown testsuite-name="Veearray"/>

@@ -51,11 +51,9 @@
 
     <!-- Define custom task to "cleanup" the revision information -->
     <property name="custom.tasks.lib" value="${build.location}/buildsystem/ant_customizations.jar"/>
-    <!-- property name="custom.cleanrev.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.CleanRevision"/ -->
     <property name="custom.echo.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.Say"/>
     <available file="${custom.tasks.lib}" property="ant_customizations.exist"/>
     <fail unless="ant_customizations.exist" message="Cannot find custom tasks library: '${custom.tasks.lib}' directory"/>
-    <!-- taskdef  name="cleanRevision" classname="${custom.cleanrev.task.class}" classpath="${custom.tasks.lib}"/ -->
     <taskdef  name="say"           classname="${custom.echo.task.class}"     classpath="${custom.tasks.lib}"/>
 
     <target name="build-nightly"    description="Trigger the nightly automated build and lrg tests"
@@ -101,7 +99,28 @@
         <property name="git.hash" value="NA"/>
     </target>
 
-    <target name="pre-init" depends="get-git-hash"> <!-- depends="get-svn-rev" -->
+    <target name="get-git-branch" unless="branch" depends="set-defaults">
+        <!-- get git branch (parse results of "git branch")           -->
+        <exec outputproperty="git.output"
+            failonerror="false"
+            failifexecutionfails="false"
+            errorproperty="gitbranch.failed"
+            logError="true"
+            executable="${git.exec}">
+            <arg value="branch"/>
+        </exec>
+        <exec outputproperty="branch"
+            failonerror="false"
+            failifexecutionfails="false"
+            errorproperty="echo.failed"
+            logError="true"
+            executable="echo">
+            <arg value="$git.output"/>
+        </exec>
+        <property name="git.hash" value="NA"/>
+    </target>
+
+    <target name="pre-init" depends="get-git-hash">
         <tstamp>
             <format property="build.date" pattern="yyyyMMdd"/>
             <format property="build.time" pattern="HHmm"/>
@@ -125,33 +144,6 @@
                                                 else="v${build.date}-${git.hash}">
             <equals arg1="${git.hash}" arg2="NA"/>
         </condition>
-    </target>
-
-    <target name="common-init">
-        <!-- M2_HOME defaults the value maven 3.0.3 install location on the build  -->
-        <!--   server, this is brittle, but easier for now                         -->
-        <property name="M2_HOME" value="/shared/common/apache-maven-3.0.3"/>
-        <echo message="'M2_HOME' set to: '${M2_HOME}'"/>
-
-        <property file="${basedir}/autobuild.properties"/>
-
-        <!-- Set version.string appropriately. variable should only be used for   -->
-        <!--    uploaded filenames  or manifest entries.                          -->
-        <property name="version.string" value="${release.version}.${version.qualifier}"/>
-
-        <!-- Set extract.dir appropriately for this build                         -->
-        <property name="extract.dir" value="${build.tool.root}/${release.version}/${version.string}"/>
-
-        <!-- For signed archive name need "version.string" defined first -->
-        <property name="p2.archive.presigned.zip" value="eclipselink-P2-${version.string}.zip"/>
-        <property name="p2.archive.signed.zip"    value="eclipselink-P2signed-${version.string}.zip"/>
-
-        <!-- generate Release Designation string for manifest                     -->
-        <property name="release.designation" value="EclipseLink ${release.version}"/>
-
-        <!-- Now that all our overrides are complete, pull in the rest of the build properties -->
-        <property file="${build.location}/antbuild.properties"/>
-
         <echo message="ANT_ARGS='${env.ANT_ARGS}'"/>
         <echo message="ANT_OPTS='${env.ANT_OPTS}'"/>
         <echo message=" "/>
@@ -164,12 +156,51 @@
         <echo message="env.GIT_EXEC    = '${env.GIT_EXEC}'"/>
         <echo message="env.TARGET      = '${env.TARGET}'"/>
         <echo message=" "/>
-        <echo message="builddate.buildtime='${build.date}.${build.time}'"/>
         <echo message="java.version   ='${java.version}'"/>
         <echo message="os.name        ='${os.name}'"/>
         <echo message="os.arch        ='${os.arch}'"/>
         <echo message="os.version     ='${os.version}'"/>
         <echo message=" "/>
+        <echo message="builddate.buildtime='${build.date}.${build.time}'"/>
+        <echo message="coretest.prop.file='${coretest.prop.file}'"/>
+        <echo message="test.properties.run='${test.properties.run}'"/>
+        <echo message="build.type='${build.type}'"/>
+        <echo message="version.qualifier='${version.qualifier}'"/>
+        <echo message=" "/>
+    </target>
+
+    <target name="common-init">
+        <!-- M2_HOME defaults the value maven 3.0.3 install location on the build -->
+        <!--   server, this is brittle, but easier for now                        -->
+        <property name="M2_HOME" value="/shared/common/apache-maven-3.0.3"/>
+        <echo message="'M2_HOME' set to: '${M2_HOME}'"/>
+
+        <property file="${basedir}/autobuild.properties"/>
+
+        <!-- Set version.string appropriately. variable should only be used for   -->
+        <!--    uploaded filenames  or manifest entries.                          -->
+        <property name="version.string" value="${release.version}.${version.qualifier}"/>
+
+        <!-- Set extract.dir appropriately for this build                         -->
+        <property name="extract.dir" value="${build.tool.root}/exported_builds/${release.version}/${version.qualifier}"/>
+
+        <!-- For signed archive name need "version.string" defined first -->
+        <property name="p2.archive.presigned.zip" value="eclipselink-P2-${version.string}.zip"/>
+        <property name="p2.archive.signed.zip"    value="eclipselink-P2signed-${version.string}.zip"/>
+
+        <!-- generate Release Designation string for manifest                     -->
+        <property name="release.designation" value="EclipseLink ${release.version}"/>
+
+        <!-- generate string for tag creation (used for maven publish anf handoff-version as well)  -->
+        <condition property="milestone.tag" value="${release.version}">
+            <equals arg1="${build.type}" arg2="RELEASE"/>
+        </condition>
+        <property name="milestone.tag" value="${release.version}-${build.type}"/>
+        <echo message="milestone.tag        ='${milestone.tag}'"/>
+
+        <!-- Now that all our overrides are complete, pull in the rest of the build properties -->
+        <property file="${build.location}/antbuild.properties"/>
+
         <echo message="branch.name     ='${branch.name}'"/>
         <echo message="branch          ='${branch}'"/>
         <echo message="basedir         ='${basedir}'"/>
@@ -190,11 +221,13 @@
         <echo message="build.number   ='${build.date}'"/>
         <echo message="git.hash       ='${git.hash}'"/>
         <echo message=" "/>
+        <echo message="milestone.tag  ='${milestone.tag}'"/>
+        <echo message=" "/>
         <echo message="jdbc.driver.jar='${jdbc.driver.jar}'"/>
         <echo message="db.driver      ='${db.driver}'"/>
         <echo message="db.url         ='${db.url}'"/>
         <echo message="db.user        ='${db.user}'"/>
-        <echo message="db.pwd         ='${db.pwd}'"/>
+        <echo message="db.pwd         = **********"/>
         <echo message="db.platform    ='${db.platform}'"/>
     </target>
 
@@ -202,11 +235,30 @@
         <ant antfile="antbuild.xml" dir="${build.location}" target="clean"/>
     </target>
 
+    <target name="cleanSchema" depends="common-init">
+        <echo message="Cleaning the db schema for '${db.name}'..."/>
+        <echo message="drop schema ${DB_NAME};" file="sql.sql" append="false"/>
+        <echo message="create schema ${DB_NAME};" file="sql.sql" append="true"/>
+        <exec outputproperty="dbclean.result"
+            failonerror="false"
+            failifexecutionfails="false"
+            errorproperty="dbclean.failed"
+            logError="true"
+            executable="mysql">
+            <arg value="-u${db.user}"/>
+            <arg value="-p${db.pwd}"/>
+            <arg value="-e'drop schema ${DB_NAME}; create schema ${DB_NAME};'"/>
+        </exec>
+        <!-- does -e"drop schema ${DB_NAME}; create schema ${DB_NAME};" work??? -->
+        <delete file="sql.sql" failonerror="false"/>
+        <echo message="done."/>
+    </target>
+
     <target name="build" depends="init">
         <ant antfile="antbuild.xml" dir="${build.location}"          target="build-all-but-ext"/>
         <ant antfile="antbuild.xml" dir="${build.location}/features" target="build-features-create-signzip"/>
         <ant antfile="antbuild.xml" dir="${build.location}"          target="package-all"/>
-        <!-- Generate proper handoff file -->
+        <!-- Extract build artifacts from Hudson Workspace and make them accessible to publish -->
         <antcall target="extract-build-artifacts"/>
     </target>
 
@@ -278,19 +330,42 @@
     </target>
 
     <!--  =====  #####        Post 'build' Processing Targets            #####  =====  -->
-    <target name="extract-build-artifacts" depends="common-init">
+    <target name="generate-nightly-p2-site" depends="common-init">
+        <!-- has to be run before publish, so publish can operate independent of branches -->
+        <property name="p2.archive.to.use"       value="${hudson.workspace}/features/${p2.archive.presigned.zip}"/>
+        <property name="p2.repos.dir"            value="${extract.dir}/p2repo"/>
+        <property name="metadata.repos.name"     value="&quot;${p2.nightly.repos.name}&quot;"/>
+        <property name="artifact.repos.name"     value="&quot;EclipseLink Incremental Artifacts&quot;"/>
+        <property name="p2.SDK.install.dir"      value="${build.deps.dir}/eclipse"/>
+        <available file="${p2.SDK.install.dir}" type="dir" property="p2.SDK.install.dir.exist"/>
+        <fail message="${p2.SDK.install.dir} dir not found. Build will fail, aborting now." unless="p2.SDK.install.dir.exist"/>
+        <!-- Clean existing repos if it exists (should only be true of a release redo, or the latest milestone or nightly) -->
+        <delete dir="${p2.repos.dir}" failonerror="false"/>
+        <mkdir dir="${p2.repos.dir}"/>
+        <!-- populate update site with feature and bundle jars, then publish repository -->
+        <ant antfile="antbuild.xml" dir="${hudson.workspace}/features" target="assemble-repos">
+            <property name="do.composite"        value="true"/>
+            <property name="ready-to-go"         value="true"/>
+            <property name="bundle.install.file" value="${hudson.workspace}/${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}"/>
+            <property name="nosql.install.file"  value="${hudson.workspace}/${eclipselink.nosql.install.prefix}${eclipselink.zip.suffix}"/>
+            <property name="p2.archive.zip"      value="${p2.archive.to.use}"/>
+        </ant>
+    </target>
+
+    <target name="extract-build-artifacts" depends="generate-nightly-p2-site">
         <!-- New Publish Architecture -->
         <mkdir dir="${extract.dir}"/>
         <echo message="Extracting build artifacts..."/>
         <echo message="   from '${hudson.workspace}'"/>
         <echo message="     to '${extract.dir}'"/>
-        <copy file="${hudson.workspace}/features/${p2.archive.presigned.zip}"                           tofile="${extract.dir}/${p2.archive.presigned.zip}" failonerror="false"/>
-        <copy file="${hudson.workspace}/${eclipselink.install.prefix}${eclipselink.zip.suffix}"         tofile="${extract.dir}/${eclipselink.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
-        <copy file="${hudson.workspace}/${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"     tofile="${extract.dir}/${eclipselink.src.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
-        <copy file="${hudson.workspace}/${eclipselink.tst.src.prefix}${eclipselink.zip.suffix}"         tofile="${extract.dir}/${eclipselink.tst.src.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
-        <copy file="${hudson.workspace}/${eclipselink.tst.jar.prefix}${eclipselink.zip.suffix}"         tofile="${extract.dir}/${eclipselink.tst.jar.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
+        <copy file="${hudson.workspace}/eclipselink.jar"                                                tofile="${extract.dir}/eclipselink.jar"                                                               failonerror="false"/>
+        <copy file="${hudson.workspace}/features/${p2.archive.presigned.zip}"                           tofile="${extract.dir}/${p2.archive.presigned.zip}"                                                   failonerror="false"/>
+        <copy file="${hudson.workspace}/${eclipselink.install.prefix}${eclipselink.zip.suffix}"         tofile="${extract.dir}/${eclipselink.install.prefix}-${version.string}${eclipselink.zip.suffix}"      failonerror="false"/>
+        <copy file="${hudson.workspace}/${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"     tofile="${extract.dir}/${eclipselink.src.install.prefix}-${version.string}${eclipselink.zip.suffix}"  failonerror="false"/>
+        <copy file="${hudson.workspace}/${eclipselink.tst.src.prefix}${eclipselink.zip.suffix}"         tofile="${extract.dir}/${eclipselink.tst.src.prefix}-${version.string}${eclipselink.zip.suffix}"      failonerror="false"/>
+        <copy file="${hudson.workspace}/${eclipselink.tst.jar.prefix}${eclipselink.zip.suffix}"         tofile="${extract.dir}/${eclipselink.tst.jar.prefix}-${version.string}${eclipselink.zip.suffix}"      failonerror="false"/>
         <copy file="${hudson.workspace}/${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}" tofile="${extract.dir}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
-        <copy file="${hudson.workspace}/${eclipselink.nosql.install.prefix}${eclipselink.zip.suffix}"   tofile="${extract.dir}/${eclipselink.nosql.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
+        <copy file="${hudson.workspace}/${eclipselink.nosql.install.prefix}${eclipselink.zip.suffix}"   tofile="${extract.dir}/${eclipselink.nosql.install.prefix}-${version.string}${eclipselink.zip.suffix}"   failonerror="false"/>
         <copy todir="${extract.dir}" failonerror="false">
             <fileset  dir="${hudson.workspace}">
                 <include name="${eclipselink.install.prefix}*${version.qualifier}-shared-lib.zip"/>
@@ -298,7 +373,8 @@
         </copy>
         <!-- Generate proper handoff file -->
         <antcall target="generate-handoff">
-            <param name="procedure" value="build"/>
+            <param name="procedure"   value="build"/>
+            <param name="host"        value="Eclipse"/>
             <param name="extract.loc" value="${extract.dir}"/>
         </antcall>
     </target>
@@ -322,7 +398,8 @@
         <copy file="${hudson.workspace}/${eclipselink.dbws.builder.test}/${report.dir}/junit-noframes.html" tofile="${result.host.dir}/eclipselink-dbws-util-lrg-${version.string}.html" failonerror="false"/>
         <!-- Generate proper handoff file -->
         <antcall target="generate-handoff">
-            <param name="procedure" value="test"/>
+            <param name="procedure"   value="test"/>
+            <param name="host"        value="Eclipse"/>
             <param name="extract.loc" value="${result.host.dir}"/>
         </antcall>
     </target>
@@ -332,12 +409,11 @@
     </target>
     <target name="generate-handoff" if="procedure" depends="cannot-generate-handoff" description="generate the publishing handoff file">
         <property name="handoff.file" value="${build.tool.root}/handoff-file-${procedure}-${branch}-${version.qualifier}.dat"/>
-        <echo message="extract.loc=${extract.loc}" file="${handoff.file}" append="false"/>
-        <echo message="*host=${host}" file="${handoff.file}" append="true"/>
+        <echo message="extract.loc=${extract.loc} host=${host} maven.tag=${milestone.tag}" file="${handoff.file}" append="false"/>
     </target>
 
 
-    <!--  =====  #####              Publishing Targets               #####  =====  -->
+    <!--  =====  #####           Public Publishing Targets               #####  =====  -->
 
     <target name="publish-init" depends="common-init">
         <!-- Set download.dir appropriately depending upon build target          -->
@@ -390,12 +466,6 @@
         </condition>
         <property name="artifact.repos.name" value="&quot;EclipseLink Milestone Artifacts&quot;"/>
 
-        <!-- generate string for tag creation (only used if milestone, or release build)  -->
-        <condition property="milestone.tag" value="${release.version}">
-            <equals arg1="${build.type}" arg2="RELEASE"/>
-        </condition>
-        <property name="milestone.tag" value="${release.version}-${build.type}"/>
-
         <echo message="download.dir         ='${download.dir}'"/>
         <echo message="p2.composite.root.dir='${p2.composite.root.dir}'"/>
         <echo message="p2.repos.dir         ='${p2.repos.dir}'"/>
@@ -403,7 +473,6 @@
         <echo message="p2.SDK.install.dir   ='${p2.SDK.install.dir}'"/>
         <echo message="metadata.repos.name  ='${metadata.repos.name}'"/>
         <echo message="artifact.repos.name  ='${artifact.repos.name}'"/>
-        <echo message="milestone.tag        ='${milestone.tag}'"/>
     </target>
 
     <!--  =====  Build Publish Targets -->
@@ -502,34 +571,6 @@
                 <include name="*.sh"/>
             </fileset>
         </chmod>
-    </target>
-
-
-    <!-- Helper target for cb processing -->
-    <!--   Is intendended only to be called by build post-processing if a cb fails tests -->
-    <!--   Variables used defined only on command-line of script:                        -->
-    <!--       test.result.zip      - name of zip containing test result files           -->
-    <!--       test.result.dest.dir - location of "failed build" result dir              -->
-    <!--                                                                                 -->
-    <target name="save-tst-results" depends="init">
-        <echo message="build.location=${build.location}"/>
-        <echo message="${eclipselink.core.test}/${report.dir}/junit-noframes.html"/>
-        <echo message="${eclipselink.jpa.test}/${report.dir}/junit-noframes.html"/>
-        <echo message="${eclipselink.moxy.test}/${report.dir}/jaxb/junit-noframes.html"/>
-        <echo message="${eclipselink.moxy.test}/${report.dir}/oxm/junit-noframes.html"/>
-        <echo message="${eclipselink.sdo.test}/${report.dir}/true/junit-noframes.html"/>
-        <echo message="${eclipselink.dbws.test}/${report.dir}/junit-noframes.html"/>
-        <echo message="${eclipselink.dbws.builder.test}/${report.dir}/junit-noframes.html"/>
-        <zip destfile="${basedir}/${test.result.zip}">
-            <zipfileset dir="${build.location}">
-                <include name="${eclipselink.core.test}/${report.dir}/junit-noframes.html"/>
-                <include name="${eclipselink.jpa.test}/${report.dir}/junit-noframes.html"/>
-                <include name="${eclipselink.moxy.test}/${report.dir}/**/junit-noframes.html"/>
-                <include name="${eclipselink.sdo.test}/${report.dir}/**/junit-noframes.html"/>
-                <include name="${eclipselink.dbws.test}/${report.dir}/junit-noframes.html"/>
-                <include name="${eclipselink.dbws.builder.test}/${report.dir}/junit-noframes.html"/>
-            </zipfileset>
-        </zip>
     </target>
 
 </project>

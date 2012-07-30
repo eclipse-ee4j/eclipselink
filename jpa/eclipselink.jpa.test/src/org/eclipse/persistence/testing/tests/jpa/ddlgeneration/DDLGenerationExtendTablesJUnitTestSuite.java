@@ -136,7 +136,7 @@ public class DDLGenerationExtendTablesJUnitTestSuite extends
             tests.add("testValidateMafiaFamily007");
         }
         tests.add("testSimpleSelectFoo");
-        Collections.sort(tests);
+
         for (String test : tests) {
             suite.addTest(new DDLGenerationExtendTablesJUnitTestSuite(test));
         }

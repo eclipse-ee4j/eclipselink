@@ -16,7 +16,6 @@ import java.util.*;
 
 import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.server.*;
 import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.descriptors.*;
