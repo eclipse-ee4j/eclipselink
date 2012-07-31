@@ -24,8 +24,7 @@ import javax.ejb.Singleton;
 @Singleton
 public class Service extends ServiceBase {
 
-   @EJB
-    public void setPersistenceFactory(PersistenceFactory factory) {
+    public void setPersistenceFactory(PersistenceFactoryBase factory) {
         this.factory = factory;
     }
 
