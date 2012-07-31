@@ -12,30 +12,20 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.typemappinginfo;
 
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 
-@XmlType(name="employee", namespace="someUri")
-public class Employee {
+public class EmployeeToStringAdapter extends XmlAdapter<String, Employee> {
 
-    public String firstName;
-    public String lastName;
-    
-    public boolean equals(Object theObject){
-    	if(theObject instanceof Employee){
-    		Employee emp = (Employee)theObject;
-    	   if(!firstName.equals(emp.firstName)){
-    		   return false;
-    	   }
-    	   if(lastName == null){
-    		   if(emp.lastName != null){
-    			   return false;
-    		   }
-    	   }else if(!lastName.equals(emp.lastName)){
-    		   return false;
-    	   }
-    	   return true;
-    	}else{
-    	   return false;
-    	}
+    @Override
+    public String marshal(Employee v) throws Exception {
+        return v.firstName;
     }
+
+    @Override
+    public Employee unmarshal(String v) throws Exception {
+    	Employee emp = new Employee();
+       emp.firstName = v;
+    	return emp;
+    }
+
 }
