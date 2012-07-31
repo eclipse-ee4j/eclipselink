@@ -307,10 +307,10 @@
                 <sysproperty key="useDeploymentXML" value="false"/>
                 <sysproperty key="test.properties" value="${jparstest.build.location}/test.properties"/>
                 <sysproperty key="jpars.xmlfile.directory" value="META-INF/xmldocs/"/>
-
+                <sysproperty key="server.uri.base" value="${SERVER_URL}"/>
                 <batchtest todir="${report.dir}">
                     <fileset dir="${src.dir}">
-                        <include name="org/eclipse/persistence/jpars/test/AllJavaSETests.java"/>
+                        <include name="${jpars.test.class}"/>
                     </fileset>
                     <formatter type="xml"/>
                 </batchtest>
