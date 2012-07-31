@@ -192,7 +192,9 @@ publishBuildArtifacts() {
     version=$3
     date=$4
     timestamp=$5
+    qualifier=$6
 
+    echo " "
     echo "Processing Build archives for publishing..."
     rootDest=${dest}/nightly
 
@@ -247,10 +249,15 @@ publishBuildArtifacts() {
         #verify everything copied correctly
         if [ \( "${srcJarCount}" = "${destJarCount}" \) -a \( "${srcZipCount}" = "${destZipCount}" \) ] ; then
             echo "    Published ${destJarCount} jar(s) and ${destZipCount} zip(s) successfully."
+        else
+            echo "    Published ${destJarCount} jar(s) and ${destZipCount} zip(s), but Src and Dest numbers don't match."
+            echo "    Expected ${srcJarCount} jar(s) and ${srcZipCount} zip(s) to copy. Publish failed!"
+            Error=true
         fi
     else
         # Something is not right! skipping.."
         echo "    Required locations and data failed to verify... skipping Artifact publishing...."
+        ERROR=true
         if [ "${DEBUG}" = "true" ] ; then
             echo "publishBuildArtifacts: Required locations and data:"
             echo "   src       = '${src}'"
@@ -271,6 +278,7 @@ publishP2Repo() {
     version=$3
     qualifier=$4
 
+    echo " "
     echo "Preparing to publish P2 repository...."
     rootDest=${dest}/nightly-updates
 
@@ -288,28 +296,36 @@ publishP2Repo() {
         #if not 0 and dir repo not already published, copy it preserving timestamps
         srcP2Count=`ls ${src} | grep -c p2repo`
         downloadDest=${rootDest}/${version}.${qualifier}
-        if [ \( ! "${srcP2Count}" = "0" \) -a \( ! -d ${downloadDest} \) ] ; then
-            #Create download destination dir (dest/nightly-updates/<version>.<qualifier>)
-            createPath ${downloadDest}
+        if [ \( ! "${srcP2Count}" = "0" \) ] ; then
+            srcP2jarCount=`ls -r ${src}/p2repo/* | grep -c [.]jar$`
 
-            if [ "${DEBUG}" = "true" ] ; then
-                echo "publishP2Repo: Copying ${srcHtmlCount} html(s)"
-                echo "                       from: '${src}'"
-                echo "                         to: '${downloadDest}'"
-            fi
-            cp -r --preserve=timestamps ${src}/p2repo/* ${downloadDest}
+            if [ \( ! -d ${downloadDest} \) ] ; then
+                #Create download destination dir (dest/nightly-updates/<version>.<qualifier>)
+                createPath ${downloadDest}
 
-            destP2Count=`ls ${downloadDest} | grep -c [.]jar$`
-            if [ "${DEBUG}" = "true" ] ; then
-                echo "publishP2Repo: ${destP2Count} jars in copied repo."
-            fi
+                if [ "${DEBUG}" = "true" ] ; then
+                    echo "publishP2Repo: Copying ${srcP2Count} repo(s) (${srcP2jarCount} jars)"
+                    echo "                       from: '${src}'"
+                    echo "                         to: '${downloadDest}'"
+                fi
+                cp -r --preserve=timestamps ${src}/p2repo/* ${downloadDest}
 
-            #verify everything copied correctly
-            if [ "${destP2Count}" -gt 0 ] ; then
-                echo "    Published ${destP2Count} repo successfully."
+                destP2jarCount=`ls -r ${downloadDest}/* | grep -c [.]jar$`
+                if [ "${DEBUG}" = "true" ] ; then
+                    echo "publishP2Repo: ${destP2jarCount} jars copied to repo."
+                fi
+
+                #verify everything copied correctly
+                if [ "${destP2jarCount}" = "${srcP2jarCount}" ] ; then
+                    echo "    Published ${destP2jarCount} of ${srcP2jarCount} jars to repo successfully."
+                else
+                    echo "    Publish failed for P2 Repo. Only copied ${destP2jarCount} of ${srcP2jarCount} jars to repo."
+                    ERROR=true
+                    rm -r ${downloadDest}
+                fi
             else
-                echo "    Publish failed for P2 Repo."
-                rm -r ${downloadDest}
+                destP2jarCount=`ls -r ${downloadDest}/* | grep -c [.]jar$`
+                echo "   P2 repo already exists, ${destP2jarCount} of ${srcP2jarCount} jars published. Skipping..."
             fi
         else
             echo "    No P2 repo to publish..."
@@ -317,6 +333,7 @@ publishP2Repo() {
     else
         # Something is not right! skipping.."
         echo "    Required locations and data failed to verify... skipping Repo publishing...."
+        ERROR=true
         if [ "${DEBUG}" = "true" ] ; then
             echo "publishP2Repo: Required locations and data:"
             echo "   src      = '${src}'"
@@ -359,10 +376,11 @@ publishMavenRepo() {
     # Run Ant from ${exec_location} using ${buildfile} ${arguments}
     runAnt ${exec_location} ${upload_src_dir}/uploadToMaven.xml "${arguments}"
 
-    if encountered error, increment error_cnt, otherwise, cleanup ${upload_src_dir},
+    # if encountered error, increment error_cnt, otherwise, cleanup ${upload_src_dir}
     if [ "${local_err}" = "true" ] ; then
        error_cnt=`expr ${error_cnt} + 1`
     else
+       echo "should 'rm -r ${upload_src_dir}', but won't for debugging for now."
        #rm -r ${upload_src_dir}
     fi
 
@@ -503,9 +521,14 @@ fi
 curdir=`pwd`
 cd $HOME_DIR
 NEW_RESULTS=false
+ERROR=false
 handoff_cnt=0
 for handoff in `ls handoff-file*.dat` ; do
     handoff_cnt=`expr ${handoff_cnt} + 1`
+    if [ "$handoff_cnt" -gt "1" ] ; then
+        echo " "
+        echo " "
+    fi
     echo "Detected handoff file:'${handoff}'. Process starting..."
     # Do stuff
     parseHandoff ${handoff}
