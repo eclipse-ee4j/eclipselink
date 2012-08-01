@@ -752,6 +752,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
             XPathNode node = getNonAttributeXPathNode(namespaceURI, localName, qName, atts);            
 
             if(null == node && xPathNode.getTextNode() != null){
+            	XPathFragment textWrapperFragment = getTextWrapperFragment();
                 if(textWrapperFragment != null && localName.equals(textWrapperFragment.getLocalName())){
                    node = xPathNode.getTextNode();
                 }
@@ -1347,6 +1348,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
 	    	childRecord = (UnmarshalRecord) treeObjectBuilder.createRecord(session);
 	        childRecord.setUnmarshaller(unmarshaller);
 	        childRecord.session = this.session;
+	        childRecord.setTextWrapperFragment(textWrapperFragment);
 	        childRecord.setXMLReader(this.xmlReader);
 	        childRecord.setFragmentBuilder(fragmentBuilder);
 	        childRecord.setUnmarshalNamespaceResolver(this.getUnmarshalNamespaceResolver());
@@ -1362,10 +1364,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
         super.setUnmarshaller(unmarshaller);                
         if(xPathFragment != null){
         	xPathFragment.setNamespaceAware(isNamespaceAware());
-        }
-        if(unmarshaller.getValueWrapper() != null){
-        	textWrapperFragment = new XPathFragment(unmarshaller.getValueWrapper());
-        }
+        }      
     }
     
     /**
@@ -1406,9 +1405,19 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
     	return xmlReader.getNamespaceSeparator();
     }
 
+    private void setTextWrapperFragment(XPathFragment newTextWrapperFragment) {
+    	textWrapperFragment = newTextWrapperFragment;
+    }
+    
     public XPathFragment getTextWrapperFragment() {
-    	if(unmarshaller.getMediaType() == MediaType.APPLICATION_JSON){    
-            return textWrapperFragment;
+    	if(unmarshaller.getMediaType() == MediaType.APPLICATION_JSON){
+    		if(textWrapperFragment == null){
+    			textWrapperFragment = new XPathFragment();
+    			textWrapperFragment.setLocalName(unmarshaller.getValueWrapper());
+    			textWrapperFragment.setNamespaceAware(isNamespaceAware());
+    			textWrapperFragment.setNamespaceSeparator(getNamespaceSeparator());
+    		}
+    		return textWrapperFragment;
     	}
     	return null;
     }
