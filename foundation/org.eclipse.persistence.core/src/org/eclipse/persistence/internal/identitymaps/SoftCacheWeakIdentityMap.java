@@ -15,6 +15,7 @@ package org.eclipse.persistence.internal.identitymaps;
 import java.lang.ref.*;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
  * <p><b>Purpose</b>: A SoftCacheWeakIdentityMap is identical to the WeakIdentityMap, however the weak reference
@@ -30,13 +31,9 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
  * @since TOPLink/Java 1.2
  */
 public class SoftCacheWeakIdentityMap extends HardCacheWeakIdentityMap {
-    public SoftCacheWeakIdentityMap(int size, ClassDescriptor descriptor) {
-        super(size, descriptor);
-    }
 
-    public SoftCacheWeakIdentityMap(int size, ClassDescriptor descriptor, boolean isIsolated) {
-        this(size, descriptor);
-        this.isIsolated = isIsolated;
+    public SoftCacheWeakIdentityMap(int size, ClassDescriptor descriptor, AbstractSession session, boolean isIsolated) {
+        super(size, descriptor, session, isIsolated);
     }
     
     /**

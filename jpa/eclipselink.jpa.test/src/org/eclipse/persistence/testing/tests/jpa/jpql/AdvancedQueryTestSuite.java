@@ -154,6 +154,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         suite.addTest(new AdvancedQueryTestSuite("testJPQLCacheHits"));
         suite.addTest(new AdvancedQueryTestSuite("testCacheIndexes"));
         suite.addTest(new AdvancedQueryTestSuite("testSQLHint"));
+        suite.addTest(new AdvancedQueryTestSuite("testLoadGroup"));
         if (!isJPA10()) {
             suite.addTest(new AdvancedQueryTestSuite("testQueryPESSIMISTIC_FORCE_INCREMENTLock"));
             suite.addTest(new AdvancedQueryTestSuite("testVersionChangeWithReadLock"));
@@ -1968,6 +1969,40 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             }
             if (isWeavingEnabled() && counter.getSqlStatements().size() > queries) {
                 fail("Should have been " + queries + " queries but was: " + counter.getSqlStatements().size());
+            }
+            clearCache();
+            for (Customer customer : results) {
+                verifyObject(customer);
+            }
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+            if (counter != null) {
+                counter.remove();
+            }
+        }
+    }
+
+    /**
+     * Test batch fetching of maps.
+     */
+    public void testLoadGroup() {
+        clearCache();
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        // Count SQL.
+        QuerySQLTracker counter = new QuerySQLTracker(getServerSession());
+        try {
+            Query query = em.createQuery("Select c from Customer c");
+            query.setHint(QueryHints.LOAD_GROUP_ATTRIBUTE, "CSInteractions");
+            query.setHint(QueryHints.LOAD_GROUP_ATTRIBUTE, "CCustomers");
+            List<Customer> results = query.getResultList();
+            counter.getSqlStatements().clear();
+            for (Customer customer : results) {
+                customer.getCSInteractions().size();
+            }
+            if (counter.getSqlStatements().size() > 0) {
+                fail("Load group should have loaded attributes.");
             }
             clearCache();
             for (Customer customer : results) {

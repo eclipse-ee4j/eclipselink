@@ -434,7 +434,11 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
             if (this.session.isUnitOfWork()) {
                 result = registerResultInUnitOfWork(rows, (UnitOfWorkImpl)this.session, this.translationRow, true);// 
             } else {
-                result = this.containerPolicy.containerInstance(rows.size());
+                if (rows instanceof ThreadCursoredList) {
+                    result = this.containerPolicy.containerInstance();
+                } else {
+                    result = this.containerPolicy.containerInstance(rows.size());
+                }
                 this.descriptor.getObjectBuilder().buildObjectsInto(this, rows, result);
             }
     

@@ -26,7 +26,7 @@ public class ConcurrentIdentityMapKeyEnumerationTest extends TestCase {
     protected FullIdentityMap identityMap;
 
     public ConcurrentIdentityMapKeyEnumerationTest() {
-        identityMap = new FullIdentityMap(1);
+        identityMap = new FullIdentityMap(1, null, getAbstractSession(), false);
     }
 
     public void reset() {

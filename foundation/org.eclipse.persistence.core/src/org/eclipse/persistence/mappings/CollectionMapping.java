@@ -1330,6 +1330,23 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     }
 
     /**
+     * Force instantiation of the load group.
+     */
+    @Override
+    public void load(final Object object, AttributeItem item, final AbstractSession session) {
+        instantiateAttribute(object, session);
+        if (item.getGroup() != null) {
+            Object value = getRealAttributeValueFromObject(object, session);
+            ContainerPolicy cp = this.containerPolicy;
+            for (Object iterator = cp.iteratorFor(value); cp.hasNext(iterator);) {
+                Object wrappedObject = cp.nextEntry(iterator, session);
+                Object nestedObject = cp.unwrapIteratorResult(wrappedObject);
+                session.load(nestedObject, item.getGroup());
+            }
+        }
+    }
+    
+    /**
      * ADVANCED:
      * Return whether the reference objects must be deleted
      * one by one, as opposed to with a single DELETE statement.

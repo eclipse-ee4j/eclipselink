@@ -418,7 +418,7 @@ public abstract class DescriptorIterator {
             AttributeGroup currentGroupOriginal = this.currentGroup;
             AttributeItem currentItemOriginal = this.currentItem;
             for (DatabaseMapping mapping : mappings) {
-                this.currentItem = this.currentGroup.getItem(mapping.getAttributeName());
+                this.currentItem = this.currentGroup.getItems().get(mapping.getAttributeName());
                 // iterate only over the mappings found in the group
                 if (currentItem != null) {
                     mapping.iterate(this);

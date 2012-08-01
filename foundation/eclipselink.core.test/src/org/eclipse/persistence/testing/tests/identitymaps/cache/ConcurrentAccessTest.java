@@ -22,7 +22,7 @@ public class ConcurrentAccessTest extends AutoVerifyTestCase {
     }
 
     public void test() {
-        this.cache = new CacheIdentityMap(10);
+        this.cache = new CacheIdentityMap(10, null, getAbstractSession(), false);
 
         org.eclipse.persistence.testing.models.employee.domain.Employee employee = new org.eclipse.persistence.testing.models.employee.domain.Employee();
         java.math.BigDecimal id = new java.math.BigDecimal(7777);

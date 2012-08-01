@@ -16,6 +16,7 @@ import java.util.*;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 
 
@@ -27,17 +28,9 @@ import org.eclipse.persistence.mappings.ForeignReferenceMapping;
  * @since TOPLink/Java 1.0
  */
 public class NoIdentityMap extends AbstractIdentityMap {
-    public NoIdentityMap(int size) {
-        super(size);
-    }
 
-    public NoIdentityMap(int size, ClassDescriptor descriptor) {
-        super(size, descriptor);
-    }
-
-    public NoIdentityMap(int size, ClassDescriptor descriptor, boolean isolated) {
-        this(size, descriptor);
-        this.isIsolated = isolated;
+    public NoIdentityMap(int size, ClassDescriptor descriptor, AbstractSession session, boolean isolated) {
+        super(size, descriptor, session, isolated);
     }
     
     /**

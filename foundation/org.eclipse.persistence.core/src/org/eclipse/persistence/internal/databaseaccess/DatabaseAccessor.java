@@ -110,12 +110,6 @@ public class DatabaseAccessor extends DatasourceAccessor {
     // Bug 2804663 - Each DatabaseAccessor holds on to its own LOBValueWriter instance
     protected LOBValueWriter lobWriter;
 
-    /**
-     * PERF: Option to allow concurrent thread processing of result sets.
-     * This allows the objects to be built while the rows are being fetched.
-     */
-    protected boolean shouldUseThreadCursors;
-
     /** PERF: Cache the statement object for dynamic SQL execution. */
     protected Statement dynamicStatement;
     protected boolean isDynamicStatementInUse;
@@ -123,7 +117,6 @@ public class DatabaseAccessor extends DatasourceAccessor {
     public DatabaseAccessor() {
         super();
         this.lobWriter = null;
-        this.shouldUseThreadCursors = false;
         this.isDynamicStatementInUse = false;
     }
     
@@ -631,6 +624,9 @@ public class DatabaseAccessor extends DatasourceAccessor {
                     result = processResultSet(resultSet, dbCall, statement, session);
                 }
             }
+            if (result instanceof ThreadCursoredList) {
+                return result;
+            }
             // Log any warnings on finest.
             if (session.shouldLog(SessionLog.FINEST, SessionLog.SQL)) {// Avoid printing if no logging required.
             	SQLWarning warning = statement.getWarnings();
@@ -724,7 +720,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
                     boolean hasNext = resultSet.next();
                     // PERF: Optimize out simple empty case.
                     if (hasNext) {
-                        if (shouldUseThreadCursors()) {
+                        if (session.isConcurrent()) {
                             // If using threading return the cursored list,
                             // do not close the result or statement as the rows are being fetched by the thread.
                             return buildThreadCursoredResult(call, resultSet, statement, metaData, session);
@@ -780,52 +776,56 @@ public class DatabaseAccessor extends DatasourceAccessor {
         final ThreadCursoredList results = new ThreadCursoredList(20);
         Runnable runnable = new Runnable() {
             public void run() {
-                session.startOperationProfile(SessionProfiler.RowFetch, dbCall.getQuery(), SessionProfiler.ALL);
                 try {
-                    // Initial next was already validated before this method is called.
-                    boolean hasNext = true;
-                    while (hasNext) {
-                        results.add(fetchRow(dbCall.getFields(), dbCall.getFieldsArray(), resultSet, metaData, session));
-                        hasNext = resultSet.next();
+                    session.startOperationProfile(SessionProfiler.RowFetch, dbCall.getQuery(), SessionProfiler.ALL);
+                    try {
+                        // Initial next was already validated before this method is called.
+                        boolean hasNext = true;
+                        while (hasNext) {
+                            results.add(fetchRow(dbCall.getFields(), dbCall.getFieldsArray(), resultSet, metaData, session));
+                            hasNext = resultSet.next();
+                        }
+                        resultSet.close();// This must be closed in case the statement is cached and not closed.
+                    } catch (SQLException exception) {
+                        //If this is a connection from an external pool then closeStatement will close the connection.
+                        //we must test the connection before that happens.
+                        RuntimeException exceptionToThrow = processExceptionForCommError(session, exception, dbCall);
+                        try {// Ensure that the statement is closed, but still ensure that the real exception is thrown.
+                            closeStatement(statement, session, dbCall);
+                        } catch (Exception closeException) {
+                        }
+                        if (exceptionToThrow == null){
+                            results.throwException(DatabaseException.sqlException(exception, dbCall, DatabaseAccessor.this, session, false));
+                        }
+                        results.throwException(exceptionToThrow);
+                    } catch (RuntimeException exception) {
+                        try {// Ensure that the statement is closed, but still ensure that the real exception is thrown.
+                            closeStatement(statement, session, dbCall);
+                        } catch (Exception closeException) {
+                        }
+                        if (exception instanceof DatabaseException) {
+                            ((DatabaseException)exception).setCall(dbCall);
+                        }
+                        results.throwException(exception);
+                    } finally {
+                        session.endOperationProfile(SessionProfiler.RowFetch, dbCall.getQuery(), SessionProfiler.ALL);
                     }
-                    resultSet.close();// This must be closed in case the statement is cached and not closed.
-                } catch (SQLException exception) {
-                    //If this is a connection from an external pool then closeStatement will close the connection.
-                    //we must test the connection before that happens.
-                    RuntimeException exceptionToThrow = processExceptionForCommError(session, exception, dbCall);
-                    try {// Ensure that the statement is closed, but still ensure that the real exception is thrown.
-                        closeStatement(statement, session, dbCall);
-                    } catch (Exception closeException) {
+    
+                    // This is in a separate try block to ensure that the real exception is not masked by the close exception.
+                    try {
+                        // Allow for caching of statement, forced closes are not cache as they failed execution so are most likely bad.
+                        DatabaseAccessor.this.releaseStatement(statement, dbCall.getSQLString(), dbCall, session);
+                    } catch (SQLException exception) {
+                        //With an external connection pool the connection may be null after this call, if it is we will
+                        //be unable to determine if it is a connection based exception so treat it as if it wasn't.
+                        DatabaseException commException = processExceptionForCommError(session, exception, dbCall);
+                        if (commException != null) results.throwException(commException);
+                        results.throwException(DatabaseException.sqlException(exception, DatabaseAccessor.this, session, false));
                     }
-                    if (exceptionToThrow == null){
-                        results.throwException(DatabaseException.sqlException(exception, dbCall, DatabaseAccessor.this, session, false));
-                    }
-                    results.throwException(exceptionToThrow);
-                } catch (RuntimeException exception) {
-                    try {// Ensure that the statement is closed, but still ensure that the real exception is thrown.
-                        closeStatement(statement, session, dbCall);
-                    } catch (Exception closeException) {
-                    }
-                    if (exception instanceof DatabaseException) {
-                        ((DatabaseException)exception).setCall(dbCall);
-                    }
-                    results.throwException(exception);
                 } finally {
-                    session.endOperationProfile(SessionProfiler.RowFetch, dbCall.getQuery(), SessionProfiler.ALL);
+                    results.setIsComplete(true);
+                    session.releaseReadConnection(DatabaseAccessor.this);
                 }
-
-                // This is in a separate try block to ensure that the real exception is not masked by the close exception.
-                try {
-                    // Allow for caching of statement, forced closes are not cache as they failed execution so are most likely bad.
-                    DatabaseAccessor.this.releaseStatement(statement, dbCall.getSQLString(), dbCall, session);
-                } catch (SQLException exception) {
-                    //With an external connection pool the connection may be null after this call, if it is we will
-                    //be unable to determine if it is a connection based exception so treat it as if it wasn't.
-                    DatabaseException commException = processExceptionForCommError(session, exception, dbCall);
-                    if (commException != null) results.throwException(commException);
-                    results.throwException(DatabaseException.sqlException(exception, DatabaseAccessor.this, session, false));
-                }
-                results.setIsComplete(true);
             }
         };
         session.getServerPlatform().launchContainerRunnable(runnable);
@@ -1438,22 +1438,6 @@ public class DatabaseAccessor extends DatasourceAccessor {
      */
     protected boolean isInBatchWritingMode(AbstractSession session) {
         return getPlatform().usesBatchWriting() && this.isInTransaction;
-    }
-
-    /**
-     * Return if thread cursors should be used for fetch the result row.
-     * This allows the objects to be built while the rows are being fetched.
-     */
-    public boolean shouldUseThreadCursors() {
-        return shouldUseThreadCursors;
-    }
-
-    /**
-     * Set if thread cursors should be used for fetch the result row.
-     * This allows the objects to be built while the rows are being fetched.
-     */
-    public void setShouldUseThreadCursors(boolean shouldUseThreadCursors) {
-        this.shouldUseThreadCursors = shouldUseThreadCursors;
     }
 
     /**

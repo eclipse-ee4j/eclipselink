@@ -51,14 +51,14 @@ import org.eclipse.persistence.internal.identitymaps.*;
 public class CacheIdentityMapTestSuite extends TestSuite {
     public CacheIdentityMapTestSuite() {
         setDescription("This suite thoroughly tests the functionality of the cache identity maps.");
-        CacheIdentityMap cache = new CacheIdentityMap(10);
+        CacheIdentityMap cache = new CacheIdentityMap(10, null, getAbstractSession(), false);
         addTest(getInsertOverflowTestSuite(cache));
         addTest(getInsertTestSuite(cache));
-        addTest(getSmallCacheTestSuite(new CacheIdentityMap(2)));
+        addTest(getSmallCacheTestSuite(new CacheIdentityMap(2, null, getAbstractSession(), false)));
     }
 
     public void addTests() {
-        CacheIdentityMap cache = new CacheIdentityMap(10);
+        CacheIdentityMap cache = new CacheIdentityMap(10, null, getAbstractSession(), false);
 
     }
 

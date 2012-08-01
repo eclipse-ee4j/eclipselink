@@ -18,6 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 
 /**
@@ -32,22 +33,16 @@ public class FullIdentityMap extends AbstractIdentityMap {
 
     /** Map of CacheKeys stored using their key. */
     protected Map<Object, CacheKey> cacheKeys;
-
-    public FullIdentityMap() {}
     
-    public FullIdentityMap(int size) {
-        super(size);
-        cacheKeys = new ConcurrentHashMap(size);
+    /**
+     * Used to allow subclasses to build different map type.
+     */
+    public FullIdentityMap() {        
     }
-
-    public FullIdentityMap(int size, ClassDescriptor descriptor) {
-        super(size, descriptor);
-        cacheKeys = new ConcurrentHashMap(size);
-    }
-
-    public FullIdentityMap(int size, ClassDescriptor descriptor, boolean isolated) {
-        this(size, descriptor);
-        this.isIsolated = isolated;
+    
+    public FullIdentityMap(int size, ClassDescriptor descriptor, AbstractSession session, boolean isolated) {
+        super(size, descriptor, session, isolated);
+        this.cacheKeys = new ConcurrentHashMap(size);
     }
     
     /**

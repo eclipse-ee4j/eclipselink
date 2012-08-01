@@ -13,6 +13,7 @@
 package org.eclipse.persistence.internal.identitymaps;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
  * <p><b>Purpose</b>: A fixed size LRU cache<p>
@@ -33,29 +34,12 @@ public class CacheIdentityMap extends FullIdentityMap {
     /** Provide handles on the linked list */
     protected LinkedCacheKey last;
 
-    /**
-     * Initialize newly instantiated CacheIdentityMap.
-     * @param size the size of the Cache.
-     */
-    public CacheIdentityMap(int size) {
-        super(size);
+    public CacheIdentityMap(int size, ClassDescriptor descriptor, AbstractSession session, boolean isolated) {
+        super(size, descriptor, session, isolated);
         this.first = new LinkedCacheKey(new CacheId(new Object[0]), null, null, 0, isIsolated);
         this.last = new LinkedCacheKey(new CacheId(new Object[0]), null, null, 0, isIsolated);
         this.first.setNext(this.last);
         this.last.setPrevious(this.first);
-    };
-
-    public CacheIdentityMap(int size, ClassDescriptor descriptor) {
-        super(size, descriptor);
-        this.first = new LinkedCacheKey(new CacheId(new Object[0]), null, null, 0, isIsolated);
-        this.last = new LinkedCacheKey(new CacheId(new Object[0]), null, null, 0, isIsolated);
-        this.first.setNext(this.last);
-        this.last.setPrevious(this.first);
-    }
-
-    public CacheIdentityMap(int size, ClassDescriptor descriptor, boolean isolated) {
-        this(size, descriptor);
-        this.isIsolated = isolated;
     }
     
     @Override

@@ -34,6 +34,7 @@ import org.eclipse.persistence.internal.sessions.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.remote.*;
 import org.eclipse.persistence.sessions.CopyGroup;
+import org.eclipse.persistence.internal.queries.AttributeItem;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 
 /**
@@ -535,7 +536,18 @@ public abstract class AggregateMapping extends DatabaseMapping {
     protected void iterateOnAttributeValue(DescriptorIterator iterator, Object attributeValue) {
         iterator.iterateForAggregateMapping(attributeValue, this, getReferenceDescriptor(attributeValue, iterator.getSession()));
     }
-
+    
+    /**
+     * Force instantiation of the load group.
+     */
+    @Override
+    public void load(final Object object, AttributeItem item, final AbstractSession session) {
+        if (item.getGroup() != null) {
+            Object value = getAttributeValueFromObject(object);
+            getObjectBuilder(value, session).load(object, item.getGroup(), session);
+        }
+    }
+    
     /**
      * Merge the attribute values.
      */

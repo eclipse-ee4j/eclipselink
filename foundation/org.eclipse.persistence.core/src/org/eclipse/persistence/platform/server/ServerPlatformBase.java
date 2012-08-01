@@ -473,7 +473,11 @@ public abstract class ServerPlatformBase implements ServerPlatform {
      */
     public ExecutorService getThreadPool() {
         if ((threadPool == null) && (this.threadPoolSize > 0)) {
-            threadPool = Executors.newFixedThreadPool(getThreadPoolSize());
+            synchronized (this) {
+                if (threadPool == null) {
+                    threadPool = Executors.newFixedThreadPool(getThreadPoolSize());
+                }
+            }
         }
         return threadPool;
     }
@@ -579,7 +583,8 @@ public abstract class ServerPlatformBase implements ServerPlatform {
     public void shutdown() {
         unregisterMBean();
         if (this.threadPool != null) {
-            getThreadPool().shutdownNow();
+            this.threadPool.shutdownNow();
+            this.threadPool = null;
         }
     }
 

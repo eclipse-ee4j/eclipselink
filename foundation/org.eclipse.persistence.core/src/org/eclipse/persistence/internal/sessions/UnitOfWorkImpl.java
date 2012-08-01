@@ -311,6 +311,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         this.exceptionHandler = parent.exceptionHandler;
         this.pessimisticLockTimeoutDefault = parent.pessimisticLockTimeoutDefault;
         this.queryTimeoutDefault = parent.queryTimeoutDefault;
+        this.isConcurrent = parent.isConcurrent();
         // Initialize the readOnlyClasses variable.
         this.setReadOnlyClasses(parent.copyReadOnlyClasses());
         this.validationLevel = Partial;

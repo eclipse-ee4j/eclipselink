@@ -58,11 +58,11 @@ public class CacheIdentityMapTestModel extends TestModel {
     }
 
     public void addTests() {
-        CacheIdentityMap cache = new CacheIdentityMap(10);
+        CacheIdentityMap cache = new CacheIdentityMap(10, null, getAbstractSession(), false);
 
         addTest(getInsertOverflowTestSuite(cache));
         addTest(getInsertTestSuite(cache));
-        addTest(getSmallCacheTestSuite(new CacheIdentityMap(2)));
+        addTest(getSmallCacheTestSuite(new CacheIdentityMap(2, null, getAbstractSession(), false)));
         addTest(new ConcurrentAccessTest());
         addTest(new ConcurrentReadBigBadObjectTest());
     }

@@ -15,6 +15,7 @@ package org.eclipse.persistence.internal.identitymaps;
 import java.util.*;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
  * <p><b>Purpose</b>: A WeakIdentityMap holds all objects referenced by the application only.
@@ -34,15 +35,10 @@ public class WeakIdentityMap extends FullIdentityMap {
     /** PERF: Keep track of a cleanup size to avoid cleanup bottleneck for large caches. */
     protected volatile int cleanupSize;
 
-    public WeakIdentityMap(int size, ClassDescriptor descriptor) {
-        super(size, descriptor);
+    public WeakIdentityMap(int size, ClassDescriptor descriptor, AbstractSession session, boolean isolated) {
+        super(size, descriptor, session, isolated);
         this.cleanupCount = 0;
         this.cleanupSize = size;
-    }
-
-    public WeakIdentityMap(int size, ClassDescriptor descriptor, boolean isolated) {
-        this(size, descriptor);
-        this.isIsolated = isolated;
     }
     
     /**
@@ -100,12 +96,27 @@ public class WeakIdentityMap extends FullIdentityMap {
         if (this.cleanupCount > this.cleanupSize) {
             synchronized (this) {
                 if (this.cleanupCount > this.cleanupSize) {
-                    cleanupDeadCacheKeys();
-                    this.cleanupCount = 0;
-                    // PERF: Avoid cleanup bottleneck for large cache sizes, increase next cleanup.
-                    int size = getSize();
-                    if (size > this.cleanupSize) {
-                        this.cleanupSize = size;
+                    if ((this.session !=  null) && this.session.isConcurrent()) {
+                        Runnable runnable = new Runnable() {
+                            public void run() {
+                                cleanupDeadCacheKeys();
+                                WeakIdentityMap.this.cleanupCount = 0;
+                                // PERF: Avoid cleanup bottleneck for large cache sizes, increase next cleanup.
+                                int size = getSize();
+                                if (size > WeakIdentityMap.this.cleanupSize) {
+                                    WeakIdentityMap.this.cleanupSize = size;
+                                }
+                            }
+                        };
+                        this.session.getServerPlatform().launchContainerRunnable(runnable);
+                    } else {
+                        cleanupDeadCacheKeys();
+                        this.cleanupCount = 0;
+                        // PERF: Avoid cleanup bottleneck for large cache sizes, increase next cleanup.
+                        int size = getSize();
+                        if (size > this.cleanupSize) {
+                            this.cleanupSize = size;
+                        }
                     }
                 }
             }

@@ -41,6 +41,9 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
     /** Is this identity map within an IsolatedClientSession */
     protected boolean isIsolated;
     
+    /** Session that the map is on */
+    protected AbstractSession session;
+    
     public AbstractIdentityMap(){
     }
 
@@ -49,28 +52,11 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
      * <b>NOTE</b>: Subclasses may provide different behavior for maxSize.
      * @param size is the maximum size to be allocated for the receiver.
      */
-    public AbstractIdentityMap(int size) {
+    public AbstractIdentityMap(int size, ClassDescriptor descriptor, AbstractSession session, boolean isolated) {
         this.maxSize = size;
-    }
-
-    /**
-     * Instantiate an new IdentityMap with it's maximum size.<p>
-     * <b>NOTE</b>: Subclasses may provide different behavior for maxSize.
-     * @param size is the maximum size to be allocated for the receiver.
-     */
-    public AbstractIdentityMap(int size, ClassDescriptor descriptor) {
-        this(size);
         this.descriptor = descriptor;
-    }
-
-    /**
-     * Instantiate an new IdentityMap with it's maximum size.<p>
-     * <b>NOTE</b>: Subclasses may provide different behavior for maxSize.
-     * @param size is the maximum size to be allocated for the receiver.
-     */
-    public AbstractIdentityMap(int size, ClassDescriptor descriptor, boolean isolated) {
-        this(size, descriptor);
         this.isIsolated = isolated;
+        this.session = session;
     }
 
     /**
