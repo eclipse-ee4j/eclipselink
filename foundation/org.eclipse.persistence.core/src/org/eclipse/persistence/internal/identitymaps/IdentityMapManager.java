@@ -15,7 +15,6 @@
 package org.eclipse.persistence.internal.identitymaps;
 
 import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -312,23 +311,6 @@ public class IdentityMapManager implements Serializable, Cloneable {
         }
         return false;
     }
-
-    /**
-     * Create the identity map for the unit of work.
-     * PERF: UOW uses a special map to avoid locks, always full, and can use special weak refs.
-     */
-    public IdentityMap buildNewIdentityMapForUnitOfWork(UnitOfWorkImpl unitOfwork, ClassDescriptor descriptor) {
-        ReferenceMode mode = unitOfwork.getReferenceMode();
-        if (mode == ReferenceMode.FORCE_WEAK) {
-            return new WeakUnitOfWorkIdentityMap(32, descriptor);
-        } else if ((mode == ReferenceMode.WEAK)
-                // Only allow weak if using change tracking.
-                && descriptor.getObjectChangePolicy().isAttributeChangeTrackingPolicy()) {
-            return new WeakUnitOfWorkIdentityMap(32, descriptor);        
-        } else {
-            return new UnitOfWorkIdentityMap(32, descriptor);
-        }
-    }
     
     /**
      * INTERNAL: (Public to allow testing to access)
@@ -336,22 +318,21 @@ public class IdentityMapManager implements Serializable, Cloneable {
      */
     public IdentityMap buildNewIdentityMap(ClassDescriptor descriptor) {
         if (this.session.isUnitOfWork()) {
-            if (((UnitOfWorkImpl)this.session).getReferenceMode() == ReferenceMode.FORCE_WEAK){
-                return new WeakUnitOfWorkIdentityMap(32, descriptor);
-            } else if (((UnitOfWorkImpl)this.session).getReferenceMode() == ReferenceMode.WEAK && descriptor.getObjectChangePolicy().isAttributeChangeTrackingPolicy()){
-                return new WeakUnitOfWorkIdentityMap(32, descriptor);        
+            ReferenceMode mode = ((UnitOfWorkImpl)this.session).getReferenceMode();
+            if (mode == ReferenceMode.FORCE_WEAK){
+                return new WeakUnitOfWorkIdentityMap(32, descriptor, this.session, true);
+            } else if (mode == ReferenceMode.WEAK && descriptor.getObjectChangePolicy().isAttributeChangeTrackingPolicy()) {
+                return new WeakUnitOfWorkIdentityMap(32, descriptor, this.session, true);        
             } else {
-                return new UnitOfWorkIdentityMap(32, descriptor);
+                return new UnitOfWorkIdentityMap(32, descriptor, this.session, true);
             }
         }
 
         // Remote session has its own setting.
         if (this.session.isRemoteSession()) {
             return buildNewIdentityMap(descriptor.getRemoteIdentityMapClass(), descriptor.getRemoteIdentityMapSize(), descriptor, true);
-        } else if (this.session.isIsolatedClientSession()){
-            return buildNewIdentityMap(descriptor.getIdentityMapClass(), descriptor.getIdentityMapSize(), descriptor, true);
-        }else{
-            return buildNewIdentityMap(descriptor.getIdentityMapClass(), descriptor.getIdentityMapSize(), descriptor, false);
+        } else {
+            return buildNewIdentityMap(descriptor.getIdentityMapClass(), descriptor.getIdentityMapSize(), descriptor, this.session.isIsolatedClientSession());
         }
     }
     
@@ -360,32 +341,34 @@ public class IdentityMapManager implements Serializable, Cloneable {
      * Return a new empty identity map of the class type.
      */
     protected IdentityMap buildNewIdentityMap(Class identityMapClass, int size, ClassDescriptor descriptor, boolean isIsolated) throws DescriptorException {
+        // PERF: Avoid reflection.
+        if (identityMapClass == ClassConstants.SoftCacheWeakIdentityMap_Class) {
+            return new SoftCacheWeakIdentityMap(size, descriptor, this.session, isIsolated);
+        } else if (identityMapClass == ClassConstants.HardCacheWeakIdentityMap_Class) {
+            return new HardCacheWeakIdentityMap(size, descriptor, this.session, isIsolated);
+        } else if (identityMapClass == ClassConstants.SoftIdentityMap_Class) {
+            return new SoftIdentityMap(size, descriptor, this.session, isIsolated);
+        } else if (identityMapClass == ClassConstants.WeakIdentityMap_Class) {
+            return new WeakIdentityMap(size, descriptor, this.session, isIsolated);
+        } else if (identityMapClass == ClassConstants.FullIdentityMap_Class) {
+            return new FullIdentityMap(size, descriptor, this.session, isIsolated);
+        } else if (identityMapClass == ClassConstants.CacheIdentityMap_Class) {
+            return new CacheIdentityMap(size, descriptor, this.session, isIsolated);
+        }
         try {
-            Constructor constructor = null;
-            Class[] parameters = null;
-            Object[] values = null;
-            if (isIsolated){
-                parameters = new Class[]{ClassConstants.PINT, ClassDescriptor.class, boolean.class};
-                values = new Object[]{Integer.valueOf(size), descriptor, true};
-            }else{
-                parameters = new Class[]{ClassConstants.PINT, ClassDescriptor.class};
-                values = new Object[]{Integer.valueOf(size), descriptor};
-            }
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                try {
-                    constructor = (Constructor)AccessController.doPrivileged(new PrivilegedGetConstructorFor(identityMapClass, parameters, false));
-                    IdentityMap map = (IdentityMap)AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, values));
-                    if ((descriptor != null) && (descriptor.getCachePolicy().getCacheInterceptorClass() != null)) {
-                        constructor = (Constructor)AccessController.doPrivileged(new PrivilegedGetConstructorFor(descriptor.getCacheInterceptorClass(), new Class[] { IdentityMap.class, AbstractSession.class }, false));
-                        Object params[] = new Object[]{map, this.session};
-                        map = (IdentityMap)AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, params));
-                    }
-                    return map;
-                } catch (PrivilegedActionException exception) {
-                    throw DescriptorException.invalidIdentityMap(descriptor, exception.getException());
+            Class[] parameters = new Class[]{ClassConstants.PINT, ClassDescriptor.class, AbstractSession.class, boolean.class};
+            Object[] values = new Object[]{Integer.valueOf(size), descriptor, this.session, isIsolated};
+            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                Constructor constructor = (Constructor)AccessController.doPrivileged(new PrivilegedGetConstructorFor(identityMapClass, parameters, false));
+                IdentityMap map = (IdentityMap)AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, values));
+                if ((descriptor != null) && (descriptor.getCachePolicy().getCacheInterceptorClass() != null)) {
+                    constructor = (Constructor)AccessController.doPrivileged(new PrivilegedGetConstructorFor(descriptor.getCacheInterceptorClass(), new Class[] { IdentityMap.class, AbstractSession.class }, false));
+                    Object params[] = new Object[]{map, this.session};
+                    map = (IdentityMap)AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, params));
                 }
+                return map;
             } else {
-                constructor = PrivilegedAccessHelper.getConstructorFor(identityMapClass, parameters, false);
+                Constructor constructor = PrivilegedAccessHelper.getConstructorFor(identityMapClass, parameters, false);
                 IdentityMap map = (IdentityMap)PrivilegedAccessHelper.invokeConstructor(constructor, values);
                 if ((descriptor != null) && (descriptor.getCacheInterceptorClass() != null)) {
                     constructor = PrivilegedAccessHelper.getConstructorFor(descriptor.getCacheInterceptorClass(), new Class[] { IdentityMap.class, AbstractSession.class }, false);
@@ -953,10 +936,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
                 return null;
             }
             IdentityMap newIdentityMap = null;
-            if (this.session.isUnitOfWork()) {
-                newIdentityMap = buildNewIdentityMapForUnitOfWork((UnitOfWorkImpl)this.session, descriptor);
-                identityMap = this.identityMaps.put(descriptorClass, newIdentityMap);
-            } else if (this.session.isIsolatedClientSession()) {
+            if (this.session.isUnitOfWork() || this.session.isIsolatedClientSession()) {
                 newIdentityMap = buildNewIdentityMap(descriptor);
                 identityMap = this.identityMaps.put(descriptorClass, newIdentityMap);
             } else {

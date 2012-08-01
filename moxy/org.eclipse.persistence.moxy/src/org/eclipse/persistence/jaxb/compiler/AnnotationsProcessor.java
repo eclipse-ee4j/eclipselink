@@ -1059,6 +1059,9 @@ public class AnnotationsProcessor {
                         }
                     }
                 }
+                if (!helper.isBuiltInJavaType(javaClass)) {
+                    extraClasses.add(javaClass);
+                }
                 javaClass = newType;
             }
             java.lang.annotation.Annotation[] annotations = getAnnotations(tmi);

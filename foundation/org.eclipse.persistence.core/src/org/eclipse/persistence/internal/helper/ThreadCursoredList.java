@@ -13,6 +13,7 @@
 package org.eclipse.persistence.internal.helper;
 
 import java.util.*;
+
 import org.eclipse.persistence.exceptions.ValidationException;
 
 /**
@@ -123,7 +124,7 @@ public class ThreadCursoredList extends Vector {
      * Return if any exception that was throw from concurrent population thread.
      */
     public boolean hasException() {
-        return getException() != null;
+        return exception != null;
     }
 
     /**
@@ -148,7 +149,7 @@ public class ThreadCursoredList extends Vector {
      * If an exception was thrown during the concurrent population throw the exception.
      */
     public synchronized boolean isComplete() {
-        if (hasException()) {
+        if (exception != null) {
             // Set the exception to null so it is only thrown once.
             RuntimeException thrownException = this.exception;
             this.exception = null;
@@ -349,11 +350,8 @@ public class ThreadCursoredList extends Vector {
         return result;
     }
 
-    /**
-     * Not supported currently.
-     */
     public Iterator iterator() {
-        throw ValidationException.operationNotSupported("iterator");
+        return listIterator(0);
     }
 
     /**
@@ -380,18 +378,71 @@ public class ThreadCursoredList extends Vector {
         return super.lastIndexOf(element, index);
     }
 
-    /**
-     * Not supported currently.
-     */
     public ListIterator listIterator() {
-        throw ValidationException.operationNotSupported("iterator");
+        return listIterator(0);
     }
 
     /**
-     * Not supported currently.
+     * Iterate while waiting at end until complete.
      */
     public ListIterator listIterator(final int index) {
-        throw ValidationException.operationNotSupported("iterator");
+        return new ListIterator() {
+            int count = index;
+
+            public boolean hasNext() {
+                synchronized (ThreadCursoredList.this) {
+                    boolean result = count < ThreadCursoredList.this.getSize();
+                    while ((!result) && (!isComplete())) {
+                        waitUntilAdd();
+                        result = count < ThreadCursoredList.this.getSize();
+                    }
+                    return result;
+                }
+            }
+
+            public Object next() {
+                synchronized (ThreadCursoredList.this) {
+                    boolean result = count < ThreadCursoredList.this.getSize();
+                    while ((!result) && (!isComplete())) {
+                        waitUntilAdd();
+                        result = count < ThreadCursoredList.this.getSize();
+                    }
+                    if (result) {
+                        return get(count++);
+                    }
+                }
+                throw new NoSuchElementException("Vector Iterator");
+            }
+
+            public void remove() {
+                throw ValidationException.operationNotSupported("remove");
+            }
+
+            public void set(Object object) {
+                throw ValidationException.operationNotSupported("set");
+            }
+
+            public void add(Object object) {
+                throw ValidationException.operationNotSupported("add");
+            }
+            
+            public int previousIndex() {
+                return count - 1;
+            }
+            
+            public int nextIndex() {
+                return count;
+            }
+            
+            public Object previous() {
+                count--;
+                return get(count);
+            }
+            
+            public boolean hasPrevious() {
+                return count > 0;
+            }
+        };
     }
 
     /**

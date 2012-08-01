@@ -1306,6 +1306,13 @@ public abstract class DatabaseMapping implements Cloneable, Serializable {
     }
 
     /**
+     * Force instantiation of the load group.
+     */
+    public void load(final Object object, AttributeItem item, final AbstractSession session) {
+        // Do nothing by default.
+    }
+    
+    /**
      * INTERNAL:
      * Merge changes from the source to the target object.
      */

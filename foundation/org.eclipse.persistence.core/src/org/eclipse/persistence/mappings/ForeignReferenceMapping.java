@@ -33,6 +33,7 @@ import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.indirection.*;
+import org.eclipse.persistence.internal.queries.AttributeItem;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.remote.*;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -1339,6 +1340,19 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
     @Override
     public abstract void iterateOnRealAttributeValue(DescriptorIterator iterator, Object realAttributeValue);
 
+
+    /**
+     * Force instantiation of the load group.
+     */
+    @Override
+    public void load(final Object object, AttributeItem item, final AbstractSession session) {
+        instantiateAttribute(object, session);
+        if (item.getGroup() != null) {
+            Object value = getRealAttributeValueFromObject(object, session);
+            session.load(value, item.getGroup());
+        }
+    }
+    
     /**
      * INTERNAL:
      * Replace the client value holder with the server value holder,

@@ -59,7 +59,7 @@ public class IdentityMapTestSuite extends TestSuite {
         addTest(getHardCacheWeakIdentityMapSuite());
         addTest(getWeakIdentityMapSuite());
         addTest(getSoftIdentityMapSuite());
-        addTest(getDeleteWithGarbageCollectionTestSuite(new CacheIdentityMap(100)));
+        addTest(getDeleteWithGarbageCollectionTestSuite(new CacheIdentityMap(100, null, null, false)));
         addTest(new GetSizeRecurseOptionTest());
         addTest(new ClearLastAccessedIdentityMapTest());
         addTest(new InitializeIdentityMapByDescriptorJavaClassTest());
@@ -88,7 +88,7 @@ public class IdentityMapTestSuite extends TestSuite {
         suite.addTest(new RegisterInIdentityMapTest(FullIdentityMap.class));
         suite.addTest(new DeleteFromIdentityMapTest(FullIdentityMap.class));
 
-        addMultipleIdentityTests(suite, new FullIdentityMap(100));
+        addMultipleIdentityTests(suite, new FullIdentityMap(100, null, null, false));
         suite.addTest(new RemoveFromIdentityMapReturnTest());
         suite.addTest(new SetWriteLockInIdentityMapTest(FullIdentityMap.class));
 
@@ -103,7 +103,7 @@ public class IdentityMapTestSuite extends TestSuite {
 
         suite.addTest(new RegisterInIdentityMapTest(HardCacheWeakIdentityMap.class));
         suite.addTest(new DeleteFromIdentityMapTest(HardCacheWeakIdentityMap.class));
-        addMultipleIdentityTests(suite, new HardCacheWeakIdentityMap(100, null));
+        addMultipleIdentityTests(suite, new HardCacheWeakIdentityMap(100, null, null, false));
         suite.addTest(new SetWriteLockInIdentityMapTest(HardCacheWeakIdentityMap.class));
         
         suite.addTest(new HardCacheWeakIdentityMapTest());
@@ -132,7 +132,7 @@ public class IdentityMapTestSuite extends TestSuite {
 
         suite.addTest(new RegisterInIdentityMapTest(SoftCacheWeakIdentityMap.class));
         suite.addTest(new DeleteFromIdentityMapTest(SoftCacheWeakIdentityMap.class));
-        addMultipleIdentityTests(suite, new SoftCacheWeakIdentityMap(100, null));
+        addMultipleIdentityTests(suite, new SoftCacheWeakIdentityMap(100, null, null, false));
         suite.addTest(new SetWriteLockInIdentityMapTest(SoftCacheWeakIdentityMap.class));
         
         suite.addTest(new ReadSoftCacheWeakIdentityMapTest(SoftCacheWeakIdentityMap.class));
@@ -148,7 +148,7 @@ public class IdentityMapTestSuite extends TestSuite {
 
         suite.addTest(new RegisterInIdentityMapTest(WeakIdentityMap.class));
         suite.addTest(new DeleteFromIdentityMapTest(WeakIdentityMap.class));
-        addMultipleIdentityTests(suite, new WeakIdentityMap(100, null));
+        addMultipleIdentityTests(suite, new WeakIdentityMap(100, null, null, false));
         suite.addTest(new SetWriteLockInIdentityMapTest(WeakIdentityMap.class));
         
         suite.addTest(new ReadWeakIdentityMapTest(WeakIdentityMap.class));
@@ -169,7 +169,7 @@ public class IdentityMapTestSuite extends TestSuite {
 
         suite.addTest(new RegisterInIdentityMapTest(SoftIdentityMap.class));
         suite.addTest(new DeleteFromIdentityMapTest(SoftIdentityMap.class));
-        addMultipleIdentityTests(suite, new SoftIdentityMap(100, null));
+        addMultipleIdentityTests(suite, new SoftIdentityMap(100, null, null, false));
         suite.addTest(new SetWriteLockInIdentityMapTest(SoftIdentityMap.class));
         
         return suite;

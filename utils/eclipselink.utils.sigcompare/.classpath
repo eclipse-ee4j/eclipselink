@@ -2,8 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/EclipseLink 2.3.0"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/EclipseLink 2.1.2"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/EclipseLink 2.2.0"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.asm"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

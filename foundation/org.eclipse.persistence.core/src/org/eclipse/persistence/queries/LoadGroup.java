@@ -29,6 +29,8 @@ package org.eclipse.persistence.queries;
  */
 public class LoadGroup extends AttributeGroup {
 
+    protected Boolean isConcurrent;
+
     public LoadGroup() {
         super();
     }
@@ -67,5 +69,40 @@ public class LoadGroup extends AttributeGroup {
 
     public void addAttribute(String attributeNameOrPath, LoadGroup group) {
         super.addAttribute(attributeNameOrPath, group);
+    }
+    
+    /**
+     * INTERNAL:
+     * Return if the load group should load its relationships concurrently.
+     */
+    public Boolean getIsConcurrent() {
+        return this.isConcurrent;
+    }
+    
+    /**
+     * ADVANCED:
+     * Return if the load group should load its relationships concurrently.
+     * This will use the session's server platform's thread pool.
+     * Each of the query results objects relationships will be loaded on a different thread.
+     * This can improve performance by processing many queries at once.
+     * Concurrent load is only supported when a shared cache is used.
+     */
+    public boolean isConcurrent() {
+        if (this.isConcurrent == null) {
+            return false;
+        }
+        return this.isConcurrent.booleanValue();
+    }
+    
+    /**
+     * ADVANCED:
+     * Set if the load group should load its relationships concurrently.
+     * This will use the session's server platform's thread pool.
+     * Each of the query results objects relationships will be loaded on a different thread.
+     * This can improve performance by processing many queries at once.
+     * Concurrent load is only supported when a shared cache is used.
+     */
+    public void setIsConcurrent(Boolean isConcurrent) {
+        this.isConcurrent = isConcurrent;
     }
  }

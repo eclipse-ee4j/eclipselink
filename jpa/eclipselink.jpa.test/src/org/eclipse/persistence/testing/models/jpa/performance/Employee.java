@@ -36,6 +36,11 @@ import org.eclipse.persistence.config.QueryHints;
             name="findAllEmployeesJoin",
             query="Select e from Employee e join fetch e.address"),
     @NamedQuery(
+            name="findAllEmployeesLoad",
+            query="Select e from Employee e",
+            hints={
+                    @QueryHint(name=QueryHints.LOAD_GROUP_ATTRIBUTE, value="address")}),
+    @NamedQuery(
             name="findAllEmployeesBatch",
             query="Select e from Employee e",
             hints=@QueryHint(name=QueryHints.BATCH, value="e.address")),

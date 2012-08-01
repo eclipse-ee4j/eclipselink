@@ -47,6 +47,7 @@ import org.eclipse.persistence.internal.expressions.*;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.identitymaps.*;
 import org.eclipse.persistence.internal.indirection.ProxyIndirectionPolicy;
+import org.eclipse.persistence.internal.queries.AttributeItem;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.EntityFetchGroup;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
@@ -636,7 +637,6 @@ public class ObjectBuilder implements Cloneable, Serializable {
         return domainObject;
     }
 
-
     /**
      * Force instantiation to any eager mappings.
      */
@@ -654,6 +654,42 @@ public class ObjectBuilder implements Cloneable, Serializable {
                 if (fetchGroup == null || fetchGroup.containsAttributeInternal(mapping.getAttributeName())) {
                     mapping.instantiateAttribute(object, session);
                 }
+            }
+        }
+    }
+    
+    /**
+     * Force instantiation to any mappings in the load group.
+     */
+    public void load(final Object object, AttributeGroup group, final AbstractSession session) {
+        FetchGroupManager fetchGroupManager = this.descriptor.getFetchGroupManager();
+        if (fetchGroupManager != null) {
+            FetchGroup fetchGroup = fetchGroupManager.getObjectFetchGroup(object);
+            if (fetchGroup != null) {
+                if (!fetchGroup.getAttributeNames().containsAll(group.getAttributeNames())) {
+                    // trigger fetch group if it does not contain all attributes of the current group.
+                    fetchGroup.onUnfetchedAttribute((FetchGroupTracker)object, null);
+                }
+            }
+        }
+        for (AttributeItem eachItem : group.getItems().values()) {
+            final DatabaseMapping mapping = getMappingForAttributeName(eachItem.getAttributeName());
+            final AttributeItem item = eachItem;
+            if (mapping == null) {
+                // no mapping found
+                throw ValidationException.fetchGroupHasUnmappedAttribute(group, item.getAttributeName());
+            }
+            // Allow the attributes to be loaded on concurrent threads.
+            // Only do so on a ServerSession, as other sessions are not thread safe.
+            if (group.isConcurrent() && session.isServerSession()) {
+                Runnable runnable = new Runnable() {
+                    public void run() {
+                        mapping.load(object, item, session);
+                    }
+                };
+                session.getServerPlatform().launchContainerRunnable(runnable);
+            } else {
+                mapping.load(object, item, session);
             }
         }
     }
@@ -887,6 +923,12 @@ public class ObjectBuilder implements Cloneable, Serializable {
                 concreteDescriptor.getCachePolicy().indexObjectInCache(cacheKey, databaseRow, domainObject, concreteDescriptor, session, !domainWasMissing);
             }
         }
+        if (query instanceof ObjectLevelReadQuery) {
+            LoadGroup group = ((ObjectLevelReadQuery)query).getLoadGroup();
+            if (group != null) {
+                session.load(domainObject, group);
+            }
+        }
         
         if (returnCacheKey) {
             return cacheKey;
@@ -1075,7 +1117,10 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * Return a container which contains the instances of the receivers javaClass.
      * Set the fields of the instance to the values stored in the database rows.
      */
-    public Object buildObjectsInto(ReadAllQuery query, List databaseRows, Object domainObjects) throws DatabaseException {
+    public Object buildObjectsInto(ReadAllQuery query, List databaseRows, Object domainObjects) {
+        if (databaseRows instanceof ThreadCursoredList) {
+            return buildObjectsFromCursorInto(query, databaseRows, domainObjects);
+        }
         int size = databaseRows.size();
         if (size > 0) {
             AbstractSession session = query.getSession();
@@ -1130,6 +1175,62 @@ public class ObjectBuilder implements Cloneable, Serializable {
         return domainObjects;
     }
 
+    /**
+     * Return a container which contains the instances of the receivers javaClass.
+     * Set the fields of the instance to the values stored in the database rows.
+     */
+    public Object buildObjectsFromCursorInto(ReadAllQuery query, List databaseRows, Object domainObjects) {
+        AbstractSession session = query.getSession();
+        session.startOperationProfile(SessionProfiler.ObjectBuilding, query, SessionProfiler.ALL);
+        try {
+            InheritancePolicy inheritancePolicy = null;
+            if (this.descriptor.hasInheritance()) {
+                inheritancePolicy = this.descriptor.getInheritancePolicy();
+            }
+            boolean isUnitOfWork = session.isUnitOfWork();
+            boolean shouldCacheQueryResults = query.shouldCacheQueryResults();
+            boolean shouldUseWrapperPolicy = query.shouldUseWrapperPolicy();            
+            // PERF: Avoid lazy init of join manager if no joining.
+            JoinedAttributeManager joinManager = null;
+            if (query.hasJoining()) {
+                joinManager = query.getJoinedAttributeManager();
+            }
+            ContainerPolicy policy = query.getContainerPolicy();
+            if (policy.shouldAddAll()) {
+                List domainObjectsIn = new ArrayList();
+                List<AbstractRecord> databaseRowsIn = new ArrayList();
+                for (Enumeration iterator = ((Vector)databaseRows).elements(); iterator.hasMoreElements(); ) {
+                    AbstractRecord databaseRow = (AbstractRecord)iterator.nextElement();
+                    // PERF: 1-m joining nulls out duplicate rows.
+                    if (databaseRow != null) {
+                        domainObjectsIn.add(buildObject(query, databaseRow, joinManager, session, this.descriptor, inheritancePolicy,
+                                isUnitOfWork, shouldCacheQueryResults, shouldUseWrapperPolicy));
+                        databaseRowsIn.add(databaseRow);
+                    }
+                }
+                policy.addAll(domainObjectsIn, domainObjects, session, databaseRowsIn, query, (CacheKey)null, true);
+            } else {
+                boolean quickAdd = (domainObjects instanceof Collection) && !this.hasWrapperPolicy;
+                for (Enumeration iterator = ((Vector)databaseRows).elements(); iterator.hasMoreElements(); ) {
+                    AbstractRecord databaseRow = (AbstractRecord)iterator.nextElement();
+                    // PERF: 1-m joining nulls out duplicate rows.
+                    if (databaseRow != null) {
+                        Object domainObject = buildObject(query, databaseRow, joinManager, session, this.descriptor, inheritancePolicy,
+                                isUnitOfWork, shouldCacheQueryResults, shouldUseWrapperPolicy);
+                        if (quickAdd) {
+                            ((Collection)domainObjects).add(domainObject);
+                        } else {
+                            policy.addInto(domainObject, domainObjects, session, databaseRow, query, (CacheKey)null, true);
+                        }
+                    }
+                }
+            }
+        } finally {
+            session.endOperationProfile(SessionProfiler.ObjectBuilding, query, SessionProfiler.ALL);
+        }
+        return domainObjects;
+    }
+    
     /**
      * Build the primary key expression for the secondary table.
      */

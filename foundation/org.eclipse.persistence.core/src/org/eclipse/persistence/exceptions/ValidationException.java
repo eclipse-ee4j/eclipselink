@@ -2857,7 +2857,7 @@ public class ValidationException extends EclipseLinkException {
      * PUBLIC:
      * Fetch group has an attribute that doesn't have corresponding mapping.
      */
-    public static ValidationException fetchGroupHasUnmappedAttribute(FetchGroup fetchGroup, String attributeName) {
+    public static ValidationException fetchGroupHasUnmappedAttribute(AttributeGroup fetchGroup, String attributeName) {
         Object[] args = { fetchGroup,  attributeName };
 
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, FETCH_GROUP_HAS_UNMAPPED_ATTRIBUTE, args));

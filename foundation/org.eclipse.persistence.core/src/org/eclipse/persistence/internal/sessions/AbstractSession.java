@@ -59,7 +59,6 @@ import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.logging.SessionLogEntry;
 import org.eclipse.persistence.logging.DefaultSessionLog;
-import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
 import org.eclipse.persistence.sessions.DatabaseLogin;
@@ -227,6 +226,9 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     protected Integer pessimisticLockTimeoutDefault;
 
     protected int queryTimeoutDefault;
+    
+    /** Allow a session to enable concurrent processing. */
+    protected boolean isConcurrent = false;
     
     /**
      * This map will hold onto class to static metamodel class references from JPA.
@@ -4744,43 +4746,16 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     * @param objectOrCollection
     */
    public void load(Object objectOrCollection, AttributeGroup group) {
-       if(objectOrCollection == null || group == null) {
+       if (objectOrCollection == null || group == null) {
            return;
-       }
-       LoadGroup loadGroup = group.toLoadGroup();
-       DescriptorIterator iterator = new DescriptorIterator() {
-           public void iterate(Object object) {
-               if(this.getCurrentGroup() != null) {
-                   if(getCurrentDescriptor().hasFetchGroupManager()) {
-                       FetchGroup fetchGroup = getCurrentDescriptor().getFetchGroupManager().getObjectFetchGroup(object);
-                       if(fetchGroup != null) {
-                           if(!fetchGroup.getAttributeNames().containsAll(getCurrentGroup().getAttributeNames())) {
-                               // trigger fetch group if it does not contain all attributes of the current group.
-                               fetchGroup.onUnfetchedAttribute((FetchGroupTracker)object, null);
-                           }
-                       }
-                   }
-                   ObjectBuilder builder = getCurrentDescriptor().getObjectBuilder();
-                   Iterator<String> it = getCurrentGroup().getAttributeNames().iterator();
-                   while(it.hasNext()) {
-                       DatabaseMapping mapping = builder.getMappingForAttributeName(it.next());
-                       // instantiate indirection
-                       mapping.instantiateAttribute(object, session);
-                   }
-               }
-           }
-       };
-       iterator.setSession(this);
-       iterator.setVisitedObjects(new IdentityHashMap());
-       iterator.setShouldTrackCurrentGroup(true);
-       
-       if(objectOrCollection instanceof Collection) {
-           Iterator it = ((Collection)objectOrCollection).iterator();
-           while(it.hasNext()) {
-               iterator.startIterationOn(it.next(), loadGroup);
+       }       
+       if (objectOrCollection instanceof Collection) {
+           Iterator iterator = ((Collection)objectOrCollection).iterator();
+           while (iterator.hasNext()) {
+               load(iterator.next(), group);
            }
        } else {
-           iterator.startIterationOn(objectOrCollection, loadGroup);
+           getDescriptor(objectOrCollection).getObjectBuilder().load(objectOrCollection, group, this);
        }
    }
 
@@ -4852,5 +4827,27 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
    
    public void setRefreshMetadataListener(MetadataRefreshListener metadatalistener) {
        this.metadatalistener = metadatalistener;
+   }
+   
+   /**
+    * ADVANCED:
+    * Return if the session enables concurrent processing.
+    * Concurrent processing allow certain processing to be done on seperate threads.
+    * This can result in improved performance.
+    * This will use the session's server platform's thread pool.
+    */
+   public boolean isConcurrent() {
+       return this.isConcurrent;
+   }
+
+   /**
+    * ADVANCED:
+    * Set if the session enables concurrent processing.
+    * Concurrent processing allow certain processing to be done on seperate threads.
+    * This can result in improved performance.
+    * This will use the session's server platform's thread pool.
+    */
+   public void setIsConcurrent(boolean isConcurrent) {
+       this.isConcurrent = isConcurrent;
    }
 }

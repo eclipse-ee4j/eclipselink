@@ -13,6 +13,7 @@
 package org.eclipse.persistence.internal.identitymaps;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
  * <p><b>Purpose</b>: A SoftIdentityMap holds all objects referenced by the application.
@@ -27,15 +28,10 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
  */
 public class SoftIdentityMap extends WeakIdentityMap {
 
-    public SoftIdentityMap(int size, ClassDescriptor descriptor) {
-        super(size, descriptor);
+    public SoftIdentityMap(int size, ClassDescriptor descriptor, AbstractSession session, boolean isIsolated) {
+        super(size, descriptor, session, isIsolated);
         this.cleanupCount = 0;
         this.cleanupSize = size;
-    }
-
-    public SoftIdentityMap(int size, ClassDescriptor descriptor, boolean isIsolated) {
-        this(size, descriptor);
-        this.isIsolated = isIsolated;
     }
     
     @Override

@@ -26,7 +26,11 @@ public class Employee {
     	   if(!firstName.equals(emp.firstName)){
     		   return false;
     	   }
-    	   if(!lastName.equals(emp.lastName)){
+    	   if(lastName == null){
+    		   if(emp.lastName != null){
+    			   return false;
+    		   }
+    	   }else if(!lastName.equals(emp.lastName)){
     		   return false;
     	   }
     	   return true;

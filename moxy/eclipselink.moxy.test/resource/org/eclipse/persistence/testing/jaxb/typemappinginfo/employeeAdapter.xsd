@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="someUri" xmlns:ns0="someUri" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+ <xsd:complexType name="employee">
+      <xsd:sequence>
+         <xsd:element minOccurs="0" name="firstName" type="xsd:string"/>
+         <xsd:element minOccurs="0" name="lastName" type="xsd:string"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="testTagName" nillable="true" type="xsd:string"/>
+</xsd:schema>

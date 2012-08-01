@@ -279,6 +279,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         tests.add("testComplexPathExpression");
         tests.add("testDirectColletionInSubquery");
 
+        Collections.sort(tests);
         for (String test : tests) {
             suite.addTest(new JUnitJPQLComplexTestSuite(test));
         }
@@ -3214,11 +3215,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         EntityManager em = createEntityManager();
         try {
            Query query = null;
-           if (getDatabaseSession().getPlatform().isOracle()) {
-               query = em.createQuery("Select cast(e.firstName as char) from Employee e where cast(e.firstName as char) = 'Bob'");
-           } else {
-               query = em.createQuery("Select cast(e.firstName as char(3)) from Employee e where cast(e.firstName as char(3)) = 'Bob'");
-           }
+           query = em.createQuery("Select cast(e.firstName as char(30)) from Employee e where cast(e.firstName as char(30)) = 'Bob'");
            query.getResultList();
            // Most databases require a size on char.
            if (getDatabaseSession().getPlatform().isMySQL()) {
@@ -3584,8 +3581,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     public void testDirectColletionInSubquery() {
         EntityManager em = createEntityManager();
         String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp LEFT JOIN emp.responsibilities respons WHERE (emp.responsibilities IS EMPTY) OR (respons IN (SELECT rs FROM Employee empx join empx.responsibilities rs WHERE 1 = 0))";
-
-        List result = em.createQuery(ejbqlString).getResultList();
+        em.createQuery(ejbqlString).getResultList();
         closeEntityManager(em);
     }
 

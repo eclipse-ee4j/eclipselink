@@ -528,4 +528,12 @@ public class AttributeGroup implements Serializable, Cloneable {
 
         return clone;
     }
+    
+    /**
+     * INTERNAL:
+     * Only LoadGroups allow concurrency.
+     */
+    public boolean isConcurrent() {
+        return false;
+    }
 }

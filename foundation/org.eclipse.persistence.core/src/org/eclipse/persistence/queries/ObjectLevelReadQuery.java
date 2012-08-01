@@ -1121,8 +1121,8 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             return executeObjectLevelReadQueryFromResultSet();
         }
         
-        if (getSession().isUnitOfWork()) {
-            UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl)getSession();
+        if (this.session.isUnitOfWork()) {
+            UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl)this.session;
 
             // Note if a nested unit of work this will recursively start a
             // transaction early on the parent also.
@@ -1133,7 +1133,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
                 }
             }
             if (unitOfWork.isNestedUnitOfWork()) {
-                UnitOfWorkImpl nestedUnitOfWork = (UnitOfWorkImpl)getSession();
+                UnitOfWorkImpl nestedUnitOfWork = (UnitOfWorkImpl)this.session;
                 setSession(nestedUnitOfWork.getParent());
                 Object result = executeDatabaseQuery();
                 setSession(nestedUnitOfWork);
@@ -1141,30 +1141,30 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             }
         }
         
-        session.validateQuery(this);// this will update the query with any settings
+        this.session.validateQuery(this);// this will update the query with any settings
 
-        if (getQueryId() == 0) {
-            setQueryId(getSession().getNextQueryId());
+        if (this.queryId == 0) {
+            this.queryId = this.session.getNextQueryId();
         }
 
         Object result = executeObjectLevelReadQuery();
-        if(result != null) {
-            if(this.loadGroup != null) {
+        if (result != null) {
+            if (this.loadGroup != null) {
                 Object resultToLoad  = result;
-                if(this.shouldIncludeData) {
+                if (this.shouldIncludeData) {
                     resultToLoad = ((ComplexQueryResult)result).getResult();
                 }
-                getSession().load(resultToLoad, this.loadGroup);
+                this.session.load(resultToLoad, this.loadGroup);
             } else {
-                FetchGroup executionFetchGroup = this.getExecutionFetchGroup(); 
-                if(executionFetchGroup != null) {
+                FetchGroup executionFetchGroup = getExecutionFetchGroup(); 
+                if (executionFetchGroup != null) {
                     LoadGroup lg = executionFetchGroup.toLoadGroupLoadOnly();
-                    if(lg != null) {
+                    if (lg != null) {
                         Object resultToLoad  = result;
-                        if(this.shouldIncludeData) {
+                        if (this.shouldIncludeData) {
                             resultToLoad = ((ComplexQueryResult)result).getResult();
                         }
-                        getSession().load(resultToLoad, lg);
+                        this.session.load(resultToLoad, lg);
                     }
                 }
             }
@@ -1914,6 +1914,11 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             this.joinedAttributeManager.computeJoiningMappingQueries(session);
         }
         computeBatchReadMappingQueries();
+        if (getLoadGroup() != null) {
+            if (getLoadGroup().getIsConcurrent() == null) {
+                getLoadGroup().setIsConcurrent(getSession().isConcurrent());
+            }
+        }
     }
     
     /**

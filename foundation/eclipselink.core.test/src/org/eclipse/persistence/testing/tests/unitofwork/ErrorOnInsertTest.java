@@ -101,7 +101,6 @@ public class ErrorOnInsertTest extends AutoVerifyTestCase {
             this.dynamicSQLMechanism = new DynamicSQLBatchWritingMechanism(this);
             this.parameterizedMechanism = new ParameterizedSQLBatchWritingMechanism(this);
             this.lobWriter = accessor.getLOBWriter();
-            this.shouldUseThreadCursors = accessor.shouldUseThreadCursors();
         }
 
         public void basicCommitTransaction(AbstractSession session) throws DatabaseException {
