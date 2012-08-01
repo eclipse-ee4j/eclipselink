@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.persistence.internal.jpa.StoredProcedureQueryImpl;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
@@ -147,17 +146,16 @@ public class NamedPLSQLStoredProcedureQueryMetadata extends NamedNativeQueryMeta
         // Process the query hints.
         Map<String, Object> hints = processQueryHints(session);
         
+        org.eclipse.persistence.internal.jpa.JPAQuery query =
+                new org.eclipse.persistence.internal.jpa.JPAQuery(getName(), call, hints);
+
         // Process the result class.
-        if (getResultClass().isVoid()) {
-            if (hasResultSetMapping(session)) {
-                session.addQuery(getName(), StoredProcedureQueryImpl.buildStoredProcedureQuery(getResultSetMapping(), call, hints, getLoader(), session));
-            } else {
-                // Neither a resultClass or resultSetMapping is specified so place in a temp query on the session
-                session.addQuery(getName(), StoredProcedureQueryImpl.buildStoredProcedureQuery(call, hints, getLoader(), session));
-            }
-        } else {
-            session.addQuery(getName(), StoredProcedureQueryImpl.buildStoredProcedureQuery(getJavaClass(getResultClass()), call, hints, getLoader(), session));
+        if (!getResultClass().isVoid()) {
+            query.setResultClassName(getJavaClassName(getResultClass()));
+        } else if (hasResultSetMapping(session)) {
+            query.addResultSetMapping(getResultSetMapping());
         }
+        session.addJPAQuery(query);
     }
     
     /**

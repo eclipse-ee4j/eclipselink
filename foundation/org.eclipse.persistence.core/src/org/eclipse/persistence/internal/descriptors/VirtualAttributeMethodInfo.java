@@ -13,6 +13,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.descriptors;
 
+import java.io.Serializable;
+
 /**
  * Data-holding object that holds information about object used by mappings with
  * a VIRTUAL access type.
@@ -20,7 +22,7 @@ package org.eclipse.persistence.internal.descriptors;
  * @author tware
  *
  */
-public class VirtualAttributeMethodInfo {
+public class VirtualAttributeMethodInfo implements Serializable{
 
     protected String getMethodName = null;
     protected String setMethodName = null;

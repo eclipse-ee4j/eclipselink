@@ -29,7 +29,7 @@ public class ConversionExceptionResource extends ListResourceBundle {
                                            { "3004", "Incorrect time format: [{0}] (expected [HH:MM:SS])" },
                                            { "3005", "Incorrect timestamp format: [{0}] (expected [YYYY-MM-DD HH:MM:SS.NNNNNNNNN])" },
                                            { "3006", "[{0}] must be of even length to be converted to a byte array." },
-                                           { "3007", "The object [{0}], of class [{1}], could not be converted to [{2}].  Ensure that the class [{0}] is on the CLASSPATH.  You may need to use alternate API passing in the appropriate class loader as required, or setting it on the default ConversionManager" },
+                                           { "3007", "The object [{0}], of class [{1}], could not be converted to [{2}].  Ensure that the class [{2}] is on the CLASSPATH.  You may need to use alternate API passing in the appropriate class loader as required, or setting it on the default ConversionManager" },
                                            { "3008", "Incorrect date-time format: [{0}] (expected [YYYY-MM-DD'T'HH:MM:SS])" }
     };
 

@@ -20,10 +20,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;
 import org.eclipse.persistence.internal.security.PrivilegedInvokeConstructor;
 import org.eclipse.persistence.sessions.DatabaseRecord;
@@ -38,7 +40,8 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
  */
 public class ConstructorResult extends SQLResult {
     /** Stores the class of result  */
-    protected Class targetClass;
+    protected String targetClassName;
+    protected transient Class targetClass;
 
     /** Stored the column results of this constructor result */
     protected List<ColumnResult> columnResults;
@@ -65,6 +68,20 @@ public class ConstructorResult extends SQLResult {
         }
         
         this.targetClass = targetClass;
+        this.targetClassName = targetClass.getName();
+    }
+    
+    /**
+     * Constructor accepting target class name.
+     */
+    public ConstructorResult(String targetClassName){
+        this();
+        
+        if (targetClassName == null) {
+            throw new IllegalArgumentException(ExceptionLocalization.buildMessage("null_value_for_constructor_result"));
+        }
+        
+        this.targetClassName = targetClassName;
     }
     
     /**
@@ -72,6 +89,34 @@ public class ConstructorResult extends SQLResult {
      */
     public void addColumnResult(ColumnResult columnResult) {
         columnResults.add(columnResult);
+    }
+    
+    /**
+     * INTERNAL:
+     * Convert all the class-name-based settings in this query to actual class-based
+     * settings. This method is used when converting a project that has been built
+     * with class names to a project with classes.
+     * @param classLoader 
+     */
+    public void convertClassNamesToClasses(ClassLoader classLoader){
+        super.convertClassNamesToClasses(classLoader);
+        
+        //no need to get the class if we already have it
+        if (targetClass == null && targetClassName!=null) {
+            try{
+                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                    try {
+                        targetClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(targetClassName, true, classLoader));
+                    } catch (PrivilegedActionException exception) {
+                        throw ValidationException.classNotFoundWhileConvertingClassNames(targetClassName, exception.getException());
+                    }
+                } else {
+                    targetClass = org.eclipse.persistence.internal.security.PrivilegedAccessHelper.getClassForName(targetClassName, true, classLoader);
+                }
+            } catch (ClassNotFoundException exc){
+                throw ValidationException.classNotFoundWhileConvertingClassNames(targetClassName, exc);
+            }
+        }
     }
     
     /**

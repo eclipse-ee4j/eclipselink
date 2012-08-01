@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     07/19/2011-2.2.1 Guy Pelletier 
  *       - 338812: ManyToMany mapping in aggregate object violate integrity constraint on deletion
+ *     08/01/2012-2.5 Chris Delahunt
+ *       - 371950: Metadata caching 
  ******************************************************************************/  
 package org.eclipse.persistence.mappings;
 
@@ -70,7 +72,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
     
     /** Map the name of a field in the aggregate descriptor to a field in the source table. */
     /** 322233 - changed to store the source DatabaseField to hold Case and other colunm info*/
-    protected transient Map<String, DatabaseField> aggregateToSourceFields;
+    protected Map<String, DatabaseField> aggregateToSourceFields;
 
     /**
      * Map of nested attributes that need to apply an override name to their
@@ -80,25 +82,25 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      * attribute to database field override.
      * @see addFieldTranslation()
      */
-    protected transient Map<String, DatabaseField> nestedFieldTranslations;
+    protected Map<String, DatabaseField> nestedFieldTranslations;
     
     /** 
      * List of many to many mapping overrides to apply at initialize time to 
      * their cloned aggregate mappings. 
      */
-    protected transient List<ManyToManyMapping> overrideManyToManyMappings;
+    protected List<ManyToManyMapping> overrideManyToManyMappings;
     
     /** 
      * List of unidirectional one to many mapping overrides to apply at 
      * initialize time to their cloned aggregate mappings. 
      */
-    protected transient List<UnidirectionalOneToManyMapping> overrideUnidirectionalOneToManyMappings;
+    protected List<UnidirectionalOneToManyMapping> overrideUnidirectionalOneToManyMappings;
     
     /**
      * List of maps id mappings that need to be set to read only at initialize
      * time on their cloned aggregate mappings.
      */
-    protected transient List<DatabaseMapping> mapsIdMappings;
+    protected List<DatabaseMapping> mapsIdMappings;
     
     /**
      * Default constructor.

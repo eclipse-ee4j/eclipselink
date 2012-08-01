@@ -8,14 +8,15 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
+ *     08/01/2012-2.5 Chris Delahunt
+ *       - 371950: Metadata caching 
  ******************************************************************************/
 
 package org.eclipse.persistence.internal.jpa.deployment;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.listeners.BeanValidationListener;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -32,10 +33,10 @@ import java.security.AccessController;
  * @author Mitesh Meswani
  */
 public interface BeanValidationInitializationHelper {
-    public void bootstrapBeanValidation(Map puProperties, AbstractSession session, MetadataProject project, ClassLoader appClassLoader);
+    public void bootstrapBeanValidation(Map puProperties, AbstractSession session, ClassLoader appClassLoader);
 
     static class BeanValidationInitializationHelperImpl implements BeanValidationInitializationHelper {
-        public void bootstrapBeanValidation(Map puProperties, AbstractSession session, MetadataProject project, ClassLoader appClassLoader) {
+        public void bootstrapBeanValidation(Map puProperties, AbstractSession session, ClassLoader appClassLoader) {
 
             ValidatorFactory validatorFactory = getValidatorFactory(puProperties);
 
@@ -54,10 +55,12 @@ public interface BeanValidationInitializationHelper {
                 BeanValidationListener validationListener =
                         new BeanValidationListener(beanValidatorFactory, groupPrePersit, groupPreUpdate, groupPreRemove);
                 //Install BeanValidationListener on the desc
-                for (EntityAccessor accessor : project.getEntityAccessors()) {
-                    accessor.getDescriptor().addInternalListener(validationListener);
+                for (ClassDescriptor descriptor : session.getProject().getDescriptors().values()) {
+                    if (descriptor.isDescriptorTypeNormal()) {
+                        //add only to entities
+                        descriptor.getEventManager().addInternalListener(validationListener);
+                    }
                 }
-
             }
         }
 

@@ -130,7 +130,7 @@ public class ConstructorResultMetadata extends ORMetadata {
      */
     public ConstructorResult process() {
         // Create a new constructor result with the target class.
-        ConstructorResult constructorResult = new ConstructorResult(getJavaClass(getTargetClass()));
+        ConstructorResult constructorResult = new ConstructorResult(getJavaClassName(getTargetClass()));
         
         // Process the column results.
         for (ColumnResultMetadata columnResult : getColumnResults()) {

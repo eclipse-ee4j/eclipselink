@@ -88,9 +88,9 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
  */
 public class MappedKeyMapContainerPolicy extends MapContainerPolicy {
     
-    protected transient MapKeyMapping keyMapping;
+    protected MapKeyMapping keyMapping;
 
-    protected transient MapComponentMapping valueMapping;
+    protected MapComponentMapping valueMapping;
     
     public DatabaseQuery keyQuery;
     

@@ -239,19 +239,19 @@ public class MetadataProcessor {
     
     /**
      * INTERNAL:
-     * Return a list of instantiated StructConverter objects that were defined in the
-     * metadata of this project.
+     * Adds a list of StructConverter string names that were defined in the
+     * metadata of this project to the native EclipseLink project.
      * 
-     * These StructConverters can be added to the Session 
+     * These StructConverters can be added to the Project to be processed later 
      */
-    public List<StructConverter> getStructConverters() {
-        List<StructConverter> structConverters = new ArrayList<StructConverter>();
+    public void addStructConverterNames() {
+        List<String> structConverters = new ArrayList<String>();
         for (StructConverterMetadata converter: m_project.getStructConverters()) {
-            StructConverter structConverter = (StructConverter) MetadataHelper.getClassInstance(converter.getConverterClassName(), m_loader);
-            structConverters.add(structConverter);
+            structConverters.add(converter.getConverterClassName());
         }
-        
-        return structConverters;
+        if (!structConverters.isEmpty()) {
+            m_session.getProject().setStructConverters(structConverters);
+        }
     }
      
     /**

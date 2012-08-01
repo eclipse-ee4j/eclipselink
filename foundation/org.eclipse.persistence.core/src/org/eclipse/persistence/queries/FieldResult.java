@@ -14,6 +14,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.queries;
 
+import java.io.Serializable;
+
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.sessions.DatabaseRecord;
@@ -29,7 +31,7 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
  * @since TopLink Java Essentials
  */
 
-public class FieldResult {
+public class FieldResult implements Serializable{
     /** Stores the name of the bean attribute  */
     protected String attributeName;
     /** Stores passed in field name split on the '.' character */

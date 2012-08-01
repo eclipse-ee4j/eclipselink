@@ -128,7 +128,7 @@ public class ColumnResultMetadata extends ORMetadata {
         
         // Set the type name.
         if (! getType().isVoid()) {
-            field.setType(getJavaClass(getType()));
+            field.setTypeName(getJavaClassName(getType()));
         }
         
         // Return a column result to the mapping.

@@ -62,7 +62,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
     protected transient ClassDescriptor referenceDescriptor;
 
     /** This query is used to read referenced objects for this mapping. */
-    protected transient ReadQuery selectionQuery;
+    protected ReadQuery selectionQuery;
 
     /** Indicates whether the referenced object is privately owned or not. */
     protected boolean isPrivateOwned;
@@ -1373,7 +1373,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             if (sourceQuery != null && sourceQuery.isObjectBuildingQuery() && ((ObjectBuildingQuery)sourceQuery).shouldRefreshIdentityMapResult()){
                 refreshCascade = sourceQuery.getCascadePolicy();
             }
-        attributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, parentCacheKey.getObject(), parentCacheKey, targetObject, refreshCascade, executionSession, false);
+            attributeValue = this.indirectionPolicy.cloneAttribute(attributeValue, parentCacheKey.getObject(), parentCacheKey, targetObject, refreshCascade, executionSession, false);
         }
         if (executionSession.isUnitOfWork() && sourceQuery.shouldRefreshIdentityMapResult()){
             // check whether the attribute is fully build before calling getAttributeValueFromObject because that

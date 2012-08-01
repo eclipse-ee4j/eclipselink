@@ -69,6 +69,9 @@ public class DescriptorEventManager implements Cloneable, Serializable {
     protected boolean excludeDefaultListeners;
     protected boolean excludeSuperclassListeners;
 
+    //JPA project caching support.  Holds DescriptorEventListener representations for serialization/storage.
+    protected java.util.List<SerializableDescriptorEventHolder> descriptorEventHolders;
+
     /** PERF: Cache if any events listener exist. */
     protected boolean hasAnyEventListeners;
     public static final int PreWriteEvent = 0;
@@ -143,9 +146,20 @@ public class DescriptorEventManager implements Cloneable, Serializable {
      * INTERNAL:
      *
      */
-    public void addinternalListener(DescriptorEventListener listener) {
+    public void addInternalListener(DescriptorEventListener listener) {
+        if (internalListeners==null) {
+            internalListeners = new ArrayList<DescriptorEventListener>();
+        }
         internalListeners.add(listener);
         setHasAnyEventListeners(true); // ensure that events are generated
+    }
+
+    /**
+     * INTERNAL:
+     *
+     */
+    public void addEntityListenerHolder(SerializableDescriptorEventHolder holder) {
+        this.getDescriptorEventHolders().add(holder);
     }
 
     /**
@@ -166,7 +180,21 @@ public class DescriptorEventManager implements Cloneable, Serializable {
 
         return clone;
     }
-    
+
+    /**
+     * INTERNAL:
+     * This method was added to allow JPA project caching so that DescriptorEventListeners could be 
+     * serialized and re-added to the EventManager using a SerializableDescriptorEventHolder.
+     * @param classLoader 
+     */
+    public void processDescriptorEventHolders(ClassLoader classLoader) {
+        if (this.descriptorEventHolders != null) {
+            for (SerializableDescriptorEventHolder holder: descriptorEventHolders) {
+                holder.addListenerToEventManager(getDescriptor(), classLoader);
+            }
+        }
+    }
+
     /**
      * INTERNAL:
      * EJB 3.0 support. Returns true if this event manager should exclude the 
@@ -298,6 +326,27 @@ public class DescriptorEventManager implements Cloneable, Serializable {
      */
     protected ClassDescriptor getDescriptor() {
         return descriptor;
+    }
+
+    /**
+     * INTERNAL:
+     * used by JPA project caching to store DescriptorEventListener representations that can build the underlying 
+     * DescriptorEventListener and add it to the EventManager.
+     */
+    public java.util.List<SerializableDescriptorEventHolder> getDescriptorEventHolders() {
+        if (descriptorEventHolders == null) {
+            descriptorEventHolders = new java.util.ArrayList();
+        }
+        return descriptorEventHolders;
+    }
+
+    /**
+     * INTERNAL:
+     * used by JPA project caching to store DescriptorEventListener representations that can build the underlying 
+     * DescriptorEventListener and add it to the EventManager.
+     */
+    public void setDescriptorEventHolders(java.util.List<SerializableDescriptorEventHolder> descriptorEventHolders) {
+        this.descriptorEventHolders = descriptorEventHolders;
     }
 
     /**

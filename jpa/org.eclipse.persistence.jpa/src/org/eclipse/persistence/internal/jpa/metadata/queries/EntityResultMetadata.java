@@ -160,7 +160,7 @@ public class EntityResultMetadata extends ORMetadata {
      */
     public EntityResult process() {
         // Create a new entity result.
-        EntityResult entityResult = new EntityResult(getJavaClass(getEntityClass()));
+        EntityResult entityResult = new EntityResult(getJavaClassName(getEntityClass()));
     
         // Process the field results.
         for (FieldResultMetadata fieldResult : getFieldResults()) {

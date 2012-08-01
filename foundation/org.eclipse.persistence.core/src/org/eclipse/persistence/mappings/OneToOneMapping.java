@@ -67,7 +67,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     protected static final String setObject = "setObject";
     
     /** Mechanism holds relationTable and all fields and queries associated with it. */
-    protected transient RelationTableMechanism mechanism;
+    protected RelationTableMechanism mechanism;
 
     /**
      * Define if this mapping is really for a OneToOne relationship.

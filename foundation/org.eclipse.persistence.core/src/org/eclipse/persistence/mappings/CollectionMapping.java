@@ -61,7 +61,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
     protected transient ModifyQuery deleteAllQuery;
     protected transient boolean hasCustomDeleteAllQuery;
     protected ContainerPolicy containerPolicy;
-    protected transient boolean hasOrderBy;
+    protected boolean hasOrderBy;
 
     /** Field holds the order of elements in the list in the db, requires collection of type List, may be not null only in case isListOrderFieldSupported==true */
     protected DatabaseField listOrderField;

@@ -136,6 +136,20 @@ public class EntityListener extends DescriptorEventAdapter {
     /**
      * INTERNAL:
      */
+    public Hashtable<String, List<Method>> getAllEventMethods() {
+        return m_methods;
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void setAllEventMethods(Hashtable<String, List<Method>> methods) {
+        m_methods = methods;
+    }
+    
+    /**
+     * INTERNAL:
+     */
     protected List<Method> getEventMethods(int eventCode) {
         String eventString = m_eventStrings.get(eventCode);
         

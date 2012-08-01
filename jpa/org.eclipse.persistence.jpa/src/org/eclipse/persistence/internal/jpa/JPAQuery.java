@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     08/01/2012-2.5 Chris Delahunt
+ *       - 371950: Metadata caching 
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa;
 
@@ -17,11 +19,16 @@ import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.OptimisticLockException;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import javax.persistence.LockModeType;
 
 import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.EntityResult;
+import org.eclipse.persistence.queries.SQLResultSetMapping;
+import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.sessions.Session;
 
 
@@ -37,6 +44,11 @@ import org.eclipse.persistence.sessions.Session;
 public class JPAQuery extends DatabaseQuery  {
     private String lockMode;
     private String jpqlString;
+    private String sqlString;
+    private StoredProcedureCall call;
+    private String resultClassName;
+    private List<String> resultClassNames;
+    private List<String> resultSetMappingNames;
     private Map<String, Object> hints;
     
     public JPAQuery() {
@@ -46,6 +58,13 @@ public class JPAQuery extends DatabaseQuery  {
         this.jpqlString=jpqlString;
     }
     
+    /**
+     * JPQL 
+     * @param name
+     * @param jpqlString
+     * @param lockMode
+     * @param hints
+     */
     public JPAQuery(String name, String jpqlString, String lockMode, Map<String, Object> hints) {
         this.name = name;
         this.jpqlString = jpqlString;
@@ -55,6 +74,52 @@ public class JPAQuery extends DatabaseQuery  {
         if (lockMode == null) {
             this.lockMode = "NONE";
         }
+    }
+    
+    /*
+     * SQL returning an entity
+     */
+    public JPAQuery(String queryName, String sqlString, Map<String, Object> hints) {
+        //this.resultClassName = resultClassName;
+        this.name = queryName; 
+        this.sqlString = sqlString;
+        this.flushOnExecute = null;
+        this.hints = hints;
+        this.lockMode = null;
+    }
+    
+    /*
+     * Stored Proc returning an Entity
+     */
+    public JPAQuery(String queryName, StoredProcedureCall call, Map<String, Object> hints) {
+        //this.resultClassName = resultClassName;
+        this.name = queryName;
+        this.call = call;
+        this.flushOnExecute = null;
+        this.hints = hints;
+        this.lockMode = null;
+    }
+    
+    public void setResultClassName(String className){
+        this.resultClassName = className;
+    }
+    
+    public void addResultSetMapping(String resultSetMapping){
+        if (resultSetMappingNames == null) {
+            resultSetMappingNames = new ArrayList<String>();
+        }
+        this.resultSetMappingNames.add(resultSetMapping);
+    }
+    
+    public void setResultSetMappings(List<String> resultSetMappings){
+        this.resultSetMappingNames = resultSetMappings;
+    }
+    
+    public void addResultClassNames(String className) {
+        if (resultClassNames == null) {
+            resultClassNames = new ArrayList<String>();
+        }
+        this.resultClassNames.add(className);
     }
 
     /**
@@ -89,7 +154,15 @@ public class JPAQuery extends DatabaseQuery  {
      * Generate the DatabaseQuery query from the JPA named query.
      */
     public void prepare() {
-        setDatabaseQuery(processJPQLQuery(getSession()));
+        DatabaseQuery query = null;
+        if (sqlString!=null) {
+            query = processSQLQuery(getSession());
+        } else if (jpqlString!=null) {
+            query = processJPQLQuery(getSession());
+        } else if (call!=null) {
+            query = processStoredProcedureQuery(getSession());
+        }
+        setDatabaseQuery(query);
     }
     
     /**
@@ -110,8 +183,60 @@ public class JPAQuery extends DatabaseQuery  {
         ejbquery.setName(this.getName());
         return ejbquery;
     }    
-    
-    
+
+    /**
+     * INTERNAL:
+     * Convert the SQL string into a DatabaseQuery.
+     */
+    public DatabaseQuery processSQLQuery(Session session){
+        DatabaseQuery query = null;
+        ClassLoader loader = session.getDatasourcePlatform().getConversionManager().getLoader();
+        if (resultClassName != null) {
+            Class clazz = session.getDatasourcePlatform().getConversionManager().convertClassNameToClass(resultClassName);
+            query = EJBQueryImpl.buildSQLDatabaseQuery(clazz, sqlString, hints, loader, (AbstractSession)session);
+        } else if (resultSetMappingNames != null) {
+            query = EJBQueryImpl.buildSQLDatabaseQuery(resultSetMappingNames.get(0), sqlString, hints, loader, (AbstractSession)session);
+        } else {
+            // Neither a resultClass or resultSetMapping is specified so place in a temp query on the session
+            query = EJBQueryImpl.buildSQLDatabaseQuery(sqlString, hints, loader, (AbstractSession)session);  
+        }
+        query.setName(this.getName());
+        return query;
+    }
+
+    /**
+     * INTERNAL:
+     * Convert the StoredProc call into a DatabaseQuery.
+     */
+    public DatabaseQuery processStoredProcedureQuery(Session session){
+        DatabaseQuery query = null;
+        ClassLoader loader = session.getDatasourcePlatform().getConversionManager().getLoader();
+        
+        if (resultClassNames != null) {
+            List<SQLResultSetMapping> resultSetMappings = new ArrayList<SQLResultSetMapping>();
+            
+            for (String resultClass : resultClassNames) {
+                SQLResultSetMapping mapping = new SQLResultSetMapping(resultClass);
+                
+                EntityResult entityResult = new EntityResult(resultClass);
+                mapping.addResult(entityResult);
+
+                resultSetMappings.add(mapping);
+            }
+            query = StoredProcedureQueryImpl.buildResultSetMappingQuery(resultSetMappings, call, hints, loader, (AbstractSession)session);
+        } else if (resultSetMappingNames != null) {
+            query = StoredProcedureQueryImpl.buildResultSetMappingNameQuery(resultSetMappingNames, call, hints, loader, (AbstractSession)session);
+        } else if (resultClassName != null) {
+            Class clazz = session.getDatasourcePlatform().getConversionManager().convertClassNameToClass(resultClassName);
+            query = StoredProcedureQueryImpl.buildStoredProcedureQuery(clazz, call, hints, loader, (AbstractSession)session);
+        } else {
+            // Neither a resultClass or resultSetMapping is specified so place in a temp query on the session
+            query = StoredProcedureQueryImpl.buildStoredProcedureQuery(call, hints, loader, (AbstractSession)session);
+        }
+        query.setName(this.getName());
+        return query;
+    }
+
     /**
      * INTERNAL:
      * This should never be called and is only here because it is needed as an extension

@@ -546,16 +546,14 @@ public class SessionBroker extends DatabaseSessionImpl {
             }
             
             // Copy jpa queries from member sessions into SessionBroker before descriptors' initialization.
-            int nJPAQueriesSize = databaseSession.getJPAQueries().size();
-            for(int i=0; i < nJPAQueriesSize; i++) {
-                DatabaseQuery query = databaseSession.getJPAQueries().get(i);
-                query.setSessionName(sessionName);
-                getJPAQueries().add(query);
+            if (!databaseSession.isJPAQueriesProcessed()) {
+                for(DatabaseQuery query: databaseSession.getJPAQueries()) {
+                    query.setSessionName(sessionName);
+                    getJPAQueries().add(query);
+                }
+                //prevent them from being re-added in the case of a logout/login
+                databaseSession.setJPAQueriesProcessed(true);
             }
-            // processJPAQueries method clears jpa queries after they have been copied to the session.
-            // in broker case jpa queries processed only on the broker, so clear them from member sessions now
-            // otherwise they would be added again (in case of logout, then login).
-            databaseSession.getJPAQueries().clear();
 
             // assign session name to each query
             Iterator<List<DatabaseQuery>> it = databaseSession.getQueries().values().iterator();

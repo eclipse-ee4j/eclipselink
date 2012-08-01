@@ -2988,6 +2988,9 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * Return the non primary key mappings.
      */
     protected List<DatabaseMapping> getNonPrimaryKeyMappings() {
+        if (nonPrimaryKeyMappings == null) {
+            nonPrimaryKeyMappings = new ArrayList(10);
+        }
         return nonPrimaryKeyMappings;
     }
 
@@ -3333,7 +3336,7 @@ public class ObjectBuilder implements Cloneable, Serializable {
             DatabaseField field = (DatabaseField)fields.next();
             if (null ==primaryKeyFields || !primaryKeyFields.contains(field)) {
                 DatabaseMapping mapping = getMappingForField(field);
-                if (nonPrimaryKeyMappings != null && !getNonPrimaryKeyMappings().contains(mapping)) {
+                if (!getNonPrimaryKeyMappings().contains(mapping)) {
                     getNonPrimaryKeyMappings().add(mapping);
                 }
             }

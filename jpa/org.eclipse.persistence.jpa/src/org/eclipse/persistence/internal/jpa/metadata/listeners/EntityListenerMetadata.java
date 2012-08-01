@@ -82,7 +82,6 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
     private MetadataClass m_entityListenerClass;
     
     protected EntityListener m_listener;
-    
     private String m_className;
     private String m_postLoad;
     private String m_postPersist;
@@ -395,29 +394,27 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
             m_entityListenerClass = getMetadataFactory().getMetadataClass(m_className);
         }
 
-        DescriptorEventListener listener;
+        JPAEntityListenerHolder holder = new JPAEntityListenerHolder();
+        holder.setIsDefaultListener(Boolean.valueOf(isDefaultListener));
+
         Object entityListenerClassInstance = getInstance(getClass(m_entityListenerClass, loader));
-        
+        holder.listenerClassName = m_entityListenerClass.getName();
+
         if (m_entityListenerClass.extendsInterface(DescriptorEventListener.class)) {
-            listener = (DescriptorEventListener) entityListenerClassInstance;
+            holder.listener = (DescriptorEventListener) entityListenerClassInstance;
+            holder.extendsDescriptorEvent = Boolean.TRUE;
         } else {
             // Initialize the listener class before processing the callback methods.
             m_listener = new EntityListener(entityListenerClassInstance, getClass(classAccessor.getDescriptorJavaClass(), loader));
-            
+
             // Process the callback methods defined from XML and annotations.
             processCallbackMethods(getCandidateCallbackMethodsForEntityListener(), classAccessor);
-            
-            listener = m_listener;
+            holder.convertToSerializableMethods(m_listener.getAllEventMethods());
+            holder.listener = m_listener;
         }
-        
-        // Add the listener to the descriptor.
-        if (isDefaultListener) {
-            classAccessor.getDescriptor().addDefaultEventListener(listener);
-        } else {
-            classAccessor.getDescriptor().addEntityListenerEventListener(listener);
-        }
+        classAccessor.getDescriptor().getClassDescriptor().getEventManager().addEntityListenerHolder(holder);
     }
-    
+
     /**
      * INTERNAL:
      * Process the the callback methods. The XML defined callback methods are

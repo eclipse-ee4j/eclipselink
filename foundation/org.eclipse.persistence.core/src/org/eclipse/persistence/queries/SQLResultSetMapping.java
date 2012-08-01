@@ -16,6 +16,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.queries;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Iterator;
@@ -32,7 +33,7 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
  * @author Gordon Yorke
  * @since TopLink Java Essentials
  */
-public class SQLResultSetMapping {
+public class SQLResultSetMapping implements Serializable{
     /** Stores the name of this SQLResultSetMapping.  This name is unique within
      * The project.
      */

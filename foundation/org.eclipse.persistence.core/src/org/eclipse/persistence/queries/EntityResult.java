@@ -45,7 +45,7 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
 public class EntityResult extends SQLResult {
     /** Stores the class name of result  */
     protected String entityClassName;
-    protected Class entityClass;
+    protected transient Class entityClass;
     
     /** Stores the list of FieldResult */
     protected Map fieldResults;
@@ -60,6 +60,7 @@ public class EntityResult extends SQLResult {
         if (this.entityClass == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("null_value_for_entity_result"));
         }
+        this.entityClassName = entityClass.getName();
     }
     
     public EntityResult(String entityClassName){

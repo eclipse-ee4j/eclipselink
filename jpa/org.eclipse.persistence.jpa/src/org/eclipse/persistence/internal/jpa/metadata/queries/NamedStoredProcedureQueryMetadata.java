@@ -24,14 +24,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.persistence.internal.jpa.StoredProcedureQueryImpl;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.queries.SQLResultSetMapping;
 import org.eclipse.persistence.queries.StoredProcedureCall;
 
 /**
@@ -270,33 +268,27 @@ public class NamedStoredProcedureQueryMetadata extends NamedNativeQueryMetadata 
         // Process the query hints.
         Map<String, Object> hints = processQueryHints(session);
         
-        if (! m_resultClasses.isEmpty()) {    
-            // Process the multiple result classes.
-            List<SQLResultSetMapping> resultSetMappings = new ArrayList<SQLResultSetMapping>();
-            
+        //org.eclipse.persistence.queries.DatabaseQuery query = null;
+        org.eclipse.persistence.internal.jpa.JPAQuery query =
+                new org.eclipse.persistence.internal.jpa.JPAQuery(getName(), call, hints);
+
+        if (! m_resultClasses.isEmpty()) {
+            // Process the multiple result classes.            
             for (MetadataClass resultClass : m_resultClasses) {
-                resultSetMappings.add(new SQLResultSetMappingMetadata(resultClass, getAccessibleObject(), getProject(), getLocation()).process()); 
+                query.addResultClassNames(getJavaClassName(resultClass));
             }
-            
-            session.addQuery(getName(), StoredProcedureQueryImpl.buildResultSetMappingQuery(resultSetMappings, call, hints, getLoader(), session));
         } else if (! m_resultSetMappings.isEmpty()) {
             // Process the multiple result set mapping.
-            session.addQuery(getName(), StoredProcedureQueryImpl.buildResultSetMappingNameQuery(m_resultSetMappings, call, hints, getLoader(), session));
-        } else {            
+            query.setResultSetMappings(m_resultSetMappings);
+        } else {
             // Legacy support (EclipseLink @NamedStoreProcedureQuery).
-            if (getResultClass().isVoid()) {
-                // Process the single result set mapping.
-                if (hasResultSetMapping(session)) {
-                    session.addQuery(getName(), StoredProcedureQueryImpl.buildStoredProcedureQuery(getResultSetMapping(), call, hints, getLoader(), session));
-                } else {
-                    // Neither a resultClass or resultSetMapping is specified so place in a temp query on the session
-                    session.addQuery(getName(), StoredProcedureQueryImpl.buildStoredProcedureQuery(call, hints, getLoader(), session));
-                }
-            } else {
-                // Process the single result class.
-                session.addQuery(getName(), StoredProcedureQueryImpl.buildStoredProcedureQuery(getJavaClass(getResultClass()), call, hints, getLoader(), session));
+            if (!getResultClass().isVoid()) {
+                query.setResultClassName(getJavaClassName(getResultClass()));
+            } else if (hasResultSetMapping(session)) {
+                query.addResultSetMapping(getResultSetMapping());
             }
         }
+        session.addJPAQuery(query);
     }
     
     /**

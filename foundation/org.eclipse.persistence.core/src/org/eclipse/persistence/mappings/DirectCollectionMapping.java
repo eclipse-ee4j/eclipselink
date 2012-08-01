@@ -17,6 +17,8 @@
  *       - 376603: Provide for table per tenant support for multitenant applications
  *      *     30/05/2012-2.4 Guy Pelletier    
  *       - 354678: Temp classloader is still being used during metadata processing
+ *     08/01/2012-2.5 Chris Delahunt
+ *       - 371950: Metadata caching 
  ******************************************************************************/  
 package org.eclipse.persistence.mappings;
 
@@ -88,29 +90,29 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
     protected List<Expression> orderByExpressions;
     
     /** Stores the reference table*/
-    protected transient DatabaseTable referenceTable;
+    protected DatabaseTable referenceTable;
 
     /** The direct field name is converted and stored */
-    protected transient DatabaseField directField;
-    protected transient Vector<DatabaseField> sourceKeyFields;
-    protected transient Vector<DatabaseField> referenceKeyFields;
+    protected DatabaseField directField;
+    protected Vector<DatabaseField> sourceKeyFields;
+    protected Vector<DatabaseField> referenceKeyFields;
 
     /** Used for insertion for m-m and dc, not used in 1-m. */
-    protected transient DataModifyQuery insertQuery;
+    protected DataModifyQuery insertQuery;
 
     /** Used for deletion when ChangeSets are used */
-    protected transient ModifyQuery changeSetDeleteQuery;
+    protected ModifyQuery changeSetDeleteQuery;
     protected transient ModifyQuery changeSetDeleteNullQuery; // Bug 306075
-    protected transient boolean hasCustomDeleteQuery;
-    protected transient boolean hasCustomInsertQuery;
+    protected boolean hasCustomDeleteQuery;
+    protected boolean hasCustomInsertQuery;
     protected HistoryPolicy historyPolicy;
     
     /** Used (only in case listOrderField != null) to delete object with particular orderFieldValue */
-    protected transient ModifyQuery deleteAtIndexQuery;
+    protected ModifyQuery deleteAtIndexQuery;
     /** Used (only in case listOrderField != null) to update orderFieldValue of object with particular orderFieldValue */
-    protected transient ModifyQuery updateAtIndexQuery;
-    protected transient boolean hasCustomDeleteAtIndexQuery;
-    protected transient boolean hasCustomUpdateAtIndexQuery;
+    protected ModifyQuery updateAtIndexQuery;
+    protected boolean hasCustomDeleteAtIndexQuery;
+    protected boolean hasCustomUpdateAtIndexQuery;
     
     /**
      * @since Java Persistence API 2.0
@@ -118,7 +120,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      * To specify the conversion type 
      * */
     protected transient Class attributeClassification;
-    protected transient String attributeClassificationName;    
+    protected String attributeClassificationName;    
     /** 
      * @since Java Persistence API 2.0
      * Referenced by MapAttributeImpl to pick up the BasicMap value parameter type 
