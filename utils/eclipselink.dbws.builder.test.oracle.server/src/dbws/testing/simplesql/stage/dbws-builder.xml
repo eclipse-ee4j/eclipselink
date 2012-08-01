@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dbws-builder xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <properties>
+    <property name="projectName">simplesql</property>
+    <property name="logLevel">off</property>
+    <property name="username">TLUSER</property>
+    <property name="password">password</property>
+    <property name="url">jdbc:oracle:thin:@ottvm028.ca.oracle.com:1521:TOPLINK</property>
+    <property name="driver">oracle.jdbc.OracleDriver</property>
+    <property name="platformClassname">org.eclipse.persistence.platform.database.oracle.Oracle11Platform</property>
+    <property name="dataSource"></property>
+    <property name="wsdlLocationURI">http://localhost:7001/simplesql/simplesql?wsdl</property>
+  </properties>
+  <sql
+    name="count-info"
+    isCollection="false"
+    simpleXMLFormatTag="simple-sql"
+    xmlTag="count-info"
+    >
+    <text><![CDATA[select count(*) as "COUNT" from SIMPLESQL]]></text>
+  </sql>
+</dbws-builder>

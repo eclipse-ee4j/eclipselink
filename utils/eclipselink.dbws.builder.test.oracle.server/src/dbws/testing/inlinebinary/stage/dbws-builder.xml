@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dbws-builder xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <properties>
+    <property name="projectName">inlinebinary</property>
+    <property name="logLevel">off</property>
+    <property name="username">TLUSER</property>
+    <property name="password">password</property>
+    <property name="url">jdbc:oracle:thin:@ottvm028.ca.oracle.com:1521:TOPLINK</property>
+    <property name="driver">oracle.jdbc.OracleDriver</property>
+    <property name="platformClassname">org.eclipse.persistence.platform.database.oracle.Oracle11Platform</property>
+    <property name="dataSource"></property>
+    <property name="wsdlLocationURI">http://localhost:7001/inlinebinary/inlinebinary?wsdl</property>
+  </properties>
+  <table
+    schemaPattern="TLUSER"
+    tableNamePattern="INLINEBINARY"
+  />
+</dbws-builder>
