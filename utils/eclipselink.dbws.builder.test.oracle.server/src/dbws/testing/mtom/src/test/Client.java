@@ -99,6 +99,7 @@ public class Client {
         	System.out.println("findByPk failed:  wrong number of attachments - expected [1] but was [" + response.countAttachments() + "]");
         	System.exit(-1);
 		}
+		@SuppressWarnings("rawtypes")
 		AttachmentPart ap = (AttachmentPart)((Iterator)response.getAttachments()).next();
         SOAPElement elt = SOAPFactory.newInstance().createElement(new QName("http://www.w3.org/2004/08/xop/include", "Include", "xop"));
 		// content id will be wrapped in angled brackets - need to remove them
