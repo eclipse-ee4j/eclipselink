@@ -341,19 +341,21 @@ public class IdentityMapManager implements Serializable, Cloneable {
      * Return a new empty identity map of the class type.
      */
     protected IdentityMap buildNewIdentityMap(Class identityMapClass, int size, ClassDescriptor descriptor, boolean isIsolated) throws DescriptorException {
-        // PERF: Avoid reflection.
-        if (identityMapClass == ClassConstants.SoftCacheWeakIdentityMap_Class) {
-            return new SoftCacheWeakIdentityMap(size, descriptor, this.session, isIsolated);
-        } else if (identityMapClass == ClassConstants.HardCacheWeakIdentityMap_Class) {
-            return new HardCacheWeakIdentityMap(size, descriptor, this.session, isIsolated);
-        } else if (identityMapClass == ClassConstants.SoftIdentityMap_Class) {
-            return new SoftIdentityMap(size, descriptor, this.session, isIsolated);
-        } else if (identityMapClass == ClassConstants.WeakIdentityMap_Class) {
-            return new WeakIdentityMap(size, descriptor, this.session, isIsolated);
-        } else if (identityMapClass == ClassConstants.FullIdentityMap_Class) {
-            return new FullIdentityMap(size, descriptor, this.session, isIsolated);
-        } else if (identityMapClass == ClassConstants.CacheIdentityMap_Class) {
-            return new CacheIdentityMap(size, descriptor, this.session, isIsolated);
+        if ((descriptor == null) || (descriptor.getCachePolicy().getCacheInterceptorClass() == null)) {
+            // PERF: Avoid reflection.
+            if (identityMapClass == ClassConstants.SoftCacheWeakIdentityMap_Class) {
+                return new SoftCacheWeakIdentityMap(size, descriptor, this.session, isIsolated);
+            } else if (identityMapClass == ClassConstants.HardCacheWeakIdentityMap_Class) {
+                return new HardCacheWeakIdentityMap(size, descriptor, this.session, isIsolated);
+            } else if (identityMapClass == ClassConstants.SoftIdentityMap_Class) {
+                return new SoftIdentityMap(size, descriptor, this.session, isIsolated);
+            } else if (identityMapClass == ClassConstants.WeakIdentityMap_Class) {
+                return new WeakIdentityMap(size, descriptor, this.session, isIsolated);
+            } else if (identityMapClass == ClassConstants.FullIdentityMap_Class) {
+                return new FullIdentityMap(size, descriptor, this.session, isIsolated);
+            } else if (identityMapClass == ClassConstants.CacheIdentityMap_Class) {
+                return new CacheIdentityMap(size, descriptor, this.session, isIsolated);
+            }
         }
         try {
             Class[] parameters = new Class[]{ClassConstants.PINT, ClassDescriptor.class, AbstractSession.class, boolean.class};
