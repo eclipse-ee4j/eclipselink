@@ -431,28 +431,8 @@ public class SDOHelperContext implements HelperContext {
      * keyed on identifier if none eixsts
      */
     public static HelperContext getHelperContext(String identifier) {
-        String id = identifier;
-        // if identifier is an alias, we need the actual id value
-        ConcurrentMap<String, String> aliasEntries = getAliasMap();
-        if (aliasEntries.containsKey(identifier)) {
-            id = aliasEntries.get(identifier);
-        }
         ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
-        // check the map for contextClassLoader and return it if it exists
-        HelperContext hCtx = getUserSetHelperContext(id, contextClassLoader);
-        if (hCtx != null) {
-            return hCtx;
-        }
-        ConcurrentMap<String, HelperContext> contextMap = getContextMap();
-        HelperContext helperContext = contextMap.get(id);
-        if (null == helperContext) {
-            helperContext = new SDOHelperContext(id);
-            HelperContext existingContext = contextMap.putIfAbsent(id, helperContext);
-            if (existingContext != null) {
-                helperContext = existingContext;
-            }
-        }
-        return helperContext;
+        return getHelperContext(identifier, contextClassLoader);
     }
 
     /**
@@ -460,8 +440,17 @@ public class SDOHelperContext implements HelperContext {
      * one if it does not already exist.
      */
     public static HelperContext getHelperContext(String identifier, ClassLoader classLoader) {
+        // if identifier is an alias, we need the actual id value
+        ConcurrentMap<String, String> aliasEntries = getAliasMap();
+        if (aliasEntries.containsKey(identifier)) {
+            identifier = aliasEntries.get(identifier);
+        }
+        HelperContext helperContext = getUserSetHelperContext(identifier, classLoader);
+        if (helperContext != null) {
+            return helperContext;
+        }
         ConcurrentMap<String, HelperContext> contextMap = getContextMap();
-        HelperContext helperContext = contextMap.get(identifier);
+        helperContext = contextMap.get(identifier);
         if (null == helperContext) {
             helperContext = new SDOHelperContext(identifier, classLoader);
             HelperContext existingContext = contextMap.putIfAbsent(identifier, helperContext);
@@ -610,7 +599,7 @@ public class SDOHelperContext implements HelperContext {
      *         wrapping Thread.currentThread().getContextClassLoader()
      */
     private static MapKeyLookupResult getContextMapKey(ClassLoader classLoader, String classLoaderName) {
-        // Helper contexts in OC4J server will be keyed on classloader  
+        // Helper contexts in OC4J server will be keyed on classloader
         if (classLoaderName.startsWith(OC4J_CLASSLOADER_NAME)) {
             // Check to see if we are running in a Servlet container or a local EJB container
             if ((classLoader.getParent() != null) //

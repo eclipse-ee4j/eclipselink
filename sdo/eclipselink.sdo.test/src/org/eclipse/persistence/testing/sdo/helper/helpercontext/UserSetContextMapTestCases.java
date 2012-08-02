@@ -140,4 +140,14 @@ public class UserSetContextMapTestCases extends SDOHelperContextTestCases {
         }
         return anObject;
     }
+
+    public void testPutGetNamedHelperContextByClassLoader() {
+        ClassLoader classLoader = this.getClass().getClassLoader();
+        SDOHelperContext controlHelperContext = new SDOHelperContext("testPutGetNamedHelperContextByClassLoader");
+        SDOHelperContext.putHelperContext(classLoader, controlHelperContext);
+        HelperContext testHelperContext = SDOHelperContext.getHelperContext(controlHelperContext.getIdentifier(), classLoader);
+        assertSame(controlHelperContext, testHelperContext);
+        SDOHelperContext.removeHelperContext(controlHelperContext.getIdentifier(), classLoader);
+    }
+
 }
