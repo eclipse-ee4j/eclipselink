@@ -46,10 +46,10 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
     protected static final String ObjectAdded = "objectAdded";
     
     /** The target foreign key fields that reference the sourceKeyFields. */
-    protected transient Vector<DatabaseField> targetForeignKeyFields;
+    protected Vector<DatabaseField> targetForeignKeyFields;
 
     /** The (typically primary) source key fields that are referenced by the targetForeignKeyFields. */
-    protected transient Vector<DatabaseField> sourceKeyFields;
+    protected Vector<DatabaseField> sourceKeyFields;
 
     /** This maps the target foreign key fields to the corresponding (primary) source key fields. */
     protected transient Map<DatabaseField, DatabaseField> targetForeignKeysToSourceKeys;
@@ -79,8 +79,8 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      *   where 1 is id of the source, and 2 is the id of the target to be added.  
      *  Used only in case data modification events required.
      **/
-    protected transient DataModifyQuery addTargetQuery;
-    protected transient boolean hasCustomAddTargetQuery;
+    protected DataModifyQuery addTargetQuery;
+    protected boolean hasCustomAddTargetQuery;
     
     /** 
      * Query used to update a single target row changing its foreign key value from the one pointing to the source to null. 
@@ -92,8 +92,8 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      *   where 1 is id of the source, and 2 is the id of the target to be removed.  
      *  Used only in case data modification events required.
      **/
-    protected transient DataModifyQuery removeTargetQuery;
-    protected transient boolean hasCustomRemoveTargetQuery;
+    protected DataModifyQuery removeTargetQuery;
+    protected boolean hasCustomRemoveTargetQuery;
 
     /** 
      * Query used to update all target rows changing target foreign key value from the one pointing to the source to null. 
@@ -105,8 +105,8 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      *   where 1 is id of the source to be deleted.  
      *  Used only in case data modification events required.
      **/
-    protected transient DataModifyQuery removeAllTargetsQuery;
-    protected transient boolean hasCustomRemoveAllTargetsQuery;
+    protected DataModifyQuery removeAllTargetsQuery;
+    protected boolean hasCustomRemoveAllTargetsQuery;
     
     /**
      * PUBLIC:
@@ -362,6 +362,16 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
     }
     
     /**
+     * Overrides CollectionMappig because this mapping requires a DeleteAllQuery instead of a ModifyQuery.  
+     */
+    protected ModifyQuery getDeleteAllQuery() {
+        if (deleteAllQuery == null) {
+            deleteAllQuery = new DeleteAllQuery();//this is casted to a DeleteAllQuery
+        }
+        return deleteAllQuery;
+    }
+    
+    /**
      * INTERNAL:
      * Return source key fields for translation by an AggregateObjectMapping
      */
@@ -398,6 +408,9 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * Return the source/target key fields.
      */
     public Map<DatabaseField, DatabaseField> getSourceKeysToTargetForeignKeys() {
+        if (sourceKeysToTargetForeignKeys == null) {
+            sourceKeysToTargetForeignKeys = new HashMap(2);
+        }
         return sourceKeysToTargetForeignKeys;
     }
 
@@ -437,6 +450,9 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * Return the target/source key fields.
      */
     public Map<DatabaseField, DatabaseField> getTargetForeignKeysToSourceKeys() {
+        if (targetForeignKeysToSourceKeys == null) {
+            targetForeignKeysToSourceKeys = new HashMap(2);
+        }
         return targetForeignKeysToSourceKeys;
     }
 

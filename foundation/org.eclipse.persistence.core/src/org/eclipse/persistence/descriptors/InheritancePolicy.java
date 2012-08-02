@@ -15,6 +15,8 @@
  *       - 355093: Add new 'includeCriteria' flag to Multitenant metadata
  *     09/09/2011-2.3.1 Guy Pelletier 
  *       - 356197: Add new VPD type to MultitenantType
+ *     08/01/2012-2.5 Chris Delahunt
+ *       - 371950: Metadata caching 
  ******************************************************************************/  
 package org.eclipse.persistence.descriptors;
 
@@ -57,13 +59,12 @@ public class InheritancePolicy implements Serializable, Cloneable {
     protected String parentClassName;
     protected ClassDescriptor parentDescriptor;
     protected List<ClassDescriptor> childDescriptors;
-    protected transient DatabaseField classIndicatorField;
+    protected DatabaseField classIndicatorField;
     protected transient Map classIndicatorMapping;
-    protected transient Map classNameIndicatorMapping;
+    protected Map classNameIndicatorMapping;
     protected transient boolean shouldUseClassNameAsIndicator;
     protected transient Boolean shouldReadSubclasses;
-    protected transient boolean hasMultipleTableChild;
-    protected transient DatabaseTable readAllSubclassesView;
+    protected DatabaseTable readAllSubclassesView;
     protected transient List<Object> allChildClassIndicators;
     protected transient Expression onlyInstancesExpression;
     protected transient Expression withAllSubclassesExpression;
@@ -493,6 +494,9 @@ public class InheritancePolicy implements Serializable, Cloneable {
      * Used for queries on branch classes only.
      */
     protected List<Object> getAllChildClassIndicators() {
+        if (allChildClassIndicators == null) {
+            allChildClassIndicators = new ArrayList(4);
+        }
         return allChildClassIndicators;
     }
 
@@ -699,6 +703,9 @@ public class InheritancePolicy implements Serializable, Cloneable {
      * Return the association of indicators and classes using specified ConversionManager
      */
     public Map getClassIndicatorMapping() {
+        if (classIndicatorMapping == null) {
+            classIndicatorMapping = new HashMap(10);
+        }
         return classIndicatorMapping;
     }
 
@@ -707,7 +714,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
      * Return the mapping from class name to indicator, used by MW.
      */
     public Map getClassNameIndicatorMapping() {
-        if (classNameIndicatorMapping.isEmpty() && !classIndicatorMapping.isEmpty()) {
+        if (classNameIndicatorMapping.isEmpty() && classIndicatorMapping!=null && !classIndicatorMapping.isEmpty()) {
             Iterator keysEnum = classIndicatorMapping.keySet().iterator();
             Iterator valuesEnum = classIndicatorMapping.values().iterator();
             while (keysEnum.hasNext()) {

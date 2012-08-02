@@ -66,7 +66,11 @@ public class ConversionException extends EclipseLinkException {
     }
 
     public static ConversionException couldNotBeConverted(Object object, Class javaClass) {
-        Object[] args = { object, object.getClass(), javaClass };
+        Class objectClass = null;
+        if (object!=null) {
+            objectClass = object.getClass();
+        }
+        Object[] args = { object, objectClass, javaClass };
         String message = ExceptionMessageGenerator.buildMessage(ConversionException.class, COULD_NOT_BE_CONVERTED, args);
         ConversionException conversionException = new ConversionException(message, object, javaClass, null);
         conversionException.setErrorCode(COULD_NOT_BE_CONVERTED);

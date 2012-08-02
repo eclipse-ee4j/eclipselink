@@ -1460,6 +1460,7 @@ public abstract class ClassAccessor extends MetadataAccessor {
                     }
                 }
                 
+                getDescriptor().getClassDescriptor().setDescriptorCustomizerClassName(m_customizerClass.getName());
                 getDescriptor().setHasCustomizer();
                 getProject().addAccessorWithCustomizer(this);
             }

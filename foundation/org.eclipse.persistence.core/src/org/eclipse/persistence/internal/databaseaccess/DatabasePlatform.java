@@ -2255,7 +2255,7 @@ public class DatabasePlatform extends DatasourcePlatform {
         } else if (parameter instanceof BindCallCustomParameter) {
             ((BindCallCustomParameter)(parameter)).set(this, statement, index, session);
         } else if (typeConverters != null && typeConverters.containsKey(parameter.getClass())){
-            StructConverter converter = getTypeConverters().get(parameter.getClass());
+            StructConverter converter = typeConverters.get(parameter.getClass());
             parameter = converter.convertToStruct(parameter, getConnection(session, statement.getConnection()));
             statement.setObject(index, parameter);
         } else {

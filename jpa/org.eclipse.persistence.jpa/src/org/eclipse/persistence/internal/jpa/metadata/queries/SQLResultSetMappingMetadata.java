@@ -183,12 +183,6 @@ public class SQLResultSetMappingMetadata extends ORMetadata {
      * Process an sql result set mapping metadata into a EclipseLink 
      * SqlResultSetMapping and store it on the session. The order of processing
      * the results and adding them is important to be spec compliant.
-     * 
-     * NOTE: SQLResultSetMapping and queries are processed with the real
-     * classloader and therefore, any class dependencies must be loaded
-     * during processing. You can not rely on setting a class name and hope 
-     * rely on convert class names to classes to be called (it's already been 
-     * called)
      */
     public SQLResultSetMapping process() {        
         // Initialize a new SqlResultSetMapping (with the metadata name)

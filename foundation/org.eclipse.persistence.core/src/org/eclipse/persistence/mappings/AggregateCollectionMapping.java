@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     12/30/2010-2.3 Guy Pelletier  
  *       - 312253: Descriptor exception with Embeddable on DDL gen
+ *     07/27/2012-2.5 Chris Delahunt
+ *       - 371950: Metadata caching 
  ******************************************************************************/  
 package org.eclipse.persistence.mappings;
 
@@ -51,21 +53,21 @@ import org.eclipse.persistence.sessions.remote.DistributedSession;
 public class AggregateCollectionMapping extends CollectionMapping implements RelationalMapping, MapComponentMapping, EmbeddableMapping {
 
     /** This is a key in the target table which is a foreign key in the target table. */
-    protected transient Vector<DatabaseField> targetForeignKeyFields;
+    protected Vector<DatabaseField> targetForeignKeyFields;
 
     /** This is a primary key in the source table that is used as foreign key in the target table */
-    protected transient Vector<DatabaseField> sourceKeyFields;
+    protected Vector<DatabaseField> sourceKeyFields;
 
     /** Foreign keys in the target table to the related keys in the source table */
-    protected transient Map<DatabaseField, DatabaseField> targetForeignKeyToSourceKeys;
+    protected Map<DatabaseField, DatabaseField> targetForeignKeyToSourceKeys;
 
     /** Map the name of a field in the aggregate collection descriptor to a field in the actual table specified in the mapping. */
-    protected transient Map<String, DatabaseField> aggregateToSourceFields;
+    protected Map<String, DatabaseField> aggregateToSourceFields;
 
     /** Map the name of an attribute of the reference descriptor mapped with AggregateCollectionMapping to aggregateToSourceFieldNames
      * that should be applied to this mapping.
      */
-    protected transient Map<String, Map<String, DatabaseField>> nestedAggregateToSourceFields;
+    protected Map<String, Map<String, DatabaseField>> nestedAggregateToSourceFields;
 
     /** In RemoteSession case the mapping needs the reference descriptor serialized from the server, 
      * but referenceDescriptor attribute defined as transient in the superclass. To overcome that
@@ -79,7 +81,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     /** Indicates whether the entire target object is primary key - in that case the object can't be updated in the db,
      * but rather deleted and then re-inserted. 
      */
-    protected transient boolean isEntireObjectPK;
+    protected boolean isEntireObjectPK;
     
     /** These queries used to update listOrderField
      */
@@ -1186,6 +1188,16 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         }
 
         return criteria;
+    }
+
+    /**
+     * Overrides CollectionMappig because this mapping requires a DeleteAllQuery instead of a ModifyQuery.  
+     */
+    protected ModifyQuery getDeleteAllQuery() {
+        if (deleteAllQuery == null) {
+            deleteAllQuery = new DeleteAllQuery();//this is casted to a DeleteAllQuery
+        }
+        return deleteAllQuery;
     }
 
     /**

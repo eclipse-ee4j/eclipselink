@@ -14,6 +14,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.queries;
 
+import java.io.Serializable;
+
 import org.eclipse.persistence.sessions.DatabaseRecord;
 
 /**
@@ -27,7 +29,7 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
  * @author Gordon Yorke
  * @since TopLink Java Essentials
  */
-public abstract class SQLResult {
+public abstract class SQLResult implements Serializable{
     protected SQLResultSetMapping sqlResultSetMapping;
     
     /**

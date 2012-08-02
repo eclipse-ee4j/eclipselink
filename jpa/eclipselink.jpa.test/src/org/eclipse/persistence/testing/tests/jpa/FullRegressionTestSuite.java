@@ -26,6 +26,7 @@ import org.eclipse.persistence.testing.tests.jpa.advanced.AdvancedJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.CacheImplJUnitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.CallbackEventJUnitTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.advanced.EntityManagerJUnitTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.advanced.MetadataCachingTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.advanced.QueryCastTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.advanced.SQLResultSetMappingTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.advanced.JoinedAttributeAdvancedJunitTest;
@@ -133,6 +134,7 @@ public class FullRegressionTestSuite extends TestSuite {
         suite.addTest(PessimisticLockingExtendedScopeTestSuite.suite());
         suite.addTest(UpdateAllQueryAdvancedJunitTest.suite());
         suite.addTest(ComplexAggregateTestSuite.suite());
+        suite.addTest(MetadataCachingTestSuite.suite());
         fullSuite.addTest(suite);
 
         // FieldAccess advanced model

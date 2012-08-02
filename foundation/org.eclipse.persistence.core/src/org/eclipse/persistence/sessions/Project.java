@@ -112,10 +112,12 @@ public class Project implements Serializable, Cloneable {
     /** Default value for ClassDescriptor.idValidation. */
     protected IdValidation defaultIdValidation = null;
     
-    
     /** List of queries - once Project is initialized, these are copied to the Session. */
-    protected transient List<DatabaseQuery> queries = null;
-    
+    protected List<DatabaseQuery> queries = null;
+
+    /** List of queries from JPA that need special processing before execution. */
+    protected List<DatabaseQuery> jpaQueries;
+
     /** Flag that allows native queries or not */
     protected boolean allowNativeSQLQueries = true;
     
@@ -150,6 +152,10 @@ public class Project implements Serializable, Cloneable {
     protected String vpdIdentifier;
     protected String vpdLastIdentifierClassName; // Used for validation exception.
     
+    /** used for Caching JPA projects */
+    protected Collection<String> classNamesForWeaving;
+    protected Collection<String> structConverters;
+
     /**
      * PUBLIC:
      * Create a new project.
@@ -207,13 +213,28 @@ public class Project implements Serializable, Cloneable {
     public void setDefaultTemporalMutable(boolean defaultTemporalMutable) {
         this.defaultTemporalMutable = defaultTemporalMutable;
     }
-    
+
+    /**
+     * INTERNAL:
+     * Return all pre-defined not yet parsed JPQL queries.
+     */
+    public List<DatabaseQuery> getJPAQueries() {
+        // PERF: lazy init, not normally required.
+        if (jpaQueries == null) {
+            jpaQueries = new ArrayList();
+        }
+        return jpaQueries;
+    }
+
     /**
      * INTERNAL:
      * Return the JPQL parse cache.
      * This is used to optimize dynamic JPQL.
      */
     public ConcurrentFixedCache getJPQLParseCache() {
+        if (jpqlParseCache==null) {
+            jpqlParseCache = new ConcurrentFixedCache(200);
+        }
         return jpqlParseCache;
     }
 
@@ -671,6 +692,24 @@ public class Project implements Serializable, Cloneable {
     }
 
     /**
+     * INTERNAL:
+     * Returns all classes in this project that are needed for weaving. 
+     * This list currently includes entity, embeddables and mappedSuperClasses.
+     */
+    public Collection<String> getClassNamesForWeaving() {
+        return classNamesForWeaving;
+    }
+
+    /**
+     * INTERNAL:
+     * Returns all classes in this project that are needed for weaving. 
+     * This list currently includes entity, embeddables and mappedSuperClasses.
+     */
+    public void setClassNamesForWeaving(Collection<String> classNamesForWeaving) {
+        this.classNamesForWeaving = classNamesForWeaving;
+    }
+
+    /**
      * OBSOLETE:
      * Return the login, the login holds any database connection information given.
      * This has been replaced by getDatasourceLogin to make use of the Login interface
@@ -710,7 +749,25 @@ public class Project implements Serializable, Cloneable {
         }
         return this.sqlResultSetMappings.get(sqlResultSetMapping);
     }
-    
+
+    /**
+     * INTERNAL:
+     * Returns structure converter class names that would be set on the databasePlatform instance
+     * This is used to avoid the platform instance changing at login.
+     */
+    public Collection<String> getStructConverters() {
+        return structConverters;
+    }
+
+    /**
+     * INTERNAL:
+     * Returns structure converter class names that would be set on the databasePlatform instance
+     * This is used to avoid the platform instance changing at login.
+     */
+    public void setStructConverters(Collection<String> structConverters) {
+        this.structConverters = structConverters;
+    }
+
     /**
      * INTERNAL:
      * Return the name of the last class to set a VPD identifiers.
@@ -1247,7 +1304,15 @@ public class Project implements Serializable, Cloneable {
         
         return this.mappedSuperclassDescriptors.containsKey(className);
     }
- 
+
+    /**
+     * INTERNAL:
+     * Return all pre-defined not yet parsed EJBQL queries.
+     */
+    public void addJPAQuery(DatabaseQuery query) {
+        getJPAQueries().add(query);
+    }
+
     /**
      * INTERNAL:
      * 266912: Add a descriptor to the Map of mappedSuperclass descriptors

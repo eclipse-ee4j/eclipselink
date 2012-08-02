@@ -2339,7 +2339,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
             org.eclipse.persistence.expressions.Expression conditionExp = ((InternalSelection)condition).getCurrentNode();
             conditionExp = org.eclipse.persistence.expressions.Expression.from(conditionExp, currentNode);
             ((FunctionExpression)currentNode).addChild(conditionExp);
-            org.eclipse.persistence.expressions.Expression resultExp = ((InternalSelection)condition).getCurrentNode();
+            org.eclipse.persistence.expressions.Expression resultExp = ((InternalSelection)result).getCurrentNode();
             resultExp = org.eclipse.persistence.expressions.Expression.from(resultExp, currentNode);
             ((FunctionExpression)currentNode).addChild(resultExp);
             return this;

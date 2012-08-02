@@ -53,7 +53,7 @@ import org.eclipse.persistence.queries.FetchGroupTracker;
  * @author King Wang, dclarke
  * @since TopLink 10.1.3.
  */
-public class FetchGroupManager implements Cloneable {
+public class FetchGroupManager implements Cloneable, java.io.Serializable {
     //The group map is keyed by the group name, valued by the fetch group object. 
     private Map<String, FetchGroup> fetchGroups = null;
 

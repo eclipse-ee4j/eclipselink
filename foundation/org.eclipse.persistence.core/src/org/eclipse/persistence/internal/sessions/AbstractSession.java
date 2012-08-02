@@ -127,7 +127,7 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     transient protected Map<String, List<DatabaseQuery>> queries;
 
     /** Stores predefined not yet parsed JPQL queries.*/
-    transient protected List<DatabaseQuery> jpaQueries;
+    protected boolean jpaQueriesProcessed = false;
 
     /** Resolves referential integrity on commits. */
     transient protected CommitManager commitManager;
@@ -2230,24 +2230,23 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * Return all pre-defined not yet parsed JPQL queries.
      */
     public List<DatabaseQuery> getJPAQueries() {
-        // PERF: lazy init, not normally required.
-        if (jpaQueries == null) {
-            jpaQueries = new Vector();
-        }
-        return jpaQueries;
+        return getProject().getJPAQueries();
     }
 
     /**
      * INTERNAL:
      * Process the JPA named queries into EclipseLink Session queries.
      */
-    public void processJPAQueries() {
-        for (DatabaseQuery jpaQuery : getJPAQueries()) {
-            jpaQuery.checkPrepare(this, null);
-            DatabaseQuery databaseQuery = (DatabaseQuery)jpaQuery.getProperty("databasequery");
-            addQuery(databaseQuery.getName(), databaseQuery);
+    protected void processJPAQueries() {
+        if (!jpaQueriesProcessed) {
+            for (DatabaseQuery jpaQuery : getProject().getJPAQueries()) {
+                jpaQuery.checkPrepare(this, null);
+                DatabaseQuery databaseQuery = (DatabaseQuery)jpaQuery.getProperty("databasequery");
+                databaseQuery = (databaseQuery==null)? jpaQuery: databaseQuery;
+                addQuery(databaseQuery);
+            }
+            jpaQueriesProcessed = true;
         }
-        getJPAQueries().clear();
     }
 
     /**
@@ -3111,6 +3110,14 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
     }
     
     /**
+     * INTERNAL:
+     * used to see if JPA Queries have been processed during initialization
+     */
+    public boolean isJPAQueriesProcessed(){
+        return this.jpaQueriesProcessed;
+    }
+    
+    /**
      * PUBLIC:
      * Returns true if Protected Entities should be built within this session
      */
@@ -3612,6 +3619,14 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      */
     public void setIntegrityChecker(IntegrityChecker integrityChecker) {
         this.integrityChecker = integrityChecker;
+    }
+    
+    /**
+     * INTERNAL:
+     * used to set if JPA Queries have been processed during initialization
+     */
+    public void setJPAQueriesProcessed(boolean jpaQueriesProcessed){
+        this.jpaQueriesProcessed = jpaQueriesProcessed;
     }
 
     /**

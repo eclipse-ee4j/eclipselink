@@ -54,7 +54,7 @@ public class ObjectTypeConverter implements Converter {
     protected transient Map fieldToAttributeValues;
     protected Map attributeToFieldValues;
     protected transient Object defaultAttributeValue;
-    protected transient String defaultAttributeValueString;
+    protected String defaultAttributeValueString;
     protected transient Class fieldClassification;
     protected transient String fieldClassificationName;
     
@@ -316,6 +316,9 @@ public class ObjectTypeConverter implements Converter {
      * Get the field to attribute mapping.
      */
     public Map getFieldToAttributeValues() {
+        if (fieldToAttributeValues == null) {
+            fieldToAttributeValues = new HashMap(10);
+        }
         return fieldToAttributeValues;
     }
 

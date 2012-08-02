@@ -50,7 +50,7 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
      * Indicates whether target's optimistic locking value should be incremented on
      * target being added to / removed from a source. 
      **/
-    protected transient boolean shouldIncrementTargetLockValueOnAddOrRemoveTarget;
+    protected boolean shouldIncrementTargetLockValueOnAddOrRemoveTarget;
 
     /**
      * Indicates whether target's optimistic locking value should be incremented on
@@ -58,7 +58,7 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
      * Note that if the flag is set to true then the indirection will be triggered on
      * source delete - in order to verify all targets' versions.
      **/
-    protected transient boolean shouldIncrementTargetLockValueOnDeleteSource;
+    protected boolean shouldIncrementTargetLockValueOnDeleteSource;
 
     /**
      * PUBLIC:

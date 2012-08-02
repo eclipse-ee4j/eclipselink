@@ -46,7 +46,7 @@ public class ManyToManyMapping extends CollectionMapping implements RelationalMa
     protected static final String ObjectAdded = "objectAdded";
 
     /** Mechanism holds relationTable and all fields and queries associated with it. */
-    protected transient RelationTableMechanism mechanism;
+    protected RelationTableMechanism mechanism;
     protected HistoryPolicy historyPolicy;
 
     /**

@@ -42,10 +42,10 @@ public abstract class DatasourceCall implements Call {
     protected DatabaseQuery query;
 
     // The parameters (values) are ordered as they appear in the call.
-    transient protected List parameters;
+    protected List parameters;
 
     // The parameter types determine if the parameter is a modify, translation or literal type.
-    transient protected List<Integer> parameterTypes;
+    protected List<Integer> parameterTypes;
     public static final Integer LITERAL = Integer.valueOf(1);
     public static final Integer MODIFY = Integer.valueOf(2);
     public static final Integer TRANSLATION = Integer.valueOf(3);
@@ -895,5 +895,40 @@ public abstract class DatasourceCall implements Call {
      */
     public boolean isNativeConnectionRequired() {
         return isNativeConnectionRequired;
+    }
+
+    /**
+     * INTERNAL:
+     * This method is used to correct parameterTypes which are compared to static values using == equality, which changes 
+     * during serialization/deserialization.  
+     * @param in
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
+        if (parameterTypes !=null) {
+            List<Integer> newParameterTypes = new ArrayList<Integer>(parameterTypes.size());
+            for (Integer type: parameterTypes){
+                if (LITERAL.equals(type)) {
+                    newParameterTypes.add(LITERAL);
+                } else if (MODIFY.equals(type)) {
+                    newParameterTypes.add(MODIFY);
+                } else if (TRANSLATION.equals(type)) {
+                    newParameterTypes.add(TRANSLATION);
+                } else if (CUSTOM_MODIFY.equals(type)) {
+                    newParameterTypes.add(CUSTOM_MODIFY);
+                } else if (OUT.equals(type)) {
+                    newParameterTypes.add(OUT);
+                } else if (INOUT.equals(type)) {
+                    newParameterTypes.add(INOUT);
+                } else if (IN.equals(type)) {
+                    newParameterTypes.add(IN);
+                } else if (OUT_CURSOR.equals(type)) {
+                    newParameterTypes.add(OUT_CURSOR);
+                } 
+            }
+            parameterTypes = newParameterTypes;
+        }
     }
 }

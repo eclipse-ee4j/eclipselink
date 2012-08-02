@@ -1553,6 +1553,38 @@ public class PersistenceUnitProperties {
     public static final String SESSIONS_XML = "eclipselink.sessions-xml";
 
     /**
+     * The <code>"eclipselink.project-cache"</code>property configures the type of
+     * ProjectCacheAccessor implementation to use to retrieve and store projects
+     * representing the metadata for the project
+     * <p>
+     * Values (case insensitive):
+     * <ul>
+     * <li>"java-serialization": Use {@link FileBasedProjectCache}
+     * <li>Custom ProjectCacheAccessor - Specify a custom class name which
+     * implements {@link ProjectCacheAccessor}
+     * </ul>
+     * 
+     * @see ProjectCacheAccessor
+     */
+    public static final String PROJECT_CACHE = "eclipselink.project-cache"; 
+    
+    /**
+     * The property <code>"eclipselink.project-cache.java-serialization.file"</code>
+     * 
+     * <p>Specifies the name of the file to read/write a serialized project representing the application's
+     * metadata</p>* 
+     * 
+     * 
+     * <p>Specifies the name of the metadata repository xml file to read from using classloader to find the resource</p>
+     * 
+     * <p>This property should be used in conjunction with 
+     * <code>"eclipselink.project-cache"</code> when a project is serialized to a file for caching.</p>
+     * 
+     * @see #PROJECT_CACHE
+     */
+    public static final String PROJECT_CACHE_FILE = "eclipselink.project-cache.java-serialization.file-location";
+
+    /**
      * The <code>"eclipselink.temporal.mutable"</code> property configures the
      * default for detecting changes to temporal field (Date, Calendar). Default
      * "false" (changes to date object itself are not detected). By default it

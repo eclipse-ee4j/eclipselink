@@ -65,7 +65,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
 
     /** To specify the conversion type */
     protected transient Class attributeClassification;
-    protected transient String attributeClassificationName;
+    protected String attributeClassificationName;
     
     /** PERF: Also store object class of attribute in case of primitive. */
     protected transient Class attributeObjectClassification;

@@ -57,7 +57,7 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
  * that was originally defined in ManyToManyMapping
  * and now is shared with OneToOneMapping. 
  */
-public class RelationTableMechanism  implements Cloneable {
+public class RelationTableMechanism  implements Cloneable, java.io.Serializable {
     /** The intermediate relation table. */
     protected DatabaseTable relationTable;
 

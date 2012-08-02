@@ -19,6 +19,8 @@
  *       - 355093: Add new 'includeCriteria' flag to Multitenant metadata
  *     09/09/2011-2.3.1 Guy Pelletier
  *       - 356197: Add new VPD type to MultitenantType
+ *     08/01/2012-2.5 Chris Delahunt
+ *       - 371950: JPA Metadata caching
  ******************************************************************************/
 package org.eclipse.persistence.descriptors;
 
@@ -85,18 +87,18 @@ import org.eclipse.persistence.queries.WriteObjectQuery;
  * @see ClassDescriptor
  */
 public class DescriptorQueryManager implements Cloneable, Serializable {
-    protected transient InsertObjectQuery insertQuery;
-    protected transient UpdateObjectQuery updateQuery;
-    protected transient ReadObjectQuery readObjectQuery;
-    protected transient ReadAllQuery readAllQuery;
-    protected transient DeleteObjectQuery deleteQuery;
+    protected InsertObjectQuery insertQuery;
+    protected UpdateObjectQuery updateQuery;
+    protected ReadObjectQuery readObjectQuery;
+    protected ReadAllQuery readAllQuery;
+    protected DeleteObjectQuery deleteQuery;
     protected DoesExistQuery doesExistQuery;
     protected ClassDescriptor descriptor;
     protected boolean hasCustomMultipleTableJoinExpression;
-    protected transient String additionalCriteria;
+    protected String additionalCriteria;
     protected transient Expression additionalJoinExpression;
     protected transient Expression multipleTableJoinExpression;
-    protected transient Map<String, List<DatabaseQuery>> queries;
+    protected Map<String, List<DatabaseQuery>> queries;
     protected transient Map<DatabaseTable, Expression> tablesJoinExpressions;
     /** PERF: Update call cache for avoiding regenerated update SQL. */
     protected transient ConcurrentFixedCache cachedUpdateCalls;

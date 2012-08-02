@@ -17,6 +17,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.descriptors;
 
+import java.io.Serializable;
+
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -28,7 +30,7 @@ import org.eclipse.persistence.tools.schemaframework.TableDefinition;
  * @author Guy Pelletier
  * @since EclipseLink 2.3.1
  */
-public interface MultitenantPolicy {
+public interface MultitenantPolicy extends Serializable {
     public abstract void addToTableDefinition(TableDefinition tableDefinition);
     public abstract void addFieldsToRow(AbstractRecord row, AbstractSession session);
     public abstract MultitenantPolicy clone(ClassDescriptor descriptor);

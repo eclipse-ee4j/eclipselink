@@ -102,7 +102,10 @@ public class EntityClassListenerMetadata extends EntityListenerMetadata {
         
         // Add the listener only if we actually found callback methods.
         if (m_listener.hasCallbackMethods()) {
-            m_descriptor.setEntityEventListener(m_listener);
+            JPAEntityListenerHolder holder = new JPAEntityListenerHolder();
+            holder.listener = m_listener;
+            holder.convertToSerializableMethods(m_listener.getAllEventMethods());
+            m_descriptor.getClassDescriptor().getEventManager().addEntityListenerHolder(holder);
         }
     }
 }

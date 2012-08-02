@@ -184,6 +184,13 @@ parseHandoff() {
     fi
 }
 
+## Set an expected variable "ProcExpected" and "ProcSuccessful"
+## compare at end and if match delete local build artifacts
+## and handoff file.
+# 100 - artifacts to pub
+#  10 - p2 to pub
+#   1 - maven to pub (should be set if 100 = true)
+
 unset publishBuildArtifacts
 publishBuildArtifacts() {
     # Usage: publishBuildArtifacts src dest version date timestamp

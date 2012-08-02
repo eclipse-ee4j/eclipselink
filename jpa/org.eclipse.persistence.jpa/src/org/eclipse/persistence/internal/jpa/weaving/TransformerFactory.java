@@ -183,7 +183,7 @@ public class TransformerFactory {
                 ClassDetails classDetails = (ClassDetails)i.next();
                 ClassDetails superClassDetails = classDetailsMap.get(classDetails.getSuperClassName());
                 if (superClassDetails == null) {
-                    ClassDescriptor descriptor = findDescriptor(session.getProject(), classDetails.getClassName());
+                    ClassDescriptor descriptor = findDescriptor(session.getProject(), classDetails.getDescribedClass().getName());
                     if (descriptor != null && descriptor.hasInheritance()){
                         superClassDetails = classDetailsMap.get(descriptor.getInheritancePolicy().getParentClassName());
                     }

@@ -33,7 +33,7 @@ import org.eclipse.persistence.queries.AttributeGroup;
 public class CopyGroup extends AttributeGroup {
     protected boolean shouldResetPrimaryKey;
     protected boolean shouldResetVersion;
-    protected org.eclipse.persistence.internal.sessions.AbstractSession session;
+    protected transient org.eclipse.persistence.internal.sessions.AbstractSession session;
     protected Map copies;
 
     /** Policy depth that determines how the copy will cascade to the object's

@@ -374,13 +374,6 @@ public class MetadataDescriptor {
     public void addIdAttributeName(String idAttributeName) {
         m_idAttributeNames.add(idAttributeName);    
     }
-    
-    /**
-     * INTERNAL:
-     */
-    public void addInternalListener(DescriptorEventListener validationListener) {
-        m_descriptor.getEventManager().addinternalListener(validationListener);
-    }
 
     /**
      * INTERNAL:
