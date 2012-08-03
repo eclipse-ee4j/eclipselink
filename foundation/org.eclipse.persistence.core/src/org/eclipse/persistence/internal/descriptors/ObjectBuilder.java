@@ -3089,9 +3089,6 @@ public class ObjectBuilder implements Cloneable, Serializable {
      * Return the non primary key mappings.
      */
     protected List<DatabaseMapping> getNonPrimaryKeyMappings() {
-        if (nonPrimaryKeyMappings == null) {
-            nonPrimaryKeyMappings = new ArrayList(10);
-        }
         return nonPrimaryKeyMappings;
     }
 
@@ -3184,6 +3181,9 @@ public class ObjectBuilder implements Cloneable, Serializable {
         getCloningMappings().clear();
         getEagerMappings().clear();
         getRelationshipMappings().clear();
+        if (nonPrimaryKeyMappings == null) {
+            nonPrimaryKeyMappings = new ArrayList(10);
+        }
 
         for (Enumeration mappings = this.descriptor.getMappings().elements();
                  mappings.hasMoreElements();) {
@@ -3428,17 +3428,18 @@ public class ObjectBuilder implements Cloneable, Serializable {
         if(null != primaryKeyMappings) {
             primaryKeyMappings.clear();
         }
-        if(null != nonPrimaryKeyMappings) {
-            nonPrimaryKeyMappings.clear();
-        }
 
         // This must be before because the secondary table primary key fields are registered after
-        for (Iterator fields = getMappingsByField().keySet().iterator(); fields.hasNext();) {
-            DatabaseField field = (DatabaseField)fields.next();
-            if (null ==primaryKeyFields || !primaryKeyFields.contains(field)) {
-                DatabaseMapping mapping = getMappingForField(field);
-                if (!getNonPrimaryKeyMappings().contains(mapping)) {
-                    getNonPrimaryKeyMappings().add(mapping);
+        //but no point doing it if the nonPrimaryKeyMappings collection is null
+        if (nonPrimaryKeyMappings != null) {
+            nonPrimaryKeyMappings.clear();
+            for (Iterator fields = getMappingsByField().keySet().iterator(); fields.hasNext();) {
+                DatabaseField field = (DatabaseField)fields.next();
+                if (null ==primaryKeyFields || !primaryKeyFields.contains(field)) {
+                    DatabaseMapping mapping = getMappingForField(field);
+                    if (!getNonPrimaryKeyMappings().contains(mapping)) {
+                        getNonPrimaryKeyMappings().add(mapping);
+                    }
                 }
             }
         }
