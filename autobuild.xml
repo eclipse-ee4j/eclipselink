@@ -33,9 +33,9 @@
 
 <!-- =============================================================================
 *  General Comments
-*  This buildfile contains automation specific instructions for the automated build
-*  process using Hudson for EclipseLink at Eclipse and is intended to be called by
-*  Hudson (generic user).
+*  This buildfile contains branch and automation specific instructions for the
+*  automated build process using Hudson for EclipseLink at Eclipse and is intended
+*  to be called by Hudson (generic user).
 *
 *  All publishing commands are now in a separate xml file (publishbuild.xml)
 *================================================================================= -->
@@ -193,7 +193,7 @@
         <!-- generate Release Designation string for manifest                     -->
         <property name="release.designation" value="EclipseLink ${release.version}"/>
 
-        <!-- generate string for tag creation (used for maven publish anf handoff-version as well)  -->
+        <!-- generate string for tag creation (used for maven publish and handoff-version as well)  -->
         <condition property="milestone.tag" value="${release.version}">
             <equals arg1="${build.type}" arg2="RELEASE"/>
         </condition>
@@ -235,25 +235,6 @@
 
     <target name="clean" depends="init">
         <ant antfile="antbuild.xml" dir="${build.location}" target="clean"/>
-    </target>
-
-    <target name="cleanSchema" depends="common-init">
-        <echo message="Cleaning the db schema for '${db.name}'..."/>
-        <echo message="drop schema ${DB_NAME};" file="sql.sql" append="false"/>
-        <echo message="create schema ${DB_NAME};" file="sql.sql" append="true"/>
-        <exec outputproperty="dbclean.result"
-            failonerror="false"
-            failifexecutionfails="false"
-            errorproperty="dbclean.failed"
-            logError="true"
-            executable="mysql">
-            <arg value="-u${db.user}"/>
-            <arg value="-p${db.pwd}"/>
-            <arg value="-e'drop schema ${DB_NAME}; create schema ${DB_NAME};'"/>
-        </exec>
-        <!-- does -e"drop schema ${DB_NAME}; create schema ${DB_NAME};" work??? -->
-        <delete file="sql.sql" failonerror="false"/>
-        <echo message="done."/>
     </target>
 
     <target name="build" depends="init">
