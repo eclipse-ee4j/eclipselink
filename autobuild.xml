@@ -33,16 +33,11 @@
 
 <!-- =============================================================================
 *  General Comments
-*  This buildfile contains branch specific instructions for the automated build
-*  process for EclipseLink and is intended to be called by the generic
-*  "bootstrap.xml" which is called by bootstrap.sh.
-*     Autobuild contains targets to generate and test continuous and nightly
-*        snapshot, monthly and Release milestone builds, with the associated
-*        Delivery steps (uploading files and test results to the download
-*        server, interfacing with the "uploadToMaven" script, tagging source,
-*        etc.  It is not intended to be  executed directly, nor does it directly
-*        build or package EclipseLink. It is designed to be run on the Eclipse
-*        Build Server (an IBM PowerPC running Linux)
+*  This buildfile contains branch and automation specific instructions for the
+*  automated build process using Hudson for EclipseLink at Eclipse and is intended
+*  to be called by Hudson (generic user).
+*
+*  All publishing commands are now in a separate xml file (publishbuild.xml)
 *================================================================================= -->
 <project name="AutoBuild" basedir="." default="build-nightly">
 <echo message="---- AutoBuild.xml ----"/>
@@ -56,53 +51,73 @@
 
     <!-- Define custom task to "cleanup" the revision information -->
     <property name="custom.tasks.lib" value="${build.location}/buildsystem/ant_customizations.jar"/>
-    <property name="custom.cleanrev.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.CleanRevision"/>
     <property name="custom.echo.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.Say"/>
     <available file="${custom.tasks.lib}" property="ant_customizations.exist"/>
     <fail unless="ant_customizations.exist" message="Cannot find custom tasks library: '${custom.tasks.lib}' directory"/>
-    <taskdef  name="cleanRevision" classname="${custom.cleanrev.task.class}" classpath="${custom.tasks.lib}"/>
     <taskdef  name="say"           classname="${custom.echo.task.class}"     classpath="${custom.tasks.lib}"/>
 
-    <target name="build-no-publish" description="Trigger an automated build without testing or publish"
-            depends="clean, build-np"
-    />
     <target name="build-nightly"    description="Trigger the nightly automated build and lrg tests"
             depends="clean, build, test-lrg"
-    />
-    <target name="build-milestone"  description="Trigger build, testing, and publishing of a milestone release ('release' is a milestone in this case)"
-            depends="promote-init, sign-and-wait, regen-archives, publish-milestone, create-tag"
     />
     <target name="build-continuous" description="Trigger an automated build and run the tests if source changes exist"
             depends="clean, build-no-javadoc, build-utils, test-srg"
     />
     <target name="build-ora-extension" description="Trigger the automated oracle extension build"
-            depends="init, build-oracle-extension, publish-oracle-extension"
-    />
-
-    <target name="build-ora-nosql" description="Placeholder: has to be here due to changes in bootstrap"
-            depends="init"
+            depends="init, build-oracle-extension"
     />
 
     <target name="init" depends="pre-init, common-init"/>
 
-    <target name="get-svn-rev" unless="svn.revision">
-        <!-- get svn.revision    NOTE: if get fails defaulted to "NA"              -->
-        <exec outputproperty="svn.revision"
-            failonerror="false"
-            failifexecutionfails="false"
-            errorproperty="svnversion.failed"
-            logError="true"
-            executable="${svn.exec}">
-            <arg value="info"/>
-            <arg value="--revision"/>
-            <arg value="HEAD"/>
-            <arg value="${svn.branch.url}"/>
-        </exec>
-        <cleanRevision input="${svn.revision}" property="svn.revision"/>
-        <property name="svn.revision" value="NA"/>
+    <target name="set-defaults">
+        <property name="branch" value="master"/>
+
+        <condition property="git.exec"   value="${env.GIT_EXEC}">
+            <isset property="env.GIT_EXEC"/>
+        </condition>
+        <property name="git.exec" value="/usr/bin/git"/>
+        <property name="build.deps.dir"  value="${extensions.depend.dir}"/>
+        <property name="junit.dir"       value="${build.deps.dir}/junit"/>
+        <property name="build.tool.root" value="${build.location}"/>
+        <property file="${build.tool.root}/db-${branch}.properties"/>
     </target>
 
-    <target name="pre-init" depends="get-svn-rev">
+    <target name="get-git-hash" unless="git.hash" depends="set-defaults">
+        <!-- get git.hash    NOTE: if get fails defaulted to "NA" -->
+        <exec outputproperty="git.hash"
+            failonerror="false"
+            failifexecutionfails="false"
+            errorproperty="githash.failed"
+            logError="true"
+            executable="${git.exec}">
+            <arg value="log"/>
+            <arg value="-1"/>
+            <arg value="--format=%h"/>
+        </exec>
+        <property name="git.hash" value="NA"/>
+    </target>
+
+    <target name="get-git-branch" unless="branch" depends="set-defaults">
+        <!-- get git branch (parse results of "git branch")           -->
+        <exec outputproperty="git.output"
+            failonerror="false"
+            failifexecutionfails="false"
+            errorproperty="gitbranch.failed"
+            logError="true"
+            executable="${git.exec}">
+            <arg value="branch"/>
+        </exec>
+        <exec outputproperty="branch"
+            failonerror="false"
+            failifexecutionfails="false"
+            errorproperty="echo.failed"
+            logError="true"
+            executable="echo">
+            <arg value="$git.output"/>
+        </exec>
+        <property name="git.hash" value="NA"/>
+    </target>
+
+    <target name="pre-init" depends="get-git-hash">
         <tstamp>
             <format property="build.date" pattern="yyyyMMdd"/>
             <format property="build.time" pattern="HHmm"/>
@@ -113,19 +128,44 @@
         <!-- #                       db for post-build testing.                    -->
         <!-- # coretest.prop.file  - the file generated by the build, that holds   -->
         <!-- #                       the db properties for automated testing       -->
-        <property name="coretest.prop.file" value="${log.dir}/mysql.jpa.test.properties"/>
-        <property name="test.properties.run" value="${coretest.prop.file}"/>
+        <property name="coretest.prop.file"   value="${build.location}/mysql.jpa.test.properties"/>
+        <property name="test.properties.run"  value="${coretest.prop.file}"/>
+        <!-- added because looks like property name may have changed, or override was failing -->
+        <property name="core.test.properties" value="${coretest.prop.file}"/>
 
-        <!-- build.type should default to "SNAPSHOT, unless it is set to "M#"  -->
+        <!-- build.type should default to "SNAPSHOT, unless it is set to "M#"    -->
         <!--   or "RELEASE" on the command-line for milestone or release builds  -->
         <property name="build.type" value="SNAPSHOT"/>
 
         <!-- Set version.qualifier appropriately. variable should only be used    -->
         <!--    for uploaded filenames  or manifest entries.                      -->
         <condition property="version.qualifier" value="qualifier"
-                                                else="v${build.date}-r${svn.revision}">
-            <equals arg1="${svn.revision}" arg2="NA"/>
+                                                else="v${build.date}-${git.hash}">
+            <equals arg1="${git.hash}" arg2="NA"/>
         </condition>
+        <echo message="ANT_ARGS='${env.ANT_ARGS}'"/>
+        <echo message="ANT_OPTS='${env.ANT_OPTS}'"/>
+        <echo message=" "/>
+        <echo message="env.JAVA_HOME   = '${env.JAVA_HOME}'"/>
+        <echo message="env.ANT_HOME    = '${env.ANT_HOME}'"/>
+        <echo message="env.JUNIT_HOME  = '${env.JUNIT_HOME}'"/>
+        <echo message="env.MAVENANT_DIR= '${env.MAVENANT_DIR}'"/>
+        <echo message="env.PATH        = '${env.PATH}'"/>
+        <echo message="env.CLASSPATH   = '${env.CLASSPATH}'"/>
+        <echo message="env.GIT_EXEC    = '${env.GIT_EXEC}'"/>
+        <echo message="env.TARGET      = '${env.TARGET}'"/>
+        <echo message=" "/>
+        <echo message="java.version   ='${java.version}'"/>
+        <echo message="os.name        ='${os.name}'"/>
+        <echo message="os.arch        ='${os.arch}'"/>
+        <echo message="os.version     ='${os.version}'"/>
+        <echo message=" "/>
+        <echo message="builddate.buildtime='${build.date}.${build.time}'"/>
+        <echo message="coretest.prop.file='${coretest.prop.file}'"/>
+        <echo message="test.properties.run='${test.properties.run}'"/>
+        <echo message="build.type='${build.type}'"/>
+        <echo message="version.qualifier='${version.qualifier}'"/>
+        <echo message=" "/>
     </target>
 
     <target name="common-init">
@@ -135,10 +175,219 @@
         <!--    uploaded filenames  or manifest entries.                          -->
         <property name="version.string" value="${release.version}.${version.qualifier}"/>
 
+        <!-- Set extract.dir appropriately for this build                         -->
+        <property name="extract.dir" value="${build.tool.root}/exported_builds/${release.version}/${version.qualifier}"/>
+
         <!-- For signed archive name need "version.string" defined first -->
         <property name="p2.archive.presigned.zip" value="eclipselink-P2-${version.string}.zip"/>
         <property name="p2.archive.signed.zip"    value="eclipselink-P2signed-${version.string}.zip"/>
 
+        <!-- generate Release Designation string for manifest                     -->
+        <property name="release.designation" value="EclipseLink ${release.version}"/>
+
+        <!-- generate string for tag creation (used for maven publish and handoff-version as well)  -->
+        <condition property="milestone.tag" value="${release.version}">
+            <equals arg1="${build.type}" arg2="RELEASE"/>
+        </condition>
+        <property name="milestone.tag" value="${release.version}-${build.type}"/>
+        <echo message="milestone.tag        ='${milestone.tag}'"/>
+
+        <!-- Now that all our overrides are complete, pull in the rest of the build properties -->
+        <property file="${build.location}/build.properties"/>
+
+        <echo message="branch.name     ='${branch.name}'"/>
+        <echo message="branch          ='${branch}'"/>
+        <echo message="basedir         ='${basedir}'"/>
+        <echo message="build.deps.dir  ='${build.deps.dir}'"/>
+        <echo message="build.location  ='${build.location}'"/>
+        <echo message="build.tool.root ='${build.tool.root}'"/>
+        <echo message="hudson.workspace='${hudson.workspace}'"/>
+        <echo message="extract.dir     ='${extract.dir}'"/>
+        <echo message="log.dir         ='${log.dir}'"/>
+        <echo message="junit.dir       ='${junit.dir}'"/>
+        <echo message="junit.lib       ='${junit.lib}'"/>
+        <echo message=" "/>
+        <echo message="git.exec       ='${git.exec}'"/>
+        <echo message=" "/>
+        <echo message="EL version     ='${release.version}'"/>
+        <echo message="build.type     ='${build.type}'"/>
+        <echo message="version.string ='${version.string}'"/>
+        <echo message="build.number   ='${build.date}'"/>
+        <echo message="git.hash       ='${git.hash}'"/>
+        <echo message=" "/>
+        <echo message="milestone.tag  ='${milestone.tag}'"/>
+        <echo message=" "/>
+        <echo message="jdbc.driver.jar='${jdbc.driver.jar}'"/>
+        <echo message="db.driver      ='${db.driver}'"/>
+        <echo message="db.url         ='${db.url}'"/>
+        <echo message="db.user        ='${db.user}'"/>
+        <echo message="db.pwd         = **********"/>
+        <echo message="db.platform    ='${db.platform}'"/>
+    </target>
+
+    <target name="clean" depends="init">
+        <ant antfile="build.xml" dir="${build.location}" target="clean"/>
+    </target>
+
+    <target name="build" depends="init">
+        <ant antfile="build.xml" dir="${build.location}"          target="build-all-but-ext"/>
+        <ant antfile="build.xml" dir="${build.location}/features" target="build-features-create-signzip"/>
+        <ant antfile="build.xml" dir="${build.location}"          target="package-all"/>
+        <!-- Extract build artifacts from Hudson Workspace and make them accessible to publish -->
+        <antcall target="extract-build-artifacts"/>
+    </target>
+
+    <target name="build-oracle-extension">
+        <ant antfile="build.xml" dir="${build.location}" target="build-oracle-extension"/>
+    </target>
+
+    <target name="build-no-javadoc" depends="init">
+        <ant antfile="build.xml" dir="${build.location}" target="build"/>
+    </target>
+
+    <target name="build-utils" depends="init">
+        <ant antfile="build.xml" dir="${build.location}" target="build-util"/>
+    </target>
+
+    <target name="build-test" depends="init">
+        <!-- Builds all tests including MW tests (needed for nightly compile verification even if they aren't run) -->
+        <ant antfile="build.xml" dir="${build.location}" target="build-test"/>
+    </target>
+
+    <target name="build-core-test" depends="init">
+        <ant antfile="build.xml" dir="${build.location}" target="build-core-test"/>
+    </target>
+
+    <target name="test-srg">
+        <!-- Generate Test properties file -->
+        <echo message="# Generated db connection properties (by bootstrap.xml)${line.separator}" file="${coretest.prop.file}" append="false"/>
+        <echo message="jdbc.driver.jar=${jdbc.driver.jar}${line.separator}" file="${coretest.prop.file}" append="true"/>
+        <echo message="db.driver=${db.driver}${line.separator}"             file="${coretest.prop.file}" append="true"/>
+        <echo message="db.url=${db.url}${line.separator}"                   file="${coretest.prop.file}" append="true"/>
+        <echo message="db.user=${db.user}${line.separator}"                 file="${coretest.prop.file}" append="true"/>
+        <echo message="db.pwd=${db.pwd}${line.separator}"                   file="${coretest.prop.file}" append="true"/>
+        <echo message="db.platform=${db.platform}${line.separator}"         file="${coretest.prop.file}" append="true"/>
+
+        <ant antfile="build.xml" dir="${build.location}" target="test-srg">
+            <property name="eclipselink.logging.level" value="${test.logging.level}"/>
+        </ant>
+        <!-- delete file="${coretest.prop.file}"/ -->
+    </target>
+
+    <target name="test-lrg">
+        <!-- Generate Test properties file -->
+        <echo message="# Generated db connection properties (by bootstrap.xml)${line.separator}" file="${coretest.prop.file}" append="false"/>
+        <echo message="jdbc.driver.jar=${jdbc.driver.jar}${line.separator}" file="${coretest.prop.file}" append="true"/>
+        <echo message="db.driver=${db.driver}${line.separator}"             file="${coretest.prop.file}" append="true"/>
+        <echo message="db.url=${db.url}${line.separator}"                   file="${coretest.prop.file}" append="true"/>
+        <echo message="db.user=${db.user}${line.separator}"                 file="${coretest.prop.file}" append="true"/>
+        <echo message="db.pwd=${db.pwd}${line.separator}"                   file="${coretest.prop.file}" append="true"/>
+        <echo message="db.platform=${db.platform}${line.separator}"         file="${coretest.prop.file}" append="true"/>
+
+        <ant antfile="build.xml" dir="${build.location}" target="test-lrg">
+            <property name="eclipselink.logging.level" value="${test.logging.level}"/>
+        </ant>
+        <!-- delete file="${coretest.prop.file}"/ -->
+
+        <!-- Extract test artifacts from Hudson Workspace and make them accessible to publish -->
+        <antcall target="extract-test-results"/>
+    </target>
+
+    <target name="test-browser" depends="init">
+        <echo message="db.platform=${db.platform}${line.separator}"         file="${coretest.prop.file}" append="true"/>
+        <ant antfile="build.xml" dir="${build.location}" target="test-browser">
+            <property name="eclipselink.logging.level" value="${test.logging.level}"/>
+        </ant>
+    </target>
+
+    <!--  =====  #####        Post 'build' Processing Targets            #####  =====  -->
+    <target name="generate-nightly-p2-site" depends="common-init">
+        <!-- has to be run before publish, so publish can operate independent of branches -->
+        <property name="p2.archive.to.use"       value="${hudson.workspace}/features/${p2.archive.presigned.zip}"/>
+        <property name="p2.repos.dir"            value="${extract.dir}/p2repo"/>
+        <property name="metadata.repos.name"     value="&quot;${p2.nightly.repos.name}&quot;"/>
+        <property name="artifact.repos.name"     value="&quot;EclipseLink Incremental Artifacts&quot;"/>
+        <property name="p2.SDK.install.dir"      value="${build.deps.dir}/eclipse"/>
+        <available file="${p2.SDK.install.dir}" type="dir" property="p2.SDK.install.dir.exist"/>
+        <fail message="${p2.SDK.install.dir} dir not found. Build will fail, aborting now." unless="p2.SDK.install.dir.exist"/>
+        <!-- Clean existing repos if it exists (should only be true of a release redo, or the latest milestone or nightly) -->
+        <delete dir="${p2.repos.dir}" failonerror="false"/>
+        <mkdir dir="${p2.repos.dir}"/>
+        <!-- populate update site with feature and bundle jars, then publish repository -->
+        <ant antfile="build.xml" dir="${hudson.workspace}/features" target="assemble-repos">
+            <property name="do.composite"        value="true"/>
+            <property name="ready-to-go"         value="true"/>
+            <property name="bundle.install.file" value="${hudson.workspace}/${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}"/>
+            <property name="nosql.install.file"  value="${hudson.workspace}/${eclipselink.nosql.install.prefix}${eclipselink.zip.suffix}"/>
+            <property name="p2.archive.zip"      value="${p2.archive.to.use}"/>
+        </ant>
+    </target>
+
+    <target name="extract-build-artifacts" depends="generate-nightly-p2-site">
+        <!-- New Publish Architecture -->
+        <mkdir dir="${extract.dir}"/>
+        <echo message="Extracting build artifacts..."/>
+        <echo message="   from '${hudson.workspace}'"/>
+        <echo message="     to '${extract.dir}'"/>
+        <copy file="${hudson.workspace}/eclipselink.jar"                                                tofile="${extract.dir}/eclipselink.jar"                                                               failonerror="false"/>
+        <copy file="${hudson.workspace}/features/${p2.archive.presigned.zip}"                           tofile="${extract.dir}/${p2.archive.presigned.zip}"                                                   failonerror="false"/>
+        <copy file="${hudson.workspace}/${eclipselink.install.prefix}${eclipselink.zip.suffix}"         tofile="${extract.dir}/${eclipselink.install.prefix}-${version.string}${eclipselink.zip.suffix}"      failonerror="false"/>
+        <copy file="${hudson.workspace}/${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"     tofile="${extract.dir}/${eclipselink.src.install.prefix}-${version.string}${eclipselink.zip.suffix}"  failonerror="false"/>
+        <copy file="${hudson.workspace}/${eclipselink.tst.src.prefix}${eclipselink.zip.suffix}"         tofile="${extract.dir}/${eclipselink.tst.src.prefix}-${version.string}${eclipselink.zip.suffix}"      failonerror="false"/>
+        <copy file="${hudson.workspace}/${eclipselink.tst.jar.prefix}${eclipselink.zip.suffix}"         tofile="${extract.dir}/${eclipselink.tst.jar.prefix}-${version.string}${eclipselink.zip.suffix}"      failonerror="false"/>
+        <copy file="${hudson.workspace}/${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}" tofile="${extract.dir}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
+        <copy file="${hudson.workspace}/${eclipselink.nosql.install.prefix}${eclipselink.zip.suffix}"   tofile="${extract.dir}/${eclipselink.nosql.install.prefix}-${version.string}${eclipselink.zip.suffix}"   failonerror="false"/>
+        <copy todir="${extract.dir}" failonerror="false">
+            <fileset  dir="${hudson.workspace}">
+                <include name="${eclipselink.install.prefix}*${version.qualifier}-shared-lib.zip"/>
+            </fileset>
+        </copy>
+        <!-- Generate proper handoff file -->
+        <antcall target="generate-handoff">
+            <param name="procedure"   value="build"/>
+            <param name="host"        value="Eclipse"/>
+            <param name="extract.loc" value="${extract.dir}"/>
+        </antcall>
+    </target>
+
+    <target name="extract-test-results" depends="common-init">
+        <!-- 'Publish' from Hudson to Build -->
+        <property name="host" value="Eclipse"/>
+        <property name="result.host.dir" value="${extract.dir}/${host}"/>
+        <mkdir dir="${result.host.dir}"/>
+        <echo message="Extracting test artifacts..."/>
+        <echo message="   from '${hudson.workspace}'"/>
+        <echo message="     to '${result.host.dir}'"/>
+        <copy file="${hudson.workspace}/${eclipselink.core.test}/${report.dir}/junit-noframes.html"         tofile="${result.host.dir}/eclipselink-core-lrg-${version.string}.html"      failonerror="false"/>
+        <copy file="${hudson.workspace}/${eclipselink.jpa.test}/${report.dir}/junit-noframes.html"          tofile="${result.host.dir}/eclipselink-jpa-lrg-${version.string}.html"       failonerror="false"/>
+        <copy file="${hudson.workspace}/${eclipselink.jpa.wdf.test}/${report.dir}/junit-noframes.html"      tofile="${result.host.dir}/eclipselink-jpa-wdf-lrg-${version.string}.html"   failonerror="false"/>
+        <copy file="${hudson.workspace}/${eclipselink.jpars.test}/${report.dir}/junit-noframes.html"        tofile="${result.host.dir}/eclipselink-jpars-lrg-${version.string}.html"     failonerror="false"/>
+        <copy file="${hudson.workspace}/${eclipselink.moxy.test}/${report.dir}/jaxb/junit-noframes.html"    tofile="${result.host.dir}/eclipselink-jaxb-lrg-${version.string}.html"      failonerror="false"/>
+        <copy file="${hudson.workspace}/${eclipselink.moxy.test}/${report.dir}/oxm/junit-noframes.html"     tofile="${result.host.dir}/eclipselink-oxm-lrg-${version.string}.html"       failonerror="false"/>
+        <copy file="${hudson.workspace}/${eclipselink.sdo.test}/${report.dir}/true/junit-noframes.html"     tofile="${result.host.dir}/eclipselink-sdo-lrg-${version.string}.html"       failonerror="false"/>
+        <copy file="${hudson.workspace}/${eclipselink.dbws.test}/${report.dir}/junit-noframes.html"         tofile="${result.host.dir}/eclipselink-dbws-lrg-${version.string}.html"      failonerror="false"/>
+        <copy file="${hudson.workspace}/${eclipselink.dbws.builder.test}/${report.dir}/junit-noframes.html" tofile="${result.host.dir}/eclipselink-dbws-util-lrg-${version.string}.html" failonerror="false"/>
+        <!-- Generate proper handoff file -->
+        <antcall target="generate-handoff">
+            <param name="procedure"   value="test"/>
+            <param name="host"        value="Eclipse"/>
+            <param name="extract.loc" value="${result.host.dir}"/>
+        </antcall>
+    </target>
+
+    <target name="cannot-generate-handoff" unless="procedure" depends="init">
+        <fail message="'procedure' not set. Cannot generate handoff file!"/>
+    </target>
+    <target name="generate-handoff" if="procedure" depends="cannot-generate-handoff" description="generate the publishing handoff file">
+        <property name="handoff.file" value="${build.tool.root}/handoff-file-${procedure}-${branch}-${version.qualifier}.dat"/>
+        <echo message="extract.loc=${extract.loc} host=${host} maven.tag=${milestone.tag}" file="${handoff.file}" append="false"/>
+        <!-- could use ${line.separator} to generate on separate lines, but don't as yet -->
+    </target>
+
+
+    <!--  =====  #####           Public Publishing Targets               #####  =====  -->
+
+    <target name="publish-init" depends="common-init">
         <!-- Set download.dir appropriately depending upon build target          -->
         <condition property="download.dir" value="${eclipselink.root.download.dir}/nightly/${release.version}/${build.date}">
             <equals arg1="${build.type}" arg2="SNAPSHOT"/>
@@ -189,249 +438,34 @@
         </condition>
         <property name="artifact.repos.name" value="&quot;EclipseLink Milestone Artifacts&quot;"/>
 
-        <!-- generate string for tag creation (only used if milestone, or release build)  -->
-        <condition property="milestone.tag" value="${release.version}">
-            <equals arg1="${build.type}" arg2="RELEASE"/>
-        </condition>
-        <property name="milestone.tag" value="${release.version}-${build.type}"/>
-
-        <!-- Now that all our overrides are complete, pull in the rest of the build properties -->
-        <property file="${build.root.dir}/build.properties"/>
-
-        <echo message="ANT_ARGS='${env.ANT_ARGS}'"/>
-        <echo message="ANT_OPTS='${env.ANT_OPTS}'"/>
-        <echo message=" "/>
-        <echo message="env.JAVA_HOME   = '${env.JAVA_HOME}'"/>
-        <echo message="env.ANT_HOME    = '${env.ANT_HOME}'"/>
-        <echo message="env.JUNIT_HOME  = '${env.JUNIT_HOME}'"/>
-        <echo message="env.MAVENANT_DIR= '${env.MAVENANT_DIR}'"/>
-        <echo message="env.PATH        = '${env.PATH}'"/>
-        <echo message="env.CLASSPATH   = '${env.CLASSPATH}'"/>
-        <echo message="env.SVN_EXEC    = '${env.SVN_EXEC}'"/>
-        <echo message="env.TARGET      = '${env.TARGET}'"/>
-        <echo message=" "/>
-        <echo message="builddate.buildtime='${build.date}.${build.time}'"/>
-        <echo message="java.version   ='${java.version}'"/>
-        <echo message="os.name        ='${os.name}'"/>
-        <echo message="os.arch        ='${os.arch}'"/>
-        <echo message="os.version     ='${os.version}'"/>
-        <echo message=" "/>
-        <echo message="branch.name    ='${branch.name}'"/>
-        <echo message="basedir        ='${basedir}'"/>
-        <echo message="build.deps.dir ='${build.deps.dir}'"/>
-        <echo message="build.root.dir ='${build.root.dir}'"/>
-        <echo message="log.dir        ='${log.dir}'"/>
-        <echo message="junit.dir      ='${junit.dir}'"/>
-        <echo message="junit.lib      ='${junit.lib}'"/>
-        <echo message=" "/>
-        <echo message="EL version     ='${release.version}'"/>
-        <echo message="build.type     ='${build.type}'"/>
-        <echo message="version.string ='${version.string}'"/>
-        <echo message="build.number   ='${build.date}'"/>
-        <echo message="svn.revision   ='${svn.revision}'"/>
+        <echo message="download.dir         ='${download.dir}'"/>
+        <echo message="p2.composite.root.dir='${p2.composite.root.dir}'"/>
+        <echo message="p2.repos.dir         ='${p2.repos.dir}'"/>
+        <echo message="release.designation  ='${release.designation}'"/>
+        <echo message="p2.SDK.install.dir   ='${p2.SDK.install.dir}'"/>
+        <echo message="metadata.repos.name  ='${metadata.repos.name}'"/>
+        <echo message="artifact.repos.name  ='${artifact.repos.name}'"/>
     </target>
-
-    <target name="clean" depends="init">
-        <ant antfile="build.xml" dir="${build.root.dir}" target="clean"/>
-    </target>
-
-    <target name="clean-dependencies" depends="init">
-        <!-- Removed full delete of source tree because build-clean should take care
-             of old build artifacts, and "svn co" should update source (including
-             updating revision numbers, and cleaning up files that were renamed or
-             deleted in the repos). -->
-        <delete dir="${junit.dir}"/>
-        <delete dir="${build.deps.dir}/mail"/>
-        <delete dir="${build.deps.dir}/mavenant"/>
-        <delete file="${build.deps.dir}/dependencies.txt"/>
-        <delete file="${build.deps.dir}/junit.zip"/>
-    </target>
-
-    <target name="check-4-junit">
-        <echo message="Looking for: ${junit.dir}/junit.jar"/>
-        <available file="${junit.dir}/junit.jar" type="file" property="junit-exist"/>
-        <echo message="junit-exist: ${junit-exist}"/>
-    </target>
-    <target name="get-junit" unless="junit-exist" depends="check-4-junit">
-        <mkdir dir="${junit.dir}"/>
-
-        <!-- Get junit, extract it, then copy to expected location and cleanup (flatten won't work) -->
-        <get src="${junit.url}" dest="${build.deps.dir}/junit.zip"/>
-        <unzip src="${build.deps.dir}/junit.zip" dest="${build.deps.dir}"/>
-        <copy file="${build.deps.dir}/${junit.bundle}/junit.jar" todir="${junit.dir}"/>
-        <delete dir="${build.deps.dir}/${junit.bundle}"/>
-        <property name="dependencies-downloaded" value="true"/>
-    </target>
-
-    <target name="check-4-mail">
-        <echo message="Looking for: ${build.deps.dir}/mail/mail.jar"/>
-        <available file="${build.deps.dir}/mail/mail.jar" type="file" property="mail-exist"/>
-        <echo message="mail-exist: ${mail-exist}"/>
-    </target>
-    <target name="get-mail" unless="mail-exist" depends="check-4-mail">
-        <mkdir dir="${build.deps.dir}/mail"/>
-        <get src="${mail.url}"       dest="${build.deps.dir}/mail/mail.jar"/>
-        <property name="dependencies-downloaded" value="true"/>
-    </target>
-
-    <target name="check-4-activation">
-        <echo message="Looking for: ${build.deps.dir}/mail/activation.jar"/>
-        <available file="${build.deps.dir}/mail/activation.jar" type="file" property="activation-exist"/>
-        <echo message="activation-exist: ${activation-exist}"/>
-    </target>
-    <target name="get-activation" unless="activation-exist" depends="check-4-activation">
-        <get src="${activation.url}" dest="${build.deps.dir}/mail/activation.jar"/>
-        <property name="dependencies-downloaded" value="true"/>
-    </target>
-
-    <target name="check-4-mavenant">
-        <echo message="Looking for: ${build.deps.dir}/mavenant/maven-ant-tasks-2.0.8.jar"/>
-        <available file="${build.deps.dir}/mavenant/maven-ant-tasks-2.0.8.jar" type="file" property="mavenant-exist"/>
-        <echo message="mavenant-exist: ${mavenant-exist}"/>
-    </target>
-    <target name="get-mavenant" unless="mavenant-exist" depends="check-4-mavenant">
-        <!-- Commented out download, because it seems the access to apache.org has been blocked -->
-        <!-- mkdir dir="${build.deps.dir}/mavenant"/ -->
-        <!-- get src="${mavenant.url}"   dest="${build.deps.dir}/mavenant/maven-ant-tasks-2.0.8.jar"/ -->
-        <!-- property name="dependencies-downloaded" value="true"/ -->
-        <fail message="Must manually create dependency. Build cannot find: ${build.deps.dir}/mavenant/maven-ant-tasks-2.0.8.jar"/>
-    </target>
-
-    <target name="get-dependencies" if="dependencies-downloaded" depends="get-junit, get-mail, get-activation, get-mavenant">
-        <delete file="${build.deps.dir}/dependencies.txt" failonerror="true"/>
-
-        <!-- Generate "dependencies.txt" file -->
-        <echo message="Buildsystem external dependencies come from:${line.separator}" file="${build.deps.dir}/dependencies.txt" append="false"/>
-        <echo message="junit:      ${junit.url}${line.separator}"      file="${build.deps.dir}/dependencies.txt" append="true"/>
-        <echo message="activation: ${activation.url}${line.separator}" file="${build.deps.dir}/dependencies.txt" append="true"/>
-        <echo message="mail:       ${mail.url}${line.separator}"       file="${build.deps.dir}/dependencies.txt" append="true"/>
-        <echo message="mavenant:   ${mavenant.url}${line.separator}"   file="${build.deps.dir}/dependencies.txt" append="true"/>
-    </target>
-
-    <target name="custom" if="custom.target" depends="init, get-dependencies">
-        <ant antfile="build.xml" dir="${build.root.dir}" target="${custom.target}"/>
-    </target>
-
-    <target name="build-np" depends="get-dependencies">
-        <ant antfile="build.xml" dir="${build.root.dir}"          target="build-all-but-ext"/>
-        <ant antfile="build.xml" dir="${build.root.dir}/features" target="build-features-create-signzip"/>
-        <ant antfile="build.xml" dir="${build.root.dir}"          target="package-all"/>
-    </target>
-
-    <target name="build" depends="get-dependencies">
-        <ant antfile="build.xml" dir="${build.root.dir}"          target="build-all-but-ext"/>
-        <ant antfile="build.xml" dir="${build.root.dir}/features" target="build-features-create-signzip"/>
-        <ant antfile="build.xml" dir="${build.root.dir}"          target="package-all"/>
-        <!-- Generate proper handoff file -->
-        <antcall target="generate-handoff">
-            <param name="procedure" value="build"/>
-        </antcall>
-    </target>
-
-    <target name="build-oracle-extension">
-        <ant antfile="build.xml" dir="${build.root.dir}" target="build-oracle-extension"/>
-    </target>
-
-    <target name="build-oracle-nosql">
-        <!-- Do Nothing placeholder: Is here in case it ever gets called from bootstrap -->
-    </target>
-
-    <target name="build-no-javadoc" depends="get-dependencies">
-        <ant antfile="build.xml" dir="${build.root.dir}" target="build"/>
-    </target>
-
-    <target name="build-utils" depends="get-dependencies">
-        <ant antfile="build.xml" dir="${build.root.dir}" target="build-util"/>
-    </target>
-
-    <target name="build-test" depends="get-dependencies">
-        <!-- Builds all tests including MW tests (needed for nightly compile verification even if they aren't run) -->
-        <ant antfile="build.xml" dir="${build.root.dir}" target="build-test"/>
-    </target>
-
-    <target name="build-core-test" depends="get-dependencies">
-        <ant antfile="build.xml" dir="${build.root.dir}" target="build-core-test"/>
-    </target>
-
-    <target name="test-srg">
-        <!-- Generate Test properties file -->
-        <echo message="# Generated db connection properties (by bootstrap.xml)${line.separator}" file="${coretest.prop.file}" append="false"/>
-        <echo message="jdbc.driver.jar=${jdbc.driver.jar}${line.separator}" file="${coretest.prop.file}" append="true"/>
-        <echo message="db.driver=${db.driver}${line.separator}"             file="${coretest.prop.file}" append="true"/>
-        <echo message="db.url=${db.url}${line.separator}"                   file="${coretest.prop.file}" append="true"/>
-        <echo message="db.user=${db.user}${line.separator}"                 file="${coretest.prop.file}" append="true"/>
-        <echo message="db.pwd=${db.pwd}${line.separator}"                   file="${coretest.prop.file}" append="true"/>
-        <echo message="db.platform=${db.platform}${line.separator}"         file="${coretest.prop.file}" append="true"/>
-
-        <ant antfile="build.xml" dir="${build.root.dir}" target="test-srg">
-            <property name="eclipselink.logging.level" value="${test.logging.level}"/>
-        </ant>
-        <!-- delete file="${coretest.prop.file}"/ -->
-    </target>
-
-    <target name="test-lrg">
-        <!-- Generate Test properties file -->
-        <echo message="# Generated db connection properties (by bootstrap.xml)${line.separator}" file="${coretest.prop.file}" append="false"/>
-        <echo message="jdbc.driver.jar=${jdbc.driver.jar}${line.separator}" file="${coretest.prop.file}" append="true"/>
-        <echo message="db.driver=${db.driver}${line.separator}"             file="${coretest.prop.file}" append="true"/>
-        <echo message="db.url=${db.url}${line.separator}"                   file="${coretest.prop.file}" append="true"/>
-        <echo message="db.user=${db.user}${line.separator}"                 file="${coretest.prop.file}" append="true"/>
-        <echo message="db.pwd=${db.pwd}${line.separator}"                   file="${coretest.prop.file}" append="true"/>
-        <echo message="db.platform=${db.platform}${line.separator}"         file="${coretest.prop.file}" append="true"/>
-
-        <ant antfile="build.xml" dir="${build.root.dir}" target="test-lrg">
-            <property name="eclipselink.logging.level" value="${test.logging.level}"/>
-        </ant>
-        <!-- delete file="${coretest.prop.file}"/ -->
-
-        <!-- Generate proper handoff file -->
-        <antcall target="generate-handoff">
-            <param name="procedure" value="test"/>
-        </antcall>
-    </target>
-
-    <target name="test-browser" depends="init">
-        <echo message="db.platform=${db.platform}${line.separator}"         file="${coretest.prop.file}" append="true"/>
-        <ant antfile="build.xml" dir="${build.root.dir}" target="test-browser">
-            <property name="eclipselink.logging.level" value="${test.logging.level}"/>
-        </ant>
-    </target>
-
-    <target name="cannot-generate-handoff" unless="procedure" depends="init">
-        <fail message="'procedure' not set. Cannot generate handoff file!"/>
-    </target>
-    <target name="generate-handoff" if="procedure" depends="cannot-generate-handoff" description="generate the publishing handoff file">
-        <property name="handoff.file" value="${env.HOME_DIR}/handoff-file-${procedure}-${env.BRANCH_NM}-${version.qualifier}.dat"/>
-        <echo message="host=Eclipse" file="${handoff.file}" append="false"/>
-    </target>
-
-
-    <!--  =====  #####              Publishing Targets               #####  =====  -->
 
     <!--  =====  Build Publish Targets -->
-    <target name="publish-build" depends="init, publish-artifacts, publish-maven, publish-p2-site, cleanup-old-builds"/>
+    <target name="publish-build" depends="publish-init, publish-artifacts, publish-maven, publish-p2-site, cleanup-old-builds"/>
     <target name="publish-artifacts">
         <!-- New Publish Architecture -->
         <mkdir dir="${download.dir}"/>
-        <copy file="${build.root.dir}/features/${p2.archive.presigned.zip}"                            tofile="${download.dir}/${p2.archive.presigned.zip}" failonerror="false"/>
-        <copy file="${build.root.dir}/${eclipselink.install.prefix}${eclipselink.zip.suffix}"          tofile="${download.dir}/${eclipselink.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
-        <copy file="${build.root.dir}/${eclipselink.src.install.prefix}${eclipselink.zip.suffix}"      tofile="${download.dir}/${eclipselink.src.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
-        <copy file="${build.root.dir}/${eclipselink.tst.src.prefix}${eclipselink.zip.suffix}"          tofile="${download.dir}/${eclipselink.tst.src.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
-        <copy file="${build.root.dir}/${eclipselink.plugins.install.prefix}${eclipselink.zip.suffix}"  tofile="${download.dir}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}" failonerror="false"/>
         <copy todir="${download.dir}" failonerror="false">
-            <fileset  dir="${build.root.dir}">
-                <include name="${eclipselink.install.prefix}*${version.qualifier}-shared-lib.zip"/>
+            <fileset  dir="${extracted.location}">
+                <include name="*.${eclipselink.zip.suffix}"/>
             </fileset>
         </copy>
     </target>
 
     <target name="publish-maven" depends="init">
-        <ant antfile="uploadToMaven.xml" dir="${build.root.dir}" target="upload-maven-all"/>
+        <ant antfile="uploadToMaven.xml" dir="${extracted.location}" target="upload-maven-all"/>
     </target>
 
     <target name="publish-p2-site" depends="fix-permission">
         <!-- has to be run after publish, so it can be generic for nightly, or milestone builds -->
-        <condition property="p2.archive.to.use" value="${build.root.dir}/features/${p2.archive.presigned.zip}"
+        <condition property="p2.archive.to.use" value="${extracted.location}/features/${p2.archive.presigned.zip}"
                                                  else="${download.dir}/${p2.archive.signed.zip}">
             <equals arg1="${build.type}" arg2="SNAPSHOT"/>
         </condition>
@@ -439,7 +473,7 @@
         <delete dir="${p2.repos.dir}" failonerror="false"/>
         <mkdir dir="${p2.repos.dir}"/>
         <!-- populate update site with feature and bundle jars, then publish repository -->
-        <ant antfile="build.xml" dir="${build.root.dir}/features" target="assemble-repos">
+        <ant antfile="build.xml" dir="${extracted.location}/features" target="assemble-repos">
             <property name="do.composite"        value="true"/>
             <property name="ready-to-go"         value="true"/>
             <property name="bundle.install.file" value="${download.dir}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}"/>
@@ -449,7 +483,7 @@
         <echo message="p2.composite.root.dir = '${p2.composite.root.dir}'"/>
         <echo message="metadata.repos.name   = '${metadata.repos.name}'"/>
         <exec executable="/bin/sh" failonerror="false" logError="true" >
-            <arg value="${build.root.dir}/buildsystem/buildCompositeP2.sh"/>
+            <arg value="${extracted.location}/buildsystem/buildCompositeP2.sh"/>
             <arg value="${p2.composite.root.dir}"/>
             <arg value="${metadata.repos.name}"/>
         </exec>
@@ -460,7 +494,7 @@
     <!-- Antified "cleanNightly.sh" -->
     <target name="cleanup-old-builds" depends="fix-permission">
         <exec executable="/bin/sh" failonerror="true" logError="true" >
-            <arg value="${build.root.dir}/buildsystem/cleanNightly.sh"/>
+            <arg value="${extracted.location}/buildsystem/cleanNightly.sh"/>
         </exec>
     </target>
 
@@ -472,36 +506,29 @@
         <!-- New Publish Architecture -->
         <property name="host.dir" value="${download.dir}/${host}"/>
         <mkdir dir="${host.dir}"/>
-        <copy file="${build.root.dir}/${eclipselink.core.test}/${report.dir}/junit-noframes.html"      tofile="${host.dir}/eclipselink-core-lrg-${version.string}.html"      failonerror="false"/>
-        <copy file="${build.root.dir}/${eclipselink.jpa.test}/${report.dir}/junit-noframes.html"       tofile="${host.dir}/eclipselink-jpa-lrg-${version.string}.html"       failonerror="false"/>
-        <copy file="${build.root.dir}/${eclipselink.jpa.wdf.test}/${report.dir}/junit-noframes.html"   tofile="${host.dir}/eclipselink-jpa-wdf-lrg-${version.string}.html"   failonerror="false"/>
-        <copy file="${build.root.dir}/${eclipselink.moxy.test}/${report.dir}/jaxb/junit-noframes.html" tofile="${host.dir}/eclipselink-jaxb-lrg-${version.string}.html"      failonerror="false"/>
-        <copy file="${build.root.dir}/${eclipselink.moxy.test}/${report.dir}/oxm/junit-noframes.html"  tofile="${host.dir}/eclipselink-oxm-lrg-${version.string}.html"       failonerror="false"/>
-        <copy file="${build.root.dir}/${eclipselink.sdo.test}/${report.dir}/true/junit-noframes.html"  tofile="${host.dir}/eclipselink-sdo-lrg-${version.string}.html"       failonerror="false"/>
-        <copy file="${build.root.dir}/${eclipselink.dbws.test}/${report.dir}/junit-noframes.html"      tofile="${host.dir}/eclipselink-dbws-lrg-${version.string}.html"      failonerror="false"/>
-        <copy file="${build.root.dir}/${eclipselink.dbws.builder.test}/${report.dir}/junit-noframes.html" tofile="${host.dir}/eclipselink-dbws-util-lrg-${version.string}.html" failonerror="false"/>
+        <copy todir="${host.dir}" failonerror="false">
+            <fileset  dir="${extracted.location}">
+                <include name="*.*"/>
+            </fileset>
+        </copy>
         <!-- Remove any old results summary file, if it exists -->
         <delete file="${host.dir}/ResultsSummary.dat" failonerror="false"/>
         <!-- Run gen summary dat script -->
     </target>
 
-    <target name="publish-oracle-extension">
+    <!-- target name="publish-oracle-extension">
         <echo message="oracle-extension commit in progress..."/>
         <exec executable="${svn.exec}" failonerror="false" logError="true">
             <arg value="commit"/>
             <arg value="-m ${version.string}"/>
-            <arg value="${build.root.dir}/foundation/plugins/org.eclipse.persistence.oracle.jar"/>
-            <arg value="${build.root.dir}/foundation/plugins/org.eclipse.persistence.oracle.source.jar"/>
+            <arg value="${hudson.workspace}/foundation/plugins/org.eclipse.persistence.oracle.jar"/>
+            <arg value="${hudson.workspace}/foundation/plugins/org.eclipse.persistence.oracle.source.jar"/>
         </exec>
-    </target>
-
-    <target name="publish-oracle-nosql">
-        <!-- Another placeholder to prevent broken automation -->
-    </target>
+    </target -->
 
     <target name="fix-permission">
         <chmod perm="ug+x">
-            <fileset dir="${build.root.dir}/buildsystem">
+            <fileset dir="${hudson.workspace}/buildsystem">
                 <include name="*.sh"/>
             </fileset>
         </chmod>
@@ -518,7 +545,7 @@
 
     <target name="sign-and-wait" unless="signed.archive.exist" depends="promote-init">
         <echo message="Proceeding with signing of unsigned archive..."/>
-        <ant antfile="build.xml" dir="${build.root.dir}/features" target="sign-jars">
+        <ant antfile="build.xml" dir="${build.location}/features" target="sign-jars">
             <property name="signing.script"  value="sign"/>
             <property name="signed.archive.src.file"   value="${promote.archive.unsigned.lib}"/>
             <property name="signed.archive.dest.file"  value="${promote.archive.signed.lib}"/>
@@ -714,7 +741,7 @@
     <!--       test.result.dest.dir - location of "failed build" result dir              -->
     <!--                                                                                 -->
     <target name="save-tst-results" depends="init">
-        <echo message="build.root.dir=${build.root.dir}"/>
+        <echo message="build.location=${build.location}"/>
         <echo message="${eclipselink.core.test}/${report.dir}/junit-noframes.html"/>
         <echo message="${eclipselink.jpa.test}/${report.dir}/junit-noframes.html"/>
         <echo message="${eclipselink.moxy.test}/${report.dir}/jaxb/junit-noframes.html"/>
@@ -723,7 +750,7 @@
         <echo message="${eclipselink.dbws.test}/${report.dir}/junit-noframes.html"/>
         <echo message="${eclipselink.dbws.builder.test}/${report.dir}/junit-noframes.html"/>
         <zip destfile="${basedir}/${test.result.zip}">
-            <zipfileset dir="${build.root.dir}">
+            <zipfileset dir="${build.location}">
                 <include name="${eclipselink.core.test}/${report.dir}/junit-noframes.html"/>
                 <include name="${eclipselink.jpa.test}/${report.dir}/junit-noframes.html"/>
                 <include name="${eclipselink.moxy.test}/${report.dir}/**/junit-noframes.html"/>
