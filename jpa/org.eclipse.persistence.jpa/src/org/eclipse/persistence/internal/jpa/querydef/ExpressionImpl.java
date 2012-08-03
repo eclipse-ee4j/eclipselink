@@ -60,7 +60,7 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
         if (project != null){
             ClassDescriptor descriptor = project.getClassDescriptor(javaType);
             if (descriptor != null && descriptor.hasInheritance()){
-                descriptor.getInheritancePolicy().getSubclassDescriptor(type);
+                descriptor = descriptor.getInheritancePolicy().getSubclassDescriptor(type);
                 if (descriptor != null){
                     return buildExpressionForAs(type);
                 }

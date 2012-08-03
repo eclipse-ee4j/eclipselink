@@ -55,7 +55,7 @@ public interface BeanValidationInitializationHelper {
                 BeanValidationListener validationListener =
                         new BeanValidationListener(beanValidatorFactory, groupPrePersit, groupPreUpdate, groupPreRemove);
                 //Install BeanValidationListener on the desc
-                for (ClassDescriptor descriptor : session.getProject().getDescriptors().values()) {
+                for (ClassDescriptor descriptor : session.getProject().getOrderedDescriptors()) {
                     if (descriptor.isDescriptorTypeNormal()) {
                         //add only to entities
                         descriptor.getEventManager().addInternalListener(validationListener);

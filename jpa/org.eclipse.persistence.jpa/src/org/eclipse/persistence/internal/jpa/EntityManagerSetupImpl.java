@@ -470,9 +470,6 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                             processor.createDynamicClasses();
 
                             processor.addEntityListeners();
-                            if (!isCompositeMember()) {
-                                addBeanValidationListeners(deployProperties, realClassLoader);
-                            }
 
                             if (projectCacheAccessor != null) {
                                 //cache the project:
@@ -482,6 +479,10 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                             // The project is initially created using class names rather than classes.  This call will make the conversion.
                             // If the session was loaded from sessions.xml this will also convert the descriptor classes to the correct class loader.
                             session.getProject().convertClassNamesToClasses(realClassLoader);
+
+                            if (!isCompositeMember()) {
+                                addBeanValidationListeners(deployProperties, realClassLoader);
+                            }
 
                             // Process the customizers last.
                             processor.processCustomizers();

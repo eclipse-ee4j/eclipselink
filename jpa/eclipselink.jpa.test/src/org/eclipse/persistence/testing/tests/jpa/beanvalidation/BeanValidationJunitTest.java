@@ -92,7 +92,7 @@ public class BeanValidationJunitTest extends JUnitTestCase {
 
     /**
      * Strategy:
-     * 1. Persit an object with invalid value
+     * 1. Persist an object with invalid value
      * 2. Assert - a ConstraintViolationException is raised
      * 3. Assert - transaction is rolled back
      * 4. Assert - The validation exception is due to invalid value given by us.
