@@ -4,7 +4,6 @@ Export-Package: org.eclipse.persistence.jpa.rs;version="2.5.0",
  org.eclipse.persistence.jpa.rs.exceptions;version="2.5.0",
  org.eclipse.persistence.jpa.rs.logging;version="2.5.0",
  org.eclipse.persistence.jpa.rs.logging.i18n;version="2.5.0",
- org.eclipse.persistence.jpa.rs.metadata;version="2.5.0",
  org.eclipse.persistence.jpa.rs.metadata.model;version="2.5.0",
  org.eclipse.persistence.jpa.rs.util;version="2.5.0"
 Bundle-Name: EclipseLink JPA-RS
@@ -17,6 +16,7 @@ Bundle-Vendor: Eclipse.org - EclipseLink Project
 Bundle-Version: 2.5.0.qualifier
 Bundle-ManifestVersion: 2
 Import-Package: com.sun.jersey.api.core;resolution:=optional,
+ com.sun.jersey.core.util;resolution:=optional,
  javax.annotation,
  javax.ejb;version="3.1.0",
  javax.naming,
