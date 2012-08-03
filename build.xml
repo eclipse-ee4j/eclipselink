@@ -118,6 +118,15 @@
     <!-- The default for junit.lib is still "junit.jar", even though we now depend upon junit 4.5  -->
     <property file="${trunk.build.location}/build.properties"/>
 
+    <!-- Detect compatible version of Ant -->
+    <condition property="compat.ant" value="true">
+        <not>
+            <contains string="${ant.version}" substring="1.8"/>
+        </not>
+    </condition>
+    <echo message="Ant Version detected: '${ant.version}'"/>
+    <fail message="An non-compatible version of Ant was detected! Build won't run properly unless running 1.7.x of Ant!." unless="compat.ant"/>
+
     <!-- Needed because some buildfiles depend upon JDK6 -->
     <condition property="java_is_v5" value="true">
         <contains string="${java.version}" substring="1.5"/>
@@ -153,9 +162,14 @@
         <pathelement path="${eclipselink.plugins}/${asm}"/>
         <pathelement path="${eclipselink.plugins}/${jaxb-api.jar}"/>
         <pathelement path="${eclipselink.plugins}/${persistence10.jar}"/>
-        <fileset
-            dir="${eclipselink.plugins}"
-            includes="${eclipselink.core.depend}"/>
+        <pathelement path="${eclipselink.plugins}/${activation.jar}"/>
+        <pathelement path="${eclipselink.plugins}/${resource.jar}"/>
+        <pathelement path="${eclipselink.plugins}/${ejb.jar}"/>
+        <pathelement path="${eclipselink.plugins}/${jms.jar}"/>
+        <pathelement path="${eclipselink.plugins}/${stax_api.jar}"/>
+        <pathelement path="${eclipselink.plugins}/${transaction.jar}"/>
+        <pathelement path="${eclipselink.plugins}/${mail.jar}"/>
+        <pathelement path="${eclipselink.plugins}/${wsrs.jar}"/>
     </path>
 
 <!-- ================================================================================= -->
@@ -170,7 +184,7 @@
 <!-- ================================================================================= -->
 
     <!-- "top-level" target for creating the distribution archives. -->
-    <target name="package-all" depends="package-eclipselink-bundles, package-src-jar, package-example-jar, package-tst-src-zip, package-javadoc-zip, package-installer-zip"/>
+    <target name="package-all" depends="package-eclipselink-bundles, package-src-jar, package-tst-src-zip, package-javadoc-zip, package-installer-zip"/>
 
     <!-- Compiles all components except tests, builds eclipselink.jar. -->
     <target name="build-eclipselink-jar" depends="build-core, package-eclipselink-jar" description="build all EclipseLink distribution files except docs and tests"/>
@@ -573,23 +587,6 @@
                 <include name="org.eclipse.persistence*.source*.jar"/>
                 <exclude name="*equinox*.jar"/>
             </zipgroupfileset>
-        </jar>
-    </target>
-
-    <!-- Packages the eclipselink examples jar. -->
-    <target name="package-example-jar" description="build EclipseLink Examples jar">
-        <delete file="${eclipselink.example.install.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
-        <jar jarfile="${eclipselink.example.install.prefix}${eclipselink.zip.suffix}" duplicate="preserve">
-             <manifest>
-                <attribute name="Specification-Title"    value="${eclipselink.specification.title} Source"/>
-                <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
-                <attribute name="Specification-Version"  value="${release.version}"/>
-                <attribute name="Implementation-Title"   value="${eclipselink.implementation.title}"/>
-                <attribute name="Implementation-Vendor"  value="${implementation.vendor}"/>
-                <attribute name="Implementation-Version" value="${version.string}"/>
-                <attribute name="Release-Designation"    value="${release.designation}"/>
-            </manifest>
-            <zipfileset dir="examples" includes="**" excludes="**/.svn/**" prefix="examples_${release.version}" />
         </jar>
     </target>
 

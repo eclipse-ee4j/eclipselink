@@ -37,14 +37,21 @@
 *         build.type      - should be set to "SNAPSHOT, "M##", or "RELEASE"
 *
 *********************************************************************************-->
-
+<!-- Build Assumptions:
+*         running from a "view"
+*            Needs:
+*               ${mavenant.dir}/maven-ant-tasks-2.0.8.jar (assumes: ${build.deps.dir}/mavenant)
+*               build.properties
+*               ./buildsystem/ant_customizations.jar
+*
+*********************************************************************************-->
 <project name="Upload2Maven"  basedir="." xmlns:artifact="urn:maven-artifact-ant" default="upload-maven-all">
     <property file="${user.home}/build.properties"/>
     <property file="build.properties"/>
     <!-- The following properties defined so they can be overridden for testing -->
     <property name="mavenant.dir" value="${build.deps.dir}/mavenant"/>
     <property name="eclipselink.root.download.dir" value="home/data/httpd/download.eclipse.org/rt/eclipselink"/>
-    
+
     <path id="maven-ant-tasks.classpath" path="${mavenant.dir}/maven-ant-tasks-2.0.8.jar" />
     <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant"
              classpathref="maven-ant-tasks.classpath" />
@@ -92,7 +99,7 @@
         <selectbundle basename="${sdoapi.prefix}" directory="${maven.2.sdo.plugins.dir}"
                      criterion="${sdoapi.criteria}" property="sdoapi.version" versiononly="true"
         />
-        
+
         <echo message="jpaapi2.version = ${jpaapi2.version}"/>
         <echo message="sdoapi.version  = ${sdoapi.version}"/>
     </target>
@@ -102,7 +109,7 @@
         <tstamp>
             <format property="build.date" pattern="yyyyMMdd"/>
         </tstamp>
- 
+
         <fail message="Cannot upload to Maven without a release.version defined!" unless="release.version"/>
         <fail message="Cannot upload to Maven without a build.date defined!"      unless="build.date"/>
         <fail message="Cannot upload to Maven without a build.type defined!"      unless="build.type"/>
@@ -193,7 +200,7 @@
         <property name="weaving.dependencies"  value="${deps.head}${dep.jpa}${deps.foot}"/>
         <property name="equinox.dependencies"  value="${deps.head}${dep.jpa.weaving}${dep.jpa}${deps.foot}"/>
         <property name="dbws.dependencies"     value="${deps.head}${dep.core}${deps.foot}"/>
-        <property name="moxy.dependencies"     value="${deps.head}${dep.core}${deps.foot}"/>
+        <property name="moxy.dependencies"     value="${deps.head}${dep.core}${dep.antlr}${deps.foot}"/>
         <property name="sdo.dependencies"      value="${deps.head}${dep.sdoapi}${dep.moxy}${dep.core}${deps.foot}"/>
     </target>
 
