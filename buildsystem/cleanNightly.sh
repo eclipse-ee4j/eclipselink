@@ -1,7 +1,22 @@
 # !/bin/sh
 #set -x
 
-version=2.5.0
+version=$1
+
+unset usage
+usage() {
+    echo " "
+    echo "Usage: `basename $0` [version]"
+    echo "  version  Name of version for which old builds will be cleaned."
+}
+
+if [ \( -z "$version" \) -o \( "$version" = "" \) ] ; then
+    usage
+    exit
+else
+   echo "Purging old builds of '${version}'..."
+fi
+
 BaseDownloadNFSDir="/home/data/httpd/download.eclipse.org/rt/eclipselink"
 buildir=/shared/rt/eclipselink
 

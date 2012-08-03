@@ -31,12 +31,8 @@ LOG_DIR=${HOME_DIR}/logs
 #Files
 ANT_BLDFILE=publishbuild.xml
 
-# Need to export after parsing:
-# BLD_DEPS_DIR
-# BRANCH
-# GITHASH
-# BLDDATE
-# handoff
+#Global Variables
+PUB_SCOPE_EXPECTED=0
 
 PATH=${JAVA_HOME}/bin:${ANT_HOME}/bin:/usr/bin:/usr/local/bin:${PATH}
 
@@ -184,12 +180,59 @@ parseHandoff() {
     fi
 }
 
-## Set an expected variable "ProcExpected" and "ProcSuccessful"
-## compare at end and if match delete local build artifacts
-## and handoff file.
-# 100 - artifacts to pub
-#  10 - p2 to pub
-#   1 - maven to pub (should be set if 100 = true)
+unset establishPublishScope
+establishPublishScope() {
+    # Usage: establishPublishScope src
+    src=$1
+
+    ## To test success set variables "PUB_SCOPE_EXPECTED" and "PUB_SCOPE_COMPLETED"
+    ## compare at end and if match delete local build artifacts
+    ## and handoff file.
+    # 100 - artifacts to pub
+    #  10 - p2 to pub
+    #   1 - maven to pub (should be set if 100 = true, but only need eclipselink.jar and bundle.zip)
+
+    #reset PUB_SCOPE_EXPECTED for this handoff instance
+    PUB_SCOPE_EXPECTED=0
+
+    # search for zip files in src meaning need to publish artifacts
+    srcZipCount=`ls ${src} | grep -c [.]zip$`
+    if [ "${srcZipCount}" -gt 0 ] ; then
+        PUB_SCOPE_EXPECTED=`expr ${PUB_SCOPE_EXPECTED} + 100`
+        echo "Zip archives detected. Logging 'Archive publish' within scope."
+    else
+        echo "No zip archives detected. 'Archive publish' beyond scope."
+    fi
+
+    # search for p2repo dir, meaning need to publish P2
+    # search for zip files in src meaning need to publish artifacts
+    srcP2Count=`ls ${src} | grep -c p2repo`
+    if [ \( ! "${srcP2Count}" = "0" \) ] ; then
+        srcP2jarCount=`ls -r ${src}/p2repo/* | grep -c [.]jar$`
+        if [ "${srcP2jarCount}" -gt 0 ] ; then
+            PUB_SCOPE_EXPECTED=`expr ${PUB_SCOPE_EXPECTED} + 10`
+            echo "Viable p2repo found. Logging 'p2 publish' within scope"
+        else
+            echo "p2repo dir found, but it is empty to publish. 'P2 publish' beyond scope."
+        fi
+    else
+        echo "No p2repo found. 'P2 publish' beyond scope."
+    fi
+
+    # search for bundle zip and eclipselink.jar, meaning can/need to generate maven
+    srcELJarCount=`ls ${src} | grep -c eclipselink[.]jar$`
+    srcpluginZipCount=`ls ${src} | grep -c eclipselink-plugins`
+    if [ "${srcELJarCount}" -gt 0 ] ; then
+        if [ "${srcpluginZipCount}" -gt 0 ] ; then
+            PUB_SCOPE_EXPECTED=`expr ${PUB_SCOPE_EXPECTED} + 1`
+            echo "Basic components available for mavenpublish. Logging 'Maven publish' as within scope."
+        else
+            echo "No bundle archives detected. Maven publish beyond scope."
+        fi
+    else
+        echo "No eclipselink.jar detected. Maven publish beyond scope."
+    fi
+}
 
 unset publishBuildArtifacts
 publishBuildArtifacts() {
@@ -540,10 +583,18 @@ for handoff in `ls handoff-file*.dat` ; do
     # Do stuff
     parseHandoff ${handoff}
     if [ "$PROC" = "build" ] ; then
-       publishBuildArtifacts ${BUILD_ARCHIVE_LOC} ${DNLD_DIR} ${VERSION} ${BLDDATE} ${TIMESTAMP}
-       publishP2Repo ${BUILD_ARCHIVE_LOC} ${DNLD_DIR} ${VERSION} ${QUALIFIER}
-
+       establishPublishScope ${BUILD_ARCHIVE_LOC}
+       if [ "${PUB_SCOPE_EXPECTED}" -ge 100 ] ; then
+           publishBuildArtifacts ${BUILD_ARCHIVE_LOC} ${DNLD_DIR} ${VERSION} ${BLDDATE} ${TIMESTAMP}
+       fi
+       if [ "${PUB_SCOPE_EXPECTED}" -ge 10 ] ; then
+           publishP2Repo ${BUILD_ARCHIVE_LOC} ${DNLD_DIR} ${VERSION} ${QUALIFIER}
+       fi
+       if [ "${PUB_SCOPE_EXPECTED}" -ge 10 ] ; then
+           echo "Could call publishMavenRepo() if ready"
+       fi
     else
+       PUB_SCOPE_EXPECTED=0
        publishTestArtifacts ${BUILD_ARCHIVE_LOC} ${DNLD_DIR} ${VERSION} ${BLDDATE} ${HOST}
     fi
     #runAnt ${BRANCH} ${QUALIFIER} ${PROC} ${BUILD_ARCHIVE_LOC} ${HOST}
@@ -558,7 +609,12 @@ for handoff in `ls handoff-file*.dat` ; do
  # ${MAVEN_TAG}
  # ${VERSION}
  # ${TIMESTAMP}
-    if [ "${ERROR}" = "false" ] ; then
+    if [ "${PUB_SCOPE_EXPECTED}" = "${PUB_SCOPE_COMPLETED}" ] ; then
+       echo "Success: can now delete '${handoff}' and '${BUILD_ARCHIVE_LOC}'"
+    else
+       echo "Full processing failed: Cannot remove '${handoff}' and '${BUILD_ARCHIVE_LOC}'"
+    fi
+    if [ "${ERROR} " = "false" ] ; then
         echo "Processing of '${handoff}' complete."
         # remove handoff
         #rm ${handoff}
@@ -568,7 +624,7 @@ for handoff in `ls handoff-file*.dat` ; do
         #rm ${BUILD_ARCHIVE_LOC}/*  # Gets rid of the bulk of the artifacts, but will leave the dir heirarchy
         echo "   Removing '${BUILD_ARCHIVE_LOC}/*'. (not!)"
     else
-        # Repost error
+        # Report error
         echo "Error processing of '${handoff}'."
         echo "    Deletion aborted..."
     fi
