@@ -23,7 +23,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <p>
  * <div nowrap><b>BNF:</b> <code>delete_statement ::= delete_clause [where_clause]</code><p>
  *
- * @version 2.4
+ * @version 2.4.1
  * @since 2.3
  * @author Pascal Filion
  */
@@ -167,7 +167,7 @@ public final class DeleteStatement extends AbstractExpression {
 		}
 
 		// Now fully qualify attribute names with a virtual identification variable
-		accept(FullyQualifyPathExpressionVisitor.instance());
+		accept(new FullyQualifyPathExpressionVisitor());
 	}
 
 	/**

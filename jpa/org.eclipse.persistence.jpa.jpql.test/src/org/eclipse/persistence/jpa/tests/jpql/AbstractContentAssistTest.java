@@ -42,7 +42,7 @@ import static org.junit.Assert.*;
  * This unit-test tests the JPQL content assist at various position within the JPQL query and with
  * complete and incomplete queries.
  *
- * @version 2.4
+ * @version 2.4.1
  * @since 2.3
  * @author Pascal Filion
  */

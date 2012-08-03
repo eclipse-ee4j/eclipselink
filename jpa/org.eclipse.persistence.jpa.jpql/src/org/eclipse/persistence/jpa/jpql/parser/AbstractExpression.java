@@ -33,7 +33,7 @@ import org.eclipse.persistence.jpa.jpql.util.iterator.IterableListIterator;
  * @see ExpressionFactory
  * @see JPQLGrammar
  *
- * @version 2.4
+ * @version 2.4.1
  * @since 2.3
  * @author Pascal Filion
  */
@@ -468,17 +468,6 @@ public abstract class AbstractExpression implements Expression {
 	 */
 	public JPQLGrammar getGrammar() {
 		return getRoot().getGrammar();
-	}
-
-	/**
-	 * Retrieves the identifiers that are supported by the given BNF.
-	 *
-	 * @param queryBNFId The unique identifier of the BNF for which the supported identifiers are requested
-	 * @return The list of JPQL identifiers that can be used with the BNF
-	 * @see ExpressionRegistry#getIdentifiers(String)
-	 */
-	protected Iterable<String> getIdentifiers(String queryBNFId) {
-		return getExpressionRegistry().getIdentifiers(queryBNFId);
 	}
 
 	/**

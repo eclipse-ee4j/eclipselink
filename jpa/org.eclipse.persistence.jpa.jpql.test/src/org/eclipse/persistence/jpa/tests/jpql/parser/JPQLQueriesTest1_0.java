@@ -13,6 +13,12 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
+import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
+
+import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
+
+import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_4;
+
 import org.junit.Test;
 
 import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries1_0.*;
@@ -37,7 +43,11 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 
 	@Test
 	public final void test_Query_001() {
+		test_Query_001(getGrammar());
+	}
 
+	final void test_Query_001(JPQLGrammar jpqlGrammar) {
+		
 		// SELECT e FROM Employee e
 
 		ExpressionTester selectStatement = selectStatement(
@@ -45,11 +55,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			from("Employee", "e")
 		);
 
-		testQuery(query_001(), selectStatement);
+		testQuery(query_001(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_002() {
+		test_Query_002(getGrammar());
+	}
+
+	final void test_Query_002(JPQLGrammar jpqlGrammar) {
 
 		// SELECT e\nFROM Employee e
 
@@ -58,11 +72,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			from("Employee", "e")
 		);
 
-		testQuery(query_002(), selectStatement);
+		testQuery(query_002(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_003() {
+		test_Query_003(getGrammar());
+	}
+
+	final void test_Query_003(JPQLGrammar jpqlGrammar) {
 
 		// SELECT e
       // FROM Employee e
@@ -80,11 +98,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			)
 		);
 
-		testQuery(query_003(), selectStatement);
+		testQuery(query_003(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_004() {
+		test_Query_004(getGrammar());
+	}
+
+	final void test_Query_004(JPQLGrammar jpqlGrammar) {
 
 		// SELECT p.number
 		// FROM Employee e, Phone p
@@ -106,11 +128,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			)
 		);
 
-		testQuery(query_004(), selectStatement);
+		testQuery(query_004(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_005() {
+		test_Query_005(getGrammar());
+	}
+
+	final void test_Query_005(JPQLGrammar jpqlGrammar) {
 
 		// SELECT d, COUNT(e), MAX(e.salary), AVG(e.salary)
 		// FROM Department d JOIN d.employees e
@@ -130,11 +156,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			nullExpression()
 		);
 
-		testQuery(query_005(), selectStatement);
+		testQuery(query_005(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_006() {
+		test_Query_006(getGrammar());
+	}
+
+	final void test_Query_006(JPQLGrammar jpqlGrammar) {
 
 		// SELECT e
 		// FROM Employee e
@@ -152,11 +182,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(andExpression)
 		);
 
-		testQuery(query_006(), selectStatement);
+		testQuery(query_006(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_007() {
+		test_Query_007(getGrammar());
+	}
+
+	final void test_Query_007(JPQLGrammar jpqlGrammar) {
 
 		// SELECT e
 		// FROM Employee e
@@ -174,11 +208,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(andExpression)
 		);
 
-		testQuery(query_007(), selectStatement);
+		testQuery(query_007(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_008() {
+		test_Query_008(getGrammar());
+	}
+
+	final void test_Query_008(JPQLGrammar jpqlGrammar) {
 
 		// SELECT e
 		// FROM Employee e
@@ -196,11 +234,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(andExpression)
 		);
 
-		testQuery(query_008(), selectStatement);
+		testQuery(query_008(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_009() {
+		test_Query_009(getGrammar());
+	}
+
+	final void test_Query_009(JPQLGrammar jpqlGrammar) {
 
 		// SELECT e
 		// FROM Employee e
@@ -212,11 +254,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(path("e.startDate").between(inputParameter("?1"), inputParameter("?2")))
 		);
 
-		testQuery(query_009(), selectStatement);
+		testQuery(query_009(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_010() {
+		test_Query_010(getGrammar());
+	}
+
+	final void test_Query_010(JPQLGrammar jpqlGrammar) {
 
 		// SELECT e
 		// FROM Employee e
@@ -242,11 +288,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(andExpression)
 		);
 
-		testQuery(query_010(), selectStatement);
+		testQuery(query_010(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_011() {
+		test_Query_011(getGrammar());
+	}
+
+	final void test_Query_011(JPQLGrammar jpqlGrammar) {
 
 		// SELECT e
 		// FROM Project p JOIN p.employees e
@@ -262,11 +312,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			orderBy("e.name")
 		);
 
-		testQuery(query_011(), selectStatement);
+		testQuery(query_011(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_012() {
+		test_Query_012(getGrammar());
+	}
+
+	final void test_Query_012(JPQLGrammar jpqlGrammar) {
 
 		// SELECT e
 		// FROM Employee e
@@ -278,11 +332,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(isEmpty("e.projects"))
 		);
 
-		testQuery(query_012(), selectStatement);
+		testQuery(query_012(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_013() {
+		test_Query_013(getGrammar());
+	}
+
+	final void test_Query_013(JPQLGrammar jpqlGrammar) {
 
 		// SELECT e
 		// FROM Employee e
@@ -294,11 +352,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(isNotEmpty("e.projects"))
 		);
 
-		testQuery(query_013(), selectStatement);
+		testQuery(query_013(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_014() {
+		test_Query_014(getGrammar());
+	}
+
+	final void test_Query_014(JPQLGrammar jpqlGrammar) {
 
 		// UPDATE Employee e
 		// SET e.manager = ?1
@@ -309,11 +371,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(path("e.department").equal(inputParameter("?2")))
 		);
 
-		testQuery(query_014(), updateStatement);
+		testQuery(query_014(), updateStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_015() {
+		test_Query_015(getGrammar());
+	}
+
+	final void test_Query_015(JPQLGrammar jpqlGrammar) {
 
 		// DELETE FROM Project p
       // WHERE p.employees IS EMPTY
@@ -324,11 +390,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(isEmpty("p.employees"))
 		);
 
-		testQuery(query_015(), deleteStatement);
+		testQuery(query_015(), deleteStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_016() {
+		test_Query_016(getGrammar());
+	}
+
+	final void test_Query_016(JPQLGrammar jpqlGrammar) {
 
 		// DELETE FROM Department d
 		// WHERE d.name IN ('CA13', 'CA19', 'NY30')
@@ -346,11 +416,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(inExpression)
 		);
 
-		testQuery(query_016(), deleteStatement);
+		testQuery(query_016(), deleteStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_017() {
+		test_Query_017(getGrammar());
+	}
+
+	final void test_Query_017(JPQLGrammar jpqlGrammar) {
 
 		// UPDATE Employee e
 		// SET e.department = null
@@ -361,11 +435,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(path("e.department.name").in(string("'CA13'"), string("'CA19'"), string("'NY30'")))
 		);
 
-		testQuery(query_017(), updateStatement);
+		testQuery(query_017(), updateStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_018() {
+		test_Query_018(getGrammar());
+	}
+
+	final void test_Query_018(JPQLGrammar jpqlGrammar) {
 
 		// SELECT d
 		// FROM Department d
@@ -383,11 +461,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(likeExpression)
 		);
 
-		testQuery(query_018(), selectStatement);
+		testQuery(query_018(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_019() {
+		test_Query_019(getGrammar());
+	}
+
+	final void test_Query_019(JPQLGrammar jpqlGrammar) {
 
 		// SELECT e
 		// FROM Employee e
@@ -409,11 +491,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(comparisonExpression)
 		);
 
-		testQuery(query_019(), selectStatement);
+		testQuery(query_019(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_020() {
+		test_Query_020(getGrammar());
+	}
+
+	final void test_Query_020(JPQLGrammar jpqlGrammar) {
 
 		// SELECT e
 		// FROM Employee e
@@ -441,11 +527,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(exists(subQuery))
 		);
 
-		testQuery(query_020(), selectStatement);
+		testQuery(query_020(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_021() {
+		test_Query_021(getGrammar());
+	}
+
+	final void test_Query_021(JPQLGrammar jpqlGrammar) {
 
 		// SELECT e
 		// FROM Employee e
@@ -465,11 +555,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			)
 		);
 
-		testQuery(query_021(), selectStatement);
+		testQuery(query_021(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_022() {
+		test_Query_022(getGrammar());
+	}
+
+	final void test_Query_022(JPQLGrammar jpqlGrammar) {
 
 		// SELECT e
 		// FROM Employee e
@@ -489,11 +583,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(in("e.department", subquery))
 		);
 
-		testQuery(query_022(), selectStatement);
+		testQuery(query_022(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_023() {
+		test_Query_023(getGrammar());
+	}
+
+	final void test_Query_023(JPQLGrammar jpqlGrammar) {
 
 		// SELECT p
 		// FROM Phone p
@@ -511,11 +609,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(notInExpression)
 		);
 
-		testQuery(query_023(), selectStatement);
+		testQuery(query_023(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_024() {
+		test_Query_024(getGrammar());
+	}
+
+	final void test_Query_024(JPQLGrammar jpqlGrammar) {
 
 		// SELECT m
 		// FROM Employee m
@@ -545,11 +647,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(comparisonExpression2)
 		);
 
-		testQuery(query_024(), selectStatement);
+		testQuery(query_024(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_025() {
+		test_Query_025(getGrammar());
+	}
+
+	final void test_Query_025(JPQLGrammar jpqlGrammar) {
 
 		// SELECT e
 		// FROM Employee e
@@ -561,11 +667,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(memberOf("e", "e.directs"))
 		);
 
-		testQuery(query_025(), selectStatement);
+		testQuery(query_025(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_026() {
+		test_Query_026(getGrammar());
+	}
+
+	final void test_Query_026(JPQLGrammar jpqlGrammar) {
 
 		// SELECT e
 		// FROM Employee e
@@ -590,11 +700,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(notExists(subquery))
 		);
 
-		testQuery(query_026(), selectStatement);
+		testQuery(query_026(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_027() {
+		test_Query_027(getGrammar());
+	}
+
+	final void test_Query_027(JPQLGrammar jpqlGrammar) {
 
 		// SELECT e
 		// FROM Employee e
@@ -622,11 +736,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(andExpression)
 		);
 
-		testQuery(query_027(), selectStatement);
+		testQuery(query_027(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_028() {
+		test_Query_028(getGrammar());
+	}
+
+	final void test_Query_028(JPQLGrammar jpqlGrammar) {
 
 		// SELECT e
 		// FROM Employee e
@@ -650,11 +768,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(comparisonExpression)
 		);
 
-		testQuery(query_028(), selectStatement);
+		testQuery(query_028(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_029() {
+		test_Query_029(getGrammar());
+	}
+
+	final void test_Query_029(JPQLGrammar jpqlGrammar) {
 
 		// SELECT d
 		// FROM Department d
@@ -666,11 +788,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(equal(size("d.employees"), numeric(2L)))
 		);
 
-		testQuery(query_029(), selectStatement);
+		testQuery(query_029(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_030() {
+		test_Query_030(getGrammar());
+	}
+
+	final void test_Query_030(JPQLGrammar jpqlGrammar) {
 
 		// SELECT d
       // FROM Department d
@@ -688,11 +814,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(equal(sub(subquery), numeric(2)))
 		);
 
-		testQuery(query_030(), selectStatement);
+		testQuery(query_030(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_031() {
+		test_Query_031(getGrammar());
+	}
+
+	final void test_Query_031(JPQLGrammar jpqlGrammar) {
 
 		// SELECT e
 		// FROM Employee e
@@ -707,11 +837,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			orderBy(orderByItemDesc("e.name"))
 		);
 
-		testQuery(query_031(), selectStatement);
+		testQuery(query_031(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_032() {
+		test_Query_032(getGrammar());
+	}
+
+	final void test_Query_032(JPQLGrammar jpqlGrammar) {
 
 		// SELECT e
       // FROM Employee e JOIN e.department d
@@ -729,11 +863,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			)
 		);
 
-		testQuery(query_032(), selectStatement);
+		testQuery(query_032(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_033() {
+		test_Query_033(getGrammar());
+	}
+
+	final void test_Query_033(JPQLGrammar jpqlGrammar) {
 
 		// SELECT AVG(e.salary) FROM Employee e
 		ExpressionTester selectStatement = selectStatement(
@@ -741,11 +879,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			from("Employee", "e")
 		);
 
-		testQuery(query_033(), selectStatement);
+		testQuery(query_033(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_034() {
+		test_Query_034(getGrammar());
+	}
+
+	final void test_Query_034(JPQLGrammar jpqlGrammar) {
 
 		// SELECT d.name, AVG(e.salary)
 		// FROM Department d JOIN d.employees e
@@ -760,11 +902,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			nullExpression()
 		);
 
-		testQuery(query_034(), selectStatement);
+		testQuery(query_034(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_035() {
+		test_Query_035(getGrammar());
+	}
+
+	final void test_Query_035(JPQLGrammar jpqlGrammar) {
 
 		// SELECT d.name, AVG(e.salary)
       // FROM Department d JOIN d.employees e
@@ -780,11 +926,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			nullExpression()
 		);
 
-		testQuery(query_035(), selectStatement);
+		testQuery(query_035(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_036() {
+		test_Query_036(getGrammar());
+	}
+
+	final void test_Query_036(JPQLGrammar jpqlGrammar) {
 
 		// SELECT d.name, AVG(e.salary)
       // FROM Department d JOIN d.employees e
@@ -801,11 +951,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			nullExpression()
 		);
 
-		testQuery(query_036(), selectStatement);
+		testQuery(query_036(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_037() {
+		test_Query_037(getGrammar());
+	}
+
+	final void test_Query_037(JPQLGrammar jpqlGrammar) {
 
 		// SELECT e, COUNT(p), COUNT(DISTINCT p.type)
 		// FROM Employee e JOIN e.phones p
@@ -822,11 +976,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			nullExpression()
 		);
 
-		testQuery(query_037(), selectStatement);
+		testQuery(query_037(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_038() {
+		test_Query_038(getGrammar());
+	}
+
+	final void test_Query_038(JPQLGrammar jpqlGrammar) {
 
 		// SELECT d.name, e.salary, COUNT(p)
 		// FROM Department d JOIN d.employees e JOIN e.projects p
@@ -844,11 +1002,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			nullExpression()
 		);
 
-		testQuery(query_038(), selectStatement);
+		testQuery(query_038(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_039() {
+		test_Query_039(getGrammar());
+	}
+
+	final void test_Query_039(JPQLGrammar jpqlGrammar) {
 
 		// SELECT e, COUNT(p)
 		// FROM Employee e JOIN e.projects p
@@ -864,11 +1026,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			nullExpression()
 		);
 
-		testQuery(query_039(), selectStatement);
+		testQuery(query_039(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_040() {
+		test_Query_040(getGrammar());
+	}
+
+	final void test_Query_040(JPQLGrammar jpqlGrammar) {
 
 		// UPDATE Employee e
 		// SET e.salary = 60000
@@ -879,11 +1045,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(equal(path("e.salary"), numeric(55000)))
 		);
 
-		testQuery(query_040(), updateStatement);
+		testQuery(query_040(), updateStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_041() {
+		test_Query_041(getGrammar());
+	}
+
+	final void test_Query_041(JPQLGrammar jpqlGrammar) {
 
 		// UPDATE Employee e
 		// SET e.salary = e.salary + 5000
@@ -907,11 +1077,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(exists(subquery))
 		);
 
-		testQuery(query_041(), updateStatement);
+		testQuery(query_041(), updateStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_042() {
+		test_Query_042(getGrammar());
+	}
+
+	final void test_Query_042(JPQLGrammar jpqlGrammar) {
 
 		// UPDATE Phone p
 		// SET p.number = CONCAT('288', SUBSTRING(p.number, LOCATE(p.number, '-'), 4)),
@@ -941,11 +1115,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(andExpression)
 		);
 
-		testQuery(query_042(), updateStatement);
+		testQuery(query_042(), updateStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_043() {
+		test_Query_043(getGrammar());
+	}
+
+	final void test_Query_043(JPQLGrammar jpqlGrammar) {
 
 		// DELETE FROM Employee e
 		// WHERE e.department IS NULL";
@@ -955,11 +1133,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(isNull(path("e.department")))
 		);
 
-		testQuery(query_043(), deleteStatement);
+		testQuery(query_043(), deleteStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_044() {
+		test_Query_044(getGrammar());
+	}
+
+	final void test_Query_044(JPQLGrammar jpqlGrammar) {
 
 		// Select Distinct object(c)
 		// From Customer c, In(c.orders) co
@@ -984,11 +1166,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(comparisonExpression)
 		);
 
-		testQuery(query_044(), selectStatement);
+		testQuery(query_044(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_045() {
+		test_Query_045(getGrammar());
+	}
+
+	final void test_Query_045(JPQLGrammar jpqlGrammar) {
 
 		// SELECT DISTINCT object(c)
 		// FROM Customer c, IN(c.orders) co
@@ -1013,11 +1199,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(comparisonExpression)
 		);
 
-		testQuery(query_045(), selectStatement);
+		testQuery(query_045(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_046() {
+		test_Query_046(getGrammar());
+	}
+
+	final void test_Query_046(JPQLGrammar jpqlGrammar) {
 
 		// SELECT Distinct object(c)
 		// FROM Customer c, IN(c.orders) co
@@ -1039,11 +1229,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(comparisonExpression)
 		);
 
-		testQuery(query_046(), selectStatement);
+		testQuery(query_046(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_047() {
+		test_Query_047(getGrammar());
+	}
+
+	final void test_Query_047(JPQLGrammar jpqlGrammar) {
 
 		// SELECT Distinct object(c)
 		// FROM Customer c, IN(c.orders) co
@@ -1068,11 +1262,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(comparisonExpression)
 		);
 
-		testQuery(query_047(), selectStatement);
+		testQuery(query_047(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_048() {
+		test_Query_048(getGrammar());
+	}
+
+	final void test_Query_048(JPQLGrammar jpqlGrammar) {
 
 		// SELECT Distinct object(c)
 		// FROM Customer c, IN(c.orders) co
@@ -1095,11 +1293,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			)
 		);
 
-		testQuery(query_048(), selectStatement);
+		testQuery(query_048(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_049() {
+		test_Query_049(getGrammar());
+	}
+
+	final void test_Query_049(JPQLGrammar jpqlGrammar) {
 
 		// SELECT Distinct object(c)
 		// FROM Customer c, IN(c.orders) co
@@ -1121,11 +1323,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(comparisonExpression)
 		);
 
-		testQuery(query_049(), selectStatement);
+		testQuery(query_049(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_050() {
+		test_Query_050(getGrammar());
+	}
+
+	final void test_Query_050(JPQLGrammar jpqlGrammar) {
 
 		// SELECT Distinct object(c)
       // FROM Customer c, IN(c.orders) co
@@ -1150,11 +1356,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(comparisonExpression)
 		);
 
-		testQuery(query_050(), selectStatement);
+		testQuery(query_050(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_051() {
+		test_Query_051(getGrammar());
+	}
+
+	final void test_Query_051(JPQLGrammar jpqlGrammar) {
 
 		// SELECT Distinct object(c)
 		// FROM Customer c, IN(c.orders) co
@@ -1179,11 +1389,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(comparisonExpression)
 		);
 
-		testQuery(query_051(), selectStatement);
+		testQuery(query_051(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_052() {
+		test_Query_052(getGrammar());
+	}
+
+	final void test_Query_052(JPQLGrammar jpqlGrammar) {
 
 		// SELECT DISTINCT object(c)
 		// FROM Customer c, IN(c.orders) co
@@ -1205,11 +1419,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(comparisonExpression)
 		);
 
-		testQuery(query_052(), selectStatement);
+		testQuery(query_052(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_053() {
+		test_Query_053(getGrammar());
+	}
+
+	final void test_Query_053(JPQLGrammar jpqlGrammar) {
 
 		// SELECT DISTINCT object(c)
 		// FROM Customer c, IN(c.orders) co
@@ -1234,11 +1452,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(comparisonExpression)
 		);
 
-		testQuery(query_053(), selectStatement);
+		testQuery(query_053(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_054() {
+		test_Query_054(getGrammar());
+	}
+
+	final void test_Query_054(JPQLGrammar jpqlGrammar) {
 
 		// SELECT DISTINCT object(c)
 		// FROM Customer c, IN(c.orders) co
@@ -1263,11 +1485,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(comparisonExpression)
 		);
 
-		testQuery(query_054(), selectStatement);
+		testQuery(query_054(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_055() {
+		test_Query_055(getGrammar());
+	}
+
+	final void test_Query_055(JPQLGrammar jpqlGrammar) {
 
 		// SELECT DISTINCT c
 		// FROM Customer c JOIN c.orders o
@@ -1289,11 +1515,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			)
 		);
 
-		testQuery(query_055(), selectStatement);
+		testQuery(query_055(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_056() {
+		test_Query_056(getGrammar());
+	}
+
+	final void test_Query_056(JPQLGrammar jpqlGrammar) {
 
 		// SELECT DISTINCT c
 		// FROM Customer c JOIN c.orders o
@@ -1313,11 +1543,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(exists(subquery))
 		);
 
-		testQuery(query_056(), selectStatement);
+		testQuery(query_056(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_057() {
+		test_Query_057(getGrammar());
+	}
+
+	final void test_Query_057(JPQLGrammar jpqlGrammar) {
 
 		// SELECT DISTINCT c
 		// from Customer c
@@ -1340,11 +1574,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			)
 		);
 
-		testQuery(query_057(), selectStatement);
+		testQuery(query_057(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_058() {
+		test_Query_058(getGrammar());
+	}
+
+	final void test_Query_058(JPQLGrammar jpqlGrammar) {
 
 		// Select Object(o)
 		// from Order o
@@ -1364,11 +1602,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(exists(subquery))
 		);
 
-		testQuery(query_058(), selectStatement);
+		testQuery(query_058(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_059() {
+		test_Query_059(getGrammar());
+	}
+
+	final void test_Query_059(JPQLGrammar jpqlGrammar) {
 
 		// SELECT DISTINCT c
 		// FROM Customer c
@@ -1388,11 +1630,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(exists(subquery))
 		);
 
-		testQuery(query_059(), selectStatement);
+		testQuery(query_059(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_060() {
+		test_Query_060(getGrammar());
+	}
+
+	final void test_Query_060(JPQLGrammar jpqlGrammar) {
 
 		// SELECT c
 		// FROM Customer c
@@ -1409,11 +1655,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(notExists(subquery))
 		);
 
-		testQuery(query_060(), selectStatement);
+		testQuery(query_060(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_061() {
+		test_Query_061(getGrammar());
+	}
+
+	final void test_Query_061(JPQLGrammar jpqlGrammar) {
 
 		// select object(o)
 		// FROM Order o
@@ -1425,11 +1675,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(greaterThan(sqrt(path("o.totalPrice")), inputParameter(":doubleValue")))
 		);
 
-		testQuery(query_061(), selectStatement);
+		testQuery(query_061(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_062() {
+		test_Query_062(getGrammar());
+	}
+
+	final void test_Query_062(JPQLGrammar jpqlGrammar) {
 
 		// select sum(o.totalPrice)
 		// FROM Order o
@@ -1445,11 +1699,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			nullExpression()
 		);
 
-		testQuery(query_062(), selectStatement);
+		testQuery(query_062(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_063() {
+		test_Query_063(getGrammar());
+	}
+
+	final void test_Query_063(JPQLGrammar jpqlGrammar) {
 
 		// select c.name
 		// FROM Customer c
@@ -1465,11 +1723,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			nullExpression()
 		);
 
-		testQuery(query_063(), selectStatement);
+		testQuery(query_063(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_064() {
+		test_Query_064(getGrammar());
+	}
+
+	final void test_Query_064(JPQLGrammar jpqlGrammar) {
 
 		// select c.name
 		// FROM  Customer c
@@ -1485,11 +1747,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			nullExpression()
 		);
 
-		testQuery(query_064(), selectStatement);
+		testQuery(query_064(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_065() {
+		test_Query_065(getGrammar());
+	}
+
+	final void test_Query_065(JPQLGrammar jpqlGrammar) {
 
 		// select c.name
 		// FROM  Customer c
@@ -1505,11 +1771,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			nullExpression()
 		);
 
-		testQuery(query_065(), selectStatement);
+		testQuery(query_065(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_066() {
+		test_Query_066(getGrammar());
+	}
+
+	final void test_Query_066(JPQLGrammar jpqlGrammar) {
 
 		// select c.name
 		// FROM  Customer c
@@ -1525,11 +1795,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			nullExpression()
 		);
 
-		testQuery(query_066(), selectStatement);
+		testQuery(query_066(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_067() {
+		test_Query_067(getGrammar());
+	}
+
+	final void test_Query_067(JPQLGrammar jpqlGrammar) {
 
 		// select a.city
 		// FROM  Customer c JOIN c.home a
@@ -1545,11 +1819,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			nullExpression()
 		);
 
-		testQuery(query_067(), selectStatement);
+		testQuery(query_067(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_068() {
+		test_Query_068(getGrammar());
+	}
+
+	final void test_Query_068(JPQLGrammar jpqlGrammar) {
 
 		// select count(cc.country)
 		// FROM  Customer c JOIN c.country cc
@@ -1565,11 +1843,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			nullExpression()
 		);
 
-		testQuery(query_068(), selectStatement);
+		testQuery(query_068(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_069() {
+		test_Query_069(getGrammar());
+	}
+
+	final void test_Query_069(JPQLGrammar jpqlGrammar) {
 
 		// select count(cc.country)
 		// FROM  Customer c JOIN c.country cc
@@ -1585,11 +1867,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			nullExpression()
 		);
 
-		testQuery(query_069(), selectStatement);
+		testQuery(query_069(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_070() {
+		test_Query_070(getGrammar());
+	}
+
+	final void test_Query_070(JPQLGrammar jpqlGrammar) {
 
 		// select c.name
 		// FROM  Customer c
@@ -1605,11 +1891,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			nullExpression()
 		);
 
-		testQuery(query_070(), selectStatement);
+		testQuery(query_070(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_071() {
+		test_Query_071(getGrammar());
+	}
+
+	final void test_Query_071(JPQLGrammar jpqlGrammar) {
 
 		// select count(c)
 		// FROM  Customer c JOIN c.aliases a
@@ -1628,11 +1918,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			nullExpression()
 		);
 
-		testQuery(query_071(), selectStatement);
+		testQuery(query_071(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_072() {
+		test_Query_072(getGrammar());
+	}
+
+	final void test_Query_072(JPQLGrammar jpqlGrammar) {
 
 		// select c.country.country
 		// FROM  Customer c
@@ -1647,11 +1941,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			nullExpression()
 		);
 
-		testQuery(query_072(), selectStatement);
+		testQuery(query_072(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_073() {
+		test_Query_073(getGrammar());
+	}
+
+	final void test_Query_073(JPQLGrammar jpqlGrammar) {
 
 		// select Count(c)
 		// FROM  Customer c JOIN c.country cc
@@ -1667,11 +1965,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			nullExpression()
 		);
 
-		testQuery(query_073(), selectStatement);
+		testQuery(query_073(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_074() {
+		test_Query_074(getGrammar());
+	}
+
+	final void test_Query_074(JPQLGrammar jpqlGrammar) {
 
 		// select c.name
 		// FROM  Customer c JOIN c.orders o
@@ -1687,11 +1989,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			nullExpression()
 		);
 
-		testQuery(query_074(), selectStatement);
+		testQuery(query_074(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_075() {
+		test_Query_075(getGrammar());
+	}
+
+	final void test_Query_075(JPQLGrammar jpqlGrammar) {
 
 		// select Object(o)
 		// FROM Order AS o
@@ -1708,11 +2014,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(orExpression)
 		);
 
-		testQuery(query_075(), selectStatement);
+		testQuery(query_075(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_076() {
+		test_Query_076(getGrammar());
+	}
+
+	final void test_Query_076(JPQLGrammar jpqlGrammar) {
 
 		// select Distinct Object(o)
 		// FROM Order AS o
@@ -1729,11 +2039,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(orExpression)
 		);
 
-		testQuery(query_076(), selectStatement);
+		testQuery(query_076(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_077() {
+		test_Query_077(getGrammar());
+	}
+
+	final void test_Query_077(JPQLGrammar jpqlGrammar) {
 
 		// select Object(o)
 		// FROM Order AS o
@@ -1750,11 +2064,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(orExpression)
 		);
 
-		testQuery(query_077(), selectStatement);
+		testQuery(query_077(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_078() {
+		test_Query_078(getGrammar());
+	}
+
+	final void test_Query_078(JPQLGrammar jpqlGrammar) {
 
 		// select DISTINCT o
 		// FROM Order AS o
@@ -1771,11 +2089,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(orExpression)
 		);
 
-		testQuery(query_078(), selectStatement);
+		testQuery(query_078(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_079() {
+		test_Query_079(getGrammar());
+	}
+
+	final void test_Query_079(JPQLGrammar jpqlGrammar) {
 
 		// select Object(o)
 		// FROM Order AS o
@@ -1792,11 +2114,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(andExpression)
 		);
 
-		testQuery(query_079(), selectStatement);
+		testQuery(query_079(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_080() {
+		test_Query_080(getGrammar());
+	}
+
+	final void test_Query_080(JPQLGrammar jpqlGrammar) {
 
 		// select Object(o)
 		// FROM Order AS o
@@ -1813,11 +2139,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(andExpression)
 		);
 
-		testQuery(query_080(), selectStatement);
+		testQuery(query_080(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_081() {
+		test_Query_081(getGrammar());
+	}
+
+	final void test_Query_081(JPQLGrammar jpqlGrammar) {
 
 		// select Object(o)
 		// FROM Order AS o
@@ -1834,11 +2164,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(andExpression)
 		);
 
-		testQuery(query_081(), selectStatement);
+		testQuery(query_081(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_082() {
+		test_Query_082(getGrammar());
+	}
+
+	final void test_Query_082(JPQLGrammar jpqlGrammar) {
 
 		// select Object(o)
 		// FROM Order AS o
@@ -1855,11 +2189,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(andExpression)
 		);
 
-		testQuery(query_082(), selectStatement);
+		testQuery(query_082(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_083() {
+		test_Query_083(getGrammar());
+	}
+
+	final void test_Query_083(JPQLGrammar jpqlGrammar) {
 
 		// SELECT DISTINCT p
 		// From Product p
@@ -1871,11 +2209,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(notBetween(path("p.shelfLife.soldDate"), inputParameter(":date1"), inputParameter(":newdate")))
 		);
 
-		testQuery(query_083(), selectStatement);
+		testQuery(query_083(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_084() {
+		test_Query_084(getGrammar());
+	}
+
+	final void test_Query_084(JPQLGrammar jpqlGrammar) {
 
 		// SELECT DISTINCT o
 		// From Order o
@@ -1887,11 +2229,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(notBetween(path("o.totalPrice"), numeric(1000), numeric(1200)))
 		);
 
-		testQuery(query_084(), selectStatement);
+		testQuery(query_084(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_085() {
+		test_Query_085(getGrammar());
+	}
+
+	final void test_Query_085(JPQLGrammar jpqlGrammar) {
 
 		// SELECT DISTINCT p
 		// From Product p
@@ -1903,11 +2249,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(between(path("p.shelfLife.soldDate"), inputParameter(":date1"), inputParameter(":date6")))
 		);
 
-		testQuery(query_085(), selectStatement);
+		testQuery(query_085(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_086() {
+		test_Query_086(getGrammar());
+	}
+
+	final void test_Query_086(JPQLGrammar jpqlGrammar) {
 
 		// SELECT DISTINCT a
 		// from Alias a LEFT JOIN FETCH a.customers
@@ -1919,11 +2269,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(like(path("a.alias"), string("'a%'")))
 		);
 
-		testQuery(query_086(), selectStatement);
+		testQuery(query_086(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_087() {
+		test_Query_087(getGrammar());
+	}
+
+	final void test_Query_087(JPQLGrammar jpqlGrammar) {
 
 		// select Object(o)
 		// from Order o LEFT JOIN FETCH o.customer
@@ -1935,11 +2289,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(like(path("o.customer.name"), string("'%Caruso'")))
 		);
 
-		testQuery(query_087(), selectStatement);
+		testQuery(query_087(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_088() {
+		test_Query_088(getGrammar());
+	}
+
+	final void test_Query_088(JPQLGrammar jpqlGrammar) {
 
 		// select o
 		// from Order o LEFT JOIN FETCH o.customer
@@ -1951,11 +2309,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(equal(path("o.customer.home.city"), string("'Lawrence'")))
 		);
 
-		testQuery(query_088(), selectStatement);
+		testQuery(query_088(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_089() {
+		test_Query_089(getGrammar());
+	}
+
+	final void test_Query_089(JPQLGrammar jpqlGrammar) {
 
 		// SELECT DISTINCT c
 		// from Customer c LEFT JOIN FETCH c.orders
@@ -1967,11 +2329,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(in(path("c.home.state"), string("'NY'"), string("'RI'")))
 		);
 
-		testQuery(query_089(), selectStatement);
+		testQuery(query_089(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_090() {
+		test_Query_090(getGrammar());
+	}
+
+	final void test_Query_090(JPQLGrammar jpqlGrammar) {
 
 		// SELECT c
 		// from Customer c JOIN FETCH c.spouse
@@ -1981,11 +2347,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			from("Customer", "c", joinFetch("c.spouse"))
 		);
 
-		testQuery(query_090(), selectStatement);
+		testQuery(query_090(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_091() {
+		test_Query_091(getGrammar());
+	}
+
+	final void test_Query_091(JPQLGrammar jpqlGrammar) {
 
 		// SELECT Object(c)
 		// from Customer c INNER JOIN c.aliases a
@@ -1997,11 +2367,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(equal(path("a.alias"), inputParameter(":aName")))
 		);
 
-		testQuery(query_091(), selectStatement);
+		testQuery(query_091(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_092() {
+		test_Query_092(getGrammar());
+	}
+
+	final void test_Query_092(JPQLGrammar jpqlGrammar) {
 
 		// SELECT Object(o)
 		// from Order o INNER JOIN o.customer cust
@@ -2013,11 +2387,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(equal(path("cust.name"), inputParameter("?1")))
 		);
 
-		testQuery(query_092(), selectStatement);
+		testQuery(query_092(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_093() {
+		test_Query_093(getGrammar());
+	}
+
+	final void test_Query_093(JPQLGrammar jpqlGrammar) {
 
 		// SELECT DISTINCT object(c)
 		// from Customer c INNER JOIN c.creditCards cc
@@ -2029,11 +2407,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(equal(path("cc.type"), string("'VISA'")))
 		);
 
-		testQuery(query_093(), selectStatement);
+		testQuery(query_093(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_094() {
+		test_Query_094(getGrammar());
+	}
+
+	final void test_Query_094(JPQLGrammar jpqlGrammar) {
 
 		// SELECT c
 		// from Customer c INNER JOIN c.spouse s
@@ -2043,11 +2425,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			from("Customer", "c", innerJoin("c.spouse", "s"))
 		);
 
-		testQuery(query_094(), selectStatement);
+		testQuery(query_094(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_095() {
+		test_Query_095(getGrammar());
+	}
+
+	final void test_Query_095(JPQLGrammar jpqlGrammar) {
 
 		// select cc.type
 		// FROM CreditCard cc JOIN cc.customer cust
@@ -2062,11 +2448,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			nullExpression()
 		);
 
-		testQuery(query_095(), selectStatement);
+		testQuery(query_095(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_096() {
+		test_Query_096(getGrammar());
+	}
+
+	final void test_Query_096(JPQLGrammar jpqlGrammar) {
 
 		// select cc.code
 		// FROM Customer c JOIN c.country cc
@@ -2081,11 +2471,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			nullExpression()
 		);
 
-		testQuery(query_096(), selectStatement);
+		testQuery(query_096(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_097() {
+		test_Query_097(getGrammar());
+	}
+
+	final void test_Query_097(JPQLGrammar jpqlGrammar) {
 
 		// select Object(c)
 		// FROM Customer c JOIN c.aliases a
@@ -2100,11 +2494,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			nullExpression()
 		);
 
-		testQuery(query_097(), selectStatement);
+		testQuery(query_097(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_098() {
+		test_Query_098(getGrammar());
+	}
+
+	final void test_Query_098(JPQLGrammar jpqlGrammar) {
 
 		// select Object(c)
 		// FROM Customer c JOIN c.aliases a
@@ -2119,11 +2517,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			nullExpression()
 		);
 
-		testQuery(query_098(), selectStatement);
+		testQuery(query_098(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_099() {
+		test_Query_099(getGrammar());
+	}
+
+	final void test_Query_099(JPQLGrammar jpqlGrammar) {
 
 		// SELECT c.id, a.alias
 		// from Customer c LEFT OUTER JOIN c.aliases a
@@ -2142,11 +2544,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			)
 		);
 
-		testQuery(query_099(), selectStatement);
+		testQuery(query_099(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_100() {
+		test_Query_100(getGrammar());
+	}
+
+	final void test_Query_100(JPQLGrammar jpqlGrammar) {
 
 		// SELECT o.id, cust.id
 		// from Order o LEFT OUTER JOIN o.customer cust
@@ -2162,11 +2568,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			orderBy("o.id")
 		);
 
-		testQuery(query_100(), selectStatement);
+		testQuery(query_100(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_101() {
+		test_Query_101(getGrammar());
+	}
+
+	final void test_Query_101(JPQLGrammar jpqlGrammar) {
 
 		// SELECT DISTINCT c
 		// from Customer c LEFT OUTER JOIN c.creditCards cc
@@ -2181,11 +2591,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			nullExpression()
 		);
 
-		testQuery(query_101(), selectStatement);
+		testQuery(query_101(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_102() {
+		test_Query_102(getGrammar());
+	}
+
+	final void test_Query_102(JPQLGrammar jpqlGrammar) {
 
 		// SELECT Sum(p.quantity)
 		// FROM Product p
@@ -2195,11 +2609,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			from("Product", "p")
 		);
 
-		testQuery(query_102(), selectStatement);
+		testQuery(query_102(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_103() {
+		test_Query_103(getGrammar());
+	}
+
+	final void test_Query_103(JPQLGrammar jpqlGrammar) {
 
 		// Select Count(c.home.city)
 		// from Customer c
@@ -2209,11 +2627,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			from("Customer", "c")
 		);
 
-		testQuery(query_103(), selectStatement);
+		testQuery(query_103(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_104() {
+		test_Query_104(getGrammar());
+	}
+
+	final void test_Query_104(JPQLGrammar jpqlGrammar) {
 
 		// SELECT Sum(p.price)
 		// FROM Product p
@@ -2223,11 +2645,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			from("Product", "p")
 		);
 
-		testQuery(query_104(), selectStatement);
+		testQuery(query_104(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_105() {
+		test_Query_105(getGrammar());
+	}
+
+	final void test_Query_105(JPQLGrammar jpqlGrammar) {
 
 		// SELECT AVG(o.totalPrice)
 		// FROM Order o
@@ -2237,11 +2663,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			from("Order", "o")
 		);
 
-		testQuery(query_105(), selectStatement);
+		testQuery(query_105(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_106() {
+		test_Query_106(getGrammar());
+	}
+
+	final void test_Query_106(JPQLGrammar jpqlGrammar) {
 
 		// SELECT DISTINCT MAX(l.quantity)
 		// FROM LineItem l
@@ -2251,11 +2681,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			from("LineItem", "l")
 		);
 
-		testQuery(query_106(), selectStatement);
+		testQuery(query_106(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_107() {
+		test_Query_107(getGrammar());
+	}
+
+	final void test_Query_107(JPQLGrammar jpqlGrammar) {
 
 		// SELECT DISTINCT MIN(o.id)
 		// FROM Order o
@@ -2267,11 +2701,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(path("o.customer.name").equal(string("'Robert E. Bissett'")))
 		);
 
-		testQuery(query_107(), selectStatement);
+		testQuery(query_107(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_108() {
+		test_Query_108(getGrammar());
+	}
+
+	final void test_Query_108(JPQLGrammar jpqlGrammar) {
 
 		// SELECT NEW com.sun.ts.tests.ejb30.persistence.query.language.schema30.Customer(c.id, c.name)
 		// FROM Customer c
@@ -2287,11 +2725,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(path("c.work.city").equal(inputParameter(":workcity")))
 		);
 
-		testQuery(query_108(), selectStatement);
+		testQuery(query_108(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_109() {
+		test_Query_109(getGrammar());
+	}
+
+	final void test_Query_109(JPQLGrammar jpqlGrammar) {
 
 		// SELECT DISTINCT c
 		// FROM Customer c
@@ -2303,11 +2745,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(size("c.orders").greaterThan(numeric(100)))
 		);
 
-		testQuery(query_109(), selectStatement);
+		testQuery(query_109(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_110() {
+		test_Query_110(getGrammar());
+	}
+
+	final void test_Query_110(JPQLGrammar jpqlGrammar) {
 
 		// SELECT DISTINCT c
 		// FROM Customer c
@@ -2319,11 +2765,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(size("c.orders").greaterThanOrEqual(numeric(2)))
 		);
 
-		testQuery(query_110(), selectStatement);
+		testQuery(query_110(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_111() {
+		test_Query_111(getGrammar());
+	}
+
+	final void test_Query_111(JPQLGrammar jpqlGrammar) {
 
 		// select Distinct c
 		// FROM Customer c LEFT OUTER JOIN c.work workAddress
@@ -2335,11 +2785,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(isNull(path("workAddress.zip")))
 		);
 
-		testQuery(query_111(), selectStatement);
+		testQuery(query_111(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_112() {
+		test_Query_112(getGrammar());
+	}
+
+	final void test_Query_112(JPQLGrammar jpqlGrammar) {
 
 		// SELECT DISTINCT c
 		// FROM Customer c, IN(c.orders) o
@@ -2351,11 +2805,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 				fromIn("c.orders", "o"))
 		);
 
-		testQuery(query_112(), selectStatement);
+		testQuery(query_112(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_113() {
+		test_Query_113(getGrammar());
+	}
+
+	final void test_Query_113(JPQLGrammar jpqlGrammar) {
 
 		// Select Distinct Object(c)
 		// from Customer c
@@ -2367,11 +2825,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(isNull(path("c.name")))
 		);
 
-		testQuery(query_113(), selectStatement);
+		testQuery(query_113(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_114() {
+		test_Query_114(getGrammar());
+	}
+
+	final void test_Query_114(JPQLGrammar jpqlGrammar) {
 
 		// Select c.name
 		// from Customer c
@@ -2383,11 +2845,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(path("c.home.street").equal(string("'212 Edgewood Drive'")))
 		);
 
-		testQuery(query_114(), selectStatement);
+		testQuery(query_114(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_115() {
+		test_Query_115(getGrammar());
+	}
+
+	final void test_Query_115(JPQLGrammar jpqlGrammar) {
 
 		// Select s.customer
 		// from Spouse s
@@ -2399,11 +2865,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(path("s.id").equal(string("'6'")))
 		);
 
-		testQuery(query_115(), selectStatement);
+		testQuery(query_115(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_116() {
+		test_Query_116(getGrammar());
+	}
+
+	final void test_Query_116(JPQLGrammar jpqlGrammar) {
 
 		// Select c.work.zip
 		// from Customer c
@@ -2413,11 +2883,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			from("Customer", "c")
 		);
 
-		testQuery(query_116(), selectStatement);
+		testQuery(query_116(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_117() {
+		test_Query_117(getGrammar());
+	}
+
+	final void test_Query_117(JPQLGrammar jpqlGrammar) {
 
 		// SELECT Distinct Object(c)
 		// From Customer c, IN(c.home.phones) p
@@ -2436,11 +2910,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			)
 		);
 
-		testQuery(query_117(), selectStatement);
+		testQuery(query_117(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_118() {
+		test_Query_118(getGrammar());
+	}
+
+	final void test_Query_118(JPQLGrammar jpqlGrammar) {
 
 		// SELECT DISTINCT Object(c)
 		// from Customer c, in(c.aliases) a
@@ -2452,11 +2930,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(not(isNull(path("a.customerNoop"))))
 		);
 
-		testQuery(query_118(), selectStatement);
+		testQuery(query_118(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_119() {
+		test_Query_119(getGrammar());
+	}
+
+	final void test_Query_119(JPQLGrammar jpqlGrammar) {
 
 		// select distinct object(c)
 		// fRoM Customer c, IN(c.aliases) a
@@ -2468,11 +2950,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(path("c.name").equal(inputParameter(":cName")).or(isNull(path("a.customerNoop"))))
 		);
 
-		testQuery(query_119(), selectStatement);
+		testQuery(query_119(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_120() {
+		test_Query_120(getGrammar());
+	}
+
+	final void test_Query_120(JPQLGrammar jpqlGrammar) {
 
 		// select Distinct Object(c)
 		// from Customer c, in(c.aliases) a
@@ -2484,11 +2970,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(path("c.name").equal(inputParameter(":cName")).and(isNull(path("a.customerNoop"))))
 		);
 
-		testQuery(query_120(), selectStatement);
+		testQuery(query_120(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_121() {
+		test_Query_121(getGrammar());
+	}
+
+	final void test_Query_121(JPQLGrammar jpqlGrammar) {
 
 		// sElEcT Distinct oBJeCt(c)
 		// FROM Customer c, IN(c.aliases) a
@@ -2500,11 +2990,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(isNotNull(path("a.customerNoop")))
 		);
 
-		testQuery(query_121(), selectStatement);
+		testQuery(query_121(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_122() {
+		test_Query_122(getGrammar());
+	}
+
+	final void test_Query_122(JPQLGrammar jpqlGrammar) {
 
 		// select distinct Object(c)
 		// FROM Customer c, in(c.aliases) a
@@ -2516,11 +3010,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(path("a.alias").like(string("'%\\_%'"), string('\\')))
 		);
 
-		testQuery(query_122(), selectStatement);
+		testQuery(query_122(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_123() {
+		test_Query_123(getGrammar());
+	}
+
+	final void test_Query_123(JPQLGrammar jpqlGrammar) {
 
 		// Select Distinct Object(c)
 		// FROM Customer c, in(c.aliases) a
@@ -2532,11 +3030,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(isNull(path("a.customerNoop")))
 		);
 
-		testQuery(query_123(), selectStatement);
+		testQuery(query_123(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_124() {
+		test_Query_124(getGrammar());
+	}
+
+	final void test_Query_124(JPQLGrammar jpqlGrammar) {
 
 		// Select Distinct o.creditCard.balance
 		// from Order o
@@ -2551,11 +3053,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			orderBy(orderByItemAsc("o.creditCard.balance"))
 		);
 
-		testQuery(query_124(), selectStatement);
+		testQuery(query_124(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_125() {
+		test_Query_125(getGrammar());
+	}
+
+	final void test_Query_125(JPQLGrammar jpqlGrammar) {
 
 		// Select c.work.zip
 		// from Customer c
@@ -2571,11 +3077,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			orderBy(orderByItemAsc("c.work.zip"))
 		);
 
-		testQuery(query_125(), selectStatement);
+		testQuery(query_125(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_126() {
+		test_Query_126(getGrammar());
+	}
+
+	final void test_Query_126(JPQLGrammar jpqlGrammar) {
 
 		// SELECT a.alias
 		// FROM Alias AS a
@@ -2595,11 +3105,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(orExpression)
 		);
 
-		testQuery(query_126(), selectStatement);
+		testQuery(query_126(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_127() {
+		test_Query_127(getGrammar());
+	}
+
+	final void test_Query_127(JPQLGrammar jpqlGrammar) {
 
 		// Select Object(c)
 		// from Customer c
@@ -2616,11 +3130,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(orExpression)
 		);
 
-		testQuery(query_127(), selectStatement);
+		testQuery(query_127(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_128() {
+		test_Query_128(getGrammar());
+	}
+
+	final void test_Query_128(JPQLGrammar jpqlGrammar) {
 
 		// Select Distinct Object(p)
 		// from Product p
@@ -2632,11 +3150,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(path("p.name").equal(inputParameter("?1")))
 		);
 
-		testQuery(query_128(), selectStatement);
+		testQuery(query_128(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_129() {
+		test_Query_129(getGrammar());
+	}
+
+	final void test_Query_129(JPQLGrammar jpqlGrammar) {
 
 		// Select Distinct Object(p)
 		// from Product p
@@ -2658,11 +3180,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(andExpression)
 		);
 
-		testQuery(query_129(), selectStatement);
+		testQuery(query_129(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_130() {
+		test_Query_130(getGrammar());
+	}
+
+	final void test_Query_130(JPQLGrammar jpqlGrammar) {
 
 		// Select Distinct Object(o)
 		// from Order o
@@ -2674,11 +3200,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(isNotNull(path("o.customer.name")))
 		);
 
-		testQuery(query_130(), selectStatement);
+		testQuery(query_130(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_131() {
+		test_Query_131(getGrammar());
+	}
+
+	final void test_Query_131(JPQLGrammar jpqlGrammar) {
 
 		// Select DISTINCT Object(p)
 		// From Product p
@@ -2695,11 +3225,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(orExpression)
 		);
 
-		testQuery(query_131(), selectStatement);
+		testQuery(query_131(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_132() {
+		test_Query_132(getGrammar());
+	}
+
+	final void test_Query_132(JPQLGrammar jpqlGrammar) {
 
 		// Select DISTINCT Object(p)
 		// From Product p
@@ -2711,11 +3245,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(path("p.quantity").notBetween(numeric(10), numeric(20)))
 		);
 
-		testQuery(query_132(), selectStatement);
+		testQuery(query_132(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_133() {
+		test_Query_133(getGrammar());
+	}
+
+	final void test_Query_133(JPQLGrammar jpqlGrammar) {
 
 		// Select DISTINCT OBJECT(p)
 		// From Product p
@@ -2732,11 +3270,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(andExpression)
 		);
 
-		testQuery(query_133(), selectStatement);
+		testQuery(query_133(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_134() {
+		test_Query_134(getGrammar());
+	}
+
+	final void test_Query_134(JPQLGrammar jpqlGrammar) {
 
 		// Select DISTINCT OBJECT(p)
 		// From Product p
@@ -2748,11 +3290,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(path("p.quantity").between(numeric(10), numeric(20)))
 		);
 
-		testQuery(query_134(), selectStatement);
+		testQuery(query_134(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_135() {
+		test_Query_135(getGrammar());
+	}
+
+	final void test_Query_135(JPQLGrammar jpqlGrammar) {
 
 		// Select Distinct OBJECT(c)
 		// from Customer c, IN(c.creditCards) b
@@ -2764,11 +3310,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(sqrt(path("b.balance")).equal(inputParameter(":dbl")))
 		);
 
-		testQuery(query_135(), selectStatement);
+		testQuery(query_135(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_136() {
+		test_Query_136(getGrammar());
+	}
+
+	final void test_Query_136(JPQLGrammar jpqlGrammar) {
 
 		// Select Distinct OBJECT(c)
 		// From Product p
@@ -2780,11 +3330,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(mod(numeric(550), numeric(100)).equal(path("p.quantity")))
 		);
 
-		testQuery(query_136(), selectStatement);
+		testQuery(query_136(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_137() {
+		test_Query_137(getGrammar());
+	}
+
+	final void test_Query_137(JPQLGrammar jpqlGrammar) {
 
 		// SELECT DISTINCT Object(c)
 		// from Customer c
@@ -2801,11 +3355,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(orExpression)
 		);
 
-		testQuery(query_137(), selectStatement);
+		testQuery(query_137(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_138() {
+		test_Query_138(getGrammar());
+	}
+
+	final void test_Query_138(JPQLGrammar jpqlGrammar) {
 
 		// SELECT DISTINCT Object(c)
 		// from Customer c
@@ -2817,11 +3375,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(path("c.home.state").in(string("'NH'"), string("'RI'")))
 		);
 
-		testQuery(query_138(), selectStatement);
+		testQuery(query_138(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_139() {
+		test_Query_139(getGrammar());
+	}
+
+	final void test_Query_139(JPQLGrammar jpqlGrammar) {
 
 		// SELECT o
 		// FROM Customer c JOIN c.orders o JOIN c.address a
@@ -2837,11 +3399,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			orderBy(orderByItemDesc("o.quantity"), orderByItem("o.totalcost"))
 		);
 
-		testQuery(query_139(), selectStatement);
+		testQuery(query_139(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_140() {
+		test_Query_140(getGrammar());
+	}
+
+	final void test_Query_140(JPQLGrammar jpqlGrammar) {
 
 		// SELECT c
 		// from Customer c
@@ -2853,11 +3419,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(path("c.home.city").in(inputParameter(":city")))
 		);
 
-		testQuery(query_140(), selectStatement);
+		testQuery(query_140(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_141() {
+		test_Query_141(getGrammar());
+	}
+
+	final void test_Query_141(JPQLGrammar jpqlGrammar) {
 
 		// Select Distinct Object(o)
 		// from Order o, in(o.lineItems) l
@@ -2869,11 +3439,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(path("l.quantity").notIn(numeric(1), numeric(5)))
 		);
 
-		testQuery(query_141(), selectStatement);
+		testQuery(query_141(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_142() {
+		test_Query_142(getGrammar());
+	}
+
+	final void test_Query_142(JPQLGrammar jpqlGrammar) {
 
 		// Select Distinct Object(o)
 		// FROM Order o
@@ -2885,11 +3459,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(path("o.sampleLineItem").memberOf(collectionPath("o.lineItems")))
 		);
 
-		testQuery(query_142(), selectStatement);
+		testQuery(query_142(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_143() {
+		test_Query_143(getGrammar());
+	}
+
+	final void test_Query_143(JPQLGrammar jpqlGrammar) {
 
 		// Select Distinct Object(o)
 		// FROM Order o
@@ -2901,11 +3479,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(inputParameter(":param").notMember(collectionPath("o.lineItems")))
 		);
 
-		testQuery(query_143(), selectStatement);
+		testQuery(query_143(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_144() {
+		test_Query_144(getGrammar());
+	}
+
+	final void test_Query_144(JPQLGrammar jpqlGrammar) {
 
 		// Select Distinct Object(o)
 		// FROM Order o, LineItem l
@@ -2917,11 +3499,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(variable("l").member(collectionPath("o.lineItems")))
 		);
 
-		testQuery(query_144(), selectStatement);
+		testQuery(query_144(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_145() {
+		test_Query_145(getGrammar());
+	}
+
+	final void test_Query_145(JPQLGrammar jpqlGrammar) {
 
 		// select distinct Object(c)
 		// FROM Customer c, in(c.aliases) a
@@ -2933,11 +3519,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(path("a.alias").like(string("'sh\\_ll'"), string('\\')))
 		);
 
-		testQuery(query_145(), selectStatement);
+		testQuery(query_145(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_146() {
+		test_Query_146(getGrammar());
+	}
+
+	final void test_Query_146(JPQLGrammar jpqlGrammar) {
 
 		// Select Distinct Object(a)
 		// FROM Alias a
@@ -2949,11 +3539,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(path("a.customerNoop").notMemberOf(collectionPath("a.customersNoop")))
 		);
 
-		testQuery(query_146(), selectStatement);
+		testQuery(query_146(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_147() {
+		test_Query_147(getGrammar());
+	}
+
+	final void test_Query_147(JPQLGrammar jpqlGrammar) {
 
 		// Select Distinct Object(a)
 		// FROM Alias a
@@ -2965,11 +3559,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(path("a.customerNoop").memberOf(collectionPath("a.customersNoop")))
 		);
 
-		testQuery(query_147(), selectStatement);
+		testQuery(query_147(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_148() {
+		test_Query_148(getGrammar());
+	}
+
+	final void test_Query_148(JPQLGrammar jpqlGrammar) {
 
 		// Select Distinct Object(a)
 		// from Alias a
@@ -2981,11 +3579,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(locate(string("'ev'"), path("a.alias")).equal(numeric(3)))
 		);
 
-		testQuery(query_148(), selectStatement);
+		testQuery(query_148(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_149() {
+		test_Query_149(getGrammar());
+	}
+
+	final void test_Query_149(JPQLGrammar jpqlGrammar) {
 
 		// Select DISTINCT Object(o)
 		// From Order o
@@ -2997,11 +3599,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(path("o.totalPrice").greaterThan(abs(inputParameter(":dbl"))))
 		);
 
-		testQuery(query_149(), selectStatement);
+		testQuery(query_149(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_150() {
+		test_Query_150(getGrammar());
+	}
+
+	final void test_Query_150(JPQLGrammar jpqlGrammar) {
 
 		// Select Distinct OBjeCt(a)
 		// From Alias a
@@ -3013,11 +3619,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(length(path("a.alias")).greaterThan(numeric(4)))
 		);
 
-		testQuery(query_150(), selectStatement);
+		testQuery(query_150(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_151() {
+		test_Query_151(getGrammar());
+	}
+
+	final void test_Query_151(JPQLGrammar jpqlGrammar) {
 
 		// Select Distinct Object(a)
 		// From Alias a
@@ -3032,11 +3642,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 					substring(inputParameter(":string1"), inputParameter(":int2"), inputParameter(":int3"))))
 		);
 
-		testQuery(query_151(), selectStatement);
+		testQuery(query_151(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_152() {
+		test_Query_152(getGrammar());
+	}
+
+	final void test_Query_152(JPQLGrammar jpqlGrammar) {
 
 		// Select Distinct Object(a)
 		// From Alias a
@@ -3051,11 +3665,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 					concat(string("'ste'"), string("'vie'"))))
 		);
 
-		testQuery(query_152(), selectStatement);
+		testQuery(query_152(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_153() {
+		test_Query_153(getGrammar());
+	}
+
+	final void test_Query_153(JPQLGrammar jpqlGrammar) {
 
 		// Select Distinct Object(c)
 		// FROM Customer c
@@ -3067,11 +3685,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(isNotNull(path("c.work.zip")))
 		);
 
-		testQuery(query_153(), selectStatement);
+		testQuery(query_153(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_154() {
+		test_Query_154(getGrammar());
+	}
+
+	final void test_Query_154(JPQLGrammar jpqlGrammar) {
 
 		// sELEct dIsTiNcT oBjEcT(c)
 		// FROM Customer c
@@ -3083,11 +3705,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(isNull(path("c.work.zip")))
 		);
 
-		testQuery(query_154(), selectStatement);
+		testQuery(query_154(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_155() {
+		test_Query_155(getGrammar());
+	}
+
+	final void test_Query_155(JPQLGrammar jpqlGrammar) {
 
 		// Select Distinct Object(c)
 		// FROM Customer c
@@ -3099,11 +3725,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(isNotEmpty("c.aliases"))
 		);
 
-		testQuery(query_155(), selectStatement);
+		testQuery(query_155(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_156() {
+		test_Query_156(getGrammar());
+	}
+
+	final void test_Query_156(JPQLGrammar jpqlGrammar) {
 
 		// Select Distinct Object(c)
 		// FROM Customer c
@@ -3115,11 +3745,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(isEmpty("c.aliases"))
 		);
 
-		testQuery(query_156(), selectStatement);
+		testQuery(query_156(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_157() {
+		test_Query_157(getGrammar());
+	}
+
+	final void test_Query_157(JPQLGrammar jpqlGrammar) {
 
 		// Select Distinct Object(c)
 		// FROM Customer c
@@ -3131,11 +3765,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(path("c.home.zip").notLike(string("'%44_'")))
 		);
 
-		testQuery(query_157(), selectStatement);
+		testQuery(query_157(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_158() {
+		test_Query_158(getGrammar());
+	}
+
+	final void test_Query_158(JPQLGrammar jpqlGrammar) {
 
 		// Select Distinct Object(c)
 		// FROM Customer c
@@ -3147,11 +3785,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(path("c.home.zip").like(string("'%77'")))
 		);
 
-		testQuery(query_158(), selectStatement);
+		testQuery(query_158(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_159() {
+		test_Query_159(getGrammar());
+	}
+
+	final void test_Query_159(JPQLGrammar jpqlGrammar) {
 
 		// Select Distinct Object(c)
 		// FROM Customer c Left Outer Join c.home h
@@ -3163,11 +3805,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(path("h.city").notIn(string("'Swansea'"), string("'Brookline'")))
 		);
 
-		testQuery(query_159(), selectStatement);
+		testQuery(query_159(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_160() {
+		test_Query_160(getGrammar());
+	}
+
+	final void test_Query_160(JPQLGrammar jpqlGrammar) {
 
 		// select distinct c
 		// FROM Customer c
@@ -3179,11 +3825,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(path("c.home.city").in(string("'Lexington'")))
 		);
 
-		testQuery(query_160(), selectStatement);
+		testQuery(query_160(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_161() {
+		test_Query_161(getGrammar());
+	}
+
+	final void test_Query_161(JPQLGrammar jpqlGrammar) {
 
 		// sElEcT c
 		// FROM Customer c
@@ -3195,11 +3845,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(path("c.name").equal(inputParameter(":cName")))
 		);
 
-		testQuery(query_161(), selectStatement);
+		testQuery(query_161(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_162() {
+		test_Query_162(getGrammar());
+	}
+
+	final void test_Query_162(JPQLGrammar jpqlGrammar) {
 
 		// select distinct Object(o)
 		// From Order o
@@ -3211,11 +3865,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(path("o.creditCard.approved").equal(FALSE()))
 		);
 
-		testQuery(query_162(), selectStatement);
+		testQuery(query_162(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_163() {
+		test_Query_163(getGrammar());
+	}
+
+	final void test_Query_163(JPQLGrammar jpqlGrammar) {
 
 		// SELECT DISTINCT Object(o)
 		// From Order o
@@ -3227,11 +3885,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(path("o.totalPrice").notBetween(numeric(1000), numeric(1200)))
 		);
 
-		testQuery(query_163(), selectStatement);
+		testQuery(query_163(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_164() {
+		test_Query_164(getGrammar());
+	}
+
+	final void test_Query_164(JPQLGrammar jpqlGrammar) {
 
 		// SELECT DISTINCT Object(o)
 		// From Order o
@@ -3243,11 +3905,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(path("o.totalPrice").between(numeric(1000), numeric(1200)))
 		);
 
-		testQuery(query_164(), selectStatement);
+		testQuery(query_164(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_165() {
+		test_Query_165(getGrammar());
+	}
+
+	final void test_Query_165(JPQLGrammar jpqlGrammar) {
 
 		// SELECT DISTINCT Object(o)
 		// FROM Order o, in(o.lineItems) l
@@ -3265,11 +3931,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 						string("'Robert E. Bissett'"))))
 		);
 
-		testQuery(query_165(), selectStatement);
+		testQuery(query_165(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_166() {
+		test_Query_166(getGrammar());
+	}
+
+	final void test_Query_166(JPQLGrammar jpqlGrammar) {
 
 		// select distinct Object(o)
 		// FROM Order AS o, in(o.lineItems) l
@@ -3306,11 +3976,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			)
 		);
 
-		testQuery(query_166(), selectStatement);
+		testQuery(query_166(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_167() {
+		test_Query_167(getGrammar());
+	}
+
+	final void test_Query_167(JPQLGrammar jpqlGrammar) {
 
 		// SeLeCt DiStInCt oBjEcT(o)
 		// FROM Order AS o
@@ -3327,11 +4001,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			)
 		);
 
-		testQuery(query_167(), selectStatement);
+		testQuery(query_167(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_168() {
+		test_Query_168(getGrammar());
+	}
+
+	final void test_Query_168(JPQLGrammar jpqlGrammar) {
 
 		// Select Distinct Object(o)
 		// FROM Order o
@@ -3343,11 +4021,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(not(path("o.totalPrice").lowerThan(numeric(4500))))
 		);
 
-		testQuery(query_168(), selectStatement);
+		testQuery(query_168(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_169() {
+		test_Query_169(getGrammar());
+	}
+
+	final void test_Query_169(JPQLGrammar jpqlGrammar) {
 
 		// Select DISTINCT Object(P)
 		// From Product p
@@ -3357,11 +4039,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			from("Product", "p")
 		);
 
-		testQuery(query_169(), selectStatement);
+		testQuery(query_169(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_170() {
+		test_Query_170(getGrammar());
+	}
+
+	final void test_Query_170(JPQLGrammar jpqlGrammar) {
 
 		// SELECT DISTINCT c
 		// from Customer c
@@ -3384,11 +4070,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			)
 		);
 
-		testQuery(query_170(), selectStatement);
+		testQuery(query_170(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_171() {
+		test_Query_171(getGrammar());
+	}
+
+	final void test_Query_171(JPQLGrammar jpqlGrammar) {
 
 		// SELECT c
 		// from Customer c
@@ -3411,11 +4101,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			)
 		);
 
-		testQuery(query_172(), selectStatement);
+		testQuery(query_172(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_172() {
+		test_Query_172(getGrammar());
+	}
+
+	final void test_Query_172(JPQLGrammar jpqlGrammar) {
 
 		// SELECT c
 		// from Customer c
@@ -3438,11 +4132,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			)
 		);
 
-		testQuery(query_172(), selectStatement);
+		testQuery(query_172(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_173() {
+		test_Query_173(getGrammar());
+	}
+
+	final void test_Query_173(JPQLGrammar jpqlGrammar) {
 
 		// Select Distinct Object(c)
 		// FrOm Customer c, In(c.aliases) a
@@ -3454,11 +4152,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(path("a.alias").equal(inputParameter(":aName")))
 		);
 
-		testQuery(query_173(), selectStatement);
+		testQuery(query_173(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_174() {
+		test_Query_174(getGrammar());
+	}
+
+	final void test_Query_174(JPQLGrammar jpqlGrammar) {
 
 		// Select Distinct Object(c)
 		// FROM Customer AS c
@@ -3468,11 +4170,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			fromAs("Customer", "c")
 		);
 
-		testQuery(query_174(), selectStatement);
+		testQuery(query_174(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_175() {
+		test_Query_175(getGrammar());
+	}
+
+	final void test_Query_175(JPQLGrammar jpqlGrammar) {
 
 		// Select Distinct o
 		// from Order AS o
@@ -3484,11 +4190,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(path("o.customer.name").equal(inputParameter(":name")))
 		);
 
-		testQuery(query_175(), selectStatement);
+		testQuery(query_175(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_176() {
+		test_Query_176(getGrammar());
+	}
+
+	final void test_Query_176(JPQLGrammar jpqlGrammar) {
 
 		// UPDATE Customer c SET c.name = 'CHANGED'
 		// WHERE c.orders IS NOT EMPTY
@@ -3498,11 +4208,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(isNotEmpty("c.orders"))
 		);
 
-		testQuery(query_176(), updateStatement);
+		testQuery(query_176(), updateStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_177() {
+		test_Query_177(getGrammar());
+	}
+
+	final void test_Query_177(JPQLGrammar jpqlGrammar) {
 
 		// UPDATE DateTime SET date = CURRENT_DATE
 
@@ -3510,11 +4224,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			update("DateTime", set("{datetime}.date", CURRENT_DATE()))
 		);
 
-		testQuery(query_177(), updateStatement);
+		testQuery(query_177(), updateStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_178() {
+		test_Query_178(getGrammar());
+	}
+
+	final void test_Query_178(JPQLGrammar jpqlGrammar) {
 
 		// SELECT c
 		// FROM Customer c
@@ -3532,11 +4250,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			)
 		);
 
-		testQuery(query_178(), selectStatement);
+		testQuery(query_178(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_179() {
+		test_Query_179(getGrammar());
+	}
+
+	final void test_Query_179(JPQLGrammar jpqlGrammar) {
 
 		// SELECT OBJECT ( c ) FROM Customer AS c
 
@@ -3545,11 +4267,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			fromAs("Customer", "c")
 		);
 
-		testQuery(query_179(), selectStatement);
+		testQuery(query_179(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_180() {
+		test_Query_180(getGrammar());
+	}
+
+	final void test_Query_180(JPQLGrammar jpqlGrammar) {
 
 		// SELECT c.firstName, c.lastName
 		// FROM Customer AS c
@@ -3559,11 +4285,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			fromAs("Customer", "c")
 		);
 
-		testQuery(query_180(), selectStatement);
+		testQuery(query_180(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_181() {
+		test_Query_181(getGrammar());
+	}
+
+	final void test_Query_181(JPQLGrammar jpqlGrammar) {
 
 		// SELECT c.address.city
 		// FROM Customer AS c
@@ -3573,11 +4303,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			fromAs("Customer", "c")
 		);
 
-		testQuery(query_181(), selectStatement);
+		testQuery(query_181(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_182() {
+		test_Query_182(getGrammar());
+	}
+
+	final void test_Query_182(JPQLGrammar jpqlGrammar) {
 
 		// SELECT new com.titan.domain.Name(c.firstName, c.lastName)
 		// FROM Customer c
@@ -3587,11 +4321,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			from("Customer", "c")
 		);
 
-		testQuery(query_182(), selectStatement);
+		testQuery(query_182(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_183() {
+		test_Query_183(getGrammar());
+	}
+
+	final void test_Query_183(JPQLGrammar jpqlGrammar) {
 
 		// SELECT cbn.ship
 		// FROM Customer AS c, IN ( c.reservations ) r, IN ( r.cabins ) cbn
@@ -3605,11 +4343,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			)
 		);
 
-		testQuery(query_183(), selectStatement);
+		testQuery(query_183(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_184() {
+		test_Query_184(getGrammar());
+	}
+
+	final void test_Query_184(JPQLGrammar jpqlGrammar) {
 
 		// Select c.firstName, c.lastName, p.number
 		// From Customer c Left Join c.phoneNumbers p
@@ -3619,11 +4361,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			from("Customer", "c", leftJoin("c.phoneNumbers", "p"))
 		);
 
-		testQuery(query_184(), selectStatement);
+		testQuery(query_184(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_185() {
+		test_Query_185(getGrammar());
+	}
+
+	final void test_Query_185(JPQLGrammar jpqlGrammar) {
 
 		// SELECT r
 		// FROM Reservation AS r
@@ -3640,11 +4386,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			)
 		);
 
-		testQuery(query_185(), selectStatement);
+		testQuery(query_185(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_186() {
+		test_Query_186(getGrammar());
+	}
+
+	final void test_Query_186(JPQLGrammar jpqlGrammar) {
 
 		// SELECT s
 		// FROM Ship AS s
@@ -3661,11 +4411,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			)
 		);
 
-		testQuery(query_186(), selectStatement);
+		testQuery(query_186(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_187() {
+		test_Query_187(getGrammar());
+	}
+
+	final void test_Query_187(JPQLGrammar jpqlGrammar) {
 
 		// SELECT r
 		// FROM Reservation r, IN ( r.customers ) AS cust
@@ -3677,11 +4431,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(variable("cust").equal(inputParameter(":specificCustomer")))
 		);
 
-		testQuery(query_187(), selectStatement);
+		testQuery(query_187(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_188() {
+		test_Query_188(getGrammar());
+	}
+
+	final void test_Query_188(JPQLGrammar jpqlGrammar) {
 
 		// SELECT s
 		// FROM Ship AS s
@@ -3693,11 +4451,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(path("s.tonnage").between(numeric("80000.00"), numeric("130000.00")))
 		);
 
-		testQuery(query_188(), selectStatement);
+		testQuery(query_188(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_189() {
+		test_Query_189(getGrammar());
+	}
+
+	final void test_Query_189(JPQLGrammar jpqlGrammar) {
 
 		// SELECT s
 		// FROM Ship AS s
@@ -3709,11 +4471,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(path("s.tonnage").notBetween(numeric("80000.00"), numeric("130000.00")))
 		);
 
-		testQuery(query_189(), selectStatement);
+		testQuery(query_189(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_190() {
+		test_Query_190(getGrammar());
+	}
+
+	final void test_Query_190(JPQLGrammar jpqlGrammar) {
 
 		// SELECT c
 		// FROM Customer AS c
@@ -3725,11 +4491,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(path("c.address.state").in(string("'FL'"), string("'TX'"), string("'MI'"), string("'WI'"), string("'MN'")))
 		);
 
-		testQuery(query_190(), selectStatement);
+		testQuery(query_190(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_191() {
+		test_Query_191(getGrammar());
+	}
+
+	final void test_Query_191(JPQLGrammar jpqlGrammar) {
 
 		// SELECT cab
 		// FROM Cabin AS cab
@@ -3749,11 +4519,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			)
 		);
 
-		testQuery(query_191(), selectStatement);
+		testQuery(query_191(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_192() {
+		test_Query_192(getGrammar());
+	}
+
+	final void test_Query_192(JPQLGrammar jpqlGrammar) {
 
 		// SELECT c
 		// FROM Customer c
@@ -3774,11 +4548,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			)
 		);
 
-		testQuery(query_192(), selectStatement);
+		testQuery(query_192(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_193() {
+		test_Query_193(getGrammar());
+	}
+
+	final void test_Query_193(JPQLGrammar jpqlGrammar) {
 
 		// SELECT c
 		// FROM Customer c
@@ -3790,11 +4568,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(isNull(path("c.address")))
 		);
 
-		testQuery(query_193(), selectStatement);
+		testQuery(query_193(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_194() {
+		test_Query_194(getGrammar());
+	}
+
+	final void test_Query_194(JPQLGrammar jpqlGrammar) {
 
 		// SELECT c
 		// FROM Customer c
@@ -3816,11 +4598,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			)
 		);
 
-		testQuery(query_194(), selectStatement);
+		testQuery(query_194(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_195() {
+		test_Query_195(getGrammar());
+	}
+
+	final void test_Query_195(JPQLGrammar jpqlGrammar) {
 
 		// SELECT crs
 		// FROM Cruise AS crs, IN(crs.reservations) AS res, Customer AS cust
@@ -3844,11 +4630,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			)
 		);
 
-		testQuery(query_195(), selectStatement);
+		testQuery(query_195(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_196() {
+		test_Query_196(getGrammar());
+	}
+
+	final void test_Query_196(JPQLGrammar jpqlGrammar) {
 
 		// SELECT c
 		// FROM Customer AS c
@@ -3870,11 +4660,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			)
 		);
 
-		testQuery(query_196(), selectStatement);
+		testQuery(query_196(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_197() {
+		test_Query_197(getGrammar());
+	}
+
+	final void test_Query_197(JPQLGrammar jpqlGrammar) {
 
 		// SELECT c
 		// FROM Customer AS C
@@ -3886,11 +4680,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			orderBy("c.lastName")
 		);
 
-		testQuery(query_197(), selectStatement);
+		testQuery(query_197(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_198() {
+		test_Query_198(getGrammar());
+	}
+
+	final void test_Query_198(JPQLGrammar jpqlGrammar) {
 
 		// SELECT c
 		// FROM Customer AS C
@@ -3909,11 +4707,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			orderBy(orderByItemDesc("c.lastName"))
 		);
 
-		testQuery(query_198(), selectStatement);
+		testQuery(query_198(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_199() {
+		test_Query_199(getGrammar());
+	}
+
+	final void test_Query_199(JPQLGrammar jpqlGrammar) {
 
 		// SELECT cr.name, COUNT (res)
 		// FROM Cruise cr LEFT JOIN cr.reservations res
@@ -3925,11 +4727,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			groupBy(path("cr.name"))
 		);
 
-		testQuery(query_199(), selectStatement);
+		testQuery(query_199(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_200() {
+		test_Query_200(getGrammar());
+	}
+
+	final void test_Query_200(JPQLGrammar jpqlGrammar) {
 
 		// SELECT cr.name, COUNT (res)
 		// FROM Cruise cr LEFT JOIN cr.reservations res
@@ -3943,11 +4749,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			having(count(variable("res")).greaterThan(numeric(10)))
 		);
 
-		testQuery(query_200(), selectStatement);
+		testQuery(query_200(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_201() {
+		test_Query_201(getGrammar());
+	}
+
+	final void test_Query_201(JPQLGrammar jpqlGrammar) {
 
 		// SELECT COUNT (res)
 		// FROM Reservation res
@@ -3970,11 +4780,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			)
 		);
 
-		testQuery(query_201(), selectStatement);
+		testQuery(query_201(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_202() {
+		test_Query_202(getGrammar());
+	}
+
+	final void test_Query_202(JPQLGrammar jpqlGrammar) {
 
 		// SELECT cr
 		// FROM Cruise cr
@@ -3998,11 +4812,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			)
 		);
 
-		testQuery(query_202(), selectStatement);
+		testQuery(query_202(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_203() {
+		test_Query_203(getGrammar());
+	}
+
+	final void test_Query_203(JPQLGrammar jpqlGrammar) {
 
 		// SELECT cr
 		// FROM Cruise cr
@@ -4026,11 +4844,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			)
 		);
 
-		testQuery(query_203(), selectStatement);
+		testQuery(query_203(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_204() {
+		test_Query_204(getGrammar());
+	}
+
+	final void test_Query_204(JPQLGrammar jpqlGrammar) {
 
 		// UPDATE Reservation res
 		// SET res.name = 'Pascal'
@@ -4058,11 +4880,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			)
 		);
 
-		testQuery(query_204(), updateStatement);
+		testQuery(query_204(), updateStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_205() {
+		test_Query_205(getGrammar());
+	}
+
+	final void test_Query_205(JPQLGrammar jpqlGrammar) {
 
 		// SELECT o.quantity, a.zipcode
 		// FROM Customer c JOIN c.orders o JOIN c.address a
@@ -4079,11 +4905,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			)
 		);
 
-		testQuery(query_205(), selectStatement);
+		testQuery(query_205(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_206() {
+		test_Query_206(getGrammar());
+	}
+
+	final void test_Query_206(JPQLGrammar jpqlGrammar) {
 
 		// DELETE
 		// FROM Customer c
@@ -4094,11 +4924,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(path("c.status").equal(string("'inactive'")))
 		);
 
-		testQuery(query_206(), deleteStatement);
+		testQuery(query_206(), deleteStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_207() {
+		test_Query_207(getGrammar());
+	}
+
+	final void test_Query_207(JPQLGrammar jpqlGrammar) {
 
 		// DELETE
 		// FROM Customer c
@@ -4115,11 +4949,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			)
 		);
 
-		testQuery(query_207(), deleteStatement);
+		testQuery(query_207(), deleteStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_208() {
+		test_Query_208(getGrammar());
+	}
+
+	final void test_Query_208(JPQLGrammar jpqlGrammar) {
 
 		// UPDATE customer c
 		// SET c.status = 'outstanding'
@@ -4130,11 +4968,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			where(path("c.balance").lowerThan(numeric(10000)))
 		);
 
-		testQuery(query_208(), updateStatement);
+		testQuery(query_208(), updateStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_209() {
+		test_Query_209(getGrammar());
+	}
+
+	final void test_Query_209(JPQLGrammar jpqlGrammar) {
 
 		// Select e
 		// from Employee e join e.phoneNumbers p
@@ -4160,11 +5002,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			)
 		);
 
-		testQuery(query_209(), selectStatement);
+		testQuery(query_209(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_210() {
+		test_Query_210(getGrammar());
+	}
+
+	final void test_Query_210(JPQLGrammar jpqlGrammar) {
 
 		// Select e
 		// From Employee e
@@ -4185,11 +5031,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			))
 		);
 
-		testQuery(query_210(), selectStatement);
+		testQuery(query_210(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_211() {
+		test_Query_211(getGrammar());
+	}
+
+	final void test_Query_211(JPQLGrammar jpqlGrammar) {
 
 		// Select e
 		// From Employee e
@@ -4207,11 +5057,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			))
 		);
 
-		testQuery(query_211(), selectStatement);
+		testQuery(query_211(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_212() {
+		test_Query_212(getGrammar());
+	}
+
+	final void test_Query_212(JPQLGrammar jpqlGrammar) {
 
 		// UPDATE Employee e SET e.salary = e.salary*(1+(:percent/100))
 		// WHERE EXISTS (SELECT p
@@ -4248,11 +5102,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			))
 		);
 
-		testQuery(query_212(), updateStatement, buildQueryFormatter_1());
+		testQuery(query_212(), updateStatement, jpqlGrammar, buildQueryFormatter_1());
 	}
 
 	@Test
 	public final void test_Query_213() {
+		test_Query_213(getGrammar());
+	}
+
+	final void test_Query_213(JPQLGrammar jpqlGrammar) {
 
 		// select e_0
       // from Sellexpect e_0
@@ -4305,11 +5163,15 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			)
 		);
 
-		testQuery(query_213(), selectStatement);
+		testQuery(query_213(), selectStatement, jpqlGrammar);
 	}
 
 	@Test
 	public final void test_Query_214() {
+		test_Query_214(getGrammar());
+	}
+
+	final void test_Query_214(JPQLGrammar jpqlGrammar) {
 
 		// SELECT r
 		// FROM RuleCondition r
@@ -4350,6 +5212,66 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 			)
 		);
 
-		testQuery(query_214(), selectStatement);
+		testQuery(query_214(), selectStatement, jpqlGrammar);
+	}
+
+	@Test
+	public final void test_Query_215() {
+		test_Query_215(getGrammar());
+	}
+
+	final void test_Query_215(JPQLGrammar jpqlGrammar) {
+
+		String jpqlQuery = "SELECT NEW pkg.TableMetadata(" +
+		                   "            table_oir," +
+		                   "            (SELECT pi.value FROM table_oir.propertyInstances pi WHERE pi.property.name = 'x'), " +
+		                   "            description_pi.value" +
+		                   "        ) " +
+		                   "FROM ObjectInstanceRevision table_oir," +
+		                   "     IN (table_oir.propertyInstances) description_pi " +
+		                   "WHERE table_oir.objectInstance.objectClass.objectClassId = 'y'";
+
+		boolean valid = jpqlGrammar.getProviderVersion() == EclipseLinkJPQLGrammar2_4.VERSION ||
+		                jpqlGrammar.getJPAVersion() == JPAVersion.VERSION_2_1;
+
+		ExpressionTester subquery = subquery(
+			subSelect(path("pi.value")),
+			subFrom(
+				identificationVariableDeclaration(
+					rangeVariableDeclaration(
+						collectionPath("table_oir.propertyInstances"),
+						variable("pi")
+					)
+				)
+			),
+			where(
+				path("pi.property.name").equal(string("'x'"))
+			)
+		);
+
+		ExpressionTester selectStatement = selectStatement(
+			select(
+				new_(
+					"pkg.TableMetadata",
+					variable("table_oir"),
+					sub(valid ? subquery : bad(subquery)),
+					path("description_pi.value")
+				)
+			),
+			from(
+				identificationVariableDeclaration("ObjectInstanceRevision", "table_oir"),
+				fromIn("table_oir.propertyInstances", "description_pi")
+			),
+			where(
+				path("table_oir.objectInstance.objectClass.objectClassId").equal(string("'y'"))
+			)
+		);
+
+		if (valid) {
+			testQuery(jpqlQuery, selectStatement, jpqlGrammar);
+		}
+		else {
+			testInvalidQuery(jpqlQuery, selectStatement, jpqlGrammar);
+		}
 	}
 }

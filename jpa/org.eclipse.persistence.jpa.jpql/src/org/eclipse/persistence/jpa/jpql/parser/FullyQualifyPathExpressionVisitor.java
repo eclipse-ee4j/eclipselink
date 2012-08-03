@@ -18,7 +18,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * variable in the range variable declaration. This only applies to an <b>UPDATE</b> or <b>DELETE</b>
  * query.
  *
- * @version 2.4
+ * @version 2.4.1
  * @since 2.3
  * @author Pascal Filion
  */
@@ -35,20 +35,6 @@ public final class FullyQualifyPathExpressionVisitor extends AbstractTraverseChi
 	 * a map key, map value or map entry expression.
 	 */
 	private GeneralIdentificationVariableVisitor visitor;
-
-	/**
-	 * The singleton instance of this visitor.
-	 */
-	private static final FullyQualifyPathExpressionVisitor INSTANCE = new FullyQualifyPathExpressionVisitor();
-
-	/**
-	 * Returns the singleton instance of this visitor.
-	 *
-	 * @return The singleton instance of this visitor
-	 */
-	static ExpressionVisitor instance() {
-		return INSTANCE;
-	}
 
 	private GeneralIdentificationVariableVisitor generalIdentificationVariableVisitor() {
 		if (visitor == null) {
