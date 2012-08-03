@@ -133,7 +133,7 @@ import static org.junit.Assert.*;
 /**
  * The abstract definition of a unit-test that tests the {@link StateObject} API.
  *
- * @version 2.4
+ * @version 2.4.1
  * @since 2.4
  * @author Pascal Filion
  */
@@ -1846,7 +1846,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
 		return new CollectionMemberDeclarationStateObjectTester(
 			collectionPath,
 			false,
-			null,
+			nullExpression(),
 			true
 		);
 	}

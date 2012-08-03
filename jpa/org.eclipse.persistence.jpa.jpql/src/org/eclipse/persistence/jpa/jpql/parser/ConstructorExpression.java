@@ -26,7 +26,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <p>
  * <div nowrap><b>BNF:</b> <code>constructor_expression ::= NEW constructor_name(constructor_item {, constructor_item}*)</code><p>
  *
- * @version 2.4
+ * @version 2.4.1
  * @since 2.3
  * @author Pascal Filion
  */
@@ -296,6 +296,14 @@ public final class ConstructorExpression extends AbstractExpression {
 		else {
 			wordParser.moveBackward(count);
 		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected boolean shouldSkipLiteral(AbstractExpression expression) {
+		return false;
 	}
 
 	/**

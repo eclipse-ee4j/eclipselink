@@ -479,6 +479,11 @@ public class JAXBUnmarshaller implements Unmarshaller {
         try {
             XMLDescriptor xmlDescriptor = type.getXmlDescriptor();
             if(null != xmlDescriptor && null == getSchema()) {
+            	 RootLevelXmlAdapter adapter= null;
+                 if(jaxbContext.getTypeMappingInfoToJavaTypeAdapters().size() >0){
+                 	adapter = jaxbContext.getTypeMappingInfoToJavaTypeAdapters().get(type);
+                 }
+            	
                 UnmarshalRecord unmarshalRecord = (UnmarshalRecord) xmlDescriptor.getObjectBuilder().createRecord((AbstractSession) xmlUnmarshaller.getXMLContext().getSession(0));
                 XMLStreamReaderReader staxReader = new XMLStreamReaderReader(xmlUnmarshaller);
                 unmarshalRecord.setUnmarshaller(xmlUnmarshaller);
@@ -493,7 +498,27 @@ public class JAXBUnmarshaller implements Unmarshaller {
                 } else {
                     value = unmarshalRecord.getCurrentObject();
                 }
-                return new JAXBElement(new QName(unmarshalRecord.getRootElementNamespaceUri(), unmarshalRecord.getLocalName()), (Class) type.getType(), value);
+                if(value instanceof WrappedValue){
+                	value = ((WrappedValue)value).getValue();
+                }
+                
+                if(value instanceof ManyValue){
+                	value = ((ManyValue)value).getItem();
+                }
+                if(adapter != null) {
+                    try {
+                        value = adapter.getXmlAdapter().unmarshal(value);
+                    } catch(Exception ex) {
+                        throw new JAXBException(XMLMarshalException.marshalException(ex));
+                    }
+                }
+                Class declaredClass = null;
+                if(type.getType() instanceof Class){
+                    declaredClass = (Class)type.getType();
+                }else{
+                    declaredClass = Object.class;
+                }
+                return new JAXBElement(new QName(unmarshalRecord.getRootElementNamespaceUri(), unmarshalRecord.getLocalName()), declaredClass, value);
             }
             if(jaxbContext.getTypeMappingInfoToGeneratedType() == null) {
                 return unmarshal(streamReader, type.getType());

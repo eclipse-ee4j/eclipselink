@@ -24,15 +24,17 @@ import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
 /**
  * This registry contains the necessary information used by Hermes parser. When parsing a JPQL query,
  * the {@link JPQLGrammar} given to {@link JPQLExpression} will give access to this registry.
- *
+ * <p>
  * Provisional API: This interface is part of an interim API that is still under development and
  * expected to change significantly before reaching stability. It is available at this early stage
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
  * API will almost certainly be broken (repeatedly) as the API evolves.
  *
  * @see JPQLGrammar
+ * @see ExpressionFactory
+ * @see JPQLQueryBNF
  *
- * @version 2.4
+ * @version 2.4.1
  * @since 2.4
  * @author Pascal Filion
  */
@@ -174,12 +176,13 @@ public class ExpressionRegistry {
 	}
 
 	/**
-	 * Retrieves the identifiers that are supported by the given BNF.
+	 * Retrieves the JPQL identifiers that are supported by the BNF rule with the given unique
+	 * identifier. The JPQL identifiers are retrieved by scanning the {@link ExpressionFactory}
+	 * registered with the BNF rule and its child BNF rules.
 	 *
-	 * @param queryBNFId The unique identifier of the BNF for which the supported identifiers are requested
-	 * @return The JPQL identifiers that can be used with the BNF
+	 * @return The list of JPQL identifiers that are supported by a BNF rule
 	 */
-	public Set<String> getIdentifiers(String queryBNFId) {
+	public Iterable<String> getIdentifiers(String queryBNFId) {
 		return getQueryBNF(queryBNFId).getIdentifiers();
 	}
 
@@ -299,12 +302,6 @@ public class ExpressionRegistry {
 		queryBNF.setFallbackBNFId(queryBNFId);
 	}
 
-	public void setHandleSubExpression(String queryBNFId, boolean handleSubExpression) {
-		JPQLQueryBNF queryBNF = queryBNFs.get(queryBNFId);
-		Assert.isNotNull(queryBNF, "The JPQLQueryBNF identified with '" + queryBNFId + "' does not exist.");
-		queryBNF.setHandleSubExpression(handleSubExpression);
-	}
-
 	/**
 	 * Sets the unique identifier of the {@link ExpressionFactory} to use when the fall back BNF
 	 * ID is not <code>null</code>. This will be used to parse a portion of the query when the
@@ -321,6 +318,12 @@ public class ExpressionRegistry {
 		JPQLQueryBNF queryBNF = queryBNFs.get(queryBNFId);
 		Assert.isNotNull(queryBNF, "The JPQLQueryBNF identified with '" + queryBNFId + "' does not exist.");
 		queryBNF.setFallbackExpressionFactoryId(fallbackExpressionFactoryId);
+	}
+
+	public void setHandleSubExpression(String queryBNFId, boolean handleSubExpression) {
+		JPQLQueryBNF queryBNF = queryBNFs.get(queryBNFId);
+		Assert.isNotNull(queryBNF, "The JPQLQueryBNF identified with '" + queryBNFId + "' does not exist.");
+		queryBNF.setHandleSubExpression(handleSubExpression);
 	}
 
 	/**

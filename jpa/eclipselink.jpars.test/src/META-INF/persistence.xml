@@ -15,10 +15,10 @@
         <class>org.eclipse.persistence.jpars.test.model.multitenant.Account</class>
         <exclude-unlisted-classes/>
         <properties>
-           <property name="javax.persistence.nonJtaDataSource" value="jdbc/jpa-rs"/>
+           <property name="javax.persistence.nonJtaDataSource" value="jdbc/ELNonJTADS"/>
            <property name="eclipselink.logging.level" value="FINEST"/>
            <property name="eclipselink.logging.parameters" value="true"/>
-           <property name="eclipselink.target-server" value="SunAS9"/>
+           <property name="eclipselink.target-server" value="Glassfish"/>
         </properties>
     </persistence-unit>
     <persistence-unit name="auction-static-local" transaction-type="RESOURCE_LOCAL">

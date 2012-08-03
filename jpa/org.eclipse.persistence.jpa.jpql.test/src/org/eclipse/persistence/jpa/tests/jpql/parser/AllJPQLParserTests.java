@@ -21,7 +21,7 @@ import org.junit.runners.Suite.SuiteClasses;
  * The root test suite containing the test suites that define how to test the parser with various
  * JPA versions and extensions.
  *
- * @version 2.4
+ * @version 2.4.1
  * @since 2.4
  * @author Pascal Filion
  */
@@ -30,7 +30,8 @@ import org.junit.runners.Suite.SuiteClasses;
 	AllJPQLParserTests2_0.class,
 	AllJPQLParserTests2_1.class,
 	AllEclipseLinkJPQLParserTests.class,
-	AllEclipseLinkJPQLParserTests2_4.class
+	AllEclipseLinkJPQLParserTests2_4.class,
+	AllJPQLParserConcurrentTests.class
 })
 @RunWith(JPQLTestRunner.class)
 public final class AllJPQLParserTests {

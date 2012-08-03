@@ -934,14 +934,24 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
 
             ((XMLLogin)xmlContext.getSession(0).getDatasourceLogin()).setEqualNamespaceResolvers(true);
 
+           
+            JAXBContextState contextState = new JAXBContextState(xmlContext, generator, typesToBeBound, properties);
+            
             for(TypeMappingInfo typeMappingInfo : typesToBeBound) {
-                Type typeMappingInfoType = typeMappingInfo.getType();
-                if(typeMappingInfoType.getClass() == Class.class) {
-                    XMLDescriptor xmlDescriptor = (XMLDescriptor) proj.getClassDescriptor((Class) typeMappingInfoType);
+                Type classToLookup = typeMappingInfo.getType();
+                if(contextState.getTypeMappingInfoToGeneratedType()!= null && contextState.getTypeMappingInfoToGeneratedType().size() >0){
+                    Class generatedClass = contextState.getTypeMappingInfoToGeneratedType().get(typeMappingInfo);
+                    if(generatedClass != null){
+                        classToLookup = generatedClass;
+                    }
+                }                 
+                if(classToLookup != null && classToLookup.getClass() == Class.class){
+                    XMLDescriptor xmlDescriptor = (XMLDescriptor) proj.getClassDescriptor((Class) classToLookup);
                     typeMappingInfo.setXmlDescriptor(xmlDescriptor);
                 }
             }
-            return new JAXBContextState(xmlContext, generator, typesToBeBound, properties);
+            
+            return contextState;
         }
 
         /**

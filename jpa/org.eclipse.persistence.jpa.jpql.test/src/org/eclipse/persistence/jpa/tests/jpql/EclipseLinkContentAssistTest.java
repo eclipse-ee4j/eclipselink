@@ -25,7 +25,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * This unit-test tests the JPQL content assist at various position within the JPQL query and with
  * complete and incomplete queries and make sure the EclipseLink additional support works correctly.
  *
- * @version 2.4
+ * @version 2.4.1
  * @since 2.4
  * @author Pascal Filion
  */

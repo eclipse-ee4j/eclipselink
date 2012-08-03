@@ -141,7 +141,7 @@ import static org.junit.Assert.*;
  * Note: This class provides the {@link ExpressionTester} for all JPQL grammars (1.0, 2.0 and 2.1),
  * as well as for EclipseLink (all versions).
  *
- * @version 2.4
+ * @version 2.4.1
  * @since 2.3
  * @author Pascal Filion
  */
@@ -3717,6 +3717,26 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 	 * @param jpqlQuery The JPQL query to parse and to test the parsed tree representation
 	 * @param expressionTester The tester used to verify the parsed tree is correctly representing the
 	 * JPQL query
+	 * @param jpqlGrammar The {@link JPQLGrammar} used to determine how to parse the JPQL query
+	 * @param formatter This formatter is used to personalized the formatting of the JPQL query
+	 * before it is used to test the generated string
+	 */
+	protected void testInvalidQuery(String jpqlQuery,
+	                                ExpressionTester expressionTester,
+	                                JPQLGrammar jpqlGrammar) {
+
+		testQuery(jpqlQuery, expressionTester, jpqlGrammar, JPQLStatementBNF.ID, JPQLQueryStringFormatter.DEFAULT, true);
+	}
+
+	/**
+	 * Tests the parsing of the given JPQL query by comparing the parsed tree ({@link JPQLExpression})
+	 * with the given tester, which is an equivalent representation of the parsed tree.
+	 * <p>
+	 * The parsing system will have the tolerance turned on.
+	 *
+	 * @param jpqlQuery The JPQL query to parse and to test the parsed tree representation
+	 * @param expressionTester The tester used to verify the parsed tree is correctly representing the
+	 * JPQL query
 	 * @param formatter This formatter is used to personalized the formatting of the JPQL query
 	 * before it is used to test the generated string
 	 */
@@ -3784,6 +3804,113 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 	protected void testQuery(String jpqlQuery, ExpressionTester expressionTester) {
 		testQuery(jpqlQuery, expressionTester, JPQLStatementBNF.ID, JPQLQueryStringFormatter.DEFAULT, true);
 		testQuery(jpqlQuery, expressionTester, JPQLStatementBNF.ID, JPQLQueryStringFormatter.DEFAULT, false);
+	}
+
+	/**
+	 * Tests the parsing of the given JPQL query by comparing the parsed tree ({@link JPQLExpression})
+	 * with the given tester, which is an equivalent representation of the parsed tree.
+	 * <p>
+	 * This method test both parsing modes: tolerant and non-tolerant. When the tolerant mode is
+	 * turned on, it means it will parse valid/complete and invalid/incomplete JPQL queries. When the
+	 * tolerant mode is turned off, it means the JPQL query has to be complete and has to be
+	 * grammatically valid.
+	 *
+	 * @param jpqlQuery The JPQL query to parse and to test the parsed tree representation
+	 * @param expressionTester The tester used to verify the parsed tree is correctly representing the
+	 * JPQL query
+	 * @param jpqlGrammar The {@link JPQLGrammar} used to determine how to parse the JPQL query
+	 * @param formatter This formatter is used to personalized the formatting of the JPQL query
+	 * before it is used to test the generated string
+	 */
+	protected void testQuery(String jpqlQuery,
+	                         ExpressionTester expressionTester,
+	                         JPQLGrammar jpqlGrammar) {
+
+		testQuery(jpqlQuery, expressionTester, jpqlGrammar, JPQLStatementBNF.ID, JPQLQueryStringFormatter.DEFAULT, true);
+		testQuery(jpqlQuery, expressionTester, jpqlGrammar, JPQLStatementBNF.ID, JPQLQueryStringFormatter.DEFAULT, false);
+	}
+
+	/**
+	 * Tests the parsing of the given JPQL query by comparing the parsed tree ({@link JPQLExpression})
+	 * with the given tester, which is an equivalent representation of the parsed tree.
+	 * <p>
+	 * This method test both parsing modes: tolerant and non-tolerant. When the tolerant mode is
+	 * turned on, it means it will parse valid/complete and invalid/incomplete JPQL queries. When the
+	 * tolerant mode is turned off, it means the JPQL query has to be complete and has to be
+	 * grammatically valid.
+	 *
+	 * @param jpqlQuery The JPQL query to parse and to test the parsed tree representation
+	 * @param expressionTester The tester used to verify the parsed tree is correctly representing the
+	 * JPQL query
+	 * @param jpqlGrammar The {@link JPQLGrammar} used to determine how to parse the JPQL query
+	 * @param formatter This formatter is used to personalized the formatting of the JPQL query
+	 * before it is used to test the generated string
+	 */
+	protected void testQuery(String jpqlQuery,
+	                         ExpressionTester expressionTester,
+	                         JPQLGrammar jpqlGrammar,
+	                         JPQLQueryStringFormatter formatter) {
+
+		testQuery(jpqlQuery, expressionTester, jpqlGrammar, JPQLStatementBNF.ID, formatter, true);
+		testQuery(jpqlQuery, expressionTester, jpqlGrammar, JPQLStatementBNF.ID, formatter, false);
+	}
+
+	/**
+	 * Tests the parsing of the given JPQL query by comparing the parsed tree ({@link JPQLExpression})
+	 * with the given tester, which is an equivalent representation of the parsed tree.
+	 * <p>
+	 * This method test both parsing modes: tolerant and non-tolerant. When the tolerant mode is
+	 * turned on, it means it will parse valid/complete and invalid/incomplete JPQL queries. When the
+	 * tolerant mode is turned off, it means the JPQL query has to be complete and has to be
+	 * grammatically valid.
+	 *
+	 * @param jpqlQuery The JPQL query to parse and to test the parsed tree representation
+	 * @param expressionTester The tester used to verify the parsed tree is correctly representing the
+	 * JPQL query
+	 * @param queryBNFId The unique identifier of the {@link org.eclipse.persistence.jpa.jpql.parser.
+	 * JPQLQueryBNF JPQLQueryBNF}
+	 * @param formatter This formatter is used to personalized the formatting of the JPQL query
+	 * before it is used to test the generated string
+	 */
+	protected void testQuery(String jpqlQuery,
+	                         ExpressionTester expressionTester,
+	                         JPQLGrammar jpqlGrammar,
+	                         String jpqlQueryBNFId,
+	                         JPQLQueryStringFormatter formatter) {
+
+		testQuery(jpqlQuery, expressionTester, jpqlGrammar, jpqlQueryBNFId, formatter, true);
+		testQuery(jpqlQuery, expressionTester, jpqlGrammar, jpqlQueryBNFId, formatter, false);
+	}
+
+	/**
+	 * Tests the parsing of the given JPQL query by comparing the parsed tree ({@link JPQLExpression})
+	 * with the given tester, which is an equivalent representation of the parsed tree.
+	 *
+	 * @param jpqlQuery The JPQL query to parse and to test the parsed tree representation
+	 * @param expressionTester The tester used to verify the parsed tree is correctly representing the
+	 * JPQL query
+	 * @param jpqlGrammar The {@link JPQLGrammar} used to determine how to parse the JPQL query
+	 * @param queryBNFId The unique identifier of the {@link org.eclipse.persistence.jpa.jpql.parser.
+	 * JPQLQueryBNF JPQLQueryBNF}
+	 * @param formatter This formatter is used to personalized the formatting of the JPQL query
+	 * before it is used to test the generated string
+	 * @param tolerant Determines if the parsing system should be tolerant, meaning if it should try
+	 * to parse grammatically invalid or incomplete queries
+	 */
+	protected void testQuery(String jpqlQuery,
+	                         ExpressionTester expressionTester,
+	                         JPQLGrammar jpqlGrammar,
+	                         String jpqlQueryBNFId,
+	                         JPQLQueryStringFormatter formatter,
+	                         boolean tolerant) {
+
+		JPQLExpression jpqlExpression = buildQuery(jpqlQuery, jpqlGrammar, jpqlQueryBNFId, formatter, tolerant);
+
+		if (expressionTester.getClass() != JPQLExpressionTester.class) {
+			expressionTester = jpqlExpression(expressionTester);
+		}
+
+		expressionTester.test(jpqlExpression);
 	}
 
 	/**
@@ -3878,13 +4005,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 	                         JPQLQueryStringFormatter formatter,
 	                         boolean tolerant) {
 
-		JPQLExpression jpqlExpression = buildQuery(jpqlQuery, jpqlGrammar, jpqlQueryBNFId, formatter, tolerant);
-
-		if (expressionTester.getClass() != JPQLExpressionTester.class) {
-			expressionTester = jpqlExpression(expressionTester);
-		}
-
-		expressionTester.test(jpqlExpression);
+		testQuery(jpqlQuery, expressionTester, jpqlGrammar, jpqlQueryBNFId, formatter, tolerant);
 	}
 
 	/**
