@@ -254,16 +254,16 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
     public void initialize(AbstractSession session) throws DescriptorException {
         super.initialize(session);
         if (this.getField() instanceof XMLField) {
-            if(getValueConverter() instanceof TypeConversionConverter) {
-                TypeConversionConverter converter = (TypeConversionConverter) getValueConverter();
+            if (valueConverter instanceof TypeConversionConverter) {
+                TypeConversionConverter converter = (TypeConversionConverter) valueConverter;
                 this.getField().setType(converter.getObjectClass());
             }
-            String xpathString = ((XMLField)getField()).getXPath();
-            if (this.isAbstractCompositeDirectCollectionMapping() && (xpathString.indexOf(XMLConstants.ATTRIBUTE) == -1) && (!xpathString.endsWith(XMLConstants.TEXT))) {            
+            String xpathString = ((XMLField) getField()).getXPath();
+            if (this.isAbstractCompositeDirectCollectionMapping() && (xpathString.indexOf(XMLConstants.ATTRIBUTE) == -1) && (!xpathString.endsWith(XMLConstants.TEXT))) {
                 throw DescriptorException.invalidXpathForXMLDirectMapping(this);
-            }            
+            }
         }
-        
+
         ContainerPolicy cp = getContainerPolicy();
         if (cp != null) {
             if (cp.getContainerClass() == null) {
@@ -339,15 +339,15 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
 
         for (Enumeration stream = fieldValues.elements(); stream.hasMoreElements();) {
             Object element = stream.nextElement();
-            if (hasValueConverter()) {
-                if (getValueConverter() instanceof XMLConverter) {
-                    element = ((XMLConverter) getValueConverter()).convertDataValueToObjectValue(element, executionSession, ((XMLRecord) row).getUnmarshaller());
+            if (null != valueConverter) {
+                if (valueConverter instanceof XMLConverter) {
+                    element = ((XMLConverter) valueConverter).convertDataValueToObjectValue(element, executionSession, ((XMLRecord) row).getUnmarshaller());
                 } else {
-                    element = getValueConverter().convertDataValueToObjectValue(element, executionSession);
+                    element = valueConverter.convertDataValueToObjectValue(element, executionSession);
                 }
             }
-            if(element != null && element.getClass() == ClassConstants.STRING) {
-                if(isCollapsingStringValues) {
+            if (element != null && element.getClass() == ClassConstants.STRING) {
+                if (isCollapsingStringValues) {
                     element = XMLConversionManager.getDefaultXMLManager().collapseStringValue((String)element);
                 } else if(isNormalizingStringValues) {
                     element = XMLConversionManager.getDefaultXMLManager().normalizeStringValue((String)element);
@@ -377,26 +377,27 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
 
         Vector elements = new Vector(cp.sizeFor(attributeValue));
         Object iter = cp.iteratorFor(attributeValue);
-        if(null != iter) {
-            while(cp.hasNext(iter)) {
+        if (null != iter) {
+            while (cp.hasNext(iter)) {
                 Object element = cp.next(iter, session);
-                if (hasValueConverter()) {
-                    if (getValueConverter() instanceof XMLConverter) {
-                        element = ((XMLConverter) getValueConverter()).convertObjectValueToDataValue(element, session, ((XMLRecord) row).getMarshaller());
+                if (null != valueConverter) {
+                    if (valueConverter instanceof XMLConverter) {
+                        element = ((XMLConverter) valueConverter).convertObjectValueToDataValue(element, session, ((XMLRecord) row).getMarshaller());
                     } else {
-                        element = getValueConverter().convertObjectValueToDataValue(element, session);
+                        element = valueConverter.convertObjectValueToDataValue(element, session);
                     }
                 }
-    
+
                 if (element != null) {
                     elements.addElement(element);
                 } else {
-                    if (getNullPolicy() == null) {
+                    AbstractNullPolicy nullPolicy = getNullPolicy();
+                    if (nullPolicy == null) {
                         elements.addElement(null);
                     } else {
-                        if (getNullPolicy().getMarshalNullRepresentation() == XMLNullRepresentationType.XSI_NIL) {
+                        if (nullPolicy.getMarshalNullRepresentation() == XMLNullRepresentationType.XSI_NIL) {
                             elements.addElement(XMLRecord.NIL);
-                        } else if (getNullPolicy().getMarshalNullRepresentation() == XMLNullRepresentationType.ABSENT_NODE) {
+                        } else if (nullPolicy.getMarshalNullRepresentation() == XMLNullRepresentationType.ABSENT_NODE) {
                             // Do nothing
                         } else {
                             elements.addElement(XMLConstants.EMPTY_STRING);
@@ -415,11 +416,11 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
 
     public void writeSingleValue(Object value, Object parent, XMLRecord record, AbstractSession session) {
         Object element = value;
-        if (hasValueConverter()) {
-            if (getValueConverter() instanceof XMLConverter) {
-                element = ((XMLConverter) getValueConverter()).convertObjectValueToDataValue(element, session, record.getMarshaller());
+        if (null != valueConverter) {
+            if (valueConverter instanceof XMLConverter) {
+                element = ((XMLConverter) valueConverter).convertObjectValueToDataValue(element, session, record.getMarshaller());
             } else {
-                element = getValueConverter().convertObjectValueToDataValue(element, session);
+                element = valueConverter.convertObjectValueToDataValue(element, session);
             }
         }
         record.add(this.getField(), element);
@@ -442,7 +443,7 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
     }
 
     public void setAttributeValueInObject(Object object, Object value) throws DescriptorException {
-        if(isWriteOnly()) {
+        if (isWriteOnly()) {
             return;
         }
         super.setAttributeValueInObject(object, value);
@@ -479,45 +480,45 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
     public void setReuseContainer(boolean reuseContainer) {
         this.reuseContainer = reuseContainer;
     }
-    
+
     /**
-     * PUBLIC: 
-     * Returns true if this mapping is normalizing string values on unmarshal before adding 
-     * them to the collection. Normalize replaces any CR, LF or Tab characters with a 
-     * single space character. 
+     * PUBLIC:
+     * Returns true if this mapping is normalizing string values on unmarshal before adding
+     * them to the collection. Normalize replaces any CR, LF or Tab characters with a
+     * single space character.
      */
     public boolean isNormalizingStringValues() {
         return this.isNormalizingStringValues;
     }
-    
+
     /**
      * PUBLIC:
      * Indicates that this mapping should normalize all string values before adding them
-     * to the collection on unmarshal. Normalize replaces any CR, LF or Tab characters with a 
-     * single space character. 
+     * to the collection on unmarshal. Normalize replaces any CR, LF or Tab characters with a
+     * single space character.
      * @param normalize
      */
     public void setNormalizingStringValues(boolean normalize) {
         this.isNormalizingStringValues = normalize;
     }
-    
-    
+
+
     /**
      * PUBLIC:
      * Indicates that this mapping should collapse all string values before adding them
      * to the collection on unmarshal. Collapse removes leading and trailing whitespaces, and replaces
-     * any sequence of whitespace characters with a single space. 
+     * any sequence of whitespace characters with a single space.
      * @param normalize
      */
     public void setCollapsingStringValues(boolean collapse) {
         this.isCollapsingStringValues = collapse;
     }
-    
+
     /**
      * PUBLIC:
      * Returns true if this mapping should collapse all string values before adding them
      * to the collection. Collapse removes leading and trailing whitespaces, and replaces
-     * any sequence of whitespace characters with a single space. 
+     * any sequence of whitespace characters with a single space.
      * @param normalize
      */
     public boolean isCollapsingStringValues() {
@@ -536,7 +537,7 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
 
     /**
      * INTERNAL
-     * Indicate whether by default an empty container should be set on the 
+     * Indicate whether by default an empty container should be set on the
      * field/property if the collection is not present in the XML document.
      * @since EclipseLink 2.3.3
      */
