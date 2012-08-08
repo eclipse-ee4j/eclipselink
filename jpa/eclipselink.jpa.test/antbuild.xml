@@ -3330,7 +3330,7 @@
     <target name="server-test-jpars" depends="clean-test, set-server-properties" if="is.glassfish.or.weblogic">
         <echo message="jpars url is ${jpars.url}"/>
         <copy file="${eclipselink.jpa.test}/../eclipselink.jpars.test/src/META-INF/persistence.xml" tofile="${eclipselink.jpa.test}/../eclipselink.jpars.test/src/META-INF/persistence.xml.original" overwrite="true"/>
-        <replace file="${eclipselink.jpa.test}/../eclipselink.jpars.test/src/META-INF/persistence.xml" token='Glassfish' value="${server.platform}"/>
+        <replace file="${eclipselink.jpa.test}/../eclipselink.jpars.test/src/META-INF/persistence.xml" token='SunAS9' value="${server.platform}"/>
         <property name="MODEL_NAME" value="eclipselink-jpars-model"/>
         <property name="EAR_NAME" value="${MODEL_NAME}"/>
         <antcall target="server-build-ear-jpars" inheritRefs="true"/>
