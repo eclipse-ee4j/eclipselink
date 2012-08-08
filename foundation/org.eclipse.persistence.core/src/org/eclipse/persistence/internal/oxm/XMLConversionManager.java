@@ -758,30 +758,33 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
      * @return
      */
     public XMLGregorianCalendar convertStringToXMLGregorianCalendar(String sourceString) {
+        // Trim in case of leading or trailing whitespace
+        String trimmedSourceString = sourceString.trim();
+
         XMLGregorianCalendar calToReturn = null;
+        
         try {
-            calToReturn = getDatatypeFactory().newXMLGregorianCalendar(sourceString);
+            calToReturn = getDatatypeFactory().newXMLGregorianCalendar(trimmedSourceString);
         } catch (IllegalArgumentException e1) {
             try {
                 // GMonths may have different representations:
                 // JDK 1.5: "--MM--"   JDK 1.6: "--MM"
                 // If we caught an IllegalArgumentException, try the other syntax
-
-                int length = sourceString.length();
+                int length = trimmedSourceString.length();
                 String retryString = null;
-                if (length >= 6 && (sourceString.charAt(4) == '-') && (sourceString.charAt(5) == '-')) {
+                if (length >= 6 && (trimmedSourceString.charAt(4) == '-') && (trimmedSourceString.charAt(5) == '-')) {
                     // Try to omit the trailing dashes if any (--MM--),
                     // but preserve time zone specifier, if any.
                     retryString = new StringBuilder(
-                            sourceString.substring(0, 4)).append(
-                            length > 6 ? sourceString.substring(6) : "")
+                            trimmedSourceString.substring(0, 4)).append(
+                            length > 6 ? trimmedSourceString.substring(6) : "")
                             .toString();
                 } else if (length >= 4) {
                     // For "--MM" add the trailing dashes, preserving
                     // any trailing time zone specifier.
                     retryString = new StringBuilder(
-                            sourceString.substring(0, 4)).append("--").append(
-                            length > 4 ? sourceString.substring(4) : "")
+                            trimmedSourceString.substring(0, 4)).append("--").append(
+                            length > 4 ? trimmedSourceString.substring(4) : "")
                             .toString();
                 }
                 if (retryString != null) {
@@ -918,28 +921,29 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
              }
         }
         Timestamp timestamp = Helper.timestampFromCalendar(cal);
-        int decimalIndex = sourceString.lastIndexOf('.');
+        String trimmedSourceString = sourceString.trim(); 
+        int decimalIndex = trimmedSourceString.lastIndexOf('.');
 
         if(-1 == decimalIndex) {
             return timestamp;
         }else{
-            int timeZoneIndex = sourceString.lastIndexOf(GMT_SUFFIX);
+            int timeZoneIndex = trimmedSourceString.lastIndexOf(GMT_SUFFIX);
             if(-1 == timeZoneIndex) {
-                timeZoneIndex = sourceString.lastIndexOf('-');
+                timeZoneIndex = trimmedSourceString.lastIndexOf('-');
                 if(timeZoneIndex < decimalIndex) {
                     timeZoneIndex = -1;
                 }
                 if(-1 == timeZoneIndex) {
-                    timeZoneIndex = sourceString.lastIndexOf('+');
+                    timeZoneIndex = trimmedSourceString.lastIndexOf('+');
                 }
 
             }
 
             String nsString;
             if(-1 == timeZoneIndex) {
-                nsString = sourceString.substring(decimalIndex + 1);
+                nsString = trimmedSourceString.substring(decimalIndex + 1);
             } else {
-                nsString = sourceString.substring((decimalIndex + 1), timeZoneIndex);
+                nsString = trimmedSourceString.substring((decimalIndex + 1), timeZoneIndex);
             }
             double ns = Long.valueOf(nsString).doubleValue();
             ns = ns * Math.pow(10, 9 - nsString.length());
