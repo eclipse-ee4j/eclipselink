@@ -1567,7 +1567,7 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
         Object result = containerInstance(pks.length);
         Map<Object, Object> fromCache = session.getIdentityMapAccessor().getAllFromIdentityMapWithEntityPK(pks, elementDescriptor);
         for (Object entity: fromCache.values()){
-            addInto(null, entity, result, session);
+            addInto(entity, result, session);
         }
         DatabaseRecord translationRow = new DatabaseRecord();
         List foreignKeyValues = new ArrayList(pks.length - fromCache.size());
@@ -1597,7 +1597,7 @@ public abstract class ContainerPolicy implements Cloneable, Serializable {
                 return session.executeQuery(mapping.getSelectionQuery(), foreignKeys);
             }
             for (Object element: temp){
-                addInto(null, element, result, session);
+                addInto(element, result, session);
             }
         }
         return result;
