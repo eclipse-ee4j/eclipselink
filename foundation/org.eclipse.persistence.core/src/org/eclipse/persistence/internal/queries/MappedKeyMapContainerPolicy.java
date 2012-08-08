@@ -280,12 +280,17 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy {
     public Object[] buildReferencesPKList(Object container, AbstractSession session){
         Object[] result = new Object[this.sizeFor(container)*2];
         Iterator iterator = (Iterator)this.iteratorFor(container);
+        boolean isElementCollection = ((DatabaseMapping)valueMapping).isElementCollectionMapping();
         int index = 0;
         while(iterator.hasNext()){
             Map.Entry entry = (Entry) iterator.next();
             result[index] = keyMapping.createSerializableMapKeyInfo(entry.getKey(), session);
             ++index;
-            result[index] = elementDescriptor.getObjectBuilder().extractPrimaryKeyFromObject(entry.getValue(), session);
+            if (isElementCollection) {
+                result[index] = entry.getValue();
+            } else {
+                result[index] = elementDescriptor.getObjectBuilder().extractPrimaryKeyFromObject(entry.getValue(), session);
+            }
             ++index;
         }
         return result;
@@ -895,9 +900,10 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy {
      */
     @Override
     public Object valueFromPKList(Object[] pks, AbstractRecord foreignKeys, ForeignReferenceMapping mapping, AbstractSession session){
-        Object result = containerInstance(pks.length/2);
-        Object[] keys = new Object[pks.length /2];
-        Object[] values = new Object[pks.length /2];
+        int mapSize = pks.length/2;
+        Object result = containerInstance(mapSize);
+        Object[] keys = new Object[mapSize];
+        Object[] values = new Object[mapSize];
         for (int index = 0; index < pks.length; ++index){
             keys[index/2] = pks[index];
             ++index;
@@ -905,45 +911,49 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy {
         }
         
         List<Object> keyObjects = keyMapping.createMapComponentsFromSerializableKeyInfo(keys, session);
-        
-
-        Map<Object, Object> fromCache = session.getIdentityMapAccessor().getAllFromIdentityMapWithEntityPK(values, elementDescriptor);
-        DatabaseRecord translationRow = new DatabaseRecord();
-        List foreignKeyValues = new ArrayList(pks.length - fromCache.size());
-        
-        CacheKeyType cacheKeyType = this.elementDescriptor.getCachePolicy().getCacheKeyType();
-        for (int index = 0; index < pks.length; ++index){
-            Object pk = pks[index];
-            if (!fromCache.containsKey(pk)){
-                if (cacheKeyType == CacheKeyType.CACHE_ID){
-                    foreignKeyValues.add(Arrays.asList(((CacheId)pk).getPrimaryKey()));
-                }else{
-                    foreignKeyValues.add(pk);
+        if (((DatabaseMapping)valueMapping).isElementCollectionMapping()) {
+            for(int i = 0; i < mapSize; i++){
+                addInto(keyObjects.get(i), values[i], result, session);
+            }
+        } else {
+            Map<Object, Object> fromCache = session.getIdentityMapAccessor().getAllFromIdentityMapWithEntityPK(values, elementDescriptor);
+            DatabaseRecord translationRow = new DatabaseRecord();
+            List foreignKeyValues = new ArrayList(pks.length - fromCache.size());
+            
+            CacheKeyType cacheKeyType = this.elementDescriptor.getCachePolicy().getCacheKeyType();
+            for (int index = 0; index < mapSize; ++index){
+                Object pk = values[index];
+                if (!fromCache.containsKey(pk)){
+                    if (cacheKeyType == CacheKeyType.CACHE_ID){
+                        foreignKeyValues.add(Arrays.asList(((CacheId)pk).getPrimaryKey()));
+                    }else{
+                        foreignKeyValues.add(pk);
+                    }
                 }
             }
-        }
-        if (!foreignKeyValues.isEmpty()){
-            translationRow.put(ForeignReferenceMapping.QUERY_BATCH_PARAMETER, foreignKeyValues);
-            ReadAllQuery query = new ReadAllQuery(elementDescriptor.getJavaClass());
-            query.setIsExecutionClone(true);
-            query.setTranslationRow(translationRow);
-            query.setSession(session);
-            query.setSelectionCriteria(elementDescriptor.buildBatchCriteriaByPK(query.getExpressionBuilder(), query));
-            Collection<Object> temp = (Collection<Object>) session.executeQuery(query);
-            if (temp.size() < foreignKeyValues.size()){
-                //Not enough results have been found, this must be a stale collection with a removed
-                //element.  Execute a reload based on FK.
-                return session.executeQuery(mapping.getSelectionQuery(), foreignKeys);
+            if (!foreignKeyValues.isEmpty()){
+                translationRow.put(ForeignReferenceMapping.QUERY_BATCH_PARAMETER, foreignKeyValues);
+                ReadAllQuery query = new ReadAllQuery(elementDescriptor.getJavaClass());
+                query.setIsExecutionClone(true);
+                query.setTranslationRow(translationRow);
+                query.setSession(session);
+                query.setSelectionCriteria(elementDescriptor.buildBatchCriteriaByPK(query.getExpressionBuilder(), query));
+                Collection<Object> temp = (Collection<Object>) session.executeQuery(query);
+                if (temp.size() < foreignKeyValues.size()){
+                    //Not enough results have been found, this must be a stale collection with a removed
+                    //element.  Execute a reload based on FK.
+                    return session.executeQuery(mapping.getSelectionQuery(), foreignKeys);
+                }
+                for (Object element: temp){
+                    Object pk = elementDescriptor.getObjectBuilder().extractPrimaryKeyFromObject(element, session);
+                    fromCache.put(pk, element);
+                }
             }
-            for (Object element: temp){
-                Object pk = elementDescriptor.getObjectBuilder().extractPrimaryKeyFromObject(element, session);
-                fromCache.put(pk, element);
+        
+            Iterator keyIterator = keyObjects.iterator();
+            for(Object key : values){
+                addInto(keyIterator.next(), fromCache.get(key), result, session);
             }
-        }
-    
-        Iterator keyIterator = keyObjects.iterator();
-        for(Object key : values){
-            addInto(keyIterator.next(), fromCache.get(key), result, session);
         }
         return result;
     }
