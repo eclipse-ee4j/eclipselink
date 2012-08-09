@@ -210,9 +210,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
                 addUnmarshalValue(unmarshalRecord, stringTokenizer.nextToken(), collection);
             }
         } else {
-            if (lastXPathFragment.nameIsText()) {
-                addUnmarshalValue(unmarshalRecord, value, collection);
-            }
+            addUnmarshalValue(unmarshalRecord, value, collection);            
         }
     }
 
