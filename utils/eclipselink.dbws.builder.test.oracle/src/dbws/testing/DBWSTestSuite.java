@@ -16,6 +16,7 @@ package dbws.testing;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.sql.Connection;
@@ -124,37 +125,63 @@ public class DBWSTestSuite {
 
     public static DBWSLogger dbwsLogger;
     public static void setUp(String stageDir) throws WSDLException {
-    	setUp(stageDir, false);
+    	setUp(stageDir, false, false);
     }
-    public static void setUp(String stageDir, boolean useLogger) throws WSDLException {
-        if (builder == null) {
-            builder = new DBWSBuilder();
-        }
+    public static void setUp(String stageDir, boolean useLogger, boolean builderIsInitialized) throws WSDLException {
         DBWS_SERVICE_STREAM = new ByteArrayOutputStream();
         DBWS_SCHEMA_STREAM = new ByteArrayOutputStream();
         DBWS_SESSION_STREAM = new ByteArrayOutputStream();
         DBWS_OR_STREAM = new ByteArrayOutputStream();
         DBWS_OX_STREAM = new ByteArrayOutputStream();
         DBWS_WSDL_STREAM = new ByteArrayOutputStream();
+        XMLContext context = new XMLContext(new DBWSBuilderModelProject());
+        XMLUnmarshaller unmarshaller = context.createUnmarshaller();
+        if (!builderIsInitialized) {
+            if (builder == null) {
+                builder = new DBWSBuilder();
+            }
         username = System.getProperty(DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
         password = System.getProperty(DATABASE_PASSWORD_KEY, DEFAULT_DATABASE_PASSWORD);
         url = System.getProperty(DATABASE_URL_KEY, DEFAULT_DATABASE_URL);
         String builderString = DBWS_BUILDER_XML_USERNAME + username + DBWS_BUILDER_XML_PASSWORD +
             password + DBWS_BUILDER_XML_URL + url + DBWS_BUILDER_XML_DRIVER + DATABASE_DRIVER +
             DBWS_BUILDER_XML_PLATFORM + DATABASE_PLATFORM + DBWS_BUILDER_XML_MAIN;
-        XMLContext context = new XMLContext(new DBWSBuilderModelProject());
-        XMLUnmarshaller unmarshaller = context.createUnmarshaller();
-        DBWSBuilderModel builderModel = (DBWSBuilderModel)unmarshaller.unmarshal(
-            new StringReader(builderString));
+	        DBWSBuilderModel builderModel = (DBWSBuilderModel)unmarshaller.unmarshal(new StringReader(builderString));
+	        builder.properties = builderModel.properties;
+	        builder.operations = builderModel.operations;
+        }        
         builder.quiet = true;
         builder.setPlatformClassname(DATABASE_PLATFORM);
-        builder.properties = builderModel.properties;
-        builder.operations = builderModel.operations;
+        
         XRPackager xrPackager = new JSR109WebServicePackager(null, "WebServiceTestPackager", noArchive) {
             @Override
             public void start() {
                 // do nothing - don't have to verify existence of 'stageDir' when
                 // all the streams are in-memory
+            }
+            @Override
+            public OutputStream getSchemaStream() {
+                return DBWS_SCHEMA_STREAM;
+            }
+            @Override
+            public OutputStream getSessionsStream(String sessionsFileName) {
+                return DBWS_SESSION_STREAM;
+            }
+            @Override
+            public OutputStream getServiceStream() {
+                return DBWS_SERVICE_STREAM;
+            }
+            @Override
+            public OutputStream getOrStream() {
+                return DBWS_OR_STREAM;
+            }
+            @Override
+            public OutputStream getOxStream() {
+                return DBWS_OX_STREAM;
+            }
+            @Override
+            public OutputStream getWSDLStream() {
+                return DBWS_WSDL_STREAM;
             }
         };
         xrPackager.setDBWSBuilder(builder);
@@ -165,16 +192,23 @@ public class DBWSTestSuite {
         }
         if (stageDir == null) {
             builder.getProperties().put(SESSIONS_FILENAME_KEY, NO_SESSIONS_FILENAME);
+            if (!builderIsInitialized) {
             builder.build(DBWS_SCHEMA_STREAM, __nullStream, DBWS_SERVICE_STREAM, DBWS_OR_STREAM,
                 DBWS_OX_STREAM, __nullStream, __nullStream, __nullStream, __nullStream,
                 __nullStream, __nullStream, __nullStream, dbwsLogger);
+            } else {
+            	builder.start();
         }
-        else {
+        } else {
             xrPackager.setSessionsFileName(builder.getSessionsFileName());
             xrPackager.setStageDir(new File(stageDir));
+            if (!builderIsInitialized) {
             builder.build(DBWS_SCHEMA_STREAM, DBWS_SESSION_STREAM, DBWS_SERVICE_STREAM,
                 DBWS_OR_STREAM, DBWS_OX_STREAM, __nullStream, __nullStream, DBWS_WSDL_STREAM,
                 __nullStream, __nullStream,  __nullStream, __nullStream, dbwsLogger);
+            } else {
+            	builder.start();
+            }
         }
         XRServiceFactory factory = new XRServiceFactory() {
             @Override
