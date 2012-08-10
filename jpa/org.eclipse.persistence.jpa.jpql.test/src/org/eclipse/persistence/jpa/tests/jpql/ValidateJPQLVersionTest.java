@@ -18,6 +18,7 @@ import java.util.List;
 import org.eclipse.persistence.jpa.jpql.AbstractValidator;
 import org.eclipse.persistence.jpa.jpql.EclipseLinkGrammarValidator;
 import org.eclipse.persistence.jpa.jpql.JPQLQueryProblem;
+import org.eclipse.persistence.jpa.jpql.parser.DefaultEclipseLinkJPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_4;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLExpression;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
@@ -34,7 +35,7 @@ import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
  * is defined in a more recent version than the one used for validation will list the expression
  * as not supported.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -108,7 +109,7 @@ public class ValidateJPQLVersionTest extends AbstractValidatorTest {
 
  		testHasOnlyOneProblem(
  			jpqlQuery,
- 			EclipseLinkJPQLGrammar2_4.instance(),
+ 			DefaultEclipseLinkJPQLGrammar.instance(),
  			JPQLGrammar1_0.instance(),
  			CaseExpression_InvalidJPAVersion,
  			startPosition,
@@ -125,7 +126,7 @@ public class ValidateJPQLVersionTest extends AbstractValidatorTest {
 
  		testHasOnlyOneProblem(
  			jpqlQuery,
- 			EclipseLinkJPQLGrammar2_4.instance(),
+ 			DefaultEclipseLinkJPQLGrammar.instance(),
  			JPQLGrammar1_0.instance(),
  			CastExpression_InvalidJPAVersion,
  			startPosition,
@@ -142,7 +143,7 @@ public class ValidateJPQLVersionTest extends AbstractValidatorTest {
 
  		testHasOnlyOneProblem(
  			jpqlQuery,
- 			EclipseLinkJPQLGrammar2_4.instance(),
+ 			DefaultEclipseLinkJPQLGrammar.instance(),
  			JPQLGrammar2_0.instance(),
  			CastExpression_InvalidJPAVersion,
  			startPosition,
@@ -159,7 +160,7 @@ public class ValidateJPQLVersionTest extends AbstractValidatorTest {
 
  		testHasOnlyOneProblem(
  			jpqlQuery,
- 			EclipseLinkJPQLGrammar2_4.instance(),
+ 			DefaultEclipseLinkJPQLGrammar.instance(),
  			JPQLGrammar2_1.instance(),
  			CastExpression_InvalidJPAVersion,
  			startPosition,
@@ -210,7 +211,7 @@ public class ValidateJPQLVersionTest extends AbstractValidatorTest {
 
  		testHasOnlyOneProblem(
  			jpqlQuery,
- 			EclipseLinkJPQLGrammar2_4.instance(),
+ 			DefaultEclipseLinkJPQLGrammar.instance(),
  			JPQLGrammar1_0.instance(),
  			CoalesceExpression_InvalidJPAVersion,
  			startPosition,
@@ -227,7 +228,7 @@ public class ValidateJPQLVersionTest extends AbstractValidatorTest {
 
  		testHasOnlyOneProblem(
  			jpqlQuery,
- 			EclipseLinkJPQLGrammar2_4.instance(),
+ 			DefaultEclipseLinkJPQLGrammar.instance(),
  			JPQLGrammar1_0.instance(),
  			EntityTypeLiteral_InvalidJPAVersion,
  			startPosition,
@@ -278,7 +279,7 @@ public class ValidateJPQLVersionTest extends AbstractValidatorTest {
 
  		testHasOnlyOneProblem(
  			jpqlQuery,
- 			EclipseLinkJPQLGrammar2_4.instance(),
+ 			DefaultEclipseLinkJPQLGrammar.instance(),
  			JPQLGrammar1_0.instance(),
  			ExtractExpression_InvalidJPAVersion,
  			startPosition,
@@ -295,7 +296,7 @@ public class ValidateJPQLVersionTest extends AbstractValidatorTest {
 
  		testHasOnlyOneProblem(
  			jpqlQuery,
- 			EclipseLinkJPQLGrammar2_4.instance(),
+ 			DefaultEclipseLinkJPQLGrammar.instance(),
  			JPQLGrammar2_0.instance(),
  			ExtractExpression_InvalidJPAVersion,
  			startPosition,
@@ -312,7 +313,7 @@ public class ValidateJPQLVersionTest extends AbstractValidatorTest {
 
  		testHasOnlyOneProblem(
  			jpqlQuery,
- 			EclipseLinkJPQLGrammar2_4.instance(),
+ 			DefaultEclipseLinkJPQLGrammar.instance(),
  			JPQLGrammar2_1.instance(),
  			ExtractExpression_InvalidJPAVersion,
  			startPosition,
@@ -329,7 +330,7 @@ public class ValidateJPQLVersionTest extends AbstractValidatorTest {
 
  		testHasOnlyOneProblem(
  			jpqlQuery,
- 			EclipseLinkJPQLGrammar2_4.instance(),
+ 			DefaultEclipseLinkJPQLGrammar.instance(),
  			JPQLGrammar1_0.instance(),
  			RangeVariableDeclaration_InvalidRootObject,
  			startPosition,
@@ -346,7 +347,7 @@ public class ValidateJPQLVersionTest extends AbstractValidatorTest {
 
  		testHasOnlyOneProblem(
  			jpqlQuery,
- 			EclipseLinkJPQLGrammar2_4.instance(),
+ 			DefaultEclipseLinkJPQLGrammar.instance(),
  			JPQLGrammar2_0.instance(),
  			RangeVariableDeclaration_InvalidRootObject,
  			startPosition,
@@ -363,7 +364,7 @@ public class ValidateJPQLVersionTest extends AbstractValidatorTest {
 
  		testHasOnlyOneProblem(
  			jpqlQuery,
- 			EclipseLinkJPQLGrammar2_4.instance(),
+ 			DefaultEclipseLinkJPQLGrammar.instance(),
  			JPQLGrammar2_1.instance(),
  			RangeVariableDeclaration_InvalidRootObject,
  			startPosition,
@@ -380,7 +381,7 @@ public class ValidateJPQLVersionTest extends AbstractValidatorTest {
 
  		testHasOnlyOneProblem(
  			jpqlQuery,
- 			EclipseLinkJPQLGrammar2_4.instance(),
+ 			DefaultEclipseLinkJPQLGrammar.instance(),
  			JPQLGrammar1_0.instance(),
  			FunctionExpression_InvalidJPAVersion,
  			startPosition,
@@ -397,7 +398,7 @@ public class ValidateJPQLVersionTest extends AbstractValidatorTest {
 
  		testHasOnlyOneProblem(
  			jpqlQuery,
- 			EclipseLinkJPQLGrammar2_4.instance(),
+ 			DefaultEclipseLinkJPQLGrammar.instance(),
  			JPQLGrammar2_0.instance(),
  			FunctionExpression_InvalidJPAVersion,
  			startPosition,
@@ -412,7 +413,7 @@ public class ValidateJPQLVersionTest extends AbstractValidatorTest {
 
  		testHasNoProblems(
  			jpqlQuery,
- 			EclipseLinkJPQLGrammar2_4.instance(),
+ 			DefaultEclipseLinkJPQLGrammar.instance(),
  			JPQLGrammar2_1.instance()
  		);
 	}
@@ -459,7 +460,7 @@ public class ValidateJPQLVersionTest extends AbstractValidatorTest {
  		testHasNoProblems(
  			jpqlQuery,
  			JPQLGrammar2_1.instance(),
- 			EclipseLinkJPQLGrammar2_4.instance()
+ 			DefaultEclipseLinkJPQLGrammar.instance()
  		);
 	}
 
@@ -482,8 +483,8 @@ public class ValidateJPQLVersionTest extends AbstractValidatorTest {
 
  		testHasNoProblems(
  			jpqlQuery,
- 			EclipseLinkJPQLGrammar2_4.instance(),
- 			EclipseLinkJPQLGrammar2_4.instance()
+ 			DefaultEclipseLinkJPQLGrammar.instance(),
+ 			DefaultEclipseLinkJPQLGrammar.instance()
  		);
 	}
 
@@ -496,7 +497,7 @@ public class ValidateJPQLVersionTest extends AbstractValidatorTest {
 
 		testHasOnlyOneProblem(
 			jpqlQuery,
-			EclipseLinkJPQLGrammar2_4.instance(),
+			DefaultEclipseLinkJPQLGrammar.instance(),
 			JPQLGrammar1_0.instance(),
 			IndexExpression_InvalidJPAVersion,
 			startPosition,
@@ -547,7 +548,7 @@ public class ValidateJPQLVersionTest extends AbstractValidatorTest {
 
  		testHasOnlyOneProblem(
  			jpqlQuery,
- 			EclipseLinkJPQLGrammar2_4.instance(),
+ 			DefaultEclipseLinkJPQLGrammar.instance(),
  			JPQLGrammar1_0.instance(),
  			Join_InvalidJoinAssociationPath,
  			startPosition,
@@ -564,7 +565,7 @@ public class ValidateJPQLVersionTest extends AbstractValidatorTest {
 
  		testHasOnlyOneProblem(
  			jpqlQuery,
- 			EclipseLinkJPQLGrammar2_4.instance(),
+ 			DefaultEclipseLinkJPQLGrammar.instance(),
  			JPQLGrammar2_0.instance(),
  			Join_InvalidJoinAssociationPath,
  			startPosition,
@@ -581,7 +582,7 @@ public class ValidateJPQLVersionTest extends AbstractValidatorTest {
 
  		testHasOnlyOneProblem(
  			jpqlQuery,
- 			EclipseLinkJPQLGrammar2_4.instance(),
+ 			DefaultEclipseLinkJPQLGrammar.instance(),
  			JPQLGrammar2_1.instance(),
  			Join_InvalidJoinAssociationPath,
  			startPosition,
@@ -598,7 +599,7 @@ public class ValidateJPQLVersionTest extends AbstractValidatorTest {
 
  		testHasOnlyOneProblem(
  			jpqlQuery,
- 			EclipseLinkJPQLGrammar2_4.instance(),
+ 			DefaultEclipseLinkJPQLGrammar.instance(),
  			JPQLGrammar1_0.instance(),
  			KeyExpression_InvalidJPAVersion,
  			startPosition,
@@ -649,7 +650,7 @@ public class ValidateJPQLVersionTest extends AbstractValidatorTest {
 
  		testHasOnlyOneProblem(
  			jpqlQuery,
- 			EclipseLinkJPQLGrammar2_4.instance(),
+ 			DefaultEclipseLinkJPQLGrammar.instance(),
  			JPQLGrammar1_0.instance(),
  			NullIfExpression_InvalidJPAVersion,
  			startPosition,
@@ -700,7 +701,7 @@ public class ValidateJPQLVersionTest extends AbstractValidatorTest {
 
  		testHasProblem(
  			jpqlQuery,
- 			EclipseLinkJPQLGrammar2_4.instance(),
+ 			DefaultEclipseLinkJPQLGrammar.instance(),
  			JPQLGrammar1_0.instance(),
  			RegexpExpression_InvalidJPAVersion,
  			startPosition,
@@ -717,7 +718,7 @@ public class ValidateJPQLVersionTest extends AbstractValidatorTest {
 
  		testHasProblem(
  			jpqlQuery,
- 			EclipseLinkJPQLGrammar2_4.instance(),
+ 			DefaultEclipseLinkJPQLGrammar.instance(),
  			JPQLGrammar2_0.instance(),
  			RegexpExpression_InvalidJPAVersion,
  			startPosition,
@@ -734,7 +735,7 @@ public class ValidateJPQLVersionTest extends AbstractValidatorTest {
 
  		testHasProblem(
  			jpqlQuery,
- 			EclipseLinkJPQLGrammar2_4.instance(),
+ 			DefaultEclipseLinkJPQLGrammar.instance(),
  			JPQLGrammar2_1.instance(),
  			RegexpExpression_InvalidJPAVersion,
  			startPosition,
@@ -751,7 +752,7 @@ public class ValidateJPQLVersionTest extends AbstractValidatorTest {
 
  		testHasOnlyOneProblem(
  			jpqlQuery,
- 			EclipseLinkJPQLGrammar2_4.instance(),
+ 			DefaultEclipseLinkJPQLGrammar.instance(),
  			JPQLGrammar1_0.instance(),
  			ResultVariable_InvalidJPAVersion,
  			startPosition,
@@ -802,7 +803,7 @@ public class ValidateJPQLVersionTest extends AbstractValidatorTest {
 
  		testHasOnlyOneProblem(
  			jpqlQuery,
- 			EclipseLinkJPQLGrammar2_4.instance(),
+ 			DefaultEclipseLinkJPQLGrammar.instance(),
  			JPQLGrammar1_0.instance(),
  			FunctionExpression_InvalidJPAVersion,
  			startPosition,
@@ -836,7 +837,7 @@ public class ValidateJPQLVersionTest extends AbstractValidatorTest {
 
  		testHasOnlyOneProblem(
  			jpqlQuery,
- 			EclipseLinkJPQLGrammar2_4.instance(),
+ 			DefaultEclipseLinkJPQLGrammar.instance(),
  			JPQLGrammar2_1.instance(),
  			FunctionExpression_InvalidJPAVersion,
  			startPosition,
@@ -853,7 +854,7 @@ public class ValidateJPQLVersionTest extends AbstractValidatorTest {
 
  		testHasOnlyOneProblem(
  			jpqlQuery,
- 			EclipseLinkJPQLGrammar2_4.instance(),
+ 			DefaultEclipseLinkJPQLGrammar.instance(),
  			JPQLGrammar1_0.instance(),
  			TableVariableDeclaration_InvalidJPAVersion,
  			startPosition,
@@ -870,7 +871,7 @@ public class ValidateJPQLVersionTest extends AbstractValidatorTest {
 
 		testHasOnlyOneProblem(
 			jpqlQuery,
-			EclipseLinkJPQLGrammar2_4.instance(),
+			DefaultEclipseLinkJPQLGrammar.instance(),
 			JPQLGrammar2_0.instance(),
 			TableVariableDeclaration_InvalidJPAVersion,
 			startPosition,
@@ -887,7 +888,7 @@ public class ValidateJPQLVersionTest extends AbstractValidatorTest {
 
 		testHasOnlyOneProblem(
 			jpqlQuery,
-			EclipseLinkJPQLGrammar2_4.instance(),
+			DefaultEclipseLinkJPQLGrammar.instance(),
 			JPQLGrammar2_1.instance(),
 			TableVariableDeclaration_InvalidJPAVersion,
 			startPosition,
@@ -904,7 +905,7 @@ public class ValidateJPQLVersionTest extends AbstractValidatorTest {
 
  		testHasOnlyOneProblem(
  			jpqlQuery,
- 			EclipseLinkJPQLGrammar2_4.instance(),
+ 			DefaultEclipseLinkJPQLGrammar.instance(),
  			JPQLGrammar1_0.instance(),
  			TypeExpression_InvalidJPAVersion,
  			startPosition,
@@ -955,7 +956,7 @@ public class ValidateJPQLVersionTest extends AbstractValidatorTest {
 
  		testHasOnlyOneProblem(
  			jpqlQuery,
- 			EclipseLinkJPQLGrammar2_4.instance(),
+ 			DefaultEclipseLinkJPQLGrammar.instance(),
  			JPQLGrammar1_0.instance(),
  			UnionClause_InvalidJPAVersion,
  			startPosition,
@@ -972,7 +973,7 @@ public class ValidateJPQLVersionTest extends AbstractValidatorTest {
 
  		testHasOnlyOneProblem(
  			jpqlQuery,
- 			EclipseLinkJPQLGrammar2_4.instance(),
+ 			DefaultEclipseLinkJPQLGrammar.instance(),
  			JPQLGrammar2_0.instance(),
  			UnionClause_InvalidJPAVersion,
  			startPosition,
@@ -989,7 +990,7 @@ public class ValidateJPQLVersionTest extends AbstractValidatorTest {
 
  		testHasOnlyOneProblem(
  			jpqlQuery,
- 			EclipseLinkJPQLGrammar2_4.instance(),
+ 			DefaultEclipseLinkJPQLGrammar.instance(),
  			JPQLGrammar2_1.instance(),
  			UnionClause_InvalidJPAVersion,
  			startPosition,
@@ -1006,7 +1007,7 @@ public class ValidateJPQLVersionTest extends AbstractValidatorTest {
 
  		testHasOnlyOneProblem(
  			jpqlQuery,
- 			EclipseLinkJPQLGrammar2_4.instance(),
+ 			DefaultEclipseLinkJPQLGrammar.instance(),
  			JPQLGrammar1_0.instance(),
  			ValueExpression_InvalidJPAVersion,
  			startPosition,

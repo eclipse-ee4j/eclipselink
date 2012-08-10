@@ -21,7 +21,7 @@ public final class UpperExpressionTest extends JPQLParserTest {
 	@Test
 	public void testBuildExpression_01() {
 
-		String query = "SELECT e FROM Employee e WHERE UPPER(e.firstName)";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE UPPER(e.firstName)";
 
 		SelectStatementTester selectStatement = selectStatement(
 			select(variable("e")),
@@ -29,13 +29,13 @@ public final class UpperExpressionTest extends JPQLParserTest {
 			where(upper(path("e.firstName")))
 		);
 
-		testQuery(query, selectStatement);
+		testQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_02() {
 
-		String query = "SELECT e FROM Employee e WHERE UPPER(AVG(e.firstName))";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE UPPER(AVG(e.firstName))";
 
 		SelectStatementTester selectStatement = selectStatement(
 			select(variable("e")),
@@ -43,13 +43,13 @@ public final class UpperExpressionTest extends JPQLParserTest {
 			where(upper(avg("e.firstName")))
 		);
 
-		testQuery(query, selectStatement);
+		testQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_03() {
 
-		String query = "SELECT e FROM Employee e WHERE UPPER";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE UPPER";
 
 		UpperExpressionTester upper = upper(nullExpression());
 		upper.hasLeftParenthesis  = false;
@@ -61,13 +61,13 @@ public final class UpperExpressionTest extends JPQLParserTest {
 			where(upper)
 		);
 
-		testInvalidQuery(query, selectStatement);
+		testInvalidQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_04() {
 
-		String query = "SELECT e FROM Employee e WHERE UPPER(";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE UPPER(";
 
 		UpperExpressionTester upper = upper(nullExpression());
 		upper.hasLeftParenthesis  = true;
@@ -79,13 +79,13 @@ public final class UpperExpressionTest extends JPQLParserTest {
 			where(upper)
 		);
 
-		testInvalidQuery(query, selectStatement);
+		testInvalidQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_05() {
 
-		String query = "SELECT e FROM Employee e WHERE UPPER()";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE UPPER()";
 
 		UpperExpressionTester upper = upper(nullExpression());
 		upper.hasLeftParenthesis  = true;
@@ -97,13 +97,13 @@ public final class UpperExpressionTest extends JPQLParserTest {
 			where(upper)
 		);
 
-		testInvalidQuery(query, selectStatement);
+		testInvalidQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_06() {
 
-		String query = "SELECT e FROM Employee e WHERE UPPER GROUP BY e.name";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE UPPER GROUP BY e.name";
 
 		UpperExpressionTester upper = upper(nullExpression());
 		upper.hasLeftParenthesis  = false;
@@ -113,18 +113,16 @@ public final class UpperExpressionTest extends JPQLParserTest {
 			select(variable("e")),
 			from("Employee", "e"),
 			where(upper),
-			groupBy(path("e.name")),
-			nullExpression(),
-			nullExpression()
+			groupBy(path("e.name"))
 		);
 
-		testInvalidQuery(query, selectStatement);
+		testInvalidQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_07() {
 
-		String query = "SELECT e FROM Employee e WHERE UPPER( GROUP BY e.name";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE UPPER( GROUP BY e.name";
 
 		UpperExpressionTester upper = upper(nullExpression());
 		upper.hasLeftParenthesis  = true;
@@ -134,11 +132,9 @@ public final class UpperExpressionTest extends JPQLParserTest {
 			select(variable("e")),
 			from("Employee", "e"),
 			where(upper),
-			groupBy(path("e.name")),
-			nullExpression(),
-			nullExpression()
+			groupBy(path("e.name"))
 		);
 
-		testInvalidQuery(query, selectStatement);
+		testInvalidQuery(jpqlQuery, selectStatement);
 	}
 }

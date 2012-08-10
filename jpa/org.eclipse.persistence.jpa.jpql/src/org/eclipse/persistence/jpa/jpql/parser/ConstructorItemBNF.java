@@ -21,7 +21,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  *                                                    aggregate_expression |
  *                                                    identification_variable</code><p>
  *
- * @version 2.4
+ * @version 2.4.1
  * @since 2.3
  * @author Pascal Filion
  */
@@ -48,7 +48,7 @@ public final class ConstructorItemBNF extends JPQLQueryBNF {
 		super.initialize();
 		setHandleCollection(true);
 		setFallbackBNFId(ID);
-		setFallbackExpressionFactoryId(LiteralExpressionFactory.ID);
+		setFallbackExpressionFactoryId(PreLiteralExpressionFactory.ID);
 		registerChild(SingleValuedPathExpressionBNF.ID);
 		registerChild(ScalarExpressionBNF.ID);
 		registerChild(AggregateExpressionBNF.ID);

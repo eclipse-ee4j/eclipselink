@@ -158,9 +158,7 @@ public final class AbsExpressionTest extends JPQLParserTest {
 			select(variable("e")),
 			from("Employee", "e"),
 			where(absExpression),
-			groupBy(path("e.name")),
-			nullExpression(),
-			nullExpression()
+			groupBy(path("e.name"))
 		);
 
 		testInvalidQuery(query, selectStatement);
@@ -178,9 +176,7 @@ public final class AbsExpressionTest extends JPQLParserTest {
 			select(variable("e")),
 			from("Employee", "e"),
 			where(absExpression),
-			groupBy(path("e.name")),
-			nullExpression(),
-			nullExpression()
+			groupBy(path("e.name"))
 		);
 
 		testInvalidQuery(query, selectStatement);
@@ -233,9 +229,7 @@ public final class AbsExpressionTest extends JPQLParserTest {
 			select(variable("e")),
 			from("Employee", "e"),
 			where(absExpression),
-			groupBy(variable("e")),
-			nullExpression(),
-			nullExpression()
+			groupBy(variable("e"))
 		);
 
 		testInvalidQuery(query, selectStatement);
@@ -253,9 +247,7 @@ public final class AbsExpressionTest extends JPQLParserTest {
 			select(variable("e")),
 			from("Employee", "e"),
 			where(absExpression),
-			groupBy(variable("e")),
-			nullExpression(),
-			nullExpression()
+			groupBy(variable("e"))
 		);
 
 		testInvalidQuery(query, selectStatement);
@@ -273,9 +265,7 @@ public final class AbsExpressionTest extends JPQLParserTest {
 			select(variable("e")),
 			from("Employee", "e"),
 			where(absExpression),
-			groupBy(variable("e")),
-			nullExpression(),
-			nullExpression()
+			groupBy(variable("e"))
 		);
 
 		testQuery(query, selectStatement);
@@ -293,9 +283,7 @@ public final class AbsExpressionTest extends JPQLParserTest {
 			select(variable("e")),
 			from("Employee", "e"),
 			where(absExpression),
-			groupBy(variable("e")),
-			nullExpression(),
-			nullExpression()
+			groupBy(variable("e"))
 		);
 
 		testQuery(query, selectStatement);
@@ -313,9 +301,7 @@ public final class AbsExpressionTest extends JPQLParserTest {
 			select(variable("e")),
 			from("Employee", "e"),
 			where(absExpression),
-			groupBy(variable("e")),
-			nullExpression(),
-			nullExpression()
+			groupBy(variable("e"))
 		);
 
 		testQuery(query, selectStatement);

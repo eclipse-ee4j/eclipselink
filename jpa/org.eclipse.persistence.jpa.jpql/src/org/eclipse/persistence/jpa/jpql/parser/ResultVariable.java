@@ -23,7 +23,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <p>
  * <div nowrap><b>BNF:</b> <code>select_item ::= select_expression [[AS] result_variable]</code><p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -33,11 +33,6 @@ public final class ResultVariable extends AbstractExpression {
 	 * The actual <b>AS</b> identifier found in the string representation of the JPQL query.
 	 */
 	private String asIdentifier;
-
-	/**
-	 * Determines whether the identifier <b>AS</b> was parsed or not.
-	 */
-	private boolean hasAs;
 
 	/**
 	 * Determines whether a whitespace was parsed after the identifier <b>AS</b>.
@@ -107,7 +102,7 @@ public final class ResultVariable extends AbstractExpression {
 		}
 
 		// 'AS'
-		if (hasAs) {
+		if (asIdentifier != null) {
 			children.add(buildStringExpression(AS));
 		}
 
@@ -125,8 +120,7 @@ public final class ResultVariable extends AbstractExpression {
 	 * Returns the actual <b>AS</b> found in the string representation of the JPQL query, which has
 	 * the actual case that was used.
 	 *
-	 * @return The <b>AS</b> identifier that was actually parsed, or an empty string if it was not
-	 * parsed
+	 * @return The <b>AS</b> identifier that was actually parsed, or an empty string if it was not parsed
 	 */
 	public String getActualAsIdentifier() {
 		return (asIdentifier != null) ? asIdentifier : ExpressionTools.EMPTY_STRING;
@@ -169,7 +163,7 @@ public final class ResultVariable extends AbstractExpression {
 	 * @return <code>true</code> if the identifier <b>AS</b> was parsed; <code>false</code> otherwise
 	 */
 	public boolean hasAs() {
-		return hasAs;
+		return asIdentifier != null;
 	}
 
 	/**
@@ -196,8 +190,7 @@ public final class ResultVariable extends AbstractExpression {
 	/**
 	 * Determines whether a whitespace was parsed after the identifier <b>AS</b>.
 	 *
-	 * @return <code>true</code> if there was a whitespace after <b>AS</b>; <code>false</code>
-	 * otherwise
+	 * @return <code>true</code> if there was a whitespace after <b>AS</b>; <code>false</code> otherwise
 	 */
 	public boolean hasSpaceAfterAs() {
 		return hasSpaceAfterAs;
@@ -211,7 +204,6 @@ public final class ResultVariable extends AbstractExpression {
 
 		// Parse 'AS'
 		if (wordParser.startsWithIdentifier(AS)) {
-			hasAs = true;
 			asIdentifier = wordParser.moveForward(2);
 			hasSpaceAfterAs = wordParser.skipLeadingWhitespace() > 0;
 		}
@@ -239,7 +231,7 @@ public final class ResultVariable extends AbstractExpression {
 		}
 
 		// 'AS'
-		if (hasAs) {
+		if (asIdentifier != null) {
 			writer.append(actual ? asIdentifier : AS);
 		}
 

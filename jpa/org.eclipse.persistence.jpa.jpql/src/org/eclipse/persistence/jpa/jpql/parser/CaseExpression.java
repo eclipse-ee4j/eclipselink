@@ -23,7 +23,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * or
  * <div nowrap><b>BNF:</b> <code>simple_case_expression ::= CASE case_operand simple_when_clause {simple_when_clause}* ELSE scalar_expression END</code><p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -53,16 +53,6 @@ public final class CaseExpression extends AbstractExpression {
 	 * The actual <b>END</b> identifier found in the string representation of the JPQL query.
 	 */
 	private String endIdentifier;
-
-	/**
-	 * Determines whether the identifier <b>ELSE</b> was parsed.
-	 */
-	private boolean hasElse;
-
-	/**
-	 * Determines whether the identifier <b>END</b> was parsed.
-	 */
-	private boolean hasEnd;
 
 	/**
 	 * Determines whether a whitespace was parsed after <b>CASE</b>.
@@ -166,7 +156,7 @@ public final class CaseExpression extends AbstractExpression {
 		}
 
 		// 'ELSE'
-		if (hasElse) {
+		if (elseIdentifier != null) {
 			children.add(buildStringExpression(ELSE));
 		}
 
@@ -184,7 +174,7 @@ public final class CaseExpression extends AbstractExpression {
 		}
 
 		// 'END'
-		if (hasEnd) {
+		if (endIdentifier != null) {
 			children.add(buildStringExpression(END));
 		}
 	}
@@ -281,7 +271,7 @@ public final class CaseExpression extends AbstractExpression {
 	 * otherwise
 	 */
 	public boolean hasElse() {
-		return hasElse;
+		return elseIdentifier != null;
 	}
 
 	/**
@@ -301,7 +291,7 @@ public final class CaseExpression extends AbstractExpression {
 	 * @return <code>true</code> if the identifier <b>END</b> was parsed; <code>false</code> otherwise
 	 */
 	public boolean hasEnd() {
-		return hasEnd;
+		return endIdentifier != null;
 	}
 
 	/**
@@ -399,7 +389,6 @@ public final class CaseExpression extends AbstractExpression {
 
 		// Parse 'CASE'
 		caseIdentifier = wordParser.moveForward(CASE);
-
 		hasSpaceAfterCase = wordParser.skipLeadingWhitespace() > 0;
 
 		// Parse case operand
@@ -407,37 +396,27 @@ public final class CaseExpression extends AbstractExpression {
 
 		if (!wordParser.startsWithIdentifier(WHEN)) {
 			caseOperand = parse(wordParser, CaseOperandBNF.ID, tolerant);
+			hasSpaceAfterCaseOperand = wordParser.skipLeadingWhitespace() > 0;
 		}
-
-		hasSpaceAfterCaseOperand = wordParser.skipLeadingWhitespace() > 0;
 
 		// Parse the WHEN clauses
 		parsingType = ParsingType.WHEN;
-
 		whenClauses = parse(wordParser, WhenClauseBNF.ID, tolerant);
-
 		hasSpaceAfterWhenClauses = wordParser.skipLeadingWhitespace() > 0;
 
 		// Parse 'ELSE'
-		hasElse = wordParser.startsWithIdentifier(ELSE);
-
-		if (hasElse) {
+		if (wordParser.startsWithIdentifier(ELSE)) {
 			elseIdentifier = wordParser.moveForward(ELSE);
+			hasSpaceAfterElse = wordParser.skipLeadingWhitespace() > 0;
 		}
-
-		hasSpaceAfterElse = wordParser.skipLeadingWhitespace() > 0;
 
 		// Parse the ELSE expression
 		parsingType = ParsingType.ELSE;
-
 		elseExpression = parse(wordParser, ElseExpressionBNF.ID, tolerant);
-
 		hasSpaceAfterElseExpression = wordParser.skipLeadingWhitespace() > 0;
 
 		// Parse 'END'
-		hasEnd = wordParser.startsWithIdentifier(END);
-
-		if (hasEnd) {
+		if (wordParser.startsWithIdentifier(END)) {
 			endIdentifier = wordParser.moveForward(END);
 		}
 	}
@@ -474,7 +453,7 @@ public final class CaseExpression extends AbstractExpression {
 		}
 
 		// 'ELSE'
-		if (hasElse) {
+		if (elseIdentifier != null) {
 			writer.append(actual ? elseIdentifier : ELSE);
 		}
 
@@ -492,7 +471,7 @@ public final class CaseExpression extends AbstractExpression {
 		}
 
 		// 'END'
-		if (hasEnd) {
+		if (endIdentifier != null) {
 			writer.append(actual ? endIdentifier : END);
 		}
 	}

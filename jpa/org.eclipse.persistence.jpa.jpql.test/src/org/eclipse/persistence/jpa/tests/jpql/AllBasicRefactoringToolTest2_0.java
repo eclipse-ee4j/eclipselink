@@ -18,6 +18,7 @@ import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_1;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_2;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_3;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_4;
+import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_5;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar2_0;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar2_1;
@@ -29,7 +30,7 @@ import org.junit.runners.Suite.SuiteClasses;
  * The root test suite containing the unit-tests testing the refactoring functionality when the JPA
  * version is 2.0.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -52,7 +53,8 @@ public final class AllBasicRefactoringToolTest2_0 {
 			EclipseLinkJPQLGrammar2_1.instance(),
 			EclipseLinkJPQLGrammar2_2.instance(),
 			EclipseLinkJPQLGrammar2_3.instance(),
-			EclipseLinkJPQLGrammar2_4.instance()
+			EclipseLinkJPQLGrammar2_4.instance(),
+			EclipseLinkJPQLGrammar2_5.instance()
 		};
 	}
 }

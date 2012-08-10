@@ -22,20 +22,20 @@ public final class ConstructorExpressionTest extends JPQLParserTest {
 	@Test
 	public void testBuildExpression_01() {
 
-		String query = "SELECT NEW " + ConstructorExpressionTest.class.getName() + "(e) FROM Employee e";
+		String jpqlQuery = "SELECT NEW " + ConstructorExpressionTest.class.getName() + "(e) FROM Employee e";
 
 		ExpressionTester selectStatement = selectStatement(
 			select(new_(ConstructorExpressionTest.class.getName(), variable("e"))),
 			from("Employee", "e")
 		);
 
-		testQuery(query, selectStatement);
+		testQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_02() {
 
-		String query = "SELECT NEW " + ConstructorExpressionTest.class.getName() + "(e, COUNT(DISTINCT e.name)) FROM Employee e";
+		String jpqlQuery = "SELECT NEW " + ConstructorExpressionTest.class.getName() + "(e, COUNT(DISTINCT e.name)) FROM Employee e";
 
 		ExpressionTester selectStatement = selectStatement(
 			select(
@@ -48,13 +48,13 @@ public final class ConstructorExpressionTest extends JPQLParserTest {
 			from("Employee", "e")
 		);
 
-		testQuery(query, selectStatement);
+		testQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_03() {
 
-		String query = "SELECT NEW";
+		String jpqlQuery = "SELECT NEW";
 
 		ConstructorExpressionTester constructor = new_(ExpressionTools.EMPTY_STRING, nullExpression());
 		constructor.hasSpaceAfterNew    = false;
@@ -62,17 +62,16 @@ public final class ConstructorExpressionTest extends JPQLParserTest {
 		constructor.hasRightParenthesis = false;
 
 		ExpressionTester selectStatement = selectStatement(
-			select(constructor),
-			nullExpression()
+			select(constructor)
 		);
 
-		testInvalidQuery(query, selectStatement);
+		testInvalidQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_04() {
 
-		String query = "SELECT NEW ";
+		String jpqlQuery = "SELECT NEW ";
 
 		ConstructorExpressionTester constructor = new_(ExpressionTools.EMPTY_STRING, nullExpression());
 		constructor.hasSpaceAfterNew    = true;
@@ -80,17 +79,16 @@ public final class ConstructorExpressionTest extends JPQLParserTest {
 		constructor.hasRightParenthesis = false;
 
 		ExpressionTester selectStatement = selectStatement(
-			select(constructor),
-			nullExpression()
+			select(constructor)
 		);
 
-		testInvalidQuery(query, selectStatement);
+		testInvalidQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_05() {
 
-		String query = "SELECT NEW From Employee e";
+		String jpqlQuery = "SELECT NEW From Employee e";
 
 		ConstructorExpressionTester constructor = new_(ExpressionTools.EMPTY_STRING, nullExpression());
 		constructor.hasSpaceAfterNew    = true;
@@ -102,13 +100,13 @@ public final class ConstructorExpressionTest extends JPQLParserTest {
 			from("Employee", "e")
 		);
 
-		testInvalidQuery(query, selectStatement);
+		testInvalidQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_06() {
 
-		String query = "SELECT NEW(";
+		String jpqlQuery = "SELECT NEW(";
 
 		ConstructorExpressionTester constructor = new_(ExpressionTools.EMPTY_STRING, nullExpression());
 		constructor.hasSpaceAfterNew    = false;
@@ -116,17 +114,16 @@ public final class ConstructorExpressionTest extends JPQLParserTest {
 		constructor.hasRightParenthesis = false;
 
 		ExpressionTester selectStatement = selectStatement(
-			select(constructor),
-			nullExpression()
+			select(constructor)
 		);
 
-		testInvalidQuery(query, selectStatement);
+		testInvalidQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_07() {
 
-		String query = "SELECT NEW(,";
+		String jpqlQuery = "SELECT NEW(,";
 
 		ConstructorExpressionTester constructor = new_(
 			ExpressionTools.EMPTY_STRING,
@@ -142,33 +139,31 @@ public final class ConstructorExpressionTest extends JPQLParserTest {
 		constructor.hasRightParenthesis = false;
 
 		ExpressionTester selectStatement = selectStatement(
-			select(constructor),
-			nullExpression()
+			select(constructor)
 		);
 
-		testInvalidQuery(query, selectStatement);
+		testInvalidQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_08() {
 
-		String query = "SELECT NEW()";
+		String jpqlQuery = "SELECT NEW()";
 
 		ConstructorExpressionTester constructor = new_(ExpressionTools.EMPTY_STRING, nullExpression());
 		constructor.hasSpaceAfterNew = false;
 
 		ExpressionTester selectStatement = selectStatement(
-			select(constructor),
-			nullExpression()
+			select(constructor)
 		);
 
-		testInvalidQuery(query, selectStatement);
+		testInvalidQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_09() {
 
-		String query = "SELECT NEW(,)";
+		String jpqlQuery = "SELECT NEW(,)";
 
 		ConstructorExpressionTester constructor = new_(
 			ExpressionTools.EMPTY_STRING,
@@ -184,17 +179,16 @@ public final class ConstructorExpressionTest extends JPQLParserTest {
 		constructor.hasRightParenthesis = true;
 
 		ExpressionTester selectStatement = selectStatement(
-			select(constructor),
-			nullExpression()
+			select(constructor)
 		);
 
-		testInvalidQuery(query, selectStatement);
+		testInvalidQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_10() {
 
-		String query = "SELECT NEW(e.name";
+		String jpqlQuery = "SELECT NEW(e.name";
 
 		ConstructorExpressionTester constructor = new_(
 			ExpressionTools.EMPTY_STRING,
@@ -205,17 +199,16 @@ public final class ConstructorExpressionTest extends JPQLParserTest {
 		constructor.hasRightParenthesis = false;
 
 		ExpressionTester selectStatement = selectStatement(
-			select(constructor),
-			nullExpression()
+			select(constructor)
 		);
 
-		testInvalidQuery(query, selectStatement);
+		testInvalidQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_11() {
 
-		String query = "SELECT NEW(e.name,";
+		String jpqlQuery = "SELECT NEW(e.name,";
 
 		ConstructorExpressionTester constructor = new_(
 			ExpressionTools.EMPTY_STRING,
@@ -231,17 +224,16 @@ public final class ConstructorExpressionTest extends JPQLParserTest {
 		constructor.hasRightParenthesis = false;
 
 		ExpressionTester selectStatement = selectStatement(
-			select(constructor),
-			nullExpression()
+			select(constructor)
 		);
 
-		testInvalidQuery(query, selectStatement);
+		testInvalidQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_12() {
 
-		String query = "SELECT NEW(e.name, ";
+		String jpqlQuery = "SELECT NEW(e.name, ";
 
 		ConstructorExpressionTester constructor = new_(
 			ExpressionTools.EMPTY_STRING,
@@ -252,17 +244,16 @@ public final class ConstructorExpressionTest extends JPQLParserTest {
 		constructor.hasRightParenthesis = false;
 
 		ExpressionTester selectStatement = selectStatement(
-			select(constructor),
-			nullExpression()
+			select(constructor)
 		);
 
-		testInvalidQuery(query, selectStatement);
+		testInvalidQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_13() {
 
-		String query = "SELECT NEW(e.name,)";
+		String jpqlQuery = "SELECT NEW(e.name,)";
 
 		ConstructorExpressionTester constructor = new_(
 			ExpressionTools.EMPTY_STRING,
@@ -275,17 +266,16 @@ public final class ConstructorExpressionTest extends JPQLParserTest {
 		constructor.hasSpaceAfterNew = false;
 
 		ExpressionTester selectStatement = selectStatement(
-			select(constructor),
-			nullExpression()
+			select(constructor)
 		);
 
-		testInvalidQuery(query, selectStatement);
+		testInvalidQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_14() {
 
-		String query = "SELECT NEW(e.name)";
+		String jpqlQuery = "SELECT NEW(e.name)";
 
 		ConstructorExpressionTester constructor = new_(
 			ExpressionTools.EMPTY_STRING,
@@ -294,17 +284,16 @@ public final class ConstructorExpressionTest extends JPQLParserTest {
 		constructor.hasSpaceAfterNew = false;
 
 		ExpressionTester selectStatement = selectStatement(
-			select(constructor),
-			nullExpression()
+			select(constructor)
 		);
 
-		testInvalidQuery(query, selectStatement);
+		testInvalidQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_15() {
 
-		String query = "SELECT NEW(e.name) From Employee e";
+		String jpqlQuery = "SELECT NEW(e.name) From Employee e";
 
 		ConstructorExpressionTester constructor = new_(
 			ExpressionTools.EMPTY_STRING,
@@ -317,13 +306,13 @@ public final class ConstructorExpressionTest extends JPQLParserTest {
 			from("Employee", "e")
 		);
 
-		testInvalidQuery(query, selectStatement);
+		testInvalidQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_16() {
 
-		String query = "SELECT NEW(AVG(e.name)) From Employee e";
+		String jpqlQuery = "SELECT NEW(AVG(e.name)) From Employee e";
 
 		ConstructorExpressionTester constructor = new_(
 			ExpressionTools.EMPTY_STRING,
@@ -336,19 +325,18 @@ public final class ConstructorExpressionTest extends JPQLParserTest {
 			from("Employee", "e")
 		);
 
-		testInvalidQuery(query, selectStatement);
+		testInvalidQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_17() {
 
-		String query = "SELECT NEW (e.name)";
+		String jpqlQuery = "SELECT NEW (e.name)";
 
 		ExpressionTester selectStatement = selectStatement(
-			select(new_(ExpressionTools.EMPTY_STRING, path("e.name"))),
-			nullExpression()
+			select(new_(ExpressionTools.EMPTY_STRING, path("e.name")))
 		);
 
-		testInvalidQuery(query, selectStatement);
+		testInvalidQuery(jpqlQuery, selectStatement);
 	}
 }

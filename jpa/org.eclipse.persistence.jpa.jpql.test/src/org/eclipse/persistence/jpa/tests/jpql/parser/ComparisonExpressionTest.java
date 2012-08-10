@@ -21,7 +21,7 @@ public final class ComparisonExpressionTest extends JPQLParserTest {
 	@Test
 	public void testBuildExpression_01() {
 
-		String query = "SELECT e FROM Employee e WHERE e.name > 'Pascal'";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name > 'Pascal'";
 
 		ExpressionTester selectStatement = selectStatement(
 			select(variable("e")),
@@ -29,13 +29,13 @@ public final class ComparisonExpressionTest extends JPQLParserTest {
 			where(path("e.name").greaterThan(string("'Pascal'")))
 		);
 
-		testQuery(query, selectStatement);
+		testQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_02() {
 
-		String query = "SELECT e FROM Employee e WHERE e.age >= 21";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.age >= 21";
 
 		ExpressionTester selectStatement = selectStatement(
 			select(variable("e")),
@@ -43,13 +43,13 @@ public final class ComparisonExpressionTest extends JPQLParserTest {
 			where(path("e.age").greaterThanOrEqual(numeric(21)))
 		);
 
-		testQuery(query, selectStatement);
+		testQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_03() {
 
-		String query = "SELECT e FROM Employee e WHERE e.age = 21";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.age = 21";
 
 		ExpressionTester selectStatement = selectStatement(
 			select(variable("e")),
@@ -57,13 +57,13 @@ public final class ComparisonExpressionTest extends JPQLParserTest {
 			where(path("e.age").equal(numeric(21)))
 		);
 
-		testQuery(query, selectStatement);
+		testQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_04() {
 
-		String query = "SELECT e FROM Employee e WHERE e.age < 21";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.age < 21";
 
 		ExpressionTester selectStatement = selectStatement(
 			select(variable("e")),
@@ -71,13 +71,13 @@ public final class ComparisonExpressionTest extends JPQLParserTest {
 			where(path("e.age").lowerThan(numeric(21)))
 		);
 
-		testQuery(query, selectStatement);
+		testQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_05() {
 
-		String query = "SELECT e FROM Employee e WHERE e.age <= 21";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.age <= 21";
 
 		ExpressionTester selectStatement = selectStatement(
 			select(variable("e")),
@@ -85,13 +85,13 @@ public final class ComparisonExpressionTest extends JPQLParserTest {
 			where(path("e.age").lowerThanOrEqual(numeric(21)))
 		);
 
-		testQuery(query, selectStatement);
+		testQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_06() {
 
-		String query = "SELECT e FROM Employee e WHERE e.age <> 21";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.age <> 21";
 
 		ExpressionTester selectStatement = selectStatement(
 			select(variable("e")),
@@ -99,13 +99,13 @@ public final class ComparisonExpressionTest extends JPQLParserTest {
 			where(path("e.age").different(numeric(21)))
 		);
 
-		testQuery(query, selectStatement);
+		testQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_07() {
 
-		String query = "SELECT e FROM Employee e WHERE e.age <>";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.age <>";
 
 		ComparisonExpressionTester comparison = path("e.age").different(nullExpression());
 		comparison.hasSpaceAfterIdentifier = false;
@@ -116,13 +116,13 @@ public final class ComparisonExpressionTest extends JPQLParserTest {
 			where(comparison)
 		);
 
-		testInvalidQuery(query, selectStatement);
+		testInvalidQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_08() {
 
-		String query = "SELECT e FROM Employee e WHERE e.age <> ";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.age <> ";
 
 		ComparisonExpressionTester comparison = path("e.age").different(nullExpression());
 		comparison.hasSpaceAfterIdentifier = true;
@@ -133,13 +133,13 @@ public final class ComparisonExpressionTest extends JPQLParserTest {
 			where(comparison)
 		);
 
-		testInvalidQuery(query, selectStatement);
+		testInvalidQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_09() {
 
-		String query = "SELECT e FROM Employee e WHERE <> e.age";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE <> e.age";
 
 		ExpressionTester selectStatement = selectStatement(
 			select(variable("e")),
@@ -147,13 +147,13 @@ public final class ComparisonExpressionTest extends JPQLParserTest {
 			where(nullExpression().different(path("e.age")))
 		);
 
-		testInvalidQuery(query, selectStatement);
+		testInvalidQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_10() {
 
-		String query = "SELECT e FROM Employee e WHERE <>";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE <>";
 
 		ComparisonExpressionTester comparison = nullExpression().different(nullExpression());
 		comparison.hasSpaceAfterIdentifier = false;
@@ -164,13 +164,13 @@ public final class ComparisonExpressionTest extends JPQLParserTest {
 			where(comparison)
 		);
 
-		testInvalidQuery(query, selectStatement);
+		testInvalidQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_11() {
 
-		String query = "SELECT e FROM Employee e WHERE <> ";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE <> ";
 
 		ComparisonExpressionTester comparison = nullExpression().different(nullExpression());
 		comparison.hasSpaceAfterIdentifier = true;
@@ -181,13 +181,13 @@ public final class ComparisonExpressionTest extends JPQLParserTest {
 			where(comparison)
 		);
 
-		testInvalidQuery(query, selectStatement);
+		testInvalidQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_12() {
 
-		String query = "SELECT e FROM Employee e WHERE e.age <";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.age <";
 
 		ComparisonExpressionTester comparison = path("e.age").lowerThan(nullExpression());
 		comparison.hasSpaceAfterIdentifier = false;
@@ -198,23 +198,21 @@ public final class ComparisonExpressionTest extends JPQLParserTest {
 			where(comparison)
 		);
 
-		testInvalidQuery(query, selectStatement);
+		testInvalidQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_13() {
 
-		String query = "SELECT e FROM Employee e WHERE e.age < ORDER BY e.name";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.age < ORDER BY e.name";
 
 		ExpressionTester selectStatement = selectStatement(
 			select(variable("e")),
 			from("Employee", "e"),
 			where(path("e.age").lowerThan(nullExpression())),
-			nullExpression(),
-			nullExpression(),
 			orderBy(orderByItem(path("e.name")))
 		);
 
-		testInvalidQuery(query, selectStatement);
+		testInvalidQuery(jpqlQuery, selectStatement);
 	}
 }

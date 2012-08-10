@@ -61,7 +61,7 @@ import org.eclipse.persistence.jpa.jpql.util.CollectionTools;
  * @see AbstractGrammarValidator
  * @see AbstractSemanticValidator
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -410,6 +410,16 @@ public abstract class AbstractValidator extends AnonymousExpressionVisitor {
 	 */
 	protected String getProviderVersion() {
 		return getGrammar().getProviderVersion();
+	}
+
+	/**
+	 * Returns the persistence provider name.
+	 *
+	 * @return The name of the persistence provider, <code>null</code> should never be returned
+	 * @since 2.5
+	 */
+	protected String getProvider() {
+		return getGrammar().getProvider();
 	}
 
 	/**

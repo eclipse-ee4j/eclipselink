@@ -16,8 +16,8 @@ package org.eclipse.persistence.jpa.tests.jpql;
 import java.util.List;
 import org.eclipse.persistence.jpa.jpql.AbstractGrammarValidator;
 import org.eclipse.persistence.jpa.jpql.EclipseLinkGrammarValidator;
+import org.eclipse.persistence.jpa.jpql.EclipseLinkVersion;
 import org.eclipse.persistence.jpa.jpql.JPQLQueryProblem;
-import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_4;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLQueryStringFormatter;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -85,10 +85,6 @@ public class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarValidator
 		return new EclipseLinkGrammarValidator(jpqlGrammar);
 	}
 
-	protected boolean isEclipseLink2_4() {
-		return jpqlGrammar.getProviderVersion() == EclipseLinkJPQLGrammar2_4.VERSION;
-	}
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -97,12 +93,17 @@ public class EclipseLinkGrammarValidatorTest2_4 extends AbstractGrammarValidator
 		return true;
 	}
 
+	protected boolean isNewerThanOrEqual(EclipseLinkVersion version) {
+		EclipseLinkVersion currentVersion = EclipseLinkVersion.value(jpqlGrammar.getProviderVersion());
+		return currentVersion.isNewerThanOrEqual(version);
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	protected boolean isSubqueryAllowedAnywhere() {
-		return isEclipseLink2_4();
+		return isNewerThanOrEqual(EclipseLinkVersion.VERSION_2_4);
 	}
 
 	@Test

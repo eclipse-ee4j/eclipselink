@@ -19,8 +19,12 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * query. The domain of the query may be constrained by path expressions. Identification variables
  * designate instances of a particular entity abstract schema type. The <b>FROM</b> clause can
  * contain multiple identification variable declarations separated by a comma (,).
- *
+ * <p/>
+ * JPA 1.0, 2.0, 2.1, EclipseLink 1.0 - 2.4:
  * <div nowrap><b>BNF:</b> <code>from_clause ::= FROM identification_variable_declaration {, {identification_variable_declaration | collection_member_declaration}}*</code><p>
+ *
+ * EclipseLink 2.5:
+ * <div nowrap><b>BNF:</b> <code>from_clause ::= FROM identification_variable_declaration {, {identification_variable_declaration | collection_member_declaration}}* [hierarchical_query_clause] [asof_clause]</code><p>
  *
  * @version 2.4
  * @since 2.3

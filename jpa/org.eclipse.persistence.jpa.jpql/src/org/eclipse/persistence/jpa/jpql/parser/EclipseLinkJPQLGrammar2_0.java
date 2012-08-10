@@ -13,6 +13,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.parser;
 
+import org.eclipse.persistence.jpa.jpql.EclipseLinkVersion;
 import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
 
 /**
@@ -30,10 +31,14 @@ import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
  *                               [NOT] IN { ( in_item {, in_item}* ) |
  *                                          (subquery) |
  *                                          collection_valued_input_parameter
- *                                        }
- * </code></pre>
+ *                                        }</code></pre>
  *
- * @version 2.4
+ * Provisional API: This interface is part of an interim API that is still under development and
+ * expected to change significantly before reaching stability. It is available at this early stage
+ * to solicit feedback from pioneering adopters on the understanding that any code that uses this
+ * API will almost certainly be broken (repeatedly) as the API evolves.
+ *
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -48,13 +53,20 @@ public final class EclipseLinkJPQLGrammar2_0 extends AbstractJPQLGrammar {
 	/**
 	 * The EclipseLink version, which is 2.0.
 	 */
-	public static final String VERSION = "2.0";
+	public static final EclipseLinkVersion VERSION = EclipseLinkVersion.VERSION_2_0;
 
 	/**
 	 * Creates a new <code>EclipseLinkJPQLGrammar2_0</code>.
 	 */
 	public EclipseLinkJPQLGrammar2_0() {
 		super();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public String getProvider() {
+		return DefaultEclipseLinkJPQLGrammar.PROVIDER_NAME;
 	}
 
 	/**
@@ -106,7 +118,7 @@ public final class EclipseLinkJPQLGrammar2_0 extends AbstractJPQLGrammar {
 	 * {@inheritDoc}
 	 */
 	public String getProviderVersion() {
-		return VERSION;
+		return VERSION.getVersion();
 	}
 
 	/**

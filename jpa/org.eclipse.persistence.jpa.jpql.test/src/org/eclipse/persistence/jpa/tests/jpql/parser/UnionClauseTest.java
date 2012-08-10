@@ -16,7 +16,7 @@ package org.eclipse.persistence.jpa.tests.jpql.parser;
 import org.junit.Test;
 
 /**
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -237,7 +237,7 @@ public class UnionClauseTest extends JPQLParserTest {
 		UnionClauseTester union = union(nullExpression());
 		union.hasSpaceAfterIdentifier = true;
 
-		CollectionExpressionTester unions = spacedCollection(
+		CollectionExpressionTester unionClauses = spacedCollection(
 			except(
 				subSelect(variable("a")),
 				subFrom("Alias", "a")
@@ -250,16 +250,12 @@ public class UnionClauseTest extends JPQLParserTest {
 			)
 		);
 
-		unions.spaces[1] = false;
+		unionClauses.spaces[1] = false;
 
 		ExpressionTester selectStatement = selectStatement(
 			select(variable("e")),
 			from("Employee", "e"),
-			nullExpression(),
-			nullExpression(),
-			nullExpression(),
-			nullExpression(),
-			unions
+			unionClauses
 		);
 
 		testInvalidQuery(jpqlQuery, selectStatement);
@@ -283,7 +279,7 @@ public class UnionClauseTest extends JPQLParserTest {
 
 		subquery.hasSpaceAfterFrom = true;
 
-		CollectionExpressionTester unions = spacedCollection(
+		CollectionExpressionTester unionClauses = spacedCollection(
 			except(subquery),
 			intersectAll(
 				subSelect(variable("p")),
@@ -296,17 +292,13 @@ public class UnionClauseTest extends JPQLParserTest {
 			)
 		);
 
-		unions.spaces[0] = false;
-		unions.spaces[1] = false;
+		unionClauses.spaces[0] = false;
+		unionClauses.spaces[1] = false;
 
 		ExpressionTester selectStatement = selectStatement(
 			select(variable("e")),
 			from("Employee", "e"),
-			nullExpression(),
-			nullExpression(),
-			nullExpression(),
-			nullExpression(),
-			unions
+			unionClauses
 		);
 
 		testInvalidQuery(jpqlQuery, selectStatement);

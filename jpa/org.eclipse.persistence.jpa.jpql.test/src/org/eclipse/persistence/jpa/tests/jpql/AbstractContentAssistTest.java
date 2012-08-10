@@ -19,11 +19,6 @@ import java.util.List;
 import org.eclipse.persistence.jpa.jpql.AbstractJPQLQueryHelper;
 import org.eclipse.persistence.jpa.jpql.DefaultContentAssistProposals;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
-import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_0;
-import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_1;
-import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_2;
-import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_3;
-import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_4;
 import org.eclipse.persistence.jpa.jpql.parser.ExpressionFactory;
 import org.eclipse.persistence.jpa.jpql.parser.ExpressionRegistry;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
@@ -31,6 +26,7 @@ import org.eclipse.persistence.jpa.jpql.spi.IEntity;
 import org.eclipse.persistence.jpa.jpql.spi.IQuery;
 import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
 import org.eclipse.persistence.jpa.jpql.spi.java.JavaQuery;
+import org.eclipse.persistence.jpa.jpql.util.CollectionTools;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLQueryBNFAccessor;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -42,7 +38,7 @@ import static org.junit.Assert.*;
  * This unit-test tests the JPQL content assist at various position within the JPQL query and with
  * complete and incomplete queries.
  *
- * @version 2.4
+ * @version 2.4.1
  * @since 2.3
  * @author Pascal Filion
  */
@@ -162,37 +158,6 @@ public abstract class AbstractContentAssistTest extends JPQLCoreTest {
 
 	protected JavaQuery getVirtualQuery() {
 		return virtualQuery;
-	}
-
-	protected final boolean isEclipseLink2_0() {
-		return jpqlGrammar().getProviderVersion() == EclipseLinkJPQLGrammar2_0.VERSION;
-	}
-
-	protected final boolean isEclipseLink2_1() {
-		return jpqlGrammar().getProviderVersion() == EclipseLinkJPQLGrammar2_1.VERSION;
-	}
-
-	protected boolean isEclipseLink2_1OrLater() {
-		return isEclipseLink2_1() ||
-		       isEclipseLink2_2() ||
-		       isEclipseLink2_3() ||
-		       isEclipseLink2_4();
-	}
-
-	protected final boolean isEclipseLink2_2() {
-		return jpqlGrammar().getProviderVersion() == EclipseLinkJPQLGrammar2_2.VERSION;
-	}
-
-	protected final boolean isEclipseLink2_3() {
-		return jpqlGrammar().getProviderVersion() == EclipseLinkJPQLGrammar2_3.VERSION;
-	}
-
-	protected final boolean isEclipseLink2_4() {
-		return jpqlGrammar().getProviderVersion() == EclipseLinkJPQLGrammar2_4.VERSION;
-	}
-
-	protected boolean isEclipseLink2_4OrLater() {
-		return isEclipseLink2_4();
 	}
 
 	/**

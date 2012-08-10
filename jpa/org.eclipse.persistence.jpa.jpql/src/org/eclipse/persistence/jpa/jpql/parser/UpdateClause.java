@@ -31,16 +31,11 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * @see UpdateStatement
  * @see UpdateItem
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
 public final class UpdateClause extends AbstractExpression {
-
-	/**
-	 * Determines whether the identifier <b>SET</b> was parsed.
-	 */
-	private boolean hasSet;
 
 	/**
 	 * Determines whether a whitespace was parsed after the abstract schema name declaration.
@@ -133,7 +128,7 @@ public final class UpdateClause extends AbstractExpression {
 		}
 
 		// 'SET'
-		if (hasSet) {
+		if (setIdentifier != null) {
 			children.add(buildStringExpression(SET));
 		}
 
@@ -170,8 +165,7 @@ public final class UpdateClause extends AbstractExpression {
 	 * Returns the actual <b>SET</b> found in the string representation of the JPQL query, which has
 	 * the actual case that was used.
 	 *
-	 * @return The <b>SET</b> identifier that was actually parsed, or an empty string if it was not
-	 * parsed
+	 * @return The <b>SET</b> identifier that was actually parsed, or an empty string if it was not parsed
 	 */
 	public String getActualSetIdentifier() {
 		return (setIdentifier != null) ? setIdentifier : ExpressionTools.EMPTY_STRING;
@@ -207,8 +201,7 @@ public final class UpdateClause extends AbstractExpression {
 	}
 
 	/**
-	 * Returns the {@link Expression} representing the single update item or the collection of update
-	 * items.
+	 * Returns the {@link Expression} representing the single update item or the collection of update items.
 	 *
 	 * @return The expression that was parsed representing the single or multiple update items
 	 */
@@ -222,8 +215,7 @@ public final class UpdateClause extends AbstractExpression {
 	/**
 	 * Determines whether the range variable declaration was parsed.
 	 *
-	 * @return <code>true</code> if the range variable declaration was parsed; <code>false</code>
-	 * otherwise
+	 * @return <code>true</code> if the range variable declaration was parsed; <code>false</code> otherwise
 	 */
 	public boolean hasRangeVariableDeclaration() {
 		return rangeVariableDeclaration != null &&
@@ -236,7 +228,7 @@ public final class UpdateClause extends AbstractExpression {
 	 * @return <code>true</code> if <b>SET</b> was part of the query; <code>false</code> otherwise
 	 */
 	public boolean hasSet() {
-		return hasSet;
+		return setIdentifier != null;
 	}
 
 	/**
@@ -252,8 +244,7 @@ public final class UpdateClause extends AbstractExpression {
 	/**
 	 * Determines whether a whitespace was found after <b>SET</b>.
 	 *
-	 * @return <code>true</code> if there was a whitespace after <b>SET</b>; <code>false</code>
-	 * otherwise
+	 * @return <code>true</code> if there was a whitespace after <b>SET</b>; <code>false</code> otherwise
 	 */
 	public boolean hasSpaceAfterSet() {
 		return hasSpaceAfterSet;
@@ -316,9 +307,7 @@ public final class UpdateClause extends AbstractExpression {
 		hasSpaceAfterRangeVariableDeclaration = wordParser.skipLeadingWhitespace() > 0;
 
 		// Parse 'SET'
-		hasSet = tolerant ? wordParser.startsWithIdentifier(SET) : true;
-
-		if (hasSet) {
+		if (wordParser.startsWithIdentifier(SET)) {
 			setIdentifier = wordParser.moveForward(SET);
 			hasSpaceAfterSet = wordParser.skipLeadingWhitespace() > 0;
 		}
@@ -350,7 +339,7 @@ public final class UpdateClause extends AbstractExpression {
 		}
 
 		// 'SET'
-		if (hasSet) {
+		if (setIdentifier != null) {
 			writer.append(actual ? setIdentifier : SET);
 		}
 

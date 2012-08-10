@@ -14,20 +14,23 @@
 package org.eclipse.persistence.jpa.jpql;
 
 import org.eclipse.persistence.jpa.jpql.parser.AbstractSelectStatement;
+import org.eclipse.persistence.jpa.jpql.parser.AsOfClause;
 import org.eclipse.persistence.jpa.jpql.parser.CastExpression;
+import org.eclipse.persistence.jpa.jpql.parser.ConnectByClause;
 import org.eclipse.persistence.jpa.jpql.parser.DatabaseType;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkExpressionVisitor;
-import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_4;
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.ExtractExpression;
 import org.eclipse.persistence.jpa.jpql.parser.GroupByClause;
 import org.eclipse.persistence.jpa.jpql.parser.HavingClause;
+import org.eclipse.persistence.jpa.jpql.parser.HierarchicalQueryClause;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByClause;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByItem;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByItem.Ordering;
 import org.eclipse.persistence.jpa.jpql.parser.PatternValueBNF;
 import org.eclipse.persistence.jpa.jpql.parser.RegexpExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SelectStatement;
+import org.eclipse.persistence.jpa.jpql.parser.StartWithClause;
 import org.eclipse.persistence.jpa.jpql.parser.TableExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TableVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.UnionClause;
@@ -44,7 +47,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
  * API will almost certainly be broken (repeatedly) as the API evolves.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -151,7 +154,14 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 	 */
 	@Override
 	protected boolean isJoinFetchIdentifiable() {
-		return getGrammar().getProviderVersion() == EclipseLinkJPQLGrammar2_4.VERSION;
+		EclipseLinkVersion version = EclipseLinkVersion.value(getGrammar().getProviderVersion());
+		return version.isNewerThanOrEqual(EclipseLinkVersion.VERSION_2_4);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(AsOfClause expression) {
 	}
 
 	/**
@@ -197,6 +207,13 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 				}
 			}
 		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(ConnectByClause expression) {
+		// TODO: 2.5
 	}
 
 	/**
@@ -286,6 +303,13 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 	/**
 	 * {@inheritDoc}
 	 */
+	public void visit(HierarchicalQueryClause expression) {
+		// TODO: 2.5
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void visit(OrderByItem expression) {
 		super.visit(expression);
@@ -367,6 +391,13 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 				addAllFunctions(PatternValueBNF.ID);
 			}
 		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(StartWithClause expression) {
+		// TODO: 2.5
 	}
 
 	/**
@@ -461,7 +492,19 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 		/**
 		 * {@inheritDoc}
 		 */
+		public void visit(AsOfClause expression) {
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
 		public void visit(CastExpression expression) {
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public void visit(ConnectByClause expression) {
 		}
 
 		/**
@@ -479,7 +522,19 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 		/**
 		 * {@inheritDoc}
 		 */
+		public void visit(HierarchicalQueryClause expression) {
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
 		public void visit(RegexpExpression expression) {
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public void visit(StartWithClause expression) {
 		}
 
 		/**
@@ -629,8 +684,20 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 		/**
 		 * {@inheritDoc}
 		 */
+		public void visit(AsOfClause expression) {
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
 		public void visit(CastExpression expression) {
 			complete = expression.hasRightParenthesis();
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public void visit(ConnectByClause expression) {
 		}
 
 		/**
@@ -650,8 +717,20 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 		/**
 		 * {@inheritDoc}
 		 */
+		public void visit(HierarchicalQueryClause expression) {
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
 		public void visit(RegexpExpression expression) {
 			complete = expression.hasPatternValue();
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public void visit(StartWithClause expression) {
 		}
 
 		/**

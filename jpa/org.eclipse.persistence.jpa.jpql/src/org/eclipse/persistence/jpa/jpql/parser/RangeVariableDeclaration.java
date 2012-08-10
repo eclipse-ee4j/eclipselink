@@ -33,7 +33,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <div nowrap><b>BNF:</b> <code>root_object ::= abstract_schema_name | (subquery)</code>
  * <p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -43,11 +43,6 @@ public final class RangeVariableDeclaration extends AbstractExpression {
 	 * The actual <b>AS</b> identifier found in the string representation of the JPQL query.
 	 */
 	private String asIdentifier;
-
-	/**
-	 * Determines whether the identifier <b>AS</b> was parsed.
-	 */
-	private boolean hasAs;
 
 	/**
 	 * Determines whether a whitespace was parsed after <b>AS</b>.
@@ -137,7 +132,7 @@ public final class RangeVariableDeclaration extends AbstractExpression {
 		}
 
 		// 'AS'
-		if (hasAs) {
+		if (asIdentifier != null) {
 			children.add(buildStringExpression(AS));
 		}
 
@@ -149,17 +144,6 @@ public final class RangeVariableDeclaration extends AbstractExpression {
 		if (identificationVariable != null) {
 			children.add(identificationVariable);
 		}
-	}
-
-	/**
-	 * Returns the {@link Expression} that represents the "root" object.
-	 *
-	 * @return The expression that was parsed representing the "root" object
-	 * @deprecated Use {@link #getRootObject()}
-	 */
-	@Deprecated
-	public Expression getAbstractSchemaName() {
-		return getRootObject();
 	}
 
 	/**
@@ -205,23 +189,12 @@ public final class RangeVariableDeclaration extends AbstractExpression {
 	}
 
 	/**
-	 * Determines whether the "root" object was parsed.
-	 *
-	 * @return <code>true</code> if the "root" object was parsed; <code>false</code> otherwise
-	 * @deprecated Use {@link #hasRootObject()}
-	 */
-	@Deprecated
-	public boolean hasAbstractSchemaName() {
-		return hasRootObject();
-	}
-
-	/**
 	 * Determines whether the identifier <b>AS</b> was parsed.
 	 *
 	 * @return <code>true</code> if the identifier <b>AS</b> was parsed; <code>false</code> otherwise
 	 */
 	public boolean hasAs() {
-		return hasAs;
+		return asIdentifier != null;
 	}
 
 	/**
@@ -243,18 +216,6 @@ public final class RangeVariableDeclaration extends AbstractExpression {
 	public boolean hasRootObject() {
 		return rootObject != null &&
 		      !rootObject.isNull();
-	}
-
-	/**
-	 * Determines whether a whitespace was parsed after the "root" object.
-	 *
-	 * @return <code>true</code> if there was a whitespace after "root" object;
-	 * <code>false</code> otherwise
-	 * @deprecated Use {@link #hasSpaceAfterRootObject()}
-	 */
-	@Deprecated
-	public boolean hasSpaceAfterAbstractSchemaName() {
-		return hasSpaceAfterRootObject;
 	}
 
 	/**
@@ -312,9 +273,7 @@ public final class RangeVariableDeclaration extends AbstractExpression {
 		hasSpaceAfterRootObject = wordParser.skipLeadingWhitespace() > 0;
 
 		// Parse 'AS'
-		hasAs = wordParser.startsWithIdentifier(AS);
-
-		if (hasAs) {
+		if (wordParser.startsWithIdentifier(AS)) {
 			asIdentifier = wordParser.moveForward(AS);
 			hasSpaceAfterAs = wordParser.skipLeadingWhitespace() > 0;
 		}
@@ -400,7 +359,7 @@ public final class RangeVariableDeclaration extends AbstractExpression {
 		}
 
 		// 'AS'
-		if (hasAs) {
+		if (asIdentifier != null) {
 			writer.append(actual ? asIdentifier : AS);
 		}
 

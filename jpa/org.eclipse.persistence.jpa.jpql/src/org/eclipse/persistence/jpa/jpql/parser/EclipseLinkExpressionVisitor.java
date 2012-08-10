@@ -17,16 +17,31 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * The {@link ExpressionVisitor} that adds support for the additional JPQL identifiers supported by
  * EclipseLink that is not defined in the JPA function specification.
  * <p>
+ * <b>Important:</b> If a new specification of the Java persistence is released, this interface will
+ * be augmented to support the new functionality.
+ * <p>
  * Provisional API: This interface is part of an interim API that is still under development and
  * expected to change significantly before reaching stability. It is available at this early stage
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
  * API will almost certainly be broken (repeatedly) as the API evolves.
  *
- * @version 2.4
+ * @see AbstractEclipseLinkExpressionVisitor
+ * @see AbstractEclipseLinkTraverseChildrenVisitor
+ * @see AbstractEclipseLinkTraverseParentVisitor
+ * @see EclipseLinkAnonymousExpressionVisitor
+ *
+ * @version 2.5
  * @since 2.0
  * @author Pascal Filion
  */
 public interface EclipseLinkExpressionVisitor extends ExpressionVisitor {
+
+	/**
+	 * Visits the {@link AsOfClause} expression.
+	 *
+	 * @param expression The {@link Expression} to visit
+	 */
+	void visit(AsOfClause expression);
 
 	/**
 	 * Visits the {@link CastExpression} expression.
@@ -34,6 +49,13 @@ public interface EclipseLinkExpressionVisitor extends ExpressionVisitor {
 	 * @param expression The {@link Expression} to visit
 	 */
 	void visit(CastExpression expression);
+
+	/**
+	 * Visits the {@link ConnectByClause} expression.
+	 *
+	 * @param expression The {@link ConnectByClause} to visit
+	 */
+	void visit(ConnectByClause expression);
 
 	/**
 	 * Visits the {@link DatabaseType} expression.
@@ -50,9 +72,25 @@ public interface EclipseLinkExpressionVisitor extends ExpressionVisitor {
 	void visit(ExtractExpression expression);
 
 	/**
-	 * {@inheritDoc}
+	 * Visits the {@link HierarchicalQueryClause} expression.
+	 *
+	 * @param expression The {@link HierarchicalQueryClause} to visit
+	 */
+	void visit(HierarchicalQueryClause expression);
+
+	/**
+	 * Visits the {@link RegexpExpression} expression.
+	 *
+	 * @param expression The {@link Expression} to visit
 	 */
 	void visit(RegexpExpression expression);
+
+	/**
+	 * Visits the {@link StartWithClause} expression.
+	 *
+	 * @param expression The {@link StartWithClause} to visit
+	 */
+	void visit(StartWithClause expression);
 
 	/**
 	 * Visits the {@link TableExpression} expression.

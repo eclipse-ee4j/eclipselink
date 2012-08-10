@@ -17,17 +17,27 @@ import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
 
 /**
  * This {@link JPQLGrammar JPQL grammar} provides support for parsing JPQL queries defined by the
- * JPA 2.1 functional specification and the EclipseLink 2.4.
+ * JPA 2.1 functional specification and the EclipseLink 2.5.
+ * <p>
+ * Provisional API: This interface is part of an interim API that is still under development and
+ * expected to change significantly before reaching stability. It is available at this early stage
+ * to solicit feedback from pioneering adopters on the understanding that any code that uses this
+ * API will almost certainly be broken (repeatedly) as the API evolves.
  *
  * @see JPQLGrammar2_1
- * @see EclipseLinkJPQLGrammar2_4
+ * @see EclipseLinkJPQLGrammar2_5
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
 public final class DefaultEclipseLinkJPQLGrammar implements JPQLGrammar {
+
+	/**
+	 * The persistence provider name: EclipseLink.
+	 */
+	public static final String PROVIDER_NAME = "EclipseLink";
 
 	/**
 	 * Creates a new <code>DefaultEclipseLinkJPQLGrammar</code>.
@@ -42,7 +52,7 @@ public final class DefaultEclipseLinkJPQLGrammar implements JPQLGrammar {
 	 * @return The latest {@link JPQLGrammar} that supports EclipseLink
 	 */
 	public static JPQLGrammar instance() {
-		return EclipseLinkJPQLGrammar2_4.instance();
+		return EclipseLinkJPQLGrammar2_5.instance();
 	}
 
 	/**
@@ -62,6 +72,13 @@ public final class DefaultEclipseLinkJPQLGrammar implements JPQLGrammar {
 	/**
 	 * {@inheritDoc}
 	 */
+	public String getProvider() {
+		return instance().getProvider();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public String getProviderVersion() {
 		return instance().getProviderVersion();
 	}
@@ -71,6 +88,6 @@ public final class DefaultEclipseLinkJPQLGrammar implements JPQLGrammar {
 	 */
 	@Override
 	public String toString() {
-		return "EclipseLink 2.4 (default)";
+		return instance().toString();
 	}
 }

@@ -13,6 +13,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.parser;
 
+import org.eclipse.persistence.jpa.jpql.EclipseLinkVersion;
 import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
 
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
@@ -61,11 +62,14 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  *
  * groupby_item ::= single_valued_path_expression | identification_variable | scalar_expression
  *
- * aggregate_expression ::= { AVG | MAX | MIN | SUM | COUNT } ([DISTINCT] scalar_expression)
+ * aggregate_expression ::= { AVG | MAX | MIN | SUM | COUNT } ([DISTINCT] scalar_expression)</code></pre>
  *
- * </code></pre>
+ * Provisional API: This interface is part of an interim API that is still under development and
+ * expected to change significantly before reaching stability. It is available at this early stage
+ * to solicit feedback from pioneering adopters on the understanding that any code that uses this
+ * API will almost certainly be broken (repeatedly) as the API evolves.<p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -80,7 +84,7 @@ public final class EclipseLinkJPQLGrammar2_1 extends AbstractJPQLGrammar {
 	/**
 	 * The EclipseLink version, which is 2.1.
 	 */
-	public static final String VERSION = "2.1";
+	public static final EclipseLinkVersion VERSION = EclipseLinkVersion.VERSION_2_1;
 
 	/**
 	 * Creates a new <code>EclipseLinkJPQLGrammar2_1</code>.
@@ -144,8 +148,15 @@ public final class EclipseLinkJPQLGrammar2_1 extends AbstractJPQLGrammar {
 	/**
 	 * {@inheritDoc}
 	 */
+	public String getProvider() {
+		return DefaultEclipseLinkJPQLGrammar.PROVIDER_NAME;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public String getProviderVersion() {
-		return VERSION;
+		return VERSION.getVersion();
 	}
 
 	/**

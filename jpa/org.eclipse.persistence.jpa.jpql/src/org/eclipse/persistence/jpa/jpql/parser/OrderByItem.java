@@ -55,7 +55,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <div nowrap><b>BNF:</b> <code>orderby_item ::= state_field_path_expression | result_variable [ ASC | DESC ] [ NULLS FIRST | NULLS LAST ]</code>
  * <p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -71,21 +71,6 @@ public final class OrderByItem extends AbstractExpression {
 	 * The actual 'FIRST' identifier found in the string representation of the JPQL query.
 	 */
 	private String firstIdentifier;
-
-	/**
-	 * Determines whether 'FIRST' is present in the query or not.
-	 */
-	private boolean hasFirst;
-
-	/**
-	 * Determines whether 'FIRST' is present in the query or not.
-	 */
-	private boolean hasLast;
-
-	/**
-	 * Determines whether 'NULLS' is present in the query or not.
-	 */
-	private boolean hasNulls;
 
 	/**
 	 * Determines whether a whitespace was parsed after the order by expression.
@@ -185,8 +170,8 @@ public final class OrderByItem extends AbstractExpression {
 		}
 
 		// 'NULLS'
-		if (hasNulls) {
-			children.add(buildStringExpression("NULLS"));
+		if (nullsIdentifier != null) {
+			children.add(buildStringExpression(NULLS));
 		}
 
 		if (hasSpaceAfterNulls) {
@@ -194,12 +179,12 @@ public final class OrderByItem extends AbstractExpression {
 		}
 
 		// 'FIRST'
-		if (hasFirst) {
-			children.add(buildStringExpression("FIRST"));
+		if (firstIdentifier != null) {
+			children.add(buildStringExpression(FIRST));
 		}
 		// 'LAST'
-		else if (hasLast) {
-			children.add(buildStringExpression("LAST"));
+		else if (lastIdentifier != null) {
+			children.add(buildStringExpression(LAST));
 		}
 	}
 
@@ -213,23 +198,23 @@ public final class OrderByItem extends AbstractExpression {
 	public String getActualNullOrdering() {
 
 		// NULLS FIRST
-		if (hasNulls && hasFirst) {
+		if ((nullsIdentifier != null) && (firstIdentifier != null)) {
 			return nullsIdentifier + SPACE + firstIdentifier;
 		}
 
 		// NULLS LAST
-		if (hasNulls && hasLast) {
+		if ((nullsIdentifier != null) && (lastIdentifier != null)) {
 			return nullsIdentifier + SPACE + lastIdentifier;
 		}
 
-		if (hasNulls) {
+		if (nullsIdentifier != null) {
 			return nullsIdentifier;
 		}
 
-		if (hasFirst) {
+		if (firstIdentifier != null) {
 			return firstIdentifier;
 		}
-		else if (hasLast) {
+		else if (lastIdentifier != null) {
 			return lastIdentifier;
 		}
 
@@ -303,7 +288,7 @@ public final class OrderByItem extends AbstractExpression {
 	 *  <code>false</code> otherwise
 	 */
 	public boolean hasNulls() {
-		return hasNulls;
+		return nullsIdentifier != null;
 	}
 
 	/**
@@ -434,27 +419,24 @@ public final class OrderByItem extends AbstractExpression {
 			hasSpaceAfterOrdering = (count > 0);
 
 			// Parse 'NULLS'
-			if (wordParser.startsWithIdentifier("NULLS")) {
-				hasNulls = true;
-				nullsIdentifier = wordParser.moveForward("NULLS");
+			if (wordParser.startsWithIdentifier(NULLS)) {
+				nullsIdentifier = wordParser.moveForward(NULLS);
 				hasSpaceAfterNulls = wordParser.skipLeadingWhitespace() > 0;
 			}
 
 			// Parse 'FIRT'
-			if (wordParser.startsWithIdentifier("FIRST")) {
-				hasFirst = true;
-				firstIdentifier = wordParser.moveForward("FIRST");
+			if (wordParser.startsWithIdentifier(FIRST)) {
+				firstIdentifier = wordParser.moveForward(FIRST);
 			}
 			// Parse 'LAST'
-			else if (wordParser.startsWithIdentifier("LAST")) {
-				hasLast = true;
-				lastIdentifier = wordParser.moveForward("LAST");
+			else if (wordParser.startsWithIdentifier(LAST)) {
+				lastIdentifier = wordParser.moveForward(LAST);
 			}
 
-			if (hasNulls && hasFirst) {
+			if ((nullsIdentifier != null) && (firstIdentifier != null)) {
 				nullOrdering = NullOrdering.NULLS_FIRST;
 			}
-			else if (hasNulls && hasLast) {
+			else if ((nullsIdentifier != null) && (lastIdentifier != null)) {
 				nullOrdering = NullOrdering.NULLS_LAST;
 			}
 			else {
@@ -491,8 +473,8 @@ public final class OrderByItem extends AbstractExpression {
 		}
 
 		// 'NULLS'
-		if (hasNulls) {
-			writer.append(actual? nullsIdentifier : "NULLS");
+		if (nullsIdentifier != null) {
+			writer.append(actual? nullsIdentifier : NULLS);
 		}
 
 		if (hasSpaceAfterNulls) {
@@ -500,12 +482,12 @@ public final class OrderByItem extends AbstractExpression {
 		}
 
 		// 'FIRST'
-		if (hasFirst) {
-			writer.append(actual? firstIdentifier : "FIRST");
+		if (firstIdentifier != null) {
+			writer.append(actual? firstIdentifier : FIRST);
 		}
 		// 'LAST'
-		else if (hasLast) {
-			writer.append(actual? lastIdentifier : "LAST");
+		else if (lastIdentifier != null) {
+			writer.append(actual? lastIdentifier : LAST);
 		}
 	}
 

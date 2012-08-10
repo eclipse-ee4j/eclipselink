@@ -34,7 +34,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <p>
  * Example: <code><b>SELECT</b> t <b>FROM</b> Player p, <b>IN</b> (p.teams) AS t</code>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -50,11 +50,6 @@ public final class CollectionMemberDeclaration extends AbstractExpression {
 	 * identification variable.
 	 */
 	private AbstractExpression collectionValuedPathExpression;
-
-	/**
-	 * Determines whether the identifier <b>AS</b> was parsed.
-	 */
-	private boolean hasAs;
 
 	/**
 	 * Flag used to determine if the closing parenthesis is present in the query.
@@ -158,7 +153,7 @@ public final class CollectionMemberDeclaration extends AbstractExpression {
 		}
 
 		// AS
-		if (hasAs) {
+		if (asIdentifier != null) {
 			children.add(buildStringExpression(AS));
 		}
 
@@ -231,7 +226,7 @@ public final class CollectionMemberDeclaration extends AbstractExpression {
 	 * @return <code>true</code> if the identifier <b>AS</b> was parsed; <code>false</code> otherwise
 	 */
 	public boolean hasAs() {
-		return hasAs;
+		return asIdentifier != null;
 	}
 
 	/**
@@ -321,7 +316,7 @@ public final class CollectionMemberDeclaration extends AbstractExpression {
 		return !hasLeftParenthesis            &&
 		       !hasRightParenthesis           &&
 		       !hasSpaceAfterRightParenthesis &&
-		       !hasAs                         &&
+		        asIdentifier == null          &&
 		       !hasIdentificationVariable();
 	}
 
@@ -366,7 +361,7 @@ public final class CollectionMemberDeclaration extends AbstractExpression {
 			tolerant
 		);
 
-		if (hasCollectionValuedPathExpression()) {
+		if (collectionValuedPathExpression != null) {
 			count = wordParser.skipLeadingWhitespace();
 		}
 
@@ -394,9 +389,7 @@ public final class CollectionMemberDeclaration extends AbstractExpression {
 		}
 
 		// Parse 'AS'
-		hasAs = wordParser.startsWithIdentifier(AS);
-
-		if (hasAs) {
+		if (wordParser.startsWithIdentifier(AS)) {
 			asIdentifier = wordParser.moveForward(AS);
 			hasSpaceAfterAs = wordParser.skipLeadingWhitespace() > 0;
 		}
@@ -408,7 +401,7 @@ public final class CollectionMemberDeclaration extends AbstractExpression {
 		    !hasLeftParenthesis            &&
 		    !hasRightParenthesis           &&
 		     hasSpaceAfterRightParenthesis &&
-		    !hasAs                         &&
+		     asIdentifier == null          &&
 		     isParsingComplete(wordParser, wordParser.word(), null)) {
 
 			parseVariable = false;
@@ -422,8 +415,8 @@ public final class CollectionMemberDeclaration extends AbstractExpression {
 		if (!hasLeftParenthesis            &&
 		    !hasRightParenthesis           &&
 		     hasSpaceAfterRightParenthesis &&
-		    !hasAs                         &&
-		    !hasIdentificationVariable()) {
+		     asIdentifier == null          &&
+		     identificationVariable == null) {
 
 			hasSpaceAfterRightParenthesis = false;
 			wordParser.moveBackward(count);
@@ -462,7 +455,7 @@ public final class CollectionMemberDeclaration extends AbstractExpression {
 		}
 
 		// 'AS'
-		if (hasAs) {
+		if (asIdentifier != null) {
 			writer.append(actual ? asIdentifier : AS);
 		}
 
@@ -477,8 +470,7 @@ public final class CollectionMemberDeclaration extends AbstractExpression {
 	}
 
 	/**
-	 * Creates a string representation of this expression up and excluding the
-	 * <b>AS</b> identifier.
+	 * Creates a string representation of this expression up and excluding the <b>AS</b> identifier.
 	 *
 	 * @return The string representation of a section of this expression
 	 */

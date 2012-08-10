@@ -17,62 +17,61 @@ import org.junit.Test;
 
 @SuppressWarnings("nls")
 public final class NullComparisonExpressionTest extends JPQLParserTest {
+
 	@Test
 	public void testBuildExpression_01() {
-		String query = "SELECT e FROM Employee e WHERE e.name IS NULL";
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name IS NULL";
+
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("e")),
 			from("Employee", "e"),
 			where(isNull(path("e.name")))
 		);
 
-		testQuery(query, selectStatement);
+		testQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_02() {
-		String query = "SELECT e FROM Employee e WHERE e.name IS NOT NULL";
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		String jpqlQuery = "SELECT e FROM Employee e WHERE e.name IS NOT NULL";
+
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("e")),
 			from("Employee", "e"),
 			where(isNotNull(path("e.name")))
 		);
 
-		testQuery(query, selectStatement);
+		testQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_03() {
-		String query = "SELECT e FROM Employee e WHERE IS NULL";
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		String jpqlQuery = "SELECT e FROM Employee e WHERE IS NULL";
+
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("e")),
 			from("Employee", "e"),
 			where(isNull(nullExpression()))
 		);
 
-		testQuery(query, selectStatement);
+		testQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_04() {
-		String query = "SELECT e FROM Employee e WHERE IS NULL HAVING e.adult";
 
-		ExpressionTester selectStatement = selectStatement
-		(
+		String jpqlQuery = "SELECT e FROM Employee e WHERE IS NULL HAVING e.adult";
+
+		ExpressionTester selectStatement = selectStatement(
 			select(variable("e")),
 			from("Employee", "e"),
 			where(isNull(nullExpression())),
-			nullExpression(),
-			having(path("e.adult")),
-			nullExpression()
+			having(path("e.adult"))
 		);
 
-		testQuery(query, selectStatement);
+		testQuery(jpqlQuery, selectStatement);
 	}
 }

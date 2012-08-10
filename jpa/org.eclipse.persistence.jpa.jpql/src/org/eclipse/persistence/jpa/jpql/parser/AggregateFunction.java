@@ -44,32 +44,16 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * @see MinFunction
  * @see SumFunction
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
 public abstract class AggregateFunction extends AbstractSingleEncapsulatedExpression {
 
 	/**
-	 * Determines whether the identifier <b>DISTINCT</b> was parsed.
-	 */
-	private boolean hasDistinct;
-
-	/**
 	 * The actual <b>DISTINCT</b> identifier found in the string representation of the JPQL query.
 	 */
 	private String distinctIdentifier;
-
-	/**
-	 * Returns the actual <b>DISTINCT</b> identifier found in the string representation of the JPQL
-	 * query, which has the actual case that was used.
-	 *
-	 * @return The <b>DISTINCT</b> identifier that was actually parsed, or an empty string if it was
-	 * not parsed
-	 */
-	public String getActualDistinctIdentifier() {
-		return (distinctIdentifier != null) ?distinctIdentifier : ExpressionTools.EMPTY_STRING;
-	}
 
 	/**
 	 * Determines whether whitespace was found after the identifier <b>DISTINCT</b>.
@@ -91,7 +75,7 @@ public abstract class AggregateFunction extends AbstractSingleEncapsulatedExpres
 	@Override
 	protected void addOrderedEncapsulatedExpressionTo(List<Expression> children) {
 
-		if (hasDistinct) {
+		if (distinctIdentifier != null) {
 			children.add(buildStringExpression(DISTINCT));
 		}
 
@@ -121,6 +105,17 @@ public abstract class AggregateFunction extends AbstractSingleEncapsulatedExpres
 	}
 
 	/**
+	 * Returns the actual <b>DISTINCT</b> identifier found in the string representation of the JPQL
+	 * query, which has the actual case that was used.
+	 *
+	 * @return The <b>DISTINCT</b> identifier that was actually parsed, or an empty string if it was
+	 * not parsed
+	 */
+	public String getActualDistinctIdentifier() {
+		return (distinctIdentifier != null) ?distinctIdentifier : ExpressionTools.EMPTY_STRING;
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	public JPQLQueryBNF getQueryBNF() {
@@ -133,7 +128,7 @@ public abstract class AggregateFunction extends AbstractSingleEncapsulatedExpres
 	 * @return <code>true</code> if the query has <b>DISTINCT</b>; <code>false</code> otherwise
 	 */
 	public final boolean hasDistinct() {
-		return hasDistinct;
+		return distinctIdentifier != null;
 	}
 
 	/**
@@ -153,9 +148,7 @@ public abstract class AggregateFunction extends AbstractSingleEncapsulatedExpres
 	protected final void parseEncapsulatedExpression(WordParser wordParser, int whitespaceCount, boolean tolerant) {
 
 		// Parse 'DISTINCT'
-		hasDistinct = wordParser.startsWithIdentifier(DISTINCT);
-
-		if (hasDistinct) {
+		if (wordParser.startsWithIdentifier(DISTINCT)) {
 			distinctIdentifier = wordParser.moveForward(DISTINCT);
 			hasSpaceAfterDistinct = wordParser.skipLeadingWhitespace() > 0;
 		}
@@ -170,7 +163,7 @@ public abstract class AggregateFunction extends AbstractSingleEncapsulatedExpres
 	@Override
 	protected void toParsedTextEncapsulatedExpression(StringBuilder writer, boolean actual) {
 
-		if (hasDistinct) {
+		if (distinctIdentifier != null) {
 			writer.append(actual ? distinctIdentifier : DISTINCT);
 		}
 

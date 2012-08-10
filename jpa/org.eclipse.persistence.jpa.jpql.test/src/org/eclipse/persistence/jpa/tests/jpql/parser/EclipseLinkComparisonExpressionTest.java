@@ -13,10 +13,20 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
+import org.eclipse.persistence.jpa.jpql.EclipseLinkVersion;
 import org.junit.Test;
 
+/**
+ * @version 2.5
+ * @since 2.4
+ * @author Pascal Filion
+ */
 @SuppressWarnings("nls")
 public final class EclipseLinkComparisonExpressionTest extends JPQLParserTest {
+
+	protected boolean isEclipseLink2_0() {
+		return EclipseLinkVersion.value(getGrammar().getProviderVersion()) == EclipseLinkVersion.VERSION_2_0;
+	}
 
 	@Test
 	public void test_BuildExpression_01() throws Exception {
@@ -80,9 +90,7 @@ public final class EclipseLinkComparisonExpressionTest extends JPQLParserTest {
 			select(variable("e")),
 			from("Employee", "e"),
 			where(path("e.age").notEqual(string("'JPQL'"))),
-			groupBy(path("e.name")),
-			nullExpression(),
-			nullExpression()
+			groupBy(path("e.name"))
 		);
 
 		testQuery(query, selectStatement);
@@ -101,9 +109,7 @@ public final class EclipseLinkComparisonExpressionTest extends JPQLParserTest {
 			select(variable("e")),
 			from("Employee", "e"),
 			where(nullExpression().notEqual(string("'JPQL'"))),
-			groupBy(path("e.name")),
-			nullExpression(),
-			nullExpression()
+			groupBy(path("e.name"))
 		);
 
 		testInvalidQuery(query, selectStatement);

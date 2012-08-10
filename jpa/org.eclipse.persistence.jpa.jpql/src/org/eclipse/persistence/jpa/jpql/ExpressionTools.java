@@ -13,6 +13,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql;
 
+import org.eclipse.persistence.jpa.jpql.parser.AbstractExpression;
+
 /**
  * A utility class containing various methods related to the Hermes parser.
  * <p>
@@ -21,7 +23,7 @@ package org.eclipse.persistence.jpa.jpql;
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
  * API will almost certainly be broken (repeatedly) as the API evolves.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -90,6 +92,30 @@ public final class ExpressionTools {
 		}
 
 		return sb.toString();
+	}
+
+	/**
+	 * Determines whether the JPQL fragment is an expression of the form <code>&lt;IDENTIFIER&gt;(</code>.
+	 *
+	 * @param wordParser The text to parse based on the current position of the cursor
+	 * @param identifier The identifier to verify if it's for an expression or for possibly for a
+	 * variable name
+	 * @return <code>true</code> if the identifier is followed by '('; <code>false</code> otherwise
+	 */
+	public static boolean isFunctionExpression(WordParser wordParser, String identifier) {
+
+		// Skip the identifier
+		int count = identifier.length();
+		wordParser.moveForward(identifier);
+
+		// Check to see if ( is following the identifier
+		int whitespace = wordParser.skipLeadingWhitespace();
+		boolean function = wordParser.startsWith(AbstractExpression.LEFT_PARENTHESIS);
+
+		// Revert the changes
+		wordParser.moveBackward(count + whitespace);
+
+		return function;
 	}
 
 	/**

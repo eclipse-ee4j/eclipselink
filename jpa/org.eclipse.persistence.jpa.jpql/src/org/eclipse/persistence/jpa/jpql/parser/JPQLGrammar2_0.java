@@ -16,6 +16,8 @@ package org.eclipse.persistence.jpa.jpql.parser;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
 
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
+
 /**
  * This {@link JPQLGrammar} provides support for parsing JPQL queries defined in <a
  * href="http://jcp.org/en/jsr/detail?id=317">JSR-337 - Java Persistence 2.0</a>.
@@ -325,8 +327,13 @@ import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
  *
  * trim_string ::= [0-9] ([0-9])? ':' [0-9] [0-9] ':' [0-9] [0-9] '.' [0-9]*
  * </pre></code>
+ * <p>
+ * Provisional API: This interface is part of an interim API that is still under development and
+ * expected to change significantly before reaching stability. It is available at this early stage
+ * to solicit feedback from pioneering adopters on the understanding that any code that uses this
+ * API will almost certainly be broken (repeatedly) as the API evolves.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -389,6 +396,13 @@ public final class JPQLGrammar2_0 extends AbstractJPQLGrammar {
 	 */
 	public JPAVersion getJPAVersion() {
 		return JPAVersion.VERSION_2_0;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public String getProvider() {
+		return DefaultJPQLGrammar.PROVIDER_NAME;
 	}
 
 	/**
@@ -476,31 +490,31 @@ public final class JPQLGrammar2_0 extends AbstractJPQLGrammar {
 	@Override
 	protected void initializeIdentifiers() {
 
-		registerIdentifierRole(Expression.CASE,     IdentifierRole.FUNCTION);           // ???
-		registerIdentifierRole(Expression.COALESCE, IdentifierRole.FUNCTION);           // COALLESCE(x {, y}+)
-		registerIdentifierRole(Expression.ELSE,     IdentifierRole.COMPOUND_FUNCTION);
-		registerIdentifierRole(Expression.END,      IdentifierRole.COMPLETEMENT);
-		registerIdentifierRole(Expression.ENTRY,    IdentifierRole.FUNCTION);           // ENTRY(x)
-		registerIdentifierRole(Expression.INDEX,    IdentifierRole.FUNCTION);           // INDEX(x)
-		registerIdentifierRole(Expression.KEY,      IdentifierRole.FUNCTION);           // KEY(x)
-		registerIdentifierRole(Expression.NULLIF,   IdentifierRole.FUNCTION);           // NULLIF(x, y)
-		registerIdentifierRole(Expression.THEN,     IdentifierRole.COMPOUND_FUNCTION);
-		registerIdentifierRole(Expression.TYPE,     IdentifierRole.FUNCTION);           // TYPE(x)
-		registerIdentifierRole(Expression.VALUE,    IdentifierRole.FUNCTION);           // VALUE(x)
-		registerIdentifierRole(Expression.WHEN,     IdentifierRole.COMPOUND_FUNCTION);  // Part of CASE WHEN ELSE END
+		registerIdentifierRole(CASE,        IdentifierRole.FUNCTION);           // ???
+		registerIdentifierRole(COALESCE,    IdentifierRole.FUNCTION);           // COALLESCE(x {, y}+)
+		registerIdentifierRole(ELSE,        IdentifierRole.COMPOUND_FUNCTION);
+		registerIdentifierRole(END,         IdentifierRole.COMPLETEMENT);
+		registerIdentifierRole(ENTRY,       IdentifierRole.FUNCTION);           // ENTRY(x)
+		registerIdentifierRole(INDEX,       IdentifierRole.FUNCTION);           // INDEX(x)
+		registerIdentifierRole(KEY,         IdentifierRole.FUNCTION);           // KEY(x)
+		registerIdentifierRole(NULLIF,      IdentifierRole.FUNCTION);           // NULLIF(x, y)
+		registerIdentifierRole(THEN,        IdentifierRole.COMPOUND_FUNCTION);
+		registerIdentifierRole(TYPE,        IdentifierRole.FUNCTION);           // TYPE(x)
+		registerIdentifierRole(VALUE,       IdentifierRole.FUNCTION);           // VALUE(x)
+		registerIdentifierRole(WHEN,        IdentifierRole.COMPOUND_FUNCTION);  // Part of CASE WHEN ELSE END
 
-		registerIdentifierVersion(Expression.CASE,     JPAVersion.VERSION_2_0);
-		registerIdentifierVersion(Expression.COALESCE, JPAVersion.VERSION_2_0);
-		registerIdentifierVersion(Expression.ELSE,     JPAVersion.VERSION_2_0);
-		registerIdentifierVersion(Expression.END,      JPAVersion.VERSION_2_0);
-		registerIdentifierVersion(Expression.ENTRY,    JPAVersion.VERSION_2_0);
-		registerIdentifierVersion(Expression.INDEX,    JPAVersion.VERSION_2_0);
-		registerIdentifierVersion(Expression.KEY,      JPAVersion.VERSION_2_0);
-		registerIdentifierVersion(Expression.NULLIF,   JPAVersion.VERSION_2_0);
-		registerIdentifierVersion(Expression.THEN,     JPAVersion.VERSION_2_0);
-		registerIdentifierVersion(Expression.TYPE,     JPAVersion.VERSION_2_0);
-		registerIdentifierVersion(Expression.VALUE,    JPAVersion.VERSION_2_0);
-		registerIdentifierVersion(Expression.WHEN,     JPAVersion.VERSION_2_0);
+		registerIdentifierVersion(CASE,     JPAVersion.VERSION_2_0);
+		registerIdentifierVersion(COALESCE, JPAVersion.VERSION_2_0);
+		registerIdentifierVersion(ELSE,     JPAVersion.VERSION_2_0);
+		registerIdentifierVersion(END,      JPAVersion.VERSION_2_0);
+		registerIdentifierVersion(ENTRY,    JPAVersion.VERSION_2_0);
+		registerIdentifierVersion(INDEX,    JPAVersion.VERSION_2_0);
+		registerIdentifierVersion(KEY,      JPAVersion.VERSION_2_0);
+		registerIdentifierVersion(NULLIF,   JPAVersion.VERSION_2_0);
+		registerIdentifierVersion(THEN,     JPAVersion.VERSION_2_0);
+		registerIdentifierVersion(TYPE,     JPAVersion.VERSION_2_0);
+		registerIdentifierVersion(VALUE,    JPAVersion.VERSION_2_0);
+		registerIdentifierVersion(WHEN,     JPAVersion.VERSION_2_0);
 	}
 
 	/**

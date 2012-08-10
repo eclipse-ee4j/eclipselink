@@ -16,7 +16,7 @@ package org.eclipse.persistence.jpa.jpql.spi;
 /**
  * An enumeration listing the various releases of the Java Persistence specification.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -26,7 +26,7 @@ public enum JPAVersion {
 	 * The constant for the default version used by the parsing system, which is always the latest
 	 * version of the Java Persistence functional specification, which is version 2.0.
 	 */
-	DEFAULT_VERSION(2.0),
+	DEFAULT_VERSION(2.1),
 
 	/**
 	 * The constant for the Java Persistence specification 1.0.

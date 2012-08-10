@@ -14,6 +14,7 @@
 package org.eclipse.persistence.jpa.tests.jpql;
 
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_4;
+import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_5;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar2_1;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLGrammarTestHelper;
@@ -24,7 +25,7 @@ import org.junit.runners.Suite.SuiteClasses;
  * This test suite containing the unit-tests testing the refactoring functionality with EclipseLink
  * additional support.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -42,7 +43,8 @@ public final class AllBasicRefactoringToolTest2_1 {
 	static JPQLGrammar[] buildJPQLGrammars() {
 		return new JPQLGrammar[] {
 			JPQLGrammar2_1.instance(),
-			EclipseLinkJPQLGrammar2_4.instance()
+			EclipseLinkJPQLGrammar2_4.instance(),
+			EclipseLinkJPQLGrammar2_5.instance()
 		};
 	}
 }

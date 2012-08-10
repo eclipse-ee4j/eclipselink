@@ -15,6 +15,7 @@ package org.eclipse.persistence.jpa.tests.jpql;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.eclipse.persistence.jpa.jpql.EclipseLinkVersion;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_4;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -25,7 +26,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * This unit-test tests the JPQL content assist at various position within the JPQL query and with
  * complete and incomplete queries and make sure the EclipseLink additional support works correctly.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -53,7 +54,8 @@ public class EclipseLinkContentAssistTest extends AbstractContentAssistTest {
 	 */
 	@Override
 	boolean isJoinFetchIdentifiable() {
-		return getGrammar().getProviderVersion().equals(EclipseLinkJPQLGrammar2_4.VERSION);
+		EclipseLinkVersion currentVersion = EclipseLinkVersion.value(getGrammar().getProviderVersion());
+		return currentVersion.isNewerThanOrEqual(EclipseLinkJPQLGrammar2_4.VERSION);
 	}
 
 	@Test

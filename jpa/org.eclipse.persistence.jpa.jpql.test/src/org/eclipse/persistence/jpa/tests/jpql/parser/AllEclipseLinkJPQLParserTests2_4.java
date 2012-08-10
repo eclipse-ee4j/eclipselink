@@ -14,6 +14,7 @@
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_4;
+import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_5;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.eclipse.persistence.jpa.tests.jpql.JPQLTestRunner;
 import org.junit.runner.RunWith;
@@ -23,7 +24,7 @@ import org.junit.runners.Suite.SuiteClasses;
  * This test suite runs {@link EclipseLinkJPQLParserTests2_4} using JPQL grammars written for JPA
  * 2.1 and for EclipseLink 2.4.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -52,7 +53,8 @@ public final class AllEclipseLinkJPQLParserTests2_4 {
 	@JPQLGrammarTestHelper
 	static JPQLGrammar[] buildJPQLGrammars() {
 		return new JPQLGrammar[] {
-			EclipseLinkJPQLGrammar2_4.instance()
+			EclipseLinkJPQLGrammar2_4.instance(),
+			EclipseLinkJPQLGrammar2_5.instance()
 		};
 	}
 }

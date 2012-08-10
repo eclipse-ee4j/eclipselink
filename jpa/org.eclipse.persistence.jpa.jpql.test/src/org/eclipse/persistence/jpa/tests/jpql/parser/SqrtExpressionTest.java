@@ -21,7 +21,7 @@ public final class SqrtExpressionTest extends JPQLParserTest {
 	@Test
 	public void testBuildExpression_01() {
 
-		String query = "SELECT e FROM Employee e WHERE SQRT(2)";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE SQRT(2)";
 
 		SelectStatementTester selectStatement = selectStatement(
 			select(variable("e")),
@@ -29,13 +29,13 @@ public final class SqrtExpressionTest extends JPQLParserTest {
 			where(sqrt(numeric(2)))
 		);
 
-		testQuery(query, selectStatement);
+		testQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_02() {
 
-		String query = "SELECT e FROM Employee e WHERE SQRT(e.age + 100)";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE SQRT(e.age + 100)";
 
 		SelectStatementTester selectStatement = selectStatement(
 			select(variable("e")),
@@ -43,13 +43,13 @@ public final class SqrtExpressionTest extends JPQLParserTest {
 			where(sqrt(path("e.age").add(numeric(100))))
 		);
 
-		testQuery(query, selectStatement);
+		testQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_03() {
 
-		String query = "SELECT e FROM Employee e WHERE SQRT(e.age + 100 - AVG(e.age))";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE SQRT(e.age + 100 - AVG(e.age))";
 
 		SelectStatementTester selectStatement = selectStatement(
 			select(variable("e")),
@@ -57,13 +57,13 @@ public final class SqrtExpressionTest extends JPQLParserTest {
 			where(sqrt(path("e.age").add(numeric(100).subtract(avg(path("e.age"))))))
 		);
 
-		testQuery(query, selectStatement);
+		testQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_04() {
 
-		String query = "SELECT e FROM Employee e WHERE SQRT";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE SQRT";
 
 		SqrtExpressionTester sqrt = sqrt(nullExpression());
 		sqrt.hasLeftParenthesis  = false;
@@ -75,13 +75,13 @@ public final class SqrtExpressionTest extends JPQLParserTest {
 			where(sqrt)
 		);
 
-		testInvalidQuery(query, selectStatement);
+		testInvalidQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_05() {
 
-		String query = "SELECT e FROM Employee e WHERE SQRT(";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE SQRT(";
 
 		SqrtExpressionTester sqrt = sqrt(nullExpression());
 		sqrt.hasLeftParenthesis  = true;
@@ -93,13 +93,13 @@ public final class SqrtExpressionTest extends JPQLParserTest {
 			where(sqrt)
 		);
 
-		testQuery(query, selectStatement);
+		testQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_06() {
 
-		String query = "SELECT e FROM Employee e WHERE SQRT()";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE SQRT()";
 
 		SqrtExpressionTester sqrt = sqrt(nullExpression());
 		sqrt.hasLeftParenthesis  = true;
@@ -111,13 +111,13 @@ public final class SqrtExpressionTest extends JPQLParserTest {
 			where(sqrt)
 		);
 
-		testInvalidQuery(query, selectStatement);
+		testInvalidQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_07() {
 
-		String query = "SELECT e FROM Employee e WHERE SQRT GROUP BY e.name";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE SQRT GROUP BY e.name";
 
 		SqrtExpressionTester sqrt = sqrt(nullExpression());
 		sqrt.hasLeftParenthesis  = false;
@@ -127,18 +127,16 @@ public final class SqrtExpressionTest extends JPQLParserTest {
 			select(variable("e")),
 			from("Employee", "e"),
 			where(sqrt),
-			groupBy(path("e.name")),
-			nullExpression(),
-			nullExpression()
+			groupBy(path("e.name"))
 		);
 
-		testInvalidQuery(query, selectStatement);
+		testInvalidQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_08() {
 
-		String query = "SELECT e FROM Employee e WHERE SQRT( GROUP BY e.name";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE SQRT( GROUP BY e.name";
 
 		SqrtExpressionTester sqrt = sqrt(nullExpression());
 		sqrt.hasLeftParenthesis  = true;
@@ -148,11 +146,9 @@ public final class SqrtExpressionTest extends JPQLParserTest {
 			select(variable("e")),
 			from("Employee", "e"),
 			where(sqrt),
-			groupBy(path("e.name")),
-			nullExpression(),
-			nullExpression()
+			groupBy(path("e.name"))
 		);
 
-		testInvalidQuery(query, selectStatement);
+		testInvalidQuery(jpqlQuery, selectStatement);
 	}
 }

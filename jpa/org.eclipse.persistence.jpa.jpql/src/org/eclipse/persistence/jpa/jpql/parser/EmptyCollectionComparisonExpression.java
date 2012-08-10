@@ -24,7 +24,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <p>
  * <div nowrap><b>BNF:</b> <code>empty_collection_comparison_expression ::= collection_valued_path_expression IS [NOT] EMPTY</code><p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -40,16 +40,6 @@ public final class EmptyCollectionComparisonExpression extends AbstractExpressio
 	 * The {@link Expression} that represents the collection-valued path expression.
 	 */
 	private AbstractExpression expression;
-
-	/**
-	 * Determines whether the identifier <b>IS</b> was parsed.
-	 */
-	private boolean hasIs;
-
-	/**
-	 * Determines whether the identifier <b>NOT</b> was parsed.
-	 */
-	private boolean hasNot;
 
 	/**
 	 * Determines whether a whitespace was parsed after <b>IS</b>.
@@ -138,7 +128,7 @@ public final class EmptyCollectionComparisonExpression extends AbstractExpressio
 		}
 
 		// 'NOT'
-		if (hasNot) {
+		if (notIdentifier != null) {
 			children.add(buildStringExpression(NOT));
 		}
 
@@ -205,9 +195,19 @@ public final class EmptyCollectionComparisonExpression extends AbstractExpressio
 	 * @return Either <b>IS NOT EMPTY</b>, <b>NOT EMPTY</b>, <b>IS EMPTY</b> or <b>EMPTY</b>
 	 */
 	public String getIdentifier() {
-		if ( hasIs && hasNot) return IS_NOT_EMPTY;
-		if (!hasIs && hasNot) return "NOT_EMPTY";
-		if ( hasIs)           return IS_EMPTY;
+
+		if ((isIdentifier != null) && (notIdentifier != null)) {
+			return IS_NOT_EMPTY;
+		}
+
+		if ((isIdentifier == null) && (notIdentifier != null)) {
+			return "NOT_EMPTY";
+		}
+
+		if (isIdentifier != null) {
+			return IS_EMPTY;
+		}
+
 		return EMPTY;
 	}
 
@@ -234,14 +234,13 @@ public final class EmptyCollectionComparisonExpression extends AbstractExpressio
 	 * @return <code>true</code> if the identifier <b>NOT</b> was parsed; <code>false</code> otherwise
 	 */
 	public boolean hasNot() {
-		return hasNot;
+		return notIdentifier != null;
 	}
 
 	/**
 	 * Determines whether a whitespace was found after <b>IS</b>.
 	 *
-	 * @return <code>true</code> if there was a whitespace after <b>IS</b>; <code>false</code>
-	 * otherwise
+	 * @return <code>true</code> if there was a whitespace after <b>IS</b>; <code>false</code> otherwise
 	 */
 	public boolean hasSpaceAfterIs() {
 		return hasSpaceAfterIs;
@@ -256,17 +255,15 @@ public final class EmptyCollectionComparisonExpression extends AbstractExpressio
 		String identifier = getText();
 
 		if (identifier != null) {
+
 			// 'IS'
-			hasIs = true;
 			isIdentifier = wordParser.moveForward(IS);
 			hasSpaceAfterIs = true;
 
 			wordParser.moveForward(1);
 
 			// 'NOT'
-			hasNot = (identifier == IS_NOT_EMPTY);
-
-			if (hasNot) {
+			if (identifier == IS_NOT_EMPTY) {
 				notIdentifier = wordParser.moveForward(NOT);
 				wordParser.moveForward(1);
 			}
@@ -275,18 +272,15 @@ public final class EmptyCollectionComparisonExpression extends AbstractExpressio
 			emptyIdentifier = wordParser.moveForward(EMPTY);
 		}
 		else {
+
 			// Parse 'IS'
 			if (wordParser.startsWithIdentifier(IS)) {
-				hasIs = true;
 				isIdentifier = wordParser.moveForward(IS);
 				hasSpaceAfterIs = wordParser.skipLeadingWhitespace() > 0;
 			}
 
 			// Parse 'NOT'
-			hasNot = wordParser.startsWithIdentifier(NOT);
-
-			// Parse 'NOT'
-			if (hasNot) {
+			if (wordParser.startsWithIdentifier(NOT)) {
 				notIdentifier = wordParser.moveForward(NOT);
 				wordParser.skipLeadingWhitespace();
 			}
@@ -309,7 +303,7 @@ public final class EmptyCollectionComparisonExpression extends AbstractExpressio
 		}
 
 		// 'IS'
-		if (hasIs) {
+		if (isIdentifier != null) {
 			writer.append(actual ? isIdentifier : IS);
 		}
 
@@ -318,7 +312,7 @@ public final class EmptyCollectionComparisonExpression extends AbstractExpressio
 		}
 
 		// 'NOT'
-		if (hasNot) {
+		if (notIdentifier != null) {
 			writer.append(actual ? notIdentifier : NOT);
 			writer.append(SPACE);
 		}

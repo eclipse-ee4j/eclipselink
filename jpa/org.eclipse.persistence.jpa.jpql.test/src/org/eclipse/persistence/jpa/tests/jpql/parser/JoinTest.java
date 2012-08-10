@@ -84,10 +84,7 @@ public final class JoinTest extends JPQLParserTest {
 		SelectStatementTester selectStatement = selectStatement(
 			select(variable("pub")),
 			from("Publisher", "pub", joinAs(nullExpression(), nullExpression())),
-			nullExpression(),
-			nullExpression(),
-			having(path("pub.revenue").greaterThan(numeric(1000000))),
-			nullExpression()
+			having(path("pub.revenue").greaterThan(numeric(1000000)))
 		);
 
 		selectStatement.hasSpaceAfterFrom = false;
@@ -245,10 +242,7 @@ public final class JoinTest extends JPQLParserTest {
 		SelectStatementTester selectStatement = selectStatement(
 			select(variable("pub")),
 			from("Publisher", "pub", joinFetchAs(nullExpression(), nullExpression())),
-			nullExpression(),
-			nullExpression(),
-			having(path("pub.revenue").greaterThan(numeric(1000000))),
-			nullExpression()
+			having(path("pub.revenue").greaterThan(numeric(1000000)))
 		);
 
 		selectStatement.hasSpaceAfterFrom = false;

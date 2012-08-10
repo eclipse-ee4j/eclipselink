@@ -18,8 +18,10 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
 
 /**
  * The expression representing some keywords: <code>TRUE</code>, <code>FALSE</code> or <code>NULL</code>.
+ * <p>
+ * EclipseLink 2.5 added two new identifiers: <code><b>MINVALUE</b></code> and <code><b>MAXVALUE</b></code>.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -34,9 +36,10 @@ public final class KeywordExpression extends AbstractExpression {
 	 * Creates a new <code>KeywordExpression</code>.
 	 *
 	 * @param parent The parent of this expression
+	 * @param identifier The identifier represented by this expression
 	 */
-	public KeywordExpression(AbstractExpression parent) {
-		super(parent);
+	public KeywordExpression(AbstractExpression parent, String identifier) {
+		super(parent, identifier);
 	}
 
 	/**
@@ -90,17 +93,7 @@ public final class KeywordExpression extends AbstractExpression {
 	 */
 	@Override
 	protected void parse(WordParser wordParser, boolean tolerant) {
-		String word = parseIdentifier(wordParser);
-		setText(word);
-		identifier = wordParser.moveForward(word);
-	}
-
-	private String parseIdentifier(WordParser wordParser) {
-		switch (wordParser.character()) {
-			case 'T': case 't': return TRUE;
-			case 'F': case 'f': return FALSE;
-			default:            return NULL;
-		}
+		identifier = wordParser.moveForward(getText());
 	}
 
 	/**

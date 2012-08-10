@@ -22,11 +22,13 @@ import org.eclipse.persistence.jpa.jpql.model.IJPQLQueryBuilder;
 import org.eclipse.persistence.jpa.jpql.model.IJPQLQueryFormatter;
 import org.eclipse.persistence.jpa.jpql.model.IJPQLQueryFormatter.IdentifierStyle;
 import org.eclipse.persistence.jpa.jpql.model.JPQLQueryBuilder2_0;
+import org.eclipse.persistence.jpa.jpql.model.JPQLQueryBuilder2_1;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_0;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_1;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_2;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_3;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_4;
+import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_5;
 import org.eclipse.persistence.jpa.tests.jpql.JPQLTestRunner;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;
@@ -34,7 +36,7 @@ import org.junit.runners.Suite.SuiteClasses;
 /**
  * This test suite containing the unit-tests testing {@link StateObject} API when the JPA version is 2.0.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -52,11 +54,13 @@ public final class AllStateObjectTest2_0 {
 	static IJPQLQueryBuilder[] buildJPQLQueryBuilders() {
 		return new IJPQLQueryBuilder[] {
 			new JPQLQueryBuilder2_0(),
+			new JPQLQueryBuilder2_1(),
 			new EclipseLinkJPQLQueryBuilder(EclipseLinkJPQLGrammar2_0.instance()),
 			new EclipseLinkJPQLQueryBuilder(EclipseLinkJPQLGrammar2_1.instance()),
 			new EclipseLinkJPQLQueryBuilder(EclipseLinkJPQLGrammar2_2.instance()),
 			new EclipseLinkJPQLQueryBuilder(EclipseLinkJPQLGrammar2_3.instance()),
-			new EclipseLinkJPQLQueryBuilder(EclipseLinkJPQLGrammar2_4.instance())
+			new EclipseLinkJPQLQueryBuilder(EclipseLinkJPQLGrammar2_4.instance()),
+			new EclipseLinkJPQLQueryBuilder(EclipseLinkJPQLGrammar2_5.instance())
 		};
 	}
 

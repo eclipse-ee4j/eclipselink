@@ -30,7 +30,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  *                         DAY_SECOND | DAY_MINUTE | DAY_HOUR | YEAR_MONTH, etc }
  * <p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author James Sutherland
  */
@@ -45,11 +45,6 @@ public final class ExtractExpression extends AbstractSingleEncapsulatedExpressio
 	 * The actual <b>FROM</b> identifier found in the string representation of the JPQL query.
 	 */
 	private String fromIdentifier;
-
-	/**
-	 * Determines whether the identifier <b>FROM</b> was part of the query.
-	 */
-	private boolean hasFrom;
 
 	/**
 	 * Determines whether a space was parsed after the date part.
@@ -93,7 +88,7 @@ public final class ExtractExpression extends AbstractSingleEncapsulatedExpressio
 		}
 
 		// 'FROM'
-		if (hasFrom) {
+		if (fromIdentifier != null) {
 			children.add(buildStringExpression(FROM));
 		}
 
@@ -155,7 +150,7 @@ public final class ExtractExpression extends AbstractSingleEncapsulatedExpressio
 	 */
 	@Override
 	public boolean hasEncapsulatedExpression() {
-		return hasDatePart() || hasFrom || hasExpression();
+		return hasDatePart() || (fromIdentifier != null) || hasExpression();
 	}
 
 	/**
@@ -164,7 +159,7 @@ public final class ExtractExpression extends AbstractSingleEncapsulatedExpressio
 	 * @return <code>true</code> if the identifier <b>FROM</b> was parsed; <code>false</code> otherwise
 	 */
 	public boolean hasFrom() {
-		return hasFrom;
+		return fromIdentifier != null;
 	}
 
 	/**
@@ -228,10 +223,7 @@ public final class ExtractExpression extends AbstractSingleEncapsulatedExpressio
 		}
 
 		// Parse 'FROM'
-		hasFrom = wordParser.startsWithIdentifier(FROM);
-
-		// Parse 'FROM'
-		if (hasFrom) {
+		if (wordParser.startsWithIdentifier(FROM)) {
 			fromIdentifier = wordParser.moveForward(FROM);
 			hasSpaceAfterFrom = wordParser.skipLeadingWhitespace() > 0;
 		}
@@ -254,7 +246,6 @@ public final class ExtractExpression extends AbstractSingleEncapsulatedExpressio
 	@Override
 	protected void removeEncapsulatedExpression() {
 		super.removeEncapsulatedExpression();
-		hasFrom               = false;
 		datePart              = ExpressionTools.EMPTY_STRING;
 		fromIdentifier        = null;
 		hasSpaceAfterFrom     = false;
@@ -275,7 +266,7 @@ public final class ExtractExpression extends AbstractSingleEncapsulatedExpressio
 		}
 
 		// FROM
-		if (hasFrom) {
+		if (fromIdentifier != null) {
 			writer.append(actual ? fromIdentifier : FROM);
 		}
 

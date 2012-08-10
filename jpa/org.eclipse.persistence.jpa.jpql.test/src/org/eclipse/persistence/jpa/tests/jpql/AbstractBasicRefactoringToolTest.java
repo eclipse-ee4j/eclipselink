@@ -18,7 +18,6 @@ import org.eclipse.persistence.jpa.jpql.BasicRefactoringTool;
 import org.eclipse.persistence.jpa.jpql.RefactoringDelta;
 import org.eclipse.persistence.jpa.jpql.TextEdit;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
-import org.eclipse.persistence.jpa.jpql.util.iterator.IterableListIterator;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLGrammarTestHelper;
 
 import static org.junit.Assert.*;
@@ -27,7 +26,7 @@ import static org.junit.Assert.*;
  * The abstract definition of a unit-test that tests {@link org.eclipse.persistence.jpa.jpql.
  * BasicRefactoringTool BasicRefactoringTool}.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -52,10 +51,10 @@ public abstract class AbstractBasicRefactoringToolTest extends JPQLCoreTest {
 		assertNotNull("The RefactoringDelta cannot be null", delta);
 		assertEquals("One MultiTextEdit should have been created", 1, delta.size());
 
-		IterableListIterator<TextEdit> textEdits = delta.textEdits();
+		Iterable<TextEdit> textEdits = delta.textEdits();
 		assertNotNull("The list of Edit cannot be null", textEdits);
 
-		TextEdit textEdit = textEdits.next();
+		TextEdit textEdit = textEdits.iterator().next();
 		assertNotNull("The Edit cannot be null", textEdit);
 
 		assertEquals(offset,            textEdit.getOffset());
@@ -65,7 +64,7 @@ public abstract class AbstractBasicRefactoringToolTest extends JPQLCoreTest {
 
 		assertEquals(expectedJPQLQuery, delta.applyChanges());
 		assertFalse(delta.hasTextEdits());
-		assertFalse(delta.textEdits().hasNext());
+		assertFalse(delta.textEdits().iterator().hasNext());
 	}
 
 	protected final void testChanges(BasicRefactoringTool refactoringTool,
@@ -111,7 +110,7 @@ public abstract class AbstractBasicRefactoringToolTest extends JPQLCoreTest {
 
 		assertEquals(expectedJPQLQuery, delta.applyChanges());
 		assertFalse(delta.hasTextEdits());
-		assertFalse(delta.textEdits().hasNext());
+		assertFalse(delta.textEdits().iterator().hasNext());
 	}
 
 	protected final void testHasNoChanges(BasicRefactoringTool refactoringTool) {

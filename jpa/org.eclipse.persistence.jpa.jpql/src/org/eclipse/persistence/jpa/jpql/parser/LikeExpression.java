@@ -31,7 +31,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <p>
  * <div nowrap><b>BNF:</b> <code>like_expression ::= string_expression [NOT] LIKE pattern_value [ESCAPE escape_character]</code><p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -47,16 +47,6 @@ public final class LikeExpression extends AbstractExpression {
 	 * The actual <b>escape</b> identifier found in the string representation of the JPQL query.
 	 */
 	private String escapeIdentifier;
-
-	/**
-	 * Determines whether the identifier <b>ESCAPE</b> was parsed.
-	 */
-	private boolean hasEscape;
-
-	/**
-	 * Determines whether the identifier <b>NOT</b> was parsed.
-	 */
-	private boolean hasNot;
 
 	/**
 	 * Determines whether a whitespace was parsed after <b>ESCAPE</b>.
@@ -146,7 +136,7 @@ public final class LikeExpression extends AbstractExpression {
 		}
 
 		// 'NOT'
-		if (hasNot) {
+		if (notIdentifier != null) {
 			children.add(buildStringExpression(SPACE));
 			children.add(buildStringExpression(NOT));
 		}
@@ -170,7 +160,7 @@ public final class LikeExpression extends AbstractExpression {
 		}
 
 		// 'ESCAPE'
-		if (hasEscape) {
+		if (escapeIdentifier != null) {
 			children.add(buildStringExpression(ESCAPE));
 		}
 
@@ -235,7 +225,7 @@ public final class LikeExpression extends AbstractExpression {
 	 * @return Either <b>LIKE</b> or <b>NOT LIKE</b>
 	 */
 	public String getIdentifier() {
-		return hasNot ? NOT_LIKE : LIKE;
+		return (notIdentifier != null) ? NOT_LIKE : LIKE;
 	}
 
 	/**
@@ -275,7 +265,7 @@ public final class LikeExpression extends AbstractExpression {
 	 * @return <code>true</code> if the identifier <b>ESCAPE</b> was parsed; <code>false</code> otherwise
 	 */
 	public boolean hasEscape() {
-		return hasEscape;
+		return escapeIdentifier != null;
 	}
 
 	/**
@@ -295,7 +285,7 @@ public final class LikeExpression extends AbstractExpression {
 	 * @return <code>true</code> if the identifier <b>NOT</b> was parsed; <code>false</code> otherwise
 	 */
 	public boolean hasNot() {
-		return hasNot;
+		return notIdentifier != null;
 	}
 
 	/**
@@ -311,8 +301,7 @@ public final class LikeExpression extends AbstractExpression {
 	/**
 	 * Determines whether a whitespace was parsed after <b>ESCAPE</b>.
 	 *
-	 * @return <code>true</code> if there was a whitespace after <b>ESCAPE</b>; <code>false</code>
-	 * otherwise
+	 * @return <code>true</code> if there was a whitespace after <b>ESCAPE</b>; <code>false</code> otherwise
 	 */
 	public boolean hasSpaceAfterEscape() {
 		return hasSpaceAfterEscape;
@@ -321,8 +310,7 @@ public final class LikeExpression extends AbstractExpression {
 	/**
 	 * Determines whether a whitespace was parsed after <b>LIKE</b>.
 	 *
-	 * @return <code>true</code> if there was a whitespace after <b>LIKE</b>; <code>false</code>
-	 * otherwise
+	 * @return <code>true</code> if there was a whitespace after <b>LIKE</b>; <code>false</code> otherwise
 	 */
 	public boolean hasSpaceAfterLike() {
 		return hasSpaceAfterLike;
@@ -331,8 +319,7 @@ public final class LikeExpression extends AbstractExpression {
 	/**
 	 * Determines whether a whitespace was parsed after the pattern value.
 	 *
-	 * @return <code>true</code> if there was a whitespace after the pattern value; <code>false</code>
-	 * otherwise
+	 * @return <code>true</code> if there was a whitespace after the pattern value; <code>false</code> otherwise
 	 */
 	public boolean hasSpaceAfterPatternValue() {
 		return hasSpaceAfterPatternValue;
@@ -386,9 +373,7 @@ public final class LikeExpression extends AbstractExpression {
 	protected void parse(WordParser wordParser, boolean tolerant) {
 
 		// Parse 'NOT
-		hasNot = wordParser.startsWithIgnoreCase('N');
-
-		if (hasNot) {
+		if (wordParser.startsWithIgnoreCase('N')) {
 			notIdentifier = wordParser.moveForward(NOT);
 			wordParser.skipLeadingWhitespace();
 		}
@@ -404,9 +389,7 @@ public final class LikeExpression extends AbstractExpression {
 		int count = wordParser.skipLeadingWhitespace();
 
 		// Parse 'ESCAPE'
-		hasEscape = wordParser.startsWithIdentifier(ESCAPE);
-
-		if (hasEscape) {
+		if (wordParser.startsWithIdentifier(ESCAPE)) {
 			hasSpaceAfterPatternValue = (count > 0);
 			count = 0;
 			escapeIdentifier = wordParser.moveForward(ESCAPE);
@@ -440,7 +423,10 @@ public final class LikeExpression extends AbstractExpression {
 		else {
 			escapeCharacter = parse(wordParser, LikeExpressionEscapeCharacterBNF.ID, tolerant);
 
-			if (!hasEscape && (escapeCharacter == null) && !wordParser.isTail()) {
+			if ((escapeIdentifier == null) &&
+			    (escapeCharacter == null)  &&
+			    !wordParser.isTail()) {
+
 				hasSpaceAfterPatternValue = false;
 				wordParser.moveBackward(count);
 			}
@@ -461,14 +447,14 @@ public final class LikeExpression extends AbstractExpression {
 
 		// 'NOT LIKE' or 'LIKE'
 		if (actual) {
-			if (hasNot) {
+			if (notIdentifier != null) {
 				writer.append(notIdentifier);
 				writer.append(SPACE);
 			}
 			writer.append(likeIdentifier);
 		}
 		else {
-			writer.append(hasNot ? NOT_LIKE : LIKE);
+			writer.append((notIdentifier != null) ? NOT_LIKE : LIKE);
 		}
 
 		if (hasSpaceAfterLike) {
@@ -485,7 +471,7 @@ public final class LikeExpression extends AbstractExpression {
 		}
 
 		// 'ESCAPE'
-		if (hasEscape) {
+		if (escapeIdentifier != null) {
 			writer.append(actual ? escapeIdentifier : ESCAPE);
 		}
 

@@ -18,16 +18,14 @@ import java.util.List;
 import org.eclipse.persistence.jpa.jpql.WordParser;
 
 /**
- * A select statement must always have a <code><b>SELECT</b></code> and a <code><b>FROM</b></code>
- * clause. The other clauses are optional.
- * <p>
- * <div nowrap><b>BNF:</b> <code>select_statement ::= select_clause from_clause [where_clause] [groupby_clause] [having_clause] [orderby_clause]</code>
- * <p>
+ * A query is an operation that retrieves data from one or more tables or views. In this reference,
+ * a top-level <code><b>SELECT</b></code> statement is called a query, and a query nested within
+ * another SQL statement is called a subquery.
  *
  * @see SelectStatement
  * @see SimpleSelectStatement
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -71,7 +69,7 @@ public abstract class AbstractSelectStatement extends AbstractExpression {
 	/**
 	 * The <code><b>SELECT</b></code> clause of this select statement.
 	 */
-	private AbstractSelectClause selectClause;
+	private AbstractExpression selectClause;
 
 	/**
 	 * The <code><b>WHERE</b></code> clause of this select statement.
@@ -227,9 +225,9 @@ public abstract class AbstractSelectStatement extends AbstractExpression {
 	 *
 	 * @return The expression representing the <b>SELECT</b> clause
 	 */
-	public AbstractSelectClause getSelectClause() {
+	public final Expression getSelectClause() {
 		if (selectClause == null) {
-			selectClause = buildSelectClause();
+			selectClause = buildNullExpression();
 		}
 		return selectClause;
 	}
@@ -247,7 +245,7 @@ public abstract class AbstractSelectStatement extends AbstractExpression {
 	}
 
 	/**
-	 * Determines whether the <b>FROM</b> clause is defined.
+	 * Determines whether the <b>FROM</b> clause was parsed or not.
 	 *
 	 * @return <code>true</code> if the query that got parsed had the <b>FROM</b> clause
 	 */
@@ -257,7 +255,7 @@ public abstract class AbstractSelectStatement extends AbstractExpression {
 	}
 
 	/**
-	 * Determines whether the <b>GROUP BY</b> clause is defined.
+	 * Determines whether the <b>GROUP BY</b> clause was parsed or not.
 	 *
 	 * @return <code>true</code> if the query that got parsed had the <b>GROUP BY</b> clause
 	 */
@@ -267,13 +265,24 @@ public abstract class AbstractSelectStatement extends AbstractExpression {
 	}
 
 	/**
-	 * Determines whether the <b>HAVING</b> clause is defined.
+	 * Determines whether the <b>HAVING</b> clause was parsed or not.
 	 *
 	 * @return <code>true</code> if the query that got parsed had the <b>HAVING</b> clause
 	 */
 	public final boolean hasHavingClause() {
 		return havingClause != null &&
 		      !havingClause.isNull();
+	}
+
+	/**
+	 * Determines whether the <b>SELECT</b> clause was parsed or not.
+	 *
+	 * @return <code>true</code> if the query that got parsed had the <b>HAVING</b> clause
+	 * @since 2.5
+	 */
+	public final boolean hasSelectClause() {
+		return selectClause != null &&
+		      !selectClause.isNull();
 	}
 
 	/**
@@ -337,34 +346,36 @@ public abstract class AbstractSelectStatement extends AbstractExpression {
 	protected void parse(WordParser wordParser, boolean tolerant) {
 
 		// Parse 'SELECT' clause
-		selectClause = buildSelectClause();
-		selectClause.parse(wordParser, tolerant);
+		if (wordParser.startsWithIdentifier(SELECT)) {
+			selectClause = buildSelectClause();
+			selectClause.parse(wordParser, tolerant);
 
-		hasSpaceAfterSelect = wordParser.skipLeadingWhitespace() > 0;
+			hasSpaceAfterSelect = wordParser.skipLeadingWhitespace() > 0;
+		}
 
 		// Parse 'FROM' clause
 		if (wordParser.startsWithIdentifier(FROM)) {
 			fromClause = buildFromClause();
 			fromClause.parse(wordParser, tolerant);
-		}
 
-		hasSpaceAfterFrom = wordParser.skipLeadingWhitespace() > 0;
+			hasSpaceAfterFrom = wordParser.skipLeadingWhitespace() > 0;
+		}
 
 		// Parse 'WHERE' clause
 		if (wordParser.startsWithIdentifier(WHERE)) {
 			whereClause = new WhereClause(this);
 			whereClause.parse(wordParser, tolerant);
-		}
 
-		hasSpaceAfterWhere = wordParser.skipLeadingWhitespace() > 0;
+			hasSpaceAfterWhere = wordParser.skipLeadingWhitespace() > 0;
+		}
 
 		// Parse 'GROUP BY' clause
 		if (wordParser.startsWithIdentifier(GROUP_BY)) {
 			groupByClause = new GroupByClause(this);
 			groupByClause.parse(wordParser, tolerant);
-		}
 
-		hasSpaceAfterGroupBy = wordParser.skipLeadingWhitespace() > 0;
+			hasSpaceAfterGroupBy = wordParser.skipLeadingWhitespace() > 0;
+		}
 
 		// Parse 'HAVING' clause
 		if (wordParser.startsWithIdentifier(HAVING)) {
@@ -374,16 +385,16 @@ public abstract class AbstractSelectStatement extends AbstractExpression {
 
 		if (!wordParser.isTail() && !shouldManageSpaceAfterClause()) {
 
-			if (hasSpaceAfterFrom     &&
-			    whereClause   == null &&
-			    groupByClause == null &&
-			    havingClause  == null) {
+			if (hasSpaceAfterFrom               &&
+			    whereClause == null             &&
+			    groupByClause == null           &&
+			    havingClause == null) {
 
 				hasSpaceAfterFrom = false;
 				wordParser.moveBackward(1);
 			}
-			else if (hasSpaceAfterWhere    &&
-			         groupByClause == null &&
+			else if (hasSpaceAfterWhere              &&
+			         groupByClause == null           &&
 			         havingClause  == null) {
 
 				hasSpaceAfterWhere = false;
@@ -399,9 +410,11 @@ public abstract class AbstractSelectStatement extends AbstractExpression {
 	}
 
 	/**
-	 * Determines whether
+	 * Determines whether the whitespace following the <code><b>HAVING</b></code> clause should be
+	 * managed by this expression or not.
 	 *
-	 * @return
+	 * @return <code>true</code> by default to keep the whitespace part of this expression;
+	 * <code>false</code> to let the parent handle it
 	 */
 	protected boolean shouldManageSpaceAfterClause() {
 		return true;
@@ -413,7 +426,7 @@ public abstract class AbstractSelectStatement extends AbstractExpression {
 	@Override
 	protected void toParsedText(StringBuilder writer, boolean actual) {
 
-		// SELECT ...
+		// SELECT clause
 		if (selectClause != null) {
 			selectClause.toParsedText(writer, actual);
 		}
@@ -422,8 +435,8 @@ public abstract class AbstractSelectStatement extends AbstractExpression {
 			writer.append(SPACE);
 		}
 
-		// FROM ...
-		if (hasFromClause()) {
+		// FROM clause
+		if (fromClause != null) {
 			fromClause.toParsedText(writer, actual);
 		}
 
@@ -431,8 +444,8 @@ public abstract class AbstractSelectStatement extends AbstractExpression {
 			writer.append(SPACE);
 		}
 
-		// WHERE ...
-		if (hasWhereClause()) {
+		// WHERE clause
+		if (whereClause != null) {
 			whereClause.toParsedText(writer, actual);
 		}
 
@@ -440,8 +453,8 @@ public abstract class AbstractSelectStatement extends AbstractExpression {
 			writer.append(SPACE);
 		}
 
-		// GROUP BY ...
-		if (hasGroupByClause()) {
+		// GROUP BY clause
+		if (groupByClause != null) {
 			groupByClause.toParsedText(writer, actual);
 		}
 
@@ -449,8 +462,8 @@ public abstract class AbstractSelectStatement extends AbstractExpression {
 			writer.append(SPACE);
 		}
 
-		// HAVING ...
-		if (hasHavingClause()) {
+		// HAVING clause
+		if (havingClause != null) {
 			havingClause.toParsedText(writer, actual);
 		}
 	}

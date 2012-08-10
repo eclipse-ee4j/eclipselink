@@ -13,8 +13,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.jpql;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -48,6 +46,7 @@ import org.eclipse.persistence.jpa.jpql.parser.AllOrAnyExpression;
 import org.eclipse.persistence.jpa.jpql.parser.AndExpression;
 import org.eclipse.persistence.jpa.jpql.parser.AnonymousExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.ArithmeticFactor;
+import org.eclipse.persistence.jpa.jpql.parser.AsOfClause;
 import org.eclipse.persistence.jpa.jpql.parser.AvgFunction;
 import org.eclipse.persistence.jpa.jpql.parser.BadExpression;
 import org.eclipse.persistence.jpa.jpql.parser.BetweenExpression;
@@ -60,6 +59,7 @@ import org.eclipse.persistence.jpa.jpql.parser.CollectionMemberExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionValuedPathExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ComparisonExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConcatExpression;
+import org.eclipse.persistence.jpa.jpql.parser.ConnectByClause;
 import org.eclipse.persistence.jpa.jpql.parser.ConstructorExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CountFunction;
 import org.eclipse.persistence.jpa.jpql.parser.DatabaseType;
@@ -77,6 +77,7 @@ import org.eclipse.persistence.jpa.jpql.parser.FromClause;
 import org.eclipse.persistence.jpa.jpql.parser.FunctionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.GroupByClause;
 import org.eclipse.persistence.jpa.jpql.parser.HavingClause;
+import org.eclipse.persistence.jpa.jpql.parser.HierarchicalQueryClause;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.InExpression;
@@ -114,6 +115,7 @@ import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectStatement;
 import org.eclipse.persistence.jpa.jpql.parser.SizeExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SqrtExpression;
+import org.eclipse.persistence.jpa.jpql.parser.StartWithClause;
 import org.eclipse.persistence.jpa.jpql.parser.StateFieldPathExpression;
 import org.eclipse.persistence.jpa.jpql.parser.StringLiteral;
 import org.eclipse.persistence.jpa.jpql.parser.SubExpression;
@@ -144,7 +146,7 @@ import org.eclipse.persistence.queries.ReportQuery;
  * JPQL Expression} and creates the corresponding {@link org.eclipse.persistence.expressions.
  * Expression EclipseLink Expression}.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  * @author John Bracken
@@ -391,13 +393,6 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 		return variableNames;
 	}
 
-	private Comparator<Class<?>> numericTypeComparator() {
-		if (numericTypeComparator == null) {
-			numericTypeComparator = new NumericTypeComparator();
-		}
-		return numericTypeComparator;
-	}
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -442,7 +437,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 		queryExpression = ExpressionMath.add(leftExpression, rightExpression);
 
 		// Set the expression type
-		Collections.sort(types, numericTypeComparator());
+		Collections.sort(types, NumericTypeComparator.instance());
 		type[0] = types.get(0);
 	}
 
@@ -507,6 +502,12 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 		queryExpression = ExpressionMath.subtract(queryExpression, arithmeticFactor);
 
 		// Note: The type will be calculated when traversing the sub-expression
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(AsOfClause expression) {
 	}
 
 	/**
@@ -778,6 +779,13 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	public void visit(ConnectByClause expression) {
+		// TODO: 2.5
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public void visit(ConstructorExpression expression) {
 		// Nothing to do
 	}
@@ -888,7 +896,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 		queryExpression = ExpressionMath.divide(leftExpression, rightExpression);
 
 		// Set the expression type
-		Collections.sort(types, numericTypeComparator());
+		Collections.sort(types, NumericTypeComparator.instance());
 		type[0] = types.get(0);
 	}
 
@@ -1085,6 +1093,13 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	 */
 	public void visit(HavingClause expression) {
 		expression.getConditionalExpression().accept(this);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(HierarchicalQueryClause expression) {
+		// TODO 2.5
 	}
 
 	/**
@@ -1351,20 +1366,20 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 		type[0] = Integer.class;
 	}
 
-        /**
-		 * {@inheritDoc}
-		 */
-		public void visit(LowerExpression expression) {
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(LowerExpression expression) {
 
-			// Create the expression from the encapsulated expression
-			expression.getExpression().accept(this);
+		// Create the expression from the encapsulated expression
+		expression.getExpression().accept(this);
 
-			// Now create the LOWER expression
-			queryExpression = queryExpression.toLowerCase();
+		// Now create the LOWER expression
+		queryExpression = queryExpression.toLowerCase();
 
-			// Set the expression type
-			type[0] = String.class;
-		}
+		// Set the expression type
+		type[0] = String.class;
+	}
 
 	/**
 	 * {@inheritDoc}
@@ -1445,7 +1460,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 		queryExpression = ExpressionMath.multiply(leftExpression, rightExpression);
 
 		// Set the expression type
-		Collections.sort(types, numericTypeComparator());
+		Collections.sort(types, NumericTypeComparator.instance());
 		type[0] = types.get(0);
 	}
 
@@ -1576,33 +1591,33 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 		type[0] = Boolean.class;
 	}
 
-        /**
-		 * {@inheritDoc}
-		 */
-		public void visit(RangeVariableDeclaration expression) {
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(RangeVariableDeclaration expression) {
 
-			IdentificationVariable variable = (IdentificationVariable) expression.getIdentificationVariable();
-			Declaration declaration = queryContext.getDeclaration(variable.getVariableName());
+		IdentificationVariable variable = (IdentificationVariable) expression.getIdentificationVariable();
+		Declaration declaration = queryContext.getDeclaration(variable.getVariableName());
 
-			// If the Declaration is RangeDeclaration, then retrieve its Descriptor directly,
-			// this will support two cases automatically, the "root" object is
-			// 1) An abstract schema name (entity name) -> parsed as AbstractSchemaName
-			// 2) A fully qualified class name -> parsed as a CollectionValuedPathExpression
-			//    that cannot be visited
-			if (declaration.isRange()) {
-				type[0] = declaration.getDescriptor().getJavaClass();
-				queryExpression = new ExpressionBuilder(type[0]);
-			}
-			// The FROM subquery needs to be created differently than a regular subquery
-			else if (declaration.isSubquery()) {
-				type[0] = null;
-				queryExpression = declaration.getQueryExpression();
-			}
-			// This should be a derived path (CollectionValuedPathExpression) or a subquery
-			else {
-				expression.getRootObject().accept(this);
-			}
+		// If the Declaration is RangeDeclaration, then retrieve its Descriptor directly,
+		// this will support two cases automatically, the "root" object is
+		// 1) An abstract schema name (entity name) -> parsed as AbstractSchemaName
+		// 2) A fully qualified class name -> parsed as a CollectionValuedPathExpression
+		//    that cannot be visited
+		if (declaration.isRange()) {
+			type[0] = declaration.getDescriptor().getJavaClass();
+			queryExpression = new ExpressionBuilder(type[0]);
 		}
+		// The FROM subquery needs to be created differently than a regular subquery
+		else if (declaration.isSubquery()) {
+			type[0] = null;
+			queryExpression = declaration.getQueryExpression();
+		}
+		// This should be a derived path (CollectionValuedPathExpression) or a subquery
+		else {
+			expression.getRootObject().accept(this);
+		}
+	}
 
 	/**
 	 * {@inheritDoc}
@@ -1715,6 +1730,13 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	public void visit(StartWithClause expression) {
+		// TODO: 2.5
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public void visit(StateFieldPathExpression expression) {
 		visitPathExpression(expression, false, expression.pathSize());
 	}
@@ -1789,7 +1811,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 		queryExpression = ExpressionMath.subtract(leftExpression, rightExpression);
 
 		// Set the expression type
-		Collections.sort(types, numericTypeComparator());
+		Collections.sort(types, NumericTypeComparator.instance());
 		type[0] = types.get(0);
 	}
 
@@ -2068,8 +2090,8 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	private class InExpressionBuilder extends AnonymousExpressionVisitor {
 
 		private boolean hasNot;
-		private boolean singleInputParameter;
 		private Expression leftExpression;
+		private boolean singleInputParameter;
 
 		/**
 		 * Creates a new <code>InExpressionBuilder</code>.
@@ -2188,50 +2210,6 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 			protected void visit(org.eclipse.persistence.jpa.jpql.parser.Expression expression) {
 				expression.accept(ExpressionBuilderVisitor.this);
 			}
-		}
-	}
-
-	/**
-	 * This {@link Comparator} compares two {@link Class} values and returned the appropriate numeric
-	 * type that takes precedence.
-	 */
-	private static class NumericTypeComparator implements Comparator<Class<?>> {
-
-		/**
-		 * {@inheritDoc}
-		 */
-		public int compare(Class<?> type1, Class<?> type2) {
-
-			// Same type
-			if (type1 == type2) {
-				return 0;
-			}
-
-			// Object type
-			if (type1 == Object.class) return -1;
-			if (type2 == Object.class) return 1;
-
-			// Double
-			if (type1 == Double.TYPE || type1 == Double.class) return -1;
-			if (type2 == Double.TYPE || type2 == Double.class) return 1;
-
-			// Float
-			if (type1 == Float.TYPE || type1 == Float.class) return -1;
-			if (type2 == Float.TYPE || type2 == Float.class) return 1;
-
-			// BigDecimal
-			if (type1 == BigDecimal.class) return -1;
-			if (type2 == BigDecimal.class) return 1;
-
-			// BigInteger
-			if (type1 == BigInteger.class) return -1;
-			if (type2 == BigInteger.class) return 1;
-
-			// Long
-			if (type1 == Long.TYPE || type1 == Long.class) return -1;
-			if (type2 == Long.TYPE || type2 == Long.class) return 1;
-
-			return 1;
 		}
 	}
 

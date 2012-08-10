@@ -13,12 +13,16 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql;
 
+import org.eclipse.persistence.jpa.jpql.parser.AsOfClause;
 import org.eclipse.persistence.jpa.jpql.parser.CastExpression;
+import org.eclipse.persistence.jpa.jpql.parser.ConnectByClause;
 import org.eclipse.persistence.jpa.jpql.parser.DatabaseType;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.ExtractExpression;
+import org.eclipse.persistence.jpa.jpql.parser.HierarchicalQueryClause;
 import org.eclipse.persistence.jpa.jpql.parser.RegexpExpression;
+import org.eclipse.persistence.jpa.jpql.parser.StartWithClause;
 import org.eclipse.persistence.jpa.jpql.parser.TableExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TableVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.UnionClause;
@@ -31,7 +35,7 @@ import org.eclipse.persistence.jpa.jpql.parser.UnionClause;
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
  * API will almost certainly be broken (repeatedly) as the API evolves.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -51,7 +55,21 @@ public class EclipseLinkParameterTypeVisitor extends ParameterTypeVisitor
 	/**
 	 * {@inheritDoc}
 	 */
+	public void visit(AsOfClause expression) {
+		type = Object.class;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public void visit(CastExpression expression) {
+		type = Object.class;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(ConnectByClause expression) {
 		type = Object.class;
 	}
 
@@ -72,6 +90,13 @@ public class EclipseLinkParameterTypeVisitor extends ParameterTypeVisitor
 	/**
 	 * {@inheritDoc}
 	 */
+	public void visit(HierarchicalQueryClause expression) {
+		type = Object.class;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public void visit(RegexpExpression expression) {
 
 		Expression patternValue = expression.getPatternValue();
@@ -83,6 +108,13 @@ public class EclipseLinkParameterTypeVisitor extends ParameterTypeVisitor
 		else if (stringExpression.isAncestor(inputParameter)) {
 			this.expression = expression;
 		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(StartWithClause expression) {
+		type = Object.class;
 	}
 
 	/**

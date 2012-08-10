@@ -27,7 +27,7 @@ import java.util.List;
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
  * API will almost certainly be broken (repeatedly) as the API evolves.
  *
- * @version 2.4
+ * @version 2.4.1
  * @since 2.4
  * @author Pascal Filion
  */
@@ -41,13 +41,32 @@ public final class CollectionTools {
 	}
 
 	/**
+	 * Adds to the given {@link Collection} the items contained in the array.
+	 *
+	 * @param collection The {@link Collection} that will receive the items returned by the {@link Iterator}
+	 * @param array The array to add to the given {@link Collection}
+	 * @return The given {@link Collection}
+	 * @param <T> The type of the collection
+	 * @param <E> The type of the element
+	 * @since 2.4.1
+	 */
+	public static <T extends Collection<E>, E> T addAll(T collection, E[] array) {
+		for (E item : array) {
+			collection.add(item);
+		}
+		return collection;
+	}
+
+	/**
 	 * Adds to the given {@link Collection} the items returned by the given {@link Iterator}.
 	 *
 	 * @param collection The {@link Collection} that will receive the items returned by the {@link Iterator}
 	 * @param iterator The {@link Iterator} that will return the items to add to the {@link Collection}
+	 * @param <T> The type of the collection
+	 * @param <E> The type of the element
 	 * @return The given {@link Collection}
 	 */
-	public static <T extends Collection<I>, I> T addAll(T collection, Iterator<? extends I> iterator) {
+	public static <T extends Collection<E>, E> T addAll(T collection, Iterator<? extends E> iterator) {
 		while (iterator.hasNext()) {
 			collection.add(iterator.next());
 		}

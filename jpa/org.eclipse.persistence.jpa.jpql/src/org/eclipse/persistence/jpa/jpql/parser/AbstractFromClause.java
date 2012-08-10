@@ -28,11 +28,18 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * @see FromClause
  * @see SimpleFromClause
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
 public abstract class AbstractFromClause extends AbstractExpression {
+
+	/**
+	 * The {@link Expression} that represents the <code><b>AS OF</b></code> clause.
+	 *
+	 * @since 2.5
+	 */
+	private AbstractExpression asOfClause;
 
 	/**
 	 * The declaration portion of this <b>FROM</b> clause.
@@ -43,6 +50,29 @@ public abstract class AbstractFromClause extends AbstractExpression {
 	 * Determines whether a whitespace was parsed after the identifier <b>FROM</b>.
 	 */
 	private boolean hasSpace;
+
+	/**
+	 * Determines whether there is a whitespace after the hierarchical query clause.
+	 *
+	 * @since 2.5
+	 */
+	private boolean hasSpaceAfterHierarchicalQueryClause;
+
+	/**
+	 * Determines whether there is a whitespace after the declaration and either the hierarchical
+	 * query clause or the <code><b>AS OF</b></code> clause was parsed.
+	 *
+	 * @since 2.5
+	 */
+	private boolean hasSpaceDeclaration;
+
+	/**
+	 * The hierarchical query clause, which holds onto the <code><b>START WITH</b></code> and
+	 * <code><b>CONNECT BY</b></code> clauses.
+	 *
+	 * @since 2.5
+	 */
+	private AbstractExpression hierarchicalQueryClause;
 
 	/**
 	 * The actual identifier found in the string representation of the JPQL query.
@@ -63,21 +93,25 @@ public abstract class AbstractFromClause extends AbstractExpression {
 	 */
 	public void acceptChildren(ExpressionVisitor visitor) {
 		getDeclaration().accept(visitor);
+		getHierarchicalQueryClause().accept(visitor);
+		getAsOfClause().accept(visitor);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected final void addChildrenTo(Collection<Expression> children) {
+	protected void addChildrenTo(Collection<Expression> children) {
 		children.add(getDeclaration());
+		children.add(getHierarchicalQueryClause());
+		children.add(getAsOfClause());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected final void addOrderedChildrenTo(List<Expression> children) {
+	protected void addOrderedChildrenTo(List<Expression> children) {
 
 		// 'FROM'
 		children.add(buildStringExpression(FROM));
@@ -90,6 +124,24 @@ public abstract class AbstractFromClause extends AbstractExpression {
 		// Declaration
 		if (declaration != null) {
 			children.add(declaration);
+		}
+
+		if (hasSpaceDeclaration) {
+			children.add(buildStringExpression(SPACE));
+		}
+
+		// Hierarchical query clause
+		if (hierarchicalQueryClause != null) {
+			children.add(hierarchicalQueryClause);
+		}
+
+		if (hasSpaceAfterHierarchicalQueryClause) {
+			children.add(buildStringExpression(SPACE));
+		}
+
+		// 'AS OF' clause
+		if (asOfClause != null) {
+			children.add(asOfClause);
 		}
 	}
 
@@ -130,6 +182,18 @@ public abstract class AbstractFromClause extends AbstractExpression {
 	}
 
 	/**
+	 * Returns the {@link Expression} representing the <b>AS OF</b> clause.
+	 *
+	 * @return The expression representing the <b>AS OF</b> clause
+	 */
+	public final Expression getAsOfClause() {
+		if (asOfClause == null) {
+			asOfClause = buildNullExpression();
+		}
+		return asOfClause;
+	}
+
+	/**
 	 * Returns the {@link Expression} that represents the declaration of this clause.
 	 *
 	 * @return The expression that was parsed representing the declaration
@@ -139,6 +203,29 @@ public abstract class AbstractFromClause extends AbstractExpression {
 			declaration = buildNullExpression();
 		}
 		return declaration;
+	}
+
+	/**
+	 * Returns the {@link Expression} representing the hierarchical query clause.
+	 *
+	 * @return The expression representing the hierarchical query clause
+	 * @since 2.5
+	 */
+	public final Expression getHierarchicalQueryClause() {
+		if (hierarchicalQueryClause == null) {
+			hierarchicalQueryClause = buildNullExpression();
+		}
+		return hierarchicalQueryClause;
+	}
+
+	/**
+	 * Determines whether the <b>AS OF</b> clause is defined.
+	 *
+	 * @return <code>true</code> if the query that got parsed had the <b>AS OF</b> clause
+	 */
+	public final boolean hasAsOfClause() {
+		return asOfClause != null &&
+		      !asOfClause.isNull();
 	}
 
 	/**
@@ -153,6 +240,29 @@ public abstract class AbstractFromClause extends AbstractExpression {
 	}
 
 	/**
+	 * Determines whether the hierarchical query clause was parsed or not.
+	 *
+	 * @return <code>true</code> if the query that got parsed had the hierarchical query clause
+	 * @since 2.5
+	 */
+	public final boolean hasHierarchicalQueryClause() {
+		return hierarchicalQueryClause != null &&
+		      !hierarchicalQueryClause.isNull();
+	}
+
+	/**
+	 * Determines whether a whitespace was found after the declaration query clause, which will be
+	 * <code>true</code> if it's followed by either the hierarchical query clause or the <code><b>AS
+	 * OF</b></code> clause.
+	 *
+	 * @return <code>true</code> if there was a whitespace after the declaration; <code>false</code> otherwise
+	 * @since 2.5
+	 */
+	public final boolean hasSpaceAfterDeclaration() {
+		return hasSpaceDeclaration;
+	}
+
+	/**
 	 * Determines whether a whitespace was parsed after the <b>FROM</b> identifier.
 	 *
 	 * @return <code>true</code> if a whitespace was parsed after the <b>FROM</b> identifier;
@@ -160,6 +270,18 @@ public abstract class AbstractFromClause extends AbstractExpression {
 	 */
 	public final boolean hasSpaceAfterFrom() {
 		return hasSpace;
+	}
+
+	/**
+	 * Determines whether a whitespace was found after the hierarchical query clause. In some cases,
+	 * the space is owned by a child of the hierarchical query clause.
+	 *
+	 * @return <code>true</code> if there was a whitespace after the hierarchical query clause and
+	 * owned by this expression; <code>false</code> otherwise
+	 * @since 2.5
+	 */
+	public final boolean hasSpaceAfterHierarchicalQueryClause() {
+		return hasSpaceAfterHierarchicalQueryClause;
 	}
 
 	/**
@@ -180,7 +302,7 @@ public abstract class AbstractFromClause extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected final void parse(WordParser wordParser, boolean tolerant) {
+	protected void parse(WordParser wordParser, boolean tolerant) {
 
 		// Parse 'FROM'
 		identifier = wordParser.moveForward(FROM);
@@ -189,6 +311,34 @@ public abstract class AbstractFromClause extends AbstractExpression {
 
 		// Parse the declaration
 		declaration = parse(wordParser, declarationBNF(), tolerant);
+
+		int count = wordParser.skipLeadingWhitespace();
+		hasSpaceDeclaration = (count > 0);
+
+		// Parse hierarchical query clause
+		if (wordParser.startsWithIdentifier(START_WITH) ||
+		    wordParser.startsWithIdentifier(CONNECT_BY)) {
+
+			hierarchicalQueryClause = new HierarchicalQueryClause(this);
+			hierarchicalQueryClause.parse(wordParser, tolerant);
+
+			count = wordParser.skipLeadingWhitespace();
+			hasSpaceAfterHierarchicalQueryClause = (count > 0);
+		}
+
+		// AS OF clause
+		if (wordParser.startsWithIdentifier(AS_OF)) {
+			asOfClause = new AsOfClause(this);
+			asOfClause.parse(wordParser, tolerant);
+		}
+		else if (hasSpaceAfterHierarchicalQueryClause) {
+			hasSpaceAfterHierarchicalQueryClause = false;
+			wordParser.moveBackward(count);
+		}
+		else if (hierarchicalQueryClause == null) {
+			hasSpaceDeclaration = false;
+			wordParser.moveBackward(count);
+		}
 	}
 
 	/**
@@ -203,7 +353,7 @@ public abstract class AbstractFromClause extends AbstractExpression {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected final void toParsedText(StringBuilder writer, boolean actual) {
+	protected void toParsedText(StringBuilder writer, boolean actual) {
 
 		// 'FROM'
 		writer.append(actual ? identifier : FROM);
@@ -215,6 +365,24 @@ public abstract class AbstractFromClause extends AbstractExpression {
 		// Declaration
 		if (declaration != null) {
 			declaration.toParsedText(writer, actual);
+		}
+
+		if (hasSpaceDeclaration) {
+			writer.append(SPACE);
+		}
+
+		// Hierarchical query clause
+		if (hierarchicalQueryClause != null) {
+			hierarchicalQueryClause.toParsedText(writer, actual);
+		}
+
+		if (hasSpaceAfterHierarchicalQueryClause) {
+			writer.append(SPACE);
+		}
+
+		// AS OF clause
+		if (asOfClause != null) {
+			asOfClause.toParsedText(writer, actual);
 		}
 	}
 }

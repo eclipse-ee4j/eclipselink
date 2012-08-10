@@ -22,6 +22,7 @@ import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_1;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_2;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_3;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_4;
+import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_5;
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.InternalCountBNF;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLQueryBNF;
@@ -3431,7 +3432,8 @@ public abstract class AbstractGrammarValidatorTest extends AbstractValidatorTest
 		if (jpqlGrammar == EclipseLinkJPQLGrammar2_1.instance() ||
 		    jpqlGrammar == EclipseLinkJPQLGrammar2_2.instance() ||
 		    jpqlGrammar == EclipseLinkJPQLGrammar2_3.instance() ||
-		    jpqlGrammar == EclipseLinkJPQLGrammar2_4.instance()) {
+		    jpqlGrammar == EclipseLinkJPQLGrammar2_4.instance() ||
+			 jpqlGrammar == EclipseLinkJPQLGrammar2_5.instance()) {
 
 			testDoesNotHaveProblem(
 				problems,
