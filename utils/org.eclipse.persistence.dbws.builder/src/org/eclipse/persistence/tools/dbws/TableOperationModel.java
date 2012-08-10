@@ -26,6 +26,7 @@ public class TableOperationModel extends OperationModel {
     protected String schemaPattern;
     protected String tablePattern;
     public ArrayList<OperationModel> additionalOperations;
+
     //cache resolved DatabaseType's
     transient protected List<TableType> dbTables = new ArrayList<TableType>();
 
@@ -74,5 +75,24 @@ public class TableOperationModel extends OperationModel {
     }
     public void setDbTables(List<TableType> dbTables) {
         this.dbTables = dbTables;
+    }
+    
+    /**
+     * Return the List of additional (nested) operations for this
+     * TableOperationModel
+     */
+    public ArrayList<OperationModel> getAdditionalOperations() {
+        if (additionalOperations == null) {
+            additionalOperations = new ArrayList<OperationModel>();
+        }
+        return additionalOperations;
+    }
+
+    /**
+     * Add an operation to the List of additional (nested) operations
+     * for this TableOperationModel
+     */
+    public void addOperation(OperationModel additionalOperation) {
+        getAdditionalOperations().add(additionalOperation);
     }
 }

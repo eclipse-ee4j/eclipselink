@@ -410,8 +410,21 @@ prompt> java -cp eclipselink.jar:eclipselink-dbwsutils.jar:your_favourite_jdbc_d
         return __nullStream;
     }
 
+    /**
+     * @deprecated As of release 2.4, use addOperation(OperationModel operation) instead.
+     * @see org.eclipse.persistence.tools.dbws.DBWSBuilder#addOperation(OperationModel operation)
+     */
+    @Deprecated
     public void addSqlOperation(SQLOperationModel sqlOperation) {
         operations.add(sqlOperation);
+    }
+    
+    /**
+     * Add an OperationModel instance to the List of OperationModels 
+     * to be processed.
+     */
+    public void addOperation(OperationModel operation) {
+        operations.add(operation);
     }
 
     protected ProjectConfig buildORProjectConfig() {

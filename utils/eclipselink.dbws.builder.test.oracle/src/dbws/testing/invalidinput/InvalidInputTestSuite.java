@@ -107,7 +107,7 @@ public class InvalidInputTestSuite extends DBWSTestSuite {
 	          "/>" +
             "</dbws-builder>";
           builder = null;
-          DBWSTestSuite.setUp(".", true);
+          DBWSTestSuite.setUp(".", true, false);
     }
 
     @AfterClass
