@@ -176,7 +176,7 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
                 }
                 unmarshalRecord.setTypeQName(new QName(namespaceURI, type));
             }
-            if (xmlCompositeDirectCollectionMapping.getNullPolicy().isNullRepresentedByXsiNil() && unmarshalRecord.isNil()) {
+            if (unmarshalRecord.isNil() && xmlCompositeDirectCollectionMapping.getNullPolicy().isNullRepresentedByXsiNil()) {
                 getContainerPolicy().addInto(null, unmarshalRecord.getContainerInstance(this), unmarshalRecord.getSession());
             }
         } else if (lastXPathFragment.isAttribute()) {
@@ -236,10 +236,8 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
             return;
         }
 
-        if (xmlCompositeDirectCollectionMapping.getNullPolicy().isNullRepresentedByXsiNil()) {
-            if (unmarshalRecord.isNil()) {
-                return;
-            }
+        if (unmarshalRecord.isNil() && xmlCompositeDirectCollectionMapping.getNullPolicy().isNullRepresentedByXsiNil()) {            
+            return;            
         }
 
         if (!isWhitespaceAware() && XMLConstants.EMPTY_STRING.equals(value)) {
