@@ -1994,7 +1994,9 @@ public class ObjectBuilder implements Cloneable, Serializable {
         objectBuilder.setFieldsMap(new HashMap(getFieldsMap()));
         objectBuilder.setReadOnlyMappingsByField(new HashMap(getReadOnlyMappingsByField()));
         objectBuilder.setPrimaryKeyMappings(new ArrayList(getPrimaryKeyMappings()));
-        objectBuilder.setNonPrimaryKeyMappings(new ArrayList(getNonPrimaryKeyMappings()));
+        if (nonPrimaryKeyMappings != null) {
+            objectBuilder.setNonPrimaryKeyMappings(new ArrayList(getNonPrimaryKeyMappings()));
+        }
         objectBuilder.cloningMappings = new ArrayList(this.cloningMappings);
         objectBuilder.eagerMappings = new ArrayList(this.eagerMappings);
         objectBuilder.relationshipMappings = new ArrayList(this.relationshipMappings);
