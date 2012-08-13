@@ -355,8 +355,9 @@ public class XMLMarshaller implements Cloneable {
                 }                
             }
         }else{
-        	session = xmlContext.getSession(object.getClass());
-        	xmlDescriptor = getDescriptor(object, session);        	
+            Class objectClass = object.getClass();
+            session = xmlContext.getSession(objectClass);
+            xmlDescriptor = getDescriptor(objectClass, session);
         }
 
        
@@ -541,8 +542,9 @@ public class XMLMarshaller implements Cloneable {
 	                        }                
 	                    }
 	                }else{
-	                	session = xmlContext.getSession(object.getClass());
-	                	xmlDescriptor = getDescriptor(object.getClass(), session);
+                            Class objectClass = object.getClass();
+                            session = xmlContext.getSession(objectClass);
+                            xmlDescriptor = getDescriptor(objectClass, session);
 	                }
             	}
                 OutputStreamRecord record;
@@ -652,6 +654,7 @@ public class XMLMarshaller implements Cloneable {
 	            }
         	}
         }else{
+            Class objectClass = object.getClass();
             if(object instanceof Collection) {
                 try {
                     writerRecord.startCollection();
@@ -664,7 +667,7 @@ public class XMLMarshaller implements Cloneable {
                     throw XMLMarshalException.marshalException(e);
                 }
                 return;
-            } else if(object.getClass().isArray()) {
+            } else if(objectClass.isArray()) {
                 try {
                     writerRecord.startCollection();
                     int arrayLength = Array.getLength(object);
@@ -679,8 +682,8 @@ public class XMLMarshaller implements Cloneable {
                 return;
             }
             if(session == null || xmlDescriptor == null){
-                session = xmlContext.getSession(object.getClass());
-                xmlDescriptor = getDescriptor(object.getClass(), session);
+                session = xmlContext.getSession(objectClass);
+                xmlDescriptor = getDescriptor(objectClass, session);
             }
         }
 
@@ -752,8 +755,9 @@ public class XMLMarshaller implements Cloneable {
                 }                
             }
         }else{
-        	session = xmlContext.getSession(object.getClass());
-        	xmlDescriptor = getDescriptor(object.getClass(), session);
+            Class objectClass = object.getClass();
+            session = xmlContext.getSession(objectClass);
+            xmlDescriptor = getDescriptor(objectClass, session);
         }
         
         //if it's a simple xml root then session and descriptor will be null
@@ -822,8 +826,9 @@ public class XMLMarshaller implements Cloneable {
                     }                
                 }
             }else{
-            	session = xmlContext.getSession(object.getClass());
-            	xmlDescriptor = getDescriptor(object.getClass(), session);
+                Class objectClass = object.getClass();
+                session = xmlContext.getSession(objectClass);
+                xmlDescriptor = getDescriptor(objectClass, session);
             }
             
             
@@ -924,8 +929,9 @@ public class XMLMarshaller implements Cloneable {
                 }                
             }
         }else{
-        	session = xmlContext.getSession(object);
-        	xmlDescriptor = getDescriptor(object.getClass(), session);
+            Class objectClass = object.getClass();
+            session = xmlContext.getSession(objectClass);
+            xmlDescriptor = getDescriptor(objectClass, session);
         }
         
         marshal(object, marshalRecord, session, xmlDescriptor, isXMLRoot);
@@ -953,8 +959,8 @@ public class XMLMarshaller implements Cloneable {
         if(null != schema) {
             marshalRecord = new ValidatingMarshalRecord(marshalRecord, this);
         }
-        if (getAttachmentMarshaller() != null) {
-            marshalRecord.setXOPPackage(getAttachmentMarshaller().isXOPPackage());
+        if (this.attachmentMarshaller != null) {
+            marshalRecord.setXOPPackage(this.attachmentMarshaller.isXOPPackage());
         }
         marshalRecord.setMarshaller(this);
         
@@ -1189,8 +1195,8 @@ public class XMLMarshaller implements Cloneable {
             if (!isXMLRoot) {
                 xmlRow = (XMLRecord) ((XMLObjectBuilder) descriptor.getObjectBuilder()).createRecordFor(object, xmlContext.getDocumentPreservationPolicy(session));
                 xmlRow.setMarshaller(this);
-                if (getAttachmentMarshaller() != null) {
-                    xmlRow.setXOPPackage(getAttachmentMarshaller().isXOPPackage());
+                if (this.attachmentMarshaller != null) {
+                    xmlRow.setXOPPackage(this.attachmentMarshaller.isXOPPackage());
                 }
                 addDescriptorNamespacesToXMLRecord(descriptor, xmlRow);
             }
@@ -1218,8 +1224,8 @@ public class XMLMarshaller implements Cloneable {
             if (!isXMLRoot) {
                 xmlRow = (XMLRecord) ((XMLObjectBuilder) descriptor.getObjectBuilder()).createRecordFor(object, xmlContext.getDocumentPreservationPolicy(session));
                 xmlRow.setMarshaller(this);
-                if (getAttachmentMarshaller() != null) {
-                    xmlRow.setXOPPackage(getAttachmentMarshaller().isXOPPackage());
+                if (this.attachmentMarshaller != null) {
+                    xmlRow.setXOPPackage(this.attachmentMarshaller.isXOPPackage());
                 }
                 if (xmlRow.getDOM().getNodeType() == Node.ELEMENT_NODE) {
                     addDescriptorNamespacesToXMLRecord(descriptor, xmlRow);
@@ -1302,8 +1308,8 @@ public class XMLMarshaller implements Cloneable {
         if (docPresPolicy != null && docPresPolicy.shouldPreserveDocument()) {
             XMLRecord xmlRow = (XMLRecord) ((XMLObjectBuilder) descriptor.getObjectBuilder()).createRecord(localRootName, parent, session);
             xmlRow.setMarshaller(this);
-            if (getAttachmentMarshaller() != null) {
-                xmlRow.setXOPPackage(getAttachmentMarshaller().isXOPPackage());
+            if (this.attachmentMarshaller != null) {
+                xmlRow.setXOPPackage(this.attachmentMarshaller.isXOPPackage());
             }
             return objectToXML(object, descriptor, xmlRow, isXMLRoot, docPresPolicy);
         }
@@ -1358,8 +1364,8 @@ public class XMLMarshaller implements Cloneable {
                 }
                 xmlRow = (XMLRecord) ((XMLObjectBuilder) descriptor.getObjectBuilder()).createRecordFor(((XMLRoot) object).getObject(), docPresPolicy, recordName, xmlRootUri);
                 xmlRow.setMarshaller(this);
-                if (getAttachmentMarshaller() != null) {
-                    xmlRow.setXOPPackage(getAttachmentMarshaller().isXOPPackage());
+                if (this.attachmentMarshaller != null) {
+                    xmlRow.setXOPPackage(this.attachmentMarshaller.isXOPPackage());
                 }
                 if (!isRootDocumentFragment) {
                     if (shouldCallSetAttributeNS) {
