@@ -206,7 +206,6 @@ public class AnnotationsProcessor {
     private Map<TypeMappingInfo, Class> typeMappingInfoToAdapterClasses;
     private Map<TypeMappingInfo, QName> typeMappingInfoToSchemaType;
 
-    private NamespaceResolver namespaceResolver;
     private Helper helper;
     private String defaultTargetNamespace;
 
@@ -244,7 +243,6 @@ public class AnnotationsProcessor {
         javaClassToTypeMappingInfos = null;
         typeMappingInfoToGeneratedClasses = null;
         typeMappingInfoToAdapterClasses = null;
-        namespaceResolver = null;
         helper = null;
         logger = null;
         referencedByTransformer = null;
@@ -456,7 +454,6 @@ public class AnnotationsProcessor {
         }
         this.factoryMethods = new HashMap<String, JavaMethod>();
         this.xmlRegistries = new HashMap<String, org.eclipse.persistence.jaxb.xmlmodel.XmlRegistry>();
-        this.namespaceResolver = new NamespaceResolver();
         this.xmlRootElements = new HashMap<String, ElementDeclaration>();
 
         arrayClassesToGeneratedClasses = new HashMap<String, Class>();
@@ -506,7 +503,8 @@ public class AnnotationsProcessor {
                 continue;
             }
 
-            TypeInfo info = typeInfo.get(javaClass.getQualifiedName());
+            String qualifiedName = javaClass.getQualifiedName();
+            TypeInfo info = typeInfo.get(qualifiedName);
             if (info != null) {
                 if (info.isPreBuilt()) {
                     continue;
@@ -518,7 +516,7 @@ public class AnnotationsProcessor {
             } else {
                 info = new TypeInfo(helper);
             }
-            info.setJavaClassName(javaClass.getQualifiedName());
+            info.setJavaClassName(qualifiedName);
             info.setPreBuilt(true);
 
             // handle @XmlTransient
@@ -547,14 +545,16 @@ public class AnnotationsProcessor {
             		info.getPackageLevelAdaptersByClass().put(adapterClass, boundType);            	    
             	}
             }
+
+            NamespaceInfo namespaceInfo = packageInfo.getNamespaceInfo();
             // handle @XmlType
-            preProcessXmlType(javaClass, info, packageInfo.getNamespaceInfo());
+            preProcessXmlType(javaClass, info, namespaceInfo);
 
             // handle @XmlAccessorType
-            preProcessXmlAccessorType(javaClass, info, packageInfo.getNamespaceInfo());
+            preProcessXmlAccessorType(javaClass, info, namespaceInfo);
 
             // handle @XmlAccessorOrder
-            preProcessXmlAccessorOrder(javaClass, info, packageInfo.getNamespaceInfo());
+            preProcessXmlAccessorOrder(javaClass, info, namespaceInfo);
 
             // handle package level @XmlJavaTypeAdapters
             processPackageLevelAdapters(javaClass, info);
@@ -3006,10 +3006,6 @@ public class AnnotationsProcessor {
         return userDefinedSchemaTypes;
     }
 
-    public NamespaceResolver getNamespaceResolver() {
-        return namespaceResolver;
-    }
-
     public QName getQNameForProperty(String defaultName, JavaHasAnnotations element, NamespaceInfo namespaceInfo, TypeInfo info) {
         String uri = info.getClassNamespace();
         String name = XMLProcessor.DEFAULT;
@@ -4223,7 +4219,6 @@ public class AnnotationsProcessor {
             this.typeQNames = new ArrayList<QName>();
             this.userDefinedSchemaTypes = new HashMap<String, QName>();
             this.packageToPackageInfoMappings = new HashMap<String, PackageInfo>();
-            this.namespaceResolver = new NamespaceResolver();
         }
 
         JavaClass[] jClasses = new JavaClass[] { javaClass };
