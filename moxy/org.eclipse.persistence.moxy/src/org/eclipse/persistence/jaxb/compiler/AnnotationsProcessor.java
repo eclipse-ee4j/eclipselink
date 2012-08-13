@@ -4135,6 +4135,67 @@ public class AnnotationsProcessor {
         mv.visitMaxs(1, 1);
         mv.visitEnd();
 
+        if(!componentType.isPrimitive() &&  ArrayValue.class.isAssignableFrom(superType)){
+        
+        	//@Override
+    	    //public Object getItem() {
+    	    //    if(null == adaptedValue) {
+    	    //        return null;
+    	    //    }    	      
+    	    //    int len = adaptedValue.size();
+    		//    Float[] array = new Float[len];
+    	    //    adaptedValue.toArray(array);
+    	    //    return array;      
+    	    // }     
+            mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "getItem", "()Ljava/lang/Object;", null, null);
+        	mv.visitCode();
+        	mv.visitVarInsn(Opcodes.ALOAD, 0);
+        	mv.visitFieldInsn(Opcodes.GETFIELD, classNameSeparatedBySlash, "adaptedValue", "Ljava/util/Collection;");
+        	Label l0 = new Label();
+        	mv.visitJumpInsn(Opcodes.IFNONNULL, l0);
+        	mv.visitInsn(Opcodes.ACONST_NULL);
+        	mv.visitInsn(Opcodes.ARETURN);
+        	mv.visitLabel(l0);
+        	mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
+        	mv.visitVarInsn(Opcodes.ALOAD, 0);
+        	mv.visitFieldInsn(Opcodes.GETFIELD, classNameSeparatedBySlash, "adaptedValue", "Ljava/util/Collection;");
+        	mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/Collection", "size", "()I");
+        	mv.visitVarInsn(Opcodes.ISTORE, 1);
+        	mv.visitVarInsn(Opcodes.ILOAD, 1);
+        	mv.visitTypeInsn(Opcodes.ANEWARRAY, componentClassNameSeparatedBySlash);
+        	mv.visitVarInsn(Opcodes.ASTORE, 2);
+        	mv.visitVarInsn(Opcodes.ALOAD, 0);
+        	mv.visitFieldInsn(Opcodes.GETFIELD, classNameSeparatedBySlash, "adaptedValue", "Ljava/util/Collection;");
+        	mv.visitVarInsn(Opcodes.ALOAD, 2);
+        	mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/Collection", "toArray", "([Ljava/lang/Object;)[Ljava/lang/Object;");
+        	mv.visitInsn(Opcodes.POP);        	
+        	
+        	mv.visitVarInsn(Opcodes.ALOAD, 2);
+            mv.visitInsn(Opcodes.ARETURN);
+        	mv.visitMaxs(2, 3);        	
+        	mv.visitEnd();
+        	
+        		
+        	//@Override
+          	//public void setItem(Object array) {
+          	//    Float[] floatArray = (Float[])array;
+          	//	adaptedValue =   (Collection<T>) Arrays.asList(floatArray);
+          	//}          	    
+        	mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "setItem", "(Ljava/lang/Object;)V", null, null);
+        	mv.visitCode();
+        	mv.visitVarInsn(Opcodes.ALOAD, 1);
+        	mv.visitTypeInsn(Opcodes.CHECKCAST, "[L"+componentClassNameSeparatedBySlash+";");
+        	mv.visitVarInsn(Opcodes.ASTORE, 2);
+        	mv.visitVarInsn(Opcodes.ALOAD, 0);
+        	mv.visitVarInsn(Opcodes.ALOAD, 2);
+        	mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/util/Arrays", "asList", "([Ljava/lang/Object;)Ljava/util/List;");
+        	mv.visitFieldInsn(Opcodes.PUTFIELD, classNameSeparatedBySlash, "adaptedValue", "Ljava/util/Collection;");
+        	mv.visitInsn(Opcodes.RETURN);
+        	mv.visitMaxs(2, 3);
+        	mv.visitEnd();        		
+        }
+        
+        
         // @XmlElement(name="item", nillable=true)
         // public Collection<COMPONENT_TYPE> getAdaptedValue() {
         //    return super.getAdaptedValue();

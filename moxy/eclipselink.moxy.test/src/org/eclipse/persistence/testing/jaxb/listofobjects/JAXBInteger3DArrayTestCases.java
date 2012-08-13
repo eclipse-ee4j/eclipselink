@@ -57,7 +57,7 @@ public class JAXBInteger3DArrayTestCases extends JAXBListOfObjectsTestCases {
         int level2Size = 3;
         int level3Size = 4;
         int counter = 0;
-        int[][][] my3DArray = new int[level1Size][level2Size][level3Size];
+        Integer[][][] my3DArray = new Integer[level1Size][level2Size][level3Size];
         for(int x=0; x<level1Size; x++) {
             for(int y=0; y<level2Size; y++) {
                 for(int z=0; z<level3Size; z++) {
