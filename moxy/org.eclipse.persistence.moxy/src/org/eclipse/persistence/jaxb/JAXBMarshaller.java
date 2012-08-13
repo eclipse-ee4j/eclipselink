@@ -654,6 +654,9 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         try {
             if (key == null) {
                 throw new IllegalArgumentException();
+            } else if (XMLConstants.JAXB_FRAGMENT.equals(key)) {
+                Boolean fragment = (Boolean) value;
+                xmlMarshaller.setFragment(fragment.booleanValue());
             } else if (JAXB_FORMATTED_OUTPUT.equals(key)) {
                 Boolean formattedOutput = (Boolean) value;
                 xmlMarshaller.setFormattedOutput(formattedOutput.booleanValue());
@@ -663,9 +666,6 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
                 xmlMarshaller.setSchemaLocation((String) value);
             } else if (JAXB_NO_NAMESPACE_SCHEMA_LOCATION.equals(key)) {
                 xmlMarshaller.setNoNamespaceSchemaLocation((String) value);
-            } else if (XMLConstants.JAXB_FRAGMENT.equals(key)) {
-                Boolean fragment = (Boolean) value;
-                xmlMarshaller.setFragment(fragment.booleanValue());
             } else if(MarshallerProperties.NAMESPACE_PREFIX_MAPPER.equals(key)) { 
             	if(value instanceof Map){
             		NamespacePrefixMapper namespacePrefixMapper = new MapNamespacePrefixMapper((Map)value);

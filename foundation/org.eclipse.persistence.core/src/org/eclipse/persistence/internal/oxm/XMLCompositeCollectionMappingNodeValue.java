@@ -150,7 +150,8 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
                 }          
             }
 
-            if(xmlCompositeCollectionMapping.getNullPolicy().isNullRepresentedByEmptyNode()) {
+            AbstractNullPolicy nullPolicy = xmlCompositeCollectionMapping.getNullPolicy();
+            if(nullPolicy.isNullRepresentedByEmptyNode()) {
                 String qnameString = xPathFragment.getLocalName();
                 if(xPathFragment.getPrefix() != null) {
                     qnameString = xPathFragment.getPrefix()  + XMLConstants.COLON + qnameString;
@@ -165,7 +166,7 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
                     xmlReader.setContentHandler(aHandler);
                     xmlReader.setLexicalHandler(aHandler);
                 }
-            } else if (xmlCompositeCollectionMapping.getNullPolicy().isNullRepresentedByXsiNil() && unmarshalRecord.isNil()) {
+            } else if (nullPolicy.isNullRepresentedByXsiNil() && unmarshalRecord.isNil()) {
                 getContainerPolicy().addInto(null, unmarshalRecord.getContainerInstance(this), unmarshalRecord.getSession());
             } else {
                 XMLField xmlFld = (XMLField) this.xmlCompositeCollectionMapping.getField();

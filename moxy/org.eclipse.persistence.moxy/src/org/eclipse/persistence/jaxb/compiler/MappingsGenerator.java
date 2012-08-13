@@ -1882,7 +1882,9 @@ public class MappingsGenerator {
         		JavaClass itemType = (JavaClass)collectionType.getActualTypeArguments().toArray()[0];
         		try {
         			Class declaredClass = PrivilegedAccessHelper.getClassForName(itemType.getRawName(), false, helper.getClassLoader());
-        			mapping.setAttributeElementClass(declaredClass);
+        			if(declaredClass != String.class){
+        			    mapping.setAttributeElementClass(declaredClass);
+        			}
         		} catch (Exception e) {}
         	}
         }
