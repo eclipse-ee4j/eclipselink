@@ -30,6 +30,7 @@ import javax.xml.transform.stream.*;
 import org.w3c.dom.Document;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
+import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases.FakeSchema;
 
 public class MarshallerPropertiesTestCases extends OXTestCase {
     private final static String CONTROL_NO_NAMESPACE_XML = "org/eclipse/persistence/testing/oxm/jaxb/Employee_NoNamespaceSchema.xml";
@@ -153,6 +154,33 @@ public class MarshallerPropertiesTestCases extends OXTestCase {
         assertTrue("Custom header not written when marshalling to Result.", writer2.toString().contains(header));
 
         marshaller.setProperty("com.sun.xml.bind.xmlHeaders", null);
+    }
+
+    public void testXmlHeadersWithValidation() throws Exception {
+        String header = "<!-- Copyright 2012 ACME Corp. -->";
+
+        Employee emp = new Employee();
+
+        // Marshal to Stream
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        marshaller.setProperty("com.sun.xml.bind.xmlHeaders", header);
+        marshaller.setSchema(FakeSchema.INSTANCE);
+        marshaller.marshal(emp, stream);
+        assertTrue("Custom header not written when marshalling to Stream.", new String(stream.toByteArray()).contains(header));
+
+        // Marshal to Writer
+        StringWriter writer =  new StringWriter();
+        marshaller.marshal(emp, writer);
+        assertTrue("Custom header not written when marshalling to Writer.", writer.toString().contains(header));
+
+        // Marshal to Result
+        StringWriter writer2 = new StringWriter();
+        StreamResult result = new StreamResult(writer2);
+        marshaller.marshal(emp, result);
+        assertTrue("Custom header not written when marshalling to Result.", writer2.toString().contains(header));
+
+        marshaller.setProperty("com.sun.xml.bind.xmlHeaders", null);
+        marshaller.setSchema(null);
     }
 
     public void testXmlHeadersWithNoXmlDeclaration() throws Exception {
