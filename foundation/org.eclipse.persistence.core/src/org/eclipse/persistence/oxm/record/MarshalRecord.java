@@ -29,10 +29,12 @@ import org.eclipse.persistence.internal.oxm.XPathPredicate;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.XPathNode;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.oxm.XMLLogin;
 import org.eclipse.persistence.oxm.XMLMarshalListener;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.w3c.dom.Document;
@@ -121,6 +123,13 @@ public abstract class MarshalRecord extends XMLRecord {
 
     public String transformToXML() {
         return null;
+    }
+    
+    public void setSession(AbstractSession session) {
+        super.setSession(session);
+        if (session != null && session.getDatasourceLogin() instanceof XMLLogin) {
+            this.equalNamespaceResolvers = ((XMLLogin) session.getDatasourceLogin()).hasEqualNamespaceResolvers();
+        }
     }
 
     /**

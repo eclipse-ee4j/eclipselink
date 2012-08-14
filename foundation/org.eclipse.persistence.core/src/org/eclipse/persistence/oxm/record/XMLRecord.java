@@ -24,7 +24,6 @@ import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
-import org.eclipse.persistence.oxm.XMLLogin;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.documentpreservation.DocumentPreservationPolicy;
@@ -283,9 +282,6 @@ public abstract class XMLRecord extends AbstractRecord {
 
     public void setSession(AbstractSession session) {
         this.session = session;
-        if (session != null && session.getDatasourceLogin() instanceof XMLLogin) {
-            this.equalNamespaceResolvers = ((XMLLogin) session.getDatasourceLogin()).hasEqualNamespaceResolvers();
-        }
     }
 
     public void setEqualNamespaceResolvers(boolean equalNRs) {
