@@ -96,6 +96,10 @@ public abstract class AttributeAccessor implements Cloneable, Serializable {
         return false;
     }
     
+    public boolean isValuesAccessor() {
+    	return false;
+    }
+    
     public boolean isVirtualAttributeAccessor(){
         return false;
     }
