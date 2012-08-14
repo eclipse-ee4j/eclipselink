@@ -874,8 +874,9 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
                 levelIndex--;
                 return;
             }
-            if (null != xPathNode.getUnmarshalNodeValue()) {
-                xPathNode.getUnmarshalNodeValue().endElement(xPathFragment, this);
+            NodeValue unmarshalNodeValue = xPathNode.getUnmarshalNodeValue();
+            if (null != unmarshalNodeValue) {
+                    unmarshalNodeValue.endElement(xPathFragment, this);
             } else {
                 XPathNode textNode = xPathNode.getTextNode();
 
