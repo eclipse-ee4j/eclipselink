@@ -44,6 +44,11 @@ public class ValuesAccessor extends AttributeAccessor {
         setAttributeName(mapping.getAttributeName());
     }
 
+    @Override
+    public boolean isValuesAccessor() {
+    	return true;
+    }
+    
     public Object getAttributeValueFromObject(Object entity) throws DescriptorException {
         Map<String, PropertyWrapper> propertiesMap = ((DynamicEntityImpl)entity).getPropertiesMap();
         PropertyWrapper wrapper = propertiesMap.get(attributeName);
