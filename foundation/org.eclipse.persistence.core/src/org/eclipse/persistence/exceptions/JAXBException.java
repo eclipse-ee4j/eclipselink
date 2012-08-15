@@ -118,6 +118,7 @@ public class JAXBException extends EclipseLinkException {
     public static final int ERROR_CREATING_PROPERTY_ACCESSOR = 50086;
     public static final int ERROR_INVOKING_ACCESSOR = 50087;
     public static final int INVALID_ENUM_VALUE = 50088;
+    public static final int INVALID_INTERFACE = 50089;
     
 
 
@@ -1096,4 +1097,11 @@ public class JAXBException extends EclipseLinkException {
         validationException.setErrorCode(INVALID_ENUM_VALUE);
         return validationException;
     }
+    
+    public static JAXBException invalidInterface(String interfaceName) {
+        Object[] args = {interfaceName};
+        JAXBException validationException = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, INVALID_INTERFACE, args));
+        validationException.setErrorCode(INVALID_INTERFACE);
+        return validationException;
+    }    
 }

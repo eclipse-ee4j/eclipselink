@@ -107,7 +107,8 @@ public class JAXBExceptionResource extends ListResourceBundle {
         {"50085", "An exception occured while invoking the createFieldAccessor method on the AccessorFactory {0}"},
         {"50086", "An exception occured while invoking the createPropertyAccessor method on the AccessorFactory {0}"},
         {"50087", "An exception occured while attempting to invoke the {0} method on the Accessor {1}"},
-        {"50088", "Enum value {0} is not valid for an XmlEnum with class {1}"}
+        {"50088", "Enum value {0} is not valid for an XmlEnum with class {1}"},
+        {"50089", "The java interface {0} can not be mapped by JAXB as it has multiple mappable parent interfaces. Multiple inheritence is not supported"}
     };
 
     /**

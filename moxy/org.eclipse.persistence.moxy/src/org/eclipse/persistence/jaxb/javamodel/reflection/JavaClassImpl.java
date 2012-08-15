@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.jaxb.javamodel.reflection;
 
+import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.jaxb.javamodel.JavaAnnotation;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
@@ -339,6 +340,26 @@ public class JavaClassImpl implements JavaClass {
     public JavaClass getSuperclass() {
         if(this.superClassOverride != null) {
             return this.superClassOverride;
+        }
+        if(jClass.isInterface()) {
+            Class[] superInterfaces = jClass.getInterfaces();
+            if(superInterfaces != null) {
+                if(superInterfaces.length == 1) {
+                    return javaModelImpl.getClass(superInterfaces[0]);
+                } else {
+                    Class parent = null;
+                    for(Class next:superInterfaces) {
+                        if(!(next.getName().startsWith("java.") || next.getName().startsWith("javax."))) {
+                            if(parent == null) {
+                                parent = next;
+                            } else {
+                                throw JAXBException.invalidInterface(jClass.getName());
+                            }
+                        }
+                    }
+                    return javaModelImpl.getClass(parent);
+                }
+            }
         }
         return javaModelImpl.getClass(jClass.getSuperclass());
     }
