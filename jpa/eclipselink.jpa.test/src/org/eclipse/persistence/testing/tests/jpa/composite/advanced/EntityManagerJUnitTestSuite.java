@@ -1927,6 +1927,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
     
     public void testPESSIMISTIC_FORCE_INCREMENTLock() {
+        if ((JUnitTestCase.getServerSession()).getPlatform().isHANA()) {
+            // HANA currently doesn't support pessimistic locking with queries on multiple tables
+            // feature is under development (see bug 384129), but test should be skipped for the time being
+            return;
+        }
         if (isSelectForUpateSupported()) {
             Employee employee = null;
             Integer version1;
@@ -1970,6 +1975,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
     
     public void testPESSIMISTIC_READLockWithNoChanges() {
+        if ((JUnitTestCase.getServerSession()).getPlatform().isHANA()) {
+            // HANA currently doesn't support pessimistic locking with queries on multiple tables
+            // feature is under development (see bug 384129), but test should be skipped for the time being
+            return;
+        }
         // Cannot create parallel entity managers in the server.
         if (! isOnServer() && isSelectForUpateSupported()) {             
             Employee employee = null;
@@ -2014,6 +2024,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
     
     public void testPESSIMISTIC_WRITELockWithNoChanges() {
+        if ((JUnitTestCase.getServerSession()).getPlatform().isHANA()) {
+            // HANA currently doesn't support pessimistic locking with queries on multiple tables
+            // feature is under development (see bug 384129), but test should be skipped for the time being
+            return;
+        }
         // Cannot create parallel entity managers in the server.
         if (! isOnServer() && isSelectForUpateSupported()) {
             Employee employee = null;
@@ -2201,6 +2216,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     public void testLockWithJoinedInheritanceStrategy () throws InterruptedException {
         if (getPlatform(Employee.class).isMaxDB() || getPlatform(LargeProject.class).isMaxDB()) {
             // skip this test (bug 326799)
+            return;
+        }
+        if ((JUnitTestCase.getServerSession()).getPlatform().isHANA()) {
+            // HANA currently doesn't support pessimistic locking with queries on multiple tables
+            // feature is under development (see bug 384129), but test should be skipped for the time being
             return;
         }
         
@@ -4797,6 +4817,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         if (getPlatform(Employee.class).isSymfoware()) {
             getDatabaseSession().logMessage("Test testGetLockModeType skipped for this platform, "
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
+            return;
+        }
+        if ((JUnitTestCase.getServerSession()).getPlatform().isHANA()) {
+            // HANA currently doesn't support pessimistic locking with queries on multiple tables
+            // feature is under development (see bug 384129), but test should be skipped for the time being
             return;
         }
         if (isSelectForUpateSupported()) {
@@ -7484,6 +7509,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
     // gf 3032
     public void testPessimisticLockHintStartsTransaction(){
+        if ((JUnitTestCase.getServerSession()).getPlatform().isHANA()) {
+            // HANA currently doesn't support pessimistic locking with queries on multiple tables
+            // feature is under development (see bug 384129), but test should be skipped for the time being
+            return;
+        }
         if (isOnServer()) {
             // Extended persistence context are not supported in the server.
             return;

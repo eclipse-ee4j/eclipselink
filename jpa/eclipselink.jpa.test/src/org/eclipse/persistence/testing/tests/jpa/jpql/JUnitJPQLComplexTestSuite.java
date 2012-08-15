@@ -4225,6 +4225,11 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
      * or rolled back.
      */
     public void testPessimisticLock() throws InterruptedException {
+        if ((JUnitTestCase.getServerSession()).getPlatform().isHANA()) {
+            // HANA currently doesn't support pessimistic locking with queries on multiple tables
+            // feature is under development (see bug 384129), but test should be skipped for the time being
+            return;
+        }
         // test uses entity managers in a way that is disallowed in our server framework
         if (isOnServer() || !isSelectForUpateSupported()){
             return;

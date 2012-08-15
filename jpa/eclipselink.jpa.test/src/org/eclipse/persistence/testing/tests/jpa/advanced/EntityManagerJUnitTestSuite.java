@@ -1779,133 +1779,151 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
     
     public void testPESSIMISTIC_FORCE_INCREMENTLock() {
-        if (isSelectForUpateSupported()) {
-            Employee employee = null;
-            Integer version1;
+        if (!isSelectForUpateSupported()) {
+            return;
+        }
+        if ((JUnitTestCase.getServerSession()).getPlatform().isHANA()) {
+            // HANA currently doesn't support pessimistic locking with queries on multiple tables
+            // feature is under development (see bug 384129), but test should be skipped for the time being
+            return;
+        }
+        Employee employee = null;
+        Integer version1;
 
-            EntityManager em = createEntityManager();
-            
-            try {
-                beginTransaction(em);
-                employee = new Employee();
-                employee.setFirstName("Guillaume");
-                employee.setLastName("Aujet");
-                em.persist(employee);
-                commitTransaction(em);
-            } catch (RuntimeException ex) {
-                if (isTransactionActive(em)) {
-                    rollbackTransaction(em);
-                }
-             
-                closeEntityManager(em);
-                throw ex;
+        EntityManager em = createEntityManager();
+
+        try {
+            beginTransaction(em);
+            employee = new Employee();
+            employee.setFirstName("Guillaume");
+            employee.setLastName("Aujet");
+            em.persist(employee);
+            commitTransaction(em);
+        } catch (RuntimeException ex) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
             }
-            
-            version1 = employee.getVersion();
-            
-            try {
-                beginTransaction(em);
-                employee = em.find(Employee.class, employee.getId(), LockModeType.PESSIMISTIC_FORCE_INCREMENT);
-                commitTransaction(em);
-                
-                assertTrue("The version was not updated on the pessimistic lock.", version1.intValue() < employee.getVersion().intValue());
-            } catch (RuntimeException ex) {
-                if (isTransactionActive(em)) {
-                    rollbackTransaction(em);
-                }
-                
-                throw ex;
-            } finally {
-                closeEntityManager(em);
+
+            closeEntityManager(em);
+            throw ex;
+        }
+
+        version1 = employee.getVersion();
+
+        try {
+            beginTransaction(em);
+            employee = em.find(Employee.class, employee.getId(), LockModeType.PESSIMISTIC_FORCE_INCREMENT);
+            commitTransaction(em);
+
+            assertTrue("The version was not updated on the pessimistic lock.", version1.intValue() < employee.getVersion().intValue());
+        } catch (RuntimeException ex) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
             }
+
+            throw ex;
+        } finally {
+            closeEntityManager(em);
         }
     }
     
     public void testPESSIMISTIC_READLockWithNoChanges() {
         // Cannot create parallel entity managers in the server.
-        if (! isOnServer() && isSelectForUpateSupported()) {             
-            Employee employee = null;
-            Integer version1;
+        if (isOnServer() || !isSelectForUpateSupported()) {
+            return;
+        }
+        if ((JUnitTestCase.getServerSession()).getPlatform().isHANA()) {
+            // HANA currently doesn't support pessimistic locking with queries on multiple tables
+            // feature is under development (see bug 384129), but test should be skipped for the time being
+            return;
+        }
+        Employee employee = null;
+        Integer version1;
 
-            EntityManager em = createEntityManager();
-            
-            try {
-                beginTransaction(em);
-                employee = new Employee();
-                employee.setFirstName("Black");
-                employee.setLastName("Crappie");
-                em.persist(employee);
-                commitTransaction(em);
-            } catch (RuntimeException ex) {
-                if (isTransactionActive(em)) {
-                    rollbackTransaction(em);
-                }
-             
-                closeEntityManager(em);
-                throw ex;
+        EntityManager em = createEntityManager();
+
+        try {
+            beginTransaction(em);
+            employee = new Employee();
+            employee.setFirstName("Black");
+            employee.setLastName("Crappie");
+            em.persist(employee);
+            commitTransaction(em);
+        } catch (RuntimeException ex) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
             }
-            
-            version1 = employee.getVersion();
-            
-            try {
-                beginTransaction(em);
-                employee = em.find(Employee.class, employee.getId(), LockModeType.PESSIMISTIC_READ);
-                commitTransaction(em);
-                
-                assertTrue("The version was updated on the pessimistic lock.", version1.intValue() == employee.getVersion().intValue());
-            } catch (RuntimeException ex) {
-                if (isTransactionActive(em)) {
-                    rollbackTransaction(em);
-                }
-                
-                throw ex;
-            } finally {
-                closeEntityManager(em);
+
+            closeEntityManager(em);
+            throw ex;
+        }
+
+        version1 = employee.getVersion();
+
+        try {
+            beginTransaction(em);
+            employee = em.find(Employee.class, employee.getId(), LockModeType.PESSIMISTIC_READ);
+            commitTransaction(em);
+
+            assertTrue("The version was updated on the pessimistic lock.", version1.intValue() == employee.getVersion().intValue());
+        } catch (RuntimeException ex) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
             }
+
+            throw ex;
+        } finally {
+            closeEntityManager(em);
         }
     }
     
     public void testPESSIMISTIC_WRITELockWithNoChanges() {
         // Cannot create parallel entity managers in the server.
-        if (! isOnServer() && isSelectForUpateSupported()) {
-            Employee employee = null;
-            Integer version1;
-    
-            EntityManager em = createEntityManager();
-            
-            try {
-                beginTransaction(em);
-                employee = new Employee();
-                employee.setFirstName("Black");
-                employee.setLastName("Crappie");
-                em.persist(employee);
-                commitTransaction(em);
-            } catch (RuntimeException ex) {
-                if (isTransactionActive(em)) {
-                    rollbackTransaction(em);
-                }
-             
-                closeEntityManager(em);
-                throw ex;
+        if (isOnServer() || !isSelectForUpateSupported()) {
+            return;
+        }
+        if ((JUnitTestCase.getServerSession()).getPlatform().isHANA()) {
+            // HANA currently doesn't support pessimistic locking with queries on multiple tables
+            // feature is under development (see bug 384129), but test should be skipped for the time being
+            return;
+        }
+        Employee employee = null;
+        Integer version1;
+
+        EntityManager em = createEntityManager();
+
+        try {
+            beginTransaction(em);
+            employee = new Employee();
+            employee.setFirstName("Black");
+            employee.setLastName("Crappie");
+            em.persist(employee);
+            commitTransaction(em);
+        } catch (RuntimeException ex) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
             }
-            
-            version1 = employee.getVersion();
-            
-            try {
-                beginTransaction(em);
-                employee = em.find(Employee.class, employee.getId(), LockModeType.PESSIMISTIC_WRITE);
-                commitTransaction(em);
-                
-                assertTrue("The version was updated on the pessimistic lock.", version1.intValue() == employee.getVersion().intValue());
-            } catch (RuntimeException ex) {
-                if (isTransactionActive(em)) {
-                    rollbackTransaction(em);
-                }
-                
-                throw ex;
-            } finally {
-                closeEntityManager(em);
+
+            closeEntityManager(em);
+            throw ex;
+        }
+
+        version1 = employee.getVersion();
+
+        try {
+            beginTransaction(em);
+            employee = em.find(Employee.class, employee.getId(), LockModeType.PESSIMISTIC_WRITE);
+            commitTransaction(em);
+
+            assertTrue("The version was updated on the pessimistic lock.", version1.intValue() == employee.getVersion().intValue());
+        } catch (RuntimeException ex) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
             }
+
+            throw ex;
+        } finally {
+            closeEntityManager(em);
         }
     }
     
@@ -2174,6 +2192,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         ServerSession session = JUnitTestCase.getServerSession();
         // Cannot create parallel entity managers in the server. Uses FOR UPDATE clause which SQLServer doesn't support.
         if (isOnServer() || !isSelectForUpateSupported() || !isPessimisticWriteLockSupported()) {
+            return;
+        }
+        if ((JUnitTestCase.getServerSession()).getPlatform().isHANA()) {
+            // HANA currently doesn't support pessimistic locking with queries on multiple tables
+            // feature is under development (see bug 384129), but test should be skipped for the time being
             return;
         }
             
@@ -8205,6 +8228,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             return;
         }
         if (!isSelectForUpateSupported()) {
+            return;
+        }
+        if ((JUnitTestCase.getServerSession()).getPlatform().isHANA()) {
+            // HANA currently doesn't support pessimistic locking with queries on multiple tables
+            // feature is under development (see bug 384129), but test should be skipped for the time being
             return;
         }
         EntityManagerImpl em = (EntityManagerImpl)createEntityManager();

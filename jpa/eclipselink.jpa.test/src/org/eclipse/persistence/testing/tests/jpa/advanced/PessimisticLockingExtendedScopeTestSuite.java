@@ -218,6 +218,11 @@ import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyE;
             warning("This test deadlocks on SQL Server");
             return;
         }
+        if ((JUnitTestCase.getServerSession()).getPlatform().isHANA()) {
+            // HANA currently doesn't support pessimistic locking with queries on multiple tables
+            // feature is under development (see bug 384129), but test should be skipped for the time being
+            return;
+        }
         final Employee emp = new Employee();
         
         final Actor actor = new Actor<Employee>() {
@@ -488,6 +493,11 @@ import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyE;
             warning("This test deadlocks on SQL Server");
             return;
         }
+        if ((JUnitTestCase.getServerSession()).getPlatform().isHANA()) {
+            // HANA currently doesn't support pessimistic locking with queries on multiple tables
+            // feature is under development (see bug 384129), but test should be skipped for the time being
+            return;
+        }
         // Cannot create parallel entity managers in the server.
         if (! isOnServer() && isSelectForUpateSupported()) {
             EntityManager em = createEntityManager();
@@ -547,6 +557,11 @@ import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyE;
     public void testPESSMISTIC_ES9() throws Exception {
         if (getPlatform().isSQLServer()) {
             warning("This test deadlocks on SQL Server");
+            return;
+        }
+        if ((JUnitTestCase.getServerSession()).getPlatform().isHANA()) {
+            // HANA currently doesn't support pessimistic locking with queries on multiple tables
+            // feature is under development (see bug 384129), but test should be skipped for the time being
             return;
         }
         // Cannot create parallel entity managers in the server.

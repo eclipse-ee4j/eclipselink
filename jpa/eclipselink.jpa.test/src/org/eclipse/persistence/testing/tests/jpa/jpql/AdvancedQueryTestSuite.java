@@ -1129,6 +1129,11 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
     }
     
     public void testQueryPESSIMISTIC_READLock() {
+        if ((JUnitTestCase.getServerSession()).getPlatform().isHANA()) {
+            // HANA currently doesn't support pessimistic locking with queries on multiple tables
+            // feature is under development (see bug 384129), but test should be skipped for the time being
+            return;
+        }
         // Cannot create parallel entity managers in the server.
         if (! isOnServer() && isSelectForUpateSupported()) {
             EntityManager em = createEntityManager();
@@ -1178,6 +1183,11 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
     }
     
     public void testQueryPESSIMISTIC_WRITELock() {
+        if ((JUnitTestCase.getServerSession()).getPlatform().isHANA()) {
+            // HANA currently doesn't support pessimistic locking with queries on multiple tables
+            // feature is under development (see bug 384129), but test should be skipped for the time being
+            return;
+        }
         // Cannot create parallel entity managers in the server.
         if (! isOnServer() && isSelectForUpateSupported()) {
             EntityManager em = createEntityManager();
@@ -1227,6 +1237,11 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
     }
     
     public void testQueryPESSIMISTIC_FORCE_INCREMENTLock() {
+        if ((JUnitTestCase.getServerSession()).getPlatform().isHANA()) {
+            // HANA currently doesn't support pessimistic locking with queries on multiple tables
+            // feature is under development (see bug 384129), but test should be skipped for the time being
+            return;
+        }
         if (isSelectForUpateSupported()) {
             Employee employee = null;
             Integer version1;
@@ -1419,6 +1434,11 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
     }
 
     public void testLockWithSecondaryTable() {
+        if ((JUnitTestCase.getServerSession()).getPlatform().isHANA()) {
+            // HANA currently doesn't support pessimistic locking with queries on multiple tables
+            // feature is under development (see bug 384129), but test should be skipped for the time being
+            return;
+        }
         // Cannot create parallel entity managers in the server.
         if (! isOnServer() && isSelectForUpateSupported()) {
             EntityManager em = createEntityManager();
