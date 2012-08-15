@@ -24,7 +24,7 @@
 DROP USER ${db.user} CASCADE;
 
 CREATE USER ${db.user} PROFILE "DEFAULT" IDENTIFIED BY ${db.pwd} ACCOUNT UNLOCK;
-REM "The following line is required by Oracle DB version 12.1"
+REM "The following line is required for Oracle DB version 12.1"
 GRANT UNLIMITED TABLESPACE TO ${db.user};
 GRANT CONNECT TO ${db.user};
 GRANT RESOURCE TO ${db.user};
@@ -36,6 +36,9 @@ GRANT execute on dbms_flashback TO ${db.user};
 GRANT execute on dbms_rls TO ${db.user};
 GRANT execute on dbms_session TO ${db.user};
 GRANT change notification TO ${db.user};
+REM "The following 2 lines are required for DBWS Oracle-specific tests"
+GRANT create any directory TO ${db.user};
+GRANT drop any directory TO ${db.user};
         </sql>
     </target>
 
@@ -65,7 +68,7 @@ DROP USER ${oracle.proxy.user2} CASCADE;
   
 CREATE USER ${oracle.proxy.user} IDENTIFIED BY ${oracle.proxy.pwd} ACCOUNT UNLOCK;
 CREATE USER ${oracle.proxy.user2} IDENTIFIED BY ${oracle.proxy.pwd2} ACCOUNT UNLOCK;
-REM "The following 2 lines are required by Oracle DB version 12.1"
+REM "The following 2 lines are required for Oracle DB version 12.1"
 GRANT UNLIMITED TABLESPACE TO ${oracle.proxy.user};
 GRANT UNLIMITED TABLESPACE TO ${oracle.proxy.user2};
 GRANT CONNECT TO ${oracle.proxy.user};
