@@ -63,9 +63,7 @@ public final class NotExpressionTest extends JPQLParserTest {
 			select(variable("e")),
 			from("Employee", "e"),
 			where(not(nullExpression())),
-			nullExpression(),
-			having(path("e.age").equal(numeric(2))),
-			nullExpression()
+			having(path("e.age").equal(numeric(2)))
 		);
 
 		testInvalidQuery(query, selectStatement);

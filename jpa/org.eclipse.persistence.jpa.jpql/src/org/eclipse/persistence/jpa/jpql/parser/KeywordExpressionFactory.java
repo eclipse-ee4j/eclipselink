@@ -16,12 +16,15 @@ package org.eclipse.persistence.jpa.jpql.parser;
 import org.eclipse.persistence.jpa.jpql.WordParser;
 
 /**
- * This {@link KeywordExpressionFactory} creates a new {@link KeywordExpression} when the portion of
- * the query to parse starts with <b>FALSE</b>, <b>TRUE</b> or <b>NULL</b>.
+ * This <code>KeywordExpressionFactory</code> creates a new {@link KeywordExpression} when the
+ * portion of the JPQL query to parse is <code><b>FALSE</b></code>, <code><b>TRUE</b></code> or
+ * <code><b>NULL</b></code>.
+ * <p>
+ * EclipseLink 2.5 added two new identifiers: <code><b>MINVALUE</b></code> and <code><b>MAXVALUE</b></code>.
  *
  * @see KeywordExpression
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -53,8 +56,14 @@ public final class KeywordExpressionFactory extends ExpressionFactory {
 	                                             AbstractExpression expression,
 	                                             boolean tolerant) {
 
-		expression = new KeywordExpression(parent);
-		expression.parse(wordParser, tolerant);
-		return expression;
+		for (String identifier : identifiers()) {
+			if (identifier.equalsIgnoreCase(word)) {
+				expression = new KeywordExpression(parent, identifier);
+				expression.parse(wordParser, tolerant);
+				return expression;
+			}
+		}
+
+		return null;
 	}
 }

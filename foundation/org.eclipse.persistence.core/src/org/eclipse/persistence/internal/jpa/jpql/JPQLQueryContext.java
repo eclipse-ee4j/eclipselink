@@ -51,7 +51,7 @@ import org.eclipse.persistence.queries.ReportQuery;
  * This context is used when creating and populating a {@link DatabaseQuery} when traversing the
  * parsed representation of a JPQL query.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  * @author John Bracken
@@ -159,6 +159,18 @@ final class JPQLQueryContext {
 	 */
 	private static final Class<?>[] EMPTY_TYPE = new Class<?>[1];
 
+	/**
+	 * Creates a new <code>JPQLQueryContext</code>.
+	 *
+	 * @param query The {@link DatabaseQuery} from which information will be queries
+	 * @param jpqlGrammar The JPQL grammar that defines how the JPQL query was parsed
+	 * @since 2.5
+	 */
+	JPQLQueryContext(DatabaseQuery query, JPQLGrammar jpqlGrammar) {
+		this(jpqlGrammar);
+		String jpqlQuery = query.getJPQLString();
+		cache(query.getSession(), query, parse(jpqlQuery), jpqlQuery);
+	}
 
 	/**
 	 * Creates a new <code>JPQLQueryContext</code>.
@@ -369,8 +381,7 @@ final class JPQLQueryContext {
 	 *
 	 * @param session The EclipseLink {@link AbstractSession} this context will use
 	 * @param query The {@link DatabaseQuery} that may already exist and it will be populated with
-	 * the information contained in the JPQL query or <code>null</code> if the query will need to
-	 * be created
+	 * the information contained in the JPQL query or <code>null</code> if the query will need to be created
 	 * @param jpqlExpression The parsed tree representation of the JPQL query
 	 * @param jpqlQuery The JPQL query
 	 */
@@ -1078,6 +1089,10 @@ final class JPQLQueryContext {
 		}
 
 		return parameterTypeVisitor;
+	}
+
+	private JPQLExpression parse(String jpqlQuery) {
+		return new JPQLExpression(jpqlQuery, jpqlGrammar);
 	}
 
 	/**

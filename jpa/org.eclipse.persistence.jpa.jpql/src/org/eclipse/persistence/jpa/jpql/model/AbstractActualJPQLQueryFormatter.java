@@ -523,11 +523,12 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 		// SELECT clause
 		stateObject.getSelectClause().accept(this);
 
-		// If no select items were parsed by they got added later, make sure a space is added
+		// If no select items were parsed but they got added later, make sure a space is added
 		if (shouldOutput(expression) ||
 		    expression.hasSpaceAfterSelect() ||
-		    (!expression.getSelectClause().hasSelectExpression() &&
-		     stateObject.getSelectClause().hasSelectItem())) {
+		    // TODO
+		    (/*!expression.getSelectClause().hasSelectExpression() &&*/
+		      stateObject.getSelectClause().hasSelectItem())) {
 
 			writer.append(SPACE);
 		}

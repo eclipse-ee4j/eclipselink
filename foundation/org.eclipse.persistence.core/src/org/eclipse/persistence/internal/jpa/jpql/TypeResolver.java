@@ -41,6 +41,7 @@ import org.eclipse.persistence.jpa.jpql.parser.AllOrAnyExpression;
 import org.eclipse.persistence.jpa.jpql.parser.AndExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ArithmeticExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ArithmeticFactor;
+import org.eclipse.persistence.jpa.jpql.parser.AsOfClause;
 import org.eclipse.persistence.jpa.jpql.parser.AvgFunction;
 import org.eclipse.persistence.jpa.jpql.parser.BadExpression;
 import org.eclipse.persistence.jpa.jpql.parser.BetweenExpression;
@@ -53,6 +54,7 @@ import org.eclipse.persistence.jpa.jpql.parser.CollectionMemberExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionValuedPathExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ComparisonExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ConcatExpression;
+import org.eclipse.persistence.jpa.jpql.parser.ConnectByClause;
 import org.eclipse.persistence.jpa.jpql.parser.ConstructorExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CountFunction;
 import org.eclipse.persistence.jpa.jpql.parser.DatabaseType;
@@ -71,6 +73,7 @@ import org.eclipse.persistence.jpa.jpql.parser.FromClause;
 import org.eclipse.persistence.jpa.jpql.parser.FunctionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.GroupByClause;
 import org.eclipse.persistence.jpa.jpql.parser.HavingClause;
+import org.eclipse.persistence.jpa.jpql.parser.HierarchicalQueryClause;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.InExpression;
@@ -108,6 +111,7 @@ import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectStatement;
 import org.eclipse.persistence.jpa.jpql.parser.SizeExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SqrtExpression;
+import org.eclipse.persistence.jpa.jpql.parser.StartWithClause;
 import org.eclipse.persistence.jpa.jpql.parser.StateFieldPathExpression;
 import org.eclipse.persistence.jpa.jpql.parser.StringLiteral;
 import org.eclipse.persistence.jpa.jpql.parser.SubExpression;
@@ -138,7 +142,7 @@ import org.eclipse.persistence.mappings.querykeys.QueryKey;
 /**
  * This visitor resolves the type of any given {@link Expression}.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -375,13 +379,6 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
 		       type == BigInteger.class || type == BigDecimal.class;
 	}
 
-	private Comparator<Class<?>> numericTypeComparator() {
-		if (numericTypeComparator == null) {
-			numericTypeComparator = new NumericTypeComparator();
-		}
-		return numericTypeComparator;
-	}
-
 	private PathResolver pathResolver() {
 		if (pathResolver == null) {
 			pathResolver = new PathResolver();
@@ -592,6 +589,13 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	public void visit(AsOfClause expression) {
+		type = Object.class;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public void visit(AvgFunction expression) {
 		type = Double.class;
 	}
@@ -674,6 +678,13 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
 	 */
 	public void visit(ConcatExpression expression) {
 		type = String.class;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(ConnectByClause expression) {
+		// TODO: 2.5
 	}
 
 	/**
@@ -813,6 +824,13 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
 	 */
 	public void visit(HavingClause expression) {
 		type = Object.class;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(HierarchicalQueryClause expression) {
+		// TODO: 2.5
 	}
 
 	/**
@@ -1176,6 +1194,13 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	public void visit(StartWithClause expression) {
+		// TODO: 2.5
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public void visit(StateFieldPathExpression expression) {
 		type = resolveMappingType(expression);
 	}
@@ -1345,7 +1370,7 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
 		}
 
 		if (types.size() == 2) {
-			Collections.sort(types, numericTypeComparator());
+			Collections.sort(types, NumericTypeComparator.instance());
 			type = types.get(0);
 		}
 		else {
@@ -1414,50 +1439,6 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
 		@Override
 		public void visit(CollectionExpression expression) {
 			this.expression = expression;
-		}
-	}
-
-	/**
-	 * This {@link Comparator} compares two {@link Class} values and returned the appropriate numeric
-	 * type that takes precedence.
-	 */
-	private static class NumericTypeComparator implements Comparator<Class<?>> {
-
-		/**
-		 * {@inheritDoc}
-		 */
-		public int compare(Class<?> type1, Class<?> type2) {
-
-			// Same type
-			if (type1 == type2) {
-				return 0;
-			}
-
-			// Object type
-			if (type1 == Object.class) return -1;
-			if (type2 == Object.class) return  1;
-
-			// Double
-			if (type1 == Double.TYPE || type1 == Double.class) return -1;
-			if (type2 == Double.TYPE || type2 == Double.class) return  1;
-
-			// Float
-			if (type1 == Float.TYPE || type1 == Float.class) return -1;
-			if (type2 == Float.TYPE || type2 == Float.class) return  1;
-
-			// BigDecimal
-			if (type1 == BigDecimal.class) return -1;
-			if (type2 == BigDecimal.class) return  1;
-
-			// BigInteger
-			if (type1 == BigInteger.class) return -1;
-			if (type2 == BigInteger.class) return  1;
-
-			// Long
-			if (type1 == Long.TYPE || type1 == Long.class) return -1;
-			if (type2 == Long.TYPE || type2 == Long.class) return  1;
-
-			return 1;
 		}
 	}
 

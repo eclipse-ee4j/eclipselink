@@ -24,7 +24,7 @@ public final class TypeExpressionTest extends JPQLParserTest {
 	@Test
 	public void testBuildExpression_01() {
 
-		String query = "SELECT e FROM Employee e WHERE TYPE(e) IN :empTypes";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE TYPE(e) IN :empTypes";
 
 		InExpressionTester inExpression = type("e").in(inputParameter(":empTypes"));
 		inExpression.hasLeftParenthesis  = false;
@@ -37,13 +37,13 @@ public final class TypeExpressionTest extends JPQLParserTest {
 			where(inExpression)
 		);
 
-		testQuery(query, selectStatement);
+		testQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_02() {
 
-		String query = "SELECT e FROM Employee e WHERE TYPE";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE TYPE";
 
 		TypeExpressionTester type = type(nullExpression());
 		type.hasLeftParenthesis  = false;
@@ -55,13 +55,13 @@ public final class TypeExpressionTest extends JPQLParserTest {
 			where(type)
 		);
 
-		testInvalidQuery(query, selectStatement);
+		testInvalidQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_03() {
 
-		String query = "SELECT e FROM Employee e WHERE TYPE(";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE TYPE(";
 
 		TypeExpressionTester type = type(nullExpression());
 		type.hasLeftParenthesis  = true;
@@ -73,13 +73,13 @@ public final class TypeExpressionTest extends JPQLParserTest {
 			where(type)
 		);
 
-		testInvalidQuery(query, selectStatement);
+		testInvalidQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_04() {
 
-		String query = "SELECT e FROM Employee e WHERE TYPE( GROUP BY e.name";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE TYPE( GROUP BY e.name";
 
 		TypeExpressionTester type = type(nullExpression());
 		type.hasLeftParenthesis  = true;
@@ -89,18 +89,16 @@ public final class TypeExpressionTest extends JPQLParserTest {
 			select(variable("e")),
 			from("Employee", "e"),
 			where(type),
-			groupBy(path("e.name")),
-			nullExpression(),
-			nullExpression()
+			groupBy(path("e.name"))
 		);
 
-		testInvalidQuery(query, selectStatement);
+		testInvalidQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_05() {
 
-		String query = "SELECT e FROM Employee e WHERE TYPE(e GROUP BY e.name";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE TYPE(e GROUP BY e.name";
 
 		TypeExpressionTester type = type("e");
 		type.hasLeftParenthesis  = true;
@@ -110,18 +108,16 @@ public final class TypeExpressionTest extends JPQLParserTest {
 			select(variable("e")),
 			from("Employee", "e"),
 			where(type),
-			groupBy(path("e.name")),
-			nullExpression(),
-			nullExpression()
+			groupBy(path("e.name"))
 		);
 
-		testInvalidQuery(query, selectStatement);
+		testInvalidQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_06() {
 
-		String query = "SELECT e FROM Employee e WHERE TYPE) GROUP BY e.name";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE TYPE) GROUP BY e.name";
 
 		TypeExpressionTester type = type(nullExpression());
 		type.hasLeftParenthesis  = false;
@@ -131,18 +127,16 @@ public final class TypeExpressionTest extends JPQLParserTest {
 			select(variable("e")),
 			from("Employee", "e"),
 			where(type),
-			groupBy(path("e.name")),
-			nullExpression(),
-			nullExpression()
+			groupBy(path("e.name"))
 		);
 
-		testInvalidQuery(query, selectStatement);
+		testInvalidQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_07() {
 
-		String query = "SELECT e FROM Employee e WHERE TYPE e) GROUP BY e.name";
+		String jpqlQuery = "SELECT e FROM Employee e WHERE TYPE e) GROUP BY e.name";
 
 		TypeExpressionTester type = type("e");
 		type.hasLeftParenthesis  = false;
@@ -152,11 +146,9 @@ public final class TypeExpressionTest extends JPQLParserTest {
 			select(variable("e")),
 			from("Employee", "e"),
 			where(type),
-			groupBy(path("e.name")),
-			nullExpression(),
-			nullExpression()
+			groupBy(path("e.name"))
 		);
 
-		testInvalidQuery(query, selectStatement);
+		testInvalidQuery(jpqlQuery, selectStatement);
 	}
 }

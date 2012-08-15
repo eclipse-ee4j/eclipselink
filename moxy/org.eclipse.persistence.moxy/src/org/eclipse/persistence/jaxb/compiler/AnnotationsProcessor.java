@@ -214,7 +214,6 @@ public class AnnotationsProcessor {
     private Map<TypeMappingInfo, Class> typeMappingInfoToAdapterClasses;
     private Map<TypeMappingInfo, QName> typeMappingInfoToSchemaType;
 
-    private NamespaceResolver namespaceResolver;
     private Helper helper;
     private String defaultTargetNamespace;
 
@@ -252,7 +251,6 @@ public class AnnotationsProcessor {
         javaClassToTypeMappingInfos = null;
         typeMappingInfoToGeneratedClasses = null;
         typeMappingInfoToAdapterClasses = null;
-        namespaceResolver = null;
         helper = null;
         logger = null;
         referencedByTransformer = null;
@@ -466,7 +464,6 @@ public class AnnotationsProcessor {
         }
         this.factoryMethods = new HashMap<String, JavaMethod>();
         this.xmlRegistries = new HashMap<String, org.eclipse.persistence.jaxb.xmlmodel.XmlRegistry>();
-        this.namespaceResolver = new NamespaceResolver();
         this.xmlRootElements = new HashMap<String, ElementDeclaration>();
 
         arrayClassesToGeneratedClasses = new HashMap<String, Class>();
@@ -521,7 +518,8 @@ public class AnnotationsProcessor {
                 continue;
             }
 
-            TypeInfo info = typeInfo.get(javaClass.getQualifiedName());
+            String qualifiedName = javaClass.getQualifiedName();
+            TypeInfo info = typeInfo.get(qualifiedName);
             if (info != null) {
                 if (info.isPreBuilt()) {
                     continue;
@@ -533,7 +531,7 @@ public class AnnotationsProcessor {
             } else {
                 info = new TypeInfo(helper);
             }
-            info.setJavaClassName(javaClass.getQualifiedName());
+            info.setJavaClassName(qualifiedName);
             info.setPreBuilt(true);
 
             // handle @XmlTransient
@@ -562,14 +560,15 @@ public class AnnotationsProcessor {
             		info.getPackageLevelAdaptersByClass().put(adapterClass, boundType);            	    
             	}
             }
+            NamespaceInfo namespaceInfo = packageInfo.getNamespaceInfo();
             // handle @XmlType
-            preProcessXmlType(javaClass, info, packageInfo.getNamespaceInfo());
+            preProcessXmlType(javaClass, info, namespaceInfo);
 
             // handle @XmlAccessorType
-            preProcessXmlAccessorType(javaClass, info, packageInfo.getNamespaceInfo());
+            preProcessXmlAccessorType(javaClass, info, namespaceInfo);
 
             // handle @XmlAccessorOrder
-            preProcessXmlAccessorOrder(javaClass, info, packageInfo.getNamespaceInfo());
+            preProcessXmlAccessorOrder(javaClass, info, namespaceInfo);
 
             // handle package level @XmlJavaTypeAdapters
             processPackageLevelAdapters(javaClass, info);
@@ -3121,10 +3120,6 @@ public class AnnotationsProcessor {
         return userDefinedSchemaTypes;
     }
 
-    public NamespaceResolver getNamespaceResolver() {
-        return namespaceResolver;
-    }
-
     public QName getQNameForProperty(String defaultName, JavaHasAnnotations element, NamespaceInfo namespaceInfo, TypeInfo info) {
         String uri = info.getClassNamespace();
         String name = XMLProcessor.DEFAULT;
@@ -4140,6 +4135,67 @@ public class AnnotationsProcessor {
         mv.visitMaxs(1, 1);
         mv.visitEnd();
 
+        if(!componentType.isPrimitive() &&  ArrayValue.class.isAssignableFrom(superType)){
+        
+        	//@Override
+    	    //public Object getItem() {
+    	    //    if(null == adaptedValue) {
+    	    //        return null;
+    	    //    }    	      
+    	    //    int len = adaptedValue.size();
+    		//    Float[] array = new Float[len];
+    	    //    adaptedValue.toArray(array);
+    	    //    return array;      
+    	    // }     
+            mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "getItem", "()Ljava/lang/Object;", null, null);
+        	mv.visitCode();
+        	mv.visitVarInsn(Opcodes.ALOAD, 0);
+        	mv.visitFieldInsn(Opcodes.GETFIELD, classNameSeparatedBySlash, "adaptedValue", "Ljava/util/Collection;");
+        	Label l0 = new Label();
+        	mv.visitJumpInsn(Opcodes.IFNONNULL, l0);
+        	mv.visitInsn(Opcodes.ACONST_NULL);
+        	mv.visitInsn(Opcodes.ARETURN);
+        	mv.visitLabel(l0);
+        	mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
+        	mv.visitVarInsn(Opcodes.ALOAD, 0);
+        	mv.visitFieldInsn(Opcodes.GETFIELD, classNameSeparatedBySlash, "adaptedValue", "Ljava/util/Collection;");
+        	mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/Collection", "size", "()I");
+        	mv.visitVarInsn(Opcodes.ISTORE, 1);
+        	mv.visitVarInsn(Opcodes.ILOAD, 1);
+        	mv.visitTypeInsn(Opcodes.ANEWARRAY, componentClassNameSeparatedBySlash);
+        	mv.visitVarInsn(Opcodes.ASTORE, 2);
+        	mv.visitVarInsn(Opcodes.ALOAD, 0);
+        	mv.visitFieldInsn(Opcodes.GETFIELD, classNameSeparatedBySlash, "adaptedValue", "Ljava/util/Collection;");
+        	mv.visitVarInsn(Opcodes.ALOAD, 2);
+        	mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/Collection", "toArray", "([Ljava/lang/Object;)[Ljava/lang/Object;");
+        	mv.visitInsn(Opcodes.POP);        	
+        	
+        	mv.visitVarInsn(Opcodes.ALOAD, 2);
+            mv.visitInsn(Opcodes.ARETURN);
+        	mv.visitMaxs(2, 3);        	
+        	mv.visitEnd();
+        	
+        		
+        	//@Override
+          	//public void setItem(Object array) {
+          	//    Float[] floatArray = (Float[])array;
+          	//	adaptedValue =   (Collection<T>) Arrays.asList(floatArray);
+          	//}          	    
+        	mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "setItem", "(Ljava/lang/Object;)V", null, null);
+        	mv.visitCode();
+        	mv.visitVarInsn(Opcodes.ALOAD, 1);
+        	mv.visitTypeInsn(Opcodes.CHECKCAST, "[L"+componentClassNameSeparatedBySlash+";");
+        	mv.visitVarInsn(Opcodes.ASTORE, 2);
+        	mv.visitVarInsn(Opcodes.ALOAD, 0);
+        	mv.visitVarInsn(Opcodes.ALOAD, 2);
+        	mv.visitMethodInsn(Opcodes.INVOKESTATIC, "java/util/Arrays", "asList", "([Ljava/lang/Object;)Ljava/util/List;");
+        	mv.visitFieldInsn(Opcodes.PUTFIELD, classNameSeparatedBySlash, "adaptedValue", "Ljava/util/Collection;");
+        	mv.visitInsn(Opcodes.RETURN);
+        	mv.visitMaxs(2, 3);
+        	mv.visitEnd();        		
+        }
+        
+        
         // @XmlElement(name="item", nillable=true)
         // public Collection<COMPONENT_TYPE> getAdaptedValue() {
         //    return super.getAdaptedValue();
@@ -4364,7 +4420,6 @@ public class AnnotationsProcessor {
             this.typeQNames = new ArrayList<QName>();
             this.userDefinedSchemaTypes = new HashMap<String, QName>();
             this.packageToPackageInfoMappings = new HashMap<String, PackageInfo>();
-            this.namespaceResolver = new NamespaceResolver();
         }
 
         JavaClass[] jClasses = new JavaClass[] { javaClass };

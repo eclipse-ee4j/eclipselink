@@ -30,17 +30,18 @@ import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
  * <li>{@link EclipseLinkJPQLGrammar2_2} defines the JPQL grammar based on JPA 2.0 and the additional EclipseLink 2.2 support.</li>
  * <li>{@link EclipseLinkJPQLGrammar2_3} defines the JPQL grammar based on JPA 2.0 and the additional EclipseLink 2.3 support.</li>
  * <li>{@link EclipseLinkJPQLGrammar2_4} defines the JPQL grammar based on JPA 2.0 and the additional EclipseLink 2.4 support.</li>
+ * <li>{@link EclipseLinkJPQLGrammar2_5} defines the JPQL grammar based on JPA 2.0 and the additional EclipseLink 2.5 support.</li>
  * <li>{@link DefaultJPQLGrammar} defines the JPQL grammar based on the latest JPA version;</li>
  * <li>{@link DefaultEclipseLinkJPQLGrammar} defines the JPQL grammar based on the latest JPA and
  * the latest EclipseLink;</li>
  * </ul>
- *
+ * <p>
  * Provisional API: This interface is part of an interim API that is still under development and
  * expected to change significantly before reaching stability. It is available at this early stage
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
  * API will almost certainly be broken (repeatedly) as the API evolves.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -61,6 +62,14 @@ public interface JPQLGrammar {
 	 * @return The {@link JPAVersion JPA version} supported by this grammar
 	 */
 	JPAVersion getJPAVersion();
+
+	/**
+	 * Returns the persistence provider name.
+	 *
+	 * @return The name of the persistence provider, <code>null</code> should never be returned
+	 * @since 2.5
+	 */
+	String getProvider();
 
 	/**
 	 * Returns the version of the persistence provider.

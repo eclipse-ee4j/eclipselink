@@ -13,15 +13,18 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql;
 
+import org.eclipse.persistence.jpa.jpql.parser.AsOfClause;
 import org.eclipse.persistence.jpa.jpql.parser.CastExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionValuedPathExpression;
+import org.eclipse.persistence.jpa.jpql.parser.ConnectByClause;
 import org.eclipse.persistence.jpa.jpql.parser.DatabaseType;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkExpressionVisitor;
-import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_4;
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.ExtractExpression;
+import org.eclipse.persistence.jpa.jpql.parser.HierarchicalQueryClause;
 import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.RegexpExpression;
+import org.eclipse.persistence.jpa.jpql.parser.StartWithClause;
 import org.eclipse.persistence.jpa.jpql.parser.TableExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TableVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.UnionClause;
@@ -47,7 +50,7 @@ import org.eclipse.persistence.jpa.jpql.parser.UnionClause;
  *
  * @see EclipseLinkGrammarValidator
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -99,10 +102,6 @@ public class EclipseLinkSemanticValidator extends AbstractSemanticValidator
 		return new TopLevelFirstDeclarationVisitor();
 	}
 
-	protected boolean isEclipseLink2_4OrLater() {
-		return getProviderVersion() == EclipseLinkJPQLGrammar2_4.VERSION;
-	}
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -139,8 +138,21 @@ public class EclipseLinkSemanticValidator extends AbstractSemanticValidator
 	/**
 	 * {@inheritDoc}
 	 */
+	public void visit(AsOfClause expression) {
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public void visit(CastExpression expression) {
 		// Nothing to validate semantically
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(ConnectByClause expression) {
+		// TODO: 2.5
 	}
 
 	/**
@@ -160,8 +172,22 @@ public class EclipseLinkSemanticValidator extends AbstractSemanticValidator
 	/**
 	 * {@inheritDoc}
 	 */
+	public void visit(HierarchicalQueryClause expression) {
+		// Nothing to validate semantically
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public void visit(RegexpExpression expression) {
 		// Nothing to validate semantically
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(StartWithClause expression) {
+		// TODO: 2.5
 	}
 
 	/**
@@ -195,7 +221,8 @@ public class EclipseLinkSemanticValidator extends AbstractSemanticValidator
 
 			// Derived path is not allowed, this could although be a fully
 			// qualified class name, which was added to EclipseLink 2.4
-			valid = isEclipseLink2_4OrLater();
+			EclipseLinkVersion version = EclipseLinkVersion.value(getGrammar().getProviderVersion());
+			valid = version.isNewerThanOrEqual(EclipseLinkVersion.VERSION_2_4);
 
 			if (valid) {
 				Object type = helper.getType(expression.toActualText());

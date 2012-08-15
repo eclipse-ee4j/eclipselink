@@ -29,7 +29,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <p>
  * Example: <code>DELETE FROM Employee e</code>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -44,11 +44,6 @@ public final class DeleteClause extends AbstractExpression {
 	 * The actual <b>FROM</b> identifier found in the string representation of the JPQL query.
 	 */
 	private String fromIdentifier;
-
-	/**
-	 * Determines whether the identifier <b>FROM</b> was parsed.
-	 */
-	private boolean hasFrom;
 
 	/**
 	 * Determines whether a whitespace was parsed after <b>DELETE</b>.
@@ -110,7 +105,7 @@ public final class DeleteClause extends AbstractExpression {
 		}
 
 		// 'FROM'
-		if (hasFrom) {
+		if (fromIdentifier != null) {
 			children.add(buildStringExpression(FROM));
 		}
 
@@ -171,14 +166,13 @@ public final class DeleteClause extends AbstractExpression {
 	 * @return <code>true</code> if <b>FROM</b> was parsed; <code>false</code> otherwise
 	 */
 	public boolean hasFrom() {
-		return hasFrom;
+		return fromIdentifier != null;
 	}
 
 	/**
 	 * Determines whether the range variable declaration was parsed.
 	 *
-	 * @return <code>true</code> if the range variable declaration was parsed; <code>false</code>
-	 * otherwise
+	 * @return <code>true</code> if the range variable declaration was parsed; <code>false</code> otherwise
 	 */
 	public boolean hasRangeVariableDeclaration() {
 		return rangeVariableDeclaration != null &&
@@ -217,9 +211,7 @@ public final class DeleteClause extends AbstractExpression {
 		hasSpaceAfterDelete = wordParser.skipLeadingWhitespace() > 0;
 
 		// Parse 'FROM'
-		hasFrom = tolerant ? wordParser.startsWithIdentifier(FROM) : true;
-
-		if (hasFrom) {
+		if (wordParser.startsWithIdentifier(FROM)) {
 			fromIdentifier = wordParser.moveForward(FROM);
 			hasSpaceAfterFrom = wordParser.skipLeadingWhitespace() > 0;
 		}
@@ -252,7 +244,7 @@ public final class DeleteClause extends AbstractExpression {
 		}
 
 		// 'FROM'
-		if (hasFrom) {
+		if (fromIdentifier != null) {
 			writer.append(actual ? fromIdentifier : FROM);
 		}
 

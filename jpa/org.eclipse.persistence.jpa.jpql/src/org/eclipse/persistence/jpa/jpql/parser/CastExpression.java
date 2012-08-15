@@ -25,7 +25,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  *
  * @see DatabaseType
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author James Sutherland
  */
@@ -42,11 +42,6 @@ public final class CastExpression extends AbstractSingleEncapsulatedExpression {
 	private AbstractExpression databaseType;
 
 	/**
-	 * Determines whether the identifier <b>AS</b> was part of the query.
-	 */
-	private boolean hasAs;
-
-	/**
 	 * Determines whether a space was parsed after the identifier <b>AS</b>.
 	 */
 	private boolean hasSpaceAfterAs;
@@ -55,6 +50,11 @@ public final class CastExpression extends AbstractSingleEncapsulatedExpression {
 	 * Determines whether a space was parsed after the expression.
 	 */
 	private boolean hasSpaceAfterExpression;
+
+	/**
+	 * Flag used to determine how to stop parsing based on what is being parsed.
+	 */
+	private boolean parsingDatabaseType;
 
 	/**
 	 * This flag is used to prevent the parsing from using any {@link ExpressionFactory} before
@@ -94,7 +94,7 @@ public final class CastExpression extends AbstractSingleEncapsulatedExpression {
 		}
 
 		// 'AS'
-		if (hasAs) {
+		if (asIdentifier != null) {
 			children.add(buildStringExpression(AS));
 		}
 
@@ -137,7 +137,7 @@ public final class CastExpression extends AbstractSingleEncapsulatedExpression {
 	 * @return <code>true</code> if the identifier <b>AS</b> was parsed; <code>false</code> otherwise
 	 */
 	public boolean hasAs() {
-		return hasAs;
+		return asIdentifier != null;
 	}
 
 	/**
@@ -155,7 +155,7 @@ public final class CastExpression extends AbstractSingleEncapsulatedExpression {
 	 */
 	@Override
 	public boolean hasEncapsulatedExpression() {
-		return super.hasEncapsulatedExpression() || hasAs || hasDatabaseType();
+		return super.hasEncapsulatedExpression() || (asIdentifier != null) || hasDatabaseType();
 	}
 
 	/**
@@ -184,6 +184,10 @@ public final class CastExpression extends AbstractSingleEncapsulatedExpression {
 	@Override
 	protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
 
+		if (parsingDatabaseType) {
+			return super.isParsingComplete(wordParser, word, expression);
+		}
+
 		ExpressionFactory factory = getQueryBNF(encapsulatedExpressionBNF()).getExpressionFactory(word);
 
 		// The first check is used to stop parsing the scalar expression,
@@ -210,15 +214,14 @@ public final class CastExpression extends AbstractSingleEncapsulatedExpression {
 		hasSpaceAfterExpression = wordParser.skipLeadingWhitespace() > 0;
 
 		// Parse 'AS'
-		hasAs = wordParser.startsWithIdentifier(AS);
-
-		if (hasAs) {
+		if (wordParser.startsWithIdentifier(AS)) {
 			asIdentifier = wordParser.moveForward(AS);
 			hasSpaceAfterAs = wordParser.skipLeadingWhitespace() > 0;
 		}
 
 		// Parse the database type
 		if (!wordParser.isTail()) {
+			parsingDatabaseType = true;
 			if (tolerant) {
 				databaseType = parse(wordParser, DatabaseTypeQueryBNF.ID, tolerant);
 			}
@@ -243,10 +246,9 @@ public final class CastExpression extends AbstractSingleEncapsulatedExpression {
 	@Override
 	protected void removeEncapsulatedExpression() {
 		super.removeEncapsulatedExpression();
-		hasAs = false;
 		asIdentifier = null;
 		databaseType = null;
-		hasSpaceAfterAs         = false;
+		hasSpaceAfterAs = false;
 		hasSpaceAfterExpression = false;
 	}
 
@@ -272,7 +274,7 @@ public final class CastExpression extends AbstractSingleEncapsulatedExpression {
 		}
 
 		// 'AS'
-		if (hasAs) {
+		if (asIdentifier != null) {
 			writer.append(actual ? asIdentifier : AS);
 		}
 

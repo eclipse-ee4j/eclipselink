@@ -60,7 +60,7 @@ public class InvalidPackageTestSuite extends DBWSTestSuite {
 		      "/>" +
             "</dbws-builder>";
           builder = null;
-          DBWSTestSuite.setUp(".", true);
+          DBWSTestSuite.setUp(".", true, false);
     }
 
 	@Test

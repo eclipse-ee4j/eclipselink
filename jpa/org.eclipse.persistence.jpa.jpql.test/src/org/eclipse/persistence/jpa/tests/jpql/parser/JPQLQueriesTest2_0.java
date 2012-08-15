@@ -18,7 +18,9 @@ import org.junit.Test;
 import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries2_0.*;
 
 /**
- * @version 2.4
+ * This unit-tests tests the parsed tree representation of a JPQL query based on the JPA 2.0 grammar.
+ *
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -278,8 +280,6 @@ public final class JPQLQueriesTest2_0 extends JPQLParserTest {
 					path("a.county").equal(string("'Santa Clara'"))
 				)
 			),
-			nullExpression(),
-			nullExpression(),
 			orderBy(
 				orderByItem("o.quantity"),
 				orderByItem(variable("taxedCost")),
@@ -307,7 +307,6 @@ public final class JPQLQueriesTest2_0 extends JPQLParserTest {
 			from("Customer", "c", join("c.orders", "o"), join("c.address", "a")),
 			where(path("a.state").equal(string("'CA'"))),
 			groupBy(path("a.zipcode")),
-			nullExpression(),
 			orderBy(orderByItemDesc(variable("q")))
 		);
 
@@ -338,9 +337,6 @@ public final class JPQLQueriesTest2_0 extends JPQLParserTest {
 		ExpressionTester selectStatement = selectStatement(
 			select(resultVariableAs(mod(path("a.id"), numeric(2)), "m")),
 			from("Address", "a", joinFetch("a.customerList")),
-			nullExpression(),
-			nullExpression(),
-			nullExpression(),
 			orderBy(
 				orderByItem(variable("m")),
 				orderByItem(path("a.zipcode"))

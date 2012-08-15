@@ -21,7 +21,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  *
  * @see StateFieldPathExpression
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -50,11 +50,11 @@ public final class StateFieldPathExpressionFactory extends AbstractLiteralExpres
 	                                             AbstractExpression expression,
 	                                             boolean tolerant) {
 
-		if (tolerant && getExpressionRegistry().isIdentifier(word)) {
-			return null;
-		}
+//		if (tolerant && getExpressionRegistry().isIdentifier(word)) {
+//			return null;
+//		}
 
-		expression = new IdentificationVariable(parent, word);
+		expression = new StateFieldPathExpression(parent, word);
 		expression.parse(wordParser, tolerant);
 		return expression;
 	}

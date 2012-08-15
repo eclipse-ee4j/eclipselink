@@ -26,7 +26,7 @@ import org.eclipse.persistence.jpa.jpql.util.iterator.IterableListIterator;
  *
  * @see JPQLGrammar
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -57,6 +57,13 @@ public interface Expression {
 	 * The constant for 'AS'.
 	 */
 	String AS = "AS";
+
+	/**
+	 * The constant for 'AS OF'.
+	 *
+	 * @since 2.5
+	 */
+	String AS_OF = "AS OF";
 
 	/**
 	 * The constant for 'ASC'.
@@ -126,6 +133,13 @@ public interface Expression {
 	 * The constant for 'CONCAT'.
 	 */
 	String CONCAT = "CONCAT";
+
+	/**
+	 * The constant for 'CONNECT BY'.
+	 *
+	 * @since 2.5
+	 */
+	String CONNECT_BY = "CONNECT BY";
 
 	/**
 	 * The constant for 'COUNT'.
@@ -237,6 +251,13 @@ public interface Expression {
 	String FETCH = "FETCH";
 
 	/**
+	 * The constant for 'FIRST'.
+	 *
+	 * @since 2.5
+	 */
+	String FIRST = "FIRST";
+
+	/**
 	 * The constant for 'FROM'.
 	 */
 	String FROM = "FROM";
@@ -346,6 +367,13 @@ public interface Expression {
 	String KEY = "KEY";
 
 	/**
+	 * The constant for 'LAST'.
+	 *
+	 * @since 2.5
+	 */
+	String LAST = "LAST";
+
+	/**
 	 * The constant for 'LEADING'.
 	 */
 	String LEADING = "LEADING";
@@ -451,6 +479,13 @@ public interface Expression {
 	String NEW = "NEW";
 
 	/**
+	 * The constant for 'NOCYCLE'.
+	 *
+	 * @since 2.5
+	 */
+	String NOCYCLE = "NOCYCLE";
+
+	/**
 	 * The constant for 'NOT'.
 	 */
 	String NOT = "NOT";
@@ -501,6 +536,13 @@ public interface Expression {
 	 * The constant for 'NULLIF'.
 	 */
 	String NULLIF = "NULLIF";
+
+	/**
+	 * The constant for 'NULLS'.
+	 *
+	 * @since 2.5
+	 */
+	String NULLS = "NULLS";
 
 	/**
 	 * The constant for 'NULLS FIRST'.
@@ -583,6 +625,13 @@ public interface Expression {
 	String REGEXP = "REGEXP";
 
 	/**
+	 * The constant for 'SCN'.
+	 *
+	 * @since 2.5
+	 */
+	String SCN = "SCN";
+
+	/**
 	 * The constant for 'SELECT'.
 	 */
 	String SELECT = "SELECT";
@@ -615,6 +664,13 @@ public interface Expression {
 	String SQRT = "SQRT";
 
 	/**
+	 * The constant for 'WHERE'.
+	 *
+	 * @version 2.5
+	 */
+	String START_WITH = "START WITH";
+
+	/**
 	 * The constant for 'SUBSTRING'.
 	 */
 	String SUBSTRING = "SUBSTRING";
@@ -625,16 +681,23 @@ public interface Expression {
 	String SUM = "SUM";
 
 	/**
-    * The constant for 'TABLE'.
-    *
-    * @since 2.4
-    */
+	 * The constant for 'TABLE'.
+	 *
+	 * @since 2.4
+	 */
 	String TABLE = "TABLE";
 
-   /**
+	/**
 	 * The constant for 'THEN'.
 	 */
 	String THEN = "THEN";
+
+	/**
+	 * The constant for 'TIMESTAMP'.
+	 *
+	 * @since 2.5
+	 */
+	String TIMESTAMP = "TIMESTAMP";
 
 	/**
 	 * The constant for 'TRAILING'.

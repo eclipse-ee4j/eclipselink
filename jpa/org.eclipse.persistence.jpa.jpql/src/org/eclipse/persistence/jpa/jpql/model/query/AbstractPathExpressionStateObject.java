@@ -25,7 +25,7 @@ import org.eclipse.persistence.jpa.jpql.model.IListChangeEvent.EventType;
 import org.eclipse.persistence.jpa.jpql.model.IListChangeListener;
 import org.eclipse.persistence.jpa.jpql.model.ListChangeEvent;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractPathExpression;
-import org.eclipse.persistence.jpa.jpql.parser.StateFieldPathExpressionBNF;
+import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariableBNF;
 import org.eclipse.persistence.jpa.jpql.spi.IManagedType;
 import org.eclipse.persistence.jpa.jpql.spi.IManagedTypeProvider;
 import org.eclipse.persistence.jpa.jpql.spi.IMapping;
@@ -34,7 +34,6 @@ import org.eclipse.persistence.jpa.jpql.spi.ITypeDeclaration;
 import org.eclipse.persistence.jpa.jpql.util.CollectionTools;
 import org.eclipse.persistence.jpa.jpql.util.iterator.CloneListIterator;
 import org.eclipse.persistence.jpa.jpql.util.iterator.IterableListIterator;
-
 import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
 
 /**
@@ -45,7 +44,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
  *
  * @see AbstractPathExpression
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -268,7 +267,7 @@ public abstract class AbstractPathExpressionStateObject extends AbstractStateObj
 	 */
 	public StateObject getIdentificationVariable() {
 		if ((identificationVariable == null) && hasItems()) {
-			identificationVariable = buildStateObject(getItem(0), StateFieldPathExpressionBNF.ID);
+			identificationVariable = buildStateObject(getItem(0), IdentificationVariableBNF.ID);
 		}
 		return identificationVariable;
 	}

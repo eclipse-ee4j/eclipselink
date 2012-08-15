@@ -26,10 +26,7 @@ public final class GroupByClauseTest extends JPQLParserTest {
 		SelectStatementTester selectStatement = selectStatement(
 			select(variable("e")),
 			from("Employee", "e"),
-			nullExpression(),
-			groupBy(path("e.name")),
-			nullExpression(),
-			nullExpression()
+			groupBy(path("e.name"))
 		);
 
 		testQuery(query, selectStatement);
@@ -43,13 +40,10 @@ public final class GroupByClauseTest extends JPQLParserTest {
 		SelectStatementTester selectStatement = selectStatement(
 			select(variable("e")),
 			from("Employee", "e"),
-			nullExpression(),
 			groupBy(
 				path("e.name"),
 				variable("e")
-			),
-			nullExpression(),
-			nullExpression()
+			)
 		);
 
 		testQuery(query, selectStatement);

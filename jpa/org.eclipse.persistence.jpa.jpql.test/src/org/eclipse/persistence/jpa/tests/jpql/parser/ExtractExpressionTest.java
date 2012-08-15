@@ -16,7 +16,7 @@ package org.eclipse.persistence.jpa.tests.jpql.parser;
 import org.junit.Test;
 
 /**
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -77,8 +77,7 @@ public final class ExtractExpressionTest extends JPQLParserTest {
 		extract.hasRightParenthesis = false;
 
 		ExpressionTester selectStatement = selectStatement(
-			select(resultVariable(extract, "e")),
-			nullExpression()
+			select(resultVariable(extract, "e"))
 		);
 
 		testInvalidQuery(jpqlQuery, selectStatement);
@@ -121,8 +120,7 @@ public final class ExtractExpressionTest extends JPQLParserTest {
 		extract.hasRightParenthesis = false;
 
 		ExpressionTester selectStatement = selectStatement(
-			select(resultVariable(extract, "e")),
-			nullExpression()
+			select(resultVariable(extract, "e"))
 		);
 
 		testInvalidQuery(jpqlQuery, selectStatement);
@@ -138,8 +136,7 @@ public final class ExtractExpressionTest extends JPQLParserTest {
 		extract.hasRightParenthesis = false;
 
 		ExpressionTester selectStatement = selectStatement(
-			select(resultVariable(extract, "e")),
-			nullExpression()
+			select(resultVariable(extract, "e"))
 		);
 
 		testInvalidQuery(jpqlQuery, selectStatement);

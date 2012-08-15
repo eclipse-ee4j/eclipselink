@@ -1846,7 +1846,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
 		return new CollectionMemberDeclarationStateObjectTester(
 			collectionPath,
 			false,
-			null,
+			nullExpression(),
 			true
 		);
 	}
@@ -3349,6 +3349,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
 			super();
 			this.derived                = derived;
 			this.hasAs                  = hasAs;
+			this.hasSpaceAfterIn        = true;
 			this.collectionValuedPath   = collectionValuedPath;
 			this.identificationVariable = identificationVariable;
 		}

@@ -33,7 +33,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * @see SelectClause
  * @see SimpleSelectClause
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -43,11 +43,6 @@ public abstract class AbstractSelectClause extends AbstractExpression {
 	 * The actual <b>DISTINCT</b> identifier found in the string representation of the JPQL query.
 	 */
 	private String distinctIdentifier;
-
-	/**
-	 * Determines whether the identifier <b>DISTINCT</b> was parsed.
-	 */
-	private boolean hasDistinct;
 
 	/**
 	 * Determines whether a whitespace was parsed after the <b>DISTINCT</b>.
@@ -107,7 +102,7 @@ public abstract class AbstractSelectClause extends AbstractExpression {
 		}
 
 		// 'DISTINCT'
-		if (hasDistinct) {
+		if (distinctIdentifier != null) {
 			children.add(buildStringExpression(DISTINCT));
 		}
 
@@ -162,7 +157,7 @@ public abstract class AbstractSelectClause extends AbstractExpression {
 	 * <code>false</code> otherwise
 	 */
 	public final boolean hasDistinct() {
-		return hasDistinct;
+		return distinctIdentifier != null;
 	}
 
 	/**
@@ -208,9 +203,7 @@ public abstract class AbstractSelectClause extends AbstractExpression {
 		hasSpaceAfterSelect = wordParser.skipLeadingWhitespace() > 0;
 
 		// Parse 'DISTINCT'
-		hasDistinct = wordParser.startsWithIdentifier(DISTINCT);
-
-		if (hasDistinct) {
+		if (wordParser.startsWithIdentifier(DISTINCT)) {
 			distinctIdentifier = wordParser.moveForward(DISTINCT);
 			hasSpaceAfterDistinct = wordParser.skipLeadingWhitespace() > 0;
 		}
@@ -240,7 +233,7 @@ public abstract class AbstractSelectClause extends AbstractExpression {
 		}
 
 		// 'DISTINCT'
-		if (hasDistinct) {
+		if (distinctIdentifier != null) {
 			writer.append(actual ? distinctIdentifier : DISTINCT);
 		}
 

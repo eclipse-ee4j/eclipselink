@@ -31,8 +31,10 @@ import org.eclipse.persistence.internal.oxm.UnmarshalXPathEngine;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLConstants;
+import org.eclipse.persistence.oxm.XMLLogin;
 import org.eclipse.persistence.internal.oxm.XPathEngine;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.platform.xml.XMLParser;
@@ -766,6 +768,13 @@ public class DOMRecord extends XMLRecord {
         }
     }
 
+    public void setSession(AbstractSession session) {
+        this.session = session;
+        if (session != null && session.getDatasourceLogin() instanceof XMLLogin) {
+            this.equalNamespaceResolvers = ((XMLLogin) session.getDatasourceLogin()).hasEqualNamespaceResolvers();
+        }
+    }
+    
     /**
      * Set the XML from an XML reader.
      */

@@ -145,7 +145,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  *
  * @see AbstractSemanticValidator
  *
- * @version 2.4
+ * @version 2.4.1
  * @since 2.4
  * @author Pascal Filion
  */
@@ -3205,7 +3205,7 @@ public abstract class AbstractGrammarValidator extends AbstractValidator {
 	public void visit(FunctionExpression expression) {
 
 		JPQLQueryBNF queryBNF = getQueryBNF(expression.getQueryBNF().getId());
-		boolean validFunction = (queryBNF != null) && queryBNF.getIdentifiers().contains(expression.getIdentifier());
+		boolean validFunction = (queryBNF != null) && queryBNF.hasIdentifier(expression.getIdentifier());
 
 		// JPA 1.0/2.0 does not support the function expression
 		if (!isJPA2_1() || !validFunction) {

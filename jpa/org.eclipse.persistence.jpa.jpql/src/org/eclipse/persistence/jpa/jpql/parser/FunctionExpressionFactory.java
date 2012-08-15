@@ -14,6 +14,7 @@
 package org.eclipse.persistence.jpa.jpql.parser;
 
 import org.eclipse.persistence.jpa.jpql.Assert;
+import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.WordParser;
 
 /**
@@ -22,7 +23,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  *
  * @see FunctionExpression
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author James
  */
@@ -103,37 +104,13 @@ public final class FunctionExpressionFactory extends ExpressionFactory {
 
 		// Make sure the new function is a real expression and not a variable name.
 		// Example: SELECT column FROM Column column
-		if (isFunctionExpression(wordParser, identifier)) {
+		if (ExpressionTools.isFunctionExpression(wordParser, identifier)) {
 			expression = new FunctionExpression(parent, identifier, parameterCount, parameterQueryBNFId);
 			expression.parse(wordParser, tolerant);
 			return expression;
 		}
 
 		return null;
-	}
-
-	/**
-	 * Determines whether the JPQL fragment is an expression of the form <code>&lt;IDENTIFIER&gt;(</code>.
-	 *
-	 * @param wordParser The text to parse based on the current position of the cursor
-	 * @param identifier The identifier to verify if it's for an expression or for possibly for a
-	 * variable name
-	 * @return <code>true</code> if the identifier is followed by '('; <code>false</code> otherwise
-	 */
-	protected boolean isFunctionExpression(WordParser wordParser, String identifier) {
-
-		// Skip the identifier
-		int count = identifier.length();
-		wordParser.moveForward(identifier);
-
-		// Check to see if ( is following the identifier
-		int whitespace = wordParser.skipLeadingWhitespace();
-		boolean function = wordParser.startsWith(AbstractExpression.LEFT_PARENTHESIS);
-
-		// Revert the changes
-		wordParser.moveBackward(count + whitespace);
-
-		return function;
 	}
 
 	/**

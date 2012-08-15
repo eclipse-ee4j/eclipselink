@@ -92,7 +92,6 @@ public final class SelectStatementTest extends JPQLParserTest {
 		SelectStatementTester selectStatement = selectStatement(
 			select(variable("e")),
 			from("Employee", "e"),
-			nullExpression(),
 			groupBy(variable("e")),
 			having(sum(variable("e"))),
 			orderBy(orderByItem(variable("e")))
@@ -110,9 +109,7 @@ public final class SelectStatementTest extends JPQLParserTest {
 			select(variable("e")),
 			from("Employee", "e"),
 			where(path("e.name").equal(string("'Pascal'"))),
-			groupBy(variable("e")),
-			nullExpression(),
-			nullExpression()
+			groupBy(variable("e"))
 		);
 
 		testQuery(query, selectStatement);
@@ -128,8 +125,7 @@ public final class SelectStatementTest extends JPQLParserTest {
 			from("Employee", "e"),
 			where(path("e.name").equal(string("'Pascal'"))),
 			groupBy(variable("e")),
-			having(sum(variable("e"))),
-			nullExpression()
+			having(sum(variable("e")))
 		);
 
 		testQuery(query, selectStatement);
@@ -162,7 +158,6 @@ public final class SelectStatementTest extends JPQLParserTest {
 			from("Employee", "e"),
 			where(path("e.name").equal(string("'Pascal'"))),
 			groupBy(variable("e")),
-			nullExpression(),
 			orderBy(orderByItem(variable("e")))
 		);
 
@@ -178,7 +173,6 @@ public final class SelectStatementTest extends JPQLParserTest {
 			select(variable("e")),
 			from("Employee", "e"),
 			where(path("e.name").equal(string("'Pascal'"))),
-			nullExpression(),
 			having(sum(variable("e"))),
 			orderBy(orderByItem(variable("e")))
 		);

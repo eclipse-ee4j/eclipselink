@@ -28,7 +28,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <p>
  * <div nowrap><b>BNF:</b> <code>collection_member_expression ::= entity_or_value_expression [NOT] MEMBER [OF] collection_valued_path_expression</code><p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -43,16 +43,6 @@ public final class CollectionMemberExpression extends AbstractExpression {
 	 * The {@link Expression} representing the entity expression.
 	 */
 	private AbstractExpression entityExpression;
-
-	/**
-	 * Determines whether the identifier <b>NOT</b> was parsed.
-	 */
-	private boolean hasNot;
-
-	/**
-	 * Determines whether the identifier <b>OF</b> was parsed.
-	 */
-	private boolean hasOf;
 
 	/**
 	 * Determines whether a whitespace was parsed after <b>MEMBER</b>.
@@ -130,7 +120,7 @@ public final class CollectionMemberExpression extends AbstractExpression {
 		}
 
 		// 'NOT'
-		if (hasNot) {
+		if (notIdentifier != null) {
 			if (hasEntityExpression()) {
 				children.add(buildStringExpression(SPACE));
 			}
@@ -138,7 +128,7 @@ public final class CollectionMemberExpression extends AbstractExpression {
 			children.add(buildStringExpression(NOT));
 		}
 
-		if (hasNot || hasEntityExpression()) {
+		if ((notIdentifier != null) || hasEntityExpression()) {
 			children.add(buildStringExpression(SPACE));
 		}
 
@@ -150,7 +140,7 @@ public final class CollectionMemberExpression extends AbstractExpression {
 		}
 
 		// 'OF'
-		if (hasOf) {
+		if (ofIdentifier != null) {
 			children.add(buildStringExpression(OF));
 		}
 
@@ -221,15 +211,24 @@ public final class CollectionMemberExpression extends AbstractExpression {
 	}
 
 	/**
-	 * Returns the identifier for this expression that may include <b>NOT</b> and <b>OF</b> if it was
-	 * parsed.
+	 * Returns the identifier for this expression that may include <b>NOT</b> and <b>OF</b> if it was parsed.
 	 *
 	 * @return Either <b>MEMBER</b>, <b>NOT MEMBER</b>, <b>NOT MEMBER OF</b> or <b>MEMBER OF</b>
 	 */
 	public String getIdentifier() {
-		if (hasNot && hasOf) return NOT_MEMBER_OF;
-		if (hasNot)          return NOT_MEMBER;
-		if (hasOf)           return MEMBER_OF;
+
+		if ((notIdentifier != null) && (ofIdentifier != null)) {
+			return NOT_MEMBER_OF;
+		}
+
+		if (notIdentifier != null) {
+			return NOT_MEMBER;
+		}
+
+		if (ofIdentifier != null) {
+			return MEMBER_OF;
+		}
+
 		return MEMBER;
 	}
 
@@ -267,7 +266,7 @@ public final class CollectionMemberExpression extends AbstractExpression {
 	 * @return <code>true</code> if the identifier <b>NOT</b> was parsed; <code>false</code> otherwise
 	 */
 	public boolean hasNot() {
-		return hasNot;
+		return notIdentifier != null;
 	}
 
 	/**
@@ -276,14 +275,13 @@ public final class CollectionMemberExpression extends AbstractExpression {
 	 * @return <code>true</code> if the identifier <b>OF</b> was parsed; <code>false</code> otherwise
 	 */
 	public boolean hasOf() {
-		return hasOf;
+		return ofIdentifier != null;
 	}
 
 	/**
 	 * Determines whether a whitespace was found after <b>MEMBER</b>.
 	 *
-	 * @return <code>true</code> if there was a whitespace after <b>MEMBER</b>; <code>false</code>
-	 * otherwise
+	 * @return <code>true</code> if there was a whitespace after <b>MEMBER</b>; <code>false</code> otherwise
 	 */
 	public boolean hasSpaceAfterMember() {
 		return hasSpaceAfterMember;
@@ -292,8 +290,7 @@ public final class CollectionMemberExpression extends AbstractExpression {
 	/**
 	 * Determines whether a whitespace was found after <b>OF</b>.
 	 *
-	 * @return <code>true</code> if there was a whitespace after <b>OF</b>; <code>false</code>
-	 * otherwise
+	 * @return <code>true</code> if there was a whitespace after <b>OF</b>; <code>false</code> otherwise
 	 */
 	public boolean hasSpaceAfterOf() {
 		return hasSpaceAfterOf;
@@ -306,9 +303,7 @@ public final class CollectionMemberExpression extends AbstractExpression {
 	protected void parse(WordParser wordParser, boolean tolerant) {
 
 		// Parse 'NOT'
-		hasNot = wordParser.startsWithIgnoreCase('N');
-
-		if (hasNot) {
+		if (wordParser.startsWithIgnoreCase('N')) {
 			notIdentifier = wordParser.moveForward(NOT);
 			wordParser.skipLeadingWhitespace();
 		}
@@ -319,9 +314,7 @@ public final class CollectionMemberExpression extends AbstractExpression {
 		hasSpaceAfterMember = wordParser.skipLeadingWhitespace() > 0;
 
 		// Parse 'OF'
-		hasOf = wordParser.startsWithIdentifier(OF);
-
-		if (hasOf) {
+		if (wordParser.startsWithIdentifier(OF)) {
 			ofIdentifier = wordParser.moveForward(OF);
 			hasSpaceAfterOf = wordParser.skipLeadingWhitespace() > 0;
 		}
@@ -346,7 +339,7 @@ public final class CollectionMemberExpression extends AbstractExpression {
 		}
 
 		// 'NOT'
-		if (hasNot) {
+		if (notIdentifier != null) {
 			if (hasEntityExpression()) {
 				writer.append(SPACE);
 			}
@@ -354,7 +347,7 @@ public final class CollectionMemberExpression extends AbstractExpression {
 			writer.append(actual ? notIdentifier : NOT);
 		}
 
-		if (hasNot || hasEntityExpression()) {
+		if ((notIdentifier != null) || hasEntityExpression()) {
 			writer.append(SPACE);
 		}
 
@@ -366,7 +359,7 @@ public final class CollectionMemberExpression extends AbstractExpression {
 		}
 
 		// 'OF'
-		if (hasOf) {
+		if (ofIdentifier != null) {
 			writer.append(actual ? ofIdentifier : OF);
 		}
 

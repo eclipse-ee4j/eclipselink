@@ -13,11 +13,10 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.parser;
 
-
 /**
  * <div nowrap><b>BNFL</b> <code>subquery ::= simple_select_clause subquery_from_clause [where_clause] [groupby_clause] [having_clause]</code><p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -60,14 +59,6 @@ public final class SimpleSelectStatement extends AbstractSelectStatement {
 	 */
 	public JPQLQueryBNF getQueryBNF() {
 		return getQueryBNF(SubqueryBNF.ID);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public SimpleSelectClause getSelectClause() {
-		return (SimpleSelectClause) super.getSelectClause();
 	}
 
 	/**

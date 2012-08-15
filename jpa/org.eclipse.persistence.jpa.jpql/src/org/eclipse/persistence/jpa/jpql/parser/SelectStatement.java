@@ -18,18 +18,60 @@ import java.util.List;
 import org.eclipse.persistence.jpa.jpql.WordParser;
 
 /**
- * A select statement must always have a <b>SELECT</b> and a <b>FROM</b> clause.
+ * A <code><b>SELECT</b></code> query is an operation that retrieves data from one or more tables or
+ * views.
  * <p>
  * JPA:
- * <div nowrap><b>BNF:</b> <code>select_statement ::= select_clause from_clause [where_clause] [groupby_clause] [having_clause] [orderby_clause]</code>
+ * <div nowrap><b>BNF:</b> <code>select_statement ::= select_clause
+ *                                                    from_clause
+ *                                                    [where_clause]
+ *                                                    [groupby_clause]
+ *                                                    [having_clause]
+ *                                                    [orderby_clause]</code>
  * <p>
  * EclipseLink 2.4:
- * <div nowrap><b>BNF:</b> <code>select_statement ::= select_clause from_clause [where_clause] [groupby_clause] [having_clause] [orderby_clause] {union_clause}*</code>
+ * <div nowrap><b>BNF:</b> <code>select_statement ::= select_clause
+ *                                                    from_clause
+ *                                                    [where_clause]
+ *                                                    [groupby_clause]
+ *                                                    [having_clause]
+ *                                                    [orderby_clause]
+ *                                                    {union_clause}*</code>
+ * <p>
+ * EclipseLink 2.5:
+ * <div nowrap><b>BNF:</b> <code>select_statement ::= select_clause
+ *                                                    from_clause
+ *                                                    [flashback_query_clause]
+ *                                                    [where_clause]
+ *                                                    [hierarchical_query_clause]
+ *                                                    [groupby_clause]
+ *                                                    [having_clause]
+ *                                                    [orderby_clause]
+ *                                                    {union_clause}*</code>
+ * <p>
+ * HQL query (EclipseLink 2.5):
+ * <div nowrap><b>BNF:</b> <code>select_statement ::= [select_clause]
+ *                                                    from_clause
+ *                                                    [flashback_query_clause]
+ *                                                    [where_clause]
+ *                                                    [hierarchical_query_clause]
+ *                                                    [groupby_clause]
+ *                                                    [having_clause]
+ *                                                    [orderby_clause]
+ *                                                    {union_clause}*</code>
  * <p>
  *
+ * @see FlashbackQueryClause
+ * @see FromClause
+ * @see GroupByClause
+ * @see HavingClause
+ * @see HierarchicalQueryClause
+ * @see OrderByClause
  * @see SelectClause
+ * @see UnionClause
+ * @see WhereClause
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -152,14 +194,6 @@ public final class SelectStatement extends AbstractSelectStatement {
 	}
 
 	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public SelectClause getSelectClause() {
-		return (SelectClause) super.getSelectClause();
-	}
-
-	/**
 	 * Returns the {@link Expression} representing the <b>UNION</b> clauses.
 	 *
 	 * @return The {@link Expression} representing the <b>UNION</b> clauses
@@ -172,7 +206,7 @@ public final class SelectStatement extends AbstractSelectStatement {
 	}
 
 	/**
-	 * Determines whether the <b>ORDER BY</b> clause is defined.
+	 * Determines whether the <b>ORDER BY</b> clause is defined or not.
 	 *
 	 * @return <code>true</code> if the query that got parsed had the <b>ORDER BY</b> clause
 	 */
@@ -220,8 +254,8 @@ public final class SelectStatement extends AbstractSelectStatement {
 	protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
 
 		if (word.equalsIgnoreCase(UNION)     ||
-          word.equalsIgnoreCase(INTERSECT) ||
-          word.equalsIgnoreCase(EXCEPT)) {
+		    word.equalsIgnoreCase(INTERSECT) ||
+		    word.equalsIgnoreCase(EXCEPT)) {
 
 			return false;
 		}

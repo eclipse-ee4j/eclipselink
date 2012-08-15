@@ -13,6 +13,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.parser;
 
+import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.WordParser;
 
 /**
@@ -23,12 +24,12 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  *
  * @see StateFieldPathExpression
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
-public final class UpdateItemStateFieldPathExpressionFactory extends AbstractLiteralExpressionFactory {
+public final class UpdateItemStateFieldPathExpressionFactory extends ExpressionFactory {
 
 	/**
 	 * The unique identifier of this {@link StateFieldPathExpressionFactory}.
@@ -49,15 +50,43 @@ public final class UpdateItemStateFieldPathExpressionFactory extends AbstractLit
 	protected AbstractExpression buildExpression(AbstractExpression parent,
 	                                             WordParser wordParser,
 	                                             String word,
+	                                             JPQLQueryBNF queryBNF,
 	                                             AbstractExpression expression,
 	                                             boolean tolerant) {
 
-		if (tolerant && getExpressionRegistry().isIdentifier(word)) {
-			return null;
-		}
+		ExpressionRegistry registry = getExpressionRegistry();
 
-		expression = new StateFieldPathExpression(parent, word);
-		expression.parse(wordParser, tolerant);
-		return expression;
+		// When the tolerant mode is turned on, parse the invalid portion of the query
+		if (tolerant && registry.isIdentifier(word)) {
+
+			ExpressionFactory factory = registry.expressionFactoryForIdentifier(word);
+
+			// Special case where the word is seen as an JPQL identifier but it's actually
+			// an unqualified path expression. Examples:
+			// UPDATE DateTime SET avg = 'JPQL'
+			// UPDATE DateTime SET timestamp = 'JPQL'
+			if (factory == null ||
+			    registry.getIdentifierRole(word) == IdentifierRole.FUNCTION &&
+			    !ExpressionTools.isFunctionExpression(wordParser, word)) {
+
+				expression = new StateFieldPathExpression(parent, word);
+				expression.parse(wordParser, tolerant);
+				return expression;
+			}
+
+			factory = registry.getExpressionFactory(PreLiteralExpressionFactory.ID);
+
+			// Pass on the fallback ExpressionFactory, this will allow PreLiteralExpressionFactory to
+			// give to LiteralExpressionFactory the ExpressionFactory that will be used to create the
+			// right object but will still create the right object when the query is invalid
+			factory.setFallBackExpressionFactory(StateFieldPathExpressionFactory.ID);
+
+			return factory.buildExpression(parent, wordParser, word, queryBNF, expression, tolerant);
+		}
+		else {
+			expression = new StateFieldPathExpression(parent, word);
+			expression.parse(wordParser, tolerant);
+			return expression;
+		}
 	}
 }

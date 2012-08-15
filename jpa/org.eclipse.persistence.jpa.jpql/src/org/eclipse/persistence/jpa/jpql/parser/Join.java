@@ -43,11 +43,6 @@ public final class Join extends AbstractExpression {
 	private String asIdentifier;
 
 	/**
-	 * Determines whether the identifier <b>AS</b> was parsed.
-	 */
-	private boolean hasAs;
-
-	/**
 	 * Determines whether a whitespace was parsed after <b>AS</b>.
 	 */
 	private boolean hasSpaceAfterAs;
@@ -165,7 +160,7 @@ public final class Join extends AbstractExpression {
 		}
 
 		// 'AS'
-		if (hasAs) {
+		if (asIdentifier != null) {
 			children.add(buildStringExpression(AS));
 
 			if (hasSpaceAfterAs) {
@@ -268,7 +263,7 @@ public final class Join extends AbstractExpression {
 	 * @return <code>true</code> if the identifier <b>AS</b> was parsed; <code>false</code> otherwise
 	 */
 	public boolean hasAs() {
-		return hasAs;
+		return asIdentifier != null;
 	}
 
 	/**
@@ -432,9 +427,7 @@ public final class Join extends AbstractExpression {
 		hasSpaceAfterJoinAssociation = count > 0;
 
 		// Parse 'AS'
-		hasAs = wordParser.startsWithIdentifier(AS);
-
-		if (hasAs) {
+		if (wordParser.startsWithIdentifier(AS)) {
 			asIdentifier = wordParser.moveForward(AS);
 			hasSpaceAfterAs = wordParser.skipLeadingWhitespace() > 0;
 		}
@@ -458,7 +451,7 @@ public final class Join extends AbstractExpression {
 
 		// A JOIN FETCH without '[AS] identification_variable' will not keep the
 		// whitespace after the join association for backward compatibility (for now)
-		if (!hasAs &&
+		if (asIdentifier == null           &&
 		    hasSpaceAfterJoinAssociation   &&
 		    identificationVariable == null &&
 		    hasFetch() &&
@@ -512,7 +505,7 @@ public final class Join extends AbstractExpression {
 		}
 
 		// 'AS'
-		if (hasAs) {
+		if (asIdentifier != null) {
 			writer.append(actual ? asIdentifier : AS);
 
 			if (hasSpaceAfterAs) {

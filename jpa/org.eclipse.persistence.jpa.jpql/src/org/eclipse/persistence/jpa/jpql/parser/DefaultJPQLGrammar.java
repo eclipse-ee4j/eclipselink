@@ -19,23 +19,28 @@ import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
 /**
  * This {@link JPQLGrammar JPQL grammar} provides support for parsing JPQL queries defined in the
  * latest JPA functional specification. The current version of the functional specification is
- * <a href="http://jcp.org/en/jsr/detail?id=317">JSR-337 Java Persistence 2.0</a>.
- *
+ * <a href="http://jcp.org/en/jsr/detail?id=317">JSR-338 - Java Persistence 2.1</a>.
+ * <p>
  * Provisional API: This interface is part of an interim API that is still under development and
  * expected to change significantly before reaching stability. It is available at this early stage
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
  * API will almost certainly be broken (repeatedly) as the API evolves.
  *
- * @see JPQLGrammar2_0
+ * @see JPQLGrammar2_1
  * @see DefaultJPQLGrammar
  * @see DefaultEclipseLinkJPQLGrammar
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
 public final class DefaultJPQLGrammar implements JPQLGrammar {
+
+	/**
+	 * The generic persistence provider name: JPA.
+	 */
+	public static final String PROVIDER_NAME = "JPA";
 
 	/**
 	 * Creates a new <code>DefaultJPQLGrammar</code>.
@@ -50,7 +55,7 @@ public final class DefaultJPQLGrammar implements JPQLGrammar {
 	 * @return The singleton instance of this {@link DefaultJPQLGrammar}
 	 */
 	public static JPQLGrammar instance() {
-		return JPQLGrammar2_0.instance();
+		return JPQLGrammar2_1.instance();
 	}
 
 	/**
@@ -70,6 +75,13 @@ public final class DefaultJPQLGrammar implements JPQLGrammar {
 	/**
 	 * {@inheritDoc}
 	 */
+	public String getProvider() {
+		return instance().getProvider();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public String getProviderVersion() {
 		return ExpressionTools.EMPTY_STRING;
 	}
@@ -79,6 +91,6 @@ public final class DefaultJPQLGrammar implements JPQLGrammar {
 	 */
 	@Override
 	public String toString() {
-		return "JPQLGrammar 2.0 (default)";
+		return instance().toString();
 	}
 }

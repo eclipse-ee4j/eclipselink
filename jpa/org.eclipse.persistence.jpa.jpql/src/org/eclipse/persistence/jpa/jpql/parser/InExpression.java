@@ -39,7 +39,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <p>
  * <div nowrap>Example: </code><b>SELECT</b> p <b>FROM</b> Project p <b>WHERE</b> <b>TYPE</b>(p) <b>IN</b>(LargeProject, SmallProject)</p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -54,11 +54,6 @@ public final class InExpression extends AbstractExpression {
 	 * Flag used to determine if the closing parenthesis is present in the query.
 	 */
 	private boolean hasLeftParenthesis;
-
-	/**
-	 * Determines whether this expression is negated or not.
-	 */
-	private boolean hasNot;
 
 	/**
 	 * Flag used to determine if the opening parenthesis is present in the query.
@@ -87,8 +82,7 @@ public final class InExpression extends AbstractExpression {
 	private String notIdentifier;
 
 	/**
-	 * Determines whether what was parsed after the <code>IN</code> identifier is a single input
-	 * parameter.
+	 * Determines whether what was parsed after the <code>IN</code> identifier is a single input parameter.
 	 */
 	private Boolean singleInputParameter;
 
@@ -145,7 +139,7 @@ public final class InExpression extends AbstractExpression {
 		}
 
 		// 'NOT'
-		if (hasNot) {
+		if (notIdentifier != null) {
 			children.add(buildStringExpression(NOT));
 		}
 
@@ -202,8 +196,7 @@ public final class InExpression extends AbstractExpression {
 	 * Returns the actual <b>NOT</b> found in the string representation of the JPQL query, which has
 	 * the actual case that was used.
 	 *
-	 * @return The <b>NOT</b> identifier that was actually parsed, or an empty string if it was not
-	 * parsed
+	 * @return The <b>NOT</b> identifier that was actually parsed, or an empty string if it was not parsed
 	 */
 	public String getActualNotIdentifier() {
 		return (notIdentifier != null) ? notIdentifier : ExpressionTools.EMPTY_STRING;
@@ -248,7 +241,7 @@ public final class InExpression extends AbstractExpression {
 	 * @return Either <b>IS IN</b> or <b>IN</b>
 	 */
 	public String getIdentifier() {
-		return hasNot ? NOT_IN : IN;
+		return (notIdentifier != null) ? NOT_IN : IN;
 	}
 
 	/**
@@ -284,8 +277,7 @@ public final class InExpression extends AbstractExpression {
 	/**
 	 * Determines whether the list of items was parsed.
 	 *
-	 * @return <code>true</code> if at least one item was parsed; <code>false</code>
-	 * otherwise
+	 * @return <code>true</code> if at least one item was parsed; <code>false</code> otherwise
 	 */
 	public boolean hasInItems() {
 		return inItems != null &&
@@ -308,7 +300,7 @@ public final class InExpression extends AbstractExpression {
 	 * @return <code>true</code> if the identifier <b>NOT</b> was parsed; <code>false</code> otherwise
 	 */
 	public boolean hasNot() {
-		return hasNot;
+		return notIdentifier != null;
 	}
 
 	/**
@@ -380,9 +372,7 @@ public final class InExpression extends AbstractExpression {
 	protected void parse(WordParser wordParser, boolean tolerant) {
 
 		// Parse 'NOT'
-		hasNot = wordParser.startsWithIgnoreCase('N');
-
-		if (hasNot) {
+		if (wordParser.startsWithIgnoreCase('N')) {
 			notIdentifier = wordParser.moveForward(NOT);
 			wordParser.skipLeadingWhitespace();
 		}
@@ -439,7 +429,7 @@ public final class InExpression extends AbstractExpression {
 		}
 
 		// 'NOT'
-		if (hasNot) {
+		if (notIdentifier != null) {
 			writer.append(actual ? notIdentifier : NOT);
 			writer.append(SPACE);
 		}

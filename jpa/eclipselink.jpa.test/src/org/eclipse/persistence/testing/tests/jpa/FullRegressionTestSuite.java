@@ -1,91 +1,46 @@
 /*******************************************************************************
  * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the 
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
- * which accompanies this distribution. 
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+ * which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at 
+ * and the Eclipse Distribution License is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     06/16/2009-2.0 Guy Pelletier 
+ *     06/16/2009-2.0 Guy Pelletier
  *       - 277039: JPA 2.0 Cache Usage Settings
- *     01/19/2010-2.1 Guy Pelletier 
+ *     01/19/2010-2.1 Guy Pelletier
  *       - 211322: Add fetch-group(s) support to the EclipseLink-ORM.XML Schema
- *     03/23/2011-2.3 Guy Pelletier 
+ *     03/23/2011-2.3 Guy Pelletier
  *       - 337323: Multi-tenant with shared schema support (part 1)
- ******************************************************************************/  
+ ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa;
 
-import junit.framework.TestSuite;
 import junit.framework.Test;
-
+import junit.framework.TestSuite;
 import org.eclipse.persistence.testing.tests.jpa.advanced.AdvancedJPAJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.AdvancedJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.CacheImplJUnitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.CallbackEventJUnitTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.advanced.EntityManagerJUnitTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.advanced.MetadataCachingTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.advanced.QueryCastTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.advanced.SQLResultSetMappingTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.advanced.JoinedAttributeAdvancedJunitTest;
-import org.eclipse.persistence.testing.tests.jpa.advanced.ReportQueryMultipleReturnTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.advanced.ExtendedPersistenceContextJUnitTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.advanced.ReportQueryConstructorExpressionTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.advanced.JoinedAttributeAdvancedJunitTest;
+import org.eclipse.persistence.testing.tests.jpa.advanced.MetadataCachingTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.advanced.OptimisticConcurrencyJUnitTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.advanced.PessimisticLockingExtendedScopeTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.advanced.QueryCastTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.advanced.ReportQueryAdvancedJUnitTest;
+import org.eclipse.persistence.testing.tests.jpa.advanced.ReportQueryConstructorExpressionTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.advanced.ReportQueryMultipleReturnTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.advanced.SQLResultSetMappingTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.advanced.UpdateAllQueryAdvancedJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.compositepk.AdvancedCompositePKJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.concurrency.ConcurrencyTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.concurrency.LifecycleJUnitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.fetchgroup.AdvancedFetchGroupJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.advanced.multitenant.AdvancedMultiTenantJunitTest;
-import org.eclipse.persistence.testing.tests.jpa.advanced.ReportQueryAdvancedJUnitTest;
-import org.eclipse.persistence.testing.tests.jpa.advanced.PessimisticLockingExtendedScopeTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.advanced.UpdateAllQueryAdvancedJunitTest;
-
-import org.eclipse.persistence.testing.tests.jpa.inheritance.LifecycleCallbackJunitTest;
-import org.eclipse.persistence.testing.tests.jpa.inheritance.DeleteAllQueryInheritanceJunitTest;
-import org.eclipse.persistence.testing.tests.jpa.inheritance.EntityManagerJUnitTestCase;
-import org.eclipse.persistence.testing.tests.jpa.inheritance.MixedInheritanceJUnitTestCase;
-import org.eclipse.persistence.testing.tests.jpa.inheritance.JoinedAttributeInheritanceJunitTest;
-import org.eclipse.persistence.testing.tests.jpa.inheritance.ReportQueryMultipleReturnInheritanceTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.inheritance.TablePerClassInheritanceJUnitTest;
-
-import org.eclipse.persistence.testing.tests.jpa.inherited.OrderedListJunitTest;
-import org.eclipse.persistence.testing.tests.jpa.inherited.OrderedListAttributeChangeTrackingJunitTest;
-import org.eclipse.persistence.testing.tests.jpa.inherited.InheritedModelJunitTest;
-import org.eclipse.persistence.testing.tests.jpa.inherited.InheritedCallbacksJunitTest;
-import org.eclipse.persistence.testing.tests.jpa.inherited.EmbeddableSuperclassJunitTest;
-
-import org.eclipse.persistence.testing.tests.jpa.partitioned.PartitionedTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.partitioned.PartitionedXMLTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.plsql.PLSQLTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.plsql.XMLPLSQLTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.relationships.EMQueryJUnitTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.relationships.ExpressionJUnitTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.relationships.IsolatedCacheTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.relationships.RelationshipModelJUnitTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.relationships.UniAndBiDirectionalMappingTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.relationships.VirtualAttributeTestSuite;
-
-import org.eclipse.persistence.testing.tests.jpa.validation.ValidationTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.validation.QueryParameterValidationTestSuite;
-
-
-import org.eclipse.persistence.testing.tests.jpa.jpaadvancedproperties.JPAAdvPropertiesJUnitTestCase;
-import org.eclipse.persistence.testing.tests.jpa.jpql.AdvancedQueryTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLComplexAggregateTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLComplexTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLDateTimeTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLExamplesTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLInheritanceTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLModifyTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLParameterTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLSimpleTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLUnitTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLValidationTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitNativeQueryTestSuite;
-import org.eclipse.persistence.testing.tests.jpa.xml.EntityMappingsJUnitTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.cacheable.CacheableModelJunitTest;
 import org.eclipse.persistence.testing.tests.jpa.cascadedeletes.CascadeDeletesJUnitTestSuite;
 import org.eclipse.persistence.testing.tests.jpa.complexaggregate.ComplexAggregateTestSuite;
@@ -104,9 +59,48 @@ import org.eclipse.persistence.testing.tests.jpa.fetchgroups.SimpleDefaultFetchG
 import org.eclipse.persistence.testing.tests.jpa.fetchgroups.SimpleFetchGroupTests;
 import org.eclipse.persistence.testing.tests.jpa.fetchgroups.SimpleNamedFetchGroupTests;
 import org.eclipse.persistence.testing.tests.jpa.fetchgroups.SimpleSerializeFetchGroupTests;
+import org.eclipse.persistence.testing.tests.jpa.inheritance.DeleteAllQueryInheritanceJunitTest;
+import org.eclipse.persistence.testing.tests.jpa.inheritance.EntityManagerJUnitTestCase;
+import org.eclipse.persistence.testing.tests.jpa.inheritance.JoinedAttributeInheritanceJunitTest;
+import org.eclipse.persistence.testing.tests.jpa.inheritance.LifecycleCallbackJunitTest;
+import org.eclipse.persistence.testing.tests.jpa.inheritance.MixedInheritanceJUnitTestCase;
+import org.eclipse.persistence.testing.tests.jpa.inheritance.ReportQueryMultipleReturnInheritanceTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.inheritance.TablePerClassInheritanceJUnitTest;
+import org.eclipse.persistence.testing.tests.jpa.inherited.EmbeddableSuperclassJunitTest;
+import org.eclipse.persistence.testing.tests.jpa.inherited.InheritedCallbacksJunitTest;
+import org.eclipse.persistence.testing.tests.jpa.inherited.InheritedModelJunitTest;
+import org.eclipse.persistence.testing.tests.jpa.inherited.OrderedListAttributeChangeTrackingJunitTest;
+import org.eclipse.persistence.testing.tests.jpa.inherited.OrderedListJunitTest;
+import org.eclipse.persistence.testing.tests.jpa.jpaadvancedproperties.JPAAdvPropertiesJUnitTestCase;
+import org.eclipse.persistence.testing.tests.jpa.jpql.AdvancedQueryTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLComplexAggregateTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLComplexTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLDateTimeTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLExamplesTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLInheritanceTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLModifyTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLParameterTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLQueryHelperTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLSimpleTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLUnitTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLValidationTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.jpql.JUnitNativeQueryTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.partitioned.PartitionedTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.partitioned.PartitionedXMLTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.plsql.PLSQLTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.plsql.XMLPLSQLTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.relationships.EMQueryJUnitTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.relationships.ExpressionJUnitTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.relationships.IsolatedCacheTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.relationships.RelationshipModelJUnitTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.relationships.UniAndBiDirectionalMappingTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.relationships.VirtualAttributeTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.validation.QueryParameterValidationTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.validation.ValidationTestSuite;
+import org.eclipse.persistence.testing.tests.jpa.xml.EntityMappingsJUnitTestSuite;
 
 public class FullRegressionTestSuite extends TestSuite {
-    
+
     public static Test suite() {
         TestSuite fullSuite = new TestSuite();
         fullSuite.setName("FullRegressionTestSuite");
@@ -114,7 +108,7 @@ public class FullRegressionTestSuite extends TestSuite {
         // Advanced model
         TestSuite suite = new TestSuite();
         suite.setName("advanced");
-        suite.addTest(LifecycleJUnitTest.suite());        
+        suite.addTest(LifecycleJUnitTest.suite());
         suite.addTest(ConcurrencyTest.suite());
         suite.addTest(CacheImplJUnitTest.suite());
         suite.addTest(CallbackEventJUnitTestSuite.suite());
@@ -221,6 +215,7 @@ public class FullRegressionTestSuite extends TestSuite {
         suite.addTest(JUnitJPQLParameterTestSuite.suite());
         suite.addTest(JUnitJPQLExamplesTestSuite.suite());
         suite.addTest(JUnitJPQLModifyTestSuite.suite());
+        suite.addTest(JUnitJPQLQueryHelperTestSuite.suite());
         suite.addTest(AdvancedQueryTestSuite.suite());
         suite.addTest(JUnitNativeQueryTestSuite.suite());
         fullSuite.addTest(suite);
@@ -269,17 +264,17 @@ public class FullRegressionTestSuite extends TestSuite {
         suite.addTest(org.eclipse.persistence.testing.tests.jpa.criteria.AdvancedQueryTestSuite.suite());
         suite.addTest(org.eclipse.persistence.testing.tests.jpa.criteria.JUnitCriteriaSimpleTestSuite.suite());
         // Addition of the following suite requires classpath work - as it currently does not allow the JPA Testing Browser.launch to run in the Eclipse IDE
-        //suite.addTest(org.eclipse.persistence.testing.tests.jpa.criteria.metamodel.JUnitCriteriaSimpleTestSuite.suite());  
+        //suite.addTest(org.eclipse.persistence.testing.tests.jpa.criteria.metamodel.JUnitCriteriaSimpleTestSuite.suite());
         fullSuite.addTest(suite);
-        
+
         // JPA 2.0 Cacheable model
         fullSuite.addTest(CacheableModelJunitTest.suite());
-        
+
         // JPA 2.0 Delimited Identifiers model
         fullSuite.addTest(DelimitedPUTestSuite.suite());
 
         fullSuite.addTest(CascadeDeletesJUnitTestSuite.suite());
-        
+
         fullSuite.addTest(QueryCastTestSuite.suite());
 
         // Fetch Groups tests.
@@ -304,13 +299,13 @@ public class FullRegressionTestSuite extends TestSuite {
 
         // Composite tests.
         fullSuite.addTest(org.eclipse.persistence.testing.tests.jpa.composite.advanced.EntityManagerJUnitTestSuite.suite());
-        
+
         // Fetch Groups tests.
         suite = new TestSuite();
         suite.setName("Extensibility");
         suite.addTest(ExtensibilityTests.suite());
         fullSuite.addTest(suite);
-        
+
         return fullSuite;
     }
 }

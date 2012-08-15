@@ -26,7 +26,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * or
  * <div nowrap><b>BNF:</b> <code>simple_when_clause ::= WHEN scalar_expression THEN scalar_expression</code><p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -48,13 +48,7 @@ public final class WhenClause extends AbstractExpression {
 	private boolean hasSpaceAfterWhenExpression;
 
 	/**
-	 * Determines whether the identifier <b>THEN</b> was parsed.
-	 */
-	private boolean hasThen;
-
-	/**
-	 * The {@link Expression} representing the expression following the identifier
-	 * <b>THEN</b>.
+	 * The {@link Expression} representing the expression following the identifier <b>THEN</b>.
 	 */
 	private AbstractExpression thenExpression;
 
@@ -129,7 +123,7 @@ public final class WhenClause extends AbstractExpression {
 		}
 
 		// THEN
-		if (hasThen) {
+		if (thenIdentifier != null) {
 			children.add(buildStringExpression(THEN));
 		}
 
@@ -147,8 +141,7 @@ public final class WhenClause extends AbstractExpression {
 	 * Returns the actual <b>THEN</b> found in the string representation of the JPQL query, which
 	 * has the actual case that was used.
 	 *
-	 * @return The <b>THEN</b> identifier that was actually parsed, or an empty string if it was not
-	 * parsed
+	 * @return The <b>THEN</b> identifier that was actually parsed, or an empty string if it was not parsed
 	 */
 	public String getActualThenIdentifier() {
 		return (thenIdentifier != null) ? thenIdentifier : ExpressionTools.EMPTY_STRING;
@@ -198,8 +191,7 @@ public final class WhenClause extends AbstractExpression {
 	/**
 	 * Determines whether a whitespace was parsed after <b>THEN</b>.
 	 *
-	 * @return <code>true</code> if there was a whitespace after <b>THEN</b>; <code>false</code>
-	 * otherwise
+	 * @return <code>true</code> if there was a whitespace after <b>THEN</b>; <code>false</code> otherwise
 	 */
 	public boolean hasSpaceAfterThen() {
 		return hasSpaceAfterThen;
@@ -208,8 +200,7 @@ public final class WhenClause extends AbstractExpression {
 	/**
 	 * Determines whether a whitespace was parsed after <b>WHEN</b>.
 	 *
-	 * @return <code>true</code> if there was a whitespace after <b>WHEN</b>; <code>false</code>
-	 * otherwise
+	 * @return <code>true</code> if there was a whitespace after <b>WHEN</b>; <code>false</code> otherwise
 	 */
 	public boolean hasSpaceAfterWhen() {
 		return hasSpaceAfterWhen;
@@ -228,11 +219,10 @@ public final class WhenClause extends AbstractExpression {
 	/**
 	 * Determines whether the identifier <b>THEN</b> was part of the query.
 	 *
-	 * @return <code>true</code> if the identifier <b>THEN</b> was parsed; <code>false</code>
-	 * otherwise
+	 * @return <code>true</code> if the identifier <b>THEN</b> was parsed; <code>false</code> otherwise
 	 */
 	public boolean hasThen() {
-		return hasThen;
+		return thenIdentifier != null;
 	}
 
 	/**
@@ -277,22 +267,17 @@ public final class WhenClause extends AbstractExpression {
 
 		// Parse 'WHEN'
 		whenIdentifier = wordParser.moveForward(WHEN);
-
 		hasSpaceAfterWhen = wordParser.skipLeadingWhitespace() > 0;
 
 		// Parse the expression
 		whenExpression = parse(wordParser, InternalWhenClauseBNF.ID, tolerant);
-
 		hasSpaceAfterWhenExpression = wordParser.skipLeadingWhitespace() > 0;
 
 		// Parse 'THEN'
-		hasThen = wordParser.startsWithIdentifier(THEN);
-
-		if (hasThen) {
+		if (wordParser.startsWithIdentifier(THEN)) {
 			thenIdentifier = wordParser.moveForward(THEN);
+			hasSpaceAfterThen = wordParser.skipLeadingWhitespace() > 0;
 		}
-
-		hasSpaceAfterThen = wordParser.skipLeadingWhitespace() > 0;
 
 		// Parse the then expression
 		thenExpression = parse(wordParser, ScalarExpressionBNF.ID, tolerant);
@@ -321,7 +306,7 @@ public final class WhenClause extends AbstractExpression {
 		}
 
 		// 'THEN'
-		if (hasThen) {
+		if (thenIdentifier != null) {
 			writer.append(actual ? thenIdentifier : THEN);
 		}
 

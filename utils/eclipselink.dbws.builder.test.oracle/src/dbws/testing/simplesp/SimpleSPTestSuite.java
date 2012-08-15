@@ -29,6 +29,7 @@ import javax.wsdl.WSDLException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -37,6 +38,8 @@ import org.eclipse.persistence.internal.xr.Invocation;
 import org.eclipse.persistence.internal.xr.Operation;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.tools.dbws.DBWSBuilder;
+import org.eclipse.persistence.tools.dbws.ProcedureOperationModel;
+import org.eclipse.persistence.tools.dbws.TableOperationModel;
 
 //test imports
 import dbws.testing.DBWSTestSuite;
@@ -176,71 +179,69 @@ public class SimpleSPTestSuite extends DBWSTestSuite {
                 //e.printStackTrace();
             }
         }
-        DBWS_BUILDER_XML_USERNAME =
-          "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-          "<dbws-builder xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
-            "<properties>" +
-                "<property name=\"projectName\">simpleSP</property>" +
-                "<property name=\"logLevel\">off</property>" +
-                "<property name=\"username\">";
-        DBWS_BUILDER_XML_PASSWORD =
-                "</property><property name=\"password\">";
-        DBWS_BUILDER_XML_URL =
-                "</property><property name=\"url\">";
-        DBWS_BUILDER_XML_DRIVER =
-                "</property><property name=\"driver\">";
-        DBWS_BUILDER_XML_PLATFORM =
-                "</property><property name=\"platformClassname\">";
-        DBWS_BUILDER_XML_MAIN =
-                "</property>" +
-            "</properties>" +
-            "<procedure " +
-                "name=\"VarcharTest\" " +
-                "catalogPattern=\"TOPLEVEL\" " +
-                "procedurePattern=\"VarcharSP\" " +
-                "returnType=\"xsd:int\" " +
-            "/>" +
-            "<procedure " +
-                "name=\"NoArgsTest\" " +
-                "catalogPattern=\"TOPLEVEL\" " +
-                "procedurePattern=\"NoArgSP\" " +
-                "returnType=\"xsd:int\" " +
-            "/>" +
-            "<procedure " +
-                "name=\"InOutArgsTest\" " +
-                "catalogPattern=\"TOPLEVEL\" " +
-                "procedurePattern=\"InOutArgsSP\" " +
-                "isSimpleXMLFormat=\"true\" " +
-            "/>" +
-            "<procedure " +
-                "name=\"FindByJobTest\" " +
-                "catalogPattern=\"TOPLEVEL\" " +
-                "procedurePattern=\"FindByJob\" " +
-                "isCollection=\"true\" " +
-                "isSimpleXMLFormat=\"true\" " +
-                "simpleXMLFormatTag=\"simplesp-rows\" " +
-                "xmlTag=\"simplesp-row\" " +
-            "/>" +
-            "<procedure " +
-                "name=\"GetSalaryByIdTest\" " +
-                "catalogPattern=\"TOPLEVEL\" " +
-                "procedurePattern=\"GETSALARYBYID\" " +
-            "/>" +
-            "<table " +
-               "schemaPattern=\"%\" " +
-               "tableNamePattern=\"SIMPLESP\" " +
-               ">" +
-               "<procedure " +
-                  "name=\"GetAllTest\" " +
-                  "catalogPattern=\"TOPLEVEL\" " +
-                  "procedurePattern=\"GetAll\" " +
-                  "isCollection=\"true\" " +
-                  "returnType=\"simplespType\" " +
-               "/>" +
-            "</table>" +
-          "</dbws-builder>";
-          builder = new DBWSBuilder();
-          DBWSTestSuite.setUp(".");
+
+        username = System.getProperty(DATABASE_USERNAME_KEY, DEFAULT_DATABASE_USERNAME);
+        password = System.getProperty(DATABASE_PASSWORD_KEY, DEFAULT_DATABASE_PASSWORD);
+        url = System.getProperty(DATABASE_URL_KEY, DEFAULT_DATABASE_URL);
+
+        builder = new DBWSBuilder();
+          
+        builder.setProjectName("simpleSP");
+        builder.setLogLevel("off");
+        builder.setUsername(username);
+        builder.setPassword(password);
+        builder.setUrl(url);
+        builder.setDriver(System.getProperty("db.driver", DATABASE_DRIVER));
+        builder.setPlatformClassname(System.getProperty("db.platform", DATABASE_PLATFORM));
+        
+        ProcedureOperationModel procOpModel = new ProcedureOperationModel();
+        procOpModel.setName("VarcharTest");
+        procOpModel.setCatalogPattern("TOPLEVEL");
+        procOpModel.setProcedurePattern("VarcharSP");
+        procOpModel.setReturnType("xsd:int");
+        builder.addOperation(procOpModel);
+        
+        procOpModel = new ProcedureOperationModel();
+        procOpModel.setName("NoArgsTest");
+        procOpModel.setCatalogPattern("TOPLEVEL");
+        procOpModel.setProcedurePattern("NoArgSP");
+        procOpModel.setReturnType("xsd:int");
+        builder.addOperation(procOpModel);
+        
+        procOpModel = new ProcedureOperationModel();
+        procOpModel.setName("InOutArgsTest");
+        procOpModel.setCatalogPattern("TOPLEVEL");
+        procOpModel.setProcedurePattern("InOutArgsSP");
+        procOpModel.setIsSimpleXMLFormat(true);
+        builder.addOperation(procOpModel);
+        
+        procOpModel = new ProcedureOperationModel();
+        procOpModel.setName("FindByJobTest");
+        procOpModel.setCatalogPattern("TOPLEVEL");
+        procOpModel.setProcedurePattern("FindByJob");
+        procOpModel.setIsCollection(true);
+        procOpModel.setIsSimpleXMLFormat(true);
+        procOpModel.setSimpleXMLFormatTag("simplesp-rows");
+        procOpModel.setXmlTag("simplesp-row");
+        builder.addOperation(procOpModel);
+        procOpModel = new ProcedureOperationModel();
+        procOpModel.setName("GetSalaryByIdTest");
+        procOpModel.setCatalogPattern("TOPLEVEL");
+        procOpModel.setProcedurePattern("GETSALARYBYID");
+        builder.addOperation(procOpModel);
+        
+        TableOperationModel tableOpModel = new TableOperationModel();
+        tableOpModel.setSchemaPattern("%");
+        tableOpModel.setTablePattern("SIMPLESP");
+        procOpModel = new ProcedureOperationModel();
+        procOpModel.setName("GetAllTest");
+        procOpModel.setCatalogPattern("TOPLEVEL");
+        procOpModel.setProcedurePattern("GetAll");
+        procOpModel.setIsCollection(true);
+        procOpModel.setReturnType("simplespType");
+        tableOpModel.addOperation(procOpModel);
+        builder.addOperation(tableOpModel);
+        setUp(".", false, true);
     }
 
     @AfterClass

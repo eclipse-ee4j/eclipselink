@@ -20,7 +20,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <p>
  * <div nowrap><b>BNF:</b> <code>KEY(identification_variable)</code><p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -31,7 +31,7 @@ public final class KeyExpression extends EncapsulatedIdentificationVariableExpre
 	 *
 	 * @param parent The parent of this expression
 	 */
-	KeyExpression(AbstractExpression parent) {
+	public KeyExpression(AbstractExpression parent) {
 		super(parent);
 	}
 

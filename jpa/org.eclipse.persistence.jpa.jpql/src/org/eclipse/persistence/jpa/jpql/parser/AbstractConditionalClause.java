@@ -29,9 +29,11 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <div nowrap><b>BNF:</b> <code>expression ::= identifier conditional_expression</code><p>
  *
  * @see HavingClause
+ * @see OnClause
+ * @see StartWithClause
  * @see WhereClause
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -45,7 +47,7 @@ public abstract class AbstractConditionalClause extends AbstractExpression {
 	/**
 	 * Determines whether a whitespace was parsed after the identifier.
 	 */
-	private boolean hasSpace;
+	private boolean hasSpaceAfterIdentifier;
 
 	/**
 	 * The actual identifier found in the string representation of the JPQL query.
@@ -87,7 +89,7 @@ public abstract class AbstractConditionalClause extends AbstractExpression {
 		children.add(buildStringExpression(getText()));
 
 		// Space
-		if (hasSpace) {
+		if (hasSpaceAfterIdentifier) {
 			children.add(buildStringExpression(SPACE));
 		}
 
@@ -145,7 +147,7 @@ public abstract class AbstractConditionalClause extends AbstractExpression {
 	 * otherwise
 	 */
 	public final boolean hasSpaceAfterIdentifier() {
-		return hasSpace;
+		return hasSpaceAfterIdentifier;
 	}
 
 	/**
@@ -166,7 +168,7 @@ public abstract class AbstractConditionalClause extends AbstractExpression {
 		// Parse the identifier
 		identifier = wordParser.moveForward(getText());
 
-		hasSpace = wordParser.skipLeadingWhitespace() > 0;
+		hasSpaceAfterIdentifier = wordParser.skipLeadingWhitespace() > 0;
 
 		// Parse the conditional expression
 		conditionalExpression = parse(wordParser, ConditionalExpressionBNF.ID, tolerant);
@@ -188,7 +190,7 @@ public abstract class AbstractConditionalClause extends AbstractExpression {
 
 		writer.append(actual ? identifier : getText());
 
-		if (hasSpace) {
+		if (hasSpaceAfterIdentifier) {
 			writer.append(SPACE);
 		}
 

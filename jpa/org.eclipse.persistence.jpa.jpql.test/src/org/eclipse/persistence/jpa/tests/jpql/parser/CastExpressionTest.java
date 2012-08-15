@@ -20,17 +20,25 @@ import static org.eclipse.persistence.jpa.tests.jpql.EclipseLinkJPQLQueries2_4.*
 /**
  * The unit-tests for {@link org.eclipse.persistence.jpa.jpql.parser.CastExpression CastExpression}.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
 @SuppressWarnings("nls")
 public final class CastExpressionTest extends JPQLParserTest {
 
-	private JPQLQueryStringFormatter buildStringFormatter() {
+	private JPQLQueryStringFormatter buildStringFormatter_01() {
 		return new JPQLQueryStringFormatter() {
-			public String format(String query) {
-				return query.replace("AS)", "AS )");
+			public String format(String jpqlQuery) {
+				return jpqlQuery.replace("AS)", "AS )");
+			}
+		};
+	}
+
+	private JPQLQueryStringFormatter buildStringFormatter_02() {
+		return new JPQLQueryStringFormatter() {
+			public String format(String jpqlQuery) {
+				return jpqlQuery.replace("TIMESTAMP)", "timestamp)");
 			}
 		};
 	}
@@ -100,7 +108,7 @@ public final class CastExpressionTest extends JPQLParserTest {
 			from("Employee", "e")
 		);
 
-		testQuery(query_006(), selectStatement);
+		testQuery(query_006(), selectStatement, buildStringFormatter_02());
 	}
 
 	@Test
@@ -166,8 +174,7 @@ public final class CastExpressionTest extends JPQLParserTest {
 		cast.hasRightParenthesis = false;
 
 		ExpressionTester selectStatement = selectStatement(
-			select(cast),
-			nullExpression()
+			select(cast)
 		);
 
 		testInvalidQuery(jpqlQuery, selectStatement);
@@ -183,8 +190,7 @@ public final class CastExpressionTest extends JPQLParserTest {
 		cast.hasRightParenthesis = false;
 
 		ExpressionTester selectStatement = selectStatement(
-			select(cast),
-			nullExpression()
+			select(cast)
 		);
 
 		testInvalidQuery(jpqlQuery, selectStatement);
@@ -200,8 +206,7 @@ public final class CastExpressionTest extends JPQLParserTest {
 		cast.hasRightParenthesis = true;
 
 		ExpressionTester selectStatement = selectStatement(
-			select(cast),
-			nullExpression()
+			select(cast)
 		);
 
 		testInvalidQuery(jpqlQuery, selectStatement);
@@ -217,8 +222,7 @@ public final class CastExpressionTest extends JPQLParserTest {
 		cast.hasRightParenthesis = false;
 
 		ExpressionTester selectStatement = selectStatement(
-			select(cast),
-			nullExpression()
+			select(cast)
 		);
 
 		testInvalidQuery(jpqlQuery, selectStatement);
@@ -234,8 +238,7 @@ public final class CastExpressionTest extends JPQLParserTest {
 		cast.hasRightParenthesis = true;
 
 		ExpressionTester selectStatement = selectStatement(
-			select(cast),
-			nullExpression()
+			select(cast)
 		);
 
 		testInvalidQuery(jpqlQuery, selectStatement);
@@ -290,7 +293,7 @@ public final class CastExpressionTest extends JPQLParserTest {
 			from("Employee", "e")
 		);
 
-		testInvalidQuery(jpqlQuery, selectStatement, buildStringFormatter());
+		testInvalidQuery(jpqlQuery, selectStatement, buildStringFormatter_01());
 	}
 
 	@Test

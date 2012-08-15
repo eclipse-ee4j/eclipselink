@@ -37,6 +37,7 @@ public class AdvancedDynamicTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildSHOVELOWNERTable());
         addTableDefinition(buildSHOVELPROJECTTable());
         addTableDefinition(buildSHOVELPROJECTSTable());
+        addTableDefinition(buildRUNNERTable());
     }
     
     public static TableDefinition buildADDRESSTable() {
@@ -806,6 +807,43 @@ public class AdvancedDynamicTableCreator extends TogglingFastTableCreator {
         fieldSCOOP.setUnique(false);
         fieldSCOOP.setIsIdentity(false);
         table.addField(fieldSCOOP);
+        
+        return table;
+    }
+    
+    public static TableDefinition buildRUNNERTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("DYNAMIC_RUNNER");
+    
+        FieldDefinition fieldBIB = new FieldDefinition();
+        fieldBIB.setName("BIB");
+        fieldBIB.setTypeName("NUMERIC");
+        fieldBIB.setSize(15);
+        fieldBIB.setShouldAllowNull(false);
+        fieldBIB.setIsPrimaryKey(true);
+        fieldBIB.setUnique(false);
+        fieldBIB.setIsIdentity(false);
+        table.addField(fieldBIB);
+    
+        FieldDefinition fieldWORLDRANK = new FieldDefinition();
+        fieldWORLDRANK.setName("WORLDRANK");
+        fieldWORLDRANK.setTypeName("NUMERIC");
+        fieldWORLDRANK.setSize(15);
+        fieldWORLDRANK.setShouldAllowNull(false);
+        fieldWORLDRANK.setIsPrimaryKey(true);
+        fieldWORLDRANK.setUnique(false);
+        fieldWORLDRANK.setIsIdentity(false);
+        table.addField(fieldWORLDRANK);
+    
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("NAME");
+        fieldNAME.setTypeName("VARCHAR");
+        fieldNAME.setSize(40);
+        fieldNAME.setShouldAllowNull(true);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setIsIdentity(false);
+        table.addField(fieldNAME);
         
         return table;
     }

@@ -14,7 +14,6 @@
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
 import org.junit.Test;
-
 import static org.eclipse.persistence.jpa.tests.jpql.EclipseLinkJPQLQueries2_4.*;
 
 /**
@@ -147,9 +146,6 @@ public final class EclipseLinkJPQLParserTests2_4 extends JPQLParserTest {
 			select(variable("a")),
 			from("Address", "a"),
 			where(path("a.city").equal(string("'Ottawa'"))),
-			nullExpression(),
-			nullExpression(),
-			nullExpression(),
 			union(
 				subSelect(variable("a2")),
 				subFrom("Address", "a2")
@@ -196,7 +192,7 @@ public final class EclipseLinkJPQLParserTests2_4 extends JPQLParserTest {
 	}
 
 	@Test
-	public final void test_Query_016() {
+	public void test_Query_016() {
 
 		// Update Employee set name='JPQL' WHERE column!='value'
 
@@ -214,7 +210,7 @@ public final class EclipseLinkJPQLParserTests2_4 extends JPQLParserTest {
 	}
 
 	@Test
-	public final void test_Query_017() {
+	public void test_Query_017() {
 
 		// select DISTINCT NEW com.ca.waae.dbaccess.dao.MetaPropDef(p.id.metaId, p.jilName, p.dbTable, p.dbColumn, p.dbType)
 		// FROM UjoMetaProperty p

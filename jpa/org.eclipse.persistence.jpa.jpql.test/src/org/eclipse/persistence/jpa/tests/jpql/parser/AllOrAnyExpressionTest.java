@@ -94,9 +94,7 @@ public final class AllOrAnyExpressionTest extends JPQLParserTest {
 			select(variable("e")),
 			from("Employee", "e"),
 			where(allExpression),
-			groupBy(path("e.name")),
-			nullExpression(),
-			nullExpression()
+			groupBy(path("e.name"))
 		);
 
 		testInvalidQuery(query, selectStatement);
@@ -113,9 +111,7 @@ public final class AllOrAnyExpressionTest extends JPQLParserTest {
 			select(variable("e")),
 			from("Employee", "e"),
 			where(allExpression),
-			groupBy(path("e.name")),
-			nullExpression(),
-			nullExpression()
+			groupBy(path("e.name"))
 		);
 
 		testInvalidQuery(query, selectStatement);
@@ -197,9 +193,7 @@ public final class AllOrAnyExpressionTest extends JPQLParserTest {
 			select(variable("e")),
 			from("Employee", "e"),
 			where(anyExpression),
-			groupBy(path("e.name")),
-			nullExpression(),
-			nullExpression()
+			groupBy(path("e.name"))
 		);
 
 		testInvalidQuery(query, selectStatement);
@@ -216,9 +210,7 @@ public final class AllOrAnyExpressionTest extends JPQLParserTest {
 			select(variable("e")),
 			from("Employee", "e"),
 			where(anyExpression),
-			groupBy(path("e.name")),
-			nullExpression(),
-			nullExpression()
+			groupBy(path("e.name"))
 		);
 
 		testInvalidQuery(query, selectStatement);
@@ -300,9 +292,7 @@ public final class AllOrAnyExpressionTest extends JPQLParserTest {
 			select(variable("e")),
 			from("Employee", "e"),
 			where(someExpression),
-			groupBy(path("e.name")),
-			nullExpression(),
-			nullExpression()
+			groupBy(path("e.name"))
 		);
 
 		testInvalidQuery(query, selectStatement);
@@ -319,9 +309,7 @@ public final class AllOrAnyExpressionTest extends JPQLParserTest {
 			select(variable("e")),
 			from("Employee", "e"),
 			where(someExpression),
-			groupBy(path("e.name")),
-			nullExpression(),
-			nullExpression()
+			groupBy(path("e.name"))
 		);
 
 		testInvalidQuery(query, selectStatement);

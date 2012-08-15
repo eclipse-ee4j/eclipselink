@@ -18,6 +18,7 @@ import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_1;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_2;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_3;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_4;
+import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_5;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar2_0;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar2_1;
@@ -29,7 +30,7 @@ import org.junit.runners.Suite.SuiteClasses;
  * The test suite containing all the test suites testing the validation of JPQL queries based on
  * the JPQL grammar.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -42,6 +43,8 @@ import org.junit.runners.Suite.SuiteClasses;
 	AllGrammarValidatorTests.AllEclipseLinkGrammarValidatorTest.class,
 	// Unit-Test testing parsing a JPQL query that was written following EclipseLink 2.4
 	AllGrammarValidatorTests.AllEclipseLinkGrammarValidatorTest2_4.class,
+	// Unit-Test testing parsing a JPQL query that was written following EclipseLink 2.5
+	AllGrammarValidatorTests.AllEclipseLinkGrammarValidatorTest2_5.class,
 })
 @RunWith(JPQLTestRunner.class)
 public final class AllGrammarValidatorTests {
@@ -90,7 +93,8 @@ public final class AllGrammarValidatorTests {
 		static JPQLGrammar[] buildJPQLGrammars() {
 			return new JPQLGrammar[] {
 				JPQLGrammar2_1.instance(),
-				EclipseLinkJPQLGrammar2_4.instance()
+				EclipseLinkJPQLGrammar2_4.instance(),
+				EclipseLinkJPQLGrammar2_5.instance()
 			};
 		}
 	}
@@ -117,7 +121,8 @@ public final class AllGrammarValidatorTests {
 				EclipseLinkJPQLGrammar2_1.instance(),
 				EclipseLinkJPQLGrammar2_2.instance(),
 				EclipseLinkJPQLGrammar2_3.instance(),
-				EclipseLinkJPQLGrammar2_4.instance()
+				EclipseLinkJPQLGrammar2_4.instance(),
+				EclipseLinkJPQLGrammar2_5.instance()
 			};
 		}
 	}
@@ -140,7 +145,31 @@ public final class AllGrammarValidatorTests {
 		@JPQLGrammarTestHelper
 		static JPQLGrammar[] buildJPQLGrammars() {
 			return new JPQLGrammar[] {
-				EclipseLinkJPQLGrammar2_4.instance()
+				EclipseLinkJPQLGrammar2_4.instance(),
+				EclipseLinkJPQLGrammar2_5.instance()
+			};
+		}
+	}
+
+	/**
+	 * This test suite tests JPQL queries written following the grammar defined in the JPA 2.1 spec
+	 * with the extension provided by EclipseLink 2.5 and makes sure the various JPQL grammars that
+	 * support it parses them correctly.
+	 */
+	@SuiteClasses({
+		EclipseLinkGrammarValidatorTest2_5.class,
+	})
+	@RunWith(JPQLTestRunner.class)
+	public static class AllEclipseLinkGrammarValidatorTest2_5 {
+
+		private AllEclipseLinkGrammarValidatorTest2_5() {
+			super();
+		}
+
+		@JPQLGrammarTestHelper
+		static JPQLGrammar[] buildJPQLGrammars() {
+			return new JPQLGrammar[] {
+				EclipseLinkJPQLGrammar2_5.instance()
 			};
 		}
 	}

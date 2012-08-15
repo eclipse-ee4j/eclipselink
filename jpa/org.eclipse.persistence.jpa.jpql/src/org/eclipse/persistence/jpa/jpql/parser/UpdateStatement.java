@@ -28,7 +28,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * @see UpdateClause
  * @see WhereClause
  *
- * @version 2.4
+ * @version 2.4.1
  * @since 2.3
  * @author Pascal Filion
  */
@@ -169,7 +169,7 @@ public final class UpdateStatement extends AbstractExpression {
 		}
 
 		// Now fully qualify attribute names with a virtual identification variable
-		accept(FullyQualifyPathExpressionVisitor.instance());
+		accept(new FullyQualifyPathExpressionVisitor());
 	}
 
 	/**

@@ -15,23 +15,26 @@ package org.eclipse.persistence.jpa.jpql;
 
 import org.eclipse.persistence.jpa.jpql.parser.AbstractEclipseLinkExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractSelectClause;
+import org.eclipse.persistence.jpa.jpql.parser.AsOfClause;
 import org.eclipse.persistence.jpa.jpql.parser.CastExpression;
+import org.eclipse.persistence.jpa.jpql.parser.ConnectByClause;
 import org.eclipse.persistence.jpa.jpql.parser.DatabaseType;
 import org.eclipse.persistence.jpa.jpql.parser.DatabaseTypeFactory;
+import org.eclipse.persistence.jpa.jpql.parser.DefaultEclipseLinkJPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkExpressionVisitor;
-import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_4;
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.ExtractExpression;
+import org.eclipse.persistence.jpa.jpql.parser.HierarchicalQueryClause;
 import org.eclipse.persistence.jpa.jpql.parser.InExpression;
 import org.eclipse.persistence.jpa.jpql.parser.InputParameter;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.parser.PatternValueBNF;
 import org.eclipse.persistence.jpa.jpql.parser.RegexpExpression;
+import org.eclipse.persistence.jpa.jpql.parser.StartWithClause;
 import org.eclipse.persistence.jpa.jpql.parser.StringExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.TableExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TableVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.UnionClause;
-
 import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
@@ -43,7 +46,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
  * API will almost certainly be broken (repeatedly) as the API evolves.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -59,19 +62,6 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
 	 */
 	public EclipseLinkGrammarValidator(JPQLGrammar jpqlGrammar) {
 		super(jpqlGrammar);
-	}
-
-	/**
-	 * Creates a new <code>EclipseLinkGrammarValidator</code>.
-	 *
-	 * @param queryContext The context used to query information about the JPQL query
-	 * @deprecated This constructor only exists for backward compatibility. {@link JPQLQueryContext}
-	 * is no longer required, only {@link JPQLGrammar}
-	 * @see #EclipseLinkGrammarValidator(JPQLGrammar)
-	 */
-	@Deprecated
-	public EclipseLinkGrammarValidator(JPQLQueryContext queryContext) {
-		super(queryContext.getGrammar());
 	}
 
 	protected AbstractSingleEncapsulatedExpressionHelper<CastExpression> buildCastExpressionHelper() {
@@ -271,8 +261,13 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
 		return (EclipseLinkOwningClauseVisitor) super.getOwningClauseVisitor();
 	}
 
-	private boolean isEclipseLink() {
-		return getProviderVersion() != ExpressionTools.EMPTY_STRING;
+	/**
+	 * Determines whether the persistence provider is EclipseLink or not.
+	 *
+	 * @return <code>true</code> if the persistence provider is EclipseLink; <code>false</code> otherwise
+	 */
+	protected final boolean isEclipseLink() {
+		return DefaultEclipseLinkJPQLGrammar.PROVIDER_NAME.equals(getProvider());
 	}
 
 	/**
@@ -288,7 +283,8 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
 	 */
 	@Override
 	protected boolean isJoinFetchIdentifiable() {
-		return getProviderVersion() == EclipseLinkJPQLGrammar2_4.VERSION;
+		EclipseLinkVersion version = EclipseLinkVersion.value(getGrammar().getProviderVersion());
+		return version.isNewerThanOrEqual(EclipseLinkVersion.VERSION_2_4);
 	}
 
 	protected boolean isOwnedByInExpression(Expression expression) {
@@ -320,7 +316,8 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
 	 */
 	@Override
 	protected boolean isSubqueryAllowedAnywhere() {
-		return getProviderVersion() == EclipseLinkJPQLGrammar2_4.VERSION;
+		EclipseLinkVersion version = EclipseLinkVersion.value(getGrammar().getProviderVersion());
+		return version.isNewerThanOrEqual(EclipseLinkVersion.VERSION_2_4);
 	}
 
 	protected AbstractSingleEncapsulatedExpressionHelper<TableExpression> tableExpressionHelper() {
@@ -352,6 +349,12 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
 		}
 
 		super.validateAbstractSelectClause(expression, multipleSelectItemsAllowed);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(AsOfClause expression) {
 	}
 
 	/**
@@ -394,6 +397,13 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
 	/**
 	 * {@inheritDoc}
 	 */
+	public void visit(ConnectByClause expression) {
+		// TODO: 2.5
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public void visit(DatabaseType expression) {
 		validateAbstractDoubleEncapsulatedExpression(expression, databaseTypeHelper());
 	}
@@ -421,6 +431,13 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
 				addProblem(expression, startPosition, ExtractExpression_MissingDatePart);
 			}
 		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(HierarchicalQueryClause expression) {
+		// TODO: 2.5
 	}
 
 	/**
@@ -509,6 +526,13 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
 				}
 			}
 		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(StartWithClause expression) {
+		// TODO: 2.5
 	}
 
 	/**

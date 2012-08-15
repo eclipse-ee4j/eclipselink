@@ -21,7 +21,7 @@ public final class AbstractSchemaNameTest extends JPQLParserTest {
 	@Test
 	public void testBuildExpression_01() throws Exception {
 
-		String query = "SELECT e FROM Employee e";
+		String jpqlQuery = "SELECT e FROM Employee e";
 
 		ExpressionTester selectStatement = selectStatement(
 			select(variable("e")),
@@ -30,13 +30,13 @@ public final class AbstractSchemaNameTest extends JPQLParserTest {
 			)
 		);
 
-		testQuery(query, selectStatement);
+		testQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_02() throws Exception {
 
-		String query = "SELECT e FROM Employee e, Address a";
+		String jpqlQuery = "SELECT e FROM Employee e, Address a";
 
 		ExpressionTester selectStatement = selectStatement(
 			select(variable("e")),
@@ -46,83 +46,74 @@ public final class AbstractSchemaNameTest extends JPQLParserTest {
 			)
 		);
 
-		testQuery(query, selectStatement);
+		testQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_03() throws Exception {
 
-		String query = "select o from Order o";
+		String jpqlQuery = "select o from Order o";
 
 		ExpressionTester selectStatement = selectStatement(
 			select(variable("o")),
 			from("Order", "o")
 		);
 
-		testQuery(query, selectStatement);
+		testQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_04() throws Exception {
 
-		String query = "select o from Order o order by o.name";
+		String jpqlQuery = "select o from Order o order by o.name";
 
 		ExpressionTester selectStatement = selectStatement(
 			select(variable("o")),
 			from("Order", "o"),
-			nullExpression(),
-			nullExpression(),
-			nullExpression(),
 			orderBy(orderByItem("o.name"))
 		);
 
-		testQuery(query, selectStatement);
+		testQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_05() throws Exception {
 
-		String query = "select o from Order o where o.age > 18";
+		String jpqlQuery = "select o from Order o where o.age > 18";
 
 		ExpressionTester selectStatement = selectStatement(
 			select(variable("o")),
 			from("Order", "o"),
-			where(path("o.age").greaterThan(numeric(18))),
-			nullExpression(),
-			nullExpression(),
-			nullExpression()
+			where(path("o.age").greaterThan(numeric(18)))
 		);
 
-		testQuery(query, selectStatement);
+		testQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_06() throws Exception {
 
-		String query = "select g from Group g";
+		String jpqlQuery = "select g from Group g";
 
 		ExpressionTester selectStatement = selectStatement(
 			select(variable("g")),
 			from("Group", "g")
 		);
 
-		testQuery(query, selectStatement);
+		testQuery(jpqlQuery, selectStatement);
 	}
 
 	@Test
 	public void testBuildExpression_07() throws Exception {
 
-		String query = "select g from Group g where g.age > 18";
+		String jpqlQuery = "select g from Group g where g.age > 18";
 
 		ExpressionTester selectStatement = selectStatement(
 			select(variable("g")),
 			from("Group", "g"),
-			where(path("g.age").greaterThan(numeric(18))),
-			nullExpression(),
-			nullExpression(),
-			nullExpression()
+			where(path("g.age").greaterThan(numeric(18)))
 		);
 
-		testQuery(query, selectStatement);
+		testQuery(jpqlQuery, selectStatement);
 	}
 }

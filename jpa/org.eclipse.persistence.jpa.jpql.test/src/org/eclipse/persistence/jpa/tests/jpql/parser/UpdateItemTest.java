@@ -18,25 +18,18 @@ import org.junit.Test;
 @SuppressWarnings("nls")
 public final class UpdateItemTest extends JPQLParserTest {
 
-	@Test
-	public void testBuildExpression_01() {
-
-		String query = "UPDATE Employee e SET e.name = 'Pascal'";
-
-		UpdateStatementTester updateStatement = updateStatement(
-			update(
-				"Employee", "e",
-				set("e.name", string("'Pascal'"))
-			)
-		);
-
-		testQuery(query, updateStatement);
+	private JPQLQueryStringFormatter buildQueryFormatter_1() {
+		return new JPQLQueryStringFormatter() {
+			public String format(String query) {
+				return query.replace("AVG", "avg");
+			}
+		};
 	}
 
 	@Test
-	public void testBuildExpression_02() {
+	public void test_BuildExpression_02() {
 
-		String query = "UPDATE Employee e SET e.name = 'Pascal', e.manager.salary = 100000";
+		String jpqlQuery = "UPDATE Employee e SET e.name = 'Pascal', e.manager.salary = 100000";
 
 		UpdateStatementTester updateStatement = updateStatement(
 			update(
@@ -46,6 +39,51 @@ public final class UpdateItemTest extends JPQLParserTest {
 			)
 		);
 
-		testQuery(query, updateStatement);
+		testQuery(jpqlQuery, updateStatement);
+	}
+
+	@Test
+	public void test_BuildExpression_03() {
+
+		String jpqlQuery = "UPDATE Employee SET AVG(2) = 'Pascal'";
+
+		UpdateStatementTester updateStatement = updateStatement(
+			update(
+				"Employee",
+				set(bad(avg(numeric(2))), string("'Pascal'"))
+			)
+		);
+
+		testInvalidQuery(jpqlQuery, updateStatement);
+	}
+
+	@Test
+	public void test_BuildExpression_04() {
+
+		String jpqlQuery = "UPDATE Employee SET avg = 'Pascal'";
+
+		UpdateStatementTester updateStatement = updateStatement(
+			update(
+				"Employee",
+				set("{employee}.avg", string("'Pascal'"))
+			)
+		);
+
+		testInvalidQuery(jpqlQuery, updateStatement, buildQueryFormatter_1());
+	}
+
+	@Test
+	public void testBuildExpression_01() {
+
+		String jpqlQuery = "UPDATE Employee e SET e.name = 'Pascal'";
+
+		UpdateStatementTester updateStatement = updateStatement(
+			update(
+				"Employee", "e",
+				set("e.name", string("'Pascal'"))
+			)
+		);
+
+		testQuery(jpqlQuery, updateStatement);
 	}
 }

@@ -16,6 +16,8 @@ package org.eclipse.persistence.jpa.jpql.parser;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
 
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
+
 /**
  * This {@link JPQLGrammar} provides support for parsing JPQL queries defined in <a
  * href="http://jcp.org/en/jsr/detail?id=220">JSR-220 - Enterprise JavaBeans 3.0</a>.
@@ -248,8 +250,13 @@ import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
  *
  * TIME_STRING ::= [0-9] ([0-9])? ':' [0-9] [0-9] ':' [0-9] [0-9] '.' [0-9]*
  * </code></pre>
+ * <p>
+ * Provisional API: This interface is part of an interim API that is still under development and
+ * expected to change significantly before reaching stability. It is available at this early stage
+ * to solicit feedback from pioneering adopters on the understanding that any code that uses this
+ * API will almost certainly be broken (repeatedly) as the API evolves.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -291,6 +298,13 @@ public final class JPQLGrammar1_0 extends AbstractJPQLGrammar {
 	 */
 	public JPAVersion getJPAVersion() {
 		return JPAVersion.VERSION_1_0;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public String getProvider() {
+		return DefaultJPQLGrammar.PROVIDER_NAME;
 	}
 
 	/**
@@ -500,109 +514,109 @@ public final class JPQLGrammar1_0 extends AbstractJPQLGrammar {
 	@Override
 	protected void initializeIdentifiers() {
 
-		registerIdentifierRole(Expression.ABS,                   IdentifierRole.FUNCTION);           // ABS(x)
-		registerIdentifierRole(Expression.ALL,                   IdentifierRole.FUNCTION);           // ALL(x)
-		registerIdentifierRole(Expression.AND,                   IdentifierRole.AGGREGATE);          // x AND y
-		registerIdentifierRole(Expression.ANY,                   IdentifierRole.FUNCTION);           // ANY(x)
-		registerIdentifierRole(Expression.AS,                    IdentifierRole.COMPLETEMENT);
-		registerIdentifierRole(Expression.ASC,                   IdentifierRole.COMPLETEMENT);
-		registerIdentifierRole(Expression.AVG,                   IdentifierRole.FUNCTION);           // AVG(x)
-		registerIdentifierRole(Expression.BETWEEN,               IdentifierRole.COMPOUND_FUNCTION);  // x BETWEEN y AND z
-		registerIdentifierRole(Expression.BIT_LENGTH,            IdentifierRole.UNUSED);
-		registerIdentifierRole(Expression.BOTH,                  IdentifierRole.COMPLETEMENT);
-		registerIdentifierRole(Expression.CHAR_LENGTH,           IdentifierRole.UNUSED);
-		registerIdentifierRole(Expression.CHARACTER_LENGTH,      IdentifierRole.UNUSED);
-		registerIdentifierRole(Expression.CLASS,                 IdentifierRole.UNUSED);
-		registerIdentifierRole(Expression.CONCAT,                IdentifierRole.FUNCTION);           // CONCAT(x, y)
-		registerIdentifierRole(Expression.COUNT,                 IdentifierRole.FUNCTION);           // COUNT(x)
-		registerIdentifierRole(Expression.CURRENT_DATE,          IdentifierRole.FUNCTION);
-		registerIdentifierRole(Expression.CURRENT_TIME,          IdentifierRole.FUNCTION);
-		registerIdentifierRole(Expression.CURRENT_TIMESTAMP,     IdentifierRole.FUNCTION);
-		registerIdentifierRole(Expression.DELETE,                IdentifierRole.CLAUSE);
-		registerIdentifierRole(Expression.DELETE_FROM,           IdentifierRole.CLAUSE);
-		registerIdentifierRole(Expression.DESC,                  IdentifierRole.COMPLETEMENT);
-		registerIdentifierRole(Expression.DISTINCT,              IdentifierRole.COMPLETEMENT);
-		registerIdentifierRole(Expression.EMPTY,                 IdentifierRole.COMPOUND_FUNCTION);
-		registerIdentifierRole(Expression.ESCAPE,                IdentifierRole.COMPLETEMENT);
-		registerIdentifierRole(Expression.EXISTS,                IdentifierRole.FUNCTION);           // EXISTS(x)
-		registerIdentifierRole(Expression.FALSE,                 IdentifierRole.FUNCTION);
-		registerIdentifierRole(Expression.FETCH,                 IdentifierRole.COMPOUND_FUNCTION);
-		registerIdentifierRole(Expression.FROM,                  IdentifierRole.CLAUSE);
-		registerIdentifierRole(Expression.HAVING,                IdentifierRole.CLAUSE);
-		registerIdentifierRole(Expression.IN,                    IdentifierRole.COMPOUND_FUNCTION);  // x IN { (y {, z}* | (s) | t }
-		registerIdentifierRole(Expression.INNER,                 IdentifierRole.COMPOUND_FUNCTION);  // Part of JOIN
-		registerIdentifierRole(Expression.IS,                    IdentifierRole.COMPOUND_FUNCTION);
-		registerIdentifierRole(Expression.JOIN,                  IdentifierRole.COMPOUND_FUNCTION);
-		registerIdentifierRole(Expression.LEADING,               IdentifierRole.COMPLETEMENT);
-		registerIdentifierRole(Expression.LEFT,                  IdentifierRole.COMPLETEMENT);
-		registerIdentifierRole(Expression.LENGTH,                IdentifierRole.FUNCTION);           // LENGTH(x)
-		registerIdentifierRole(Expression.LIKE,                  IdentifierRole.COMPOUND_FUNCTION);
-		registerIdentifierRole(Expression.LOCATE,                IdentifierRole.FUNCTION);           // LOCATE(x, y [, z]))
-		registerIdentifierRole(Expression.LOWER,                 IdentifierRole.FUNCTION);           // LOWER(x)
-		registerIdentifierRole(Expression.MAX,                   IdentifierRole.FUNCTION);           // MAX(x)
-		registerIdentifierRole(Expression.MEMBER,                IdentifierRole.COMPOUND_FUNCTION);  // x MEMBER y
-		registerIdentifierRole(Expression.MIN,                   IdentifierRole.FUNCTION);           // MIN(x)
-		registerIdentifierRole(Expression.MOD,                   IdentifierRole.FUNCTION);           // MOD(x, y)
-		registerIdentifierRole(Expression.NEW,                   IdentifierRole.FUNCTION);           // NEW x (y {, z}*)
-		registerIdentifierRole(Expression.NOT,                   IdentifierRole.COMPLETEMENT);
-		registerIdentifierRole(Expression.NULL,                  IdentifierRole.FUNCTION);
-		registerIdentifierRole(Expression.OBJECT,                IdentifierRole.FUNCTION);           // OBJECT(x)
-		registerIdentifierRole(Expression.OF,                    IdentifierRole.COMPOUND_FUNCTION);  // Part of MEMBER [OF]
-		registerIdentifierRole(Expression.OR,                    IdentifierRole.AGGREGATE);          // x OR y
-		registerIdentifierRole(Expression.OUTER,                 IdentifierRole.COMPLETEMENT);       // Part of JOIN
-		registerIdentifierRole(Expression.POSITION,              IdentifierRole.UNUSED);
-		registerIdentifierRole(Expression.SELECT,                IdentifierRole.CLAUSE);
-		registerIdentifierRole(Expression.SET,                   IdentifierRole.CLAUSE);
-		registerIdentifierRole(Expression.SIZE,                  IdentifierRole.FUNCTION);           // SIZE(x)
-		registerIdentifierRole(Expression.SOME,                  IdentifierRole.FUNCTION);           // SOME(x)
-		registerIdentifierRole(Expression.SQRT,                  IdentifierRole.FUNCTION);           // SQRT(x)
-		registerIdentifierRole(Expression.SUBSTRING,             IdentifierRole.FUNCTION);           // SUBSTRING(x, y {, z})
-		registerIdentifierRole(Expression.SUM,                   IdentifierRole.FUNCTION);
-		registerIdentifierRole(Expression.TRAILING,              IdentifierRole.COMPLETEMENT);
-		registerIdentifierRole(Expression.TRIM,                  IdentifierRole.FUNCTION);           // TRIM([[x [c] FROM] y)
-		registerIdentifierRole(Expression.TRUE,                  IdentifierRole.FUNCTION);
-		registerIdentifierRole(Expression.UNKNOWN,               IdentifierRole.UNUSED);
-		registerIdentifierRole(Expression.UPDATE,                IdentifierRole.CLAUSE);
-		registerIdentifierRole(Expression.UPPER,                 IdentifierRole.FUNCTION);           // UPPER(x)
-		registerIdentifierRole(Expression.WHERE,                 IdentifierRole.CLAUSE);
-		registerIdentifierRole(Expression.PLUS,                  IdentifierRole.AGGREGATE);          // x + y
-		registerIdentifierRole(Expression.MINUS,                 IdentifierRole.AGGREGATE);          // x - y
-		registerIdentifierRole(Expression.MULTIPLICATION,        IdentifierRole.AGGREGATE);          // x * y
-		registerIdentifierRole(Expression.DIVISION,              IdentifierRole.AGGREGATE);          // x / y
-		registerIdentifierRole(Expression.LOWER_THAN,            IdentifierRole.AGGREGATE);          // x < y
-		registerIdentifierRole(Expression.LOWER_THAN_OR_EQUAL,   IdentifierRole.AGGREGATE);          // x <= y
-		registerIdentifierRole(Expression.GREATER_THAN,          IdentifierRole.AGGREGATE);          // x >  y
-		registerIdentifierRole(Expression.GREATER_THAN_OR_EQUAL, IdentifierRole.AGGREGATE);          // x >= y
-		registerIdentifierRole(Expression.DIFFERENT,             IdentifierRole.AGGREGATE);          // x <> y
-		registerIdentifierRole(Expression.EQUAL,                 IdentifierRole.AGGREGATE);          // x =  y
+		registerIdentifierRole(ABS,                   IdentifierRole.FUNCTION);           // ABS(x)
+		registerIdentifierRole(ALL,                   IdentifierRole.FUNCTION);           // ALL(x)
+		registerIdentifierRole(AND,                   IdentifierRole.AGGREGATE);          // x AND y
+		registerIdentifierRole(ANY,                   IdentifierRole.FUNCTION);           // ANY(x)
+		registerIdentifierRole(AS,                    IdentifierRole.COMPLETEMENT);
+		registerIdentifierRole(ASC,                   IdentifierRole.COMPLETEMENT);
+		registerIdentifierRole(AVG,                   IdentifierRole.FUNCTION);           // AVG(x)
+		registerIdentifierRole(BETWEEN,               IdentifierRole.COMPOUND_FUNCTION);  // x BETWEEN y AND z
+		registerIdentifierRole(BIT_LENGTH,            IdentifierRole.UNUSED);
+		registerIdentifierRole(BOTH,                  IdentifierRole.COMPLETEMENT);
+		registerIdentifierRole(CHAR_LENGTH,           IdentifierRole.UNUSED);
+		registerIdentifierRole(CHARACTER_LENGTH,      IdentifierRole.UNUSED);
+		registerIdentifierRole(CLASS,                 IdentifierRole.UNUSED);
+		registerIdentifierRole(CONCAT,                IdentifierRole.FUNCTION);           // CONCAT(x, y)
+		registerIdentifierRole(COUNT,                 IdentifierRole.FUNCTION);           // COUNT(x)
+		registerIdentifierRole(CURRENT_DATE,          IdentifierRole.FUNCTION);
+		registerIdentifierRole(CURRENT_TIME,          IdentifierRole.FUNCTION);
+		registerIdentifierRole(CURRENT_TIMESTAMP,     IdentifierRole.FUNCTION);
+		registerIdentifierRole(DELETE,                IdentifierRole.CLAUSE);
+		registerIdentifierRole(DELETE_FROM,           IdentifierRole.CLAUSE);
+		registerIdentifierRole(DESC,                  IdentifierRole.COMPLETEMENT);
+		registerIdentifierRole(DISTINCT,              IdentifierRole.COMPLETEMENT);
+		registerIdentifierRole(EMPTY,                 IdentifierRole.COMPOUND_FUNCTION);
+		registerIdentifierRole(ESCAPE,                IdentifierRole.COMPLETEMENT);
+		registerIdentifierRole(EXISTS,                IdentifierRole.FUNCTION);           // EXISTS(x)
+		registerIdentifierRole(FALSE,                 IdentifierRole.FUNCTION);
+		registerIdentifierRole(FETCH,                 IdentifierRole.COMPOUND_FUNCTION);
+		registerIdentifierRole(FROM,                  IdentifierRole.CLAUSE);
+		registerIdentifierRole(HAVING,                IdentifierRole.CLAUSE);
+		registerIdentifierRole(IN,                    IdentifierRole.COMPOUND_FUNCTION);  // x IN { (y {, z}* | (s) | t }
+		registerIdentifierRole(INNER,                 IdentifierRole.COMPOUND_FUNCTION);  // Part of JOIN
+		registerIdentifierRole(IS,                    IdentifierRole.COMPOUND_FUNCTION);
+		registerIdentifierRole(JOIN,                  IdentifierRole.COMPOUND_FUNCTION);
+		registerIdentifierRole(LEADING,               IdentifierRole.COMPLETEMENT);
+		registerIdentifierRole(LEFT,                  IdentifierRole.COMPLETEMENT);
+		registerIdentifierRole(LENGTH,                IdentifierRole.FUNCTION);           // LENGTH(x)
+		registerIdentifierRole(LIKE,                  IdentifierRole.COMPOUND_FUNCTION);
+		registerIdentifierRole(LOCATE,                IdentifierRole.FUNCTION);           // LOCATE(x, y [, z]))
+		registerIdentifierRole(LOWER,                 IdentifierRole.FUNCTION);           // LOWER(x)
+		registerIdentifierRole(MAX,                   IdentifierRole.FUNCTION);           // MAX(x)
+		registerIdentifierRole(MEMBER,                IdentifierRole.COMPOUND_FUNCTION);  // x MEMBER y
+		registerIdentifierRole(MIN,                   IdentifierRole.FUNCTION);           // MIN(x)
+		registerIdentifierRole(MOD,                   IdentifierRole.FUNCTION);           // MOD(x, y)
+		registerIdentifierRole(NEW,                   IdentifierRole.FUNCTION);           // NEW x (y {, z}*)
+		registerIdentifierRole(NOT,                   IdentifierRole.COMPLETEMENT);
+		registerIdentifierRole(NULL,                  IdentifierRole.FUNCTION);
+		registerIdentifierRole(OBJECT,                IdentifierRole.FUNCTION);           // OBJECT(x)
+		registerIdentifierRole(OF,                    IdentifierRole.COMPOUND_FUNCTION);  // Part of MEMBER [OF]
+		registerIdentifierRole(OR,                    IdentifierRole.AGGREGATE);          // x OR y
+		registerIdentifierRole(OUTER,                 IdentifierRole.COMPLETEMENT);       // Part of JOIN
+		registerIdentifierRole(POSITION,              IdentifierRole.UNUSED);
+		registerIdentifierRole(SELECT,                IdentifierRole.CLAUSE);
+		registerIdentifierRole(SET,                   IdentifierRole.CLAUSE);
+		registerIdentifierRole(SIZE,                  IdentifierRole.FUNCTION);           // SIZE(x)
+		registerIdentifierRole(SOME,                  IdentifierRole.FUNCTION);           // SOME(x)
+		registerIdentifierRole(SQRT,                  IdentifierRole.FUNCTION);           // SQRT(x)
+		registerIdentifierRole(SUBSTRING,             IdentifierRole.FUNCTION);           // SUBSTRING(x, y {, z})
+		registerIdentifierRole(SUM,                   IdentifierRole.FUNCTION);
+		registerIdentifierRole(TRAILING,              IdentifierRole.COMPLETEMENT);
+		registerIdentifierRole(TRIM,                  IdentifierRole.FUNCTION);           // TRIM([[x [c] FROM] y)
+		registerIdentifierRole(TRUE,                  IdentifierRole.FUNCTION);
+		registerIdentifierRole(UNKNOWN,               IdentifierRole.UNUSED);
+		registerIdentifierRole(UPDATE,                IdentifierRole.CLAUSE);
+		registerIdentifierRole(UPPER,                 IdentifierRole.FUNCTION);           // UPPER(x)
+		registerIdentifierRole(WHERE,                 IdentifierRole.CLAUSE);
+		registerIdentifierRole(PLUS,                  IdentifierRole.AGGREGATE);          // x + y
+		registerIdentifierRole(MINUS,                 IdentifierRole.AGGREGATE);          // x - y
+		registerIdentifierRole(MULTIPLICATION,        IdentifierRole.AGGREGATE);          // x * y
+		registerIdentifierRole(DIVISION,              IdentifierRole.AGGREGATE);          // x / y
+		registerIdentifierRole(LOWER_THAN,            IdentifierRole.AGGREGATE);          // x < y
+		registerIdentifierRole(LOWER_THAN_OR_EQUAL,   IdentifierRole.AGGREGATE);          // x <= y
+		registerIdentifierRole(GREATER_THAN,          IdentifierRole.AGGREGATE);          // x >  y
+		registerIdentifierRole(GREATER_THAN_OR_EQUAL, IdentifierRole.AGGREGATE);          // x >= y
+		registerIdentifierRole(DIFFERENT,             IdentifierRole.AGGREGATE);          // x <> y
+		registerIdentifierRole(EQUAL,                 IdentifierRole.AGGREGATE);          // x =  y
 
 		// Composite Identifiers
-		registerIdentifierRole(Expression.GROUP_BY,              IdentifierRole.CLAUSE);
-		registerIdentifierRole(Expression.LEFT_JOIN,             IdentifierRole.COMPOUND_FUNCTION);
-		registerIdentifierRole(Expression.LEFT_JOIN_FETCH,       IdentifierRole.COMPOUND_FUNCTION);
-		registerIdentifierRole(Expression.LEFT_OUTER_JOIN,       IdentifierRole.COMPOUND_FUNCTION);
-		registerIdentifierRole(Expression.LEFT_OUTER_JOIN_FETCH, IdentifierRole.COMPOUND_FUNCTION);
-		registerIdentifierRole(Expression.INNER_JOIN,            IdentifierRole.COMPOUND_FUNCTION);
-		registerIdentifierRole(Expression.INNER_JOIN_FETCH,      IdentifierRole.COMPOUND_FUNCTION);
-		registerIdentifierRole(Expression.IS_EMPTY,              IdentifierRole.COMPOUND_FUNCTION);
-		registerIdentifierRole(Expression.IS_NOT_EMPTY,          IdentifierRole.COMPOUND_FUNCTION);
-		registerIdentifierRole(Expression.IS_NOT_NULL,           IdentifierRole.COMPOUND_FUNCTION);
-		registerIdentifierRole(Expression.IS_NULL,               IdentifierRole.COMPOUND_FUNCTION);
-		registerIdentifierRole(Expression.JOIN_FETCH,            IdentifierRole.COMPOUND_FUNCTION);
-		registerIdentifierRole(Expression.MEMBER_OF,             IdentifierRole.COMPOUND_FUNCTION);  // x NOT MEMBER OF y
-		registerIdentifierRole(Expression.NOT_BETWEEN,           IdentifierRole.COMPOUND_FUNCTION);  // x NOT BETWEEN y AND z
-		registerIdentifierRole(Expression.NOT_EXISTS,            IdentifierRole.FUNCTION);           // NOT EXISTS(x)
-		registerIdentifierRole(Expression.NOT_IN,                IdentifierRole.COMPOUND_FUNCTION);  // x NOT IN { (y {, z}* | (s) | t }
-		registerIdentifierRole(Expression.NOT_LIKE,              IdentifierRole.COMPOUND_FUNCTION);  // x NOT LIKE y
-		registerIdentifierRole(Expression.NOT_MEMBER,            IdentifierRole.COMPOUND_FUNCTION);  // x NOT MEMBER y
-		registerIdentifierRole(Expression.NOT_MEMBER_OF,         IdentifierRole.COMPOUND_FUNCTION);  // x NOT MEMBER OF y
-		registerIdentifierRole(Expression.ORDER_BY,              IdentifierRole.CLAUSE);
+		registerIdentifierRole(GROUP_BY,              IdentifierRole.CLAUSE);
+		registerIdentifierRole(LEFT_JOIN,             IdentifierRole.COMPOUND_FUNCTION);
+		registerIdentifierRole(LEFT_JOIN_FETCH,       IdentifierRole.COMPOUND_FUNCTION);
+		registerIdentifierRole(LEFT_OUTER_JOIN,       IdentifierRole.COMPOUND_FUNCTION);
+		registerIdentifierRole(LEFT_OUTER_JOIN_FETCH, IdentifierRole.COMPOUND_FUNCTION);
+		registerIdentifierRole(INNER_JOIN,            IdentifierRole.COMPOUND_FUNCTION);
+		registerIdentifierRole(INNER_JOIN_FETCH,      IdentifierRole.COMPOUND_FUNCTION);
+		registerIdentifierRole(IS_EMPTY,              IdentifierRole.COMPOUND_FUNCTION);
+		registerIdentifierRole(IS_NOT_EMPTY,          IdentifierRole.COMPOUND_FUNCTION);
+		registerIdentifierRole(IS_NOT_NULL,           IdentifierRole.COMPOUND_FUNCTION);
+		registerIdentifierRole(IS_NULL,               IdentifierRole.COMPOUND_FUNCTION);
+		registerIdentifierRole(JOIN_FETCH,            IdentifierRole.COMPOUND_FUNCTION);
+		registerIdentifierRole(MEMBER_OF,             IdentifierRole.COMPOUND_FUNCTION);  // x NOT MEMBER OF y
+		registerIdentifierRole(NOT_BETWEEN,           IdentifierRole.COMPOUND_FUNCTION);  // x NOT BETWEEN y AND z
+		registerIdentifierRole(NOT_EXISTS,            IdentifierRole.FUNCTION);           // NOT EXISTS(x)
+		registerIdentifierRole(NOT_IN,                IdentifierRole.COMPOUND_FUNCTION);  // x NOT IN { (y {, z}* | (s) | t }
+		registerIdentifierRole(NOT_LIKE,              IdentifierRole.COMPOUND_FUNCTION);  // x NOT LIKE y
+		registerIdentifierRole(NOT_MEMBER,            IdentifierRole.COMPOUND_FUNCTION);  // x NOT MEMBER y
+		registerIdentifierRole(NOT_MEMBER_OF,         IdentifierRole.COMPOUND_FUNCTION);  // x NOT MEMBER OF y
+		registerIdentifierRole(ORDER_BY,              IdentifierRole.CLAUSE);
 
 		// Partial Identifiers
-		registerIdentifierRole("BY",                             IdentifierRole.CLAUSE);             // Part of GROUP BY, ORDER BY
-		registerIdentifierRole("DELETE",                         IdentifierRole.CLAUSE);             // Part of DELETE FROM
-		registerIdentifierRole("GROUP",                          IdentifierRole.CLAUSE);             // Part of GROUP BY
-		registerIdentifierRole("ORDER",                          IdentifierRole.CLAUSE);             // Part of ORDERY BY
+		registerIdentifierRole("BY",                  IdentifierRole.CLAUSE);             // Part of GROUP BY, ORDER BY
+		registerIdentifierRole("DELETE",              IdentifierRole.CLAUSE);             // Part of DELETE FROM
+		registerIdentifierRole("GROUP",               IdentifierRole.CLAUSE);             // Part of GROUP BY
+		registerIdentifierRole("ORDER",               IdentifierRole.CLAUSE);             // Part of ORDERY BY
 	}
 
 	/**

@@ -24,7 +24,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <p>
  * <div nowrap><b>BNF:</b> <code>null_comparison_expression ::= {single_valued_path_expression | input_parameter} IS [NOT] NULL</code><p>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -34,11 +34,6 @@ public final class NullComparisonExpression extends AbstractExpression {
 	 * The expression tested for being <code>null</code> or not.
 	 */
 	private AbstractExpression expression;
-
-	/**
-	 * Determines whether 'NOT' is present in the query or not.
-	 */
-	private boolean hasNot;
 
 	/**
 	 * The actual <b>IS</b> identifier found in the string representation of the JPQL query.
@@ -168,7 +163,7 @@ public final class NullComparisonExpression extends AbstractExpression {
 	 * @return Either <b>IS NULL</b> or <b>IS NOT NULL</b>
 	 */
 	public String getIdentifier() {
-		return hasNot ? IS_NOT_NULL : IS_NULL;
+		return (notIdentifier != null) ? IS_NOT_NULL : IS_NULL;
 	}
 
 	/**
@@ -195,7 +190,7 @@ public final class NullComparisonExpression extends AbstractExpression {
 	 * @return <code>true</code> if <b>NOT</b> is present in the query; <code>false</code> otherwise
 	 */
 	public boolean hasNot() {
-		return hasNot;
+		return notIdentifier != null;
 	}
 
 	/**
@@ -210,9 +205,7 @@ public final class NullComparisonExpression extends AbstractExpression {
 		wordParser.skipLeadingWhitespace();
 
 		// 'NOT'
-		hasNot = wordParser.startsWithIdentifier(NOT);
-
-		if (hasNot) {
+		if (wordParser.startsWithIdentifier(NOT)) {
 			notIdentifier = wordParser.moveForward(NOT);
 			wordParser.skipLeadingWhitespace();
 		}
@@ -237,7 +230,7 @@ public final class NullComparisonExpression extends AbstractExpression {
 			writer.append(isIdentifier);
 			writer.append(SPACE);
 
-			if (hasNot) {
+			if (notIdentifier != null) {
 				writer.append(notIdentifier);
 				writer.append(SPACE);
 			}

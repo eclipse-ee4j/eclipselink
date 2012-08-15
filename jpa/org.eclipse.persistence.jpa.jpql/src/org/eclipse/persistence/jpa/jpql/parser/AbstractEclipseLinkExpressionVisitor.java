@@ -21,7 +21,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
  * API will almost certainly be broken (repeatedly) as the API evolves.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -31,7 +31,19 @@ public abstract class AbstractEclipseLinkExpressionVisitor extends AbstractExpre
 	/**
 	 * {@inheritDoc}
 	 */
+	public void visit(AsOfClause expression) {
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public void visit(CastExpression expression) {
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(ConnectByClause expression) {
 	}
 
 	/**
@@ -49,7 +61,19 @@ public abstract class AbstractEclipseLinkExpressionVisitor extends AbstractExpre
 	/**
 	 * {@inheritDoc}
 	 */
+	public void visit(HierarchicalQueryClause expression) {
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public void visit(RegexpExpression expression) {
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(StartWithClause expression) {
 	}
 
 	/**

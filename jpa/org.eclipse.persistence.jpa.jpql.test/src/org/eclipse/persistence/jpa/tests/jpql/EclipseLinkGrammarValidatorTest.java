@@ -16,12 +16,8 @@ package org.eclipse.persistence.jpa.tests.jpql;
 import java.util.List;
 import org.eclipse.persistence.jpa.jpql.AbstractGrammarValidator;
 import org.eclipse.persistence.jpa.jpql.EclipseLinkGrammarValidator;
+import org.eclipse.persistence.jpa.jpql.EclipseLinkVersion;
 import org.eclipse.persistence.jpa.jpql.JPQLQueryProblem;
-import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_0;
-import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_1;
-import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_2;
-import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_3;
-import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_4;
 import org.junit.Test;
 
 import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
@@ -46,24 +42,9 @@ public class EclipseLinkGrammarValidatorTest extends AbstractGrammarValidatorTes
 		return new EclipseLinkGrammarValidator(jpqlGrammar);
 	}
 
-	protected boolean isEclipseLink2_0() {
-		return jpqlGrammar.getProviderVersion() == EclipseLinkJPQLGrammar2_0.VERSION;
-	}
-
-	protected boolean isEclipseLink2_1() {
-		return jpqlGrammar.getProviderVersion() == EclipseLinkJPQLGrammar2_1.VERSION;
-	}
-
-	protected boolean isEclipseLink2_2() {
-		return jpqlGrammar.getProviderVersion() == EclipseLinkJPQLGrammar2_2.VERSION;
-	}
-
-	protected boolean isEclipseLink2_3() {
-		return jpqlGrammar.getProviderVersion() == EclipseLinkJPQLGrammar2_3.VERSION;
-	}
-
-	protected boolean isEclipseLink2_4() {
-		return jpqlGrammar.getProviderVersion() == EclipseLinkJPQLGrammar2_4.VERSION;
+	protected boolean equals(EclipseLinkVersion version) {
+		EclipseLinkVersion currentVersion = EclipseLinkVersion.value(jpqlGrammar.getProviderVersion());
+		return currentVersion == version;
 	}
 
 	/**
@@ -71,7 +52,12 @@ public class EclipseLinkGrammarValidatorTest extends AbstractGrammarValidatorTes
 	 */
 	@Override
 	protected boolean isJoinFetchIdentifiable() {
-		return isEclipseLink2_4();
+		return isNewerThanOrEqual(EclipseLinkVersion.VERSION_2_4);
+	}
+
+	protected boolean isNewerThanOrEqual(EclipseLinkVersion version) {
+		EclipseLinkVersion currentVersion = EclipseLinkVersion.value(jpqlGrammar.getProviderVersion());
+		return currentVersion.isNewerThanOrEqual(version);
 	}
 
 	/**
@@ -79,7 +65,7 @@ public class EclipseLinkGrammarValidatorTest extends AbstractGrammarValidatorTes
 	 */
 	@Override
 	protected boolean isSubqueryAllowedAnywhere() {
-		return isEclipseLink2_4();
+		return isNewerThanOrEqual(EclipseLinkVersion.VERSION_2_4);
 	}
 
 	@Test
@@ -88,7 +74,7 @@ public class EclipseLinkGrammarValidatorTest extends AbstractGrammarValidatorTes
 		String query = "SELECT e FROM Employee e GROUP BY AVG(e.age)";
 		List<JPQLQueryProblem> problems = validate(query);
 
-		if (isEclipseLink2_0()) {
+		if (equals(EclipseLinkVersion.VERSION_2_0)) {
 			int startPosition = "SELECT e FROM Employee e GROUP BY ".length();
 			int endPosition   = query.length();
 			testHasOnlyOneProblem(problems, BadExpression_InvalidExpression, startPosition, endPosition);
@@ -107,7 +93,7 @@ public class EclipseLinkGrammarValidatorTest extends AbstractGrammarValidatorTes
 
 		List<JPQLQueryProblem> problems = validate(query);
 
-		if (isEclipseLink2_0()) {
+		if (equals(EclipseLinkVersion.VERSION_2_0)) {
 
 			int startPosition1 = "SELECT e FROM Employee e GROUP BY ".length();
 			int endPosition1   = "SELECT e FROM Employee e GROUP BY AVG(e.age)".length();
@@ -145,7 +131,7 @@ public class EclipseLinkGrammarValidatorTest extends AbstractGrammarValidatorTes
 
 		List<JPQLQueryProblem> problems = validate(query);
 
-		if (isEclipseLink2_0()) {
+		if (equals(EclipseLinkVersion.VERSION_2_0)) {
 
 			int startPosition1 = "SELECT e FROM Employee e ORDER BY ".length();
 			int endPosition1   = "SELECT e FROM Employee e ORDER BY LENGTH(e.age)".length();

@@ -170,7 +170,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  *
  * conditional_term ::= conditional_factor | conditional_term AND conditional_factor
  *
- * conditional_factor ::= [ NOT ] conditional_primary
+ * conditional_factor ::= [NOT] conditional_primary
  *
  * conditional_primary ::= simple_cond_expression | (conditional_expression)
  *
@@ -352,8 +352,13 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  *
  * trim_string ::= [0-9] ([0-9])? ':' [0-9] [0-9] ':' [0-9] [0-9] '.' [0-9]*
  * </pre></code>
+ * <p>
+ * Provisional API: This interface is part of an interim API that is still under development and
+ * expected to change significantly before reaching stability. It is available at this early stage
+ * to solicit feedback from pioneering adopters on the understanding that any code that uses this
+ * API will almost certainly be broken (repeatedly) as the API evolves.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -416,6 +421,13 @@ public final class JPQLGrammar2_1 extends AbstractJPQLGrammar {
 	 */
 	public JPAVersion getJPAVersion() {
 		return JPAVersion.VERSION_2_1;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public String getProvider() {
+		return DefaultJPQLGrammar.PROVIDER_NAME;
 	}
 
 	/**
@@ -497,9 +509,9 @@ public final class JPQLGrammar2_1 extends AbstractJPQLGrammar {
 	@Override
 	protected void initializeIdentifiers() {
 
-		registerIdentifierRole(FUNCTION, IdentifierRole.FUNCTION);          // FUNCTION(n, x1, ..., x2)
-		registerIdentifierRole(ON,       IdentifierRole.COMPOUND_FUNCTION); // ON x
-		registerIdentifierRole(TREAT,    IdentifierRole.COMPOUND_FUNCTION); // TREAT(x AS y)
+		registerIdentifierRole(FUNCTION,    IdentifierRole.FUNCTION);          // FUNCTION(n, x1, ..., x2)
+		registerIdentifierRole(ON,          IdentifierRole.COMPOUND_FUNCTION); // ON x
+		registerIdentifierRole(TREAT,       IdentifierRole.COMPOUND_FUNCTION); // TREAT(x AS y)
 
 		registerIdentifierVersion(FUNCTION, JPAVersion.VERSION_2_1);
 		registerIdentifierVersion(ON,       JPAVersion.VERSION_2_1);

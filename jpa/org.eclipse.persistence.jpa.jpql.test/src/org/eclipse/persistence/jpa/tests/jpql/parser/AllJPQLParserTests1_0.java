@@ -19,6 +19,7 @@ import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_1;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_2;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_3;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_4;
+import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_5;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar1_0;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar2_0;
@@ -30,7 +31,7 @@ import org.junit.runners.Suite.SuiteClasses;
 /**
  * This test suite runs {@link JPQLParserTests1_0} using JPQL grammars written for JPA 1.0 and higher.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -55,7 +56,8 @@ public final class AllJPQLParserTests1_0 {
 			EclipseLinkJPQLGrammar2_1.instance(),
 			EclipseLinkJPQLGrammar2_2.instance(),
 			EclipseLinkJPQLGrammar2_3.instance(),
-			EclipseLinkJPQLGrammar2_4.instance()
+			EclipseLinkJPQLGrammar2_4.instance(),
+			EclipseLinkJPQLGrammar2_5.instance()
 		};
 	}
 }

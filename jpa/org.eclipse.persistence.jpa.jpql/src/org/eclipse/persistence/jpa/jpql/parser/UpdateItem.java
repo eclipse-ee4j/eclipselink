@@ -25,7 +25,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  *
  * @see UpdateClause
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -100,7 +100,7 @@ public final class UpdateItem extends AbstractExpression {
 			children.add(stateFieldExpression);
 		}
 
-		if (hasSpaceAfterStateFieldPathExpression()) {
+		if (hasSpaceAfterStateFieldPathExpression) {
 			children.add(buildStringExpression(SPACE));
 		}
 
@@ -120,8 +120,7 @@ public final class UpdateItem extends AbstractExpression {
 	}
 
 	/**
-	 * Returns the {@link Expression} representing the new value, which is the new value of the
-	 * property.
+	 * Returns the {@link Expression} representing the new value, which is the new value of the property.
 	 *
 	 * @return The expression for the new value
 	 */
@@ -174,8 +173,7 @@ public final class UpdateItem extends AbstractExpression {
 	/**
 	 * Determines whether a whitespace was parsed after the equal sign or not.
 	 *
-	 * @return <code>true</code> if there was a whitespace after the equal sign; <code>false</code>
-	 * otherwise
+	 * @return <code>true</code> if there was a whitespace after the equal sign; <code>false</code> otherwise
 	 */
 	public boolean hasSpaceAfterEqualSign() {
 		return hasSpaceAfterEqualSign;
@@ -199,6 +197,15 @@ public final class UpdateItem extends AbstractExpression {
 	public boolean hasStateFieldPathExpression() {
 		return stateFieldExpression != null &&
 		      !stateFieldExpression.isNull();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
+		return word.equals(EQUAL) ||
+		       super.isParsingComplete(wordParser, word, expression);
 	}
 
 	/**
@@ -248,7 +255,7 @@ public final class UpdateItem extends AbstractExpression {
 			stateFieldExpression.toParsedText(writer, actual);
 		}
 
-		if (hasSpaceAfterStateFieldPathExpression()) {
+		if (hasSpaceAfterStateFieldPathExpression) {
 			writer.append(SPACE);
 		}
 

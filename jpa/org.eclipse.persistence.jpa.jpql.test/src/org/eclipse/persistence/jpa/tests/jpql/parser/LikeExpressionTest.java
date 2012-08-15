@@ -13,10 +13,24 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
+import org.eclipse.persistence.jpa.jpql.EclipseLinkVersion;
+import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.junit.Test;
 
 @SuppressWarnings("nls")
 public final class LikeExpressionTest extends JPQLParserTest {
+
+	protected boolean isEclipseLink2_1OrNewer() {
+
+		String version = getGrammar().getProviderVersion();
+
+		if (ExpressionTools.stringIsEmpty(version)) {
+			return false;
+		}
+
+		EclipseLinkVersion currentVersion = EclipseLinkVersion.value(getGrammar().getProviderVersion());
+		return currentVersion.isNewerThanOrEqual(EclipseLinkVersion.VERSION_2_1);
+	}
 
 	@Test
 	public void testBuildExpression_01() {
@@ -127,16 +141,14 @@ public final class LikeExpressionTest extends JPQLParserTest {
 		LikeExpressionTester likeExpression = like(
 			string("'Pascal''s code'"),
 			string("'Pascal'"),
-			isEclipseLink2_1OrLater() ? TRUE() : bad(TRUE())
+			isEclipseLink2_1OrNewer() ? TRUE() : bad(TRUE())
 		);
 
 		ExpressionTester selectStatement = selectStatement(
 			select(variable("e")),
 			from("Employee", "e"),
 			where(likeExpression),
-			groupBy(variable("e")),
-			nullExpression(),
-			nullExpression()
+			groupBy(variable("e"))
 		);
 
 		testInvalidQuery(query, selectStatement);
@@ -150,7 +162,7 @@ public final class LikeExpressionTest extends JPQLParserTest {
 		LikeExpressionTester likeExpression = like(
 			string("'Pascal''s code'"),
 			string("'Pascal'"),
-			isEclipseLink2_1OrLater() ? TRUE() : bad(TRUE())
+			isEclipseLink2_1OrNewer() ? TRUE() : bad(TRUE())
 		);
 
 		ExpressionTester selectStatement = selectStatement(
@@ -162,9 +174,7 @@ public final class LikeExpressionTest extends JPQLParserTest {
 					path("e.name").equal(string("'Pascal'"))
 				)
 			),
-			groupBy(variable("e")),
-			nullExpression(),
-			nullExpression()
+			groupBy(variable("e"))
 		);
 
 		testInvalidQuery(query, selectStatement);

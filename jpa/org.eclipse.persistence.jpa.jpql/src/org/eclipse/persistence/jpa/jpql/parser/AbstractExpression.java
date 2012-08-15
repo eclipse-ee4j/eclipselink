@@ -33,7 +33,7 @@ import org.eclipse.persistence.jpa.jpql.util.iterator.IterableListIterator;
  * @see ExpressionFactory
  * @see JPQLGrammar
  *
- * @version 2.4
+ * @version 2.4.1
  * @since 2.3
  * @author Pascal Filion
  */
@@ -471,17 +471,6 @@ public abstract class AbstractExpression implements Expression {
 	}
 
 	/**
-	 * Retrieves the identifiers that are supported by the given BNF.
-	 *
-	 * @param queryBNFId The unique identifier of the BNF for which the supported identifiers are requested
-	 * @return The list of JPQL identifiers that can be used with the BNF
-	 * @see ExpressionRegistry#getIdentifiers(String)
-	 */
-	protected Iterable<String> getIdentifiers(String queryBNFId) {
-		return getExpressionRegistry().getIdentifiers(queryBNFId);
-	}
-
-	/**
 	 * Retrieves the JPA version in which the identifier was first introduced.
 	 *
 	 * @return The version in which the identifier was introduced
@@ -610,13 +599,17 @@ public abstract class AbstractExpression implements Expression {
 	 * <code>false</code> if more can be parsed
 	 */
 	protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
-		return word.equalsIgnoreCase(FROM)                ||
-		       word.equalsIgnoreCase(WHERE)               ||
-		       word.equalsIgnoreCase(HAVING)              ||
-		       wordParser.startsWithIdentifier(GROUP_BY)  ||
-		       wordParser.startsWithIdentifier(ORDER_BY)  ||
-		       word.equalsIgnoreCase(UNION)               ||
-		       word.equalsIgnoreCase(INTERSECT)           ||
+		return word.equalsIgnoreCase(FROM)                 ||
+		       word.equalsIgnoreCase(WHERE)                ||
+		       word.equalsIgnoreCase(HAVING)               ||
+		       wordParser.startsWithIdentifier(GROUP_BY)   ||
+		       wordParser.startsWithIdentifier(ORDER_BY)   ||
+		       wordParser.startsWithIdentifier(AS_OF)      ||
+		       wordParser.startsWithIdentifier(START_WITH) ||
+		       wordParser.startsWithIdentifier(CONNECT_BY) ||
+		       word.equalsIgnoreCase(UNION)                ||
+		       word.equalsIgnoreCase(UNION)                ||
+		       word.equalsIgnoreCase(INTERSECT)            ||
 		       word.equalsIgnoreCase(EXCEPT);
 	}
 
@@ -710,7 +703,6 @@ public abstract class AbstractExpression implements Expression {
 
 				// If the JPQLQueryBNF handles parsing the sub-expression, then delegate the parsing
 				// to its fallback ExpressionFactory
-				// fallback Expression Factory
 				if (queryBNF.handlesSubExpression()) {
 					expression = buildExpressionFromFallingBack(
 						wordParser,

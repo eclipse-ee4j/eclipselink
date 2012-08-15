@@ -30,7 +30,7 @@ import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
  * API will almost certainly be broken (repeatedly) as the API evolves.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -43,19 +43,6 @@ public class DefaultGrammarValidator extends AbstractGrammarValidator {
 	 */
 	public DefaultGrammarValidator(JPQLGrammar jpqlGrammar) {
 		super(jpqlGrammar);
-	}
-
-	/**
-	 * Creates a new <code>DefaultGrammarValidator</code>.
-	 *
-	 * @param queryContext The context used to query information about the JPQL query
-	 * @deprecated This constructor only exists for backward compatibility. {@link JPQLQueryContext}
-	 * is no longer required, only {@link JPQLGrammar}
-	 * @see #DefaultGrammarValidator(JPQLGrammar)
-	 */
-	@Deprecated
-	public DefaultGrammarValidator(JPQLQueryContext queryContext) {
-		super(queryContext.getGrammar());
 	}
 
 	/**
