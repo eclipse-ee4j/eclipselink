@@ -368,6 +368,21 @@
         </attributes>
     </entity>
     
+    <entity name="DynamicRunner" class="Runner">
+    	<table name="DYNAMIC_RUNNER"/>
+		<attributes>
+			<embedded-id name="id" attribute-type="DynamicRunnerPK"/>
+			<basic name="name" attribute-type="java.lang.String"/>
+		</attributes>
+	</entity>
+	
+	<embeddable class="DynamicRunnerPK">
+		<attributes>
+			<basic name="bib" attribute-type="int"/>
+			<basic name="worldRank" attribute-type="int"/>
+		</attributes>
+	</embeddable>
+	
     <embeddable class="ShovelSections">
         <access-methods get-method="getMaterial" set-method="setMaterial"/>
         <attributes>

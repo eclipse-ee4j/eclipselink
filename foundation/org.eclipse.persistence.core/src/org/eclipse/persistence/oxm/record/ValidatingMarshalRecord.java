@@ -576,4 +576,9 @@ public class ValidatingMarshalRecord extends MarshalRecord {
 
     }
 
+    @Override
+    public void writeHeader() {
+        marshalRecord.writeHeader();
+    }
+
 }

@@ -836,49 +836,12 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      * may be available if the relationship has been cached.
      */
     public Object valueFromPKList(Object[] pks, AbstractRecord foreignKeys, ForeignReferenceMapping mapping, AbstractSession session){
-        
-        Object result = containerInstance(pks.length/2);
-        Object[] values = new Object[pks.length /2];
-        for (int index = 1; index < pks.length; index += 2){
-            values[index/2] = pks[index];
+        // pks contains both keys and values, but only values are required because keys could be obtained from corresponding values.
+        Object[] pksOnly = new Object[pks.length / 2];
+        for (int i=0; i<pks.length/2; i++) {
+            pksOnly[i] = pks[2*i + 1];
         }
-        Map<Object, Object> fromCache = session.getIdentityMapAccessor().getAllFromIdentityMapWithEntityPK(values, elementDescriptor);
-        for (Object entity: fromCache.values()){
-            addInto(null, entity, result, session);
-        }
-        DatabaseRecord translationRow = new DatabaseRecord();
-        List foreignKeyValues = new ArrayList(values.length - fromCache.size());
-        for (int index = 0; index < values.length; ++index){
-            //it is a map so the keys are in the list but we do not need them in this case
-            Object pk = values[index];
-            if (!fromCache.containsKey(pk)){
-                if (this.elementDescriptor.getCachePolicy().getCacheKeyType() == CacheKeyType.CACHE_ID){
-                    foreignKeyValues.add(Arrays.asList(((CacheId)pk).getPrimaryKey()));
-                }else{
-                    foreignKeyValues.add(pk);
-                }
-            }
-        }
-        if (!foreignKeyValues.isEmpty()){
-            translationRow.put(ForeignReferenceMapping.QUERY_BATCH_PARAMETER, foreignKeyValues);
-    
-            ReadAllQuery query = new ReadAllQuery();
-            query.setReferenceClass(elementDescriptor.getJavaClass());
-            query.setIsExecutionClone(true);
-            query.setTranslationRow(translationRow);
-            query.setSession(session);
-            query.setSelectionCriteria(elementDescriptor.buildBatchCriteriaByPK(query.getExpressionBuilder(), query));
-            Collection<Object> temp = (Collection<Object>) session.executeQuery(query);
-            if (temp.size() < foreignKeyValues.size()){
-                //Not enough results have been found, this must be a stale collection with a removed
-                //element.  Execute a reload based on FK.
-                return session.executeQuery(mapping.getSelectionQuery(), foreignKeys);
-            }
-            for (Object element: temp){
-                addInto(null, element, result, session);
-            }
-        }
-        return result;
+        return super.valueFromPKList(pksOnly, foreignKeys, mapping, session);
     }
 
     /**

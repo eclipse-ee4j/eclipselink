@@ -451,57 +451,61 @@ public class CMP3Policy extends CMPPolicy {
                                 break;
                             }
                         }
-                        
-                        try {
-                            pkAttributes[i] = new FieldAccessor(getField(currentKeyClass, fieldName), fieldName, field, mapping, currentKeyClass != keyClass);
-                            fieldToAccessorMap.put(field, pkAttributes[i]);
-                            noSuchElementException = null;
-                        } catch (NoSuchFieldException ex) {
-                            String getMethodName = null; 
-                            String setMethodName = null; 
-                            if(mapping.isObjectReferenceMapping() && ((ObjectReferenceMapping)mapping).getIndirectionPolicy().isWeavedObjectBasicIndirectionPolicy()) {
-                                WeavedObjectBasicIndirectionPolicy weavedIndirectionPolicy = (WeavedObjectBasicIndirectionPolicy)((ObjectReferenceMapping)mapping).getIndirectionPolicy();
-                                if (weavedIndirectionPolicy.hasUsedMethodAccess()) {
-                                    getMethodName = weavedIndirectionPolicy.getGetMethodName();
-                                    setMethodName = weavedIndirectionPolicy.getSetMethodName();
-                                }
-                            } else {
-                                getMethodName = mapping.getGetMethodName(); 
-                                setMethodName = mapping.getSetMethodName(); 
-                            }
-                            if (getMethodName != null) {
-                                // Must be a property.
-                                try {
-                                    Method getMethod = null;
-                                    if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                                        try {
-                                            getMethod = AccessController.doPrivileged(new PrivilegedGetMethod(currentKeyClass, getMethodName, new Class[] {}, true));
-                                        } catch (PrivilegedActionException exception) {
-                                            throw (NoSuchMethodException)exception.getException();
-                                        }
-                                    } else {
-                                        getMethod = PrivilegedAccessHelper.getMethod(currentKeyClass, getMethodName, new Class[] {}, true);
-                                    }
-                                    Method setMethod = null;
-                                    if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                                        try {
-                                            setMethod = AccessController.doPrivileged(new PrivilegedGetMethod(currentKeyClass, setMethodName, new Class[] {getMethod.getReturnType()}, true));
-                                        } catch (PrivilegedActionException exception) {
-                                            throw (NoSuchMethodException)exception.getException();
-                                        }
-                                    } else {
-                                        setMethod = PrivilegedAccessHelper.getMethod(currentKeyClass, setMethodName, new Class[] {getMethod.getReturnType()}, true);
-                                    }
-                                    pkAttributes[i] = new PropertyAccessor(getMethod, setMethod, fieldName, field, mapping, currentKeyClass != keyClass);
-                                    this.fieldToAccessorMap.put(field, pkAttributes[i]);
-                                    noSuchElementException = null;
-                                } catch (NoSuchMethodException exs) {
-                                    // not a field not a method, but a pk class is defined.  Check for other mappings
-                                    noSuchElementException = exs;
-                                }
-                            } else {
-                                noSuchElementException = ex;
-                            }
+
+                        if (mapping.getAttributeAccessor().isValuesAccessor()) {
+                        	pkAttributes[i] = new ValuesFieldAccessor(fieldName, field, mapping, currentKeyClass != keyClass);
+                        } else {
+	                        try {
+	                        	pkAttributes[i] = new FieldAccessor(getField(currentKeyClass, fieldName), fieldName, field, mapping, currentKeyClass != keyClass);
+	                            fieldToAccessorMap.put(field, pkAttributes[i]);
+	                            noSuchElementException = null;
+	                        } catch (NoSuchFieldException ex) {
+	                            String getMethodName = null; 
+	                            String setMethodName = null; 
+	                            if(mapping.isObjectReferenceMapping() && ((ObjectReferenceMapping)mapping).getIndirectionPolicy().isWeavedObjectBasicIndirectionPolicy()) {
+	                                WeavedObjectBasicIndirectionPolicy weavedIndirectionPolicy = (WeavedObjectBasicIndirectionPolicy)((ObjectReferenceMapping)mapping).getIndirectionPolicy();
+	                                if (weavedIndirectionPolicy.hasUsedMethodAccess()) {
+	                                    getMethodName = weavedIndirectionPolicy.getGetMethodName();
+	                                    setMethodName = weavedIndirectionPolicy.getSetMethodName();
+	                                }
+	                            } else {
+	                                getMethodName = mapping.getGetMethodName(); 
+	                                setMethodName = mapping.getSetMethodName(); 
+	                            }
+	                            if (getMethodName != null) {
+	                                // Must be a property.
+	                                try {
+	                                    Method getMethod = null;
+	                                    if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+	                                        try {
+	                                            getMethod = AccessController.doPrivileged(new PrivilegedGetMethod(currentKeyClass, getMethodName, new Class[] {}, true));
+	                                        } catch (PrivilegedActionException exception) {
+	                                            throw (NoSuchMethodException)exception.getException();
+	                                        }
+	                                    } else {
+	                                        getMethod = PrivilegedAccessHelper.getMethod(currentKeyClass, getMethodName, new Class[] {}, true);
+	                                    }
+	                                    Method setMethod = null;
+	                                    if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+	                                        try {
+	                                            setMethod = AccessController.doPrivileged(new PrivilegedGetMethod(currentKeyClass, setMethodName, new Class[] {getMethod.getReturnType()}, true));
+	                                        } catch (PrivilegedActionException exception) {
+	                                            throw (NoSuchMethodException)exception.getException();
+	                                        }
+	                                    } else {
+	                                        setMethod = PrivilegedAccessHelper.getMethod(currentKeyClass, setMethodName, new Class[] {getMethod.getReturnType()}, true);
+	                                    }
+	                                    pkAttributes[i] = new PropertyAccessor(getMethod, setMethod, fieldName, field, mapping, currentKeyClass != keyClass);
+	                                    this.fieldToAccessorMap.put(field, pkAttributes[i]);
+	                                    noSuchElementException = null;
+	                                } catch (NoSuchMethodException exs) {
+	                                    // not a field not a method, but a pk class is defined.  Check for other mappings
+	                                    noSuchElementException = exs;
+	                                }
+	                            } else {
+	                                noSuchElementException = ex;
+	                            }
+	                        }
                         }
                     }
                  
@@ -676,6 +680,48 @@ public class CMP3Policy extends CMPPolicy {
             } catch (Exception ex) {
                 throw DescriptorException.errorUsingPrimaryKey(object, getDescriptor(), ex);
             }
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * This class will be used when the element of the keyclass is a virtual field.
+     */
+    private class ValuesFieldAccessor implements KeyElementAccessor {
+        protected String attributeName;
+        protected DatabaseField databaseField;
+        protected DatabaseMapping mapping;
+        protected boolean isNestedAccessor;
+
+        public ValuesFieldAccessor(String attributeName, DatabaseField databaseField, DatabaseMapping mapping, boolean isNestedAccessor) {
+            this.attributeName = attributeName;
+            this.databaseField = databaseField;
+            this.mapping = mapping;
+            this.isNestedAccessor = isNestedAccessor;
+        }
+
+        public String getAttributeName() {
+            return this.attributeName;
+        }
+
+        public DatabaseField getDatabaseField() {
+            return this.databaseField;
+        }
+        
+        public DatabaseMapping getMapping() {
+            return this.mapping;
+        }
+        
+        public Object getValue(Object object, AbstractSession session) {
+        	return mapping.getRealAttributeValueFromObject(object, session);
+        }
+        
+        public boolean isNestedAccessor() {
+            return isNestedAccessor;
+        }
+        
+        public void setValue(Object object, Object value) {
+        	mapping.setRealAttributeValueInObject(object, value);
         }
     }
 

@@ -444,6 +444,12 @@
         <delete>
           <fileset dir="." includes="TEST-*xml"/>
           <fileset dir="." includes="junit*.properties"/>
+          <fileset dir="." includes="eclipselink-dbws-*"/>
+          <fileset dir="." includes="eclipselink-dbws.*"/>
+          <fileset dir="." includes="DBWSProvider.*"/>
+          <fileset dir="." includes="ProviderListener.*"/>
+          <fileset dir="." includes="web.xml*"/>
+          <fileset dir="." includes="dbws.war"/>
         </delete>
     </target>
 

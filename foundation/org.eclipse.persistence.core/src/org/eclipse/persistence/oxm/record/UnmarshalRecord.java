@@ -958,9 +958,10 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
                 levelIndex--;
                 return;
             }
-            if (null != xPathNode.getUnmarshalNodeValue()) {
+            NodeValue unmarshalNodeValue = xPathNode.getUnmarshalNodeValue();
+            if (null != unmarshalNodeValue) {
                 try {
-                    xPathNode.getUnmarshalNodeValue().endElement(xPathFragment, this);
+                    unmarshalNodeValue.endElement(xPathFragment, this);
                 } catch(EclipseLinkException e) {
                 	if ((null == xmlReader) || (null == xmlReader.getErrorHandler())) {
                         throw e;

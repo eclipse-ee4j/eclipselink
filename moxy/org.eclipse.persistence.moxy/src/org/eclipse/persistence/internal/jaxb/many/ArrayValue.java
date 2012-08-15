@@ -25,13 +25,14 @@ public abstract class ArrayValue<T> extends ManyValue<T, Object> {
         if(null == adaptedValue) {
             return null;
         }
-        Object array = Array.newInstance(containerClass(), adaptedValue.size());
-        int x = 0;
-        for(Object value : adaptedValue) {
-            Array.set(array, x, value);
-            x++;
+                      
+        int len = adaptedValue.size();
+        
+        Object array = Array.newInstance(containerClass(),len);
+        for( int i=0; i<len; i++ ){
+            Array.set(array,i,((ArrayList)adaptedValue).get(i));
         }
-        return array;
+        return array;      
     }
 
     @Override
@@ -40,12 +41,13 @@ public abstract class ArrayValue<T> extends ManyValue<T, Object> {
     }
 
     @Override
-    public void setItem(Object array) {
+    public void setItem(Object array) {    	
         int arraySize = Array.getLength(array);
         adaptedValue = new ArrayList<T>(arraySize);
         for(int x=0; x<arraySize; x++) {
             adaptedValue.add((T) Array.get(array, x));
         }
     }
+    
 
 }

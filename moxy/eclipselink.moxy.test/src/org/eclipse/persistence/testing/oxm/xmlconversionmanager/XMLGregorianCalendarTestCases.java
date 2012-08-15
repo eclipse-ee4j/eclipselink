@@ -86,7 +86,7 @@ public class XMLGregorianCalendarTestCases extends XMLMappingTestCases {
     }
     
     public Document getWriteControlDocument() throws Exception {
-        InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/oxm/xmlconversionmanager/emp.xml");
+        InputStream inputStream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/oxm/xmlconversionmanager/emp-write.xml");
         Document doc = parser.parse(inputStream);
         removeEmptyTextNodes(doc);
         inputStream.close();

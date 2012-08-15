@@ -237,6 +237,8 @@ public class EntityMappingsDynamicAdvancedJUnitTestCase extends JUnitTestCase {
         
         suite.addTest(new EntityMappingsDynamicAdvancedJUnitTestCase("testDynamicWithNoPersistenceXML"));
         
+        suite.addTest(new EntityMappingsDynamicAdvancedJUnitTestCase("testDynamicEmbeddedId"));
+        
         return suite;
     }
     
@@ -798,6 +800,46 @@ public class EntityMappingsDynamicAdvancedJUnitTestCase extends JUnitTestCase {
 
             assertTrue("Error updating Employee", emp.get("salary").equals(50000));
             assertTrue("Version field not updated", emp.get("version").equals(version + 1));            
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            
+            throw e;
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+
+    /**
+     * Test create and read of dynamic entity using an embedded id.
+     */
+    public void testDynamicEmbeddedId() {
+        EntityManager em = createDynamicPUEntityManager();
+        JPADynamicHelper helper = new JPADynamicHelper(em);
+        
+        try {
+            beginTransaction(em);
+            
+            DynamicEntity runner = helper.newDynamicEntity("DynamicRunner");
+            runner.set("name", "Ryan Hill");
+            
+            DynamicEntity runnerPK = helper.newDynamicEntity("DynamicRunnerPK");
+            runnerPK.set("bib", 1);
+            runnerPK.set("worldRank", 13);
+            
+            runner.set("id", runnerPK);
+            
+            em.persist(runner);
+            commitTransaction(em);
+            
+            clearDynamicPUCache();
+            em.clear();
+            
+            // Re-read the runner and verify the data.
+            DynamicEntity r = (DynamicEntity) em.find(helper.getType("DynamicRunner").getJavaClass(), runnerPK);
+            assertTrue("Runner didn't match after create", getDynamicPUServerSession().compareObjects(r, runner));
+            assertNotNull("The runner was not found", r);
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);

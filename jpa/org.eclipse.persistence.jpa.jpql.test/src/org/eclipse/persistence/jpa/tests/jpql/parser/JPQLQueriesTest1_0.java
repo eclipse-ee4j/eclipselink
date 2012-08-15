@@ -41,6 +41,30 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 		};
 	}
 
+	private JPQLQueryStringFormatter buildStringFormatter_1() {
+		return new JPQLQueryStringFormatter() {
+			public String format(String query) {
+				return query.replace("AVG", "avg");
+			}
+		};
+	}
+
+	private JPQLQueryStringFormatter buildStringFormatter_2() {
+		return new JPQLQueryStringFormatter() {
+			public String format(String query) {
+				return query.replace("CURRENT_TIMESTAMP", "current_timestamp");
+			}
+		};
+	}
+
+	private JPQLQueryStringFormatter buildStringFormatter_3() {
+		return new JPQLQueryStringFormatter() {
+			public String format(String query) {
+				return query.replace("END", "end");
+			}
+		};
+	}
+
 	@Test
 	public final void test_Query_001() {
 		test_Query_001(getGrammar());
@@ -5273,5 +5297,53 @@ public final class JPQLQueriesTest1_0 extends JPQLParserTest {
 		else {
 			testInvalidQuery(jpqlQuery, selectStatement, jpqlGrammar);
 		}
+	}
+
+	@Test
+	public final void test_Query_216() {
+		test_Query_216(getGrammar());
+	}
+
+	final void test_Query_216(JPQLGrammar jpqlGrammar) {
+
+		String jpqlQuery = "UPDATE Employee SET avg = 'JPQL'";
+
+		UpdateStatementTester updateStatement = updateStatement(
+			update("Employee", set("{employee}.avg", string("'JPQL'")))
+		);
+
+		testQuery(jpqlQuery, updateStatement, jpqlGrammar, buildStringFormatter_1());
+	}
+
+	@Test
+	public final void test_Query_217() {
+		test_Query_217(getGrammar());
+	}
+
+	final void test_Query_217(JPQLGrammar jpqlGrammar) {
+
+		String jpqlQuery = "UPDATE Employee SET current_timestamp = 'JPQL'";
+
+		UpdateStatementTester updateStatement = updateStatement(
+			update("Employee", set("{employee}.current_timestamp", string("'JPQL'")))
+		);
+
+		testQuery(jpqlQuery, updateStatement, jpqlGrammar, buildStringFormatter_2());
+	}
+
+	@Test
+	public final void test_Query_218() {
+		test_Query_218(getGrammar());
+	}
+
+	final void test_Query_218(JPQLGrammar jpqlGrammar) {
+
+		String jpqlQuery = "UPDATE Employee SET end = 'JPQL'";
+
+		UpdateStatementTester updateStatement = updateStatement(
+			update("Employee", set("{employee}.end", string("'JPQL'")))
+		);
+
+		testQuery(jpqlQuery, updateStatement, jpqlGrammar, buildStringFormatter_3());
 	}
 }

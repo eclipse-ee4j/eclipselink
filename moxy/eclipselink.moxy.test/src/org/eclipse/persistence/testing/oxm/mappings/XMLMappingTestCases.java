@@ -576,7 +576,7 @@ public abstract class XMLMappingTestCases extends OXTestCase {
         this.shouldRemoveEmptyTextNodesFromControlDoc = value;
     }
 
-    protected static class FakeSchema extends Schema {
+    public static class FakeSchema extends Schema {
 
         public static FakeSchema INSTANCE = new FakeSchema();
 
