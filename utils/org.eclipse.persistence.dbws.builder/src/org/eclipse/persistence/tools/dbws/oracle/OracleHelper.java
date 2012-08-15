@@ -209,28 +209,25 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
             dbwsBuilder.logMessage(FINEST, BUILDING_QUERYOP_FOR + qualifiedProcName);
 
             QueryHandler qh = null;
-            if (!hasComplexArgs) {
+            // before assigning queryHandler, check for named query in OR project
+            List<DatabaseQuery> queries = dbwsBuilder.getOrProject().getQueries();
+            if (queries.size() > 0) {
+                for (DatabaseQuery q : queries) {
+                    if (q.getName().equals(qo.getName())) {
+                        qh = new NamedQueryHandler();
+                        ((NamedQueryHandler) qh).setName(qo.getName());
+                    }
+                }
+            }
+            if (qh == null) {
                 if (storedProcedure.isFunctionType()) {
                     qh = new StoredFunctionQueryHandler();
                 } else {
                     qh = new StoredProcedureQueryHandler();
                 }
                 ((StoredProcedureQueryHandler) qh).setName(qualifiedProcName);
-
-                // before assigning queryHandler, check for named query in OR
-                // project
-                List<DatabaseQuery> queries = dbwsBuilder.getOrProject().getQueries();
-                if (queries.size() > 0) {
-                    for (DatabaseQuery q : queries) {
-                        if (q.getName().equals(qo.getName())) {
-                            qh = new NamedQueryHandler();
-                            ((NamedQueryHandler) qh).setName(qo.getName());
-                        }
-                    }
-                }
-
-                qo.setQueryHandler(qh);
             }
+            qo.setQueryHandler(qh);
 
             String returnType = procedureOperationModel.getReturnType();
             boolean isCollection = procedureOperationModel.isCollection();
@@ -323,7 +320,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                         pa = new ProcedureArgument();
                         pa.setName(argName);
                         pa.setParameterName(argName);
-                        if (!hasComplexArgs && qh instanceof StoredProcedureQueryHandler) {
+                        if (qh instanceof StoredProcedureQueryHandler) {
                             ((StoredProcedureQueryHandler)qh).getInArguments().add(pa);
                         }
                     } else {
@@ -376,19 +373,16 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                             result.setType(xmlType);
                             // use of INOUT precludes SimpleXMLFormat
                             isSimpleXMLFormat = false;
-                            if (!hasComplexArgs) {
-                                if (qh instanceof StoredProcedureQueryHandler) {
-                                    ((StoredProcedureQueryHandler)qh).getInOutArguments().add(pao);
-                                }
-                            } else {   // complex
-                                paShadow = new ProcedureArgument();
-                                paShadow.setName(argName);
-                                paShadow.setParameterName(argName);
-                            }
-                        } else if (!hasComplexArgs) {
                             if (qh instanceof StoredProcedureQueryHandler) {
-                                ((StoredProcedureQueryHandler)qh).getOutArguments().add(pao);
+                                ((StoredProcedureQueryHandler)qh).getInOutArguments().add(pao);
                             }
+                            paShadow = new ProcedureArgument();
+                            paShadow.setName(argName);
+                            paShadow.setParameterName(argName);
+                        } else { // OUT arg 
+                        	if (qh instanceof StoredProcedureQueryHandler) {
+                        		((StoredProcedureQueryHandler)qh).getOutArguments().add(pao);
+                        	}
                         }
                     }
                     if (hasComplexArgs && arg.getEnclosedType().isPLSQLType()) {
@@ -1110,7 +1104,6 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
                         }
                         buildAndAddArrayMapping(ordt, lFieldName, fieldName, getStructureNameForField(fType, null));
                     } else if (fType.getEnclosedType().isObjectTableType()) {
-                        // assumes ObjectTableType has an enclosed ObjectType type
                         if (buildDescriptor) {
                             // need to update the java class name on the descriptor to include package (project) name
                             ordt2.setJavaClassName(getGeneratedJavaClassName(alias, dbwsBuilder.getProjectName()));

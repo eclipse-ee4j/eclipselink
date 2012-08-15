@@ -72,6 +72,9 @@ public class RowTypeTestSuite extends DBWSTestSuite {
              "<result>" +
                 "<type>ns1:RTYPE_TABLE_ROWTYPE</type>" +
              "</result>" +
+              "<named-query>" +
+                 "<name>rowtypeTest</name>" +
+              "</named-query>" +
           "</query>" +
           "<query>" +
             "<name>rowtypeTest2</name>" +
@@ -82,6 +85,9 @@ public class RowTypeTestSuite extends DBWSTestSuite {
             "<result>" +
                "<type>ns1:RTYPE_TABLE_ROWTYPE</type>" +
             "</result>" +
+              "<named-query>" +
+                 "<name>rowtypeTest2</name>" +
+              "</named-query>" +
          "</query>" +
       "</dbws>";
     
