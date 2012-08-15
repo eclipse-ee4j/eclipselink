@@ -63,7 +63,7 @@ import static dbws.testing.DBWSTestSuite.buildConnection;
 @RunWith(Suite.class)
 @SuiteClasses({
     AdvancedJDBCPackageTestSuite.class,
-    //BlobTypeTestSuite.class,
+    BlobTypeTestSuite.class,
     ComplexPLSQLSFTestSuite.class,
     ComplexPLSQLSPTestSuite.class,
     CustomSQLTestSuite.class,

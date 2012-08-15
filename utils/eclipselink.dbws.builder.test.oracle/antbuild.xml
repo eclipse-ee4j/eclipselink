@@ -326,11 +326,9 @@
           <test
             name="dbws.testing.advancedjdbcpackage.AdvancedJDBCPackageTestSuite"
           />
-		  <!--
           <test
             name="dbws.testing.blobtype.BlobTypeTestSuite"
           />
-		  -->
           <test
             name="dbws.testing.complexplsqlsf.ComplexPLSQLSFTestSuite"
           />
