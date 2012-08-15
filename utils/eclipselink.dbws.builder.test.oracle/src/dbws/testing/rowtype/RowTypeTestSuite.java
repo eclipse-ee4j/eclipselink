@@ -59,31 +59,37 @@ public class RowTypeTestSuite extends DBWSTestSuite {
            "<xsd:element name=\"RTYPE_TABLE_ROWTYPE\" type=\"RTYPE_TABLE_ROWTYPE\"/>" +
         "</xsd:schema>";
     static final String SERVICE = 
-       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
-       "<dbws xmlns:ns1=\"urn:rowtype\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
-          "<name>rowtype</name>" +
-          "<sessions-file>eclipselink-dbws-sessions.xml</sessions-file>" +
-          "<query>" +
-             "<name>rowtypeTest</name>" +
-             "<parameter>" +
-                "<name>PARAM1</name>" +
-                "<type>xsd:int</type>" +
-             "</parameter>" +
-             "<result>" +
-                "<type>ns1:RTYPE_TABLE_ROWTYPE</type>" +
-             "</result>" +
-          "</query>" +
-          "<query>" +
-            "<name>rowtypeTest2</name>" +
-             "<parameter>" +
-                "<name>PARAM1</name>" +
-                "<type>xsd:int</type>" +
-             "</parameter>" +
-            "<result>" +
-               "<type>ns1:RTYPE_TABLE_ROWTYPE</type>" +
-            "</result>" +
-         "</query>" +
-      "</dbws>";
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+        "<dbws xmlns:ns1=\"urn:rowtype\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+           "<name>rowtype</name>" +
+           "<sessions-file>eclipselink-dbws-sessions.xml</sessions-file>" +
+           "<query>" +
+              "<name>rowtypeTest</name>" +
+              "<parameter>" +
+                 "<name>PARAM1</name>" +
+                 "<type>xsd:int</type>" +
+              "</parameter>" +
+              "<result>" +
+                 "<type>ns1:RTYPE_TABLE_ROWTYPE</type>" +
+              "</result>" +
+              "<named-query>" +
+                 "<name>rowtypeTest</name>" +
+              "</named-query>" +
+           "</query>" +
+           "<query>" +
+              "<name>rowtypeTest2</name>" +
+              "<parameter>" +
+                 "<name>PARAM1</name>" +
+                 "<type>xsd:int</type>" +
+              "</parameter>" +
+              "<result>" +
+                 "<type>ns1:RTYPE_TABLE_ROWTYPE</type>" +
+              "</result>" +
+              "<named-query>" +
+                 "<name>rowtypeTest2</name>" +
+              "</named-query>" +
+            "</query>" +
+        "</dbws>";
     
     
     static final String ROWTYPE_TEST_TABLE = "RTYPE_TABLE";
