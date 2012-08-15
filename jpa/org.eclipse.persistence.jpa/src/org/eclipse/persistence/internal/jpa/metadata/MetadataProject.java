@@ -828,7 +828,7 @@ public class MetadataProject {
                 descriptor.getClassDescriptor().setJavaClass(dcl.createDynamicClass(descriptor.getJavaClassName(), parentDescriptor.getClassDescriptor().getJavaClass()));
             } else {
                 // Create and set the virtual class on the descriptor
-                descriptor.getClassDescriptor().setJavaClass(dcl.createDynamicClass(descriptor.getJavaClassName()));
+                descriptor.getClassDescriptor().setJavaClass(dcl.createDynamicClass(descriptor.getJavaClassName(), new MetadataDynamicClassWriter(descriptor)));
             }
             
             // Store the descriptor by java class name.
