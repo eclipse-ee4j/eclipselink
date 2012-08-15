@@ -11,6 +11,7 @@
  *     dclarke, mnorman - Dynamic Persistence
  *       http://wiki.eclipse.org/EclipseLink/Development/Dynamic 
  *       (https://bugs.eclipse.org/bugs/show_bug.cgi?id=200045)
+ *     dclarke - Bug 387240: added field and method calls to allow extensibility
  *
  ******************************************************************************/
 package org.eclipse.persistence.dynamic;
@@ -202,9 +203,30 @@ public class DynamicClassWriter {
         mv.visitInsn(ARETURN);
         mv.visitMaxs(0, 0);
 
+        addFields(cw, parentClassNameAsSlashes);
+        addMethods(cw, parentClassNameAsSlashes);
+
         cw.visitEnd();
         return cw.toByteArray();
 
+    }
+
+    /**
+     * Allow subclasses to add additional state to the dynamic entity.
+     * 
+     * @param cw
+     * @param parentClassNameAsSlashes
+     */
+    protected void addFields(ClassWriter cw, String parentClassType) {
+    }
+
+    /**
+     * Allow subclasses to add additional methods to the dynamic entity.
+     * 
+     * @param cw
+     * @param parentClassNameAsSlashes
+     */
+    protected void addMethods(ClassWriter cw, String parentClassType) {
     }
 
     public static int[] ICONST = new int[] { ICONST_0, ICONST_1, ICONST_2, ICONST_3, ICONST_4, ICONST_5 };
