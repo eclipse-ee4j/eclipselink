@@ -1,6 +1,6 @@
 @echo off
 setlocal
-call "%~dp0setenv.cmd"
+call "%~dp0../../bin/setenv.cmd"
 
 @REM User may increase Java memory setting(s) if desired:
 set JVM_ARGS=-Xmx256m
@@ -12,7 +12,7 @@ set THIS=%_FIXPATH:~1%
 
 set CLASSPATH=%THIS%\javax.servlet_2.4.0.v200806031604.jar
 set CLASSPATH=%CLASSPATH%;%THIS%\javax.wsdl_1.6.2.v201012040545.jar
-set CLASSPATH=%CLASSPATH%;%THIS%\org.eclipse.persistence.oracleddlparser_1.0.0.v20120530.jar
+set CLASSPATH=%CLASSPATH%;%THIS%\org.eclipse.persistence.oracleddlparser_1.0.0.v20120622.jar
 set CLASSPATH=%CLASSPATH%;%THIS%..\..\jlib\eclipselink.jar
 set CLASSPATH=%CLASSPATH%;%THIS%\eclipselink-dbwsutils.jar
 set CLASSPATH=%CLASSPATH%;%DRIVER_CLASSPATH%
