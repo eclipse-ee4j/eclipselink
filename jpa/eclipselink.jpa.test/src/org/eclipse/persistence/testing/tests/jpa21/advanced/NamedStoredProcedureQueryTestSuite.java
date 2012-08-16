@@ -14,6 +14,8 @@
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls       
  *     07/13/2012-2.5 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     08/24/2012-2.5 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa21.advanced;
 
@@ -434,8 +436,6 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
                 query.registerStoredProcedureParameter("old_p_code_v", String.class, ParameterMode.IN);
                 query.registerStoredProcedureParameter("employee_count_v", Integer.class, ParameterMode.OUT);
                 
-                beginTransaction(em);
-                
                 boolean result = query.setParameter("new_p_code_v", postalCodeCorrection).setParameter("old_p_code_v", postalCodeTypo).execute();
                 assertTrue("Result did not return true for a result set.", result);
                 
@@ -452,6 +452,9 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
                 // Get the update count.
                 int updateCount = query.getUpdateCount();
                 assertTrue("Update count incorrect: " + updateCount, updateCount == 2);
+                
+                // Update count should return -1 now.
+                assertTrue("Update count should be -1.", query.getUpdateCount() == -1);
                 
                 // Check output parameters by name.
                 // TODO: to investigate. This little bit is hacky. For some 
@@ -508,10 +511,6 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
                     // Expected, swallow.
                 }
                 
-                // This will commit all the changes and update the cache. Will
-                // also close all open calls from execute methods.
-                commitTransaction(em);
-                
                 // Just because we don't trust anyone ... :-)
                 Address a1 = em.find(Address.class, address1.getId());
                 assertTrue("The postal code was not updated for address 1.", a1.getPostalCode().equals(postalCodeCorrection));
@@ -528,6 +527,7 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
                 throw e;
             }
             
+            // The open statement/connection will be closed here.
             closeEntityManager(em);
         }
     }

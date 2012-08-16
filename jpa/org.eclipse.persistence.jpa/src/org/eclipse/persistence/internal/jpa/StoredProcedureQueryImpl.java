@@ -20,6 +20,8 @@
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *     07/13/2012-2.5 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     08/24/2012-2.5 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa;
 
@@ -43,9 +45,9 @@ import javax.persistence.QueryTimeoutException;
 import javax.persistence.StoredProcedureQuery;
 import javax.persistence.TemporalType;
 
+import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
-import org.eclipse.persistence.internal.jpa.transaction.EntityTransactionImpl;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.queries.DataReadQuery;
@@ -217,6 +219,32 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
         return hintQuery;
     }
     
+    /** 
+     * Call this method to close any open connections to the database.
+     */
+    @Override
+    public void close() {
+        DatabaseQuery query = executeCall.getQuery();
+        AbstractSession session = query.getSession();
+        DatabaseAccessor accessor = (DatabaseAccessor) query.getAccessor();
+
+        try {
+            if (! executeStatement.isClosed()) {
+                accessor.releaseStatement(executeStatement, query.getSQLString(), executeCall, session);
+            }
+        } catch (SQLException exception) {
+            // With an external connection pool the connection may be null 
+            // after this call, if it is we will be unable to determine if 
+            // it is a connection based exception so treat it as if it wasn't.
+            DatabaseException commException = accessor.processExceptionForCommError(session, exception, null);
+            if (commException != null) {
+                throw commException;
+            }
+
+            throw DatabaseException.sqlException(exception, executeCall, accessor, session, false);
+        }
+    }
+    
     /**
      * Returns true if the first result corresponds to a result set, and false 
      * if it is an update count or if there are no results other than through 
@@ -240,19 +268,24 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
         
             ResultSetMappingQuery query = (ResultSetMappingQuery) getDatabaseQueryInternal();
             query.setIsExecuteCall();
-            // TODO: new call. executeReadQuery does a number of things we likely do not care about?
             executeCall = (DatabaseCall) executeReadQuery();
             executeStatement = (CallableStatement) executeCall.getStatement();
             
-            // TODO:
-            // Add this call to be closed on commit.
+            // Add this query to the entity manager open queries list.
+            // The query will be closed in the following cases:
+            // Within a transaction:
+            //  - on commit
+            //  - on rollback
+            // Outside of a transaction:
+            //  - em close
+            // Other safeguards, we will close the query if/when 
+            //  - we hit the end of the results.
+            //  - this query is garbage collected (finalize method)
+            //
             // Deferring closing the call avoids having to go through all the 
             // results now (and building all the result objects) and things 
-            // remain on a as needed basis from the statement. However, adding 
-            // it to the transaction impl is what worries me ... might not be 
-            // the best solution ... valid within a container?
-
-            ((EntityTransactionImpl) entityManager.getTransaction()).addOpenCall(executeCall);
+            // remain on a as needed basis from the statement.
+            entityManager.addOpenQuery(this);
             
             return executeCall.getExecuteReturnValue();
         } catch (LockTimeoutException exception) {
@@ -261,6 +294,14 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             setRollbackOnly();
             throw exception;
         } 
+    }
+    
+    /**
+     * Finalize method in case the query is not closed.
+     */
+    @Override
+    public void finalize() {
+        close();
     }
     
     /**
@@ -282,8 +323,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             }
         }
 
-        // TODO: Query has not been executed ... throw exception?
-        return null;
+        throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa21_invalid_call_on_un_executed_query"));
     }
 
     /**
@@ -306,8 +346,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             }
         }
 
-        // TODO: Query has not been executed ... throw exception?
-        return null;
+        throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa21_invalid_call_on_un_executed_query"));
     }
     
     /**
@@ -316,38 +355,41 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
      */
     @Override
     public List getResultList() {
-        if (executeStatement == null) {
-            if (resultList == null) {
-                resultList = super.getResultList();
-            }
-        
-            if (resultList.get(0) instanceof List) {
-                return (List) resultList.remove(0);
+        try {
+            if (executeStatement == null) {
+                if (resultList == null) {
+                    resultList = super.getResultList();
+                }
+            
+                if (resultList.get(0) instanceof List) {
+                    return (List) resultList.remove(0);
+                } else {
+                    return resultList;
+                }
             } else {
-                return resultList;
-            }
-        } else {
-            try {
                 AbstractSession session = (AbstractSession) getActiveSession();
                 DatabaseAccessor accessor = (DatabaseAccessor) executeCall.getQuery().getAccessor();
                 ResultSet resultSet = executeStatement.getResultSet();
                 executeCall.setFields(null);
                 executeCall.matchFieldOrder(resultSet, accessor, session);
                 ResultSetMetaData metaData = resultSet.getMetaData();
-            
+                
                 List result =  new Vector();
                 while (resultSet.next()) {
                     result.add(accessor.fetchRow(executeCall.getFields(), executeCall.getFieldsArray(), resultSet, metaData, session));
                 }
-
+    
                 resultSet.close(); // This must be closed in case the statement is cached and not closed.
                 return ((ResultSetMappingQuery) executeCall.getQuery()).buildObjectsFromRecords(result, ++executeResultSetIndex);
-            } catch (SQLException e) {
-                setRollbackOnly();
-                // TODO: throw exception here.
-                return null;
-                //throw e;
             }
+        } catch (LockTimeoutException exception) {
+            throw exception;
+        } catch (RuntimeException exception) {
+            setRollbackOnly();
+            throw exception;
+        } catch (SQLException e) {
+            setRollbackOnly();
+            throw new RuntimeException(e);
         }
     }
     
@@ -366,7 +408,12 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     public int getUpdateCount() {
         if (executeStatement != null) {
             try {
-                return executeStatement.getUpdateCount();
+                int updateCount = executeStatement.getUpdateCount();
+                
+                // Move the result pointer up.
+                executeStatement.getMoreResults();
+                
+                return updateCount;
             } catch (SQLException e) {
                 e.printStackTrace();
             }

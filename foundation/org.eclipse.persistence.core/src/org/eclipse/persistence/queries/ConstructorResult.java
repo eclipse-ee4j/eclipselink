@@ -10,6 +10,8 @@
  * Contributors:
  *     02/08/2012-2.4 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     08/24/2012-2.5 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/  
 package org.eclipse.persistence.queries;
 
@@ -100,6 +102,11 @@ public class ConstructorResult extends SQLResult {
      */
     public void convertClassNamesToClasses(ClassLoader classLoader){
         super.convertClassNamesToClasses(classLoader);
+        
+        // Make sure the column results have been converted.
+        for (ColumnResult columnResult : columnResults) {
+            columnResult.convertClassNamesToClasses(classLoader);
+        }
         
         //no need to get the class if we already have it
         if (targetClass == null && targetClassName!=null) {

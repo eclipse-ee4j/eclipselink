@@ -13,11 +13,14 @@
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *     06/20/2012-2.5 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     08/24/2012-2.5 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
 import java.util.Map;
 
+import org.eclipse.persistence.internal.jpa.JPAQuery;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
@@ -121,8 +124,7 @@ public class NamedPLSQLStoredFunctionQueryMetadata extends NamedPLSQLStoredProce
         // Process the query hints.
         Map<String, Object> hints = processQueryHints(session);
 
-        org.eclipse.persistence.internal.jpa.JPAQuery query =
-                new org.eclipse.persistence.internal.jpa.JPAQuery(getName(), call, hints);
+        JPAQuery query = new JPAQuery(getName(), call, hints);
 
         // Process the result class.
         if (!getResultClass().isVoid()) {
@@ -130,6 +132,7 @@ public class NamedPLSQLStoredFunctionQueryMetadata extends NamedPLSQLStoredProce
         } else if (hasResultSetMapping(session)) {
             query.addResultSetMapping(getResultSetMapping());
         }
+        
         session.addJPAQuery(query);
     }
 

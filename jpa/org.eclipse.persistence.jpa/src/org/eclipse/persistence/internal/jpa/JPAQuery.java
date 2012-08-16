@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     08/01/2012-2.5 Chris Delahunt
  *       - 371950: Metadata caching 
+ *     08/24/2012-2.5 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa;
 
@@ -80,7 +82,6 @@ public class JPAQuery extends DatabaseQuery  {
      * SQL returning an entity
      */
     public JPAQuery(String queryName, String sqlString, Map<String, Object> hints) {
-        //this.resultClassName = resultClassName;
         this.name = queryName; 
         this.sqlString = sqlString;
         this.flushOnExecute = null;
@@ -92,7 +93,6 @@ public class JPAQuery extends DatabaseQuery  {
      * Stored Proc returning an Entity
      */
     public JPAQuery(String queryName, StoredProcedureCall call, Map<String, Object> hints) {
-        //this.resultClassName = resultClassName;
         this.name = queryName;
         this.call = call;
         this.flushOnExecute = null;
@@ -162,6 +162,11 @@ public class JPAQuery extends DatabaseQuery  {
         } else if (call!=null) {
             query = processStoredProcedureQuery(getSession());
         }
+        
+        // Make sure all class names have been converted.
+        ClassLoader loader = session.getDatasourcePlatform().getConversionManager().getLoader();
+        query.convertClassNamesToClasses(loader);
+        
         setDatabaseQuery(query);
     }
     

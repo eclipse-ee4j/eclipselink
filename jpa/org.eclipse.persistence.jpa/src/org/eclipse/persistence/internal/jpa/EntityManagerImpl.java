@@ -27,6 +27,8 @@
  *       - 376603: Provide for table per tenant support for multitenant applications
  *     06/20/2012-2.5 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     08/24/2012-2.5 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa;
 
@@ -138,6 +140,11 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      */
     protected Map<String, ConnectionPolicy> connectionPolicies;
 
+    /**
+     * Keep a list of openQueries that are executed in this entity manager.
+     */
+    protected List<QueryImpl> openQueries;
+    
     /**
      * Property to avoid resuming unit of work if going to be closed on commit
      * anyway.
@@ -289,6 +296,28 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         this((DatabaseSessionImpl) SessionManager.getManager().getSession(sessionName), null);
     }
 
+    
+    /**
+     * Queries that leave the connection and are executed against this entity
+     * manager will be added here. On rollback or commit any left over open 
+     * queries should be closed.
+     * 
+     * @param query
+     */
+    public void addOpenQuery(QueryImpl query) {
+        if (openQueries == null) {
+            openQueries = new ArrayList<QueryImpl>();
+        }
+        
+        openQueries.add(query);
+    	
+        // If there is an open transaction, tag the query to it to be closed
+        // on commite or rollback.
+        if (getTransaction() != null) {
+            ((EntityTransactionImpl) getTransaction()).addOpenQuery(query);
+        }
+    }
+    
     /**
      * Constructor called from the EntityManagerFactory to create an
      * EntityManager
@@ -1659,6 +1688,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     public void close() {
         try {
             verifyOpen();
+            closeOpenQueries();
             this.isOpen = false;
             this.factory = null;
             this.databaseSession = null;
@@ -1691,6 +1721,17 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         } catch (RuntimeException e) {
             setRollbackOnly();
             throw e;
+        }
+    }
+    
+    /**
+     * Close any open queries executed against this entity manager.
+     */
+    protected void closeOpenQueries() {
+        if (openQueries != null) {
+            for (QueryImpl openQuery : openQueries) {
+                openQuery.close();
+            }
         }
     }
 

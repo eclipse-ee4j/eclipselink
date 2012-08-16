@@ -18,6 +18,8 @@
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *     06/20/2012-2.5 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     08/24/2012-2.5 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa;
 
@@ -101,13 +103,21 @@ public class QueryImpl {
         this.entityManager = entityManager;
         this.isShared = true;
     }
-
+    
     /**
      * Create an EJBQueryImpl with a DatabaseQuery.
      */
     public QueryImpl(DatabaseQuery query, EntityManagerImpl entityManager) {
         this(entityManager);
         this.databaseQuery = query;
+    }
+    
+    /** 
+     * This method should be called to close any left over open connection to 
+     * the database (if there is one).
+     */
+    public void close() {
+        // Currently nothing to do at this level. Connections are not left open.
     }
     
     /**

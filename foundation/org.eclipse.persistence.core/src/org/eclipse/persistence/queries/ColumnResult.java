@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     08/24/2012-2.5 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/  
 package org.eclipse.persistence.queries;
 
@@ -44,6 +46,19 @@ public class ColumnResult extends SQLResult{
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("null_value_for_column_result"));
         }
         this.column = new DatabaseField(column);
+    }
+    
+    /**
+     * INTERNAL:
+     * Convert all the class-name-based settings in this query to actual 
+     * class-based settings. This method is used when converting a project that 
+     * has been built with class names to a project with classes.
+     * @param classLoader 
+     */
+    public void convertClassNamesToClasses(ClassLoader classLoader){
+        super.convertClassNamesToClasses(classLoader);
+        
+        column.convertClassNamesToClasses(classLoader);
     }
     
     public DatabaseField getColumn(){

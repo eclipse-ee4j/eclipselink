@@ -13,6 +13,8 @@
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *     07/13/2012-2.5 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     08/24/2012-2.5 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/  
 package org.eclipse.persistence.internal.localization.i18n;
 
@@ -188,7 +190,8 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "cannot_update_entity_fetch-group", "Attempt to add or remove attribute [{1}] to {0} - EntityFetchGroup object is immutable."},                                           
                                            { "cannot_get_unfetched_attribute", "Cannot get unfetched attribute [{1}] from detached object {0}."},
                                            { "jpa21_invalid_parameter_name", "Invalid output parameter name : {0}. {1}"},
-                                           { "jpa21_invalid_parameter_position", "Invalid output parameter position : {0}. {1}."}
+                                           { "jpa21_invalid_parameter_position", "Invalid output parameter position : {0}. {1}."},
+                                           { "jpa21_invalid_call_on_un_executed_query", "The query must be executed before calling this method."}
                                         };
     /**
      * Return the lookup table.

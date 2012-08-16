@@ -15,6 +15,8 @@
  *       - 345962: Join fetch query when using tenant discriminator column fails.
  *     07/13/2012-2.5 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     08/24/2012-2.5 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/  
 package org.eclipse.persistence.internal.databaseaccess;
 
@@ -70,7 +72,7 @@ public abstract class DatasourceCall implements Call {
     protected static final int RETURN_ONE_ROW = 2;
     protected static final int RETURN_MANY_ROWS = 3;
     protected static final int RETURN_CURSOR = 4;
-    protected static final int RETURN_EXECUTE = 5;
+    protected static final int EXECUTE_UPDATE = 5;
 
     public DatasourceCall() {
         this.isPrepared = false;
@@ -207,12 +209,19 @@ public abstract class DatasourceCall implements Call {
     public boolean isCursorReturned() {
         return this.returnType == RETURN_CURSOR;
     }
+    
+    /**
+     * Returns true if this call returns from a statement.execute call.
+     */
+    public boolean isExecuteUpdate() {
+        return this.returnType == EXECUTE_UPDATE;
+    }
 
     /**
      * Return whether all the results of the call have been returned.
      */
     public boolean isFinished() {
-        return !isCursorReturned();
+    	return !isCursorReturned() && !isExecuteUpdate();
     }
 
     /**
@@ -271,8 +280,8 @@ public abstract class DatasourceCall implements Call {
      * Indicates that this call will return a boolean value from an execute()
      * call.
      */
-    public void returnExecute() {
-        setReturnType(RETURN_EXECUTE);
+    public void setExecuteUpdate() {
+        setReturnType(EXECUTE_UPDATE);
     }
 
     /**

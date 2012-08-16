@@ -15,6 +15,8 @@
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *     07/13/2012-2.5 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     08/24/2012-2.5 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/  
 package org.eclipse.persistence.queries;
 
@@ -269,7 +271,7 @@ public class ResultSetMappingQuery extends ObjectBuildingQuery {
             setQueryId(getSession().getNextQueryId());
         }
 
-        if (getCall().isExecuteReturn()) {
+        if (getCall().isExecuteUpdate()) {
             DatabaseCall call = ((StoredProcedureCall) getQueryMechanism().execute());
             setExecutionTime(System.currentTimeMillis());
             return call;
