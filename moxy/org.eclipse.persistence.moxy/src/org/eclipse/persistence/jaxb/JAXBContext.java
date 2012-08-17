@@ -46,6 +46,7 @@ import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.jaxb.JAXBSchemaOutputResolver;
 import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
+import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelGenerator;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -1136,21 +1137,26 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         }
 
         private void updateResolverForFields(Collection fields, NamespaceResolver nr){
-        	Iterator fieldIter = fields.iterator();
-        	while(fieldIter.hasNext()){        	
-        	    XMLField field = (XMLField)fieldIter.next();        	
-			    String uri = field.getXPathFragment().getNamespaceURI(); 		
-			    if(uri != null && nr.resolveNamespaceURI(uri) == null && !uri.equals(nr.getDefaultNamespaceURI())){   
-				    String prefix = field.getXPathFragment().getPrefix();
-				    if(prefix == null){
-					    prefix = nr.generatePrefix();
-				    }
-			        nr.put(prefix, uri);				        					
-			    }	
-        	}
+            Iterator fieldIter = fields.iterator();
+            while (fieldIter.hasNext()) {
+                XMLField field = (XMLField) fieldIter.next();
+                XPathFragment currentFragment = field.getXPathFragment();
+
+                while (currentFragment != null) {
+                    String uri = currentFragment.getNamespaceURI();
+                    if (uri != null && nr.resolveNamespaceURI(uri) == null && !uri.equals(nr.getDefaultNamespaceURI())) {
+                        String prefix = currentFragment.getPrefix();
+                        if (prefix == null) {
+                            prefix = nr.generatePrefix();
+                        }
+                        nr.put(prefix, uri);
+                    }
+                    currentFragment = currentFragment.getNextFragment();
+                }
+            }
         }
-        
-        
+
+
         private HashMap<String, Class> getClassToGeneratedClasses() {
             return classToGeneratedClasses;
         }

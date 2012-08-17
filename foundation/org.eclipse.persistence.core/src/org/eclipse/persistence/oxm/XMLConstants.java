@@ -35,9 +35,10 @@ public class XMLConstants {
     public static final char COLON = ':';
     public static final char DOT = '.';	
     public static final Character ATTRIBUTE = '@';
+    public static final String XPATH_SEPARATOR = "/";
     public static final String TEXT = "text()";
     public static final String EMPTY_STRING = "";
-    public static final String CDATA= "CDATA";
+    public static final String CDATA = "CDATA";
     public static final String SCHEMA_PREFIX = "xsd";
     public static final String SCHEMA_URL = "http://www.w3.org/2001/XMLSchema";
     public static final String SCHEMA_INSTANCE_PREFIX = "xsi";

@@ -10,7 +10,9 @@
  * Contributors:
  *     Blaise Doughan - 2.3.3 - initial implementation
  ******************************************************************************/
-@XmlSchema(namespace="http://www.example.com/B", elementFormDefault=javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
+@XmlSchema(namespace="http://www.example.com/B", elementFormDefault=javax.xml.bind.annotation.XmlNsForm.QUALIFIED,
+    xmlns = {@javax.xml.bind.annotation.XmlNs(prefix="two", namespaceURI="twoURI")}
+)
 package org.eclipse.persistence.testing.jaxb.namespaceuri.twopackages.b;
 
 import javax.xml.bind.annotation.XmlNsForm;

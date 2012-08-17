@@ -29,6 +29,7 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.Map.Entry;
 import java.util.SortedSet;
+import java.util.StringTokenizer;
 import java.util.TreeSet;
 
 import javax.xml.bind.JAXBElement;
@@ -2545,12 +2546,49 @@ public class MappingsGenerator {
         return this.getXPathForField(property, namespaceInfo, isTextMapping, false);
     }
 
+    private String prefixCustomXPath(String unprefixedXPath, Property property, NamespaceInfo nsInfo) {
+        String newXPath = "";
+        QName schemaName = property.getSchemaName();
+        String namespace = schemaName.getNamespaceURI();
+
+        if (null == namespace || namespace.equals(XMLConstants.EMPTY_STRING)) {
+            return unprefixedXPath;
+        }
+
+        String prefix = getPrefixForNamespace(namespace, nsInfo.getNamespaceResolverForDescriptor(), null);
+        if (null == prefix) {
+            return unprefixedXPath;
+        }
+
+        StringTokenizer st = new StringTokenizer(unprefixedXPath, XMLConstants.XPATH_SEPARATOR);
+        while (st.hasMoreTokens()) {
+            String nextToken = st.nextToken();
+                
+            if (st.hasMoreTokens()) {
+                if (nextToken.lastIndexOf(XMLConstants.COLON) != -1) {
+                    // Token already has a user-supplied prefix
+                    newXPath += nextToken;
+                } else {
+                    newXPath += prefix + XMLConstants.COLON + nextToken;
+                }
+                newXPath += XMLConstants.XPATH_SEPARATOR;
+            } else {
+                // Last token is text()
+                newXPath += nextToken;
+            }
+
+        }
+        return newXPath;
+    }
+    
     public XMLField getXPathForField(Property property, NamespaceInfo namespaceInfo, boolean isTextMapping, boolean isAny) {
         XMLField xmlField = null;
-        if (property.getXmlPath() != null) {
-            xmlField = new XMLField(property.getXmlPath());
+        String xPath = property.getXmlPath();
+        if (null != xPath) {
+            String newXPath = prefixCustomXPath(xPath, property, namespaceInfo);
+            xmlField = new XMLField(newXPath);
         } else {
-            String xPath = "";
+            xPath = "";
             if (property.isSetXmlElementWrapper()) {
                 XmlElementWrapper wrapper = property.getXmlElementWrapper();
                 String namespace = wrapper.getNamespace();
