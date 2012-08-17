@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ns0:a xmlns:ns0="http://www.example.com/A" xmlns="http://www.example.com/B">
-    <b>
-        <c>C</c>
-    </b>
+<ns0:a xmlns="http://www.example.com/B" xmlns:two="twoURI" xmlns:ns0="http://www.example.com/A" xmlns:one="oneURI">
+   <b>
+      <one>
+         <two:three>C</two:three>
+      </one>
+   </b>
 </ns0:a>

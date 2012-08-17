@@ -12,10 +12,13 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.namespaceuri.twopackages.b;
 
+import org.eclipse.persistence.oxm.annotations.XmlPath;
+
 public class B {
 
     private String c;
 
+    @XmlPath("one/two:three/text()")
     public String getC() {
         return c;
     }
