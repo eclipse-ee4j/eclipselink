@@ -9,7 +9,7 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *  -Matt MacIvor - Inital Implementation - 2.4.1
+ *  -Matt MacIvor - Initial Implementation - 2.4.1
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.inheritance.interfaces;
 
