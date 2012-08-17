@@ -2693,6 +2693,11 @@ public class AnnotationsProcessor {
                 JavaClass[] paramTypes = { (JavaClass) getMethod.getReturnType() };
                 setMethod = cls.getDeclaredMethod(setMethodName, paramTypes);
 
+                if(setMethod == null) {
+                    //if there's no locally declared set method, check for an inherited 
+                    //set method
+                    setMethod = cls.getMethod(setMethodName, paramTypes);
+                }
                 if(setMethod == null && !(hasJAXBAnnotations(getMethod))) {
                     //if there's no corresponding setter, and not explicitly
                     //annotated, don't process
@@ -2746,6 +2751,14 @@ public class AnnotationsProcessor {
                     getMethod = cls.getDeclaredMethod(getMethodName, new JavaClass[] {});                 
                 }
 
+                //may look for get method on parent class
+                if(getMethod == null) {
+                    //look for inherited getMethod
+                    getMethod = cls.getMethod(GET_STR + propertyName, new JavaClass[]{});
+                    if(getMethod == null) {
+                        getMethod = cls.getMethod(IS_STR + propertyName, new JavaClass[]{});
+                    }
+                }
                 if(getMethod == null && !(hasJAXBAnnotations(setMethod))) {
                     isPropertyTransient = true;
                 }
