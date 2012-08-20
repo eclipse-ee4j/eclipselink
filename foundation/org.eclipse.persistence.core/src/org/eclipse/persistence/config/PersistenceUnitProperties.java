@@ -1061,7 +1061,7 @@ public class PersistenceUnitProperties {
      * @see SessionLog#CACHE
      * @see SessionLog#PROPAGATION
      * @see SessionLog#SEQUENCING
-     * @see SessionLog#EJB_OR_METADATA
+     * @see SessionLog#METADATA
      * @see SessionLog#METAMODEL
      * @see SessionLog#WEAVER
      * @see SessionLog#PROPERTIES

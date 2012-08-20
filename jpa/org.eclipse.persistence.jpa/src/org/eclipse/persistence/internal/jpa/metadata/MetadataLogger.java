@@ -385,7 +385,7 @@ public class MetadataLogger {
      * Logging utility method.
      */
     public void log(int level, String ctx, Object[] params) {
-        m_session.log(level, SessionLog.EJB_OR_METADATA, getLoggingContextString(ctx), params);
+        m_session.log(level, SessionLog.METADATA, getLoggingContextString(ctx), params);
     }
     
     /**

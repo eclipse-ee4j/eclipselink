@@ -653,7 +653,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 try {
                     customizer.customize(descriptor);
                 } catch (Exception e) {
-                    session.getSessionLog().logThrowable(SessionLog.FINER, SessionLog.EJB_OR_METADATA, e);
+                    session.getSessionLog().logThrowable(SessionLog.FINER, SessionLog.METADATA, e);
                 }
             }
         }

@@ -61,7 +61,9 @@ public class EntityManagerFactoryProvider {
         {PersistenceUnitProperties.JDBC_DRIVER ,"eclipselink.jdbc.driver"},
         {PersistenceUnitProperties.JDBC_URL , "eclipselink.jdbc.url"},
         {PersistenceUnitProperties.JDBC_PASSWORD , "eclipselink.jdbc.password"},
-        {PersistenceUnitProperties.WEAVING , "persistence.tools.weaving"}
+        {PersistenceUnitProperties.WEAVING , "persistence.tools.weaving"},
+        {PersistenceUnitProperties.LOGGING_LEVEL + "." + SessionLog.METAMODEL, PersistenceUnitProperties.LOGGING_LEVEL + ".jpa_" + SessionLog.METAMODEL},
+        {PersistenceUnitProperties.LOGGING_LEVEL + "." + SessionLog.METADATA, PersistenceUnitProperties.LOGGING_LEVEL + ".ejb_or_" + SessionLog.METADATA}
     };
 
     /**

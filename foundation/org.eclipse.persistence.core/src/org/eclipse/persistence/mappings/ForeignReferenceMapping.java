@@ -1979,7 +1979,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             Object[] args = new Object[2];
             args[0] = getAttributeName();
             args[1] = getDescriptor().getJavaClass();
-            session.log(SessionLog.WARNING, SessionLog.EJB_OR_METADATA, "metadata_warning_ignore_lazy", args);
+            session.log(SessionLog.WARNING, SessionLog.METADATA, "metadata_warning_ignore_lazy", args);
             setIndirectionPolicy(new NoIndirectionPolicy());
         }
         
