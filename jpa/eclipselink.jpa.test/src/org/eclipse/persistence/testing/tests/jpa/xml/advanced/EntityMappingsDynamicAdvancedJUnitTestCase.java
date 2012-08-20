@@ -21,6 +21,8 @@
  *       - 317708: Exception thrown when using LAZY fetch on VIRTUAL mapping
  *     11/17/2010-2.2 Guy Pelletier 
  *       - 329008: Support dynamic context creation without persistence.xml
+ *     08/20/2012-2.4 Guy Pelletier 
+ *       - 381079: EclipseLink dynamic entity does not support embedded-id
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.xml.advanced;
 
@@ -58,6 +60,7 @@ import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
 
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.dynamic.DynamicTableCreator;
+import org.eclipse.persistence.testing.models.jpa.xml.advanced.dynamic.DynamicWalkerPK;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.dynamic.MyDynamicEntity;
 import org.eclipse.persistence.testing.models.jpa.xml.advanced.dynamic.AdvancedDynamicTableCreator;
 
@@ -238,6 +241,7 @@ public class EntityMappingsDynamicAdvancedJUnitTestCase extends JUnitTestCase {
         suite.addTest(new EntityMappingsDynamicAdvancedJUnitTestCase("testDynamicWithNoPersistenceXML"));
         
         suite.addTest(new EntityMappingsDynamicAdvancedJUnitTestCase("testDynamicEmbeddedId"));
+        suite.addTest(new EntityMappingsDynamicAdvancedJUnitTestCase("testDynamicCompositeId"));
         
         return suite;
     }
@@ -846,6 +850,45 @@ public class EntityMappingsDynamicAdvancedJUnitTestCase extends JUnitTestCase {
             }
             
             throw e;
+        } finally {
+            closeEntityManager(em);
+        }
+    }
+    
+    /**
+     * Test create and read of dynamic entity using an embedded id.
+     */
+    public void testDynamicCompositeId() {
+        EntityManager em = createDynamicPUEntityManager();
+        JPADynamicHelper helper = new JPADynamicHelper(em);
+        
+        try {
+            beginTransaction(em);
+            
+            DynamicEntity walker = helper.newDynamicEntity("DynamicWalker");
+            walker.set("name", "Sam");
+            walker.set("style", "Speed");
+            
+            em.persist(walker);
+            commitTransaction(em);
+            
+            clearDynamicPUCache();
+            em.clear();
+            
+            // Re-read the walker and see if an exception occurs.
+            DynamicWalkerPK pk = new DynamicWalkerPK();
+            pk.setId( (Integer) walker.get("id"));
+            pk.setStyle((String) walker.get("style"));
+            DynamicEntity w = (DynamicEntity) em.find(helper.getType("DynamicWalker").getJavaClass(), pk);
+            //assertTrue("Runner didn't match after create", getDynamicPUServerSession().compareObjects(r, runner));
+            //assertNotNull("The walker was not found", w);
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            
+            fail("Error occurred reading the walker with composite id" + e);
+            //throw e;
         } finally {
             closeEntityManager(em);
         }

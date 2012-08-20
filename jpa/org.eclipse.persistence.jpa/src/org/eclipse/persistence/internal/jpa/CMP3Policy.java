@@ -21,6 +21,8 @@
  *       - 357474: Address primaryKey option from tenant discriminator column
  *     14/05/2012-2.4 Guy Pelletier   
  *       - 376603: Provide for table per tenant support for multitenant applications
+ *     08/20/2012-2.4 Guy Pelletier 
+ *       - 381079: EclipseLink dynamic entity does not support embedded-id
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa;
 
@@ -452,59 +454,62 @@ public class CMP3Policy extends CMPPolicy {
                             }
                         }
 
-                        if (mapping.getAttributeAccessor().isValuesAccessor()) {
-                        	pkAttributes[i] = new ValuesFieldAccessor(fieldName, field, mapping, currentKeyClass != keyClass);
-                        } else {
-	                        try {
-	                        	pkAttributes[i] = new FieldAccessor(getField(currentKeyClass, fieldName), fieldName, field, mapping, currentKeyClass != keyClass);
-	                            fieldToAccessorMap.put(field, pkAttributes[i]);
-	                            noSuchElementException = null;
-	                        } catch (NoSuchFieldException ex) {
-	                            String getMethodName = null; 
-	                            String setMethodName = null; 
-	                            if(mapping.isObjectReferenceMapping() && ((ObjectReferenceMapping)mapping).getIndirectionPolicy().isWeavedObjectBasicIndirectionPolicy()) {
-	                                WeavedObjectBasicIndirectionPolicy weavedIndirectionPolicy = (WeavedObjectBasicIndirectionPolicy)((ObjectReferenceMapping)mapping).getIndirectionPolicy();
-	                                if (weavedIndirectionPolicy.hasUsedMethodAccess()) {
-	                                    getMethodName = weavedIndirectionPolicy.getGetMethodName();
-	                                    setMethodName = weavedIndirectionPolicy.getSetMethodName();
-	                                }
-	                            } else {
-	                                getMethodName = mapping.getGetMethodName(); 
-	                                setMethodName = mapping.getSetMethodName(); 
+	                    try {
+	                    	pkAttributes[i] = new FieldAccessor(getField(currentKeyClass, fieldName), fieldName, field, mapping, currentKeyClass != keyClass);
+	                        fieldToAccessorMap.put(field, pkAttributes[i]);
+	                        noSuchElementException = null;
+	                    } catch (NoSuchFieldException ex) {
+	                    	String getMethodName = null; 
+	                        String setMethodName = null; 
+	                        if(mapping.isObjectReferenceMapping() && ((ObjectReferenceMapping)mapping).getIndirectionPolicy().isWeavedObjectBasicIndirectionPolicy()) {
+	                        	WeavedObjectBasicIndirectionPolicy weavedIndirectionPolicy = (WeavedObjectBasicIndirectionPolicy)((ObjectReferenceMapping)mapping).getIndirectionPolicy();
+	                            if (weavedIndirectionPolicy.hasUsedMethodAccess()) {
+	                            	getMethodName = weavedIndirectionPolicy.getGetMethodName();
+	                                setMethodName = weavedIndirectionPolicy.getSetMethodName();
 	                            }
-	                            if (getMethodName != null) {
-	                                // Must be a property.
-	                                try {
-	                                    Method getMethod = null;
-	                                    if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-	                                        try {
-	                                            getMethod = AccessController.doPrivileged(new PrivilegedGetMethod(currentKeyClass, getMethodName, new Class[] {}, true));
-	                                        } catch (PrivilegedActionException exception) {
-	                                            throw (NoSuchMethodException)exception.getException();
-	                                        }
-	                                    } else {
-	                                        getMethod = PrivilegedAccessHelper.getMethod(currentKeyClass, getMethodName, new Class[] {}, true);
+	                        } else {
+	                        	getMethodName = mapping.getGetMethodName(); 
+	                            setMethodName = mapping.getSetMethodName(); 
+	                        }
+	                        if (getMethodName != null) {
+	                        	// Must be a property.
+	                            try {
+	                            	Method getMethod = null;
+	                                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+	                                	try {
+	                                		getMethod = AccessController.doPrivileged(new PrivilegedGetMethod(currentKeyClass, getMethodName, new Class[] {}, true));
+	                                	} catch (PrivilegedActionException exception) {
+	                                		throw (NoSuchMethodException)exception.getException();
 	                                    }
-	                                    Method setMethod = null;
-	                                    if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-	                                        try {
-	                                            setMethod = AccessController.doPrivileged(new PrivilegedGetMethod(currentKeyClass, setMethodName, new Class[] {getMethod.getReturnType()}, true));
-	                                        } catch (PrivilegedActionException exception) {
-	                                            throw (NoSuchMethodException)exception.getException();
-	                                        }
-	                                    } else {
-	                                        setMethod = PrivilegedAccessHelper.getMethod(currentKeyClass, setMethodName, new Class[] {getMethod.getReturnType()}, true);
-	                                    }
-	                                    pkAttributes[i] = new PropertyAccessor(getMethod, setMethod, fieldName, field, mapping, currentKeyClass != keyClass);
-	                                    this.fieldToAccessorMap.put(field, pkAttributes[i]);
-	                                    noSuchElementException = null;
-	                                } catch (NoSuchMethodException exs) {
-	                                    // not a field not a method, but a pk class is defined.  Check for other mappings
-	                                    noSuchElementException = exs;
+	                                } else {
+	                                	getMethod = PrivilegedAccessHelper.getMethod(currentKeyClass, getMethodName, new Class[] {}, true);
 	                                }
-	                            } else {
-	                                noSuchElementException = ex;
+	                                Method setMethod = null;
+	                                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+	                                	try {
+	                                		setMethod = AccessController.doPrivileged(new PrivilegedGetMethod(currentKeyClass, setMethodName, new Class[] {getMethod.getReturnType()}, true));
+	                                	} catch (PrivilegedActionException exception) {
+	                                		throw (NoSuchMethodException)exception.getException();
+	                                    }
+	                                } else {
+	                                	setMethod = PrivilegedAccessHelper.getMethod(currentKeyClass, setMethodName, new Class[] {getMethod.getReturnType()}, true);
+	                                }
+	                                pkAttributes[i] = new PropertyAccessor(getMethod, setMethod, fieldName, field, mapping, currentKeyClass != keyClass);
+	                                this.fieldToAccessorMap.put(field, pkAttributes[i]);
+	                                noSuchElementException = null;
+	                            } catch (NoSuchMethodException exs) {
+	                            	// not a field not a method, but a pk class is defined.  Check for other mappings
+	                                noSuchElementException = exs;
 	                            }
+	                        } else {
+	                        	noSuchElementException = ex;
+	                        }
+
+ 	                        // If we can't load the field or methods and the attribute accessor is a values
+	                        // accessor then we're dealing with a dynamic entity.
+	                        if (noSuchElementException != null && mapping.getAttributeAccessor().isValuesAccessor()) {
+	                        	pkAttributes[i] = new ValuesFieldAccessor(fieldName, field, mapping, currentKeyClass != keyClass);
+	                        	noSuchElementException = null;
 	                        }
                         }
                     }
