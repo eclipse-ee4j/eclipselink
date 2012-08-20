@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.eclipse.jdt.junit.launchconfig">
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
+<listEntry value="/eclipselink.dbws.builder.test.oracle.server/src/dbws/testing/AllServiceTests.java"/>
+</listAttribute>
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
+<listEntry value="1"/>
+</listAttribute>
+<stringAttribute key="org.eclipse.jdt.junit.CONTAINER" value=""/>
+<booleanAttribute key="org.eclipse.jdt.junit.KEEPRUNNING_ATTR" value="false"/>
+<stringAttribute key="org.eclipse.jdt.junit.TESTNAME" value=""/>
+<stringAttribute key="org.eclipse.jdt.junit.TEST_KIND" value="org.eclipse.jdt.junit.loader.junit4"/>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="dbws.testing.AllServiceTests"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="eclipselink.dbws.builder.test.oracle.server"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Ddb.user=${db.oracle.user} -Ddb.pwd=${db.oracle.pwd} -Ddb.url=${db.oracle.url} -Ddb.platform=${db.oracle.platform} -Ddb.driver=${db.oracle.driver} -Ddb.ddl.create=${db.ddl.create} -Ddb.ddl.drop=${db.ddl.drop} -Ddb.ddl.debug=${db.ddl.debug} -Dserver.host=${server.host} -Dserver.port=${server.port} -Dserver.platform=${server.platform} -Dserver.datasource=${server.datasource}"/>
+</launchConfiguration>

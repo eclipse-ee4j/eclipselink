@@ -13,5 +13,5 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.oracleddlparser"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.dbws"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.dbws.builder"/>
-	<classpathentry kind="output" path="classes"/>
+	<classpathentry kind="output" path="classes"/> 
 </classpath>
