@@ -10,6 +10,8 @@
  * Contributors:
  *     07/05/2010-2.1.1 Guy Pelletier 
  *       - 317708: Exception thrown when using LAZY fetch on VIRTUAL mapping
+ *     08/20/2012-2.4 Guy Pelletier 
+ *       - 381079: EclipseLink dynamic entity does not support embedded-id
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.xml.advanced.dynamic;
 
@@ -38,6 +40,7 @@ public class AdvancedDynamicTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildSHOVELPROJECTTable());
         addTableDefinition(buildSHOVELPROJECTSTable());
         addTableDefinition(buildRUNNERTable());
+        addTableDefinition(buildWALKERTable());
     }
     
     public static TableDefinition buildADDRESSTable() {
@@ -834,6 +837,43 @@ public class AdvancedDynamicTableCreator extends TogglingFastTableCreator {
         fieldWORLDRANK.setUnique(false);
         fieldWORLDRANK.setIsIdentity(false);
         table.addField(fieldWORLDRANK);
+    
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("NAME");
+        fieldNAME.setTypeName("VARCHAR");
+        fieldNAME.setSize(40);
+        fieldNAME.setShouldAllowNull(true);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setIsIdentity(false);
+        table.addField(fieldNAME);
+        
+        return table;
+    }
+    
+    public static TableDefinition buildWALKERTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("DYNAMIC_WALKER");
+    
+        FieldDefinition fieldBIB = new FieldDefinition();
+        fieldBIB.setName("ID");
+        fieldBIB.setTypeName("NUMERIC");
+        fieldBIB.setSize(15);
+        fieldBIB.setShouldAllowNull(false);
+        fieldBIB.setIsPrimaryKey(true);
+        fieldBIB.setUnique(false);
+        fieldBIB.setIsIdentity(false);
+        table.addField(fieldBIB);
+    
+        FieldDefinition fieldSTYLE = new FieldDefinition();
+        fieldSTYLE.setName("STYLE");
+        fieldSTYLE.setTypeName("VARCHAR");
+        fieldSTYLE.setSize(40);
+        fieldSTYLE.setShouldAllowNull(false);
+        fieldSTYLE.setIsPrimaryKey(true);
+        fieldSTYLE.setUnique(false);
+        fieldSTYLE.setIsIdentity(false);
+        table.addField(fieldSTYLE);
     
         FieldDefinition fieldNAME = new FieldDefinition();
         fieldNAME.setName("NAME");
