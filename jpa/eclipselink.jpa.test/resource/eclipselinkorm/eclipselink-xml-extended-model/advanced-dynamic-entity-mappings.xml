@@ -368,6 +368,19 @@
         </attributes>
     </entity>
     
+   	<entity name="DynamicWalker" class="Walker">
+    	<table name="DYNAMIC_WALKER"/>
+    	<id-class class="DynamicWalkerPK"/>
+		<attributes>
+		    <id name="id" attribute-type="Integer">
+                <column name="ID"/>
+                <generated-value/>
+            </id>
+            <id name="style" attribute-type="java.lang.String" />
+			<basic name="name" attribute-type="java.lang.String"/>
+		</attributes>
+	</entity>
+	
     <entity name="DynamicRunner" class="Runner">
     	<table name="DYNAMIC_RUNNER"/>
 		<attributes>
