@@ -93,7 +93,11 @@ public class DomToXMLStreamWriter {
                         xsw.writeNamespace(next.getLocalName(), next.getValue());
                     }
                 } else {
-                    nonNamespaceDeclAttrs.add(attribute);
+                    // Bug 387464 - Do not add default namespace attribute if repairing namespaces is true.
+                    if (!next.getName().equals(XMLConstants.XMLNS) || 
+                            !((Boolean)xsw.getProperty(javax.xml.stream.XMLOutputFactory.IS_REPAIRING_NAMESPACES)).booleanValue()) {
+                        nonNamespaceDeclAttrs.add(attribute);
+                    }
                 }
             }
         }

@@ -12,16 +12,22 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.stax;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.io.StringWriter;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Marshaller;
 import javax.xml.namespace.QName;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import junit.framework.TestCase;
 
@@ -52,5 +58,48 @@ public class XMLStreamWriterDefaultNamespaceTestCases extends TestCase {
         }
 
     }
+    
+    /**
+     * Testcase for Bug 387464
+     */
+    public void testDuplicateDefaultNamespace() throws Exception {
+        String testXmlData = "<child xmlns=\"someDefaultNameSpace\" xmlns:bi=\"definedBINameSpace\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">Test</child>";
+        EmployeeLax employeeLax = createEmployeeLax(testXmlData);
+        JAXBContext ctx = JAXBContextFactory.createContext(new Class[]{EmployeeLax.class}, null);
 
+        StringWriter writer = new StringWriter();
+        XMLOutputFactory factory = XMLOutputFactory.newInstance();
+
+        // Set IS_REPAIRING_NAMESPACES to true.
+        factory.setProperty(factory.IS_REPAIRING_NAMESPACES, new Boolean(true));
+
+        XMLStreamWriter streamWriter = factory.createXMLStreamWriter(writer);
+
+        Marshaller marshaller = ctx.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        marshaller.marshal(employeeLax, streamWriter);
+        
+        // Flush the contents of stream writer.
+        streamWriter.flush();
+        
+        String xml = "<?xml version=\"1.0\"?><employee xmlns=\"\">" + testXmlData + "</employee>";
+        String writerString = writer.toString();
+        
+        assertTrue("Incorrect XML: " + writerString, writerString.equals(xml));
+    }
+
+    protected EmployeeLax createEmployeeLax(String testXmlData) throws Exception {
+        EmployeeLax employeeLax = new ObjectFactory().createEmployeeLax();
+        Element childElement = parseXml(new ByteArrayInputStream(testXmlData.getBytes()));
+        employeeLax.setChild(childElement);
+        
+        return employeeLax;
+    }
+    
+    protected static Element parseXml(InputStream in) throws Exception {
+       DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
+       DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
+       Document xmlDocument = docBuilder.parse(in);
+       return xmlDocument.getDocumentElement();
+   }
 }
