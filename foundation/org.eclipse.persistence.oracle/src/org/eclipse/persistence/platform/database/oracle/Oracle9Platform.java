@@ -19,7 +19,6 @@ import java.io.Writer;
 import java.lang.reflect.Constructor;
 import java.security.AccessController;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -93,6 +92,11 @@ public class Oracle9Platform extends Oracle8Platform {
      * true for version 11.2.0.2 or later.
      */
     protected transient boolean isLtzTimestampInGmt;
+    /* Indicates whether time component of java.sql.Date should be truncated (hours, minutes, seconds all set to zero)
+     * before been passed as a parameter to PreparedStatement. 
+     * true for version 12.1 or later.
+     */
+    protected transient boolean shouldTruncateDate;
     /* Indicates whether driverVersion, shouldPrintCalendar, isTimestampInGmt have been initialized.
      * To re-initialize connection data call clearConnectionData method. 
      */
@@ -419,16 +423,19 @@ public class Oracle9Platform extends Oracle8Platform {
         this.driverVersion = connection.getMetaData().getDriverVersion();
         // printCalendar for versions greater or equal 9 and less than 10.2.0.4
         this.shouldPrintCalendar = Helper.compareVersions("9", this.driverVersion) <= 0 && Helper.compareVersions(this.driverVersion, "10.2.0.4") < 0;
-        if(Helper.compareVersions(this.driverVersion, "11.1.0.7") < 0) {
-            this.isTimestampInGmt = false;
-        } else {
+        if( Helper.compareVersions(this.driverVersion, "11.1.0.7") >= 0) {
             if(connection instanceof OracleConnection) {
                 String timestampTzInGmtPropStr = ((OracleConnection)connection).getProperties().getProperty("oracle.jdbc.timestampTzInGmt", "true");
                 this.isTimestampInGmt = timestampTzInGmtPropStr.equalsIgnoreCase("true");
             } else {
                 this.isTimestampInGmt = true;
             }
-            this.isLtzTimestampInGmt = Helper.compareVersions(this.driverVersion, "11.2.0.2") >= 0;
+            if (Helper.compareVersions(this.driverVersion, "11.2.0.2") >= 0) {
+                this.isLtzTimestampInGmt = true;
+                if (Helper.compareVersions(this.driverVersion, "12.1") >= 0) {
+                    this.shouldTruncateDate = true;
+                }
+            }
         }
         this.isConnectionDataInitialized = true;
     }
@@ -474,6 +481,9 @@ public class Oracle9Platform extends Oracle8Platform {
             Connection conn = getConnection(session, statement.getConnection());
             TIMESTAMPTZ tsTZ = TIMESTAMPHelper.buildTIMESTAMPTZ(calendar, conn, this.shouldPrintCalendar);
             statement.setObject(index, tsTZ);
+        } else if (this.shouldTruncateDate && parameter instanceof java.sql.Date) {
+            // hours, minutes, seconds all set to zero
+            statement.setDate(index, Helper.truncateDate((java.sql.Date)parameter));
         } else {
             super.setParameterValueInDatabaseCall(parameter, statement, index, session);
         }
@@ -844,5 +854,15 @@ public class Oracle9Platform extends Oracle8Platform {
      */
     public boolean isLtzTimestampInGmt() {
         return isLtzTimestampInGmt;
+    }
+
+    /**
+     * INTERNAL:
+     * Indicates whether time component of java.sql.Date should be truncated (hours, minutes, seconds all set to zero)
+     * before been passed as a parameter to PreparedStatement. 
+     * true for version 12.1 or later.
+     */
+    public boolean shouldTruncateDate() {
+        return shouldTruncateDate;
     }
 }

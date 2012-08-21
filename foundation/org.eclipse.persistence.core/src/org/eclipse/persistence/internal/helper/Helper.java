@@ -1696,6 +1696,23 @@ public class Helper implements Serializable {
         }
         return dateFromYearMonthDate(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE));
     }
+    
+    /**
+     * Return a sql.Date with time component zeroed out.
+     */
+    public static java.sql.Date truncateDate(java.sql.Date date) {
+        // PERF: Avoid deprecated get methods, that are now very inefficient.
+        Calendar calendar = allocateCalendar();
+        calendar.setTime(date);
+        if ((calendar.get(Calendar.HOUR_OF_DAY) != 0)
+                || (calendar.get(Calendar.MINUTE) != 0)
+                || (calendar.get(Calendar.SECOND) != 0)
+                || (calendar.get(Calendar.MILLISECOND) != 0)) {
+            date = dateFromYearMonthDate(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE)); 
+        }
+        releaseCalendar(calendar);
+        return date;
+    }
 
     /**
      * Can be used to mark code if a workaround is added for a JDBC driver or other bug.
