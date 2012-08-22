@@ -51,7 +51,15 @@ public class DefaultSchemaResolver implements SchemaResolver {
             String baseLoc = getBaseSchemaLocation();
             if (baseLoc == null) {
                 // No base location, use schema location
-                schemaUrl = new URI(schemaLocation).toURL();
+
+                URI schemaUri = new URI(schemaLocation);
+                if(!(schemaUri.isAbsolute()) && sourceXSD.getSystemId() != null) {
+                    baseLoc = sourceXSD.getSystemId();
+                    schemaUrl = new URI(baseLoc).resolve(schemaUri).toURL();
+                } else {
+                    // No base location, use schema location
+                    schemaUrl = new URI(schemaLocation).toURL();
+                }
             } else {
                 // May need to resolve against the base location
                 URI schemaUri = new URI(schemaLocation);
