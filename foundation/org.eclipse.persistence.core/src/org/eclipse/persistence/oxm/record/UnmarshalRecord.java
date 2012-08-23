@@ -513,18 +513,23 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
                 }
             }
 
+            Object parentRecordCurrentObject = null;
+            if (null != this.parentRecord) {
+                parentRecordCurrentObject = parentRecord.getCurrentObject();
+            }
+            
             XMLUnmarshalListener xmlUnmarshalListener = unmarshaller.getUnmarshalListener();
             if (null != xmlUnmarshalListener) {
                 if (null == this.parentRecord) {
                     xmlUnmarshalListener.beforeUnmarshal(currentObject, null);
                 } else {
-                    xmlUnmarshalListener.beforeUnmarshal(currentObject, parentRecord.getCurrentObject());
+                    xmlUnmarshalListener.beforeUnmarshal(currentObject, parentRecordCurrentObject);
                 }
             }
             if (null == parentRecord) {
                 this.xmlReader.newObjectEvent(currentObject, null, selfRecordMapping);
             } else {
-                this.xmlReader.newObjectEvent(currentObject, parentRecord.getCurrentObject(), selfRecordMapping);
+                this.xmlReader.newObjectEvent(currentObject, parentRecordCurrentObject, selfRecordMapping);
             }
             List containerValues = treeObjectBuilder.getContainerValues();
             if (null != containerValues) {
