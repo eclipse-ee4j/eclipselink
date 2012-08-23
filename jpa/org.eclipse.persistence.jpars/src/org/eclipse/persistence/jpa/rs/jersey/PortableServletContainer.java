@@ -32,8 +32,8 @@ import org.eclipse.persistence.jpa.rs.logging.LoggingLocalization;
 
 /**
  * Jersey Servlet/Filter class that can be referenced in web.xml instead of Jersey 1.x specific
- * {@link com.sun.jersey.spi.container.servlet.ServletContainer} and Jersey 2.x specific
- * {@link org.glassfish.jersey.servlet.ServletContainer} to enable web application portability between
+ * com.sun.jersey.spi.container.servlet.ServletContainer and Jersey 2.x specific
+ * org.glassfish.jersey.servlet.ServletContainer to enable web application portability between
  * Jersey 1.x and Jersey 2.x servlet containers.
  * <p>
  *     Since for some of the {@link org.glassfish.jersey.servlet.ServletProperties servlet init parameters} that can be
