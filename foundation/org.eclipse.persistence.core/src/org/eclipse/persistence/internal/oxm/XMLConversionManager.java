@@ -153,7 +153,7 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
     public Object convertObject(Object sourceObject, Class javaClass) throws ConversionException {
         if (sourceObject == null) {//Let the parent handle default null values
             return super.convertObject(sourceObject, javaClass);
-        } else if ((sourceObject.getClass() == javaClass) || (javaClass == null) || (javaClass == ClassConstants.OBJECT)) {
+        } else if (javaClass == null || javaClass == ClassConstants.OBJECT || sourceObject.getClass() == javaClass) {
             return sourceObject;
         } else if (javaClass == ClassConstants.STRING) {
            if(sourceObject instanceof List){
