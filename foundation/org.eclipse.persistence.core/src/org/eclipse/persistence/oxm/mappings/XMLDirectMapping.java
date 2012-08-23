@@ -395,7 +395,7 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
             if(value == XMLRecord.noEntry) {
                 return;                    
             }
-            if(value != null && value.getClass() == ClassConstants.STRING) {
+            if (value != null && value instanceof String) {
                 if(isCollapsingStringValues) {
                     value = XMLConversionManager.getDefaultXMLManager().collapseStringValue((String)value);
                 } else if(isNormalizingStringValues) {

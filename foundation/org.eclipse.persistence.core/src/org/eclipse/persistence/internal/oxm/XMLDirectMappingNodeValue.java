@@ -166,17 +166,19 @@ public class XMLDirectMappingNodeValue extends MappingNodeValue implements NullC
             return;
         }
         Object value;
-        if(unmarshalRecord.getCharacters().length() == 0) {
-            value = this.getMapping().getNullValue();
+        CharSequence unmarshalRecordCharacters = unmarshalRecord.getCharacters();
+        if (unmarshalRecordCharacters.length() == 0) {
+            value = xmlDirectMapping.getNullValue();
         } else {
-            value = unmarshalRecord.getCharacters().toString();
+            value = unmarshalRecordCharacters.toString();
         }
         unmarshalRecord.resetStringBuffer();
         AbstractSession session = unmarshalRecord.getSession();
         XMLConversionManager xmlConversionManager = (XMLConversionManager) session.getDatasourcePlatform().getConversionManager();
-        if (unmarshalRecord.getTypeQName() != null) {
-            Class typeClass = xmlField.getJavaClass(unmarshalRecord.getTypeQName());
-            value = xmlConversionManager.convertObject(value, typeClass, unmarshalRecord.getTypeQName());
+        QName typeQName = unmarshalRecord.getTypeQName(); 
+        if (typeQName != null) {
+            Class typeClass = xmlField.getJavaClass(typeQName);
+            value = xmlConversionManager.convertObject(value, typeClass, typeQName);
         } else {
             value = xmlField.convertValueBasedOnSchemaType(value, xmlConversionManager,unmarshalRecord);
         }

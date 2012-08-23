@@ -1204,8 +1204,9 @@ public class XMLMarshaller implements Cloneable {
                 }                
             }
         }else{
-        	session = xmlContext.getSession(object);
-        	descriptor = getDescriptor(object, session);
+            Class objectClass = object.getClass();
+        	session = xmlContext.getSession(objectClass);
+        	descriptor = getDescriptor(objectClass, session);
         }
         
         
