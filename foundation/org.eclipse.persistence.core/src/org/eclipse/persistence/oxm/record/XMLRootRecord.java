@@ -69,17 +69,21 @@ public class XMLRootRecord extends UnmarshalRecord {
      */
     @Override
     public Object getCurrentObject() {
-        // this assumes that since we're unmarshalling to a primitive wrapper, the root
-        // element has a single text node.  if, however, the root element doesn't have
-        // a text node as a first child, we'll try converting null
-        String val = null;
-        if (characters != null) {
-            val = characters.toString();
-        }
         XMLRoot xmlRoot = new XMLRoot();
-        xmlRoot.setObject(((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(val, targetClass));
         xmlRoot.setLocalName(getLocalName());
         xmlRoot.setNamespaceURI(getRootElementNamespaceUri());
+        if(currentObject == null) {
+            // this assumes that since we're unmarshalling to a primitive wrapper, the root
+            // element has a single text node.  if, however, the root element doesn't have
+            // a text node as a first child, we'll try converting null
+            String val = null;
+            if (characters != null) {
+                val = characters.toString();
+            }
+            xmlRoot.setObject(((XMLConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(val, targetClass));
+        } else {
+            xmlRoot.setObject(currentObject);
+        }
         return xmlRoot;
     }
 

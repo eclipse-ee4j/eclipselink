@@ -19,6 +19,7 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
+import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;
@@ -48,8 +49,10 @@ import javax.ws.rs.ext.Providers;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.JAXBIntrospector;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.namespace.QName;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
@@ -247,6 +250,9 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
                 return Object.class;
             }
             return (Class<?>) type;
+        } else if (genericType instanceof GenericArrayType) {
+            GenericArrayType genericArrayType = (GenericArrayType) genericType;
+            return getDomainClass(genericArrayType.getGenericComponentType());
         } else {
             return Object.class;
         }
@@ -440,9 +446,17 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
                     if(type.isArray()) {
                         ArrayList<JAXBElement> arrayList = (ArrayList<JAXBElement>) value;
                         int arrayListSize = arrayList.size();
-                        Object array = Array.newInstance(domainClass, arrayListSize);
-                        for(int x=0; x<arrayListSize; x++) {
-                            Array.set(array, x, arrayList.get(x).getValue());
+                        Object array;
+                        if(genericType instanceof GenericArrayType) {
+                            array = Array.newInstance(JAXBElement.class, arrayListSize);
+                            for(int x=0; x<arrayListSize; x++) {
+                                Array.set(array, x, arrayList.get(x));
+                            }
+                        } else {
+                            array = Array.newInstance(domainClass, arrayListSize);
+                            for(int x=0; x<arrayListSize; x++) {
+                                Array.set(array, x, arrayList.get(x).getValue());
+                            }
                         }
                         return array;
                     } else {
@@ -467,11 +481,14 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
                                 wrapItemInJAXBElement = rawType == JAXBElement.class;
                             }
                         }
-                        for(JAXBElement element : (Collection<JAXBElement>) value) {
+                        for(Object element : (Collection<Object>) value) {
                             if(wrapItemInJAXBElement) {
+                                if(!(element instanceof JAXBElement)) {
+                                    element = new JAXBElement(new QName(""), domainClass, element);
+                                } 
                                 containerPolicy.addInto(element, container, null);
                             } else {
-                                containerPolicy.addInto(element.getValue(), container, null);
+                                containerPolicy.addInto(JAXBIntrospector.getValue(element), container, null);
                             }
                         }
                         return container;
