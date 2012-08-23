@@ -83,6 +83,14 @@ public class CyclicImportsDefineTestCases extends XSDHelperDefineTestCases {
         Source result = schemaResolver.resolveSchema(xsdSource, uri2, "Cyclic2.xsd");
         assertTrue("The schema should not have been resolved as the base location does not contain a protocol", result == null);
     }
+    
+    public void testPassWithNoBaseLocationAndRelativePaths() {
+        Source xsdSource = new StreamSource(FILE_PROTOCOL + USER_DIR + "/org/eclipse/persistence/testing/sdo/helper/xsdhelper/generate/Cyclic1.xsd");
+        DefaultSchemaResolver schemaResolver = new DefaultSchemaResolver();
+        Source result = schemaResolver.resolveSchema(xsdSource, uri2, "nested/Nested1.xsd");
+        Source result2 = schemaResolver.resolveSchema(result, uri2, "Nested2.xsd");
+        assertTrue("The schema should have been resolved based on source system ids", result2 != null);
+    }
 
     /**
      * Success case - relative portions of the location should be normalized
