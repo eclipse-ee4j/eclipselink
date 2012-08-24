@@ -57,21 +57,21 @@ public class StaticModelDatabasePopulator {
         em.persist(auction3);
         
         StaticBid bid1 = new StaticBid();
-        bid1.setBid(110);
+        bid1.setAmount(110);
         bid1.setTime(System.currentTimeMillis());
         bid1.setAuction(auction1);
         bid1.setUser(user1);
         em.persist(bid1);
         
         StaticBid bid2 = new StaticBid();
-        bid2.setBid(111);
+        bid2.setAmount(111);
         bid2.setTime(System.currentTimeMillis());
         bid2.setAuction(auction1);
         bid2.setUser(user2);
         em.persist(bid2);
         
         StaticBid bid3 = new StaticBid();
-        bid3.setBid(1100);
+        bid3.setAmount(1100);
         bid3.setTime(System.currentTimeMillis());
         bid3.setAuction(auction2);
         bid3.setUser(user2);
@@ -150,4 +150,15 @@ public class StaticModelDatabasePopulator {
         return address;
     }
     
+    public static void cleanupDB(EntityManagerFactory emf) {
+        EntityManager em = emf.createEntityManager();
+        em.getTransaction().begin();
+
+        em.createQuery("delete from StaticBid b").executeUpdate();
+        em.createQuery("delete from StaticUser u").executeUpdate();
+        em.createQuery("delete from StaticAddress d").executeUpdate();
+        em.createQuery("delete from StaticAuction a").executeUpdate();
+
+        em.getTransaction().commit();
+    }    
 }

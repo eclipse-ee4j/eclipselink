@@ -722,17 +722,18 @@ public class PersistenceContext {
     
     protected Object wrap(Object entity){
         ClassDescriptor descriptor = getJpaSession().getDescriptor(entity);
-        if (entity instanceof FetchGroupTracker){
+        if (entity instanceof FetchGroupTracker && entity instanceof PersistenceWeavedRest){
             FetchGroup fetchGroup = new FetchGroup();
             for (DatabaseMapping mapping: descriptor.getMappings()){
-                if (!mapping.isForeignReferenceMapping() || mapping.isPrivateOwned()){
+                if (!mapping.isForeignReferenceMapping() || mapping.isPrivateOwned()
+                        || !isRelationshipRepresentedInRelationshipInfo(mapping.getAttributeName(), (PersistenceWeavedRest) entity)){
                     fetchGroup.addAttribute(mapping.getAttributeName());
                 }
             }
             (new FetchGroupManager()).setObjectFetchGroup(entity, fetchGroup, null);
         } else if (descriptor.hasRelationships()){
             for (DatabaseMapping mapping: descriptor.getMappings()){
-                if (mapping.isForeignReferenceMapping() && !mapping.isPrivateOwned()){
+                if (isRelationshipRepresentedInRelationshipInfo(mapping.getAttributeName(), (PersistenceWeavedRest) entity)){
                     // we require Fetch groups to handle relationships
                     throw new JPARSException(LoggingLocalization.buildMessage("weaving_required_for_relationships", new Object[]{}));
                 }
@@ -742,7 +743,14 @@ public class PersistenceContext {
     }
     
     public void marshallEntity(Object object, MediaType mediaType, OutputStream output) throws JAXBException {
-        preMarshallEntity(object);
+        marshallEntity(object, mediaType, output, true);
+    }
+
+    public void marshallEntity(Object object, MediaType mediaType, OutputStream output, boolean sendRelationships) throws JAXBException {
+        if (sendRelationships) {
+            preMarshallEntity(object);
+        }
+
         Marshaller marshaller = getJAXBContext().createMarshaller();
         marshaller.setProperty(MarshallerProperties.MEDIA_TYPE, mediaType.toString());
         marshaller.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, false);
@@ -837,6 +845,13 @@ public class PersistenceContext {
         }
     }
     
-    
-
+    private boolean isRelationshipRepresentedInRelationshipInfo(
+            String relationship, PersistenceWeavedRest object) {
+        for (RelationshipInfo info : object._persistence_getRelationships()) {
+            if (info.getAttributeName().equals(relationship)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

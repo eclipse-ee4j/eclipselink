@@ -573,7 +573,7 @@ public class TestService {
         
         StaticAuction auction = (StaticAuction)context.find("StaticAuction", StaticModelDatabasePopulator.AUCTION1_ID);
         StaticBid bid = new StaticBid();
-        bid.setBid(100);
+        bid.setAmount(100);
         bid.setId(1000);
         context.create(null, bid);
 

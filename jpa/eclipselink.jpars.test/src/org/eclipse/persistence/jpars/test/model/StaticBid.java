@@ -21,8 +21,6 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import org.eclipse.persistence.annotations.PrivateOwned;
-
 @NamedQueries({
     @NamedQuery(
         name="Bid.all", 
@@ -42,7 +40,7 @@ public class StaticBid {
     @GeneratedValue
     private int id;
     
-    private double bid;
+    private double amount;
     
     private long time;
 
@@ -60,12 +58,12 @@ public class StaticBid {
         this.id = id;
     }
 
-    public double getBid() {
-        return bid;
+    public double getAmount() {
+        return amount;
     }
 
-    public void setBid(double bid) {
-        this.bid = bid;
+    public void setAmount(double amount) {
+        this.amount = amount;
     }
 
     public long getTime() {
