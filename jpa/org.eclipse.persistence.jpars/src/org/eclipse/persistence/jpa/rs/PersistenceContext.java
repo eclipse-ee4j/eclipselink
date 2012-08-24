@@ -394,6 +394,7 @@ public class PersistenceContext {
                 } catch (Exception e){
                     JPARSLogger.fine("exception_while_updating_attribute", new Object[]{entityName, getName(), e.toString()});
                     transaction.rollbackTransaction(em);
+                    return null;
                 }
             } else {
                 return null;
@@ -429,6 +430,7 @@ public class PersistenceContext {
                     transaction.commitTransaction(em);
                 } catch (Exception e){
                     transaction.rollbackTransaction(em);
+                    return null;
                 }
             } else {
                 return null;
