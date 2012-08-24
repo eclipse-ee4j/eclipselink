@@ -757,7 +757,7 @@ public class MergeManager {
         }
         // FullyMergeEntity is a special grid cache flag.
         // The original will be null for new objects, objects merged or read into the uow, or referenced objects that are not in the cache.
-        if (original == null  && !descriptor.getFullyMergeEntity()) {
+        if (original == null) {
             // #1, #2, #3 new objects
             original = unitOfWork.getOriginalVersionOfObjectOrNull(clone, objectChangeSet, descriptor, targetSession);
             // Original was not in cache.  Make sure it is placed in the cache.
@@ -778,7 +778,7 @@ public class MergeManager {
         }
         // Always merge into the original.
         try {
-            if (original == null || descriptor.getFullyMergeEntity()) {
+            if (original == null) {
                 // #1, 2, 3, 9, 4, 5, 6
                 // If original does not exist then we must merge the entire object.
                 // This occurs when an object is new, was merged or read into the unit of work and, or referenced objects is not in the shared cache.
@@ -818,14 +818,14 @@ public class MergeManager {
                     }
                     if (!objectChangeSet.isNew()) {
                         // #5 read in uow, #9 grid
-                        objectBuilder.mergeIntoObject(original, objectChangeSet, true, clone, this, targetSession, false, !descriptor.getCopyPolicy().buildsNewInstance(), false);
+                        objectBuilder.mergeIntoObject(original, objectChangeSet, true, clone, this, targetSession, false, originalWasNull, false);
                         if (originalWasNull && !unitOfWork.isObjectRegistered(clone)){
                             // mark the instance in the cache as invalid as we may have just merged a stub if
                             // a detached stub was referenced by a managed entity
                             cacheKey.setInvalidationState(CacheKey.CACHE_KEY_INVALID);
                         }
                     } else {
-                        objectBuilder.mergeChangesIntoObject(original, objectChangeSet, clone, this, targetSession, !descriptor.getCopyPolicy().buildsNewInstance(), true);
+                        objectBuilder.mergeChangesIntoObject(original, objectChangeSet, clone, this, targetSession, originalWasNull, true);
                         // PERF: If PersistenceEntity is caching the primary key this must be cleared as the primary key may have changed in new objects.
                     }
                 }
@@ -842,6 +842,8 @@ public class MergeManager {
             } else if (objectChangeSet == null) {
                 // #6, 7 - referenced objects
                 // PERF: If we have no change set and it has an original, then no merging is required, just use the original object.                
+            } else if (descriptor.getFullyMergeEntity() && objectChangeSet.hasChanges()){
+                objectBuilder.mergeChangesIntoObject(original, objectChangeSet, clone, this, targetSession, false, true);
             } else {
                 // #1, 2, 3 existing objects, new objects with originals
                 // Regardless if the object is new, old, valid or invalid, merging will ensure there is a stub of an object in the 
