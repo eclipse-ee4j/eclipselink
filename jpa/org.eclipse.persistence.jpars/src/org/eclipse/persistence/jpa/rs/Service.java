@@ -13,7 +13,7 @@
 package org.eclipse.persistence.jpa.rs;
 
 import javax.ejb.LocalBean;
-import javax.inject.Singleton;
+import javax.ejb.Singleton;
 
 /**
  * JAX-RS application interface JPA-RS
