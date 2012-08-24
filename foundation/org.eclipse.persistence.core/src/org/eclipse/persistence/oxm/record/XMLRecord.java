@@ -90,6 +90,52 @@ public abstract class XMLRecord extends AbstractRecord {
         return put(new XMLField(key), value);
     }
     
+    
+    /**
+     * Marshal an attribute for the give namespaceURI, localName, preifx and value
+     * @param namespaceURI
+     * @param localName
+     * @param prefix     
+     * @param value
+     */
+    public void attributeWithoutQName(String namespaceURI, String localName, String prefix, String value){
+        String qualifiedName = localName;
+        if(prefix != null && prefix.length() >0){
+            qualifiedName = prefix + getNamespaceSeparator() + qualifiedName;
+        }
+        attribute(namespaceURI, localName, qualifiedName, value);
+    }
+       
+    /**
+     * Marshal an attribute for the give namespaceURI, localName, qualifiedName and value
+     * @param namespaceURI
+     * @param localName
+     * @param qName     
+     * @param value
+     */
+    public void attribute(String namespaceURI, String localName, String qName, String value){
+        XMLField xmlField = new XMLField(XMLConstants.ATTRIBUTE +qName);
+        xmlField.setNamespaceResolver(getNamespaceResolver());
+        xmlField.getLastXPathFragment().setNamespaceURI(namespaceURI);
+        add(xmlField, value);
+    }
+    
+    /**
+     * Marshal a namespace declaration for the given prefix and url
+     * @param prefix
+     * @param url
+     */
+    public void namespaceDeclaration(String prefix, String namespaceURI){
+        
+        String existingPrefix = getNamespaceResolver().resolveNamespaceURI(namespaceURI);
+        if(existingPrefix == null || (existingPrefix != null && !existingPrefix.equals(XMLConstants.EMPTY_STRING) && !existingPrefix.equals(prefix))){        
+            XMLField xmlField = new XMLField("@" + XMLConstants.XMLNS + XMLConstants.COLON + prefix);
+            xmlField.setNamespaceResolver(getNamespaceResolver());
+            xmlField.getXPathFragment().setNamespaceURI(XMLConstants.XMLNS_URL);
+            add(xmlField, namespaceURI);
+        }
+    }
+    
     /**
      * PUBLIC:
      * Get the local name of the context root element.

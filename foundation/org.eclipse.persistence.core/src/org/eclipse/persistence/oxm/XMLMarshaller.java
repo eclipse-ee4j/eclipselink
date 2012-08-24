@@ -1052,10 +1052,10 @@ public class XMLMarshaller implements Cloneable {
                 marshalRecord.openStartElement(rootFragment, nr);
             }
             if (null != schemaLocation) {
-                marshalRecord.attribute(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_LOCATION, xsiPrefix + XMLConstants.COLON + XMLConstants.SCHEMA_LOCATION, schemaLocation);
+                marshalRecord.attributeWithoutQName(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_LOCATION, xsiPrefix, schemaLocation);
             }
             if (null != noNsSchemaLocation) {
-                marshalRecord.attribute(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.NO_NS_SCHEMA_LOCATION, xsiPrefix + XMLConstants.COLON + XMLConstants.NO_NS_SCHEMA_LOCATION, noNsSchemaLocation);
+                marshalRecord.attributeWithoutQName(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.NO_NS_SCHEMA_LOCATION, xsiPrefix, noNsSchemaLocation);
             }
             if (isNil) {
                 marshalRecord.nilSimple(nr);
