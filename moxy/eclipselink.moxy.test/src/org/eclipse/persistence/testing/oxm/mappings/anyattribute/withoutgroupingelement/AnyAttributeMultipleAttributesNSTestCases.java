@@ -80,7 +80,6 @@ public class AnyAttributeMultipleAttributesNSTestCases extends XMLMappingTestCas
     }
 
     public void testLoadFromSAXSource() throws Exception {
-    System.out.println("testLoadFromSAXSource");
         InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
         InputSource insource = new InputSource(instream);
         SAXSource theSource = new SAXSource(insource);
@@ -90,7 +89,6 @@ public class AnyAttributeMultipleAttributesNSTestCases extends XMLMappingTestCas
     }
 
     public void testLoadFromSAXSourceWithReader() throws Exception {
-        System.out.println("testLoadFromSAXSourceWithReader");
         InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
         InputSource insource = new InputSource(instream);
         SAXSource theSource = new SAXSource(insource);

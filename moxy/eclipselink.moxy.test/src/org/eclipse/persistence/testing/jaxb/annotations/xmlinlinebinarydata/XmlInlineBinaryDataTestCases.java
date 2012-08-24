@@ -45,7 +45,6 @@ public class XmlInlineBinaryDataTestCases extends TestCase {
         fieldRoot.setC("C".getBytes());
         StringWriter a = new StringWriter();
         marshaller.marshal(fieldRoot, a);
-        System.out.println(a.toString());
         assertEquals(2, attachmentMarshaller.getAttachmentCount());
     }
 

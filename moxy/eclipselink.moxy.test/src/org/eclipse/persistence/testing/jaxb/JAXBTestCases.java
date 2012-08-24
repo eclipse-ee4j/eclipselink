@@ -85,7 +85,7 @@ import org.xml.sax.XMLReader;
 
 public abstract class JAXBTestCases extends XMLMappingTestCases {
 
-    public static final String ECLIPSELINK_OXM_XSD = "eclipselink_oxm_2_4.xsd";
+    public static final String ECLIPSELINK_OXM_XSD = "eclipselink_oxm_2_5.xsd";
     protected JAXBContext jaxbContext;
     protected Marshaller jaxbMarshaller;
     protected Unmarshaller jaxbUnmarshaller;
