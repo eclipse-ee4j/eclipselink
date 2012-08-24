@@ -1,0 +1,203 @@
+<?xml version="1.0"?>
+<!--/*******************************************************************************
+* This program and the accompanying materials are made available under the
+* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
+* which accompanies this distribution.
+* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+* and the Eclipse Distribution License is available at
+* http://www.eclipse.org/org/documents/edl-v10.php.
+*
+*   Ant naming conventions:
+*   - regardless of the actual OS platform,'/' is the directory separator
+*     (Ant will convert as appropriate).
+*   - multi-word properties use periods '.'
+*     - properties ending in .jar define jarfile names only (no path)
+*     - properties ending in .lib are fully qualified jars (path and filename)
+*     - properties ending in .dir are directory paths
+*     - properties ending in .path are path refid names (classpath fragments)
+*   - multi-word targets use hyphens '-'
+*     - targets beginning with test- are reserved for high level test targets,
+*       and are used in test results parsing
+*     - targets typically use the form <action>-<object>-<type> (ie. package-bundle-zip)
+*   - multi-word macros use underscores '_'
+*   - multi-word macro attributes are concatinated
+*     e.g. 'runpathref'
+*   - multi-word tasks (taskdef) names are concatinated
+*     e.g. 'validateconnection'
+*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
+*     e.g. ${env.XXX}.
+*   - Ant properties are lower case.
+*
+* Contributors:
+*     tware - initial implementation based on work by egwin in other EclipseLink components
+#******************************************************************************/-->
+<project name="org.eclipse.persistence.jpars" default="build" basedir=".">
+    <available file="../${ant.project.name}" type="dir" property="jpars.is.local"/>
+    <!-- Test to make sure that the calling script doesn't inherit the variable -->
+    <!-- (should be set locally, and be destroyed upon return) -->
+    <fail message="Not running from '${ant.project.name}' directory" unless="jpars.is.local"/>
+
+    <dirname  property="jpars.build.location_temp" file="${ant.file.org.eclipse.persistence.jpars}"/>
+    <pathconvert targetos="unix" property="jpars.build.location">
+        <path>
+            <pathelement location="${jpars.build.location_temp}"/>
+        </path>
+    </pathconvert>
+    <condition property="jpars.2.base.dir" value="../.." else="..">
+        <contains string="${jpars.build.location}" substring="jpa/${ant.project.name}"/>
+    </condition>
+    <echo message="jpars.2.base.dir = '${jpars.2.base.dir}'"/>
+    <property name="jpars.2.common.plugins.dir" value="${jpars.2.base.dir}/plugins"/>
+    <property name="jpars.2.buildsys.dir" value="${jpars.2.base.dir}/buildsystem"/>
+    <property name="jpars.2.jpa.plugins.dir" value="../plugins"/>
+    <property name="jpars.2.javax.persistence.xsds.dir" value="${jpars.2.jpa.plugins.dir}/javax.persistence/src/javax/persistence"/>
+
+    <!-- local property overrides -->
+    <condition property="custom.properties.message" value="Loading ${user.home}/build.properties..."
+                                                     else="Custom properties file '${user.home}/build.properties' not found to load.">
+        <available file="${user.home}/build.properties"/>
+    </condition>
+    <echo message="${custom.properties.message}"/>
+    <property file="${user.home}/build.properties"/>
+    <property file="${jpars.build.location}/antbuild.properties"/>
+
+
+    <!-- Primary Targets: "jar" separate for dev use -->
+    <target name="build" depends="clean, compile, jar" description="build ${ant.project.name} component"/>
+    <target name="jar"   depends="package" description="package ${ant.project.name} component"/>
+
+    <!-- clean -->
+    <target name="clean" description="Clean all generated content">
+        <delete includeEmptyDirs="true" failonerror="false">
+            <fileset dir="${classes.dir}"/>
+            <fileset dir="${jpars.2.common.plugins.dir}" includes="${ant.project.name}_*.jar, ${ant.project.name}.source_*.jar"/>
+        </delete>
+    </target>
+
+    <!-- initialize varables and paths needed for compile -->
+    <!-- the number of properties needed now is too great for lazy loading without a target -->
+    <target name="init">
+        <property name="custom.tasks.lib" value="${jpars.2.buildsys.dir}/ant_customizations.jar"/>
+        <property name="custom.echo.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.Say"/>
+        <property name="custom.selectbundle.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.SelectBundle"/>
+        <taskdef name="say"          classname="${custom.echo.task.class}"         classpath="${custom.tasks.lib}"/>
+        <taskdef name="selectbundle" classname="${custom.selectbundle.task.class}" classpath="${custom.tasks.lib}"/>
+
+        <!-- This HAS to be defined after allowing user redefinitions (which will cause the condition not to set anything) -->
+        <!-- This tests to make sure the extensions dir exists, if not sets to a existant dummy location -->
+        <condition property="extensions.depend.dir" value="${jpars.2.base.dir}/../extension.lib.external"
+                                                    else="${jpars.build.location}">
+            <available file="${jpars.2.base.dir}/../extension.lib.external" type="dir"/>
+        </condition>
+        <echo message="extensions.depend.dir        = '${extensions.depend.dir}'"/>
+
+        <!-- versioning -->
+        <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
+        <tstamp>
+           <format property="build.date" pattern="yyyyMMdd"/>
+           <format property="build.time" pattern="HHmm"/>
+        </tstamp>
+        <property name="build.type"            value="SNAPSHOT"/>
+        <property name="svn.revision"          value="NA"/>
+        <property name="version.qualifier"     value="qualifier"/>
+        <property name="version.string"        value="${release.version}.${version.qualifier}"/>
+        <property name="release.designation"   value="EclipseLink ${release.version} Build"/>
+        <property name="specification.vendor"  value="Eclipse.org - EclipseLink Project"/>
+        <property name="implementation.vendor" value="${specification.vendor}"/>
+
+        <!-- dependency properties -->
+        <property name="persistence.lib"    value="${jpars.2.jpa.plugins.dir}/${persistence20.jar}"/>
+        <property name="core.lib"             value="${jpars.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
+        <property name="jpa.lib"             value="${jpars.2.common.plugins.dir}/org.eclipse.persistence.jpa_${version.string}.jar"/>
+        <property name="moxy.lib"             value="${jpars.2.common.plugins.dir}/org.eclipse.persistence.moxy_${version.string}.jar"/>
+
+        <!-- dependency tests -->
+        <available file="${persistence.lib}" property="persistence.bundle.exist"/>
+        <available file="${core.lib}"        property="core.bundle.exist"/>
+        <available file="${jpa.lib}"        property="jpa.bundle.exist"/>
+        <available file="${moxy.lib}"        property="moxy.bundle.exist"/>
+
+        <fail message="Cannot find: '${persistence.lib}'" unless="persistence.bundle.exist"/>
+        <fail message="Cannot find: '${core.lib}'"        unless="core.bundle.exist"/>
+        <fail message="Cannot find: '${jpa.lib}'"        unless="jpa.bundle.exist"/>
+        <fail message="Cannot find: '${moxy.lib}'"        unless="moxy.bundle.exist"/>
+
+        <!-- Set Compile Path-->
+        <path id="jpars.compile.path">
+            <pathelement path="${core.lib}"/>
+            <pathelement path="${jpa.lib}"/>
+            <pathelement path="${moxy.lib}"/>
+            <pathelement path="${jpars.2.common.plugins.dir}/osgi.core.zip"/>
+            <fileset
+                dir="../${plugins.dir}"
+                includes="${eclipselink.jpars.depend}"/>
+            <pathelement path="${persistence.lib}"/>
+            <fileset
+                dir="${jpars.2.common.plugins.dir}"
+                includes="${eclipselink.core.depend}"/>
+        </path>
+    </target>
+
+    <!-- compile -->
+    <target name="compile" depends="init" description="Compile bundle code">
+        <mkdir dir="${classes.dir}"/>
+        <javac srcdir="${src.dir}"
+               destdir="${classes.dir}"
+               includes="org/eclipse/persistence/**/*.java"
+               debug="${javac.debug}"
+               debuglevel="${javac.debuglevel}"
+               optimize="${javac.optimize}"
+               source="${javac.version}"
+               target="${javac.version}"
+               deprecation="${javac.deprecation}"
+               failonerror="true"
+               memoryMaximumSize="512m"
+               fork="true"
+               classpathref="jpars.compile.path"
+        />
+    </target>
+
+    <!-- package -->
+    <target name="package-src" depends="init">
+        <jar jarfile="${jpars.2.common.plugins.dir}/${ant.project.name}.source_${version.string}.jar" duplicate="preserve">
+             <manifest>
+                <attribute name="Specification-Vendor"   value="${specification.vendor}"/>
+                <attribute name="Specification-Version"  value="${release.version}"/>
+                <attribute name="Implementation-Vendor"  value="${implementation.vendor}"/>
+                <attribute name="Implementation-Version" value="${version.string}"/>
+                <attribute name="Bundle-ManifestVersion" value="2"/>
+                <attribute name="Bundle-Name"            value="EclipseLink JPARS Source"/>
+                <attribute name="Bundle-SymbolicName"    value="${ant.project.name}.source"/>
+                <attribute name="Bundle-Vendor"          value="${implementation.vendor}"/>
+                <attribute name="Bundle-Version"         value="${version.string}"/>
+                <attribute name="Eclipse-SourceBundle"   value="${ant.project.name};version=&quot;${version.string}&quot;"/>
+            </manifest>
+            <fileset dir="${jpars.2.base.dir}">
+                <include name="about.html"/>
+                <include name="readme.html"/>
+                <include name="license.*"/>
+            </fileset>
+            <fileset dir="${src.dir}">
+                <include name="org/eclipse/persistence/**/*.java"/>
+                <include name="META-INF/**/*.xml"/>
+            </fileset>
+        </jar>
+    </target>
+        
+    <target name="package" depends="init, package-src" description="jar OSGI bundle">
+        <jar jarfile="${jpars.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" duplicate="preserve" manifest="${src.dir}/../META-INF/MANIFEST.MF">
+            <fileset dir="${jpars.2.base.dir}">
+                <include name="about.html"/>
+                <include name="readme.html"/>
+                <include name="license.*"/>
+            </fileset>
+            <fileset dir="${classes.dir}">
+                <include name="org/eclipse/persistence/**/*.class"/>
+            </fileset>
+            <fileset dir="${src.dir}">
+                <include name="META-INF/**/*.xml"/>
+            </fileset>
+        </jar>
+    </target>
+
+</project>

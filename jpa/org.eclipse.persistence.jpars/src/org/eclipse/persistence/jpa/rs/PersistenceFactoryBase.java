@@ -30,6 +30,12 @@ import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
 import org.eclipse.persistence.jpa.Archive;
 import org.eclipse.persistence.jpa.rs.util.JPARSLogger;
 
+/**
+ * Manages the PersistenceContexts that are used by a JPA-RS deployment.  Provides a single point to bootstrap
+ * and look up PersistenceContexts 
+ * @author tware
+ *
+ */
 public class PersistenceFactoryBase {
     
     private Map<String, PersistenceContext> dynamicPersistenceContexts = new HashMap<String, PersistenceContext>();
@@ -46,9 +52,6 @@ public class PersistenceFactoryBase {
     public PersistenceContext bootstrapPersistenceContext(String name, EntityManagerFactory emf, URI baseURI, boolean replace){
         PersistenceContext persistenceContext = new PersistenceContext(name, (EntityManagerFactoryImpl)emf, baseURI);
         persistenceContext.setBaseURI(baseURI);
-      /*  if (replace){
-            dynamicPersistenceContexts.put(name, persistenceContext);
-        }*/
         return persistenceContext;
     }
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2012 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -11,6 +11,13 @@
  *      tware - initial 
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs;
+
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.ws.rs.core.Application;
+
 
 import org.eclipse.persistence.jpa.rs.exceptions.ClassNotFoundExceptionMapper;
 import org.eclipse.persistence.jpa.rs.exceptions.IOExceptionMapper;
@@ -26,24 +33,39 @@ import org.eclipse.persistence.jpa.rs.exceptions.NoResultExceptionMapper;
 import org.eclipse.persistence.jpa.rs.exceptions.NoSuchMethodExceptionMapper;
 import org.eclipse.persistence.jpa.rs.exceptions.NonUniqueResultExceptionExceptionMapper;
 
-import com.sun.jersey.api.core.DefaultResourceConfig;
+/**
+ * Config class for JPA-RS REST service.  This class should remain dependant only on classes from 
+ * the specification since it is designed to work with both Jersey 1.x and Jersey 2.x.
+ * 
+ * @see ServicePathDefinition
+ * @author tware
+ *
+ */
+public class JPARSApplication extends Application {
 
-public class JparsResourceConfig extends DefaultResourceConfig {
-    public JparsResourceConfig() {
-        getExplicitRootResources().put("/", Service.class);
-        getClasses().add(ClassNotFoundExceptionMapper.class);
-        getClasses().add(IllegalAccessExceptionMapper.class);
-        getClasses().add(IllegalArgumentExceptionMapper.class);
-        getClasses().add(IllegalStateExceptionMapper.class);
-        getClasses().add(InvocationTargetExceptionMapper.class);
-        getClasses().add(IOExceptionMapper.class);
-        getClasses().add(JAXBExceptionMapper.class);
-        getClasses().add(JPARSExceptionMapper.class);
-        getClasses().add(MalformedURLExceptionMapper.class);
-        getClasses().add(NamingExceptionMapper.class);
-        getClasses().add(NonUniqueResultExceptionExceptionMapper.class);
-        getClasses().add(NoResultExceptionMapper.class);
-        getClasses().add(NoSuchMethodExceptionMapper.class);
-        
+private final Set<Class<?>> classes;
+
+    public JPARSApplication() {
+        HashSet<Class<?>> c = new HashSet<Class<?>>();
+        c.add(Service.class);
+        c.add(ClassNotFoundExceptionMapper.class);
+        c.add(IllegalAccessExceptionMapper.class);
+        c.add(IllegalArgumentExceptionMapper.class);
+        c.add(IllegalStateExceptionMapper.class);
+        c.add(InvocationTargetExceptionMapper.class);
+        c.add(IOExceptionMapper.class);
+        c.add(JAXBExceptionMapper.class);
+        c.add(JPARSExceptionMapper.class);
+        c.add(MalformedURLExceptionMapper.class);
+        c.add(NamingExceptionMapper.class);
+        c.add(NonUniqueResultExceptionExceptionMapper.class);
+        c.add(NoResultExceptionMapper.class);
+        c.add(NoSuchMethodExceptionMapper.class);
+        classes = Collections.unmodifiableSet(c);
+    }
+    
+    @Override
+    public Set<Class<?>> getClasses() {
+        return classes;
     }
 }

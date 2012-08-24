@@ -28,6 +28,8 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
+import org.eclipse.persistence.exceptions.ConversionException;
+import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.jpa.rs.logging.LoggingLocalization;
 
 /**
@@ -76,13 +78,13 @@ public class PortableServletContainer implements Filter, Servlet {
         Class<Servlet> servletClass;
         boolean isJersey1 = false;
         try {
-            servletClass = (Class<Servlet>) Class.forName("com.sun.jersey.spi.container.servlet.ServletContainer");
+            servletClass = (Class<Servlet>) ConversionManager.getDefaultManager().convertClassNameToClass("com.sun.jersey.spi.container.servlet.ServletContainer");
             isJersey1 = true;
-        } catch (ClassNotFoundException e) {
+        } catch (ConversionException e) {
             // Jersey 1.x not present, try Jersey 2.x
             try {
-                servletClass = (Class<Servlet>) Class.forName("org.glassfish.jersey.servlet.ServletContainer");
-            } catch (ClassNotFoundException ex) {
+                servletClass = (Class<Servlet>) ConversionManager.getDefaultManager().convertClassNameToClass("org.glassfish.jersey.servlet.ServletContainer");
+            } catch (ConversionException ex) {
                 throw new IllegalStateException(LoggingLocalization.buildMessage("jersey.not.available", new Object[]{}));
             }
         }

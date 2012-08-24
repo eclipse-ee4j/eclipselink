@@ -4,7 +4,6 @@ Export-Package: org.eclipse.persistence.jpa.rs;version="2.4.1",
  org.eclipse.persistence.jpa.rs.exceptions;version="2.4.1",
  org.eclipse.persistence.jpa.rs.logging;version="2.4.1",
  org.eclipse.persistence.jpa.rs.logging.i18n;version="2.4.1",
- org.eclipse.persistence.jpa.rs.metadata;version="2.4.1",
  org.eclipse.persistence.jpa.rs.metadata.model;version="2.4.1",
  org.eclipse.persistence.jpa.rs.util;version="2.4.1"
 Bundle-Name: EclipseLink JPA-RS
