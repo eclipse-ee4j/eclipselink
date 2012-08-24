@@ -8,27 +8,21 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- * 		dclarke/tware - initial 
+ *      tware - initial 
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs;
 
-import javax.ejb.LocalBean;
-import javax.inject.Singleton;
+import javax.ws.rs.Path;
 
 /**
- * JAX-RS application interface JPA-RS
+ * This interface is provided as a means to provide the base path for the JPA-RS REST service
+ * in a manner that is portable between Jersey 1.x and Jersey 2.x.
  * 
+ * @see JPARSApplication
  * @author tware
- * @since EclipseLink 2.4.0
+ *
  */
-@Singleton
-@LocalBean
-public class Service extends ServiceBase implements ServicePathDefinition {
-
-    
-   public void setPersistenceFactory(PersistenceFactoryBase factory) {
-        this.factory = factory;
-    }
+@Path("/")
+public interface ServicePathDefinition {
 
 }
-
