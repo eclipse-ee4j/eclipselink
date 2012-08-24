@@ -442,7 +442,7 @@ public class TreeObjectBuilder extends XMLObjectBuilder {
                     } else {
                         schemaType = xmlDescriptor.getSchemaReference().getSchemaContextAsQName();
                     }
-                    writeXsiTypeAttribute(xmlDescriptor, (XMLRecord) record, schemaType, false);
+                    writeXsiTypeAttribute(xmlDescriptor, marshalRecord, schemaType.getNamespaceURI(), schemaType.getLocalPart(), schemaType.getPrefix(), false);
                 }
             } else {
                 // Push the duplicate object anyway, so that we can get the complete cycle string

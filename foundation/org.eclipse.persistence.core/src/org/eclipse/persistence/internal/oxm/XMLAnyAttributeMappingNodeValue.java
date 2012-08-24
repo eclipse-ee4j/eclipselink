@@ -89,7 +89,11 @@ public class XMLAnyAttributeMappingNodeValue extends MappingNodeValue implements
 
                     }
                 }
-                marshalRecord.attribute(name.getNamespaceURI(), name.getLocalPart(), qualifiedName, value);
+                if(XMLConstants.XMLNS_URL.equals(name.getNamespaceURI())){
+                    marshalRecord.namespaceDeclaration(name.getLocalPart(), name.getNamespaceURI());
+                }else{
+                    marshalRecord.attribute(name.getNamespaceURI(), name.getLocalPart(), qualifiedName, value);
+                }
             }
         }
 

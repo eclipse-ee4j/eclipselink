@@ -177,7 +177,7 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
             if(((MarshalRecord)xmlRecord).hasCustomNamespaceMapper()) {
                 prefix = ((MarshalRecord)xmlRecord).getNamespaceResolver().resolveNamespaceURI(next.getNamespaceURI());
             }
-            ((MarshalRecord)xmlRecord).attribute(XMLConstants.XMLNS_URL, prefix, XMLConstants.XMLNS + XMLConstants.COLON + prefix, next.getNamespaceURI());
+           ((MarshalRecord)xmlRecord).namespaceDeclaration(prefix, next.getNamespaceURI());
         }
 
     }
