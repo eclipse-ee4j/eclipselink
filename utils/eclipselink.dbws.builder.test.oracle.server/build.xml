@@ -74,7 +74,7 @@
     </condition>
     <echo message="${custom.properties.message}"/>
     <property file="${user.home}/build.properties"/>
-    <property file="${dbwsbldrorcltst.build.location}/antbuild.properties"/>
+    <property file="${dbwsbldrorcltst.build.location}/build.properties"/>
     <condition property="custom.test.properties.message" value="Loading ${user.home}/test.properties..."
                                                           else="Custom properties file '${user.home}/test.properties' not found to load.">
         <available file="${user.home}/test.properties"/>
