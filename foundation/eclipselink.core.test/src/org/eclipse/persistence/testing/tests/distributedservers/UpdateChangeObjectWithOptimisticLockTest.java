@@ -12,10 +12,9 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.distributedservers;
 
-import org.eclipse.persistence.exceptions.OptimisticLockException;
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
 
@@ -56,16 +55,16 @@ public class UpdateChangeObjectWithOptimisticLockTest extends ComplexUpdateTest 
      */
     protected void verify() {
         DatabaseSession remoteServer = ((DistributedServer)DistributedServersModel.getDistributedServers().get(0)).getDistributedSession();
-        remoteServer.beginTransaction();
-        UnitOfWork uow = remoteServer.acquireUnitOfWork();
-        Employee remoteEmp = (Employee)uow.executeQuery(this.query);
-        remoteEmp.setLastName("newName" + System.currentTimeMillis());
-        try {
-            uow.commit();
-        } catch (OptimisticLockException ex) {
+        // The main session is now in transaction (started in TransactionalTestCase.setup).
+        // remoteServer was setup to share accessor (and therefore connection) with the main session (see DistributedServer constructor),
+        // therefore remoteServer's connection is in transaction.
+        // Because it seems there is no way to write object with version without transaction,
+        // let's compare versions directly
+        Employee remoteEmp = (Employee)remoteServer.executeQuery(this.query);
+        long remoteVersion = (Long)remoteServer.getDescriptor(Employee.class).getOptimisticLockingPolicy().getWriteLockValue(remoteEmp, remoteEmp.getId(), (AbstractSession)remoteServer);
+        long writtenVersion = (Long)getUnitOfWork().getParent().getDescriptor(Employee.class).getOptimisticLockingPolicy().getWriteLockValue((Employee)objectToBeWritten, ((Employee)objectToBeWritten).getId(), (AbstractSession)getUnitOfWork().getParent());
+        if (remoteVersion != writtenVersion) {
             throw new TestErrorException("Failed to copy the version number to the remote system");
-        } finally {
-            remoteServer.rollbackTransaction();
         }
     }
 }

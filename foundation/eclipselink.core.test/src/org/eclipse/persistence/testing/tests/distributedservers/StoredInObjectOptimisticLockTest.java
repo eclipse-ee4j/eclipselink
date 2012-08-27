@@ -12,10 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.distributedservers;
 
-import org.eclipse.persistence.exceptions.OptimisticLockException;
-import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Session;
-import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.models.aggregate.Client;
 
@@ -55,18 +52,14 @@ public class StoredInObjectOptimisticLockTest extends ComplexUpdateTest {
      */
     protected void verify() {
         Session remoteServer = ((DistributedServer)DistributedServersModel.getDistributedServers().get(0)).getDistributedSession();
-
-        // Begin a transaction to avoid corrupting the database.
-        ((DatabaseSession)remoteServer).beginTransaction();
-        UnitOfWork uow = remoteServer.acquireUnitOfWork();
-        Client remoteClient = (Client)uow.executeQuery(this.query);
-        remoteClient.setName("newName" + System.currentTimeMillis());
-        try {
-            uow.commit();
-        } catch (OptimisticLockException ex) {
+        // The main session is now in transaction (started in TransactionalTestCase.setup).
+        // remoteServer was setup to share accessor (and therefore connection) with the main session (see DistributedServer constructor),
+        // therefore remoteServer's connection is in transaction.
+        // Because it seems there is no way to write object with version without transaction,
+        // let's compare versions directly
+        Client remoteClient = (Client)remoteServer.executeQuery(this.query);
+        if (remoteClient.getVersion().getVersion() != ((Client)objectToBeWritten).getVersion().getVersion()) {
             throw new TestErrorException("Failed to copy the version number to the remote system");
-        } finally {
-            ((DatabaseSession)remoteServer).rollbackTransaction();
         }
     }
 }
