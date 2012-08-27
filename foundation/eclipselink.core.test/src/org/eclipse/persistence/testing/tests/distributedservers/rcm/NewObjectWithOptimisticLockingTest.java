@@ -23,6 +23,10 @@ public class NewObjectWithOptimisticLockingTest extends ConfigurableCacheSyncDis
     
     public void setup(){
         super.setup();
+        // super.setup begins transaction with intention to keep it until reset.
+        // Cannot do it in this test because both sessions share the same accessor connection,
+        // therefore end transaction.
+        getAbstractSession().rollbackTransaction();
         
         UnitOfWork uow = getSession().acquireUnitOfWork();
         ListHolder holder = new ListHolder();
@@ -47,7 +51,7 @@ public class NewObjectWithOptimisticLockingTest extends ConfigurableCacheSyncDis
     }
     
     public void verify(){
-        // ensure the changes are propgated
+        // ensure the changes are propagated
         try{
             Thread.sleep(1000);
         } catch (InterruptedException e){};
@@ -79,6 +83,8 @@ public class NewObjectWithOptimisticLockingTest extends ConfigurableCacheSyncDis
         }
         uow.deleteObject(holder);
         uow.commit();
+        // super.reset ends transaction - but none is active, so begins transaction.
+        getAbstractSession().beginTransaction();
         super.reset();
     }
 }
