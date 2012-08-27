@@ -40,22 +40,23 @@ import org.eclipse.persistence.sessions.Session;
  * <p>
  * In addition, EclipseLink categories used for logging name space are defined with the following String values:
  * <table>
- * <tr><td>&nbsp;</td><td>SQL</td>           <td>&nbsp;</td><td>= "sql"</td></tr>
- * <tr><td>&nbsp;</td><td>TRANSACTION</td>   <td>&nbsp;</td><td>= "transaction"</td></tr>
- * <tr><td>&nbsp;</td><td>EVENT</td>         <td>&nbsp;</td><td>= "event"</td></tr>
- * <tr><td>&nbsp;</td><td>CONNECTION</td>         <td>&nbsp;</td><td>= "connection"</td></tr> 
- * <tr><td>&nbsp;</td><td>QUERY</td>         <td>&nbsp;</td><td>= "query"</td></tr>
- * <tr><td>&nbsp;</td><td>CACHE</td>         <td>&nbsp;</td><td>= "cache"</td></tr>
- * <tr><td>&nbsp;</td><td>PROPAGATION</td>   <td>&nbsp;</td><td>= "propagation"</td></tr>
- * <tr><td>&nbsp;</td><td>SEQUENCING</td>    <td>&nbsp;</td><td>= "sequencing"</td></tr>
- * <tr><td>&nbsp;</td><td>EJB</td>           <td>&nbsp;</td><td>= "ejb"</td></tr>
- * <tr><td>&nbsp;</td><td>DMS</td>           <td>&nbsp;</td><td>= "dms"</td></tr>
- * <tr><td>&nbsp;</td><td>EJB_OR_METADATA</td><td>&nbsp;</td><td>= "ejb_or_metadata"</td></tr>
- * <tr><td>&nbsp;</td><td>METAMODEL</td><td>&nbsp;</td><td>= "metamodel"</td></tr>
- * <tr><td>&nbsp;</td><td>WEAVER</td>        <td>&nbsp;</td><td>= "weaver"</td></tr>
- * <tr><td>&nbsp;</td><td>PROPERTIES</td>        <td>&nbsp;</td><td>= "properties"</td></tr>
- * <tr><td>&nbsp;</td><td>SERVER</td>        <td>&nbsp;</td><td>= "server"</td></tr>
+ * <tr><td>&nbsp;</td><td>{@link #SQL}</td>           <td>&nbsp;</td><td>= {@value #SQL}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@link #TRANSACTION}</td>   <td>&nbsp;</td><td>= {@value #TRANSACTION}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@link #EVENT}</td>         <td>&nbsp;</td><td>= {@value #EVENT}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@link #CONNECTION}</td>         <td>&nbsp;</td><td>= {@value #CONNECTION}</td></tr> 
+ * <tr><td>&nbsp;</td><td>{@link #QUERY}</td>         <td>&nbsp;</td><td>= {@value #QUERY}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@link #CACHE}</td>         <td>&nbsp;</td><td>= {@value #CACHE}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@link #PROPAGATION}</td>   <td>&nbsp;</td><td>= {@value #PROPAGATION}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@link #SEQUENCING}</td>    <td>&nbsp;</td><td>= {@value #SEQUENCING}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@link #EJB}</td>           <td>&nbsp;</td><td>= {@value #EJB}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@link #DMS}</td>           <td>&nbsp;</td><td>= {@value #DMS}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@link #METADATA}</td><td>&nbsp;</td><td>= {@value #METADATA} </td></tr>
+ * <tr><td>&nbsp;</td><td>{@link #METAMODEL}</td><td>&nbsp;</td><td>= {@value #METAMODEL}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@link #WEAVER}</td>        <td>&nbsp;</td><td>= {@value #WEAVER}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@link #PROPERTIES}</td>        <td>&nbsp;</td><td>= {@value #PROPERTIES}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@link #SERVER}</td>        <td>&nbsp;</td><td>= {@value #SERVER}</td></tr>
  * </table>
+ * 
  * @see AbstractSessionLog
  * @see SessionLogEntry
  * @see Session
@@ -109,7 +110,12 @@ public interface SessionLog extends Cloneable {
     public static final String JPA = "jpa";
     public static final String EJB = "ejb";
     public static final String DMS = "dms";
-    public static final String EJB_OR_METADATA = "metadata";
+    public static final String METADATA = "metadata";
+    /**
+     * @deprecated use {@link #METADATA}
+     */
+    @Deprecated 
+    public static final String EJB_OR_METADATA = METADATA;
     public static final String METAMODEL = "metamodel";
     public static final String WEAVER = "weaver";
     public static final String PROPERTIES = "properties";
@@ -117,7 +123,7 @@ public interface SessionLog extends Cloneable {
     public static final String DDL = "ddl";
     public static final String JPARS = "jpars";
     
-    public final String[] loggerCatagories = new String[] { SQL ,TRANSACTION ,EVENT ,CONNECTION ,QUERY ,CACHE ,PROPAGATION ,SEQUENCING ,EJB ,DMS ,EJB_OR_METADATA, METAMODEL, WEAVER ,PROPERTIES ,SERVER, JPARS};
+    public final String[] loggerCatagories = new String[] { SQL ,TRANSACTION ,EVENT ,CONNECTION ,QUERY ,CACHE ,PROPAGATION ,SEQUENCING ,EJB ,DMS ,METADATA, METAMODEL, WEAVER ,PROPERTIES ,SERVER, JPARS};
 
     /**
      * PUBLIC:
@@ -214,15 +220,15 @@ public interface SessionLog extends Cloneable {
      * <p>
      * The EclipseLink logging levels returned correspond to:<br>
      * <table>
-     * <tr><td>ALL</td>    <td>&nbsp;</td><td>= 0</td></tr>
-     * <tr><td>FINEST</td> <td>&nbsp;</td><td>= 1</td></tr>
-     * <tr><td>FINER</td>  <td>&nbsp;</td><td>= 2</td></tr>
-     * <tr><td>FINE</td>   <td>&nbsp;</td><td>= 3</td></tr>
-     * <tr><td>CONFIG</td> <td>&nbsp;</td><td>= 4</td></tr>
-     * <tr><td>INFO</td>   <td>&nbsp;</td><td>= 5</td></tr>
-     * <tr><td>WARNING</td><td>&nbsp;</td><td>= 6</td></tr>
-     * <tr><td>SEVERE</td> <td>&nbsp;</td><td>= 7</td></tr>
-     * <tr><td>OFF</td>    <td>&nbsp;</td><td>= 8</td></tr>
+     * <tr><td>{@link #ALL}</td>    <td>&nbsp;</td><td>= {@value #ALL}</td>
+     * <tr><td>{@link #FINEST}</td> <td>&nbsp;</td><td>= {@value #FINEST}</td>
+     * <tr><td>{@link #FINER}</td>  <td>&nbsp;</td><td>= {@value #FINER}</td>
+     * <tr><td>{@link #FINE}</td>   <td>&nbsp;</td><td>= {@value #FINE}</td>
+     * <tr><td>{@link #CONFIG}</td> <td>&nbsp;</td><td>= {@value #CONFIG}</td>
+     * <tr><td>{@link #INFO}</td>   <td>&nbsp;</td><td>= {@value #INFO}</td>
+     * <tr><td>{@link #WARNING}</td><td>&nbsp;</td><td>= {@value #WARNING}</td>
+     * <tr><td>{@link #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td> 
+     * <tr><td>{@link #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td>
      * </table>
      */
     public int getLevel();
@@ -699,19 +705,19 @@ public interface SessionLog extends Cloneable {
 
     /**
      * PUBLIC:
-     * Log a throwable with level.
+     * Log a {@link Throwable} with level.
      * <p>
      * The EclipseLink logging levels available are:<br>
      * <table>
-     * <tr><td>ALL</td>    <td>&nbsp;</td><td>= 0</td>
-     * <tr><td>FINEST</td> <td>&nbsp;</td><td>= 1</td>
-     * <tr><td>FINER</td>  <td>&nbsp;</td><td>= 2</td>
-     * <tr><td>FINE</td>   <td>&nbsp;</td><td>= 3</td>
-     * <tr><td>CONFIG</td> <td>&nbsp;</td><td>= 4</td>
-     * <tr><td>INFO</td>   <td>&nbsp;</td><td>= 5</td>
-     * <tr><td>WARNING</td><td>&nbsp;</td><td>= 6</td>
-     * <tr><td>SEVERE</td> <td>&nbsp;</td><td>= 7</td> 
-     * <tr><td>OFF</td>    <td>&nbsp;</td><td>= 8</td>
+     * <tr><td>{@link #ALL}</td>    <td>&nbsp;</td><td>= {@value #ALL}</td>
+     * <tr><td>{@link #FINEST}</td> <td>&nbsp;</td><td>= {@value #FINEST}</td>
+     * <tr><td>{@link #FINER}</td>  <td>&nbsp;</td><td>= {@value #FINER}</td>
+     * <tr><td>{@link #FINE}</td>   <td>&nbsp;</td><td>= {@value #FINE}</td>
+     * <tr><td>{@link #CONFIG}</td> <td>&nbsp;</td><td>= {@value #CONFIG}</td>
+     * <tr><td>{@link #INFO}</td>   <td>&nbsp;</td><td>= {@value #INFO}</td>
+     * <tr><td>{@link #WARNING}</td><td>&nbsp;</td><td>= {@value #WARNING}</td>
+     * <tr><td>{@link #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td> 
+     * <tr><td>{@link #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td>
      * </table>
      */
     public void logThrowable(int level, Throwable throwable);
@@ -722,15 +728,15 @@ public interface SessionLog extends Cloneable {
      * <p>
      * The EclipseLink logging levels available are:<br>
      * <table>
-     * <tr><td>ALL</td>    <td>&nbsp;</td><td>= 0</td>
-     * <tr><td>FINEST</td> <td>&nbsp;</td><td>= 1</td>
-     * <tr><td>FINER</td>  <td>&nbsp;</td><td>= 2</td>
-     * <tr><td>FINE</td>   <td>&nbsp;</td><td>= 3</td>
-     * <tr><td>CONFIG</td> <td>&nbsp;</td><td>= 4</td>
-     * <tr><td>INFO</td>   <td>&nbsp;</td><td>= 5</td>
-     * <tr><td>WARNING</td><td>&nbsp;</td><td>= 6</td>
-     * <tr><td>SEVERE</td> <td>&nbsp;</td><td>= 7</td> 
-     * <tr><td>OFF</td>    <td>&nbsp;</td><td>= 8</td>
+     * <tr><td>{@link #ALL}</td>    <td>&nbsp;</td><td>= {@value #ALL}</td>
+     * <tr><td>{@link #FINEST}</td> <td>&nbsp;</td><td>= {@value #FINEST}</td>
+     * <tr><td>{@link #FINER}</td>  <td>&nbsp;</td><td>= {@value #FINER}</td>
+     * <tr><td>{@link #FINE}</td>   <td>&nbsp;</td><td>= {@value #FINE}</td>
+     * <tr><td>{@link #CONFIG}</td> <td>&nbsp;</td><td>= {@value #CONFIG}</td>
+     * <tr><td>{@link #INFO}</td>   <td>&nbsp;</td><td>= {@value #INFO}</td>
+     * <tr><td>{@link #WARNING}</td><td>&nbsp;</td><td>= {@value #WARNING}</td>
+     * <tr><td>{@link #SEVERE}</td> <td>&nbsp;</td><td>= {@value #SEVERE}</td> 
+     * <tr><td>{@link #OFF}</td>    <td>&nbsp;</td><td>= {@value #OFF}</td>
      * </table>
      */
     public void logThrowable(int level, String category, Throwable throwable);

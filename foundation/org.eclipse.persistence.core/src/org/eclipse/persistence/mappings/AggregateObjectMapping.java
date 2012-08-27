@@ -1268,7 +1268,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         if (isNullAllowed) {
             if (getReferenceDescriptor().hasTargetForeignKeyMapping(session)) {
                 isNullAllowed = false;
-                session.log(SessionLog.WARNING, SessionLog.EJB_OR_METADATA, "metadata_warning_ignore_is_null_allowed", new Object[]{this});
+                session.log(SessionLog.WARNING, SessionLog.METADATA, "metadata_warning_ignore_is_null_allowed", new Object[]{this});
             }
         }
         

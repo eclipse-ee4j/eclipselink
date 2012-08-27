@@ -141,7 +141,7 @@ public class CachePolicy implements Cloneable, Serializable {
         // If the parent is isolated, then the child must also be isolated.
         if (!parentPolicy.isSharedIsolation()) {
             if (!isIsolated() && (getCacheIsolation() != parentPolicy.getCacheIsolation())) {
-                session.log(SessionLog.WARNING, SessionLog.EJB_OR_METADATA, "overriding_cache_isolation",
+                session.log(SessionLog.WARNING, SessionLog.METADATA, "overriding_cache_isolation",
                         new Object[]{descriptorDescriptor.getAlias(),
                                 parentPolicy.getCacheIsolation(), descriptor.getAlias(),
                                 getCacheIsolation()});
