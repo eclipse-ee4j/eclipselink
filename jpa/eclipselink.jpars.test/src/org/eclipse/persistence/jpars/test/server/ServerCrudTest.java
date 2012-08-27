@@ -58,14 +58,13 @@ public class ServerCrudTest {
         PersistenceFactoryBase factory = new PersistenceFactoryBase();
         EntityManagerFactory emf = Persistence.createEntityManagerFactory(DEFAULT_PU, properties);
         context = factory.bootstrapPersistenceContext("auction-static", emf, new URI("http://localhost:8080/JPA-RS/"), false);
-        StaticModelDatabasePopulator.cleanupDB(context.getEmf());
         StaticModelDatabasePopulator.populateDB(emf);
         client = Client.create();
     }
     
     @AfterClass
     public static void teardown() {
-        //StaticModelDatabasePopulator.cleanupDB(context.getEmf());
+        StaticModelDatabasePopulator.cleanupDB(context.getEmf());
     }
     
     @Test
@@ -115,7 +114,7 @@ public class ServerCrudTest {
         StaticUser user = new StaticUser();
         user.setName("Joe");
         user.setId(100);
-        user = restCreate(user, "StaticUser", StaticUser.class, true);
+        user = restCreate(user, "StaticUser", StaticUser.class);
         assertTrue("Wrong big retrieved.", user.getName().equals("Joe"));
         StaticUser dbUser = dbRead(user.getId(), StaticUser.class);
         assertTrue("DB User not equal ", user.equals(dbUser));
@@ -129,7 +128,7 @@ public class ServerCrudTest {
         StaticUser user = new StaticUser();
         user.setName("Joe");
         user.setId(101);
-        user = restCreate(user, "StaticUser", StaticUser.class, DEFAULT_PU, null, MediaType.APPLICATION_XML_TYPE, MediaType.APPLICATION_XML_TYPE, true);
+        user = restCreate(user, "StaticUser", StaticUser.class, DEFAULT_PU, null, MediaType.APPLICATION_XML_TYPE, MediaType.APPLICATION_XML_TYPE);
         assertTrue("Wrong big retrieved.", user.getName().equals("Joe"));
         StaticUser dbUser = dbRead(user.getId(), StaticUser.class);
         assertTrue("DB User not equal ", user.equals(dbUser));
@@ -142,7 +141,7 @@ public class ServerCrudTest {
     public void testCreateSequenced(){
         StaticAuction auction = new StaticAuction();
         auction.setName("Laptop");
-        auction = restCreate(auction, "StaticAuction", StaticAuction.class, true);
+        auction = restCreate(auction, "StaticAuction", StaticAuction.class);
     }
     
     @Test(expected = RestCallFailedException.class)
@@ -150,7 +149,7 @@ public class ServerCrudTest {
         StaticUser user = new StaticUser();
         user.setName("Joe");
         user.setId(102);
-        user = restCreate(user, "NonExistant", StaticUser.class, true);
+        user = restCreate(user, "NonExistant", StaticUser.class);
     }
     
     @Test(expected = RestCallFailedException.class)
@@ -158,7 +157,7 @@ public class ServerCrudTest {
         StaticUser user = new StaticUser();
         user.setName("Joe");
         user.setId(103);
-        user = restCreate(user, "StaticUser", StaticUser.class, "non-existant", null, MediaType.APPLICATION_XML_TYPE, MediaType.APPLICATION_XML_TYPE, true);
+        user = restCreate(user, "StaticUser", StaticUser.class, "non-existant", null, MediaType.APPLICATION_XML_TYPE, MediaType.APPLICATION_XML_TYPE);
     }
    
     /**
@@ -338,7 +337,7 @@ public class ServerCrudTest {
         // load the cache
         Map<String, String> hints = new HashMap<String, String>();
         hints.put(QueryHints.REFRESH, "true");
-        List<StaticUser> users = (List<StaticUser>)restNamedQuery("User.all", "StaticUser", null, null);
+        List<StaticUser> users = (List<StaticUser>)restNamedQuery("User.all", "StaticUser", null, hints);
         assertTrue("Incorrect Number of users found.", users.size() == 3);
         StaticUser user1 = users.get(0);
         String oldName = user1.getName();
@@ -448,7 +447,7 @@ public class ServerCrudTest {
         bid.setId(777);
         bid.setAmount(510);
         bid.setTime(System.currentTimeMillis());
-        bid = restCreate(bid, "StaticBid", StaticBid.class, false);
+        bid = restCreate(bid, "StaticBid", StaticBid.class);
 
         // Create an auction
         StaticAuction auction = new StaticAuction();
@@ -458,8 +457,7 @@ public class ServerCrudTest {
         auction.setImage("Starwars.jpg");
         auction.setEndPrice(1000);
         auction.setDescription("Lego auction");
-        auction = restCreate(auction, "StaticAuction", StaticAuction.class,
-                false);
+        auction = restCreate(auction, "StaticAuction", StaticAuction.class);
 
         // Create a user
         StaticUser user = new StaticUser();
@@ -474,7 +472,7 @@ public class ServerCrudTest {
         address.setType("Business");
 
         user.setAddress(address);
-        user = restCreate(user, "StaticUser", StaticUser.class, false);
+        user = restCreate(user, "StaticUser", StaticUser.class);
 
         // Update bid with the auction
         restUpdateBidirectionalRelationship(String.valueOf(777), "StaticBid",
@@ -485,8 +483,8 @@ public class ServerCrudTest {
                 String.valueOf(777), "StaticBid", "user", user, "auction-static", MediaType.APPLICATION_JSON_TYPE,
                 MediaType.APPLICATION_JSON_TYPE, null, true);
 
-        String expectedAuctionLink = "http://localhost:8080/eclipselink.jpars.test/persistence/auction-static/entity/StaticBid/777/auction";
-        String expectedUserLink = "http://localhost:8080/eclipselink.jpars.test/persistence/auction-static/entity/StaticBid/777/user";
+        String expectedAuctionLink = getServerURI() + DEFAULT_PU + "/entity/StaticBid/777/auction";
+        String expectedUserLink = getServerURI() + DEFAULT_PU + "/entity/StaticBid/777/user";
 
         assertTrue(bidJsonResponse.toUpperCase().indexOf(expectedAuctionLink.toUpperCase()) != -1);
 
@@ -500,6 +498,10 @@ public class ServerCrudTest {
 
         assertTrue("Wrong user, could not update bid with a user.", userByLink.getName().equals(user.getName()));
         assertTrue("Wrong auction, could not update bid with an auction.", auctionByLink.getName().equals(auction.getName()));
+        
+        dbDelete(bid);
+        dbDelete(user);
+        dbDelete(auction);
     }
 
     @Test
@@ -542,11 +544,8 @@ public class ServerCrudTest {
         String bidJsonResponse = restUpdateBidirectionalRelationship(String.valueOf(bid.getId()), "StaticBid", "user", user,
                 "auction-static", MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON_TYPE, null, true);
 
-        String expectedAuctionLink = "http://localhost:8080/eclipselink.jpars.test/persistence/auction-static/entity/StaticBid/"
-                + bid.getId() + "/auction";
-
-        String expectedUserLink = "http://localhost:8080/eclipselink.jpars.test/persistence/auction-static/entity/StaticBid/"
-                + bid.getId() + "/user";
+        String expectedAuctionLink = getServerURI() + DEFAULT_PU + "/entity/StaticBid/" + bid.getId() + "/auction";
+        String expectedUserLink = getServerURI() + DEFAULT_PU + "/entity/StaticBid/" + bid.getId() + "/user";
 
         assertTrue(bidJsonResponse.toUpperCase().indexOf(expectedAuctionLink.toUpperCase()) != -1);
         assertTrue(bidJsonResponse.toUpperCase().indexOf(expectedUserLink.toUpperCase()) != -1);
@@ -559,6 +558,10 @@ public class ServerCrudTest {
 
         assertTrue("Wrong user, could not update bid with a user.", userByLink.getName().equals(user.getName()));
         assertTrue("Wrong auction, could not update bid with an auction.", auctionByLink.getName().equals(auction.getName()));
+        
+        dbDelete(bid);
+        dbDelete(user);
+        dbDelete(auction);
     }    
     
     private static <T> T dbRead(Object id, Class<T> resultClass){
@@ -582,11 +585,11 @@ public class ServerCrudTest {
         em.getTransaction().commit();
     }
     
-    private static <T> T restCreate(Object object, String type, Class<T> resultClass, boolean sendLinks) throws RestCallFailedException {
-        return restCreate(object, type, resultClass, DEFAULT_PU, null, MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON_TYPE, sendLinks);
+    private static <T> T restCreate(Object object, String type, Class<T> resultClass) throws RestCallFailedException {
+        return restCreate(object, type, resultClass, DEFAULT_PU, null, MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON_TYPE);
     }
     
-    private static <T> T restCreate(Object object, String type, Class<T> resultClass, String persistenceUnit, Map<String, String> tenantId, MediaType inputMediaType, MediaType outputMediaType, boolean sendLinks) throws RestCallFailedException {
+    private static <T> T restCreate(Object object, String type, Class<T> resultClass, String persistenceUnit, Map<String, String> tenantId, MediaType inputMediaType, MediaType outputMediaType) throws RestCallFailedException {
         StringBuffer uri = new StringBuffer();
         uri.append(getServerURI() + persistenceUnit);
         if (tenantId != null){
@@ -598,12 +601,7 @@ public class ServerCrudTest {
         WebResource webResource = client.resource(uri.toString());
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         try{
-            if (sendLinks) {
-                context.marshallEntity(object, inputMediaType, os);
-            } else {
-                context.marshallEntity(object, inputMediaType, os, false);
-            }
-            
+               context.marshallEntity(object, inputMediaType, os, false);
         } catch (JAXBException e){
             fail("Exception thrown unmarshalling: " + e);
         }

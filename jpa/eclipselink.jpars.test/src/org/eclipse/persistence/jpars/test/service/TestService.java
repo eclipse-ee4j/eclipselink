@@ -16,7 +16,6 @@ import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -24,12 +23,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-import javax.persistence.spi.PersistenceUnitInfo;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -39,13 +36,7 @@ import javax.xml.bind.JAXBException;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
-import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.dynamic.DynamicEntity;
-import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
-import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
-import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
-import org.eclipse.persistence.jpa.Archive;
-import org.eclipse.persistence.jpa.PersistenceProvider;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.PersistenceFactoryBase;
 import org.eclipse.persistence.jpa.rs.Service;
@@ -59,7 +50,6 @@ import org.eclipse.persistence.jpars.test.util.StaticModelDatabasePopulator;
 import org.eclipse.persistence.jpars.test.util.ExamplePropertiesLoader;
 import org.eclipse.persistence.jpars.test.util.TestHttpHeaders;
 import org.eclipse.persistence.jpars.test.util.TestURIInfo;
-import org.eclipse.persistence.jpars.test.util.XMLFilePathBuilder;
 import org.eclipse.persistence.queries.FetchGroupTracker;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -264,7 +254,7 @@ public class TestService {
         context.create(null, entity2);
         
         DynamicEntity entity3 = (DynamicEntity)context.newEntity("Bid");
-        entity3.set("bid", 200d);
+        entity3.set("amount", 200d);
         entity3.set("user", entity2);
         entity3.set("auction", entity1);
         context.create(null, entity3);
@@ -382,21 +372,21 @@ public class TestService {
         context.create(null, entity2);
         
         DynamicEntity entity3 = (DynamicEntity)context.newEntity("Bid");
-        entity3.set("bid", 200d);
+        entity3.set("amount", 200d);
         entity3.set("user", entity2);
         entity3.set("auction", entity1);
         context.create(null, entity3);
 
         entity3 = (DynamicEntity)context.find(null, "Bid", entity3.get("id"), null);
 
-        entity3.set("bid", 201d);
+        entity3.set("amount", 201d);
         entity1 = entity3.get("auction");
         entity1.set("name", "Laptop");
         StreamingOutput output = (StreamingOutput)service.update("auction", "Bid", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), new TestURIInfo(), serializeToStream(entity3, context, MediaType.APPLICATION_JSON_TYPE)).getEntity();
 
         String resultString = stringifyResults(output);
         
-        assertTrue("bid was not in results.", resultString.replace(" ","").contains("\"bid\":201.0"));
+        assertTrue("amount was not in results.", resultString.replace(" ","").contains("\"amount\":201.0"));
         assertTrue("link was not in results.", resultString.replace(" ","").contains("http://localhost:8080/JPA-RS/auction/entity/Bid/"));
         assertTrue("rel was not in results.", resultString.replace(" ","").contains("\"rel\":\"user\""));
         assertTrue("Laptop was not in results.", resultString.replace(" ","").contains("\"name\":\"Laptop\""));

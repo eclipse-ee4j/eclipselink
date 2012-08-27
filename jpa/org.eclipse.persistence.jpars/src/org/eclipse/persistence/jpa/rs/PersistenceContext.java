@@ -720,6 +720,12 @@ public class PersistenceContext {
         return element.getValue();
     }
     
+    /**
+     * Make adjustements to an unmarshalled entity based on what is found in the weaved fields
+     * 
+     * @param entity
+     * @return
+     */
     protected Object wrap(Object entity){
         ClassDescriptor descriptor = getJpaSession().getDescriptor(entity);
         if (entity instanceof FetchGroupTracker && entity instanceof PersistenceWeavedRest){
@@ -742,10 +748,28 @@ public class PersistenceContext {
         return entity;
     }
     
+    /**
+     * Marshall an entity to either JSON or XML
+     * Calling this method, will treat relationships as unfetched in the XML/JSON and marshall them as links
+     * rather than attempting to marshall the data in those relationships
+     * @param object
+     * @param mediaType
+     * @param output
+     * @throws JAXBException
+     */
     public void marshallEntity(Object object, MediaType mediaType, OutputStream output) throws JAXBException {
         marshallEntity(object, mediaType, output, true);
     }
 
+    /**
+     * Marshall an entity to either JSON or XML
+     * @param object
+     * @param mediaType
+     * @param output
+     * @param sendRelationships if this is set to true, relationships will be sent as links instead of sending 
+     * the actual objects in the relationships
+     * @throws JAXBException
+     */
     public void marshallEntity(Object object, MediaType mediaType, OutputStream output, boolean sendRelationships) throws JAXBException {
         if (sendRelationships) {
             preMarshallEntity(object);
@@ -793,6 +817,11 @@ public class PersistenceContext {
         }
     }
     
+    /**
+     * Process an entity and add any additional data that needs to be added prior to marshalling
+     * This method will both single entities and lists of entities
+     * @param object
+     */
     protected void preMarshallEntity(Object object){
         if (object instanceof List){
             Iterator i = ((List)object).iterator();
@@ -804,6 +833,11 @@ public class PersistenceContext {
         }
     }
     
+    /**
+     * Add any data required prior to marshalling an entity to XML or JSON
+     * In general, this will only affect fields that have been weaved into the object
+     * @param entity
+     */
     protected void preMarshallIndividualEntity(Object entity){
         if (entity instanceof PersistenceWeavedRest){
             ClassDescriptor descriptor = getJpaSession().getClassDescriptor(entity.getClass());
@@ -845,6 +879,16 @@ public class PersistenceContext {
         }
     }
     
+    /**
+     * Check to see if our weaved list of relationships contains a particular attribute.
+     * This will tell us if an object that has been composed by unmarshalling XML or JSON
+     * has had that relationship fetched.  When the relationship is present in the list of
+     * RelationShipInfo objects, it means it is not fetched.
+     *
+     * @param relationship
+     * @param object
+     * @return
+     */
     private boolean isRelationshipRepresentedInRelationshipInfo(
             String relationship, PersistenceWeavedRest object) {
         for (RelationshipInfo info : object._persistence_getRelationships()) {
