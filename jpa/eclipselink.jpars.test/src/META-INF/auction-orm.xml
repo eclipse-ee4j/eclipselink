@@ -30,7 +30,7 @@
     </named-query>
     
     <named-query name="Bid.maxForAuctionId">
-        <query>SELECT MAX(b.bid) FROM Bid b WHERE b.auction.id =:auctionId</query>
+        <query>SELECT MAX(b.amount) FROM Bid b WHERE b.auction.id =:auctionId</query>
     </named-query>
     
     <named-query name="Bid.forUserId">
@@ -86,7 +86,7 @@
                 <column name="ID" />
                 <generated-value/>
             </id>
-            <basic name="bid" attribute-type="Double" />
+            <basic name="amount" attribute-type="Double" />
             <basic name="time" attribute-type="Long"/>        
             <one-to-one name="user" fetch="EAGER" target-entity="User">
                 <join-column name="USER_ID" />

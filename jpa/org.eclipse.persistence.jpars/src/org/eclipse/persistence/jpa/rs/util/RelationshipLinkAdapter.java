@@ -33,7 +33,9 @@ public class RelationshipLinkAdapter extends XmlAdapter<Link, RelationshipInfo> 
     
     @Override
     public RelationshipInfo unmarshal(Link v) throws Exception {
-        return null;
+        RelationshipInfo info = new RelationshipInfo();
+        info.setAttributeName(v.getRel());
+        return info;
     }
     
     @Override
