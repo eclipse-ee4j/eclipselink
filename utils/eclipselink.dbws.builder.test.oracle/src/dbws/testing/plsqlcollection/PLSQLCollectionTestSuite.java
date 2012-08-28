@@ -49,8 +49,11 @@ public class PLSQLCollectionTestSuite extends DBWSTestSuite {
                 "\nO2 DECIMAL(7,2)" +
             "\n);" +
             "\nTYPE TAB2 IS TABLE OF ORECORD INDEX BY BINARY_INTEGER;" +
+            "\nTYPE TAB3 IS TABLE OF BOOLEAN INDEX BY BINARY_INTEGER;" +
             "\nPROCEDURE COPYTABLE(OLDTAB IN TAB1, NEWTAB OUT TAB1);" +
             "\nPROCEDURE SETRECORD(INREC IN ORECORD, NEWTAB OUT TAB2);" +
+            "\nPROCEDURE COPYBOOLEANTABLE(OLDTAB IN TAB3, NEWTAB OUT TAB3);" +
+            "\nPROCEDURE BOOLTOVARCHAR(OLDTAB IN TAB3, NEWTAB OUT TAB1);" +
             "\nFUNCTION COPYTABLE2(OLDTAB IN TAB1) RETURN TAB1;" +
             "\nFUNCTION SETRECORD2(INREC IN ORECORD) RETURN TAB2;" +
         "\nEND PACKAGE2;";
@@ -60,6 +63,22 @@ public class PLSQLCollectionTestSuite extends DBWSTestSuite {
             "\nBEGIN" +
                 "\nNEWTAB := OLDTAB;" +
             "\nEND COPYTABLE;" +
+            "\nPROCEDURE COPYBOOLEANTABLE(OLDTAB IN TAB3, NEWTAB OUT TAB3) AS" +
+            "\nBEGIN" +
+                "\nNEWTAB := OLDTAB;" +
+            "\nEND COPYBOOLEANTABLE;" +
+            "\nPROCEDURE BOOLTOVARCHAR(OLDTAB IN TAB3, NEWTAB OUT TAB1) AS" +
+            "\nBEGIN" +
+                "\nIF OLDTAB.COUNT > 0 THEN" +
+                    "\nFOR I IN OLDTAB.FIRST..OLDTAB.LAST LOOP" +
+                        "\nIF OLDTAB(I) = TRUE THEN" +
+                            "\nNEWTAB(I + 1 - OLDTAB.FIRST) := 'true';" +
+                        "\nELSE" +
+                            "\nNEWTAB(I + 1 - OLDTAB.FIRST) := 'false';" +
+                        "\nEND IF;"+
+                    "\nEND LOOP;" +
+                "\nEND IF;" +
+            "\nEND BOOLTOVARCHAR;" +
             "\nPROCEDURE SETRECORD(INREC IN ORECORD, NEWTAB OUT TAB2) AS" +
             "\nBEGIN" +
                 "\nNEWTAB(0) := INREC;" +
@@ -84,12 +103,16 @@ public class PLSQLCollectionTestSuite extends DBWSTestSuite {
         "\n)";
     static final String CREATE_PACKAGE2_TAB2_TYPE =
         "CREATE OR REPLACE TYPE PACKAGE2_TAB2 AS TABLE OF PACKAGE2_ORECORD";
+    static final String CREATE_PACKAGE2_TAB3_TYPE =
+        "CREATE OR REPLACE TYPE PACKAGE2_TAB3 AS TABLE OF INTEGER";
     static final String DROP_PACKAGE2_PACKAGE =
         "DROP PACKAGE PACKAGE2";
     static final String DROP_PACKAGE2_TAB1_TYPE =
         "DROP TYPE PACKAGE2_TAB1";
     static final String DROP_PACKAGE2_TAB2_TYPE =
         "DROP TYPE PACKAGE2_TAB2";
+    static final String DROP_PACKAGE2_TAB3_TYPE =
+        "DROP TYPE PACKAGE2_TAB3";
     static final String DROP_PACKAGE2_ORECORD_TYPE =
         "DROP TYPE PACKAGE2_ORECORD";
 
@@ -125,6 +148,7 @@ public class PLSQLCollectionTestSuite extends DBWSTestSuite {
             runDdl(conn, CREATE_PACKAGE2_TAB1_TYPE, ddlDebug);
             runDdl(conn, CREATE_PACKAGE2_ORECORD_TYPE, ddlDebug);
             runDdl(conn, CREATE_PACKAGE2_TAB2_TYPE, ddlDebug);
+            runDdl(conn, CREATE_PACKAGE2_TAB3_TYPE, ddlDebug);
         }
         DBWS_BUILDER_XML_USERNAME =
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
@@ -156,6 +180,16 @@ public class PLSQLCollectionTestSuite extends DBWSTestSuite {
                   "procedurePattern=\"COPYTABLE2\" " +
               "/>" +
               "<plsql-procedure " +
+                  "name=\"CopyBoolTableTest\" " +
+                  "catalogPattern=\"PACKAGE2\" " +
+                  "procedurePattern=\"COPYBOOLEANTABLE\" " +
+              "/>" +
+              "<plsql-procedure " +
+                  "name=\"BoolTabToVarcharTabTest\" " +
+                  "catalogPattern=\"PACKAGE2\" " +
+                  "procedurePattern=\"BOOLTOVARCHAR\" " +
+              "/>" +
+              "<plsql-procedure " +
                   "name=\"SetRecordTest\" " +
                   "catalogPattern=\"PACKAGE2\" " +
                   "procedurePattern=\"SETRECORD\" " +
@@ -178,6 +212,7 @@ public class PLSQLCollectionTestSuite extends DBWSTestSuite {
             runDdl(conn, DROP_PACKAGE2_PACKAGE, ddlDebug);
             runDdl(conn, DROP_PACKAGE2_TAB1_TYPE, ddlDebug);
             runDdl(conn, DROP_PACKAGE2_TAB2_TYPE, ddlDebug);
+            runDdl(conn, DROP_PACKAGE2_TAB3_TYPE, ddlDebug);
             runDdl(conn, DROP_PACKAGE2_ORECORD_TYPE, ddlDebug);
         }
     }
@@ -219,6 +254,54 @@ public class PLSQLCollectionTestSuite extends DBWSTestSuite {
         assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
     }
 
+    @Test
+    public void copyBoolTableTest() {
+        XMLUnmarshaller unmarshaller = xrService.getXMLContext().createUnmarshaller();
+        Object inputTab = unmarshaller.unmarshal(new StringReader(TABLE3_XML));
+        Invocation invocation = new Invocation("CopyBoolTableTest");
+        invocation.setParameter("OLDTAB", inputTab);
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(TABLE3_XML));
+        assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+    }
+    public static final String TABLE3_XML =
+        STANDALONE_XML_HEADER +
+        "<PACKAGE2_TAB3 xmlns=\"urn:PLSQLCollection\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+          "<item>1</item>" +
+          "<item>0</item>" +
+          "<item>1</item>" +
+          "<item>0</item>" +
+        "</PACKAGE2_TAB3>";
+
+    @Test
+    public void boolTabToVarcharTabTest() {
+        XMLUnmarshaller unmarshaller = xrService.getXMLContext().createUnmarshaller();
+        Object inputTab = unmarshaller.unmarshal(new StringReader(TABLE3_XML));
+        Invocation invocation = new Invocation("BoolTabToVarcharTabTest");
+        invocation.setParameter("OLDTAB", inputTab);
+        Operation op = xrService.getOperation(invocation.getName());
+        Object result = op.invoke(xrService, invocation);
+        assertNotNull("result is null", result);
+        Document doc = xmlPlatform.createDocument();
+        XMLMarshaller marshaller = xrService.getXMLContext().createMarshaller();
+        marshaller.marshal(result, doc);
+        Document controlDoc = xmlParser.parse(new StringReader(TABLE4_XML));
+        assertTrue("Expected:\n" + documentToString(controlDoc) + "\nActual:\n" + documentToString(doc), comparer.isNodeEqual(controlDoc, doc));
+    }
+    public static final String TABLE4_XML =
+        STANDALONE_XML_HEADER +
+        "<PACKAGE2_TAB1 xmlns=\"urn:PLSQLCollection\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
+          "<item>true</item>" +
+          "<item>false</item>" +
+          "<item>true</item>" +
+          "<item>false</item>" +
+        "</PACKAGE2_TAB1>";
+    
     /**
      * StoredProcedure test.
      */
@@ -288,18 +371,56 @@ public class PLSQLCollectionTestSuite extends DBWSTestSuite {
         STANDALONE_XML_HEADER +
         "<wsdl:definitions name=\"PLSQLCollectionService\" targetNamespace=\"urn:PLSQLCollectionService\" xmlns:ns1=\"urn:PLSQLCollection\" xmlns:wsdl=\"http://schemas.xmlsoap.org/wsdl/\" xmlns:tns=\"urn:PLSQLCollectionService\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/wsdl/soap/\">" +
         "<wsdl:types>" +
-          "<xsd:schema xmlns:tns=\"urn:PLSQLCollectionService\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" targetNamespace=\"urn:PLSQLCollectionService\" elementFormDefault=\"qualified\"><xsd:import schemaLocation=\"eclipselink-dbws-schema.xsd\" namespace=\"urn:PLSQLCollection\"/><xsd:complexType name=\"SetRecordTestRequestType\"><xsd:sequence><xsd:element name=\"INREC\" type=\"ns1:PACKAGE2_ORECORD\"/></xsd:sequence></xsd:complexType><xsd:complexType name=\"CopyTableTestResponseType\"><xsd:sequence><xsd:element name=\"result\"><xsd:complexType><xsd:sequence><xsd:element ref=\"ns1:PACKAGE2_TAB1\" minOccurs=\"0\"/></xsd:sequence></xsd:complexType></xsd:element></xsd:sequence></xsd:complexType><xsd:complexType name=\"CopyTableTest2ResponseType\"><xsd:sequence><xsd:element name=\"result\"><xsd:complexType><xsd:sequence><xsd:element ref=\"ns1:PACKAGE2_TAB1\" minOccurs=\"0\"/></xsd:sequence></xsd:complexType></xsd:element></xsd:sequence></xsd:complexType><xsd:complexType name=\"SetRecordTest2RequestType\"><xsd:sequence><xsd:element name=\"INREC\" type=\"ns1:PACKAGE2_ORECORD\"/></xsd:sequence></xsd:complexType><xsd:complexType name=\"CopyTableTestRequestType\"><xsd:sequence><xsd:element name=\"OLDTAB\" type=\"ns1:PACKAGE2_TAB1\"/></xsd:sequence></xsd:complexType><xsd:complexType name=\"SetRecordTestResponseType\"><xsd:sequence><xsd:element name=\"result\"><xsd:complexType><xsd:sequence><xsd:element ref=\"ns1:PACKAGE2_TAB2\" minOccurs=\"0\"/></xsd:sequence></xsd:complexType></xsd:element></xsd:sequence></xsd:complexType><xsd:complexType name=\"CopyTableTest2RequestType\"><xsd:sequence><xsd:element name=\"OLDTAB\" type=\"ns1:PACKAGE2_TAB1\"/></xsd:sequence></xsd:complexType><xsd:complexType name=\"SetRecordTest2ResponseType\"><xsd:sequence><xsd:element name=\"result\"><xsd:complexType><xsd:sequence><xsd:element ref=\"ns1:PACKAGE2_TAB2\" minOccurs=\"0\"/></xsd:sequence></xsd:complexType></xsd:element></xsd:sequence></xsd:complexType><xsd:element name=\"CopyTableTestResponse\" type=\"tns:CopyTableTestResponseType\"/><xsd:element name=\"CopyTableTest\" type=\"tns:CopyTableTestRequestType\"/><xsd:element name=\"SetRecordTest\" type=\"tns:SetRecordTestRequestType\"/><xsd:element name=\"CopyTableTest2Response\" type=\"tns:CopyTableTest2ResponseType\"/><xsd:element name=\"SetRecordTest2\" type=\"tns:SetRecordTest2RequestType\"/><xsd:element name=\"SetRecordTest2Response\" type=\"tns:SetRecordTest2ResponseType\"/><xsd:element name=\"SetRecordTestResponse\" type=\"tns:SetRecordTestResponseType\"/><xsd:element name=\"CopyTableTest2\" type=\"tns:CopyTableTest2RequestType\"/></xsd:schema>" +
+          "<xsd:schema xmlns:tns=\"urn:PLSQLCollectionService\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" targetNamespace=\"urn:PLSQLCollectionService\" elementFormDefault=\"qualified\">" +
+            "<xsd:import schemaLocation=\"eclipselink-dbws-schema.xsd\" namespace=\"urn:PLSQLCollection\"/>" +
+            "<xsd:complexType name=\"SetRecordTestRequestType\"><xsd:sequence><xsd:element name=\"INREC\" type=\"ns1:PACKAGE2_ORECORD\"/></xsd:sequence></xsd:complexType>" +
+            "<xsd:complexType name=\"CopyBoolTableTestResponseType\"><xsd:sequence><xsd:element name=\"result\"><xsd:complexType><xsd:sequence><xsd:element minOccurs=\"0\" ref=\"ns1:PACKAGE2_TAB3\"/></xsd:sequence></xsd:complexType></xsd:element></xsd:sequence></xsd:complexType>" +
+            "<xsd:complexType name=\"CopyTableTestResponseType\"><xsd:sequence><xsd:element name=\"result\"><xsd:complexType><xsd:sequence><xsd:element ref=\"ns1:PACKAGE2_TAB1\" minOccurs=\"0\"/></xsd:sequence></xsd:complexType></xsd:element></xsd:sequence></xsd:complexType>" +
+            "<xsd:complexType name=\"BoolTabToVarcharTabTestRequestType\"><xsd:sequence><xsd:element name=\"OLDTAB\" type=\"ns1:PACKAGE2_TAB3\"/></xsd:sequence></xsd:complexType>" +
+            "<xsd:complexType name=\"CopyTableTest2ResponseType\"><xsd:sequence><xsd:element name=\"result\"><xsd:complexType><xsd:sequence><xsd:element ref=\"ns1:PACKAGE2_TAB1\" minOccurs=\"0\"/></xsd:sequence></xsd:complexType></xsd:element></xsd:sequence></xsd:complexType>" +
+            "<xsd:complexType name=\"SetRecordTest2RequestType\"><xsd:sequence><xsd:element name=\"INREC\" type=\"ns1:PACKAGE2_ORECORD\"/></xsd:sequence></xsd:complexType>" +
+            "<xsd:complexType name=\"CopyTableTestRequestType\"><xsd:sequence><xsd:element name=\"OLDTAB\" type=\"ns1:PACKAGE2_TAB1\"/></xsd:sequence></xsd:complexType>" +
+            "<xsd:complexType name=\"BoolTabToVarcharTabTestResponseType\"><xsd:sequence><xsd:element name=\"result\"><xsd:complexType><xsd:sequence><xsd:element minOccurs=\"0\" ref=\"ns1:PACKAGE2_TAB1\"/></xsd:sequence></xsd:complexType></xsd:element></xsd:sequence></xsd:complexType>" +
+            "<xsd:complexType name=\"SetRecordTestResponseType\"><xsd:sequence><xsd:element name=\"result\"><xsd:complexType><xsd:sequence><xsd:element ref=\"ns1:PACKAGE2_TAB2\" minOccurs=\"0\"/></xsd:sequence></xsd:complexType></xsd:element></xsd:sequence></xsd:complexType>" +
+            "<xsd:complexType name=\"CopyTableTest2RequestType\"><xsd:sequence><xsd:element name=\"OLDTAB\" type=\"ns1:PACKAGE2_TAB1\"/></xsd:sequence></xsd:complexType>" +
+            "<xsd:complexType name=\"SetRecordTest2ResponseType\"><xsd:sequence><xsd:element name=\"result\"><xsd:complexType><xsd:sequence><xsd:element ref=\"ns1:PACKAGE2_TAB2\" minOccurs=\"0\"/></xsd:sequence></xsd:complexType></xsd:element></xsd:sequence></xsd:complexType>" +
+            "<xsd:complexType name=\"CopyBoolTableTestRequestType\"><xsd:sequence><xsd:element name=\"OLDTAB\" type=\"ns1:PACKAGE2_TAB3\"/></xsd:sequence></xsd:complexType>" +
+            "<xsd:element name=\"CopyTableTestResponse\" type=\"tns:CopyTableTestResponseType\"/>" +
+            "<xsd:element name=\"CopyBoolTableTestResponse\" type=\"tns:CopyBoolTableTestResponseType\"/>" +
+            "<xsd:element name=\"CopyTableTest\" type=\"tns:CopyTableTestRequestType\"/>" +
+            "<xsd:element name=\"SetRecordTest\" type=\"tns:SetRecordTestRequestType\"/>" +
+            "<xsd:element name=\"CopyTableTest2Response\" type=\"tns:CopyTableTest2ResponseType\"/>" +
+            "<xsd:element name=\"SetRecordTest2\" type=\"tns:SetRecordTest2RequestType\"/>" +
+            "<xsd:element name=\"BoolTabToVarcharTabTestResponse\" type=\"tns:BoolTabToVarcharTabTestResponseType\"/>" +
+            "<xsd:element name=\"SetRecordTest2Response\" type=\"tns:SetRecordTest2ResponseType\"/>" +
+            "<xsd:element name=\"SetRecordTestResponse\" type=\"tns:SetRecordTestResponseType\"/>" +
+            "<xsd:element name=\"BoolTabToVarcharTabTest\" type=\"tns:BoolTabToVarcharTabTestRequestType\"/>" +
+            "<xsd:element name=\"CopyBoolTableTest\" type=\"tns:CopyBoolTableTestRequestType\"/>" +
+            "<xsd:element name=\"CopyTableTest2\" type=\"tns:CopyTableTest2RequestType\"/>" +
+          "</xsd:schema>" +
         "</wsdl:types>" +
         "<wsdl:message name=\"SetRecordTest2Response\">" +
           "<wsdl:part name=\"SetRecordTest2Response\" element=\"tns:SetRecordTest2Response\">" +
+          "</wsdl:part>" +
+        "</wsdl:message>" +
+        "<wsdl:message name=\"BoolTabToVarcharTabTestResponse\">" +
+          "<wsdl:part element=\"tns:BoolTabToVarcharTabTestResponse\" name=\"BoolTabToVarcharTabTestResponse\">" +
           "</wsdl:part>" +
         "</wsdl:message>" +
         "<wsdl:message name=\"SetRecordTestRequest\">" +
           "<wsdl:part name=\"SetRecordTestRequest\" element=\"tns:SetRecordTest\">" +
           "</wsdl:part>" +
         "</wsdl:message>" +
+        "<wsdl:message name=\"BoolTabToVarcharTabTestRequest\">" +
+          "<wsdl:part element=\"tns:BoolTabToVarcharTabTest\" name=\"BoolTabToVarcharTabTestRequest\">" +
+          "</wsdl:part>" +
+        "</wsdl:message>" +
         "<wsdl:message name=\"SetRecordTestResponse\">" +
           "<wsdl:part name=\"SetRecordTestResponse\" element=\"tns:SetRecordTestResponse\">" +
+          "</wsdl:part>" +
+        "</wsdl:message>" +
+        "<wsdl:message name=\"CopyBoolTableTestResponse\">" +
+          "<wsdl:part element=\"tns:CopyBoolTableTestResponse\" name=\"CopyBoolTableTestResponse\">" +
           "</wsdl:part>" +
         "</wsdl:message>" +
         "<wsdl:message name=\"CopyTableTestRequest\">" +
@@ -316,6 +437,10 @@ public class PLSQLCollectionTestSuite extends DBWSTestSuite {
         "</wsdl:message>" +
         "<wsdl:message name=\"CopyTableTest2Request\">" +
           "<wsdl:part name=\"CopyTableTest2Request\" element=\"tns:CopyTableTest2\">" +
+          "</wsdl:part>" +
+        "</wsdl:message>" +
+        "<wsdl:message name=\"CopyBoolTableTestRequest\">" +
+          "<wsdl:part element=\"tns:CopyBoolTableTest\" name=\"CopyBoolTableTestRequest\">" +
           "</wsdl:part>" +
         "</wsdl:message>" +
         "<wsdl:message name=\"SetRecordTest2Request\">" +
@@ -340,6 +465,18 @@ public class PLSQLCollectionTestSuite extends DBWSTestSuite {
           "</wsdl:input>" +
             "<wsdl:output message=\"tns:SetRecordTest2Response\">" +
           "</wsdl:output>" +
+          "</wsdl:operation>" +
+          "<wsdl:operation name=\"BoolTabToVarcharTabTest\">" +
+            "<wsdl:input message=\"tns:BoolTabToVarcharTabTestRequest\">" +
+            "</wsdl:input>" +
+            "<wsdl:output message=\"tns:BoolTabToVarcharTabTestResponse\">" +
+            "</wsdl:output>" +
+          "</wsdl:operation>" +
+          "<wsdl:operation name=\"CopyBoolTableTest\">" +
+            "<wsdl:input message=\"tns:CopyBoolTableTestRequest\">" +
+            "</wsdl:input>" +
+            "<wsdl:output message=\"tns:CopyBoolTableTestResponse\">" +
+            "</wsdl:output>" +
           "</wsdl:operation>" +
           "<wsdl:operation name=\"CopyTableTest2\">" +
             "<wsdl:input message=\"tns:CopyTableTest2Request\">" +
@@ -370,6 +507,24 @@ public class PLSQLCollectionTestSuite extends DBWSTestSuite {
           "</wsdl:operation>" +
           "<wsdl:operation name=\"SetRecordTest2\">" +
             "<soap:operation soapAction=\"urn:PLSQLCollectionService:SetRecordTest2\"/>" +
+            "<wsdl:input>" +
+              "<soap:body use=\"literal\"/>" +
+            "</wsdl:input>" +
+            "<wsdl:output>" +
+              "<soap:body use=\"literal\"/>" +
+            "</wsdl:output>" +
+          "</wsdl:operation>" +
+          "<wsdl:operation name=\"BoolTabToVarcharTabTest\">" +
+            "<soap:operation soapAction=\"urn:PLSQLCollectionService:BoolTabToVarcharTabTest\"/>" +
+            "<wsdl:input>" +
+              "<soap:body use=\"literal\"/>" +
+            "</wsdl:input>" +
+            "<wsdl:output>" +
+              "<soap:body use=\"literal\"/>" +
+            "</wsdl:output>" +
+          "</wsdl:operation>" +
+          "<wsdl:operation name=\"CopyBoolTableTest\">" +
+            "<soap:operation soapAction=\"urn:PLSQLCollectionService:CopyBoolTableTest\"/>" +
             "<wsdl:input>" +
               "<soap:body use=\"literal\"/>" +
             "</wsdl:input>" +
