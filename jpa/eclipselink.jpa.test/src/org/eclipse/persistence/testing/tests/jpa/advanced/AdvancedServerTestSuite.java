@@ -44,8 +44,8 @@ public class AdvancedServerTestSuite extends TestSuite {
         suite.addTest(ComplexAggregateTestSuite.suite()); 
         if (! JUnitTestCase.isJPA10()) {
             suite.addTest(AdvancedFetchGroupJunitTest.suite());
+            suite.addTest(MetadataCachingTestSuite.suite());
         }
-        suite.addTest(MetadataCachingTestSuite.suite());
         return suite;
     }
 }
