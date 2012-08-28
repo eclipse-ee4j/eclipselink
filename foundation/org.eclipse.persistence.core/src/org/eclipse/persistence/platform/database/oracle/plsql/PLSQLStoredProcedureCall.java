@@ -911,9 +911,9 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
                 sb.append("(aSqlItem(I));");
             }
             else if (collection.nestedType.equals(PLSQLBoolean)) {
-                sb.append("aSqlItem(I + 1 - aPlsqlItem.FIRST) := ");
+                sb.append("aPlsqlItem(I + 1 - aSqlItem.FIRST) := ");
                 sb.append(PLSQLBoolean_IN_CONV);
-                sb.append("(aPlsqlItem(I));");
+                sb.append("(aSqlItem(I));");
             }
             else {
         		sb.append("aPlsqlItem(I) := aSqlItem(I);");
