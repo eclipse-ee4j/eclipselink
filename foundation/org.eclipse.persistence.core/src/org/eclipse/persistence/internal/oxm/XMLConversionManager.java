@@ -760,7 +760,9 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
     public XMLGregorianCalendar convertStringToXMLGregorianCalendar(String sourceString) {
         // Trim in case of leading or trailing whitespace
         String trimmedSourceString = sourceString.trim();
-        
+        if(trimmedSourceString.length() == 0) {
+            return null;
+        }
         XMLGregorianCalendar calToReturn = null;
         try {
             calToReturn = getDatatypeFactory().newXMLGregorianCalendar(trimmedSourceString);
