@@ -203,6 +203,15 @@ public class XMLGregorianCalendarTestCases extends XMLMappingTestCases {
         assertNotSame("Calendar's 'day' field was not set.", c.getDay(), DatatypeConstants.FIELD_UNDEFINED);
     }
     
+    public void testConversionFromEmptyString() throws Exception {
+        String aString = "";
+        try {
+            XMLGregorianCalendar c = (XMLGregorianCalendar) getXmlConversionManager().convertStringToXMLGregorianCalendar(aString);
+        } catch(Exception ex) {
+            fail("An unexpect exception was thrown when coverting empty string to Gregorian Calendar");
+        }
+    }
+    
     public XMLConversionManager getXmlConversionManager() {
         return (XMLConversionManager) xmlContext.getSession(0).getDatasourceLogin().getDatasourcePlatform().getConversionManager();
     }
