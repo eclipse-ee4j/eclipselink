@@ -809,11 +809,17 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
      * @return
      */
     public Duration convertStringToDuration(String sourceString) {
+        if(sourceString == null || sourceString.length() == 0) {
+            return null;
+        }
         return getDatatypeFactory().newDuration(sourceString);
     }
 
     public Calendar convertStringToCalendar(String sourceString, QName schemaTypeQName) {
         XMLGregorianCalendar xmlGregorianCalender = convertStringToXMLGregorianCalendar(sourceString, schemaTypeQName);
+        if(xmlGregorianCalender == null) {
+            return null;
+        }
         return toCalendar(xmlGregorianCalender);
     }
 
@@ -878,7 +884,9 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
                  throw XMLConversionException.incorrectTimestampDateTimeFormat(sourceString);
              }
         }
-
+        if(xmlGregorianCalender == null) {
+            return null;
+        }
         GregorianCalendar cal = xmlGregorianCalender.toGregorianCalendar();
         if(xmlGregorianCalender.getTimezone() == DatatypeConstants.FIELD_UNDEFINED) {
             cal.setTimeZone(getTimeZone());
@@ -1128,7 +1136,9 @@ public class XMLConversionManager extends ConversionManager implements TimeZoneH
 
     public java.util.Date convertStringToDate(String sourceString, QName schemaType) {
         XMLGregorianCalendar xmlGregorianCalender = convertStringToXMLGregorianCalendar(sourceString, schemaType);
-
+        if(xmlGregorianCalender == null) {
+            return null;
+        }
         Calendar cal = toCalendar(xmlGregorianCalender);
         Date returnDate = cal.getTime();
 
