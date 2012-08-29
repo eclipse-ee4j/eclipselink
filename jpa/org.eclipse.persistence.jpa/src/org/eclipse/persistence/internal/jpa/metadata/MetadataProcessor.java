@@ -79,8 +79,6 @@ import org.eclipse.persistence.jpa.Archive;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 
-import org.eclipse.persistence.platform.database.converters.StructConverter;
-
 /**
  * INTERNAL:
  * The object/relational metadata processor for the EJB3.0 specification. 

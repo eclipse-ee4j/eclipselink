@@ -18,13 +18,11 @@ import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorEventListener;
-import org.eclipse.persistence.descriptors.DescriptorEventManager;
 import org.eclipse.persistence.descriptors.SerializableDescriptorEventHolder;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
