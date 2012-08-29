@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
 
@@ -41,6 +42,7 @@ import org.eclipse.persistence.jpa.rs.exceptions.NonUniqueResultExceptionExcepti
  * @author tware
  *
  */
+@ApplicationPath("/persistence/")
 public class JPARSApplication extends Application {
 
 private final Set<Class<?>> classes;
