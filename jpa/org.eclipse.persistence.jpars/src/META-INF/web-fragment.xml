@@ -1,16 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-fragment xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.0" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-fragment_3_0.xsd">
-  <servlet>
-    <servlet-name>JPA-RS Service</servlet-name>
-    <servlet-class>org.eclipse.persistence.jpa.rs.jersey.PortableServletContainer</servlet-class>
-    <init-param>
-        <param-name>javax.ws.rs.Application</param-name>
-        <param-value>org.eclipse.persistence.jpa.rs.JPARSApplication</param-value>
-    </init-param>
-    <load-on-startup>1</load-on-startup>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>JPA-RS Service</servlet-name>
-    <url-pattern>/persistence/*</url-pattern>
-  </servlet-mapping>
+
 </web-fragment>
