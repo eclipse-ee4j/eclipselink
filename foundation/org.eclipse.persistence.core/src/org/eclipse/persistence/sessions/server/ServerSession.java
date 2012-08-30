@@ -123,7 +123,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      * @see Project#createServerSession(int, int, int)
      */
     public ServerSession(Project project, int initialNumberOfPooledConnection, int minNumberOfPooledConnection, int maxNumberOfPooledConnection) {
-        this(project, new ConnectionPolicy(DEFAULT_POOL), ConnectionPool.INITIAL_CONNECTIONS, minNumberOfPooledConnection, maxNumberOfPooledConnection, null, null);
+        this(project, new ConnectionPolicy(DEFAULT_POOL), initialNumberOfPooledConnection, minNumberOfPooledConnection, maxNumberOfPooledConnection, null, null);
     }
 
     /**

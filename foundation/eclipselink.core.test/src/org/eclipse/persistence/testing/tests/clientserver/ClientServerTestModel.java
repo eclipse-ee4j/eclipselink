@@ -116,6 +116,8 @@ public class ClientServerTestModel extends TestModel {
         suite.addTest(new ClientServerUpdateDeadlockTest());
         suite.addTest(new UnitOfWorkDeleteOrderTest()); // bug 331064
         
+        suite.addTest(new ConnectionPoolSizingTest()); // bug 388129
+        
         return suite;
     }
 
