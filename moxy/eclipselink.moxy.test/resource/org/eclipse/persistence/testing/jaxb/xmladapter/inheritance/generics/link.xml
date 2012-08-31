@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<customer>
+    <address href="http://www.example.com/address/1"/>
+    <phoneNumber href="http://www.example.com/phoneNumber/1"/>
+    <phoneNumber>555-1111</phoneNumber>
+</customer>
