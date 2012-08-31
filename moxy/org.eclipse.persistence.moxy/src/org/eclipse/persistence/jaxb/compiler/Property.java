@@ -157,22 +157,24 @@ public class Property implements Cloneable {
         adapterClass = adapterCls;
         JavaClass newType  = helper.getJavaClass(Object.class);
         ArrayList<JavaMethod> marshalMethods = new ArrayList<JavaMethod>();
-
+        
         // look for marshal method
         for (Iterator<JavaMethod> methodIt = adapterClass.getMethods().iterator(); methodIt.hasNext(); ) {
             JavaMethod method = methodIt.next();
             if (method.getName().equals(MARSHAL_METHOD_NAME)) {
-            	JavaClass returnType = method.getReturnType();
-            	// try and find a marshal method where Object is not the return type
-            	// to avoid processing an inherited default marshal method 
-            	if (!returnType.getQualifiedName().equals(newType.getQualifiedName())){
-            		newType = (JavaClass) method.getReturnType();
-            		setTypeFromAdapterClass(newType, method.getParameterTypes()[0]);
-                    return;
-            	}
-            	// found a marshal method with an Object return type; add 
-            	// it to the list in case we need to process it later
-            	marshalMethods.add(method);
+                JavaClass returnType = method.getReturnType();
+                // try and find a marshal method where Object is not the return type
+                // to avoid processing an inherited default marshal method
+                if (!returnType.getQualifiedName().equals(newType.getQualifiedName())) {
+                    if (!returnType.isInterface()) {
+                        newType = (JavaClass) method.getReturnType();
+                        setTypeFromAdapterClass(newType, method.getParameterTypes()[0]);
+                        return;
+                    }
+                }
+                // found a marshal method with an Object return type; add
+                // it to the list in case we need to process it later
+                marshalMethods.add(method);
             }
         }
         // if there are no marshal methods to process just set type 
