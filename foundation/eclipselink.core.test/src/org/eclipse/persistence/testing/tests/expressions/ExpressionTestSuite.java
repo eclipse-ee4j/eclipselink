@@ -1700,6 +1700,11 @@ public class ExpressionTestSuite extends TestSuite {
         addTest(new LiteralSQLExpressionWithQuestionMarkTest("' 123 ? 123 '", false));
         
         addRegexpTest();
+        
+        // Bug 384223 - add flag for case insensitive Expressions to use lower case, instead of upper case
+        addTest(new LowerCaseForCaseInsensitiveTest(LowerCaseForCaseInsensitiveTest.EqualsIgnoreCase));
+        addTest(new LowerCaseForCaseInsensitiveTest(LowerCaseForCaseInsensitiveTest.LikeIgnoreCase));
+        addTest(new LowerCaseForCaseInsensitiveTest(LowerCaseForCaseInsensitiveTest.ContainsSubstringIgnoringCase));
     }
 
     //SRG test set is maintained by QA only, do NOT add any new tests into it.

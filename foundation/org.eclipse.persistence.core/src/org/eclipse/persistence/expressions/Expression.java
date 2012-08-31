@@ -57,6 +57,10 @@ public abstract class Expression implements Serializable, Cloneable {
     protected boolean selectIfOrderedBy = true;
     /** PERF: Cache the hashCode. */
     protected int hashCode = 0;
+    
+    /** Use the upper() function for case insensitive expression operations (default). 
+        Seting this flag to false will use the lower() function instead. */
+    public static boolean shouldUseUpperCaseForIgnoreCase = true;
 
     /**
      * Base Expression Constructor.  Not generally used by Developers
@@ -1026,11 +1030,15 @@ public abstract class Expression implements Serializable, Cloneable {
      * <blockquote><pre>
      *     EclipseLink: employee.get("firstName").containsSubstringIgnoringCase("Bob")
      *     Java: employee.getFirstName().toUpperCase().indexOf("BOB") != -1
-     *     SQL: F_NAME LIKE '%BOB%'
+     *     SQL: UPPER(F_NAME) LIKE '%BOB%'
      * </blockquote></pre>
      */
     public Expression containsSubstringIgnoringCase(String theValue) {
-        return toUpperCase().containsSubstring(theValue.toUpperCase());
+        if (shouldUseUpperCaseForIgnoreCase) {
+            return toUpperCase().containsSubstring(theValue.toUpperCase());
+        } else {
+            return toLowerCase().containsSubstring(theValue.toLowerCase());
+        }
     }
 
     /**
@@ -1040,11 +1048,15 @@ public abstract class Expression implements Serializable, Cloneable {
      * <blockquote><pre>
      *     EclipseLink: employee.get("firstName").containsSubstringIgnoringCase("Bob")
      *     Java: employee.getFirstName().toUpperCase().indexOf("BOB") != -1
-     *     SQL: F_NAME LIKE '%BOB%'
+     *     SQL: UPPER(F_NAME) LIKE '%BOB%'
      * </blockquote></pre>
      */
     public Expression containsSubstringIgnoringCase(Expression expression) {
-        return toUpperCase().containsSubstring(expression.toUpperCase());
+        if (shouldUseUpperCaseForIgnoreCase) {
+            return toUpperCase().containsSubstring(expression.toUpperCase());
+        } else {
+            return toLowerCase().containsSubstring(expression.toLowerCase());
+        }
     }
 
     /*
@@ -1519,7 +1531,11 @@ public abstract class Expression implements Serializable, Cloneable {
      * </blockquote></pre>
      */
     public Expression equalsIgnoreCase(String theValue) {
-        return toUpperCase().equal(theValue.toUpperCase());
+        if (shouldUseUpperCaseForIgnoreCase) {
+            return toUpperCase().equal(theValue.toUpperCase());
+        } else {
+            return toLowerCase().equal(theValue.toLowerCase());
+        }
     }
 
     /**
@@ -1534,7 +1550,11 @@ public abstract class Expression implements Serializable, Cloneable {
      * </blockquote></pre>
      */
     public Expression equalsIgnoreCase(Expression theValue) {
-        return toUpperCase().equal(theValue.toUpperCase());
+        if (shouldUseUpperCaseForIgnoreCase) {
+            return toUpperCase().equal(theValue.toUpperCase());
+        } else {
+            return toLowerCase().equal(theValue.toLowerCase());
+        }
     }
 
     /**
@@ -1625,7 +1645,7 @@ public abstract class Expression implements Serializable, Cloneable {
     public static Expression fromLiteral(String value, Expression base) {
         return new LiteralExpression(value, base);
     }
-
+    
     /**
      * PUBLIC:
      * Return an expression that wraps the attribute or query key name.
@@ -3005,11 +3025,15 @@ public abstract class Expression implements Serializable, Cloneable {
      * <pre><blockquote>
      *     EclipseLink: employee.get("firstName").likeIgnoreCase("%Bob%")
      *     Java: none
-     *     SQL: UPPER(F_NAME) LIKE '%BOB%'
+     *     SQL: UPPER(F_NAME) LIKE 'BOB'
      * </blockquote></pre>
      */
     public Expression likeIgnoreCase(String theValue) {
-        return toUpperCase().like(theValue.toUpperCase());
+        if (shouldUseUpperCaseForIgnoreCase) {
+            return toUpperCase().like(theValue.toUpperCase());
+        } else {
+            return toLowerCase().like(theValue.toLowerCase());
+        }
     }
 
     /**
@@ -3018,7 +3042,11 @@ public abstract class Expression implements Serializable, Cloneable {
      * This is a case in-sensitive like.
      */
     public Expression likeIgnoreCase(Expression theValue) {
-        return toUpperCase().like(theValue.toUpperCase());
+        if (shouldUseUpperCaseForIgnoreCase) {
+            return toUpperCase().like(theValue.toUpperCase());
+        } else {
+            return toLowerCase().like(theValue.toLowerCase());
+        }
     }
 
     /**
