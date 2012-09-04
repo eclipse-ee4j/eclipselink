@@ -1,0 +1,13 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:complexType name="complex">
+      <xsd:simpleContent>
+         <xsd:extension base="simple">
+            <xsd:attribute name="bar" type="xsd:string"/>
+         </xsd:extension>
+      </xsd:simpleContent>
+   </xsd:complexType>
+   <xsd:element name="complex" type="complex"/>
+   <xsd:simpleType name="simple">
+      <xsd:restriction base="xsd:string"/>
+   </xsd:simpleType>
+</xsd:schema>
