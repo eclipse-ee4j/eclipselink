@@ -208,7 +208,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
 
         // Check if user defined a custom query.
         if (isCustomQueryUsed() == null) {
-            setIsCustomQueryUsed((!isUserDefined()) && isExpressionQuery() && (getSelectionCriteria() == null) && isDefaultPropertiesQuery() && (!hasOrderByExpressions()) && (this.descriptor.getQueryManager().hasReadAllQuery()));
+            setIsCustomQueryUsed((!isUserDefined()) && isExpressionQuery() && (getSelectionCriteria() == null) && isDefaultPropertiesQuery() && (!isDistinctComputed()) && (!hasOrderByExpressions()) && (this.descriptor.getQueryManager().hasReadAllQuery()));
         }
         if (isCustomQueryUsed().booleanValue()) {
             return this.descriptor.getQueryManager().getReadAllQuery();
