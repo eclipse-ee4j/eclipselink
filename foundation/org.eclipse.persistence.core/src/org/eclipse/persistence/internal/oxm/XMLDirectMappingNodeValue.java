@@ -131,8 +131,8 @@ public class XMLDirectMappingNodeValue extends MappingNodeValue implements NullC
                     String xPath = prefix +  XMLConstants.COLON + xPathFragment.getShortName(); 
                     XPathFragment newFragment = new XPathFragment(xPath);
                     newFragment.setNamespaceURI(namespaceResolver.getDefaultNamespaceURI());
-                    marshalRecord.openStartElement(newFragment, namespaceResolver);
-                    marshalRecord.attribute(XMLConstants.XMLNS_URL, prefix, XMLConstants.XMLNS + XMLConstants.COLON  + prefix, namespaceResolver.getDefaultNamespaceURI());
+                    marshalRecord.openStartElement(newFragment, namespaceResolver);                    
+                    marshalRecord.namespaceDeclaration(prefix, namespaceResolver.getDefaultNamespaceURI());
                     marshalRecord.predicateAttribute(xPathFragment, namespaceResolver);
                     xPathFragment = newFragment;
                 } else {

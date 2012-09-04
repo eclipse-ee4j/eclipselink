@@ -977,13 +977,13 @@ public class XMLMarshaller implements Cloneable {
             marshalRecord.openStartElement(rootFragment, nr);
             
             if (null != schemaLocation) {
-                marshalRecord.attribute(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_LOCATION, xsiPrefix + XMLConstants.COLON + XMLConstants.SCHEMA_LOCATION, schemaLocation);
+                marshalRecord.attributeWithoutQName(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_LOCATION, xsiPrefix, schemaLocation);
             }
             if (null != noNsSchemaLocation) {
-                marshalRecord.attribute(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.NO_NS_SCHEMA_LOCATION, xsiPrefix + XMLConstants.COLON + XMLConstants.NO_NS_SCHEMA_LOCATION, noNsSchemaLocation);
+                marshalRecord.attributeWithoutQName(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.NO_NS_SCHEMA_LOCATION, xsiPrefix, noNsSchemaLocation);
             }
             if (isNil) {
-                marshalRecord.attribute(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_NIL_ATTRIBUTE, xsiPrefix + XMLConstants.COLON + XMLConstants.SCHEMA_NIL_ATTRIBUTE, "true");
+                marshalRecord.attributeWithoutQName(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_NIL_ATTRIBUTE, xsiPrefix, "true");
             }
 
             marshalRecord.namespaceDeclarations(nr);
@@ -1008,11 +1008,11 @@ public class XMLMarshaller implements Cloneable {
                       if(type != null) {
                     	  xsiPrefix = nr.resolveNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
                           if (null == xsiPrefix) {
-                              xsiPrefix = XMLConstants.SCHEMA_INSTANCE_PREFIX;
-                        	  marshalRecord.attribute(XMLConstants.XMLNS_URL, xsiPrefix, XMLConstants.XMLNS + ':' + xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
+                              xsiPrefix = XMLConstants.SCHEMA_INSTANCE_PREFIX;                        	  
+                        	  marshalRecord.namespaceDeclaration(xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
                           }
-                    	  
-                          marshalRecord.attribute(XMLConstants.XMLNS_URL, XMLConstants.SCHEMA_PREFIX, XMLConstants.XMLNS + XMLConstants.COLON + XMLConstants.SCHEMA_PREFIX, XMLConstants.SCHEMA_URL);
+                    	                            
+                          marshalRecord.namespaceDeclaration(XMLConstants.SCHEMA_PREFIX, XMLConstants.SCHEMA_URL);
                           marshalRecord.attribute(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE, xsiPrefix + XMLConstants.COLON + XMLConstants.SCHEMA_TYPE_ATTRIBUTE, "xsd:" + type.getLocalPart());
                       }
             	 }

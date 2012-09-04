@@ -263,8 +263,8 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
                     xopInclude.setNamespaceURI(XMLConstants.XOP_URL);
                     marshalRecord.openStartElement(xopInclude, namespaceResolver);
                     marshalRecord.attribute("", "href", "href", c_id);
-                    if (addDeclaration) {
-                        marshalRecord.attribute(XMLConstants.XMLNS_URL, xopPrefix, XMLConstants.XMLNS + XMLConstants.COLON + xopPrefix, XMLConstants.XOP_URL);
+                    if (addDeclaration) {                        
+                        marshalRecord.namespaceDeclaration(xopPrefix,  XMLConstants.XOP_URL);
                         //marshalRecord.attribute(new XPathFragment("@xmlns:" + xopPrefix), namespaceResolver, XMLConstants.XOP_URL);
                     }
                     marshalRecord.closeStartElement();

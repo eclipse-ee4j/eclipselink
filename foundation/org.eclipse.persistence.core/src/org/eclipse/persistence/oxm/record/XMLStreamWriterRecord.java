@@ -68,13 +68,7 @@ public class XMLStreamWriterRecord extends MarshalRecord {
             if(namespaceURI == null) {
                 xmlStreamWriter.writeAttribute(xPathFragment.getLocalName(), value);
                 
-            } else if(XMLConstants.XMLNS_URL.equals(namespaceURI)) {
-                if(XMLConstants.XMLNS.equals(xPathFragment.getLocalName())) {
-                    xmlStreamWriter.writeDefaultNamespace(value);
-                }  else {
-                    xmlStreamWriter.writeNamespace(xPathFragment.getLocalName(), value);
-                }
-            }  else {
+            } else {
                 String prefix = getPrefixForFragment(xPathFragment);
                 if(prefix == null) {
                     xmlStreamWriter.writeAttribute(namespaceURI, xPathFragment.getLocalName(), value);
@@ -87,21 +81,41 @@ public class XMLStreamWriterRecord extends MarshalRecord {
         }
     }
 
-    public void attribute(String namespaceURI, String localName, String name, String value) {
-        try {
-            if(XMLConstants.XMLNS_URL.equals(namespaceURI)) {
-                if(XMLConstants.XMLNS.equals(localName)) {
-                    xmlStreamWriter.writeDefaultNamespace(value);
-                }  else {
-                    xmlStreamWriter.writeNamespace(localName, value);
-                }
+    public void defaultNamespaceDeclaration(String defaultNamespace){
+        try{
+            xmlStreamWriter.writeDefaultNamespace(defaultNamespace);
+        } catch(XMLStreamException e) {
+            throw XMLMarshalException.marshalException(e);
+        }
+    }
+    
+    public void namespaceDeclaration(String prefix, String namespaceURI){
+        try{
+            xmlStreamWriter.writeNamespace(prefix, namespaceURI);
+        } catch(XMLStreamException e) {
+            throw XMLMarshalException.marshalException(e);
+        }
+    }
+    
+    public void attributeWithoutQName(String namespaceURI, String localName, String prefix, String value){    
+        try {          
+            if(namespaceURI == null || namespaceURI.length() == 0) {
+                xmlStreamWriter.writeAttribute(localName, value);
             } else {
-                if(namespaceURI == null || namespaceURI.length() == 0) {
-                    xmlStreamWriter.writeAttribute(localName, value);
-                } else {
-                    xmlStreamWriter.writeAttribute(xmlStreamWriter.getNamespaceContext().getPrefix(namespaceURI), namespaceURI, localName, value);
-                }
+                xmlStreamWriter.writeAttribute(xmlStreamWriter.getNamespaceContext().getPrefix(namespaceURI), namespaceURI, localName, value);
             }
+        } catch(XMLStreamException e) {
+            throw XMLMarshalException.marshalException(e);
+        }       
+    }
+    
+    public void attribute(String namespaceURI, String localName, String name, String value) {
+        try {          
+             if(namespaceURI == null || namespaceURI.length() == 0) {
+                 xmlStreamWriter.writeAttribute(localName, value);
+             } else {
+                xmlStreamWriter.writeAttribute(xmlStreamWriter.getNamespaceContext().getPrefix(namespaceURI), namespaceURI, localName, value);
+             }
         } catch(XMLStreamException e) {
             throw XMLMarshalException.marshalException(e);
         }

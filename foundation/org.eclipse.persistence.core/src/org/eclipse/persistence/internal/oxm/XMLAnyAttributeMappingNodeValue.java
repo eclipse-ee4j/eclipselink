@@ -85,10 +85,14 @@ public class XMLAnyAttributeMappingNodeValue extends MappingNodeValue implements
                         qualifiedName = generatedPrefix + XMLConstants.COLON + qualifiedName;
                         nr.put(generatedPrefix, name.getNamespaceURI());
                         extraNamespaces.add(generatedPrefix);
-                        marshalRecord.attribute(XMLConstants.XMLNS_URL, generatedPrefix, XMLConstants.XMLNS + XMLConstants.COLON + generatedPrefix, name.getNamespaceURI());
+                        marshalRecord.namespaceDeclaration(generatedPrefix, name.getNamespaceURI());
                     }
                 }
-                marshalRecord.attribute(name.getNamespaceURI(), name.getLocalPart(), qualifiedName, value);
+                if(XMLConstants.XMLNS_URL.equals(name.getNamespaceURI())){
+                    marshalRecord.namespaceDeclaration(name.getLocalPart(), name.getNamespaceURI());
+                }else{
+                    marshalRecord.attribute(name.getNamespaceURI(), name.getLocalPart(), qualifiedName, value);
+                }
             }
         }
 

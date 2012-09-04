@@ -147,11 +147,11 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
             xsiPrefix = descriptor.getNamespaceResolver().resolveNamespaceURI(XMLConstants.SCHEMA_INSTANCE_URL);
         } else {
             xsiPrefix = XMLConstants.SCHEMA_INSTANCE_PREFIX;
-            marshalRecord.attribute(XMLConstants.XMLNS_URL, xsiPrefix, XMLConstants.XMLNS + XMLConstants.COLON + xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
+            marshalRecord.namespaceDeclaration(xsiPrefix,  XMLConstants.SCHEMA_INSTANCE_URL);
         }
         if (xsiPrefix == null) {
             xsiPrefix = descriptor.getNamespaceResolver().generatePrefix(XMLConstants.SCHEMA_INSTANCE_PREFIX);
-            marshalRecord.attribute(XMLConstants.XMLNS_URL, xsiPrefix, XMLConstants.XMLNS + XMLConstants.COLON + xsiPrefix, XMLConstants.SCHEMA_INSTANCE_URL);
+            marshalRecord.namespaceDeclaration(xsiPrefix,  XMLConstants.SCHEMA_INSTANCE_URL);
         }
         marshalRecord.attribute(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE, xsiPrefix + XMLConstants.COLON + XMLConstants.SCHEMA_TYPE_ATTRIBUTE, typeValue);
     }
@@ -166,7 +166,7 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
             if(((MarshalRecord)xmlRecord).hasCustomNamespaceMapper()) {
                 prefix = ((MarshalRecord)xmlRecord).getNamespaceResolver().resolveNamespaceURI(next.getNamespaceURI());
             }
-            ((MarshalRecord)xmlRecord).attribute(XMLConstants.XMLNS_URL, prefix, XMLConstants.XMLNS + XMLConstants.COLON + prefix, next.getNamespaceURI());
+           ((MarshalRecord)xmlRecord).namespaceDeclaration(prefix, next.getNamespaceURI());
         }
 
     }
