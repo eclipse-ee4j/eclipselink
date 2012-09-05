@@ -184,11 +184,13 @@ public class JSONReader extends XMLReaderAdapter {
                     UnmarshalRecord unmarshalRecord = (UnmarshalRecord) contentHandler;
                     Object unmarshalledObject = unmarshalRecord.getCurrentObject();
                     if(includeRoot && unmarshalClass != null){
-                    	XMLRoot xmlRoot = new XMLRoot();
-                    	xmlRoot.setNamespaceURI(unmarshalRecord.getRootElementNamespaceUri());
-                    	xmlRoot.setLocalName(unmarshalRecord.getLocalName());
-                        xmlRoot.setObject(unmarshalledObject);
-                        unmarshalledObject = xmlRoot;
+                        if(!(unmarshalledObject instanceof XMLRoot)) {
+                            XMLRoot xmlRoot = new XMLRoot();
+                            xmlRoot.setNamespaceURI(unmarshalRecord.getRootElementNamespaceUri());
+                            xmlRoot.setLocalName(unmarshalRecord.getLocalName());
+                            xmlRoot.setObject(unmarshalledObject);
+                            unmarshalledObject = xmlRoot;
+                        }
                     }
                     list.add(unmarshalledObject);
                     unmarshalRecord.setCurrentObject(null);
