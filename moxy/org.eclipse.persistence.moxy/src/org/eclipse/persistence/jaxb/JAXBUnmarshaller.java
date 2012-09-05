@@ -415,7 +415,6 @@ public class JAXBUnmarshaller implements Unmarshaller {
         }
         try {
             XMLStreamReaderReader staxReader = new XMLStreamReaderReader(xmlUnmarshaller);
-            staxReader.setErrorHandler(xmlUnmarshaller.getErrorHandler());
             XMLStreamReaderInputSource inputSource = new XMLStreamReaderInputSource(streamReader);
             if(XMLConversionManager.getDefaultJavaTypes().get(javaClass) != null ||ClassConstants.XML_GREGORIAN_CALENDAR.isAssignableFrom(javaClass) ||ClassConstants.DURATION.isAssignableFrom(javaClass)) {
                 PrimitiveContentHandler primitiveContentHandler = new PrimitiveContentHandler(javaClass);
@@ -488,10 +487,8 @@ public class JAXBUnmarshaller implements Unmarshaller {
                 XMLStreamReaderReader staxReader = new XMLStreamReaderReader(xmlUnmarshaller);
                 unmarshalRecord.setUnmarshaller(xmlUnmarshaller);
                 unmarshalRecord.setXMLReader(staxReader);
-                staxReader.setErrorHandler(xmlUnmarshaller.getErrorHandler());
-                XMLStreamReaderInputSource inputSource = new XMLStreamReaderInputSource(streamReader);
                 staxReader.setContentHandler(unmarshalRecord);
-                staxReader.parse(inputSource);
+                staxReader.parse(streamReader);
                 Object value = null;
                 if(unmarshalRecord.isNil()) {
                     value = null;
@@ -579,7 +576,6 @@ public class JAXBUnmarshaller implements Unmarshaller {
         }
         try {
             XMLStreamReaderReader staxReader = new XMLStreamReaderReader(xmlUnmarshaller);
-            staxReader.setErrorHandler(xmlUnmarshaller.getErrorHandler());
             XMLStreamReaderInputSource inputSource = new XMLStreamReaderInputSource(streamReader);
             Object value = xmlUnmarshaller.unmarshal(staxReader, inputSource);
             return createJAXBElementOrUnwrapIfRequired(value);
