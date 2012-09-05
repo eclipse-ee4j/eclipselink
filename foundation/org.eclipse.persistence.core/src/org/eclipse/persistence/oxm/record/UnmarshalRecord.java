@@ -396,7 +396,8 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
 
     public void setDocumentLocator(Locator locator) {
         this.documentLocator = locator;
-        if ((this.getParentRecord() == null) && locator instanceof Locator2) {
+        if (null == rootElementName  && null == rootElementLocalName && parentRecord == null && locator instanceof Locator2){
+
             Locator2 loc = (Locator2)locator;
             this.setEncoding(loc.getEncoding());
             this.setVersion(loc.getXMLVersion());
@@ -452,7 +453,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
     }
 
     public void startDocument() throws SAXException {
-        if (unmarshaller.getIDResolver() != null && getParentRecord() == null) {
+        if (unmarshaller.getIDResolver() != null && parentRecord == null) {
         	unmarshaller.getIDResolver().startDocument(unmarshaller.getErrorHandler());
         }
     }
@@ -621,11 +622,12 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
                 }
             }
 
-            if (unmarshaller.getUnmarshalListener() != null) {
+            XMLUnmarshalListener listener = unmarshaller.getUnmarshalListener();
+            if (listener != null) {
                 if (this.parentRecord != null) {
-                	unmarshaller.getUnmarshalListener().afterUnmarshal(currentObject, parentRecord.getCurrentObject());
+                    listener.afterUnmarshal(currentObject, parentRecord.getCurrentObject());
                 } else {
-                	unmarshaller.getUnmarshalListener().afterUnmarshal(currentObject, null);
+                    listener.afterUnmarshal(currentObject, null);
                 }
             }
 
@@ -716,7 +718,8 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
             initializeRecord(atts);
         }
 
-        if ((null != xPathNode.getXPathFragment() && xPathNode.getXPathFragment().nameIsText()) || xpathNodeIsMixedContent) {
+        XPathFragment xPathNodeXPathFragment = xPathNode.getXPathFragment();
+        if((null != xPathNodeXPathFragment && xPathNodeXPathFragment.nameIsText()) || xpathNodeIsMixedContent) {
             xpathNodeIsMixedContent = false;
             NodeValue xPathNodeUnmarshalNodeValue = xPathNode.getUnmarshalNodeValue();
             if (null != xPathNodeUnmarshalNodeValue) {
@@ -1014,12 +1017,12 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
             if(this.isNil() && levelIndex > 0) {
                 this.setNil(false);
             }
-            if ((0 == levelIndex) && (null != getParentRecord()) && !isSelfRecord()) {
+            if ((0 == levelIndex) && (null !=parentRecord) && !isSelfRecord()) {
                 endDocument();
                 // don't endElement on, or pass control to, a 'self' parent
-                UnmarshalRecord pRec = getParentRecord();
+                UnmarshalRecord pRec = parentRecord;
                 while (pRec.isSelfRecord()) {
-                    pRec = pRec.getParentRecord();
+                    pRec = pRec.parentRecord;
                 }
                 pRec.endElement(namespaceURI, localName, qName);
                 xmlReader.setContentHandler(pRec);
@@ -1202,8 +1205,8 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
 
     public String resolveNamespacePrefix(String prefix) {
         String namespaceURI = getUnmarshalNamespaceResolver().getNamespaceURI(prefix);
-        if(null == namespaceURI && null != getParentRecord()) {
-            namespaceURI = getParentRecord().resolveNamespacePrefix(prefix);
+        if(null == namespaceURI && null != parentRecord) {
+            namespaceURI = parentRecord.resolveNamespacePrefix(prefix);
         }
         return namespaceURI;
     }
@@ -1211,8 +1214,8 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
     public String resolveNamespaceUri(String uri) {
         String prefix = getUnmarshalNamespaceResolver().getPrefix(uri);
         if (null == prefix) {
-            if (null != getParentRecord()) {
-                prefix = getParentRecord().resolveNamespaceUri(uri);
+            if (null != parentRecord) {
+                prefix = parentRecord.resolveNamespaceUri(uri);
             }
         }
         return prefix;
