@@ -75,13 +75,13 @@ public class XMLStreamReaderReader extends XMLReaderAdapter {
         }
         if(input instanceof XMLStreamReaderInputSource) {
             XMLStreamReader xmlStreamReader = ((XMLStreamReaderInputSource) input).getXmlStreamReader();
-            unmarshalNamespaceContext.setXmlStreamReader(xmlStreamReader);
-            indexedAttributeList.setXmlStreamReader(xmlStreamReader);
             parse(xmlStreamReader);
         }
     }
-
-    private void parse(XMLStreamReader xmlStreamReader) throws SAXException {
+  
+    public void parse(XMLStreamReader xmlStreamReader) throws SAXException {
+        unmarshalNamespaceContext.setXmlStreamReader(xmlStreamReader);
+        indexedAttributeList.setXmlStreamReader(xmlStreamReader);
         try {
             contentHandler.startDocument();
             parseEvent(xmlStreamReader, xmlStreamReader.getEventType());
