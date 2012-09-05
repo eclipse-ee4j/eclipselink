@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.oxm.record;
 
+import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
 import org.eclipse.persistence.internal.oxm.StrBuffer;
@@ -38,8 +39,6 @@ public class XMLRootRecord extends UnmarshalRecord {
     public XMLRootRecord(Class cls) {
         super(null);
         targetClass = cls;
-        shouldReadChars = true;
-        elementCount = 0;
     }
 
     @Override
@@ -89,8 +88,11 @@ public class XMLRootRecord extends UnmarshalRecord {
 
     @Override
     public void startDocument() throws SAXException {
+        characters = null;
+        elementCount = 0;
+        shouldReadChars = true;
     }
-    
+
     @Override
     public void initializeRecord(XMLMapping selfRecordMapping) throws SAXException {
     }
@@ -104,9 +106,12 @@ public class XMLRootRecord extends UnmarshalRecord {
             rootElementLocalName = localName;
             rootElementNamespaceUri = namespaceURI;
         }
+        if(XMLConstants.EMPTY_STRING.equals(localName)) {
+            return;
+        }
         elementCount++;
         if (elementCount > 1) {
-            // we only want to process characters from the forst text child;
+            // we only want to process characters from the first text child;
             // if a subelement occurs, we will stop
             shouldReadChars = false;
         }
