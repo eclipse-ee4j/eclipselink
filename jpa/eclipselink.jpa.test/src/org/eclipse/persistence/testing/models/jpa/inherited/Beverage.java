@@ -13,6 +13,8 @@
  *       - 232975: Failure when attribute type is generic
  *     07/15/2010-2.2 Guy Pelletier 
  *       -311395 : Multiple lifecycle callback methods for the same lifecycle event
+ *     10/05/2012-2.4.1 Guy Pelletier 
+ *       - 373092: Exceptions using generics, embedded key and entity inheritance
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
@@ -24,10 +26,10 @@ import javax.persistence.MappedSuperclass;
 import static javax.persistence.GenerationType.*;
 
 @MappedSuperclass
-public class Beverage<T> {
+public class Beverage<PK> {
     public static int BEVERAGE_POST_PERSIST_COUNT = 0;
     
-    private T id;
+    private PK id;
     
     public Beverage() {}
     
@@ -39,11 +41,11 @@ public class Beverage<T> {
         pkColumnName="SEQ_NAME", 
         valueColumnName="SEQ_COUNT",
         pkColumnValue="BEVERAGE_SEQ")
-    public T getId() {
+    public PK getId() {
         return id;
     }
     
-    public void setId(T id) {
+    public void setId(PK id) {
         this.id = id;
     }
     
