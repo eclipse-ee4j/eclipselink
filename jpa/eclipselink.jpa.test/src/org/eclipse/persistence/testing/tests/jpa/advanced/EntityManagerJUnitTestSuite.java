@@ -404,6 +404,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         tests.add("testSequenceObjectWithSchemaName");
         tests.add("testSharedExpressionInQueries");
         tests.add("testNestedBatchQueryHints");
+        tests.add("testReplaceElementCollection");
         if (!isJPA10()) {
             tests.add("testDetachNull");
             tests.add("testDetachRemovedObject");
@@ -12200,5 +12201,45 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             rollbackTransaction(em);
             closeEntityManager(em);
         }
+    }
+    
+    // Bug 384607
+    public void testReplaceElementCollection(){
+    	EntityManager em = createEntityManager();
+    	beginTransaction(em);
+    	Golfer golfer = new Golfer();
+    	GolferPK pk = new GolferPK(102);
+    	WorldRank rank = new WorldRank();
+    	rank.setId(102);
+    	golfer.setWorldRank(rank);
+    	golfer.getSponsorDollars().put("Oracle", 10000);
+    	golfer.setGolferPK(pk);
+    	em.persist(golfer);
+    	em.persist(rank);
+    	em.flush();
+
+    	golfer = em.find(Golfer.class, golfer.getGolferPK());
+    	golfer.getSponsorDollars().put("Callaway", 20000);
+    	em.flush();
+    	
+    	clearCache();
+    	em.clear();
+    	
+    	golfer = em.find(Golfer.class, golfer.getGolferPK());
+    	assertTrue("Incorrect Number of sponsors", golfer.getSponsorDollars().size() == 2);
+    	assertTrue("Missing Sponsor: Callaway", golfer.getSponsorDollars().get("Callaway").equals(20000));
+    	assertTrue("Missing Sponsor: Oracle", golfer.getSponsorDollars().get("Oracle").equals(10000));
+
+    	golfer = em.find(Golfer.class, golfer.getGolferPK());
+    	golfer.setSponsorDollars(new HashMap<String, Integer>());
+    	em.flush();
+    	
+    	clearCache();
+    	em.clear();
+    	
+    	golfer = em.find(Golfer.class, golfer.getGolferPK());
+    	assertTrue("Incorrect Number of sponsors", golfer.getSponsorDollars().size() == 0);
+    	
+    	rollbackTransaction(em);
     }
 }

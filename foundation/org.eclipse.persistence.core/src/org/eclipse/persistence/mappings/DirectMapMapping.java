@@ -165,7 +165,7 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
     /**
      * INTERNAL:
      * Used by AttributeLevelChangeTracking to update a changeRecord with calculated changes
-     * as apposed to detected changes.  If an attribute can not be change tracked it's
+     * as opposed to detected changes.  If an attribute can not be change tracked it's
      * changes can be detected through this process.
      */
     @Override
@@ -229,6 +229,45 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
             }
         }
     }
+        
+    /**
+     * INTERNAL:
+     * This method is used to calculate the differences between two collections.
+     */
+    @Override
+    public void compareCollectionsForChange(Object oldCollection, Object newCollection, ChangeRecord changeRecord, AbstractSession session) {      
+        HashMap originalKeyValues = new HashMap(10);
+        HashMap cloneKeyValues = new HashMap(10);
+
+        Map backUpCollection = (Map)oldCollection;
+        Object backUpIter = containerPolicy.iteratorFor(backUpCollection);
+        while (containerPolicy.hasNext(backUpIter)) {// Make a lookup of the objects
+            Map.Entry entry = (Map.Entry)containerPolicy.nextEntry(backUpIter, session);
+            originalKeyValues.put(entry.getKey(), backUpCollection.get(entry.getKey()));
+        }
+
+        Map cloneObjectCollection = (Map)newCollection;
+        Object cloneIter = containerPolicy.iteratorFor(cloneObjectCollection);
+        while (containerPolicy.hasNext(cloneIter)) {//Compare them with the objects from the clone
+            Map.Entry wrappedFirstObject = (Map.Entry)containerPolicy.nextEntry(cloneIter, session);
+            Object firstValue = wrappedFirstObject.getValue();
+            Object firstKey = wrappedFirstObject.getKey();
+            Object backupValue = originalKeyValues.get(firstKey);
+            if (!originalKeyValues.containsKey(firstKey)) {
+                cloneKeyValues.put(firstKey, cloneObjectCollection.get(firstKey));
+            } else if (((backupValue == null) && (firstValue != null)) || (!backupValue.equals(firstValue))) {//the object was not in the backup
+                cloneKeyValues.put(firstKey, cloneObjectCollection.get(firstKey));
+            } else {
+                originalKeyValues.remove(firstKey);
+            }
+        }
+
+        ((DirectMapChangeRecord)changeRecord).clearChanges();
+        ((DirectMapChangeRecord)changeRecord).addAdditionChange(cloneKeyValues);
+        ((DirectMapChangeRecord)changeRecord).addRemoveChange(originalKeyValues);
+        ((DirectMapChangeRecord)changeRecord).setIsDeferred(false);
+        ((DirectMapChangeRecord)changeRecord).setLatestCollection(null);
+    }
     
     /**
      * INTERNAL:
@@ -250,42 +289,24 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
         HashMap cloneKeyValues = new HashMap(10);
 
         Map backUpCollection = null;
+        
         if (!owner.isNew()) {
             backUpAttribute = getAttributeValueFromObject(backUp);
             if ((backUpAttribute == null) && (cloneAttribute == null)) {
                 return null;
             }
             backUpCollection = (Map)getRealCollectionAttributeValueFromObject(backUp, session);
-            Object backUpIter = containerPolicy.iteratorFor(backUpCollection);
-            while (containerPolicy.hasNext(backUpIter)) {// Make a lookup of the objects
-                Map.Entry entry = (Map.Entry)containerPolicy.nextEntry(backUpIter, session);
-                originalKeyValues.put(entry.getKey(), backUpCollection.get(entry.getKey()));
-            }
         }
-        Object cloneIter = containerPolicy.iteratorFor(cloneObjectCollection);
-        while (containerPolicy.hasNext(cloneIter)) {//Compare them with the objects from the clone
-            Map.Entry wrappedFirstObject = (Map.Entry)containerPolicy.nextEntry(cloneIter, session);
-            Object firstValue = wrappedFirstObject.getValue();
-            Object firstKey = wrappedFirstObject.getKey();
-            Object backupValue = originalKeyValues.get(firstKey);
-            if (!originalKeyValues.containsKey(firstKey)) {
-                cloneKeyValues.put(firstKey, cloneObjectCollection.get(firstKey));
-            } else if (((backupValue == null) && (firstValue != null)) || (!backupValue.equals(firstValue))) {//the object was not in the backup
-                cloneKeyValues.put(firstKey, cloneObjectCollection.get(firstKey));
-            } else {
-                originalKeyValues.remove(firstKey);
-            }
-        }
-        if (cloneKeyValues.isEmpty() && originalKeyValues.isEmpty() && (!owner.isNew())) {
-            return null;
-        }
+
         DirectMapChangeRecord changeRecord = new DirectMapChangeRecord(owner);
         changeRecord.setAttribute(getAttributeName());
         changeRecord.setMapping(this);
-        changeRecord.addAdditionChange(cloneKeyValues);
-        changeRecord.addRemoveChange(originalKeyValues);
-        changeRecord.setOriginalCollection(backUpCollection);
-        return changeRecord;
+        compareCollectionsForChange(backUpCollection, cloneObjectCollection, changeRecord, session);
+        if (changeRecord.hasChanges()) {
+            changeRecord.setOriginalCollection(backUpCollection);
+            return changeRecord;
+        }
+        return null;
     }
 
     /**
@@ -648,7 +669,6 @@ public class DirectMapMapping extends DirectCollectionMapping implements MapComp
             containerPolicy.postCalculateChanges(entry.getKey(), entry.getValue(), referenceDescriptor, this, uow);
         }
     }
-
 
     /**
      * INTERNAL:
