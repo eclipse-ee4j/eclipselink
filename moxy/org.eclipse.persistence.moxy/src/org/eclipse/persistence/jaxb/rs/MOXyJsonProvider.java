@@ -44,6 +44,9 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.MessageBodyReader;
@@ -54,6 +57,7 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.JAXBIntrospector;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.UnmarshalException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
 import javax.xml.transform.stream.StreamSource;
@@ -545,6 +549,9 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
                     return value;
                 }
             }
+        } catch(UnmarshalException unmarshalException) {
+            ResponseBuilder builder = Response.status(Status.BAD_REQUEST);
+            throw new WebApplicationException(builder.build());
         } catch(JAXBException jaxbException) {
             throw new WebApplicationException(jaxbException);
         }
