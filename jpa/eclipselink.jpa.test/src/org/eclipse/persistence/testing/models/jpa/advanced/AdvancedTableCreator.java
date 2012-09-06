@@ -39,6 +39,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildEQUIPMENTTable());
         addTableDefinition(buildEQUIPMENTCODETable());
         addTableDefinition(buildGOLFERTable());
+        addTableDefinition(buildGolfer_SPONSORDOLLARSTable());
         addTableDefinition(buildHUGEPROJECTTable());
         addTableDefinition(buildLARGEPROJECTTable());
         addTableDefinition(buildMANTable());
@@ -956,6 +957,43 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         foreignKeyGOLFER_WORLDRANK.addSourceField("WORLDRANK_ID");
         foreignKeyGOLFER_WORLDRANK.addTargetField("ID");
         table.addForeignKeyConstraint(foreignKeyGOLFER_WORLDRANK);
+        
+        return table;
+    }
+    
+    public TableDefinition buildGolfer_SPONSORDOLLARSTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("Golfer_SPONSORDOLLARS");
+        
+        FieldDefinition IDfield = new FieldDefinition();
+        IDfield.setName("WORLDRANK_ID");
+        IDfield.setTypeName("NUMERIC");
+        IDfield.setSize(15);
+        IDfield.setShouldAllowNull(false);
+        IDfield.setIsPrimaryKey(true);
+        IDfield.setUnique(false);
+        IDfield.setIsIdentity(false);
+        table.addField(IDfield);
+        
+        FieldDefinition sponsorValueField = new FieldDefinition();
+        sponsorValueField.setName("SPONSOR_VALUE");
+        sponsorValueField.setTypeName("NUMERIC");
+        sponsorValueField.setSize(32);
+        sponsorValueField.setShouldAllowNull(true);
+        sponsorValueField.setIsPrimaryKey(false);
+        sponsorValueField.setUnique(false);
+        sponsorValueField.setIsIdentity(false);
+        table.addField(sponsorValueField);
+        
+        FieldDefinition sponsorNameField = new FieldDefinition();
+        sponsorNameField.setName("SPONSOR_NAME");
+        sponsorNameField.setTypeName("VARCHAR2");
+        sponsorNameField.setSize(100);
+        sponsorNameField.setShouldAllowNull(false);
+        sponsorNameField.setIsPrimaryKey(true);
+        sponsorNameField.setUnique(false);
+        sponsorNameField.setIsIdentity(false);
+        table.addField(sponsorNameField);
         
         return table;
     }
