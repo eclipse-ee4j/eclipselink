@@ -15,6 +15,8 @@
  *       -311395 : Multiple lifecycle callback methods for the same lifecycle event
  *     08/11/2010-2.2 Guy Pelletier 
  *       - 312123: JPA: Validation error during Id processing on parameterized generic OneToOne Entity relationship from MappedSuperclass
+ *     10/05/2012-2.4.1 Guy Pelletier 
+ *       - 373092: Exceptions using generics, embedded key and entity inheritance
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
@@ -37,11 +39,11 @@ import java.sql.Timestamp;
 
 @MappedSuperclass
 @ExistenceChecking(CHECK_CACHE)
-public class Beer<G, H, I> extends Beverage<G> {
+public class Beer<PK, ALCOHOL_CONTENT_TYPE, BeerDoubleType> extends Beverage<PK> {
     private Timestamp version;
-    private H alcoholContent;
+    private ALCOHOL_CONTENT_TYPE alcoholContent;
     private BeerConsumer beerConsumer;
-    private I beerDouble;
+    private BeerDoubleType beerDouble;
     
     public static int BEER_PRE_PERSIST_COUNT = 0;
     public static int BEER_POST_PERSIST_COUNT = 0;
@@ -66,7 +68,7 @@ public class Beer<G, H, I> extends Beverage<G> {
     
     @Basic
     @Column(name="ALCOHOL_CONTENT")
-    public H getAlcoholContent() {
+    public ALCOHOL_CONTENT_TYPE getAlcoholContent() {
         return alcoholContent;
     }
     
@@ -79,7 +81,7 @@ public class Beer<G, H, I> extends Beverage<G> {
     @OneToOne(fetch=LAZY)
     //@OneToOne
     @JoinColumn(name="BD_ID")
-    public I getBeerDouble() {
+    public BeerDoubleType getBeerDouble() {
         return beerDouble;
     }
     
@@ -88,7 +90,7 @@ public class Beer<G, H, I> extends Beverage<G> {
         return version;
     }
     
-    public void setAlcoholContent(H alcoholContent) {
+    public void setAlcoholContent(ALCOHOL_CONTENT_TYPE alcoholContent) {
         this.alcoholContent = alcoholContent;
     }
     
@@ -96,7 +98,7 @@ public class Beer<G, H, I> extends Beverage<G> {
         this.beerConsumer = beerConsumer;
     }
     
-    public void setBeerDouble(I beerDouble) {
+    public void setBeerDouble(BeerDoubleType beerDouble) {
         this.beerDouble = beerDouble;
     }
     

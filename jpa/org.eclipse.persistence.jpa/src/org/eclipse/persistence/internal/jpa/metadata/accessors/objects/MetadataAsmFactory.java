@@ -1,7 +1,5 @@
-package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
-
 /*******************************************************************************
- * Copyright (c) 1998, 2010 Oracle, Hans Harz, Andrew Rustleund. All rights reserved.
+ * Copyright (c) 1998, 2012 Oracle, Hans Harz, Andrew Rustleund. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -17,7 +15,11 @@ package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
  *           DatabaseSessionImpl.initializeDescriptors because @MapKey Annotation is not found.
  *     04/21/2011-2.3 dclarke: Upgraded to support ASM 3.3.1
  *     08/10/2011-2.3 Lloyd Fernandes : Bug 336133 - Validation error during processing on parameterized generic OneToMany Entity relationship from MappedSuperclass
+ *     10/05/2012-2.4.1 Guy Pelletier 
+ *       - 373092: Exceptions using generics, embedded key and entity inheritance
  ******************************************************************************/
+package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -516,16 +518,30 @@ public class MetadataAsmFactory extends MetadataFactory {
                     }
                 } else {
                     // Is a generic type variable.
-                    arguments.add(new String(new char[] { next }));
-                    if((index+1) < length) {
-                       if(desc.charAt(index+1)==':') {
-                           isGenericTyped=true;
-                           index ++;
-                           arguments.add(":");
-                           if(desc.charAt(index+1)==':') {
-                               index ++;
-                           }
-                       }
+                    int start = index;
+                    int end = start;
+                    
+                    char myNext = next;
+                    
+                    while (':' != myNext && '(' != myNext && ')' != myNext && '<' != myNext && '>' != myNext && ';' != myNext && end < length - 1) {
+                        end++;
+                        myNext = chars[end];
+                    }
+                    
+                    if (myNext == ':') {
+                        arguments.add(desc.substring(start, end));
+                        isGenericTyped=true;
+                        index = end;
+                        arguments.add(":");
+                        if(desc.charAt(index+1)==':') {
+                            index ++;
+                        }
+                    } else if (myNext == ';' && next == 'T') {
+                        arguments.add(new String(new char[] { next }));
+                        arguments.add(desc.substring(start + 1, end));
+                        index = end - 1;
+                    } else {
+                        arguments.add(new String(new char[] { next }));
                     }
                 }
             }
