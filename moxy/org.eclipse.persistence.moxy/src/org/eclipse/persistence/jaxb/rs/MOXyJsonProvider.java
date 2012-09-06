@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.jaxb.rs;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -36,12 +37,14 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import javax.activation.DataSource;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
@@ -55,6 +58,7 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
 import javax.xml.transform.stream.StreamSource;
 
+import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
@@ -353,21 +357,65 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
     }
 
     /**
-     * This method will return true for all inputs.  This means that 
-     * <i>MOXyJsonProvider</i> will always be used for the JSON binding.
-     * @return true
+     * @return true indicating that <i>MOXyJsonProvider</i> will
+     * be used for the JSON binding if the media type is of the following 
+     * patterns *&#47;json or *&#47;*+json, and the type is not assignable from 
+     * any of the the following:
+     * <ul>
+     * <li>byte[]</li>
+     * <li>java.io.File</li>
+     * <li>java.io.InputStream</li>
+     * <li>java.io.Reader</li>
+     * <li>java.lang.String</li>
+     * <li>javax.activation.DataSource</li>
+     * </ul>
      */
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return supportsMediaType(mediaType);
+        if(!supportsMediaType(mediaType)) {
+            return false;
+        } else if(ClassConstants.APBYTE == type || ClassConstants.STRING == type) {
+            return false;
+        } else if(File.class.isAssignableFrom(type)) {
+            return false;
+        } else if(DataSource.class.isAssignableFrom(type)) {
+            return false;
+        } else if(InputStream.class.isAssignableFrom(type)) {
+            return false;
+        } else if(Reader.class.isAssignableFrom(type)) {
+            return false;
+        } else {
+            return true;
+        }
     }
  
+
     /**
-     * This method will return true for all inputs.  This means that 
-     * <i>MOXyJsonProvider</i> will always be used for the JSON binding.
-     * @return true
+     * @return true indicating that <i>MOXyJsonProvider</i> will
+     * be used for the JSON binding if the media type is of the following 
+     * patterns *&#47;json or *&#47;*+json, and the type is not assignable from 
+     * any of the the following:
+     * <ul>
+     * <li>byte[]</li>
+     * <li>java.io.File</li>
+     * <li>java.lang.String</li>
+     * <li>javax.activation.DataSource</li>
+     * <li>javax.ws.rs.core.StreamingOutput</li>
+     * </ul>
      */
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return supportsMediaType(mediaType);
+        if(!supportsMediaType(mediaType)) {
+            return false;
+        } else if(ClassConstants.APBYTE == type || ClassConstants.STRING == type) {
+            return false;
+        } else if(File.class.isAssignableFrom(type)) {
+            return false;
+        } else if(DataSource.class.isAssignableFrom(type)) {
+            return false;
+        } else if(StreamingOutput.class.isAssignableFrom(type)) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     /**
@@ -576,12 +624,16 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
         this.valueWrapper = valueWrapper;
     }
 
-    private boolean supportsMediaType(MediaType mediaType) {
+    /**
+     * @return true for all media types of the pattern *&#47;json and 
+     * *&#47;*+json.
+     */
+    protected boolean supportsMediaType(MediaType mediaType) {
         String subtype = mediaType.getSubtype();
         return subtype.equals(JSON) || subtype.endsWith(PLUS_JSON);
     }
 
-    /*
+    /**
      * @see javax.ws.rs.ext.MessageBodyWriter#writeTo(java.lang.Object, java.lang.Class, java.lang.reflect.Type, java.lang.annotation.Annotation[], javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap, java.io.OutputStream)
      */
     public final void writeTo(Object object, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {
