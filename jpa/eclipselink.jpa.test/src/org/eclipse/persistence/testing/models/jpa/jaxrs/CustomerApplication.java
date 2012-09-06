@@ -17,6 +17,7 @@ import java.util.*;
 import javax.ws.rs.core.Application;
 import org.eclipse.persistence.jaxb.rs.MOXyJsonProvider;
 
+@javax.ws.rs.ApplicationPath("rest/*")
 public class CustomerApplication extends Application {
 
     @Override
