@@ -12,6 +12,9 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.advanced;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.persistence.*;
 
 @Entity
@@ -19,8 +22,11 @@ import javax.persistence.*;
 public class Golfer implements java.io.Serializable {
     private GolferPK golferPK;
     private WorldRank worldRank;
+    private Map<String, Integer> sponsorDollars = null;
     
-    public Golfer() {}
+    public Golfer() {
+        sponsorDollars = new HashMap<String, Integer>();
+    }
 
     @EmbeddedId
     public GolferPK getGolferPK() {
@@ -42,6 +48,17 @@ public class Golfer implements java.io.Serializable {
         this.worldRank = worldRank;
     }
     
+    @ElementCollection
+    @MapKeyColumn(name = "SPONSOR_NAME")
+    @Column(name = "SPONSOR_VALUE")
+    public Map<String, Integer> getSponsorDollars() {
+        return sponsorDollars;
+    }
+
+    public void setSponsorDollars(Map<String, Integer> sponsorDollars) {
+        this.sponsorDollars = sponsorDollars;
+    }
+
     public String toString() {
         return "Golfer: golferPK(" + golferPK + "), WorldRank(" + worldRank.getId() + ")";
     }
