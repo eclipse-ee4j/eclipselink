@@ -34,6 +34,7 @@
 *     egwin      - Nov 2008 - remove compile of MOXY (add dep check instead)
 *     rbarkhouse - 06 Apr 2011 - Separate JavadocAnnotationExamples from JAXBTestSuite
 *     dmahar     - Jan 2012 - remove update-package-names targets
+*     bdoughan   - Sep 2012 - Added RESTful tests and necessary dependencies
 #******************************************************************************/-->
 
 <project name="eclipselink.moxy.test" default="test" basedir=".">
@@ -96,6 +97,7 @@
         <pathelement path="${moxytest.2.common.plugins.dir}/${stax_api.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${transaction.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${mail.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${jaxrs.jar}"/>
         <pathelement path="${oep.nosql.lib}"/>
         <pathelement path="${junit.lib}"/>
         <pathelement path="${moxytest.2.moxy.dir}/${classes.dir}"/>
@@ -108,6 +110,7 @@
         <pathelement path="${jaxb-api.lib}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${activation.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${mail.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${jaxrs.jar}"/>
         <pathelement path="${moxytest.2.moxy.dir}/${classes.dir}"/>
         <pathelement path="${classes.dir}"/>
         <pathelement path="${resource.dir}"/>
@@ -159,6 +162,7 @@
         <pathelement path="${moxytest.2.common.plugins.dir}/${stax_api.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${transaction.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${mail.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${jaxrs.jar}"/>
         <pathelement path="${oep.nosql.lib}"/>
         <pathelement path="${eclipselink.lib}"/>
         <pathelement path="${jaxb-xjc.lib}"/>
@@ -171,6 +175,7 @@
         <pathelement path="${moxytest.2.common.plugins.dir}/${activation.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${stax_api.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${mail.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${jaxrs.jar}"/>
         <pathelement path="${oep.nosql.lib}"/>
         <pathelement path="${classes.dir}"/>
         <pathelement path="${resource.dir}"/>
@@ -371,6 +376,7 @@
                         <include name="org/eclipse/persistence/testing/jaxb/xmladapter/XmlAdapterTestSuite.java"/>
                         <include name="org/eclipse/persistence/testing/jaxb/dynamic/DynamicJAXBTestSuite.java"/>
                         <include name="org/eclipse/persistence/testing/jaxb/json/JSONTestSuite.java"/>
+                        <include name="org/eclipse/persistence/testing/jaxb/rs/RESTfulTestSuite.java"/>
                     </fileset>
                     <formatter type="xml"/>
                 </batchtest>
