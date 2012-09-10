@@ -22,6 +22,8 @@
  *       - 376603: Provide for table per tenant support for multitenant applications
  *     31/05/2012-2.4 Guy Pelletier  
  *       - 381196: Multitenant persistence units with a dedicated emf should allow for DDL generation.
+ *     09/10/2008-2.4.1 Guy Pelletier
+ *       - 386939: @ManyToMany Map<Entity,Entity> unidirectional reverses Key and Value fields on Update 
  ******************************************************************************/  
 package org.eclipse.persistence.tools.schemaframework;
 
@@ -368,7 +370,7 @@ public class DefaultTableGenerator {
                 } else if (mapping.isOneToManyMapping()) {
                     addForeignKeyFieldToSourceTargetTable((OneToManyMapping) mapping);
                     TableDefinition targTblDef = getTableDefFromDBTable(((OneToManyMapping)mapping).getReferenceDescriptor().getDefaultTable());
-                    addFieldsForMappedKeyMapContainerPolicy(mapping.getContainerPolicy(), targTblDef);
+                    addFieldsForMappedKeyMapContainerPolicy(mapping.getContainerPolicy(), targTblDef, false);
                 }
             } else if (mapping.isTransformationMapping()) {
                 resetTransformedFieldType((TransformationMapping) mapping);
@@ -386,7 +388,7 @@ public class DefaultTableGenerator {
      * 
      * @see MappedKeyMapContainerPolicy
      */
-    protected void addFieldsForMappedKeyMapContainerPolicy(ContainerPolicy cp, TableDefinition table){
+    protected void addFieldsForMappedKeyMapContainerPolicy(ContainerPolicy cp, TableDefinition table, boolean addKeyToPrimaryKey){
         if (cp.isMappedKeyMapPolicy()){
             List<DatabaseField> keyFields = cp.getIdentityFieldsForMapKey();
             Iterator<DatabaseField> i = keyFields.iterator();
@@ -394,7 +396,13 @@ public class DefaultTableGenerator {
                 DatabaseField foreignKey = i.next();
                 FieldDefinition fieldDef = getFieldDefFromDBField(foreignKey);
                 if (!table.getFields().contains(fieldDef)) {
-                    table.addField(getFieldDefFromDBField(foreignKey));
+                    table.addField(fieldDef);
+                    
+                    // In most cases you'll want to add the field to the relation table. When there is no
+                    // relation table (uni-directional 1-M) you will not want to do this however.
+                    if (addKeyToPrimaryKey) {
+                        fieldDef.setIsPrimaryKey(true); 
+                    }
                 }
             }
             Map<DatabaseField, DatabaseField> foreignKeys = ((MappedKeyMapContainerPolicy)cp).getForeignKeyFieldsForMapKey();
@@ -424,7 +432,7 @@ public class DefaultTableGenerator {
         buildRelationTableFields(mapping, table, targFkFields, targKeyFields);
         
         if (cp != null){
-            addFieldsForMappedKeyMapContainerPolicy(cp, table);
+            addFieldsForMappedKeyMapContainerPolicy(cp, table, true);
         }
         
         if (listOrderField != null) {
@@ -505,7 +513,7 @@ public class DefaultTableGenerator {
             dbField = ((DirectMapMapping) mapping).getDirectKeyField();
             table.addField(getFieldDefFromDBField(dbField));
         } else {
-            addFieldsForMappedKeyMapContainerPolicy(mapping.getContainerPolicy(), table);
+            addFieldsForMappedKeyMapContainerPolicy(mapping.getContainerPolicy(), table, true);
             
             if (mapping.getListOrderField() != null) {
                 table.addField(getFieldDefFromDBField(mapping.getListOrderField()));
@@ -582,7 +590,7 @@ public class DefaultTableGenerator {
      */
     protected void createAggregateTargetTable(AggregateCollectionMapping mapping) {
         TableDefinition targetTable = getTableDefFromDBTable(mapping.getReferenceDescriptor().getDefaultTable());
-        addFieldsForMappedKeyMapContainerPolicy(mapping.getContainerPolicy(), targetTable);
+        addFieldsForMappedKeyMapContainerPolicy(mapping.getContainerPolicy(), targetTable, true);
 
         Iterator aggregateFieldIterator = mapping.getReferenceDescriptor().getFields().iterator();
         while (aggregateFieldIterator.hasNext()) {

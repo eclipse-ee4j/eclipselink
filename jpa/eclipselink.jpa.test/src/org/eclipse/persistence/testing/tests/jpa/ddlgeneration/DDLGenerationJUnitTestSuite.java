@@ -35,12 +35,16 @@
  *       - 337323: Multi-tenant with shared schema support (part 6)
  *     31/05/2012-2.4 Guy Pelletier  
  *       - 381196: Multitenant persistence units with a dedicated emf should allow for DDL generation.
+ *     09/10/2008-2.4.1 Daryl Davis
+ *       - 386939: @ManyToMany Map<Entity,Entity> unidirectional reverses Key and Value fields on Update 
  ******************************************************************************/   
 package org.eclipse.persistence.testing.tests.jpa.ddlgeneration;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.io.BufferedReader;
 import java.io.File;
@@ -2142,6 +2146,64 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
                 rollbackTransaction(em);
             }
             
+            closeEntityManager(em);
+        }
+    }
+    
+    // Bug 386939 - @ManyToMany Map<Entity,Entity> unidirectional reverses Key and Value fields on Update 
+    public void testBug386939() {
+        EntityManager em = createEntityManager(DDL_PU);
+        
+        try {
+            getServerSession(DDL_PU).setLogLevel(0);
+            
+            // Step 1 - create some objects
+            beginTransaction(em);
+            
+            ValueEntity value1 = new ValueEntity("V1", "value1");
+            ValueEntity value2 = new ValueEntity("V2", "value2");
+            ValueEntity value3 = new ValueEntity("V3", "value3");
+            
+            DetailEntity detail1 = new DetailEntity("D1", "detail1");
+            DetailEntity detail2 = new DetailEntity("D2", "detail2");
+            DetailEntity detail3 = new DetailEntity("D3", "detail3");
+            
+            Master master1 = new Master("M1", "master1");
+            HashMap<DetailEntity, ValueEntity> map1 = new HashMap<DetailEntity, ValueEntity>();
+            map1.put(detail1, value3);
+            map1.put(detail3, value2);
+            master1.setDetails(map1);
+            
+            Master master2 = new Master("M2", "master2");
+            HashMap<DetailEntity, ValueEntity> map2 = new HashMap<DetailEntity, ValueEntity>();
+            map2.put(detail2, value1);
+            master2.setDetails(map2);
+            
+            Master master3 = new Master("M3", "master3");
+            HashMap<DetailEntity, ValueEntity> map3 = new HashMap<DetailEntity, ValueEntity>();
+            map3.put(detail2, value1);
+            map3.put(detail1, value1);
+            master3.setDetails(map3);
+            
+            em.persist(value1);
+            em.persist(value2);
+            em.persist(value3);
+            
+            em.persist(detail1);
+            em.persist(detail2);
+            em.persist(detail3);
+            
+            em.persist(master1);
+            em.persist(master2);
+            em.persist(master3);
+            
+            commitTransaction(em);
+
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em))
+                rollbackTransaction(em);
+            throw e;
+        } finally {
             closeEntityManager(em);
         }
     }
