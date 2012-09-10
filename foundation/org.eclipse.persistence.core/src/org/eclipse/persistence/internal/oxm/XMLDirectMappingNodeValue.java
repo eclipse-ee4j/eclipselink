@@ -156,6 +156,11 @@ public class XMLDirectMappingNodeValue extends MappingNodeValue implements NullC
     }
 
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord) {
+        if(unmarshalRecord.isNil() && xmlDirectMapping.getNullPolicy().isNullRepresentedByXsiNil()){
+            unmarshalRecord.resetStringBuffer();
+            return;
+        }        
+        
         unmarshalRecord.removeNullCapableValue(this);
         XMLField xmlField = (XMLField) xmlDirectMapping.getField();
         if (!xmlField.getLastXPathFragment().nameIsText) {

@@ -323,7 +323,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
         if ((marshaller != null) && (marshaller.getMarshalListener() != null)) {
             marshaller.getMarshalListener().beforeMarshal(object);
         }
-
+        addNamespaceDeclarations((row).getDocument());
         writeOutMappings(row, object, session);
 
 
@@ -334,7 +334,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
             addPrimaryKeyForNonDefaultTable(row);
         }
 
-        addNamespaceDeclarations((row).getDocument());
+        
 
         if ((marshaller != null) && (marshaller.getMarshalListener() != null)) {
             marshaller.getMarshalListener().afterMarshal(object);

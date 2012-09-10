@@ -38,6 +38,7 @@ import org.eclipse.persistence.testing.oxm.mappings.compositeobject.nillable.Com
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.nillable.CompositeObjectIsSetNullPolicySetNonNullTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.nillable.CompositeObjectIsSetNullPolicySetNonNullTextNodeTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.nillable.CompositeObjectNillableNodeNullPolicyTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.compositeobject.nillable.CompositeObjectNillableTextTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.nillable.CompositeObjectNullPolicyAbsentIsSetAbsentFalseTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.nillable.CompositeObjectNullPolicyAbsentIsSetAbsentTrueTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositeobject.nillable.CompositeObjectNullPolicySetEmptyFalseIsSetFalseTestCases;
@@ -117,6 +118,7 @@ public class CompositeObjectMappingTestSuite extends TestCase {
        	// pre-nillable refactor 3
         suite.addTestSuite(CompositeObjectOptionalNodeNullPolicyElementTestCases.class);
         suite.addTestSuite(CompositeObjectNillableNodeNullPolicyTestCases.class);
+        suite.addTestSuite(CompositeObjectNillableTextTestCases.class);
         suite.addTestSuite(CompositeObjectIsSetNodeNullPolicyTrueTestCases.class);
         suite.addTestSuite(CompositeObjectIsSetNodeNullPolicyFalseTestCases.class);
 

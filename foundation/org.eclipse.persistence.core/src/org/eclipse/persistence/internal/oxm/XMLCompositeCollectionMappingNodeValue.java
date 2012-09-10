@@ -185,6 +185,10 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
     }
     
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Object collection) {
+        if(unmarshalRecord.isNil() && xmlCompositeCollectionMapping.getNullPolicy().isNullRepresentedByXsiNil()){
+            unmarshalRecord.resetStringBuffer();
+            return;
+        }
         if (null == unmarshalRecord.getChildRecord()) {
                SAXFragmentBuilder builder = unmarshalRecord.getFragmentBuilder();
                UnmarshalKeepAsElementPolicy keepAsElementPolicy = xmlCompositeCollectionMapping.getKeepAsElementPolicy();        

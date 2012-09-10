@@ -31,6 +31,7 @@ public class XmlElementTestSuite extends TestSuite {
         suite.addTestSuite(XmlElementNoNamespaceTestCases.class);
         suite.addTestSuite(XmlElementCollectionTestCases.class);
         suite.addTestSuite(XmlElementNillableTestCases.class);
+        suite.addTestSuite(XmlElementNillableTextTestCases.class);
         suite.addTestSuite(FullTestCases.class);
         suite.addTestSuite(FullTestCasesNS.class);
         suite.addTestSuite(EmptyCollectionTestCases.class);

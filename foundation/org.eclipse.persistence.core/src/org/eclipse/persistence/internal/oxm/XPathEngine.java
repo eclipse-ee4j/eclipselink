@@ -501,9 +501,9 @@ public class XPathEngine {
 
                     if (values.get(index) != XMLRecord.NIL) {
                         newElement = (Element) createElement(parent, fragment, xmlField, values.get(index), session);
-                    } else {
+                    } else {                        
                         newElement = (Element) createElement(parent, fragment, xmlField, XMLConstants.EMPTY_STRING, session);
-                        newElement.setAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_INSTANCE_PREFIX + XMLConstants.COLON + XMLConstants.SCHEMA_NIL_ATTRIBUTE, XMLConstants.BOOLEAN_STRING_TRUE);
+                        addXsiNilToElement(newElement, xmlField);
                     }
                     XPathPredicate predicate = fragment.getPredicate();
                     if(predicate != null) {
@@ -530,7 +530,7 @@ public class XPathEngine {
                     newElement = (Element)createElement(parent, fragment, xmlField, value, session);
                 } else {
                     newElement = (Element) createElement(parent, fragment, xmlField, XMLConstants.EMPTY_STRING, session);
-                    newElement.setAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_INSTANCE_PREFIX + XMLConstants.COLON + XMLConstants.SCHEMA_NIL_ATTRIBUTE, XMLConstants.BOOLEAN_STRING_TRUE);
+                    addXsiNilToElement(newElement, xmlField);
                 }
                 XPathPredicate predicate = fragment.getPredicate();
                 if(predicate != null) {
@@ -1102,16 +1102,7 @@ public class XPathEngine {
         if (null == namespaceResolver) {
             return null;
         }
-
-        Enumeration prefixes = namespaceResolver.getPrefixes();
-        String prefix;
-        while (prefixes.hasMoreElements()) {
-            prefix = (String)prefixes.nextElement();
-            if (namespaceResolver.resolveNamespacePrefix(prefix).equals(namespaceURI)) {
-                return prefix;
-            }
-        }
-        return null;
+       return  namespaceResolver.resolveNamespaceURI(namespaceURI);
     }
 
     private Node addText(XMLField xmlField, Node element, String textValue) {
@@ -1158,7 +1149,19 @@ public class XPathEngine {
     private void addXsiNilToElement(Element element, XMLField xmlField) {
         NamespaceResolver nsr = new NamespaceResolver();
         nsr.setDOM(element);
-        String schemaInstancePrefix = resolveNamespacePrefixForURI(XMLConstants.SCHEMA_INSTANCE_URL, nsr);
+                                
+        String  schemaInstancePrefix = resolveNamespacePrefixForURI(XMLConstants.SCHEMA_INSTANCE_URL, nsr);
+        Node parentNode = element.getParentNode();
+        while(schemaInstancePrefix == null && parentNode != null && parentNode.getNodeType() == Node.ELEMENT_NODE){
+            nsr.setDOM(element);
+            schemaInstancePrefix = resolveNamespacePrefixForURI(XMLConstants.SCHEMA_INSTANCE_URL, nsr);
+            parentNode = parentNode.getParentNode();
+        }
+        if(schemaInstancePrefix == null && element.getOwnerDocument() != null){
+            nsr.setDOM(element.getOwnerDocument().getDocumentElement());
+            schemaInstancePrefix = resolveNamespacePrefixForURI(XMLConstants.SCHEMA_INSTANCE_URL, nsr);
+        }
+           
         if(schemaInstancePrefix == null) {
             //Not decalred in the doc
             nsr = getNamespaceResolverForField(xmlField);
@@ -1166,7 +1169,8 @@ public class XPathEngine {
             if(schemaInstancePrefix == null) {
                 schemaInstancePrefix = nsr.generatePrefix(XMLConstants.SCHEMA_INSTANCE_PREFIX);
             }
-            element.setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + XMLConstants.COLON + schemaInstancePrefix, XMLConstants.SCHEMA_INSTANCE_URL);
+            
+            element.setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + XMLConstants.COLON + schemaInstancePrefix, XMLConstants.SCHEMA_INSTANCE_URL);        
         }
         element.setAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_INSTANCE_PREFIX + XMLConstants.COLON + XMLConstants.SCHEMA_NIL_ATTRIBUTE, XMLConstants.BOOLEAN_STRING_TRUE);
         

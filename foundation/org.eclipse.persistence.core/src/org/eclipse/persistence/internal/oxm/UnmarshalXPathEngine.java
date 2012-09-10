@@ -100,17 +100,17 @@ public class UnmarshalXPathEngine {
 
     private Object selectSingleNode(Node contextNode, XPathFragment xPathFragment, XMLNamespaceResolver xmlNamespaceResolver, boolean checkForXsiNil) {
         Node resultNode = getSingleNode(contextNode, xPathFragment, xmlNamespaceResolver);
+        if (checkForXsiNil) {
+            // Check for presence of xsi:nil="true"
+            String nil = ((Element) contextNode).getAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_NIL_ATTRIBUTE);
 
+            if (nil.equals(XMLConstants.BOOLEAN_STRING_TRUE)) {
+                return XMLRecord.NIL;
+            }
+        }
         if (resultNode == null) {
 
-            if (checkForXsiNil) {
-                // Check for presence of xsi:nil="true"
-                String nil = ((Element) contextNode).getAttributeNS(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_NIL_ATTRIBUTE);
-
-                if (nil.equals(XMLConstants.BOOLEAN_STRING_TRUE)) {
-                    return XMLRecord.NIL;
-                }
-            }
+     
 
             if(!xPathFragment.nameIsText()) {
                 return XMLRecord.noEntry;
@@ -413,7 +413,9 @@ public class UnmarshalXPathEngine {
                 xmlNodeList.add(contextNode.getOwnerDocument().createTextNode(XMLConstants.EMPTY_STRING));
             }
         } else {
-            if (n != null) {
+            if (nullPolicy != null && nullPolicy.isNullRepresentedByXsiNil() && nullPolicy.valueIsNull((Element) contextNode))  {
+                xmlNodeList.add(null);
+            }else if (n != null) {
                 xmlNodeList.add(n);
             }
         }

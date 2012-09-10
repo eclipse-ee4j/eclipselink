@@ -26,6 +26,8 @@ import org.eclipse.persistence.testing.oxm.mappings.compositecollection.mappingx
 import org.eclipse.persistence.testing.oxm.mappings.compositecollection.nested.CompositeCollectionNestedTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositecollection.nillable.CompositeCollectionAbsentNodeTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositecollection.nillable.CompositeCollectionEmptyNodeTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.compositecollection.nillable.CompositeCollectionNillableTextTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.compositecollection.nillable.CompositeCollectionNillableNodeNullPolicyTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositecollection.norefclass.DefaultNSTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositecollection.reuse.CompositeCollectionReuseTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositecollection.setmethod.SetMethodTestCases;
@@ -47,7 +49,8 @@ public class CompositeCollectionMappingTestSuite extends TestCase {
         suite.addTestSuite(DefaultNSTestCases.class);
         suite.addTestSuite(CompositeCollectionEmptyNodeTestCases.class);
         suite.addTestSuite(CompositeCollectionAbsentNodeTestCases.class);
-
+        suite.addTestSuite(CompositeCollectionNillableNodeNullPolicyTestCases.class);
+        suite.addTestSuite(CompositeCollectionNillableTextTestCases.class);
         return suite;
     }
 
