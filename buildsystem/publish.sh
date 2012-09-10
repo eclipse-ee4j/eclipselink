@@ -27,12 +27,14 @@ EXEC_DIR=${HOME_DIR}
 DNLD_DIR=/home/data/httpd/download.eclipse.org/rt/eclipselink
 JAVA_HOME=/shared/common/jdk-1.6.x86_64
 LOG_DIR=${HOME_DIR}/logs
+RELENG_REPO=${HOME_DIR}/eclipselink.releng
 
 #Files
 ANT_BLDFILE=publishbuild.xml
 
 #Global Variables
 PUB_SCOPE_EXPECTED=0
+PUB_SCOPE_COMPLETED=0
 
 PATH=${JAVA_HOME}/bin:${ANT_HOME}/bin:/usr/bin:/usr/local/bin:${PATH}
 
@@ -198,7 +200,7 @@ establishPublishScope() {
     # search for zip files in src meaning need to publish artifacts
     srcZipCount=`ls ${src} | grep -c [.]zip$`
     if [ "${srcZipCount}" -gt 0 ] ; then
-        PUB_SCOPE_EXPECTED=`expr ${PUB_SCOPE_EXPECTED} + 100`
+        PUB_SCOPE_EXPECTED=`expr ${PUB_SCOPE_EXPECTED} + 101`
         echo "Zip archives detected. Logging 'Archive publish' within scope."
     else
         echo "No zip archives detected. 'Archive publish' beyond scope."
@@ -217,20 +219,6 @@ establishPublishScope() {
         fi
     else
         echo "No p2repo found. 'P2 publish' beyond scope."
-    fi
-
-    # search for bundle zip and eclipselink.jar, meaning can/need to generate maven
-    srcELJarCount=`ls ${src} | grep -c eclipselink[.]jar$`
-    srcpluginZipCount=`ls ${src} | grep -c eclipselink-plugins`
-    if [ "${srcELJarCount}" -gt 0 ] ; then
-        if [ "${srcpluginZipCount}" -gt 0 ] ; then
-            PUB_SCOPE_EXPECTED=`expr ${PUB_SCOPE_EXPECTED} + 1`
-            echo "Basic components available for mavenpublish. Logging 'Maven publish' as within scope."
-        else
-            echo "No bundle archives detected. Maven publish beyond scope."
-        fi
-    else
-        echo "No eclipselink.jar detected. Maven publish beyond scope."
     fi
 }
 
@@ -299,6 +287,7 @@ publishBuildArtifacts() {
         #verify everything copied correctly
         if [ \( "${srcJarCount}" = "${destJarCount}" \) -a \( "${srcZipCount}" = "${destZipCount}" \) ] ; then
             echo "    Published ${destJarCount} jar(s) and ${destZipCount} zip(s) successfully."
+            PUB_SCOPE_COMPLETED=`expr ${PUB_SCOPE_COMPLETED} + 100`
         else
             echo "    Published ${destJarCount} jar(s) and ${destZipCount} zip(s), but Src and Dest numbers don't match."
             echo "    Expected ${srcJarCount} jar(s) and ${srcZipCount} zip(s) to copy. Publish failed!"
@@ -321,7 +310,7 @@ publishBuildArtifacts() {
 
 unset publishP2Repo
 publishP2Repo() {
-    #Need handoff_loc, download location, version, date/time, qualifier
+    #Need handoff_loc, download location, version, qualifier
     # Usage: publishP2Repo src dest version qualifier
     src=$1
     dest=$2
@@ -368,6 +357,7 @@ publishP2Repo() {
                 #verify everything copied correctly
                 if [ "${destP2jarCount}" = "${srcP2jarCount}" ] ; then
                     echo "    Published ${destP2jarCount} of ${srcP2jarCount} jars to repo successfully."
+                    PUB_SCOPE_COMPLETED=`expr ${PUB_SCOPE_COMPLETED} + 10`
                 else
                     echo "    Publish failed for P2 Repo. Only copied ${destP2jarCount} of ${srcP2jarCount} jars to repo."
                     ERROR=true
@@ -376,9 +366,11 @@ publishP2Repo() {
             else
                 destP2jarCount=`ls -r ${downloadDest}/* | grep -c [.]jar$`
                 echo "   P2 repo already exists, ${destP2jarCount} of ${srcP2jarCount} jars published. Skipping..."
+                PUB_SCOPE_COMPLETED=`expr ${PUB_SCOPE_COMPLETED} + 10`
             fi
         else
             echo "    No P2 repo to publish..."
+            PUB_SCOPE_COMPLETED=`expr ${PUB_SCOPE_COMPLETED} + 10`
         fi
     else
         # Something is not right! skipping.."
@@ -396,97 +388,73 @@ publishP2Repo() {
 
 unset publishMavenRepo
 publishMavenRepo() {
-    #Need handoff_loc, branch, date, version
+    #Need handoff_loc, branch, date, version, qualifier
     src=$1
     branch=$2
     blddate=$3
     version=$4
+    qualifier=$5
+
+    error_cnt=0
 
     # Define SYSTEM variables needed
-    CLASSPATH
-
-    # verify latest git repo, if none exist, create it.
-    if [ -d ${RUNTIME_REPO} ] ; then
-       cd ${RUNTIME_REPO}
-       git pull
-    else
-       git clone http://git.eclipse.org/gitroot/eclipselink/eclipselink.runtime.git ${RUNTIME_REPO}
-       cd ${RUNTIME_REPO}
-    fi
-
-    # checkout branch from runtime git repo
-    git checkout ${branch}
+    BldDepsDir=${HOME_DIR}/bld_deps/${branch}
 
     # unzip necessary files to 'upload dir'/plugins
-    #unzip ${handoff_loc}/ # better in ant task??? (autobuild? - populate variables, then invoke?
+    srczip=`ls ${src}/eclipselink-src*`
+    installzip=`ls ${src}/eclipselink-${version}*`
+    nosqlpluginzip=`ls ${src}/eclipselink-plugins-nosql*`
+    pluginzip=`ls ${src}/eclipselink-plugins-${version}*`
+    if [ -f ${pluginzip} ] ; then
+       unzip -o ${pluginzip} -d ${src}/maven
+    else
+       echo "${pluginzip} not found!"
+       error_cnt=`expr ${error_cnt} + 1`
+    fi
+    if [ -f ${nosqlpluginzip} ] ; then
+       unzip -o ${nosqlpluginzip} -d ${src}/maven
+    else
+       echo "${nosqlpluginzip} not found!"
+       error_cnt=`expr ${error_cnt} + 1`
+    fi
+    if [ -f ${src}/eclipselink.jar ] ; then
+       cp ${src}/eclipselink.jar ${src}/maven/.
+    else
+       if [ -f ${installzip} ] ; then
+          unzip -o -j ${installzip} eclipselink/jlib/eclipselink.jar -d ${src}/maven
+       else
+       echo "${installzip} not found!"
+          error_cnt=`expr ${error_cnt} + 1`
+       fi
+    fi
+    if [ -f ${srczip} ] ; then
+       cp ${srczip} ${src}/maven/eclipselink-src.zip
+    else
+       echo "${srczip} not found!"
+       error_cnt=`expr ${error_cnt} + 1`
+    fi
+    ls ${src}/maven
 
     #Invoke Antscript for Maven upload
-    arguments="-Drelease.version=${version} -Dbuild.date=${blddate} -Dbuild.type=SNAPSHOT"
+    arguments="-Dbuild.deps.dir=${BldDepsDir} -Dcustom.tasks.lib=${RELENG_REPO}/ant_customizations.jar -Dversion.string=${version}.${qualifier}"
+    arguments="${arguments} -Drelease.version=${version} -Dbuild.date=${blddate} -Dbuild.type=SNAPSHOT -Dbundle.dir=${src}/maven"
 
     # Run Ant from ${exec_location} using ${buildfile} ${arguments}
-    runAnt ${exec_location} ${upload_src_dir}/uploadToMaven.xml "${arguments}"
-
-    # if encountered error, increment error_cnt, otherwise, cleanup ${upload_src_dir}
-    if [ "${local_err}" = "true" ] ; then
-       error_cnt=`expr ${error_cnt} + 1`
+    echo "ant ${RELENG_REPO}/upload${branch}ToMaven.xml ${arguments}"
+    ant -f ${RELENG_REPO}/upload${branch}ToMaven.xml ${arguments}
+    if [ "$?" = "0" ]
+    then
+       # if successful, cleanup and set "COMPLETE"
+       echo "Maven publish complete."
     else
-       echo "should 'rm -r ${upload_src_dir}', but won't for debugging for now."
-       #rm -r ${upload_src_dir}
+       # if encountered error, increment error_cnt
+       error_cnt=`expr ${error_cnt} + 1`
     fi
-
-    # return to HOME_DIR
-    cd $HOME_DIR
-}
-
-unset runAnt
-runAnt() {
-    #Define run specific variables
-    run_dir=$1
-    buildfile=$2
-    args=$3
-
-    # Store current location
-
-    # Change to run_dir
-
-    # Invoke Ant
-
-    #Directories
-#    BRANCH_PATH=${WORKSPACE}
-#    BLD_DEPS_DIR=${HOME_DIR}/bld_deps/${BRANCH}
-#    JUNIT_HOME=${BLD_DEPS_DIR}/junit
-
-    #Files
-#    JDBC_LOGIN_INFO_FILE=${HOME_DIR}/db-${BRANCH_NM}.dat
-    LOGFILE_NAME=bsb-${BRANCH_NM}_pub${PROC}_${START_DATE}.log
-    DATED_LOG=${LOG_DIR}/${LOGFILE_NAME}
-
-    # Define build dependency paths (build needs em, NOT compile dependencies)
-#    OLD_CLASSPATH=${CLASSPATH}
-#   CLASSPATH=${JUNIT_HOME}/junit.jar:${ANT_HOME}/lib/ant-junit.jar
-
-    # Export run specific variables
-    export BLD_DEPS_DIR BRANCH_NM BRANCH_PATH CLASSPATH JUNIT_HOME TARGET
-
-    # Setup parameters for Ant build
-    ANT_BASEARG="-f \"${ant.buildfile}\" -Dbranch.name=\"${BRANCH}\" -Dgit.hash=${GITHASH}"
-    ANT_BASEARG="${ANT_BASEARG} -Dbuild.date=${BLDDATE} -Dhandoff.file=${handoff}"
-
-    cd ${HOME_DIR}
-    echo "Results logged to: ${DATED_LOG}"
-    touch ${DATED_LOG}
-
-    echo ""
-    echo "${PROC} publish starting for ${BRANCH} build:${QUALIFIER} from '`pwd`'..."
-    echo "${PROC} publish started at: '`date`' for ${BRANCH} build:${QUALIFIER} from '`pwd`'..." >> ${DATED_LOG}
-    echo "   ant ${ANT_BASEARG} publish-${PROC}"
-    echo "ant ${ANT_BASEARG} publish-${PROC}" >> ${DATED_LOG}
-    if [ ! "${DEBUG}" = "true" ] ; then
-        #ant ${ANT_BASEARG} publish-${PROC} >> ${DATED_LOG} 2>&1
-        echo "Not running: ant ${ANT_BASEARG} publish-${PROC}"
+    if [ "$error_cnt" = "0" ]
+    then
+       # if successful, cleanup and set "COMPLETE"
+       PUB_SCOPE_COMPLETED=`expr ${PUB_SCOPE_COMPLETED} + 1`
     fi
-    echo "Publish completed (skipped) at: `date`" >> ${DATED_LOG}
-    echo "Publish complete."
 }
 
 unset publishTestArtifacts
@@ -534,12 +502,16 @@ publishTestArtifacts() {
         #verify everything copied correctly
         if [ "${srcHtmlCount}" = "${destHtmlCount}" ] ; then
             echo "    Published ${destHtmlCount} html(s) successfully."
+            # can clean up.
+            rm -r ${src}
         else
             echo "    Publish failed for Test Results."
+            ERROR=true
         fi
     else
         # Something is not right! skipping.."
-        echo "    Required locations and data failed to verify... skipping Artifact publishing...."
+        echo "    Required locations and data failed to verify... skipping Test Artifact publishing...."
+        ERROR=true
         if [ "${DEBUG}" = "true" ] ; then
             echo "publishTestArtifacts: Required locations and data:"
             echo "   src       = '${src}'"
@@ -550,7 +522,6 @@ publishTestArtifacts() {
         fi
     fi
 }
-
 
 
 #==========================
@@ -574,6 +545,7 @@ NEW_RESULTS=false
 ERROR=false
 handoff_cnt=0
 for handoff in `ls handoff-file*.dat` ; do
+    ERROR=false
     handoff_cnt=`expr ${handoff_cnt} + 1`
     if [ "$handoff_cnt" -gt "1" ] ; then
         echo " "
@@ -590,43 +562,29 @@ for handoff in `ls handoff-file*.dat` ; do
        if [ "${PUB_SCOPE_EXPECTED}" -ge 10 ] ; then
            publishP2Repo ${BUILD_ARCHIVE_LOC} ${DNLD_DIR} ${VERSION} ${QUALIFIER}
        fi
-       if [ "${PUB_SCOPE_EXPECTED}" -ge 10 ] ; then
-           echo "Could call publishMavenRepo() if ready"
+       if [ "${PUB_SCOPE_EXPECTED}" -ge 1 ] ; then
+           #publishMavenRepo ${BUILD_ARCHIVE_LOC} ${BRANCH} ${BLDDATE} ${VERSION} ${QUALIFIER}
+           echo "run maven if ready... (not yet. need to isolate branch specific dependencies)"
+       fi
+       if [ "${PUB_SCOPE_EXPECTED}" = "${PUB_SCOPE_COMPLETED}" ] ; then
+          echo "Success: can now delete '${handoff}' and '${BUILD_ARCHIVE_LOC}'"
+       else
+          echo "Full processing failed: Cannot remove '${handoff}' and '${BUILD_ARCHIVE_LOC}'"
+          echo "    Deletion aborted..."
        fi
     else
-       PUB_SCOPE_EXPECTED=0
        publishTestArtifacts ${BUILD_ARCHIVE_LOC} ${DNLD_DIR} ${VERSION} ${BLDDATE} ${HOST}
-    fi
-    #runAnt ${BRANCH} ${QUALIFIER} ${PROC} ${BUILD_ARCHIVE_LOC} ${HOST}
- # ${DNLD_DIR}
- # ${BRANCH}
- # ${QUALIFIER}
- # ${PROC}
- # ${BLDDATE}
- # ${GITHASH}
- # ${BUILD_ARCHIVE_LOC}
- # ${HOST}
- # ${MAVEN_TAG}
- # ${VERSION}
- # ${TIMESTAMP}
-    if [ "${PUB_SCOPE_EXPECTED}" = "${PUB_SCOPE_COMPLETED}" ] ; then
-       echo "Success: can now delete '${handoff}' and '${BUILD_ARCHIVE_LOC}'"
-    else
-       echo "Full processing failed: Cannot remove '${handoff}' and '${BUILD_ARCHIVE_LOC}'"
-    fi
-    if [ "${ERROR} " = "false" ] ; then
-        echo "Processing of '${handoff}' complete."
-        # remove handoff
-        #rm ${handoff}
-        echo "   Removing '${handoff}'. (not!)"
-        # remove exported artifacts
-        #rm -r ${BUILD_ARCHIVE_LOC} # Currently cannot because build/test are not separate locations (build would delete tests before published...
-        #rm ${BUILD_ARCHIVE_LOC}/*  # Gets rid of the bulk of the artifacts, but will leave the dir heirarchy
-        echo "   Removing '${BUILD_ARCHIVE_LOC}/*'. (not!)"
-    else
-        # Report error
-        echo "Error processing of '${handoff}'."
-        echo "    Deletion aborted..."
+       # Can combine when build publish complete.
+       if [ "${ERROR}" = "false" ] ; then
+           echo "Processing of '${handoff}' complete."
+           # remove handoff
+           echo "   Removing '${handoff}'."
+           rm ${handoff}
+       else
+           # Report error
+           echo "Error processing of '${handoff}'."
+           echo "    Deletion aborted..."
+       fi
     fi
     echo "   Finished."
 done
@@ -634,6 +592,7 @@ echo "Completed processing of all (${handoff_cnt}) handoff files."
 if [ "${NEW_RESULTS}" = "true" ] ; then
     # clean up old artifacts
     echo "Could now run '${EXEC_DIR}/cleanNightly.sh' to remove old artifacts."
+    # Will need to accumulate branches effected in this run before can know which ones to clean
     # regen web
     echo "Could now run '${EXEC_DIR}/buildNightlyList-cron.sh' to regenerate nightly download page."
     # regen P2 composite
