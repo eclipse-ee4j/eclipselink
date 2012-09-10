@@ -74,18 +74,18 @@ parseHandoff() {
     # Usage: parseHandoff handoff_file
     handoff_file=$1
     handoff_error_string1="Error: Invalid handoff_file name: '${handoff_file}'"
-    handoff_error_string2="                   Was expecting: 'handoff-file-<PROC>-<BRANCH>-<QUALIFIER>.dat'"
+    handoff_error_string2="                   Was expecting: 'handoff-file-<PROC>-<BRANCH_NM>-<QUALIFIER>.dat'"
     handoff_content_error1="Error: Invalid handoff_file contents: '`cat ${handoff_file}`'"
     handoff_content_error2="                       Was expecting: 'extract.loc=<BUILD_ARCHIVE_LOC> host=<HOST> maven.tag=<VERSION>-<MILESTONE>' "
 
-    ## Parse handoff_file name for BRANCH, QUALIFIER, and PROC (Procedure: Build/Test)
-    BRANCH=`echo ${handoff_file} | cut -s -d'-' -f4`
-    if [ "${BRANCH}" = "" ] ; then
-        echo "BRANCH ${handoff_error_string1}"
-        echo "       ${handoff_error_string2}"
-        BRANCH_ERR=true
+    ## Parse handoff_file name for BRANCH_NM, QUALIFIER, and PROC (Procedure: Build/Test)
+    BRANCH_NM=`echo ${handoff_file} | cut -s -d'-' -f4`
+    if [ "${BRANCH_NM}" = "" ] ; then
+        echo "BRANCH_NM ${handoff_error_string1}"
+        echo "          ${handoff_error_string2}"
+        BRANCH_NM_ERR=true
     else
-        BRANCH_ERR=false
+        BRANCH_NM_ERR=false
     fi
     QUALIFIER=`echo ${handoff_file} | cut -s -d'-' -f5,6 | cut -d'.' -f1`
     if [ "${QUALIFIER}" = "" ] ; then
@@ -147,7 +147,7 @@ parseHandoff() {
     ## Parse MAVEN_TAG for VERSION
     VERSION=`echo ${MAVEN_TAG} | cut -d'-' -f1`
     if [ "${VERSION}" = "" ] ; then
-        echo "VERSION Error: Something wrong with MAVEN_TAG ('${MAVEN_TAG}' should be VERSION-MILESTONE}!"
+        echo "VERSION Error: Something wrong with MAVEN_TAG ('${MAVEN_TAG}' should be VERSION-MILESTONE)!"
         ## If parsing MAVEN_TAG failed, try parsing BUILD_ARCHIVE_LOC
         VERSION=`echo ${BUILD_ARCHIVE_LOC} | cut -d'/' -f6`
         if [ "${VERSION}" = "" ] ; then
@@ -158,6 +158,13 @@ parseHandoff() {
         fi
     else
         VERSION_ERR=false
+        ## Parse VERSION for BRANCH
+        BRANCH=`echo ${VERSION} | cut -d'.' -f1-2`
+        if [ "${BRANCH}" = "" ] ; then
+            echo "BRANCH Error: Something wrong with VERSION ('${VERSION}' should be M.m.b)!"
+        else
+            BRANCH_ERR=false
+        fi
     fi
     ## Parse handoff_file directory listing for TIMESTAMP
     TIMESTAMP=`ls -l --time-style=+%Y%m%d%H%M.%S ${handoff_file} | cut -d' ' -f6`
@@ -170,6 +177,7 @@ parseHandoff() {
     if [ "${DEBUG}" = "true" ] ; then
         echo "parseHandoff: Parsed values:"
         echo "   BRANCH           = '${BRANCH}'"
+        echo "   BRANCH_NM        = '${BRANCH_NM}'"
         echo "   QUALIFIER        = '${QUALIFIER}'"
         echo "   PROC             = '${PROC}'"
         echo "   BLDDATE          = '${BLDDATE}'"
@@ -194,8 +202,9 @@ establishPublishScope() {
     #  10 - p2 to pub
     #   1 - maven to pub (should be set if 100 = true, but only need eclipselink.jar and bundle.zip)
 
-    #reset PUB_SCOPE_EXPECTED for this handoff instance
+    #reset PUB_SCOPE_EXPECTED and PUB_SCOPE_COMPLETED for this handoff instance
     PUB_SCOPE_EXPECTED=0
+    PUB_SCOPE_COMPLETED=0
 
     # search for zip files in src meaning need to publish artifacts
     srcZipCount=`ls ${src} | grep -c [.]zip$`
@@ -395,65 +404,122 @@ publishMavenRepo() {
     version=$4
     qualifier=$5
 
-    error_cnt=0
+    echo " "
+    echo "Preparing to publish Maven repository...."
 
     # Define SYSTEM variables needed
     BldDepsDir=${HOME_DIR}/bld_deps/${branch}
+    if [ ! -d "${BldDepsDir}" ] ; then
+        echo "${BldDepsDir} not found!"
+    fi
 
-    # unzip necessary files to 'upload dir'/plugins
-    srczip=`ls ${src}/eclipselink-src*`
-    installzip=`ls ${src}/eclipselink-${version}*`
-    nosqlpluginzip=`ls ${src}/eclipselink-plugins-nosql*`
-    pluginzip=`ls ${src}/eclipselink-plugins-${version}*`
-    if [ -f ${pluginzip} ] ; then
-       unzip -o ${pluginzip} -d ${src}/maven
-    else
-       echo "${pluginzip} not found!"
-       error_cnt=`expr ${error_cnt} + 1`
-    fi
-    if [ -f ${nosqlpluginzip} ] ; then
-       unzip -o ${nosqlpluginzip} -d ${src}/maven
-    else
-       echo "${nosqlpluginzip} not found!"
-       error_cnt=`expr ${error_cnt} + 1`
-    fi
-    if [ -f ${src}/eclipselink.jar ] ; then
-       cp ${src}/eclipselink.jar ${src}/maven/.
-    else
-       if [ -f ${installzip} ] ; then
-          unzip -o -j ${installzip} eclipselink/jlib/eclipselink.jar -d ${src}/maven
-       else
-       echo "${installzip} not found!"
-          error_cnt=`expr ${error_cnt} + 1`
-       fi
-    fi
-    if [ -f ${srczip} ] ; then
-       cp ${srczip} ${src}/maven/eclipselink-src.zip
-    else
-       echo "${srczip} not found!"
-       error_cnt=`expr ${error_cnt} + 1`
-    fi
-    ls ${src}/maven
+    #verify src, root dest, and needed variables exist before proceeding
+    if [ \( -d "${src}" \) -a \( -d "${BldDepsDir}" \) -a \( ! "${branch}" = "" \) -a \( ! "${blddate}" = "" \) -a \( ! "${version}" = "" \) -a \( ! "${qualifier}" = "" \) ] ; then
+        if [ "${DEBUG}" = "true" ] ; then
+            echo "publishMavenRepo: Required locations and data verified... proceeding..."
+            echo "   src       = '${src}'"
+            echo "   branch    = '${branch}'"
+            echo "   blddate   = '${blddate}'"
+            echo "   version   = '${version}'"
+            echo "   qualifier = '${qualifier}'"
+        fi
 
-    #Invoke Antscript for Maven upload
-    arguments="-Dbuild.deps.dir=${BldDepsDir} -Dcustom.tasks.lib=${RELENG_REPO}/ant_customizations.jar -Dversion.string=${version}.${qualifier}"
-    arguments="${arguments} -Drelease.version=${version} -Dbuild.date=${blddate} -Dbuild.type=SNAPSHOT -Dbundle.dir=${src}/maven"
+        error_cnt=0
 
-    # Run Ant from ${exec_location} using ${buildfile} ${arguments}
-    echo "ant ${RELENG_REPO}/upload${branch}ToMaven.xml ${arguments}"
-    ant -f ${RELENG_REPO}/upload${branch}ToMaven.xml ${arguments}
-    if [ "$?" = "0" ]
-    then
-       # if successful, cleanup and set "COMPLETE"
-       echo "Maven publish complete."
+        # unzip necessary files to 'upload dir'/plugins
+        ## start with nosql which isn't in older branches
+        if [ ! "`ls ${src} | grep -c nosql`" = "0" ] ; then
+            nosqlpluginzip=`ls ${src}/eclipselink-plugins-nosql*`
+            if [ -f ${nosqlpluginzip} ] ; then
+               unzip -o -q ${nosqlpluginzip} -d ${src}/maven
+            fi
+        else
+            echo "No nosql installer zip found! Assuming older branch, skipping..."
+        fi
+        ## The rest should not have any issues
+        srczip=`ls ${src}/eclipselink-src*`
+        installzip=`ls ${src}/eclipselink-${version}*`
+        pluginzip=`ls ${src}/eclipselink-plugins-${version}*`
+        if [ "${DEBUG}" = "true" ] ; then
+            echo "Expanding ${pluginzip}..."
+        fi
+        if [ -f ${pluginzip} ] ; then
+           unzip -o -q ${pluginzip} -d ${src}/maven
+        else
+           echo "${pluginzip} not found!"
+           error_cnt=`expr ${error_cnt} + 1`
+        fi
+        if [ "${DEBUG}" = "true" ] ; then
+            echo "Prepping an eclipselink.jar..."
+        fi
+        if [ -f ${src}/eclipselink.jar ] ; then
+            if [ "${DEBUG}" = "true" ] ; then
+                echo "   Getting from exported files..."
+            fi
+            cp ${src}/eclipselink.jar ${src}/maven/.
+        else
+            if [ "${DEBUG}" = "true" ] ; then
+                echo "    Expanding from ${installzip}..."
+            fi
+            if [ -f ${installzip} ] ; then
+                unzip -o -j -q ${installzip} eclipselink/jlib/eclipselink.jar -d ${src}/maven
+            else
+                echo "${installzip} not found!"
+                error_cnt=`expr ${error_cnt} + 1`
+            fi
+        fi
+        if [ "${DEBUG}" = "true" ] ; then
+            echo "Prepping a src.zip from ${srczip}..."
+        fi
+        if [ -f ${srczip} ] ; then
+            cp ${srczip} ${src}/maven/eclipselink-src.zip
+        else
+            echo "${srczip} not found!"
+            error_cnt=`expr ${error_cnt} + 1`
+        fi
+        if [ "${DEBUG}" = "true" ] ; then
+            ls ${src}/maven
+        fi
+
+        #Invoke Antscript for Maven upload
+        arguments="-Dbuild.deps.dir=${BldDepsDir} -Dcustom.tasks.lib=${RELENG_REPO}/ant_customizations.jar -Dversion.string=${version}.${qualifier}"
+        arguments="${arguments} -Drelease.version=${version} -Dbuild.date=${blddate} -Dbuild.type=SNAPSHOT -Dbundle.dir=${src}/maven"
+
+        # Run Ant from ${exec_location} using ${buildfile} ${arguments}
+        echo "ant ${RELENG_REPO}/upload${branch}ToMaven.xml ${arguments}"
+        if [ -f ${RELENG_REPO}/upload${branch}ToMaven.xml ] ; then
+            ant -f ${RELENG_REPO}/upload${branch}ToMaven.xml ${arguments}
+            if [ "$?" = "0" ]
+            then
+                echo "Maven publish complete."
+            else
+                # if encountered error, increment error_cnt
+                error_cnt=`expr ${error_cnt} + 1`
+            fi
+        else
+            echo "${RELENG_REPO}/upload${branch}ToMaven.xml doesn't exist. Aborting ant run..."
+            error_cnt=`expr ${error_cnt} + 1`
+        fi
+        if [ "$error_cnt" = "0" ]
+        then
+            # if successful, cleanup and set "COMPLETE"
+            PUB_SCOPE_COMPLETED=`expr ${PUB_SCOPE_COMPLETED} + 1`
+            if [ "${DEBUG}" = "true" ] ; then
+                echo "Maven Publish completed. PUB_SCOPE_COMPLETED = '${PUB_SCOPE_COMPLETED}'"
+            fi
+        fi
     else
-       # if encountered error, increment error_cnt
-       error_cnt=`expr ${error_cnt} + 1`
-    fi
-    if [ "$error_cnt" = "0" ]
-    then
-       # if successful, cleanup and set "COMPLETE"
-       PUB_SCOPE_COMPLETED=`expr ${PUB_SCOPE_COMPLETED} + 1`
+        # Something is not right! skipping.."
+        echo "    Required locations and data failed to verify... skipping Maven publishing...."
+        ERROR=true
+        if [ "${DEBUG}" = "true" ] ; then
+            echo "publishMavenRepo: Required locations and data:"
+            echo "   src       = '${src}'"
+            echo "   branch    = '${branch}'"
+            echo "   blddate   = '${blddate}'"
+            echo "   version   = '${version}'"
+            echo "   qualifier = '${qualifier}'"
+        fi
     fi
 }
 
@@ -486,6 +552,8 @@ publishTestArtifacts() {
 
         #count number of pages (html) exported, and copy them preserving date
         srcHtmlCount=`ls ${src} | grep -c [.]html$`
+        #track qualifier pattern in case multiple builds in one day
+        srcQualified=`ls ${src} | grep -m1 [.]html$ | cut -d'.' -f4`
         if [ ! "${srcHtmlCount}" = "0" ] ; then
             if [ "${DEBUG}" = "true" ] ; then
                 echo "publishTestArtifacts: Copying ${srcHtmlCount} html(s)"
@@ -494,7 +562,8 @@ publishTestArtifacts() {
             fi
             cp --preserve=timestamps ${src}/*.html ${downloadDest}/.
         fi
-        destHtmlCount=`ls ${downloadDest} | grep -c [.]html$`
+        # check number of appropriately qualified destination files
+        destHtmlCount=`ls ${downloadDest}/*${srcQualified}* | grep -c [.]html$`
         if [ "${DEBUG}" = "true" ] ; then
             echo "publishTestArtifacts: ${destHtmlCount} htmls copied."
         fi
@@ -563,14 +632,19 @@ for handoff in `ls handoff-file*.dat` ; do
            publishP2Repo ${BUILD_ARCHIVE_LOC} ${DNLD_DIR} ${VERSION} ${QUALIFIER}
        fi
        if [ "${PUB_SCOPE_EXPECTED}" -ge 1 ] ; then
-           #publishMavenRepo ${BUILD_ARCHIVE_LOC} ${BRANCH} ${BLDDATE} ${VERSION} ${QUALIFIER}
-           echo "run maven if ready... (not yet. need to isolate branch specific dependencies)"
+           publishMavenRepo ${BUILD_ARCHIVE_LOC} ${BRANCH} ${BLDDATE} ${VERSION} ${QUALIFIER}
        fi
        if [ "${PUB_SCOPE_EXPECTED}" = "${PUB_SCOPE_COMPLETED}" ] ; then
-          echo "Success: can now delete '${handoff}' and '${BUILD_ARCHIVE_LOC}'"
+           echo "Success: now deleting '${handoff}'"
+           echo "TODO: also should delete '${BUILD_ARCHIVE_LOC}' but need to make sure tests export to different area first"
+           rm ${handoff}
        else
-          echo "Full processing failed: Cannot remove '${handoff}' and '${BUILD_ARCHIVE_LOC}'"
-          echo "    Deletion aborted..."
+           if [ "${DEBUG}" = "true" ] ; then
+               echo "PUB_SCOPE_EXPECTED  = '${PUB_SCOPE_EXPECTED}'"
+               echo "PUB_SCOPE_COMPLETED = '${PUB_SCOPE_COMPLETED}'"
+           fi
+           echo "Full processing failed: Cannot remove '${handoff}' and '${BUILD_ARCHIVE_LOC}'"
+           echo "    Deletion aborted..."
        fi
     else
        publishTestArtifacts ${BUILD_ARCHIVE_LOC} ${DNLD_DIR} ${VERSION} ${BLDDATE} ${HOST}
