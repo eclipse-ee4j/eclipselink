@@ -62,7 +62,10 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
         if (name == null){
             name = "";
         }
-
+        if (!checkForProviderProperty(nonNullProperties)){
+            //not EclipseLink so return null;
+            return null;
+        }
         EntityManagerSetupImpl emSetupImpl = null;
         boolean isNew = false;
         // the name that uniquely defines persistence unit
@@ -169,6 +172,30 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
         return JavaSECMPInitializer.getJavaSECMPInitializer(classLoader);
     }
     
+
+    /**
+     * Need to check that the provider property is null or set for EclipseLink 
+     */
+    public boolean checkForProviderProperty(Map properties){
+        Object provider = properties.get("javax.persistence.provider");
+        if (provider != null){
+            //user has specified a provider make sure it is us or abort.
+            if (provider instanceof Class){
+                provider = ((Class)provider).getName();
+            }
+            try{
+                if (!(((String)provider).equals(EntityManagerFactoryProvider.class.getName()) || ((String)provider).equals(PersistenceProvider.class.getName()))){
+                    return false;
+                    //user has requested another provider so lets ignore this request.
+                }
+            }catch(ClassCastException e){
+                return false;
+                // not a recognized provider property value so must be another provider.
+            }
+        }
+        return true;
+        
+    }
     /**
      * Called by the container when an EntityManagerFactory
      * is to be created.
