@@ -405,6 +405,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         tests.add("testSharedExpressionInQueries");
         tests.add("testNestedBatchQueryHints");
         tests.add("testReplaceElementCollection");
+        tests.add("testProviderPropertySetting");
         if (!isJPA10()) {
             tests.add("testDetachNull");
             tests.add("testDetachRemovedObject");
@@ -451,6 +452,23 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         if (getServerSession().getPlatform().isPostgreSQL()) {
             getServerSession().getLogin().setShouldForceFieldNamesToUpperCase(true);
         }
+    }
+    
+    /**
+     * Bug # 361552
+     * This test verifies that EclipseLink does not ignore the Provider property passed to
+     * createEntityManagerFactory();
+     */
+    public void testProviderPropertySetting(){
+        Map properties = new HashMap();
+        properties.put("javax.persistence.provider", "org.unknown.Provider");
+        try{
+            createEntityManager(properties);
+        }catch(PersistenceException ex){
+            assertTrue("Wrong exception thrown when provider class set through properties.",ex.getMessage().contains("No Persistence provider for"));
+            return;
+        }
+        fail("EclipseLink ignored persistence provider class provided through properties.");
     }
     
     /**
