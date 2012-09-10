@@ -25,6 +25,7 @@ public class DirectCollectionMappingNillableTestSuite extends TestCase {
         suite.addTestSuite(DirectCollectionOptionalNodeNullPolicyElementTestCases.class);
         suite.addTestSuite(DirectCollectionOptionalNodeNullPolicyAttributeTestCases.class);
         suite.addTestSuite(DirectCollectionNillableNodeNullPolicyTestCases.class);
+        suite.addTestSuite(DirectCollectionNillableNodeNullPolicyTextTestCases.class);
         suite.addTestSuite(DirectCollectionIsSetNodeNullPolicyTrueTestCases.class);
         suite.addTestSuite(DirectCollectionNillableAndEmptyNodeTestCases.class);
         return suite;

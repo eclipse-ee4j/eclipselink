@@ -19,11 +19,12 @@ import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType
 
 import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.testing.oxm.OXTestCase.Metadata;
 import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 
 public class CompositeCollectionNillableNodeNullPolicyTestCases extends XMLWithJSONMappingTestCases {
-    private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/compositecollection/nillable/CompositeCollectionNillableNodeNullPolicy.xml";
-    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/compositecollection/nillable/CompositeCollectionNillableNodeNullPolicy.json";
+    protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/compositecollection/nillable/CompositeCollectionNillableNodeNullPolicy.xml";
+    protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/compositecollection/nillable/CompositeCollectionNillableNodeNullPolicy.json";
 
     public CompositeCollectionNillableNodeNullPolicyTestCases(String name) throws Exception {
         super(name);
@@ -35,12 +36,10 @@ public class CompositeCollectionNillableNodeNullPolicyTestCases extends XMLWithJ
     	aNullPolicy.setNullRepresentedByEmptyNode(false);
     	aNullPolicy.setNullRepresentedByXsiNil(true);
     	// alter marshal policy state
-    	aNullPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.XSI_NIL);//.ABSENT_NODE);
+    	aNullPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.XSI_NIL);
         Project aProject = new CompositeCollectionNodeNullPolicyProject(true);
-        XMLCompositeCollectionMapping aMapping = (XMLCompositeCollectionMapping)aProject.getDescriptor(Team.class)//
-        .getMappingForAttributeName("developers");
-        // TODO: renable after we implement NullPolicy for this mapping
-        //aMapping.setNullPolicy(aNullPolicy);
+        XMLCompositeCollectionMapping aMapping = (XMLCompositeCollectionMapping)aProject.getDescriptor(Team.class).getMappingForAttributeName("developers");
+        aMapping.setNullPolicy(aNullPolicy);
         setProject(aProject);
     }
 
@@ -51,9 +50,9 @@ public class CompositeCollectionNillableNodeNullPolicyTestCases extends XMLWithJ
         anEmployee.setLastName("Doe");
 
         Vector developers = new Vector();
-        developers.add(new Employee());//null);
+        developers.add(null);
         developers.add(anEmployee);
-        developers.add(new Employee());//null);
+        developers.add(null);
 
         Team aTeam = new Team();
         aTeam.setId(123);
@@ -61,5 +60,10 @@ public class CompositeCollectionNillableNodeNullPolicyTestCases extends XMLWithJ
         aTeam.setDevelopers(developers);
 
         return aTeam;
+    }
+    
+    @Override
+    public Metadata getMetadata() {
+        return Metadata.JAVA;
     }
 }

@@ -98,6 +98,7 @@ import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltransient.Xm
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltransient.inheritance.XmlTransientInheritanceTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltransient.splitpackage.SplitPackageTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltransient.unset.classlevel.XmlTransientUnsetClassTestCases;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltransient.unset.prop.XmlTransientUnsetPropTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltype.EmployeeFactoryClassTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltype.XmlTypeTestCases;
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltype.factory.FactoryTestCases;
@@ -216,6 +217,7 @@ public class ExternalizedMetadataTestSuite extends TestSuite {
         suite.addTestSuite(FieldAccessTestCases.class);
         suite.addTestSuite(PropertyAccessTestCases.class);
         suite.addTestSuite(UnspecifiedTestCases.class);
+        suite.addTestSuite(XmlTransientUnsetPropTestCases.class);
         return suite;
     }
     

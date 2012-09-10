@@ -25,9 +25,9 @@ import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 
 public class DirectNullPolicyElementSetNillableTestCases extends XMLWithJSONMappingTestCases {
     // TC UC 0-10 to 0-13, 2-0
-    private final static String XML_RESOURCE = //
+    protected final static String XML_RESOURCE = //
         "org/eclipse/persistence/testing/oxm/mappings/directtofield/nillable/DirectNullPolicyElementSetNillable.xml";
-    private final static String JSON_RESOURCE = //
+    protected final static String JSON_RESOURCE = //
         "org/eclipse/persistence/testing/oxm/mappings/directtofield/nillable/DirectNullPolicyElementSetNillable.json";
 
     public DirectNullPolicyElementSetNillableTestCases(String name) throws Exception {

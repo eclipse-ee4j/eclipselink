@@ -1389,12 +1389,13 @@ public class XMLMarshaller implements Cloneable {
         AbstractSession objectSession = xmlContext.getSession(object);
         xmlRow.setSession(objectSession);
         bldr.addXsiTypeAndClassIndicatorIfRequired(xmlRow, descriptor, null, null, originalObject, object, isXMLRoot, true);
-        xmlRow = (XMLRecord) bldr.buildRow(xmlRow, object,  objectSession, isXMLRoot);
-                
         xmlRow.setMarshaller(this);
         if (shouldCallSetAttributeNS && !isRootDocumentFragment) {
             ((Element) xmlRow.getDOM()).setAttributeNS(XMLConstants.XMLNS_URL, XMLConstants.XMLNS + XMLConstants.COLON + XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL);
         }
+        xmlRow = (XMLRecord) bldr.buildRow(xmlRow, object,  objectSession, isXMLRoot);
+                
+      
         document = xmlRow.getDocument();
 
         addSchemaLocations(document, session);

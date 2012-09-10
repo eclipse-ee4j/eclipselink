@@ -64,7 +64,9 @@ import org.eclipse.persistence.testing.oxm.mappings.directtofield.nillable.Direc
 import org.eclipse.persistence.testing.oxm.mappings.directtofield.nillable.DirectNullPolicyElementAbsentIsSetAbsentFalseTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.directtofield.nillable.DirectNullPolicyElementAbsentIsSetAbsentTrueTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.directtofield.nillable.DirectNullPolicyElementSetEmptyTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.directtofield.nillable.DirectNullPolicyElementSetNillableFalseTextTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.directtofield.nillable.DirectNullPolicyElementSetNillableTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.directtofield.nillable.DirectNullPolicyElementSetNillableTextTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.directtofield.nillable.DirectNullPolicyElementSetNonNullTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.directtofield.nillable.DirectOptionalNodeNullPolicyAttributeTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.directtofield.nillable.DirectOptionalNodeNullPolicyElementTestCases;
@@ -85,6 +87,8 @@ public class DirectToFieldMappingTestSuite extends OXTestCase {
             suite.addTestSuite(DirectToFieldCDATATestCases.class); // 1 docpres
         	suite.addTestSuite(DirectNullPolicyElementSetEmptyTestCases.class); // 3 docpres
         	suite.addTestSuite(DirectNullPolicyElementSetNillableTestCases.class); // 3 docpres
+        	suite.addTestSuite(DirectNullPolicyElementSetNillableTextTestCases.class);
+        	suite.addTestSuite(DirectNullPolicyElementSetNillableFalseTextTestCases.class);
         	suite.addTestSuite(DirectIsSetNullPolicyElementSetEmptyTrueTestCases.class); // 3 docpres
         	suite.addTestSuite(DirectIsSetNullPolicyElementSetNillableIsSetTrueTestCases.class); // 3 docpres
         	suite.addTestSuite(DirectNullPolicyAttributeSetEmptyTrueTestCases.class); // TODO: verify UC5-4 convert "" to null - 3 docpres
