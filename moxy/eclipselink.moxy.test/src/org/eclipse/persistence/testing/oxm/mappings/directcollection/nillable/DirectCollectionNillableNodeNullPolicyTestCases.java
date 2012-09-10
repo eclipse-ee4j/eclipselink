@@ -24,8 +24,8 @@ import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 
 public class DirectCollectionNillableNodeNullPolicyTestCases extends XMLWithJSONMappingTestCases {
 
-    private final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/directcollection/nillable/DirectCollectionNillableNodeNullPolicy.xml";
-    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/directcollection/nillable/DirectCollectionNillableNodeNullPolicy.json";
+    protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/directcollection/nillable/DirectCollectionNillableNodeNullPolicy.xml";
+    protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/oxm/mappings/directcollection/nillable/DirectCollectionNillableNodeNullPolicy.json";
 
     public DirectCollectionNillableNodeNullPolicyTestCases(String name) throws Exception {
         super(name);

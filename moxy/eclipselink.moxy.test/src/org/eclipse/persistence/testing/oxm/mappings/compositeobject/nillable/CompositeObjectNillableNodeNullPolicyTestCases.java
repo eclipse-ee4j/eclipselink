@@ -24,9 +24,9 @@ import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 
 public class CompositeObjectNillableNodeNullPolicyTestCases extends XMLWithJSONMappingTestCases {
-    private final static String XML_RESOURCE = //
+    protected final static String XML_RESOURCE = //
     	"org/eclipse/persistence/testing/oxm/mappings/compositeobject/nillable/CompositeObjectNillableNodeNullPolicy.xml";
-    private final static String JSON_RESOURCE = //
+    protected final static String JSON_RESOURCE = //
     	"org/eclipse/persistence/testing/oxm/mappings/compositeobject/nillable/CompositeObjectNillableNodeNullPolicy.json";
 
     public CompositeObjectNillableNodeNullPolicyTestCases(String name) throws Exception {

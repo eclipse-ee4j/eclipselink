@@ -336,7 +336,11 @@ public class XMLCompositeObjectMappingNodeValue extends XMLRelationshipMappingNo
     }
 
     public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord) {
-
+        if(unmarshalRecord.isNil() && xmlCompositeObjectMapping.getNullPolicy().isNullRepresentedByXsiNil()){
+            unmarshalRecord.resetStringBuffer();
+            return;
+        }
+        
         if (null == unmarshalRecord.getChildRecord()) {
             SAXFragmentBuilder builder = unmarshalRecord.getFragmentBuilder();
             UnmarshalKeepAsElementPolicy keepAsElementPolicy = xmlCompositeObjectMapping.getKeepAsElementPolicy();
