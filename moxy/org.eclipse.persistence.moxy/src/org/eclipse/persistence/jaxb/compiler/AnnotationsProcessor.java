@@ -2710,9 +2710,8 @@ public class AnnotationsProcessor {
                     boolean isLocation = helper.isAnnotationPresent(setMethod, XmlLocation.class) ||
                             helper.isAnnotationPresent(setMethod, CompilerHelper.XML_LOCATION_ANNOTATION_CLASS) ||
                             helper.isAnnotationPresent(setMethod, CompilerHelper.INTERNAL_XML_LOCATION_ANNOTATION_CLASS);
-                    if (!isTransient) {
-                        propertyMethod = setMethod;
-                    } else {
+                    propertyMethod = setMethod;
+                    if(isTransient) {
                         isPropertyTransient = true;
                         // XmlLocation can also be transient
                         if (isLocation) {
@@ -2725,9 +2724,8 @@ public class AnnotationsProcessor {
                     boolean isLocation = helper.isAnnotationPresent(getMethod, XmlLocation.class) ||
                             helper.isAnnotationPresent(setMethod, CompilerHelper.XML_LOCATION_ANNOTATION_CLASS) ||
                             helper.isAnnotationPresent(setMethod, CompilerHelper.INTERNAL_XML_LOCATION_ANNOTATION_CLASS);
-                    if (!isTransient) {
-                        propertyMethod = getMethod;
-                    } else {
+                    propertyMethod = getMethod;
+                    if(isTransient) {
                         isPropertyTransient = true;
                         // XmlLocation can also be transient
                         if (isLocation) {
@@ -2829,13 +2827,13 @@ public class AnnotationsProcessor {
                 }
                 property.setMethodProperty(true);
 
-                boolean isTransient = helper.isAnnotationPresent(property.getElement(), XmlTransient.class);
-                boolean isLocation = helper.isAnnotationPresent(property.getElement(), XmlLocation.class) ||
-                            helper.isAnnotationPresent(setMethod, CompilerHelper.XML_LOCATION_ANNOTATION_CLASS) ||
-                            helper.isAnnotationPresent(setMethod, CompilerHelper.INTERNAL_XML_LOCATION_ANNOTATION_CLASS);
-                if (!isTransient || (isTransient && isLocation)) {
-                    properties.add(property);
-                }
+                //boolean isTransient = helper.isAnnotationPresent(property.getElement(), XmlTransient.class);
+                //boolean isLocation = helper.isAnnotationPresent(property.getElement(), XmlLocation.class) ||
+                //        helper.isAnnotationPresent(setMethod, CompilerHelper.XML_LOCATION_ANNOTATION_CLASS) ||
+                //        helper.isAnnotationPresent(setMethod, CompilerHelper.INTERNAL_XML_LOCATION_ANNOTATION_CLASS);
+                //if (!isTransient || (isTransient && isLocation)) {
+                properties.add(property);
+                //}
             }
         }
 
