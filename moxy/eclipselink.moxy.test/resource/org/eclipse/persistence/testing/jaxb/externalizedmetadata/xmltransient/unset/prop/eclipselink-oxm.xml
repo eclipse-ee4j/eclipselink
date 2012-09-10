@@ -1,0 +1,11 @@
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm" package-name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltransient.unset.prop">
+	<java-types>
+		<java-type name="PhoneNumber">
+			<xml-root-element name="phone-number"/>
+			<java-attributes>
+				<xml-attribute java-attribute="type" />
+				<xml-value java-attribute="number"/>
+			</java-attributes>
+		</java-type>
+	</java-types>
+</xml-bindings>
