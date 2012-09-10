@@ -155,7 +155,6 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         suite.addTest(new AdvancedQueryTestSuite("testCacheIndexes"));
         suite.addTest(new AdvancedQueryTestSuite("testSQLHint"));
         suite.addTest(new AdvancedQueryTestSuite("testLoadGroup"));
-        suite.addTest(new AdvancedQueryTestSuite("testQueryOnPrimaryKey"));
         if (!isJPA10()) {
             suite.addTest(new AdvancedQueryTestSuite("testQueryPESSIMISTIC_FORCE_INCREMENTLock"));
             suite.addTest(new AdvancedQueryTestSuite("testVersionChangeWithReadLock"));
@@ -2552,23 +2551,5 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             commitTransaction(em);
             closeEntityManagerAndTransaction(em);            
         }
-    }
-
-    /** Test for bug#388787, JPQL sets dontUseDistinct ensuring the custom pk ReadObjectQuery isn't used */
-    public void testQueryOnPrimaryKey() {
-        EntityManager em = createEntityManager();
-        boolean isDistinctComputed = getServerSession().getDescriptor(Employee.class).getQueryManager().getReadObjectQuery().isDistinctComputed();
-        if (isDistinctComputed) {
-            warning("isDistinctComputed is true on Employee's ReadObjectQuery");
-        }
-
-        JpaQuery jpaQuery = (JpaQuery)((EntityManager)em.getDelegate()).createQuery("select e from Employee e where e.id =1");
-        //No need to execute, just verify that isCustomQueryUsed() isn't true (false or null is fine)
-        Boolean isCustomQueryUsed = jpaQuery.getDatabaseQuery().isCustomQueryUsed() == Boolean.TRUE;
-        assertFalse("JPQL PK query without distinct ended up using the custom pk query set on the descriptor",isCustomQueryUsed);
-
-        jpaQuery = (JpaQuery)((EntityManager)em.getDelegate()).createQuery("select Distinct e from Employee e where e.id =1");
-        isCustomQueryUsed = jpaQuery.getDatabaseQuery().isCustomQueryUsed() == Boolean.TRUE;
-        assertFalse("JPQL PK query with distinct ended up using the custom pk query set on the descriptor",isCustomQueryUsed);
     }
 }
