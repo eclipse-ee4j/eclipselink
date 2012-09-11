@@ -280,6 +280,8 @@ publishBuildArtifacts() {
 
         #count number of archives (zips) exported, and copy them preserving date
         srcZipCount=`ls ${src} | grep -c [.]zip$`
+        #track qualifier pattern in case multiple builds in one day (reverse order because sharedlib zip may be first and is non-conformant)
+        srcQualified=`ls -r ${src} | grep -m1 [.]zip$ | cut -d'.' -f4`
         if [ "${srcZipCount}" -gt 0 ] ; then
             if [ "${DEBUG}" = "true" ] ; then
                 echo "publishBuildArtifacts: Copying ${srcZipCount} zip(s)"
@@ -288,7 +290,8 @@ publishBuildArtifacts() {
             fi
             cp --preserve=timestamps ${src}/*.zip ${downloadDest}/.
         fi
-        destZipCount=`ls ${downloadDest} | grep -c [.]zip$`
+        # check number of appropriately qualified destination files
+        destZipCount=`ls ${downloadDest}/*${srcQualified}* | grep -c [.]zip$`
         if [ "${DEBUG}" = "true" ] ; then
             echo "publishBuildArtifacts: ${destZipCount} zips copied."
         fi
