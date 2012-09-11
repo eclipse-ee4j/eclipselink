@@ -4,8 +4,8 @@
      xmlns:ns1="http://example.com/address/" xmlns:ns0="http://example.com/process/">
     <xsd:import schemaLocation="Address.xsd" namespace="http://example.com/address/"/>
     <xsd:import schemaLocation="Process.xsd" namespace="http://example.com/process/"/>
-    <xsd:import namespace="commonj.sdo/java"/>
-    <xsd:import namespace="commonj.sdo/xml"/>
+    <xsd:import namespace="commonj.sdo/java" schemaLocation="classpath:/xml/sdoJava.xsd"/>
+    <xsd:import namespace="commonj.sdo/xml" schemaLocation="classpath:/xml/sdoXML.xsd"/>
     <xsd:complexType name="SupplierSite">
         <xsd:sequence>
             <xsd:element name="SupplierId" type="xsd:long" minOccurs="0" sdoXML:dataType="sdoJava:LongObject"/>

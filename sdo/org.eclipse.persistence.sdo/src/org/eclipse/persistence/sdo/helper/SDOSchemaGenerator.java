@@ -96,19 +96,36 @@ public class SDOSchemaGenerator {
                     Import theImport = new Import();
                     theImport.setNamespace(next.getNamespaceURI());
                     String schemaLocation = "classpath:/xml/";
+                    String customLocation = null;
                     if (next.getNamespaceURI().equals(SDOConstants.SDO_URL)) {
-                        schemaLocation += "sdoModel.xsd";
+                        if(schemaLocationResolver != null) {
+                            customLocation = schemaLocationResolver.resolveSchemaLocation(firstType, SDOConstants.SDO_BOOLEAN);
+                        }
+                        if(customLocation != null) {
+                            schemaLocation = customLocation;
+                        } else {
+                            schemaLocation += "sdoModel.xsd";
+                        }
                     } else if (next.getNamespaceURI().equals(SDOConstants.SDOXML_URL)) {
-                        schemaLocation += "sdoXML.xsd";
+                        if(schemaLocationResolver != null) {
+                            customLocation = schemaLocationResolver.resolveSchemaLocation(firstType, new SDOType(SDOConstants.SDOXML_URL, "XMLInfo"));
+                        }
+                        if(customLocation != null) {
+                            schemaLocation = customLocation;
+                        } else {
+                            schemaLocation += "sdoXML.xsd";
+                        }
                     } else if (next.getNamespaceURI().equals(SDOConstants.SDOJAVA_URL)) {
-                        schemaLocation += "sdoJava.xsd";
+                        if(schemaLocationResolver != null) {
+                            customLocation = schemaLocationResolver.resolveSchemaLocation(firstType, SDOConstants.SDO_BOOLEANOBJECT);
+                        }
+                        if(customLocation != null) {
+                            schemaLocation = customLocation;
+                        } else {
+                            schemaLocation += "sdoJava.xsd";
+                        }
                     }
-                    try {
-                        new URL(schemaLocation);
-                        theImport.setSchemaLocation(schemaLocation);
-                    } catch (MalformedURLException e) {
-                        // DO NOTHING - fix for bug 6054754 to add custom schemalocation if possible
-                    }                    
+                    theImport.setSchemaLocation(schemaLocation);
                     generatedSchema.getImports().add(theImport);
                 }
             }

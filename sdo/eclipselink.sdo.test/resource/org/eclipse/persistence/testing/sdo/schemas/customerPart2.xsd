@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema targetNamespace="my.uri1" xmlns="my.uri1" elementFormDefault="qualified" sdoJava:package="defaultPackage" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sdoJava="commonj.sdo/java" xmlns:ns0="my.url2">
-   <xsd:import namespace="commonj.sdo/java"/>
+   <xsd:import namespace="commonj.sdo/java" schemaLocation="classpath:/xml/sdoJava.xsd"/>
    <xsd:import schemaLocation="customerurl2.xsd" namespace="my.url2"/>
    <xsd:complexType name="PhoneType">
       <xsd:attribute name="number" type="xsd:string"/>
