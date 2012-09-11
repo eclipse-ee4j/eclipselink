@@ -18,7 +18,6 @@ import java.io.ObjectOutputStream;
 import java.util.Map;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.Project;
 
@@ -33,24 +32,26 @@ public class FileBasedProjectCache implements ProjectCache {
     public Project retrieveProject(Map properties, ClassLoader loader, SessionLog log) {
         Project project = null;
         java.io.ObjectInputStream in = null;
-        try {
-            
-            String projectCaching = (String)properties.get(PersistenceUnitProperties.PROJECT_CACHE_FILE);
-
-            java.io.File file = new java.io.File((String)projectCaching);
-            java.io.FileInputStream fis = new java.io.FileInputStream(file);
-            in = new java.io.ObjectInputStream(fis);
-            project = (Project)in.readObject();
-        } catch (Exception e) {
-          //need exception differentiation,logging and warnings
-          //the project not being cached should be different than an exception from reading the stream
-          log.logThrowable(SessionLog.WARNING, SessionLog.JPA, e);
-        } finally {
-            if (in != null) {
-                try {
-                    in.close();
-                } catch (java.io.IOException ignore) {
-                    //ignore exceptions from close
+        String fileName = (String)getConfigPropertyLogDebug(
+                PersistenceUnitProperties.PROJECT_CACHE_FILE,
+                properties, log);
+        if (fileName != null && fileName.length() > 0) {
+            try {
+                java.io.File file = new java.io.File(fileName);
+                java.io.FileInputStream fis = new java.io.FileInputStream(file);
+                in = new java.io.ObjectInputStream(fis);
+                project = (Project)in.readObject();
+            } catch (Exception e) {
+              //need exception differentiation,logging and warnings
+              //the project not being cached should be different than an exception from reading the stream
+              log.logThrowable(SessionLog.WARNING, SessionLog.JPA, e);
+            } finally {
+                if (in != null) {
+                    try {
+                        in.close();
+                    } catch (java.io.IOException ignore) {
+                        //ignore exceptions from close
+                    }
                 }
             }
         }
@@ -59,9 +60,9 @@ public class FileBasedProjectCache implements ProjectCache {
 
     @Override
     public void storeProject(Project project, Map properties, SessionLog log) {
-        String fileName = EntityManagerFactoryProvider.getConfigPropertyAsString(
+        String fileName = (String)getConfigPropertyLogDebug(
                 PersistenceUnitProperties.PROJECT_CACHE_FILE,
-                properties);
+                properties, log);
         if (fileName != null && fileName.length() > 0) {
             FileOutputStream fos = null;
             ObjectOutputStream out = null;
@@ -89,4 +90,25 @@ public class FileBasedProjectCache implements ProjectCache {
         }
     }
 
+    /**
+     * Check the provided map for an object with the given name.  If that object is not available, check the
+     * System properties.  Log the value returned if logging is enabled at the FINEST level
+     * @param propertyName 
+     * @param map 
+     * @param log
+     * @return
+     */
+    public Object getConfigPropertyLogDebug(String propertyName, Map properties, SessionLog log) {
+        Object value = null;
+        if (properties != null) {
+            value = properties.get(propertyName);
+        }
+        if (value == null) {
+            value = System.getProperty(propertyName);
+        }
+        if ((value != null) && (log !=  null)) {
+            log.log(SessionLog.FINEST, SessionLog.PROPERTIES, "property_value_specified", new Object[]{propertyName, value});
+        }
+        return value;
+    }
 }

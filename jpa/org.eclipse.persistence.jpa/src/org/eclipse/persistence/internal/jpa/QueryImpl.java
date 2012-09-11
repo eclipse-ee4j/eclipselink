@@ -611,15 +611,15 @@ public class QueryImpl {
             }            
         } else {
             for (int index = 0; index < call.getParameters().size(); index++) {
-                Object value = call.getParameters().get(index);
-                DatabaseField parameter = null;
-                if (value instanceof Object[]) {
-                    parameter = (DatabaseField) ((Object[])value)[0];
-                } else {
-                    parameter = (DatabaseField)call.getParameters().get(index);
-                }
                 int type = call.getParameterTypes().get(index);
                 if ((type == StoredProcedureCall.IN) || (type == StoredProcedureCall.INOUT)) {
+                    Object value = call.getParameters().get(index);
+                    DatabaseField parameter = null;
+                    if (value instanceof Object[]) {
+                        parameter = (DatabaseField) ((Object[])value)[0];
+                    } else {
+                        parameter = (DatabaseField)call.getParameters().get(index);
+                    }
                     if (call.hasOptionalArguments()) {
                         query.addArgument(parameter.getName(), Object.class, call.getOptionalArguments().contains(parameter));
                     } else {

@@ -28,7 +28,6 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider;
 import org.eclipse.persistence.logging.SessionLog;
 
 /**
@@ -57,9 +56,9 @@ public class XMLMetadataSource extends MetadataSourceAdapter {
         InputStreamReader reader = null;
         
         //read from a URL
-        String mappingURLName = EntityManagerFactoryProvider.getConfigPropertyAsString(
+        String mappingURLName = (String)getConfigPropertyLogDebug(
                 PersistenceUnitProperties.METADATA_SOURCE_XML_URL,
-                properties);
+                properties, log);
         if (mappingURLName !=null && mappingURLName.length()!=0) {
             try {
                 URL url = new URL(mappingURLName);
@@ -72,9 +71,9 @@ public class XMLMetadataSource extends MetadataSourceAdapter {
         
         //read a file using the classloader
         if (reader == null) {
-            String mappingFileName = EntityManagerFactoryProvider.getConfigPropertyAsString(
+            String mappingFileName = (String)getConfigPropertyLogDebug(
                     PersistenceUnitProperties.METADATA_SOURCE_XML_FILE,
-                    properties);
+                    properties, log);
             if (mappingFileName != null && mappingFileName.length() > 0) {
                 try {
                     URL fileURL = getFileURL(mappingFileName, classLoader, log);
@@ -148,9 +147,9 @@ public class XMLMetadataSource extends MetadataSourceAdapter {
      * @since EclipseLink 2.4
      */
     public Map<String, Object> getPropertyOverrides(Map<String, Object> properties, ClassLoader classLoader, SessionLog log) {
-        String propertiesFileName = EntityManagerFactoryProvider.getConfigPropertyAsString(
+        String propertiesFileName = (String)getConfigPropertyLogDebug(
                 PersistenceUnitProperties.METADATA_SOURCE_PROPERTIES_FILE,
-                properties);
+                properties, log);
         if (propertiesFileName == null || propertiesFileName.length() == 0) {
             return null;
         }
@@ -191,5 +190,27 @@ public class XMLMetadataSource extends MetadataSourceAdapter {
         } else {
             return null;
         }
+    }
+
+    /**
+     * Check the provided map for an object with the given name.  If that object is not available, check the
+     * System properties.  Log the value returned if logging is enabled 
+     * @param propertyName 
+     * @param map 
+     * @param log
+     * @return
+     */
+    public Object getConfigPropertyLogDebug(String propertyName, Map properties, SessionLog log) {
+        Object value = null;
+        if (properties != null) {
+            value = properties.get(propertyName);
+        }
+        if (value == null) {
+            value = System.getProperty(propertyName);
+        }
+        if ((value != null) && (log !=  null)) {
+            log.log(SessionLog.FINEST, SessionLog.PROPERTIES, "property_value_specified", new Object[]{propertyName, value});
+        }
+        return value;
     }
 }

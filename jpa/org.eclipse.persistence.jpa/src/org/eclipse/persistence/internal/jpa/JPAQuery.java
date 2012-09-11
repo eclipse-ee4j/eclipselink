@@ -19,6 +19,7 @@ package org.eclipse.persistence.internal.jpa;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.OptimisticLockException;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 import java.util.ArrayList;
@@ -155,16 +156,29 @@ public class JPAQuery extends DatabaseQuery  {
      */
     public void prepare() {
         DatabaseQuery query = null;
+        ClassLoader loader = session.getDatasourcePlatform().getConversionManager().getLoader();
         if (sqlString!=null) {
             query = processSQLQuery(getSession());
         } else if (jpqlString!=null) {
             query = processJPQLQuery(getSession());
         } else if (call!=null) {
             query = processStoredProcedureQuery(getSession());
+            if (call.hasParameters() ) {
+                //convert the type in the parameters;  query.convertClassNamesToClasses does not cascade to the call
+                for (Object value: call.getParameters()) {
+                    if (value instanceof Object[]) {
+                        //must be inout type, and the out portion is a DatabaseField
+                        ((DatabaseField) ((Object[])value)[1]).convertClassNamesToClasses(loader);
+                        value =  ((Object[])value)[0];
+                    } 
+                    if (value instanceof DatabaseField) {
+                        ((DatabaseField) value).convertClassNamesToClasses(loader);
+                    }
+                }
+            }
         }
         
         // Make sure all class names have been converted.
-        ClassLoader loader = session.getDatasourcePlatform().getConversionManager().getLoader();
         query.convertClassNamesToClasses(loader);
         
         setDatabaseQuery(query);

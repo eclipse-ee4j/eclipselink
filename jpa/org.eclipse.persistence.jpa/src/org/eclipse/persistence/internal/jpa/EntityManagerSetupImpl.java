@@ -1416,12 +1416,18 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                             DatabaseSessionImpl tempSession = (DatabaseSessionImpl)project.createServerSession();
 
                             tempSession.setName(this.sessionName);
-                            tempSession.setServerPlatform(session.getServerPlatform());
                             tempSession.setSessionLog(session.getSessionLog());
+                            tempSession.getSessionLog().setSession(tempSession);
+                            if (this.staticWeaveInfo != null) {
+                                tempSession.setLogLevel(this.staticWeaveInfo.getLogLevel());
+                            }
                             tempSession.setProfiler(session.getProfiler());
                             tempSession.setRefreshMetadataListener(this);
 
                             session = tempSession;
+                            // reusing the serverPlatform from the existing session would have been preferred,
+                            //  but its session is only set through the ServerPlatform constructor.
+                            updateServerPlatform(predeployProperties, classLoaderToUse);
                             shouldBuildProject = false;
                         } catch (Exception e) {
                             //need a better exception here
