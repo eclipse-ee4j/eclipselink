@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:pi="pi" targetNamespace="pi" xmlns:sdo="commonj.sdo">
-   <xsd:import namespace="commonj.sdo"/>
+   <xsd:import namespace="commonj.sdo" schemaLocation="classpath:/xml/sdoModel.xsd"/>
 <xsd:element name="productInstance" type="pi:ProductInstanceConfiguratorType"/>
   <xsd:complexType name="ProductInstanceConfiguratorType">
     <xsd:sequence>

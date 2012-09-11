@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema targetNamespace="my.uri" xmlns="my.uri" elementFormDefault="qualified" sdoJava:package="aPackage" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sdo="commonj.sdo" xmlns:sdoJava="commonj.sdo/java" xmlns:ns0="commonj.sdo/XML">
-   <xsd:import namespace="commonj.sdo"/>
-   <xsd:import namespace="commonj.sdo/java"/>
-   <xsd:import namespace="commonj.sdo/XML"/>
+   <xsd:import namespace="commonj.sdo" schemaLocation="classpath:/xml/sdoModel.xsd"/>
+   <xsd:import namespace="commonj.sdo/java" schemaLocation="classpath:/xml/sdoJava.xsd"/>
+   <xsd:import namespace="commonj.sdo/xml" schemaLocation="classpath:/xml/sdoXML.xsd"/>
    <xsd:complexType name="CustomerType">
       <xsd:attribute name="firstName" type="xsd:string"/>
       <xsd:attribute name="lastName" type="xsd:string"/>
