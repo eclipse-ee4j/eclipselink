@@ -527,4 +527,9 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
     public void setResultAlwaysXMLRoot(boolean alwaysReturnRoot) {
         this.isResultAlwaysXMLRoot = alwaysReturnRoot;
     }
+
+    @Override
+    public void mediaTypeChanged() {
+       //do nothing
+    }
 }

@@ -16,15 +16,20 @@ import java.io.InputStream;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
+import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
 
 public class RepeatedUnmarshalTestCases extends OXTestCase{
 
     private static final String XML_RESOURCE_VALID = "org/eclipse/persistence/testing/jaxb/unmarshaller/valid.xml";
     private static final String XML_RESOURCE_INVALID = "org/eclipse/persistence/testing/jaxb/unmarshaller/invalid.xml";
+    private static final String JSON_RESOURCE_VALID = "org/eclipse/persistence/testing/jaxb/unmarshaller/valid.json";
+
     private TestObject controlObject;
 	private JAXBContext jaxbContext;
 	
@@ -65,4 +70,25 @@ public class RepeatedUnmarshalTestCases extends OXTestCase{
 
 	}
 	
+	public void testChangeMediaType() throws JAXBException{		  	   
+		JAXBUnmarshaller unm = (JAXBUnmarshaller) jaxbContext.createUnmarshaller();
+	    
+		InputStream inputStream = ClassLoader.getSystemResourceAsStream(XML_RESOURCE_VALID);
+		StreamSource ss = new StreamSource(inputStream);
+		Object unmarshalledObject = unm.unmarshal(ss);
+		
+		assertTrue("Valid document was not unmarshalled correctly", unmarshalledObject.equals(controlObject));
+		
+		unm.setProperty(UnmarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON);
+		ss = new StreamSource(inputStream);
+		
+		unmarshalledObject = unm.unmarshal(new StreamSource(ClassLoader.getSystemResourceAsStream(JSON_RESOURCE_VALID)));		      
+		assertTrue("Valid document was not unmarshalled correctly", unmarshalledObject.equals(controlObject));
+		
+		unm.setProperty(UnmarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_XML);
+		unmarshalledObject = unm.unmarshal(new StreamSource(ClassLoader.getSystemResourceAsStream(XML_RESOURCE_VALID)));		      
+		assertTrue("Valid document was not unmarshalled correctly", unmarshalledObject.equals(controlObject));
+
+		
+	}
 }

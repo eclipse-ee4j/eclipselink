@@ -81,5 +81,7 @@ public interface PlatformUnmarshaller {
     public abstract void setResultAlwaysXMLRoot(boolean alwaysReturnRoot);
 
     public abstract boolean isResultAlwaysXMLRoot();
+    
+    public abstract void mediaTypeChanged();
 
 }

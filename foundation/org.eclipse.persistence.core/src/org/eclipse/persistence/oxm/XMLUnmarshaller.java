@@ -219,7 +219,12 @@ public class XMLUnmarshaller implements Cloneable {
      * @param mediaType
      */
     public void setMediaType(MediaType mediaType) {
-        this.mediaType = mediaType;
+    	if(this.mediaType != mediaType){
+    		this.mediaType = mediaType;
+            if(platformUnmarshaller != null){
+            	platformUnmarshaller.mediaTypeChanged();
+            }	
+    	}    	
     }
 
     /**

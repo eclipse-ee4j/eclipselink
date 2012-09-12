@@ -165,8 +165,9 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     
     private XMLReader getXMLReader(Class clazz) {
         if(null == xmlReader) {        	
-        	if(xmlUnmarshaller.getMediaType() == MediaType.APPLICATION_JSON){         		
-        		return new JSONReader(xmlUnmarshaller.getAttributePrefix(), xmlUnmarshaller.getNamespaceResolver(), xmlUnmarshaller.getNamespaceResolver() != null, xmlUnmarshaller.isIncludeRoot(), xmlUnmarshaller.getNamespaceSeparator(), xmlUnmarshaller.getErrorHandler(), xmlUnmarshaller.getValueWrapper(), clazz);
+        	if(xmlUnmarshaller.getMediaType() == MediaType.APPLICATION_JSON){        		
+        	 	xmlReader = new JSONReader(xmlUnmarshaller.getAttributePrefix(), xmlUnmarshaller.getNamespaceResolver(), xmlUnmarshaller.getNamespaceResolver() != null, xmlUnmarshaller.isIncludeRoot(), xmlUnmarshaller.getNamespaceSeparator(), xmlUnmarshaller.getErrorHandler(), xmlUnmarshaller.getValueWrapper(), clazz);
+        		return xmlReader;
         	}
             try {
                 xmlReader = new XMLReader(getSAXParser().getXMLReader());
@@ -974,5 +975,10 @@ if(clazz == ClassConstants.OBJECT) {
             validatorHandler.setErrorHandler(getErrorHandler());
         }
     }
+
+	@Override
+	public void mediaTypeChanged() {
+         xmlReader = null;		
+	}
 
 }
