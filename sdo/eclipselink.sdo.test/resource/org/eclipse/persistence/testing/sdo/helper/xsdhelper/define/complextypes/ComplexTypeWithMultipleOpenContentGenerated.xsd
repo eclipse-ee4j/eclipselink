@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="US-ASCII"?>
 <xsd:schema targetNamespace='http://www.example.org' xmlns='http://www.example.org' elementFormDefault='qualified' sdoJava:package="org.example" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sdoJava="commonj.sdo/java">
-   <xsd:import namespace="commonj.sdo/java"/>
+   <xsd:import namespace="commonj.sdo/java" schemaLocation="classpath:/xml/sdoJava.xsd"/>
    <xsd:complexType name='myTestType5' mixed="true">
       <xsd:choice maxOccurs='unbounded'>
          <xsd:element name="test" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>

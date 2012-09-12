@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema targetNamespace="theTNS" xmlns="theTNS" elementFormDefault="qualified" sdoJava:package="abc" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sdoJava="commonj.sdo/java">
-   <xsd:import namespace="commonj.sdo/java"/>
+   <xsd:import namespace="commonj.sdo/java" schemaLocation="classpath:/xml/sdoJava.xsd"/>
    <xsd:complexType name="Items">
       <xsd:sequence>
          <xsd:element name="item" type="Item" minOccurs="0" maxOccurs="unbounded">

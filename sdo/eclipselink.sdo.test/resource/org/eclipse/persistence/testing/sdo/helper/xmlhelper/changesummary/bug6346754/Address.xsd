@@ -2,7 +2,7 @@
      elementFormDefault="qualified" sdoJava:package="mypackage.address"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sdoJava="commonj.sdo/java" xmlns:ns0="http://example.com/process/">
     <xsd:import schemaLocation="Process.xsd" namespace="http://example.com/process/"/>
-    <xsd:import namespace="commonj.sdo/java"/>
+    <xsd:import namespace="commonj.sdo/java" schemaLocation="classpath:/xml/sdoJava.xsd"/>
     <xsd:complexType name="Address">
         <xsd:sequence>
             <xsd:element name="AddressId" type="xsd:decimal" minOccurs="0"/>

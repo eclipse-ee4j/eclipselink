@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema elementFormDefault="qualified" sdoJava:package="com.example.myPackage" xmlns:sdoXML="commonj.sdo/xml" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:sdoJava="commonj.sdo/java" xmlns:sdo="commonj.sdo">
-   <xsd:import namespace="commonj.sdo"/>
-   <xsd:import namespace="commonj.sdo/java"/>
-   <xsd:import namespace="commonj.sdo/xml"/>
+   <xsd:import namespace="commonj.sdo" schemaLocation="classpath:/xml/sdoModel.xsd"/>
+   <xsd:import namespace="commonj.sdo/java" schemaLocation="classpath:/xml/sdoJava.xsd"/>
+   <xsd:import namespace="commonj.sdo/xml" schemaLocation="classpath:/xml/sdoXML.xsd"/>
    <xsd:complexType name="Items">
       <xsd:sequence>
          <xsd:element name="item" type="Item" minOccurs="0" maxOccurs="unbounded"/>

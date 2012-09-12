@@ -17,6 +17,9 @@ import commonj.sdo.Type;
 
 public class Example3SLRMultiple implements SchemaLocationResolver {
     public String resolveSchemaLocation(Type sourceType, Type referencedType) {
+        if(referencedType.getURI().contains("commonj.sdo")) {
+            return null;
+        }
         return referencedType.getURI() + ".xsd";
     }
 }
