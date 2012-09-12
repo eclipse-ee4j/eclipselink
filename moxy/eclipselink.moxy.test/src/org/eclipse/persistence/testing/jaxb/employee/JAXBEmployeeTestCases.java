@@ -12,10 +12,22 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.jaxb.employee;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.PropertyException;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.stream.StreamSource;
+
+import org.eclipse.persistence.jaxb.MarshallerProperties;
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
+import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
+import org.w3c.dom.Document;
 
 public class JAXBEmployeeTestCases extends JAXBWithJSONTestCases {
 
@@ -71,4 +83,62 @@ public class JAXBEmployeeTestCases extends JAXBWithJSONTestCases {
     	return false;
     }  
     
+    public void testRepeatedUnmarshals() throws Exception{
+    	Unmarshaller u= jaxbContext.createUnmarshaller();
+    	unmarshalXML(u);
+    	unmarshalJSON(u);
+    	unmarshalJSON(u);
+    	unmarshalXML(u);            
+    	unmarshalJSON(u);
+
+    }
+    
+    private void unmarshalXML(Unmarshaller u) throws Exception{
+    	u.setProperty(UnmarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_XML );
+    	InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlDocumentLocation);
+        Object testObject = u.unmarshal(new StreamSource(inputStream));
+
+        inputStream.close();
+        xmlToObjectTest(testObject);
+    }
+    
+    private void unmarshalJSON(Unmarshaller u) throws Exception{
+    	 u.setProperty(UnmarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON );
+         InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);
+         Object testObject = u.unmarshal(new StreamSource(inputStream));
+         inputStream.close();
+         jsonToObjectTest(testObject);
+    }
+    
+    public void testRepeatedMarshals() throws Exception{
+    	Marshaller m= jaxbContext.createMarshaller();
+    	marshalXML(m);
+    	marshalJSON(m);
+    	marshalJSON(m);
+    	marshalXML(m);            
+    	marshalJSON(m);
+
+    }
+    
+    private void marshalXML(Marshaller m) throws Exception{
+    	m.setProperty(MarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_XML );
+    	ByteArrayOutputStream stream = new ByteArrayOutputStream();
+    	jaxbMarshaller.setProperty(MarshallerProperties.MEDIA_TYPE, "application/xml");
+        jaxbMarshaller.marshal(getWriteControlObject(), stream);
+        InputStream is = new ByteArrayInputStream(stream.toByteArray());         Document testDocument = parser.parse(is);
+        stream.close();
+        is.close();
+
+        objectToXMLDocumentTest(testDocument);     
+             
+    }
+    
+    private void marshalJSON(Marshaller m) throws Exception{
+    	  m.setProperty(MarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON );
+    	  ByteArrayOutputStream os = new ByteArrayOutputStream();
+          m.marshal(getWriteControlObject(), os);
+          compareStrings("testJSONMarshalToOutputStream", new String(os.toByteArray()));
+          os.close();
+      }      
+   
 }
