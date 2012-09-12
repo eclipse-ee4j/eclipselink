@@ -12,6 +12,11 @@
  ******************************************************************************/  
 package org.eclipse.persistence.jaxb.compiler;
 
+import java.lang.reflect.Array;
+import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -91,7 +96,6 @@ public class Property implements Cloneable {
     private Boolean isWriteOnly;
     private Boolean isCdata;
     private boolean isVirtual = false;
-    private static final String OPEN_BRACKET =  "[";
     private XmlTransformation xmlTransformation;
     private XmlAbstractNullPolicy nullPolicy;
     private XmlJavaTypeAdapter xmlJavaTypeAdapter;
@@ -156,15 +160,34 @@ public class Property implements Cloneable {
      */
     public void setAdapterClass(JavaClass adapterCls) {
         adapterClass = adapterCls;
+
+        // Walk up the inheritance hierarchy until we find a generic superclass specifying
+        // the value and bound types
+        Type genericSuperClass = adapterCls.getGenericSuperclass();
+        while (genericSuperClass != null && genericSuperClass instanceof Class) {
+            genericSuperClass = ((Class) genericSuperClass).getGenericSuperclass();
+        }
+
+        if (genericSuperClass != null) {
+            ParameterizedType parameterizedSuperClass = (ParameterizedType) genericSuperClass;
+            Type[] typeArguments = parameterizedSuperClass.getActualTypeArguments();
+            Type valueType = typeArguments[0];
+            Type boundType = typeArguments.length > 1 ? typeArguments[1] : typeArguments[0];
+            setTypeFromAdapterClass(getJavaClassFromType(valueType), getJavaClassFromType(boundType));
+            return;
+        }
+
+        // If no generic superclass was found, use the old method of looking at
+        // marshal method return type.  This mechanism is used for Dynamic JAXB.
         JavaClass newType  = helper.getJavaClass(Object.class);
         ArrayList<JavaMethod> marshalMethods = new ArrayList<JavaMethod>();
 
-        // look for marshal method
+        // Look for marshal method
         for (Iterator<JavaMethod> methodIt = adapterClass.getMethods().iterator(); methodIt.hasNext(); ) {
             JavaMethod method = methodIt.next();
             if (method.getName().equals(MARSHAL_METHOD_NAME)) {
                 JavaClass returnType = method.getReturnType();
-                // try and find a marshal method where Object is not the return type
+                // Try and find a marshal method where Object is not the return type,
                 // to avoid processing an inherited default marshal method
                 if (!returnType.getQualifiedName().equals(newType.getQualifiedName())) {
                     if (!returnType.isInterface()) {
@@ -173,18 +196,18 @@ public class Property implements Cloneable {
                         return;
                     }
                 }
-                // found a marshal method with an Object return type; add
+                // Found a marshal method with an Object return type; add
                 // it to the list in case we need to process it later
                 marshalMethods.add(method);
             }
         }
-        // if there are no marshal methods to process just set type 
+        // If there are no marshal methods to process just set type 
         // and original type, then return
         if (marshalMethods.size() == 0) {
             setTypeFromAdapterClass(newType, null);
             return;
         }
-        // at this point we didn't find a marshal method with a non-Object return type
+        // At this point we didn't find a marshal method with a non-Object return type
         for (JavaMethod method : marshalMethods) {
             JavaClass paramType = method.getParameterTypes()[0];
             // look for non-Object parameter type
@@ -193,10 +216,32 @@ public class Property implements Cloneable {
                 return;
             }
         }
-        // at this point we will just grab the first marshal method
+        // At this point we will just grab the first marshal method
         setTypeFromAdapterClass(newType, marshalMethods.get(0).getParameterTypes()[0]);
     }
-    
+
+    private JavaClass getJavaClassFromType(Type t) {
+        if (t instanceof Class) {
+            return helper.getJavaClass((Class) t);
+        } else if (t instanceof ParameterizedType) {
+            ParameterizedType paramValueType = (ParameterizedType) t;
+            Type rawType = paramValueType.getRawType();
+            if (rawType instanceof Class) {
+                return helper.getJavaClass((Class) rawType);
+            }
+        } else if (t instanceof TypeVariable<?>) {
+            TypeVariable<?> valueTypeVariable = (TypeVariable<?>) t;
+            return helper.getJavaClass((Class) valueTypeVariable.getBounds()[0]);
+        } else if (t instanceof GenericArrayType) {
+            GenericArrayType genericArrayValueType = (GenericArrayType) t;
+            Type rawType = genericArrayValueType.getGenericComponentType();
+            if (rawType instanceof Class) {
+                return helper.getJavaClass(Array.newInstance((Class) rawType, 1).getClass());
+            }
+        }
+        return null;
+    }
+
     /**
      * This convenience method will set the generic type, type and original type
      * for this Porperty as required based on a given 'new' type and parameter 

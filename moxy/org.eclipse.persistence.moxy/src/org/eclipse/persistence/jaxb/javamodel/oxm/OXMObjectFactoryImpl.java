@@ -13,6 +13,7 @@
 package org.eclipse.persistence.jaxb.javamodel.oxm;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -174,6 +175,10 @@ public class OXMObjectFactoryImpl implements JavaClass {
 
     public JavaClass getSuperclass() {
         return this.javaModel.getClass(JAVA_LANG_OBJECT);
+    }
+
+    public Type getGenericSuperclass() {
+        return null;
     }
 
     public boolean hasActualTypeArguments() {

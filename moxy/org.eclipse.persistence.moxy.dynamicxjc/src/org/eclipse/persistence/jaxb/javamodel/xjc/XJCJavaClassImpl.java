@@ -14,6 +14,7 @@ package org.eclipse.persistence.jaxb.javamodel.xjc;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -525,6 +526,10 @@ public class XJCJavaClassImpl implements JavaClass {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    public Type getGenericSuperclass() {
+        return null;
     }
 
     /**
