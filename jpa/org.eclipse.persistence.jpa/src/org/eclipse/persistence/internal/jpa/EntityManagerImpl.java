@@ -29,6 +29,8 @@
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *     08/24/2012-2.5 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     09/13/2012-2.5 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa;
 
@@ -143,7 +145,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     /**
      * Keep a list of openQueries that are executed in this entity manager.
      */
-    protected List<QueryImpl> openQueries;
+    protected WeakHashMap<QueryImpl, QueryImpl> openQueriesMap;
     
     /**
      * Property to avoid resuming unit of work if going to be closed on commit
@@ -296,6 +298,23 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         this((DatabaseSessionImpl) SessionManager.getManager().getSession(sessionName), null);
     }
 
+    /** 
+     * Return the weak reference to the open queries.
+     */
+    protected Map<QueryImpl, QueryImpl> getOpenQueriesMap() {
+        if (openQueriesMap == null) {
+            openQueriesMap = new WeakHashMap<QueryImpl, QueryImpl>();
+        }
+        
+        return openQueriesMap;
+    }
+    
+    /** 
+     * Return the weak reference to the open queries.
+     */
+    protected Set<QueryImpl> getOpenQueriesSet() {
+        return getOpenQueriesMap().keySet();
+    }
     
     /**
      * Queries that leave the connection and are executed against this entity
@@ -305,14 +324,10 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * @param query
      */
     public void addOpenQuery(QueryImpl query) {
-        if (openQueries == null) {
-            openQueries = new ArrayList<QueryImpl>();
-        }
-        
-        openQueries.add(query);
+        getOpenQueriesMap().put(query, query);
     	
         // If there is an open transaction, tag the query to it to be closed
-        // on commite or rollback.
+        // on commit or rollback.
         if (getTransaction() != null) {
             ((EntityTransactionImpl) getTransaction()).addOpenQuery(query);
         }
@@ -1728,10 +1743,8 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * Close any open queries executed against this entity manager.
      */
     protected void closeOpenQueries() {
-        if (openQueries != null) {
-            for (QueryImpl openQuery : openQueries) {
-                openQuery.close();
-            }
+        for (QueryImpl openQuery : getOpenQueriesSet()) {
+            openQuery.close();
         }
     }
 

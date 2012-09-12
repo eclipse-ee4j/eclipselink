@@ -13,11 +13,13 @@
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *     08/24/2012-2.5 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     09/13/2013-2.5 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.transaction;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 import javax.persistence.RollbackException;
 
@@ -33,7 +35,11 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
  * @see org.eclipse.persistence.internal.jpa.transaction.EntityTransactionImpl
  */
 public class EntityTransactionImpl implements javax.persistence.EntityTransaction {
-    protected List<QueryImpl> openQueries;
+    /**
+     * Keep a weak reference to the open queries that are executed in this entity manager.
+     */
+    protected WeakHashMap<QueryImpl, QueryImpl> openQueriesMap;
+    
     protected EntityTransactionWrapper wrapper;
 
     protected boolean active = false;
@@ -56,12 +62,19 @@ public class EntityTransactionImpl implements javax.persistence.EntityTransactio
      * Within a transaction track any open queries that will need to be closed
      * on commit or rollback.
      */
+    /**
+     * Queries that leave the connection and are executed against this entity
+     * manager will be added here. On rollback or commit any left over open 
+     * queries should be closed.
+     * 
+     * @param query
+     */
     public void addOpenQuery(QueryImpl query) {
-        if (openQueries == null) {
-            openQueries = new ArrayList<QueryImpl>();
+        if (openQueriesMap == null) {
+            openQueriesMap = new WeakHashMap<QueryImpl, QueryImpl>();
         }
-
-        openQueries.add(query);
+        
+        openQueriesMap.put(query, query);
     }
     
     /**
@@ -107,11 +120,11 @@ public class EntityTransactionImpl implements javax.persistence.EntityTransactio
      * if they haven't already been closed.
      */
     protected void closeOpenQueries() {
-        if (openQueries != null) {
-            for (QueryImpl openQuery : openQueries) {
-            	openQuery.close();
+        if (openQueriesMap != null) {
+            for (QueryImpl openQuery : openQueriesMap.keySet()) {
+                openQuery.close();
             }
-        } 	
+        }
     }
     
     /**
@@ -211,6 +224,17 @@ public class EntityTransactionImpl implements javax.persistence.EntityTransactio
         this.rollbackOnly = true;
     }
 
+    /** 
+     * Return the weak reference to the open queries.
+     */
+    protected Map<QueryImpl, QueryImpl> getOpenQueriesMap() {
+        if (openQueriesMap == null) {
+            openQueriesMap = new WeakHashMap<QueryImpl, QueryImpl>();
+        }
+        
+        return openQueriesMap;
+    }
+    
     /**
      * Determine whether the current transaction has been marked for rollback.
      * 

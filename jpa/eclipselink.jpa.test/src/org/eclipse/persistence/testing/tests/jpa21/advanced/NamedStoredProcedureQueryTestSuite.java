@@ -16,6 +16,8 @@
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *     08/24/2012-2.5 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     09/13/2013-2.5 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa21.advanced;
 
@@ -106,7 +108,8 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
         suite.addTest(new NamedStoredProcedureQueryTestSuite("testEMCreateStoredProcedureQueryWithResultClass"));
         suite.addTest(new NamedStoredProcedureQueryTestSuite("testEMCreateStoredProcedureQueryWithSqlResultSetMapping"));
         suite.addTest(new NamedStoredProcedureQueryTestSuite("testEMCreateStoredProcedureUpdateQuery"));
-        suite.addTest(new NamedStoredProcedureQueryTestSuite("testEMCreateStoredProcedureExecuteQuery"));
+        suite.addTest(new NamedStoredProcedureQueryTestSuite("testEMCreateStoredProcedureExecuteQuery1"));
+        suite.addTest(new NamedStoredProcedureQueryTestSuite("testEMCreateStoredProcedureExecuteQuery2"));
         
         return suite;
     }
@@ -389,7 +392,7 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
     /**
      * Tests a StoredProcedureQuery that does an update though EM API 
      */
-    public void testEMCreateStoredProcedureExecuteQuery() {
+    public void testEMCreateStoredProcedureExecuteQuery1() {
         if (supportsStoredProcedures()) {
             EntityManager em = createEntityManager();
             
@@ -441,8 +444,7 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
                 
                 List<Address> addressResults = query.getResultList();
                 
-                // Should return true (employees to return)
-                assertTrue("The query did not have more results (Employees).", query.hasMoreResults());
+                assertTrue("The query didn't have any more results.", query.hasMoreResults());
                 List<Employee> employeeResults = query.getResultList();
                 int numberOfEmployes = employeeResults.size();
                 
@@ -454,6 +456,170 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
                 assertTrue("Update count incorrect: " + updateCount, updateCount == 2);
                 
                 // Update count should return -1 now.
+                assertTrue("Update count should be -1.", query.getUpdateCount() == -1);
+                
+                // Check output parameters by name.
+                // TODO: to investigate. This little bit is hacky. For some 
+                // reason MySql returns a Long here. By position is ok, that is, 
+                // it returns an Integer (as we registered)
+                Long outputParamValueFromName;
+                if (getPlatform().isMySQL()) {
+                    outputParamValueFromName = (Long) query.getOutputParameterValue("employee_count_v");
+                } else {
+                    outputParamValueFromName = new Long((Integer) query.getOutputParameterValue("employee_count_v"));
+                }
+                assertNotNull("The output parameter was null.", outputParamValueFromName);
+                assertTrue("Incorrect value returned, expected " + numberOfEmployes + ", got: " + outputParamValueFromName, outputParamValueFromName.equals(new Long(numberOfEmployes)));
+                
+                // Do some negative tests ...                
+                try {
+                    query.getOutputParameterValue(null);
+                    fail("No IllegalArgumentException was caught with a null parameter name.");
+                } catch (IllegalArgumentException e) {
+                    // Expected, swallow.
+                }
+                
+                try {
+                    query.getOutputParameterValue("emp_count");
+                    fail("No IllegalArgumentException was caught with invalid parameter name.");
+                } catch (IllegalArgumentException e) {
+                    // Expected, swallow.
+                }
+                
+                try {
+                    query.getOutputParameterValue("new_p_code_v");
+                    fail("No IllegalArgumentException was caught with IN parameter name.");
+                } catch (IllegalArgumentException e) {
+                    // Expected, swallow.
+                }
+                
+                // Check output parameters by position.
+                Integer outputParamValueFromPosition = (Integer) query.getOutputParameterValue(3);
+                assertNotNull("The output parameter was null.", outputParamValueFromPosition);
+                assertTrue("Incorrect value returned, expected " + numberOfEmployes + ", got: " + outputParamValueFromPosition, outputParamValueFromPosition.equals(numberOfEmployes));
+
+                // Do some negative tests ...
+                try {
+                    query.getOutputParameterValue(8);
+                    fail("No IllegalArgumentException was caught with position out of bounds.");
+                } catch (IllegalArgumentException e) {
+                    // Expected, swallow.
+                }
+                
+                try {
+                    query.getOutputParameterValue(1);
+                    fail("No IllegalArgumentException was caught with an IN parameter position.");
+                } catch (IllegalArgumentException e) {
+                    // Expected, swallow.
+                }
+                
+                // Just because we don't trust anyone ... :-)
+                Address a1 = em.find(Address.class, address1.getId());
+                assertTrue("The postal code was not updated for address 1.", a1.getPostalCode().equals(postalCodeCorrection));
+                Address a2 = em.find(Address.class, address2.getId());
+                assertTrue("The postal code was not updated for address 2.", a2.getPostalCode().equals(postalCodeCorrection));
+                Address a3 = em.find(Address.class, address3.getId());
+                assertTrue("The postal code was not updated for address 3.", a3.getPostalCode().equals(postalCodeCorrection));
+            } catch (RuntimeException e) {
+                if (isTransactionActive(em)){
+                    rollbackTransaction(em);
+                }
+                
+                closeEntityManager(em);
+                throw e;
+            }
+            
+            // The open statement/connection will be closed here.
+            closeEntityManager(em);
+        }
+    }
+    
+    /**
+     * Tests a StoredProcedureQuery that does an update though EM API 
+     * This is the same test as above except different retrieval path.
+     */
+    public void testEMCreateStoredProcedureExecuteQuery2() {
+        if (supportsStoredProcedures()) {
+            EntityManager em = createEntityManager();
+            
+            try {
+                // Create some data (with errors)
+                String postalCodeTypo = "K2J 0L8";
+                String postalCodeCorrection = "K2G 6W2";
+                
+                beginTransaction(em);
+                
+                Address address1 = new Address();
+                address1.setCity("Winnipeg");
+                address1.setPostalCode(postalCodeTypo);
+                address1.setProvince("MB");
+                address1.setStreet("510 Main Street");
+                address1.setCountry("Canada");
+                em.persist(address1);
+                
+                Address address2 = new Address();
+                address2.setCity("Winnipeg");
+                address2.setPostalCode(postalCodeTypo);
+                address2.setProvince("MB");
+                address2.setStreet("512 Main Street");
+                address2.setCountry("Canada");
+                em.persist(address2);
+                
+                Address address3 = new Address();
+                address3.setCity("Winnipeg");
+                address3.setPostalCode(postalCodeCorrection);
+                address3.setProvince("MB");
+                address3.setStreet("514 Main Street");
+                address3.setCountry("Canada");
+                em.persist(address3);
+                
+                commitTransaction(em);
+                
+                // Clear the cache
+                em.clear();
+                clearCache();
+                
+                // Build the named stored procedure query, execute and test.
+                StoredProcedureQuery query = em.createStoredProcedureQuery("Result_Set_And_Update_Address", Address.class, Employee.class);
+                query.registerStoredProcedureParameter("new_p_code_v", String.class, ParameterMode.IN);
+                query.registerStoredProcedureParameter("old_p_code_v", String.class, ParameterMode.IN);
+                query.registerStoredProcedureParameter("employee_count_v", Integer.class, ParameterMode.OUT);
+                
+                boolean result = query.setParameter("new_p_code_v", postalCodeCorrection).setParameter("old_p_code_v", postalCodeTypo).execute();
+                assertTrue("Result did not return true for a result set.", result);
+                
+                // This shouldn't affect where we are in the retrieval of the query.
+                assertTrue("We have didn't have any more results", query.hasMoreResults());
+                assertTrue("We have didn't have any more results", query.hasMoreResults());
+                assertTrue("We have didn't have any more results", query.hasMoreResults());
+                assertTrue("We have didn't have any more results", query.hasMoreResults());
+                assertTrue("We have didn't have any more results", query.hasMoreResults());
+                assertTrue("We have didn't have any more results", query.hasMoreResults());
+                assertTrue("We have didn't have any more results", query.hasMoreResults());
+                
+                List<Address> addressResults = query.getResultList();
+                
+                // We know there should be more results so ask for them without checking for has more results.
+                List<Employee> employeeResults = query.getResultList();
+                int numberOfEmployes = employeeResults.size();
+                
+                // Should return false (no more results)
+                assertFalse("The query had more results.", query.hasMoreResults());
+                assertFalse("The query had more results.", query.hasMoreResults());
+                assertFalse("The query had more results.", query.hasMoreResults());
+                assertFalse("The query had more results.", query.hasMoreResults());
+                
+                assertNull("getResultList after no results did not return null", query.getResultList());
+                
+                // Get the update count.
+                int updateCount = query.getUpdateCount();
+                assertTrue("Update count incorrect: " + updateCount, updateCount == 2);
+                
+                // Update count should return -1 now.
+                assertTrue("Update count should be -1.", query.getUpdateCount() == -1);
+                assertTrue("Update count should be -1.", query.getUpdateCount() == -1);
+                assertTrue("Update count should be -1.", query.getUpdateCount() == -1);
+                assertTrue("Update count should be -1.", query.getUpdateCount() == -1);
                 assertTrue("Update count should be -1.", query.getUpdateCount() == -1);
                 
                 // Check output parameters by name.

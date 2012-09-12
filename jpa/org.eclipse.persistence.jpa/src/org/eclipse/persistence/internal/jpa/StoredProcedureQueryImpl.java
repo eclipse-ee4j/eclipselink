@@ -22,6 +22,8 @@
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *     08/24/2012-2.5 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     09/13/2012-2.5 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa;
 
@@ -45,11 +47,11 @@ import javax.persistence.QueryTimeoutException;
 import javax.persistence.StoredProcedureQuery;
 import javax.persistence.TemporalType;
 
-import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
@@ -63,6 +65,8 @@ import org.eclipse.persistence.queries.StoredProcedureCall;
  */
 public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedureQuery {
     protected List resultList;
+    
+    protected boolean hasMoreResults;
     
     // Call will be returned from an execute. From it you can get the result set.
     protected DatabaseCall executeCall;
@@ -233,15 +237,8 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
                 accessor.releaseStatement(executeStatement, query.getSQLString(), executeCall, session);
             }
         } catch (SQLException exception) {
-            // With an external connection pool the connection may be null 
-            // after this call, if it is we will be unable to determine if 
-            // it is a connection based exception so treat it as if it wasn't.
-            DatabaseException commException = accessor.processExceptionForCommError(session, exception, null);
-            if (commException != null) {
-                throw commException;
-            }
-
-            throw DatabaseException.sqlException(exception, executeCall, accessor, session, false);
+            // Catch the exception and log a message.
+            session.log(SessionLog.WARNING, SessionLog.CONNECTION, "exception_caught_closing_statement", exception);
         }
     }
     
@@ -286,6 +283,8 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             // results now (and building all the result objects) and things 
             // remain on a as needed basis from the statement.
             entityManager.addOpenQuery(this);
+            
+            hasMoreResults = executeCall.getExecuteReturnValue();
             
             return executeCall.getExecuteReturnValue();
         } catch (LockTimeoutException exception) {
@@ -367,29 +366,38 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
                     return resultList;
                 }
             } else {
-                AbstractSession session = (AbstractSession) getActiveSession();
-                DatabaseAccessor accessor = (DatabaseAccessor) executeCall.getQuery().getAccessor();
-                ResultSet resultSet = executeStatement.getResultSet();
-                executeCall.setFields(null);
-                executeCall.matchFieldOrder(resultSet, accessor, session);
-                ResultSetMetaData metaData = resultSet.getMetaData();
+                if (hasMoreResults()) {
+                    AbstractSession session = (AbstractSession) getActiveSession();
+                    DatabaseAccessor accessor = (DatabaseAccessor) executeCall.getQuery().getAccessor();
+                    ResultSet resultSet = executeStatement.getResultSet();
+                    executeCall.setFields(null);
+                    executeCall.matchFieldOrder(resultSet, accessor, session);
+                    ResultSetMetaData metaData = resultSet.getMetaData();
                 
-                List result =  new Vector();
-                while (resultSet.next()) {
-                    result.add(accessor.fetchRow(executeCall.getFields(), executeCall.getFieldsArray(), resultSet, metaData, session));
-                }
+                    List result =  new Vector();
+                    while (resultSet.next()) {
+                        result.add(accessor.fetchRow(executeCall.getFields(), executeCall.getFieldsArray(), resultSet, metaData, session));
+                    }
     
-                resultSet.close(); // This must be closed in case the statement is cached and not closed.
-                return ((ResultSetMappingQuery) executeCall.getQuery()).buildObjectsFromRecords(result, ++executeResultSetIndex);
+                    // The result set must be closed in case the statement is cached and not closed.
+                    resultSet.close(); 
+                    
+                    // Move the result pointer.
+                    moveResultPointer();
+                    
+                    return ((ResultSetMappingQuery) executeCall.getQuery()).buildObjectsFromRecords(result, ++executeResultSetIndex);
+                } else {
+                    return null;
+                }
             }
-        } catch (LockTimeoutException exception) {
-            throw exception;
-        } catch (RuntimeException exception) {
+        } catch (LockTimeoutException e) {
+            throw e;
+        } catch (PersistenceException e) {
             setRollbackOnly();
-            throw exception;
-        } catch (SQLException e) {
+            throw e;
+        } catch (Exception e) {
             setRollbackOnly();
-            throw new RuntimeException(e);
+            throw new PersistenceException(e);
         }
     }
     
@@ -410,8 +418,13 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             try {
                 int updateCount = executeStatement.getUpdateCount();
                 
-                // Move the result pointer up.
-                executeStatement.getMoreResults();
+                // Moving the result pointer when -1 is reached doesn't seem
+                // to be an issue for the jbdc driver, however as a safeguard,
+                // once -1 is reached don't bother trying to move the pointer
+                // as there is no need to do so.
+                if (updateCount > -1) {
+                    moveResultPointer();
+                }
                 
                 return updateCount;
             } catch (SQLException e) {
@@ -422,29 +435,36 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
         return -1;
     }
     
-
     /**
-     * Returns true if the next result corresponds to a result set,
-     * and false if it is an update count or if there are no results
-     * other than through INOUT and OUT parameters, if any.
+     * Returns true if the next result corresponds to a result set, and false if 
+     * it is an update count or if there are no results other than through INOUT 
+     * and OUT parameters, if any.
+     * 
      * @return true if next result corresponds to result set
-     * @throws QueryTimeoutException if the query execution exceeds
-     * the query timeout value set and only the statement is
-     * rolled back
-     * @throws PersistenceException if the query execution exceeds
-     * the query timeout value set and the transaction
-     * is rolled back
+     * @throws QueryTimeoutException if the query execution exceeds the query 
+     * timeout value set and only the statement is rolled back
+     * @throws PersistenceException if the query execution exceeds the query 
+     * timeout value set and the transaction is rolled back
      */
     public boolean hasMoreResults() {
         if (executeStatement != null) {
-            try {
-                return executeStatement.getMoreResults();
-            } catch (SQLException e) {
-                e.printStackTrace();
-                return false;
-            }
+            return hasMoreResults;
         } else {
             return resultList != null && ! resultList.isEmpty();
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Move the pointer up and update our has more results flag.
+     * Once there are no result sets left, this will always return false.
+     */
+    private void moveResultPointer() {
+        try {
+            hasMoreResults = executeStatement.getMoreResults();
+        } catch (SQLException e) {
+            // swallow it.
+            hasMoreResults = false;
         }
     }
     
