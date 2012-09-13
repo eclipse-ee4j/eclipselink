@@ -16,27 +16,65 @@
  ******************************************************************************/  
 package org.eclipse.persistence.mappings;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.Vector;
 
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.indirection.IndirectList;
-import org.eclipse.persistence.indirection.ValueHolder;
-import org.eclipse.persistence.internal.descriptors.*;
-import org.eclipse.persistence.internal.expressions.SQLUpdateStatement;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.internal.identitymaps.*;
-import org.eclipse.persistence.internal.queries.*;
-import org.eclipse.persistence.internal.sessions.*;
-import org.eclipse.persistence.mappings.foundation.MapComponentMapping;
-import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.DescriptorEventManager;
 import org.eclipse.persistence.descriptors.changetracking.AttributeChangeTrackingPolicy;
 import org.eclipse.persistence.descriptors.changetracking.DeferredChangeDetectionPolicy;
 import org.eclipse.persistence.descriptors.changetracking.ObjectChangeTrackingPolicy;
-import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.exceptions.ConversionException;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.exceptions.OptimisticLockException;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.expressions.ExpressionMath;
+import org.eclipse.persistence.indirection.IndirectList;
+import org.eclipse.persistence.indirection.ValueHolder;
+import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
+import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
+import org.eclipse.persistence.internal.expressions.SQLUpdateStatement;
+import org.eclipse.persistence.internal.helper.ConversionManager;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
+import org.eclipse.persistence.internal.identitymaps.CacheId;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
+import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.AggregateCollectionChangeRecord;
+import org.eclipse.persistence.internal.sessions.ChangeRecord;
+import org.eclipse.persistence.internal.sessions.MergeManager;
+import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.mappings.foundation.MapComponentMapping;
+import org.eclipse.persistence.queries.DataModifyQuery;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.DeleteAllQuery;
+import org.eclipse.persistence.queries.DeleteObjectQuery;
+import org.eclipse.persistence.queries.InsertObjectQuery;
+import org.eclipse.persistence.queries.ModifyQuery;
+import org.eclipse.persistence.queries.ObjectBuildingQuery;
+import org.eclipse.persistence.queries.ObjectLevelModifyQuery;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.queries.ReadQuery;
+import org.eclipse.persistence.queries.UpdateObjectQuery;
+import org.eclipse.persistence.queries.WriteObjectQuery;
+import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.remote.DistributedSession;
 
@@ -534,45 +572,52 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
             if (cp.sizeFor(backupCollection) != cp.sizeFor(cloneCollection)) {
                 return convertToChangeRecord(cloneCollection, backupCollection, owner, session);
             }
-            Object cloneIterator = cp.iteratorFor(cloneCollection);
-            Object backUpIterator = cp.iteratorFor(backupCollection);
+
             boolean change = false;
-
-            // For bug 2863721 must use a different UnitOfWorkChangeSet as here just
-            // seeing if changes are needed.  If changes are needed then a
-            // real changeSet will be created later.
-            UnitOfWorkChangeSet uowComparisonChangeSet = new UnitOfWorkChangeSet(session);
-            while (cp.hasNext(cloneIterator)) {
-                Object cloneObject = cp.next(cloneIterator, session);
-
-                // For CR#2285 assume that if null is added the collection has changed.
-                if (cloneObject == null) {
-                    change = true;
-                    break;
-                }
-                Object backUpObject = null;
-                if (cp.hasNext(backUpIterator)) {
-                    backUpObject = cp.next(backUpIterator, session);
-                } else {
-                    change = true;
-                    break;
-                }
-                if (cloneObject.getClass().equals(backUpObject.getClass())) {
-                    ObjectBuilder builder = getReferenceDescriptor(cloneObject.getClass(), session).getObjectBuilder();
-                    ObjectChangeSet initialChanges = builder.createObjectChangeSet(cloneObject, uowComparisonChangeSet, owner.isNew(), session);
-
-                    //compare for changes will return null if no change is detected and I need to remove the changeSet
-                    ObjectChangeSet changes = builder.compareForChange(cloneObject, backUpObject, uowComparisonChangeSet, session);
-                    if (changes != null) {
+            if (cp.isMapPolicy()){
+                change = compareMapCollectionForChange((Map)cloneCollection, (Map)backupCollection, session);
+            } else {
+                Object cloneIterator = cp.iteratorFor(cloneCollection);
+                Object backUpIterator = cp.iteratorFor(backupCollection);
+                // For bug 2863721 must use a different UnitOfWorkChangeSet as here just
+                // seeing if changes are needed.  If changes are needed then a
+                // real changeSet will be created later.
+                UnitOfWorkChangeSet uowComparisonChangeSet = new UnitOfWorkChangeSet(session);
+                while (cp.hasNext(cloneIterator)) {
+                    Object cloneObject = cp.next(cloneIterator, session);
+    
+                    // For CR#2285 assume that if null is added the collection has changed.
+                    if (cloneObject == null) {
                         change = true;
                         break;
                     }
-                } else {
+                    Object backUpObject = null;
+                    if (cp.hasNext(backUpIterator)) {
+                            backUpObject = cp.next(backUpIterator, session);
+                    } else {
+                        change = true;
+                        break;
+                    }
+                    if (cloneObject.getClass().equals(backUpObject.getClass())) {
+                        ObjectBuilder builder = getReferenceDescriptor(cloneObject.getClass(), session).getObjectBuilder();
+                        ObjectChangeSet initialChanges = builder.createObjectChangeSet(cloneObject, uowComparisonChangeSet, owner.isNew(), session);
+        
+                        //compare for changes will return null if no change is detected and I need to remove the changeSet
+                        ObjectChangeSet changes = builder.compareForChange(cloneObject, backUpObject, uowComparisonChangeSet, session);
+                        if (changes != null) {
+                            change = true;
+                            break;
+                        }
+                    } else {
+                        change = true;
+                        break;
+                    }
+                }
+                if (cp.hasNext(backUpIterator)){
                     change = true;
-                    break;
                 }
             }
-            if ((change == true) || (cp.hasNext(backUpIterator))) {
+            if ((change == true)) {
                 return convertToChangeRecord(cloneCollection, backupCollection, owner, session);
             } else {
                 return null;
@@ -581,7 +626,52 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
 
         return convertToChangeRecord(getRealCollectionAttributeValueFromObject(clone, session), containerPolicy.containerInstance(), owner, session);
     }
+  
+    
+    /**
+     * INTERNAL:
+     * Determine if an AggregateCollection that is contained as a map has changed by comparing the values in the
+     * clone to the values in the backup.
+     * @param cloneObjectCollection
+     * @param backUpCollection
+     * @param session
+     * @return
+     */
+    protected boolean compareMapCollectionForChange(Map cloneObjectCollection, Map backUpCollection, AbstractSession session){
+        HashMap originalKeyValues = new HashMap(10);
+        HashMap cloneKeyValues = new HashMap(10);
 
+        Object backUpIter = containerPolicy.iteratorFor(backUpCollection);
+        while (containerPolicy.hasNext(backUpIter)) {// Make a lookup of the objects
+            Map.Entry entry = (Map.Entry)containerPolicy.nextEntry(backUpIter, session);
+            originalKeyValues.put(entry.getKey(), entry.getValue());
+        }
+
+        UnitOfWorkChangeSet uowComparisonChangeSet = new UnitOfWorkChangeSet(session);
+        Object cloneIter = containerPolicy.iteratorFor(cloneObjectCollection);
+        while (containerPolicy.hasNext(cloneIter)) {//Compare them with the objects from the clone
+            Map.Entry wrappedFirstObject = (Map.Entry)containerPolicy.nextEntry(cloneIter, session);
+            Object firstValue = wrappedFirstObject.getValue();
+            Object firstKey = wrappedFirstObject.getKey();
+            Object backupValue = originalKeyValues.get(firstKey);
+            if (!originalKeyValues.containsKey(firstKey)) {
+                return true;
+            } else if ((backupValue == null) && (firstValue != null)) {//the object was not in the backup
+                return true;
+            } else {
+                ObjectBuilder builder = getReferenceDescriptor(firstValue.getClass(), session).getObjectBuilder();
+
+                ObjectChangeSet changes = builder.compareForChange(firstValue, backupValue, uowComparisonChangeSet, session);
+                if (changes != null) {
+                        return true;
+                } else {
+                    originalKeyValues.remove(firstKey);
+                }
+            }
+        }
+        return !originalKeyValues.isEmpty();
+    }
+    
     /**
      * INTERNAL:
      * Old and new lists are compared and only the changes are written to the database.
@@ -947,29 +1037,49 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         if (containerPolicy.sizeFor(firstCollection) == 0) {
             return true;
         }
+        
+        if (isMapKeyMapping()) {
+            Object firstIter = containerPolicy.iteratorFor(firstCollection);
+            Object secondIter = containerPolicy.iteratorFor(secondCollection);
 
-        //iterator the first aggregate collection	
-        for (Object iterFirst = containerPolicy.iteratorFor(firstCollection);
-                 containerPolicy.hasNext(iterFirst);) {
-            //fetch the next object from the first iterator.
-            Object firstAggregateObject = containerPolicy.next(iterFirst, session);
-
-            //iterator the second aggregate collection	
-            for (Object iterSecond = containerPolicy.iteratorFor(secondCollection); true;) {
-                //fetch the next object from the second iterator.
-                Object secondAggregateObject = containerPolicy.next(iterSecond, session);
-
-                //matched object found, break to outer FOR loop			
-                if (getReferenceDescriptor().getObjectBuilder().compareObjects(firstAggregateObject, secondAggregateObject, session)) {
-                    break;
-                }
-
-                if (!containerPolicy.hasNext(iterSecond)) {
+            Map keyValues = new HashMap();
+            while (containerPolicy.hasNext(secondIter)) {
+                Map.Entry secondEntry = (Map.Entry)containerPolicy.nextEntry(secondIter, session);
+                Object primaryKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(secondEntry.getValue(), session);
+                Object key = secondEntry.getKey();
+                keyValues.put(key, primaryKey);
+            }    
+            while (containerPolicy.hasNext(firstIter)) {
+                Map.Entry firstEntry = (Map.Entry)containerPolicy.nextEntry(firstIter, session);
+                Object primaryKey = getReferenceDescriptor().getObjectBuilder().extractPrimaryKeyFromObject(firstEntry.getValue(), session);
+                Object key = firstEntry.getKey();
+                if (!primaryKey.equals(keyValues.get(key))) {
                     return false;
                 }
             }
+        } else { 
+            //iterator the first aggregate collection    
+            for (Object iterFirst = containerPolicy.iteratorFor(firstCollection);
+                     containerPolicy.hasNext(iterFirst);) {
+                //fetch the next object from the first iterator.
+                Object firstAggregateObject = containerPolicy.next(iterFirst, session);
+    
+                //iterator the second aggregate collection    
+                for (Object iterSecond = containerPolicy.iteratorFor(secondCollection); true;) {
+                    //fetch the next object from the second iterator.
+                    Object secondAggregateObject = containerPolicy.next(iterSecond, session);
+    
+                    //matched object found, break to outer FOR loop            
+                    if (getReferenceDescriptor().getObjectBuilder().compareObjects(firstAggregateObject, secondAggregateObject, session)) {
+                        break;
+                    }
+    
+                    if (!containerPolicy.hasNext(iterSecond)) {
+                        return false;
+                    }
+                }
+            }
         }
-
         return true;
     }
 
@@ -1692,7 +1802,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
                 HashMap<DatabaseField, DatabaseField> fieldTranslation, HashMap<DatabaseTable, DatabaseTable> tableTranslation) throws DescriptorException {
         //recursive call to further children descriptors
         if (parentDescriptor.getInheritancePolicy().hasChildren()) {
-            //setFields(clonedChildDescriptor.getFields());		
+            //setFields(clonedChildDescriptor.getFields());        
             List<ClassDescriptor> childDescriptors = parentDescriptor.getInheritancePolicy().getChildDescriptors();
             List<ClassDescriptor> cloneChildDescriptors = new ArrayList(childDescriptors.size());
             for (ClassDescriptor childDescriptor : childDescriptors) {
