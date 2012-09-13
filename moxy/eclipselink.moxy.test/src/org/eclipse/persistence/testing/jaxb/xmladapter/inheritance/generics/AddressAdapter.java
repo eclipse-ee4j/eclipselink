@@ -15,14 +15,4 @@ package org.eclipse.persistence.testing.jaxb.xmladapter.inheritance.generics;
 
 public class AddressAdapter extends GenericAdapter<Address> {
 
-    @Override
-    public Address marshal(Address v) throws Exception {
-        return super.marshal(v);
-    }
-
-    @Override
-    public Address unmarshal(Address linkable) throws Exception {
-        return super.unmarshal(linkable);
-    }
-
 }

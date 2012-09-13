@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.jaxb.javamodel.oxm;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -132,6 +133,10 @@ public class OXMJAXBElementImpl implements JavaClass {
     }
 
     public JavaClass getSuperclass() {
+        return null;
+    }
+
+    public Type getGenericSuperclass() {
         return null;
     }
 

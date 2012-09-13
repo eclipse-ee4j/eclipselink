@@ -364,6 +364,10 @@ public class JavaClassImpl implements JavaClass {
         return javaModelImpl.getClass(jClass.getSuperclass());
     }
 
+    public Type getGenericSuperclass() {
+        return jClass.getGenericSuperclass();
+    }
+
     public boolean hasActualTypeArguments() {
         if (jType instanceof ParameterizedType) {
             ParameterizedType pType = (ParameterizedType) jType;

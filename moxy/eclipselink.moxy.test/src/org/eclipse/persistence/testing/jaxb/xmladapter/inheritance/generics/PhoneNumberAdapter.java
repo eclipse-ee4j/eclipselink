@@ -15,14 +15,4 @@ package org.eclipse.persistence.testing.jaxb.xmladapter.inheritance.generics;
 
 public class PhoneNumberAdapter extends GenericAdapter<PhoneNumber> {
 
-    @Override
-    public PhoneNumber marshal(PhoneNumber v) throws Exception {
-        return super.marshal(v);
-    }
-
-    @Override
-    public PhoneNumber unmarshal(PhoneNumber linkable) throws Exception {
-        return super.unmarshal(linkable);
-    }
-
 }

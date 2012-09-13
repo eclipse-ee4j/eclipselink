@@ -12,6 +12,11 @@
  ******************************************************************************/  
 package org.eclipse.persistence.jaxb.compiler;
 
+import java.lang.reflect.Array;
+import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -155,6 +160,25 @@ public class Property implements Cloneable {
      */
     public void setAdapterClass(JavaClass adapterCls) {
         adapterClass = adapterCls;
+
+        // Walk up the inheritance hierarchy until we find a generic superclass specifying
+        // the value and bound types
+        Type genericSuperClass = adapterCls.getGenericSuperclass();
+        while (genericSuperClass != null && genericSuperClass instanceof Class) {
+            genericSuperClass = ((Class) genericSuperClass).getGenericSuperclass();
+        }
+
+        if (genericSuperClass != null) {
+            ParameterizedType parameterizedSuperClass = (ParameterizedType) genericSuperClass;
+            Type[] typeArguments = parameterizedSuperClass.getActualTypeArguments();
+            Type valueType = typeArguments[0];
+            Type boundType = typeArguments.length > 1 ? typeArguments[1] : typeArguments[0];
+            setTypeFromAdapterClass(getJavaClassFromType(valueType), getJavaClassFromType(boundType));
+            return;
+        }
+
+        // If no generic superclass was found, use the old method of looking at
+        // marshal method return type.  This mechanism is used for Dynamic JAXB.
         JavaClass newType  = helper.getJavaClass(Object.class);
         ArrayList<JavaMethod> marshalMethods = new ArrayList<JavaMethod>();
         
@@ -195,7 +219,29 @@ public class Property implements Cloneable {
         // at this point we will just grab the first marshal method
         setTypeFromAdapterClass(newType, marshalMethods.get(0).getParameterTypes()[0]);
     }
-    
+
+    private JavaClass getJavaClassFromType(Type t) {
+        if (t instanceof Class) {
+            return helper.getJavaClass((Class) t);
+        } else if (t instanceof ParameterizedType) {
+            ParameterizedType paramValueType = (ParameterizedType) t;
+            Type rawType = paramValueType.getRawType();
+            if (rawType instanceof Class) {
+                return helper.getJavaClass((Class) rawType);
+            }
+        } else if (t instanceof TypeVariable<?>) {
+            TypeVariable<?> valueTypeVariable = (TypeVariable<?>) t;
+            return helper.getJavaClass((Class) valueTypeVariable.getBounds()[0]);
+        } else if (t instanceof GenericArrayType) {
+            GenericArrayType genericArrayValueType = (GenericArrayType) t;
+            Type rawType = genericArrayValueType.getGenericComponentType();
+            if (rawType instanceof Class) {
+                return helper.getJavaClass(Array.newInstance((Class) rawType, 1).getClass());
+            }
+        }
+        return null;
+    }
+
     /**
      * This convenience method will set the generic type, type and original type
      * for this Porperty as required based on a given 'new' type and parameter 

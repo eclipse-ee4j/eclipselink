@@ -435,6 +435,10 @@ public class OXMJavaClassImpl implements JavaClass {
         return this.javaModel.getClass(JAVA_LANG_OBJECT);
     }
 
+    public Type getGenericSuperclass() {
+        return null;
+    }
+
     /**
      * Indicates if this <code>JavaClass</code> has actual type arguments, i.e. is a
      * parameterized type (for example, <code>List&lt;Employee</code>).

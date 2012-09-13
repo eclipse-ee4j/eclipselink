@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.jaxb.javamodel;
 
+import java.lang.reflect.Type;
 import java.util.Collection;
 
 /**
@@ -49,6 +50,7 @@ public interface JavaClass extends JavaHasAnnotations {
     public JavaPackage getPackage();
     public String getPackageName();
     public JavaClass getSuperclass();
+    public Type getGenericSuperclass();
     public boolean isAbstract();
     public boolean isAnnotation();
     public boolean isArray();
