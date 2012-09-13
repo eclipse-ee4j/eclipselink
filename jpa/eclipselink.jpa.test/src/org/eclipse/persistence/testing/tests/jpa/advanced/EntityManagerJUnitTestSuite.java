@@ -461,15 +461,17 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
      * createEntityManagerFactory();
      */
     public void testProviderPropertySetting(){
-        Map properties = new HashMap();
-        properties.put("javax.persistence.provider", "org.unknown.Provider");
-        try{
-            createEntityManager(properties);
-        }catch(PersistenceException ex){
-            assertTrue("Wrong exception thrown when provider class set through properties.",ex.getMessage().contains("No Persistence provider for"));
-            return;
+        if (!isOnServer()){
+            Map properties = new HashMap();
+            properties.put("javax.persistence.provider", "org.unknown.Provider");
+            try{
+                Persistence.createEntityManagerFactory(getPersistenceUnitName(), properties);
+            }catch(PersistenceException ex){
+                assertTrue("Wrong exception thrown when provider class set through properties.",ex.getMessage().contains("No Persistence provider for"));
+                return;
+            }
+            fail("EclipseLink ignored persistence provider class provided through properties.");
         }
-        fail("EclipseLink ignored persistence provider class provided through properties.");
     }
     
     /**
