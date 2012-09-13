@@ -3654,6 +3654,7 @@ public class AnnotationsProcessor {
                 helper.isAnnotationPresent(elem, XmlIDREF.class) ||
                 helper.isAnnotationPresent(elem, XmlTransient.class) ||
                 helper.isAnnotationPresent(elem, XmlPath.class) ||
+                helper.isAnnotationPresent(elem, XmlIsSetNullPolicy.class) ||               
                 helper.isAnnotationPresent(elem, XmlPaths.class) ||
                 helper.isAnnotationPresent(elem, XmlInverseReference.class) ||
                 helper.isAnnotationPresent(elem, XmlJoinNode.class) ||
