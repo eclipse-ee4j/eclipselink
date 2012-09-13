@@ -19,6 +19,7 @@ import org.eclipse.persistence.testing.jaxb.annotations.xmllocation.XmlLocationT
 import org.eclipse.persistence.testing.jaxb.annotations.xmlnametransformer.JAXBDefaultNameTransformerTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlnametransformer.classlevel.upper.JAXBClassLevelUpperNameTransformerTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlnametransformer.upper.JAXBUpperNameTransformerTestCases;
+import org.eclipse.persistence.testing.jaxb.annotations.xmlnullpolicy.XmlNullPolicyNoXmlElementTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlnullpolicy.XmlNullPolicyTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlpath.predicate.PredicateTestSuite;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlpath.predicate.adapter.CustomerTestCases;
@@ -56,6 +57,7 @@ public class AnnotationsTestSuite extends TestSuite {
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmlpath.enumtype.EnumTestCases.class);
         suite.addTestSuite(XmlPathsOverrideTestCases.class);
         suite.addTestSuite(XmlNullPolicyTestCases.class);
+        suite.addTestSuite(XmlNullPolicyNoXmlElementTestCases.class);
         suite.addTestSuite(JAXBDefaultNameTransformerTestCases.class);
         suite.addTestSuite(JAXBUpperNameTransformerTestCases.class);
         suite.addTestSuite(JAXBClassLevelUpperNameTransformerTestCases.class);

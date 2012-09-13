@@ -3635,8 +3635,8 @@ public class AnnotationsProcessor {
      * Returns true if the field or method passed in is annotated with JAXB
      * annotations.
      */
-    private boolean hasJAXBAnnotations(JavaHasAnnotations elem) {
-        return (helper.isAnnotationPresent(elem, XmlAttachmentRef.class)) ||
+    private boolean hasJAXBAnnotations(JavaHasAnnotations elem) {    	
+    	return (helper.isAnnotationPresent(elem, XmlAttachmentRef.class)) ||
                 helper.isAnnotationPresent(elem, XmlElement.class) ||
                 helper.isAnnotationPresent(elem, XmlAttribute.class) ||
                 helper.isAnnotationPresent(elem, XmlAnyElement.class) ||
@@ -3654,6 +3654,7 @@ public class AnnotationsProcessor {
                 helper.isAnnotationPresent(elem, XmlIDREF.class) ||
                 helper.isAnnotationPresent(elem, XmlTransient.class) ||
                 helper.isAnnotationPresent(elem, XmlPath.class) ||
+                helper.isAnnotationPresent(elem, XmlIsSetNullPolicy.class) ||               
                 helper.isAnnotationPresent(elem, XmlPaths.class) ||
                 helper.isAnnotationPresent(elem, XmlInverseReference.class) ||
                 helper.isAnnotationPresent(elem, XmlJoinNode.class) ||
@@ -3667,7 +3668,7 @@ public class AnnotationsProcessor {
                 helper.isAnnotationPresent(elem, XmlLocation.class) ||
                 helper.isAnnotationPresent(elem, CompilerHelper.XML_LOCATION_ANNOTATION_CLASS) ||
                 helper.isAnnotationPresent(elem, CompilerHelper.INTERNAL_XML_LOCATION_ANNOTATION_CLASS) ||
-                helper.isAnnotationPresent(elem, XmlMixed.class);
+                helper.isAnnotationPresent(elem, XmlMixed.class);              
     }
 
     private void validateElementIsInPropOrder(TypeInfo info, String name) {
