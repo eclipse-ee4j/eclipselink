@@ -25,7 +25,7 @@ public class Golfer implements java.io.Serializable {
     private Map<String, Integer> sponsorDollars = null;
     
     public Golfer() {
-    	sponsorDollars = new HashMap<String, Integer>();
+        sponsorDollars = new HashMap<String, Integer>();
     }
 
     @EmbeddedId
@@ -52,14 +52,14 @@ public class Golfer implements java.io.Serializable {
     @MapKeyColumn(name = "SPONSOR_NAME")
     @Column(name = "SPONSOR_VALUE")
     public Map<String, Integer> getSponsorDollars() {
-		return sponsorDollars;
-	}
+        return sponsorDollars;
+    }
 
-	public void setSponsorDollars(Map<String, Integer> sponsorDollars) {
-		this.sponsorDollars = sponsorDollars;
-	}
+    public void setSponsorDollars(Map<String, Integer> sponsorDollars) {
+        this.sponsorDollars = sponsorDollars;
+    }
 
-	public String toString() {
+    public String toString() {
         return "Golfer: golferPK(" + golferPK + "), WorldRank(" + worldRank.getId() + ")";
     }
 }

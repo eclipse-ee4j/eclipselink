@@ -152,6 +152,7 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         suite.addTest(new InheritedModelJunitTest("testInterfaceBylawWrite"));
         suite.addTest(new InheritedModelJunitTest("testEmbeddableAggregateCollectionAndAggregate"));
         suite.addTest(new InheritedModelJunitTest("testNodeImplWeaving"));
+        suite.addTest(new InheritedModelJunitTest("testEmbeddaleCollectionMapEmbeddableRead"));
         
         return suite;
     }
@@ -1719,8 +1720,6 @@ public class InheritedModelJunitTest extends JUnitTestCase {
             rs.setAlcoholContent(3.5);
             consumer.addRedStripeByAlcoholContent(rs);
             em.flush();
-        } catch (Exception e){
-            e.printStackTrace();
         } finally {
             rollbackTransaction(em);
         }
@@ -1840,4 +1839,38 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         }
     }
 
+    // Bug 384527
+    public void testEmbeddaleCollectionMapEmbeddableRead(){
+        EntityManager em = createEntityManager();
+        
+        try {
+            beginTransaction(em);
+            BeerConsumer consumer = new BeerConsumer();
+            consumer.setName("Lionel");
+            RedStripe rs = new RedStripe();
+            rs.setAlcoholContent(4.5);
+            consumer.addRedStripeByAlcoholContent(rs);
+            rs = new RedStripe();
+            rs.setAlcoholContent(5.0);
+            consumer.addRedStripeByAlcoholContent(rs);
+            em.persist(consumer);
+            em.flush();
+            
+            clearCache();
+            em.clear();
+            consumer = em.find(BeerConsumer.class, consumer.getId());
+            Integer version = consumer.getVersion();
+            consumer.getRedStripesByAlcoholContent().get(4.5);
+            em.flush();
+            
+            clearCache();
+            em.clear();
+            
+            consumer = em.find(BeerConsumer.class, consumer.getId());
+            assertTrue("The version was updated on a read.", consumer.getVersion().equals(version));
+        } finally {
+            rollbackTransaction(em);
+        }
+    }
+    
 }
