@@ -118,6 +118,7 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
         suite.addTest(new ProxyAuthenticationServerTestSuite("testReadDeleteWithProxy"));
         suite.addTest(new ProxyAuthenticationServerTestSuite("testCreateWithOutProxy"));
         suite.addTest(new ProxyAuthenticationServerTestSuite("testFlushRollback"));
+        suite.addTest(new ProxyAuthenticationServerTestSuite("testProxyIsInJTATransaction"));
         // Bug 323880 - "This is already a proxy session" exception on WLS 10.3.3 after explicitly rolling back the user transaction
         suite.addTest(new ProxyAuthenticationServerTestSuite("testJtaDataSource"));
         suite.addTest(new ProxyAuthenticationServerTestSuite("testNonJtaDataSource"));
@@ -341,6 +342,55 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
             }
             closeEntityManager(em);
             System.out.println("====testFlushRollback end");
+        }
+    }
+
+    /**
+     * Test verifies that proxy connection is managed by the active JTA transaction
+     */
+    public void testProxyIsInJTATransaction() throws Exception{
+        System.out.println("====testProxyIsInJTATransactionn");
+        // create new object, persist it, flush, then rollback transaction
+        EntityManager em = createEntityManager_proxy(PROXY_PU);
+        Employee employee = null;
+        try {
+            beginTransaction_proxy(em);
+            employee  = new Employee();
+            employee.setFirstName("ProxyIsInJTATransaction");
+            employee.setLastName("1");
+            em.persist(employee);
+            em.flush();
+            // https://glassfish.dev.java.net/issues/show_bug.cgi?id=14753   Oracle proxy session problems  
+            /**if (this.serverSession.getServerPlatform() instanceof GlassfishPlatform) {
+                JpaHelper.getEntityManager(em).getUnitOfWork().getParent().getAccessor().releaseCustomizer(JpaHelper.getEntityManager(em).getUnitOfWork().getParent());
+            }*/
+        } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
+
+        clearCache(PROXY_PU);
+
+        Employee employeeRead = null;
+        em = createEntityManager_proxy(PROXY_PU);
+        try {
+            beginTransaction_proxy(em);
+            // read
+            employeeRead = (Employee)em.find(Employee.class, employee.getId());
+            if (employeeRead != null) {
+                // clean-up
+                em.remove(employeeRead);
+                commitTransaction(em);
+                fail(employeeRead + " found in the db even though JTA transaction had rolled back");
+            }
+        } finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+            System.out.println("====testProxyIsInJTATransaction end");
         }
     }
 
