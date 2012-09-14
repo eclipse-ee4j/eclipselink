@@ -36,6 +36,9 @@ public class XmlElementNillableTestCases extends JAXBWithJSONTestCases{
         employee.getStrings().add(null);
         employee.setEmployee(null);
         employee.getEmployees().add(null);
+        employee.byteArrayNillable = null;
+        employee.byteArraysNillable.add(null);
+        employee.byteArraysNillable.add(null);
         return employee;
     }
 

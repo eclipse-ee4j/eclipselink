@@ -1,4 +1,6 @@
 {"employee":{
+    "byteArrayNillable":null,
+    "byteArraysNillable":[null, null],
     "employee":null,
     "employees":[null],
     "string":null,

@@ -25,10 +25,18 @@ public class EmployeeNillable {
     private List<String> strings;
     private EmployeeNillable employee;
     private List<EmployeeNillable> employees;
+    
+    @XmlElement(nillable=true)
+    public byte[] byteArrayNillable;
+    @XmlElement(nillable=true)
+    public List<byte[]> byteArraysNillable;
 
+    public byte[] byteArrayNotNillable;
+    
     public EmployeeNillable() {
         strings = new ArrayList<String>(1);
         employees = new ArrayList<EmployeeNillable>(1);
+        byteArraysNillable = new ArrayList<byte[]>(1);
     }
 
     @XmlElement(nillable=true)
@@ -85,13 +93,24 @@ public class EmployeeNillable {
         if(!equals(employees, test.getEmployees())) {
             return false;
         }
+        if(!equals(byteArraysNillable, test.byteArraysNillable)) {
+            return false;
+        }
+        if(!equals(byteArrayNillable, test.byteArrayNillable)) {
+            return false;
+        }
+        if(!equals(byteArrayNotNillable, test.byteArrayNotNillable)) {
+            return false;
+        }
         return true;
     }
 
     private boolean equals(Object control, Object test) {
         if(null == control) {
             return null == test;
-        } else {
+        } else if(control instanceof byte[] && test instanceof byte[]){
+            return equalByteArrays((byte[])control, (byte[])test);
+        }else{
             return control.equals(test);
         }
     }
@@ -112,6 +131,25 @@ public class EmployeeNillable {
                 return false;
             }
         }
+        
+        return true;
+    }
+    
+    private boolean equalByteArrays(byte[] array1, byte[] array2) {
+        if(array1 == null && array2 == null){
+            return true;
+        }
+        if (array1.length != array2.length) {
+            return false;
+        }
+
+        // check each base64 byte in sequence
+        for (int i = 0; i < array1.length; i++) {
+            if (array1[i] != array2[i]) {
+                return false;
+            }
+        }
+
         return true;
     }
 

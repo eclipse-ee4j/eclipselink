@@ -30,6 +30,7 @@ import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.identif
 import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.identifiedbyname.withgroupingelement.BinaryDataCollectionWithGroupingElementIdentifiedByNameEmptyNSRTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.identifiedbyname.withgroupingelement.BinaryDataCollectionWithGroupingElementIdentifiedByNameNullNSRTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.identifiedbyname.withgroupingelement.BinaryDataCollectionWithGroupingElementIdentifiedByNameXOPonNSRTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.identifiedbyname.withgroupingelement.BinaryDataCollectionWithGroupingElementNillableEmptyNSRTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.reuse.BinaryDataCollectionReuseTestCases;
 
 public class XMLBinaryDataCollectionMappingTestSuite extends TestCase {
@@ -40,6 +41,7 @@ public class XMLBinaryDataCollectionMappingTestSuite extends TestCase {
         suite.addTestSuite(BinaryDataCollectionWithGroupingElementIdentifiedByNameNullNSRTestCases.class);
         // expect: Exception Description: A namespace for the prefix ns0:Include was not found in the namespace resolver.
         suite.addTestSuite(BinaryDataCollectionWithGroupingElementIdentifiedByNameEmptyNSRTestCases.class);
+        suite.addTestSuite(BinaryDataCollectionWithGroupingElementNillableEmptyNSRTestCases.class);
         suite.addTestSuite(BinaryDataCollectionForcedInlineBinaryTestCases.class);
         suite.addTestSuite(BinaryDataCollectionReuseTestCases.class);
         suite.addTestSuite(BinaryDataCollectionByteObjectArrayTestCases.class);

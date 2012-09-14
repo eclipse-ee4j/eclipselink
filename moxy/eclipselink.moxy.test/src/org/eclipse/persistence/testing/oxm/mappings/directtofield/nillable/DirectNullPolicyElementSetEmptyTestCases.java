@@ -33,41 +33,38 @@ public class DirectNullPolicyElementSetEmptyTestCases extends XMLWithJSONMapping
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        AbstractNullPolicy aNullPolicy = new NullPolicy();
-    	// Alter unmarshal policy state
-    	aNullPolicy.setNullRepresentedByEmptyNode(true);
-    	aNullPolicy.setNullRepresentedByXsiNil(false);  // no effect
-    	// Alter marshal policy state
-    	aNullPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);
-    	
-        Project aProject = new DirectNodeNullPolicyProject(true);
-        XMLDirectMapping aMapping = (XMLDirectMapping)aProject.getDescriptor(Employee.class)//
-        .getMappingForAttributeName("firstName");
+      
         
         // Add xsi namespace map entry to the resolver (we don't pick up the one on the xml instance doc) - optional for this case
         //XMLDescriptor employeeDescriptor = (XMLDescriptor) aProject.getDescriptor(Employee.class);
         //NamespaceResolver namespaceResolver = new NamespaceResolver();
         //namespaceResolver.put(XMLConstants.SCHEMA_INSTANCE_PREFIX, XMLConstants.SCHEMA_INSTANCE_URL);
-        //employeeDescriptor.setNamespaceResolver(namespaceResolver);        
+        //employeeDescriptor.setNamespaceResolver(namespaceResolver);
+        Project aProject = new DirectNodeNullPolicyProject(true);
+        updateNullPolicyForAttribute(aProject, "firstName");
+        updateNullPolicyForAttribute(aProject, "id");
 
-        aMapping.setNullPolicy(aNullPolicy);
         setProject(aProject);
     }
 
     protected Object getControlObject() {
         Employee anEmployee = new Employee();
-        anEmployee.setId(123);
+        anEmployee.setId(null);
         anEmployee.setFirstName(null);
         anEmployee.setLastName("Doe");
         return anEmployee;
     }
 
-    /*
-//  public void testXMLToObjectFromInputStream() throws Exception {    }
-  public void testObjectToXMLDocument() throws Exception {    }
-  public void testObjectToXMLStringWriter() throws Exception {   }
-  public void testObjectToContentHandler() throws Exception {    }
-  public void testXMLToObjectFromURL() throws Exception {    }
-  public void testUnmarshallerHandler() throws Exception {    }
-*/
+   private void updateNullPolicyForAttribute(Project aProject, String attributeName){
+       AbstractNullPolicy aNullPolicy = new NullPolicy();
+       // Alter unmarshal policy state
+       aNullPolicy.setNullRepresentedByEmptyNode(true);
+       aNullPolicy.setNullRepresentedByXsiNil(false);  // no effect
+       // Alter marshal policy state
+       aNullPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);
+       
+       XMLDirectMapping aMapping = (XMLDirectMapping)aProject.getDescriptor(Employee.class)//
+       .getMappingForAttributeName(attributeName);
+       aMapping.setNullPolicy(aNullPolicy);       
+   }
 }

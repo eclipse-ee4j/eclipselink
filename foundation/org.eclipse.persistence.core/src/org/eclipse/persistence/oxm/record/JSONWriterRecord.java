@@ -510,6 +510,14 @@ public class JSONWriterRecord extends MarshalRecord {
      public void emptySimple(NamespaceResolver namespaceResolver){
          nilSimple(namespaceResolver);
      }
+     
+     public void emptyAttribute(XPathFragment xPathFragment,NamespaceResolver namespaceResolver){
+         XPathFragment groupingFragment = openStartGroupingElements(namespaceResolver);
+         openStartElement(xPathFragment, namespaceResolver);
+         characters(NULL, false, false);
+         endElement(xPathFragment, namespaceResolver);
+         closeStartGroupingElements(groupingFragment);
+     }
 
      /**
       * Used when an empty complex item should be written

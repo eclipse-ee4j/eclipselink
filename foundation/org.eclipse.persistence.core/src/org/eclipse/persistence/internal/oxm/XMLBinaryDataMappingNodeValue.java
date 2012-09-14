@@ -103,23 +103,36 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
             }
         }
         XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
-
-        if (objectValue == null) {
-            marshalRecord.closeStartGroupingElements(groupingFragment);
-            return true;
-        }
-        if(!xPathFragment.isAttribute()) {
+        if(xPathFragment.isAttribute()){
+            if (objectValue == null) {
+                marshalRecord.closeStartGroupingElements(groupingFragment);
+                return true;
+            }
+        }else {
             marshalRecord.closeStartGroupingElements(groupingFragment);
             XPathFragment elementFragment = xPathFragment;
             if(xmlRootFrag != null) {
                 elementFragment = xmlRootFrag;
             }
-            if(!xPathFragment.isSelfFragment){
+            if (objectValue == null) {
+                XPathNode holderXPathNode = new XPathNode();
+                holderXPathNode.setXPathFragment(elementFragment);
+                marshalRecord.addGroupingElement(holderXPathNode);
+                boolean returnVal = xmlBinaryDataMapping.getNullPolicy().directMarshal(xPathFragment, marshalRecord, object, session, namespaceResolver);
+                if(returnVal){
+                    marshalRecord.endElement(elementFragment, namespaceResolver);
+                }
+                marshalRecord.removeGroupingElement(holderXPathNode);
+                return returnVal;
+              }else if(!xPathFragment.isSelfFragment){
                 marshalRecord.openStartElement(elementFragment, namespaceResolver);
                 marshalRecord.closeStartElement();
-            }
+            } 
         }
 
+
+       
+        
         // figure out CID or bytes 
         String c_id = null;
         byte[] bytes = null;
@@ -232,6 +245,11 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
     
     public boolean startElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts) {
         try {
+            if(unmarshalRecord.isNil() && xmlBinaryDataMapping.getNullPolicy().isNullRepresentedByXsiNil()){
+                xmlBinaryDataMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), null);
+                return true;
+            }
+            
             unmarshalRecord.removeNullCapableValue(this);
             XMLField xmlField = (XMLField) xmlBinaryDataMapping.getField();
             XPathFragment lastFragment = xmlField.getLastXPathFragment();
@@ -250,7 +268,7 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
         }
     }
 
-    public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord) {
+    public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord) {        
         unmarshalRecord.resetStringBuffer();
     }
 

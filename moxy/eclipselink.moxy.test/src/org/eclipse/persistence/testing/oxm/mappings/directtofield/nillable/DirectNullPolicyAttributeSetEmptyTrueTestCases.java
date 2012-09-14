@@ -31,33 +31,33 @@ public class DirectNullPolicyAttributeSetEmptyTrueTestCases extends XMLWithJSONM
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        AbstractNullPolicy aNullPolicy = new NullPolicy();
-    	// Alter unmarshal policy state
-        ((NullPolicy)aNullPolicy).setSetPerformedForAbsentNode(true); // no effect
-    	aNullPolicy.setNullRepresentedByEmptyNode(true); // no effect
-    	aNullPolicy.setNullRepresentedByXsiNil(false);  // no effect
-    	// Alter marshal policy state
-    	aNullPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);
+     
         Project aProject = new DirectNodeNullPolicyProject(false);
-        XMLDirectMapping aMapping = (XMLDirectMapping)aProject.getDescriptor(Employee.class)//
-        .getMappingForAttributeName("firstName");
-        aMapping.setNullPolicy(aNullPolicy);
+        updateNullPolicyForAttribute(aProject, "firstName");
+        updateNullPolicyForAttribute(aProject, "id");
+
         setProject(aProject);
     }
 
     protected Object getControlObject() {
         Employee anEmployee = new Employee();
-        anEmployee.setId(123);
+        anEmployee.setId(null);
         anEmployee.setFirstName(null);
         anEmployee.setLastName("Doe");
         return anEmployee;
     }
-    
-/*	public void testObjectToXMLDocument() throws Exception {}
-    public void testObjectToXMLStringWriter() throws Exception {}
-    public void testObjectToContentHandler() throws Exception {}
-    public void testXMLToObjectFromURL() throws Exception {}
-    public void testUnmarshallerHandler() throws Exception {}
-//    public void testXMLToObjectFromInputStream() throws Exception {}*/
-    
+
+    private void updateNullPolicyForAttribute(Project aProject, String attributeName){
+
+        AbstractNullPolicy aNullPolicy = new NullPolicy();
+        // Alter unmarshal policy state
+        ((NullPolicy)aNullPolicy).setSetPerformedForAbsentNode(true); // no effect
+        aNullPolicy.setNullRepresentedByEmptyNode(true); // no effect
+        aNullPolicy.setNullRepresentedByXsiNil(false);  // no effect
+        //  Alter marshal policy state
+        aNullPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);
+        XMLDirectMapping aMapping = (XMLDirectMapping)aProject.getDescriptor(Employee.class)//
+        .getMappingForAttributeName(attributeName);
+        aMapping.setNullPolicy(aNullPolicy);
+    }
 }

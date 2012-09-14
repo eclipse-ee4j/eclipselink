@@ -12,6 +12,10 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.oxm.mappings.binarydata;
 
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
+import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.testing.oxm.mappings.XMLWithJSONMappingTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.binarydata.Employee;
 
@@ -24,12 +28,15 @@ public class BinaryDataEmptyElementTestCases extends XMLWithJSONMappingTestCases
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        setProject(new BinaryDataEmptyElementProject());
+        Project p = new BinaryDataEmptyElementProject();
+        DatabaseMapping mapping = p.getClassDescriptor(Employee.class).getMappingForAttributeName("photo");
+        ((XMLBinaryDataMapping)mapping).getNullPolicy().setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);
+        setProject(p);
     }
 
     protected Object getControlObject() {
         Employee emp = new Employee(123);
-        emp.setPhoto(new byte[0]);
+        emp.setPhoto(null);
         return emp;
     }
     

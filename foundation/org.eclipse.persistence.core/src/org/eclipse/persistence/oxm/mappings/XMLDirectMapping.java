@@ -14,7 +14,6 @@ package org.eclipse.persistence.oxm.mappings;
 
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.DescriptorException;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
@@ -388,18 +387,18 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
     
     public void setAttributeValueInObject(Object object, Object value) throws DescriptorException {
         // PERF: Direct variable access.
-        if (isWriteOnly()) {
+        if(isWriteOnly()) {
             return;
         }
         try {
-            if (value == XMLRecord.noEntry) {
+            if(value == XMLRecord.noEntry) {
                 return;                    
             }
             if (value != null && value instanceof String) {
-                if (isCollapsingStringValues) {
-                    value = XMLConversionManager.getDefaultXMLManager().collapseStringValue((String) value);
-                } else if (isNormalizingStringValues) {
-                    value = XMLConversionManager.getDefaultXMLManager().normalizeStringValue((String) value);
+                if(isCollapsingStringValues) {
+                    value = XMLConversionManager.getDefaultXMLManager().collapseStringValue((String)value);
+                } else if(isNormalizingStringValues) {
+                    value = XMLConversionManager.getDefaultXMLManager().normalizeStringValue((String)value);
                 }
             }
             this.attributeAccessor.setAttributeValueInObject(object, value);

@@ -34,6 +34,8 @@ import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
 import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
@@ -198,10 +200,25 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
         for (Object iter = cp.iteratorFor(attributeValue); cp.hasNext(iter);) {
             Object element = cp.next(iter, session);
             element = getValueToWrite(element, object, record, field, includeField, session);
-            if(element.getClass() == ClassConstants.ABYTE) {
-                inline = true;
-            }
-            if (element != null) {
+            if(element == null){
+                AbstractNullPolicy nullPolicy = getNullPolicy();
+                if (nullPolicy == null) {
+                    elements.addElement(null);
+                } else {
+                    if (nullPolicy.getMarshalNullRepresentation() == XMLNullRepresentationType.XSI_NIL) {
+                        elements.addElement(XMLRecord.NIL);
+                    } else if (nullPolicy.getMarshalNullRepresentation() == XMLNullRepresentationType.ABSENT_NODE) {
+                        // Do nothing
+                    } else {
+                        elements.addElement(XMLConstants.EMPTY_STRING);
+                    }
+                }
+            }else{
+            
+                
+                if(element.getClass() == ClassConstants.ABYTE) {
+                    inline = true;
+                }
                 elements.addElement(element);
             }
         }
@@ -229,6 +246,10 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
             }
         }
 
+        if(element == null){
+            return null;
+        }
+        
         if (isAttribute) {
             if (isSwaRef() && (marshaller.getAttachmentMarshaller() != null)) {
                 //should be a DataHandler here
@@ -404,48 +425,53 @@ public class XMLBinaryDataCollectionMapping extends XMLCompositeDirectCollection
             } else {
                 //this was an element, so do the XOP/SWAREF/Inline binary cases for an element
                 XMLRecord record = (XMLRecord) element;
+                if (getNullPolicy().valueIsNull((Element) record.getDOM())) {
+                    fieldValue = null;
+                }
+                else{
                     record.setSession(executionSession);
 
-                if ((unmarshaller.getAttachmentUnmarshaller() != null) && unmarshaller.getAttachmentUnmarshaller().isXOPPackage() && !this.isSwaRef() && !this.shouldInlineBinaryData()) {
-                    //look for the include element:
-                    String xpath = XMLConstants.EMPTY_STRING;
-
-                    //  need a prefix for XOP
-                    String prefix = null;
-                    NamespaceResolver descriptorResolver = ((XMLDescriptor) getDescriptor()).getNamespaceResolver();
-                    if (descriptorResolver != null) {
-                        prefix = descriptorResolver.resolveNamespaceURI(XMLConstants.XOP_URL);
-                    }
-                    if (prefix == null) {
-                        prefix = XMLConstants.XOP_PREFIX;
-                    }
-                    NamespaceResolver tempResolver = new NamespaceResolver();
-                    tempResolver.put(prefix, XMLConstants.XOP_URL);
-                    xpath = prefix + XMLConstants.COLON + INCLUDE + "/@href";
-                    XMLField field = new XMLField(xpath);
-                    field.setNamespaceResolver(tempResolver);
-                    String includeValue = (String) record.get(field);
-                    if (element != null && includeValue != null) {
-                    	if ((getAttributeElementClass() == ClassConstants.ABYTE) || (getAttributeElementClass() == ClassConstants.APBYTE)) {
-                            fieldValue = unmarshaller.getAttachmentUnmarshaller().getAttachmentAsByteArray(includeValue);
+                    if ((unmarshaller.getAttachmentUnmarshaller() != null) && unmarshaller.getAttachmentUnmarshaller().isXOPPackage() && !this.isSwaRef() && !this.shouldInlineBinaryData()) {
+                        //look for the include element:
+                        String xpath = XMLConstants.EMPTY_STRING;
+    
+                        //  need a prefix for XOP
+                        String prefix = null;
+                        NamespaceResolver descriptorResolver = ((XMLDescriptor) getDescriptor()).getNamespaceResolver();
+                        if (descriptorResolver != null) {
+                            prefix = descriptorResolver.resolveNamespaceURI(XMLConstants.XOP_URL);
+                        }
+                        if (prefix == null) {
+                            prefix = XMLConstants.XOP_PREFIX;
+                        }
+                        NamespaceResolver tempResolver = new NamespaceResolver();
+                        tempResolver.put(prefix, XMLConstants.XOP_URL);
+                        xpath = prefix + XMLConstants.COLON + INCLUDE + "/@href";
+                        XMLField field = new XMLField(xpath);
+                        field.setNamespaceResolver(tempResolver);
+                        String includeValue = (String) record.get(field);
+                        if (element != null && includeValue != null) {
+                        	if ((getAttributeElementClass() == ClassConstants.ABYTE) || (getAttributeElementClass() == ClassConstants.APBYTE)) {
+                                fieldValue = unmarshaller.getAttachmentUnmarshaller().getAttachmentAsByteArray(includeValue);
+                            } else {
+                                fieldValue = unmarshaller.getAttachmentUnmarshaller().getAttachmentAsDataHandler(includeValue);
+                            }
                         } else {
-                            fieldValue = unmarshaller.getAttachmentUnmarshaller().getAttachmentAsDataHandler(includeValue);
+                            //If we didn't find the Include element, check for inline
+                            fieldValue = record.get(XMLConstants.TEXT);
+                            //should be a base64 string
+                            fieldValue = ((XMLConversionManager) executionSession.getDatasourcePlatform().getConversionManager()).convertSchemaBase64ToByteArray(fieldValue);
+                        }
+                    } else if ((unmarshaller.getAttachmentUnmarshaller() != null) && isSwaRef()) {
+                        String refValue = (String) record.get(XMLConstants.TEXT);
+                        if (refValue != null) {
+                            fieldValue = unmarshaller.getAttachmentUnmarshaller().getAttachmentAsDataHandler(refValue);
                         }
                     } else {
-                        //If we didn't find the Include element, check for inline
                         fieldValue = record.get(XMLConstants.TEXT);
                         //should be a base64 string
                         fieldValue = ((XMLConversionManager) executionSession.getDatasourcePlatform().getConversionManager()).convertSchemaBase64ToByteArray(fieldValue);
                     }
-                } else if ((unmarshaller.getAttachmentUnmarshaller() != null) && isSwaRef()) {
-                    String refValue = (String) record.get(XMLConstants.TEXT);
-                    if (refValue != null) {
-                        fieldValue = unmarshaller.getAttachmentUnmarshaller().getAttachmentAsDataHandler(refValue);
-                    }
-                } else {
-                    fieldValue = record.get(XMLConstants.TEXT);
-                    //should be a base64 string
-                    fieldValue = ((XMLConversionManager) executionSession.getDatasourcePlatform().getConversionManager()).convertSchemaBase64ToByteArray(fieldValue);
                 }
             }
             Object attributeValue = fieldValue;
