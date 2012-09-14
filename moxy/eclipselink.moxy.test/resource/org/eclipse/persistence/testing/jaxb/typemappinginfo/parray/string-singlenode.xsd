@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns0="http://jaxb.dev.java.net/array" targetNamespace="http://jaxb.dev.java.net/array"> 
+   <xsd:simpleType name="stringArray">
+      <xsd:list itemType="xsd:string"/>
+   </xsd:simpleType>
+   <xsd:element name="testTagName" type="ns0:stringArray"/>
+</xsd:schema>

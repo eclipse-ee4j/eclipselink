@@ -15,6 +15,7 @@ package org.eclipse.persistence.jaxb;
 import java.io.File;
 import java.io.InputStream;
 import java.io.Reader;
+import java.lang.reflect.Array;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.URL;
@@ -23,6 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.StringTokenizer;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -55,9 +57,11 @@ import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
+import org.eclipse.persistence.oxm.mappings.XMLCompositeDirectCollectionMapping;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.oxm.StrBuffer;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
 import org.eclipse.persistence.internal.oxm.XPathQName;
 import org.eclipse.persistence.internal.oxm.record.namespaces.PrefixMapperNamespaceResolver;
@@ -477,6 +481,26 @@ public class JAXBUnmarshaller implements Unmarshaller {
     public JAXBElement unmarshal(XMLStreamReader streamReader, TypeMappingInfo type) throws JAXBException {
         try {
             XMLDescriptor xmlDescriptor = type.getXmlDescriptor();
+
+            if (type.getType() instanceof Class) {
+                Class javaClass = (Class) type.getType();
+                Class componentClass = javaClass.getComponentType();
+                if (javaClass.isArray() && javaClass != ClassConstants.APBYTE && javaClass != ClassConstants.ABYTE && XMLConversionManager.getDefaultJavaTypes().get(componentClass) != null) {
+                    // Top-level array.  Descriptor will be for an EL-generated class, containing one DirectCollection mapping.
+                    XMLCompositeDirectCollectionMapping mapping = (XMLCompositeDirectCollectionMapping) xmlDescriptor.getMappings().get(0);
+
+                    XMLStreamReaderReader staxReader = new XMLStreamReaderReader(xmlUnmarshaller);
+                    staxReader.setErrorHandler(xmlUnmarshaller.getErrorHandler());
+
+                    PrimitiveArrayContentHandler primitiveArrayContentHandler = new PrimitiveArrayContentHandler(javaClass, componentClass, mapping.usesSingleNode());
+                    staxReader.setContentHandler(primitiveArrayContentHandler);
+
+                    XMLStreamReaderInputSource inputSource = new XMLStreamReaderInputSource(streamReader);
+                    staxReader.parse(inputSource);
+                    return primitiveArrayContentHandler.getJaxbElement();
+                }
+            }
+
             if(null != xmlDescriptor && null == getSchema()) {
             	 RootLevelXmlAdapter adapter= null;
                  if(jaxbContext.getTypeMappingInfoToJavaTypeAdapters().size() >0){
@@ -1095,8 +1119,12 @@ public class JAXBUnmarshaller implements Unmarshaller {
 
         @Override
         public void startElement(String namespaceURI, String localName, String qualifiedName, Attributes attributes) throws SAXException {
-            xsiNil = attributes.getValue(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_NIL_ATTRIBUTE) != null;
-            if(!xsiNil) {
+            String xsiNilValue = attributes.getValue(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_NIL_ATTRIBUTE);
+            if (xsiNilValue != null) {
+                xsiNil = xsiNilValue.equals(XMLConstants.BOOLEAN_STRING_TRUE) || xsiNilValue.equals("1");
+            }
+
+            if (!xsiNil) {
                 xsiType = attributes.getValue(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_TYPE_ATTRIBUTE);
             }
         }
@@ -1105,6 +1133,130 @@ public class JAXBUnmarshaller implements Unmarshaller {
         public void startPrefixMapping(String prefix, String uri)
                 throws SAXException {
             namespaces.put(prefix, uri);
+        }
+
+    }
+
+    private static class PrimitiveArrayContentHandler<T, E> extends DefaultHandler {
+
+        private Class<T> arrayClass;
+        private Class<E> componentClass;
+        private JAXBElement<T> jaxbElement;
+
+        private QName qName;
+
+        private StrBuffer stringBuffer = new StrBuffer();
+
+        private boolean xsiNil;
+        private boolean singleNode;
+        private boolean acceptCharacters = false;
+
+        private T unmarshalledArray;
+        private int currentIndex = 0;
+        private int currentSize = 10; // INITIAL SIZE
+
+        private XMLConversionManager xcm = XMLConversionManager.getDefaultXMLManager();
+
+        public PrimitiveArrayContentHandler(Class<T> arrayClass, Class<E> componentClass, boolean usesSingleNode) {
+            this.arrayClass = arrayClass;
+            this.componentClass = componentClass;
+            this.singleNode = usesSingleNode;
+            this.unmarshalledArray = (T) Array.newInstance(componentClass, currentSize);
+        }
+
+        public void startElement(String namespaceURI, String localName, String qualifiedName, Attributes attributes) throws SAXException {
+            if (localName.equals("item") || singleNode) {
+                acceptCharacters = true;
+            }
+
+            String xsiNilValue = attributes.getValue(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_NIL_ATTRIBUTE);
+            if (xsiNilValue != null) {
+                xsiNil = xsiNilValue.equals(XMLConstants.BOOLEAN_STRING_TRUE) || xsiNilValue.equals("1");
+            }
+        }
+
+        public void characters(char[] ch, int start, int length) throws SAXException {
+            if (acceptCharacters) {
+                stringBuffer.append(ch, start, length);
+            }
+        }
+
+        public void endElement(String namespaceURI, String localName, String qualifiedName) throws SAXException {
+            acceptCharacters = false;
+
+            if (!qualifiedName.equals("item")) {
+                if (namespaceURI != null && namespaceURI.length() == 0) {
+                    qName = new QName(qualifiedName);
+                } else {
+                    qName = new QName(namespaceURI, localName);
+                }
+                if (!singleNode) {
+                    return;
+                }
+            }
+
+            if (singleNode) {
+                endElementSingleNode();
+                return;
+            }
+
+            E value;
+
+            if (xsiNil) {
+                value = null;
+            } else {
+                value = (E) xcm.convertObject(stringBuffer.toString(), componentClass);
+            }
+            addValue(value);
+            stringBuffer.reset();
+        }
+
+        private void endElementSingleNode() {
+            acceptCharacters = false;
+
+            E value;
+
+            if (xsiNil) {
+                addValue(null);
+                stringBuffer.reset();
+                return;
+            }
+
+            StringTokenizer st = new StringTokenizer(stringBuffer.toString());
+
+            while (st.hasMoreTokens()) {
+                String nextToken = st.nextToken();
+                value = (E) xcm.convertObject(nextToken, componentClass);
+                addValue(value);
+            }
+            stringBuffer.reset();
+        }
+
+        private void addValue(E value) {
+            if (currentIndex == currentSize) {
+                growArray();
+            }
+            Array.set(unmarshalledArray, currentIndex, value);
+            currentIndex++;
+        }
+
+        private void growArray() {
+            int newSize = currentSize * 2;
+            T newArray = (T) Array.newInstance(componentClass, newSize);
+            System.arraycopy(unmarshalledArray, 0, newArray, 0, currentSize);
+            unmarshalledArray = newArray;
+            currentSize = newSize;
+        }
+
+        public JAXBElement<T> getJaxbElement() {
+            if (null == jaxbElement) {
+                // "trim" array
+                T newArray = (T) Array.newInstance(componentClass, currentIndex);
+                System.arraycopy(unmarshalledArray, 0, newArray, 0, currentIndex);
+
+                jaxbElement = new JAXBElement<T>(qName, arrayClass, newArray);
+            }
+            return jaxbElement;
         }
 
     }

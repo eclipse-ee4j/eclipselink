@@ -18,6 +18,7 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -452,11 +453,29 @@ public abstract class TypeMappingInfoTestCases extends OXTestCase {
 	        	compareValues(controlValue, testValue);
 	        }
 	    }
-	    
-	    protected void comparePrimitiveArrays(Object controlValue, Object testValue){
-	        fail("NEED TO COMPARE PRIMITIVE ARRAYS");
-	    }
-	    
+
+        protected void comparePrimitiveArrays(Object controlValue, Object testValue) {
+            if (controlValue == null && testValue == null) {
+                // equal
+                return;
+            }
+
+            assertEquals(controlValue.getClass(), testValue.getClass());
+
+            assertNotNull(controlValue);
+            assertNotNull(testValue);
+
+            int controlLength = Array.getLength(controlValue);
+            int testLength = Array.getLength(controlValue);
+            assertEquals(controlLength, testLength);
+
+            for (int i = 0; i < controlLength; i++) {
+                Object controlObject = Array.get(controlValue, i);
+                Object testObject = Array.get(testValue, i);
+                assertEquals(controlObject, testObject);
+            }
+        }
+
 	    protected void  compareObjectArrays(Object controlValue, Object testValue){
 	        assertEquals(((Object[])controlValue).length,((Object[])testValue).length);
 	        for(int i=0; i<((Object[])controlValue).length-1; i++){
