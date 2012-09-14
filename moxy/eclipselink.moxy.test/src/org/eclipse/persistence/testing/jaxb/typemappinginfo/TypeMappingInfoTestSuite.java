@@ -19,6 +19,7 @@ import org.eclipse.persistence.testing.jaxb.typemappinginfo.collisions.TypeMappi
 import org.eclipse.persistence.testing.jaxb.typemappinginfo.object.TypeMappingInfoObjectTestCases;
 import org.eclipse.persistence.testing.jaxb.typemappinginfo.object.prefixes.TypeMappingInfoObjectNewPrefixTestCases;
 import org.eclipse.persistence.testing.jaxb.typemappinginfo.object.prefixes.TypeMappingInfoObjectPrefixTestsCases;
+import org.eclipse.persistence.testing.jaxb.typemappinginfo.parray.PrimitiveArrayTestSuite;
 import org.eclipse.persistence.testing.jaxb.typemappinginfo.rootelement.RootFromAnnotationTestCases;
 import org.eclipse.persistence.testing.jaxb.typemappinginfo.rootelement.RootFromJAXBElementTestCases;
 import org.eclipse.persistence.testing.jaxb.typemappinginfo.rootelement.RootFromNothingTestCases;
@@ -88,6 +89,9 @@ public class TypeMappingInfoTestSuite extends TestCase {
         suite.addTestSuite(EmployeeNillableTestCases.class);
         suite.addTestSuite(PrimitiveIntTestCases.class);
         suite.addTestSuite(UrlTestCases.class);
+
+        suite.addTest(PrimitiveArrayTestSuite.suite());
+
         return suite;
     }
 }
