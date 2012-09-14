@@ -24,7 +24,7 @@ import org.eclipse.persistence.jpa.jpql.spi.ITypeDeclaration;
  * @see CollectionValuedFieldResolver
  * @see StateFieldResolver
  *
- * @version 2.4
+ * @version 2.4.1
  * @since 2.3
  * @author Pascal Filion
  */
@@ -142,5 +142,13 @@ public abstract class AbstractPathResolver extends Resolver {
 			return managedType.getMappingNamed(path);
 		}
 		return null;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String toString() {
+		return path;
 	}
 }
