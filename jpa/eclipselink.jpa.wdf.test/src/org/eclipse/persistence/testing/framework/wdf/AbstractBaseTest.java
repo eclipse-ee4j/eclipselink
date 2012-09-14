@@ -449,6 +449,10 @@ public abstract class AbstractBaseTest {
                 if (existingTables.contains("TMP_COP")) {
                     statement.executeUpdate("update TMP_COP set PARTNER_ID = null");
                 }
+                if (existingTables.contains("TMP_UCOFFICE_CUBICLE")) {
+                    statement.executeUpdate("delete from TMP_UCOFFICE_CUBICLE");
+                    existingTables.remove("TMP_UCOFFICE_CUBICLE");
+                }
                 for (String name : getClearableTableNames()) {
                     if (existingTables.contains(name.toUpperCase(Locale.ENGLISH))) {
                         statement.executeUpdate("delete from " + name);

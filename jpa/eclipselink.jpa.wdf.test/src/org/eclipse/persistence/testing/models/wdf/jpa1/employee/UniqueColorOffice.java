@@ -28,7 +28,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 @Entity
-@Table(name = "TMP_OFFICE")
+@Table(name = "TMP_UCOFFICE")
 public class UniqueColorOffice {
     private int m_id;
     private long m_capacity;
@@ -45,7 +45,7 @@ public class UniqueColorOffice {
 
     @OneToMany
     @MapKey(name = "color")
-    @JoinTable(name = "TMP_OFFICE_CUBICLE", joinColumns = { @JoinColumn(name = "OFFICE_ID") }, inverseJoinColumns = {
+    @JoinTable(name = "TMP_UCOFFICE_CUBICLE", joinColumns = { @JoinColumn(name = "OFFICE_ID") }, inverseJoinColumns = {
             @JoinColumn(name = "CUBICLE_FLOOR", referencedColumnName = "FLOOR"),
             @JoinColumn(name = "CUBICLE_PLACE", referencedColumnName = "PLACE") })
     public Map<String, Cubicle> getCubicles() {
