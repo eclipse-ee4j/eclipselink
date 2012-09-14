@@ -50,6 +50,7 @@ import org.eclipse.persistence.testing.oxm.mappings.directcollection.nillable.Di
 import org.eclipse.persistence.testing.oxm.mappings.directcollection.nillable.DirectCollectionOptionalNodeNullPolicyAttributeTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.directcollection.nillable.DirectCollectionOptionalNodeNullPolicyElementTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.directcollection.reuse.DirectCollectionReuseTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.directcollection.singlenode.DirectCollectionSingleNodeNillableTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.directcollection.singlenode.DirectCollectionSingleNodeTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.directcollection.singlenode.xmlattribute.DirectCollectionSingleNodeXMLAttributeMethodAccessingTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.directcollection.singlenode.xmlattribute.DirectCollectionSingleNodeXMLAttributeTestCases;
@@ -89,6 +90,7 @@ public class DirectCollectionMappingTestSuite extends TestCase {
         suite.addTestSuite(DirectCollectionWithGroupingElementIdentifiedByPositionNullTestCases.class);
 
         suite.addTestSuite(DirectCollectionSingleNodeTestCases.class);
+        suite.addTestSuite(DirectCollectionSingleNodeNillableTestCases.class);
         suite.addTestSuite(DirectCollectionSingleNodeXMLAttributeTestCases.class);
 
         suite.addTestSuite(DirectCollectionArrayListTestCases.class);

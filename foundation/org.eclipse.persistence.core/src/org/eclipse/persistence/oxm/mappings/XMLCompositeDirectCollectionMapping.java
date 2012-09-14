@@ -390,7 +390,7 @@ public class XMLCompositeDirectCollectionMapping extends AbstractCompositeDirect
 
                 if (element != null) {
                     elements.addElement(element);
-                } else {
+                } else if(!usesSingleNode()){
                     AbstractNullPolicy nullPolicy = getNullPolicy();
                     if (nullPolicy == null) {
                         elements.addElement(null);

@@ -150,6 +150,9 @@ public class Employee {
 
     // override the contains check on a Vector of byte[] arrays - see TypeDirectMappingTestSuite
     private boolean equalByteArrays(byte[] array1, byte[] array2) {
+        if(array1 == null && array2 == null){
+            return true;
+        }
         if (array1.length != array2.length) {
             return false;
         }

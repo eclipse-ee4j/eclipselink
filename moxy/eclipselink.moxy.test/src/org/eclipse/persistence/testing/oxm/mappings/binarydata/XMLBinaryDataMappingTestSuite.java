@@ -16,6 +16,7 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import org.eclipse.persistence.testing.oxm.mappings.binarydata.identifiedbyname.BinaryDataByteObjectArrayTestCases;
+import org.eclipse.persistence.testing.oxm.mappings.binarydata.identifiedbyname.BinaryDataIdentifiedByNameEmptyNSRNillableTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.binarydata.identifiedbyname.BinaryDataIdentifiedByNameEmptyNSRTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.binarydata.identifiedbyname.BinaryDataIdentifiedByNameNullNSRTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.binarydata.identifiedbyname.BinaryDataIdentifiedByNameXOPonNSRTestCases;
@@ -28,13 +29,18 @@ public class XMLBinaryDataMappingTestSuite extends TestCase {
         suite.addTestSuite(BinaryDataIdentifiedByNameNullNSRTestCases.class);
         // expect: Exception Description: A namespace for the prefix ns0:Include was not found in the namespace resolver.
         suite.addTestSuite(BinaryDataIdentifiedByNameEmptyNSRTestCases.class);
+        suite.addTestSuite(BinaryDataIdentifiedByNameEmptyNSRNillableTestCases.class);
         suite.addTestSuite(BinaryDataIdentifiedByNameNullTestCases.class);
         suite.addTestSuite(BinaryDataEmptyElementTestCases.class);
+        suite.addTestSuite(BinaryDataEmptyElementEmptyNodeFalseTestCases.class);
         suite.addTestSuite(BinaryDataSelfTestCases.class);
         suite.addTestSuite(BinaryDataSelfDataHandlerTestCases.class);
         suite.addTestSuite(BinaryDataByteObjectArrayTestCases.class);
         suite.addTestSuite(BinaryDataCompositeSelfTestCases.class);
+        suite.addTestSuite(BinaryDataCompositeSelfNillableTestCases.class);
         suite.addTestSuite(BinaryDataInlineTestCases.class);
+        suite.addTestSuite(BinaryDataInlineNillableTestCases.class);
+        suite.addTestSuite(BinaryDataAbsentElementTestCases.class);
         return suite;
     }
 

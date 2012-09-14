@@ -1422,6 +1422,19 @@ public class MappingsGenerator {
                 mapping.setMimeTypePolicy(new FixedMimeTypePolicy("application/octet-stream", mapping));
             }
         }
+        if (property.isSetNullPolicy()) {
+            mapping.setNullPolicy(getNullPolicyFromProperty(property, namespaceInfo.getNamespaceResolverForDescriptor()));
+        } else {
+            if (property.isNillable()){
+                mapping.getNullPolicy().setNullRepresentedByXsiNil(true);
+                mapping.getNullPolicy().setMarshalNullRepresentation(XMLNullRepresentationType.XSI_NIL);
+            } 
+            mapping.getNullPolicy().setNullRepresentedByEmptyNode(false);
+
+            if (!mapping.getXPath().equals("text()")) {
+                ((NullPolicy) mapping.getNullPolicy()).setSetPerformedForAbsentNode(false);
+            }
+        }
         mapping.setAttributeClassificationName(property.getActualType().getQualifiedName());
         return mapping;
     }

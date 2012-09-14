@@ -20,6 +20,7 @@ import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.XMLBinaryDataCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping;
 import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 
 
@@ -68,15 +69,19 @@ public class XMLInlineBinaryHandler extends UnmarshalRecord {
        Object value = this.getCharacters();
 
        Class attributeClassification = null;
+       AbstractNullPolicy nullPolicy;
        boolean isSwaRef = false;
        if(isCollection) {
            isSwaRef = ((XMLBinaryDataCollectionMapping)mapping).isSwaRef();
            field = (XMLField)((XMLBinaryDataCollectionMapping)mapping).getField();
            attributeClassification =((XMLBinaryDataCollectionMapping)mapping).getAttributeElementClass();
+           nullPolicy =((XMLBinaryDataCollectionMapping)mapping).getNullPolicy();
        } else {
            isSwaRef = ((XMLBinaryDataMapping)mapping).isSwaRef();
            field = (XMLField)((XMLBinaryDataMapping)mapping).getField();
            attributeClassification =((XMLBinaryDataMapping)mapping).getAttributeClassification();
+           nullPolicy =((XMLBinaryDataMapping)mapping).getNullPolicy();
+
        }
            
        if (isSwaRef && (parent.getUnmarshaller().getAttachmentUnmarshaller() != null)) {    	  
@@ -97,7 +102,12 @@ public class XMLInlineBinaryHandler extends UnmarshalRecord {
            if(null != valueFromReader) {
                value = valueFromReader;
            } else {
-               value = XMLConversionManager.getDefaultXMLManager().convertSchemaBase64ToByteArray(value.toString());
+               String valueString = value.toString();
+               if(valueString.length() == 0 && nullPolicy.isNullRepresentedByEmptyNode()){
+                       value = null;                   
+               }else{
+                   value = XMLConversionManager.getDefaultXMLManager().convertSchemaBase64ToByteArray(valueString);
+               }
            } 
            value = XMLBinaryDataHelper.getXMLBinaryDataHelper().convertObject(value, attributeClassification, parent.getSession());
        }

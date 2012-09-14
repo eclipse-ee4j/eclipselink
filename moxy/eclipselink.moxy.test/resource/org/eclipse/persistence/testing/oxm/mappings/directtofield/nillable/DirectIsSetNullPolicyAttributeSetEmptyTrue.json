@@ -1,6 +1,6 @@
 {"employee":{	
 	"id":123,
-	"first-name":"",
+	"first-name":null,
 	"last-name":"Doe"
       }
 }

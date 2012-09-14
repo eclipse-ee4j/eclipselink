@@ -151,7 +151,12 @@ public class XMLBinaryDataMapping extends XMLDirectMapping {
     public void writeFromObjectIntoRow(Object object, AbstractRecord row, AbstractSession session, WriteType writeType) {
         Object attributeValue = getAttributeValueFromObject(object);
         if (attributeValue == null) {
-            return;
+            XMLField field = (XMLField) getField();
+
+            if(getNullPolicy() != null && !field.getXPathFragment().isSelfFragment()) {
+               getNullPolicy().directMarshal(this.getField(), (XMLRecord) row, object);
+            }
+            return;            
         }
         writeSingleValue(attributeValue, object, (XMLRecord) row, session);
     }
@@ -358,7 +363,13 @@ public class XMLBinaryDataMapping extends XMLDirectMapping {
         } else {
             //this was an element, so do the XOP/SWAREF/Inline binary cases for an element
             XMLRecord record = (XMLRecord) value;
-                record.setSession(executionSession);
+
+            if (getNullPolicy().valueIsNull((Element) record.getDOM())) {
+                return null;
+            }
+            
+           
+            record.setSession(executionSession);
 
             if ((unmarshaller.getAttachmentUnmarshaller() != null) && unmarshaller.getAttachmentUnmarshaller().isXOPPackage() && !this.isSwaRef() && !this.shouldInlineBinaryData()) {
                 //look for the include element:

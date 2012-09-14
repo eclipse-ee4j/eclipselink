@@ -24,6 +24,7 @@ public class DirectNullPolicyAttributeSetEmptyFalseTestCases extends XMLWithJSON
 	// TC UC 4-1 to 4-4
     private final static String XML_RESOURCE = //
     "org/eclipse/persistence/testing/oxm/mappings/directtofield/nillable/DirectNullPolicyAttributeSetEmptyFalse.xml";
+    
     private final static String JSON_RESOURCE = //
     "org/eclipse/persistence/testing/oxm/mappings/directtofield/nillable/DirectNullPolicyAttributeSetEmptyFalse.json";
 
@@ -31,31 +32,42 @@ public class DirectNullPolicyAttributeSetEmptyFalseTestCases extends XMLWithJSON
         super(name);
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
-        AbstractNullPolicy aNullPolicy = new NullPolicy();
-    	// Alter unmarshal policy state
-    	aNullPolicy.setNullRepresentedByEmptyNode(true); // 
-    	aNullPolicy.setNullRepresentedByXsiNil(false);  // no effect
-    	// Alter marshal policy state
-    	aNullPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);
-        //((IsSetNullPolicy)aNullPolicy).setIsSetMethodName("isSetFirstName");
+     
+        
         Project aProject = new DirectNodeNullPolicyProject(false);
-        XMLDirectMapping aMapping = (XMLDirectMapping)aProject.getDescriptor(Employee.class)//
-        .getMappingForAttributeName("firstName");
-        aMapping.setNullPolicy(aNullPolicy);
+        updateNullPolicyForAttribute(aProject, "firstName");
+        updateNullPolicyForAttribute(aProject, "id");
+
         setProject(aProject);
     }
 
     protected Object getControlObject() {
         Employee anEmployee = new Employee();
-        anEmployee.setId(123);
-        anEmployee.setFirstName(null);//"Jane");
+        anEmployee.setId(null);
+        anEmployee.setFirstName(null);
         anEmployee.setLastName("Doe");
         return anEmployee;
     }
     
-    //public void testXMLToObjectFromURL() throws Exception {}
-    //public void testUnmarshallerHandler() throws Exception {}
-    //public void testXMLToObjectFromInputStream() throws Exception {}
-    //public void xmlToObjectTest(Object testObject) throws Exception {}
+    public Object getReadControlObject() {
+        Employee anEmployee = new Employee();
+        anEmployee.setId(0);
+        anEmployee.setFirstName("");
+        anEmployee.setLastName("Doe");
+        return anEmployee;
+    }
     
+    private void updateNullPolicyForAttribute(Project aProject, String attributeName){
+
+        AbstractNullPolicy aNullPolicy = new NullPolicy();
+        // Alter unmarshal policy state
+        aNullPolicy.setNullRepresentedByEmptyNode(false); // 
+        aNullPolicy.setNullRepresentedByXsiNil(false);  // no effect
+        // Alter marshal policy state
+        aNullPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.EMPTY_NODE);
+        //((IsSetNullPolicy)aNullPolicy).setIsSetMethodName("isSetFirstName");
+        XMLDirectMapping aMapping = (XMLDirectMapping)aProject.getDescriptor(Employee.class)//
+        .getMappingForAttributeName(attributeName);
+        aMapping.setNullPolicy(aNullPolicy);
+    }
 }

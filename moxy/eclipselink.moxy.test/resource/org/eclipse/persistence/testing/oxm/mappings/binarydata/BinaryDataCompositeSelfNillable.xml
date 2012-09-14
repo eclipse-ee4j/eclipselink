@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<employee id="123">
+   <my-image xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
+</employee>

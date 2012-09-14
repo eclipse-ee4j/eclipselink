@@ -217,7 +217,6 @@ public class QNameInheritancePolicy extends InheritancePolicy {
      */
     public Class classFromRow(AbstractRecord rowFromDatabase, AbstractSession session) throws DescriptorException {
         ((XMLRecord) rowFromDatabase).setSession(session);
-        boolean namespaceAware = ((XMLRecord) rowFromDatabase).isNamespaceAware();
         if (hasClassExtractor() || shouldUseClassNameAsIndicator()) {
             return super.classFromRow(rowFromDatabase, session);
         }
@@ -230,9 +229,10 @@ public class QNameInheritancePolicy extends InheritancePolicy {
         if (indicator == null) {
             return null;
         }
-
+        
         Class concreteClass;
         if (indicator instanceof String) {
+            boolean namespaceAware = ((XMLRecord) rowFromDatabase).isNamespaceAware();
             String indicatorValue = (String)indicator;
             int index = indicatorValue.indexOf(((XMLRecord)rowFromDatabase).getNamespaceSeparator());
             if (index == -1) {

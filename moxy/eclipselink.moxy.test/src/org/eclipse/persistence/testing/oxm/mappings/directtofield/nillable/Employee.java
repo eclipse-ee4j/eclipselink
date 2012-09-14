@@ -14,7 +14,7 @@ package org.eclipse.persistence.testing.oxm.mappings.directtofield.nillable;
 
 public class Employee {
     
-    private int id;
+    private Integer id;
     private String firstName;
     private String lastName;
     private boolean isSetFirstName = false;
@@ -28,8 +28,13 @@ public class Employee {
         try {
             Employee employee = (Employee) object;
             if(this.getId() != employee.getId()) {
-                return false;
-            }
+                if(this.getId() == null) {
+                    return false;
+                }
+                if(!this.getId().equals(employee.getId())) {
+                    return false;
+                }
+              }
             if(this.isSetFirstName() != employee.isSetFirstName()) {
                 return false;
             }
@@ -59,7 +64,7 @@ public class Employee {
         return firstName;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -77,7 +82,7 @@ public class Employee {
         this.firstName = firstName;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

@@ -109,6 +109,11 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
             XMLField xmlField = (XMLField)xmlBinaryDataCollectionMapping.getField();
             XPathFragment lastFragment = xmlField.getLastXPathFragment();
             if(!lastFragment.isAttribute()) {
+                if (unmarshalRecord.isNil() && xmlBinaryDataCollectionMapping.getNullPolicy().isNullRepresentedByXsiNil()) {
+                    getContainerPolicy().addInto(null, unmarshalRecord.getContainerInstance(this), unmarshalRecord.getSession());
+                    return true;
+                }
+                
                  //set a new content handler to deal with the Include element's event.
                  BinaryMappingContentHandler handler = new BinaryMappingContentHandler(unmarshalRecord, this, this.xmlBinaryDataCollectionMapping);
                  String qnameString = xPathFragment.getLocalName();
@@ -168,7 +173,19 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
 	@Override
 	public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object objectValue, AbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext) {
         if(objectValue == null) {
-            return false;
+            AbstractNullPolicy nullPolicy = xmlBinaryDataCollectionMapping.getNullPolicy();
+            if (nullPolicy.getMarshalNullRepresentation() != XMLNullRepresentationType.ABSENT_NODE) {
+                XPathNode holderXPathNode = new XPathNode();
+                holderXPathNode.setXPathFragment(xPathFragment);
+                marshalRecord.addGroupingElement(holderXPathNode);
+                boolean returnVal = xmlBinaryDataCollectionMapping.getNullPolicy().directMarshal(xPathFragment, marshalRecord, object, session, namespaceResolver);
+                if(returnVal){
+                    marshalRecord.endElement(xPathFragment, namespaceResolver);
+                }
+                marshalRecord.removeGroupingElement(holderXPathNode);
+                return returnVal;
+            }
+            return true;
         }
         String mimeType = this.xmlBinaryDataCollectionMapping.getMimeType(object);
         if(mimeType == null) {

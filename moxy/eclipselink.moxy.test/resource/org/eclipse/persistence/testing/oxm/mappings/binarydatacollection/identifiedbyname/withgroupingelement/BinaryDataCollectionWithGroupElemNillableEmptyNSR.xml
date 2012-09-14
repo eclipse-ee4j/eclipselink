@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<employee id="123">
+	<photos>
+		<list>
+   			<photo>
+      			<xop:Include href="c_id0" xmlns:xop="http://www.w3.org/2004/08/xop/include"/>
+   			</photo>
+   			<photo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
+   			<photo>
+      			<xop:Include href="c_id0" xmlns:xop="http://www.w3.org/2004/08/xop/include"/>
+   			</photo>
+		</list>
+	</photos>
+</employee>
