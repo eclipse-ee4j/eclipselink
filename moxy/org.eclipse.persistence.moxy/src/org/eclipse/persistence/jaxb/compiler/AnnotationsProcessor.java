@@ -1741,15 +1741,19 @@ public class AnnotationsProcessor {
                          property = buildNewProperty(info, cls, nextField, nextField.getName(), nextField.getResolvedType());
                          properties.add(property);
                     }
-                } else if (helper.isAnnotationPresent(nextField, XmlAttribute.class)) {
+                } else {
                     try {
                         property = buildNewProperty(info, cls, nextField, nextField.getName(), nextField.getResolvedType());
-                        Object value = ((JavaFieldImpl) nextField).get(null);
-                        if (value != null) {
-                            String stringValue = (String) XMLConversionManager.getDefaultXMLManager().convertObject(value, String.class, property.getSchemaType());
-                            property.setFixedValue(stringValue);
-                        } else {
-                            property.setWriteOnly(true);
+                        if (helper.isAnnotationPresent(nextField, XmlAttribute.class)) {
+                            Object value = ((JavaFieldImpl) nextField).get(null);
+                            if (value != null) {
+                                String stringValue = (String) XMLConversionManager.getDefaultXMLManager().convertObject(value, String.class, property.getSchemaType());
+                                property.setFixedValue(stringValue);
+                            }
+                        }
+                        property.setWriteOnly(true);
+                        if(!hasJAXBAnnotations(nextField)) {
+                            property.setTransient(true);
                         }
                         properties.add(property);
                     } catch (ClassCastException e) {
