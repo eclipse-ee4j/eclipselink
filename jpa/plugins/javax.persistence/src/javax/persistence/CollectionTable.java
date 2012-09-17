@@ -144,4 +144,12 @@ public @interface CollectionTable {
      * table.  These are only used if table generation is in effect.
      */
     UniqueConstraint[] uniqueConstraints() default {};
+
+    /**
+     * (Optional) Indexes for the table.  These are only used if
+     * table generation is in effect. 
+     *
+     * @since Java Persistence 2.1 
+     */
+    Index[] indexes() default {};
 }

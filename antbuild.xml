@@ -654,9 +654,12 @@
                     javax/persistence/Convert.class,
                     javax/persistence/Converter.class,
                     javax/persistence/Converts.class,
+					javax/persistence/ForeignKey,
+					javax/persistence/Index,
                     javax/persistence/criteria/CommonAbstractQuery.class,
                     javax/persistence/criteria/CriteriaDelete.class,
-                    javax/persistence/criteria/CriteriaUpdate.class
+                    javax/persistence/criteria/CriteriaUpdate.class,
+	                javax/persistence/criteria/CommonAbstractCriteria.class
             "/>
             <fileset
                 dir="${eclipselink.moxy.dynamicxjc}/${classes.dir}"

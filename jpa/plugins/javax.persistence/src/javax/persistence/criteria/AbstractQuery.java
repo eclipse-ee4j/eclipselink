@@ -33,7 +33,7 @@ import javax.persistence.metamodel.EntityType;
  *
  * @since Java Persistence 2.0
  */
-public interface AbstractQuery<T> {
+public interface AbstractQuery<T> extends CommonAbstractCriteria {
 
     /**
      * Create and add a query root corresponding to the given entity,
@@ -128,13 +128,6 @@ public interface AbstractQuery<T> {
     AbstractQuery<T> distinct(boolean distinct);
 
     /**
-     * Create a subquery of the query. 
-     * @param type  the subquery result type
-     * @return subquery 
-     */
-    <U> Subquery<U> subquery(Class<U> type);
-
-    /**
      * Return the query roots.  These are the roots that have
      * been defined for the <code>CriteriaQuery</code> or <code>Subquery</code> itself,
      * including any subquery roots defined as a result of
@@ -150,14 +143,6 @@ public interface AbstractQuery<T> {
      *  @return selection item 
      */
     Selection<T> getSelection();
-
-    /**
-     * Return the predicate that corresponds to the where clause
-     * restriction(s), or null if no restrictions have been
-     * specified.
-     * @return where clause predicate
-     */
-    Predicate getRestriction();
 
     /**
      * Return a list of the grouping expressions.  Returns empty

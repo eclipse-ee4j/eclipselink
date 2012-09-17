@@ -41,6 +41,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  *    public class ValuedCustomer extends Customer { ... }
  * </pre>
  *
+ * @see ForeignKey
+ *
  * @since Java Persistence 1.0
  */
 @Target({TYPE, METHOD, FIELD})
@@ -50,4 +52,14 @@ public @interface PrimaryKeyJoinColumns {
 
     /** One or more <code>PrimaryKeyJoinColumn</code> annotations. */
     PrimaryKeyJoinColumn[] value();
+
+    /**
+     *  (Optional)  Used to specify or disable a foreign key constraint when
+     *  table generation is in effect.  If this element is not specified,
+     *  the persistence provider's default foreign key strategy will apply.
+     *
+     *  @since Java Persistence 2.1
+     */
+    ForeignKey foreignKey() default @ForeignKey();
+
 }

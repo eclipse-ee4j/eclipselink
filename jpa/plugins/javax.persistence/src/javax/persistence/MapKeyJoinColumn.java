@@ -84,6 +84,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  *     }
  * </pre>
  *
+ * @see ForeignKey
+ *
  * @since Java Persistence 2.0
  */
 @Target( { METHOD, FIELD })
@@ -178,4 +180,13 @@ public @interface MapKeyJoinColumn {
          * </ul>
 	 */
 	String table() default "";
+
+        /**
+         *  (Optional)  Used to specify or disable a foreign key constraint when
+         *  table generation is in effect.  If this element is not specified,
+         *  the persistence provider's default foreign key strategy will apply.
+         *
+         *  @since Java Persistence 2.1
+         */
+        ForeignKey foreignKey() default @ForeignKey();
 }

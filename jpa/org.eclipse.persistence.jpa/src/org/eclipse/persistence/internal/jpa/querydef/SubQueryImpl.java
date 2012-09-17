@@ -23,6 +23,7 @@ import java.util.Set;
 
 import javax.persistence.criteria.AbstractQuery;
 import javax.persistence.criteria.CollectionJoin;
+import javax.persistence.criteria.CommonAbstractCriteria;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.ListJoin;
@@ -604,6 +605,11 @@ public class SubQueryImpl<T> extends AbstractQueryImpl<T> implements Subquery<T>
 
     protected org.eclipse.persistence.expressions.Expression getBaseExpression() {
         return this.currentNode.getSubQuery().getExpressionBuilder();
+    }
+
+    public CommonAbstractCriteria getContainingQuery() {
+        // TODO: JPA 2.1 functionality
+        throw new RuntimeException("Not implemented ... WIP ...");
     }
 
 }

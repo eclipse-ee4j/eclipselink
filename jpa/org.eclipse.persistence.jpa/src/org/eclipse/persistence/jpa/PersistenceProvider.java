@@ -402,5 +402,10 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
         }
         return classloader;
     }
+
+    public void generateSchema(PersistenceUnitInfo info, Map map) {
+        // TODO: JPA 2.1 functionality
+        throw new RuntimeException("Not implemented ... WIP ...");
+    }
 }
 

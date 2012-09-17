@@ -71,7 +71,7 @@ public @interface MapsId {
     /**
      * (Optional) The name of the attribute within the composite key
      * to which the relationship attribute corresponds.  If not
-     * supplied, the relationship maps the entity's primary
+     * supplied, the relationship maps the entity’s primary
      * key.
      */
    String value() default ""; }

@@ -102,7 +102,7 @@ public interface EntityManager {
      *         not exist
      * @throws IllegalArgumentException if the first argument does
      *         not denote an entity type or the second argument is 
-     *         is not a valid type for that entity's primary key or
+     *         is not a valid type for that entity’s primary key or
      *         is null
      */
     public <T> T find(Class<T> entityClass, Object primaryKey);
@@ -122,7 +122,7 @@ public interface EntityManager {
      *         not exist 
      * @throws IllegalArgumentException if the first argument does 
      *         not denote an entity type or the second argument is
-     *         is not a valid type for that entity's primary key or 
+     *         is not a valid type for that entity’s primary key or 
      *         is null 
      * @since Java Persistence 2.0
      */ 

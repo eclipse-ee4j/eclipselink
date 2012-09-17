@@ -91,4 +91,12 @@ public @interface SecondaryTable {
      * <p> Defaults to no additional constraints.
      */
     UniqueConstraint[] uniqueConstraints() default {};
+
+    /**
+     * (Optional) Indexes for the table.  These are only used if
+     * table generation is in effect. 
+     *
+     * @since Java Persistence 2.1 
+     */
+    Index[] indexes() default {};
 }

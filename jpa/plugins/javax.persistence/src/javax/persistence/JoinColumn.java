@@ -48,6 +48,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * @see OneToOne
  * @see JoinTable
  * @see CollectionTable
+ * @see ForeignKey
  *
  * @since Java Persistence 1.0
  */
@@ -167,4 +168,13 @@ public @interface JoinColumn {
      * </ul>
      */
     String table() default "";
+
+    /**
+     *  (Optional)  Used to specify or disable a foreign key constraint when
+     *  table generation is in effect.  If this element is not specified,
+     *  the persistence provider's default foreign key strategy will apply.
+     *
+     *  @since Java Persistence 2.1
+     */
+    ForeignKey foreignKey() default @ForeignKey();
 }

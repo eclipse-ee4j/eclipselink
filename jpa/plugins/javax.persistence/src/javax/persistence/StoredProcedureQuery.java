@@ -184,9 +184,6 @@ public interface StoredProcedureQuery extends Query {
 
     /**
      * Register a named parameter.
-     * When using parameter names, all parameters must be registered
-     * in the order in which they occur in the parameter list of the 
-     * stored procedure.
      * @param parameterName  name of the parameter as registered or
      *             specified in metadata
      * @param type  type of the parameter

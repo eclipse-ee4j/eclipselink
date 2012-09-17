@@ -26,7 +26,8 @@ import javax.persistence.spi.LoadState;
 
 /**
  * Bootstrap class that is used to obtain an {@link EntityManagerFactory}
- * in Java SE environments.  
+ * in Java SE environments.  It may also be used to cause schema
+ * generation to occur.
  * 
  * <p> The <code>Persistence</code> class is available in a Java EE
  * container environment as well; however, support for the Java SE
@@ -60,9 +61,10 @@ public class Persistence {
      * @param persistenceUnitName
      *            the name of the persistence unit
      * @param properties
-     *            Additional properties to use when creating the factory. The
-     *            values of these properties override any values that may have
-     *            been configured elsewhere.
+     *            Additional properties to use when creating the factory. 
+     *            These properties may include properties to control
+     *            schema generation.  The values of these properties override 
+     *            any values that may have been configured elsewhere.
      * @return the factory that creates EntityManagers configured according to
      *         the specified persistence unit.
      */
@@ -84,6 +86,30 @@ public class Persistence {
         }
         return emf;
     }
+
+
+    /**
+     * Create database schemas and/or tables and/or create DDL
+     * scripts as determined by the supplied properties.
+     * <p>
+     * Called when schema generation is to occur as a separate phase
+     * from creation of the entity manager factory.
+     * <p>
+     * @param persistenceUnitName the name of the persistence unit
+     * @param map properties for schema generation;  these may
+     *             also contain provider-specific properties.  The
+     *             value of these properties override any values that
+     *             may have been configured elsewhere..             
+     * @throws PersistenceException if insufficient or inconsistent
+     *         configuration information is provided of if schema
+     *         generation otherwise fails.
+     *
+     * @since Java Persistence 2.1
+     */
+    public static void generateSchema(String persistenceUnitName, Map map) {
+
+    }
+
 
     /**
      * Return the PersistenceUtil instance

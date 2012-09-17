@@ -36,12 +36,12 @@ import javax.persistence.metamodel.EntityType;
  *
  * @since Java Persistence 2.1
  */
-public interface CriteriaUpdate<T> {
+public interface CriteriaUpdate<T> extends CommonAbstractCriteria {
 
    /**
     * Create and add a query root corresponding to the entity
     * that is the target of the update.
-    * A <code>CriteriaUpdate</code> object has a single root, the object that
+    * A <code>CriteriaUpdate</code> object has a single root, the entity that
     * is being updated.
     * @param entityClass  the entity class
     * @return query root corresponding to the given entity
@@ -51,7 +51,7 @@ public interface CriteriaUpdate<T> {
    /**
     * Create and add a query root corresponding to the entity
     * that is the target of the update.
-    * A <code>CriteriaUpdate</code> object has a single root, the object that
+    * A <code>CriteriaUpdate</code> object has a single root, the entity that
     * is being updated.
     * @param entity  metamodel entity representing the entity
     *                of type X
@@ -69,7 +69,7 @@ public interface CriteriaUpdate<T> {
     * Update the value of the specified attribute.
     * @param attribute  attribute to be updated
     * @param value  new value
-    * @return  the modified query
+    * @return  the modified update query
     */
    <Y, X extends Y> CriteriaUpdate<T> set( SingularAttribute<? super T, Y> attribute, X value);
 
@@ -77,7 +77,7 @@ public interface CriteriaUpdate<T> {
     * Update the value of the specified attribute.
     * @param attribute  attribute to be updated
     * @param value  new value
-    * @return  the modified query
+    * @return  the modified update query
     */
    <Y> CriteriaUpdate<T> set( SingularAttribute<? super T, Y> attribute, Expression<? extends Y> value);
 
@@ -85,7 +85,7 @@ public interface CriteriaUpdate<T> {
     * Update the value of the specified attribute.
     * @param attribute  attribute to be updated
     * @param value  new value
-    * @return  the modified query
+    * @return  the modified update query
     */
    <Y, X extends Y> CriteriaUpdate<T> set(Path<Y> attribute, X value);
 
@@ -93,7 +93,7 @@ public interface CriteriaUpdate<T> {
     * Update the value of the specified attribute.
     * @param attribute  attribute to be updated
     * @param value  new value
-    * @return  the modified query
+    * @return  the modified update query
     */
    <Y> CriteriaUpdate<T> set(Path<Y> attribute, Expression<? extends Y> value);
 
@@ -101,44 +101,28 @@ public interface CriteriaUpdate<T> {
     * Update the value of the specified attribute.
     * @param attributeName  name of the attribute to be updated
     * @param value  new value
-    * @return  the modified query
+    * @return  the modified update query
     */
    CriteriaUpdate<T> set(String attributeName, Object value);
 
     /**
-     * Modify the query to restrict the target of the update
+     * Modify the update query to restrict the target of the update
      * according to the specified boolean expression.
      * Replaces the previously added restriction(s), if any.
      * @param restriction  a simple or compound boolean expression
-     * @return the modified query
+     * @return the modified update query
      */    
    CriteriaUpdate<T> where(Expression<Boolean> restriction);
 
     /**
-     * Modify the query to restrict the target of the update
+     * Modify the update query to restrict the target of the update
      * according to the conjunction of the specified restriction 
      * predicates.
      * Replaces the previously added restriction(s), if any.
      * If no restrictions are specified, any previously added
      * restrictions are simply removed.
      * @param restrictions  zero or more restriction predicates
-     * @return the modified query
+     * @return the modified update query
      */
    CriteriaUpdate<T> where(Predicate... restrictions);
-
-    /**
-     * Create a subquery of the query. 
-     * @param type  the subquery result type
-     * @return subquery 
-     */
-    <U> Subquery<U> subquery(Class<U> type);
-
-    /**
-     * Return the predicate that corresponds to the where clause
-     * restriction(s), or null if no restrictions have been
-     * specified.
-     * @return where clause predicate
-     */
-    Predicate getRestriction();
-
 }

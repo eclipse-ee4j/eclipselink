@@ -23,7 +23,8 @@ import java.util.Map;
  *
  * <p> It is invoked by the container in Java EE environments and
  * by the {@link javax.persistence.Persistence} class in Java SE environments to
- * create an {@link javax.persistence.EntityManagerFactory}.
+ * create an {@link javax.persistence.EntityManagerFactory} and/or to cause
+ * schema generation to occur.
  *
  * @since Java Persistence 1.0
  */
@@ -52,7 +53,8 @@ public interface PersistenceProvider {
      * @param info  metadata for use by the persistence provider
      * @param map  a Map of integration-level properties for use 
      * by the persistence provider (may be null if no properties
-     * are specified).
+     * are specified).  These properties may include properties to
+     * control schema generation.
      * If a Bean Validation provider is present in the classpath,
      * the container must pass the <code>ValidatorFactory</code> instance in
      * the map with the key <code>"javax.persistence.validation.factory"</code>.
@@ -63,6 +65,26 @@ public interface PersistenceProvider {
      * specified by the metadata
      */
     public EntityManagerFactory createContainerEntityManagerFactory(PersistenceUnitInfo info, Map map);
+
+
+    /**
+     * Create database schemas and/or tables and/or create DDL
+     * scripts as determined by the supplied properties.
+     * <p>
+     * Called by the container when schema generation is to
+     * occur as a separate phase from creation of the entity
+     * manager factory.
+     * <p>
+     * @param info metadata for use by the persistence provider
+     * @param map properties for schema generation;  these may
+     *             also include provider-specific properties
+     * @throws PersistenceException if insufficient or inconsistent
+     *         configuration information is provided of if schema
+     *         generation otherwise fails
+     *
+     * @since Java Persistence 2.1
+     */
+    public void generateSchema(PersistenceUnitInfo info, Map map);
 
     /**
      * Return the utility interface implemented by the persistence

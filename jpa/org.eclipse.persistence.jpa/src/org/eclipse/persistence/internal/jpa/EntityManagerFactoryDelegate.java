@@ -696,18 +696,22 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
     }
     
     public void addNamedQuery(String name, Query query) {
-        // TODO: implement
+        // TODO: JPA 2.1 functionality
         throw new RuntimeException("Not implemented ... WIP ...");    
     }
 
     public <T> T unwrap(Class<T> cls) {
-        // TODO: implement
+        // TODO: JPA 2.1 functionality
         throw new RuntimeException("Not implemented ... WIP ...");
     }
 
-    public EntityManager createEntityManager(
-            SynchronizationType synchronizationType, Map map) {
-        // TODO: implement
-        return null;
+    public EntityManager createEntityManager(SynchronizationType synchronizationType, Map map) {
+        // TODO: JPA 2.1 functionality
+        throw new RuntimeException("Not implemented ... WIP ...");
+    }
+
+    public EntityManager createEntityManager(SynchronizationType synchronizationType) {
+        // TODO: JPA 2.1 functionality
+        throw new RuntimeException("Not implemented ... WIP ...");
     }
 }

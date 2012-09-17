@@ -128,6 +128,10 @@ public class DynamicTestHelper {
             public ProviderUtil getProviderUtil() {
                 return null;
             }
+            
+            public void generateSchema(PersistenceUnitInfo info, Map map) {
+                // TODO: JPA 2.1 Functionality.
+            }
          };
          return provider.createEntityManagerFactory(emName, getDatabaseProperties());
     }

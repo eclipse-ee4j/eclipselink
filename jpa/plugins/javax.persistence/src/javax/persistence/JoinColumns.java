@@ -41,6 +41,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * </pre>
  *
  * @see JoinColumn
+ * @see ForeignKey
  *
  * @since Java Persistence 1.0
  */
@@ -52,4 +53,13 @@ public @interface JoinColumns {
      * The join columns that map the relationship.
      */
     JoinColumn[] value();
+
+    /**
+     *  (Optional)  Used to specify or disable a foreign key constraint when
+     *  table generation is in effect.  If this element is not specified,
+     *  the persistence provider's default foreign key strategy will apply.
+     *
+     *  @since Java Persistence 2.1
+     */
+    ForeignKey foreignKey() default @ForeignKey();
 }
