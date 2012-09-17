@@ -369,7 +369,6 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
      * initial default values.
      */
     public void _persistence_resetFetchGroup() {
-        getPropertiesMap().clear();
     }
     
     public List<RelationshipInfo> _persistence_getRelationships(){
