@@ -68,7 +68,10 @@ public class CursoredStreamReadWriteClientSessionTest extends TestCase {
             objquery.setSelectionCriteria(objexpr);
             
             Address address = (Address) clientSession.executeQuery(objquery);
-            address.setStreet("Lawrence Street");
+            // This seems to be a very bad test, it is corrupting the database state,
+            // Changing the address is not required anyway as this test does no verify,
+            // and since it is not using a UnitOfWork, the update will update verything anyway.
+            //address.setStreet("Lawrence Street");
             
             UpdateObjectQuery updateQuery = new UpdateObjectQuery();
             updateQuery.setObject(address);
