@@ -34,6 +34,8 @@ import org.eclipse.persistence.testing.models.jpa.proxyauthentication.*;
 import org.eclipse.persistence.transaction.JTATransactionController;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.ExclusiveConnectionMode;
 /**
@@ -99,6 +101,7 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
     private static final String PROXY_PU = "proxyauthentication";
     private static boolean shouldOverrideGetEntityManager = false;
     private static boolean shouldRunPureJdbcTests = false;
+    private static boolean shouldCloseProxySessionOnRollback = false;
     private static ServerSession serverSession;
 
     public ProxyAuthenticationServerTestSuite(){
@@ -128,6 +131,7 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
     public void testSetup() {
         serverSession = getServerSession(PROXY_PU);
         shouldOverrideGetEntityManager = shouldOverrideGetEntityManager();
+        shouldCloseProxySessionOnRollback = shouldCloseProxySessionOnRollback();  
         System.out.println("====the shouldOverrideGetEntityManager====" + shouldOverrideGetEntityManager);
         // currently only WLS 10.3.4 and later is known to fully support Oracle Proxy Authentication in both JTA and Non Jta cases.
         shouldRunPureJdbcTests = shouldRunPureJdbcTests();
@@ -162,7 +166,7 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
         } catch (Exception ex) {
             ex.printStackTrace();
             if (isTransactionActive(em)){
-                rollbackTransaction(em);
+                rollbackTransaction_proxy(em);
             }
             throw ex;
         } finally {
@@ -184,7 +188,7 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
         } catch (Exception ex) {
             ex.printStackTrace();
             if (isTransactionActive(newEm)){
-                rollbackTransaction(newEm);
+                rollbackTransaction_proxy(newEm);
             }
             throw ex;
         } finally {
@@ -213,7 +217,7 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
         } catch (Exception ex) {
             ex.printStackTrace();
             if (isTransactionActive(em)){
-                rollbackTransaction(em);
+                rollbackTransaction_proxy(em);
             }
             throw ex;
         } finally {
@@ -238,7 +242,7 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
         } catch (Exception ex) {
             ex.printStackTrace();
             if (isTransactionActive(em)){
-                rollbackTransaction(em);
+                rollbackTransaction_proxy(em);
             }
             throw ex;
         } finally {
@@ -294,13 +298,9 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
             employee.setLastName("1");
             em.persist(employee);
             em.flush();
-            // https://glassfish.dev.java.net/issues/show_bug.cgi?id=14753   Oracle proxy session problems  
-            /**if (this.serverSession.getServerPlatform() instanceof GlassfishPlatform) {
-                JpaHelper.getEntityManager(em).getUnitOfWork().getParent().getAccessor().releaseCustomizer(JpaHelper.getEntityManager(em).getUnitOfWork().getParent());
-            }*/
         } finally {
             if (isTransactionActive(em)){
-                rollbackTransaction(em);
+                rollbackTransaction_proxy(em);
             }
             closeEntityManager(em);
         }
@@ -320,7 +320,7 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
             em.flush();
         } finally {
             if (isTransactionActive(em)){
-                rollbackTransaction(em);
+                rollbackTransaction_proxy(em);
             }
         }
         // write through main connection - that's expected to fail with "table or view does not exist" exception
@@ -360,13 +360,9 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
             employee.setLastName("1");
             em.persist(employee);
             em.flush();
-            // https://glassfish.dev.java.net/issues/show_bug.cgi?id=14753   Oracle proxy session problems  
-            /**if (this.serverSession.getServerPlatform() instanceof GlassfishPlatform) {
-                JpaHelper.getEntityManager(em).getUnitOfWork().getParent().getAccessor().releaseCustomizer(JpaHelper.getEntityManager(em).getUnitOfWork().getParent());
-            }*/
         } finally {
             if (isTransactionActive(em)){
-                rollbackTransaction(em);
+                rollbackTransaction_proxy(em);
             }
             closeEntityManager(em);
         }
@@ -387,7 +383,7 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
             }
         } finally {
             if (isTransactionActive(em)){
-                rollbackTransaction(em);
+                rollbackTransaction_proxy(em);
             }
             closeEntityManager(em);
             System.out.println("====testProxyIsInJTATransaction end");
@@ -527,6 +523,17 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
             }
         }
     }
+    
+    /*
+     * Use it instead of rollbackTransaction when beginTransaction_proxy was used 
+     */
+    private void rollbackTransaction_proxy(EntityManager em) {
+        if (shouldCloseProxySessionOnRollback) {
+            AbstractSession session = JpaHelper.getEntityManager(em).getUnitOfWork().getParent();
+            session.getAccessor().releaseCustomizer(session);
+        }
+        rollbackTransaction(em);
+    }
 
     private void compareObjects(Employee readEmp, Employee writtenEmp, PhoneNumber readPhone, PhoneNumber writtenPhone){
         if (!serverSession.compareObjects(readEmp, proxyEmp)) {
@@ -557,7 +564,17 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
             return false;
         }
     }
-
+    
+    private boolean shouldCloseProxySessionOnRollback(){
+        // https://glassfish.dev.java.net/issues/show_bug.cgi?id=14753   Oracle proxy session problems  
+        if(serverSession.getServerPlatform().getClass().getName().equals("org.eclipse.persistence.platform.server.glassfish.GlassfishPlatform") ||
+           serverSession.getServerPlatform().getClass().getName().equals("org.eclipse.persistence.platform.server.sunas.SunAS9ServerPlatform") ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
     private boolean shouldRunPureJdbcTests(){
         // currently only WLS 10.3.4 and later is known to fully support Oracle Proxy Authentication in both JTA and Non Jta cases.
         return WebLogicPlatform.class.isAssignableFrom(serverSession.getServerPlatform().getClass()) && Helper.compareVersions(getServerSession(PROXY_PU).getServerPlatform().getServerNameAndVersion(), "10.3.4") >= 0;
