@@ -26,15 +26,18 @@ import org.eclipse.persistence.jpa.jpql.parser.IdentifierRole;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.spi.IEntity;
 import org.eclipse.persistence.jpa.jpql.spi.IMapping;
-import org.eclipse.persistence.jpa.jpql.util.iterator.CloneIterator;
-import org.eclipse.persistence.jpa.jpql.util.iterator.IterableIterator;
-
+import org.eclipse.persistence.jpa.jpql.util.iterable.SnapshotCloneIterable;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
 /**
  * The default implementation of {@link ContentAssistProposals} which stores the valid proposals.
+ * <p>
+ * Provisional API: This interface is part of an interim API that is still under development and
+ * expected to change significantly before reaching stability. It is available at this early stage
+ * to solicit feedback from pioneering adopters on the understanding that any code that uses this
+ * API will almost certainly be broken (repeatedly) as the API evolves.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -45,6 +48,15 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
 	 * The set of possible abstract schema types.
 	 */
 	private Set<IEntity> abstractSchemaTypes;
+
+	/**
+	 * The helper can be used to provide additional information that is outside the scope of simply
+	 * providing JPA metadata information, such as table names, column names, class names or {@link
+	 * ContentAssistProposalsHelper#NULL_HELPER} if none can be provided.
+	 *
+	 * @since 2.5
+	 */
+	private ContentAssistProposalsHelper helper;
 
 	/**
 	 * The set of possible identification variables.
@@ -68,6 +80,13 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
 	private Set<IMapping> mappings;
 
 	/**
+	 * The prefix that is used to filter the list TODO.
+	 *
+	 * @since 2.5
+	 */
+	private String prefix;
+
+	/**
 	 * The identification variables mapped to their abstract schema types.
 	 */
 	private Map<String, IEntity> rangeIdentificationVariables;
@@ -86,10 +105,13 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
 	 * Creates a new <code>DefaultContentAssistProposals</code>.
 	 *
 	 * @param jpqlGrammar The {@link JPQLGrammar} that defines how the JPQL query was parsed
+	 * @param helper The helper can be used to provide additional information that is outside the
+	 * scope of simply providing JPA metadata information, such as table names, column names, class
+	 * names or {@link ContentAssistProposalsHelper#NULL_HELPER} if none can be provided
 	 */
-	public DefaultContentAssistProposals(JPQLGrammar jpqlGrammar) {
+	public DefaultContentAssistProposals(JPQLGrammar jpqlGrammar, ContentAssistProposalsHelper helper) {
 		super();
-		initialize(jpqlGrammar);
+		initialize(jpqlGrammar, helper);
 	}
 
 	private static Map<String, String> buildLonguestIdentifiers() {
@@ -153,8 +175,8 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
 	/**
 	 * {@inheritDoc}
 	 */
-	public IterableIterator<IEntity> abstractSchemaTypes() {
-		return new CloneIterator<IEntity>(abstractSchemaTypes);
+	public Iterable<IEntity> abstractSchemaTypes() {
+		return new SnapshotCloneIterable<IEntity>(abstractSchemaTypes);
 	}
 
 	/**
@@ -164,6 +186,15 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
 	 */
 	public void addAbstractSchemaType(IEntity abstractSchemaType) {
 		abstractSchemaTypes.add(abstractSchemaType);
+	}
+
+	/**
+	 * Adds the given prefix that will be used to filter the list of TODO.
+	 *
+	 * @param prefix The prefix that is used to filter the list of TODO
+	 */
+	public void addClassNames(String prefix) {
+		this.prefix = prefix;
 	}
 
 	/**
@@ -215,6 +246,15 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
 	                                           IEntity abstractSchemaType) {
 
 		rangeIdentificationVariables.put(identificationVariable, abstractSchemaType);
+	}
+
+	/**
+	 * Adds
+	 *
+	 * @param prefix
+	 * @return
+	 */
+	public void addTableNames(String prefix) {
 	}
 
 	/**
@@ -376,6 +416,20 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
 	/**
 	 * {@inheritDoc}
 	 */
+	public Iterable<String> classNames() {
+		return helper.classNames(prefix);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public Iterable<String> columnNames() {
+		return helper.columnNames(prefix);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public IEntity getAbstractSchemaType(String identificationVariable) {
 		return rangeIdentificationVariables.get(identificationVariable);
 	}
@@ -410,22 +464,23 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
 	/**
 	 * {@inheritDoc}
 	 */
-	public IterableIterator<String> identificationVariables() {
+	public Iterable<String> identificationVariables() {
 		List<String> variables = new ArrayList<String>(identificationVariables.size() + rangeIdentificationVariables.size());
 		variables.addAll(identificationVariables);
 		variables.addAll(rangeIdentificationVariables.keySet());
-		return new CloneIterator<String>(variables);
+		return new SnapshotCloneIterable<String>(variables);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public IterableIterator<String> identifiers() {
-		return new CloneIterator<String>(identifiers);
+	public Iterable<String> identifiers() {
+		return new SnapshotCloneIterable<String>(identifiers);
 	}
 
-	private void initialize(JPQLGrammar jpqlGrammar) {
+	private void initialize(JPQLGrammar jpqlGrammar, ContentAssistProposalsHelper helper) {
 
+		this.helper                       = helper;
 		this.jpqlGrammar                  = jpqlGrammar;
 		this.mappings                     = new HashSet<IMapping>();
 		this.identifiers                  = new HashSet<String>();
@@ -441,8 +496,8 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
 	/**
 	 * {@inheritDoc}
 	 */
-	public IterableIterator<IMapping> mappings() {
-		return new CloneIterator<IMapping>(mappings);
+	public Iterable<IMapping> mappings() {
+		return new SnapshotCloneIterable<IMapping>(mappings);
 	}
 
 	/**
@@ -498,6 +553,13 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
 		}
 
 		return -1;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public Iterable<String> tableNames() {
+		return helper.tableNames();
 	}
 
 	/**

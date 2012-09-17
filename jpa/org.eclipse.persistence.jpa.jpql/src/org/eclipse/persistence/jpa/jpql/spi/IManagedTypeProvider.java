@@ -13,15 +13,18 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.spi;
 
-import org.eclipse.persistence.jpa.jpql.util.iterator.IterableIterator;
-
 /**
  * The external representation of the provider of managed types, which provide access to the JPA
  * domain model.
+ * <p>
+ * Provisional API: This interface is part of an interim API that is still under development and
+ * expected to change significantly before reaching stability. It is available at this early stage
+ * to solicit feedback from pioneering adopters on the understanding that any code that uses this
+ * API will almost certainly be broken (repeatedly) as the API evolves.
  *
  * @see IManagedType
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -33,7 +36,7 @@ public interface IManagedTypeProvider extends IExternalForm {
 	 * @return The {@link IEntity entities} defined in the persistence context
 	 * @version 2.4
 	 */
-	IterableIterator<IEntity> entities();
+	Iterable<IEntity> entities();
 
 	/**
 	 * Retrieves the {@link IEmbeddable} with the given {@link IType}.
@@ -132,5 +135,5 @@ public interface IManagedTypeProvider extends IExternalForm {
 	 *
 	 * @return The managed types owned by this provider
 	 */
-	IterableIterator<IManagedType> managedTypes();
+	Iterable<IManagedType> managedTypes();
 }

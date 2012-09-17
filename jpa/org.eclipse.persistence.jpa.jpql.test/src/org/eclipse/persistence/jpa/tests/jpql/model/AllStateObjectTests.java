@@ -26,11 +26,6 @@ import org.junit.runners.Suite.SuiteClasses;
  */
 @SuiteClasses({
 
-	// Testing the creation of the state model representation of a JPQL query
-	AllStateObjectTest1_0.class,
-	AllStateObjectTest2_0.class,
-	AllEclipseLinkStateObjectTest2_1.class,
-
 	// Test IJPQLQueryFormatter
 	AllJPQLQueryFormatterTests.class,
 

@@ -24,14 +24,13 @@ import org.eclipse.persistence.jpa.jpql.spi.IManagedTypeProvider;
 import org.eclipse.persistence.jpa.jpql.spi.IMappedSuperclass;
 import org.eclipse.persistence.jpa.jpql.spi.IMappingBuilder;
 import org.eclipse.persistence.jpa.jpql.spi.IType;
-import org.eclipse.persistence.jpa.jpql.util.iterator.CloneIterator;
-import org.eclipse.persistence.jpa.jpql.util.iterator.IterableIterator;
+import org.eclipse.persistence.jpa.jpql.util.iterable.SnapshotCloneIterable;
 
 /**
  * The concrete implementation of {@link IManagedTypeProvider} that is wrapping the runtime
  * representation of a provider of a managed type.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -135,8 +134,8 @@ public class JavaManagedTypeProvider implements IManagedTypeProvider {
 	/**
 	 * {@inheritDoc}
 	 */
-	public IterableIterator<IEntity> entities() {
-		return new CloneIterator<IEntity>(entities.values());
+	public Iterable<IEntity> entities() {
+		return new SnapshotCloneIterable<IEntity>(entities.values());
 	}
 
 	/**
@@ -245,7 +244,7 @@ public class JavaManagedTypeProvider implements IManagedTypeProvider {
 	/**
 	 * {@inheritDoc}
 	 */
-	public IterableIterator<IManagedType> managedTypes() {
-		return new CloneIterator<IManagedType>(managedTypes.values());
+	public Iterable<IManagedType> managedTypes() {
+		return new SnapshotCloneIterable<IManagedType>(managedTypes.values());
 	}
 }

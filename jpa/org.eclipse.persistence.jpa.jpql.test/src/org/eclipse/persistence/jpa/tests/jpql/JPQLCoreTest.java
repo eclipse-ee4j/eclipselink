@@ -19,7 +19,7 @@ import org.eclipse.persistence.jpa.jpql.spi.IManagedTypeProvider;
  * The abstract definition of a unit-test responsible to test various API that access the
  * JPQL parsed tree.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -42,7 +42,7 @@ public abstract class JPQLCoreTest extends JPQLBasicTest {
 	 * Retrieves the external form of the ORM configuration with the name retrieved from
 	 * {@link #ormXmlFileName()}.
 	 *
-	 * @param ormXmlFileName
+	 * @param ormXmlFileName The relative path of the orm.xml to load
 	 * @return The external form of the ORM configuration.
 	 * @throws Exception If an error was encountered during the creation of the ORM configuration
 	 */

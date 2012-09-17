@@ -48,6 +48,7 @@ import org.eclipse.persistence.jpa.jpql.model.query.SumFunctionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.UpdateStatementStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.WhereClauseStateObject;
 import org.eclipse.persistence.jpa.jpql.parser.TrimExpression.Specification;
+import org.eclipse.persistence.jpa.tests.jpql.UniqueSignature;
 import org.junit.Test;
 
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
@@ -57,10 +58,11 @@ import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries1_0.*;
  * This tests the manual creation of a {@link StateObject} that can be parsed by the JPQL grammar
  * defined in JPA 1.0.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
+@UniqueSignature
 @SuppressWarnings("nls")
 public final class ManualCreationStateObjectTest1_0 extends AbstractStateObjectTest1_0 {
 

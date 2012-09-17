@@ -13,7 +13,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.parser;
 
-import org.eclipse.persistence.jpa.jpql.util.iterator.IterableListIterator;
+import org.eclipse.persistence.jpa.jpql.util.iterable.ListIterable;
 
 /**
  * This is the root interface of the parsed tree representation of a JPQL query. The way a JPQL
@@ -479,13 +479,6 @@ public interface Expression {
 	String NEW = "NEW";
 
 	/**
-	 * The constant for 'NOCYCLE'.
-	 *
-	 * @since 2.5
-	 */
-	String NOCYCLE = "NOCYCLE";
-
-	/**
 	 * The constant for 'NOT'.
 	 */
 	String NOT = "NOT";
@@ -591,6 +584,13 @@ public interface Expression {
 	 * The constant for 'ORDER BY'.
 	 */
 	String ORDER_BY = "ORDER BY";
+
+	/**
+	 * The constant for 'ORDER SIBLINGS BY'.
+	 *
+	 * @since 2.5
+	 */
+	String ORDER_SIBLINGS_BY = "ORDER SIBLINGS BY";
 
 	/**
 	 * The constant for 'OUTER'.
@@ -782,9 +782,9 @@ public interface Expression {
 	/**
 	 * Returns the children of this {@link Expression}.
 	 *
-	 * @return The children of this {@link Expression} or an empty iterable iterator
+	 * @return The children of this {@link Expression} or an empty {@link ListIterable}
 	 */
-	IterableListIterator<Expression> children();
+	ListIterable<Expression> children();
 
 	/**
 	 * Returns the {@link JPQLGrammar} that defines how the JPQL query was parsed.
@@ -849,7 +849,7 @@ public interface Expression {
 	 *
 	 * @return The {@link Expression Expressions} representing this {@link Expression}
 	 */
-	IterableListIterator<Expression> orderedChildren();
+	ListIterable<Expression> orderedChildren();
 
 	/**
 	 * Retrieves the <code>Expression</code> located at the given position using the actual

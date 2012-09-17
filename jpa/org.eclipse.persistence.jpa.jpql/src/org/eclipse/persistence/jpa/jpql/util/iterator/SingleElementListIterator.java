@@ -27,7 +27,7 @@ import java.util.NoSuchElementException;
  * @since 2.4
  */
 @SuppressWarnings("nls")
-public class SingleElementListIterator<E> implements IterableListIterator<E> {
+public class SingleElementListIterator<E> implements ListIterator<E> {
 
 	/**
 	 * The only element of this <code>Iterator</code>.

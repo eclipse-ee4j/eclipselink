@@ -16,13 +16,13 @@ package org.eclipse.persistence.jpa.jpql.model.query;
 import java.util.Collection;
 import java.util.List;
 import org.eclipse.persistence.jpa.jpql.model.IListChangeListener;
-import org.eclipse.persistence.jpa.jpql.util.iterator.IterableListIterator;
+import org.eclipse.persistence.jpa.jpql.util.iterable.ListIterable;
 
 /**
  * A <code>ListHolderStateObject</code> is a {@link StateObject} having a list of children and this
  * gives access to some operation over the list.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -95,7 +95,7 @@ public interface ListHolderStateObject<T> extends StateObject {
 	 *
 	 * @return An {@link IterableListIterator} that is iterating over the children
 	 */
-	IterableListIterator<? extends T> items();
+	ListIterable<? extends T> items();
 
 	/**
 	 * Returns the number of children this list holder has.

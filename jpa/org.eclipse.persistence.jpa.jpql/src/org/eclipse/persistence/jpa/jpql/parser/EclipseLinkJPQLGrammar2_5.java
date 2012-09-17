@@ -33,7 +33,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  *
  * connectby_clause ::= CONNECT BY general_path_expression
  *
- * order_siblings_by_clause ::= ORDER SIBLINGS BY TODO
+ * order_siblings_by_clause ::= ORDER SIBLINGS BY orderby_item {, orderby_item}*
  *
  * asof_clause ::= AS OF { SCN | TIMESTAMP } expression</code></pre>
  *
@@ -134,6 +134,7 @@ public final class EclipseLinkJPQLGrammar2_5 extends AbstractJPQLGrammar {
 		registerBNF(new AsOfClauseBNF());
 		registerBNF(new ConnectByClauseBNF());
 		registerBNF(new HierarchicalQueryClauseBNF());
+		registerBNF(new OrderSiblingsByClauseBNF());
 		registerBNF(new StartWithClauseBNF());
 	}
 
@@ -146,6 +147,7 @@ public final class EclipseLinkJPQLGrammar2_5 extends AbstractJPQLGrammar {
 		registerFactory(new AsOfClauseFactory());
 		registerFactory(new ConnectByClauseFactory());
 		registerFactory(new HierarchicalQueryClauseFactory());
+		registerFactory(new OrderSiblingsByClauseFactory());
 		registerFactory(new StartWithClauseFactory());
 	}
 
@@ -158,20 +160,21 @@ public final class EclipseLinkJPQLGrammar2_5 extends AbstractJPQLGrammar {
 		// Add support for HQL query, which allows the SELECT clause to be optional
 		addIdentifier(SelectStatementFactory.ID, FROM);
 
-		registerIdentifierRole(AS_OF,         IdentifierRole.CLAUSE);
-		registerIdentifierRole(CONNECT_BY,    IdentifierRole.CLAUSE);
-		registerIdentifierRole(NOCYCLE,       IdentifierRole.COMPLETEMENT);
-		registerIdentifierRole(SCN,           IdentifierRole.COMPLETEMENT);
-		registerIdentifierRole(START_WITH,    IdentifierRole.CLAUSE);
-		registerIdentifierRole(TIMESTAMP,     IdentifierRole.COMPLETEMENT);
+		registerIdentifierRole(AS_OF,                IdentifierRole.CLAUSE);
+		registerIdentifierRole(CONNECT_BY,           IdentifierRole.CLAUSE);
+		registerIdentifierRole(SCN,                  IdentifierRole.COMPLETEMENT);
+		registerIdentifierRole(START_WITH,           IdentifierRole.CLAUSE);
+		registerIdentifierRole(ORDER_SIBLINGS_BY,    IdentifierRole.CLAUSE);
+		registerIdentifierRole(TIMESTAMP,            IdentifierRole.COMPLETEMENT);
 
-		registerIdentifierVersion(CONNECT_BY, JPAVersion.VERSION_2_1);
-		registerIdentifierVersion(NOCYCLE,    JPAVersion.VERSION_2_1);
-		registerIdentifierVersion(SCN,        JPAVersion.VERSION_2_1);
-		registerIdentifierVersion(START_WITH, JPAVersion.VERSION_2_1);
+		registerIdentifierVersion(CONNECT_BY,        JPAVersion.VERSION_2_1);
+		registerIdentifierVersion(ORDER_SIBLINGS_BY, JPAVersion.VERSION_2_1);
+		registerIdentifierVersion(SCN,               JPAVersion.VERSION_2_1);
+		registerIdentifierVersion(START_WITH,        JPAVersion.VERSION_2_1);
 
-		registerIdentifierVersion("START",    JPAVersion.VERSION_2_1);
-		registerIdentifierVersion("WITH",     JPAVersion.VERSION_2_1);
+		registerIdentifierVersion("SIBLINGS",        JPAVersion.VERSION_2_1);
+		registerIdentifierVersion("START",           JPAVersion.VERSION_2_1);
+		registerIdentifierVersion("WITH",            JPAVersion.VERSION_2_1);
 	}
 
 	/**

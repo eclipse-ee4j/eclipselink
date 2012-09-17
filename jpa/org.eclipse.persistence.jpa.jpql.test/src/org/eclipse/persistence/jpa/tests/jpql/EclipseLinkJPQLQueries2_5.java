@@ -28,21 +28,14 @@ public final class EclipseLinkJPQLQueries2_5 {
 	}
 
 	public static String query_001() {
-		return "SELECT e FROM Employee e CONNECT BY e.id = e.manager.id";
+		return "SELECT e FROM Employee e CONNECT BY e.managers";
 	}
 
 	public static String query_002() {
-		return "SELECT e " +
-		       "FROM Employee e " +
-		       "CONNECT BY e.employee.id = e.manager.id AND" +
-		       "           e.account_mgr_id = e.customer_id";
-	}
-
-	public static String query_003() {
 		return "SELECT employee " +
 		       "FROM Employee employee " +
 		       "START WITH employee.id = 100 " +
-		       "CONNECT BY employee.id = employee.manager.id " +
+		       "CONNECT BY employee.employees " +
 		       "ORDER BY employee.last_name";
 	}
 

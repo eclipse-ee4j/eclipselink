@@ -27,8 +27,8 @@ import org.eclipse.persistence.jpa.jpql.model.IListChangeListener;
 import org.eclipse.persistence.jpa.jpql.model.IPropertyChangeListener;
 import org.eclipse.persistence.jpa.jpql.model.ListChangeEvent;
 import org.eclipse.persistence.jpa.jpql.model.PropertyChangeEvent;
-import org.eclipse.persistence.jpa.jpql.util.iterator.CloneListIterator;
-import org.eclipse.persistence.jpa.jpql.util.iterator.IterableListIterator;
+import org.eclipse.persistence.jpa.jpql.util.iterable.ListIterable;
+import org.eclipse.persistence.jpa.jpql.util.iterable.SnapshotCloneListIterable;
 
 /**
  * This <code>ChangeSupport</code> is responsible to notifies registered listeners upon changes made
@@ -300,10 +300,8 @@ public class ChangeSupport {
 	}
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
-	protected <T> IterableListIterator<IListChangeListener<T>> listChangeListeners(String listName) {
-		return new CloneListIterator(
-			listChangeListeners.get(listName)
-		);
+	protected <T> ListIterable<IListChangeListener<T>> listChangeListeners(String listName) {
+		return new SnapshotCloneListIterable(listChangeListeners.get(listName));
 	}
 
 	/**
@@ -382,8 +380,8 @@ public class ChangeSupport {
 		moveItem(source, items, EventType.MOVED_DOWN, listName, item, index - 1, index);
 	}
 
-	protected IterableListIterator<IPropertyChangeListener<?>> propertyChangeListeners(String propertyName) {
-		return new CloneListIterator<IPropertyChangeListener<?>>(
+	protected ListIterable<IPropertyChangeListener<?>> propertyChangeListeners(String propertyName) {
+		return new SnapshotCloneListIterable<IPropertyChangeListener<?>>(
 			propertyChangeListeners.get(propertyName)
 		);
 	}

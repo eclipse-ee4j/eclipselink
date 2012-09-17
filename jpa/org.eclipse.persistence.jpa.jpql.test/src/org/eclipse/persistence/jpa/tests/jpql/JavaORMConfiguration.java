@@ -13,6 +13,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.tests.jpql;
 
+import java.lang.reflect.Member;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,11 +21,11 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.eclipse.persistence.jpa.jpql.spi.IEntity;
 import org.eclipse.persistence.jpa.jpql.spi.IManagedType;
+import org.eclipse.persistence.jpa.jpql.spi.IMappingBuilder;
 import org.eclipse.persistence.jpa.jpql.spi.IQuery;
 import org.eclipse.persistence.jpa.jpql.spi.IType;
 import org.eclipse.persistence.jpa.jpql.spi.java.JavaManagedTypeProvider;
 import org.eclipse.persistence.jpa.jpql.spi.java.JavaQuery;
-import org.eclipse.persistence.jpa.jpql.util.iterator.IterableIterator;
 import org.junit.Assert;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
@@ -33,7 +34,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -48,10 +49,11 @@ public class JavaORMConfiguration extends JavaManagedTypeProvider
 	/**
 	 * Creates a new <code>JavaORMConfiguration</code>.
 	 *
+	 * @param mappingBuilder
 	 * @param ormXmlFileName
 	 */
-	public JavaORMConfiguration(String ormXmlFileName) {
-		super(null); // TODO
+	public JavaORMConfiguration(IMappingBuilder<Member> mappingBuilder, String ormXmlFileName) {
+		super(mappingBuilder);
 		this.ormXmlFileName = ormXmlFileName;
 	}
 
@@ -80,7 +82,7 @@ public class JavaORMConfiguration extends JavaManagedTypeProvider
 	 * {@inheritDoc}
 	 */
 	@Override
-	public IterableIterator<IEntity> entities() {
+	public Iterable<IEntity> entities() {
 		populate();
 		return super.entities();
 	}
@@ -115,7 +117,7 @@ public class JavaORMConfiguration extends JavaManagedTypeProvider
 	 * {@inheritDoc}
 	 */
 	@Override
-	public IterableIterator<IManagedType> managedTypes() {
+	public Iterable<IManagedType> managedTypes() {
 		populate();
 		return super.managedTypes();
 	}

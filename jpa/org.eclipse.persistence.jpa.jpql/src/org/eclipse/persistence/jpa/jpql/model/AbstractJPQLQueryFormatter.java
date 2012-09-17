@@ -115,14 +115,13 @@ import org.eclipse.persistence.jpa.jpql.model.query.ValueExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.WhenClauseStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.WhereClauseStateObject;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByItem.Ordering;
-
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
 /**
  * The abstract definition of a {@link IJPQLQueryFormatter}, which converts an {@link StateObject}
  * into its string representation that can be used as a real JPQL query.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -174,7 +173,7 @@ public abstract class AbstractJPQLQueryFormatter extends BaseJPQLQueryFormatter 
 	protected void toStringChildren(ListHolderStateObject<? extends StateObject> stateObject,
 	                                boolean comma) {
 
-		for (ListIterator<? extends StateObject> iter = stateObject.items(); iter.hasNext(); ) {
+		for (ListIterator<? extends StateObject> iter = stateObject.items().iterator(); iter.hasNext(); ) {
 			iter.next().accept(this);
 			if (iter.hasNext()) {
 				writer.append(comma ? COMMA_SPACE : SPACE);
@@ -570,8 +569,8 @@ public abstract class AbstractJPQLQueryFormatter extends BaseJPQLQueryFormatter 
 			writer.append(formatIdentifier(COALESCE));
 			writer.append(formatIdentifier(LEFT_PARENTHESIS));
 
-			for (ListIterator<? extends StateObject> iter = stateObject.items(); iter.hasNext(); )
-			{
+			for (ListIterator<? extends StateObject> iter = stateObject.items().iterator(); iter.hasNext(); ) {
+
 				iter.next().accept(this);
 
 				if (iter.hasNext()) {

@@ -13,9 +13,10 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.tests.jpql;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ListResourceBundle;
+import java.util.Locale;
 import java.util.ResourceBundle;
 import org.eclipse.persistence.jpa.jpql.AbstractValidator;
 import org.eclipse.persistence.jpa.jpql.JPQLQueryProblem;
@@ -94,11 +95,30 @@ public abstract class AbstractValidatorTest extends JPQLCoreTest {
 	}
 
 	private ResourceBundle loadPropertiesFile() {
-		return ListResourceBundle.getBundle(JPQLQueryProblemResourceBundle.PROPERTIES_FILE_NAME);
+
+		// Running from plug-in project in Eclipse
+		ClassLoader classLoader = AbstractValidator.class.getClassLoader();
+		URL url = classLoader.getResource("/resource/org/eclipse/persistence/jpa/jpql/jpa_jpql_validation.properties");
+
+		if (url != null) {
+			return ResourceBundle.getBundle(
+				"resource.org.eclipse.persistence.jpa.jpql.jpa_jpql_validation",
+				Locale.getDefault(),
+				classLoader
+			);
+		}
+		// Running within the plug-in jar or from Hermes JUnit test
+		else {
+			return ResourceBundle.getBundle(
+				JPQLQueryProblemResourceBundle.PROPERTIES_FILE_NAME,
+				Locale.getDefault(),
+				classLoader
+			);
+		}
 	}
 
 	private ResourceBundle loadResourceBundle() {
-		return ListResourceBundle.getBundle(JPQLQueryProblemResourceBundle.class.getName());
+		return ResourceBundle.getBundle(JPQLQueryProblemResourceBundle.class.getName());
 	}
 
 	/**

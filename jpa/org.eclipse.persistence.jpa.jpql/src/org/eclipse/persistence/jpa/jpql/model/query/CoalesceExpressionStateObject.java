@@ -22,9 +22,8 @@ import java.util.ListIterator;
 import org.eclipse.persistence.jpa.jpql.model.IListChangeListener;
 import org.eclipse.persistence.jpa.jpql.parser.CoalesceExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ScalarExpressionBNF;
-import org.eclipse.persistence.jpa.jpql.util.iterator.CloneListIterator;
-import org.eclipse.persistence.jpa.jpql.util.iterator.IterableListIterator;
-
+import org.eclipse.persistence.jpa.jpql.util.iterable.ListIterable;
+import org.eclipse.persistence.jpa.jpql.util.iterable.SnapshotCloneListIterable;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
 /**
@@ -236,8 +235,8 @@ public class CoalesceExpressionStateObject extends AbstractEncapsulatedExpressio
 	/**
 	 * {@inheritDoc}
 	 */
-	public IterableListIterator<StateObject> items() {
-		return new CloneListIterator<StateObject>(items);
+	public ListIterable<StateObject> items() {
+		return new SnapshotCloneListIterable<StateObject>(items);
 	}
 
 	/**

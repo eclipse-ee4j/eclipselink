@@ -59,14 +59,14 @@ public final class StartWithClauseTest extends JPQLParserTest {
 	@Test
 	public void test_BuildExpression_03() throws Exception {
 
-		String jpqlQuery = "SELECT e FROM Employee e START WITH CONNECT BY NOCYCLE e.id = e.customer.id";
+		String jpqlQuery = "SELECT e FROM Employee e START WITH CONNECT BY e.ids";
 
 		StartWithClauseTester startWithClause = startWith(nullExpression());
 		startWithClause.hasSpaceAfterIdentifier = true;
 
 		HierarchicalQueryClauseTester clause = hierarchicalQueryClause(
 			startWithClause,
-			connectByNocycle(path("e.id").equal(path("e.customer.id")))
+			connectBy(collectionPath("e.ids"))
 		);
 
 		clause.hasSpaceAfterStartWithClause = false;
@@ -138,7 +138,7 @@ public final class StartWithClauseTest extends JPQLParserTest {
 		                   "START WITH     e.id = 100 " +
 		                   "           AND" +
 		                   "               e.name = 'JPQL' " +
-		                   "CONNECT BY e.name = 'JPQL'";
+		                   "CONNECT BY e.manager";
 
 		ExpressionTester selectStatement = selectStatement(
 			select(variable("e")),
@@ -150,7 +150,7 @@ public final class StartWithClauseTest extends JPQLParserTest {
 						path("e.name").equal(string("'JPQL'"))
 					)
 				),
-				connectBy(path("e.name").equal(string("'JPQL'")))
+				connectBy(collectionPath("e.manager"))
 			)
 		);
 

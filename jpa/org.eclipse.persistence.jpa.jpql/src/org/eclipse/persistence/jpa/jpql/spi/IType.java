@@ -14,12 +14,16 @@
 package org.eclipse.persistence.jpa.jpql.spi;
 
 import java.lang.annotation.Annotation;
-import org.eclipse.persistence.jpa.jpql.util.iterator.IterableIterator;
 
 /**
  * The external representation of a Java type.
+ * <p>
+ * Provisional API: This interface is part of an interim API that is still under development and
+ * expected to change significantly before reaching stability. It is available at this early stage
+ * to solicit feedback from pioneering adopters on the understanding that any code that uses this
+ * API will almost certainly be broken (repeatedly) as the API evolves.
  *
- * @version 2.3
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -38,7 +42,7 @@ public interface IType extends IExternalForm {
 	 *
 	 * @return The declared constructors
 	 */
-	IterableIterator<IConstructor> constructors();
+	Iterable<IConstructor> constructors();
 
 	/**
 	 * Determines whether the given type represents the same Java type thank this

@@ -19,6 +19,7 @@ import org.eclipse.persistence.jpa.jpql.parser.CollectionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkAnonymousExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.GroupByClause;
 import org.eclipse.persistence.jpa.jpql.parser.HavingClause;
+import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
 import org.eclipse.persistence.queries.ReportQuery;
 
 /**
@@ -29,7 +30,7 @@ import org.eclipse.persistence.queries.ReportQuery;
  * @author Pascal Filion
  * @author John Bracken
  */
-final class ReportQueryVisitor extends AbstractReadAllQueryVisitor {
+final class ReportQueryVisitor extends ReadAllQueryVisitor {
 
 	/**
 	 * This array is used to store the type of the select {@link org.eclipse.persistence.jpa.jpql
@@ -54,17 +55,17 @@ final class ReportQueryVisitor extends AbstractReadAllQueryVisitor {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(HavingClause expression) {
-		((ReportQuery) query).setHavingExpression(queryContext.buildExpression(expression));
+	public void visit(GroupByClause expression) {
+		GroupByVisitor visitor = new GroupByVisitor();
+		expression.accept(visitor);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void visit(GroupByClause expression) {
-		GroupByVisitor visitor = new GroupByVisitor();
-		expression.accept(visitor);
+	public void visit(HavingClause expression) {
+		((ReportQuery) query).setHavingExpression(queryContext.buildExpression(expression));
 	}
 
 	/**
@@ -97,6 +98,14 @@ final class ReportQueryVisitor extends AbstractReadAllQueryVisitor {
 		if (expression.hasGroupByClause()) {
 			expression.getGroupByClause().accept(this);
 		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	void visitIdentificationVariable(IdentificationVariable expression) {
+		// ReportQuery does not require it
 	}
 
 	/**

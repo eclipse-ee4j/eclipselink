@@ -18,7 +18,6 @@ import org.eclipse.persistence.jpa.jpql.model.IPropertyChangeListener;
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.spi.IManagedTypeProvider;
-import org.eclipse.persistence.jpa.jpql.util.iterator.IterableIterator;
 
 /**
  * A <code>StateObject</code> is an editable representation of a JPQL query.
@@ -26,7 +25,7 @@ import org.eclipse.persistence.jpa.jpql.util.iterator.IterableIterator;
  * {@link org.eclipse.persistence.jpa.jpql.model.IJPQLQueryBuilder IJPQLQueryBuilder} can be used to
  * create the state model from an existing JPQL query.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -56,7 +55,7 @@ public interface StateObject {
 	 * @return The children of this {@link StateObject} or an empty iterable this state object does
 	 * not have children
 	 */
-	IterableIterator<StateObject> children();
+	Iterable<StateObject> children();
 
 	/**
 	 * Decorates this {@link StateObject} with the given decorator. It means the behavior of this

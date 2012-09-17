@@ -13,12 +13,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.jpql;
 
-import java.util.Collection;
-import org.eclipse.persistence.jpa.jpql.LiteralType;
-import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariable;
-import org.eclipse.persistence.jpa.jpql.parser.Join;
-import org.eclipse.persistence.jpa.jpql.parser.ObjectExpression;
-import org.eclipse.persistence.jpa.jpql.parser.SelectClause;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 
 /**
@@ -29,7 +23,7 @@ import org.eclipse.persistence.queries.ObjectLevelReadQuery;
  * @author Pascal Filion
  * @author John Bracken
  */
-final class ObjectLevelReadQueryVisitor extends AbstractReadAllQueryVisitor {
+final class ObjectLevelReadQueryVisitor extends AbstractObjectLevelReadQueryVisitor {
 
 	/**
 	 * Creates a new <code>ObjectLevelReadQueryVisitor</code>.
@@ -41,58 +35,5 @@ final class ObjectLevelReadQueryVisitor extends AbstractReadAllQueryVisitor {
 	 */
 	ObjectLevelReadQueryVisitor(JPQLQueryContext queryContext, ObjectLevelReadQuery query) {
 		super(queryContext, query);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void visit(IdentificationVariable expression) {
-
-		String variableName = expression.getVariableName();
-
-		// Retrieve the join fetches that were defined in the same identification variable
-		// declaration, if the identification variable is mapped to a join, then there will
-		// not be any join fetch associated with it
-		Collection<Join> joinFetches = queryContext.getJoinFetches(variableName);
-
-		if (joinFetches != null ) {
-
-			for (Join joinFetch : joinFetches) {
-
-				// Retrieve the join association path expression's identification variable
-				String joinFetchVariableName = queryContext.literal(
-					joinFetch,
-					LiteralType.PATH_EXPRESSION_IDENTIFICATION_VARIABLE
-				);
-
-				// Both identification variables are the same.
-				// Then add the join associated path expression as a joined attribute
-				// Example: FROM Employee e JOIN FETCH e.employees
-				if (variableName.equals(joinFetchVariableName)) {
-					org.eclipse.persistence.expressions.Expression queryExpression = queryContext.buildExpression(joinFetch);
-					query.addJoinedAttribute(queryExpression);
-				}
-			}
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void visit(ObjectExpression expression) {
-		expression.getExpression().accept(this);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void visit(SelectClause expression) {
-		super.visit(expression);
-
-		// Visit the select expression so we can add a joined attribute if required
-		expression.getSelectExpression().accept(this);
 	}
 }

@@ -74,6 +74,13 @@ public abstract class EclipseLinkAnonymousExpressionVisitor extends AnonymousExp
 	/**
 	 * {@inheritDoc}
 	 */
+	public void visit(OrderSiblingsByClause expression) {
+		visit((Expression) expression);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public void visit(RegexpExpression expression) {
 		visit((Expression) expression);
 	}

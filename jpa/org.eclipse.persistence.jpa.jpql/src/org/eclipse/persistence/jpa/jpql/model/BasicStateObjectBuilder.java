@@ -211,7 +211,7 @@ import org.eclipse.persistence.jpa.jpql.util.CollectionTools;
  * @see Expression
  * @see StateObject
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -2074,7 +2074,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 		@Override
 		public void visit(CollectionValuedPathExpression expression) {
 			CollectionValuedPathExpressionStateObject path = stateObject.getCollectionValuedPath();
-			path.setPaths(expression.paths());
+			path.setPaths(expression.paths().iterator());
 			path.setExpression(expression);
 		}
 
@@ -2588,7 +2588,7 @@ public abstract class BasicStateObjectBuilder extends AbstractExpressionVisitor 
 		 */
 		@Override
 		public void visit(StateFieldPathExpression expression) {
-			updateItem.getStateFieldPath().setPaths(expression.paths());
+			updateItem.getStateFieldPath().setPaths(expression.paths().iterator());
 			updateItem.getStateFieldPath().setExpression(expression);
 		}
 

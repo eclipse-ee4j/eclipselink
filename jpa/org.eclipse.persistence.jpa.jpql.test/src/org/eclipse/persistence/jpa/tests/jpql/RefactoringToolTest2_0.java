@@ -24,10 +24,11 @@ import static org.junit.Assert.*;
  * The abstract definition of a unit-test that tests {@link org.eclipse.persistence.jpa.jpql.
  * RefactoringTool RefactoringTool} when the JPA version is 2.0.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
+@UniqueSignature
 @SuppressWarnings("nls")
 public final class RefactoringToolTest2_0 extends AbstractRefactoringToolTest {
 

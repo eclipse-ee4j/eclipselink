@@ -157,7 +157,6 @@ import org.eclipse.persistence.jpa.jpql.parser.UpdateClause;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateItem;
 import org.eclipse.persistence.jpa.jpql.parser.WhenClause;
 import org.eclipse.persistence.jpa.jpql.parser.WhereClause;
-
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
 /**
@@ -173,7 +172,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * identifiers and the presence of whitespace); <code>false</code> will only match the case
  * sensitivity of the JPQL identifiers.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -293,7 +292,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 	protected void toStringChildren(ListHolderStateObject<? extends StateObject> stateObject,
 	                                boolean comma) {
 
-		for (ListIterator<? extends StateObject> iter = stateObject.items(); iter.hasNext(); ) {
+		for (ListIterator<? extends StateObject> iter = stateObject.items().iterator(); iter.hasNext(); ) {
 			iter.next().accept(this);
 			if (iter.hasNext()) {
 				writer.append(comma ? COMMA_SPACE : SPACE);
@@ -1700,7 +1699,7 @@ public abstract class AbstractActualJPQLQueryFormatter extends BaseJPQLQueryForm
 			// 'ORDER BY'
 			appendIdentifier((expression != null) ? expression.getActualIdentifier() : ORDER_BY, ORDER_BY);
 
-			if (shouldOutput(expression) || expression.hasSpaceAfterOrderBy()) {
+			if (shouldOutput(expression) || expression.hasSpaceAfterIdentifier()) {
 				writer.append(SPACE);
 			}
 

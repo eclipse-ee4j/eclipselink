@@ -17,13 +17,12 @@ import java.io.IOException;
 import java.util.List;
 import org.eclipse.persistence.jpa.jpql.spi.IEntity;
 import org.eclipse.persistence.jpa.jpql.spi.IManagedType;
-import org.eclipse.persistence.jpa.jpql.util.iterator.IterableListIterator;
-import org.eclipse.persistence.jpa.jpql.util.iterator.SingleElementListIterator;
-
+import org.eclipse.persistence.jpa.jpql.util.iterable.ListIterable;
+import org.eclipse.persistence.jpa.jpql.util.iterable.SingleElementListIterable;
 import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
 
 /**
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -56,8 +55,8 @@ public abstract class AbstractModifyClauseStateObject extends AbstractStateObjec
 	/**
 	 * {@inheritDoc}
 	 */
-	public IterableListIterator<VariableDeclarationStateObject> declarations() {
-		return new SingleElementListIterator<VariableDeclarationStateObject>(rangeVariableDeclaration);
+	public ListIterable<VariableDeclarationStateObject> declarations() {
+		return new SingleElementListIterable<VariableDeclarationStateObject>(rangeVariableDeclaration);
 	}
 
 	/**

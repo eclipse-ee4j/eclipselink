@@ -37,11 +37,173 @@ public final class HierarchicalQueryClauseTest extends JPQLParserTest {
 
 		ConnectByClauseTester connectByClause = connectBy(nullExpression());
 		connectByClause.hasSpaceAfterConnectBy = false;
-		connectByClause.hasSpaceAfterNocycle = false;
 
 		HierarchicalQueryClauseTester hierarchicalQuery = hierarchicalQueryClause(
 			startWithClause,
 			connectByClause
+		);
+
+		hierarchicalQuery.hasSpaceAfterStartWithClause = false;
+
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e", hierarchicalQuery)
+		);
+
+		testInvalidQuery(jpqlQuery, selectStatement);
+	}
+
+	@Test
+	public void test_BuildExpression_02() throws Exception {
+
+		String jpqlQuery = "SELECT e FROM Employee e START WITH CONNECT BY ORDER SIBLINGS BY";
+
+		StartWithClauseTester startWithClause = startWith(nullExpression());
+		startWithClause.hasSpaceAfterIdentifier = true;
+
+		ConnectByClauseTester connectByClause = connectBy(nullExpression());
+		connectByClause.hasSpaceAfterConnectBy = true;
+
+		OrderSiblingsByClauseTester orderSiblingsByClause = orderSiblingsBy(nullExpression());
+		orderSiblingsByClause.hasSpaceAfterIdentifier = false;
+
+		HierarchicalQueryClauseTester hierarchicalQuery = hierarchicalQueryClause(
+			startWithClause,
+			connectByClause,
+			orderSiblingsByClause
+		);
+
+		hierarchicalQuery.hasSpaceAfterStartWithClause = false;
+		hierarchicalQuery.hasSpaceAfterConnectByClause = false;
+
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e", hierarchicalQuery)
+		);
+
+		testInvalidQuery(jpqlQuery, selectStatement);
+	}
+
+	@Test
+	public void test_BuildExpression_03() throws Exception {
+
+		String jpqlQuery = "SELECT e FROM Employee e START WITH CONNECT BY ORDER SIBLINGS BY ";
+
+		StartWithClauseTester startWithClause = startWith(nullExpression());
+		startWithClause.hasSpaceAfterIdentifier = true;
+
+		ConnectByClauseTester connectByClause = connectBy(nullExpression());
+		connectByClause.hasSpaceAfterConnectBy = true;
+
+		OrderSiblingsByClauseTester orderSiblingsByClause = orderSiblingsBy(nullExpression());
+		orderSiblingsByClause.hasSpaceAfterIdentifier = true;
+
+		HierarchicalQueryClauseTester hierarchicalQuery = hierarchicalQueryClause(
+			startWithClause,
+			connectByClause,
+			orderSiblingsByClause
+		);
+
+		hierarchicalQuery.hasSpaceAfterStartWithClause = false;
+		hierarchicalQuery.hasSpaceAfterConnectByClause = false;
+
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e", hierarchicalQuery)
+		);
+
+		testInvalidQuery(jpqlQuery, selectStatement);
+	}
+
+	@Test
+	public void test_BuildExpression_04() throws Exception {
+
+		String jpqlQuery = "SELECT e FROM Employee e START WITH ORDER SIBLINGS BY";
+
+		StartWithClauseTester startWithClause = startWith(nullExpression());
+		startWithClause.hasSpaceAfterIdentifier = true;
+
+		OrderSiblingsByClauseTester orderSiblingsByClause = orderSiblingsBy(nullExpression());
+		orderSiblingsByClause.hasSpaceAfterIdentifier = false;
+
+		HierarchicalQueryClauseTester hierarchicalQuery = hierarchicalQueryClause(
+			startWithClause,
+			nullExpression(),
+			orderSiblingsByClause
+		);
+
+		hierarchicalQuery.hasSpaceAfterStartWithClause = false;
+
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e", hierarchicalQuery)
+		);
+
+		testInvalidQuery(jpqlQuery, selectStatement);
+	}
+
+	@Test
+	public void test_BuildExpression_05() throws Exception {
+
+		String jpqlQuery = "SELECT e FROM Employee e ORDER SIBLINGS BY";
+
+		OrderSiblingsByClauseTester orderSiblingsByClause = orderSiblingsBy(nullExpression());
+		orderSiblingsByClause.hasSpaceAfterIdentifier = false;
+
+		HierarchicalQueryClauseTester hierarchicalQuery = hierarchicalQueryClause(
+			nullExpression(),
+			nullExpression(),
+			orderSiblingsByClause
+		);
+
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e", hierarchicalQuery)
+		);
+
+		testInvalidQuery(jpqlQuery, selectStatement);
+	}
+
+	@Test
+	public void test_BuildExpression_06() throws Exception {
+
+		String jpqlQuery = "SELECT e FROM Employee e CONNECT BY ORDER SIBLINGS BY";
+
+		ConnectByClauseTester connectByClause = connectBy(nullExpression());
+		connectByClause.hasSpaceAfterConnectBy = true;
+
+		OrderSiblingsByClauseTester orderSiblingsByClause = orderSiblingsBy(nullExpression());
+		orderSiblingsByClause.hasSpaceAfterIdentifier = false;
+
+		HierarchicalQueryClauseTester hierarchicalQuery = hierarchicalQueryClause(
+			nullExpression(),
+			connectByClause,
+			orderSiblingsByClause
+		);
+
+		hierarchicalQuery.hasSpaceAfterStartWithClause = false;
+		hierarchicalQuery.hasSpaceAfterConnectByClause = false;
+
+		ExpressionTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e", hierarchicalQuery)
+		);
+
+		testInvalidQuery(jpqlQuery, selectStatement);
+	}
+
+	@Test
+	public void test_BuildExpression_07() throws Exception {
+
+		String jpqlQuery = "SELECT e FROM Employee e CONNECT BY";
+
+		ConnectByClauseTester connectByClause = connectBy(nullExpression());
+		connectByClause.hasSpaceAfterConnectBy = false;
+
+		HierarchicalQueryClauseTester hierarchicalQuery = hierarchicalQueryClause(
+			nullExpression(),
+			connectByClause,
+			nullExpression()
 		);
 
 		hierarchicalQuery.hasSpaceAfterStartWithClause = false;

@@ -26,10 +26,11 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <code><b>CONNECT BY</b></code> specifies the relationship between parent rows and child rows of
  * the hierarchy.
  * <p>
- * <div nowrap><b>BNF:</b> <code>hierarchical_query_clause ::= [start_with_clause] connectby_clause</code><p>
+ * <div nowrap><b>BNF:</b> <code>hierarchical_query_clause ::= [start_with_clause] connectby_clause [order_siblings_by_clause]</code><p>
  *
  * @see StartWithClause
  * @see ConnectByClause
+ * @see OrderSiblingsByClause
  *
  * @version 2.5
  * @since 2.5
@@ -43,9 +44,19 @@ public final class HierarchicalQueryClause extends AbstractExpression {
 	private AbstractExpression connectByClause;
 
 	/**
+	 * Determines whether a whitespace was parsed after the <code><b>CONNECT BY</b></code> clause.
+	 */
+	private boolean hasSpaceAfterConnectByClause;
+
+	/**
 	 * Determines whether a whitespace was parsed after the <code><b>START WITH</b></code> clause.
 	 */
 	private boolean hasSpaceAfterStartWithClause;
+
+	/**
+	 * The {@link Expression} that represents the <code><b>ORDER SIBLINGS BY</b></code> clause.
+	 */
+	private AbstractExpression orderSiblingsByClause;
 
 	/**
 	 * The {@link Expression} that represents the <code><b>START WITH</b></code> clause.
@@ -74,6 +85,7 @@ public final class HierarchicalQueryClause extends AbstractExpression {
 	public void acceptChildren(ExpressionVisitor visitor) {
 		getStartWithClause().accept(visitor);
 		getConnectByClause().accept(visitor);
+		getOrderSiblingsByClause().accept(visitor);
 	}
 
 	/**
@@ -84,6 +96,7 @@ public final class HierarchicalQueryClause extends AbstractExpression {
 		super.addChildrenTo(children);
 		children.add(getStartWithClause());
 		children.add(getConnectByClause());
+		children.add(getOrderSiblingsByClause());
 	}
 
 	/**
@@ -105,6 +118,15 @@ public final class HierarchicalQueryClause extends AbstractExpression {
 		if (connectByClause != null) {
 			children.add(connectByClause);
 		}
+
+		if (hasSpaceAfterConnectByClause) {
+			children.add(buildStringExpression(SPACE));
+		}
+
+		// ORDER SIBLINGS BY clause
+		if (orderSiblingsByClause != null) {
+			children.add(orderSiblingsByClause);
+		}
 	}
 
 	/**
@@ -117,6 +139,18 @@ public final class HierarchicalQueryClause extends AbstractExpression {
 			connectByClause = buildNullExpression();
 		}
 		return connectByClause;
+	}
+
+	/**
+	 * Returns the {@link Expression} representing the <b>ORDER SIBLINGS BY</b> clause.
+	 *
+	 * @return The expression representing the <b>ORDER SIBLINGS BY</b> clause
+	 */
+	public Expression getOrderSiblingsByClause() {
+		if (orderSiblingsByClause == null) {
+			orderSiblingsByClause = buildNullExpression();
+		}
+		return orderSiblingsByClause;
 	}
 
 	/**
@@ -149,6 +183,27 @@ public final class HierarchicalQueryClause extends AbstractExpression {
 	}
 
 	/**
+	 * Determines whether the <b>ORDER SIBLINGS BY</b> clause is defined.
+	 *
+	 * @return <code>true</code> if the query that got parsed had the <b>ORDER SIBLINGS BY</b> clause
+	 */
+	public boolean hasOrderSiblingsByClause() {
+		return orderSiblingsByClause != null &&
+		      !orderSiblingsByClause.isNull();
+	}
+
+	/**
+	 * Determines whether a whitespace was found after the <code><b>CONNECT BY</b></code> clause. In
+	 * some cases, the space is owned by a child of the hierarchical query clause.
+	 *
+	 * @return <code>true</code> if there was a whitespace after the <code><b>CONNECT BY</b></code>
+	 * clause and owned by this expression; <code>false</code> otherwise
+	 */
+	public boolean hasSpaceAfterConnectByClause() {
+		return hasSpaceAfterConnectByClause;
+	}
+
+	/**
 	 * Determines whether a whitespace was found after the <code><b>START WITH</b></code> clause. In
 	 * some cases, the space is owned by a child of the hierarchical query clause.
 	 *
@@ -175,18 +230,45 @@ public final class HierarchicalQueryClause extends AbstractExpression {
 	@Override
 	protected void parse(WordParser wordParser, boolean tolerant) {
 
+		int count = 0;
+
 		// START WITH clause
 		if (wordParser.startsWithIdentifier(START_WITH)) {
 			startWithClause = new StartWithClause(this);
 			startWithClause.parse(wordParser, tolerant);
 
-			hasSpaceAfterStartWithClause = wordParser.skipLeadingWhitespace() > 0;
+			count = wordParser.skipLeadingWhitespace();
+			hasSpaceAfterStartWithClause = (count > 0);
 		}
 
 		// CONNECT BY clause
 		if (wordParser.startsWithIdentifier(CONNECT_BY)) {
 			connectByClause = new ConnectByClause(this);
 			connectByClause.parse(wordParser, tolerant);
+
+			count = wordParser.skipLeadingWhitespace();
+			hasSpaceAfterConnectByClause = (count > 0);
+		}
+
+		// ORDER SIBLINGS BY clause
+		if (wordParser.startsWithIdentifier(ORDER_SIBLINGS_BY)) {
+			orderSiblingsByClause = new OrderSiblingsByClause(this);
+			orderSiblingsByClause.parse(wordParser, tolerant);
+		}
+
+		// Let's the parent statement own the whitespace
+		if (hasSpaceAfterStartWithClause  &&
+		    connectByClause       == null &&
+		    orderSiblingsByClause == null) {
+
+			hasSpaceAfterStartWithClause = false;
+			wordParser.moveBackward(count);
+		}
+		else if (hasSpaceAfterConnectByClause &&
+		         orderSiblingsByClause == null) {
+
+			hasSpaceAfterConnectByClause = false;
+			wordParser.moveBackward(count);
 		}
 	}
 
@@ -208,6 +290,15 @@ public final class HierarchicalQueryClause extends AbstractExpression {
 		// CONNECT BY clause
 		if (connectByClause != null) {
 			connectByClause.toParsedText(writer, actual);
+
+			if (hasSpaceAfterConnectByClause) {
+				writer.append(SPACE);
+			}
+		}
+
+		// ORDER SIBLINGS BY clause
+		if (orderSiblingsByClause != null) {
+			orderSiblingsByClause.toParsedText(writer, actual);
 		}
 	}
 }

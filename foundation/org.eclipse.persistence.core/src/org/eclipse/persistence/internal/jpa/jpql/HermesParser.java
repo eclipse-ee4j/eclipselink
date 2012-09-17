@@ -45,7 +45,6 @@ import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.queries.UpdateAllQuery;
-
 import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
 
 /**
@@ -153,6 +152,7 @@ public final class HermesParser implements JPAQueryBuilder {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public DatabaseQuery buildQuery(CharSequence jpqlQuery, AbstractSession session) {
 		return populateQueryImp(jpqlQuery, null, session);
 	}
@@ -160,6 +160,7 @@ public final class HermesParser implements JPAQueryBuilder {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public Expression buildSelectionCriteria(String entityName,
 	                                         String selectionCriteria,
 	                                         AbstractSession session) {
@@ -245,6 +246,7 @@ public final class HermesParser implements JPAQueryBuilder {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void populateQuery(CharSequence jpqlQuery, DatabaseQuery query, AbstractSession session) {
 		populateQueryImp(jpqlQuery, query, session);
 	}
@@ -296,6 +298,7 @@ public final class HermesParser implements JPAQueryBuilder {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void setValidationLevel(String validationLevel) {
 		this.validationLevel = validationLevel;
 	}
@@ -365,10 +368,16 @@ public final class HermesParser implements JPAQueryBuilder {
 			return visitor.query;
 		}
 
-		private AbstractReadAllQueryVisitor buildVisitor(ObjectLevelReadQuery query) {
+		private AbstractObjectLevelReadQueryVisitor buildVisitor(ObjectLevelReadQuery query) {
+
 			if (query.isReportQuery()) {
 				return new ReportQueryVisitor(queryContext, (ReportQuery) query);
 			}
+
+			if (query.isReadAllQuery()) {
+				return new ReadAllQueryVisitor(queryContext, (ReadAllQuery) query);
+			}
+
 			return new ObjectLevelReadQueryVisitor(queryContext, query);
 		}
 

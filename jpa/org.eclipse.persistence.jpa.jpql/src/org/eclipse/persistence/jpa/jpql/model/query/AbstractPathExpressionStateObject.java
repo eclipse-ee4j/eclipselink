@@ -32,8 +32,8 @@ import org.eclipse.persistence.jpa.jpql.spi.IMapping;
 import org.eclipse.persistence.jpa.jpql.spi.IType;
 import org.eclipse.persistence.jpa.jpql.spi.ITypeDeclaration;
 import org.eclipse.persistence.jpa.jpql.util.CollectionTools;
-import org.eclipse.persistence.jpa.jpql.util.iterator.CloneListIterator;
-import org.eclipse.persistence.jpa.jpql.util.iterator.IterableListIterator;
+import org.eclipse.persistence.jpa.jpql.util.iterable.ListIterable;
+import org.eclipse.persistence.jpa.jpql.util.iterable.SnapshotCloneListIterable;
 import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
 
 /**
@@ -413,8 +413,8 @@ public abstract class AbstractPathExpressionStateObject extends AbstractStateObj
 	/**
 	 * {@inheritDoc}
 	 */
-	public IterableListIterator<String> items() {
-		return new CloneListIterator<String>(paths);
+	public ListIterable<String> items() {
+		return new SnapshotCloneListIterable<String>(paths);
 	}
 
 	/**

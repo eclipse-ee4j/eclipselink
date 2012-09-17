@@ -317,7 +317,8 @@ public abstract class AbstractFromClause extends AbstractExpression {
 
 		// Parse hierarchical query clause
 		if (wordParser.startsWithIdentifier(START_WITH) ||
-		    wordParser.startsWithIdentifier(CONNECT_BY)) {
+		    wordParser.startsWithIdentifier(CONNECT_BY) ||
+		    wordParser.startsWithIdentifier(ORDER_SIBLINGS_BY)) {
 
 			hierarchicalQueryClause = new HierarchicalQueryClause(this);
 			hierarchicalQueryClause.parse(wordParser, tolerant);

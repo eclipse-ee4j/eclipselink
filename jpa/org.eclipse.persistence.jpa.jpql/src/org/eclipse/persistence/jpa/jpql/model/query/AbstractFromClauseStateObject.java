@@ -21,10 +21,8 @@ import org.eclipse.persistence.jpa.jpql.parser.AbstractFromClause;
 import org.eclipse.persistence.jpa.jpql.spi.IEntity;
 import org.eclipse.persistence.jpa.jpql.spi.IManagedType;
 import org.eclipse.persistence.jpa.jpql.util.CollectionTools;
-import org.eclipse.persistence.jpa.jpql.util.iterator.CloneListIterator;
-import org.eclipse.persistence.jpa.jpql.util.iterator.IterableIterator;
-import org.eclipse.persistence.jpa.jpql.util.iterator.IterableListIterator;
-
+import org.eclipse.persistence.jpa.jpql.util.iterable.ListIterable;
+import org.eclipse.persistence.jpa.jpql.util.iterable.SnapshotCloneIterable;
 import static org.eclipse.persistence.jpa.jpql.ExpressionTools.*;
 import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
@@ -39,7 +37,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  *
  * @see AbstractFromClause
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -162,7 +160,7 @@ public abstract class AbstractFromClauseStateObject extends AbstractListHolderSt
 	/**
 	 * {@inheritDoc}
 	 */
-	public IterableListIterator<? extends VariableDeclarationStateObject> declarations() {
+	public ListIterable<? extends VariableDeclarationStateObject> declarations() {
 		return items();
 	}
 
@@ -236,7 +234,7 @@ public abstract class AbstractFromClauseStateObject extends AbstractListHolderSt
 	 *
 	 * @return The list of {@link IdentificationVariableStateObject IdentificationVariableStateObjects}
 	 */
-	public IterableIterator<IdentificationVariableStateObject> identificationVariables() {
+	public Iterable<IdentificationVariableStateObject> identificationVariables() {
 
 		List<IdentificationVariableStateObject> stateObjects = new ArrayList<IdentificationVariableStateObject>();
 
@@ -244,7 +242,7 @@ public abstract class AbstractFromClauseStateObject extends AbstractListHolderSt
 			CollectionTools.addAll(stateObjects, stateObject.identificationVariables());
 		}
 
-		return new CloneListIterator<IdentificationVariableStateObject>(stateObjects);
+		return new SnapshotCloneIterable<IdentificationVariableStateObject>(stateObjects);
 	}
 
 	/**

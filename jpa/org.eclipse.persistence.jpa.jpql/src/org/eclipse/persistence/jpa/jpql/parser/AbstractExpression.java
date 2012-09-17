@@ -22,8 +22,8 @@ import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.WordParser;
 import org.eclipse.persistence.jpa.jpql.WordParser.WordType;
 import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
-import org.eclipse.persistence.jpa.jpql.util.iterator.CloneListIterator;
-import org.eclipse.persistence.jpa.jpql.util.iterator.IterableListIterator;
+import org.eclipse.persistence.jpa.jpql.util.iterable.ListIterable;
+import org.eclipse.persistence.jpa.jpql.util.iterable.SnapshotCloneListIterable;
 
 /**
  * This is the abstract definition of all the parts used to create the tree hierarchy representing
@@ -390,12 +390,12 @@ public abstract class AbstractExpression implements Expression {
 	/**
 	 * {@inheritDoc}
 	 */
-	public final IterableListIterator<Expression> children() {
+	public final ListIterable<Expression> children() {
 		if (children == null) {
 			children = new LinkedList<Expression>();
 			addChildrenTo(children);
 		}
-		return new CloneListIterator<Expression>(children);
+		return new SnapshotCloneListIterable<Expression>(children);
 	}
 
 	/**
@@ -599,17 +599,18 @@ public abstract class AbstractExpression implements Expression {
 	 * <code>false</code> if more can be parsed
 	 */
 	protected boolean isParsingComplete(WordParser wordParser, String word, Expression expression) {
-		return word.equalsIgnoreCase(FROM)                 ||
-		       word.equalsIgnoreCase(WHERE)                ||
-		       word.equalsIgnoreCase(HAVING)               ||
-		       wordParser.startsWithIdentifier(GROUP_BY)   ||
-		       wordParser.startsWithIdentifier(ORDER_BY)   ||
-		       wordParser.startsWithIdentifier(AS_OF)      ||
-		       wordParser.startsWithIdentifier(START_WITH) ||
-		       wordParser.startsWithIdentifier(CONNECT_BY) ||
-		       word.equalsIgnoreCase(UNION)                ||
-		       word.equalsIgnoreCase(UNION)                ||
-		       word.equalsIgnoreCase(INTERSECT)            ||
+		return word.equalsIgnoreCase(FROM)                        ||
+		       word.equalsIgnoreCase(WHERE)                       ||
+		       word.equalsIgnoreCase(HAVING)                      ||
+		       wordParser.startsWithIdentifier(GROUP_BY)          ||
+		       wordParser.startsWithIdentifier(ORDER_BY)          ||
+		       wordParser.startsWithIdentifier(AS_OF)             ||
+		       wordParser.startsWithIdentifier(START_WITH)        ||
+		       wordParser.startsWithIdentifier(CONNECT_BY)        ||
+		       wordParser.startsWithIdentifier(ORDER_SIBLINGS_BY) ||
+		       word.equalsIgnoreCase(UNION)                       ||
+		       word.equalsIgnoreCase(UNION)                       ||
+		       word.equalsIgnoreCase(INTERSECT)                   ||
 		       word.equalsIgnoreCase(EXCEPT);
 	}
 
@@ -647,12 +648,12 @@ public abstract class AbstractExpression implements Expression {
 	/**
 	 * {@inheritDoc}
 	 */
-	public final IterableListIterator<Expression> orderedChildren() {
+	public final ListIterable<Expression> orderedChildren() {
 		if (orderedChildren == null) {
 			orderedChildren = new LinkedList<Expression>();
 			addOrderedChildrenTo(orderedChildren);
 		}
-		return new CloneListIterator<Expression>(orderedChildren);
+		return new SnapshotCloneListIterable<Expression>(orderedChildren);
 	}
 
 	/**

@@ -23,6 +23,7 @@ import org.eclipse.persistence.jpa.jpql.model.query.SelectStatementStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.StateFieldPathExpressionStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.StateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.StateObjectVisitor;
+import org.eclipse.persistence.jpa.tests.jpql.UniqueSignature;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -30,10 +31,11 @@ import static org.junit.Assert.*;
 /**
  * This unit-tests tests {@link DefaultActualJPQLQueryFormatter}.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
+@UniqueSignature
 @SuppressWarnings("nls")
 public final class DefaultActualJPQLQueryFormatterTest extends AbstractStateObjectTest {
 

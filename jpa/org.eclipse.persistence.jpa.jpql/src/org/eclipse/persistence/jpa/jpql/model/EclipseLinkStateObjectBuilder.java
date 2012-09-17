@@ -22,6 +22,7 @@ import org.eclipse.persistence.jpa.jpql.parser.DatabaseType;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.ExtractExpression;
 import org.eclipse.persistence.jpa.jpql.parser.HierarchicalQueryClause;
+import org.eclipse.persistence.jpa.jpql.parser.OrderSiblingsByClause;
 import org.eclipse.persistence.jpa.jpql.parser.RegexpExpression;
 import org.eclipse.persistence.jpa.jpql.parser.StartWithClause;
 import org.eclipse.persistence.jpa.jpql.parser.TableExpression;
@@ -98,6 +99,13 @@ public class EclipseLinkStateObjectBuilder extends BasicStateObjectBuilder
 	 * {@inheritDoc}
 	 */
 	public void visit(HierarchicalQueryClause expression) {
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(OrderSiblingsByClause expression) {
+		// TODO
 	}
 
 	/**

@@ -25,6 +25,7 @@ import org.junit.Test;
  * @since 2.4
  * @author Pascal Filion
  */
+@UniqueSignature
 @SuppressWarnings("nls")
 public final class BasicRefactoringToolTest2_1 extends AbstractBasicRefactoringToolTest {
 

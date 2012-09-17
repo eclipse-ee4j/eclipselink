@@ -22,10 +22,11 @@ import static org.junit.Assert.*;
  * This unit-test tests {@link AbstractJPQLQueryHelper} when the queries are on entities managed by
  * a persistence unit.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
+@UniqueSignature
 @SuppressWarnings("nls")
 public class DefaultJPQLQueryHelperTest extends AbstractJPQLQueryHelperTest {
 

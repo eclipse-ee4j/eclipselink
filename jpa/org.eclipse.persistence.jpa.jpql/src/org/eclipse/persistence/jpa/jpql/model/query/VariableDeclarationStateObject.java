@@ -14,7 +14,7 @@
 package org.eclipse.persistence.jpa.jpql.model.query;
 
 import org.eclipse.persistence.jpa.jpql.spi.IManagedType;
-import org.eclipse.persistence.jpa.jpql.util.iterator.IterableListIterator;
+import org.eclipse.persistence.jpa.jpql.util.iterable.ListIterable;
 
 /**
  * This defines a variable declaration, which has a "root" object and an identification variable.
@@ -25,7 +25,7 @@ import org.eclipse.persistence.jpa.jpql.util.iterator.IterableListIterator;
  * @see IdentificationVariableDeclarationStateObject
  * @see RangeVariableDeclarationStateObject
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -57,5 +57,5 @@ public interface VariableDeclarationStateObject extends StateObject {
 	 *
 	 * @return The list of {@link IdentificationVariableStateObject}
 	 */
-	IterableListIterator<IdentificationVariableStateObject> identificationVariables();
+	ListIterable<IdentificationVariableStateObject> identificationVariables();
 }

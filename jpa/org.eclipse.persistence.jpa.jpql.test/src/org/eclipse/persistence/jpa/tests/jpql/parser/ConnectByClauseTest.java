@@ -31,13 +31,13 @@ public final class ConnectByClauseTest extends JPQLParserTest {
 	@Test
 	public void test_BuildExpression_01() throws Exception {
 
-		// SELECT e FROM Employee e CONNECT BY e.id = e.manager.id
+		// SELECT e FROM Employee e CONNECT BY e.managers
 
 		ExpressionTester selectStatement = selectStatement(
 			select(variable("e")),
 			from(
 				"Employee", "e",
-				connectBy(path("e.id").equal(path("e.manager.id")))
+				connectBy(collectionPath("e.managers"))
 			)
 		);
 
@@ -47,22 +47,20 @@ public final class ConnectByClauseTest extends JPQLParserTest {
 	@Test
 	public void test_BuildExpression_02() throws Exception {
 
-		// SELECT e
-		// FROM Employee e
-		// CONNECT BY e.employee_id = e.manager_id AND
-		//            e.account_mgr_id = e.customer_id
+		// SELECT employee
+		// FROM Employee employee
+		// START WITH employee.id = 100
+		// CONNECT BY employee.employees
+		// ORDER BY employee.last_name
 
-		ExpressionTester selectStatement = selectStatement(
-			select(variable("e")),
+		SelectStatementTester selectStatement = selectStatement(
+			select(variable("employee")),
 			from(
-				"Employee", "e",
-				connectBy(
-						path("e.employee.id").equal(path("e.manager.id"))
-					.and(
-						path("e.account_mgr_id").equal(path("e.customer_id"))
-					)
-				)
-			)
+				"Employee", "employee",
+				startWith(path("employee.id").equal(numeric(100))),
+				connectBy(collectionPath("employee.employees"))
+			),
+			orderBy(orderByItem("employee.last_name"))
 		);
 
 		testQuery(query_002(), selectStatement);
@@ -70,28 +68,6 @@ public final class ConnectByClauseTest extends JPQLParserTest {
 
 	@Test
 	public void test_BuildExpression_03() throws Exception {
-
-		// SELECT employee
-		// FROM Employee employee
-		// START WITH employee.id = 100
-		// CONNECT BY employee.id = employee.manager.id
-		// ORDER BY employee.last_name
-
-		ExpressionTester selectStatement = selectStatement(
-			select(variable("employee")),
-			from(
-				"Employee", "employee",
-				startWith(path("employee.id").equal(numeric(100))),
-				connectBy(path("employee.id").equal(path("employee.manager.id")))
-			),
-			orderBy(orderByItem("employee.last_name"))
-		);
-
-		testQuery(query_003(), selectStatement);
-	}
-
-	@Test
-	public void test_BuildExpression_04() throws Exception {
 
 		String jpqlQuery = "SELECT e FROM Employee e START WITH";
 
@@ -104,7 +80,7 @@ public final class ConnectByClauseTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_BuildExpression_05() throws Exception {
+	public void test_BuildExpression_04() throws Exception {
 
 		String jpqlQuery = "SELECT e FROM Employee e CONNECT BY";
 
@@ -117,58 +93,16 @@ public final class ConnectByClauseTest extends JPQLParserTest {
 	}
 
 	@Test
-	public void test_BuildExpression_06() throws Exception {
+	public void test_BuildExpression_05() throws Exception {
 
-		String jpqlQuery = "SELECT e FROM Employee e CONNECT BY NOCYCLE";
+		String jpqlQuery = "SELECT e FROM Employee e CONNECT BY ORDER BY e.name";
 
-		ExpressionTester selectStatement = selectStatement(
-			select(variable("e")),
-			from("Employee", "e", connectByNocycle(nullExpression()))
-		);
-
-		testInvalidQuery(jpqlQuery, selectStatement);
-	}
-
-	@Test
-	public void test_BuildExpression_07() throws Exception {
-
-		String jpqlQuery = "SELECT e FROM Employee e CONNECT BY NOCYCLE ";
-
-		ConnectByClauseTester connectByClause = connectByNocycle(nullExpression());
-		connectByClause.hasSpaceAfterNocycle = true;
+		ConnectByClauseTester connectBy = connectBy(nullExpression());
+		connectBy.hasSpaceAfterConnectBy = true;
 
 		ExpressionTester selectStatement = selectStatement(
 			select(variable("e")),
-			from("Employee", "e", connectByClause)
-		);
-
-		testInvalidQuery(jpqlQuery, selectStatement);
-	}
-
-	@Test
-	public void test_BuildExpression_08() throws Exception {
-
-		String jpqlQuery = "SELECT e FROM Employee e CONNECT BY AND";
-
-		ExpressionTester selectStatement = selectStatement(
-			select(variable("e")),
-			from("Employee", "e", connectBy(nullExpression().and(nullExpression())))
-		);
-
-		testInvalidQuery(jpqlQuery, selectStatement);
-	}
-
-	@Test
-	public void test_BuildExpression_09() throws Exception {
-
-		String jpqlQuery = "SELECT e FROM Employee e CONNECT BY AND ORDER BY e.name";
-
-		AndExpressionTester and = nullExpression().and(nullExpression());
-		and.hasSpaceAfterIdentifier = true;
-
-		ExpressionTester selectStatement = selectStatement(
-			select(variable("e")),
-			from("Employee", "e", connectBy(and)),
+			from("Employee", "e", connectBy),
 			orderBy("e.name")
 		);
 

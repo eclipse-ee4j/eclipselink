@@ -22,6 +22,7 @@ import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.ExtractExpression;
 import org.eclipse.persistence.jpa.jpql.parser.HierarchicalQueryClause;
+import org.eclipse.persistence.jpa.jpql.parser.OrderSiblingsByClause;
 import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.RegexpExpression;
 import org.eclipse.persistence.jpa.jpql.parser.StartWithClause;
@@ -174,6 +175,13 @@ public class EclipseLinkSemanticValidator extends AbstractSemanticValidator
 	 */
 	public void visit(HierarchicalQueryClause expression) {
 		// Nothing to validate semantically
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(OrderSiblingsByClause expression) {
+		// TODO
 	}
 
 	/**

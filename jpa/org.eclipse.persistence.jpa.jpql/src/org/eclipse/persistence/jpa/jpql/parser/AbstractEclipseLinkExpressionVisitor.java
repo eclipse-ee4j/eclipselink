@@ -67,6 +67,12 @@ public abstract class AbstractEclipseLinkExpressionVisitor extends AbstractExpre
 	/**
 	 * {@inheritDoc}
 	 */
+	public void visit(OrderSiblingsByClause expression) {
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public void visit(RegexpExpression expression) {
 	}
 

@@ -14,12 +14,10 @@
 package org.eclipse.persistence.jpa.jpql.model.query;
 
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.List;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractSelectStatement;
 import org.eclipse.persistence.jpa.jpql.spi.IEntity;
-import org.eclipse.persistence.jpa.jpql.util.iterator.IterableListIterator;
-
+import org.eclipse.persistence.jpa.jpql.util.iterable.ListIterable;
 import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
 
 /**
@@ -35,7 +33,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
  *
  * @see AbstractSelectStatement
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -278,7 +276,7 @@ public abstract class AbstractSelectStatementStateObject extends AbstractStateOb
 	 *
 	 * @return The list of {@link VariableDeclarationStateObject}
 	 */
-	public IterableListIterator<? extends VariableDeclarationStateObject> declarations() {
+	public ListIterable<? extends VariableDeclarationStateObject> declarations() {
 		return fromClause.items();
 	}
 
@@ -400,7 +398,7 @@ public abstract class AbstractSelectStatementStateObject extends AbstractStateOb
 	 *
 	 * @return The list of {@link IdentificationVariableStateObject IdentificationVariableStateObjects}
 	 */
-	public Iterator<IdentificationVariableStateObject> identificationVariables() {
+	public Iterable<IdentificationVariableStateObject> identificationVariables() {
 		return fromClause.identificationVariables();
 	}
 

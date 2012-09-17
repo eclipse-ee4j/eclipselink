@@ -15,30 +15,17 @@ package org.eclipse.persistence.jpa.jpql.parser;
 
 import java.util.Collection;
 import java.util.List;
-import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.WordParser;
 
 /**
  * The <b>CONNECT BY</b> clause allows selecting rows in a hierarchical order using the hierarchical
  * query clause. <b>CONNECT BY</b> specifies the relationship between parent rows and child rows of
- * the hierarchy. In a hierarchical query, one expression in condition must be qualified with the
- * <b>PRIOR</b> operator to refer to the parent row.
+ * the hierarchy.
  * <p>
- * <b>PRIOR</b> is a unary operator and has the same precedence as the unary + and - arithmetic
- * operators. It evaluates the immediately following expression for the parent row of the current
- * row in a hierarchical query.
- * <p>
- * <b>PRIOR</b> is most commonly used when comparing column values with the equality operator (The
- * <b>PRIOR</b> keyword can be on either side of the operator).
- * <p>
- * Both the <b>CONNECT BY</b> condition and the <b>PRIOR</b> expression can take the form of an
- * uncorrelated subquery. However, the <b>PRIOR</b> expression cannot refer to a sequence. That is,
- * <b>CURRVAL</b> and <b>NEXTVAL</b> are not valid <b>PRIOR</b> expressions.
- * <p>
- * <div nowrap><b>BNF:</b> <code>connectby_clause ::= connectby_clause ::= <b>CONNECT BY</b> [NOCYCLE] { <b>PRIOR</b> parent_expr = child_expr | child_expr = <b>PRIOR</b> parent_expr }</code><p>
+ * <div nowrap><b>BNF:</b> <code>connectby_clause ::= <b>CONNECT BY</b> { single_valued_object_path_expression | collection_valued_path_expression }</code><p>
  *
- * @version 2.4
- * @since 2.3
+ * @version 2.5
+ * @since 2.5
  * @author Pascal Filion
  */
 public final class ConnectByClause extends AbstractExpression {
@@ -57,16 +44,6 @@ public final class ConnectByClause extends AbstractExpression {
 	 * Determines whether a whitespace was parsed after <b>CONNECT BY</b>.
 	 */
 	private boolean hasSpaceAfterConnectBy;
-
-	/**
-	 * Determines whether a whitespace was parsed after the identifier <b>NOCYCLE</b>.
-	 */
-	private boolean hasSpaceAfterNocycle;
-
-	/**
-	 * The actual <b>NOCYCLE</b> identifier found in the string representation of the JPQL query.
-	 */
-	private String nocycleIdentifier;
 
 	/**
 	 * Creates a new <code>ConnectByClause</code>.
@@ -112,15 +89,7 @@ public final class ConnectByClause extends AbstractExpression {
 			children.add(buildStringExpression(SPACE));
 		}
 
-		// 'NOCYCLE'
-		if (nocycleIdentifier != null) {
-
-			if (hasSpaceAfterNocycle) {
-				children.add(buildStringExpression(SPACE));
-			}
-		}
-
-		// Expression
+		// Relationship expression
 		if (expression != null) {
 			children.add(expression);
 		}
@@ -138,20 +107,9 @@ public final class ConnectByClause extends AbstractExpression {
 	}
 
 	/**
-	 * Returns the actual <b>NOCYCLE</b> identifier found in the string representation of the JPQL
-	 * query, which has the actual case that was used.
+	 * Returns the {@link Expression} representing the relationship expression.
 	 *
-	 * @return The <b>NOCYCLE</b> identifier that was actually parsed, or an empty string if it was
-	 * not parsed
-	 */
-	public String getActualNocycleIdentifier() {
-		return (nocycleIdentifier != null) ? nocycleIdentifier : ExpressionTools.EMPTY_STRING;
-	}
-
-	/**
-	 * Returns the {@link Expression} representing the TODO.
-	 *
-	 * @return The expression representing the TODO
+	 * @return The expression representing the relationship expression
 	 */
 	public Expression getExpression() {
 		if (expression == null) {
@@ -168,23 +126,14 @@ public final class ConnectByClause extends AbstractExpression {
 	}
 
 	/**
-	 * Determines whether the conditional expression was parsed.
+	 * Determines whether the relationship expression was parsed.
 	 *
-	 * @return <code>true</code> if the conditional expression was parsed; <code>false</code> if it
+	 * @return <code>true</code> if the relationship expression was parsed; <code>false</code> if it
 	 * was not parsed
 	 */
 	public boolean hasExpression() {
 		return expression != null &&
 		      !expression.isNull();
-	}
-
-	/**
-	 * Determines whether the identifier <b>NOCYCLE</b> was part of the query.
-	 *
-	 * @return <code>true</code> if the identifier <b>NOCYCLE</b> was parsed; <code>false</code> otherwise
-	 */
-	public boolean hasNocycle() {
-		return nocycleIdentifier != null;
 	}
 
 	/**
@@ -198,15 +147,6 @@ public final class ConnectByClause extends AbstractExpression {
 	}
 
 	/**
-	 * Determines whether a whitespace was found after <b>NOCYCLE</b>.
-	 *
-	 * @return <code>true</code> if there was a whitespace after <b>NOCYCLE</b>; <code>false</code> otherwise
-	 */
-	public boolean hasSpaceAfterNocycle() {
-		return hasSpaceAfterNocycle;
-	}
-
-	/**
 	 * {@inheritDoc}
 	 */
 	@Override
@@ -217,16 +157,8 @@ public final class ConnectByClause extends AbstractExpression {
 
 		hasSpaceAfterConnectBy = wordParser.skipLeadingWhitespace() > 0;
 
-		// Parse 'NOCYCLE'
-		boolean nocycle = wordParser.startsWithIdentifier(NOCYCLE);
-
-		if (nocycle) {
-			nocycleIdentifier = wordParser.moveForward(NOCYCLE);
-			hasSpaceAfterNocycle = wordParser.skipLeadingWhitespace() > 0;
-		}
-
-		// Conditional expression
-		expression = parse(wordParser, ConditionalExpressionBNF.ID, tolerant);
+		// Relationship expression
+		expression = parse(wordParser, CollectionValuedPathExpressionBNF.ID, tolerant);
 	}
 
 	/**
@@ -242,16 +174,7 @@ public final class ConnectByClause extends AbstractExpression {
 			writer.append(SPACE);
 		}
 
-		// 'NOCYCLE'
-		if (nocycleIdentifier != null) {
-			writer.append(actual ? nocycleIdentifier : NOCYCLE);
-
-			if (hasSpaceAfterNocycle) {
-				writer.append(SPACE);
-			}
-		}
-
-		// Conditional expression
+		// Relationship expression
 		if (expression != null) {
 			expression.toParsedText(writer, actual);
 		}

@@ -14,6 +14,7 @@
 package org.eclipse.persistence.jpa.tests.jpql.model;
 
 import java.util.Arrays;
+import java.util.ListIterator;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.model.AbstractActualJPQLQueryFormatter;
 import org.eclipse.persistence.jpa.jpql.model.BaseJPQLQueryFormatter;
@@ -122,10 +123,9 @@ import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByItem.Ordering;
 import org.eclipse.persistence.jpa.jpql.parser.TrimExpression.Specification;
-import org.eclipse.persistence.jpa.jpql.util.iterator.IterableListIterator;
+import org.eclipse.persistence.jpa.jpql.util.iterable.ListIterable;
 import org.eclipse.persistence.jpa.tests.jpql.JPQLCoreTest;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLQueryBuilder;
-
 import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 import static org.junit.Assert.*;
@@ -2929,13 +2929,14 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
 			return AbstractStateObjectTest.substract(this, expression);
 		}
 
-		public void test(IterableListIterator<? extends StateObject> items) {
-			if (!items.hasNext()) {
+		public void test(ListIterable<? extends StateObject> items) {
+			ListIterator<? extends StateObject> iterator = items.iterator();
+			if (!iterator.hasNext()) {
 				fail("State objects should be present.");
 			}
 			else {
-				test(items.next());
-				if (items.hasNext()) {
+				test(iterator.next());
+				if (iterator.hasNext()) {
 					fail("Only one StateObject child should be present");
 				}
 			}
@@ -3284,7 +3285,7 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
 		}
 
 		@Override
-		public void test(IterableListIterator<? extends StateObject> items) {
+		public void test(ListIterable<? extends StateObject> items) {
 			int index = 0;
 			for (StateObject item : items) {
 				if (index == expressionStateObjectTesters.length) {
@@ -4511,8 +4512,8 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
 		}
 
 		@Override
-		public void test(IterableListIterator<? extends StateObject> items) {
-			assertFalse(items.hasNext());
+		public void test(ListIterable<? extends StateObject> items) {
+			assertFalse(items.iterator().hasNext());
 		}
 
 		public void test(StateObject stateObject) {
@@ -4931,8 +4932,8 @@ public abstract class AbstractStateObjectTest extends JPQLCoreTest {
 		StateObjectTester notMemberOf(StateObjectTester collectionPath);
 		OrExpressionStateObjectTester or(StateObjectTester expression);
 		SubstractionExpressionStateObjectTester substract(StateObjectTester expression);
+		void test(ListIterable<? extends StateObject> items);
 
-		void test(IterableListIterator<? extends StateObject> items);
 		/**
 		 * Tests the given {@link Expression} internal data.
 		 */

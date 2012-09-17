@@ -30,9 +30,7 @@ import org.eclipse.persistence.jpa.jpql.spi.IMapping;
 import org.eclipse.persistence.jpa.jpql.spi.IMappingType;
 import org.eclipse.persistence.jpa.jpql.spi.IType;
 import org.eclipse.persistence.jpa.jpql.spi.ITypeDeclaration;
-import org.eclipse.persistence.jpa.jpql.util.iterator.CloneIterator;
-import org.eclipse.persistence.jpa.jpql.util.iterator.IterableIterator;
-
+import org.eclipse.persistence.jpa.jpql.util.iterable.SnapshotCloneIterable;
 import static org.eclipse.persistence.jpa.jpql.LiteralType.*;
 
 /**
@@ -44,7 +42,7 @@ import static org.eclipse.persistence.jpa.jpql.LiteralType.*;
  * FROM Employee e, (SELECT count(e2), e2.firstName FROM Employee e2) e3
  * WHERE e.firstName = e3.firstName</code></pre>
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -181,9 +179,9 @@ public class FromSubqueryResolver extends Resolver {
 		/**
 		 * {@inheritDoc}
 		 */
-		public IterableIterator<IMapping> mappings() {
+		public Iterable<IMapping> mappings() {
 			initializeMappings();
-			return new CloneIterator<IMapping>(mappings.values());
+			return new SnapshotCloneIterable<IMapping>(mappings.values());
 		}
 	}
 

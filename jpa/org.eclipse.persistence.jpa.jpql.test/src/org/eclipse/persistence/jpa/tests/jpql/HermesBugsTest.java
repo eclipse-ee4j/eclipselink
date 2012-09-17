@@ -13,7 +13,9 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * Illustrates possible bugs in the Hermes 2.0 parser  */
+ * Illustrates possible bugs in the Hermes 2.0 parser.
+ */
+@UniqueSignature
 @SuppressWarnings("nls")
 public class HermesBugsTest extends JPQLCoreTest {
 

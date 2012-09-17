@@ -16,8 +16,8 @@ package org.eclipse.persistence.jpa.jpql.model;
 import java.util.List;
 import org.eclipse.persistence.jpa.jpql.model.query.ListHolderStateObject;
 import org.eclipse.persistence.jpa.jpql.model.query.StateObject;
-import org.eclipse.persistence.jpa.jpql.util.iterator.CloneListIterator;
-import org.eclipse.persistence.jpa.jpql.util.iterator.IterableListIterator;
+import org.eclipse.persistence.jpa.jpql.util.iterable.ListIterable;
+import org.eclipse.persistence.jpa.jpql.util.iterable.SnapshotCloneListIterable;
 
 /**
  * The default implementation of {@link IListChangeListener} where the generics is the type of the
@@ -112,8 +112,8 @@ public class ListChangeEvent<T> implements IListChangeEvent<T> {
 	/**
 	 * {@inheritDoc}
 	 */
-	public IterableListIterator<T> items() {
-		return new CloneListIterator<T>(items);
+	public ListIterable<T> items() {
+		return new SnapshotCloneListIterable<T>(items);
 	}
 
 	/**

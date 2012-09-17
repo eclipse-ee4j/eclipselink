@@ -35,13 +35,13 @@ import org.eclipse.persistence.jpa.jpql.parser.PatternValueBNF;
 import org.eclipse.persistence.jpa.jpql.parser.ScalarExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.SelectExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.SimpleSelectExpressionBNF;
-import org.eclipse.persistence.jpa.jpql.util.iterator.ArrayIterator;
+import org.eclipse.persistence.jpa.jpql.util.iterable.ArrayIterable;
 
 /**
  * This accessor is used to easily retrieve the JPQL identifiers registered with various {@link
  * JPQLQueryBNF}. Note: the methods are added as needed.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -79,7 +79,7 @@ public class JPQLQueryBNFAccessor {
 
 	public Iterable<String> comparators() {
 		ExpressionFactory factory = getExpressionFactory(ComparisonExpressionFactory.ID);
-		return new ArrayIterator<String>(factory.identifiers());
+		return new ArrayIterable<String>(factory.identifiers());
 	}
 
 	public Iterable<String> comparisonExpressionClauses() {

@@ -19,13 +19,12 @@ import org.eclipse.persistence.jpa.jpql.spi.IManagedTypeVisitor;
 import org.eclipse.persistence.jpa.jpql.spi.IMapping;
 import org.eclipse.persistence.jpa.jpql.spi.IType;
 import org.eclipse.persistence.jpa.jpql.spi.ITypeDeclaration;
-import org.eclipse.persistence.jpa.jpql.util.iterator.IterableIterator;
-import org.eclipse.persistence.jpa.jpql.util.iterator.NullIterator;
+import org.eclipse.persistence.jpa.jpql.util.iterable.EmptyIterable;
 
 /**
  * This {@link Resolver} is responsible to resolve the type of a collection-valued field.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -159,8 +158,8 @@ public class CollectionValuedFieldResolver extends AbstractPathResolver {
 		/**
 		 * {@inheritDoc}
 		 */
-		public IterableIterator<IMapping> mappings() {
-			return NullIterator.instance();
+		public Iterable<IMapping> mappings() {
+			return EmptyIterable.instance();
 		}
 
 		/**

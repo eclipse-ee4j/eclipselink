@@ -21,10 +21,11 @@ import org.junit.Test;
  * The abstract definition of a unit-test that tests {@link org.eclipse.persistence.jpa.jpql.
  * BasicRefactoringTool BasicRefactoringTool} when the JPA version is 1.0.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
+@UniqueSignature
 @SuppressWarnings("nls")
 public final class BasicRefactoringToolTest1_0 extends AbstractBasicRefactoringToolTest {
 

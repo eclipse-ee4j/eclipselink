@@ -13,16 +13,11 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.tests.jpql;
 
-import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_0;
-import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_1;
-import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_2;
-import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_3;
-import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_4;
-import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_5;
+import org.eclipse.persistence.jpa.jpql.EclipseLinkVersion;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
-import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar2_0;
-import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar2_1;
+import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
 import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLGrammarTestHelper;
+import org.eclipse.persistence.jpa.tests.jpql.parser.JPQLGrammarTools;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;
 
@@ -31,19 +26,6 @@ import org.junit.runners.Suite.SuiteClasses;
  * @since 2.4
  * @author Pascal Filion
  */
-@SuiteClasses({
-	// Unit-Test testing validating a JPQL query that was written following the JPA 2.0 spec
-	AllSemanticValidatorTests.AllDefaultSemanticValidatorTest2_0.class,
-	// Unit-Test testing validating a JPQL query that was written following the JPA 2.1 spec
-	AllSemanticValidatorTests.AllDefaultSemanticValidatorTest2_1.class,
-	// Unit-Test testing validating a JPQL query that was written following EclipseLink 2.0, 2.1, 2.2, 2.3
-	AllSemanticValidatorTests.AllEclipseLinkSemanticValidatorTest.class,
-	// Unit-Test testing validating a JPQL query that was written following EclipseLink 2.4
-	AllSemanticValidatorTests.AllEclipseLinkSemanticValidatorTest2_4.class,
-	// Unit-Test testing validating a JPQL query that was written following EclipseLink 2.5
-	AllSemanticValidatorTests.AllEclipseLinkSemanticValidatorTest2_5.class
-})
-@RunWith(JPQLTestRunner.class)
 public final class AllSemanticValidatorTests {
 
 	private AllSemanticValidatorTests() {
@@ -66,12 +48,7 @@ public final class AllSemanticValidatorTests {
 
 		@JPQLGrammarTestHelper
 		static JPQLGrammar[] buildJPQLGrammars() {
-			return new JPQLGrammar[] {
-				JPQLGrammar2_0.instance(),
-				JPQLGrammar2_1.instance(),
-				EclipseLinkJPQLGrammar2_4.instance(),
-				EclipseLinkJPQLGrammar2_5.instance()
-			};
+			return JPQLGrammarTools.allJPQLGrammars(JPAVersion.VERSION_2_0);
 		}
 	}
 
@@ -91,11 +68,7 @@ public final class AllSemanticValidatorTests {
 
 		@JPQLGrammarTestHelper
 		static JPQLGrammar[] buildJPQLGrammars() {
-			return new JPQLGrammar[] {
-				JPQLGrammar2_1.instance(),
-				EclipseLinkJPQLGrammar2_4.instance(),
-				EclipseLinkJPQLGrammar2_5.instance()
-			};
+			return JPQLGrammarTools.allJPQLGrammars(JPAVersion.VERSION_2_1);
 		}
 	}
 
@@ -116,14 +89,7 @@ public final class AllSemanticValidatorTests {
 
 		@JPQLGrammarTestHelper
 		static JPQLGrammar[] buildJPQLGrammars() {
-			return new JPQLGrammar[] {
-				EclipseLinkJPQLGrammar2_0.instance(),
-				EclipseLinkJPQLGrammar2_1.instance(),
-				EclipseLinkJPQLGrammar2_2.instance(),
-				EclipseLinkJPQLGrammar2_3.instance(),
-				EclipseLinkJPQLGrammar2_4.instance(),
-				EclipseLinkJPQLGrammar2_5.instance()
-			};
+			return JPQLGrammarTools.allEclipseLinkJPQLGrammars(EclipseLinkVersion.VERSION_2_0);
 		}
 	}
 
@@ -144,10 +110,7 @@ public final class AllSemanticValidatorTests {
 
 		@JPQLGrammarTestHelper
 		static JPQLGrammar[] buildJPQLGrammars() {
-			return new JPQLGrammar[] {
-				EclipseLinkJPQLGrammar2_4.instance(),
-				EclipseLinkJPQLGrammar2_5.instance(),
-			};
+			return JPQLGrammarTools.allEclipseLinkJPQLGrammars(EclipseLinkVersion.VERSION_2_4);
 		}
 	}
 
@@ -168,9 +131,7 @@ public final class AllSemanticValidatorTests {
 
 		@JPQLGrammarTestHelper
 		static JPQLGrammar[] buildJPQLGrammars() {
-			return new JPQLGrammar[] {
-				EclipseLinkJPQLGrammar2_5.instance(),
-			};
+			return JPQLGrammarTools.allEclipseLinkJPQLGrammars(EclipseLinkVersion.VERSION_2_5);
 		}
 	}
 }

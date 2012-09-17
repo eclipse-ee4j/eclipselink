@@ -51,8 +51,7 @@ public interface JPQLQueryTestHelper {
 	void setUp() throws Exception;
 
 	/**
-	 * Notifies this helper before the tests are invoked, which is before the entire test suite is
-	 * invoked.
+	 * Notifies this helper before the tests are invoked, which is before the entire test suite is invoked.
 	 *
 	 * @throws Exception If an error was encountered during the initialization
 	 */

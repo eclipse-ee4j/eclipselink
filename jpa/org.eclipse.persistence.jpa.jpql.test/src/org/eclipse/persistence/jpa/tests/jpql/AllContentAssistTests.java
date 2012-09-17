@@ -31,11 +31,6 @@ import org.junit.runners.Suite.SuiteClasses;
  * @since 2.4
  * @author Pascal Filion
  */
-@SuiteClasses({
-	AllContentAssistTests.AllDefaultContentAssistTests.class,
-	AllContentAssistTests.AllEclipseLinkContentAssistTests.class
-})
-@RunWith(JPQLTestRunner.class)
 public final class AllContentAssistTests {
 
 	private AllContentAssistTests() {

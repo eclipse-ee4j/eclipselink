@@ -13,6 +13,9 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.tests.jpql;
 
+import org.eclipse.persistence.jpa.tests.jpql.model.AllEclipseLinkStateObjectTest2_1;
+import org.eclipse.persistence.jpa.tests.jpql.model.AllStateObjectTest1_0;
+import org.eclipse.persistence.jpa.tests.jpql.model.AllStateObjectTest2_0;
 import org.eclipse.persistence.jpa.tests.jpql.model.AllStateObjectTests;
 import org.eclipse.persistence.jpa.tests.jpql.parser.AllJPQLParserTests;
 import org.eclipse.persistence.jpa.tests.jpql.parser.AllUtilityTests;
@@ -22,7 +25,7 @@ import org.junit.runners.Suite.SuiteClasses;
 /**
  * The root test suite that includes the entire functionality provided by Hermes.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -31,7 +34,8 @@ import org.junit.runners.Suite.SuiteClasses;
 	AllJPQLParserTests.class,
 	ValidateJPQLVersionTest.class,
 	AllGrammarValidatorTests.class,
-	AllHermesTests.BatchTestSuite.class
+	AllHermesTests.HermesDefaultTestSuite.class,
+	AllHermesTests.HermesEclipseLinkTestSuite.class
 })
 @RunWith(JPQLTestRunner.class)
 public final class AllHermesTests {
@@ -41,17 +45,70 @@ public final class AllHermesTests {
 	}
 
 	@SuiteClasses({
-		AllJPQLQueryHelperTests.class,
-		AllSemanticValidatorTests.class,
-		AllContentAssistTests.class,
+
+		// Test JPQLQueryHelper
+		AllJPQLQueryHelperTests.AllDefaultJPQLQueryHelperTests.class,
+		AllJPQLQueryHelperTests.AllDefaultJPQLQueryHelperTests2_1.class,
+
+		// Unit-Test testing validating a JPQL query that was written following the JPA 2.0 spec
+		AllSemanticValidatorTests.AllDefaultSemanticValidatorTest2_0.class,
+		// Unit-Test testing validating a JPQL query that was written following the JPA 2.1 spec
+		AllSemanticValidatorTests.AllDefaultSemanticValidatorTest2_1.class,
+
+		// Content assist support
+		AllContentAssistTests.AllDefaultContentAssistTests.class,
+
+		// Testing the creation of the state model representation of a JPQL query
 		AllStateObjectTests.class,
+		AllStateObjectTest1_0.class,
+		AllStateObjectTest2_0.class,
+
+		// Refactoring support
 		AllRefactoringToolTests.class
 	})
 	@RunWith(JPQLTestRunner.class)
-	public static final class BatchTestSuite {
+	public static class DefaultTestSuite {
+	}
+
+	@SuiteClasses({
+
+		// Test JPQLQueryHelper
+		AllJPQLQueryHelperTests.AllEclipseLinkJPQLQueryHelperTests.class,
+		AllJPQLQueryHelperTests.AllEclipseLinkJPQLQueryHelperTests2_4.class,
+		AllJPQLQueryHelperTests.AllEclipseLinkJPQLQueryHelperTests2_5.class,
+
+		// Unit-Test testing validating a JPQL query that was written following EclipseLink 2.0, 2.1, 2.2, 2.3
+		AllSemanticValidatorTests.AllEclipseLinkSemanticValidatorTest.class,
+		// Unit-Test testing validating a JPQL query that was written following EclipseLink 2.4
+		AllSemanticValidatorTests.AllEclipseLinkSemanticValidatorTest2_4.class,
+		// Unit-Test testing validating a JPQL query that was written following EclipseLink 2.5
+		AllSemanticValidatorTests.AllEclipseLinkSemanticValidatorTest2_5.class,
+
+		// Content assist support
+		AllContentAssistTests.AllEclipseLinkContentAssistTests.class,
+
+		// Testing the creation of the state model representation of a JPQL query
+		AllStateObjectTests.class,
+		AllEclipseLinkStateObjectTest2_1.class,
+
+		// Refactoring support
+		AllRefactoringToolTests.class
+	})
+	@RunWith(JPQLTestRunner.class)
+	public static class EclipseLinkTestSuite {
+	}
+
+	private static class HermesDefaultTestSuite extends DefaultTestSuite {
 		@JPQLQueryTestHelperTestHelper
 		static JPQLQueryTestHelper buildQueryTestHelper() {
-			return new JavaJPQLQueryTestHelper();
+			return new DefaultJavaJPQLQueryTestHelper();
+		}
+	}
+
+	private static final class HermesEclipseLinkTestSuite extends EclipseLinkTestSuite {
+		@JPQLQueryTestHelperTestHelper
+		static JPQLQueryTestHelper buildQueryTestHelper() {
+			return new EclipseLinkJavaJPQLQueryTestHelper();
 		}
 	}
 }

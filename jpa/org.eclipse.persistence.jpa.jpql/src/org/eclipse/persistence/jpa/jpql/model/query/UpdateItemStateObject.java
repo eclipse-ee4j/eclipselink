@@ -19,8 +19,7 @@ import java.util.ListIterator;
 import org.eclipse.persistence.jpa.jpql.model.INewValueStateObjectBuilder;
 import org.eclipse.persistence.jpa.jpql.parser.NewValueBNF;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateItem;
-import org.eclipse.persistence.jpa.jpql.util.iterator.IterableListIterator;
-
+import org.eclipse.persistence.jpa.jpql.util.iterable.ListIterable;
 import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
@@ -32,7 +31,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  *
  * @see UpdateItem
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -232,7 +231,7 @@ public class UpdateItemStateObject extends AbstractStateObject {
 	 *
 	 * @return An {@link IterableListIterator} over the paths of the state field path
 	 */
-	public IterableListIterator<String> items() {
+	public ListIterable<String> items() {
 		return stateFieldPath.items();
 	}
 

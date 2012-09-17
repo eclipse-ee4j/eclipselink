@@ -19,8 +19,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import org.eclipse.persistence.jpa.jpql.model.IListChangeListener;
-import org.eclipse.persistence.jpa.jpql.util.iterator.CloneListIterator;
-import org.eclipse.persistence.jpa.jpql.util.iterator.IterableListIterator;
+import org.eclipse.persistence.jpa.jpql.util.iterable.ListIterable;
+import org.eclipse.persistence.jpa.jpql.util.iterable.SnapshotCloneListIterable;
 
 /**
  * The abstraction definition of a {@link StateObject} that holds onto a list of children, the
@@ -172,8 +172,8 @@ public abstract class AbstractListHolderStateObject<T extends StateObject> exten
 	/**
 	 * {@inheritDoc}
 	 */
-	public IterableListIterator<? extends T> items() {
-		return new CloneListIterator<T>(items);
+	public ListIterable<? extends T> items() {
+		return new SnapshotCloneListIterable<T>(items);
 	}
 
 	/**

@@ -36,16 +36,8 @@ import org.junit.runners.Suite.SuiteClasses;
  * @since 2.4
  * @author Pascal Filion
  */
-@SuiteClasses({
-	AllJPQLQueryHelperTests.AllDefaultJPQLQueryHelperTests.class,
-	AllJPQLQueryHelperTests.AllDefaultJPQLQueryHelperTests2_1.class,
-	AllJPQLQueryHelperTests.AllEclipseLinkJPQLQueryHelperTests.class,
-	AllJPQLQueryHelperTests.AllEclipseLinkJPQLQueryHelperTests2_4.class,
-	AllJPQLQueryHelperTests.AllEclipseLinkJPQLQueryHelperTests2_5.class,
 //	ORMEntityJPQLQueryHelperTest.class,
 //	ORMJPQLQueryHelperTest.class
-})
-@RunWith(JPQLTestRunner.class)
 public final class AllJPQLQueryHelperTests {
 
 	private AllJPQLQueryHelperTests() {
@@ -93,6 +85,7 @@ public final class AllJPQLQueryHelperTests {
 		DefaultJPQLQueryHelperTest2_1.class,
 	})
 	@RunWith(JPQLTestRunner.class)
+	@UniqueSignature
 	public static class AllDefaultJPQLQueryHelperTests2_1 {
 
 		private AllDefaultJPQLQueryHelperTests2_1() {

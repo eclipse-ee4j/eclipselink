@@ -21,6 +21,7 @@ import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.Expression;
 import org.eclipse.persistence.jpa.jpql.parser.ExtractExpression;
 import org.eclipse.persistence.jpa.jpql.parser.HierarchicalQueryClause;
+import org.eclipse.persistence.jpa.jpql.parser.OrderSiblingsByClause;
 import org.eclipse.persistence.jpa.jpql.parser.RegexpExpression;
 import org.eclipse.persistence.jpa.jpql.parser.StartWithClause;
 import org.eclipse.persistence.jpa.jpql.parser.TableExpression;
@@ -91,6 +92,13 @@ public class EclipseLinkParameterTypeVisitor extends ParameterTypeVisitor
 	 * {@inheritDoc}
 	 */
 	public void visit(HierarchicalQueryClause expression) {
+		type = Object.class;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(OrderSiblingsByClause expression) {
 		type = Object.class;
 	}
 

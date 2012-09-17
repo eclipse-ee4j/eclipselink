@@ -13,6 +13,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.tests.jpql;
 
+import java.lang.reflect.Member;
 import java.util.HashMap;
 import java.util.Map;
 import jpql.query.AbstractProduct;
@@ -32,17 +33,17 @@ import jpql.query.ShelfLife;
 import jpql.query.SmallProject;
 import jpql.query.ZipCode;
 import org.eclipse.persistence.jpa.jpql.spi.IManagedTypeProvider;
-import org.eclipse.persistence.jpa.jpql.spi.java.EclipseLinkMappingBuilder;
+import org.eclipse.persistence.jpa.jpql.spi.IMappingBuilder;
 import org.eclipse.persistence.jpa.jpql.spi.java.JavaManagedTypeProvider;
 
 /**
  * The default implementation of {@link JPQLQueryTestHelper} used by the unit-tests.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
-public final class JavaJPQLQueryTestHelper implements JPQLQueryTestHelper {
+public abstract class JavaJPQLQueryTestHelper implements JPQLQueryTestHelper {
 
 	/**
 	 * The external forms of the ORM configurations mapped to the file name.
@@ -53,6 +54,13 @@ public final class JavaJPQLQueryTestHelper implements JPQLQueryTestHelper {
 	 * The external form of the persistence unit.
 	 */
 	private JavaManagedTypeProvider persistenceUnit;
+
+	/**
+	 * Creates
+	 *
+	 * @return
+	 */
+	protected abstract IMappingBuilder<Member> buildMappingBuilder();
 
 	/**
 	 * {@inheritDoc}
@@ -66,7 +74,7 @@ public final class JavaJPQLQueryTestHelper implements JPQLQueryTestHelper {
 		IORMConfiguration ormConfiguration = ormConfigurations.get(ormXmlFileName);
 
 		if (ormConfiguration == null) {
-			ormConfiguration = new JavaORMConfiguration(ormXmlFileName);
+			ormConfiguration = new JavaORMConfiguration(buildMappingBuilder(), ormXmlFileName);
 			ormConfigurations.put(ormXmlFileName, ormConfiguration);
 		}
 
@@ -78,8 +86,7 @@ public final class JavaJPQLQueryTestHelper implements JPQLQueryTestHelper {
 	 */
 	public IManagedTypeProvider getPersistenceUnit() throws Exception {
 		if (persistenceUnit == null) {
-			// TODO
-			persistenceUnit = new JavaManagedTypeProvider(new EclipseLinkMappingBuilder());
+			persistenceUnit = new JavaManagedTypeProvider(buildMappingBuilder());
 			initializeManagedTypeProvider();
 		}
 		return persistenceUnit;

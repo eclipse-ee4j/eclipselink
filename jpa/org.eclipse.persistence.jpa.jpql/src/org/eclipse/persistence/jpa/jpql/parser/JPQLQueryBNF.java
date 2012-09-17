@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.Set;
 import org.eclipse.persistence.jpa.jpql.util.filter.Filter;
 import org.eclipse.persistence.jpa.jpql.util.filter.NullFilter;
-import org.eclipse.persistence.jpa.jpql.util.iterator.ArrayIterator;
+import org.eclipse.persistence.jpa.jpql.util.iterable.ArrayIterable;
 
 /**
  * This defines a single Backus-Naur Form (BNF) of the JPQL grammar. The Java Persistence functional
@@ -273,7 +273,7 @@ public abstract class JPQLQueryBNF {
 	 * @return The children BNFs describing this BNF rule
 	 */
 	public Iterable<JPQLQueryBNF> children() {
-		return new ArrayIterator<JPQLQueryBNF>(getChildren());
+		return new ArrayIterable<JPQLQueryBNF>(getChildren());
 	}
 
 	private JPQLQueryBNF[] getChildren() {
@@ -323,7 +323,7 @@ public abstract class JPQLQueryBNF {
 	 * BNF rule and with its children
 	 */
 	public Iterable<String> getExpressionFactoryIds() {
-		return new ArrayIterator<String>(getExpressionFactoryIdsImp());
+		return new ArrayIterable<String>(getExpressionFactoryIdsImp());
 	}
 
 	private String[] getExpressionFactoryIdsImp() {
@@ -407,13 +407,13 @@ public abstract class JPQLQueryBNF {
 		// identifiers has not been copied from cachedExpressionFactoryIds yet.
 		// cachedExpressionFactoryIds is set at the end of the method, insuring proper initialization
 		if (cachedExpressionFactoryIds != null) {
-			return new ArrayIterator<String>(cachedIdentifiers);
+			return new ArrayIterable<String>(cachedIdentifiers);
 		}
 
 		// Synchronize to make sure only one thread populates the list of JPQL identifiers
 		calculateExpressionFactories();
 
-		return new ArrayIterator<String>(cachedIdentifiers);
+		return new ArrayIterable<String>(cachedIdentifiers);
 	}
 
 	/**
@@ -543,7 +543,7 @@ public abstract class JPQLQueryBNF {
 
 		// No need to synchronize if the list of child BNFs (non-compound) was calculated
 		if (nonCompoundChildren != null) {
-			return new ArrayIterator<JPQLQueryBNF>(nonCompoundChildren);
+			return new ArrayIterable<JPQLQueryBNF>(nonCompoundChildren);
 		}
 
 		// Synchronize to make sure only one thread populates the list of child BNFs (non-compound)
@@ -553,7 +553,7 @@ public abstract class JPQLQueryBNF {
 			}
 		}
 
-		return new ArrayIterator<JPQLQueryBNF>(nonCompoundChildren);
+		return new ArrayIterable<JPQLQueryBNF>(nonCompoundChildren);
 	}
 
 	/**

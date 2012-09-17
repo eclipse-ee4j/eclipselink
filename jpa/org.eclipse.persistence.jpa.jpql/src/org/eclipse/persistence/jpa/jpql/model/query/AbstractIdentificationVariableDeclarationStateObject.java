@@ -19,15 +19,14 @@ import java.util.List;
 import java.util.ListIterator;
 import org.eclipse.persistence.jpa.jpql.parser.IdentificationVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.JoinBNF;
-import org.eclipse.persistence.jpa.jpql.util.iterator.CloneListIterator;
-import org.eclipse.persistence.jpa.jpql.util.iterator.IterableListIterator;
-
+import org.eclipse.persistence.jpa.jpql.util.iterable.ListIterable;
+import org.eclipse.persistence.jpa.jpql.util.iterable.SnapshotCloneListIterable;
 import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
 /**
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -241,13 +240,13 @@ public abstract class AbstractIdentificationVariableDeclarationStateObject exten
 	/**
 	 * {@inheritDoc}
 	 */
-	public IterableListIterator<IdentificationVariableStateObject> identificationVariables() {
+	public ListIterable<IdentificationVariableStateObject> identificationVariables() {
 		List<IdentificationVariableStateObject> stateObjects = new ArrayList<IdentificationVariableStateObject>();
 		stateObjects.add(rangeVariableDeclaration.getIdentificationVariableStateObject());
 		for (JoinStateObject join : items()) {
 			stateObjects.add(join.getIdentificationVariableStateObject());
 		}
-		return new CloneListIterator<IdentificationVariableStateObject>(stateObjects);
+		return new SnapshotCloneListIterable<IdentificationVariableStateObject>(stateObjects);
 	}
 
 	/**

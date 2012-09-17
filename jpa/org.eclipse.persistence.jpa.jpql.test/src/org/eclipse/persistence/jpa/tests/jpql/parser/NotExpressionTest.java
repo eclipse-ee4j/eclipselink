@@ -158,4 +158,23 @@ public final class NotExpressionTest extends JPQLParserTest {
 
 		testQuery(query, selectStatement);
 	}
+
+	@Test
+	public void testBuildExpression_09() {
+
+		String query = "SELECT e FROM Employee e WHERE NOT e.firstName = :firstName AND e.lastName = :lastName";
+
+		SelectStatementTester selectStatement = selectStatement(
+			select(variable("e")),
+			from("Employee", "e"),
+			where(
+					not(path("e.firstName").equal(inputParameter(":firstName")))
+				.and(
+					path("e.lastName").equal(inputParameter(":lastName"))
+				)
+			)
+		);
+
+		testQuery(query, selectStatement);
+	}
 }

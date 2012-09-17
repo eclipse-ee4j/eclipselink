@@ -22,9 +22,8 @@ import org.eclipse.persistence.jpa.jpql.model.ISelectExpressionStateObjectBuilde
 import org.eclipse.persistence.jpa.jpql.parser.InternalSelectExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.SelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.SelectExpressionBNF;
-import org.eclipse.persistence.jpa.jpql.util.iterator.CloneListIterator;
-import org.eclipse.persistence.jpa.jpql.util.iterator.IterableListIterator;
-
+import org.eclipse.persistence.jpa.jpql.util.iterable.ListIterable;
+import org.eclipse.persistence.jpa.jpql.util.iterable.SnapshotCloneListIterable;
 import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
@@ -317,8 +316,8 @@ public class SelectClauseStateObject extends AbstractSelectClauseStateObject
 	/**
 	 * {@inheritDoc}
 	 */
-	public IterableListIterator<StateObject> items() {
-		return new CloneListIterator<StateObject>(items);
+	public ListIterable<StateObject> items() {
+		return new SnapshotCloneListIterable<StateObject>(items);
 	}
 
 	/**

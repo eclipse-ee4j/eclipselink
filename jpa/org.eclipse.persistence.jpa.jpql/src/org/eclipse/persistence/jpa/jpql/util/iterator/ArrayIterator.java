@@ -20,11 +20,11 @@ import java.util.NoSuchElementException;
 /**
  * An <code>ArrayIterator</code> provides a {@link Iterator} for an array of objects.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  */
 @SuppressWarnings("nls")
-public class ArrayIterator<E> implements IterableIterator<E> {
+public class ArrayIterator<E> implements Iterator<E> {
 
 	/**
 	 * The object containing the items to iterate over.
@@ -80,13 +80,6 @@ public class ArrayIterator<E> implements IterableIterator<E> {
 	 */
 	public boolean hasNext() {
 		return nextIndex < maxIndex;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public Iterator<E> iterator() {
-		return this;
 	}
 
 	/**

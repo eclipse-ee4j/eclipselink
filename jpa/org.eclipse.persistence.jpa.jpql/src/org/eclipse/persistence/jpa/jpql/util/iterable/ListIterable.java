@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -11,21 +11,21 @@
  *     Oracle - initial API and implementation
  *
  ******************************************************************************/
-package org.eclipse.persistence.jpa.jpql.util.iterator;
+package org.eclipse.persistence.jpa.jpql.util.iterable;
+
+import java.util.ListIterator;
 
 /**
- * Used by {@link CloneIterator} to remove elements from the original collection; since the iterator
- * does not have direct access to the original collection.
+ * A <code>ListIterable</code> simply forces the returned object to be an instance of {@link ListIterator}.
  *
- * @version 2.4
- * @since 2.4
+ * @version 2.5
+ * @since 2.5
+ * @author Pascal Filion
  */
-public interface Mutator<E> {
+public interface ListIterable<T> extends Iterable<T> {
 
 	/**
-	 * Removes the specified object from the original collection.
-	 *
-	 * @param item The item to remove from the original collection
+	 * {@inheritDoc}
 	 */
-	void remove(E item);
+	ListIterator<T> iterator();
 }

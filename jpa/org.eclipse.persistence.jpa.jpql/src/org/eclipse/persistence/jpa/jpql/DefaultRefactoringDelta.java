@@ -15,8 +15,8 @@ package org.eclipse.persistence.jpa.jpql;
 
 import java.util.LinkedList;
 import java.util.List;
-import org.eclipse.persistence.jpa.jpql.util.iterator.CloneListIterator;
-import org.eclipse.persistence.jpa.jpql.util.iterator.IterableListIterator;
+import org.eclipse.persistence.jpa.jpql.util.iterable.ListIterable;
+import org.eclipse.persistence.jpa.jpql.util.iterable.SnapshotCloneListIterable;
 
 /**
  * The default implementation of {@link RefactoringDelta} which contains the {@link TextEdit} that
@@ -163,8 +163,8 @@ public class DefaultRefactoringDelta implements RefactoringDelta {
 	/**
 	 * {@inheritDoc}
 	 */
-	public IterableListIterator<TextEdit> textEdits() {
-		return new CloneListIterator<TextEdit>(textEdits);
+	public ListIterable<TextEdit> textEdits() {
+		return new SnapshotCloneListIterable<TextEdit>(textEdits);
 	}
 
 	/**

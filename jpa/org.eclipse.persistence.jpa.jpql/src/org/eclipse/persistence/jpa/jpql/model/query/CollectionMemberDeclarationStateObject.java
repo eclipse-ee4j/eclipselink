@@ -18,9 +18,8 @@ import java.util.List;
 import java.util.ListIterator;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionMemberDeclaration;
 import org.eclipse.persistence.jpa.jpql.spi.IManagedType;
-import org.eclipse.persistence.jpa.jpql.util.iterator.IterableListIterator;
-import org.eclipse.persistence.jpa.jpql.util.iterator.SingleElementListIterator;
-
+import org.eclipse.persistence.jpa.jpql.util.iterable.ListIterable;
+import org.eclipse.persistence.jpa.jpql.util.iterable.SingleElementListIterable;
 import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
@@ -43,7 +42,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * @see FromClauseStateObject
  * @see CollectionMemberDeclaration
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -240,8 +239,8 @@ public class CollectionMemberDeclarationStateObject extends AbstractStateObject
 	/**
 	 * {@inheritDoc}
 	 */
-	public IterableListIterator<IdentificationVariableStateObject> identificationVariables() {
-		return new SingleElementListIterator<IdentificationVariableStateObject>(identificationVariable);
+	public ListIterable<IdentificationVariableStateObject> identificationVariables() {
+		return new SingleElementListIterable<IdentificationVariableStateObject>(identificationVariable);
 	}
 
 	/**

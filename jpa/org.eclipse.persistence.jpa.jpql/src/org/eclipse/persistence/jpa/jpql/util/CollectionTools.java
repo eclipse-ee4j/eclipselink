@@ -15,6 +15,7 @@ package org.eclipse.persistence.jpa.jpql.util;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -27,7 +28,7 @@ import java.util.List;
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
  * API will almost certainly be broken (repeatedly) as the API evolves.
  *
- * @version 2.4.1
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -58,6 +59,20 @@ public final class CollectionTools {
 	}
 
 	/**
+	 * Adds to the given {@link Collection} the items contained in the {@link Iterable}.
+	 *
+	 * @param collection The {@link Collection} that will receive the items returned by the {@link Iterator}
+	 * @param iterable The {@link Iterable} to add to the given {@link Collection}
+	 * @return The given {@link Collection}
+	 * @param <T> The type of the collection
+	 * @param <E> The type of the element
+	 * @since 2.5
+	 */
+	public static <T extends Collection<E>, E> T addAll(T collection, Iterable<? extends E> iterable) {
+		return addAll(collection, iterable.iterator());
+	}
+
+	/**
 	 * Adds to the given {@link Collection} the items returned by the given {@link Iterator}.
 	 *
 	 * @param collection The {@link Collection} that will receive the items returned by the {@link Iterator}
@@ -74,15 +89,28 @@ public final class CollectionTools {
 	}
 
 	/**
+	 * Creates a new array and adds the items returned by the given {@link Iterable}.
+	 *
+	 * @param componentType The type of the array
+	 * @param iterator The {@link Iterable} that will iterate over the collection of items to add
+	 * into the new array in the same order they are returned
+	 * @return A new array filled with the items returned by the given iterator
+	 * @since 2.5
+	 */
+	public static <T> T[] array(Class<T> componentType, Iterable<? extends T> iterable) {
+		return array(componentType, iterable.iterator());
+	}
+
+	/**
 	 * Creates a new array and adds the items returned by the given {@link Iterator}.
 	 *
 	 * @param componentType The type of the array
 	 * @param iterator The {@link Iterator} that will iterate over the collection of items to add
 	 * into the new array in the same order they are returned
-	 * @return A new array filled with the items returned by the given iterator.
+	 * @return A new array filled with the items returned by the given iterator
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> T[] array(Class<T> componentType, Iterator<T> iterator) {
+	public static <T> T[] array(Class<T> componentType, Iterator<? extends T> iterator) {
 
 		if (!iterator.hasNext()) {
 			return (T[]) Array.newInstance(componentType, 0);
@@ -96,6 +124,19 @@ public final class CollectionTools {
 
 		T[] array = (T[]) Array.newInstance(componentType, list.size());
 		return list.toArray(array);
+	}
+
+	/**
+	 * Returns a list corresponding to the specified array. Unlike {@link Arrays#asList(Object[])},
+	 * the list is modifiable and is not backed by the array.
+	 *
+	 * @param array
+	 * @param <E>
+	 * @return
+	 * @since 2.5
+	 */
+	public static <E> ArrayList<E> list(E... array) {
+		return new ArrayList<E>(Arrays.asList(array));
 	}
 
 	/**

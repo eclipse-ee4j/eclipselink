@@ -20,9 +20,8 @@ import java.util.List;
 import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.model.IListChangeListener;
 import org.eclipse.persistence.jpa.jpql.parser.FunctionExpression;
-import org.eclipse.persistence.jpa.jpql.util.iterator.CloneListIterator;
-import org.eclipse.persistence.jpa.jpql.util.iterator.IterableListIterator;
-
+import org.eclipse.persistence.jpa.jpql.util.iterable.ListIterable;
+import org.eclipse.persistence.jpa.jpql.util.iterable.SnapshotCloneListIterable;
 import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
 
 /**
@@ -256,8 +255,8 @@ public class FunctionExpressionStateObject extends AbstractStateObject
 	/**
 	 * {@inheritDoc}
 	 */
-	public IterableListIterator<StateObject> items() {
-		return new CloneListIterator<StateObject>(items);
+	public ListIterable<StateObject> items() {
+		return new SnapshotCloneListIterable<StateObject>(items);
 	}
 
 	/**

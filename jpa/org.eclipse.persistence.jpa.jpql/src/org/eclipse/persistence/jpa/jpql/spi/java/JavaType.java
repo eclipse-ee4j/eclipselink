@@ -24,13 +24,12 @@ import org.eclipse.persistence.jpa.jpql.spi.IConstructor;
 import org.eclipse.persistence.jpa.jpql.spi.IType;
 import org.eclipse.persistence.jpa.jpql.spi.ITypeDeclaration;
 import org.eclipse.persistence.jpa.jpql.spi.ITypeRepository;
-import org.eclipse.persistence.jpa.jpql.util.iterator.CloneIterator;
-import org.eclipse.persistence.jpa.jpql.util.iterator.IterableIterator;
+import org.eclipse.persistence.jpa.jpql.util.iterable.SnapshotCloneIterable;
 
 /**
  * The concrete implementation of {@link IType} that is wrapping a Java type.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -128,11 +127,11 @@ public class JavaType implements IType {
 	/**
 	 * {@inheritDoc}
 	 */
-	public IterableIterator<IConstructor> constructors() {
+	public Iterable<IConstructor> constructors() {
 		if (constructors == null) {
 			constructors = buildConstructors();
 		}
-		return new CloneIterator<IConstructor>(constructors);
+		return new SnapshotCloneIterable<IConstructor>(constructors);
 	}
 
 	/**

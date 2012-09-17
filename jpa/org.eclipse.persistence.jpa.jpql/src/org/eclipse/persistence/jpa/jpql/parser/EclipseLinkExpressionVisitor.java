@@ -79,6 +79,13 @@ public interface EclipseLinkExpressionVisitor extends ExpressionVisitor {
 	void visit(HierarchicalQueryClause expression);
 
 	/**
+	 * Visits the {@link OrderSiblingsByClause} expression.
+	 *
+	 * @param expression The {@link Expression} to visit
+	 */
+	void visit(OrderSiblingsByClause expression);
+
+	/**
 	 * Visits the {@link RegexpExpression} expression.
 	 *
 	 * @param expression The {@link Expression} to visit

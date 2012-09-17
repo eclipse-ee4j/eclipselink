@@ -24,7 +24,6 @@ import org.eclipse.persistence.jpa.jpql.spi.IQuery;
 import org.eclipse.persistence.jpa.jpql.spi.java.JavaQuery;
 import org.junit.Ignore;
 import org.junit.Test;
-
 import static org.eclipse.persistence.jpa.jpql.JPQLQueryProblemMessages.*;
 
 /**
@@ -1664,6 +1663,14 @@ public abstract class AbstractSemanticValidatorTest extends AbstractValidatorTes
 	public final void test_ValidQuery_03() throws Exception {
 
 		String jpqlQuery = "SELECT i FROM Customer i WHERE i.home=:category ORDER BY i.id";
+		List<JPQLQueryProblem> problems = validate(jpqlQuery);
+		testHasNoProblems(problems);
+	}
+
+	@Test
+	public final void test_ValidQuery_04() throws Exception {
+
+		String jpqlQuery = "select p from Alias p join p.ids m where key(m)=:language and value(m)=:name";
 		List<JPQLQueryProblem> problems = validate(jpqlQuery);
 		testHasNoProblems(problems);
 	}

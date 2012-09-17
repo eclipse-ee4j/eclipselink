@@ -13,240 +13,259 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.util.iterator;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.ListIterator;
+import org.eclipse.persistence.jpa.jpql.util.CollectionTools;
 
 /**
- * A <code>CloneListIterator</code> iterates over a copy of a list, allowing for concurrent access
- * to the original list.
+ * A <code>CloneListIterator</code> iterates over a copy of a list,
+ * allowing for concurrent access to the original list.
  * <p>
- * The original list passed to the <code>CloneListIterator</code>'s constructor should be
- * synchronized; otherwise you run the risk of a corrupted list.
+ * The original list passed to the <code>CloneListIterator</code>'s
+ * constructor should be synchronized; otherwise you run the risk of
+ * a corrupted list (e.g. {@link java.util.Vector}.
  * <p>
- * By default, a <code>CloneListIterator</code> does not support the modification operations; this
- * is because it does not have access to the original list. But if the <code>CloneListIterator</code>
- * is supplied with a {@link Mutator} it will delegate the modification operations to the {@link
- * Mutator}. Alternatively, a subclass can override the modification methods.
+ * By default, a <code>CloneListIterator</code> does not support the
+ * modification operations; this is because it does not have
+ * access to the original list. But if the <code>CloneListIterator</code>
+ * is supplied with a {@link Mutator} it will delegate the
+ * modification operations to the {@link Mutator}.
+ * Alternatively, a subclass can override the modification methods.
  *
- * @version 2.4
- * @since 2.4
+ * @param <E> the type of elements returned by the iterator
+ *
+ * @see org.eclipse.jpt.common.utility.internal.iterables.LiveCloneListIterable
+ * @see org.eclipse.jpt.common.utility.internal.iterables.SnapshotCloneListIterable
  */
-public class CloneListIterator<E> implements IterableListIterator<E> {
-
-	/**
-	 * The position where this iterator is over the original iterator.
-	 */
+public class CloneListIterator<E>
+	implements ListIterator<E>
+{
 	private int cursor;
-
-	/**
-	 * This {@link Mutator} is used to remove the item from the original collection.
-	 */
-	private ListMutator<E> mutator;
-
-	/**
-	 * The nested {@link ListIterator}, which is iterating over a copy of the collection.
-	 */
-	private ListIterator<E> nestedListIterator;
-
-	/**
-	 * Flag used to determine which item to remove or set when those methods are called.
-	 */
+	private final ListIterator<Object> listIterator;
+	private final Mutator<E> mutator;
 	private State state;
 
 	/**
-	 * Creates a new <code>CloneListIterator</code> using a copy of the specified list. The
-	 * modification methods will not be supported, unless a subclass overrides them.
-	 *
-	 * @param list The list that is copied in order to iterate over its items without being changed concurrently
+	 * Construct a list iterator on a copy of the specified array.
+	 * The modification methods will not be supported,
+	 * unless a subclass overrides them.
+	 */
+	public CloneListIterator(E[] array) {
+		this(array, Mutator.ReadOnly.<E>instance());
+	}
+
+	/**
+	 * Construct a list iterator on a copy of the specified array.
+	 * Use the specified list mutator to modify the original list.
+	 */
+	public CloneListIterator(E[] array, Mutator<E> mutator) {
+		this(mutator, array.clone());
+	}
+
+	/**
+	 * Construct a list iterator on a copy of the specified list.
+	 * The modification methods will not be supported,
+	 * unless a subclass overrides them.
 	 */
 	public CloneListIterator(List<? extends E> list) {
-		this(list, NullListMutator.<E>instance());
+		this(list, Mutator.ReadOnly.<E>instance());
 	}
 
 	/**
-	 * Construct a list iterator on a copy of the specified list. Use the specified {@link ListMutator}
-	 * to modify the original list.
-	 *
-	 * @param list The list that is copied in order to iterate over its items without being changed concurrently
-	 * @param mutator This {@link ListMutator} is used to remove the item from the original list
+	 * Construct a list iterator on a copy of the specified list.
+	 * Use the specified list mutator to modify the original list.
+	 */
+	public CloneListIterator(List<? extends E> list, Mutator<E> mutator) {
+		this(mutator, list.toArray());
+	}
+
+	/**
+	 * Internal constructor used by subclasses.
+	 * Swap order of arguments to prevent collision with other constructor.
+	 * The passed in array will *not* be cloned.
+	 */
+	protected CloneListIterator(Mutator<E> mutator, Object... array) {
+		super();
+		// build a copy of the list and keep it in sync with original (if the mutator allows changes)
+		// that way the nested list iterator will maintain some of our state
+		this.listIterator = CollectionTools.list(array).listIterator();
+		this.mutator = mutator;
+		this.cursor = 0;
+		this.state = State.UNKNOWN;
+	}
+
+	public void add(E o) {
+		// allow the nested iterator to throw an exception before we modify the original list
+		this.listIterator.add(o);
+		this.add(this.cursor, o);
+		this.cursor++;
+	}
+
+	/**
+	 * Add the specified element to the original list.
+	 * <p>
+	 * This method can be overridden by a subclass as an
+	 * alternative to building a {@link Mutator}.
+	 */
+	protected void add(int index, E o) {
+		this.mutator.add(index, o);
+	}
+
+	public boolean hasNext() {
+		return this.listIterator.hasNext();
+	}
+
+	public boolean hasPrevious() {
+		return this.listIterator.hasPrevious();
+	}
+
+	/**
+	 * The list passed in during construction held elements of type <code>E</code>,
+	 * so this cast is not a problem. We need this cast because
+	 * all the elements of the original collection were copied into
+	 * an object array (<code>Object[]</code>).
 	 */
 	@SuppressWarnings("unchecked")
-	public CloneListIterator(List<? extends E> list, ListMutator<E> mutator) {
-		super();
-		this.cursor             = 0;
-		this.mutator            = mutator;
-		this.state              = State.UNKNOWN;
-		this.nestedListIterator = new ArrayListIterator<E>((E[]) list.toArray());
+	protected E nestedNext() {
+		return (E) this.listIterator.next();
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * The list passed in during construction held elements of type <code>E</code>,
+	 * so this cast is not a problem. We need this cast because
+	 * all the elements of the original collection were copied into
+	 * an object array (<code>Object[]</code>).
 	 */
-	public void add(E item) {
-
-		// Allow the nested iterator to throw an exception before we modify the
-		// original list
-		nestedListIterator.add(item);
-		add(cursor, item);
-		cursor++;
+	@SuppressWarnings("unchecked")
+	protected E nestedPrevious() {
+		return (E) this.listIterator.previous();
 	}
 
-	/**
-	 * Adds the specified element to the original list.
-	 * <p>
-	 * This method can be overridden by a subclass as an alternative to building a {@link Mutator}.
-	 *
-	 * @param index The index of insertion
-	 * @param item The element to insert into the list
-	 */
-	protected void add(int index, E item) {
-		mutator.add(index, item);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public boolean hasNext() {
-		return nestedListIterator.hasNext();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public boolean hasPrevious() {
-		return nestedListIterator.hasPrevious();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public ListIterator<E> iterator() {
-		return this;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
 	public E next() {
-
-		// Allow the nested iterator to throw an exception before we modify the index
-		E next = nestedListIterator.next();
-		cursor++;
-		state = State.NEXT;
+		// allow the nested iterator to throw an exception before we modify the index
+		E next = this.nestedNext();
+		this.cursor++;
+		this.state = State.NEXT;
 		return next;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public int nextIndex() {
-		return nestedListIterator.nextIndex();
+		return this.listIterator.nextIndex();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public E previous() {
-
-		// Allow the nested iterator to throw an exception before we modify the index
-		E previous = nestedListIterator.previous();
-		cursor--;
-		state = State.PREVIOUS;
+		// allow the nested iterator to throw an exception before we modify the index
+		E previous = this.nestedPrevious();
+		this.cursor--;
+		this.state = State.PREVIOUS;
 		return previous;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public int previousIndex() {
-		return nestedListIterator.previousIndex();
+		return this.listIterator.previousIndex();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public void remove() {
-
-		// Allow the nested iterator to throw an exception before we modify the
-		// original list
-		nestedListIterator.remove();
-
-		if (state == State.PREVIOUS) {
-			remove(cursor);
-		}
-		else {
-			cursor--;
-			remove(cursor);
+		// allow the nested iterator to throw an exception before we modify the original list
+		this.listIterator.remove();
+		if (this.state == State.PREVIOUS) {
+			this.remove(this.cursor);
+		} else {
+			this.cursor--;
+			this.remove(this.cursor);
 		}
 	}
 
 	/**
-	 * Removes the specified element from the original list.
+	 * Remove the specified element from the original list.
 	 * <p>
-	 * This method can be overridden by a subclass as an alternative to building a {@link ListMutator}.
-	 *
-	 * @param index The position of the item to remove from the original list
+	 * This method can be overridden by a subclass as an
+	 * alternative to building a {@link Mutator}.
 	 */
 	protected void remove(int index) {
-		mutator.remove(index);
+		this.mutator.remove(index);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void set(E item) {
-
-		// Allow the nested iterator to throw an exception before we modify the
-		// original list
-		nestedListIterator.set(item);
-
-		if (state == State.PREVIOUS) {
-			set(cursor, item);
-		}
-		else {
-			set(cursor - 1, item);
+	public void set(E o) {
+		// allow the nested iterator to throw an exception before we modify the original list
+		this.listIterator.set(o);
+		if (this.state == State.PREVIOUS) {
+			this.set(this.cursor, o);
+		} else {
+			this.set(this.cursor - 1, o);
 		}
 	}
 
 	/**
-	 * Sets the specified element in the original list.
+	 * Set the specified element in the original list.
 	 * <p>
-	 * This method can be overridden by a subclass as an alternative to building a {@link ListMutator}.
-	 *
-	 * @param index The index of replacement
-	 * @param item The element to replace the existing one
+	 * This method can be overridden by a subclass as an
+	 * alternative to building a {@link Mutator}.
 	 */
-	protected void set(int index, E item) {
-		mutator.set(index, item);
+	protected void set(int index, E o) {
+		this.mutator.set(index, o);
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Used by {@link CloneListIterator} to remove
+	 * elements from the original list; since the list iterator
+	 * does not have direct access to the original list.
 	 */
-	@Override
-	public String toString() {
-		return getClass().getSimpleName();
+	public interface Mutator<T> {
+
+		/**
+		 * Add the specified object to the original list.
+		 */
+		void add(int index, T o);
+
+		/**
+		 * Remove the specified object from the original list.
+		 */
+		void remove(int index);
+
+		/**
+		 * Set the specified object in the original list.
+		 */
+		void set(int index, T o);
+
+
+		final class ReadOnly<S>
+			implements Mutator<S>, Serializable
+		{
+			@SuppressWarnings("rawtypes")
+			public static final Mutator INSTANCE = new ReadOnly();
+			private static final long serialVersionUID = 1L;
+			// ensure single instance
+			private ReadOnly() {
+				super();
+			}
+			@SuppressWarnings("unchecked")
+			public static <R> Mutator<R> instance() {
+				return INSTANCE;
+			}
+			// add is not supported
+			public void add(int index, Object o) {
+				throw new UnsupportedOperationException();
+			}
+			private Object readResolve() {
+				// replace this object with the singleton
+				return INSTANCE;
+			}
+			// remove is not supported
+			public void remove(int index) {
+				throw new UnsupportedOperationException();
+			}
+			// set is not supported
+			public void set(int index, Object o) {
+				throw new UnsupportedOperationException();
+			}
+		}
 	}
 
-	/**
-	 * A series of constants used to determine where to update the item when {@link
-	 * CloneListIterator#set(Object)} is called.
-	 */
 	private enum State {
-
-		/**
-		 * The constant used when {@link CloneListIterator#next()} was called.
-		 */
 		NEXT,
-
-		/**
-		 * The constant used when {@link CloneListIterator#previous()} was called.
-		 */
 		PREVIOUS,
-
-		/**
-		 * The constant used when {@link CloneListIterator} was created.
-		 */
 		UNKNOWN
 	}
 }

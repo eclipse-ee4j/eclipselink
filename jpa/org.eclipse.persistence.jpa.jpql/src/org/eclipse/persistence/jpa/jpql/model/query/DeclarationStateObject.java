@@ -14,7 +14,7 @@
 package org.eclipse.persistence.jpa.jpql.model.query;
 
 import org.eclipse.persistence.jpa.jpql.spi.IManagedType;
-import org.eclipse.persistence.jpa.jpql.util.iterator.IterableListIterator;
+import org.eclipse.persistence.jpa.jpql.util.iterable.ListIterable;
 
 /**
  * This defines the declaration portion of a query, which is the <code><b>FROM</b></code> clause
@@ -25,7 +25,7 @@ import org.eclipse.persistence.jpa.jpql.util.iterator.IterableListIterator;
  * @see DeleteClauseStateObject
  * @see UpdateClauseStateObject
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -36,7 +36,7 @@ public interface DeclarationStateObject extends StateObject {
 	 *
 	 * @return The list of {@link VariableDeclarationStateObject} that define the domain of the query
 	 */
-	IterableListIterator<? extends VariableDeclarationStateObject> declarations();
+	ListIterable<? extends VariableDeclarationStateObject> declarations();
 
 	/**
 	 * Returns the {@link IManagedType} for the given identification variable. If the declaration is

@@ -18,8 +18,7 @@ import java.util.List;
 import java.util.ListIterator;
 import org.eclipse.persistence.jpa.jpql.Assert;
 import org.eclipse.persistence.jpa.jpql.parser.Join;
-import org.eclipse.persistence.jpa.jpql.util.iterator.IterableListIterator;
-
+import org.eclipse.persistence.jpa.jpql.util.iterable.ListIterable;
 import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
@@ -270,7 +269,7 @@ public class JoinStateObject extends AbstractStateObject {
 	 *
 	 * @return An <code>Iterator</code> over the segments of the state field path
 	 */
-	public IterableListIterator<String> joinAssociationPaths() {
+	public ListIterable<String> joinAssociationPaths() {
 		return joinAssociationPath.items();
 	}
 

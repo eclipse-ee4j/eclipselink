@@ -16,7 +16,6 @@ package org.eclipse.persistence.jpa.jpql;
 import org.eclipse.persistence.jpa.jpql.parser.IdentifierRole;
 import org.eclipse.persistence.jpa.jpql.spi.IEntity;
 import org.eclipse.persistence.jpa.jpql.spi.IMapping;
-import org.eclipse.persistence.jpa.jpql.util.iterator.IterableIterator;
 
 /**
  * This object stores the various proposals available for content assist for a certain position
@@ -28,7 +27,7 @@ import org.eclipse.persistence.jpa.jpql.util.iterator.IterableIterator;
  * to solicit feedback from pioneering adopters on the understanding that any code that uses this
  * API will almost certainly be broken (repeatedly) as the API evolves.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -39,7 +38,7 @@ public interface ContentAssistProposals {
 	 *
 	 * @return The {@link IEntity entities} defined in the persistence context
 	 */
-	IterableIterator<IEntity> abstractSchemaTypes();
+	Iterable<IEntity> abstractSchemaTypes();
 
 	/**
 	 * Creates a new JPQL query by inserting the given proposal at the given position. The resulted
@@ -82,6 +81,24 @@ public interface ContentAssistProposals {
 	ResultQuery buildQuery(String jpqlQuery, String proposal, int position, boolean insert);
 
 	/**
+	 * Returns the filtered list of possible class names. This is usually available when the cursor
+	 * is within the constructor name of the constructor expression.
+	 *
+	 * @return The filtered list of possible class names
+	 * @see org.eclipse.persistence.jpa.jpql.parser.ConstructorExpression
+	 * @since 2.5
+	 */
+	Iterable<String> classNames();
+
+	/**
+	 * Returns the filtered list of possible column names.
+	 *
+	 * @return The filtered list of possible column names
+	 * @since 2.5
+	 */
+	Iterable<String> columnNames();
+
+	/**
 	 * Retrieves the abstract schema type that is mapped with the given identification variable.
 	 *
 	 * @param identificationVariable The identification variable that, if defined as a range variable,
@@ -113,14 +130,14 @@ public interface ContentAssistProposals {
 	 *
 	 * @return The list of possible identification variables
 	 */
-	IterableIterator<String> identificationVariables();
+	Iterable<String> identificationVariables();
 
 	/**
 	 * Returns the collection of possible JPQL identifiers.
 	 *
 	 * @return The list of possible JPQL identifiers
 	 */
-	IterableIterator<String> identifiers();
+	Iterable<String> identifiers();
 
 	/**
 	 * Returns the collection of possible {@link IMapping mappings}, which can be state fields,
@@ -129,5 +146,13 @@ public interface ContentAssistProposals {
 	 *
 	 * @return The list of possible proposals {@link IMapping mappings}
 	 */
-	IterableIterator<IMapping> mappings();
+	Iterable<IMapping> mappings();
+
+	/**
+	 * Returns the filtered list of possible table names.
+	 *
+	 * @return The filtered list of possible table names
+	 * @since 2.5
+	 */
+	Iterable<String> tableNames();
 }

@@ -27,6 +27,7 @@ import static org.eclipse.persistence.jpa.tests.jpql.JPQLQueries2_0.*;
  * @since 2.4
  * @author Pascal Filion
  */
+@UniqueSignature
 @SuppressWarnings("nls")
 public final class BasicRefactoringToolTest2_0 extends AbstractBasicRefactoringToolTest {
 

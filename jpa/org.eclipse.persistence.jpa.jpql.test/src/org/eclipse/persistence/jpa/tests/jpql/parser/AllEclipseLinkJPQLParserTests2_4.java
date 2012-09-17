@@ -13,8 +13,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
-import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_4;
-import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkJPQLGrammar2_5;
+import org.eclipse.persistence.jpa.jpql.EclipseLinkVersion;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.eclipse.persistence.jpa.tests.jpql.JPQLTestRunner;
 import org.junit.runner.RunWith;
@@ -52,9 +51,6 @@ public final class AllEclipseLinkJPQLParserTests2_4 {
 
 	@JPQLGrammarTestHelper
 	static JPQLGrammar[] buildJPQLGrammars() {
-		return new JPQLGrammar[] {
-			EclipseLinkJPQLGrammar2_4.instance(),
-			EclipseLinkJPQLGrammar2_5.instance()
-		};
+		return JPQLGrammarTools.allEclipseLinkJPQLGrammars(EclipseLinkVersion.VERSION_2_4);
 	}
 }

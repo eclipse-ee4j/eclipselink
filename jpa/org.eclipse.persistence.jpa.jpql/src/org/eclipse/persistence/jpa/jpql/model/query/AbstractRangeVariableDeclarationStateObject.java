@@ -17,14 +17,13 @@ import java.io.IOException;
 import java.util.List;
 import org.eclipse.persistence.jpa.jpql.model.Problem;
 import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
-import org.eclipse.persistence.jpa.jpql.util.iterator.IterableListIterator;
-import org.eclipse.persistence.jpa.jpql.util.iterator.SingleElementListIterator;
-
+import org.eclipse.persistence.jpa.jpql.util.iterable.ListIterable;
+import org.eclipse.persistence.jpa.jpql.util.iterable.SingleElementListIterable;
 import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
 /**
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -197,8 +196,8 @@ public abstract class AbstractRangeVariableDeclarationStateObject extends Abstra
 	/**
 	 * {@inheritDoc}
 	 */
-	public IterableListIterator<IdentificationVariableStateObject> identificationVariables() {
-		return new SingleElementListIterator<IdentificationVariableStateObject>(identificationVariable);
+	public ListIterable<IdentificationVariableStateObject> identificationVariables() {
+		return new SingleElementListIterable<IdentificationVariableStateObject>(identificationVariable);
 	}
 
 	/**

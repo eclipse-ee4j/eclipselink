@@ -20,6 +20,7 @@ import org.eclipse.persistence.jpa.jpql.parser.AbstractConditionalClause;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractDoubleEncapsulatedExpression;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractEncapsulatedExpression;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractFromClause;
+import org.eclipse.persistence.jpa.jpql.parser.AbstractOrderByClause;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractPathExpression;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractRangeExpression;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractSchemaName;
@@ -95,6 +96,7 @@ import org.eclipse.persistence.jpa.jpql.parser.OrderByClause;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByItem;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByItem.NullOrdering;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByItem.Ordering;
+import org.eclipse.persistence.jpa.jpql.parser.OrderSiblingsByClause;
 import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.RegexpExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ResultVariable;
@@ -436,11 +438,7 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 	}
 
 	protected static ConnectByClauseTester connectBy(ExpressionTester expression) {
-		return new ConnectByClauseTester(expression, false);
-	}
-
-	protected static ConnectByClauseTester connectByNocycle(ExpressionTester expression) {
-		return new ConnectByClauseTester(expression, true);
+		return new ConnectByClauseTester(expression);
 	}
 
 	protected static CountFunctionTester count(ExpressionTester statefieldPathExpression) {
@@ -714,6 +712,18 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 
 	protected static FromClauseTester from(String abstractSchemaName,
 	                                       String identificationVariable,
+	                                       ConnectByClauseTester connectByClause,
+	                                       OrderSiblingsByClauseTester orderSiblingsByClause) {
+
+		return new FromClauseTester(
+			fromEntity(abstractSchemaName, identificationVariable),
+			hierarchicalQueryClause(nullExpression(), connectByClause, orderSiblingsByClause),
+			nullExpression()
+		);
+	}
+
+	protected static FromClauseTester from(String abstractSchemaName,
+	                                       String identificationVariable,
 	                                       ExpressionTester... joins) {
 
 		return from(
@@ -753,6 +763,17 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 
 	protected static FromClauseTester from(String abstractSchemaName,
 	                                       String identificationVariable,
+	                                       OrderSiblingsByClauseTester orderSiblingsByClause) {
+
+		return new FromClauseTester(
+			fromEntity(abstractSchemaName, identificationVariable),
+			hierarchicalQueryClause(nullExpression(), nullExpression(), orderSiblingsByClause),
+			nullExpression()
+		);
+	}
+
+	protected static FromClauseTester from(String abstractSchemaName,
+	                                       String identificationVariable,
 	                                       StartWithClauseTester startWithClause) {
 
 		return new FromClauseTester(
@@ -770,6 +791,19 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		return new FromClauseTester(
 			fromEntity(abstractSchemaName, identificationVariable),
 			hierarchicalQueryClause(startWithClause, connectByClause),
+			nullExpression()
+		);
+	}
+
+	protected static FromClauseTester from(String abstractSchemaName,
+	                                       String identificationVariable,
+	                                       StartWithClauseTester startWithClause,
+	                                       ConnectByClauseTester connectByClause,
+	                                       OrderSiblingsByClauseTester orderSiblingsByClause) {
+
+		return new FromClauseTester(
+			fromEntity(abstractSchemaName, identificationVariable),
+			hierarchicalQueryClause(startWithClause, connectByClause, orderSiblingsByClause),
 			nullExpression()
 		);
 	}
@@ -913,13 +947,20 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 	}
 
 	protected static HierarchicalQueryClauseTester hierarchicalQueryClause(ExpressionTester connectByClause) {
-		return hierarchicalQueryClause(nullExpression(), connectByClause);
+		return hierarchicalQueryClause(nullExpression(), connectByClause, nullExpression());
 	}
 
 	protected static HierarchicalQueryClauseTester hierarchicalQueryClause(ExpressionTester startWithClause,
 	                                                                       ExpressionTester connectByClause) {
 
-		return new HierarchicalQueryClauseTester(startWithClause, connectByClause);
+		return hierarchicalQueryClause(startWithClause, connectByClause, nullExpression());
+	}
+
+	protected static HierarchicalQueryClauseTester hierarchicalQueryClause(ExpressionTester startWithClause,
+	                                                                       ExpressionTester connectByClause,
+	                                                                       ExpressionTester orderSiblingsByClause) {
+
+		return new HierarchicalQueryClauseTester(startWithClause, connectByClause, orderSiblingsByClause);
 	}
 
 	protected static IdentificationVariableDeclarationTester identificationVariableDeclaration(ExpressionTester rangeVariableDeclaration) {
@@ -2674,6 +2715,14 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 
 	protected static OrderByItemTester orderByItemNullsLast(String pathExpression) {
 		return orderByItemNullsLast(path(pathExpression));
+	}
+
+	protected static OrderSiblingsByClauseTester orderSiblingsBy(ExpressionTester expression) {
+		return new OrderSiblingsByClauseTester(expression);
+	}
+
+	protected static OrderSiblingsByClauseTester orderSiblingsBy(ExpressionTester... expressions) {
+		return new OrderSiblingsByClauseTester(collection(expressions));
 	}
 
 	private static StateFieldPathExpressionTester path(ExpressionTester identificationVariable,
@@ -4716,6 +4765,42 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
+	protected static abstract class AbstractOrderByClauseTester extends AbstractExpressionTester {
+
+		public boolean hasSpaceAfterIdentifier;
+		private ExpressionTester orderByItems;
+
+		protected AbstractOrderByClauseTester(ExpressionTester orderByItems) {
+			super();
+			this.orderByItems            = orderByItems;
+			this.hasSpaceAfterIdentifier = !orderByItems.isNull();
+		}
+
+		protected abstract String identifier();
+
+		public void test(Expression expression) {
+			assertInstance(expression, AbstractOrderByClause.class);
+
+			AbstractOrderByClause orderByClause = (AbstractOrderByClause) expression;
+			assertEquals(toString(),              orderByClause.toParsedText());
+			assertEquals(!orderByItems.isNull(),  orderByClause.hasOrderByItems());
+			assertEquals(hasSpaceAfterIdentifier, orderByClause.hasSpaceAfterIdentifier());
+
+			orderByItems.test(orderByClause.getOrderByItems());
+		}
+
+		@Override
+		public String toString() {
+			StringBuilder sb = new StringBuilder();
+			sb.append(identifier());
+			if (hasSpaceAfterIdentifier) {
+				sb.append(SPACE);
+			}
+			sb.append(orderByItems);
+			return sb.toString();
+		}
+	}
+
 	protected static abstract class AbstractPathExpressionTester extends AbstractExpressionTester {
 
 		private boolean endsWithDot;
@@ -5834,15 +5919,11 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 
 		private ExpressionTester expression;
 		public boolean hasSpaceAfterConnectBy;
-		public boolean hasSpaceAfterNocycle;
-		private boolean nocycle;
 
-		protected ConnectByClauseTester(ExpressionTester expression, boolean nonycle) {
+		protected ConnectByClauseTester(ExpressionTester expression) {
 			super();
-			this.nocycle                = nonycle;
 			this.expression             = expression;
-			this.hasSpaceAfterNocycle   = nonycle && !expression.isNull();
-			this.hasSpaceAfterConnectBy = nonycle || !expression.isNull();
+			this.hasSpaceAfterConnectBy = !expression.isNull();
 		}
 
 		public void test(Expression expression) {
@@ -5851,8 +5932,6 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 			ConnectByClause priorExpression = (ConnectByClause) expression;
 			assertEquals(toString(),                priorExpression.toParsedText());
 			assertEquals(hasSpaceAfterConnectBy,    priorExpression.hasSpaceAfterConnectBy());
-			assertEquals(nocycle,                   priorExpression.hasNocycle());
-			assertEquals(hasSpaceAfterNocycle,      priorExpression.hasSpaceAfterNocycle());
 			assertEquals(!this.expression.isNull(), priorExpression.hasExpression());
 
 			this.expression.test(priorExpression.getExpression());
@@ -5863,12 +5942,6 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 			StringBuilder sb = new StringBuilder();
 			sb.append(CONNECT_BY);
 			if (hasSpaceAfterConnectBy) {
-				sb.append(SPACE);
-			}
-			if (nocycle) {
-				sb.append(NOCYCLE);
-			}
-			if (hasSpaceAfterNocycle) {
 				sb.append(SPACE);
 			}
 			sb.append(expression);
@@ -6457,28 +6530,36 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 	protected static final class HierarchicalQueryClauseTester extends AbstractExpressionTester {
 
 		private ExpressionTester connectByClause;
+		public boolean hasSpaceAfterConnectByClause;
 		public boolean hasSpaceAfterStartWithClause;
+		private ExpressionTester orderSiblingsByClause;
 		private ExpressionTester startWithClause;
 
 		protected HierarchicalQueryClauseTester(ExpressionTester startWithClause,
-		                                        ExpressionTester connectByClause) {
+		                                        ExpressionTester connectByClause,
+		                                        ExpressionTester orderSiblingsByClause) {
 			super();
 			this.startWithClause              = startWithClause;
 			this.connectByClause              = connectByClause;
+			this.orderSiblingsByClause        = orderSiblingsByClause;
 			this.hasSpaceAfterStartWithClause = !startWithClause.isNull() && !connectByClause.isNull();
+			this.hasSpaceAfterConnectByClause = !connectByClause.isNull() && !orderSiblingsByClause.isNull();
 		}
 
 		public void test(Expression expression) {
 			assertInstance(expression, HierarchicalQueryClause.class);
 
 			HierarchicalQueryClause clause = (HierarchicalQueryClause) expression;
-			assertEquals(toString(),                   clause.toString());
-			assertEquals(!startWithClause.isNull(),    clause.hasStartWithClause());
-			assertEquals(hasSpaceAfterStartWithClause, clause.hasSpaceAfterStartWithClause());
-			assertEquals(!connectByClause.isNull(),    clause.hasConnectByClause());
+			assertEquals(toString(),                      clause.toString());
+			assertEquals(!startWithClause.isNull(),       clause.hasStartWithClause());
+			assertEquals(!connectByClause.isNull(),       clause.hasConnectByClause());
+			assertEquals(!orderSiblingsByClause.isNull(), clause.hasOrderSiblingsByClause());
+			assertEquals(hasSpaceAfterStartWithClause,    clause.hasSpaceAfterStartWithClause());
+			assertEquals(hasSpaceAfterConnectByClause,    clause.hasSpaceAfterConnectByClause());
 
 			startWithClause.test(clause.getStartWithClause());
 			connectByClause.test(clause.getConnectByClause());
+			orderSiblingsByClause.test(clause.getOrderSiblingsByClause());
 		}
 
 		@Override
@@ -6489,6 +6570,10 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 				sb.append(SPACE);
 			}
 			sb.append(connectByClause);
+			if (hasSpaceAfterConnectByClause) {
+				sb.append(SPACE);
+			}
+			sb.append(orderSiblingsByClause);
 			return sb.toString();
 		}
 	}
@@ -7177,37 +7262,21 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 		}
 	}
 
-	protected static final class OrderByClauseTester extends AbstractExpressionTester {
-
-		public boolean hasSpaceAfterOrderBy;
-		private ExpressionTester orderByItems;
+	protected static final class OrderByClauseTester extends AbstractOrderByClauseTester {
 
 		protected OrderByClauseTester(ExpressionTester orderByItems) {
-			super();
-			this.orderByItems = orderByItems;
-			this.hasSpaceAfterOrderBy = true;
-		}
-
-		public void test(Expression expression) {
-			assertInstance(expression, OrderByClause.class);
-
-			OrderByClause orderByClause = (OrderByClause) expression;
-			assertEquals(toString(),             orderByClause.toParsedText());
-			assertEquals(!orderByItems.isNull(), orderByClause.hasOrderByItems());
-			assertEquals(hasSpaceAfterOrderBy,   orderByClause.hasSpaceAfterOrderBy());
-
-			orderByItems.test(orderByClause.getOrderByItems());
+			super(orderByItems);
 		}
 
 		@Override
-		public String toString() {
-			StringBuilder sb = new StringBuilder();
-			sb.append(ORDER_BY);
-			if (hasSpaceAfterOrderBy) {
-				sb.append(SPACE);
-			}
-			sb.append(orderByItems);
-			return sb.toString();
+		protected String identifier() {
+			return ORDER_BY;
+		}
+
+		@Override
+		public void test(Expression expression) {
+			super.test(expression);
+			assertInstance(expression, OrderByClause.class);
 		}
 	}
 
@@ -7278,6 +7347,24 @@ public abstract class JPQLParserTest extends JPQLBasicTest {
 			}
 
 			return sb.toString();
+		}
+	}
+
+	protected static final class OrderSiblingsByClauseTester extends AbstractOrderByClauseTester {
+
+		protected OrderSiblingsByClauseTester(ExpressionTester orderByItems) {
+			super(orderByItems);
+		}
+
+		@Override
+		protected String identifier() {
+			return ORDER_SIBLINGS_BY;
+		}
+
+		@Override
+		public void test(Expression expression) {
+			super.test(expression);
+			assertInstance(expression, OrderSiblingsByClause.class);
 		}
 	}
 

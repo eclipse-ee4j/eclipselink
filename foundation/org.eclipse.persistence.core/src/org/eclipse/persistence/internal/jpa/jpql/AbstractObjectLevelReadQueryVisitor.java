@@ -13,12 +13,16 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.jpql;
 
+import java.util.Collection;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.history.AsOfSCNClause;
+import org.eclipse.persistence.jpa.jpql.LiteralType;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractEclipseLinkExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractFromClause;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractSelectClause;
 import org.eclipse.persistence.jpa.jpql.parser.AbstractSelectStatement;
+import org.eclipse.persistence.jpa.jpql.parser.AsOfClause;
 import org.eclipse.persistence.jpa.jpql.parser.AvgFunction;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionExpression;
 import org.eclipse.persistence.jpa.jpql.parser.CollectionMemberDeclaration;
@@ -59,12 +63,12 @@ import org.eclipse.persistence.queries.ReportQuery;
  * @see ObjectLevelReadQueryVisitor
  * @see ReportQueryVisitor
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  * @author John Bracken
  */
-abstract class AbstractReadAllQueryVisitor extends AbstractEclipseLinkExpressionVisitor {
+abstract class AbstractObjectLevelReadQueryVisitor extends AbstractEclipseLinkExpressionVisitor {
 
 	/**
 	 * The {@link ObjectLevelReadQuery} to populate.
@@ -82,11 +86,32 @@ abstract class AbstractReadAllQueryVisitor extends AbstractEclipseLinkExpression
 	 *
 	 * @param queryContext The context used to query information about the application metadata and
 	 * cached information
+	 * @param query The {@link ObjectLevelReadQuery} to populate by using this visitor to visit the
+	 * parsed tree representation of the JPQL query
 	 */
-	AbstractReadAllQueryVisitor(JPQLQueryContext queryContext, ObjectLevelReadQuery query) {
+	AbstractObjectLevelReadQueryVisitor(JPQLQueryContext queryContext, ObjectLevelReadQuery query) {
 		super();
 		this.query = query;
 		this.queryContext = queryContext;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void visit(AsOfClause expression) {
+
+		Expression queryExpression = queryContext.buildExpression(expression);
+		org.eclipse.persistence.history.AsOfClause asOfClause;
+
+		if (expression.hasScn()) {
+			asOfClause = new AsOfSCNClause(queryExpression);
+		}
+		else {
+			asOfClause = new org.eclipse.persistence.history.AsOfClause(queryExpression);
+		}
+
+		query.setAsOfClause(asOfClause);
 	}
 
 	/**
@@ -103,6 +128,22 @@ abstract class AbstractReadAllQueryVisitor extends AbstractEclipseLinkExpression
 	@Override
 	public void visit(FromClause expression) {
 		visitAbstractFromClause(expression);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void visit(IdentificationVariable expression) {
+		visitIdentificationVariable(expression);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void visit(ObjectExpression expression) {
+		expression.getExpression().accept(this);
 	}
 
 	/**
@@ -253,6 +294,16 @@ abstract class AbstractReadAllQueryVisitor extends AbstractEclipseLinkExpression
 		// Add join expressions to the query (but not the join fetch expressions)
 		JoinVisitor visitor = new JoinVisitor();
 		expression.accept(visitor);
+
+		// Visit the AS OF clause
+		if (expression.hasAsOfClause()) {
+			expression.getAsOfClause().accept(this);
+		}
+
+		// Visit the hierarchical clause
+		if (expression.hasHierarchicalQueryClause()) {
+			expression.getHierarchicalQueryClause().accept(this);
+		}
 	}
 
 	void visitAbstractSelectClause(AbstractSelectClause expression) {
@@ -277,6 +328,9 @@ abstract class AbstractReadAllQueryVisitor extends AbstractEclipseLinkExpression
 		OneToOneSelectedVisitor visitor = new OneToOneSelectedVisitor();
 		expression.accept(visitor);
 		query.setShouldBuildNullForNullPk(visitor.oneToOneSelected);
+
+		// Now visit the select expression
+		expression.getSelectExpression().accept(this);
 	}
 
 	void visitAbstractSelectStatement(AbstractSelectStatement expression) {
@@ -288,6 +342,36 @@ abstract class AbstractReadAllQueryVisitor extends AbstractEclipseLinkExpression
 
 		if (expression.hasWhereClause()) {
 			expression.getWhereClause().accept(this);
+		}
+	}
+
+	void visitIdentificationVariable(IdentificationVariable expression) {
+
+		String variableName = expression.getVariableName();
+
+		// Retrieve the join fetches that were defined in the same identification variable
+		// declaration, if the identification variable is mapped to a join, then there will
+		// not be any join fetch associated with it
+		Collection<Join> joinFetches = queryContext.getJoinFetches(variableName);
+
+		if (joinFetches != null ) {
+
+			for (Join joinFetch : joinFetches) {
+
+				// Retrieve the join association path expression's identification variable
+				String joinFetchVariableName = queryContext.literal(
+					joinFetch,
+					LiteralType.PATH_EXPRESSION_IDENTIFICATION_VARIABLE
+				);
+
+				// Both identification variables are the same.
+				// Then add the join associated path expression as a joined attribute
+				// Example: FROM Employee e JOIN FETCH e.employees
+				if (variableName.equals(joinFetchVariableName)) {
+					org.eclipse.persistence.expressions.Expression queryExpression = queryContext.buildExpression(joinFetch);
+					query.addJoinedAttribute(queryExpression);
+				}
+			}
 		}
 	}
 

@@ -23,12 +23,12 @@ import java.util.NoSuchElementException;
  * Array Array};
  * <em>not</em> an {@link java.util.Iterator Iterator} for an {@link java.util.ArrayList ArrayList}.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  */
 @SuppressWarnings("nls")
 public class ArrayListIterator<E> extends ArrayIterator<E>
-                                  implements IterableListIterator<E> {
+                                  implements ListIterator<E> {
 
 	/**
 	 * The position from which the cursor cannot go lower.
@@ -40,8 +40,7 @@ public class ArrayListIterator<E> extends ArrayIterator<E>
 	 *
 	 * @param array The object containing the items to iterate over
 	 */
-	public <T extends E> ArrayListIterator(T... array)
-	{
+	public <T extends E> ArrayListIterator(T... array) {
 		this(array, 0, array.length);
 	}
 
@@ -70,14 +69,6 @@ public class ArrayListIterator<E> extends ArrayIterator<E>
 	 */
 	public boolean hasPrevious() {
 		return nextIndex > minIndex;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public ListIterator<E> iterator() {
-		return (ListIterator<E>) super.iterator();
 	}
 
 	/**

@@ -1094,4 +1094,19 @@ public final class JPQLParserConcurrentTest extends TestCase {
 		JPQLQueriesTest1_0 test = new JPQLQueriesTest1_0();
 		test.test_Query_215(AllJPQLParserConcurrentTests.jpqlGrammar);
 	}
+
+	public void test_Query_216() {
+		JPQLQueriesTest1_0 test = new JPQLQueriesTest1_0();
+		test.test_Query_216(AllJPQLParserConcurrentTests.jpqlGrammar);
+	}
+
+	public void test_Query_217() {
+		JPQLQueriesTest1_0 test = new JPQLQueriesTest1_0();
+		test.test_Query_217(AllJPQLParserConcurrentTests.jpqlGrammar);
+	}
+
+	public void test_Query_218() {
+		JPQLQueriesTest1_0 test = new JPQLQueriesTest1_0();
+		test.test_Query_218(AllJPQLParserConcurrentTests.jpqlGrammar);
+	}
 }

@@ -17,8 +17,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import org.eclipse.persistence.jpa.jpql.WordParser;
-import org.eclipse.persistence.jpa.jpql.util.iterator.CloneListIterator;
-import org.eclipse.persistence.jpa.jpql.util.iterator.IterableListIterator;
+import org.eclipse.persistence.jpa.jpql.util.iterable.ListIterable;
+import org.eclipse.persistence.jpa.jpql.util.iterable.SnapshotCloneListIterable;
 
 /**
  * An identification variable followed by the navigation operator (.) and a state field or
@@ -275,9 +275,9 @@ public abstract class AbstractPathExpression extends AbstractExpression {
 	 *
 	 * @return An <code>Iterator</code> over the segments of the state field path
 	 */
-	public final IterableListIterator<String> paths() {
+	public final ListIterable<String> paths() {
 		checkPaths();
-		return new CloneListIterator<String>(paths);
+		return new SnapshotCloneListIterable<String>(paths);
 	}
 
 	/**

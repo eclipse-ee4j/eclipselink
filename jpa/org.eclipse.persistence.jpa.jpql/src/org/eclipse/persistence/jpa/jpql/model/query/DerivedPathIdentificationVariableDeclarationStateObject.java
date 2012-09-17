@@ -14,10 +14,10 @@
 package org.eclipse.persistence.jpa.jpql.model.query;
 
 import org.eclipse.persistence.jpa.jpql.spi.IManagedType;
-import org.eclipse.persistence.jpa.jpql.util.iterator.IterableListIterator;
+import org.eclipse.persistence.jpa.jpql.util.iterable.ListIterable;
 
 /**
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -114,7 +114,7 @@ public class DerivedPathIdentificationVariableDeclarationStateObject extends Abs
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public IterableListIterator<JoinStateObject> items() {
-		return (IterableListIterator<JoinStateObject>) super.items();
+	public ListIterable<JoinStateObject> items() {
+		return (ListIterable<JoinStateObject>) super.items();
 	}
 }

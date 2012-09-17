@@ -13,126 +13,174 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql.util.iterator;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
 
 /**
- * A <code>CloneIterator</code> iterates over a copy of a collection, allowing for concurrent access
- * to the original collection.
+ * A <code>CloneIterator</code> iterates over a copy of a collection,
+ * allowing for concurrent access to the original collection.
  * <p>
- * The original collection passed to the <code>CloneIterator</code>'s constructor should be
- * synchronized; otherwise you run the risk of a corrupted collection.
+ * The original collection passed to the <code>CloneIterator</code>'s
+ * constructor should be synchronized (e.g. {@link java.util.Vector});
+ * otherwise you run the risk of a corrupted collection.
  * <p>
- * By default, a <code>CloneIterator</code> does not support the {@link #remove()} operation; this
- * is because it does not have access to the original collection. But if the <code>CloneIterator</code>
- * is supplied with an <code>Mutator</code> it will delegate the {@link #remove()} operation to the
- * {@link Mutator}. Alternatively, a subclass can override the {@link #remove(Object)} method.
+ * By default, a <code>CloneIterator</code> does not support the
+ * {@link #remove()} operation; this is because it does not have
+ * access to the original collection. But if the <code>CloneIterator</code>
+ * is supplied with an {@link Remover} it will delegate the
+ * {@link #remove()} operation to the {@link Remover}.
+ * Alternatively, a subclass can override the {@link #remove(Object)}
+ * method.
  *
- * @version 2.4
- * @since 2.4
+ * @param <E> the type of elements returned by the iterator
+ *
+ * @see org.eclipse.jpt.common.utility.internal.iterables.LiveCloneIterable
+ * @see org.eclipse.jpt.common.utility.internal.iterables.SnapshotCloneIterable
  */
-@SuppressWarnings("nls")
-public class CloneIterator<E> implements IterableIterator<E> {
-
-	/**
-	 * The current element of the iteration.
-	 */
+public class CloneIterator<E>
+	implements Iterator<E>
+{
+	private final Iterator<Object> iterator;
 	private E current;
+	private final Remover<E> remover;
+	private boolean removeAllowed;
+
+
+	// ********** constructors **********
 
 	/**
-	 * This {@link Mutator} is used to remove the item from the original collection.
-	 */
-	private Mutator<E> mutator;
-
-	/**
-	 * The nested <code>Iterator</code>, which is iterating over a copy of the collection.
-	 */
-	private Iterator<E> nestedIterator;
-
-	/**
-	 * An internal object used to determine if the
-	 */
-	private static final Object UNKNOWN = new Object();
-
-	/**
-	 * Creates a new <code>CloneIterator</code> using a copy of the specified collection. The {@link
-	 * #remove()} method will not be supported, unless a subclass overrides {@link #remove(Object)}.
-	 *
-	 * @param collection The collection that is copied in order to iterate over its items without
-	 * being changed concurrently
+	 * Construct an iterator on a copy of the specified collection.
+	 * The {@link #remove()} method will not be supported,
+	 * unless a subclass overrides the {@link #remove(Object)}.
 	 */
 	public CloneIterator(Collection<? extends E> collection) {
-		this(collection, NullMutator.<E>instance());
+		this(collection, Remover.ReadOnly.<E>instance());
 	}
 
 	/**
-	 * Creates a new <code>CloneIterator</code> using a copy of the specified collection. Use the
-	 * specified mutator to remove objects from the original collection.
-	 *
-	 * @param collection The collection that is copied in order to iterate over its items without
-	 * being changed concurrently
-	 * @param mutator This <code>Mutator</code> is used to remove the item from the original collection
+	 * Construct an iterator on a copy of the specified array.
+	 * The {@link #remove()} method will not be supported,
+	 * unless a subclass overrides the {@link #remove(Object)}.
 	 */
-	@SuppressWarnings("unchecked")
-	public CloneIterator(Collection<? extends E> collection, Mutator<? extends E> mutator) {
+	public CloneIterator(E[] array) {
+		this(array, Remover.ReadOnly.<E>instance());
+	}
+
+	/**
+	 * Construct an iterator on a copy of the specified collection.
+	 * Use the specified remover to remove objects from the
+	 * original collection.
+	 */
+	public CloneIterator(Collection<? extends E> collection, Remover<E> remover) {
+		this(remover, collection.toArray());
+	}
+
+	/**
+	 * Construct an iterator on a copy of the specified array.
+	 * Use the specified remover to remove objects from the
+	 * original array.
+	 */
+	public CloneIterator(E[] array, Remover<E> remover) {
+		this(remover, array.clone());
+	}
+
+	/**
+	 * Internal constructor used by subclasses.
+	 * Swap order of arguments to prevent collision with other constructor.
+	 * The passed in array will *not* be cloned.
+	 */
+	protected CloneIterator(Remover<E> remover, Object... array) {
 		super();
-		this.nestedIterator = new ArrayIterator<E>((E[]) collection.toArray());
-		this.mutator        = (Mutator<E>) mutator;
-		this.current        = (E) UNKNOWN;
+		this.iterator = new ArrayIterator<Object>(array);
+		this.current = null;
+		this.remover = remover;
+		this.removeAllowed = false;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+
+	// ********** Iterator implementation **********
+
 	public boolean hasNext() {
-		return nestedIterator.hasNext();
+		return this.iterator.hasNext();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public Iterator<E> iterator() {
-		return this;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
 	public E next() {
-		current = nestedIterator.next();
-		return current;
+		this.current = this.nestedNext();
+		this.removeAllowed = true;
+		return this.current;
 	}
 
+	public void remove() {
+		if ( ! this.removeAllowed) {
+			throw new IllegalStateException();
+		}
+		this.remove(this.current);
+		this.removeAllowed = false;
+	}
+
+
+	// ********** internal methods **********
+
 	/**
-	 * {@inheritDoc}
+	 * The collection passed in during construction held elements of type <code>E</code>,
+	 * so this cast is not a problem. We need this cast because
+	 * all the elements of the original collection were copied into
+	 * an object array (<code>Object[]</code>).
 	 */
 	@SuppressWarnings("unchecked")
-	public void remove() {
-
-		if (current == UNKNOWN) {
-			throw new IllegalStateException("No more item can be removed.");
-		}
-
-		remove(current);
-		current = (E) UNKNOWN;
+	protected E nestedNext() {
+		return (E) this.iterator.next();
 	}
 
 	/**
-	 * Removes the specified element from the original collection.
+	 * Remove the specified element from the original collection.
 	 * <p>
-	 * This method can be overridden by a subclass as an alternative to building a {@link Mutator}.
-	 *
-	 * @param item The element to remove from the original collection
+	 * This method can be overridden by a subclass as an
+	 * alternative to building a {@link Remover}.
 	 */
-	protected void remove(E item) {
-		mutator.remove(item);
+	protected void remove(E e) {
+		this.remover.remove(e);
 	}
 
+
+	//********** member interface **********
+
 	/**
-	 * {@inheritDoc}
+	 * Used by {@link CloneIterator} to remove
+	 * elements from the original collection; since the iterator
+	 * does not have direct access to the original collection.
 	 */
-	@Override
-	public String toString() {
-		return getClass().getSimpleName();
+	public interface Remover<T> {
+
+		/**
+		 * Remove the specified object from the original collection.
+		 */
+		void remove(T element);
+
+
+		final class ReadOnly<S>
+			implements Remover<S>, Serializable
+		{
+			@SuppressWarnings("rawtypes")
+			public static final Remover INSTANCE = new ReadOnly();
+			@SuppressWarnings("unchecked")
+			public static <R> Remover<R> instance() {
+				return INSTANCE;
+			}
+			// ensure single instance
+			private ReadOnly() {
+				super();
+			}
+			// remove is not supported
+			public void remove(Object element) {
+				throw new UnsupportedOperationException();
+			}
+			private static final long serialVersionUID = 1L;
+			private Object readResolve() {
+				// replace this object with the singleton
+				return INSTANCE;
+			}
+		}
 	}
 }

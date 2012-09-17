@@ -15,13 +15,13 @@ package org.eclipse.persistence.jpa.jpql.model;
 
 import java.util.List;
 import org.eclipse.persistence.jpa.jpql.model.query.ListHolderStateObject;
-import org.eclipse.persistence.jpa.jpql.util.iterator.IterableListIterator;
+import org.eclipse.persistence.jpa.jpql.util.iterable.ListIterable;
 
 /**
  * This is used in conjunction with {@link IListChangeListener}. It contains the information
  * regarding the content of a list being changed.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -85,7 +85,7 @@ public interface IListChangeEvent<T> {
 	 *
 	 * @return The list of items associated with the {@link EventType}
 	 */
-	IterableListIterator<T> items();
+	ListIterable<T> items();
 
 	/**
 	 * Returns the number of items that caused the original list to change.

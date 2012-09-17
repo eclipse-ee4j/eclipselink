@@ -27,6 +27,7 @@ import org.eclipse.persistence.jpa.jpql.parser.HierarchicalQueryClause;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByClause;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByItem;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByItem.Ordering;
+import org.eclipse.persistence.jpa.jpql.parser.OrderSiblingsByClause;
 import org.eclipse.persistence.jpa.jpql.parser.PatternValueBNF;
 import org.eclipse.persistence.jpa.jpql.parser.RegexpExpression;
 import org.eclipse.persistence.jpa.jpql.parser.SelectStatement;
@@ -35,7 +36,6 @@ import org.eclipse.persistence.jpa.jpql.parser.TableExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TableVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.UnionClause;
 import org.eclipse.persistence.jpa.jpql.parser.WhereClause;
-
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
 /**
@@ -362,6 +362,13 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 	/**
 	 * {@inheritDoc}
 	 */
+	public void visit(OrderSiblingsByClause expression) {
+		// TODO
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public void visit(RegexpExpression expression) {
 		int position = getPosition(expression) - corrections.peek();
 		int length = 0;
@@ -409,6 +416,17 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 		// Within "TABLE"
 		if (isPositionWithin(position, TABLE)) {
 			proposals.addIdentifier(TABLE);
+		}
+		// After '('
+		else if (expression.hasLeftParenthesis()) {
+			int length = TABLE.length() + SPACE_LENGTH;
+			String tableName = queryContext.literal(expression, LiteralType.STRING_LITERAL);
+			int tableNameLength = tableName.length();
+
+			if ((position >= length) && (position <= length + tableNameLength)) {
+				String prefix = ExpressionTools.unquote(tableName).substring(position - length);
+				proposals.addTableNames(prefix);
+			}
 		}
 	}
 
@@ -523,6 +541,12 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 		 * {@inheritDoc}
 		 */
 		public void visit(HierarchicalQueryClause expression) {
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public void visit(OrderSiblingsByClause expression) {
 		}
 
 		/**
@@ -718,6 +742,12 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 		 * {@inheritDoc}
 		 */
 		public void visit(HierarchicalQueryClause expression) {
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		public void visit(OrderSiblingsByClause expression) {
 		}
 
 		/**

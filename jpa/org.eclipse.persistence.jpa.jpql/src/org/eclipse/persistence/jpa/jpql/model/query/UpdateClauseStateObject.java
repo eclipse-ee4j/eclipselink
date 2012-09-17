@@ -21,9 +21,8 @@ import java.util.ListIterator;
 import org.eclipse.persistence.jpa.jpql.model.IListChangeListener;
 import org.eclipse.persistence.jpa.jpql.parser.InternalUpdateClauseBNF;
 import org.eclipse.persistence.jpa.jpql.parser.UpdateClause;
-import org.eclipse.persistence.jpa.jpql.util.iterator.CloneListIterator;
-import org.eclipse.persistence.jpa.jpql.util.iterator.IterableListIterator;
-
+import org.eclipse.persistence.jpa.jpql.util.iterable.ListIterable;
+import org.eclipse.persistence.jpa.jpql.util.iterable.SnapshotCloneListIterable;
 import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
@@ -38,7 +37,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  *
  * @see UpdateClause
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -333,8 +332,8 @@ public class UpdateClauseStateObject extends AbstractModifyClauseStateObject
 	/**
 	 * {@inheritDoc}
 	 */
-	public IterableListIterator<UpdateItemStateObject> items() {
-		return new CloneListIterator<UpdateItemStateObject>(items);
+	public ListIterable<UpdateItemStateObject> items() {
+		return new SnapshotCloneListIterable<UpdateItemStateObject>(items);
 	}
 
 	/**

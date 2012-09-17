@@ -20,6 +20,7 @@ import org.eclipse.persistence.jpa.jpql.parser.DatabaseType;
 import org.eclipse.persistence.jpa.jpql.parser.EclipseLinkExpressionVisitor;
 import org.eclipse.persistence.jpa.jpql.parser.ExtractExpression;
 import org.eclipse.persistence.jpa.jpql.parser.HierarchicalQueryClause;
+import org.eclipse.persistence.jpa.jpql.parser.OrderSiblingsByClause;
 import org.eclipse.persistence.jpa.jpql.parser.RegexpExpression;
 import org.eclipse.persistence.jpa.jpql.parser.StartWithClause;
 import org.eclipse.persistence.jpa.jpql.parser.TableExpression;
@@ -89,6 +90,13 @@ public class EclipseLinkResolverBuilder extends ResolverBuilder
 	 * {@inheritDoc}
 	 */
 	public void visit(HierarchicalQueryClause expression) {
+		resolver = buildClassResolver(Object.class);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(OrderSiblingsByClause expression) {
 		resolver = buildClassResolver(Object.class);
 	}
 

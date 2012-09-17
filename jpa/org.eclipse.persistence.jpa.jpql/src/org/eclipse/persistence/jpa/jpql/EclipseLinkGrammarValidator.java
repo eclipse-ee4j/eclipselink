@@ -28,6 +28,7 @@ import org.eclipse.persistence.jpa.jpql.parser.HierarchicalQueryClause;
 import org.eclipse.persistence.jpa.jpql.parser.InExpression;
 import org.eclipse.persistence.jpa.jpql.parser.InputParameter;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
+import org.eclipse.persistence.jpa.jpql.parser.OrderSiblingsByClause;
 import org.eclipse.persistence.jpa.jpql.parser.PatternValueBNF;
 import org.eclipse.persistence.jpa.jpql.parser.RegexpExpression;
 import org.eclipse.persistence.jpa.jpql.parser.StartWithClause;
@@ -438,6 +439,13 @@ public class EclipseLinkGrammarValidator extends AbstractGrammarValidator
 	 */
 	public void visit(HierarchicalQueryClause expression) {
 		// TODO: 2.5
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void visit(OrderSiblingsByClause expression) {
+		// TODO
 	}
 
 	/**

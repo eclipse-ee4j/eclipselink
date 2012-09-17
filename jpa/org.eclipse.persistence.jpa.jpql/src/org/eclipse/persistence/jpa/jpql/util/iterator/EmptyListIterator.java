@@ -23,28 +23,28 @@ import java.util.NoSuchElementException;
  * @since 2.4
  */
 @SuppressWarnings("nls")
-public final class NullListIterator implements IterableListIterator<Object> {
+public final class EmptyListIterator implements ListIterator<Object> {
 
 	/**
-	 * The singleton instance this <code>NullListIterator</code>.
+	 * The singleton instance this <code>EmptyListIterator</code>.
 	 */
-	private static NullListIterator INSTANCE = new NullListIterator();
+	private static EmptyListIterator INSTANCE = new EmptyListIterator();
 
 	/**
 	 * Ensure non-instantiability.
 	 */
-	private NullListIterator() {
+	private EmptyListIterator() {
 		super();
 	}
 
 	/**
-	 * Returns the singleton instance this <code>NullListIterator</code>.
+	 * Returns the singleton instance this <code>EmptyListIterator</code>.
 	 *
-	 * @return The singleton instance this <code>NullListIterator</code>
+	 * @return The singleton instance this <code>EmptyListIterator</code>
 	 */
 	@SuppressWarnings("unchecked")
-	public static synchronized <T> IterableListIterator<T> instance() {
-		return (IterableListIterator<T>) INSTANCE;
+	public static synchronized <T> ListIterator<T> instance() {
+		return (ListIterator<T>) INSTANCE;
 	}
 
 	/**
@@ -66,13 +66,6 @@ public final class NullListIterator implements IterableListIterator<Object> {
 	 */
 	public boolean hasPrevious() {
 		return false;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public ListIterator<Object> iterator() {
-		return this;
 	}
 
 	/**

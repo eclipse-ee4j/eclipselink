@@ -25,14 +25,12 @@ import org.eclipse.persistence.jpa.jpql.spi.IManagedType;
 import org.eclipse.persistence.jpa.jpql.spi.IManagedTypeProvider;
 import org.eclipse.persistence.jpa.jpql.spi.IMapping;
 import org.eclipse.persistence.jpa.jpql.spi.IMappingBuilder;
-import org.eclipse.persistence.jpa.jpql.util.iterator.CloneIterator;
-import org.eclipse.persistence.jpa.jpql.util.iterator.IterableIterator;
+import org.eclipse.persistence.jpa.jpql.util.iterable.SnapshotCloneIterable;
 
 /**
- * The abstract definition of {@link IManagedType} defined for wrapping the runtime mapped class
- * object.
+ * The abstract definition of {@link IManagedType} defined for wrapping the runtime mapped class object.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.3
  * @author Pascal Filion
  */
@@ -181,8 +179,8 @@ public abstract class JavaManagedType implements IManagedType {
 	/**
 	 * {@inheritDoc}
 	 */
-	public final IterableIterator<IMapping> mappings() {
+	public final Iterable<IMapping> mappings() {
 		initializeMappings();
-		return new CloneIterator<IMapping>(mappings.values());
+		return new SnapshotCloneIterable<IMapping>(mappings.values());
 	}
 }

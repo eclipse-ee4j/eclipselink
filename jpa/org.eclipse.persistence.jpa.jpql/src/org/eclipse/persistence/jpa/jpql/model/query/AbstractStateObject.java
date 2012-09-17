@@ -32,15 +32,13 @@ import org.eclipse.persistence.jpa.jpql.spi.IManagedTypeProvider;
 import org.eclipse.persistence.jpa.jpql.spi.IType;
 import org.eclipse.persistence.jpa.jpql.spi.ITypeRepository;
 import org.eclipse.persistence.jpa.jpql.util.CollectionTools;
-import org.eclipse.persistence.jpa.jpql.util.iterator.CloneIterator;
-import org.eclipse.persistence.jpa.jpql.util.iterator.IterableIterator;
-
+import org.eclipse.persistence.jpa.jpql.util.iterable.SnapshotCloneIterable;
 import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
 
 /**
  * The abstract definition of a {@link StateObject}.
  *
- * @version 2.4
+ * @version 2.5
  * @since 2.4
  * @author Pascal Filion
  */
@@ -319,10 +317,10 @@ public abstract class AbstractStateObject implements StateObject {
 	/**
 	 * {@inheritDoc}
 	 */
-	public final IterableIterator<StateObject> children() {
+	public final Iterable<StateObject> children() {
 		List<StateObject> children = new ArrayList<StateObject>();
 		addChildren(children);
-		return new CloneIterator<StateObject>(children);
+		return new SnapshotCloneIterable<StateObject>(children);
 	}
 
 	/**

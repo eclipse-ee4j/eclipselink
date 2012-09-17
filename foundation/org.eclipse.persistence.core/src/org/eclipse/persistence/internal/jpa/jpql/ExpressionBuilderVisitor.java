@@ -105,6 +105,7 @@ import org.eclipse.persistence.jpa.jpql.parser.OnClause;
 import org.eclipse.persistence.jpa.jpql.parser.OrExpression;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByClause;
 import org.eclipse.persistence.jpa.jpql.parser.OrderByItem;
+import org.eclipse.persistence.jpa.jpql.parser.OrderSiblingsByClause;
 import org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.RegexpExpression;
 import org.eclipse.persistence.jpa.jpql.parser.ResultVariable;
@@ -396,6 +397,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(AbsExpression expression) {
 
 		// First create the expression from the encapsulated expression
@@ -410,6 +412,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(AbstractSchemaName expression) {
 		ClassDescriptor descriptor = queryContext.getDescriptor(expression.getText());
 		type[0] = descriptor.getJavaClass();
@@ -419,6 +422,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(AdditionExpression expression) {
 
 		List<Class<?>> types = new ArrayList<Class<?>>(2);
@@ -444,6 +448,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(AllOrAnyExpression expression) {
 
 		// First create the subquery
@@ -469,6 +474,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(AndExpression expression) {
 
 		// Create the left side of the logical expression
@@ -489,6 +495,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(ArithmeticFactor expression) {
 
 		// First create the Expression that is prepended with the unary sign
@@ -507,12 +514,15 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(AsOfClause expression) {
+		expression.getExpression().accept(this);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(AvgFunction expression) {
 
 		// First create the expression from the encapsulated expression
@@ -533,6 +543,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(BadExpression expression) {
 		// Nothing to do
 	}
@@ -540,6 +551,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(BetweenExpression expression) {
 
 		// First create the Expression for the result expression
@@ -569,6 +581,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(CaseExpression expression) {
 
 		Expression caseOperandExpression = null;
@@ -610,6 +623,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(CastExpression expression) {
 
 		// First create the expression from the encapsulated expression
@@ -626,6 +640,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(CoalesceExpression expression) {
 
 		List<Expression> expressions = new ArrayList<Expression>();
@@ -649,6 +664,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(CollectionExpression expression) {
 		// Nothing to do, this should be handled by the owning expression
 	}
@@ -656,6 +672,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(CollectionMemberDeclaration expression) {
 		expression.getCollectionValuedPathExpression().accept(this);
 	}
@@ -663,6 +680,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(CollectionMemberExpression expression) {
 
 		// Create the expression for the entity expression
@@ -695,6 +713,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(CollectionValuedPathExpression expression) {
 		visitPathExpression(expression, nullAllowed, expression.pathSize());
 	}
@@ -702,6 +721,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(ComparisonExpression expression) {
 
 		// Create the left side of the comparison expression
@@ -755,6 +775,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(ConcatExpression expression) {
 
 		List<org.eclipse.persistence.jpa.jpql.parser.Expression> expressions = children(expression.getExpression());
@@ -779,13 +800,15 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(ConnectByClause expression) {
-		// TODO: 2.5
+		expression.getExpression().accept(this);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(ConstructorExpression expression) {
 		// Nothing to do
 	}
@@ -793,6 +816,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(CountFunction expression) {
 
 		// Create the expression from the encapsulated expression
@@ -813,6 +837,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(DatabaseType expression) {
 		// Nothing to do
 	}
@@ -820,6 +845,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(DateTime expression) {
 
 		if (expression.isJDBCDate()) {
@@ -864,6 +890,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(DeleteClause expression) {
 		// Nothing to do
 	}
@@ -871,6 +898,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(DeleteStatement expression) {
 		// Nothing to do
 	}
@@ -878,6 +906,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(DivisionExpression expression) {
 
 		List<Class<?>> types = new ArrayList<Class<?>>(2);
@@ -903,6 +932,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(EmptyCollectionComparisonExpression expression) {
 
 		CollectionValuedPathExpression collectionPath = (CollectionValuedPathExpression) expression.getExpression();
@@ -927,6 +957,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(EntityTypeLiteral expression) {
 		ClassDescriptor descriptor = queryContext.getDescriptor(expression.getEntityTypeName());
 		type[0] = descriptor.getJavaClass();
@@ -936,6 +967,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(EntryExpression expression) {
 
 		// Create the expression for the collection-valued path expression
@@ -953,6 +985,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(ExistsExpression expression) {
 
 		// First create the subquery
@@ -992,6 +1025,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(ExtractExpression expression) {
 
 		// First create the expression from the encapsulated expression
@@ -1007,6 +1041,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(FromClause expression) {
 		// Nothing to do
 	}
@@ -1014,6 +1049,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(FunctionExpression expression) {
 
 		List<org.eclipse.persistence.jpa.jpql.parser.Expression> expressions = children(expression.getExpression());
@@ -1084,6 +1120,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(GroupByClause expression) {
 		// Nothing to do
 	}
@@ -1091,6 +1128,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(HavingClause expression) {
 		expression.getConditionalExpression().accept(this);
 	}
@@ -1098,13 +1136,15 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(HierarchicalQueryClause expression) {
-		// TODO 2.5
+		// Nothing to do
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(IdentificationVariable expression) {
 
 		// The identification variable is virtual, only do something if it falsely represents a state
@@ -1180,6 +1220,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(IdentificationVariableDeclaration expression) {
 		// Nothing to do
 	}
@@ -1187,6 +1228,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(IndexExpression expression) {
 
 		// Create the expression for the encapsulated expression
@@ -1202,6 +1244,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(InExpression expression) {
 
 		// Create the expression for the left expression
@@ -1218,6 +1261,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(InputParameter expression) {
 
 		String parameterName = expression.getParameter();
@@ -1236,6 +1280,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(Join expression) {
 		try {
 			nullAllowed = expression.isLeftJoin();
@@ -1249,6 +1294,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(JPQLExpression expression) {
 		// Nothing to do
 	}
@@ -1256,6 +1302,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(KeyExpression expression) {
 
 		// First visit the parent Expression
@@ -1268,6 +1315,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(KeywordExpression expression) {
 
 		String keyword = expression.getText();
@@ -1293,6 +1341,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(LengthExpression expression) {
 
 		// Create the expression from the encapsulated expression
@@ -1308,6 +1357,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(LikeExpression expression) {
 
 		// Create the first expression
@@ -1340,6 +1390,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(LocateExpression expression) {
 
 		// Create the string to find in the find in expression
@@ -1369,6 +1420,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(LowerExpression expression) {
 
 		// Create the expression from the encapsulated expression
@@ -1384,6 +1436,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(MaxFunction expression) {
 
 		// Create the expression from the encapsulated expression
@@ -1403,6 +1456,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(MinFunction expression) {
 
 		// Create the expression from the encapsulated expression
@@ -1422,6 +1476,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(ModExpression expression) {
 
 		// First create the Expression for the first expression
@@ -1442,6 +1497,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(MultiplicationExpression expression) {
 
 		List<Class<?>> types = new ArrayList<Class<?>>(2);
@@ -1467,6 +1523,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(NotExpression expression) {
 
 		// Create the expression
@@ -1482,6 +1539,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(NullComparisonExpression expression) {
 
 		// Create the expression first
@@ -1503,6 +1561,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(NullExpression expression) {
 		queryExpression = null;
 		type[0] = null;
@@ -1511,6 +1570,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(NullIfExpression expression) {
 
 		// Create the first expression
@@ -1532,6 +1592,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(NumericLiteral expression) {
 
 		// Instantiate a Number object with the value
@@ -1545,6 +1606,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(ObjectExpression expression) {
 		// Simply traverse the OBJECT's expression
 		expression.getExpression().accept(this);
@@ -1553,6 +1615,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(OnClause expression) {
 		expression.getConditionalExpression().accept(this);
 	}
@@ -1560,6 +1623,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(OrderByClause expression) {
 		// Nothing to do
 	}
@@ -1567,6 +1631,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(OrderByItem expression) {
 		// Nothing to do
 	}
@@ -1574,6 +1639,15 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
+	public void visit(OrderSiblingsByClause expression) {
+		expression.getOrderByItems().accept(this);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void visit(OrExpression expression) {
 
 		// Create the left side of the logical expression
@@ -1594,6 +1668,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(RangeVariableDeclaration expression) {
 
 		IdentificationVariable variable = (IdentificationVariable) expression.getIdentificationVariable();
@@ -1622,6 +1697,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(RegexpExpression expression) {
 
 		// Create the first expression
@@ -1642,6 +1718,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(ResultVariable expression) {
 
 		expression.getSelectExpression().accept(this);
@@ -1655,6 +1732,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(SelectClause expression) {
 		// Nothing to do
 	}
@@ -1662,6 +1740,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(SelectStatement expression) {
 		// Nothing to do
 	}
@@ -1669,6 +1748,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(SimpleFromClause expression) {
 		// Nothing to do
 	}
@@ -1676,6 +1756,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(SimpleSelectClause expression) {
 		// Nothing to do
 	}
@@ -1683,6 +1764,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(SimpleSelectStatement expression) {
 
 		// First create the subquery
@@ -1696,6 +1778,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(SizeExpression expression) {
 
 		CollectionValuedPathExpression pathExpression = (CollectionValuedPathExpression) expression.getExpression();
@@ -1715,6 +1798,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(SqrtExpression expression) {
 
 		// First create the expression from the encapsulated expression
@@ -1730,13 +1814,15 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(StartWithClause expression) {
-		// TODO: 2.5
+		expression.getConditionalExpression().accept(this);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(StateFieldPathExpression expression) {
 		visitPathExpression(expression, false, expression.pathSize());
 	}
@@ -1744,6 +1830,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(StringLiteral expression) {
 
 		// Create the expression
@@ -1757,6 +1844,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(SubExpression expression) {
 		expression.getExpression().accept(this);
 	}
@@ -1764,6 +1852,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(SubstringExpression expression) {
 
 		// Create the first expression
@@ -1793,6 +1882,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(SubtractionExpression expression) {
 
 		List<Class<?>> types = new ArrayList<Class<?>>(2);
@@ -1818,6 +1908,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(SumFunction expression) {
 
 		// First create the expression from the encapsulated expression
@@ -1838,6 +1929,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(TableExpression expression) {
 		String tableName = queryContext.literal(expression.getExpression(), LiteralType.STRING_LITERAL);
 		tableName = ExpressionTools.unquote(tableName);
@@ -1847,6 +1939,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(TableVariableDeclaration expression) {
 		// Nothing to do
 	}
@@ -1854,6 +1947,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(TreatExpression expression) {
 
 		// First visit the parent Expression
@@ -1868,6 +1962,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(TrimExpression expression) {
 
 		// Create the TRIM character expression
@@ -1915,6 +2010,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(TypeExpression expression) {
 
 		// First create the Expression for the identification variable
@@ -1933,6 +2029,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(UnionClause expression) {
 		// Nothing to do
 	}
@@ -1940,6 +2037,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(UnknownExpression expression) {
 		queryExpression = null;
 	}
@@ -1947,6 +2045,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(UpdateClause expression) {
 		// Nothing to do
 	}
@@ -1954,6 +2053,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(UpdateItem expression) {
 		// Nothing to do
 	}
@@ -1961,6 +2061,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(UpdateStatement expression) {
 		// Nothing to do
 	}
@@ -1968,6 +2069,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(UpperExpression expression) {
 
 		// First create the expression from the encapsulated expression
@@ -1983,6 +2085,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(ValueExpression expression) {
 		expression.getExpression().accept(this);
 	}
@@ -1990,6 +2093,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(WhenClause expression) {
 		// Nothing to do
 	}
@@ -1997,6 +2101,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void visit(WhereClause expression) {
 		expression.getConditionalExpression().accept(this);
 	}

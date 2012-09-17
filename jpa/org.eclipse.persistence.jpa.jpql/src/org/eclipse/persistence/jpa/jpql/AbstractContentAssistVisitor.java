@@ -162,8 +162,6 @@ import org.eclipse.persistence.jpa.jpql.spi.ITypeRepository;
 import org.eclipse.persistence.jpa.jpql.spi.JPAVersion;
 import org.eclipse.persistence.jpa.jpql.util.filter.AndFilter;
 import org.eclipse.persistence.jpa.jpql.util.filter.Filter;
-import org.eclipse.persistence.jpa.jpql.util.iterator.IterableIterator;
-
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
 /**
@@ -190,7 +188,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	/**
 	 * The context used to query information about the JPQL query.
 	 */
-	protected final JPQLQueryContext context;
+	protected final JPQLQueryContext queryContext;
 
 	/**
 	 * This is used to change the position of the cursor in order to add possible proposals
@@ -261,7 +259,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	protected AbstractContentAssistVisitor(JPQLQueryContext context) {
 		super();
 		Assert.isNotNull(context, "The JPQLQueryContext cannot be null");
-		this.context = context;
+		this.queryContext = context;
 		initialize();
 	}
 
@@ -575,14 +573,14 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 
 		// Result variable
 		if (type == IdentificationVariableType.RESULT_VARIABLE) {
-			for (String resultVariable : context.getResultVariables()) {
+			for (String resultVariable : queryContext.getResultVariables()) {
 				addIdentificationVariable(resultVariable);
 			}
 		}
 		else if (type != IdentificationVariableType.NONE) {
 			boolean stop = false;
 
-			for (Declaration declaration : context.getDeclarations()) {
+			for (Declaration declaration : queryContext.getDeclarations()) {
 
 				if (stop) {
 					break;
@@ -797,7 +795,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		if (ExpressionTools.stringIsNotEmpty(identificationVariable) &&
 		    isValidProposal(identificationVariable, word)) {
 
-			Resolver resolver = context.getResolver(identificationVariable);
+			Resolver resolver = queryContext.getResolver(identificationVariable);
 			IEntity entity = getEntity(resolver.getType());
 
 			if (entity != null) {
@@ -1140,6 +1138,21 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	 * @return The proposals that are valid choices for the given position
 	 */
 	public ContentAssistProposals buildProposals(int position) {
+		return buildProposals(position, ContentAssistProposalsHelper.NULL_HELPER);
+	}
+
+	/**
+	 * Prepares this visitor by prepopulating it with the necessary data that is required to properly
+	 * gather the list of proposals based on the given caret position.
+	 *
+	 * @param position The position of the cursor within the JPQL query
+	 * @param helper The helper can be used to provide additional information that is outside the
+	 * scope of simply providing JPA metadata information, such as table names, column names, class
+	 * names or {@link ContentAssistProposalsHelper#NULL_HELPER} if none can be provided
+	 * @return The proposals that are valid choices for the given position
+	 * @since 2.5
+	 */
+	public ContentAssistProposals buildProposals(int position, ContentAssistProposalsHelper helper) {
 
 		JPQLExpression jpqlExpression = getJPQLExpression();
 
@@ -1148,7 +1161,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 			position
 		);
 
-		prepare(queryPosition);
+		prepare(queryPosition, helper);
 		jpqlExpression.accept(this);
 		return proposals;
 	}
@@ -1246,7 +1259,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	 *
 	 * @return The {@link IEntity entities} defined in the persistence context
 	 */
-	protected IterableIterator<IEntity> entities() {
+	protected Iterable<IEntity> entities() {
 		return getProvider().entities();
 	}
 
@@ -1637,7 +1650,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	 * @return The parsed tree representation of the JPQL query
 	 */
 	protected JPQLExpression getJPQLExpression() {
-		return context.getJPQLExpression();
+		return queryContext.getJPQLExpression();
 	}
 
 	/**
@@ -1669,7 +1682,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	 * @return Either the {@link IMapping} or <code>null</code> if none exists
 	 */
 	protected IMapping getMapping(Expression expression) {
-		return context.getMapping(expression);
+		return queryContext.getMapping(expression);
 	}
 
 	protected Filter<IMapping> getMappingCollectionFilter() {
@@ -1767,7 +1780,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	 * @return The external form of the JPQL query
 	 */
 	protected IQuery getQuery() {
-		return context.getQuery();
+		return queryContext.getQuery();
 	}
 
 	/**
@@ -1786,7 +1799,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	 * @return The {@link JPQLQueryContext} holding onto the JPQL query and the cached information
 	 */
 	protected JPQLQueryContext getQueryContext() {
-		return context;
+		return queryContext;
 	}
 
 	/**
@@ -1816,7 +1829,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	 * @return {@link Resolver} for the given {@link Expression}
 	 */
 	protected Resolver getResolver(Expression expression) {
-		return context.getResolver(expression);
+		return queryContext.getResolver(expression);
 	}
 
 	protected ResultVariableVisitor getResultVariableVisitor() {
@@ -1927,7 +1940,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	 * {@link IType} for {@link IType#UNRESOLVABLE_TYPE} if it could not be resolved
 	 */
 	protected IType getType(Expression expression) {
-		return context.getType(expression);
+		return queryContext.getType(expression);
 	}
 
 	/**
@@ -1948,7 +1961,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	 * {@link ITypeDeclaration} for {@link IType#UNRESOLVABLE_TYPE} if it could not be resolved
 	 */
 	protected ITypeDeclaration getTypeDeclaration(Expression expression) {
-		return context.getTypeDeclaration(expression);
+		return queryContext.getTypeDeclaration(expression);
 	}
 
 	/**
@@ -2358,13 +2371,16 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 	 * gather the list of proposals based on the caret position.
 	 *
 	 * @param queryPosition Contains the position of the cursor within the parsed {@link Expression}
+	 * @param helper The helper can be used to provide additional information that is outside the
+	 * scope of simply providing JPA metadata information, such as table names, column names, class
+	 * names or {@link ContentAssistProposalsHelper#NULL_HELPER} if none can be provided
 	 */
-	public void prepare(QueryPosition queryPosition) {
+	public void prepare(QueryPosition queryPosition, ContentAssistProposalsHelper helper) {
 
 		this.queryPosition = queryPosition;
-		this.proposals     = new DefaultContentAssistProposals(getGrammar());
+		this.proposals     = new DefaultContentAssistProposals(getGrammar(), helper);
 
-		wordParser = new WordParser(context.getJPQLExpression().toActualText());
+		wordParser = new WordParser(queryContext.getJPQLExpression().toActualText());
 		wordParser.setPosition(queryPosition.getPosition());
 		word = wordParser.partialWord();
 	}
@@ -2804,16 +2820,16 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		// After "NEW "
 		else if (expression.hasSpaceAfterNew()) {
 			int length = NEW.length() + SPACE_LENGTH;
+			String className = expression.getClassName();
+			int classNameLength = className.length();
 
-			// Right after "NEW "
-			if (position == length) {
-				// TODO: Show all the instantiable classes
+			// Right after "NEW " or within the fully qualified class name
+			if ((position >= length) && (position <= length + classNameLength)) {
+				proposals.addClassNames(className.substring(position - length));
 			}
-
 			// After "("
-			if (expression.hasLeftParenthesis()) {
-				String className = expression.getClassName();
-				length += className.length() + SPACE_LENGTH;
+			else if (expression.hasLeftParenthesis()) {
+				length += classNameLength + SPACE_LENGTH;
 
 				// Right after "("
 				if (position == length) {
@@ -3375,7 +3391,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 				boolean canAddCompoundIdentifiers = !expression.hasExpression();
 
 				if (!canAddCompoundIdentifiers) {
-					String variableName = context.literal(
+					String variableName = queryContext.literal(
 						expression.getExpression(),
 						LiteralType.IDENTIFICATION_VARIABLE
 					);
@@ -4531,7 +4547,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 				visitPathExpression(expression, buildMappingFilter(expression));
 			}
 			else {
-				String variableName = context.literal(
+				String variableName = queryContext.literal(
 					expression.getIdentificationVariable(),
 					LiteralType.IDENTIFICATION_VARIABLE
 				);
@@ -4581,7 +4597,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 			else {
 				// The first path is always an identification variable
 				if (resolver == null) {
-					resolver = context.getResolver(expression.getIdentificationVariable());
+					resolver = queryContext.getResolver(expression.getIdentificationVariable());
 				}
 				// Any other path is a property or collection-valued path
 				else if ((index + 1 < count) || expression.endsWithDot()) {
@@ -6914,7 +6930,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 		 * {@inheritDoc}
 		 */
 		public boolean hasDelimiterAfterIdentifier(OrderByClause expression) {
-			return expression.hasSpaceAfterOrderBy();
+			return expression.hasSpaceAfterIdentifier();
 		}
 
 		/**
