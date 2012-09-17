@@ -47,11 +47,6 @@ public class ConcurrencyManager implements Serializable {
     protected static boolean shouldTrackStack = System.getProperty(SystemProperties.RECORD_STACK_ON_LOCK) != null;
     protected Exception stack;
 
-    /** Cachekey owner set when ConcurrencyMananger is used within an cachekey on an identity map
-     * Used to store the owner so that the object involved can be retrieved from the cachekey
-     */
-    protected CacheKey ownerCacheKey;
-
     /**
      * Initialize the newly allocated instance of this class.
      * Set the depth to zero.
@@ -60,15 +55,6 @@ public class ConcurrencyManager implements Serializable {
         this.depth = 0;
         this.numberOfReaders = 0;
         this.numberOfWritersWaiting = 0;
-    }
-
-    /**
-     * Initialize a new ConcurrencyManger, setting depth to zero and setting the
-     * owner cacheKey.
-     */
-    public ConcurrencyManager(CacheKey cacheKey) {
-        this();
-        this.ownerCacheKey = cacheKey;
     }
 
     /**
@@ -206,8 +192,8 @@ public class ConcurrencyManager implements Serializable {
                 acquire();
             } else {
                 lockManager.addDeferredLock(this);
-                if (AbstractSessionLog.getLog().shouldLog(SessionLog.FINER)) {
-                    AbstractSessionLog.getLog().log(SessionLog.FINER, SessionLog.CACHE, "acquiring_deferred_lock", getOwnerCacheKey().getObject(), currentThread.getName());
+                if (AbstractSessionLog.getLog().shouldLog(SessionLog.FINER) && this instanceof CacheKey) {
+                    AbstractSessionLog.getLog().log(SessionLog.FINER, SessionLog.CACHE, "acquiring_deferred_lock", ((CacheKey)this).getObject(), currentThread.getName());
                 }
             }
         }
@@ -317,14 +303,7 @@ public class ConcurrencyManager implements Serializable {
     public int getNumberOfWritersWaiting() {
         return numberOfWritersWaiting;
     }
-
-    /**
-     * Returns the owner cache key for this concurrency manager
-     */
-    public CacheKey getOwnerCacheKey() {
-        return this.ownerCacheKey;
-    }
-
+    
     /**
      * Return if a thread has acquire this manager.
      */

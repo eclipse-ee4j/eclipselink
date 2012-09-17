@@ -1258,8 +1258,10 @@ public class IdentityMapManager implements Serializable, Cloneable {
                 for (Iterator deferredLocks = deferredLockManager.getDeferredLocks().iterator();
                          deferredLocks.hasNext();) {
                     ConcurrencyManager lock = (ConcurrencyManager)deferredLocks.next();
-                    parameters[0] = lock.getOwnerCacheKey().getObject();
-                    writer.write(TraceLocalization.buildMessage("deferred_locks", parameters) + Helper.cr());
+                    if (lock instanceof CacheKey){
+                        parameters[0] = ((CacheKey)lock).getObject();
+                        writer.write(TraceLocalization.buildMessage("deferred_locks", parameters) + Helper.cr());
+                    }
                 }
             }
         }
@@ -1297,8 +1299,10 @@ public class IdentityMapManager implements Serializable, Cloneable {
                 for (Iterator deferredLocks = deferredLockManager.getDeferredLocks().iterator();
                          deferredLocks.hasNext();) {
                     ConcurrencyManager lock = (ConcurrencyManager)deferredLocks.next();
-                    parameters[0] = lock.getOwnerCacheKey().getObject();
-                    writer.write(TraceLocalization.buildMessage("deferred_locks", parameters) + Helper.cr());
+                    if (lock instanceof CacheKey){
+                        parameters[0] = ((CacheKey)lock).getObject();
+                        writer.write(TraceLocalization.buildMessage("deferred_locks", parameters) + Helper.cr());
+                    }
                 }
             }
         }
