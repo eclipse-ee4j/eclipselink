@@ -369,7 +369,7 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
      * initial default values.
      */
     public void _persistence_resetFetchGroup() {
-        throw new UnsupportedOperationException("DynamicEntity._persistence_resetFetchGroup:: NOT SUPPORTED");
+        getPropertiesMap().clear();
     }
     
     public List<RelationshipInfo> _persistence_getRelationships(){
