@@ -599,7 +599,6 @@
 
         <!-- This should already be set, but is set as a precaution -->
         <property name="eclipselink.root.download.dir" value="/home/data/httpd/download.eclipse.org/rt/eclipselink"/>
-                                                              /home/data/httpd/download.eclipse.org/rt/eclipselink
         <!-- This depends upon freezing nightly builds after an RC# build - otherwise the nightly to be -->
         <!-- promoted to a 'RELEASE' build (same as last milestone) could expire off the nightly site   -->
         <property name="promote.source.dir"            value="${eclipselink.root.download.dir}/nightly/${release.version}/${build.date}"/>
