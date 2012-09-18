@@ -1469,6 +1469,13 @@ public class MappingsGenerator {
                 mapping.setGetMethodName(property.getGetMethodName());
             }
         }
+        // handle null policy set via xml metadata
+        if (property.isSetNullPolicy()) {
+            mapping.setNullPolicy(getNullPolicyFromProperty(property, namespaceInfo.getNamespaceResolverForDescriptor()));
+        } else if (property.isNillable()){
+            mapping.getNullPolicy().setNullRepresentedByXsiNil(true);
+            mapping.getNullPolicy().setMarshalNullRepresentation(XMLNullRepresentationType.XSI_NIL);
+        }
         // if the XPath is set (via xml-path) use it
         mapping.setField(getXPathForField(property, namespaceInfo, false));
         if (property.isSwaAttachmentRef()) {
