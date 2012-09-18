@@ -190,6 +190,7 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
     private boolean isWriteOnly;
     private boolean isCollapsingStringValues;
     private boolean isNormalizingStringValues;
+    private boolean isNullValueMarshalled = false;
 
     public XMLDirectMapping() {
         super();
@@ -312,7 +313,8 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
         // PERF: This method is a major performance code point,
         // so has been micro optimized and uses direct variable access.
         Object fieldValue = attributeValue;
-        if ((this.nullValue != null) && (this.nullValue.equals(fieldValue)) && !((XMLField)field).isRequired()) {
+
+        if ((this.nullValue != null) && (this.nullValue.equals(fieldValue)) && !this.isNullValueMarshalled && !((XMLField)field).isRequired()) {
             return null;
         }
 
@@ -463,7 +465,7 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
      * Indicates that this mapping should collapse all string values before setting them
      * in the object on unmarshal. Collapse removes leading and trailing whitespaces, and replaces
      * any sequence of whitepsace characters with a single space. 
-     * @param normalize
+     * @param collapse
      */
     public void setCollapsingStringValues(boolean collapse) {
         this.isCollapsingStringValues = collapse;
@@ -474,10 +476,27 @@ public class XMLDirectMapping extends AbstractDirectMapping implements XMLMappin
      * Returns true if this mapping should collapse all string values before setting them
      * in the object on unmarshal. Collapse removes leading and trailing whitespaces, and replaces
      * any sequence of whitepsace characters with a single space. 
-     * @param normalize
      */
     public boolean isCollapsingStringValues() {
         return this.isCollapsingStringValues;
     }
-    
+
+    /**
+     * PUBLIC:
+     * Returns true if this mapping's value should be marshalled, in the case that 
+     * it is equal to the default null value. 
+     */
+    public boolean isNullValueMarshalled() {
+        return this.isNullValueMarshalled;
+    }
+
+    /**
+     * PUBLIC:
+     * Set whether this mapping's value should be marshalled, in the case that 
+     * it is equal to the default null value. 
+     */
+    public void setNullValueMarshalled(boolean value) {
+        this.isNullValueMarshalled = value;
+    }
+
 }
