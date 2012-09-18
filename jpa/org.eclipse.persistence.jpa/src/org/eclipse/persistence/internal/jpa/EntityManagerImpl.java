@@ -1740,7 +1740,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     }
     
     /**
-     * Close any open queries executed against this entity manager.
+     * Close any open queries executed against this entity manager.0
      */
     protected void closeOpenQueries() {
         for (QueryImpl openQuery : getOpenQueriesSet()) {

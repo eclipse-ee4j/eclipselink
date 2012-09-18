@@ -233,9 +233,9 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
         DatabaseAccessor accessor = (DatabaseAccessor) query.getAccessor();
 
         try {
-            if (! executeStatement.isClosed()) {
+            //if (! executeStatement.isClosed()) {
                 accessor.releaseStatement(executeStatement, query.getSQLString(), executeCall, session);
-            }
+            //}
         } catch (SQLException exception) {
             // Catch the exception and log a message.
             session.log(SessionLog.WARNING, SessionLog.CONNECTION, "exception_caught_closing_statement", exception);
@@ -286,7 +286,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             
             hasMoreResults = executeCall.getExecuteReturnValue();
             
-            return executeCall.getExecuteReturnValue();
+            return hasMoreResults;
         } catch (LockTimeoutException exception) {
             throw exception;
         } catch (RuntimeException exception) {
@@ -316,7 +316,30 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     public Object getOutputParameterValue(int position) {
         if (executeStatement != null) {
             try {
-                return executeStatement.getObject(position);
+                // TODO: WIP
+                Object obj = executeStatement.getObject(position);
+                
+                if (obj instanceof ResultSet) {
+                    AbstractSession session = (AbstractSession) getActiveSession();
+                    DatabaseAccessor accessor = (DatabaseAccessor) executeCall.getQuery().getAccessor();
+                    ResultSet resultSet = (ResultSet) obj;
+                    
+                    executeCall.setFields(null);
+                    executeCall.matchFieldOrder(resultSet, accessor, session);
+                    ResultSetMetaData metaData = resultSet.getMetaData();
+                    
+                    List result =  new Vector();
+                    while (resultSet.next()) {
+                        result.add(accessor.fetchRow(executeCall.getFields(), executeCall.getFieldsArray(), resultSet, metaData, session));
+                    }
+    
+                    // The result set must be closed in case the statement is cached and not closed.
+                    resultSet.close(); 
+    
+                    return ((ResultSetMappingQuery) executeCall.getQuery()).buildObjectsFromRecords(result, ++executeResultSetIndex);
+                } else {
+                    return obj;
+                }
             } catch (SQLException exception) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa21_invalid_parameter_position", new Object[] { position, exception.getMessage() }), exception);
             }

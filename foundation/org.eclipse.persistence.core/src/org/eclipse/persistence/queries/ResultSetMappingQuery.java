@@ -26,6 +26,8 @@ import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.ArrayRecord;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 
@@ -182,7 +184,24 @@ public class ResultSetMappingQuery extends ObjectBuildingQuery {
             List results = new ArrayList(numberOfRecords);
         
             for (int recordIndex = 0; recordIndex < numberOfRecords; recordIndex++) {
-                results.add(buildObjectsFromRecords((List) databaseRecords.get(recordIndex), getSQLResultSetMappings().get(recordIndex)));
+                Object records = databaseRecords.get(recordIndex);
+                
+                if (records instanceof DatabaseRecord) {
+                    DatabaseRecord dRecords = (DatabaseRecord) records;
+                    
+                    for (Object dRecord : dRecords.keySet()) {
+                        Vector<DatabaseRecord> blah = (Vector<DatabaseRecord>) ((Vector) dRecords.get(dRecord)).get(0);
+                        
+                        System.out.println("blah is:" + blah.getClass());
+                        //Vector<DatabaseRecord> blah = (Vector<DatabaseRecord>) bb.get(0);
+                        //results.add(buildObjectsFromRecords(blah, getSQLResultSetMappings().get(recordIndex)));
+                        //Vector blah = (Vector) dRecords.get(dRecord);
+                        results.add(buildObjectsFromRecords(blah, getSQLResultSetMappings().get(recordIndex)));
+                        recordIndex++;
+                    }
+                } else {
+                    results.add(buildObjectsFromRecords((List) records, getSQLResultSetMappings().get(recordIndex)));
+                }
             }
         
             return results;
@@ -362,10 +381,13 @@ public class ResultSetMappingQuery extends ObjectBuildingQuery {
     
     /**
      * PUBLIC:
-     * Set to true if you the actualy jdbc result set returned from query
+     * Set to true if you the actual jdbc result set returned from query
      * execution.
      */
     public void setIsExecuteCall() {
         isExecuteCall = true;
+        
+        // Force the query to reprepare.
+        setIsPrepared(false);
     }
 }

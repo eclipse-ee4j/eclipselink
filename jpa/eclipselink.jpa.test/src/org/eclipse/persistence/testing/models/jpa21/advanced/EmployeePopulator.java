@@ -737,6 +737,30 @@ public class EmployeePopulator {
         smallProjectExample10();
     }
     
+    public StoredProcedureDefinition buildStoredProcedureReadUsingNamedRefCursor(DatabaseSession session) {
+        StoredProcedureDefinition proc = new StoredProcedureDefinition();
+        proc.setName("Read_Using_Named_Cursor");
+        
+        proc.addOutputArgument("CUR1", "CURSOR_TYPE.ANY_CURSOR");
+        proc.addOutputArgument("CUR2", "CURSOR_TYPE.ANY_CURSOR");
+        proc.addStatement("OPEN CUR1 FOR Select E.*, S.* from JPA21_EMPLOYEE E, JPA21_SALARY S WHERE E.EMP_ID = S.EMP_ID");
+        proc.addStatement("OPEN CUR2 FOR Select a.* from JPA21_ADDRESS a");
+        
+        return proc;
+    }
+    
+    public StoredProcedureDefinition buildStoredProcedureReadUsingPosRefCursor(DatabaseSession session) {
+        StoredProcedureDefinition proc = new StoredProcedureDefinition();
+        proc.setName("Read_Using_Pos_Cursor");
+        
+        proc.addOutputArgument("1", "CURSOR_TYPE.ANY_CURSOR");
+        proc.addOutputArgument("2", "CURSOR_TYPE.ANY_CURSOR");
+        proc.addStatement("OPEN CUR1 FOR Select E.*, S.* from JPA21_EMPLOYEE E, JPA21_SALARY S WHERE E.EMP_ID = S.EMP_ID");
+        proc.addStatement("OPEN CUR2 FOR Select a.* from JPA21_ADDRESS a");
+        
+        return proc;
+    }
+    
     public StoredProcedureDefinition buildStoredProcedureReadFromAddress(DatabaseSession session) {
         StoredProcedureDefinition proc = new StoredProcedureDefinition();
         proc.setName("Read_Address");
@@ -1334,6 +1358,11 @@ public class EmployeePopulator {
                 schema.replaceObject(buildStoredProcedureReadFromAddressResultSet(dbSession));
                 schema.replaceObject(buildStoredProcedureUpdateFromAddress(dbSession));
                 schema.replaceObject(buildStoredProcedureResultSetAndUpdateFromAddress(dbSession));
+                
+                if (session.getLogin().getPlatform().isOracle()) {
+                    schema.replaceObject(buildStoredProcedureReadUsingNamedRefCursor(dbSession));
+                    //schema.replaceObject(buildStoredProcedureReadUsingPosRefCursor(dbSession));
+                }
                 
                 if (session.getLogin().getPlatform().isMySQL()) {
                     schema.replaceObject(buildMySQL2ResultSetProcedure());

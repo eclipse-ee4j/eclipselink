@@ -15,6 +15,7 @@ package org.eclipse.persistence.testing.models.jpa21.advanced;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.List;
 import java.util.Vector;
 
 import javax.persistence.AttributeOverride;
@@ -34,12 +35,14 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedStoredProcedureQueries;
 import javax.persistence.NamedStoredProcedureQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SecondaryTable;
 import javax.persistence.SqlResultSetMapping;
 import javax.persistence.SqlResultSetMappings;
+import javax.persistence.StoredProcedureParameter;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Version;
@@ -56,6 +59,9 @@ import org.eclipse.persistence.sessions.Session;
 import static javax.persistence.CascadeType.*;
 import static javax.persistence.FetchType.*;
 import static javax.persistence.GenerationType.*;
+import static javax.persistence.ParameterMode.INOUT;
+import static javax.persistence.ParameterMode.OUT;
+import static javax.persistence.ParameterMode.REF_CURSOR;
 
 @Entity
 @Table(name="JPA21_EMPLOYEE")
@@ -63,11 +69,31 @@ import static javax.persistence.GenerationType.*;
     name="JPA21_SALARY",
     pkJoinColumns=@PrimaryKeyJoinColumn(name="EMP_ID", referencedColumnName="EMP_ID")
 )
-@NamedStoredProcedureQuery(
-    name="ReadUsingMultipleResultSetMappings",
-    procedureName="Read_Multiple_Result_Sets",
-    resultSetMappings={"EmployeeResultSetMapping", "AddressResultSetMapping", "ProjectResultSetMapping", "EmployeeConstructorResultSetMapping"}
-)
+@NamedStoredProcedureQueries({
+    @NamedStoredProcedureQuery(
+        name="ReadUsingMultipleResultSetMappings",
+        procedureName="Read_Multiple_Result_Sets",
+        resultSetMappings={"EmployeeResultSetMapping", "AddressResultSetMapping", "ProjectResultSetMapping", "EmployeeConstructorResultSetMapping"}
+    ),
+    @NamedStoredProcedureQuery(
+        name="ReadUsingPositionalRefCursors",
+        procedureName="Read_Using_Pos_Cursor",
+        resultClasses={Employee.class, Address.class},
+        parameters = {
+            @StoredProcedureParameter(mode=REF_CURSOR, type = void.class),
+            @StoredProcedureParameter(mode=REF_CURSOR, type = void.class)
+        }
+    ),
+    @NamedStoredProcedureQuery(
+        name="ReadUsingNamedRefCursors",
+        procedureName="Read_Using_Named_Cursor",
+        resultClasses={Employee.class, Address.class},
+        parameters = {
+            @StoredProcedureParameter(mode=REF_CURSOR, name="CUR1", type = void.class),
+            @StoredProcedureParameter(mode=REF_CURSOR, name="CUR2", type = void.class)
+        }
+    )
+})
 @SqlResultSetMappings({
     @SqlResultSetMapping(
         name = "EmployeeResultSetMapping",

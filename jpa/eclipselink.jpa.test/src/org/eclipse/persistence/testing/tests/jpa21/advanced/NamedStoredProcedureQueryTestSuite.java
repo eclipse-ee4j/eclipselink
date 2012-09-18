@@ -110,6 +110,8 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
         suite.addTest(new NamedStoredProcedureQueryTestSuite("testEMCreateStoredProcedureUpdateQuery"));
         suite.addTest(new NamedStoredProcedureQueryTestSuite("testEMCreateStoredProcedureExecuteQuery1"));
         suite.addTest(new NamedStoredProcedureQueryTestSuite("testEMCreateStoredProcedureExecuteQuery2"));
+        suite.addTest(new NamedStoredProcedureQueryTestSuite("testEMCreateStoredProcedureQueryWithNamedCursors"));
+        //suite.addTest(new NamedStoredProcedureQueryTestSuite("testEMCreateStoredProcedureQueryWithPositionalCursors"));
         
         return suite;
     }
@@ -283,7 +285,7 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
      * Tests a StoredProcedureQuery using a result-set mapping though EM API 
      */
     public void testEMCreateStoredProcedureQueryWithSqlResultSetMapping() {
-        if (supportsStoredProcedures()) {
+        if (supportsStoredProcedures() && getPlatform().isMySQL()) {
             EntityManager em = createEntityManager();
             beginTransaction(em);
             
@@ -330,7 +332,7 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
      * Tests a StoredProcedureQuery that does an update though EM API 
      */
     public void testEMCreateStoredProcedureUpdateQuery() {
-        if (supportsStoredProcedures()) {
+        if (supportsStoredProcedures() && getPlatform().isMySQL()) {
             EntityManager em = createEntityManager();
             
             try {
@@ -392,8 +394,72 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
     /**
      * Tests a StoredProcedureQuery that does an update though EM API 
      */
+    public void testEMCreateStoredProcedureQueryWithNamedCursors() {
+        if (supportsStoredProcedures() && getPlatform().isOracle() ) {
+            EntityManager em = createEntityManager();
+            
+            try {
+                StoredProcedureQuery query = em.createNamedStoredProcedureQuery("ReadUsingNamedRefCursors");
+                
+                boolean returnVal = query.execute();
+                
+                //Object employeeResultsBS = query.getOutputParameterValue("CUR1");
+                List<Employee> employeeResults = (List<Employee>) query.getOutputParameterValue(1);
+                
+                //Object addressResultsBS = query.getOutputParameterValue("CUR2");
+                List<Address> addressResults = (List<Address>) query.getOutputParameterValue(2);
+                
+                assertTrue("Update count incorrect.", true);
+            } catch (RuntimeException e) {
+                if (isTransactionActive(em)){
+                    rollbackTransaction(em);
+                }
+                
+                closeEntityManager(em);
+                throw e;
+            }
+            
+            closeEntityManager(em);
+        }
+    }
+    
+    /**
+     * Tests a StoredProcedureQuery that does an update though EM API 
+     */
+    public void testEMCreateStoredProcedureQueryWithPositionalCursors() {
+        if (supportsStoredProcedures() && getPlatform().isOracle() ) {
+            EntityManager em = createEntityManager();
+            
+            try {
+                StoredProcedureQuery query = em.createNamedStoredProcedureQuery("ReadUsingPositionalRefCursors");
+                
+                boolean returnVal = query.execute();
+                
+                //Object employeeResultsBS = query.getOutputParameterValue("CUR1");
+                List<Employee> employeeResults = (List<Employee>) query.getOutputParameterValue(1);
+                
+                //Object addressResultsBS = query.getOutputParameterValue("CUR2");
+                List<Address> addressResults = (List<Address>) query.getOutputParameterValue(2);
+                
+                assertTrue("Update count incorrect.", true);
+            } catch (RuntimeException e) {
+                if (isTransactionActive(em)){
+                    rollbackTransaction(em);
+                }
+                
+                closeEntityManager(em);
+                throw e;
+            }
+            
+            closeEntityManager(em);
+        }
+    }
+    
+    /**
+     * Tests a StoredProcedureQuery that does an update though EM API 
+     */
     public void testEMCreateStoredProcedureExecuteQuery1() {
-        if (supportsStoredProcedures()) {
+        if (supportsStoredProcedures() && getPlatform().isMySQL()) {
             EntityManager em = createEntityManager();
             
             try {
@@ -539,7 +605,7 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
      * This is the same test as above except different retrieval path.
      */
     public void testEMCreateStoredProcedureExecuteQuery2() {
-        if (supportsStoredProcedures()) {
+        if (supportsStoredProcedures() && getPlatform().isMySQL()) {
             EntityManager em = createEntityManager();
             
             try {
