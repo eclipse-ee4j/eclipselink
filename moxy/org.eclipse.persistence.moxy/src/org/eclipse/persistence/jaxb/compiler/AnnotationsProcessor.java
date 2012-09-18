@@ -796,11 +796,25 @@ public class AnnotationsProcessor {
         ArrayList<JavaClass> jClasses = getTypeInfoClasses();
         for (JavaClass jClass : jClasses) {
             TypeInfo tInfo = getTypeInfo().get(jClass.getQualifiedName());
+            
+           
+            
             // don't need to validate props on a transient class at this point
             if (tInfo.isTransient()) {
                 continue;
             }
 
+            // If a property is marked transient, ensure it doesn't exist in the propOrder
+            List<String> propOrderList = Arrays.asList(tInfo.getPropOrder());
+            ArrayList<Property> propsList = tInfo.getPropertyList();
+            for (int i = 0; i < propsList.size(); i++) {
+                Property p = propsList.get(i);
+                if (p.isTransient() && propOrderList.contains(p.getPropertyName())) {
+                     throw org.eclipse.persistence.exceptions.JAXBException.transientInProporder(p.getPropertyName());
+                }
+            }
+            
+            
             if (!jClass.isInterface() && !tInfo.isEnumerationType() && !jClass.isAbstract()) {
                 if (tInfo.getFactoryMethodName() == null && tInfo.getObjectFactoryClassName() == null) {
                     JavaConstructor zeroArgConstructor = jClass.getDeclaredConstructor(new JavaClass[] {});
