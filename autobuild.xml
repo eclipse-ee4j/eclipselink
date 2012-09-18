@@ -158,7 +158,7 @@
         <!-- Set extract.dir appropriately for this build                         -->
         <property name="extract.dir" value="${build.tool.root}/exported_builds/${release.version}/${version.qualifier}"/>
         <!-- Set location of executed scripts to hudson (is also set in promote-init for milestone publising) -->
-        <property name="script.dir" value="${hudson.workspace}/buildsystem
+        <property name="script.dir" value="${hudson.workspace}/buildsystem"/>
 
         <echo message="ANT_ARGS='${env.ANT_ARGS}'"/>
         <echo message="ANT_OPTS='${env.ANT_OPTS}'"/>
@@ -603,7 +603,7 @@
 
 
         <!-- Set build script location for p2 publishing -->
-        scrip<property name="script.dir" value="${releng.repo.dir}"/>
+        <property name="script.dir" value="${releng.repo.dir}"/>
 
         <!-- This should already be set, but is set as a precaution -->
         <property name="eclipselink.root.download.dir" value="/home/data/httpd/download.eclipse.org/rt/eclipselink"/>
