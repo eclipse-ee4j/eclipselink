@@ -822,7 +822,7 @@
         <echo message="${git.exec} push --tags"/>
         <!-- exec executable="${git.exec}" failonerror="false" logError="true">
             <arg line="push"/>
-            <arg line="--tags"/>
+            <arg line="- -tags"/>
         </exec -->
     </target>
 
