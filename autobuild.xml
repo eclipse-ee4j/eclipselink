@@ -47,7 +47,7 @@
             <pathelement location="${build.location_temp}"/>
         </path>
     </pathconvert>
-    <echo message="build.location = '${build.location}'"/>
+    <echo message="build.location   = '${build.location}'"/>
 
     <!-- Define custom task for conditional echo command -->
     <property name="custom.tasks.lib" value="${build.location}/buildsystem/ant_customizations.jar"/>
@@ -62,9 +62,9 @@
     <target name="build-continuous" description="Trigger an automated build and run the tests if source changes exist"
             depends="clean, build-no-javadoc, build-utils, test-srg"
     />
-    <target name="build-milestone" depends="promote-init, sign-and-wait, regen-archives" description="Promote a build: nightly to milestone or milestone to release ('release' is a special milestone in this case)"
+    <target name="build-milestone" depends="promote-init, sign-and-wait, regen-archives, publish-milestone, create-tag" description="Promote a build: nightly to milestone or milestone to release ('release' is a special milestone in this case)"
     />
-    <!-- , publish-milestone, create-tag" -->
+
     <target name="build-ora-extension" description="Trigger the automated oracle extension build"
             depends="init, build-oracle-extension"
     />
@@ -220,7 +220,7 @@
         <echo message="junit.dir       ='${junit.dir}'"/>
         <echo message="junit.lib       ='${junit.lib}'"/>
         <echo message=" "/>
-        <echo message="git.exec       ='${git.exec}'"/>
+        <echo message="git.exec        ='${git.exec}'"/>
         <echo message=" "/>
         <echo message="EL version     ='${release.version}'"/>
         <echo message="build.type     ='${build.type}'"/>
@@ -507,7 +507,7 @@
 
     <!-- target name="publish-oracle-extension">
         <echo message="oracle-extension commit in progress..."/>
-        <exec executable="${svn.exec}" failonerror="false" logError="true">
+        <exec executable="${git.exec}" failonerror="false" logError="true">
             <arg value="commit"/>
             <arg value="-m ${version.string}"/>
             <arg value="${hudson.workspace}/foundation/plugins/org.eclipse.persistence.oracle.jar"/>
@@ -517,7 +517,7 @@
 
     <target name="publish-oracle-nosql">
         <echo message="oracle-nosql commit in progress..."/>
-        <exec executable="${svn.exec}" failonerror="false" logError="true">
+        <exec executable="${git.exec}" failonerror="false" logError="true">
             <arg value="commit"/>
             <arg value="-m ${version.string}"/>
             <arg value="${hudson.workspace}/foundation/plugins/org.eclipse.persistence.oracle.nosql.jar"/>
@@ -574,13 +574,15 @@
     </target>
 
     <!--  =====     Milestone Init     =====  -->
-    <target name="promote-init" depends="common-init">
-        <!-- svn.revision and build.time should already be set to the svn revision number and build date of the -->
+    <target name="promote-init" depends="publish-init"> <!-- In order to promote need the settings from Publish-init too -->
+        <!-- git.hash and build.time should already be set to the git hash and build date of the -->
         <!-- build being promoted - however, build.time is undefined (it is currently unused)                   -->
-        <fail unless="git.hash"   message="git.hash doesn't exist and it should before we reach this point!"/>
-        <fail unless="build.date" message="build.date doesn't exist and it should before we reach this point!"/>
+        <fail unless="git.hash"        message="git.hash doesn't exist and it should before we reach this point!"/>
+        <fail unless="build.date"      message="build.date doesn't exist and it should before we reach this point!"/>
         <!-- build.type should be set to "M#" or "RELEASE" on the command-line for milestone or release builds  -->
-        <fail unless="build.type" message="build.type doesn't exist and it should before we reach this point!"/>
+        <fail unless="build.type"      message="build.type doesn't exist and it should before we reach this point!"/>
+        <!-- releng.repo.dir should be passed in from the promote script. It is needed for maven promotion -->
+        <fail unless="releng.repo.dir" message="releng.repo.dir doesn't exist and it should before we reach this point!"/>
 
         <tstamp>
             <format property="promote.date" pattern="MMM dd, yyyy"/>
@@ -590,7 +592,7 @@
         <!-- Not used, but need to keep for documentation purposes. Cannot comment out because double '-' not allowed in comment (format parameter) -->
         <property name="commit.hash.cmd" value="${git.exec} log -1 --format=%h"/>
         <!-- property name="version.qualifier" value="v${build.date}-{commit.hash}"/ -->
-        <!-- property name="version.qualifier" value="v${build.date}-r${svn.revision}"/ -->
+        <!-- property name="version.qualifier" value="v${build.date}-r${git.hash}"/ -->
 
         <echo message=" "/>
         <echo message="promote.date   ='${promote.date}'"/>
@@ -791,25 +793,36 @@
 
     <target name="publish-milestone-maven"> <!-- depends="init" -->
         <echo message="Publish-milestone-maven: Commented out.... No-op"/>
-        <!-- ant antfile="uploadToMaven.xml" dir="${tmp.maven.dir}" target="upload-maven-all"/ -->
+        <!-- *OLD* ant antfile="uploadToMaven.xml" dir="${tmp.maven.dir}" target="upload-maven-all"/ -->
+        <!-- *SCRIPT* ant antfile="${RELENG_REPO}/upload${branch}ToMaven.xml" dir="${tmp.maven.dir}" target="upload-maven-all">
+            <property name="build.deps.dir"   value="${BldDepsDir}"/>
+            <property name="custom.tasks.lib" value="${RELENG_REPO}/ant_customizations.jar"/>
+            <property name="version.string"   value="${version}.${qualifier}"/>
+            <property name="release.version"  value="${version}"/>
+            <property name="build.date"       value="${blddate}"/>
+            <property name="build.type"       value="SNAPSHOT"/>
+            <property name="bundle.dir"       value="${src}/maven"/>
+        <ant/ -->
+
     </target>
 
     <!--  =====     Milestone Tag     =====  -->
     <target name="create-tag">
-        <echo message="Create a tag (${milestone.tag}) of this revision (${svn.revision}) for this milestone (${build.type})"/>
-        <echo message="   ${svn.branch.url} = ${svn.branch.url}"/>
-        <echo message="   ${svn.base.url}   = ${svn.base.url}"/>
+        <echo message="Create a tag (${milestone.tag}) of this revision (${git.hash}) for this milestone (${build.type})"/>
+        <echo message="   branch.name   = ${branch.name}"/>
         <echo message="   "/>
-        <echo message="${svn.exec} copy -r ${svn.revision} \\"/>
-        <echo message="            ${svn.branch.url} \\"/>
-        <echo message="            ${svn.base.url}/tags/${milestone.tag} \\"/>
-        <echo message="            -m 'Create ${milestone.tag} Tag for ${version.string}'"/>
-        <!-- exec executable="${svn.exec}" failonerror="false" logError="true">
-            <arg line="copy"/>
-            <arg line="-r ${svn.revision}"/>
-            <arg line="${svn.branch.url}"/>
-            <arg line="${svn.base.url}/tags/${milestone.tag}"/>
-            <arg line="-m 'Create ${milestone.tag} Tag for ${version.string}'"/>
+        <echo message="${git.exec} tag -m'Create ${milestone.tag} Tag for ${version.string}' ${milestone.tag} ${git.hash}"/>
+        <!-- exec executable="${git.exec}" failonerror="false" logError="true">
+            <arg line="tag"/>
+            <arg line="-m'Create ${milestone.tag} Tag for ${version.string}'"/>
+            <arg line="${milestone.tag"/>
+            <arg line="${git.hash}"/>
+        </exec -->
+        <echo message="Now push the tag back to the Eclipse repo"/>
+        <echo message="${git.exec} push --tags"/>
+        <!-- exec executable="${git.exec}" failonerror="false" logError="true">
+            <arg line="push"/>
+            <arg line="--tags"/>
         </exec -->
     </target>
 
