@@ -62,9 +62,9 @@
     <target name="build-continuous" description="Trigger an automated build and run the tests if source changes exist"
             depends="clean, build-no-javadoc, build-utils, test-srg"
     />
-    <target name="build-milestone" depends="promote-init" description="Promote a build: nightly to milestone or milestone to release ('release' is a special milestone in this case)"
+    <target name="build-milestone" depends="promote-init, sign-and-wait, regen-archives" description="Promote a build: nightly to milestone or milestone to release ('release' is a special milestone in this case)"
     />
-    <!-- , sign-and-wait, regen-archives, publish-milestone, create-tag" -->
+    <!-- , publish-milestone, create-tag" -->
     <target name="build-ora-extension" description="Trigger the automated oracle extension build"
             depends="init, build-oracle-extension"
     />
@@ -599,6 +599,7 @@
 
         <!-- This should already be set, but is set as a precaution -->
         <property name="eclipselink.root.download.dir" value="/home/data/httpd/download.eclipse.org/rt/eclipselink"/>
+                                                              /home/data/httpd/download.eclipse.org/rt/eclipselink
         <!-- This depends upon freezing nightly builds after an RC# build - otherwise the nightly to be -->
         <!-- promoted to a 'RELEASE' build (same as last milestone) could expire off the nightly site   -->
         <property name="promote.source.dir"            value="${eclipselink.root.download.dir}/nightly/${release.version}/${build.date}"/>
@@ -616,8 +617,8 @@
         <!-- FAIL THIS PROMOTION if the source build is not found                                       -->
         <fail unless="promote.source.exist"     message="${promote.source.dir} not found! Cannot promote this build."/>
         <!-- Log status of signing archive for build                                                    -->
-        <say message="${download.dir}/${p2.archive.signed.zip} found." if="signed.archive.exist"/>
-        <say message="${download.dir}/${p2.archive.signed.zip} not found." unless="signed.archive.exist"/>
+        <say message="${promote.archive.signed.lib} found." if="signed.archive.exist"/>
+        <say message="${promote.archive.signed.lib} not found." unless="signed.archive.exist"/>
         <!-- FAIL THIS PROMOTION if neither the unsigned or signed archive are found                                       -->
         <fail unless="archive.exist"     message="Both the unsigned and signed archive is missing from ${promote.source.dir}! Cannot promote this build."/>
         <property name="temp.rebuild.dir" value="/tmp/EL${run.date}.${run.time}-${version.string}"/>
@@ -633,7 +634,7 @@
             <property name="signed.archive.src.file"   value="${promote.archive.unsigned.lib}"/>
             <property name="signed.archive.dest.file"  value="${promote.archive.signed.lib}"/>
         </ant>
-        <available file="${download.dir}/${p2.archive.signed.zip}" property="signed.archive.exist"/>
+        <available file="${promote.archive.signed.lib}" property="signed.archive.exist"/>
     </target>
 
     <!--  =====     Milestone RegenArchives     =====  -->
