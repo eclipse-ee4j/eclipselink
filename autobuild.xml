@@ -718,7 +718,7 @@
         <!-- get eclipselink.jar (from temp InstallerZip location, so will work if signed or unsigned) -->
         <copy todir="${tmp.maven.dir}" file="${temp.rebuild.dir}/install/eclipselink/jlib/${eclipselink.jar}"/>
         <!-- get bundles -->
-        <copy todir="${tmp.maven.dir}/${plugins.dir}">
+        <copy todir="${tmp.maven.dir}">
             <fileset dir="${temp.rebuild.dir}/bundlezip">
                 <include name="javax*.jar"/>
                 <exclude name="javax.wsdl*.jar"/>
@@ -733,19 +733,19 @@
             </fileset>
         </copy>
         <!-- get javax.persistence* -->
-        <copy todir="${tmp.maven.dir}/${eclipselink.jpa.base}/${plugins.dir}">
+        <copy todir="${tmp.maven.dir}">
             <fileset dir="${temp.rebuild.dir}/bundlezip">
                 <include name="javax.persistence*2.0*.jar"/>
             </fileset>
         </copy>
         <!-- get commonj.sdo -->
-        <copy todir="${tmp.maven.dir}/${eclipselink.sdo.base}/${plugins.dir}">
+        <copy todir="${tmp.maven.dir}">
             <fileset dir="${temp.rebuild.dir}/bundlezip">
                 <include name="commonj*.jar"/>
             </fileset>
         </copy>
         <!-- get utils - oracleddl/wsdl -->
-        <copy todir="${tmp.maven.dir}/${eclipselink.util.base}/${plugins.dir}">
+        <copy todir="${tmp.maven.dir}">
             <fileset dir="${temp.rebuild.dir}/bundlezip">
                 <include name="javax.wsdl*.jar"/>
             </fileset>
