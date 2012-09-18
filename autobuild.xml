@@ -176,10 +176,15 @@
         <echo message="os.version     ='${os.version}'"/>
         <echo message=" "/>
         <echo message="builddate.buildtime='${build.date}.${build.time}'"/>
-        <echo message="coretest.prop.file='${coretest.prop.file}'"/>
+        <echo message="coretest.prop.file ='${coretest.prop.file}'"/>
         <echo message="test.properties.run='${test.properties.run}'"/>
-        <echo message="build.type='${build.type}'"/>
-        <echo message="version.qualifier='${version.qualifier}'"/>
+        <echo message="build.type         ='${build.type}'"/>
+        <echo message="version.qualifier  ='${version.qualifier}'"/>
+        <echo message=" "/>
+        <echo message="build.deps.dir  ='${build.deps.dir}'"/>
+        <echo message="build.tool.root ='${build.tool.root}'"/>
+        <echo message="hudson.workspace='${hudson.workspace}'"/>
+        <echo message="extract.dir     ='${extract.dir}'"/>
         <echo message=" "/>
     </target>
 
@@ -210,11 +215,7 @@
         <echo message="branch.name     ='${branch.name}'"/>
         <echo message="branch          ='${branch}'"/>
         <echo message="basedir         ='${basedir}'"/>
-        <echo message="build.deps.dir  ='${build.deps.dir}'"/>
         <echo message="build.location  ='${build.location}'"/>
-        <echo message="build.tool.root ='${build.tool.root}'"/>
-        <echo message="hudson.workspace='${hudson.workspace}'"/>
-        <echo message="extract.dir     ='${extract.dir}'"/>
         <echo message="log.dir         ='${log.dir}'"/>
         <echo message="junit.dir       ='${junit.dir}'"/>
         <echo message="junit.lib       ='${junit.lib}'"/>
