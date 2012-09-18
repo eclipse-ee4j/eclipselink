@@ -24,6 +24,8 @@
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *     09/13/2012-2.5 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     09/27/2012-2.5 Guy Pelletier
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa;
 
@@ -100,6 +102,35 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     }
     
     /**
+     * Build the given result set into a list objects. Assumes there is an 
+     * execute call available and therefore should not be called unless an
+     * execute statement was issued by the user.
+     */
+    protected List buildResultRecords(ResultSet resultSet) {
+        try {
+            AbstractSession session = (AbstractSession) getActiveSession();
+            DatabaseAccessor accessor = (DatabaseAccessor) executeCall.getQuery().getAccessor();
+            
+            executeCall.setFields(null);
+            executeCall.matchFieldOrder(resultSet, accessor, session);
+            ResultSetMetaData metaData = resultSet.getMetaData();
+            
+            List result =  new Vector();
+            while (resultSet.next()) {
+                result.add(accessor.fetchRow(executeCall.getFields(), executeCall.getFieldsArray(), resultSet, metaData, session));
+            }
+    
+            // The result set must be closed in case the statement is cached and not closed.
+            resultSet.close();
+            
+            return result;
+        } catch (Exception e) {
+            setRollbackOnly();
+            throw new PersistenceException(e);
+        }
+    }
+    
+    /**
      * Build a ResultSetMappingQuery from a sql result set mapping name and a
      * stored procedure call.
      * 
@@ -108,7 +139,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
      */
     public static DatabaseQuery buildResultSetMappingNameQuery(List<String> resultSetMappingNames, StoredProcedureCall call) {
         ResultSetMappingQuery query = new ResultSetMappingQuery();
-        call.setReturnMultipleResultSetCollections(call.hasMultipleResultSets());
+        call.setReturnMultipleResultSetCollections(call.hasMultipleResultSets() && ! call.isMultipleCursorOutputProcedure());
         query.setCall(call);
         query.setIsUserDefined(true);
         query.setSQLResultSetMappingNames(resultSetMappingNames);
@@ -142,7 +173,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
      */
     public static DatabaseQuery buildResultSetMappingQuery(List<SQLResultSetMapping> resultSetMappings, StoredProcedureCall call) {
         ResultSetMappingQuery query = new ResultSetMappingQuery();
-        call.setReturnMultipleResultSetCollections(call.hasMultipleResultSets());
+        call.setReturnMultipleResultSetCollections(call.hasMultipleResultSets() && ! call.isMultipleCursorOutputProcedure());
         query.setCall(call);
         query.setIsUserDefined(true);
         query.setSQLResultSetMappings(resultSetMappings);
@@ -230,10 +261,10 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     public void close() {
         DatabaseQuery query = executeCall.getQuery();
         AbstractSession session = query.getSession();
-        DatabaseAccessor accessor = (DatabaseAccessor) query.getAccessor();
-
+        
         try {
-            if (! executeStatement.isClosed()) {
+            if (executeStatement != null) {
+                DatabaseAccessor accessor = (DatabaseAccessor) query.getAccessor();
                 accessor.releaseStatement(executeStatement, query.getSQLString(), executeCall, session);
             }
         } catch (SQLException exception) {
@@ -263,8 +294,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
                 throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_query_for_execute"));
             }
         
-            ResultSetMappingQuery query = (ResultSetMappingQuery) getDatabaseQueryInternal();
-            query.setIsExecuteCall();
+            getDatabaseQueryInternal().setIsExecuteCall(true);
             executeCall = (DatabaseCall) executeReadQuery();
             executeStatement = (CallableStatement) executeCall.getStatement();
             
@@ -286,7 +316,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             
             hasMoreResults = executeCall.getExecuteReturnValue();
             
-            return executeCall.getExecuteReturnValue();
+            return hasMoreResults;
         } catch (LockTimeoutException exception) {
             throw exception;
         } catch (RuntimeException exception) {
@@ -304,6 +334,24 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     }
     
     /**
+     * Return the stored procedure call associated with this query.
+     */
+    protected StoredProcedureCall getCall() {
+        return (StoredProcedureCall) getDatabaseQuery().getCall();
+    }
+    
+    /**
+     * INTERNAL: Return the cached database query for this 
+     * StoredProcedureQueryImpl. If the query is a named query and it has not 
+     * yet been looked up, the query will be looked up and stored as the cached 
+     * query.
+     */
+    @Override
+    public ResultSetMappingQuery getDatabaseQueryInternal() {
+        return (ResultSetMappingQuery) super.getDatabaseQueryInternal();
+    }
+    
+    /**
      * Used to retrieve the values passed back from the procedure through INOUT 
      * and OUT parameters. For portability, all results corresponding to result 
      * sets and update counts must be retrieved before the values of output 
@@ -316,7 +364,14 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     public Object getOutputParameterValue(int position) {
         if (executeStatement != null) {
             try {
-                return executeStatement.getObject(position);
+                Object obj = executeStatement.getObject(position);
+                
+                if (obj instanceof ResultSet) {
+                    // If a result set is returned we have to build the objects.
+                    return ((ResultSetMappingQuery) executeCall.getQuery()).buildObjectsFromRecords(buildResultRecords((ResultSet) obj), ++executeResultSetIndex);
+                } else {
+                    return obj;
+                }
             } catch (SQLException exception) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa21_invalid_parameter_position", new Object[] { position, exception.getMessage() }), exception);
             }
@@ -324,7 +379,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
 
         throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa21_invalid_call_on_un_executed_query"));
     }
-
+    
     /**
      * Used to retrieve the values passed back from the procedure through INOUT 
      * and OUT parameters. For portability, all results corresponding to result 
@@ -339,7 +394,13 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     public Object getOutputParameterValue(String parameterName) {
         if (executeStatement != null) {
             try {
-                return executeStatement.getObject(parameterName);
+                Integer position = getCall().getCursorOrdinalPosition(parameterName);
+                
+                if (position == null) {
+                    return executeStatement.getObject(parameterName);
+                } else {
+                    return getOutputParameterValue(position);
+                }
             } catch (SQLException exception) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa21_invalid_parameter_name", new Object[] { parameterName, exception.getMessage() }), exception);
             }
@@ -357,6 +418,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
         try {
             if (executeStatement == null) {
                 if (resultList == null) {
+                    getDatabaseQueryInternal().setIsExecuteCall(false);
                     resultList = super.getResultList();
                 }
             
@@ -367,20 +429,8 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
                 }
             } else {
                 if (hasMoreResults()) {
-                    AbstractSession session = (AbstractSession) getActiveSession();
-                    DatabaseAccessor accessor = (DatabaseAccessor) executeCall.getQuery().getAccessor();
-                    ResultSet resultSet = executeStatement.getResultSet();
-                    executeCall.setFields(null);
-                    executeCall.matchFieldOrder(resultSet, accessor, session);
-                    ResultSetMetaData metaData = resultSet.getMetaData();
-                
-                    List result =  new Vector();
-                    while (resultSet.next()) {
-                        result.add(accessor.fetchRow(executeCall.getFields(), executeCall.getFieldsArray(), resultSet, metaData, session));
-                    }
-    
-                    // The result set must be closed in case the statement is cached and not closed.
-                    resultSet.close(); 
+                    // Build the result records first.
+                    List result = buildResultRecords(executeStatement.getResultSet());
                     
                     // Move the result pointer.
                     moveResultPointer();

@@ -17,6 +17,8 @@
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *     08/24/2012-2.5 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     09/27/2012-2.5 Guy Pelletier
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/  
 package org.eclipse.persistence.internal.databaseaccess;
 
@@ -113,6 +115,9 @@ public abstract class DatabaseCall extends DatasourceCall {
     
     /** Allow for a single cursored output parameter. */
     protected boolean isCursorOutputProcedure;
+    
+    /** Allow for multiple cursored output parameter. */
+    protected boolean isMultipleCursorOutputProcedure;
 
     // This parameter is here to determine if we should expect a ResultSet back from the call
     // We need to know this information in order to call the correct JDBC API
@@ -580,6 +585,13 @@ public abstract class DatabaseCall extends DatasourceCall {
     }
 
     /**
+     * Used for Oracle result sets through procedures.
+     */
+    public boolean isMultipleCursorOutputProcedure() {
+        return this.isMultipleCursorOutputProcedure; 
+    }
+    
+    /**
      * Return true for procedures with any output (or in/out) parameters and no cursors
      */
     public boolean isNonCursorOutputProcedure() {
@@ -815,7 +827,7 @@ public abstract class DatabaseCall extends DatasourceCall {
     public void setIsCursorOutputProcedure(boolean isCursorOutputProcedure) {
         this.isCursorOutputProcedure = isCursorOutputProcedure;
     }
-
+    
     /**
      * Field matching is required for custom SQL statements where the result set field order is not known.
      */
@@ -823,6 +835,13 @@ public abstract class DatabaseCall extends DatasourceCall {
         this.isFieldMatchingRequired = isFieldMatchingRequired;
     }
 
+    /**
+     * Used for Oracle result sets through procedures.
+     */
+    public void setIsMultipleCursorOutputProcedure(boolean isMultipleCursorOutputProcedure) {
+        this.isMultipleCursorOutputProcedure = isMultipleCursorOutputProcedure; 
+    }
+    
     public void setIsResultSetScrollable(boolean isResultSetScrollable) {
         this.isResultSetScrollable = isResultSetScrollable;
     }

@@ -18,6 +18,8 @@
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *     09/13/2013-2.5 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     09/27/2012-2.5 Guy Pelletier
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa21.advanced;
 
@@ -87,10 +89,6 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
         
         suite.addTest(new NamedStoredProcedureQueryTestSuite("testSetup"));
         
-        // TODO: Number of tests currently only run on MySQL. That is check for 
-        // getPlatform().isMySQL() otherwise they skip the test. Should look to 
-        // add my platform tests.
-        
         // These tests call stored procedures that return a result set. 
         suite.addTest(new NamedStoredProcedureQueryTestSuite("testQueryWithMultipleResultsFromCode"));
         suite.addTest(new NamedStoredProcedureQueryTestSuite("testQueryWithMultipleResultsFromAnnotations"));
@@ -110,6 +108,9 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
         suite.addTest(new NamedStoredProcedureQueryTestSuite("testEMCreateStoredProcedureUpdateQuery"));
         suite.addTest(new NamedStoredProcedureQueryTestSuite("testEMCreateStoredProcedureExecuteQuery1"));
         suite.addTest(new NamedStoredProcedureQueryTestSuite("testEMCreateStoredProcedureExecuteQuery2"));
+        suite.addTest(new NamedStoredProcedureQueryTestSuite("testExecuteStoredProcedureQueryWithNamedCursors"));
+        suite.addTest(new NamedStoredProcedureQueryTestSuite("testGetResultListStoredProcedureQueryWithNamedCursors"));
+        suite.addTest(new NamedStoredProcedureQueryTestSuite("testExecuteStoredProcedureQueryWithUnNamedCursor"));
         
         return suite;
     }
@@ -131,9 +132,10 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
     public void testEMCreateStoredProcedureQuery() {
         if (supportsStoredProcedures() && getPlatform().isMySQL()) {
             EntityManager em = createEntityManager();
-            beginTransaction(em);
             
             try {
+                beginTransaction(em);
+                
                 Address address1 = new Address();
                 address1.setCity("Edmonton");
                 address1.setPostalCode("T5B 4M9");
@@ -170,11 +172,10 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
                     rollbackTransaction(em);
                 }
                 
-                closeEntityManager(em);
                 throw e;
+            } finally {
+                closeEntityManager(em);
             }
-            
-            closeEntityManager(em);
         }
     }
     
@@ -184,9 +185,10 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
     public void testEMCreateStoredProcedureQueryWithPositionalParameters() {
         if (supportsStoredProcedures() && getPlatform().isMySQL()) {
             EntityManager em = createEntityManager();
-            beginTransaction(em);
             
             try {
+                beginTransaction(em);
+                
                 Address address1 = new Address();
                 address1.setCity("Ottawa");
                 address1.setPostalCode("K1G 6P3");
@@ -223,9 +225,9 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
                 
                 closeEntityManager(em);
                 throw e;
+            } finally {
+                closeEntityManager(em);
             }
-            
-            closeEntityManager(em);
         }
     }  
     
@@ -235,9 +237,10 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
     public void testEMCreateStoredProcedureQueryWithResultClass() {
         if (supportsStoredProcedures() && getPlatform().isMySQL()) {
             EntityManager em = createEntityManager();
-            beginTransaction(em);
             
             try {
+                beginTransaction(em);
+                
                 Address address1 = new Address();
                 address1.setCity("Victoria");
                 address1.setPostalCode("V9A 6A9");
@@ -271,11 +274,10 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
                     rollbackTransaction(em);
                 }
                 
-                closeEntityManager(em);
                 throw e;
+            } finally {
+                closeEntityManager(em);
             }
-            
-            closeEntityManager(em);
         }
     }
     
@@ -283,11 +285,12 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
      * Tests a StoredProcedureQuery using a result-set mapping though EM API 
      */
     public void testEMCreateStoredProcedureQueryWithSqlResultSetMapping() {
-        if (supportsStoredProcedures()) {
+        if (supportsStoredProcedures() && getPlatform().isMySQL()) {
             EntityManager em = createEntityManager();
-            beginTransaction(em);
             
             try {
+                beginTransaction(em);
+                
                 Address address = new Address();
                 address.setCity("Winnipeg");
                 address.setPostalCode("R3B 1B9");
@@ -318,11 +321,10 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
                     rollbackTransaction(em);
                 }
                 
-                closeEntityManager(em);
                 throw e;
+            } finally {
+                closeEntityManager(em);
             }
-            
-            closeEntityManager(em);
         }
     }
     
@@ -330,7 +332,7 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
      * Tests a StoredProcedureQuery that does an update though EM API 
      */
     public void testEMCreateStoredProcedureUpdateQuery() {
-        if (supportsStoredProcedures()) {
+        if (supportsStoredProcedures() && getPlatform().isMySQL()) {
             EntityManager em = createEntityManager();
             
             try {
@@ -381,11 +383,96 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
                     rollbackTransaction(em);
                 }
                 
-                closeEntityManager(em);
                 throw e;
+            } finally {
+                closeEntityManager(em);
             }
+        }
+    }
+    
+    /**
+     * Tests a StoredProcedureQuery using multiple names cursors.
+     */
+    public void testExecuteStoredProcedureQueryWithNamedCursors() {
+        if (supportsStoredProcedures() && getPlatform().isOracle() ) {
+            EntityManager em = createEntityManager();
             
-            closeEntityManager(em);
+            try {
+                StoredProcedureQuery query = em.createNamedStoredProcedureQuery("ReadUsingNamedRefCursors");
+                
+                boolean returnVal = query.execute();
+                
+                List<Employee> employees = (List<Employee>) query.getOutputParameterValue("CUR1");
+                assertFalse("No employees were returned", employees.isEmpty());
+                List<Address> addresses = (List<Address>) query.getOutputParameterValue("CUR2");
+                assertFalse("No addresses were returned", addresses.isEmpty());
+                
+                assertFalse("The query had more results", query.hasMoreResults());
+            } catch (RuntimeException e) {
+                if (isTransactionActive(em)){
+                    rollbackTransaction(em);
+                }
+                
+                throw e;
+            } finally {
+                closeEntityManager(em);
+            }
+        }
+    }
+    
+    /**
+     * Tests a StoredProcedureQuery with an unnamed cursor.
+     */
+    public void testExecuteStoredProcedureQueryWithUnNamedCursor() {
+        if (supportsStoredProcedures() && getPlatform().isOracle() ) {
+            EntityManager em = createEntityManager();
+            
+            try {
+                StoredProcedureQuery query = em.createNamedStoredProcedureQuery("ReadUsingUnNamedRefCursor");
+                
+                boolean returnVal = query.execute();
+                
+                List<Employee> employees = (List<Employee>) query.getOutputParameterValue(1);
+                assertFalse("No employees were returned", employees.isEmpty());
+                
+                assertFalse("The query had more results", query.hasMoreResults());
+            } catch (RuntimeException e) {
+                if (isTransactionActive(em)){
+                    rollbackTransaction(em);
+                }
+                
+                throw e;
+            } finally {
+                closeEntityManager(em);
+            }
+        }
+    }
+    
+    /**
+     * Tests a StoredProcedureQuery that does an update though EM API 
+     */
+    public void testGetResultListStoredProcedureQueryWithNamedCursors() {
+        if (supportsStoredProcedures() && getPlatform().isOracle() ) {
+            EntityManager em = createEntityManager();
+            
+            try {
+                StoredProcedureQuery query = em.createNamedStoredProcedureQuery("ReadUsingNamedRefCursors");
+                
+                List<Employee> employees = query.getResultList();
+                assertFalse("No employees were returned", employees.isEmpty());
+                List<Address> addresses = query.getResultList();
+                assertFalse("No addresses were returned", addresses.isEmpty());
+                
+                assertFalse("The query had more results", query.hasMoreResults());
+            } catch (RuntimeException e) {
+                if (isTransactionActive(em)){
+                    rollbackTransaction(em);
+                }
+
+                throw e;
+            } finally {
+                closeEntityManager(em);
+            }
         }
     }
     
@@ -393,7 +480,7 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
      * Tests a StoredProcedureQuery that does an update though EM API 
      */
     public void testEMCreateStoredProcedureExecuteQuery1() {
-        if (supportsStoredProcedures()) {
+        if (supportsStoredProcedures() && getPlatform().isMySQL()) {
             EntityManager em = createEntityManager();
             
             try {
@@ -525,12 +612,11 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
                     rollbackTransaction(em);
                 }
                 
-                closeEntityManager(em);
                 throw e;
+            } finally {
+                // The open statement/connection will be closed here.
+                closeEntityManager(em);
             }
-            
-            // The open statement/connection will be closed here.
-            closeEntityManager(em);
         }
     }
     
@@ -539,7 +625,7 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
      * This is the same test as above except different retrieval path.
      */
     public void testEMCreateStoredProcedureExecuteQuery2() {
-        if (supportsStoredProcedures()) {
+        if (supportsStoredProcedures() && getPlatform().isMySQL()) {
             EntityManager em = createEntityManager();
             
             try {
@@ -689,12 +775,11 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
                     rollbackTransaction(em);
                 }
                 
-                closeEntityManager(em);
                 throw e;
+            } finally {
+                // The open statement/connection will be closed here.
+                closeEntityManager(em);
             }
-            
-            // The open statement/connection will be closed here.
-            closeEntityManager(em);
         }
     }
 
@@ -705,9 +790,10 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
     public void testQueryUsingPositionalParameterAndSingleResultSet() {
         if (supportsStoredProcedures() && getPlatform().isMySQL()) {
             EntityManager em = createEntityManager();
-            beginTransaction(em);
             
             try {
+                beginTransaction(em);
+                
                 Address address1 = new Address();
                 address1.setCity("Ottawa");
                 address1.setPostalCode("K1G 6P3");
@@ -732,11 +818,10 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
                     rollbackTransaction(em);
                 }
                 
-                closeEntityManager(em);
                 throw e;
+            } finally {
+                closeEntityManager(em);
             }
-            
-            closeEntityManager(em);
         }
     }
     
@@ -888,9 +973,10 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
     public void testQueryWithResultClass() {
         if (supportsStoredProcedures() && getPlatform().isMySQL()) {
             EntityManager em = createEntityManager();
-            beginTransaction(em);
             
             try {
+                beginTransaction(em);
+                
                 Address address1 = new Address();
                 address1.setCity("Ottawa");
                 address1.setPostalCode("K1G 6P3");
@@ -916,11 +1002,10 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
                     rollbackTransaction(em);
                 }
                 
-                closeEntityManager(em);
                 throw e;
+            } finally {
+                closeEntityManager(em);
             }
-            
-            closeEntityManager(em);
         }
     }
     
@@ -930,9 +1015,10 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
     public void testQueryWithResultClassPositional() {
         if (supportsStoredProcedures() && getPlatform().isMySQL()) {
             EntityManager em = createEntityManager();
-            beginTransaction(em);
             
             try {
+                beginTransaction(em);
+                
                 Address address1 = new Address();
                 address1.setCity("Ottawa");
                 address1.setPostalCode("K1G 6P3");
@@ -958,11 +1044,10 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
                     rollbackTransaction(em);
                 }
                 
-                closeEntityManager(em);
                 throw e;
+            } finally {
+                closeEntityManager(em);
             }
-            
-            closeEntityManager(em);
         }
     }    
     
@@ -972,9 +1057,10 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
     public void testQueryWithResultSetMapping() {
         if (supportsStoredProcedures()) {
             EntityManager em = createEntityManager();
-            beginTransaction(em);
             
             try {
+                beginTransaction(em);
+                
                 Address address1 = new Address();
                 address1.setCity("Ottawa");
                 address1.setPostalCode("K1G 6P3");
@@ -997,11 +1083,10 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
                     rollbackTransaction(em);
                 }
                 
-                closeEntityManager(em);
                 throw e;
+            } finally {
+                closeEntityManager(em);
             }
-            
-            closeEntityManager(em);
         }
     }
     
@@ -1011,9 +1096,10 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
     public void testQueryWithResultSetFieldMapping() {
         if (supportsStoredProcedures()) {
             EntityManager em = createEntityManager();
-            beginTransaction(em);
             
             try {
+                beginTransaction(em);
+                
                 Address address = new Address();
                 address.setCity("Ottawa");
                 address.setPostalCode("K1G 6P3");
@@ -1036,11 +1122,10 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
                     rollbackTransaction(em);
                 }
                 
-                closeEntityManager(em);
                 throw e;
+            } finally {
+                closeEntityManager(em);
             }
-            
-            closeEntityManager(em);
         }
     }
 }

@@ -9,11 +9,15 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     09/27/2012-2.5 Guy Pelletier
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/  
 package org.eclipse.persistence.queries;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
@@ -31,6 +35,7 @@ public class StoredProcedureCall extends DatabaseCall {
     protected String procedureName;
     protected List<String> procedureArgumentNames;
     protected List<DatabaseField> optionalArguments;
+    protected Map<String, Integer> cursorOrdinalPositions;
 
     public StoredProcedureCall() {
         super();
@@ -754,6 +759,28 @@ public class StoredProcedureCall extends DatabaseCall {
     public String getCallHeader(DatabasePlatform platform) {
         return platform.getProcedureCallHeader();
     }
+    
+    /**
+     * INTERNAL:
+     * Used by JPA named stored procedure queries to associate parameter name 
+     * with position. This is used to ease JPA API.
+     */
+    public Integer getCursorOrdinalPosition(String cursorName) {
+        return getCursorOrdinalPositions().get(cursorName); 
+    }
+    
+    /**
+     * INTERNAL:
+     * Used by JPA named stored procedure queries to associate parameter name 
+     * with position. This is used to ease JPA API.
+     */
+    public Map<String, Integer> getCursorOrdinalPositions() {
+        if (cursorOrdinalPositions == null) {
+            cursorOrdinalPositions = new HashMap<String, Integer>();
+        }
+        
+        return cursorOrdinalPositions;
+    }
 
     /**
      * INTERNAL:
@@ -796,6 +823,15 @@ public class StoredProcedureCall extends DatabaseCall {
     protected void prepareInternal(AbstractSession session) {        
         setSQLStringInternal(session.getPlatform().buildProcedureCallString(this, session, getQuery().getTranslationRow()));
         super.prepareInternal(session);
+    }
+    
+    /**
+     * INTERNAL:
+     * Used by JPA named stored procedure queries to associate parameter name 
+     * with position. This is used to ease JPA API.
+     */
+    public void setCursorOrdinalPosition(String cursorName, int index) {
+        getCursorOrdinalPositions().put(cursorName, index);
     }
 
     /**
@@ -862,7 +898,6 @@ public class StoredProcedureCall extends DatabaseCall {
         getProcedureArgumentNames().add(null);
         appendOut(new DatabaseField("CURSOR"));
     }
-    
     
     /**
      * PUBLIC:

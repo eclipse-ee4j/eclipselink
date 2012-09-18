@@ -14,6 +14,8 @@
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *     07/13/2012-2.5 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     09/27/2012-2.5 Guy Pelletier
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa21.advanced;
 
@@ -25,6 +27,7 @@ import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.TestCase;
+import org.eclipse.persistence.tools.schemaframework.PackageDefinition;
 import org.eclipse.persistence.tools.schemaframework.PopulationManager;
 import org.eclipse.persistence.tools.schemaframework.SchemaManager;
 import org.eclipse.persistence.tools.schemaframework.StoredProcedureDefinition;
@@ -737,6 +740,37 @@ public class EmployeePopulator {
         smallProjectExample10();
     }
     
+    public PackageDefinition buildOraclePackage() {
+        PackageDefinition types = new PackageDefinition();
+        types.setName("Cursor_Type");
+        types.addStatement("Type Any_Cursor is REF CURSOR");
+        return types;
+    }
+    
+    public StoredProcedureDefinition buildStoredProcedureReadUsingNamedRefCursor(DatabaseSession session) {
+        StoredProcedureDefinition proc = new StoredProcedureDefinition();
+        proc.setName("Read_Using_Named_Cursor");
+        
+        proc.addOutputArgument("CUR1", "CURSOR_TYPE.ANY_CURSOR");
+        proc.addOutputArgument("CUR2", "CURSOR_TYPE.ANY_CURSOR");
+        
+        proc.addStatement("OPEN CUR1 FOR Select E.*, S.* from JPA21_EMPLOYEE E, JPA21_SALARY S WHERE E.EMP_ID = S.EMP_ID");
+        proc.addStatement("OPEN CUR2 FOR Select a.* from JPA21_ADDRESS a");
+        
+        return proc;
+    }
+    
+    public StoredProcedureDefinition buildStoredProcedureReadUsingPosRefCursor(DatabaseSession session) {
+        StoredProcedureDefinition proc = new StoredProcedureDefinition();
+        proc.setName("Read_Using_UnNamed_Cursor");
+        
+        proc.addOutputArgument("RESULT_CURSOR", "CURSOR_TYPE.ANY_CURSOR");
+
+        proc.addStatement("OPEN RESULT_CURSOR FOR Select E.*, S.* from JPA21_EMPLOYEE E, JPA21_SALARY S WHERE E.EMP_ID = S.EMP_ID");
+        
+        return proc;
+    }
+    
     public StoredProcedureDefinition buildStoredProcedureReadFromAddress(DatabaseSession session) {
         StoredProcedureDefinition proc = new StoredProcedureDefinition();
         proc.setName("Read_Address");
@@ -1334,6 +1368,12 @@ public class EmployeePopulator {
                 schema.replaceObject(buildStoredProcedureReadFromAddressResultSet(dbSession));
                 schema.replaceObject(buildStoredProcedureUpdateFromAddress(dbSession));
                 schema.replaceObject(buildStoredProcedureResultSetAndUpdateFromAddress(dbSession));
+                
+                if (session.getLogin().getPlatform().isOracle()) {
+                    schema.replaceObject(buildOraclePackage());
+                    schema.replaceObject(buildStoredProcedureReadUsingNamedRefCursor(dbSession));
+                    schema.replaceObject(buildStoredProcedureReadUsingPosRefCursor(dbSession));
+                }
                 
                 if (session.getLogin().getPlatform().isMySQL()) {
                     schema.replaceObject(buildMySQL2ResultSetProcedure());

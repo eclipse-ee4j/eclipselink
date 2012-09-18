@@ -17,6 +17,8 @@
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *      *     30/05/2012-2.4 Guy Pelletier    
  *       - 354678: Temp classloader is still being used during metadata processing
+ *     09/27/2012-2.5 Guy Pelletier
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.queries;
 
@@ -392,12 +394,14 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
                 call.useUnnamedCursorOutputAsResultSet();
             } else {
                 call.useNamedCursorOutputAsResultSet(m_queryParameter);
+                call.setCursorOrdinalPosition(m_queryParameter, index);
             }
             
             // There are multiple cursor output parameters, then do not use the 
             // cursor as the result set. This will be set to true in the calls
             // above so we must do the multiple cursor call before hand.
             if (multipleCursors) {
+                call.setIsMultipleCursorOutputProcedure(true);
                 call.setIsCursorOutputProcedure(false);
             }
         }

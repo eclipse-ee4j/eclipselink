@@ -17,6 +17,8 @@
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *     08/24/2012-2.5 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     09/27/2012-2.5 Guy Pelletier
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/  
 package org.eclipse.persistence.queries;
 
@@ -174,15 +176,25 @@ public class ResultSetMappingQuery extends ObjectBuildingQuery {
      * SQLResultSetMapping(s).
      */
     public List buildObjectsFromRecords(List databaseRecords){
-        // TODO: validate the number of database records with the number of sql
-        // result set mappings??
-        
         if (getSQLResultSetMappings().size() > 1) {
             int numberOfRecords = databaseRecords.size();
             List results = new ArrayList(numberOfRecords);
         
             for (int recordIndex = 0; recordIndex < numberOfRecords; recordIndex++) {
-                results.add(buildObjectsFromRecords((List) databaseRecords.get(recordIndex), getSQLResultSetMappings().get(recordIndex)));
+                Object records = databaseRecords.get(recordIndex);
+                
+                if (records instanceof Map) {
+                    // We have a map keyed on named ref_cursors
+                    Map recordsMap = (Map) records;
+                    
+                    for (Object cursor : recordsMap.keySet()) {
+                        results.add(buildObjectsFromRecords((List) recordsMap.get(cursor), getSQLResultSetMappings().get(recordIndex)));
+                        recordIndex++;
+                    }
+                } else {
+                    // Regular list of records, iterate through them.
+                    results.add(buildObjectsFromRecords((List) records, getSQLResultSetMappings().get(recordIndex)));
+                }
             }
         
             return results;
@@ -362,10 +374,14 @@ public class ResultSetMappingQuery extends ObjectBuildingQuery {
     
     /**
      * PUBLIC:
-     * Set to true if you the actualy jdbc result set returned from query
-     * execution.
+     * Set to true if you the actual jdbc result set returned from query
+     * execution. This will unprepare the query in case it was executed
+     * previously for a getResultList() call instead (or vice versa)
      */
-    public void setIsExecuteCall() {
-        isExecuteCall = true;
+    public void setIsExecuteCall(boolean isExecuteCall) {
+        this.isExecuteCall = isExecuteCall;
+        
+        // Force the query to prepare.
+        setIsPrepared(false);
     }
 }
