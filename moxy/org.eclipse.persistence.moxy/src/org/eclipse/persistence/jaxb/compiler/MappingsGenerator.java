@@ -390,6 +390,7 @@ public class MappingsGenerator {
                 xmlDescriptor.addMapping(mapping); 
             } else {
                 XMLDirectMapping mapping = new XMLDirectMapping();
+                mapping.setNullValueMarshalled(true);
                 mapping.setAttributeName("value");
                 mapping.setGetMethodName("getValue");
                 mapping.setSetMethodName("setValue");
@@ -403,6 +404,7 @@ public class MappingsGenerator {
         	
              XMLDirectMapping mapping = new XMLDirectMapping();
              mapping.setConverter(buildJAXBEnumTypeConverter(mapping, enumInfo));
+             mapping.setNullValueMarshalled(true);
              mapping.setAttributeName("value");
              mapping.setGetMethodName("getValue");
              mapping.setSetMethodName("setValue");
@@ -1282,6 +1284,7 @@ public class MappingsGenerator {
 
     public XMLDirectMapping generateDirectMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
         XMLDirectMapping mapping = new XMLDirectMapping();
+        mapping.setNullValueMarshalled(true);
         mapping.setAttributeName(property.getPropertyName());
         String fixedValue = property.getFixedValue();
         if (fixedValue != null) {
@@ -1514,6 +1517,7 @@ public class MappingsGenerator {
     
     public XMLDirectMapping generateDirectEnumerationMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo, EnumTypeInfo enumInfo) {
         XMLDirectMapping mapping = new XMLDirectMapping();
+        mapping.setNullValueMarshalled(true);
         mapping.setConverter(buildJAXBEnumTypeConverter(mapping, enumInfo));
         mapping.setAttributeName(property.getPropertyName());
         if (property.isMethodProperty()) {
@@ -1865,6 +1869,7 @@ public class MappingsGenerator {
         } else {
             mapping = new XMLDirectMapping();
             mapping.setAttributeName(attributeName);
+            ((XMLDirectMapping)mapping).setNullValueMarshalled(true);
             ((XMLDirectMapping)mapping).setXPath(attributeName + TXT);
 
             QName schemaType = (QName) userDefinedSchemaTypes.get(theType.getQualifiedName());
@@ -2944,6 +2949,7 @@ public class MappingsGenerator {
 
 	              }else{
 	                  XMLDirectMapping mapping = new XMLDirectMapping();
+	                  mapping.setNullValueMarshalled(true);
 	                  mapping.setAttributeName("value");
 	                  mapping.setXPath("text()");
 	                  mapping.setSetMethodName("setValue");
