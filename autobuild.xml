@@ -64,7 +64,6 @@
     />
     <target name="build-milestone" depends="promote-init, sign-and-wait, regen-archives, publish-milestone, create-tag" description="Promote a build: nightly to milestone or milestone to release ('release' is a special milestone in this case)"
     />
-
     <target name="build-ora-extension" description="Trigger the automated oracle extension build"
             depends="init, build-oracle-extension"
     />
@@ -507,14 +506,11 @@
         </tstamp>
         <!-- Not used, but need to keep for documentation purposes. Cannot comment out because double '-' not allowed in comment (format parameter) -->
         <property name="commit.hash.cmd" value="${git.exec} log -1 --format=%h"/>
-        <!-- property name="version.qualifier" value="v${build.date}-{commit.hash}"/ -->
-        <!-- property name="version.qualifier" value="v${build.date}-r${git.hash}"/ -->
 
         <echo message=" "/>
         <echo message="promote.date   ='${promote.date}'"/>
         <echo message="run.date       ='${run.date}'"/>
         <echo message="run.time       ='${run.time}'"/>
-
 
         <!-- Set build script location for p2 publishing -->
         <property name="script.dir" value="${releng.repo.dir}"/>
@@ -787,7 +783,7 @@
         <exec executable="${git.exec}" failonerror="false" logError="true">
             <arg value="tag"/>
             <arg value="-m'Create ${milestone.tag} Tag for ${version.string}'"/>
-            <arg value="${milestone.tag"/>
+            <arg value="${milestone.tag}"/>
             <arg value="${git.hash}"/>
         </exec>
         <echo message="Now push the tag back to the Eclipse repo"/>
