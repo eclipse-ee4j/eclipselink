@@ -751,17 +751,27 @@
 
     <target name="publish-milestone-maven">
         <echo message="Publish-milestone-maven: "/>
-        <echo message="    using: ${RELENG_REPO}/upload${branch}ToMaven.xml"/>
+        <echo message="    using: ${releng.repo.dir}/upload${branch}ToMaven.xml"/>
         <echo message="    from dir '${tmp.maven.dir}'"/>
         <echo message="    target: 'upload-maven-all'"/>
-        <ant antfile="${RELENG_REPO}/upload${branch}ToMaven.xml" dir="${tmp.maven.dir}" target="upload-maven-all">
-            <property name="build.deps.dir"   value="${BldDepsDir}"/>
-            <property name="custom.tasks.lib" value="${RELENG_REPO}/ant_customizations.jar"/>
-            <property name="version.string"   value="${version}.${qualifier}"/>
-            <property name="release.version"  value="${version}"/>
-            <property name="build.date"       value="${blddate}"/>
-            <property name="build.type"       value="SNAPSHOT"/>
-            <property name="bundle.dir"       value="${src}/maven"/>
+        <echo message="    properties: "/>
+        <echo message="        build.deps.dir  ='${build.deps.dir}'"/>
+        <echo message="        custom.tasks.lib='${custom.tasks.lib}'"/>
+        <echo message="                         '${releng.repo.dir}/ant_customizations.jar'"/>
+        <echo message="        release.version ='${release.version}'"/>
+        <echo message="        version.string  ='${version.string}'"/>
+        <echo message="                         '${release.version}.${version.qualifier}'"/>
+        <echo message="        build.date      ='${build.date}'"/>
+        <echo message="        build.type      ='${build.type}'"/>
+        <echo message="        bundle.dir      ='${tmp.maven.dir}'"/>
+        <ant antfile="${releng.repo.dir}/upload${branch}ToMaven.xml" dir="${tmp.maven.dir}" target="upload-maven-all">
+            <property name="build.deps.dir"   value="${build.deps.dir}"/>
+            <property name="custom.tasks.lib" value="${releng.repo.dir}/ant_customizations.jar"/>
+            <property name="release.version"  value="${release.version}"/>
+            <property name="version.string"   value="${release.version}.${version.qualifier}"/>
+            <property name="build.date"       value="${build.date}"/>
+            <property name="build.type"       value="${build.type}"/>
+            <property name="bundle.dir"       value="${tmp.maven.dir}"/>
         </ant>
     </target>
 
