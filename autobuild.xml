@@ -783,7 +783,7 @@
         <exec executable="${git.exec}" failonerror="false" logError="true">
             <arg value="tag"/>
             <arg value="-m'Create ${milestone.tag} Tag for ${version.string}'"/>
-            <arg value="${milestone.tag"/>
+            <arg value="${milestone.tag}"/>
             <arg value="${git.hash}"/>
         </exec>
         <echo message="Now push the tag back to the Eclipse repo"/>
