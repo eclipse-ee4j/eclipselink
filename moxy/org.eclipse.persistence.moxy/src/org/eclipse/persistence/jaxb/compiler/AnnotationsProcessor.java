@@ -800,6 +800,17 @@ public class AnnotationsProcessor {
                 continue;
             }
 
+            // If a property is marked transient, ensure it doesn't exist in the propOrder
+            List<String> propOrderList = Arrays.asList(tInfo.getPropOrder());
+            ArrayList<Property> propsList = tInfo.getPropertyList();
+            for (int i = 0; i < propsList.size(); i++) {
+                Property p = propsList.get(i);
+                if (p.isTransient() && propOrderList.contains(p.getPropertyName())) {
+                     throw org.eclipse.persistence.exceptions.JAXBException.transientInProporder(p.getPropertyName());
+                }
+            }
+            
+            
             if (!jClass.isInterface() && !tInfo.isEnumerationType() && !jClass.isAbstract()) {
                 if (tInfo.getFactoryMethodName() == null && tInfo.getObjectFactoryClassName() == null) {
                     JavaConstructor zeroArgConstructor = jClass.getDeclaredConstructor(new JavaClass[] {});
@@ -1741,15 +1752,19 @@ public class AnnotationsProcessor {
                          property = buildNewProperty(info, cls, nextField, nextField.getName(), nextField.getResolvedType());
                          properties.add(property);
                     }
-                } else if (helper.isAnnotationPresent(nextField, XmlAttribute.class)) {
+                } else {
                     try {
                         property = buildNewProperty(info, cls, nextField, nextField.getName(), nextField.getResolvedType());
-                        Object value = ((JavaFieldImpl) nextField).get(null);
-                        if (value != null) {
-                            String stringValue = (String) XMLConversionManager.getDefaultXMLManager().convertObject(value, String.class, property.getSchemaType());
-                            property.setFixedValue(stringValue);
-                        } else {
-                            property.setWriteOnly(true);
+                        if (helper.isAnnotationPresent(nextField, XmlAttribute.class)) {
+                            Object value = ((JavaFieldImpl) nextField).get(null);
+                            if (value != null) {
+                                String stringValue = (String) XMLConversionManager.getDefaultXMLManager().convertObject(value, String.class, property.getSchemaType());
+                                property.setFixedValue(stringValue);
+                            }
+                        }
+                        property.setWriteOnly(true);
+                        if(!hasJAXBAnnotations(nextField)) {
+                            property.setTransient(true);
                         }
                         properties.add(property);
                     } catch (ClassCastException e) {

@@ -38,6 +38,8 @@ public class XmlElementTestSuite extends TestSuite {
         suite.addTestSuite(EmptyJSONArrayTestCases.class);
         suite.addTestSuite(SpecialCharacterTestCases.class);
         suite.addTestSuite(ElementOrderingTestCases.class);
+        suite.addTestSuite(XmlElementConstantsTestCases.class);
+        suite.addTestSuite(XmlElementDefaultValueTestCases.class);
         return suite;
     }
 

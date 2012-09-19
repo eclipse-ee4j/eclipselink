@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     09/13/2013-2.5 Guy Pelletier 
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/  
 package org.eclipse.persistence.internal.localization.i18n;
 
@@ -351,6 +353,8 @@ public class TraceLocalizationResource extends ListResourceBundle {
                                             { "dcn_invalidate", "Invalidating cache key [{0}] from database change event for class [{1}]." },
                                             { "dcn_register_table", "Registering table [{0}] for database change event notification." },
                                             { "dcn_unregister", "Removing registering for database change event notification." },
+                                            
+                                            { "exception_caught_closing_statement", "Exception caught when trying to close the query statement [{0}]." },
     };
 
     /**

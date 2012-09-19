@@ -1359,7 +1359,6 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
     	}else{
 	    	childRecord = (UnmarshalRecord) treeObjectBuilder.createRecord(session);
 	        childRecord.setUnmarshaller(unmarshaller);
-	        childRecord.session = this.session;
 	        childRecord.setTextWrapperFragment(textWrapperFragment);
 	        childRecord.setXMLReader(this.xmlReader);
 	        childRecord.setFragmentBuilder(fragmentBuilder);

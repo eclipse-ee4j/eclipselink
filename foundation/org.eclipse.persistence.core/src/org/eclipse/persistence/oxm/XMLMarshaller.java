@@ -1541,7 +1541,7 @@ public class XMLMarshaller implements Cloneable {
     * @return if this should marshal to a fragment or not
     */
     public boolean isFragment() {
-        return transformer.isFragment();
+        return mediaType == MediaType.APPLICATION_XML  && transformer.isFragment();
     }
 
     public void setAttachmentMarshaller(XMLAttachmentMarshaller atm) {
@@ -1574,9 +1574,18 @@ public class XMLMarshaller implements Cloneable {
         clone.setAttachmentMarshaller(attachmentMarshaller);
         clone.setEncoding(getEncoding());
         clone.setFormattedOutput(isFormattedOutput());
-        clone.setFragment(isFragment());
+        clone.setFragment(transformer.isFragment());
+        clone.setMediaType(getMediaType());
         clone.setMarshalListener(marshalListener);
         clone.setNoNamespaceSchemaLocation(noNamespaceSchemaLocation);
+        clone.setAttributePrefix(getAttributePrefix());
+        clone.setCharacterEscapeHandler(getCharacterEscapeHandler());
+        clone.setIncludeRoot(isIncludeRoot());
+        clone.setIndentString(getIndentString());
+        clone.setMarshalEmptyCollections(isMarshalEmptyCollections());
+        clone.setNamespacePrefixMapper(getNamespacePrefixMapper());
+        clone.setNamespaceSeparator(getNamespaceSeparator());
+        clone.setValueWrapper(getValueWrapper());
         for(Entry entry : marshalProperties.entrySet()) {
             clone.getProperties().put(entry.getKey(), entry.getValue());
         }

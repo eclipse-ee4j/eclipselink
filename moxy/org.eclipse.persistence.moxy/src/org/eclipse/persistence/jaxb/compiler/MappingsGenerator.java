@@ -390,6 +390,7 @@ public class MappingsGenerator {
                 xmlDescriptor.addMapping(mapping); 
             } else {
                 XMLDirectMapping mapping = new XMLDirectMapping();
+                mapping.setNullValueMarshalled(true);
                 mapping.setAttributeName("value");
                 mapping.setGetMethodName("getValue");
                 mapping.setSetMethodName("setValue");
@@ -403,6 +404,7 @@ public class MappingsGenerator {
         	
              XMLDirectMapping mapping = new XMLDirectMapping();
              mapping.setConverter(buildJAXBEnumTypeConverter(mapping, enumInfo));
+             mapping.setNullValueMarshalled(true);
              mapping.setAttributeName("value");
              mapping.setGetMethodName("getValue");
              mapping.setSetMethodName("setValue");
@@ -463,7 +465,7 @@ public class MappingsGenerator {
      * @param namespaceInfo
      * @return newly created mapping
      */
-    public DatabaseMapping generateMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
+    public DatabaseMapping generateMapping(Property property, XMLDescriptor descriptor, JavaClass descriptorJavaClass, NamespaceInfo namespaceInfo) {
         if (property.isSetXmlJavaTypeAdapter()) {
             // if we are dealing with a reference, generate mapping and return 
             if (property.isReference()) {
@@ -495,7 +497,7 @@ public class MappingsGenerator {
                         converter.setNestedConverter(((XMLCompositeDirectCollectionMapping)mapping).getValueConverter());
                         ((XMLCompositeDirectCollectionMapping)mapping).setValueConverter(converter);
                     } else {                    
-                        mapping = generateCompositeCollectionMapping(property, descriptor, namespaceInfo, valueType.getQualifiedName());
+                        mapping = generateCompositeCollectionMapping(property, descriptor,descriptorJavaClass, namespaceInfo, valueType.getQualifiedName());
                         ((XMLCompositeCollectionMapping) mapping).setConverter(new XMLJavaTypeConverter(adapterClass.getQualifiedName()));
                     }
                 } else {
@@ -586,10 +588,10 @@ public class MappingsGenerator {
         	if (property.isAnyAttribute()) {
         		return generateAnyAttributeMapping(property, descriptor, namespaceInfo);
         	}
-        	return generateMapMapping(property, descriptor, namespaceInfo);
+        	return generateMapMapping(property, descriptor, descriptorJavaClass, namespaceInfo);
         }
         if (isCollectionType(property)) {
-            return generateCollectionMapping(property, descriptor, namespaceInfo);
+            return generateCollectionMapping(property, descriptor, descriptorJavaClass, namespaceInfo);
         }
         
         JavaClass referenceClass = property.getType();
@@ -602,13 +604,13 @@ public class MappingsGenerator {
                 return generateEnumCollectionMapping(property,  descriptor, namespaceInfo,(EnumTypeInfo) reference);
             }            
             if (areEquals(componentType, Object.class)){
-                XMLCompositeCollectionMapping mapping = generateCompositeCollectionMapping(property, descriptor, namespaceInfo, null);
+                XMLCompositeCollectionMapping mapping = generateCompositeCollectionMapping(property, descriptor, descriptorJavaClass, namespaceInfo, null);
                 mapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
                 return mapping;
             }
             
             if (reference != null ||  componentType.isArray()){
-                return generateCompositeCollectionMapping(property, descriptor, namespaceInfo, componentType.getQualifiedName());
+                return generateCompositeCollectionMapping(property, descriptor, descriptorJavaClass, namespaceInfo, componentType.getQualifiedName());
             }
             return generateDirectCollectionMapping(property, descriptor, namespaceInfo);
         }
@@ -1282,6 +1284,7 @@ public class MappingsGenerator {
 
     public XMLDirectMapping generateDirectMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
         XMLDirectMapping mapping = new XMLDirectMapping();
+        mapping.setNullValueMarshalled(true);
         mapping.setAttributeName(property.getPropertyName());
         String fixedValue = property.getFixedValue();
         if (fixedValue != null) {
@@ -1469,6 +1472,13 @@ public class MappingsGenerator {
                 mapping.setGetMethodName(property.getGetMethodName());
             }
         }
+        // handle null policy set via xml metadata
+        if (property.isSetNullPolicy()) {
+            mapping.setNullPolicy(getNullPolicyFromProperty(property, namespaceInfo.getNamespaceResolverForDescriptor()));
+        } else if (property.isNillable()){
+            mapping.getNullPolicy().setNullRepresentedByXsiNil(true);
+            mapping.getNullPolicy().setMarshalNullRepresentation(XMLNullRepresentationType.XSI_NIL);
+        }
         // if the XPath is set (via xml-path) use it
         mapping.setField(getXPathForField(property, namespaceInfo, false));
         if (property.isSwaAttachmentRef()) {
@@ -1507,6 +1517,7 @@ public class MappingsGenerator {
     
     public XMLDirectMapping generateDirectEnumerationMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo, EnumTypeInfo enumInfo) {
         XMLDirectMapping mapping = new XMLDirectMapping();
+        mapping.setNullValueMarshalled(true);
         mapping.setConverter(buildJAXBEnumTypeConverter(mapping, enumInfo));
         mapping.setAttributeName(property.getPropertyName());
         if (property.isMethodProperty()) {
@@ -1541,7 +1552,7 @@ public class MappingsGenerator {
         return converter;
     }
 
-    public DatabaseMapping generateCollectionMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
+    public DatabaseMapping generateCollectionMapping(Property property, XMLDescriptor descriptor, JavaClass descriptorJavaClass, NamespaceInfo namespaceInfo) {
         // check to see if this should be a composite or direct mapping
         JavaClass javaClass = property.getActualType();
 
@@ -1557,10 +1568,10 @@ public class MappingsGenerator {
             if (referenceInfo.isEnumerationType()) {
                 return generateEnumCollectionMapping(property,  descriptor, namespaceInfo,(EnumTypeInfo) referenceInfo);
             }
-            return generateCompositeCollectionMapping(property, descriptor, namespaceInfo, javaClass.getQualifiedName());
+            return generateCompositeCollectionMapping(property, descriptor, descriptorJavaClass, namespaceInfo, javaClass.getQualifiedName());
         }
         if (!property.isAttribute() && javaClass != null && javaClass.getQualifiedName().equals(OBJECT_CLASS_NAME)){
-            XMLCompositeCollectionMapping ccMapping = generateCompositeCollectionMapping(property, descriptor, namespaceInfo, null);
+            XMLCompositeCollectionMapping ccMapping = generateCompositeCollectionMapping(property, descriptor, descriptorJavaClass, namespaceInfo, null);
             ccMapping.setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
             return ccMapping;
         }
@@ -1694,12 +1705,12 @@ public class MappingsGenerator {
         return src.getRawName().equals(tgtCanonicalName);
     }
 
-    public XMLCompositeCollectionMapping generateMapMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
+    public XMLCompositeCollectionMapping generateMapMapping(Property property, XMLDescriptor descriptor, JavaClass descriptorClass, NamespaceInfo namespaceInfo) {
     	XMLCompositeCollectionMapping mapping = new XMLCompositeCollectionMapping();
         mapping.setAttributeName(property.getPropertyName());
         initializeXMLContainerMapping(mapping);
         XMLField field = getXPathForField(property, namespaceInfo, false);
-        JavaClass descriptorClass = helper.getJavaClass(descriptor.getJavaClassName());
+
         JavaClass mapValueClass = helper.getJavaClass(MapValue.class);
         if(mapValueClass.isAssignableFrom(descriptorClass)){
         	mapping.setXPath("entry");
@@ -1858,6 +1869,7 @@ public class MappingsGenerator {
         } else {
             mapping = new XMLDirectMapping();
             mapping.setAttributeName(attributeName);
+            ((XMLDirectMapping)mapping).setNullValueMarshalled(true);
             ((XMLDirectMapping)mapping).setXPath(attributeName + TXT);
 
             QName schemaType = (QName) userDefinedSchemaTypes.get(theType.getQualifiedName());
@@ -1873,10 +1885,15 @@ public class MappingsGenerator {
         return mapping;
     }
 
-    public XMLCompositeCollectionMapping generateCompositeCollectionMapping(Property property, XMLDescriptor descriptor, NamespaceInfo namespaceInfo, String referenceClassName) {
+    public XMLCompositeCollectionMapping generateCompositeCollectionMapping(Property property, XMLDescriptor descriptor, JavaClass javaClass, NamespaceInfo namespaceInfo, String referenceClassName) {
         XMLCompositeCollectionMapping mapping = new XMLCompositeCollectionMapping();
         mapping.setAttributeName(property.getPropertyName());
         initializeXMLContainerMapping(mapping);
+        
+        JavaClass manyValueJavaClass = helper.getJavaClass(ManyValue.class);        
+        if (manyValueJavaClass.isAssignableFrom(javaClass)){
+            mapping.setReuseContainer(false);
+        }
         // handle read-only set via metadata
         if (property.isSetReadOnly()) {
             mapping.setIsReadOnly(property.isReadOnly());
@@ -2246,7 +2263,7 @@ public class MappingsGenerator {
 
             XMLDescriptor descriptor = info.getDescriptor();
             if (descriptor != null) {
-                generateMappings(info, descriptor, namespaceInfo);
+                generateMappings(info, descriptor, javaClass, namespaceInfo);
             }
             // set primary key fields (if necessary)
             DatabaseMapping mapping;
@@ -2277,16 +2294,16 @@ public class MappingsGenerator {
      * @param descriptor
      * @param namespaceInfo
      */
-    public void generateMappings(TypeInfo info, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
+    public void generateMappings(TypeInfo info, XMLDescriptor descriptor, JavaClass descriptorJavaClass, NamespaceInfo namespaceInfo) {
         if(info.isAnonymousComplexType()) {
             //may need to generate inherited mappings
-            generateInheritedMappingsForAnonymousType(info, descriptor, namespaceInfo);
+            generateInheritedMappingsForAnonymousType(info, descriptor, descriptorJavaClass, namespaceInfo);
         }
         List<Property> propertiesInOrder = info.getNonTransientPropertiesInPropOrder();
         for (int i = 0; i < propertiesInOrder.size(); i++) {
             Property next = propertiesInOrder.get(i);
             if (next != null && (!next.isTransient() || (next.isTransient() && next.isXmlLocation()))) {
-                DatabaseMapping mapping = generateMapping(next, descriptor, namespaceInfo);
+                DatabaseMapping mapping = generateMapping(next, descriptor, descriptorJavaClass, namespaceInfo);
                 if (next.isVirtual()) {
                     VirtualAttributeAccessor accessor = new VirtualAttributeAccessor();
                     accessor.setAttributeName(mapping.getAttributeName());
@@ -2319,14 +2336,13 @@ public class MappingsGenerator {
                     mapping.setProperties(next.getUserProperties());
                 }
                 //get package info
-                JavaClass jClass = helper.getJavaClass(info.getJavaClassName());
                 AccessorFactoryWrapper accessorFactory = info.getXmlAccessorFactory();
                 if(accessorFactory == null) {
                     accessorFactory = info.getPackageLevelXmlAccessorFactory();
                 }
                 if(accessorFactory != null) {
                     try {
-                        Object accessor = CompilerHelper.createAccessorFor(jClass, next, helper, accessorFactory);
+                        Object accessor = CompilerHelper.createAccessorFor(descriptorJavaClass, next, helper, accessorFactory);
                         
                         if(accessor != null) {
                             CustomAccessorAttributeAccessor attributeAccessor = new CustomAccessorAttributeAccessor(accessor);
@@ -2339,9 +2355,9 @@ public class MappingsGenerator {
         }
     }
 
-    private void generateInheritedMappingsForAnonymousType(TypeInfo info, XMLDescriptor descriptor, NamespaceInfo namespaceInfo) {
+    private void generateInheritedMappingsForAnonymousType(TypeInfo info, XMLDescriptor descriptor, JavaClass descriptorJavaClass, NamespaceInfo namespaceInfo) {
         List<TypeInfo> mappedParents = new ArrayList<TypeInfo>();
-        JavaClass next = CompilerHelper.getNextMappedSuperClass(helper.getJavaClass(info.getJavaClassName()), typeInfo, helper);
+        JavaClass next = CompilerHelper.getNextMappedSuperClass(descriptorJavaClass, typeInfo, helper);
         while(next != null) {
             TypeInfo nextInfo = this.typeInfo.get(next.getName());
             mappedParents.add(0, nextInfo);
@@ -2352,7 +2368,7 @@ public class MappingsGenerator {
             for (int i = 0; i < propertiesInOrder.size(); i++) {
                 Property nextProp = propertiesInOrder.get(i);
                 if (nextProp != null){
-                    DatabaseMapping mapping = generateMapping(nextProp, descriptor, namespaceInfo);
+                    DatabaseMapping mapping = generateMapping(nextProp, descriptor, descriptorJavaClass, namespaceInfo);
                     descriptor.addMapping(mapping);
                     // set user-defined properties if necessary
                     if (nextProp.isSetUserProperties()) {
@@ -2937,6 +2953,7 @@ public class MappingsGenerator {
 
 	              }else{
 	                  XMLDirectMapping mapping = new XMLDirectMapping();
+	                  mapping.setNullValueMarshalled(true);
 	                  mapping.setAttributeName("value");
 	                  mapping.setXPath("text()");
 	                  mapping.setSetMethodName("setValue");
