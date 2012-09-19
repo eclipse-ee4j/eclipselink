@@ -467,42 +467,7 @@
     </target>
 
     <!--  =====  Build Publish Targets -->
-    <!-- target name="publish-build" depends="publish-init, publish-artifacts, publish-maven, publish-p2-site, cleanup-old-builds"/>
-    <target name="publish-artifacts">
-        <mkdir dir="${download.dir}"/>
-        <copy todir="${download.dir}" failonerror="false">
-            <fileset  dir="${extracted.location}">
-                <include name="*.${eclipselink.zip.suffix}"/>
-            </fileset>
-        </copy>
-    </target>
-
-    <target name="publish-maven" depends="init">
-        <ant antfile="uploadToMaven.xml" dir="${extracted.location}" target="upload-maven-all"/>
-    </target -->
-
-    <!-- Antified "cleanNightly.sh" -->
-    <!-- target name="cleanup-old-builds" depends="fix-permission">
-        <exec executable="/bin/sh" failonerror="true" logError="true" >
-            <arg value="${extracted.location}/buildsystem/cleanNightly.sh"/>
-        </exec>
-    </target -->
-
-    <!--  =====  Test Publish Targets -->
-    <!-- target name="cannot-publish-tests" unless="host" depends="init">
-        <fail message="'host' is not set. Cannot initiate publication of test results!"/>
-    </target>
-    <target name="publish-tests" if="host" depends="cannot-publish-tests">
-        <property name="host.dir" value="${download.dir}/${host}"/>
-        <mkdir dir="${host.dir}"/>
-        <copy todir="${host.dir}" failonerror="false">
-            <fileset  dir="${extracted.location}">
-                <include name="*.*"/>
-            </fileset>
-        </copy>
-        <!- - Remove any old results summary file, if it exists -->
-        <!-- delete file="${host.dir}/ResultsSummary.dat" failonerror="false"/>
-    </target -->
+    <!-- Mostly removed because publish.sh now does the work -->
 
     <!-- target name="publish-oracle-extension">
         <echo message="oracle-extension commit in progress..."/>
@@ -523,9 +488,6 @@
             <arg value="${hudson.workspace}/foundation/plugins/org.eclipse.persistence.oracle.nosql.source.jar"/>
         </exec>
     </target -->
-
-    <!--  =====  #####      Dual-use Targets (publish and Milestone)      #####  =====  -->
-    <!-- also used in Milestone promotion - maintenace nightmare -->
 
     <!--  =====     Milestone Init     =====  -->
     <target name="promote-init" depends="publish-init"> <!-- In order to promote need the settings from Publish-init too -->
@@ -822,18 +784,18 @@
         <echo message="   branch.name   = ${branch.name}"/>
         <echo message="   "/>
         <echo message="${git.exec} tag -m'Create ${milestone.tag} Tag for ${version.string}' ${milestone.tag} ${git.hash}"/>
-        <!-- exec executable="${git.exec}" failonerror="false" logError="true">
-            <arg line="tag"/>
-            <arg line="-m'Create ${milestone.tag} Tag for ${version.string}'"/>
-            <arg line="${milestone.tag"/>
-            <arg line="${git.hash}"/>
-        </exec -->
+        <exec executable="${git.exec}" failonerror="false" logError="true">
+            <arg value="tag"/>
+            <arg value="-m'Create ${milestone.tag} Tag for ${version.string}'"/>
+            <arg value="${milestone.tag"/>
+            <arg value="${git.hash}"/>
+        </exec>
         <echo message="Now push the tag back to the Eclipse repo"/>
         <echo message="${git.exec} push --tags"/>
-        <!-- exec executable="${git.exec}" failonerror="false" logError="true">
-            <arg line="push"/>
-            <arg line="- -tags"/>
-        </exec -->
+        <exec executable="${git.exec}" failonerror="false" logError="true">
+            <arg value="push"/>
+            <arg value="--tags"/>
+        </exec>
     </target>
 
 </project>
