@@ -749,10 +749,12 @@
         <copy todir="${tmp.maven.dir}" file="${basedir}/uploadToMaven.xml" failonerror="false"/>
     </target>
 
-    <target name="publish-milestone-maven"> <!-- depends="init" -->
-        <echo message="Publish-milestone-maven: Commented out.... No-op"/>
-        <!-- *OLD* ant antfile="uploadToMaven.xml" dir="${tmp.maven.dir}" target="upload-maven-all"/ -->
-        <!-- *SCRIPT* ant antfile="${RELENG_REPO}/upload${branch}ToMaven.xml" dir="${tmp.maven.dir}" target="upload-maven-all">
+    <target name="publish-milestone-maven">
+        <echo message="Publish-milestone-maven: "/>
+        <echo message="    using: ${RELENG_REPO}/upload${branch}ToMaven.xml"/>
+        <echo message="    from dir '${tmp.maven.dir}'"/>
+        <echo message="    target: 'upload-maven-all'"/>
+        <ant antfile="${RELENG_REPO}/upload${branch}ToMaven.xml" dir="${tmp.maven.dir}" target="upload-maven-all">
             <property name="build.deps.dir"   value="${BldDepsDir}"/>
             <property name="custom.tasks.lib" value="${RELENG_REPO}/ant_customizations.jar"/>
             <property name="version.string"   value="${version}.${qualifier}"/>
@@ -760,8 +762,7 @@
             <property name="build.date"       value="${blddate}"/>
             <property name="build.type"       value="SNAPSHOT"/>
             <property name="bundle.dir"       value="${src}/maven"/>
-        <ant/ -->
-
+        </ant>
     </target>
 
     <target name="fix-permission">
@@ -779,7 +780,7 @@
         <delete dir="${p2.repos.dir}" failonerror="false"/>
         <mkdir dir="${p2.repos.dir}"/>
         <!-- populate update site with feature and bundle jars, then publish repository -->
-        <ant antfile="antbuild.xml" dir="${extracted.location}/features" target="assemble-repos">
+        <ant antfile="antbuild.xml" dir="${build.location}/features" target="assemble-repos">
             <property name="do.composite"        value="true"/>
             <property name="ready-to-go"         value="true"/>
             <property name="bundle.install.file" value="${download.dir}/${eclipselink.plugins.install.prefix}-${version.string}${eclipselink.zip.suffix}"/>
@@ -790,7 +791,7 @@
         <echo message="p2.composite.root.dir = '${p2.composite.root.dir}'"/>
         <echo message="metadata.repos.name   = '${metadata.repos.name}'"/>
         <exec executable="/bin/sh" failonerror="false" logError="true" >
-            <arg value="${extracted.location}/buildsystem/buildCompositeP2.sh"/>
+            <arg value="${build.location}/buildsystem/buildCompositeP2.sh"/>
             <arg value="${p2.composite.root.dir}"/>
             <arg value="${metadata.repos.name}"/>
         </exec>
