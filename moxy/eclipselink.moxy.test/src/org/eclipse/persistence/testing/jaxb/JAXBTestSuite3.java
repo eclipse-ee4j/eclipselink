@@ -26,6 +26,7 @@ import org.eclipse.persistence.testing.jaxb.jaxbcontext.withjaxbindex.JAXBContex
 import org.eclipse.persistence.testing.jaxb.jaxbcontext.withjaxbindex.JAXBContextByClassArrayWithRefInBindingsTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbcontext.withjaxbindex.JAXBContextByClassArrayWithRefTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbcontext.withjaxbindex.JAXBContextByPackageWithIndexTestCases;
+import org.eclipse.persistence.testing.jaxb.jaxbfragment.JAXBFragmentTestCases;
 import org.eclipse.persistence.testing.jaxb.jaxbintrospector.elementname.JAXBIntrospectorGetElementNameTestCases;
 import org.eclipse.persistence.testing.jaxb.prefixmapper.PrefixMapperMapTestCases;
 import org.eclipse.persistence.testing.jaxb.prefixmapper.PrefixMapperTestCases;
@@ -122,6 +123,7 @@ public class JAXBTestSuite3 extends TestCase {
         suite.addTestSuite(JAXBEmployeeTestCases.class);
         suite.addTestSuite(JAXBEmployeeNoWrapperTestCases.class);
         suite.addTestSuite(JAXBEmployeeNSTestCases.class);
+        suite.addTestSuite(JAXBFragmentTestCases.class);
         suite.addTest(org.eclipse.persistence.testing.jaxb.eventhandler.EventHandlerTestSuite.suite());
         
         return suite;
