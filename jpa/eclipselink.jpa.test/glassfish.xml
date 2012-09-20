@@ -134,8 +134,7 @@
                           org.eclipse.persistence.moxy_*.jar
                           org.eclipse.persistence.nosql_*.jar
                           org.eclipse.persistence.oracle_*.jar
-                          org.eclipse.persistence.sdo_*.jar
-                          javax.activation_*.jar"
+                          org.eclipse.persistence.sdo_*.jar"
                 excludes="org.eclipse.persistence.*.source*.jar"/>
         </copy>
     </target>
