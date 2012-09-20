@@ -77,7 +77,7 @@
         <taskdef name="selectbundle" classname="${custom.selectbundle.task.class}" classpath="${custom.tasks.lib}"/>
 
         <!-- Defaults of Pre-Set variables -->
-        <property name="compdeps.version"               value="1.0.3"/>
+        <property name="compdeps.version"               value="1.0.4"/>
         <property name="compdeps.qualifier"             value="v${compdeps.build.date}${compdeps.build.time}"/>
         <property name="compdeps.version.string"        value="${compdeps.version}.${compdeps.qualifier}"/>
         <property name="bld.src.dir"                    value="${compdeps.build.location}/target"/>
