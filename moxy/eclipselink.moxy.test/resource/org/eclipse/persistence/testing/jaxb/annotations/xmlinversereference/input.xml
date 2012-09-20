@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CUSTOMER>
+
+    <address>
+        <street>Main</street>
+    </address>
+
+    <phoneNumber>
+        <number>5551212</number>
+    </phoneNumber>
+
+    <phoneNumber>
+        <number>5551313</number>
+    </phoneNumber>
+
+</CUSTOMER>

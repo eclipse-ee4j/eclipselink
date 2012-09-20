@@ -14,6 +14,7 @@ package org.eclipse.persistence.testing.jaxb.annotations;
 
 import org.eclipse.persistence.testing.jaxb.annotations.xmlaccessmethods.XmlAccessMethodsTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlclassextractor.XmlClassExtractorTestCases;
+import org.eclipse.persistence.testing.jaxb.annotations.xmlinversereference.InverseReferenceAdapterTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlinversereference.InverseReferenceWithRefTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmllocation.XmlLocationTestSuite;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlnametransformer.JAXBDefaultNameTransformerTestCases;
@@ -88,6 +89,7 @@ public class AnnotationsTestSuite extends TestSuite {
         suite.addTest(org.eclipse.persistence.testing.jaxb.annotations.xmlvalue.XmlValueTestSuite.suite());
         suite.addTestSuite(CustomerTestCases.class);
         suite.addTestSuite(InverseReferenceWithRefTestCases.class);
+        suite.addTestSuite(InverseReferenceAdapterTestCases.class);
 
         return suite;
     }

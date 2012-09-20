@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<xml-bindings xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm"
+	package-name="org.eclipse.persistence.testing.jaxb.annotations.xmlinversereference">
+	<java-types>
+		<java-type name="Address">
+			<xml-java-type-adapter
+				value="org.eclipse.persistence.testing.jaxb.annotations.xmlinversereference.AddressAdapter" />
+			<xml-root-element name="ADDRESS" />
+		</java-type>
+		<java-type name="Customer">
+			<xml-java-type-adapter
+				value="org.eclipse.persistence.testing.jaxb.annotations.xmlinversereference.CustomerAdapter" />
+			<xml-root-element name="CUSTOMER" />
+			<java-attributes />
+		</java-type>
+		<java-type name="PhoneNumber">
+			<xml-java-type-adapter
+				value="org.eclipse.persistence.testing.jaxb.annotations.xmlinversereference.PhoneNumberAdapter" />
+		</java-type>
+	</java-types>
+</xml-bindings>

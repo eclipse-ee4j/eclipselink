@@ -506,6 +506,8 @@ public class MappingsGenerator {
                         XMLJavaTypeConverter converter = new XMLJavaTypeConverter(adapterClass.getQualifiedName());
                         converter.setNestedConverter(((XMLDirectMapping)mapping).getConverter());
                         ((XMLDirectMapping)mapping).setConverter(converter);
+                    } else if (property.isInverseReference()) {
+                        mapping = generateInverseReferenceMapping(property, descriptor, namespaceInfo);
                     } else {                    
                         mapping = generateCompositeObjectMapping(property, descriptor, namespaceInfo, valueType.getQualifiedName());
                         ((XMLCompositeObjectMapping) mapping).setConverter(new XMLJavaTypeConverter(adapterClass.getQualifiedName()));

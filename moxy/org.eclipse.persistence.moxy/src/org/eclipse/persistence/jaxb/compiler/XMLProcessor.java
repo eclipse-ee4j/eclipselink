@@ -123,7 +123,7 @@ public class XMLProcessor {
         this.jModelInput = jModelInput;
         this.aProcessor = annotationsProcessor;
         Map<String, XmlEnum> xmlEnumMap = new HashMap<String, XmlEnum>();
-        annotationsProcessor.init(originalJavaClasses, typeMappingInfos);
+        aProcessor.init(originalJavaClasses, typeMappingInfos);
 
         // build a map of packages to JavaClass so we only process the
         // JavaClasses for a given package additional classes - i.e. ones from
@@ -144,7 +144,7 @@ public class XMLProcessor {
             // handle @XmlSchema override
             NamespaceInfo nsInfo = processXmlSchema(xmlBindings, packageName);
             if (nsInfo != null) {
-                annotationsProcessor.addPackageToNamespaceMapping(packageName, nsInfo);
+                aProcessor.addPackageToNamespaceMapping(packageName, nsInfo);
             }
             
             // handle xml-registries
@@ -182,7 +182,7 @@ public class XMLProcessor {
                 }
             }
             // pre-build the TypeInfo objects
-            Map<String, TypeInfo> typeInfoMap = annotationsProcessor.preBuildTypeInfo(javaClasses);
+            Map<String, TypeInfo> typeInfoMap = aProcessor.preBuildTypeInfo(javaClasses);
 
             // handle package-level xml-schema-types
             List<XmlSchemaType> xmlSchemaTypes = null;
@@ -204,7 +204,7 @@ public class XMLProcessor {
                 }
             }
 
-            PackageInfo packageInfo = annotationsProcessor.getPackageToPackageInfoMappings().get(packageName);
+            PackageInfo packageInfo = aProcessor.getPackageToPackageInfoMappings().get(packageName);
             if (packageInfo == null) {
                 packageInfo = new PackageInfo();                             
             }
@@ -341,12 +341,12 @@ public class XMLProcessor {
             xmlBindings = xmlBindingMap.get(packageName);
             JavaClass[] javaClasses = (JavaClass[]) classesToProcess.toArray(new JavaClass[classesToProcess.size()]);
             // post-build the TypeInfo objects
-            javaClasses = annotationsProcessor.postBuildTypeInfo(javaClasses);
+            javaClasses = aProcessor.postBuildTypeInfo(javaClasses);
 
 
 
             // get the generated TypeInfo
-            Map<String, TypeInfo> typeInfosForPackage = annotationsProcessor.getTypeInfosForPackage(packageName);
+            Map<String, TypeInfo> typeInfosForPackage = aProcessor.getTypeInfosForPackage(packageName);
 
             // update xml-enum info if necessary
             for (Entry<String, TypeInfo> entry : typeInfosForPackage.entrySet()) {
@@ -372,7 +372,7 @@ public class XMLProcessor {
             // update TypeInfo objects based on the JavaTypes
             JavaTypes jTypes = xmlBindings.getJavaTypes();
             if (jTypes != null) {
-                PackageInfo packageInfo = annotationsProcessor.getPackageToPackageInfoMappings().get(packageName);
+                PackageInfo packageInfo = aProcessor.getPackageToPackageInfoMappings().get(packageName);
                 NamespaceInfo nsInfo = null;
                 if(null != packageInfo) {
                     nsInfo = packageInfo.getNamespaceInfo();
@@ -390,8 +390,8 @@ public class XMLProcessor {
         while (classIt.hasNext()) {
             ArrayList<JavaClass> jClassList = classIt.next();
             JavaClass[] jClassArray = (JavaClass[]) jClassList.toArray(new JavaClass[jClassList.size()]);
-            annotationsProcessor.buildNewTypeInfo(jClassArray);
-            annotationsProcessor.processJavaClasses(jClassArray);
+            aProcessor.buildNewTypeInfo(jClassArray);
+            aProcessor.processJavaClasses(jClassArray);
         }
 
         // need to ensure that any bound types (from XmlJavaTypeAdapter) have TypeInfo 
@@ -411,7 +411,7 @@ public class XMLProcessor {
         aProcessor.processPropertyTypes(jClasses.toArray(new JavaClass[jClasses.size()]));
         aProcessor.finalizeProperties();
         aProcessor.createElementsForTypeMappingInfo();
-        annotationsProcessor.processJavaClasses(null);       
+        aProcessor.processJavaClasses(null);
     }
 
     private XMLNameTransformer getXMLNameTransformerClassFromString(String transformerClassName){
