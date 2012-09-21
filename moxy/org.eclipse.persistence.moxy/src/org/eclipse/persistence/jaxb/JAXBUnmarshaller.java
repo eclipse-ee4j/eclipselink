@@ -36,9 +36,7 @@ import javax.xml.bind.ValidationEventHandler;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.bind.attachment.AttachmentUnmarshaller;
 import javax.xml.namespace.QName;
-import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLEventReader;
-import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
 import javax.xml.validation.Schema;
@@ -101,8 +99,6 @@ public class JAXBUnmarshaller implements Unmarshaller {
     private ValidationEventHandler validationEventHandler;
     private XMLUnmarshaller xmlUnmarshaller;
     private JAXBContext jaxbContext;
-    private XMLInputFactory xmlInputFactory;
-    private boolean initializedXMLInputFactory = false;
     public static final String XML_JAVATYPE_ADAPTERS = "xml-javatype-adapters";
     public static final String STAX_SOURCE_CLASS_NAME = "javax.xml.transform.stax.StAXSource";
     
@@ -116,18 +112,6 @@ public class JAXBUnmarshaller implements Unmarshaller {
         xmlUnmarshaller.setValidationMode(XMLUnmarshaller.NONVALIDATING);
         xmlUnmarshaller.setUnmarshalListener(new JAXBUnmarshalListener(this));
         xmlUnmarshaller.setErrorHandler(new JAXBErrorHandler(validationEventHandler));
-    }
-
-    private XMLInputFactory getXMLInputFactory() {
-        if(!initializedXMLInputFactory) {
-            try {
-                xmlInputFactory = XMLInputFactory.newInstance();
-            } catch(FactoryConfigurationError e) {
-            } finally {
-                initializedXMLInputFactory = true;
-            }
-        }
-        return xmlInputFactory;
     }
 
     public XMLUnmarshaller getXMLUnmarshaller() {
@@ -145,16 +129,14 @@ public class JAXBUnmarshaller implements Unmarshaller {
 
     public Object unmarshal(InputStream inputStream) throws JAXBException {
         try {        
-            XMLInputFactory xmlInputFactory = getXMLInputFactory();
-            if(null == xmlInputFactory ||
-                XMLUnmarshaller.NONVALIDATING != xmlUnmarshaller.getValidationMode() || xmlUnmarshaller.getMediaType() == MediaType.APPLICATION_JSON) {
+            if (xmlUnmarshaller.getMediaType() == MediaType.APPLICATION_JSON || null == jaxbContext.getXMLInputFactory() || XMLUnmarshaller.NONVALIDATING != xmlUnmarshaller.getValidationMode()) {
                 return createJAXBElementOrUnwrapIfRequired(xmlUnmarshaller.unmarshal(inputStream));
             } else {
-                if(null == inputStream) {
+                if (null == inputStream) {
                     throw XMLMarshalException.nullArgumentException();
                 }
                 XMLStreamReader xmlStreamReader;
-                xmlStreamReader = xmlInputFactory.createXMLStreamReader(inputStream);
+                xmlStreamReader = jaxbContext.getXMLInputFactory().createXMLStreamReader(inputStream);
                 Object value = unmarshal(xmlStreamReader);
                 xmlStreamReader.close();
                 return value;
@@ -189,15 +171,13 @@ public class JAXBUnmarshaller implements Unmarshaller {
     public Object unmarshal(Reader reader) throws JAXBException {
       
         try {
-            XMLInputFactory xmlInputFactory = getXMLInputFactory();
-            if(null == xmlInputFactory ||
-                XMLUnmarshaller.NONVALIDATING != xmlUnmarshaller.getValidationMode() || xmlUnmarshaller.getMediaType() == MediaType.APPLICATION_JSON) {
+            if (xmlUnmarshaller.getMediaType() == MediaType.APPLICATION_JSON || null == jaxbContext.getXMLInputFactory() || XMLUnmarshaller.NONVALIDATING != xmlUnmarshaller.getValidationMode()) {
                 return createJAXBElementOrUnwrapIfRequired(xmlUnmarshaller.unmarshal(reader));
             } else {               
-                if(null == reader) {
+                if (null == reader) {
                     throw XMLMarshalException.nullArgumentException();
                 }
-                XMLStreamReader xmlStreamReader = xmlInputFactory.createXMLStreamReader(reader);
+                XMLStreamReader xmlStreamReader = jaxbContext.getXMLInputFactory().createXMLStreamReader(reader);
                 Object value = unmarshal(xmlStreamReader);
                 xmlStreamReader.close();
                 return value;

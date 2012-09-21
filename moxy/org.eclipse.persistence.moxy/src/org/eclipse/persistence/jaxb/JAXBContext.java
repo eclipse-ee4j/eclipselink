@@ -37,6 +37,8 @@ import javax.xml.bind.ValidationEvent;
 import javax.xml.bind.ValidationEventHandler;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.namespace.QName;
+import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLInputFactory;
 import javax.xml.transform.Source;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -148,6 +150,9 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     protected JAXBContextInput contextInput;
     protected volatile JAXBContextState contextState;
 
+    private XMLInputFactory xmlInputFactory;
+    private boolean initializedXMLInputFactory = false;
+
     protected JAXBContext() {
         super();
         contextState = new JAXBContextState();
@@ -180,6 +185,18 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      */
     public JAXBContext(XMLContext context, Generator generator, TypeMappingInfo[] boundTypes) {
         contextState = new JAXBContextState(context, generator, boundTypes, null);
+    }
+
+    public XMLInputFactory getXMLInputFactory() {
+        if (!initializedXMLInputFactory) {
+            try {
+                xmlInputFactory = XMLInputFactory.newInstance();
+            } catch(FactoryConfigurationError e) {
+            } finally {
+                initializedXMLInputFactory = true;
+            }
+        }
+        return xmlInputFactory;
     }
 
     /**
