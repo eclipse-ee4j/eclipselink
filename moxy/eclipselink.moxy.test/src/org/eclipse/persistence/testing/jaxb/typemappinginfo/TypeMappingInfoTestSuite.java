@@ -69,8 +69,11 @@ public class TypeMappingInfoTestSuite extends TestCase {
         suite.addTestSuite(RootFromNothingTestCases.class);
         suite.addTestSuite(RootFromJAXBElementTestCases.class);
         suite.addTestSuite(RootFromTypeMappingInfoTestCases.class);
-
+        
+        suite.addTestSuite(RootLevelByteArrayNullContentTestCases.class);
         suite.addTestSuite(RootLevelByteArrayTestCases.class);
+        suite.addTestSuite(RootLevelByteArrayEmptyContentTestCases.class);
+        suite.addTestSuite(RootLevelByteArrayEmptyContentAttachmentTestCases.class);
         suite.addTestSuite(DefaultTargetNamespaceTestCases.class);
         suite.addTestSuite(GenericArrayTypeTestCases.class);
         

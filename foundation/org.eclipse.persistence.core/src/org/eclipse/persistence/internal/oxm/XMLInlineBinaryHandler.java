@@ -90,26 +90,25 @@ public class XMLInlineBinaryHandler extends UnmarshalRecord {
            } else {
                value = parent.getUnmarshaller().getAttachmentUnmarshaller().getAttachmentAsByteArray(value.toString());
            }
-           if (converter != null) {
-               if (converter instanceof XMLConverter) {
-                   value = ((XMLConverter)converter).convertDataValueToObjectValue(value, parent.getSession(), parent.getUnmarshaller());
-               } else {
-                   value = converter.convertDataValueToObjectValue(value, parent.getSession());
-               }
-           }
        } else {
            Object valueFromReader = this.parent.getXMLReader().getValue(getCharacters(), attributeClassification);
-           if(null != valueFromReader) {
-               value = valueFromReader;
-           } else {
-               String valueString = value.toString();
-               if(valueString.length() == 0 && nullPolicy.isNullRepresentedByEmptyNode()){
+           
+           if(parent.isNil() && nullPolicy.isNullRepresentedByXsiNil()){
+               value = null;
+           }
+           else{
+               if(null != valueFromReader) {
+                   value = valueFromReader;
+               } else {
+                   String valueString = value.toString();
+                   if(valueString.length() == 0 && nullPolicy.isNullRepresentedByEmptyNode()){
                        value = null;                   
-               }else{
-                   value = XMLConversionManager.getDefaultXMLManager().convertSchemaBase64ToByteArray(valueString);
-               }
-           } 
-           value = XMLBinaryDataHelper.getXMLBinaryDataHelper().convertObject(value, attributeClassification, parent.getSession());
+                   }else{
+                       value = XMLConversionManager.getDefaultXMLManager().convertSchemaBase64ToByteArray(valueString);
+                   }
+               } 
+               value = XMLBinaryDataHelper.getXMLBinaryDataHelper().convertObject(value, attributeClassification, parent.getSession());
+           }
        }
        if (converter != null) {
            if (converter instanceof XMLConverter) {
@@ -119,9 +118,7 @@ public class XMLInlineBinaryHandler extends UnmarshalRecord {
            }
        }       
        if(isCollection) {
-           if(value != null) {
-               parent.addAttributeValue((ContainerValue)nodeValue, value);
-           }
+           parent.addAttributeValue((ContainerValue)nodeValue, value);
        } else {
            parent.setAttributeValue(value, mapping);
        }

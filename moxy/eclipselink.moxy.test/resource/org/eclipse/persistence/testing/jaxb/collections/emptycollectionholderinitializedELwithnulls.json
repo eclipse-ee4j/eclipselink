@@ -3,6 +3,7 @@
       "@attribute-referenced-id" : "",
       "@collection12" : "",
       "collection2" : "",
+      "root2" : [ null, null ],
       "referenced-id" : "",
       "collection14string" : [ null, null ],
       "collection1" : [ null, null ],

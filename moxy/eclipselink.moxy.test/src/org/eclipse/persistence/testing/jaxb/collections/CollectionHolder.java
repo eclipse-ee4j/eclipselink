@@ -67,7 +67,6 @@ public class CollectionHolder {
     @XmlAttribute
     protected List<String> collection12;
 
-    //@XmlElements({@XmlElement(name="root"), @XmlElementRef(name="root2")})
     @XmlElements({@XmlElement(name="collection13integer", type=Integer.class), @XmlElement(name="collection13string", type=String.class)})   
     protected List collection13;
     
@@ -241,10 +240,9 @@ public class CollectionHolder {
  	    		 if(! ((JAXBElement)obj1).getDeclaredType().equals(((JAXBElement)obj2).getDeclaredType())){
  	    			 return false;
  	    		 }
- 	    		 if(! ((JAXBElement)obj1).getValue().equals(((JAXBElement)obj2).getValue())){
- 	    			 return false;
- 	    		 } 
- 	    	     return true;
+ 	    		Object value1 = ((JAXBElement)obj1).getValue();
+ 	    		Object value2 = ((JAXBElement)obj2).getValue();
+ 	    		return compareObjects(value1, value2); 	    	
      		 }
      		 return false;
      	}else{

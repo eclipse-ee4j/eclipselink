@@ -81,9 +81,15 @@ public class JAXBTestSuite extends TestCase {
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlanyelement.ns.DefaultNamespaceCollectionTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlanyelement.ns.qualified.XMLAnyElementNamespaceTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlelementref.collections.ChoiceCollectionTestCases.class);
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlelementref.collections.ChoiceCollectionNullTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlelementref.EmployeeCollectionTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlelementref.EmployeeSingleTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlelementref.XMLElementRefConverterTestCases.class);
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlelementref.attachment.XMLElementRefAttachmentTestCases.class);
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlelementref.attachment.XMLElementRefAttachmentEmptyTestCases.class);
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlelementref.attachment.XMLElementRefAttachmentNullTestCases.class);
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlelementref.attachment.XMLElementRefTestCases.class);
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlelementref.attachment.XMLElementRefNullTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlelementref.duplicatename.DuplicateNameTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlelementref.enums.EnumTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlelementref.inheritance1.Inheritance1TestCases.class);

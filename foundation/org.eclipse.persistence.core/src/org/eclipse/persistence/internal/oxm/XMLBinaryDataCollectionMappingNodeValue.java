@@ -109,11 +109,6 @@ public class XMLBinaryDataCollectionMappingNodeValue extends MappingNodeValue im
             XMLField xmlField = (XMLField)xmlBinaryDataCollectionMapping.getField();
             XPathFragment lastFragment = xmlField.getLastXPathFragment();
             if(!lastFragment.isAttribute()) {
-                if (unmarshalRecord.isNil() && xmlBinaryDataCollectionMapping.getNullPolicy().isNullRepresentedByXsiNil()) {
-                    getContainerPolicy().addInto(null, unmarshalRecord.getContainerInstance(this), unmarshalRecord.getSession());
-                    return true;
-                }
-                
                  //set a new content handler to deal with the Include element's event.
                  BinaryMappingContentHandler handler = new BinaryMappingContentHandler(unmarshalRecord, this, this.xmlBinaryDataCollectionMapping);
                  String qnameString = xPathFragment.getLocalName();

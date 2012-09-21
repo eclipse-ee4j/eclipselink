@@ -1,0 +1,19 @@
+{"employee":{
+    "fooA":{
+        "Include":{
+	    "href":"cid1234567"
+	}
+    },
+    "fooC":["",""],
+    "fooB":[{
+        "Include":{
+	    "href":"cid1234567"
+	}
+    },
+    {
+        "Include":{
+	    "href":"cid1234567"
+	}
+    }
+    ]
+}}

@@ -16,39 +16,34 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
+import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.TypeMappingInfo.ElementScope;
 import org.w3c.dom.Document;
 
-public class RootLevelByteArrayTestCases extends TypeMappingInfoWithJSONTestCases {
-    protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/byteArrayMtom.xml";
-    protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/byteArrayMtom.json";
+public class RootLevelByteArrayEmptyContentTestCases extends TypeMappingInfoWithJSONTestCases {
+    protected final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/byteArrayEmptyNoAttachement.xml";
+    protected final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/typemappinginfo/byteArrayEmptyNoAttachement.json";
     
-    protected MyAttachmentMarshaller attachmentMarshaller;
-
-    public RootLevelByteArrayTestCases(String name) throws Exception {
-        super(name);      
+    public RootLevelByteArrayEmptyContentTestCases(String name) throws Exception {
+        super(name);
         init();
     }
-      
+    
     public void init() throws Exception {
-       
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);
         setupParser();
     
-        setTypeMappingInfos(getTypeMappingInfos());
-        this.attachmentMarshaller = new MyAttachmentMarshaller();
-        jaxbUnmarshaller.setAttachmentUnmarshaller(new MyAttachmentUnmarshaller());
-        jaxbMarshaller.setAttachmentMarshaller(this.attachmentMarshaller);
-        
-        byte[] bytes = new byte[]{1, 2, 3, 4, 5, 6};
-        MyAttachmentMarshaller.attachments.put(MyAttachmentUnmarshaller.ATTACHMENT_TEST_ID, bytes);
-    }
-    
+        setTypeMappingInfos(getTypeMappingInfos());     
+    }   
+   
     protected TypeMappingInfo[] getTypeMappingInfos()throws Exception {
         if(typeMappingInfos == null) {
             typeMappingInfos = new TypeMappingInfo[1];
@@ -61,17 +56,18 @@ public class RootLevelByteArrayTestCases extends TypeMappingInfoWithJSONTestCase
         }
         return typeMappingInfos;        
     }
-        
+    
     protected Object getControlObject() {
         
-        byte[] data = new byte[] {1, 2, 3, 4, 5, 6};      
         QName qname = new QName("someUri", "testTagName");
-        JAXBElement jaxbElement = new JAXBElement(qname, byte[].class, null);
-        jaxbElement.setValue(data);
+        JAXBElement jaxbElement = new JAXBElement(qname, byte[].class, new byte[0]);
 
         return jaxbElement;
     }
 
+    protected String getNoXsiTypeControlResourceName() {
+        return XML_RESOURCE;
+    }
 
     public Map<String, InputStream> getControlSchemaFiles(){                       
         InputStream instream = ClassLoader.getSystemResourceAsStream("org/eclipse/persistence/testing/jaxb/typemappinginfo/byteArray.xsd");
@@ -80,36 +76,5 @@ public class RootLevelByteArrayTestCases extends TypeMappingInfoWithJSONTestCase
         controlSchema.put("someUri", instream);
         return controlSchema;
     }
-
-    protected String getNoXsiTypeControlResourceName() {
-        return XML_RESOURCE;
-    }
-    
-    protected void comparePrimitiveArrays(Object controlValue, Object testValue){
-        byte[] bytes1;
-        byte[] bytes2;
-        try {
-            bytes1 = (byte[])controlValue;
-            bytes2 = (byte[])testValue;
-            
-            if(bytes1.length != bytes2.length) {
-                fail("control value doesn't match test value: " + controlValue + " - " + testValue);
-            }
-            for(int i = 0; i < bytes1.length; i++) {
-                if(bytes1[i] != bytes2[i]) {
-                    fail("control value doesn't match test value: " + controlValue + " - " + testValue);
-                }
-            }
-        } catch(Exception ex) {
-            fail("control value doesn't match test value: " + controlValue + " - " + testValue);
-        }
-    }  
-    
-    public void objectToXMLDocumentTest(Document testDocument) throws Exception {
-        super.objectToXMLDocumentTest(testDocument);
-        assertNotNull(this.attachmentMarshaller.getLocalName());
-    }    
-    
-    
-
+  
 }

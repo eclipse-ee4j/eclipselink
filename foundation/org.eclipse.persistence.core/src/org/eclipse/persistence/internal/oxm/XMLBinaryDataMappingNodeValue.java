@@ -245,10 +245,6 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
     
     public boolean startElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord, Attributes atts) {
         try {
-            if(unmarshalRecord.isNil() && xmlBinaryDataMapping.getNullPolicy().isNullRepresentedByXsiNil()){
-                xmlBinaryDataMapping.setAttributeValueInObject(unmarshalRecord.getCurrentObject(), null);
-                return true;
-            }
             
             unmarshalRecord.removeNullCapableValue(this);
             XMLField xmlField = (XMLField) xmlBinaryDataMapping.getField();
@@ -268,7 +264,7 @@ public class XMLBinaryDataMappingNodeValue extends NodeValue implements NullCapa
         }
     }
 
-    public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord) {        
+    public void endElement(XPathFragment xPathFragment, UnmarshalRecord unmarshalRecord) {
         unmarshalRecord.resetStringBuffer();
     }
 

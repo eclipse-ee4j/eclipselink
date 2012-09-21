@@ -1,0 +1,7 @@
+<employee>
+   <fooA xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
+   <fooC xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
+   <fooB xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
+   <fooB xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
+   <fooC xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
+</employee>

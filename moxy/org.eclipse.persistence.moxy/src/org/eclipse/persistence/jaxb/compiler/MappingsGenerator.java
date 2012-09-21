@@ -378,6 +378,7 @@ public class MappingsGenerator {
 
                 Class attributeClassification = org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(factoryMethodParamTypes[0], getClass().getClassLoader());
                 mapping.setAttributeClassification(attributeClassification);
+                mapping.getNullPolicy().setNullRepresentedByEmptyNode(false);
 
                 mapping.setShouldInlineBinaryData(false);
                 if(mapping.getMimeType() == null) {
@@ -812,8 +813,11 @@ public class MappingsGenerator {
                     }
                     mapping.addConverter(xpath, converter);
                 }
+                DatabaseMapping nestedMapping = (DatabaseMapping) mapping.getChoiceElementMappings().get(xpath);
+                if(nestedMapping instanceof XMLBinaryDataMapping){
+                	((XMLBinaryDataMapping)nestedMapping).getNullPolicy().setNullRepresentedByEmptyNode(false);
+                }
                 if (type.isEnum()) {
-                    DatabaseMapping nestedMapping = (DatabaseMapping) mapping.getChoiceElementMappings().get(xpath);
                     if(nestedMapping.isAbstractDirectMapping()) {
                         ((XMLDirectMapping)nestedMapping).setConverter(buildJAXBEnumTypeConverter(nestedMapping, (EnumTypeInfo)info));
                     }
@@ -1065,28 +1069,33 @@ public class MappingsGenerator {
                 xmlField.setSchemaType(XMLConstants.ANY_TYPE_QNAME);
             }
             DatabaseMapping nestedMapping;
+            AbstractNullPolicy nullPolicy = null;
             if(isCollection){
                 XMLChoiceCollectionMapping xmlChoiceCollectionMapping = (XMLChoiceCollectionMapping) mapping;
                 xmlChoiceCollectionMapping.addChoiceElement(xmlField, element.getJavaTypeName());
                 nestedMapping = (DatabaseMapping) xmlChoiceCollectionMapping.getChoiceElementMappings().get(xmlField);
                 if(nestedMapping.isAbstractCompositeCollectionMapping()){
                     ((XMLCompositeCollectionMapping)nestedMapping).setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
+                    nullPolicy = ((XMLCompositeCollectionMapping)nestedMapping).getNullPolicy();
                 }
 
                 if (nestedMapping.isAbstractCompositeDirectCollectionMapping()) {
                     XMLCompositeDirectCollectionMapping nestedCompositeDirectCollectionMapping = (XMLCompositeDirectCollectionMapping) nestedMapping;
-                    nestedCompositeDirectCollectionMapping.getNullPolicy().setNullRepresentedByEmptyNode(false);
+                    nullPolicy = nestedCompositeDirectCollectionMapping.getNullPolicy();
                     if(pType.isEnum()) {
                         TypeInfo enumTypeInfo = typeInfo.get(pType.getQualifiedName());
                         nestedCompositeDirectCollectionMapping.setValueConverter(buildJAXBEnumTypeConverter(nestedCompositeDirectCollectionMapping, (EnumTypeInfo) enumTypeInfo));
                     }
+                    if(element.isList()){
+                        XMLListConverter listConverter = new XMLListConverter();
+                        listConverter.setObjectClassName(element.getJavaType().getQualifiedName());
+                        ((XMLCompositeDirectCollectionMapping)nestedMapping).setValueConverter(listConverter); 
+                    }
+                }else if(nestedMapping instanceof XMLBinaryDataCollectionMapping){
+                    nullPolicy =  ((XMLBinaryDataCollectionMapping)nestedMapping).getNullPolicy();
                 }
 
-                if (element.isList() && nestedMapping.isAbstractCompositeDirectCollectionMapping()) {
-                    XMLListConverter listConverter = new XMLListConverter();
-                    listConverter.setObjectClassName(element.getJavaType().getQualifiedName());
-                    ((XMLCompositeDirectCollectionMapping)nestedMapping).setValueConverter(listConverter);
-                }
+              
             } else {
                 XMLChoiceObjectMapping xmlChoiceObjectMapping = (XMLChoiceObjectMapping) mapping;
                 xmlChoiceObjectMapping.addChoiceElement(xmlField, element.getJavaTypeName());
@@ -1097,9 +1106,20 @@ public class MappingsGenerator {
                 }
                 if(nestedMapping.isAbstractCompositeObjectMapping()){
                     ((XMLCompositeObjectMapping)nestedMapping).setKeepAsElementPolicy(UnmarshalKeepAsElementPolicy.KEEP_UNKNOWN_AS_ELEMENT);
-                }
-            }
+                    nullPolicy = ((XMLCompositeObjectMapping)nestedMapping).getNullPolicy();
 
+                }else if(nestedMapping instanceof XMLBinaryDataMapping){
+                    nullPolicy = ((XMLBinaryDataMapping)nestedMapping).getNullPolicy();
+                }else if(nestedMapping instanceof XMLDirectMapping){
+                    nullPolicy = ((XMLDirectMapping)nestedMapping).getNullPolicy();
+                }
+                
+            }
+            if(nullPolicy != null){
+                nullPolicy.setNullRepresentedByEmptyNode(false);
+                nullPolicy.setMarshalNullRepresentation(XMLNullRepresentationType.XSI_NIL);
+                nullPolicy.setNullRepresentedByXsiNil(true);
+            }
             if (!element.isXmlRootElement()) {
                 Class scopeClass = element.getScopeClass();
                 if (scopeClass == javax.xml.bind.annotation.XmlElementDecl.GLOBAL.class){
@@ -2942,6 +2962,8 @@ public class MappingsGenerator {
 	                  ((XMLField)mapping.getField()).setSchemaType(XMLConstants.BASE_64_BINARY_QNAME);
 	                  mapping.setSetMethodName("setValue");
 	                  mapping.setGetMethodName("getValue");
+	                  mapping.getNullPolicy().setNullRepresentedByXsiNil(true);
+	                  mapping.getNullPolicy().setNullRepresentedByEmptyNode(false);
 
 	                  Class attributeClassification = org.eclipse.persistence.internal.helper.Helper.getClassFromClasseName(attributeTypeName, getClass().getClassLoader());
 	                  mapping.setAttributeClassification(attributeClassification);
