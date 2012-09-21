@@ -12,6 +12,11 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.collections;
 
+import java.util.ArrayList;
+
+import javax.xml.bind.JAXBElement;
+import javax.xml.namespace.QName;
+
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
@@ -80,6 +85,10 @@ public class CollectionHolderInitializedWithNullsTestCases extends JAXBWithJSONT
     	//obj.collection4.add(null);
     	obj.collection5.add(null);
     	obj.collection5.add(null);
+    	
+    	obj.collection6 = new ArrayList();
+        obj.collection6.add(new JAXBElement(new QName("root2"), String.class, null));
+        obj.collection6.add(new JAXBElement(new QName("root2"), String.class, null));
    // 	obj.collection6.add(null);
     //	obj.collection6.add(null);
     	//obj.collection7.add(null);

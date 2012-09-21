@@ -12,9 +12,12 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.collections;
 
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlAnyAttribute;
 import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -67,70 +70,6 @@ public class CollectionHolderNillable {
     public CollectionHolderNillable(){
     }
 
-
-    public List<Integer> getCollection1() {
-        return collection1;
-    }
-    public void setCollection1(List<Integer> collection1) {
-        this.collection1 = collection1;
-    }
-    public List<String> getCollection2() {
-        return collection2;
-    }
-    public void setCollection2(List<String> collection2) {
-        this.collection2 = collection2;
-    }
-    public List<Object> getCollection3() {
-        return collection3;
-    }
-    public void setCollection3(List<Object> collection3) {
-        this.collection3 = collection3;
-    }
-    public List getCollection4() {
-        return collection4;
-    }
-    public void setCollection4(List collection4) {
-        this.collection4 = collection4;
-    }
-    public List<CollectionHolderNillable> getCollection5() {
-        return collection5;
-    }
-    public void setCollection5(List<CollectionHolderNillable> collection5) {
-        this.collection5 = collection5;
-    }
-
-     public List getCollection6() {
-        return collection6;
-    }
-
-    public void setCollection6(List collection6) {
-        this.collection6 = collection6;
-    }
-
-    public List<ReferencedObject> getCollection7() {
-        return collection7;
-    }
-
-    public void setCollection7(List<ReferencedObject> collection7) {
-        this.collection7 = collection7;
-    }
-
-    public List<ReferencedObject> getCollection8() {
-        return collection8;
-    }
-
-    public void setCollection8(List<ReferencedObject> collection8) {
-        this.collection8 = collection8;
-    }
-
-    public List<CoinEnum> getCollection9() {
-        return collection9;
-    }
-
-    public void setCollection9(List<CoinEnum> collection9) {
-        this.collection9 = collection9;
-    }
-
     public Map getCollection10() {
         return collection10;
     }
@@ -138,45 +77,91 @@ public class CollectionHolderNillable {
     public void setCollection10(Map collection10) {
         this.collection10 = collection10;
     }
-
-    public List<byte[]> getCollection11() {
-        return collection11;
-    }
-
-    public void setCollection11(List<byte[]> collection11) {
-        this.collection11 = collection11;
-    }
-
     public boolean equals(Object compareObject){
 
          if(compareObject instanceof CollectionHolderNillable){
              CollectionHolderNillable compareCollectionHolder = ((CollectionHolderNillable)compareObject);
-             return compareCollections(collection1, compareCollectionHolder.getCollection1())
-                    && compareCollections(collection2, compareCollectionHolder.getCollection2())
-                    && compareCollections(collection3, compareCollectionHolder.getCollection3())
-                    && compareCollections(collection4, compareCollectionHolder.getCollection4())
-                    && compareCollections(collection5, compareCollectionHolder.getCollection5())
-                    && compareCollections(collection6, compareCollectionHolder.getCollection6())
-                    && compareCollections(collection7, compareCollectionHolder.getCollection7())
-                    && compareCollections(collection8, compareCollectionHolder.getCollection8())
-                    && compareCollections(collection9, compareCollectionHolder.getCollection9())
-                    && compareCollections(collection10, compareCollectionHolder.getCollection10())
-                    && compareCollections(collection11, compareCollectionHolder.getCollection11())
+             return compareCollections(collection1, compareCollectionHolder.collection1)
+                    && compareCollections(collection2, compareCollectionHolder.collection2)
+                    && compareCollections(collection3, compareCollectionHolder.collection3)
+                    && compareCollections(collection4, compareCollectionHolder.collection4)
+                    && compareCollections(collection5, compareCollectionHolder.collection5)
+                    && compareCollections(collection6, compareCollectionHolder.collection6)
+                    && compareCollections(collection7, compareCollectionHolder.collection7)
+                    && compareCollections(collection8, compareCollectionHolder.collection8)
+                    && compareCollections(collection9, compareCollectionHolder.collection9)
+                    && compareMaps(collection10, compareCollectionHolder.getCollection10())
+                    && compareCollections(collection11, compareCollectionHolder.collection11)
                     ;
          }
          return false;
      }
 
-     private boolean compareCollections(Object compareList1, Object compareList2){
+    private boolean compareMaps(Map map1, Map map2){
+        if(map1 == null){
+            return map2 == null;
+        }else{
+            if(map2 == null){
+                return false;
+            }
+          
+            return map1.equals(map2);
+        }
+    }
+    
+     private boolean compareCollections(Collection compareList1, Collection compareList2){
          if(compareList1 == null){
              return compareList2 == null;
          }else{
              if(compareList2 == null){
                  return false;
              }
-             return compareList1.equals(compareList2);
+             if(compareList1.size() != compareList2.size()){
+                 return false;
+             }
+             Iterator iter1 = compareList1.iterator();
+             Iterator iter2 = compareList2.iterator();
+             
+             while(iter1.hasNext()){
+                 if(!(compareItems(iter1.next(), iter2.next()))){
+                     return false;
+                 }
+             }
+             return true;
          }
 
      }
+     
+     private boolean compareItems(Object item1, Object item2){
+         
+         if(item1 instanceof JAXBElement){
+             if(!(item2 instanceof JAXBElement)){
+                 return false;
+             }
+             return compareJAXBElements((JAXBElement)item1, (JAXBElement)item2);
+         }else{
+             if(item1 == null){
+                 if(item2 != null){
+                     return false;
+                 }
+                 return true;
+             }else{
+                 return item1.equals(item2);
+             }
+         }
+     }
 
+     private boolean  compareJAXBElements(JAXBElement item1, JAXBElement item2){
+         if(!(item1.getName().getLocalPart().equals(item2.getName().getLocalPart()))){
+             return false;
+         }
+         if(item1.getValue() == null){
+             if(item2.getValue() != null){
+                 return false;
+             }
+         }else if(!(item1.equals(item2))){
+             return false;
+         }
+         return true;
+     }
 }

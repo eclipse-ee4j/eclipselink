@@ -12,22 +12,30 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.xmlelementref.attachment;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 
 import javax.activation.DataHandler;
+import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.attachment.AttachmentMarshaller;
 import javax.xml.bind.attachment.AttachmentUnmarshaller;
+import javax.xml.namespace.QName;
+import javax.xml.transform.stream.StreamSource;
 
-import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
+import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-public class XMLElementRefAttachmentTestCases extends JAXBTestCases {
+public class XMLElementRefAttachmentTestCases extends JAXBWithJSONTestCases {
 
-    private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelementref/attachment/employee.xml";
+    private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelementref/attachment/employeeAttachment.xml";
+    private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/xmlelementref/attachment/employeeAttachment.json";
 
     public XMLElementRefAttachmentTestCases(String name) throws Exception {
         super(name);
-        setControlDocument(XML_RESOURCE);        
+        setControlDocument(XML_RESOURCE);
+        setControlJSON(JSON_RESOURCE); 
         Class[] classes = new Class[2];
         classes[0] = ObjectFactory.class;
         classes[1] = Employee.class;
@@ -83,7 +91,7 @@ public class XMLElementRefAttachmentTestCases extends JAXBTestCases {
         ObjectFactory factory = new ObjectFactory();
         Employee employee = new Employee();
         
-        employee.ref1 = factory.createFooA();
+        employee.ref1 = factory.createFooA();        
         
         employee.ref2 = new ArrayList<JAXBElement>();
         employee.ref2.add(factory.createFooC());
@@ -93,5 +101,19 @@ public class XMLElementRefAttachmentTestCases extends JAXBTestCases {
         return employee;
     }
     
-
+    @Override
+    protected Object getJSONReadControlObject(){    
+        ObjectFactory factory = new ObjectFactory();
+        Employee employee = new Employee();
+        
+        employee.ref1 = factory.createFooA();        
+        
+        employee.ref2 = new ArrayList<JAXBElement>();
+        employee.ref2.add(factory.createFooC());
+        employee.ref2.add(factory.createFooC());
+        employee.ref2.add(factory.createFooB());
+        employee.ref2.add(factory.createFooB());        
+        return employee;
+    }
+        
 }

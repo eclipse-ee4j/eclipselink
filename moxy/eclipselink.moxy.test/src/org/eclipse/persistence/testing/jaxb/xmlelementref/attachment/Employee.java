@@ -23,7 +23,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class Employee {
     
     @XmlElementRef(name="fooA")
-    public JAXBElement<Byte[]> ref1;
+    public JAXBElement<byte[]> ref1;
     
     @XmlElementRefs({@XmlElementRef(name="fooB"), @XmlElementRef(name="fooC")})
     public List<JAXBElement> ref2;
@@ -38,7 +38,7 @@ public class Employee {
             JAXBElement next2 = emp.ref2.get(i);
             equal = equal && next1.getName().equals(next2.getName());
             if(next1.getDeclaredType() == String.class) {
-                equal = equal && next1.getValue().equals(next2.getValue());
+                equal = equal && ((next1.getValue() == null && next2.getValue() ==null ) ||( next1.getValue().equals(next2.getValue())));
             } else {
                 equal = equal && compareByteArrays((byte[])next1.getValue(), (byte[])next2.getValue());
             }
@@ -47,6 +47,9 @@ public class Employee {
     }
     
     private boolean compareByteArrays(byte[] a, byte[] b) {
+        if(a == null && b== null){
+            return true;
+        }
         for(int i = 0; i < a.length; i++) {
             if(!(a[i] == b[i])) {
                 return false;

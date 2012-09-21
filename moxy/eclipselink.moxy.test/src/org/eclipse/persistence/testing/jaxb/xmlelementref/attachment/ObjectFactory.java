@@ -21,8 +21,8 @@ import javax.xml.namespace.QName;
 public class ObjectFactory {
     
     @XmlElementDecl(name="fooA")
-    public JAXBElement<Byte[]> createFooA() {
-        return new JAXBElement(new QName("fooA"), Byte[].class, new Byte[]{1, 2, 3, 4, 5});
+    public JAXBElement<byte[]> createFooA() {
+        return new JAXBElement(new QName("fooA"), byte[].class, new byte[]{1, 2, 3, 4, 5});
     }
 
     @XmlElementDecl(name="fooB")

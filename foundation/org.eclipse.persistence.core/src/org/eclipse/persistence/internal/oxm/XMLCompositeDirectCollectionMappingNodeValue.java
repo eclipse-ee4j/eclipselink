@@ -176,9 +176,6 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
                 }
                 unmarshalRecord.setTypeQName(new QName(namespaceURI, type));
             }
-            if (unmarshalRecord.isNil() && xmlCompositeDirectCollectionMapping.getNullPolicy().isNullRepresentedByXsiNil()) {
-                getContainerPolicy().addInto(null, unmarshalRecord.getContainerInstance(this), unmarshalRecord.getSession());
-            }
         } else if (lastXPathFragment.isAttribute()) {
             if (!xmlField.usesSingleNode()) {
                 String namespaceURI = lastXPathFragment.getNamespaceURI();
@@ -232,15 +229,10 @@ public class XMLCompositeDirectCollectionMappingNodeValue extends MappingNodeVal
     }
 
     private void addUnmarshalValue(UnmarshalRecord unmarshalRecord, Object value, Object collection) {
-        if (null == value) {
-            return;
-        }
-
+      
         if (unmarshalRecord.isNil() && xmlCompositeDirectCollectionMapping.getNullPolicy().isNullRepresentedByXsiNil()) {            
-            return;            
-        }
-
-        if (!isWhitespaceAware() && XMLConstants.EMPTY_STRING.equals(value)) {
+            value = null;           
+        } else if (!isWhitespaceAware() && XMLConstants.EMPTY_STRING.equals(value)) {
             value = null;
         }
 

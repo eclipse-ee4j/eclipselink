@@ -1,0 +1,13 @@
+<employee>
+   <fooA>
+      <xop:Include href="cid1234567" xmlns:xop="http://www.w3.org/2004/08/xop/include"/>
+   </fooA>
+   <fooC>StringValue</fooC>
+   <fooB>
+      <xop:Include href="cid1234567" xmlns:xop="http://www.w3.org/2004/08/xop/include"/>
+   </fooB>
+   <fooB>
+      <xop:Include href="cid1234567" xmlns:xop="http://www.w3.org/2004/08/xop/include"/>
+   </fooB>
+   <fooC>StringValue</fooC>
+</employee>
