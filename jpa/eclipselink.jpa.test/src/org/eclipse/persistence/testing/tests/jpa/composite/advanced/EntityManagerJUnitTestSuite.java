@@ -4819,7 +4819,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                     + "Symfoware doesn't support UpdateAll/DeleteAll on multi-table objects (see rfe 298193).");
             return;
         }
-        if ((JUnitTestCase.getServerSession()).getPlatform().isHANA()) {
+        if (getPlatform(Employee.class).isHANA()) {
             // HANA currently doesn't support pessimistic locking with queries on multiple tables
             // feature is under development (see bug 384129), but test should be skipped for the time being
             return;

@@ -90,6 +90,8 @@ public interface Platform extends Serializable, Cloneable {
 
     public boolean isDBase();
 
+    public boolean isHANA();
+    
     public boolean isHSQL();
 
     public boolean isInformix();
