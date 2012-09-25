@@ -3984,6 +3984,10 @@ public class ClassDescriptor implements Cloneable, Serializable {
         if (hasInheritance()) {
             getInheritancePolicy().remoteInitialization(session);
         }
+
+        if (getCMPPolicy() != null) {
+            getCMPPolicy().remoteInitialize(this, session);
+        }
     }
 
     /**

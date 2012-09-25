@@ -61,7 +61,6 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Project;
 
 /**
@@ -86,7 +85,7 @@ public class MetamodelImpl implements Metamodel, Serializable {
     private static final long serialVersionUID = -7352420189248464690L;
 
     /** The EclipseLink Session associated with this Metamodel implementation that contains all our descriptors with mappings **/
-    private DatabaseSession session;
+    private AbstractSession session;
 
     /** The Map of entities in this metamodel keyed on Class **/
     private Map<Class, EntityTypeImpl<?>> entities;
@@ -106,19 +105,19 @@ public class MetamodelImpl implements Metamodel, Serializable {
     /** Default elementType Class when we the type cannot be determined for unsupported mappings such as Transformation and VariableOneToOne */
     public static final Class DEFAULT_ELEMENT_TYPE_FOR_UNSUPPORTED_MAPPINGS = Object.class;
 
-    public MetamodelImpl(DatabaseSession session) {
+    public MetamodelImpl(AbstractSession session) {
         this.session = session;
         initialize();
     }
 
     public MetamodelImpl(EntityManager em) {
         // Create a new Metamodel using the EclipseLink session on the EM
-        this(JpaHelper.getEntityManager(em).getDatabaseSession());
+        this(JpaHelper.getEntityManager(em).getAbstractSession());
     }
 
     public MetamodelImpl(EntityManagerFactory emf) {
         // Create a new Metamodel using the EclipseLink session on the EMF
-        this(JpaHelper.getDatabaseSession(emf));
+        this(((AbstractSession)JpaHelper.getDatabaseSession(emf)));
     }
 
     /**
@@ -226,6 +225,13 @@ public class MetamodelImpl implements Metamodel, Serializable {
     }
 
     /**
+     *  Return the metamodel managed types map.
+     */
+    public Map<Class, ManagedTypeImpl<?>> getManagedTypesMap() {
+        return this.managedTypes;
+    }
+
+    /**
      *  Return the metamodel managed types.
      *  @return the metamodel managed types
      */
@@ -256,7 +262,7 @@ public class MetamodelImpl implements Metamodel, Serializable {
      * Return the DatabaseSession associated with this Metamodel
      * @return
      */
-    protected DatabaseSession getSession() {
+    protected AbstractSession getSession() {
         return this.session;
     }
 
@@ -497,15 +503,13 @@ public class MetamodelImpl implements Metamodel, Serializable {
      * @return
      */
     public void printAllTypes() {
-        if(null == types || types.isEmpty()) {
+        if ((null == types) || types.isEmpty()) {
             // 338837: verify that the collection is not empty - this would mean entities did not make it into the search path
             AbstractSessionLog.getLog().log(SessionLog.WARNING, SessionLog.METAMODEL, "metamodel_type_collection_empty", null, true);           
         } else {
-            ((AbstractSession)session).log(SessionLog.INFO, SessionLog.METAMODEL, 
-                "metamodel_print_type_header",this.types.size());
-            for(Type aType : this.types.values()) {
-                ((AbstractSession)session).log(SessionLog.INFO, SessionLog.METAMODEL, 
-                    "metamodel_print_type_value",aType);
+            this.session.log(SessionLog.INFO, SessionLog.METAMODEL, "metamodel_print_type_header",this.types.size());
+            for (Type aType : this.types.values()) {
+                this.session.log(SessionLog.INFO, SessionLog.METAMODEL, "metamodel_print_type_value",aType);
             }
         }
     }

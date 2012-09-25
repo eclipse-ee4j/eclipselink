@@ -12,21 +12,8 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced;
 
-import java.util.*;
 import java.io.Serializable;
 import javax.persistence.*;
-
-import static javax.persistence.CascadeType.*;
-
-import org.eclipse.persistence.annotations.NamedStoredFunctionQuery;
-import org.eclipse.persistence.annotations.NamedStoredProcedureQuery;
-import org.eclipse.persistence.annotations.NamedStoredProcedureQueries;
-import org.eclipse.persistence.annotations.StoredProcedureParameter;
-import org.eclipse.persistence.annotations.Convert;
-
-import static org.eclipse.persistence.annotations.Direction.IN;
-import static org.eclipse.persistence.annotations.Direction.OUT;
-import static org.eclipse.persistence.annotations.Direction.IN_OUT;
 
 /**
  * <p><b>Purpose</b>: Represents a simple Entity with no identity map

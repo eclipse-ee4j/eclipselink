@@ -39,7 +39,7 @@ import org.eclipse.persistence.queries.FetchGroupTracker;
 @Entity(name = "PhoneNumber")
 @Table(name = "CMP3_FA_PHONENUMBER")
 @PrimaryKey(columns = { @Column(name = "OWNER_ID"), @Column(name = "TYPE") })
-public class PhoneNumber extends PhoneNumberMappedSuperclass implements Serializable {
+public class PhoneNumber extends PhoneNumberMappedSuperclass {
     public enum PhoneStatus {
         ACTIVE, ASSIGNED, UNASSIGNED, DEAD
     }

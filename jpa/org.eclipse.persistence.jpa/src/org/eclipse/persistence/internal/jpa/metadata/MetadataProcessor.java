@@ -419,6 +419,9 @@ public class MetadataProcessor {
                 
                 if (mappingFileURLs.hasMoreElements()) {
                     URL nextURL = mappingFileURLs.nextElement();
+                    if (nextURL == null) {
+                        nextURL = mappingFileURLs.nextElement();                        
+                    }
 
                     if (mappingFileURLs.hasMoreElements()) {
                         // Switched to warning, same file can be on the classpath twice in some deployments,

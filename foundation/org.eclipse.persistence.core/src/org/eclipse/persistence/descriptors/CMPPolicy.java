@@ -265,6 +265,13 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
             throw DescriptorException.updateAllFieldsNotSet(descriptor);
         }
     }
+    
+    /**
+     * INTERNAL:
+     * Initialize the CMPPolicy settings for remote sessions.
+     */
+    public void remoteInitialize(ClassDescriptor descriptor, AbstractSession session) throws DescriptorException {
+    }
 
     /**
      * INTERNAL:

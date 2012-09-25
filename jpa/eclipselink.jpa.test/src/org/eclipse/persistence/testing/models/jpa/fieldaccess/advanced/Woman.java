@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced;
 
+import java.io.Serializable;
+
 import javax.persistence.*;
 
 import org.eclipse.persistence.annotations.CascadeOnDelete;
@@ -21,7 +23,7 @@ import static javax.persistence.GenerationType.*;
 
 @Entity(name = "Woman")
 @Table(name = "CMP3_FA_WOMAN")
-public class Woman {
+public class Woman implements Serializable {
     @Id
     @GeneratedValue(strategy = SEQUENCE, generator = "FA_WOMAN_SEQ_GENERATOR")
     @SequenceGenerator(name = "FA_WOMAN_SEQ_GENERATOR", sequenceName = "WOMAN_SEQ")

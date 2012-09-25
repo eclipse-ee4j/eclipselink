@@ -81,8 +81,8 @@ public abstract class AttributeImpl<X, T> implements Attribute<X, T>, Serializab
      */
     protected AttributeImpl(ManagedTypeImpl<X> managedType, DatabaseMapping mapping) {
         this.mapping = mapping;
-        // Cache this Attribute on the mapping
-        this.mapping.setProperty(getClass().getName(), this);
+        // Cache this Attribute on the mapping - Why??
+        //this.mapping.setProperty(getClass().getName(), this);
         this.managedType = managedType;
     }
 

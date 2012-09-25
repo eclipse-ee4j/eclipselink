@@ -12,14 +12,16 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced;
 
+import java.io.Serializable;
+
 import javax.persistence.*;
 
 import static javax.persistence.CascadeType.*;
 
 @Entity(name = "PartnerLink")
 @Table(name = "CMP3_FA_MW")
-@IdClass(org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.PartnerLinkPK.class)
-public class PartnerLink {
+@IdClass(PartnerLinkPK.class)
+public class PartnerLink implements Serializable {
     @Id
     @Column(name = "M", insertable = false, updatable = false)
     private Integer manId;

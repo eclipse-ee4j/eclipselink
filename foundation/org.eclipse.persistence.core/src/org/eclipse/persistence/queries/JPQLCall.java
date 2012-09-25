@@ -35,7 +35,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  */
 public class JPQLCall implements Serializable, Call {
     // Back reference to query, unfortunately required for events.
-    protected DatabaseQuery query;
+    protected transient DatabaseQuery query;
     protected String jpqlString;
 
     // Check that we aren't parsing more than once

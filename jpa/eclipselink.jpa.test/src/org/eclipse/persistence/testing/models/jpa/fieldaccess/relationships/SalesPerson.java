@@ -24,7 +24,7 @@ import java.util.Collection;
 @Entity(name="FieldAccessSalesPerson")
 @Table(name="CMP3_FIELDACCESS_SALESPERSON")
 @Cache(shared=false)
-public class SalesPerson 
+public class SalesPerson implements java.io.Serializable
 {
     private String name;
     @Id

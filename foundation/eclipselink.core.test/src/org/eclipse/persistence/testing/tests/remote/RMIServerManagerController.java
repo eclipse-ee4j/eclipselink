@@ -20,6 +20,7 @@ import java.rmi.server.*;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.sessions.remote.rmi.*;
+import org.eclipse.persistence.sessions.server.ServerSession;
 
 public class RMIServerManagerController extends UnicastRemoteObject implements RMIServerManager {
     protected Session session;
@@ -40,7 +41,11 @@ public class RMIServerManagerController extends UnicastRemoteObject implements R
 
         if (controllerClassName == null) {
             try {
-                controller = new RMIRemoteSessionControllerDispatcher((getSession()));
+                if (getSession().isServerSession()) {
+                    controller = new RMIRemoteSessionControllerDispatcher((((ServerSession)getSession()).acquireClientSession()));
+                } else {
+                    controller = new RMIRemoteSessionControllerDispatcher((getSession()));                    
+                }
             } catch (RemoteException exception) {
                 System.out.println("Error in invocation " + exception.toString());
             }

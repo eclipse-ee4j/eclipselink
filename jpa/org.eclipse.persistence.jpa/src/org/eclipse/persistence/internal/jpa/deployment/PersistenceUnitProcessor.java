@@ -293,12 +293,14 @@ public class PersistenceUnitProcessor {
                 while (resources.hasMoreElements()){
 
                     URL descUrl = resources.nextElement();
-                    URL puRootUrl = computePURootURL(descUrl, descriptorPath);
-                    archive = PersistenceUnitProcessor.getArchiveFactory(loader).createArchive(puRootUrl, descriptorPath, null);
-    
-                   // archive = new BundleArchive(puRootUrl, descUrl);
-                    if (archive != null){
-                        archives.add(archive);
+                    if (descUrl != null) {
+                        URL puRootUrl = computePURootURL(descUrl, descriptorPath);
+                        archive = PersistenceUnitProcessor.getArchiveFactory(loader).createArchive(puRootUrl, descriptorPath, null);
+        
+                       // archive = new BundleArchive(puRootUrl, descUrl);
+                        if (archive != null){
+                            archives.add(archive);
+                        }
                     }
                 }
             } else {

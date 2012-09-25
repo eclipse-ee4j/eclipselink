@@ -41,6 +41,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
 import org.eclipse.persistence.internal.jpa.querydef.CriteriaBuilderImpl;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.internal.sessions.PropertiesHandler;
 import org.eclipse.persistence.jpa.JpaEntityManagerFactory;
@@ -69,7 +70,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
     /** Reference to Cache Interface. */
     protected Cache myCache;
     /** Reference to the ServerSession for this deployment. */
-    protected volatile DatabaseSessionImpl session;
+    protected volatile AbstractSession session;
     /** EntityManagerSetupImpl that deployed this factory. */
     protected EntityManagerSetupImpl setupImpl;
     /** Stores if closed has been called. */
@@ -133,7 +134,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
      * 
      * @param serverSession
      */
-    public EntityManagerFactoryDelegate(DatabaseSessionImpl databaseSession, JpaEntityManagerFactory owner) {
+    public EntityManagerFactoryDelegate(AbstractSession databaseSession, JpaEntityManagerFactory owner) {
         this.session = databaseSession;
         this.owner = owner;
         processProperties(databaseSession.getProperties());
@@ -171,6 +172,16 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
      * construction
      */
     public DatabaseSessionImpl getDatabaseSession() {
+        return (DatabaseSessionImpl)getAbstractSession();
+    }
+
+    /**
+     * INTERNAL: Returns the ServerSession that the Factory will be using and
+     * initializes it if it is not available. This method makes use of the
+     * partially constructed session stored in our setupImpl and completes its
+     * construction
+     */
+    public AbstractSession getAbstractSession() {
         if (this.session == null) {
             // PERF: Avoid synchronization.
             synchronized (this) {
@@ -217,7 +228,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
      * TODO: should throw IllegalStateException if not ServerSession
      */
     public ServerSession getServerSession() {
-        return (ServerSession)getDatabaseSession();
+        return (ServerSession)getAbstractSession();
     }
 
     /**
@@ -228,7 +239,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
      * TODO: should throw IllegalStateException if not SessionBroker
      */
     public SessionBroker getSessionBroker() {
-        return (SessionBroker)getDatabaseSession();
+        return (SessionBroker)getAbstractSession();
     }
 
     /**
@@ -275,14 +286,17 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
 
     protected EntityManagerImpl createEntityManagerImpl(Map properties) {
         verifyOpen();
-        DatabaseSessionImpl session = getDatabaseSession();
-        if (!session.isLoggedIn()) {
-            // PERF: Avoid synchronization.
-            synchronized (session) {
-                // DCL ok as isLoggedIn is volatile boolean, set after login is
-                // complete.
-                if (!session.isLoggedIn()) {
-                    session.login();
+        AbstractSession session = getAbstractSession();
+        if (session.isDatabaseSession()) {
+            DatabaseSessionImpl databaseSession = (DatabaseSessionImpl)session;
+            if (!databaseSession.isLoggedIn()) {
+                // PERF: Avoid synchronization.
+                synchronized (databaseSession) {
+                    // DCL ok as isLoggedIn is volatile boolean, set after login is
+                    // complete.
+                    if (!databaseSession.isLoggedIn()) {
+                        databaseSession.login();
+                    }
                 }
             }
         }
@@ -327,7 +341,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
                 return value;
             }
         }
-        DatabaseSessionImpl tempSession = this.session;
+        AbstractSession tempSession = this.session;
         if (tempSession != null) {
             return tempSession.getProperty(name);
         } else {
@@ -561,7 +575,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
         if (!this.isOpen()) {
             throw new IllegalStateException(ExceptionLocalization.buildMessage("operation_on_closed_entity_manager_factory"));
         }
-        DatabaseSessionImpl tempSession = this.session;
+        AbstractSession tempSession = this.session;
         if (tempSession != null) {
             return Collections.unmodifiableMap(EntityManagerFactoryProvider.mergeMaps(properties, tempSession.getProperties()));
         } else {
@@ -599,7 +613,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
          * MappedSuperclass metamodel descriptors.  This is provided for
          * implementations that use the metamodel before the 1st EntityManager creation.
          */        
-        this.getDatabaseSession();
+        getAbstractSession();
         return this.setupImpl.getMetamodel();
     }
 

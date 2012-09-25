@@ -301,7 +301,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     /**
      * Return the name to use for the query in performance monitoring.
      */
-    protected String monitorName;
+    protected transient String monitorName;
     
     /** Allow additional validation to be performed before using the update call cache */
     protected boolean shouldValidateUpdateCallCacheUse;

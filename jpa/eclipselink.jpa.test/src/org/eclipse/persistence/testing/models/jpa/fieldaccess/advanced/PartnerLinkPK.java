@@ -15,40 +15,41 @@ package org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced;
 import javax.persistence.*;
 
 public class PartnerLinkPK {
-	@Id
+    @Id
     private Integer manId;
-	@Id
+    @Id
     private Integer womanId;
 	
-	// This should not get processed as part of the primary key.
-	public static final long serialVersionUID = 7696472275622076147L;
-	// Nor this ...
-	public transient Integer transientField = 0;
+    // This should not get processed as part of the primary key.
+    public static final long serialVersionUID = 7696472275622076147L;
+    // Nor this ...
+    public transient Integer transientField = 0;
 
-	public PartnerLinkPK() {}    
-    
-	public Integer getManId() { 
-        return manId; 
-    }    
-    
-	public Integer getWomanId() { 
-        return womanId; 
+    public PartnerLinkPK() {
     }
-    
-	public void setManId(Integer manId) { 
-        this.manId = manId; 
+
+    public Integer getManId() {
+        return manId;
     }
-    
-    public void setWomanId(Integer womanId) { 
-        this.womanId = womanId; 
+
+    public Integer getWomanId() {
+        return womanId;
+    }
+
+    public void setManId(Integer manId) {
+        this.manId = manId;
+    }
+
+    public void setWomanId(Integer womanId) {
+        this.womanId = womanId;
     }
 
     public boolean equals(Object anotherPartnerLinkPK) {
         if (anotherPartnerLinkPK.getClass() != PartnerLinkPK.class) {
             return false;
         }
-        
-        return getManId().equals(((PartnerLinkPK) anotherPartnerLinkPK).getManId()) && 
-               getWomanId().equals(((PartnerLinkPK) anotherPartnerLinkPK).getWomanId());
+
+        return getManId().equals(((PartnerLinkPK) anotherPartnerLinkPK).getManId())
+                && getWomanId().equals(((PartnerLinkPK) anotherPartnerLinkPK).getWomanId());
     }
 }

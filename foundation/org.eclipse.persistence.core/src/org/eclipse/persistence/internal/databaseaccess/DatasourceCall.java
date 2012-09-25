@@ -41,7 +41,7 @@ import org.eclipse.persistence.logging.SessionLog;
  */
 public abstract class DatasourceCall implements Call {
     // Back reference to query, unfortunately required for events.
-    protected DatabaseQuery query;
+    protected transient DatabaseQuery query;
 
     // The parameters (values) are ordered as they appear in the call.
     protected List parameters;

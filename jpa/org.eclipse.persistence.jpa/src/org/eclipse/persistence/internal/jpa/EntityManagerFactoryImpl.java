@@ -169,7 +169,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
      * 
      * @param serverSession
      */
-    public EntityManagerFactoryImpl(DatabaseSessionImpl session) {
+    public EntityManagerFactoryImpl(AbstractSession session) {
         delegate = new EntityManagerFactoryDelegate(session, this);
     }
 

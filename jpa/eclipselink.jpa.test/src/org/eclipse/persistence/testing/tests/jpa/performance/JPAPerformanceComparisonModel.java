@@ -31,6 +31,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 //import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.helper.Helper;
 //import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
+import org.eclipse.persistence.jpa.JpaCache;
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.testing.framework.*;
 
@@ -48,6 +49,7 @@ public class JPAPerformanceComparisonModel extends TestModel {
         suite.setName("ReadingSuite");
         suite.addTest(buildReadAllVsReadAllResultSet());
         suite.addTest(buildBatchFetchTest());
+        suite.addTest(buildLoadTest());
         addTest(suite);
     }
 
@@ -221,7 +223,7 @@ public class JPAPerformanceComparisonModel extends TestModel {
                     }
                     public void endTest() {
                         EntityManager em = createEntityManager();
-                        createEntityManager().unwrap(Session.class).getDescriptor(Address.class).setCacheIsolation(CacheIsolationType.ISOLATED);
+                        createEntityManager().unwrap(Session.class).getDescriptor(Address.class).setCacheIsolation(CacheIsolationType.SHARED);
                         createEntityManager().unwrap(Session.class).getDescriptor(Address.class).setUnitOfWorkCacheIsolationLevel(ClassDescriptor.ISOLATE_NEW_DATA_AFTER_TRANSACTION);
                         em.close();
                     }
@@ -234,6 +236,7 @@ public class JPAPerformanceComparisonModel extends TestModel {
                     public void startTest() {
                         EntityManager em = createEntityManager();
                         createEntityManager().unwrap(Session.class).getDescriptor(Address.class).setCacheIsolation(CacheIsolationType.ISOLATED);
+                        createEntityManager().unwrap(Session.class).getDescriptor(Address.class).setUnitOfWorkCacheIsolationLevel(ClassDescriptor.ISOLATE_CACHE_ALWAYS);
                         em.close();
                     }
                     public void test() {
@@ -243,7 +246,8 @@ public class JPAPerformanceComparisonModel extends TestModel {
                     }
                     public void endTest() {
                         EntityManager em = createEntityManager();
-                        createEntityManager().unwrap(Session.class).getDescriptor(Address.class).setCacheIsolation(CacheIsolationType.ISOLATED);
+                        createEntityManager().unwrap(Session.class).getDescriptor(Address.class).setCacheIsolation(CacheIsolationType.SHARED);
+                        createEntityManager().unwrap(Session.class).getDescriptor(Address.class).setUnitOfWorkCacheIsolationLevel(ClassDescriptor.ISOLATE_NEW_DATA_AFTER_TRANSACTION);
                         em.close();
                     }
                 };
@@ -339,8 +343,6 @@ public class JPAPerformanceComparisonModel extends TestModel {
         return test;
     }
     
-
-    
     /**
      * Add a test to compare various batch fetching options.
      */
@@ -395,15 +397,49 @@ public class JPAPerformanceComparisonModel extends TestModel {
             }
             
             public void reset() {
-                createEntityManager().unwrap(Session.class).getDescriptor(Employee.class).setCacheIsolation(CacheIsolationType.ISOLATED);
+                createEntityManager().unwrap(Session.class).getDescriptor(Employee.class).setCacheIsolation(CacheIsolationType.SHARED);
                 createEntityManager().unwrap(Session.class).getDescriptor(Employee.class).setUnitOfWorkCacheIsolationLevel(ClassDescriptor.ISOLATE_NEW_DATA_AFTER_TRANSACTION);
-                createEntityManager().unwrap(Session.class).getDescriptor(Address.class).setCacheIsolation(CacheIsolationType.ISOLATED);
+                createEntityManager().unwrap(Session.class).getDescriptor(Address.class).setCacheIsolation(CacheIsolationType.SHARED);
                 createEntityManager().unwrap(Session.class).getDescriptor(Address.class).setUnitOfWorkCacheIsolationLevel(ClassDescriptor.ISOLATE_NEW_DATA_AFTER_TRANSACTION);
                 createEntityManager().unwrap(Session.class).getProject().setHasIsolatedClasses(false);
             }
 
         };
         test.setName("BatchFetchTest");
+        return test;
+    }
+    
+    /**
+     * Add a test to compare various batch fetching options.
+     */
+    public TestCase buildLoadTest() {
+        PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            public void setup() {
+                
+                if (!getTests().isEmpty()) {
+                    return;
+                }
+                
+                PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+                    public void test() {
+                        testQuery("findAllEmployeesLoad");
+                        ((JpaCache)getExecutor().getEntityManagerFactory().getCache()).clear();
+                    }
+                };
+                test.setName("LoadTest");
+                addTest(test);
+            }
+            
+            public void test() throws Exception {
+                testQuery("findAllEmployees");
+                ((JpaCache)getExecutor().getEntityManagerFactory().getCache()).clear();
+            }
+            
+            public void reset() {
+            }
+
+        };
+        test.setName("LoadTest");
         return test;
     }
     
@@ -416,6 +452,54 @@ public class JPAPerformanceComparisonModel extends TestModel {
         for (Employee employee : employees) {
             employee.getAddress().toString();
         }
+        em.close();
+    }
+    
+    /**
+     * Add a test to compare various batch fetching options.
+     */
+    public TestCase buildThreadCursorTest() {
+        PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            public void setup() {
+                
+                if (!getTests().isEmpty()) {
+                    return;
+                }
+                
+                PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+                    public void test() {
+                        testJPQL("Select a from Address a");
+                    }
+                };
+                test.setName("ReadAllTest");
+                addTest(test);
+                
+                test = new PerformanceComparisonTestCase() {
+                    public void startTest() {
+                    }
+                    public void test() {
+                        testJPQL("Select a from Address a");
+                    }
+                };
+                test.setName("ThreadCursorReadAllTest");
+                addTest(test);                
+            }
+            
+            public void test() throws Exception {
+                testQuery("findAllEmployees");
+            }
+
+        };
+        test.setName("ThreadCursorTest");
+        return test;
+    }
+    
+    /**
+     * Execute the named query and traverse the results.
+     */
+    protected void testJPQL(String query) {
+        EntityManager em = getExecutor().createEntityManager();
+        em.createNamedQuery(query).getResultList().size();
         em.close();
     }
 }
