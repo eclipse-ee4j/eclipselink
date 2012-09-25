@@ -30,6 +30,7 @@ public class PrefixMapperMapTestCases extends JAXBWithJSONTestCases {
         Map<String, String> map = new HashMap<String, String>();
 
         map.put("someuri", "newPrefix");
+        map.put("extraUri", "ns0");
         map.put(XMLConstants.SCHEMA_INSTANCE_URL, "xsi");
         map.put("my.uri", "somePrefix");
         
