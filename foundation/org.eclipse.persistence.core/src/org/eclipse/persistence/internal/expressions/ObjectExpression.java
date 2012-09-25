@@ -257,7 +257,7 @@ public abstract class ObjectExpression extends DataExpression {
         if (castDescriptor == null){
             throw QueryException.couldNotFindCastDescriptor(castClass, getBaseExpression());
         }
-        if (castDescriptor.getInheritancePolicy() == null){
+        if (!castDescriptor.hasInheritance()){
             throw QueryException.castMustUseInheritance(getBaseExpression());
         }
         ClassDescriptor parentDescriptor = castDescriptor.getInheritancePolicy().getParentDescriptor();

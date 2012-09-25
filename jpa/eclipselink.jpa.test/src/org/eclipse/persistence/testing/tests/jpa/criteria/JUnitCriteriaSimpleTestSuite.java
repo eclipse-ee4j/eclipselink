@@ -2709,67 +2709,58 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
     public void mapCastTest(){
         EntityManager em = createEntityManager();
         beginTransaction(em);
-        
-        BeerConsumer bc1 = new BeerConsumer();
-        bc1.setName("George");
-        em.persist(bc1);
-        Blue blue = new Blue();
-        blue.setUniqueKey(new BigInteger("1"));
-        em.persist(blue);
-        bc1.addBlueBeerToConsume(blue);
-        blue.setBeerConsumer(bc1);
-        
-        BeerConsumer bc2 = new BeerConsumer();
-        bc2.setName("Scott");
-        em.persist(bc2);
-        BlueLight blueLight = new BlueLight();
-        blueLight.setDiscount(10);
-        blueLight.setUniqueKey(new BigInteger("2"));
-        em.persist(blueLight);
-        blueLight.setBeerConsumer(bc2);
-        bc2.addBlueBeerToConsume(blueLight);
-        
-        commitTransaction(em);
-        clearCache();
-        
-        ReadAllQuery query = new ReadAllQuery();
-        Expression selectionCriteria = new ExpressionBuilder().anyOf("blueBeersToConsume").treat(BlueLight.class).get("discount").equal(10);
-        query.setSelectionCriteria(selectionCriteria);
-        query.setReferenceClass(BeerConsumer.class);
-        query.dontUseDistinct();
-        
-        Vector expectedResult = (Vector)getServerSession().executeQuery(query);
-        
-        clearCache();
-        beginTransaction(em);
-
-        //"SELECT e from Employee e join cast(e.project, LargeProject) p where p.budget = 1000
-        CriteriaBuilder qb1 = em.getCriteriaBuilder();
-        CriteriaQuery<BeerConsumer> cq1 = qb1.createQuery(BeerConsumer.class);
-
-        Root<BeerConsumer> root = cq1.from(BeerConsumer.class);
-        Join<BeerConsumer, Blue> join = root.join("blueBeersToConsume");
-        Path exp = ((Path)join.as(BlueLight.class)).get("discount");
-        cq1.where(qb1.equal(exp, new Integer(10)) );
         try {
+        
+            BeerConsumer bc1 = new BeerConsumer();
+            bc1.setName("George");
+            em.persist(bc1);
+            Blue blue = new Blue();
+            blue.setUniqueKey(new BigInteger("1"));
+            em.persist(blue);
+            bc1.addBlueBeerToConsume(blue);
+            blue.setBeerConsumer(bc1);
+            
+            BeerConsumer bc2 = new BeerConsumer();
+            bc2.setName("Scott");
+            em.persist(bc2);
+            BlueLight blueLight = new BlueLight();
+            blueLight.setDiscount(10);
+            blueLight.setUniqueKey(new BigInteger("2"));
+            em.persist(blueLight);
+            blueLight.setBeerConsumer(bc2);
+            bc2.addBlueBeerToConsume(blueLight);
+    
+            em.flush();
+            em.clear();
+            clearCache();
+    
+            ReadAllQuery query = new ReadAllQuery();
+            Expression selectionCriteria = new ExpressionBuilder().anyOf("blueBeersToConsume").treat(BlueLight.class).get("discount").equal(10);
+            query.setSelectionCriteria(selectionCriteria);
+            query.setReferenceClass(BeerConsumer.class);
+            query.dontUseDistinct();
+    
+            Query jpaQuery = ((org.eclipse.persistence.internal.jpa.EntityManagerImpl)em.getDelegate()).createQuery(query);
+            List expectedResult = jpaQuery.getResultList();
+    
+            clearCache();
+            em.clear();
+    
+            //"SELECT e from Employee e join cast(e.project, LargeProject) p where p.budget = 1000
+            CriteriaBuilder qb1 = em.getCriteriaBuilder();
+            CriteriaQuery<BeerConsumer> cq1 = qb1.createQuery(BeerConsumer.class);
+    
+            Root<BeerConsumer> root = cq1.from(BeerConsumer.class);
+            Join<BeerConsumer, Blue> join = root.join("blueBeersToConsume");
+            Path exp = ((Path)join.as(BlueLight.class)).get("discount");
+            cq1.where(qb1.equal(exp, new Integer(10)) );
+        
             List result = em.createQuery(cq1).getResultList();
             Assert.assertTrue("LargeProject cast failed.", comparer.compareObjects(result, expectedResult));
         } finally {
-
-            blueLight = em.find(BlueLight.class, blueLight.getId());
-            blueLight.getBeerConsumer().getBlueBeersToConsume().remove(blueLight);
-            em.remove(blueLight.getBeerConsumer());
-            blueLight.setBeerConsumer(null);
-            
-            blue = em.find(Blue.class, blue.getId());
-            blue.getBeerConsumer().getBlueBeersToConsume().remove(blue);
-            em.remove(blue.getBeerConsumer());
-            blue.setBeerConsumer(null);
-            
-            em.remove(blueLight);
-            em.remove(blue);
-
-            commitTransaction(em);
+            if (isTransactionActive(em)) {
+                this.rollbackTransaction(em);
+            }
             closeEntityManager(em);
         }
         
@@ -2778,56 +2769,53 @@ public class JUnitCriteriaSimpleTestSuite extends JUnitTestCase {
     public void oneToOneCastTest(){
         EntityManager em = createEntityManager();
         beginTransaction(em);
-        
-        Person rudy = new Person();
-        rudy.setName("Rudy");
-        em.persist(rudy);
-        SportsCar sportsCar = new SportsCar();
-        sportsCar.setMaxSpeed(200);
-        em.persist(sportsCar);
-        rudy.setCar(sportsCar);
-        
-        Person theo = new Person();
-        theo.setName("Theo");
-        em.persist(theo);
-        Car car = new Car();
-        em.persist(car);
-        theo.setCar(car);
-
-        commitTransaction(em);
-        clearCache();
-        
-        ReadAllQuery query = new ReadAllQuery();
-        Expression selectionCriteria = new ExpressionBuilder().get("car").treat(SportsCar.class).get("maxSpeed").equal(200);
-        query.setSelectionCriteria(selectionCriteria);
-        query.setReferenceClass(Person.class);
-        query.dontUseDistinct();
-        
-        Vector expectedResult = (Vector)getServerSession().executeQuery(query);
-        
-        clearCache();
-        beginTransaction(em);
-        //"SELECT e from Employee e join cast(e.project, LargeProject) p where p.budget = 1000
-        CriteriaBuilder qb1 = em.getCriteriaBuilder();
-        CriteriaQuery<Person> cq1 = qb1.createQuery(Person.class);
-
-        Root<Person> root = cq1.from(Person.class);
-        Join<Person, Car> join = root.join("car");
-        Path exp = ((Path)join.as(SportsCar.class)).get("maxSpeed");
-        cq1.where(qb1.equal(exp, new Integer(200)) );
         try {
+        
+            Person rudy = new Person();
+            rudy.setName("Rudy");
+            em.persist(rudy);
+            SportsCar sportsCar = new SportsCar();
+            sportsCar.setMaxSpeed(200);
+            em.persist(sportsCar);
+            rudy.setCar(sportsCar);
+            
+            Person theo = new Person();
+            theo.setName("Theo");
+            em.persist(theo);
+            Car car = new Car();
+            em.persist(car);
+            theo.setCar(car);
+    
+            em.flush();
+            em.clear();
+            clearCache();
+            
+            ReadAllQuery query = new ReadAllQuery();
+            Expression selectionCriteria = new ExpressionBuilder().get("car").treat(SportsCar.class).get("maxSpeed").equal(200);
+            query.setSelectionCriteria(selectionCriteria);
+            query.setReferenceClass(Person.class);
+            query.dontUseDistinct();
+            //query.setShouldFilterDuplicates(false);
+            Query jpaQuery = ((org.eclipse.persistence.internal.jpa.EntityManagerImpl)em.getDelegate()).createQuery(query);
+            List expectedResult = jpaQuery.getResultList();;
+            
+            clearCache();
+            em.clear();
+            //"SELECT e from Employee e join cast(e.project, LargeProject) p where p.budget = 1000
+            CriteriaBuilder qb1 = em.getCriteriaBuilder();
+            CriteriaQuery<Person> cq1 = qb1.createQuery(Person.class);
+    
+            Root<Person> root = cq1.from(Person.class);
+            Join<Person, Car> join = root.join("car");
+            Path exp = ((Path)join.as(SportsCar.class)).get("maxSpeed");
+            cq1.where(qb1.equal(exp, new Integer(200)) );
+        
             List result = em.createQuery(cq1).getResultList();
             Assert.assertTrue("OneToOne cast failed.", comparer.compareObjects(result, expectedResult));
         } finally {
-            rudy = em.find(Person.class, rudy.getId());
-            rudy.setCar(null);
-            
-            theo = em.find(Person.class, theo.getId());
-            theo.setCar(null);
-            
-            em.remove(rudy);
-            em.remove(theo);
-            commitTransaction(em);
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
             closeEntityManager(em);
         }
     }

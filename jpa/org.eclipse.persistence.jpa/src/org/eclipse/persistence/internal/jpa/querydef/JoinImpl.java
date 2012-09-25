@@ -14,6 +14,9 @@
 
 package org.eclipse.persistence.internal.jpa.querydef;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.From;
@@ -21,6 +24,7 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Predicate.BooleanOperator;
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.Bindable;
 import javax.persistence.metamodel.ManagedType;
@@ -43,6 +47,7 @@ import javax.persistence.metamodel.Metamodel;
 public class JoinImpl<Z, X> extends FromImpl<Z, X> implements Join<Z, X>, Fetch<Z, X> {
     
     protected JoinType joinType;
+    protected Expression<Boolean> on;
     
     public <T> JoinImpl(Path<Z> parentPath, ManagedType managedType, Metamodel metamodel, Class<X> javaClass, org.eclipse.persistence.expressions.Expression expressionNode, Bindable<T> modelArtifact){
         this(parentPath, managedType, metamodel, javaClass, expressionNode, modelArtifact,JoinType.INNER);
@@ -95,18 +100,49 @@ public class JoinImpl<Z, X> extends FromImpl<Z, X> implements Join<Z, X>, Fetch<
     }
     
     public Predicate getOn() {
-        // TODO: implement
-        throw new RuntimeException("Not implemented ... WIP ...");
+        if (this.on == null) {
+            return null;
+        }
+        if (((ExpressionImpl)this.on).isPredicate()) return (Predicate)this.on;
+        
+        //see queryBuilder.isTrue(this.on);
+        List list = new ArrayList();
+        list.add(this.on);
+        return new CompoundExpressionImpl(this.metamodel, ((InternalSelection)this.on).getCurrentNode().equal(true), list, "equals");
     }
 
     public JoinImpl<Z, X> on(Expression<Boolean> restriction) {
-        // TODO: implement
-        throw new RuntimeException("Not implemented ... WIP ...");
+        this.on = restriction;
+        org.eclipse.persistence.expressions.Expression onExp = restriction==null? null:((ExpressionImpl)restriction).getCurrentNode();
+        ((PathImpl)this.pathParent).getCurrentNode().join(this.currentNode, onExp);
+
+        return this;
     }
 
     public JoinImpl<Z, X> on(Predicate... restrictions) {
-        // TODO: implement
-        throw new RuntimeException("Not implemented ... WIP ...");
+        org.eclipse.persistence.expressions.Expression onExp;
+        if (restrictions == null || restrictions.length == 0){
+            this.on = null;
+            onExp = null;
+        } else {
+            //from criteriaQueryImpl.where(Predicate... restrictions)
+            Predicate a = restrictions[0];
+            for (int i = 1; i < restrictions.length; ++i){
+                org.eclipse.persistence.expressions.Expression currentNode = ((CompoundExpressionImpl)a).getCurrentNode().and(
+                        ((CompoundExpressionImpl)restrictions[i]).getCurrentNode());
+                ((CompoundExpressionImpl)a).setParentNode(currentNode);
+                ((CompoundExpressionImpl)restrictions[i]).setParentNode(currentNode);
+                ArrayList list = new ArrayList();
+                list.add(a);
+                list.add(restrictions[i]);
+                a = new PredicateImpl(this.metamodel, currentNode, list, BooleanOperator.AND);
+            }
+            this.on = a;
+            onExp = ((ExpressionImpl)a).getCurrentNode();
+        }
+
+        ((PathImpl)this.pathParent).getCurrentNode().join(this.currentNode, onExp);
+        return this;
     }
   
 }

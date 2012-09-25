@@ -67,6 +67,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
     protected Set<Join<X, ?>> joins;
     protected Set<Fetch<X, ?>> fetches;
     protected boolean isLeaf = true; // used to track dangling joins.
+    protected boolean isJoin = false;
     protected boolean isFetch = false;
     protected FromImpl correlatedParent;
 
@@ -365,6 +366,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
         }
         this.isLeaf = false;
         this.joins.add(join);
+        ((FromImpl)join).isJoin = true;
         return join;
     }
 
@@ -402,6 +404,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
         }
         this.isLeaf = false;
         this.joins.add(join);
+        ((FromImpl)join).isJoin = true;
         return join;
     }
 
@@ -423,6 +426,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
         }
         this.isLeaf = false;
         this.joins.add(join);
+        ((FromImpl)join).isJoin = true;
         return join;
     }
 
@@ -444,6 +448,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
         }
         this.isLeaf = false;
         this.joins.add(join);
+        ((FromImpl)join).isJoin = true;
         return join;
     }
 
@@ -465,6 +470,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
         }
         this.isLeaf = false;
         this.joins.add(join);
+        ((FromImpl)join).isJoin = true;
         return join;
     }
 
@@ -507,6 +513,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
                 }
             }
             this.joins.add(join);
+            ((FromImpl)join).isJoin = true;
             return join;
         }else{
             return join(((SingularAttribute)attribute), jt);
@@ -567,7 +574,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
         while(!stack.isEmpty()){
             FromImpl currentJoin = (FromImpl) stack.pop();
             stack.addAll(currentJoin.getJoins());
-            if (currentJoin.isLeaf){
+            if (currentJoin.isJoin) {
                     query.addJoin(currentJoin);
                 }
         }
@@ -578,10 +585,10 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
         Stack stack = new Stack();
         stack.push(this);
         while(!stack.isEmpty()){
-            FromImpl currentJoin = (FromImpl) stack.pop();
-            stack.addAll(currentJoin.getFetches());
-            if (currentJoin.isLeaf){
-                    fetches.add(currentJoin.getCurrentNode());
+            FromImpl currentFetch = (FromImpl) stack.pop();
+            stack.addAll(currentFetch.getFetches());
+            if (currentFetch.isFetch) {//currentJoin.isLeaf){
+                    fetches.add(currentFetch.getCurrentNode());
                 }
         }
         return fetches;

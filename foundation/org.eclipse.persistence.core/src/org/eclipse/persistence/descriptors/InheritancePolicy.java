@@ -1339,7 +1339,7 @@ public class InheritancePolicy implements Serializable, Cloneable {
         // referenceClass = Project => joinedMappingIndexes(0) = Map {SmallProject -> 6; LargeProject -> 8}.
         // These maps are populated in the loop below, and set into the main query joinedMappingIndexes.
         HashMap joinedMappingIndexes = null;
-        if (query.hasJoining()) {
+        if (query.hasJoining() && query.getJoinedAttributeManager().hasJoinedExpressions()) {
             joinedMappingIndexes = new HashMap();
         }
         ClassDescriptor rootDescriptor = query.getDescriptor();

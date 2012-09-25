@@ -41,7 +41,7 @@ public class FunctionExpressionImpl<X> extends ExpressionImpl<X>{
     protected <T> FunctionExpressionImpl (Metamodel metamodel, Class<X> resultClass, org.eclipse.persistence.expressions.Expression expressionNode, List<Expression<?>> compoundExpressions){
         super(metamodel, resultClass, expressionNode);
         if (compoundExpressions != null){
-            this.expressions = new ArrayList(compoundExpressions);
+            this.expressions = compoundExpressions;
         }else{
             this.expressions = new ArrayList();
         }
