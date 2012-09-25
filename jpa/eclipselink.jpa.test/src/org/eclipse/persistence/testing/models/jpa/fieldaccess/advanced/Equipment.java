@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -31,7 +33,7 @@ import static javax.persistence.GenerationType.TABLE;
     query="select * from CMP3_FA_ADV_EQUIP",
     resultClass=org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Equipment.class
 )
-public class Equipment  {
+public class Equipment implements Serializable  {
 	@Id
     @GeneratedValue(strategy=TABLE, generator="FA_EQUIP_TABLE_GENERATOR")
 	@TableGenerator(

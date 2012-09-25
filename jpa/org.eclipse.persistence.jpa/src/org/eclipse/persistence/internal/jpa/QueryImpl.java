@@ -332,12 +332,12 @@ public class QueryImpl {
         if ((this.queryName != null) && (this.databaseQuery == null)) {
             // need error checking and appropriate exception for non-existing
             // query
-            this.databaseQuery = this.entityManager.getDatabaseSession().getQuery(this.queryName);
+            this.databaseQuery = this.entityManager.getAbstractSession().getQuery(this.queryName);
             if (this.databaseQuery != null) {
                 if (!this.databaseQuery.isPrepared()) {
                     // prepare the query before cloning, this ensures we do not
                     // have to continually prepare on each usage
-                    this.databaseQuery.checkPrepare(this.entityManager.getDatabaseSession(), new DatabaseRecord());
+                    this.databaseQuery.checkPrepare(this.entityManager.getAbstractSession(), new DatabaseRecord());
                 }
             } else {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("unable_to_find_named_query", new Object[] { this.queryName }));
@@ -682,7 +682,7 @@ public class QueryImpl {
      */
     protected void setHintInternal(String hintName, Object value) {
         cloneSharedQuery();
-        ClassLoader loader = getEntityManager().getDatabaseSession().getLoader();
+        ClassLoader loader = getEntityManager().getAbstractSession().getLoader();
         DatabaseQuery hintQuery = QueryHintsHandler.apply(hintName, value, getDatabaseQueryInternal(), loader, (AbstractSession) getActiveSession());
         if (hintQuery != null) {
             setDatabaseQuery(hintQuery);

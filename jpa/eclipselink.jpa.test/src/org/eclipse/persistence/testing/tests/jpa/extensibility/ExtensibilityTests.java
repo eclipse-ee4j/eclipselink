@@ -20,7 +20,6 @@ import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.persistence.PersistenceException;
 
 import junit.framework.Test;
@@ -37,24 +36,19 @@ import org.eclipse.persistence.testing.models.jpa.extensibility.PhoneNumber;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.QueryHints;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.internal.descriptors.VirtualAttributeMethodInfo;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryDelegate;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider;
-import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl;
 import org.eclipse.persistence.internal.sessions.coordination.MetadataRefreshCommand;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.jpa.JpaEntityManagerFactory;
-import org.eclipse.persistence.jpa.PersistenceProvider;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
-import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.extensibility.ExtensibilityTableCreator;
-import org.eclipse.persistence.testing.tests.jpa.relationships.ExpressionJUnitTestSuite;
 
 public class ExtensibilityTests extends JUnitTestCase {
     
@@ -518,7 +512,7 @@ public class ExtensibilityTests extends JUnitTestCase {
             properties.put(PersistenceUnitProperties.DEPLOY_ON_STARTUP, "true");
             MetadataRefreshCommand command = new MetadataRefreshCommand(properties);
 
-            AbstractSession session = delegate.getDatabaseSession();
+            AbstractSession session = delegate.getAbstractSession();
             command.executeWithSession(session);
 
             em = emf.createEntityManager();

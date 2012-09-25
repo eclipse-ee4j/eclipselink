@@ -36,7 +36,7 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
     protected int maxSize;
 
     /** PERF: Store the descriptor to allow lastAccessed cache lookup optimization. */
-    protected ClassDescriptor descriptor;
+    protected transient ClassDescriptor descriptor;
     
     /** Is this identity map within an IsolatedClientSession */
     protected boolean isIsolated;
@@ -432,6 +432,9 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
      * Return the class that this is the map for.
      */
     public Class getDescriptorClass() {
+        if (descriptor == null) {
+            return null;
+        }
         return descriptor.getJavaClass();
     }
     

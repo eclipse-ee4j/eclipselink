@@ -102,7 +102,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     /**
      * References the DatabaseSession that this deployment is using.
      */
-    protected DatabaseSessionImpl databaseSession;
+    protected AbstractSession databaseSession;
 
     /**
      * References to the parent factory that has created this entity manager.
@@ -295,7 +295,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      *            existence, or errors with the specified session.
      */
     public EntityManagerImpl(String sessionName) {
-        this((DatabaseSessionImpl) SessionManager.getManager().getSession(sessionName), null);
+        this(SessionManager.getManager().getSession(sessionName), null);
     }
 
     /** 
@@ -340,7 +340,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * @param databaseSession
      *            the databaseSession assigned to this deployment.
      */
-    public EntityManagerImpl(DatabaseSessionImpl databaseSession) {
+    public EntityManagerImpl(AbstractSession databaseSession) {
         this(databaseSession, null);
     }
 
@@ -354,16 +354,8 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      *            passed into this EntityManager, but there are currently no
      *            such properties implemented
      */
-    public EntityManagerImpl(DatabaseSessionImpl databaseSession, Map properties) {
-        this.databaseSession = databaseSession;
-        this.referenceMode = ReferenceMode.HARD;
-        this.flushMode = FlushModeType.AUTO;
-        this.flushClearCache = FlushClearCache.DEFAULT;
-        this.persistOnCommit = true;
-        this.commitWithoutPersistRules = false;
-        this.isOpen = true;
-        this.cacheStoreBypass = false;
-        initialize(properties);
+    public EntityManagerImpl(AbstractSession databaseSession, Map properties) {
+        this(new EntityManagerFactoryImpl(databaseSession).unwrap(), properties);
     }
 
     /**
@@ -378,7 +370,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      */
     public EntityManagerImpl(EntityManagerFactoryDelegate factory, Map properties) {
         this.factory = factory;
-        this.databaseSession = factory.getDatabaseSession();
+        this.databaseSession = factory.getAbstractSession();
         this.beginEarlyTransaction = factory.getBeginEarlyTransaction();
         this.closeOnCommit = factory.getCloseOnCommit();
         this.flushMode = factory.getFlushMode();
@@ -1295,7 +1287,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             propertyValue = this.properties.get(name);
         }
         if (propertyValue == null) {
-            propertyValue = this.factory.getDatabaseSession().getProperty(name);
+            propertyValue = this.factory.getAbstractSession().getProperty(name);
         }
         return propertyValue;
     }
@@ -1393,6 +1385,13 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * Return the underlying database session
      */
     public DatabaseSessionImpl getDatabaseSession() {
+        return (DatabaseSessionImpl)this.databaseSession;
+    }
+
+    /**
+     * Return the underlying database session
+     */
+    public AbstractSession getAbstractSession() {
         return this.databaseSession;
     }
 
@@ -1874,7 +1873,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
                 // currently this can't happen - the databaseSession is either ServerSession or SessionBroker. 
                 client = this.databaseSession;
             }
-            this.extendedPersistenceContext = new RepeatableWriteUnitOfWork(client, this.referenceMode);
+            this.extendedPersistenceContext = client.acquireRepeatableWriteUnitOfWork(this.referenceMode);
             this.extendedPersistenceContext.setResumeUnitOfWorkOnTransactionCompletion(!this.closeOnCommit);
             this.extendedPersistenceContext.setShouldDiscoverNewObjects(this.persistOnCommit);
             this.extendedPersistenceContext.setDiscoverUnregisteredNewObjectsWithoutPersist(this.commitWithoutPersistRules);
@@ -2628,7 +2627,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * @since Java Persistence API 2.0
      */
     public Map<String, Object> getProperties() {
-        Map sessionMap = new HashMap(this.getDatabaseSession().getProperties());
+        Map sessionMap = new HashMap(getAbstractSession().getProperties());
         if (this.properties != null) {
             sessionMap.putAll(this.properties);
         }
@@ -2675,7 +2674,9 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
                 return (T) this.getUnitOfWork();
             } else if (cls.equals(JpaEntityManager.class)) {
                 return (T) this;
-            } else if (cls.equals(Session.class) || cls.equals(AbstractSession.class) || cls.equals(DatabaseSession.class) || cls.equals(DatabaseSessionImpl.class)) {            
+            } else if (cls.equals(Session.class) || cls.equals(AbstractSession.class)) {            
+                return (T) this.getAbstractSession();
+            } else if (cls.equals(DatabaseSession.class) || cls.equals(DatabaseSessionImpl.class)) {            
                 return (T) this.getDatabaseSession();
             } else if (cls.equals(Server.class) || cls.equals(ServerSession.class)) {            
                 return (T) this.getServerSession();

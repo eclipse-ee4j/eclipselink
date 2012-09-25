@@ -12,15 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.fieldaccess.relationships;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Collection;
-import java.util.Map;
-
 import javax.persistence.*;
-
-import static javax.persistence.GenerationType.*;
-import static javax.persistence.CascadeType.*;
 
 @Entity(name="FieldAccessCustomer2")
 @Table(name="CMP3_FIELDACCESS_CUSTOMER2")

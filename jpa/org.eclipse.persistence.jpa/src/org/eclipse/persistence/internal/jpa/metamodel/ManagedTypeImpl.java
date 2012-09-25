@@ -129,8 +129,9 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
         this.descriptor = descriptor;
         // the metamodel field must be instantiated prior to any *AttributeImpl instantiation which will use the metamodel
         this.metamodel = metamodel;
-        // Cache the ManagedType on the descriptor 
-        descriptor.setProperty(getClass().getName(), this);
+        // Cache the ManagedType on the descriptor - avoid doing this, use metamodel map instead.
+        // descriptor.setProperty(getClass().getName(), this);
+        metamodel.getManagedTypesMap().put(descriptor.getJavaClass(), this);
         // Note: Full initialization of the ManagedType occurs during MetamodelImpl.initialize() after all types are instantiated
     }
 
@@ -412,7 +413,7 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
      */
     protected static ManagedTypeImpl<?> create(MetamodelImpl metamodel, ClassDescriptor descriptor) {
         // Get the ManagedType property on the descriptor if it exists
-        ManagedTypeImpl<?> managedType = (ManagedTypeImpl<?>) descriptor.getProperty(ManagedTypeImpl.class.getName());
+        ManagedTypeImpl<?> managedType = metamodel.getManagedTypesMap().get(descriptor.getJavaClass());
         // Create an Entity, Embeddable or MappedSuperclass
         if (null == managedType) {            
             // The descriptor can be one of NORMAL:0, INTERFACE:1 (not supported), AGGREGATE:2 or AGGREGATE_COLLECTION:3

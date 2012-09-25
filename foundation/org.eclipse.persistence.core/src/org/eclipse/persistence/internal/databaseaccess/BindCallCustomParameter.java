@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.databaseaccess;
 
+import java.io.Serializable;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Array;
@@ -42,7 +43,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  * <ul>
  * </ul>
  */
-public class BindCallCustomParameter {
+public class BindCallCustomParameter implements Serializable {
     /**
      * Return if unwrapped connection should be used. 
      */

@@ -12,7 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.fieldaccess.relationships;
 
-public class CustomerDetails 
+public class CustomerDetails implements java.io.Serializable
 {
     private Integer custId;
     private int orderCount;

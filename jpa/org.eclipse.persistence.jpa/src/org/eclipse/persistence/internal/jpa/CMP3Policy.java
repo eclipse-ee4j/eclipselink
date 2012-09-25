@@ -26,6 +26,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa;
 
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.security.AccessController;
@@ -63,11 +64,11 @@ import org.eclipse.persistence.mappings.OneToOneMapping;
 public class CMP3Policy extends CMPPolicy {
 
     /** Stores the fields for this classes compound primary key class if required. */
-    protected KeyElementAccessor[] keyClassFields;
+    protected transient KeyElementAccessor[] keyClassFields;
 
     /** Used to look up the KeyElementAccessor for a specific DatabaseField, used for 
       resolving DerivedIds */
-    protected HashMap<DatabaseField,KeyElementAccessor> fieldToAccessorMap;
+    protected transient HashMap<DatabaseField,KeyElementAccessor> fieldToAccessorMap;
     
     // Store the primary key class name
     protected String pkClassName;
@@ -116,6 +117,7 @@ public class CMP3Policy extends CMPPolicy {
      * INTERNAL:
      * Clone the CMP3Policy
      */
+    @Override
     public CMP3Policy clone() {
         CMP3Policy policy = new CMP3Policy();
         policy.setPrimaryKeyClassName(getPKClassName());
@@ -130,6 +132,7 @@ public class CMP3Policy extends CMPPolicy {
      * with class names to a project with classes.
      * @param classLoader 
      */
+    @Override
     public void convertClassNamesToClasses(ClassLoader classLoader){
         if(getPKClassName() != null){
             try{
@@ -155,6 +158,7 @@ public class CMP3Policy extends CMPPolicy {
      * INTERNAL:
      * Return if this policy is for CMP3.
      */
+    @Override
     public boolean isCMP3Policy() {
         return true;
     }
@@ -191,6 +195,7 @@ public class CMP3Policy extends CMPPolicy {
     /**
      * INTERNAL:
      */
+    @Override
     public Object getPKClassInstance() {
         try {
             return getPKClass().newInstance();
@@ -301,6 +306,7 @@ public class CMP3Policy extends CMPPolicy {
      *            corresponding pk fields
      * @return Object
      */
+    @Override
     public Object createBeanUsingKey(Object key, AbstractSession session) {
         try {
             Object bean = this.getDescriptor().getInstantiationPolicy().buildNewInstance();
@@ -430,7 +436,9 @@ public class CMP3Policy extends CMPPolicy {
                         } else if (mapping.isOneToOneMapping()) {
                             ClassDescriptor refDescriptor = mapping.getReferenceDescriptor();
                             // ensure the referenced descriptor was initialized
-                            refDescriptor.initialize(session);
+                            if (!session.isRemoteSession()) {
+                                refDescriptor.initialize(session);
+                            }
                             CMPPolicy refPolicy = refDescriptor.getCMPPolicy();
                             setPKClass(refPolicy.getPKClass());
                         } 
@@ -440,7 +448,9 @@ public class CMP3Policy extends CMPPolicy {
                         if (mapping.isOneToOneMapping()){
                             ClassDescriptor refDescriptor = mapping.getReferenceDescriptor();
                             // ensure the referenced descriptor was initialized
-                            refDescriptor.initialize(session);
+                            if (!session.isRemoteSession()) {
+                                refDescriptor.initialize(session);
+                            }
                             CMPPolicy refPolicy = refDescriptor.getCMPPolicy();
                             if ((refPolicy!=null) && refPolicy.isCMP3Policy() && (refPolicy.getPKClass() == currentKeyClass)){
                                 //Since the ref pk class is our pk class, get the accessor we need to pull the value out of the PK class for our field
@@ -453,56 +463,56 @@ public class CMP3Policy extends CMPPolicy {
                                 break;
                             }
                         }
-
-	                    try {
-	                    	pkAttributes[i] = new FieldAccessor(getField(currentKeyClass, fieldName), fieldName, field, mapping, currentKeyClass != keyClass);
-	                        fieldToAccessorMap.put(field, pkAttributes[i]);
-	                        noSuchElementException = null;
-	                    } catch (NoSuchFieldException ex) {
-	                    	String getMethodName = null; 
-	                        String setMethodName = null; 
-	                        if(mapping.isObjectReferenceMapping() && ((ObjectReferenceMapping)mapping).getIndirectionPolicy().isWeavedObjectBasicIndirectionPolicy()) {
-	                        	WeavedObjectBasicIndirectionPolicy weavedIndirectionPolicy = (WeavedObjectBasicIndirectionPolicy)((ObjectReferenceMapping)mapping).getIndirectionPolicy();
-	                            if (weavedIndirectionPolicy.hasUsedMethodAccess()) {
-	                            	getMethodName = weavedIndirectionPolicy.getGetMethodName();
-	                                setMethodName = weavedIndirectionPolicy.getSetMethodName();
-	                            }
-	                        } else {
-	                        	getMethodName = mapping.getGetMethodName(); 
-	                            setMethodName = mapping.getSetMethodName(); 
-	                        }
-	                        if (getMethodName != null) {
-	                        	// Must be a property.
-	                            try {
-	                            	Method getMethod = null;
-	                                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-	                                	try {
-	                                		getMethod = AccessController.doPrivileged(new PrivilegedGetMethod(currentKeyClass, getMethodName, new Class[] {}, true));
-	                                	} catch (PrivilegedActionException exception) {
-	                                		throw (NoSuchMethodException)exception.getException();
-	                                    }
-	                                } else {
-	                                	getMethod = PrivilegedAccessHelper.getMethod(currentKeyClass, getMethodName, new Class[] {}, true);
-	                                }
-	                                Method setMethod = null;
-	                                if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-	                                	try {
-	                                		setMethod = AccessController.doPrivileged(new PrivilegedGetMethod(currentKeyClass, setMethodName, new Class[] {getMethod.getReturnType()}, true));
-	                                	} catch (PrivilegedActionException exception) {
-	                                		throw (NoSuchMethodException)exception.getException();
-	                                	}
-	                                } else {
-	                                	setMethod = PrivilegedAccessHelper.getMethod(currentKeyClass, setMethodName, new Class[] {getMethod.getReturnType()}, true);
-	                                }
-	                                pkAttributes[i] = new PropertyAccessor(getMethod, setMethod, fieldName, field, mapping, currentKeyClass != keyClass);
-	                                this.fieldToAccessorMap.put(field, pkAttributes[i]);
-	                                noSuchElementException = null;
-	                            } catch (NoSuchMethodException exs) {
-	                            	// not a field not a method, but a pk class is defined.  Check for other mappings
-	                                noSuchElementException = exs;
-	                            }
-	                        } else {
-	                        	noSuchElementException = ex;
+                        
+                        try {
+                            pkAttributes[i] = new FieldAccessor(getField(currentKeyClass, fieldName), fieldName, field, mapping, currentKeyClass != keyClass);
+                            fieldToAccessorMap.put(field, pkAttributes[i]);
+                            noSuchElementException = null;
+                        } catch (NoSuchFieldException ex) {
+                            String getMethodName = null; 
+                            String setMethodName = null; 
+                            if(mapping.isObjectReferenceMapping() && ((ObjectReferenceMapping)mapping).getIndirectionPolicy().isWeavedObjectBasicIndirectionPolicy()) {
+                                WeavedObjectBasicIndirectionPolicy weavedIndirectionPolicy = (WeavedObjectBasicIndirectionPolicy)((ObjectReferenceMapping)mapping).getIndirectionPolicy();
+                                if (weavedIndirectionPolicy.hasUsedMethodAccess()) {
+                                    getMethodName = weavedIndirectionPolicy.getGetMethodName();
+                                    setMethodName = weavedIndirectionPolicy.getSetMethodName();
+                                }
+                            } else {
+                                getMethodName = mapping.getGetMethodName(); 
+                                setMethodName = mapping.getSetMethodName(); 
+                            }
+                            if (getMethodName != null) {
+                                // Must be a property.
+                                try {
+                                    Method getMethod = null;
+                                    if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                                        try {
+                                            getMethod = AccessController.doPrivileged(new PrivilegedGetMethod(currentKeyClass, getMethodName, new Class[] {}, true));
+                                        } catch (PrivilegedActionException exception) {
+                                            throw (NoSuchMethodException)exception.getException();
+                                        }
+                                    } else {
+                                        getMethod = PrivilegedAccessHelper.getMethod(currentKeyClass, getMethodName, new Class[] {}, true);
+                                    }
+                                    Method setMethod = null;
+                                    if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                                        try {
+                                            setMethod = AccessController.doPrivileged(new PrivilegedGetMethod(currentKeyClass, setMethodName, new Class[] {getMethod.getReturnType()}, true));
+                                        } catch (PrivilegedActionException exception) {
+                                            throw (NoSuchMethodException)exception.getException();
+                                        }
+                                    } else {
+                                        setMethod = PrivilegedAccessHelper.getMethod(currentKeyClass, setMethodName, new Class[] {getMethod.getReturnType()}, true);
+                                    }
+                                    pkAttributes[i] = new PropertyAccessor(getMethod, setMethod, fieldName, field, mapping, currentKeyClass != keyClass);
+                                    this.fieldToAccessorMap.put(field, pkAttributes[i]);
+                                    noSuchElementException = null;
+                                } catch (NoSuchMethodException exs) {
+                                    // not a field not a method, but a pk class is defined.  Check for other mappings
+                                    noSuchElementException = exs;
+                                }
+                            } else {
+                                noSuchElementException = ex;
 	                        }
 	                            
 	                        // If we can't load the field or methods and the attribute accessor is a values
@@ -622,7 +632,7 @@ public class CMP3Policy extends CMPPolicy {
      * INTERNAL:
      * This class will be used when the element of the keyclass is a field
      */
-    private class FieldAccessor implements KeyElementAccessor {
+    private class FieldAccessor implements KeyElementAccessor, Serializable {
         protected Field field;
         protected String attributeName;
         protected DatabaseField databaseField;
@@ -766,9 +776,21 @@ public class CMP3Policy extends CMPPolicy {
      * INTERNAL:
      * Initialize the CMPPolicy settings.
      */
+    @Override
     public void initialize(ClassDescriptor descriptor, AbstractSession session) throws DescriptorException {
         super.initialize(descriptor, session);
         
         this.keyClassFields = initializePrimaryKeyFields(this.pkClass, session);
+    }
+    
+    /**
+     * INTERNAL:
+     * Initialize the CMPPolicy settings for remote sessions.
+     */
+    @Override
+    public void remoteInitialize(ClassDescriptor descriptor, AbstractSession session) throws DescriptorException {
+        super.remoteInitialize(descriptor, session);
+        
+        this.keyClassFields = initializePrimaryKeyFields(null, session);
     }
 }

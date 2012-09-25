@@ -95,7 +95,7 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
             this.queryName = queryDescription;
         } else {
             if (databaseQuery == null) {
-                databaseQuery = buildEJBQLDatabaseQuery(queryDescription, this.entityManager.getDatabaseSession());
+                databaseQuery = buildEJBQLDatabaseQuery(queryDescription, this.entityManager.getAbstractSession());
             }
         }
     }

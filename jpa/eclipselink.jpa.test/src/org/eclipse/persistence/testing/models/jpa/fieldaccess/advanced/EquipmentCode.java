@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced;
 
+import java.io.Serializable;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -41,10 +43,10 @@ import org.eclipse.persistence.annotations.ReadOnly;
         query="select * from CMP3_FA_ADV_EQUIP_CODE where CODE='C'",
         resultClass=org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.EquipmentCode.class)
 })
-public class EquipmentCode  {
-	@Id
+public class EquipmentCode implements Serializable  {
+    @Id
     @GeneratedValue(strategy=TABLE, generator="FA_EQUIP_CODE_TABLE_GENERATOR")
-	@TableGenerator(
+    @TableGenerator(
         name="FA_EQUIP_CODE_TABLE_GENERATOR", 
         table="CMP3_FA_ADV_EQUIP_CODE_SEQ", 
         pkColumnName="SEQ_NAME", 

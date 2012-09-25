@@ -42,7 +42,7 @@ public class WeavedObjectBasicIndirectionPolicy extends BasicIndirectionPolicy {
     /** Name of the initial set method. */
     protected String setMethodName = null;
     /** Lazily initialized set method based on the set method name. */
-    protected Method setMethod = null;
+    protected transient Method setMethod = null;
     /** Name of the initial get method. */
     protected String getMethodName;
     /** indicates whether the mapping has originally used method access */

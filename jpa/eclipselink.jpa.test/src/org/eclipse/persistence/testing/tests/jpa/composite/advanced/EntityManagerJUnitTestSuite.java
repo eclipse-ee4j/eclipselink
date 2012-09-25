@@ -38,7 +38,6 @@ import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Collection;
 import java.util.Map;
@@ -69,12 +68,9 @@ import javax.persistence.spi.ProviderUtil;
 
 import junit.framework.*;
 
-import org.eclipse.persistence.annotations.IdValidation;
 import org.eclipse.persistence.config.EntityManagerProperties;
 import org.eclipse.persistence.config.ExclusiveConnectionMode;
-import org.eclipse.persistence.indirection.IndirectContainer;
 import org.eclipse.persistence.indirection.IndirectList;
-import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.internal.indirection.BatchValueHolder;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
@@ -100,12 +96,10 @@ import org.eclipse.persistence.sessions.changesets.UnitOfWorkChangeSet;
 import org.eclipse.persistence.sessions.server.ClientSession;
 import org.eclipse.persistence.sessions.server.ConnectionPolicy;
 import org.eclipse.persistence.sessions.server.ConnectionPool;
-import org.eclipse.persistence.sessions.server.ReadConnectionPool;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.IntegrityException;
 import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.tools.schemaframework.PopulationManager;
 import org.eclipse.persistence.tools.schemaframework.SequenceObjectDefinition;
 import org.eclipse.persistence.tools.schemaframework.TableCreator;
 import org.eclipse.persistence.jpa.JpaEntityManagerFactory;
@@ -119,7 +113,6 @@ import org.eclipse.persistence.sessions.Connector;
 import org.eclipse.persistence.sessions.CopyGroup;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.DatasourceLogin;
-import org.eclipse.persistence.sessions.DefaultConnector;
 import org.eclipse.persistence.sessions.JNDIConnector;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.SessionEvent;
@@ -130,7 +123,6 @@ import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.AggregateObjectMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.mappings.OneToManyMapping;
 import org.eclipse.persistence.config.CacheUsage;
 import org.eclipse.persistence.config.CacheUsageIndirectionPolicy;
 import org.eclipse.persistence.config.CascadePolicy;
@@ -138,27 +130,20 @@ import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.PessimisticLock;
 import org.eclipse.persistence.config.QueryType;
-import org.eclipse.persistence.config.ReferenceMode;
 import org.eclipse.persistence.config.ResultSetConcurrency;
 import org.eclipse.persistence.config.ResultSetType;
 import org.eclipse.persistence.config.ResultType;
-import org.eclipse.persistence.config.SessionCustomizer;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.descriptors.DescriptorEvent;
-import org.eclipse.persistence.descriptors.DescriptorEventAdapter;
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
 import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
-import org.eclipse.persistence.descriptors.changetracking.ObjectChangePolicy;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
-import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.descriptors.PersistenceEntity;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.internal.jpa.jdbc.DataSourceImpl;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
-import org.eclipse.persistence.internal.sessions.DirectToFieldChangeRecord;
 import org.eclipse.persistence.internal.sessions.RepeatableWriteUnitOfWork;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.internal.weaving.PersistenceWeaved;
@@ -174,7 +159,6 @@ import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
 import org.eclipse.persistence.testing.framework.TestProblemException;
 import org.eclipse.persistence.testing.models.jpa.composite.advanced.CompositeEventListener;
-import org.eclipse.persistence.testing.models.jpa.composite.advanced.Customizer;
 import org.eclipse.persistence.testing.models.jpa.composite.advanced.EmployeePopulator;
 import org.eclipse.persistence.testing.models.jpa.composite.advanced.member_1.*;
 import org.eclipse.persistence.testing.models.jpa.composite.advanced.member_2.*;
@@ -550,14 +534,14 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                     // first member[i]EventListener.preLogin(session[i]) 
                     assertTrue(errorMsg+"memberListener(PreLogin(member))", 
                             handling.getEvent().getEventCode() == SessionEvent.PreLogin &&
-                            setSessions.contains((ServerSession)handling.getEvent().getSession()) &&
+                            setSessions.contains(handling.getEvent().getSession()) &&
                             handling.getListener() == sessionListeners.get(handling.getEvent().getSession())
                             ); 
                 } else {
                     // then compositeEventListener.preLogin(session[i]) 
                     assertTrue(errorMsg+"compositeListener(PreLogin(member))", 
                             handling.getEvent().getEventCode() == SessionEvent.PreLogin &&
-                            setSessions.contains((ServerSession)handling.getEvent().getSession()) &&
+                            setSessions.contains(handling.getEvent().getSession()) &&
                             handling.getListener() == compositeListener
                             ); 
                 }
@@ -566,14 +550,14 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                     // first member[i]EventListener.postLogin(session[i]) 
                     assertTrue(errorMsg+"memberListener(PostLogin(member))", 
                             handling.getEvent().getEventCode() == SessionEvent.PostLogin &&
-                            setSessions.contains((ServerSession)handling.getEvent().getSession()) &&
+                            setSessions.contains(handling.getEvent().getSession()) &&
                             handling.getListener() == sessionListeners.get(handling.getEvent().getSession())
                             ); 
                 } else {
                     // then compositeEventListener.postLogin(session[i]) 
                     assertTrue("compositeListener(PostLogin(member))", 
                             handling.getEvent().getEventCode() == SessionEvent.PostLogin &&
-                            setSessions.contains((ServerSession)handling.getEvent().getSession()) &&
+                            setSessions.contains(handling.getEvent().getSession()) &&
                             handling.getListener() == compositeListener
                             ); 
                 }
@@ -4947,7 +4931,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         try {
             beginTransaction(em);
             EntityManagerImpl emi = (EntityManagerImpl) em.getDelegate();
-            DatabaseSessionImpl session = emi.getDatabaseSession();
+            AbstractSession session = emi.getDatabaseSession();
             SessionBroker broker = emi.getSessionBroker();
             UnitOfWork uow = emi.getUnitOfWork();
             JpaEntityManager jem = emi;

@@ -55,10 +55,10 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
 public class JoinedAttributeManager implements Cloneable, Serializable {
     
     /** Stores AggregateObjectMapping expressions used within local join expressions */
-    protected List<DatabaseMapping> joinedAggregateMappings = new ArrayList(0);
+    protected transient List<DatabaseMapping> joinedAggregateMappings = new ArrayList(0);
     
     /** indexed list of mappings corresponding to */
-    protected List<DatabaseMapping> joinedAttributeMappings = new ArrayList(0);
+    protected transient List<DatabaseMapping> joinedAttributeMappings = new ArrayList(0);
 
     /** Stores the joined attributes added through the query */
     protected List<Expression> joinedAttributeExpressions;

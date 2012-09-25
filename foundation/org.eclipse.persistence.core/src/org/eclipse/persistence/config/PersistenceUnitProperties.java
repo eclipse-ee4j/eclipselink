@@ -1530,7 +1530,7 @@ public class PersistenceUnitProperties {
      * property configures whether to enable the copying of all descriptor named
      * queries to the session to be usable from the entity manager.
      * <p>
-     * Default: "true".
+     * Default: "false".
      */
     public static final String INCLUDE_DESCRIPTOR_QUERIES = "eclipselink.session.include.descriptor.queries";
 
@@ -1781,7 +1781,7 @@ public class PersistenceUnitProperties {
     public static final String METADATA_SOURCE_RCM_COMMAND = "eclipselink.metadata-source.send-refresh-command";
     
     /**
-     * The property <code>"eclipselink.metadata-repository.xml.file"</code>
+     * The property <code>"eclipselink.metadata-source.xml.file"</code>
      * 
      * <p>Specifies the name of the metadata repository xml file to read from using classloader to find the resource</p>
      * 
@@ -1793,7 +1793,7 @@ public class PersistenceUnitProperties {
     public static final String METADATA_SOURCE_XML_FILE = "eclipselink.metadata-source.xml.file";
     
     /**
-     * The property <code>"eclipselink.metadata-repository.xml.URL"</code>
+     * The property <code>"eclipselink.metadata-source.xml.URL"</code>
      * 
      * <p>Specifies the name of the metadata repository xml URL to read from.</p>
      * 
@@ -1805,7 +1805,7 @@ public class PersistenceUnitProperties {
     public static final String METADATA_SOURCE_XML_URL = "eclipselink.metadata-source.xml.url";
 
     /**
-     * The property <code>"eclipselink.metadata-repository.properties.file"</code>
+     * The property <code>"eclipselink.metadata-source.properties.file"</code>
      * 
      * <p>Specifies the name of the metadata repository properties file to read from using classloader to find the resource</p>
      * 

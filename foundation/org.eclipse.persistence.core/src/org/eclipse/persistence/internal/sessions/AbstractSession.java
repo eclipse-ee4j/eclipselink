@@ -22,9 +22,12 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.sessions;
 
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
 import java.util.*;
 import java.io.*;
 
+import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.ReferenceMode;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.DescriptorEvent;
@@ -63,6 +66,9 @@ import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.security.PrivilegedClassForName;
+import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.sequencing.Sequencing;
 import org.eclipse.persistence.sessions.coordination.CommandProcessor;
 import org.eclipse.persistence.sessions.coordination.CommandManager;
@@ -251,6 +257,9 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
 
     /** Stores the set of multitenant context properties this session requires **/
     protected Set<String> multitenantContextProperties;
+
+    /** Store the query builder used to parse JPQL. */
+    transient protected JPAQueryBuilder queryBuilder;
     
     /**
      * INTERNAL:
@@ -313,7 +322,64 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
      * Return the query builder used to parser JPQL.
      */
     public JPAQueryBuilder getQueryBuilder() {
-        return getParent().getQueryBuilder();
+        if (this.queryBuilder == null) {
+            AbstractSession parent = getParent();
+            if (parent != null) {
+                this.queryBuilder = parent.getQueryBuilder();
+            } else {
+                this.queryBuilder = buildDefaultQueryBuilder();
+            }
+        }
+        return this.queryBuilder;
+    }
+    
+    /**
+     * INTERNAL
+     * Set the query builder used to parser JPQL.
+     */
+    public void setQueryBuilder(JPAQueryBuilder queryBuilder) {
+        this.queryBuilder = queryBuilder;
+    }
+    
+    /**
+     * INTERNAL
+     * Build the JPQL builder based on session properties.
+     */
+    protected JPAQueryBuilder buildDefaultQueryBuilder() {
+        String queryBuilderClassName = (String)getProperty(PersistenceUnitProperties.JPQL_PARSER);
+        if (queryBuilderClassName == null) {
+            queryBuilderClassName = "org.eclipse.persistence.internal.jpa.jpql.HermesParser";
+            //queryBuilderClassName = "org.eclipse.persistence.queries.ANTLRQueryBuilder";
+        }
+        String validation = (String)getProperty(PersistenceUnitProperties.JPQL_VALIDATION);
+        JPAQueryBuilder builder = null;
+        try {
+            Class parserClass = null;
+            // use class.forName() to avoid loading parser classes for JAXB
+            // Use Class.forName not thread class loader to avoid class loader issues.
+            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                try {
+                    parserClass = (Class)AccessController.doPrivileged(new PrivilegedClassForName(queryBuilderClassName));
+                } catch (PrivilegedActionException exception) {
+                }
+            } else {
+                parserClass = PrivilegedAccessHelper.getClassForName(queryBuilderClassName);
+            }
+            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                try {
+                    builder = (JPAQueryBuilder)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(parserClass));
+                } catch (PrivilegedActionException exception) {
+                }
+            } else {
+                builder = (JPAQueryBuilder)PrivilegedAccessHelper.newInstanceFromClass(parserClass);
+            }
+        } catch (Exception e) {
+            throw new IllegalStateException("Could not load the JPQL parser class." /* TODO: Localize string */, e);
+        }
+        if (validation != null) {
+            builder.setValidationLevel(validation);
+        }
+        return builder;
     }
     
     /**
@@ -381,6 +447,17 @@ public abstract class AbstractSession implements org.eclipse.persistence.session
         unitOfWork.registerWithTransactionIfRequired();
 
         return unitOfWork;
+    }
+
+    /**
+     * PUBLIC:
+     * Return a repeatable write unit of work for this session.
+     * A repeatable write unit of work allows multiple writeChanges (flushes).
+     *
+     * @see RepeatableWriteUnitOfWork
+     */
+    public RepeatableWriteUnitOfWork acquireRepeatableWriteUnitOfWork(ReferenceMode referenceMode) {
+        return new RepeatableWriteUnitOfWork(this, referenceMode);
     }
 
     /**

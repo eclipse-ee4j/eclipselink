@@ -720,7 +720,7 @@ public abstract class JUnitTestCase extends TestCase {
      * Verifies that the object was merged to the cache, and written to the database correctly.
      */
     public static void verifyObjectInCacheAndDatabase(Object writtenObject, String persistenceUnit) {
-        DatabaseSessionImpl dbs = getDatabaseSession(persistenceUnit); 
+        AbstractSession dbs = getDatabaseSession(persistenceUnit); 
         Object readObject = dbs.readObject(writtenObject);
         if (!dbs.compareObjects(readObject, writtenObject)) {
             fail("Object from cache: " + readObject + " does not match object that was written: " + writtenObject + ". See log (on finest) for what did not match.");
@@ -743,7 +743,7 @@ public abstract class JUnitTestCase extends TestCase {
      * Compare objects.
      */
     public static void compareObjects(Object obj1, Object obj2, String persistenceUnit) {
-        DatabaseSessionImpl dbs = getDatabaseSession(persistenceUnit); 
+        AbstractSession dbs = getDatabaseSession(persistenceUnit); 
         if (!dbs.compareObjects(obj1, obj2)) {
             fail("Objects " + obj1 + " and " + obj2 + " are not equal. See log (on finest) for what did not match.");
         }
@@ -809,7 +809,7 @@ public abstract class JUnitTestCase extends TestCase {
      * Verifies that the object was deleted from the database correctly.
      */
     public void verifyDelete(Object writtenObject, String persistenceUnit) {
-        DatabaseSessionImpl dbs = getDatabaseSession(persistenceUnit);
+        AbstractSession dbs = getDatabaseSession(persistenceUnit);
         boolean ok;
         if (dbs.isServerSession()) {
             ok = ((ServerSession)dbs).acquireClientSession().verifyDelete(writtenObject);
@@ -844,9 +844,9 @@ public abstract class JUnitTestCase extends TestCase {
     }
 
     public static boolean isSelectForUpateSupported(String puName) {
-        DatabaseSessionImpl dbSession = getDatabaseSession(puName);
+        AbstractSession dbSession = getDatabaseSession(puName);
         if (dbSession.isBroker()) {
-            for(AbstractSession memberSession : ((SessionBroker)dbSession).getSessionsByName().values()) {
+            for (AbstractSession memberSession : ((SessionBroker)dbSession).getSessionsByName().values()) {
                 if (!isSelectForUpateSupported(memberSession.getPlatform())) {
                     return false;
                 }
@@ -876,7 +876,7 @@ public abstract class JUnitTestCase extends TestCase {
     }
 
     public static boolean isPessimisticWriteLockSupported(String puName) {
-        DatabaseSessionImpl dbSession = getDatabaseSession(puName);
+        AbstractSession dbSession = getDatabaseSession(puName);
         if (dbSession.isBroker()) {
             for(AbstractSession memberSession : ((SessionBroker)dbSession).getSessionsByName().values()) {
                 if (!isPessimisticWriteLockSupported(memberSession.getPlatform())) {
@@ -904,9 +904,9 @@ public abstract class JUnitTestCase extends TestCase {
      * PostgreSQL also supports NOWAIT, but doesn't support the outer joins used in the tests.
      */
     public static boolean isSelectForUpateNoWaitSupported(String puName) {
-        DatabaseSessionImpl dbSession = getDatabaseSession(puName);
+        AbstractSession dbSession = getDatabaseSession(puName);
         if (dbSession.isBroker()) {
-            for(AbstractSession memberSession : ((SessionBroker)dbSession).getSessionsByName().values()) {
+            for (AbstractSession memberSession : ((SessionBroker)dbSession).getSessionsByName().values()) {
                 if (!isSelectForUpateSupported(memberSession.getPlatform())) {
                     return false;
                 }

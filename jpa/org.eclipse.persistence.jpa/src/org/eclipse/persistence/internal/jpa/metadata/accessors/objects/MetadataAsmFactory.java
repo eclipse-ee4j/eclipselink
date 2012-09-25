@@ -86,7 +86,23 @@ public class MetadataAsmFactory extends MetadataFactory {
             // therefore, tag the MetadataClass as loadable false. This will be
             // used to determine if a class will be dynamically created or not.
             metadataClass = new MetadataClass(this, className, false);
-            metadataClass.setIsAccessible(false);
+            // If the class is a JDK class, then maybe there is a class loader issues,
+            // since it is a JDK class, just use reflection.
+            if ((className.length() > 5) && className.substring(0, 5).equals("java.")) {
+                try {
+                    Class reflectClass = Class.forName(className);
+                    if (reflectClass.getSuperclass() != null) {
+                        metadataClass.setSuperclassName(reflectClass.getSuperclass().getName());
+                    }
+                    for (Class reflectInterface : reflectClass.getInterfaces()) {
+                        metadataClass.addInterface(reflectInterface.getName());
+                    }
+                } catch (Exception failed) {
+                    metadataClass.setIsAccessible(false);                    
+                }
+            } else {
+                metadataClass.setIsAccessible(false);                
+            }
             addMetadataClass(metadataClass);
         } finally {
             try {

@@ -139,7 +139,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     protected Map<Object, Object> pessimisticLockedObjects;
 
     /** Used to store the list of locks that this UnitOfWork has acquired for this merge */
-    protected MergeManager lastUsedMergeManager;
+    protected transient MergeManager lastUsedMergeManager;
 
     /**
      * When in transaction batch read objects must use query local
@@ -279,7 +279,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     protected Map<DatabaseMapping, List<Object>> deletedPrivateOwnedObjects;
 
     /** temporarily holds a reference to a merge manager that is calling this UnitOfWork during merge **/
-    protected MergeManager mergeManagerForActiveMerge = null;
+    protected transient MergeManager mergeManagerForActiveMerge = null;
 
     /** Set of objects that were deleted by database cascade delete constraints. */
     protected Set<Object> cascadeDeleteObjects;
