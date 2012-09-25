@@ -1424,7 +1424,7 @@ public class ClassDescriptor implements Cloneable, Serializable {
                         throw ValidationException.classNotFoundWhileConvertingClassNames(getCopyPolicyClassName(), exception.getException());
                     }
                     try {
-                        newCopyPolicy = AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(copyPolicyClass));
+                        newCopyPolicy = (CopyPolicy)AccessController.doPrivileged(new PrivilegedNewInstanceFromClass(copyPolicyClass));
                     } catch (PrivilegedActionException exception) {
                         throw ValidationException.reflectiveExceptionWhileCreatingClassInstance(getCopyPolicyClassName(), exception.getException());
                     }
