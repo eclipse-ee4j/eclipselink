@@ -46,15 +46,22 @@ public class PrefixMapperNamespaceResolver extends NamespaceResolver {
 	        for(Object next:nestedResolver.getNamespaces()) {
 	            Namespace ns = (Namespace)next;
 	            String uri = ns.getNamespaceURI();
-	            String originalPrefix = ns.getPrefix();
+	            String existingPrefix = null;
+	            if(contextualNamespaces != null) {
+	                existingPrefix = contextualNamespaces.resolveNamespaceURI(uri);
+	            }
+	            //if there's already a prefix for this uri, don't bother adding it
+	            if(existingPrefix == null) {
+	                String originalPrefix = ns.getPrefix();
 	            
-	            //ask prefixMapper for a new prefix for this uri
-	            String prefix = prefixMapper.getPreferredPrefix(uri, originalPrefix, true);
+	                //ask prefixMapper for a new prefix for this uri
+	                String prefix = prefixMapper.getPreferredPrefix(uri, originalPrefix, true);
 	            
-	            if(prefix != null) {
-	                this.put(prefix, uri);
-	            } else {
-	                this.put(originalPrefix, uri);
+	                if(prefix != null) {
+	                    this.put(prefix, uri);
+	                } else {
+	                    this.put(originalPrefix, uri);
+	                }
 	            }
 	        }
 	        defaultUri = nestedResolver.getDefaultNamespaceURI();
@@ -79,6 +86,8 @@ public class PrefixMapperNamespaceResolver extends NamespaceResolver {
                 String prefix = prefixMapper.getPreferredPrefix(uri, null, true);
                 if(prefix != null) {
                     this.put(prefix, uri);
+                } else {
+                    this.put(this.generatePrefix(), uri);
                 }
             }
         }

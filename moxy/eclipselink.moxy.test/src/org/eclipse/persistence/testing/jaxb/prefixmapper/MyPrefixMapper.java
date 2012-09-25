@@ -22,7 +22,7 @@ public class MyPrefixMapper extends NamespacePrefixMapper {
         if(arg0.equals("someuri")) {
             return "newPrefix";
         }
-        if(arg0.equals(XMLConstants.SCHEMA_INSTANCE_PREFIX)) {
+        if(arg0.equals(XMLConstants.SCHEMA_INSTANCE_URL)) {
             return "xsi";
         }
         return arg1;
@@ -30,7 +30,7 @@ public class MyPrefixMapper extends NamespacePrefixMapper {
     
     @Override
     public java.lang.String[] getPreDeclaredNamespaceUris() {
-        return new String[] {"someuri", XMLConstants.SCHEMA_INSTANCE_URL, "my.uri"};
+        return new String[] {"extraUri"};
     }
     
     @Override
