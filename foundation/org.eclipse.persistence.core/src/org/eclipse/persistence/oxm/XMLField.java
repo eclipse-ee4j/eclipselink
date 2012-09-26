@@ -502,31 +502,36 @@ public class XMLField extends DatabaseField {
     }
 
     private void buildFragments(String xpathString) {
-        StringTokenizer st = new StringTokenizer(xpathString, "/");        
+        StringTokenizer st = new StringTokenizer(xpathString, "/", true);        
         String next;
         int i = 0;
         XPathFragment currentXPathFragment = null;
         XPathFragment nextXPathFragment = null;
 
-        //If the first character is a / we do not want the string tokenizer to get
-        //rid of it because it indicates that we doing something at the root.
-        if (xpathString.charAt(0) == '/') {
-            next = st.nextToken();
-            next = '/' + next;
-            currentXPathFragment = new XPathFragment(next);
-            setXPathFragment(currentXPathFragment);
-            currentXPathFragment.setXMLField(this);
-            i++;
-        }
-
         while (st.hasMoreTokens()) {
-            next = st.nextToken().intern();
+            next = st.nextToken();
             if (null != next) {
-                if (next.equals(XMLConstants.TEXT)) {
-                    nextXPathFragment = new XPathFragment(XMLConstants.TEXT);
+                if ("/".equals(next)) {
+                    if (0 == i) {
+                        next = "/" + st.nextToken();
+                    } else { 
+                        continue;
+                    }
+                }                   
+                if (next.contains("[") && !next.contains("]")) {
+                    StringBuilder sb = new StringBuilder(next);
+                    String more;
+                    while (st.hasMoreTokens()) {
+                        more = st.nextToken();
+                        sb.append(more);
+                        if (more.contains("]"))
+                            break;
+                    }   
+                    next = sb.toString().intern();
                 } else {
-                    nextXPathFragment = new XPathFragment(next);
+                    next = next.intern();
                 }
+                nextXPathFragment = new XPathFragment(next);
                 if (0 == i) {
                     setXPathFragment(nextXPathFragment);
                 } else {
