@@ -715,6 +715,9 @@ public class FetchGroupManager implements Cloneable, java.io.Serializable {
      * reinit the query manager's queries if they exist
      */
     public void initialize(AbstractSession session) throws DescriptorException {
+        if (this.entityFetchGroups == null) {
+            this.entityFetchGroups = new ConcurrentHashMap();
+        }
         if (!(Helper.classImplementsInterface(getDescriptor().getJavaClass(), ClassConstants.FetchGroupTracker_class))) {
             //to use fetch group, the domain class must implement FetchGroupTracker interface
             session.getIntegrityChecker().handleError(DescriptorException.needToImplementFetchGroupTracker(getDescriptor().getJavaClass(), getDescriptor()));
