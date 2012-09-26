@@ -13,9 +13,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.transaction.sunas;
 
-import javax.transaction.TransactionManager;
-
-import org.eclipse.persistence.transaction.JTATransactionController;
+import org.eclipse.persistence.transaction.glassfish.GlassfishTransactionController;
 
 /**
  * <p>
@@ -25,22 +23,12 @@ import org.eclipse.persistence.transaction.JTATransactionController;
  * transactions in SunAS9. The JTA TransactionManager must be set on the instance.
  * <p>
  * @see org.eclipse.persistence.transaction.JTATransactionController
+ * 
+ * replaced by GlassfishTransactionController
  */
-public class SunAS9TransactionController extends JTATransactionController {
-    // Use "java:appserver/TransactionManager" instead of java:pm/TransactionManager
-    // as the former one is available in ACC as well as server.
-    // See com.sun.enterprise.naming.java.javaURLContext in GlassFish appserv-core
-    public static final String JNDI_TRANSACTION_MANAGER_NAME = "java:appserver/TransactionManager";
+public class SunAS9TransactionController extends GlassfishTransactionController {
 
     public SunAS9TransactionController() {
         super();
-    }
-
-    /**
-     * INTERNAL:
-     * Obtain and return the JTA TransactionManager on this platform
-     */
-    protected TransactionManager acquireTransactionManager() throws Exception {
-        return (TransactionManager)jndiLookup(JNDI_TRANSACTION_MANAGER_NAME);
     }
 }
