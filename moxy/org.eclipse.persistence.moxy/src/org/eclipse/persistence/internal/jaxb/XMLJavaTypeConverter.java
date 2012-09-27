@@ -147,7 +147,7 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
             }
             return adapter.unmarshal(toConvert);
         } catch (Exception ex) {
-            throw ConversionException.couldNotBeConverted(dataValue, boundType);
+            throw ConversionException.couldNotBeConverted(dataValue, boundType, ex);
         }
     }
 
