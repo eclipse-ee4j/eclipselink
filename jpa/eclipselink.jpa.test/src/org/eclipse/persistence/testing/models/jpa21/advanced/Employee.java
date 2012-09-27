@@ -10,6 +10,8 @@
  * Contributors:
  *     02/08/2012-2.4 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     09/27/2012-2.5 Guy Pelletier
+ *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  ******************************************************************************/   
 package org.eclipse.persistence.testing.models.jpa21.advanced;
 
@@ -76,12 +78,11 @@ import static javax.persistence.ParameterMode.REF_CURSOR;
         resultSetMappings={"EmployeeResultSetMapping", "AddressResultSetMapping", "ProjectResultSetMapping", "EmployeeConstructorResultSetMapping"}
     ),
     @NamedStoredProcedureQuery(
-        name="ReadUsingPositionalRefCursors",
-        procedureName="Read_Using_Pos_Cursor",
-        resultClasses={Employee.class, Address.class},
+        name="ReadUsingUnNamedRefCursor",
+        procedureName="Read_Using_UnNamed_Cursor",
+        resultClasses={Employee.class},
         parameters = {
-            @StoredProcedureParameter(mode=REF_CURSOR, type = void.class),
-            @StoredProcedureParameter(mode=REF_CURSOR, type = void.class)
+            @StoredProcedureParameter(mode=REF_CURSOR, type=void.class),
         }
     ),
     @NamedStoredProcedureQuery(
@@ -89,8 +90,8 @@ import static javax.persistence.ParameterMode.REF_CURSOR;
         procedureName="Read_Using_Named_Cursor",
         resultClasses={Employee.class, Address.class},
         parameters = {
-            @StoredProcedureParameter(mode=REF_CURSOR, name="CUR1", type = void.class),
-            @StoredProcedureParameter(mode=REF_CURSOR, name="CUR2", type = void.class)
+            @StoredProcedureParameter(mode=REF_CURSOR, name="CUR1", type=void.class),
+            @StoredProcedureParameter(mode=REF_CURSOR, name="CUR2", type=void.class)
         }
     )
 })
