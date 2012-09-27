@@ -1677,11 +1677,24 @@ public class PersistenceUnitProperties {
     public static final String ORM_SCHEMA_VALIDATION = "eclipselink.orm.validate.schema";
 
     /**
-     * The <code>"eclipselink.deploy-on-startup"</code> property allows deployment
-     * to be configured to occur on startup (creation of the EntityManagerFactory),
-     * instead of occurring the first time an EntityManager is created.
-     * This may increase startup time of a JavaEE server, but will avoid the first request from hanging
-     * as the persistence unit is deployed.
+     * The <code>"eclipselink.deploy-on-startup"</code> property controls whether
+     * EclipseLink creates the persistence unit when the application starts up, or
+     * when the persistence unit is first actually accessed by the application.
+     *
+     * Setting this to true causes the persistence unit to be created when the
+     * EntityManagerFactory is created, usually during deployment to a Java EE
+     * 7 container or servlet container.  Enabling this option may increase
+     * startup time of the container/server, but will prevent the first request
+     * to the application from pausing while the persistence unit is deployed.
+     *
+     * When this property is set to false the persistence unit is not
+     * initialized until the first EntityManager is created or until metadata
+     * is requested from the EntityManagerFactory. 
+     * 
+     * When set to False, there is a known issue with Fields of static metamodel 
+     * classes ("Entity_" classes) being null until the persistence unit is
+     * initialized. This behaviour won't affect applications unless they use 
+     * the static metamodel feature.  (See bug 383199)
      * <p>
      * Values: A boolean value of "True" or (default "False").
      */
