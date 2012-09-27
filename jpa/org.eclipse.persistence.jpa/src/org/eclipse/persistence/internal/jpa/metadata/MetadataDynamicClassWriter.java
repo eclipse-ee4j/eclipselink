@@ -18,6 +18,8 @@ import static org.eclipse.persistence.internal.libraries.asm.Opcodes.ALOAD;
 import static org.eclipse.persistence.internal.libraries.asm.Opcodes.ARETURN;
 import static org.eclipse.persistence.internal.libraries.asm.Opcodes.CHECKCAST;
 import static org.eclipse.persistence.internal.libraries.asm.Opcodes.INVOKESPECIAL;
+import static org.eclipse.persistence.internal.libraries.asm.Opcodes.POP;
+import static org.eclipse.persistence.internal.libraries.asm.Opcodes.RETURN;
 
 import org.eclipse.persistence.dynamic.DynamicClassWriter;
 import org.eclipse.persistence.internal.helper.ClassConstants;
@@ -36,6 +38,8 @@ import org.eclipse.persistence.internal.libraries.asm.Type;
  */
 public class MetadataDynamicClassWriter extends DynamicClassWriter {
 
+    private static final String LDYNAMIC_ENTITY = "Lorg/eclipse/persistence/dynamic/DynamicEntity;";
+    private static final String SET = "set";
     private static final String LJAVA_LANG_OBJECT = "Ljava/lang/Object;";
     private static final String LJAVA_LANG_STRING = "Ljava/lang/String;";
     private static final String DYNAMIC_EXCEPTION = "org/eclipse/persistence/exceptions/DynamicException";
@@ -60,15 +64,11 @@ public class MetadataDynamicClassWriter extends DynamicClassWriter {
     @Override
     protected void addMethods(ClassWriter cw, String parentClassType) {
         for (MappingAccessor accessor : getDescriptor().getMappingAccessors()) {
-            
-            // Create getter method name based on attribute name
-            char string[] = accessor.getAttributeName().toCharArray();
-            string[0] = Character.toUpperCase(string[0]);
-            String fullMethodName = GET + new String(string);
-
+            String propertyName = propertyName(accessor.getAttributeName());
             Type returnType = getAsmType(accessor);
 
-            MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, fullMethodName, "()" + returnType.getDescriptor(), null, new String[] { DYNAMIC_EXCEPTION });
+            // Add getter
+            MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, GET + propertyName, "()" + returnType.getDescriptor(), null, new String[] { DYNAMIC_EXCEPTION });
             mv.visitCode();
             mv.visitVarInsn(ALOAD, 0);
             mv.visitLdcInsn(accessor.getAttributeName());
@@ -76,6 +76,18 @@ public class MetadataDynamicClassWriter extends DynamicClassWriter {
             mv.visitTypeInsn(CHECKCAST, returnType.getInternalName());
             mv.visitInsn(ARETURN);
             mv.visitMaxs(2, 1);
+            mv.visitEnd();
+
+            // Add setter
+            mv = cw.visitMethod(ACC_PUBLIC, SET + propertyName, "(" + returnType.getDescriptor() + ")V", null, new String[] { DYNAMIC_EXCEPTION });
+            mv.visitCode();
+            mv.visitVarInsn(ALOAD, 0);
+            mv.visitLdcInsn("id");
+            mv.visitVarInsn(ALOAD, 1);
+            mv.visitMethodInsn(INVOKESPECIAL, parentClassType, SET, "(" + LJAVA_LANG_STRING + LJAVA_LANG_OBJECT + ")" + LDYNAMIC_ENTITY);
+            mv.visitInsn(POP);
+            mv.visitInsn(RETURN);
+            mv.visitMaxs(3, 2);
             mv.visitEnd();
         }
     }
@@ -113,5 +125,15 @@ public class MetadataDynamicClassWriter extends DynamicClassWriter {
         }
 
         return Type.getType("L" + attributeType.replace(".", "/") + ";");
+    }
+
+    /**
+     * Convert attribute name into property name to be used in get/set method
+     * names by upper casing first letter.
+     */
+    private String propertyName(String attributeName) {
+        char string[] = attributeName.toCharArray();
+        string[0] = Character.toUpperCase(string[0]);
+        return new String(string);
     }
 }
