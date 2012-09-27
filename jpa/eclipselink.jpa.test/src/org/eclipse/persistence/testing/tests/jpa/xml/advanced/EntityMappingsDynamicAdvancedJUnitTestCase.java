@@ -26,6 +26,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.jpa.xml.advanced;
 
+import java.lang.reflect.Method;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -37,6 +38,7 @@ import javax.persistence.EntityNotFoundException;
 import javax.persistence.Query;
 import javax.persistence.EntityManager;
 
+import junit.framework.Assert;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
@@ -46,9 +48,14 @@ import org.eclipse.persistence.descriptors.RelationalDescriptor;
 
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.dynamic.DynamicEntity;
+import org.eclipse.persistence.dynamic.DynamicType;
 
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.jpa.dynamic.JPADynamicHelper;
+import org.eclipse.persistence.mappings.CollectionMapping;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.DirectCollectionMapping;
+import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 
 import org.eclipse.persistence.queries.DoesExistQuery;
 
@@ -242,6 +249,9 @@ public class EntityMappingsDynamicAdvancedJUnitTestCase extends JUnitTestCase {
         
         suite.addTest(new EntityMappingsDynamicAdvancedJUnitTestCase("testDynamicEmbeddedId"));
         suite.addTest(new EntityMappingsDynamicAdvancedJUnitTestCase("testDynamicCompositeId"));
+        
+        suite.addTest(new EntityMappingsDynamicAdvancedJUnitTestCase("testEmployeeWeaving"));
+        suite.addTest(new EntityMappingsDynamicAdvancedJUnitTestCase("testAddressWeaving"));
         
         return suite;
     }
@@ -892,5 +902,65 @@ public class EntityMappingsDynamicAdvancedJUnitTestCase extends JUnitTestCase {
         } finally {
             closeEntityManager(em);
         }
+    }
+    
+    public void testEmployeeWeaving() throws Exception {
+        EntityManager em = createDynamicPUEntityManager();
+        JPADynamicHelper helper = new JPADynamicHelper(em);
+        DynamicType type = helper.getType("DynamicEmployee");
+
+        Assert.assertNotNull(type);
+        Assert.assertTrue(DynamicEntity.class.isAssignableFrom(type.getJavaClass()));
+
+        assertAccessors(type);
+    }
+
+    public void testAddressWeaving() throws Exception {
+        EntityManager em = createDynamicPUEntityManager();
+        JPADynamicHelper helper = new JPADynamicHelper(em);
+        DynamicType type = helper.getType("DynamicAddress");
+
+        Assert.assertNotNull(type);
+        Assert.assertTrue(DynamicEntity.class.isAssignableFrom(type.getJavaClass()));
+
+        assertAccessors(type);
+    }
+
+    /**
+     * Assert that all mappings have get/set methods matching mappings and their
+     * accessor classification types.
+     */
+    private void assertAccessors(DynamicType type) throws Exception {
+        for (DatabaseMapping mapping : type.getDescriptor().getMappings()) {
+            String propertyName = propertyName(mapping.getAttributeName());
+
+            @SuppressWarnings("unchecked")
+            Method method = mapping.getDescriptor().getJavaClass().getDeclaredMethod("get" + propertyName, new Class[0]);
+
+            Class<?> expectedReturnType = mapping.getAttributeClassification();
+            if (mapping.isCollectionMapping()) {
+                expectedReturnType = ((CollectionMapping) mapping).getContainerPolicy().getContainerClass();
+            }
+            if (expectedReturnType == null && mapping.isForeignReferenceMapping()) {
+                ForeignReferenceMapping frMapping = (ForeignReferenceMapping) mapping;
+                expectedReturnType = frMapping.getReferenceDescriptor().getJavaClass();
+            }
+            
+            Assert.assertNotNull("No classification for: " + mapping, expectedReturnType);
+
+            if (!expectedReturnType.isPrimitive()) {
+                Assert.assertTrue("Incorrect get" + propertyName + " return type: " + method.getReturnType(), method.getReturnType().isAssignableFrom(expectedReturnType));
+            }
+        }
+    }
+    
+    /**
+     * Convert attribute name into property name to be used in get/set method
+     * names by upper casing first letter.
+     */
+    private String propertyName(String attributeName) {
+        char string[] = attributeName.toCharArray();
+        string[0] = Character.toUpperCase(string[0]);
+        return new String(string);
     }
 }
