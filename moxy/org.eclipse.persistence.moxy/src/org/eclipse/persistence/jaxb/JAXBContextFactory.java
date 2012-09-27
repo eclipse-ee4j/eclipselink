@@ -47,6 +47,7 @@ import org.eclipse.persistence.jaxb.compiler.CompilerHelper;
 import org.eclipse.persistence.jaxb.compiler.XMLProcessor;
 import org.eclipse.persistence.jaxb.metadata.MetadataSource;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
+import org.eclipse.persistence.oxm.MediaType;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
@@ -376,9 +377,9 @@ public class JAXBContextFactory {
             	boolean isJSON = isJSONFormat(metadataBufferedReader);
             	StreamSource metadataSource = new StreamSource(metadataBufferedReader);
             	if(isJSON){
-            		return getXmlBindingsByMediaType(unmarshaller, metadataSource, classLoader, properties, "application/json");	
+            		return getXmlBindingsByMediaType(unmarshaller, metadataSource, classLoader, properties, MediaType.APPLICATION_JSON);	
             	}else{
-            		return getXmlBindingsByMediaType(unmarshaller, metadataSource, classLoader, properties, "application/xml");	
+            		return getXmlBindingsByMediaType(unmarshaller, metadataSource, classLoader, properties, MediaType.APPLICATION_XML);	
             	}            	
             }else{
             	 throw org.eclipse.persistence.exceptions.JAXBException.incorrectValueParameterTypeForOxmXmlKey();
@@ -429,8 +430,8 @@ public class JAXBContextFactory {
          return url;
     }
     
-    private static XmlBindings getXmlBindingsByMediaType(Unmarshaller unmarshaller, Source metadata, ClassLoader classLoader, Map<String, Object> properties, String mediaType) throws JAXBException {
-        if("application/xml".equals(mediaType)) {
+    private static XmlBindings getXmlBindingsByMediaType(Unmarshaller unmarshaller, Source metadata, ClassLoader classLoader, Map<String, Object> properties, MediaType mediaType) throws JAXBException {
+        if(MediaType.APPLICATION_XML.equals(mediaType)) {
             unmarshaller.setEventHandler(JSON_BINDING_DOCUMENT_VEH);
         } else {
             unmarshaller.setEventHandler(JAXBContext.DEFAULT_VALIDATION_EVENT_HANDER);

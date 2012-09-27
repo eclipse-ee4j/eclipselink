@@ -647,23 +647,11 @@ if(clazz == ClassConstants.OBJECT) {
         } else if (source instanceof StreamSource) {
             StreamSource streamSource = (StreamSource) source;
             if (null != streamSource.getReader()) {
-            	if(xmlUnmarshaller.getMediaType() == MediaType.APPLICATION_XML){
-            		return unmarshal(streamSource.getReader(), clazz);	
-            	}else{                
-                    return unmarshal(new InputSource(streamSource.getReader()), clazz, getXMLReader(clazz));
-            	}
+          	return unmarshal(streamSource.getReader(), clazz);	
             } else if (null != streamSource.getInputStream()) {
-            	if(xmlUnmarshaller.getMediaType() == MediaType.APPLICATION_XML){
-            		return unmarshal(streamSource.getInputStream(), clazz);
-            	}else{                
-                    return unmarshal(new InputSource(streamSource.getInputStream()), clazz, getXMLReader(clazz));
-            	}
+            	return unmarshal(streamSource.getInputStream(), clazz);
             } else {
-            	if(xmlUnmarshaller.getMediaType() == MediaType.APPLICATION_XML){
-            		return unmarshal(streamSource.getSystemId(), clazz);
-            	}else{                
-                    return unmarshal(new InputSource(streamSource.getSystemId()), clazz, getXMLReader(clazz));
-            	}                
+            	return unmarshal(streamSource.getSystemId(), clazz);
             }
         } else {
         	DOMResult result = new DOMResult();
