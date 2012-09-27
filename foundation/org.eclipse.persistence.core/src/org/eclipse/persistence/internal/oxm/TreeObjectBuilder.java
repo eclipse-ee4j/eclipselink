@@ -60,7 +60,6 @@ import org.eclipse.persistence.oxm.mappings.XMLObjectReferenceMapping;
 import org.eclipse.persistence.oxm.record.MarshalRecord;
 import org.eclipse.persistence.oxm.record.NodeRecord;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
-import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.oxm.sequenced.SequencedObject;
 import org.w3c.dom.Node;
 

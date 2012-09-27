@@ -67,7 +67,6 @@ public abstract class XMLRecord extends AbstractRecord {
 
     public XMLRecord() {
         super(null, null);
-        namespaceResolver = new NamespaceResolver();
         namespaceAware = true;
         // Required for subclasses.
     }

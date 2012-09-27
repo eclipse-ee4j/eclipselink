@@ -238,12 +238,11 @@ public class QNameInheritancePolicy extends InheritancePolicy {
             if (index == -1) {
                 if (namespaceAware && usesXsiType) {
                     String uri = ((XMLRecord)rowFromDatabase).resolveNamespacePrefix(null);
-                    if (uri == null) {
-                        concreteClass = (Class)this.classIndicatorMapping.get(new XPathQName(((XMLRecord)rowFromDatabase).getNamespaceResolver().getDefaultNamespaceURI() ,indicatorValue, namespaceAware));
-                    } else {
-                        XPathQName qname = new XPathQName(uri, indicatorValue, namespaceAware);
-                        concreteClass = (Class)this.classIndicatorMapping.get(qname);
-                    }
+                    if (uri == null && ((XMLRecord)rowFromDatabase).getNamespaceResolver() != null) {
+                    	uri = ((XMLRecord)rowFromDatabase).getNamespaceResolver().getDefaultNamespaceURI();
+                    } 
+                    XPathQName qname = new XPathQName(uri, indicatorValue, namespaceAware);                        
+                    concreteClass = (Class)this.classIndicatorMapping.get(qname);
                 } else {
                     XPathQName qname = new XPathQName(indicatorValue, namespaceAware);
                     concreteClass = (Class)this.classIndicatorMapping.get(qname);
