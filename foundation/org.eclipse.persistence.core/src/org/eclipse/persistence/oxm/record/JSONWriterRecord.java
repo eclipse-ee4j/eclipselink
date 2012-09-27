@@ -88,11 +88,12 @@ public class JSONWriterRecord extends MarshalRecord {
     public void setMarshaller(XMLMarshaller marshaller) {
         super.setMarshaller(marshaller);
         attributePrefix = marshaller.getAttributePrefix();
-        encoder = Charset.forName(marshaller.getEncoding()).newEncoder();        
-        if(marshaller.getValueWrapper() != null){
-        	textWrapperFragment = new XPathFragment(marshaller.getValueWrapper());
+        encoder = Charset.forName(marshaller.getEncoding()).newEncoder();
+        if (marshaller.getValueWrapper() != null) {
+            textWrapperFragment = new XPathFragment();
+            textWrapperFragment.setLocalName(marshaller.getValueWrapper());
         }
-        characterEscapeHandler = marshaller.getCharacterEscapeHandler();        
+        characterEscapeHandler = marshaller.getCharacterEscapeHandler();
     }
 
         
