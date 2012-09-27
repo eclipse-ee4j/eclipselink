@@ -58,6 +58,7 @@ public abstract class MarshalRecord extends XMLRecord {
     
     public MarshalRecord() {
         super();
+        namespaceResolver = new NamespaceResolver();
     }
 
     public HashMap getPositionalNodes() {

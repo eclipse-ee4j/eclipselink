@@ -40,7 +40,7 @@ public abstract class XMLRecord extends AbstractRecord {
     private Object owningObject;
     protected Object currentObject;
     private QName leafElementType;
-    private NamespaceResolver namespaceResolver;
+    protected NamespaceResolver namespaceResolver;
     protected AbstractSession session;
     private boolean isXOPPackage;
     protected boolean hasCustomNamespaceMapper;
@@ -63,8 +63,6 @@ public abstract class XMLRecord extends AbstractRecord {
 
     public XMLRecord() {
         super(null, null);
-        namespaceResolver = new NamespaceResolver();
-        // Required for subclasses.
     }
 
     /**
