@@ -1911,7 +1911,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
     
     public void testPESSIMISTIC_FORCE_INCREMENTLock() {
-        if ((JUnitTestCase.getServerSession()).getPlatform().isHANA()) {
+        if (getPlatform(Employee.class).isHANA()) {
             // HANA currently doesn't support pessimistic locking with queries on multiple tables
             // feature is under development (see bug 384129), but test should be skipped for the time being
             return;
@@ -1959,7 +1959,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
     
     public void testPESSIMISTIC_READLockWithNoChanges() {
-        if ((JUnitTestCase.getServerSession()).getPlatform().isHANA()) {
+        if (getPlatform(Employee.class).isHANA()) {
             // HANA currently doesn't support pessimistic locking with queries on multiple tables
             // feature is under development (see bug 384129), but test should be skipped for the time being
             return;
@@ -2008,7 +2008,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
     
     public void testPESSIMISTIC_WRITELockWithNoChanges() {
-        if ((JUnitTestCase.getServerSession()).getPlatform().isHANA()) {
+        if (getPlatform(Employee.class).isHANA()) {
             // HANA currently doesn't support pessimistic locking with queries on multiple tables
             // feature is under development (see bug 384129), but test should be skipped for the time being
             return;
@@ -2202,7 +2202,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             // skip this test (bug 326799)
             return;
         }
-        if ((JUnitTestCase.getServerSession()).getPlatform().isHANA()) {
+        if (getPlatform(Employee.class).isHANA()) {
             // HANA currently doesn't support pessimistic locking with queries on multiple tables
             // feature is under development (see bug 384129), but test should be skipped for the time being
             return;
@@ -7493,7 +7493,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
     // gf 3032
     public void testPessimisticLockHintStartsTransaction(){
-        if ((JUnitTestCase.getServerSession()).getPlatform().isHANA()) {
+        if (getPlatform(Employee.class).isHANA()) {
             // HANA currently doesn't support pessimistic locking with queries on multiple tables
             // feature is under development (see bug 384129), but test should be skipped for the time being
             return;
