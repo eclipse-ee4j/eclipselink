@@ -294,7 +294,8 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
             
             unmarshalRecord.setUnmarshaller(this.unmarshaller);
             unmarshalRecord.setXMLReader(this.getXMLReader());
-            if (xmlDescriptor !=null && xmlDescriptor.getLocationAccessor()!=null && xmlReader.getLocator() != null) {
+
+            if(xmlReader.getLocator() != null) {
                 unmarshalRecord.setDocumentLocator(xmlReader.getLocator());
             }
             unmarshalRecord.setAttributes(atts);
