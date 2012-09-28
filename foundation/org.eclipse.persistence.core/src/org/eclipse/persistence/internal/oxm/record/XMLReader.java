@@ -59,6 +59,7 @@ public class XMLReader implements org.xml.sax.XMLReader {
     protected ValidatingContentHandler validatingContentHandler;
     protected boolean namespaceAware;
     protected char namespaceSeparator;
+    protected Locator locator;
 
     public XMLReader(org.xml.sax.XMLReader internalReader) {
         this();
@@ -69,6 +70,14 @@ public class XMLReader implements org.xml.sax.XMLReader {
         this.supportsLexicalHandler = true;
         namespaceAware = true;
         namespaceSeparator = XMLConstants.COLON;
+    }
+    
+    public Locator getLocator(){
+    	return locator;
+    }
+    
+    public void setLocator(Locator newLocator){
+    	locator = newLocator;
     }
 
     public ContentHandler getContentHandler () {
