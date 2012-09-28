@@ -20,6 +20,7 @@ import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
+import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.ext.Locator2;
 
@@ -32,7 +33,7 @@ public class XMLStreamReaderReader extends XMLReaderAdapter {
     private UnmarshalNamespaceContext unmarshalNamespaceContext;
     private XMLStreamReaderAttributes indexedAttributeList;
     private boolean qNameAware;
-    private StreamReaderLocator locator;
+    private XMLStreamReader xmlStreamReader;
 
     public XMLStreamReaderReader() {
         unmarshalNamespaceContext = new UnmarshalNamespaceContext();
@@ -43,6 +44,13 @@ public class XMLStreamReaderReader extends XMLReaderAdapter {
         super(xmlUnmarshaller);
         unmarshalNamespaceContext = new UnmarshalNamespaceContext();
         indexedAttributeList = new XMLStreamReaderAttributes();
+    }
+    
+    public Locator getLocator(){
+    	if(locator == null){
+    		locator = new StreamReaderLocator(xmlStreamReader);
+    	}
+    	return locator;
     }
 
     @Override
@@ -81,9 +89,9 @@ public class XMLStreamReaderReader extends XMLReaderAdapter {
     }
   
     public void parse(XMLStreamReader xmlStreamReader) throws SAXException {
+    	this.xmlStreamReader = xmlStreamReader;
         unmarshalNamespaceContext.setXmlStreamReader(xmlStreamReader);
         indexedAttributeList.setXmlStreamReader(xmlStreamReader);
-        locator = new StreamReaderLocator(xmlStreamReader);
         try {
             contentHandler.startDocument();
             parseEvent(xmlStreamReader, xmlStreamReader.getEventType());
@@ -102,10 +110,6 @@ public class XMLStreamReaderReader extends XMLReaderAdapter {
     private void parseEvent(XMLStreamReader xmlStreamReader, int eventType) throws SAXException {
         switch (eventType) {
             case XMLStreamReader.START_ELEMENT: {
-                // Capture the Location so that we can keep it's -current-
-                // line and column number, for use with @XmlLocation
-                contentHandler.setDocumentLocator(locator);
-
                 depth++;
                 String localName = xmlStreamReader.getLocalName();
                 String namespaceURI = xmlStreamReader.getNamespaceURI();

@@ -65,7 +65,6 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
     private XMLDescriptor descriptor;
     private XMLUnmarshaller unmarshaller;
     private AbstractSession session;
-    private Locator2 locator;
     private UnmarshalNamespaceResolver unmarshalNamespaceResolver;
     private UnmarshalKeepAsElementPolicy keepAsElementPolicy = UnmarshalKeepAsElementPolicy.KEEP_NONE_AS_ELEMENT;
     private SAXDocumentBuilder documentBuilder;
@@ -109,8 +108,8 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
     }
 
     public void setDocumentLocator(Locator locator) {
-        if (locator instanceof Locator2) {
-            this.locator = (Locator2)locator;
+        if (xmlReader != null && locator instanceof Locator2) {
+        	xmlReader.setLocator(locator);
         }
     }
 
@@ -292,11 +291,13 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
             }
             this.descriptor = xmlDescriptor;
             this.rootRecord = unmarshalRecord;
-            if (locator != null) {
-                unmarshalRecord.setDocumentLocator(locator);
-            }
+            
             unmarshalRecord.setUnmarshaller(this.unmarshaller);
             unmarshalRecord.setXMLReader(this.getXMLReader());
+
+            if(xmlReader.getLocator() != null) {
+                unmarshalRecord.setDocumentLocator(xmlReader.getLocator());
+            }
             unmarshalRecord.setAttributes(atts);
 
             if(atts != null && null != atts.getValue(XMLConstants.SCHEMA_INSTANCE_URL, XMLConstants.SCHEMA_NIL_ATTRIBUTE)) {

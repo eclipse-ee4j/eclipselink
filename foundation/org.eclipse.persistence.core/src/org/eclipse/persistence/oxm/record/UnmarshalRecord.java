@@ -126,12 +126,8 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
     private boolean xpathNodeIsMixedContent = false;
     private int unmappedLevel = -1;
 
-    // The Locator that is updated throughout the unmarshal process
-    private Locator documentLocator;
-
     // The "snapshot" location of this object, for @XmlLocation
     private Locator xmlLocation;
-
 
     protected XPathFragment textWrapperFragment;    
 
@@ -393,20 +389,25 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
     public void setTypeQName(QName typeQName) {
         this.typeQName = typeQName;
     }
-
+    
     public void setDocumentLocator(Locator locator) {
-        this.documentLocator = locator;
-        if (null == rootElementName  && null == rootElementLocalName && parentRecord == null && locator instanceof Locator2){
-
-            Locator2 loc = (Locator2)locator;
-            this.setEncoding(loc.getEncoding());
-            this.setVersion(loc.getXMLVersion());
-        }
+    	if(xmlReader != null){
+    		xmlReader.setLocator(locator);
+    		if (null == rootElementName  && null == rootElementLocalName && parentRecord == null && locator instanceof Locator2){
+                Locator2 loc = (Locator2)locator;
+                this.setEncoding(loc.getEncoding());
+                this.setVersion(loc.getXMLVersion());
+            }
+    	}
     }
+    
     public Locator getDocumentLocator() {
-        return this.documentLocator;
+    	if(xmlReader != null){
+    		return xmlReader.getLocator();
+    	}
+      return null;
     }
-
+    
     public Object get(DatabaseField key) {
         XMLField xmlField = this.convertToXMLField(key);
         XPathFragment lastFragment = xmlField.getLastXPathFragment();        
@@ -500,22 +501,15 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
             if (currentObject == null) {
             	currentObject = treeObjectBuilder.buildNewInstance();
             }
-
-            if (parentRecord != null && parentRecord.getDocumentLocator() != null) {
-                this.documentLocator = parentRecord.getDocumentLocator();
-            }
-
-            if (documentLocator != null) {
+            if (xmlDescriptor.getLocationAccessor() != null && xmlReader.getLocator() != null){
                 // Check to see if this Descriptor isLocationAware
-                if (xmlDescriptor.getLocationAccessor() != null) {
                     // Store the snapshot of the current documentLocator
-                    setXmlLocation(new Locator2Impl(documentLocator));
-                }
+                	xmlLocation  = new Locator2Impl(xmlReader.getLocator());
             }
-
+            
             Object parentRecordCurrentObject = null;
             if (null != this.parentRecord) {
-                parentRecordCurrentObject = parentRecord.getCurrentObject();
+                parentRecordCurrentObject = parentRecord.currentObject;
             }
             
             XMLUnmarshalListener xmlUnmarshalListener = unmarshaller.getUnmarshalListener();
@@ -698,8 +692,8 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
         }
 
         // Set XML Location if applicable
-        if (getXmlLocation() != null && ((XMLDescriptor) xmlDescriptor).getLocationAccessor() != null) {
-            ((XMLDescriptor) xmlDescriptor).getLocationAccessor().setAttributeValueInObject(getCurrentObject(), getXmlLocation());
+        if (xmlLocation != null && ((XMLDescriptor) xmlDescriptor).getLocationAccessor() != null) {
+            ((XMLDescriptor) xmlDescriptor).getLocationAccessor().setAttributeValueInObject(getCurrentObject(), xmlLocation);
         }
     }
 
@@ -854,7 +848,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
                         }
                         if (attributeNodeValue == null) {
                             attributeNodeValue = this.getAttributeChildNodeValue(attNamespace, attLocalName);
-
+                            
                             try {
                                 if (attributeNodeValue != null) {
                                     attributeNodeValue.attribute(this, attNamespace, attLocalName, value);
@@ -867,7 +861,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
                                 if ((null == xmlReader) || (null == xmlReader.getErrorHandler())) {
                                     throw e;
                                 } else {
-                                    SAXParseException saxParseException = new SAXParseException(e.getLocalizedMessage(), documentLocator, e);
+                                    SAXParseException saxParseException = new SAXParseException(e.getLocalizedMessage(), getDocumentLocator(), e);
                                     xmlReader.getErrorHandler().warning(saxParseException);
                                 }
                             }
@@ -882,7 +876,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
             if ((null == xmlReader) || (null == xmlReader.getErrorHandler())) {
                 throw e;
             } else {
-                SAXParseException saxParseException = new SAXParseException(e.getLocalizedMessage(), documentLocator, e);
+                SAXParseException saxParseException = new SAXParseException(e.getLocalizedMessage(), getDocumentLocator(), e);
                 xmlReader.getErrorHandler().error(saxParseException);
             }
         }
@@ -918,7 +912,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
                         }
                     }
                 }
-                errorHandler.warning(new SAXParseException(messageBuilder.toString(), documentLocator));
+                errorHandler.warning(new SAXParseException(messageBuilder.toString(), getDocumentLocator()));
             }
         }
         if ((null != selfRecords) || (null == xmlReader) || isSelfRecord()) {
@@ -976,7 +970,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
                 	if ((null == xmlReader) || (null == xmlReader.getErrorHandler())) {
                         throw e;
                     } else {
-                        SAXParseException saxParseException = new SAXParseException(e.getLocalizedMessage(), documentLocator, e);
+                        SAXParseException saxParseException = new SAXParseException(e.getLocalizedMessage(), getDocumentLocator(), e);
                         xmlReader.getErrorHandler().warning(saxParseException);
                     }
                 }
@@ -1352,16 +1346,16 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
 
     public UnmarshalRecord getChildUnmarshalRecord(TreeObjectBuilder treeObjectBuilder) {
     	if(childRecord != null && !childRecord.isSelfRecord){
-    		childRecord.initialize(treeObjectBuilder);    		
+    		childRecord.initialize(treeObjectBuilder);
 	        childRecord.setParentRecord(this);        
 	        return childRecord;
     	}else{
 	    	childRecord = (UnmarshalRecord) treeObjectBuilder.createRecord(session);
-	        childRecord.setUnmarshaller(unmarshaller);	        
+	        childRecord.setUnmarshaller(unmarshaller);
 	        childRecord.setTextWrapperFragment(textWrapperFragment);
 	        childRecord.setXMLReader(this.xmlReader);
 	        childRecord.setFragmentBuilder(fragmentBuilder);
-	        childRecord.setUnmarshalNamespaceResolver(this.getUnmarshalNamespaceResolver());
+	        childRecord.setUnmarshalNamespaceResolver(unmarshalNamespaceResolver);
 	        childRecord.setParentRecord(this);        
     	}
         return childRecord;    	
@@ -1392,24 +1386,6 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
         return prefixesForFragment;
     }
        
-
-    /**
-     * INTERNAL
-     * Returns this UnmarshalRecord's XML Location, indicating where in the XML document
-     * this object was unmarshalled from.
-     */
-    public Locator getXmlLocation() {
-        return xmlLocation;
-    }
-
-    /**
-     * INTERNAL
-     * Sets this UnmarshalRecord's XML Location, indicating where in the XML document
-     * this object was unmarshalled from.
-     */
-    public void setXmlLocation(Locator xmlLocation) {
-        this.xmlLocation = xmlLocation;
-    }
 
     public char getNamespaceSeparator(){
     	return xmlReader.getNamespaceSeparator();

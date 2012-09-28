@@ -32,6 +32,7 @@ import javax.xml.stream.events.XMLEvent;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
 import org.xml.sax.InputSource;
+import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.ext.Locator2;
 
@@ -45,7 +46,7 @@ public class XMLEventReaderReader extends XMLReaderAdapter {
     //scope in some STAX implementations
     private Map<Integer, List<Namespace>> namespaces;
     private XMLEventReaderAttributes indexedAttributeList;
-    private EventReaderLocator locator;
+    private XMLEvent lastEvent;
 
     public XMLEventReaderReader() {
         this.namespaces = new HashMap<Integer, List<Namespace>>();
@@ -69,8 +70,15 @@ public class XMLEventReaderReader extends XMLReaderAdapter {
         }
     }
 
+    public Locator getLocator(){
+    	if(locator == null){
+    		locator = new  EventReaderLocator();    		
+    	}
+    	((EventReaderLocator)locator).setEvent(lastEvent);
+    	return locator;
+    }
+    
     private void parse(XMLEventReader xmlEventReader) throws SAXException {
-        locator = new EventReaderLocator();
         try {
             contentHandler.startDocument();
             parseEvent(xmlEventReader.nextEvent());
@@ -164,10 +172,7 @@ public class XMLEventReaderReader extends XMLReaderAdapter {
                 break;
             }
             case XMLEvent.START_ELEMENT: {
-                // Capture the Location so that we can keep it's -current-
-                // line and column number, for use with @XmlLocation
-                locator.setEvent(xmlEvent);
-                contentHandler.setDocumentLocator(locator);
+                lastEvent = xmlEvent;
 
                 depth++;
                 StartElement startElement = xmlEvent.asStartElement();
