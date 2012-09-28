@@ -2166,12 +2166,11 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         sequenceNameMapping.setXPath(getPrimaryNamespaceXPath() + "sequencing/" + getPrimaryNamespaceXPath() + "sequence-name/text()");
         descriptor.addMapping(sequenceNameMapping);
 
-        XMLCompositeObjectMapping sequenceFieldMapping = new XMLCompositeObjectMapping();
+        XMLDirectMapping sequenceFieldMapping = new XMLDirectMapping();
         sequenceFieldMapping.setAttributeName("sequenceNumberField");
-        sequenceFieldMapping.setGetMethodName("getSequenceNumberField");
-        sequenceFieldMapping.setSetMethodName("setSequenceNumberField");
-        sequenceFieldMapping.setReferenceClass(DatabaseField.class);
-        sequenceFieldMapping.setXPath(getPrimaryNamespaceXPath() + "sequencing/" + getPrimaryNamespaceXPath() + "sequence-field");
+        sequenceFieldMapping.setGetMethodName("getSequenceNumberFieldName");
+        sequenceFieldMapping.setSetMethodName("setSequenceNumberFieldName");
+        sequenceFieldMapping.setXPath(getPrimaryNamespaceXPath() + "sequencing/" + getPrimaryNamespaceXPath() + "sequence-field/@name");
         descriptor.addMapping(sequenceFieldMapping);
 
         XMLDirectMapping identityMapClassMapping = new XMLDirectMapping();
