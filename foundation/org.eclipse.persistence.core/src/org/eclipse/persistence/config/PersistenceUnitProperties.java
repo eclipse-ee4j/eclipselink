@@ -33,20 +33,22 @@ import javax.persistence.FlushModeType;
 import javax.persistence.Persistence;
 
 import org.eclipse.persistence.annotations.Cache;
-import org.eclipse.persistence.config.ReferenceMode;
 import org.eclipse.persistence.exceptions.ExceptionHandler;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
+import org.eclipse.persistence.platform.database.events.DatabaseEventListener;
 import org.eclipse.persistence.platform.server.ServerPlatform;
 import org.eclipse.persistence.queries.JPAQueryBuilder;
 import org.eclipse.persistence.sessions.DatabaseLogin;
+import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.SessionEventListener;
 import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.sessions.coordination.RemoteCommandManager;
 import org.eclipse.persistence.sessions.factories.SessionManager;
+import org.eclipse.persistence.tools.profiler.PerformanceMonitor;
 import org.eclipse.persistence.tools.profiler.PerformanceProfiler;
 import org.eclipse.persistence.tools.profiler.QueryMonitor;
-import org.eclipse.persistence.tools.profiler.PerformanceMonitor;
 
 /**
  * The class defines EclipseLink persistence unit property names. These values
@@ -2521,6 +2523,21 @@ public class PersistenceUnitProperties {
     static {
         PROPERTY_LOG_OVERRIDES.put(JDBC_PASSWORD, "xxxxxx");
     }
+
+
+    /**
+     * The <code>"eclipselink.weaving.rest"</code> property configures
+     * whether classes will be weaved to support our JPA_RS functionality
+     * <p>
+     * This property will only be considered if weaving is enabled.
+     * <p>
+     * Values (case insensitive):
+     * <ul>
+     * <li>"true" (DEFAULT)
+     * <li>"false"
+     * </ul>
+     */
+    public static final String WEAVING_REST = "eclipselink.weaving.rest";
 
     /**
      * INTERNAL: Return the overridden log string.

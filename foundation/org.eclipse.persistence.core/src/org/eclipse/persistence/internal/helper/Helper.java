@@ -17,9 +17,18 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.helper;
 
-import java.util.*;
-import java.io.*;
-import java.lang.reflect.*;
+import java.io.Closeable;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.Serializable;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URI;
@@ -27,14 +36,32 @@ import java.net.URISyntaxException;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+import java.util.StringTokenizer;
+import java.util.TimeZone;
+import java.util.Vector;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import org.eclipse.persistence.config.SystemProperties;
+import org.eclipse.persistence.exceptions.ConversionException;
+import org.eclipse.persistence.exceptions.EclipseLinkException;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
-import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.security.PrivilegedGetField;
 import org.eclipse.persistence.internal.security.PrivilegedGetMethod;
-import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
 
 /**
  * INTERNAL:
@@ -1157,7 +1184,60 @@ public class Helper implements Serializable {
         returnVector.addElement(theObject);
         return returnVector;
     }
+        
+    /**
+     * Used by our byte code weaving to enable users who are debugging to output
+     * the generated class to a file
+     * 
+     * @param className
+     * @param classBytes
+     * @param outputPath
+     */
+    public static void outputClassFile(String className, byte[] classBytes,
+            String outputPath) {
+        StringBuffer directoryName = new StringBuffer();
+        StringTokenizer tokenizer = new StringTokenizer(className, "\n\\/");
+        String token = null;
+        while (tokenizer.hasMoreTokens()) {
+            token = tokenizer.nextToken();
+            if (tokenizer.hasMoreTokens()) {
+                directoryName.append(token + File.separator);
+            }
+        }
+        FileOutputStream fos = null;
+        try {
+            String usedOutputPath = outputPath;
+            if (!outputPath.endsWith(File.separator)) {
+                usedOutputPath = outputPath + File.separator;
+            }
+            File file = new File(usedOutputPath + directoryName);
+            file.mkdirs();
+            file = new File(file, token + ".class");
+            if (!file.exists()) {
+                file.createNewFile();
+            } else {
+                if (!System.getProperty(
+                        SystemProperties.WEAVING_SHOULD_OVERWRITE, "false")
+                        .equalsIgnoreCase("true")) {
+                    AbstractSessionLog.getLog().log(SessionLog.WARNING,
+                            SessionLog.WEAVER, "weaver_not_overwriting",
+                            className);
+                    return;
+                }
+            }
 
+            fos = new FileOutputStream(file);
+            fos.write(classBytes);
+        } catch (Exception e) {
+            AbstractSessionLog.getLog().log(SessionLog.WARNING,
+                    SessionLog.WEAVER, "weaver_could_not_write", className, e);
+            AbstractSessionLog.getLog().logThrowable(SessionLog.FINEST,
+                    SessionLog.WEAVER, e);
+        } finally {
+            Helper.close(fos);
+        }
+    }        
+    
     /**
      * Return a string containing the platform-appropriate
      * characters for separating entries in a path (e.g. the classpath)

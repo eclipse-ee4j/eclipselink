@@ -21,6 +21,8 @@ import javax.xml.bind.JAXBElement;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.internal.descriptors.VirtualAttributeAccessor;
+import org.eclipse.persistence.internal.jpa.rs.metadata.model.Link;
+import org.eclipse.persistence.internal.jpa.weaving.RestAdapterClassWriter;
 import org.eclipse.persistence.internal.weaving.RelationshipInfo;
 import org.eclipse.persistence.jaxb.metadata.MetadataSource;
 import org.eclipse.persistence.jaxb.xmlmodel.JavaType;
@@ -28,17 +30,17 @@ import org.eclipse.persistence.jaxb.xmlmodel.JavaType.JavaAttributes;
 import org.eclipse.persistence.jaxb.xmlmodel.ObjectFactory;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlAccessMethods;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.JavaTypes;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlElement;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlSchema;
-import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.JavaTypes;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlSchema.XmlNs;
-import org.eclipse.persistence.jaxb.xmlmodel.XmlElement;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlVirtualAccessMethods;
-import org.eclipse.persistence.jpa.rs.metadata.model.Link;
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ObjectReferenceMapping;
 import org.eclipse.persistence.sessions.server.Server;
+
 
 /**
  * {@link MetadataSource} used in the creation of dynamic JAXB contexts for applications.
@@ -69,7 +71,7 @@ public class DynamicXMLMetadataSource implements MetadataSource {
         atomNs.setNamespaceUri(LINK_NAMESPACE_URI);
         xmlSchema.getXmlNs().add(atomNs);
         xmlBindings.setXmlSchema(xmlSchema);
-        
+
         for (ClassDescriptor ormDescriptor : session.getProject().getOrderedDescriptors()) {
             String descriptorPackageName = "";
             if (ormDescriptor.getJavaClassName().lastIndexOf('.') > 0){
@@ -79,7 +81,7 @@ public class DynamicXMLMetadataSource implements MetadataSource {
                 javaTypes.getJavaType().add(createJAXBType(ormDescriptor, objectFactory));
             }
         }
-    }
+     }
     
     private JavaType createJAXBType(ClassDescriptor classDescriptor, ObjectFactory objectFactory) {
         JavaType javaType = new JavaType();
@@ -99,36 +101,44 @@ public class DynamicXMLMetadataSource implements MetadataSource {
         // Make them all root elements for now
         javaType.setXmlRootElement(new org.eclipse.persistence.jaxb.xmlmodel.XmlRootElement());
 
+        // set rest adapter
+        String name = classDescriptor.getJavaClassName() + "." + RestAdapterClassWriter.ADAPTER_INNER_CLASS_NAME;
+        XmlJavaTypeAdapter adapter = new XmlJavaTypeAdapter();
+        adapter.setValue(name);
+        adapter.setValueType(classDescriptor.getJavaClassName());
+        adapter.setType(classDescriptor.getJavaClassName());
+        javaType.setXmlJavaTypeAdapter(adapter);
+        
         return javaType;
     }
     
-    private JAXBElement<XmlElement> createJAXBProperty(DatabaseMapping mapping, ObjectFactory objectFactory, JavaType owningType, boolean isDynamic) {
-        if (!mapping.getAttributeAccessor().isVirtualAttributeAccessor() && !isDynamic && (mapping.isPrivateOwned() || (!mapping.isObjectReferenceMapping() &&  !mapping.isCollectionMapping()) )){
+    private JAXBElement<XmlElement> createJAXBProperty(DatabaseMapping mapping,
+            ObjectFactory objectFactory, JavaType owningType, boolean isDynamic) {
+        if (!mapping.getAttributeAccessor().isVirtualAttributeAccessor()
+                && !isDynamic) {
             return null;
         }
         XmlElement xmlElement = new XmlElement();
         xmlElement.setJavaAttribute(mapping.getAttributeName());
-        if (mapping.isObjectReferenceMapping()){
-            xmlElement.setType(((ObjectReferenceMapping)mapping).getReferenceClassName());
-            if (!mapping.isPrivateOwned()){
-                xmlElement.setReadOnly(true);
-            }
-        } else if (mapping.isCollectionMapping()){
-            xmlElement.setType(((CollectionMapping)mapping).getReferenceClassName());
-            if (!mapping.isPrivateOwned()){
-                xmlElement.setReadOnly(true);
-            }
+        if (mapping.isObjectReferenceMapping()) {
+            xmlElement.setType(((ObjectReferenceMapping) mapping).getReferenceClassName());
+        } else if (mapping.isCollectionMapping()) {
+            xmlElement.setType(((CollectionMapping) mapping).getReferenceClassName());
         } else {
             xmlElement.setType(mapping.getAttributeClassification().getName());
         }
-        if (mapping.getAttributeAccessor().isVirtualAttributeAccessor()){
-            VirtualAttributeAccessor jpaAccessor = (VirtualAttributeAccessor)mapping.getAttributeAccessor();
-            if (owningType.getXmlVirtualAccessMethods() == null){
+        if (mapping.getAttributeAccessor().isVirtualAttributeAccessor()) {
+            VirtualAttributeAccessor jpaAccessor = (VirtualAttributeAccessor) mapping
+                    .getAttributeAccessor();
+            if (owningType.getXmlVirtualAccessMethods() == null) {
                 XmlVirtualAccessMethods virtualAccessMethods = new XmlVirtualAccessMethods();
-                virtualAccessMethods.setGetMethod(jpaAccessor.getGetMethodName());
-                virtualAccessMethods.setSetMethod(jpaAccessor.getSetMethodName());
+                virtualAccessMethods.setGetMethod(jpaAccessor
+                        .getGetMethodName());
+                virtualAccessMethods.setSetMethod(jpaAccessor
+                        .getSetMethodName());
                 owningType.setXmlVirtualAccessMethods(virtualAccessMethods);
-            } else if (!owningType.getXmlVirtualAccessMethods().getGetMethod().equals(jpaAccessor.getGetMethodName())){
+            } else if (!owningType.getXmlVirtualAccessMethods().getGetMethod()
+                    .equals(jpaAccessor.getGetMethodName())) {
                 XmlAccessMethods accessMethods = new XmlAccessMethods();
                 accessMethods.setGetMethod(jpaAccessor.getGetMethodName());
                 accessMethods.setSetMethod(jpaAccessor.getSetMethodName());
@@ -162,7 +172,7 @@ public class DynamicXMLMetadataSource implements MetadataSource {
         xmlElement.setXmlJavaTypeAdapter(adapter);
         return objectFactory.createXmlElement(xmlElement);
     }
-    
+
     
     public static void addXmlAdapter(XmlElement xmlElement) {
         xmlElement.setXmlPath(xmlElement.getJavaAttribute() + "/" + LINK_PREFIX + ":" + LINK_LOCAL_NAME + "[@rel='" + xmlElement.getJavaAttribute() + "']/@href");

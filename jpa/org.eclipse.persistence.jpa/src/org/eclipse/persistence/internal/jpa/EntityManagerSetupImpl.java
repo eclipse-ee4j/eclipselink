@@ -37,11 +37,19 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa;
 
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.util.*;
-import java.io.FileWriter;
+import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.getConfigProperty;
+import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.getConfigPropertyAsString;
+import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug;
+import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.getConfigPropertyLogDebug;
+import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.login;
+import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.mergeMaps;
+import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.translateOldProperties;
+import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.warnOldProperties;
+import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.writeDDLToDatabase;
+import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.writeDDLsToFiles;
+
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
@@ -49,54 +57,27 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.URLDecoder;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.StringTokenizer;
 
+import javax.persistence.PersistenceException;
+import javax.persistence.ValidationMode;
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.ManagedType;
 import javax.persistence.metamodel.Metamodel;
-import javax.persistence.spi.PersistenceUnitInfo;
 import javax.persistence.spi.ClassTransformer;
-import javax.persistence.PersistenceException;
-import javax.persistence.ValidationMode;
+import javax.persistence.spi.PersistenceUnitInfo;
+import javax.persistence.spi.PersistenceUnitTransactionType;
 
-import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
-import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
-import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy.LockOnChange;
-import org.eclipse.persistence.internal.jpa.weaving.PersistenceWeaver;
-import org.eclipse.persistence.internal.jpa.weaving.TransformerFactory;
-import org.eclipse.persistence.sessions.JNDIConnector;
-import org.eclipse.persistence.logging.AbstractSessionLog;
-import org.eclipse.persistence.logging.DefaultSessionLog;
-import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedClassForName;
-import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredField;
-import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredMethod;
-import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;        
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
-import org.eclipse.persistence.internal.sessions.PropertiesHandler;
-import org.eclipse.persistence.sequencing.Sequence;
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.sessions.server.ConnectionPolicy;
-import org.eclipse.persistence.sessions.server.ConnectionPool;
-import org.eclipse.persistence.sessions.server.ExternalConnectionPool;
-import org.eclipse.persistence.sessions.server.ReadConnectionPool;
-import org.eclipse.persistence.sessions.server.ServerSession;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataProcessor;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAsmFactory;
-import org.eclipse.persistence.internal.jpa.metamodel.MetamodelImpl;
-import org.eclipse.persistence.sessions.broker.SessionBroker;
-import org.eclipse.persistence.sessions.coordination.MetadataRefreshListener;
-import org.eclipse.persistence.sessions.coordination.RemoteCommandManager;
-import org.eclipse.persistence.sessions.coordination.TransportManager;
-import org.eclipse.persistence.sessions.coordination.jms.JMSTopicTransportManager;
-import org.eclipse.persistence.sessions.coordination.jms.JMSPublishingTransportManager;
-import org.eclipse.persistence.sessions.coordination.rmi.RMITransportManager;
-import org.eclipse.persistence.sessions.factories.SessionManager;
-import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
 import org.eclipse.persistence.annotations.IdValidation;
 import org.eclipse.persistence.config.BatchWriting;
 import org.eclipse.persistence.config.CacheCoordinationProtocol;
@@ -109,39 +90,88 @@ import org.eclipse.persistence.config.ProfilerType;
 import org.eclipse.persistence.config.SessionCustomizer;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
-import org.eclipse.persistence.platform.server.CustomServerPlatform;
-import org.eclipse.persistence.platform.server.ServerPlatform;
 import org.eclipse.persistence.eis.EISConnectionSpec;
 import org.eclipse.persistence.eis.EISLogin;
 import org.eclipse.persistence.eis.EISPlatform;
-import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.exceptions.ConversionException;
+import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.exceptions.EntityManagerSetupException;
+import org.eclipse.persistence.exceptions.ExceptionHandler;
+import org.eclipse.persistence.exceptions.IntegrityException;
+import org.eclipse.persistence.exceptions.PersistenceUnitLoadingException;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
+import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
+import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy.LockOnChange;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.ConcurrencyManager;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.JPAClassLoaderHolder;
 import org.eclipse.persistence.internal.helper.JPAConversionManager;
-import javax.persistence.spi.PersistenceUnitTransactionType;
-
-import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
 import org.eclipse.persistence.internal.jpa.deployment.BeanValidationInitializationHelper;
+import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
 import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
-import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.jpa.jdbc.DataSourceImpl;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataHelper;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataProcessor;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAsmFactory;
+import org.eclipse.persistence.internal.jpa.metamodel.MetamodelImpl;
+import org.eclipse.persistence.internal.jpa.weaving.PersistenceWeaver;
+import org.eclipse.persistence.internal.jpa.weaving.TransformerFactory;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.security.PrivilegedClassForName;
+import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredField;
+import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredMethod;
+import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
+import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.security.SecurableObjectHolder;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
+import org.eclipse.persistence.internal.sessions.PropertiesHandler;
+import org.eclipse.persistence.jpa.metadata.FileBasedProjectCache;
 import org.eclipse.persistence.jpa.metadata.MetadataSource;
+import org.eclipse.persistence.jpa.metadata.ProjectCache;
 import org.eclipse.persistence.jpa.metadata.XMLMetadataSource;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.DefaultSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.platform.database.converters.StructConverter;
 import org.eclipse.persistence.platform.database.events.DatabaseEventListener;
 import org.eclipse.persistence.platform.database.partitioning.DataPartitioningCallback;
+import org.eclipse.persistence.platform.server.CustomServerPlatform;
+import org.eclipse.persistence.platform.server.ServerPlatform;
 import org.eclipse.persistence.platform.server.ServerPlatformBase;
+import org.eclipse.persistence.sequencing.Sequence;
+import org.eclipse.persistence.sessions.Connector;
+import org.eclipse.persistence.sessions.DatabaseLogin;
+import org.eclipse.persistence.sessions.DatasourceLogin;
+import org.eclipse.persistence.sessions.DefaultConnector;
+import org.eclipse.persistence.sessions.ExternalTransactionController;
+import org.eclipse.persistence.sessions.JNDIConnector;
+import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.SessionEventListener;
+import org.eclipse.persistence.sessions.SessionProfiler;
+import org.eclipse.persistence.sessions.broker.SessionBroker;
+import org.eclipse.persistence.sessions.coordination.MetadataRefreshListener;
+import org.eclipse.persistence.sessions.coordination.RemoteCommandManager;
+import org.eclipse.persistence.sessions.coordination.TransportManager;
+import org.eclipse.persistence.sessions.coordination.jms.JMSPublishingTransportManager;
+import org.eclipse.persistence.sessions.coordination.jms.JMSTopicTransportManager;
+import org.eclipse.persistence.sessions.coordination.rmi.RMITransportManager;
+import org.eclipse.persistence.sessions.factories.SessionManager;
+import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
+import org.eclipse.persistence.sessions.server.ConnectionPolicy;
+import org.eclipse.persistence.sessions.server.ConnectionPool;
+import org.eclipse.persistence.sessions.server.ExternalConnectionPool;
+import org.eclipse.persistence.sessions.server.ReadConnectionPool;
+import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.tools.profiler.PerformanceMonitor;
 import org.eclipse.persistence.tools.profiler.PerformanceProfiler;
 import org.eclipse.persistence.tools.profiler.QueryMonitor;
 import org.eclipse.persistence.tools.schemaframework.SchemaManager;
-import org.eclipse.persistence.jpa.metadata.ProjectCache;
-import org.eclipse.persistence.jpa.metadata.FileBasedProjectCache;
-
-import static org.eclipse.persistence.internal.jpa.EntityManagerFactoryProvider.*;
 
 /**
  * INTERNAL:
@@ -286,6 +316,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     boolean weaveEager;
     boolean weaveFetchGroups;
     boolean weaveInternal;
+    boolean weaveRest;
     
     /**
      * Used to indicate that an EntityManagerFactoryImpl based on this
@@ -441,6 +472,12 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         // state is PREDEPLOYED or DEPLOYED
         session.log(SessionLog.FINEST, SessionLog.JPA, "deploy_begin", new Object[]{getPersistenceUnitInfo().getPersistenceUnitName(), session.getName(), state, factoryCount});
         
+        ClassLoader classLoaderToUse = realClassLoader;
+        
+        if (additionalProperties.containsKey(PersistenceUnitProperties.CLASSLOADER)){
+            classLoaderToUse = (ClassLoader)additionalProperties.get(PersistenceUnitProperties.CLASSLOADER);
+        }
+        
         // indicates whether session has failed to connect, determines whether HALF_DEPLOYED state should be kept in case of exception.
         boolean isLockAcquired = false;
         try {
@@ -456,19 +493,22 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 if (state == STATE_PREDEPLOYED) {
                     if (shouldBuildProject && !isSessionLoadedFromSessionsXML) {
                         if (isComposite()) {
-                            deployCompositeMembers(deployProperties, realClassLoader);
+                            deployCompositeMembers(deployProperties, classLoaderToUse);
                         } else {
                             if (processor.getMetadataSource() != null) {
-                                Map metadataProperties = processor.getMetadataSource().getPropertyOverrides(deployProperties, realClassLoader, session.getSessionLog());
+                                Map metadataProperties = processor.getMetadataSource().getPropertyOverrides(deployProperties, classLoaderToUse, session.getSessionLog());
                                 if (metadataProperties != null && !metadataProperties.isEmpty()) {
                                     translateOldProperties(metadataProperties, session);
                                     deployProperties = mergeMaps(metadataProperties, deployProperties);
                                 }
                             }
                             // listeners and queries require the real classes and are therefore built during deploy using the realClassLoader
-                            processor.setClassLoader(realClassLoader);
+                            processor.setClassLoader(classLoaderToUse);
                             processor.createDynamicClasses();
-
+                            if (weaveRest){
+                                processor.createRestInterfaces();
+                            }
+                            
                             processor.addEntityListeners();
 
                             if (projectCacheAccessor != null) {
@@ -478,10 +518,10 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
 
                             // The project is initially created using class names rather than classes.  This call will make the conversion.
                             // If the session was loaded from sessions.xml this will also convert the descriptor classes to the correct class loader.
-                            session.getProject().convertClassNamesToClasses(realClassLoader);
+                            session.getProject().convertClassNamesToClasses(classLoaderToUse);
 
                             if (!isCompositeMember()) {
-                                addBeanValidationListeners(deployProperties, realClassLoader);
+                                addBeanValidationListeners(deployProperties, classLoaderToUse);
                             }
 
                             // Process the customizers last.
@@ -492,19 +532,19 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     } else {
                         // The project is initially created using class names rather than classes.  This call will make the conversion.
                         // If the session was loaded from sessions.xml this will also convert the descriptor classes to the correct class loader.
-                        session.getProject().convertClassNamesToClasses(realClassLoader);
+                        session.getProject().convertClassNamesToClasses(classLoaderToUse);
                         if (!shouldBuildProject) {
                             //process anything that might not have been serialized/cached in the project correctly:
                             if (!isCompositeMember()) {
-                                addBeanValidationListeners(deployProperties, realClassLoader);
+                                addBeanValidationListeners(deployProperties, classLoaderToUse);
                             }
 
                             //process Descriptor customizers:
-                            processDescriptorsFromCachedProject(realClassLoader);     
+                            processDescriptorsFromCachedProject(classLoaderToUse);     
                         }
                     }
-                    finishProcessingDescriptorEvents(realClassLoader);
-                    structConverters = getStructConverters(realClassLoader);
+                    finishProcessingDescriptorEvents(classLoaderToUse);
+                    structConverters = getStructConverters(classLoaderToUse);
 
                     initSession();
 
@@ -512,7 +552,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                         session.handleException(new IntegrityException(session.getIntegrityChecker()));
                     }
 
-                    session.getDatasourcePlatform().getConversionManager().setLoader(realClassLoader);
+                    session.getDatasourcePlatform().getConversionManager().setLoader(classLoaderToUse);
                     state = STATE_HALF_DEPLOYED;
                     // keep deployLock
                 } else {
@@ -541,7 +581,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                             throw persistenceException;
                         }
                         session.setProperties(deployProperties);
-                        updateSession(deployProperties, realClassLoader);
+                        updateSession(deployProperties, classLoaderToUse);
                         if (isValidationOnly(deployProperties, false)) {
                             /**
                              * for 324213 we could add a session.loginAndDetectDatasource() call 
@@ -1555,12 +1595,14 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 weaveEager = false;
                 weaveFetchGroups = false;
                 weaveInternal = false;
+                weaveRest = false;
                 if (enableWeaving) {
                     weaveChangeTracking = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_CHANGE_TRACKING, predeployProperties, "true", session));
                     weaveLazy = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_LAZY, predeployProperties, "true", session));
                     weaveEager = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_EAGER, predeployProperties, "false", session));
                     weaveFetchGroups = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_FETCHGROUPS, predeployProperties, "true", session));
                     weaveInternal = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_INTERNAL, predeployProperties, "true", session));
+                    weaveRest = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_REST, predeployProperties, "true", session));
                 }
             }
             if (shouldBuildProject && !isSessionLoadedFromSessionsXML ) {
@@ -1618,7 +1660,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     if (enableWeaving) {                
                         // build a list of entities the persistence unit represented by this EntityManagerSetupImpl will use
                         Collection entities = PersistenceUnitProcessor.buildEntityList(processor, classLoaderToUse);
-                        this.weaver = TransformerFactory.createTransformerAndModifyProject(session, entities, classLoaderToUse, weaveLazy, weaveChangeTracking, weaveFetchGroups, weaveInternal);
+                        this.weaver = TransformerFactory.createTransformerAndModifyProject(session, entities, classLoaderToUse, weaveLazy, weaveChangeTracking, weaveFetchGroups, weaveInternal, weaveRest);
                         session.getProject().setClassNamesForWeaving(new ArrayList(processor.getProject().getWeavableClassNames()));
                     }
 
@@ -1646,7 +1688,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                             persistenceClasses.add(factory.getMetadataClass(className));
                         }
                     }
-                    this.weaver = TransformerFactory.createTransformerAndModifyProject(session, persistenceClasses, classLoaderToUse, weaveLazy, weaveChangeTracking, weaveFetchGroups, weaveInternal);
+                    this.weaver = TransformerFactory.createTransformerAndModifyProject(session, persistenceClasses, classLoaderToUse, weaveLazy, weaveChangeTracking, weaveFetchGroups, weaveInternal, weaveRest);
                 }
             }
 

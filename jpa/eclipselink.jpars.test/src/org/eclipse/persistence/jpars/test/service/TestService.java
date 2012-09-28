@@ -12,6 +12,9 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpars.test.service;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
@@ -33,9 +36,9 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 import javax.xml.bind.JAXBException;
 
-
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
+import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.PersistenceFactoryBase;
@@ -46,16 +49,14 @@ import org.eclipse.persistence.jpars.test.model.StaticAuction;
 import org.eclipse.persistence.jpars.test.model.StaticBid;
 import org.eclipse.persistence.jpars.test.model.StaticUser;
 import org.eclipse.persistence.jpars.test.model.multitenant.Account;
-import org.eclipse.persistence.jpars.test.util.StaticModelDatabasePopulator;
 import org.eclipse.persistence.jpars.test.util.ExamplePropertiesLoader;
+import org.eclipse.persistence.jpars.test.util.StaticModelDatabasePopulator;
 import org.eclipse.persistence.jpars.test.util.TestHttpHeaders;
 import org.eclipse.persistence.jpars.test.util.TestURIInfo;
 import org.eclipse.persistence.queries.FetchGroupTracker;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 /**
  * Tests for the JPA RS service class
@@ -99,11 +100,13 @@ public class TestService {
             properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
             properties.put(PersistenceUnitProperties.DDL_GENERATION, PersistenceUnitProperties.DROP_AND_CREATE);
             properties.put(PersistenceUnitProperties.DEPLOY_ON_STARTUP, "true");
-
+           
             getAuctionPersistenceContext(properties);
 
             getPhoneBookPersistenceContext(properties);
             
+            properties.put(PersistenceUnitProperties.CLASSLOADER, new DynamicClassLoader(Thread.currentThread().getContextClassLoader()));
+ 
             EntityManagerFactory emf = Persistence.createEntityManagerFactory("auction-static-local", properties);
             factory.bootstrapPersistenceContext("auction-static-local", emf, BASE_URI, false);
 
@@ -387,7 +390,7 @@ public class TestService {
         String resultString = stringifyResults(output);
         
         assertTrue("amount was not in results.", resultString.replace(" ","").contains("\"amount\":201.0"));
-        assertTrue("link was not in results.", resultString.replace(" ","").contains("http://localhost:8080/JPA-RS/auction/entity/Bid/"));
+        assertTrue("link was not in results.", resultString.replace(" ","").contains("http://localhost:9090/JPA-RS/auction/entity/Bid/"));
         assertTrue("rel was not in results.", resultString.replace(" ","").contains("\"rel\":\"user\""));
         assertTrue("Laptop was not in results.", resultString.replace(" ","").contains("\"name\":\"Laptop\""));
         
@@ -634,17 +637,17 @@ public class TestService {
         Service service = new Service();
         service.setPersistenceFactory(factory);
         PersistenceContext context = getAuctionPersistenceContext(null);
-        LinkAdapter adapter = new LinkAdapter("http://localhost:8080/JPA-RS/", context);
+        LinkAdapter adapter = new LinkAdapter("http://localhost:9090/JPA-RS/", context);
         DynamicEntity entity1 = null;
         DynamicEntity entity2 = null;
         try{
-            entity1 = (DynamicEntity)adapter.unmarshal("http://localhost:8080/JPA-RS/auction/entity/Auction/1");
+            entity1 = (DynamicEntity)adapter.unmarshal("http://localhost:9090/JPA-RS/auction/entity/Auction/1");
         } catch (Exception e){
             fail(e.toString());
         }
         assertTrue("id for Auction was missing", entity1.get("id").equals(1));
         try{
-            entity2 = (DynamicEntity)adapter.unmarshal("http://localhost:8080/JPA-RS/auction/entity/Address/1+Home");
+            entity2 = (DynamicEntity)adapter.unmarshal("http://localhost:9090/JPA-RS/auction/entity/Address/1+Home");
         } catch (Exception e){
             fail(e.toString());
         }

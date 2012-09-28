@@ -13,12 +13,9 @@
 package org.eclipse.persistence.internal.jpa.weaving;
 
 // J2SE imports
-import java.io.File;
-import java.io.FileOutputStream;
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
 import java.util.Map;
-import java.util.StringTokenizer;
 
 import javax.persistence.spi.ClassTransformer;
 
@@ -30,7 +27,6 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.Session;
 
-
 /**
  * INTERNAL:
  * This class performs dynamic bytecode weaving: for each attribute
@@ -39,8 +35,6 @@ import org.eclipse.persistence.sessions.Session;
  */
 public class PersistenceWeaver implements ClassTransformer {
 
-    public static final String WEAVER_NOT_OVERWRITING = "weaver_not_overwriting";
-    public static final String WEAVER_COULD_NOT_WRITE = "weaver_could_not_write";
     public static final String EXCEPTION_WHILE_WEAVING = "exception_while_weaving";
     
     protected Session session; // for logging
@@ -101,14 +95,19 @@ public class PersistenceWeaver implements ClassTransformer {
                     ((AbstractSession)session).log(SessionLog.FINEST, SessionLog.WEAVER, "end_weaving_class", className);
                     return null;
                 }
-    
+                
+                /*if (classWeaver.weavedRest && loader instanceof DynamicClassLoader){
+                    RestAdapterClassWriter restAdapter = new RestAdapterClassWriter(classDetails.getClassName());
+                    ((DynamicClassLoader)loader).addClass(restAdapter.getClassName(), restAdapter);
+                }*/
+                
                 if (classWeaver.weaved) {
                     byte[] bytes = classWriter.toByteArray();
                     
                     String outputPath = System.getProperty(SystemProperties.WEAVING_OUTPUT_PATH, "");
     
                     if (!outputPath.equals("")) {
-                        outputFile(className, bytes, outputPath);
+                        Helper.outputClassFile(className, bytes, outputPath);
                     }
                     if (classWeaver.weavedPersistenceEntity) {
                         ((AbstractSession)session).log(SessionLog.FINEST, SessionLog.WEAVER, "weaved_persistenceentity", className);
@@ -122,6 +121,9 @@ public class PersistenceWeaver implements ClassTransformer {
                     if (classWeaver.weavedFetchGroups) {
                         ((AbstractSession)session).log(SessionLog.FINEST, SessionLog.WEAVER, "weaved_fetchgroups", className);
                     }
+                    if (classWeaver.weavedRest) {
+                        ((AbstractSession)session).log(SessionLog.FINEST, SessionLog.WEAVER, "weaved_rest", className);
+                    }
                     ((AbstractSession)session).log(SessionLog.FINEST, SessionLog.WEAVER, "end_weaving_class", className);
                     return bytes;
                 }
@@ -132,46 +134,6 @@ public class PersistenceWeaver implements ClassTransformer {
             ((AbstractSession)session).logThrowable(SessionLog.FINEST, SessionLog.WEAVER, exception);
         }
         return null; // returning null means 'use existing class bytes'
-    }
-    
-    protected void outputFile(String className, byte[] classBytes, String outputPath){
-        StringBuffer directoryName = new StringBuffer();;
-        StringTokenizer tokenizer = new StringTokenizer(className, "\n\\/");
-        String token = null;
-        while (tokenizer.hasMoreTokens()){
-            token = tokenizer.nextToken();
-            if (tokenizer.hasMoreTokens()){
-                directoryName.append(token + File.separator);
-            }
-        }
-        FileOutputStream fos = null;
-        try{
-            String usedOutputPath = outputPath;
-            if (!outputPath.endsWith(File.separator)){
-                usedOutputPath = outputPath + File.separator;
-            }
-            File file = new File(usedOutputPath + directoryName);
-            file.mkdirs();
-            file = new File(file, token + ".class");
-            if (!file.exists()){
-                file.createNewFile();
-            } else {
-                if (!System.getProperty(SystemProperties.WEAVING_SHOULD_OVERWRITE, "false").equalsIgnoreCase("true")){
-                    ((AbstractSession)session).log(
-                            SessionLog.WARNING, SessionLog.WEAVER, WEAVER_NOT_OVERWRITING, className);
-                    return;
-                }
-            }
-            
-        	fos = new FileOutputStream(file);
-            fos.write(classBytes);
-        } catch (Exception e){
-            ((AbstractSession)session).log(
-                    SessionLog.WARNING, SessionLog.WEAVER, WEAVER_COULD_NOT_WRITE, className, e);
-            ((AbstractSession)session).logThrowable(SessionLog.FINEST, SessionLog.WEAVER, e);
-        } finally {
-        	Helper.close(fos);
-        }
     }
     
     // same as in org.eclipse.persistence.internal.helper.Helper, but uses

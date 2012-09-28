@@ -12,7 +12,10 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.weaving;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.eclipse.persistence.internal.descriptors.VirtualAttributeMethodInfo;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
@@ -39,6 +42,8 @@ public class ClassDetails {
     protected boolean shouldWeaveFetchGroups = false;
     /** Define if internal optimizations should be weaved in this class. */    
     protected boolean shouldWeaveInternal = false;
+    /** Define if this class should be weaved for our REST support */
+    protected boolean shouldWeaveRest = false;
     /** Map of this class' persistent attributes where the key is the Attribute name. */
     protected Map<String, AttributeDetails> attributesMap;
     /** Map of this class' persistent get methods where the key is the getMethod name. */
@@ -133,6 +138,14 @@ public class ClassDetails {
     
     public void setShouldWeaveInternal(boolean shouldWeaveInternal) {
         this.shouldWeaveInternal = shouldWeaveInternal;
+    }
+    
+    public boolean shouldWeaveREST(){
+        return shouldWeaveRest;
+    }
+        
+    public void setShouldWeaveREST(boolean shouldWeaveRest){
+        this.shouldWeaveRest = shouldWeaveRest;
     }
     
     public Map<String, AttributeDetails> getAttributesMap() {

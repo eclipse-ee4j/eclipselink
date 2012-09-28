@@ -43,18 +43,14 @@ import java.util.Map;
 
 import org.eclipse.persistence.eis.mappings.EISOneToManyMapping;
 import org.eclipse.persistence.exceptions.ValidationException;
-
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotatedElement;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.columns.AssociationOverrideMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
-
-import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
-
-import org.eclipse.persistence.internal.helper.DatabaseField;
-
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.EmbeddableMapping;
@@ -217,6 +213,7 @@ public class OneToManyAccessor extends CollectionAccessor {
               processMappedByRelationTable(ownerMapping.getRelationTableMechanism(), mapping.getRelationTableMechanism());
               // Set the mapping to read only
               mapping.setIsReadOnly(true);
+              mapping.setMappedBy(getMappedBy());
            } else {
                // Create a 1-M mapping and process common collection mapping 
                // metadata first followed by specific metadata.
@@ -240,6 +237,7 @@ public class OneToManyAccessor extends CollectionAccessor {
                 
                    mapping.addTargetForeignKeyField(fkField, pkField);
                }
+               mapping.setMappedBy(getMappedBy());
            }
        } else {
            // If improper mapping encountered, throw an exception.

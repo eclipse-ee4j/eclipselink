@@ -33,10 +33,8 @@
 package org.eclipse.persistence.internal.jpa.metadata;
 
 import java.io.IOException;
-
 import java.net.URISyntaxException;
 import java.net.URL;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -50,32 +48,25 @@ import java.util.Set;
 
 import javax.persistence.spi.PersistenceUnitInfo;
 
-import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
-import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor.Mode;
-import org.eclipse.persistence.jpa.metadata.MetadataSource;
-
 import org.eclipse.persistence.config.DescriptorCustomizer;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.exceptions.PersistenceUnitLoadingException;
 import org.eclipse.persistence.exceptions.ValidationException;
-
 import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl;
-
+import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
+import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor.Mode;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EmbeddableAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAsmFactory;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataFactory;
-
 import org.eclipse.persistence.internal.jpa.metadata.converters.StructConverterMetadata;
-
-import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappingsReader;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
-
+import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappingsReader;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.Archive;
-
+import org.eclipse.persistence.jpa.metadata.MetadataSource;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 
@@ -163,6 +154,10 @@ public class MetadataProcessor {
         m_project.createDynamicClasses(m_loader);
     }
     
+    public void createRestInterfaces(){
+        m_project.createRestInterfaces(m_loader);
+    }
+        
     /**
      * INTERNAL:
      * Return compositeProcessor.

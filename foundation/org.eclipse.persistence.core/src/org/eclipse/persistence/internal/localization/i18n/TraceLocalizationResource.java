@@ -250,6 +250,7 @@ public class TraceLocalizationResource extends ListResourceBundle {
                                            { "weaved_fetchgroups", "Weaved fetch groups (FetchGroupTracker) [{0}]."},
                                            { "weaved_changetracker", "Weaved change tracking (ChangeTracker) [{0}]."},
                                            { "weaved_persistenceentity", "Weaved persistence (PersistenceEntity) [{0}]."},
+                                           { "weaved_rest", "Weaved REST [{0}]."},
                                            { "cmp_init_invoke_predeploy", "JavaSECMPInitializer - predeploying {0}."},
                                            { "cmp_init_register_transformer", "JavaSECMPInitializer - registering transformer for {0}."},
                                            { "cmp_init_tempLoader_created", "JavaSECMPInitializer - created temporary ClassLoader: {0}."},
