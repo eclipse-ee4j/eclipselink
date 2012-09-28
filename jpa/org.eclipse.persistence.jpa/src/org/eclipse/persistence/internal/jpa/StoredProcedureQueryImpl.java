@@ -294,7 +294,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
                 throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_query_for_execute"));
             }
         
-            getDatabaseQueryInternal().setIsExecuteCall(true);
+            ((ResultSetMappingQuery) super.getDatabaseQueryInternal()).setIsExecuteCall(true);
             executeCall = (DatabaseCall) executeReadQuery();
             executeStatement = (CallableStatement) executeCall.getStatement();
             
@@ -338,17 +338,6 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
      */
     protected StoredProcedureCall getCall() {
         return (StoredProcedureCall) getDatabaseQuery().getCall();
-    }
-    
-    /**
-     * INTERNAL: Return the cached database query for this 
-     * StoredProcedureQueryImpl. If the query is a named query and it has not 
-     * yet been looked up, the query will be looked up and stored as the cached 
-     * query.
-     */
-    @Override
-    public ResultSetMappingQuery getDatabaseQueryInternal() {
-        return (ResultSetMappingQuery) super.getDatabaseQueryInternal();
     }
     
     /**
@@ -418,7 +407,10 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
         try {
             if (executeStatement == null) {
                 if (resultList == null) {
-                    getDatabaseQueryInternal().setIsExecuteCall(false);
+                    if (getDatabaseQueryInternal().isResultSetMappingQuery()) {
+                        ((ResultSetMappingQuery) super.getDatabaseQueryInternal()).setIsExecuteCall(false);
+                    }
+
                     resultList = super.getResultList();
                 }
             

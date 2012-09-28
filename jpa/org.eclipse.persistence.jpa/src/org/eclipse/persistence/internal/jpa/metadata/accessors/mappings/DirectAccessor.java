@@ -25,8 +25,13 @@
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     10/09/2012-2.5 Guy Pelletier 
+ *       - 374688: JPA 2.1 Converter support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.persistence.annotations.Convert;
 
@@ -34,10 +39,13 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAcce
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.converters.EnumeratedMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
+import org.eclipse.persistence.internal.jpa.metadata.converters.ConvertMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.LobMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.TemporalMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_CONVERT;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_CONVERTS;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ENUMERATED;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_FETCH_LAZY;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_LOB;
@@ -54,7 +62,7 @@ import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JP
  * - any metadata mapped from XML to this class must be handled in the merge
  *   method. (merging is done at the accessor/mapping level)
  * - any metadata mapped from XML to this class must be initialized in the
- *   initXMLObject  method.
+ *   initXMLObject method.
  * - methods should be preserved in alphabetical order.
  * 
  * @author Guy Pelletier
@@ -63,11 +71,12 @@ import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JP
 public abstract class DirectAccessor extends MappingAccessor {
     private Boolean m_optional;
     private EnumeratedMetadata m_enumerated;
+    private List<ConvertMetadata> m_converts = new ArrayList<ConvertMetadata>();
     private LobMetadata m_lob;
     
     private String m_fetch;
     private String m_convert;
-    
+        
     private TemporalMetadata m_temporal;
     
     /**
@@ -96,6 +105,19 @@ public abstract class DirectAccessor extends MappingAccessor {
         // Set the temporal type if one is present.
         if (isAnnotationPresent(JPA_TEMPORAL)) {
             m_temporal = new TemporalMetadata(getAnnotation(JPA_TEMPORAL), this);
+        }
+        
+        // Set the converts if some are present. 
+        // Process all the join columns first.
+        if (isAnnotationPresent(JPA_CONVERTS)) {
+            for (Object convert : (Object[]) getAnnotation(JPA_CONVERTS).getAttributeArray("value")) {
+                m_converts.add(new ConvertMetadata((MetadataAnnotation) convert, this));
+            }
+        }
+        
+        // Process the single convert second.
+        if (isAnnotationPresent(JPA_CONVERT)) {
+            m_converts.add(new ConvertMetadata(getAnnotation(JPA_CONVERT), this));
         }
         
         // Set the convert value if one is present.
@@ -128,7 +150,7 @@ public abstract class DirectAccessor extends MappingAccessor {
                 return false;
             }
             
-            if (! valuesMatch(m_convert, directAccessor.getConvert())) {
+            if (! valuesMatch(m_converts, directAccessor.getConverts())) {
                 return false;
             }
             
@@ -140,10 +162,18 @@ public abstract class DirectAccessor extends MappingAccessor {
     
     /**
      * INTERNAL:
-     * Used for OX mapping.
      */
     public String getConvert() {
         return m_convert;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    @Override
+    public List<ConvertMetadata> getConverts() {
+        return m_converts;
     }
     
     /**
@@ -231,6 +261,16 @@ public abstract class DirectAccessor extends MappingAccessor {
     
     /**
      * INTERNAL:
+     * Method to check if there is JPA convert(s) metadata. Those mapping 
+     * accessors that do support them should override this method.
+     */
+    @Override
+    public boolean hasConverts() {
+        return ! m_converts.isEmpty() || getDescriptor().hasConverts(getAttributeName());
+    }
+    
+    /**
+     * INTERNAL:
      * Return true if this accessor has enumerated metadata.
      */
     @Override
@@ -267,6 +307,12 @@ public abstract class DirectAccessor extends MappingAccessor {
         initXMLObject(m_enumerated, accessibleObject);
         initXMLObject(m_lob, accessibleObject);
         initXMLObject(m_temporal, accessibleObject);
+        
+        // Initialize lists of ORMetadata objects.
+        initXMLObjects(m_converts, accessibleObject);
+        
+        // Initialize a previous text element from a list of elements (legacy)
+        m_convert = initXMLTextObject(m_converts);
     }
     
     /**
@@ -284,8 +330,8 @@ public abstract class DirectAccessor extends MappingAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setConvert(String convert) {
-        m_convert = convert;
+    public void setConverts(List<ConvertMetadata> converts) {
+        m_converts = converts;
     }
     
     /**

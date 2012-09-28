@@ -10,6 +10,8 @@
  * Contributors:
  *     02/08/2012-2.4 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     10/09/2012-2.5 Guy Pelletier 
+ *       - 374688: JPA 2.1 Converter support
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa21.advanced;
 
@@ -568,7 +570,18 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
 
         field = new FieldDefinition();
         field.setName("SALARY");
-        field.setTypeName("NUMBER");
+        field.setTypeName("VARCHAR");
+        field.setSize(15);
+        field.setSubSize(0);
+        field.setIsPrimaryKey(false);
+        field.setIsIdentity(false);
+        field.setUnique(false);
+        field.setShouldAllowNull(true);
+        table.addField(field);
+        
+        field = new FieldDefinition();
+        field.setName("PREVIOUSSALARY");
+        field.setTypeName("NUMERIC");
         field.setSize(15);
         field.setSubSize(0);
         field.setIsPrimaryKey(false);

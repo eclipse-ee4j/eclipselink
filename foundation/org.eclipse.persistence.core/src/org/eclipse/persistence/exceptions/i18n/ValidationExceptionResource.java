@@ -23,6 +23,8 @@
  *       - 356197: Add new VPD type to MultitenantType
  *     22/05/2012-2.4 Guy Pelletier  
  *       - 380008: Multitenant persistence units with a dedicated emf should force tenant property specification up front.
+ *     10/09/2012-2.5 Guy Pelletier 
+ *       - 374688: JPA 2.1 Converter support
  ******************************************************************************/  
 package org.eclipse.persistence.exceptions.i18n;
 
@@ -336,6 +338,7 @@ public class ValidationExceptionResource extends ListResourceBundle {
                                            { "7344", "VPD (connections and DDL generation) is not supported for the platform: [{0}]."},
                                            { "7345", "{0} file specified for XMLMetadataSource is not found"},
                                            { "7346", "The multitenant context property [{0}] has not been provided. When the persistence unit property (" + PersistenceUnitProperties.MULTITENANT_SHARED_EMF + ") is set to false, all multitenant context properties must be provided up front. This can be done through the persistence unit definition directly or by passing a properties map containing all the multitenant context properties on the create entity manager factory call."},
+                                           { "7347", "The entity [{0}] specifies class level convert metadata without specifying an attribute name for each. An attribute name must be provided for all entity level convert metadata to ensure the correct application to a super class attribute."},
                                            
  };
     

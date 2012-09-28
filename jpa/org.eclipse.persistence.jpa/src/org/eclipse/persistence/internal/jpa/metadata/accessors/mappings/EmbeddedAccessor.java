@@ -29,6 +29,8 @@
  *       - 309856: MappedSuperclasses from XML are not being initialized properly
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     10/09/2012-2.5 Guy Pelletier 
+ *       - 374688: JPA 2.1 Converter support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -43,6 +45,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
 
 import org.eclipse.persistence.internal.jpa.metadata.columns.AssociationOverrideMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.AttributeOverrideMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.converters.ConvertMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
 import org.eclipse.persistence.mappings.AggregateMapping;
@@ -54,6 +57,8 @@ import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JP
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ATTRIBUTE_OVERRIDES;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ASSOCIATION_OVERRIDE;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ASSOCIATION_OVERRIDES;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_CONVERT;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_CONVERTS;
 
 /**
  * An embedded relationship accessor. It may define all the same attributes
@@ -76,6 +81,7 @@ import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JP
 public class EmbeddedAccessor extends MappingAccessor {
     private List<AssociationOverrideMetadata> m_associationOverrides = new ArrayList<AssociationOverrideMetadata>();
     private List<AttributeOverrideMetadata> m_attributeOverrides = new ArrayList<AttributeOverrideMetadata>();
+    private List<ConvertMetadata> m_converts = new ArrayList<ConvertMetadata>();
 
     /**
      * INTERNAL:
@@ -123,6 +129,19 @@ public class EmbeddedAccessor extends MappingAccessor {
         if (isAnnotationPresent(JPA_ASSOCIATION_OVERRIDE)) {
             m_associationOverrides.add(new AssociationOverrideMetadata(getAnnotation(JPA_ASSOCIATION_OVERRIDE), this));
         }
+        
+        // Set the converts if some are present. 
+        // Process all the join columns first.
+        if (isAnnotationPresent(JPA_CONVERTS)) {
+            for (Object convert : (Object[]) getAnnotation(JPA_CONVERTS).getAttributeArray("value")) {
+                m_converts.add(new ConvertMetadata((MetadataAnnotation) convert, this));
+            }
+        }
+        
+        // Process the single convert second.
+        if (isAnnotationPresent(JPA_CONVERT)) {
+            m_converts.add(new ConvertMetadata(getAnnotation(JPA_CONVERT), this));
+        }
     }
     
     /**
@@ -144,7 +163,11 @@ public class EmbeddedAccessor extends MappingAccessor {
                 return false;
             }
             
-            return valuesMatch(m_attributeOverrides, embeddedAccessor.getAttributeOverrides());
+            if (! valuesMatch(m_attributeOverrides, embeddedAccessor.getAttributeOverrides())) {
+                return false;
+            }
+            
+            return valuesMatch(m_converts, embeddedAccessor.getConverts());
         }
         
         return false;
@@ -169,6 +192,15 @@ public class EmbeddedAccessor extends MappingAccessor {
 
     /**
      * INTERNAL:
+     * Used for OX mapping.
+     */
+    @Override
+    public List<ConvertMetadata> getConverts() {
+        return m_converts;
+    }
+    
+    /**
+     * INTERNAL:
      */
     @Override
     public void initXMLObject(MetadataAccessibleObject accessibleObject, XMLEntityMappings entityMappings) {
@@ -177,6 +209,7 @@ public class EmbeddedAccessor extends MappingAccessor {
         // Initialize lists of ORMetadata objects.
         initXMLObjects(m_attributeOverrides, accessibleObject);
         initXMLObjects(m_associationOverrides, accessibleObject);
+        initXMLObjects(m_converts, accessibleObject);
     }
     
     /**
@@ -206,11 +239,15 @@ public class EmbeddedAccessor extends MappingAccessor {
         if (mapping.isAggregateObjectMapping()) {
             AggregateObjectMapping aggregateMapping = (AggregateObjectMapping)mapping;
             aggregateMapping.setIsNullAllowed(true);
+            
             // Process attribute overrides.
             processAttributeOverrides(m_attributeOverrides, aggregateMapping, getReferenceDescriptor());
            
             // Process association overrides.
             processAssociationOverrides(m_associationOverrides, aggregateMapping, getReferenceDescriptor());
+            
+            // TODO: Process converts.
+            
         } else if (mapping.isAbstractCompositeObjectMapping()) {
             ((AbstractCompositeObjectMapping)mapping).setField(getDatabaseField(getDescriptor().getPrimaryTable(), MetadataLogger.COLUMN));
         }
@@ -233,6 +270,14 @@ public class EmbeddedAccessor extends MappingAccessor {
      */
     public void setAttributeOverrides(List<AttributeOverrideMetadata> attributeOverrides) {
         m_attributeOverrides = attributeOverrides;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setConverts(List<ConvertMetadata> converts) {
+        m_converts = converts;
     }
     
     /**

@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     10/09/2012-2.5 Guy Pelletier 
+ *       - 374688: JPA 2.1 Converter support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.deployment;
 
@@ -56,6 +58,7 @@ import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.jpa.Archive;
 import org.eclipse.persistence.jpa.ArchiveFactory;
 
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_CONVERTER;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_EMBEDDABLE;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ENTITY;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_STATIC_METAMODEL;
@@ -449,6 +452,13 @@ public class PersistenceUnitProcessor {
     /**
      * Return if a given class is annotated with @Embeddable.
      */
+    public static MetadataAnnotation getConverterAnnotation(MetadataClass candidateClass){
+        return candidateClass.getAnnotation(JPA_CONVERTER);
+    }
+    
+    /**
+     * Return if a given class is annotated with @Embeddable.
+     */
     public static MetadataAnnotation getEmbeddableAnnotation(MetadataClass candidateClass){
         return candidateClass.getAnnotation(JPA_EMBEDDABLE);
     }
@@ -475,6 +485,13 @@ public class PersistenceUnitProcessor {
      */
     public static MetadataAnnotation getStaticMetamodelAnnotation(MetadataClass candidateClass){
         return candidateClass.getAnnotation(JPA_STATIC_METAMODEL);
+    }
+    
+    /**
+     * Return if a given class is annotated with @Converter.
+     */
+    public static boolean isConverter(MetadataClass candidateClass) {
+        return candidateClass.isAnnotationPresent(JPA_CONVERTER);
     }
     
     /**

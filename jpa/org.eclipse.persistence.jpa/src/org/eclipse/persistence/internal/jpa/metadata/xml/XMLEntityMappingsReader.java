@@ -17,6 +17,8 @@
  *       - 257606: Add orm.xml schema validation true/(false) flag support in persistence.xml
  *     03/27/2009-2.0 Guy Pelletier 
  *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+ *     10/09/2012-2.5 Guy Pelletier 
+ *       - 374688: JPA 2.1 Converter support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
@@ -57,7 +59,7 @@ public class XMLEntityMappingsReader {
     public static final String ORM_1_0_NAMESPACE = "http://java.sun.com/xml/ns/persistence/orm";
     public static final String ORM_2_0_XSD = "org/eclipse/persistence/jpa/orm_2_0.xsd";
     public static final String ORM_2_0_NAMESPACE = "http://java.sun.com/xml/ns/persistence/orm";
-    public static final String ECLIPSELINK_ORM_XSD = "org/eclipse/persistence/jpa/eclipselink_orm_2_4.xsd";
+    public static final String ECLIPSELINK_ORM_XSD = "org/eclipse/persistence/jpa/eclipselink_orm_2_5.xsd";
     public static final String ECLIPSELINK_ORM_NAMESPACE = "http://www.eclipse.org/eclipselink/xsds/persistence/orm";
     
     private static XMLContext m_orm1_0Project;

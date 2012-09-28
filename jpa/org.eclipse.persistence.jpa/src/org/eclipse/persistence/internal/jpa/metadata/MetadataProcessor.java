@@ -29,6 +29,8 @@
  *       - 357476: Change caching default to ISOLATED for multitenant's using a shared EMF.
  *     06/20/2012-2.5 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     10/09/2012-2.5 Guy Pelletier 
+ *       - 374688: JPA 2.1 Converter support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -56,6 +58,7 @@ import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor.Mode;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ConverterAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EmbeddableAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAsmFactory;
@@ -357,6 +360,8 @@ public class MetadataProcessor {
                         m_project.addEmbeddableAccessor(new EmbeddableAccessor(PersistenceUnitProcessor.getEmbeddableAnnotation(candidateClass), candidateClass, m_project));
                     } else if (PersistenceUnitProcessor.isStaticMetamodelClass(candidateClass)) {
                         m_project.addStaticMetamodelClass(PersistenceUnitProcessor.getStaticMetamodelAnnotation(candidateClass), candidateClass);
+                    } else if (PersistenceUnitProcessor.isConverter(candidateClass) && ! m_project.hasConverterAccessor(candidateClass)) {
+                        m_project.addConverterAccessor(new ConverterAccessor(PersistenceUnitProcessor.getConverterAnnotation(candidateClass), candidateClass, m_project));
                     }
                 }
                 
@@ -567,6 +572,7 @@ public class MetadataProcessor {
             m_project.processStage1();
             m_project.processStage2();
         }
+        
         if (mode != PersistenceUnitProcessor.Mode.COMPOSITE_MEMBER_INITIAL) {
             m_project.processStage3(mode);
         }

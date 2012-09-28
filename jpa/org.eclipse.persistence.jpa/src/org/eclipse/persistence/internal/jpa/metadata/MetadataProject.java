@@ -85,6 +85,8 @@
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *     06/20/2012-2.5 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     10/09/2012-2.5 Guy Pelletier 
+ *       - 374688: JPA 2.1 Converter support
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -115,6 +117,7 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ConverterAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EmbeddableAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.InterfaceAccessor;
@@ -273,6 +276,10 @@ public class MetadataProject {
     // Metadata converters, that is, EclipseLink converters.
     private Map<String, AbstractConverterMetadata> m_converters;
     
+    // The converter accessors for this project
+    private Map<String, ConverterAccessor> m_converterAccessors;
+    private Map<MetadataClass, ConverterAccessor> m_autoApplyConvertAccessors;
+    
     // Store PLSQL record and table types by name, to allow reuse.
     private Map<String, PLSQLComplexTypeMetadata> m_plsqlComplexTypes;
     
@@ -351,6 +358,8 @@ public class MetadataProject {
         m_sequenceGenerators = new HashMap<String, SequenceGeneratorMetadata>();
         m_uuidGenerators = new HashMap<String, UuidGeneratorMetadata>();
         m_converters = new HashMap<String, AbstractConverterMetadata>();
+        m_converterAccessors = new HashMap<String, ConverterAccessor>();
+        m_autoApplyConvertAccessors = new HashMap<MetadataClass, ConverterAccessor>();
         m_partitioningPolicies = new HashMap<String, AbstractPartitioningMetadata>();
         m_plsqlComplexTypes = new HashMap<String, PLSQLComplexTypeMetadata>();
         m_metamodelMappedSuperclasses = new HashMap<String, MappedSuperclassAccessor>();
@@ -420,6 +429,18 @@ public class MetadataProject {
         // Check for another converter with the same name.
         if (converter.shouldOverride(m_converters.get(converter.getName()))) {
             m_converters.put(converter.getName(), converter);
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Add a abstract converter metadata to the project. The actual processing 
+     * isn't done until an accessor referencing the converter is processed. 
+     */
+    public void addConverterAccessor(ConverterAccessor converterAccessor) {
+        // Check for another converter with the same name.
+        if (converterAccessor.shouldOverride(m_converterAccessors.get(converterAccessor.getIdentifier()))) {
+            m_converterAccessors.put(converterAccessor.getIdentifier(), converterAccessor);
         }
     }
     
@@ -943,6 +964,13 @@ public class MetadataProject {
     }
 
     /**
+     * Return the converter for the auto apply class type.
+     */
+    public ConverterAccessor getAutoApplyConverter(MetadataClass cls) {
+        return m_autoApplyConvertAccessors.get(cls);
+    }
+    
+    /**
      * INTERNAL:
      */
     public MetadataProcessor getCompositeProcessor() {
@@ -955,6 +983,20 @@ public class MetadataProject {
     public AbstractConverterMetadata getConverter(String name) {
         return m_converters.get(name);
     }
+    
+    /**
+     * INTERNAL:
+     */
+    public ConverterAccessor getConverterAccessor(MetadataClass cls) {
+        return m_converterAccessors.get(cls.getName());
+    }  
+    
+    /**
+     * INTERNAL:
+     */
+    public Map<String, ConverterAccessor> getConverterAccessors() {
+        return m_converterAccessors;
+    } 
     
     /**
      * INTERNAL:
@@ -1249,10 +1291,24 @@ public class MetadataProject {
     }
     
     /**
+     * Return true if there is an auto-apply converter for the given cls.
+     */
+    public boolean hasAutoApplyConverter(MetadataClass cls) {
+        return m_autoApplyConvertAccessors.containsKey(cls);
+    }
+    
+    /**
      * INTERNAL:
      */
     public boolean hasConverter(String name) {
         return m_converters.containsKey(name);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public boolean hasConverterAccessor(MetadataClass cls) {
+        return m_converterAccessors.containsKey(cls.getName());
     }
     
     /**
@@ -1662,6 +1718,13 @@ public class MetadataProject {
                 embeddable.preProcess();
             }
         }
+
+        // 3 - Build our global converter and auto-apply lists first
+        for (ConverterAccessor converterAccessor : getConverterAccessors().values()) {
+            if (converterAccessor.autoApply()) {
+                m_autoApplyConvertAccessors.put(converterAccessor.getAutoApplyConvertType(), converterAccessor);
+            }
+        }
     }
     
     /**
@@ -1675,7 +1738,7 @@ public class MetadataProject {
      * @see processStage3
      */
     public void processStage2() {
-        // 266912: process mappedSuperclasses separately from entity descriptors
+        // 266912: process metamodel mappedSuperclasses separately from entity descriptors
         for (MappedSuperclassAccessor msAccessor : m_metamodelMappedSuperclasses.values()) {
             if (! msAccessor.isProcessed()) {               
                 msAccessor.processMetamodelDescriptor();    

@@ -45,6 +45,8 @@
  *       - 347563: transient field/property in embeddable entity
  *     04/09/2012-2.4 Guy Pelletier 
  *       - 374377: OrderBy with ElementCollection doesn't work
+ *     10/09/2012-2.5 Guy Pelletier 
+ *       - 374688: JPA 2.1 Converter support
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -70,6 +72,7 @@ import org.eclipse.persistence.internal.jpa.metadata.columns.AttributeOverrideMe
 import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.OrderColumnMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.converters.ConvertMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.EnumeratedMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.TemporalMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.mappings.MapKeyMetadata;
@@ -132,6 +135,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
     private List<AssociationOverrideMetadata> m_mapKeyAssociationOverrides = new ArrayList<AssociationOverrideMetadata>();
     private List<AttributeOverrideMetadata> m_attributeOverrides = new ArrayList<AttributeOverrideMetadata>();
     private List<AttributeOverrideMetadata> m_mapKeyAttributeOverrides = new ArrayList<AttributeOverrideMetadata>();
+    private List<ConvertMetadata> m_mapKeyConverts = new ArrayList<ConvertMetadata>();
     private List<JoinColumnMetadata> m_mapKeyJoinColumns = new ArrayList<JoinColumnMetadata>(); 
     
     private MapKeyMetadata m_mapKey;
@@ -258,7 +262,8 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
         if (isAnnotationPresent(JPA_ORDER_COLUMN)) {
             m_orderColumn = new OrderColumnMetadata(getAnnotation(JPA_ORDER_COLUMN), this);
         }
-        
+
+        // Set the delete all flag if one is defined.
         if (isAnnotationPresent(DeleteAll.class)) {
             m_deleteAll = Boolean.TRUE;
         }
@@ -356,7 +361,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
                 return false;
             }
             
-            if (! valuesMatch(m_mapKeyConvert, elementCollectionAccessor.getMapKeyConvert())) {
+            if (! valuesMatch(m_mapKeyConverts, elementCollectionAccessor.getMapKeyConverts())) {
                 return false;
             }
             
@@ -515,10 +520,17 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
     
     /**
      * INTERNAL:
-     * Used for OX mapping.
      */
     public String getMapKeyConvert() {
         return m_mapKeyConvert;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<ConvertMetadata> getMapKeyConverts() {
+        return m_mapKeyConverts;
     }
     
     /**
@@ -726,6 +738,7 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
         initXMLObjects(m_associationOverrides, accessibleObject);
         initXMLObjects(m_mapKeyAssociationOverrides, accessibleObject);
         initXMLObjects(m_mapKeyAttributeOverrides, accessibleObject);
+        initXMLObjects(m_mapKeyConverts, accessibleObject);
         
         // Initialize single objects.
         initXMLObject(m_column, accessibleObject);
@@ -736,6 +749,9 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
         // Initialize the any class names we read from XML.
         m_targetClass = initXMLClassName(m_targetClassName);
         m_mapKeyClass = initXMLClassName(m_mapKeyClassName);
+        
+        // Initialize a previous text element from a list of elements (legacy)
+        m_mapKeyConvert = initXMLTextObject(m_mapKeyConverts);
     }
     
     /**
@@ -1034,8 +1050,8 @@ public class ElementCollectionAccessor extends DirectCollectionAccessor implemen
      * INTERNAL:
      * Used for OX mapping.
      */
-    public void setMapKeyConvert(String mapKeyConvert) {
-        m_mapKeyConvert = mapKeyConvert;
+    public void setMapKeyConverts(List<ConvertMetadata> mapKeyConverts) {
+        m_mapKeyConverts = mapKeyConverts;
     }
     
     /**

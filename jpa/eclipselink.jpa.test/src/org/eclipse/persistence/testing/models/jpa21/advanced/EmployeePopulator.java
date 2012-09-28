@@ -16,6 +16,8 @@
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *     09/27/2012-2.5 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     10/09/2012-2.5 Guy Pelletier 
+ *       - 374688: JPA 2.1 Converter support
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa21.advanced;
 
@@ -189,7 +191,7 @@ public class EmployeePopulator {
             employee.setFirstName("Bob");
             employee.setLastName("Smith");
             employee.setMale();
-            employee.setSalary(35000);
+            employee.setSalary(new Long(35000));
             employee.setPeriod(employmentPeriodExample1());
             employee.setAddress(addressExample1());
             employee.setDepartment(departmentExample1());
@@ -212,7 +214,7 @@ public class EmployeePopulator {
             employee.setFemale();
             employee.setPeriod(employmentPeriodExample10());
             employee.setAddress(addressExample10());
-            employee.setSalary(56232);
+            employee.setSalary(new Long(56232));
             employee.addPhoneNumber(phoneNumberExample1());
             employee.addPhoneNumber(phoneNumberExample2());
             employee.addResponsibility("Sort files");
@@ -232,7 +234,7 @@ public class EmployeePopulator {
             employee.setFemale();
             employee.setPeriod(employmentPeriodExample11());
             employee.setAddress(addressExample11());
-            employee.setSalary(75000);
+            employee.setSalary(new Long(75000));
             employee.addPhoneNumber(phoneNumberExample2());
             employee.addPhoneNumber(phoneNumberExample3());
             employee.addPhoneNumber(phoneNumberExample4());
@@ -254,7 +256,7 @@ public class EmployeePopulator {
             employee.setMale();
             employee.setPeriod(employmentPeriodExample12());
             employee.setAddress(addressExample12());
-            employee.setSalary(50000);
+            employee.setSalary(new Long(50000));
             employee.addPhoneNumber(phoneNumberExample3());
             employee.addPhoneNumber(phoneNumberExample4());
             employee.addResponsibility("Bug fixes");
@@ -271,7 +273,7 @@ public class EmployeePopulator {
         try {
             employee.setFirstName("SquareRoot");
             employee.setLastName("TestCase1");
-            employee.setSalary(36);
+            employee.setSalary(new Long(36));
             employee.setPeriod(employmentPeriodExample1());
             employee.setAddress(addressExample1());
             employee.addPhoneNumber(phoneNumberExample1());
@@ -290,7 +292,7 @@ public class EmployeePopulator {
         try {
             employee.setFirstName("SquareRoot");
             employee.setLastName("TestCase2");
-            employee.setSalary(49);
+            employee.setSalary(new Long(49));
             employee.setPeriod(employmentPeriodExample1());
             employee.setAddress(addressExample1());
             employee.addPhoneNumber(phoneNumberExample1());
@@ -310,7 +312,7 @@ public class EmployeePopulator {
         try {
             employee.setFirstName("No Phone Number");
             employee.setLastName("Test case");
-            employee.setSalary(555);
+            employee.setSalary(new Long(555));
             employee.setPeriod(employmentPeriodExample1());
             employee.setAddress(addressExample1());         
             employee.addResponsibility("Find ways to make the days go by faster");
@@ -328,7 +330,7 @@ public class EmployeePopulator {
             employee.setFirstName("John");
             employee.setLastName("Way");
             employee.setMale();
-            employee.setSalary(53000);
+            employee.setSalary(new Long(53000));
             startCalendar.set(1970, 0, 1, 8, 0, 0);
             endCalendar.set(1970, 0, 1, 17, 30, 0);
             employee.setPeriod(employmentPeriodExample2());
@@ -352,7 +354,7 @@ public class EmployeePopulator {
             employee.setFirstName("Charles");
             employee.setLastName("Chanley");
             employee.setMale();
-            employee.setSalary(43000);
+            employee.setSalary(new Long(43000));
             startCalendar.set(1970, 0, 1, 7, 0, 0);
             endCalendar.set(1970, 0, 1, 15, 30, 0);
             employee.setPeriod(employmentPeriodExample6());
@@ -375,7 +377,7 @@ public class EmployeePopulator {
             employee.setFirstName("Emanual");
             employee.setLastName("Smith");
             employee.setMale();
-            employee.setSalary(49631);
+            employee.setSalary(new Long(49631));
             startCalendar.set(1970, 0, 1, 6, 45, 0);
             endCalendar.set(1970, 0, 1, 16, 32, 0);
             employee.setPeriod(employmentPeriodExample5());
@@ -399,7 +401,7 @@ public class EmployeePopulator {
             employee.setFirstName("Sarah");
             employee.setLastName("Way");
             employee.setFemale();
-            employee.setSalary(87000);
+            employee.setSalary(new Long(87000));
             startCalendar.set(1970, 0, 1, 12, 0, 0);
             endCalendar.set(1970, 0, 1, 20, 0, 30);
             employee.setPeriod(employmentPeriodExample4());
@@ -422,7 +424,7 @@ public class EmployeePopulator {
             employee.setFirstName("Marcus");
             employee.setLastName("Saunders");
             employee.setMale();
-            employee.setSalary(54300);
+            employee.setSalary(new Long(54300));
             employee.setPeriod(employmentPeriodExample3());
             employee.setAddress(addressExample3());
             employee.addResponsibility("Write user specifications.");
@@ -442,7 +444,7 @@ public class EmployeePopulator {
             employee.setFirstName("Nancy");
             employee.setLastName("White");
             employee.setFemale();
-            employee.setSalary(31000);
+            employee.setSalary(new Long(31000));
             employee.setPeriod(employmentPeriodExample7());
             employee.setAddress(addressExample7());
             employee.addPhoneNumber(phoneNumberExample3());
@@ -460,7 +462,7 @@ public class EmployeePopulator {
             employee.setFirstName("Fred");
             employee.setLastName("Jones");
             employee.setMale();
-            employee.setSalary(500000);
+            employee.setSalary(new Long(500000));
             employee.setPeriod(employmentPeriodExample8());
             employee.setAddress(addressExample8());
             employee.addPhoneNumber(phoneNumberExample4());
@@ -479,7 +481,7 @@ public class EmployeePopulator {
             employee.setFirstName("Betty");
             employee.setLastName("Jones");
             employee.setFemale();
-            employee.setSalary(500001);
+            employee.setSalary(new Long(500001));
             startCalendar.set(1970, 0, 1, 22, 0, 0);
             endCalendar.set(1970, 0, 1, 5, 30, 0);
             employee.setPeriod(employmentPeriodExample9());

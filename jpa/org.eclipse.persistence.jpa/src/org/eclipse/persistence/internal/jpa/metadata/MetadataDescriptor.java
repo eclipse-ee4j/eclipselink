@@ -96,6 +96,8 @@
  *       - 354678: Temp classloader is still being used during metadata processing
  *     04/07/2012-2.5 Guy Pelletier    
  *       - 384275: Customizer from a mapped superclass is not overridden by an entity customizer 
+ *     10/09/2012-2.5 Guy Pelletier 
+ *       - 374688: JPA 2.1 Converter support
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -137,6 +139,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.PropertyMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.AssociationOverrideMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.AttributeOverrideMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.TenantDiscriminatorColumnMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.converters.ConvertMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListener;
 import org.eclipse.persistence.internal.jpa.metadata.mappings.AccessMethodsMetadata;
@@ -202,6 +205,7 @@ public class MetadataDescriptor {
     private Map<String, AttributeOverrideMetadata> m_attributeOverrides;
     private Map<String, AssociationOverrideMetadata> m_associationOverrides;
     private Map<String, Map<String, MetadataAccessor>> m_biDirectionalManyToManyAccessors;
+    private Map<String, List<ConvertMetadata>> m_converts;
     
     private MetadataClass m_pkClass;
     private MetadataClass m_javaClass;
@@ -268,6 +272,7 @@ public class MetadataDescriptor {
         m_attributeOverrides = new HashMap<String, AttributeOverrideMetadata>();
         m_associationOverrides = new HashMap<String, AssociationOverrideMetadata>();
         m_biDirectionalManyToManyAccessors = new HashMap<String, Map<String, MetadataAccessor>>();
+        m_converts = new HashMap<String, List<ConvertMetadata>>();
         
         m_descriptor = new RelationalDescriptor();
         m_descriptor.setAlias("");
@@ -298,6 +303,17 @@ public class MetadataDescriptor {
      */
     public void addAttributeOverride(AttributeOverrideMetadata attributeOverride) {
         m_attributeOverrides.put(attributeOverride.getName(), attributeOverride);
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public void addConvert(String attributeName, ConvertMetadata convert) {
+        if (! m_converts.containsKey(attributeName)) {
+            m_converts.put(attributeName, new ArrayList<ConvertMetadata>());
+        }
+        
+        m_converts.get(attributeName).add(convert);
     }
     
     /** 
@@ -582,6 +598,13 @@ public class MetadataDescriptor {
      */
     public CMPPolicy getCMPPolicy() {
         return m_descriptor.getCMPPolicy();
+    }
+    
+    /**
+     * INTERNAL:
+     */
+    public List<ConvertMetadata> getConverts(String attributeName) {
+        return m_converts.get(attributeName);
     }
     
     /**
@@ -1227,6 +1250,14 @@ public class MetadataDescriptor {
 
     /**
      * INTERNAL:
+     * Return true if there is convert metadata for the given attribute name.
+     */
+    public boolean hasConverts(String attributeName) { 
+        return m_converts.containsKey(attributeName);
+    }
+    
+    /**
+     * INTERNAL:
      * Indicates that a customizer annotation or customizer element has already 
      * been processed for this descriptor.
      */
@@ -1239,7 +1270,7 @@ public class MetadataDescriptor {
      * Return whether there is an IdAccessor on this descriptor.
      */
     public boolean hasIdAccessor() {
-        return !m_idAccessors.isEmpty();
+        return ! m_idAccessors.isEmpty();
     }
     
     /**
@@ -1695,17 +1726,6 @@ public class MetadataDescriptor {
      */
     public void setIsEmbeddable() {
         m_descriptor.descriptorIsAggregate();
-    }
-
-    /**
-     * INTERNAL:
-     * This method will throw a not supported exception and should not be called
-     * For Embeddable Collections, call setIsEmbeddable() instead.  The cloned descriptor
-     * will be fixed at initialize time
-     * @deprecated
-     */
-    public void setIsEmbeddableCollection() {
-        throw new RuntimeException("Not Supported");
     }
 
     /**

@@ -87,6 +87,8 @@
  *       - 337323: Multi-tenant with shared schema support (part 8)
  *     07/03/2011-2.3.1 Guy Pelletier 
  *       - 348756: m_cascadeOnDelete boolean should be changed to Boolean
+ *     10/09/2012-2.5 Guy Pelletier 
+ *       - 374688: JPA 2.1 Converter support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
@@ -113,6 +115,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataC
 
 import org.eclipse.persistence.internal.jpa.metadata.columns.DiscriminatorColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.converters.ConvertMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.inheritance.InheritanceMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityClassListenerMetadata;
@@ -131,6 +134,8 @@ import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ACCESS_FIELD;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ACCESS_PROPERTY;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_CONVERT;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_CONVERTS;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ENTITY;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_DISCRIMINATOR_COLUMN;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_DISCRIMINATOR_VALUE;
@@ -162,6 +167,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     private InheritanceMetadata m_inheritance;
     private DiscriminatorColumnMetadata m_discriminatorColumn;
     
+    private List<ConvertMetadata> m_converts = new ArrayList<ConvertMetadata>();
     private List<PrimaryKeyJoinColumnMetadata> m_primaryKeyJoinColumns = new ArrayList<PrimaryKeyJoinColumnMetadata>();
     private List<SecondaryTableMetadata> m_secondaryTables = new ArrayList<SecondaryTableMetadata>();
     private List<IndexMetadata> m_indexes = new ArrayList<IndexMetadata>();
@@ -327,6 +333,14 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * INTERNAL:
      * Used for OX mapping.
      */
+    public List<ConvertMetadata> getConverts() {
+        return m_converts;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
     public DiscriminatorColumnMetadata getDiscriminatorColumn() {
         return m_discriminatorColumn;
     }
@@ -451,10 +465,11 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         initXMLObject(m_discriminatorColumn, accessibleObject);
         initXMLObject(m_table, accessibleObject);
         
-        // Initialize lists of objects.
+        // Initialize lists of ORMetadata objects.
         initXMLObjects(m_secondaryTables, accessibleObject);
         initXMLObjects(m_primaryKeyJoinColumns, accessibleObject);
         initXMLObjects(m_indexes, accessibleObject);
+        initXMLObjects(m_converts, accessibleObject);
     }
     
     /**
@@ -506,6 +521,7 @@ public class EntityAccessor extends MappedSuperclassAccessor {
         m_secondaryTables = mergeORObjectLists(m_secondaryTables, accessor.getSecondaryTables());
         m_primaryKeyJoinColumns = mergeORObjectLists(m_primaryKeyJoinColumns, accessor.getPrimaryKeyJoinColumns());
         m_indexes = mergeORObjectLists(m_indexes, accessor.getIndexes());
+        m_converts = mergeORObjectLists(m_converts, accessor.getConverts());
     }
     
     /**
@@ -849,6 +865,63 @@ public class EntityAccessor extends MappedSuperclassAccessor {
     
     /**
      * INTERNAL:
+     * Add a convert metadata to the descriptor convert map.
+     */
+    public void processConvert(ConvertMetadata convert) {
+        if (convert.hasAttributeName()) {
+            // We have dot notation.
+            if (convert.getAttributeName().indexOf(".") > -1) {
+                String dotNotationName = convert.getAttributeName();
+                String attributeName = dotNotationName.substring(0, dotNotationName.indexOf("."));
+                String remainder = dotNotationName.substring(dotNotationName.indexOf(".") + 1);
+                // Update the convert attribute name for correct convert processing.
+                convert.setAttributeName(remainder);
+                getDescriptor().addConvert(attributeName, convert);
+            } else {
+                // Update the convert attribute name for correct convert processing.
+                convert.setAttributeName("");
+                getDescriptor().addConvert(convert.getAttributeName(), convert);
+            }
+        } else {
+            throw ValidationException.missingConvertAttributeName(getJavaClassName());
+        }
+    }
+    
+    /**
+     * INTERNAL:
+     * Process the convert metadata for this entity accessor logging ignore
+     * warnings where necessary.
+     */
+    public void processConverts() {
+        if (m_converts.isEmpty()) {
+            // Look for a Converts annotation.
+            if (isAnnotationPresent(JPA_CONVERTS)) {
+                for (Object convert : (Object[]) getAnnotation(JPA_CONVERTS).getAttributeArray("value")) { 
+                    processConvert(new ConvertMetadata((MetadataAnnotation) convert, this));
+                }
+            } else {
+                // Look for a Convert annotation
+                if (isAnnotationPresent(JPA_CONVERT)) {    
+                    processConvert(new ConvertMetadata(getAnnotation(JPA_CONVERT), this));
+                }
+            }
+        } else {
+            if (isAnnotationPresent(JPA_CONVERT)) {
+                getLogger().logConfigMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, getAnnotation(JPA_CONVERT), getJavaClassName(), getLocation());
+            }
+                
+            if (isAnnotationPresent(JPA_CONVERTS)) {
+                getLogger().logConfigMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, getAnnotation(JPA_CONVERTS), getJavaClassName(), getLocation());
+            }
+                
+            for (ConvertMetadata convert : m_converts) {
+                processConvert(convert);
+            }
+        }
+    }
+    
+    /**
+     * INTERNAL:
      * Allows for processing DerivedIds.  All referenced accessors are processed
      * first to ensure the necessary fields are set before this derivedId is processed 
      */
@@ -1096,36 +1169,35 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * Process secondary-table(s) for a given entity.
      */
     protected void processSecondaryTables() {
-        if (getDescriptor().getClassDescriptor().isEISDescriptor()) {
-            return;
-        }
-        
-        MetadataAnnotation secondaryTable = getAnnotation(JPA_SECONDARY_TABLE);
-        MetadataAnnotation secondaryTables = getAnnotation(JPA_SECONDARY_TABLES);
-        
-        if (m_secondaryTables.isEmpty()) {
-            // Look for a SecondaryTables annotation.
-            if (secondaryTables != null) {
-                for (Object table : (Object[]) secondaryTables.getAttributeArray("value")) { 
-                    processSecondaryTable(new SecondaryTableMetadata((MetadataAnnotation)table, this));
+        // Ignore secondary tables when the descriptor is an EIS descriptor.
+        if (! getDescriptor().getClassDescriptor().isEISDescriptor()) {
+            MetadataAnnotation secondaryTable = getAnnotation(JPA_SECONDARY_TABLE);
+            MetadataAnnotation secondaryTables = getAnnotation(JPA_SECONDARY_TABLES);
+            
+            if (m_secondaryTables.isEmpty()) {
+                // Look for a SecondaryTables annotation.
+                if (secondaryTables != null) {
+                    for (Object table : (Object[]) secondaryTables.getAttributeArray("value")) { 
+                        processSecondaryTable(new SecondaryTableMetadata((MetadataAnnotation)table, this));
+                    }
+                } else {
+                    // Look for a SecondaryTable annotation
+                    if (secondaryTable != null) {    
+                        processSecondaryTable(new SecondaryTableMetadata(secondaryTable, this));
+                    }
                 }
             } else {
-                // Look for a SecondaryTable annotation
-                if (secondaryTable != null) {    
-                    processSecondaryTable(new SecondaryTableMetadata(secondaryTable, this));
+                if (secondaryTable != null) {
+                    getLogger().logConfigMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, secondaryTable, getJavaClassName(), getLocation());
                 }
-            }
-        } else {
-            if (secondaryTable != null) {
-                getLogger().logConfigMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, secondaryTable, getJavaClassName(), getLocation());
-            }
-            
-            if (secondaryTables != null) {
-                getLogger().logConfigMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, secondaryTables, getJavaClassName(), getLocation());
-            }
-            
-            for (SecondaryTableMetadata table : m_secondaryTables) {
-                processSecondaryTable(table);
+                
+                if (secondaryTables != null) {
+                    getLogger().logConfigMessage(MetadataLogger.OVERRIDE_ANNOTATION_WITH_XML, secondaryTables, getJavaClassName(), getLocation());
+                }
+                
+                for (SecondaryTableMetadata table : m_secondaryTables) {
+                    processSecondaryTable(table);
+                }
             }
         }
     }
@@ -1156,14 +1228,14 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      * correct, fully qualified name on the TopLink DatabaseTable.
      */
     protected void processTable(TableMetadata table) {
-        if (getDescriptor().getClassDescriptor().isEISDescriptor()) {
-            return;
+        // Ignore secondary tables when the descriptor is an EIS descriptor.
+        if (! getDescriptor().getClassDescriptor().isEISDescriptor()) {
+            // Process any table defaults and log warning messages.
+            processTable(table, getDescriptor().getDefaultTableName());
+            
+            // Set the table on the descriptor.
+            getDescriptor().setPrimaryTable(table.getDatabaseTable());
         }
-        // Process any table defaults and log warning messages.
-        processTable(table, getDescriptor().getDefaultTableName());
-        
-        // Set the table on the descriptor.
-        getDescriptor().setPrimaryTable(table.getDatabaseTable());
     }
     
     /**
@@ -1236,6 +1308,14 @@ public class EntityAccessor extends MappedSuperclassAccessor {
      */
     public void setClassExtractorName(String classExtractorName) {
         m_classExtractorName = classExtractorName;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setConverts(List<ConvertMetadata> converts) {
+        m_converts = converts;
     }
     
     /**

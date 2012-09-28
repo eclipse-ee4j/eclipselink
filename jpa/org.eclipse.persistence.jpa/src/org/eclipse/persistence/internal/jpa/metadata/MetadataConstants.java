@@ -12,6 +12,8 @@
  *       - 249329: To remain JPA 1.0 compliant, any new JPA 2.0 annotations should be referenced by name
  *     03/29/2010-2.1 Guy Pelletier 
  *       - 267217: Add Named Access Type to EclipseLink-ORM
+ *     10/09/2012-2.5 Guy Pelletier 
+ *       - 374688: JPA 2.1 Converter support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -47,6 +49,9 @@ public class MetadataConstants {
     public static final String JPA_COLLECTION_TABLE = "javax.persistence.CollectionTable";
     public static final String JPA_COLUMN = "javax.persistence.Column";
     public static final String JPA_COLUMN_RESULT = "javax.persistence.ColumnResult";
+    public static final String JPA_CONVERT = "javax.persistence.Convert";
+    public static final String JPA_CONVERTS = "javax.persistence.Converts";
+    public static final String JPA_CONVERTER = "javax.persistence.Converter";
     public static final String JPA_DISCRIMINATOR_COLUMN = "javax.persistence.DiscriminatorColumn";
     public static final String JPA_DISCRIMINATOR_VALUE = "javax.persistence.DiscriminatorValue";
     public static final String JPA_ELEMENT_COLLECTION = "javax.persistence.ElementCollection";

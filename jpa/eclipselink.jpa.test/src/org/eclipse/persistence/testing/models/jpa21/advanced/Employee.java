@@ -12,6 +12,8 @@
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
  *     09/27/2012-2.5 Guy Pelletier
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     10/09/2012-2.5 Guy Pelletier 
+ *       - 374688: JPA 2.1 Converter support
  ******************************************************************************/   
 package org.eclipse.persistence.testing.models.jpa21.advanced;
 
@@ -130,7 +132,8 @@ public class Employee implements Serializable, Cloneable {
     public enum EmployeeStatus {FULL_TIME, PART_TIME, CONTRACT}
     public enum Gender { Female, Male }
     
-    private int salary;
+    private Long salary;
+    private Long previousSalary;
     
     private Integer id;
     private Integer version;
@@ -261,6 +264,12 @@ public class Employee implements Serializable, Cloneable {
         return m_phoneNumbers; 
     }
 
+    @Column(table="JPA21_SALARY")
+    @javax.persistence.Convert(disableConversion=true)
+    public Long getPreviousSalary() { 
+        return previousSalary; 
+    }
+    
     @ManyToMany(cascade={PERSIST, MERGE})
     @JoinTable(
         name="JPA21_EMP_PROJ",
@@ -282,7 +291,7 @@ public class Employee implements Serializable, Cloneable {
     }
 
     @Column(table="JPA21_SALARY")
-    public int getSalary() { 
+    public Long getSalary() { 
         return salary; 
     }
 
@@ -377,6 +386,10 @@ public class Employee implements Serializable, Cloneable {
         this.m_phoneNumbers = phoneNumbers;
     }
     
+    public void setPreviousSalary(Long previousSalary) { 
+        this.previousSalary = previousSalary; 
+    }
+    
     public void setProjects(Collection<Project> projects) {
         this.projects = projects;
     }
@@ -385,7 +398,7 @@ public class Employee implements Serializable, Cloneable {
         this.responsibilities = responsibilities;
     }
     
-    public void setSalary(int salary) { 
+    public void setSalary(Long salary) { 
         this.salary = salary; 
     }
 

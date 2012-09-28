@@ -47,6 +47,8 @@
  *       - 333913: @OrderBy and <order-by/> without arguments should order by primary
  *     03/24/2011-2.3 Guy Pelletier 
  *       - 337323: Multi-tenant with shared schema support (part 1)
+ *     10/09/2012-2.5 Guy Pelletier 
+ *       - 374688: JPA 2.1 Converter support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -69,6 +71,7 @@ import org.eclipse.persistence.internal.jpa.metadata.columns.AttributeOverrideMe
 import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.OrderColumnMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.converters.ConvertMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.EnumeratedMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.TemporalMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.mappings.MapKeyMetadata;
@@ -122,6 +125,7 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
     
     private List<AssociationOverrideMetadata> m_mapKeyAssociationOverrides = new ArrayList<AssociationOverrideMetadata>();
     private List<AttributeOverrideMetadata> m_mapKeyAttributeOverrides = new ArrayList<AttributeOverrideMetadata>();
+    private List<ConvertMetadata> m_mapKeyConverts = new ArrayList<ConvertMetadata>();
     private List<JoinColumnMetadata> m_mapKeyJoinColumns = new ArrayList<JoinColumnMetadata>();
     
     private MapKeyMetadata m_mapKey;
@@ -416,6 +420,14 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
      */
     public String getMapKeyConvert() {
         return m_mapKeyConvert;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<ConvertMetadata> getMapKeyConverts() {
+        return m_mapKeyConverts;
     }
     
     /**
@@ -740,6 +752,14 @@ public abstract class CollectionAccessor extends RelationshipAccessor implements
      */
     public void setMapKeyConvert(String mapKeyConvert) {
         m_mapKeyConvert = mapKeyConvert;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setMapKeyConverts(List<ConvertMetadata> mapKeyConverts) {
+        m_mapKeyConverts = mapKeyConverts;
     }
     
     /**

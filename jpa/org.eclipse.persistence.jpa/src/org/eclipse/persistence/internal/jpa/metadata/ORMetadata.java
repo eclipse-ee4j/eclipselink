@@ -36,6 +36,8 @@
  *       - 354678: Temp classloader is still being used during metadata processing
  *     06/20/2012-2.5 Guy Pelletier 
  *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+ *     10/09/2012-2.5 Guy Pelletier 
+ *       - 374688: JPA 2.1 Converter support
  ******************************************************************************/ 
 package org.eclipse.persistence.internal.jpa.metadata;
 
@@ -481,6 +483,15 @@ public abstract class ORMetadata {
     
     /**
      * INTERNAL:
+     * Any ORMetadata that supported mixed types, that is, text or other
+     * metadata should override this method.
+     */
+    protected String getText() {
+        return null;
+    }
+    
+    /**
+     * INTERNAL:
      * This is a value is that is used when logging messages for overriding.
      * @see shouldOverride
      */
@@ -493,6 +504,15 @@ public abstract class ORMetadata {
      */
     protected boolean hasIdentifier() {
         return ! getIdentifier().equals("");
+    }
+    
+    /**
+     * INTERNAL:
+     * Any ORMetadata that supported mixed types, that is, text or other
+     * metadata should override this method.
+     */
+    protected boolean hasText() {
+        return getText() != null && ! getText().equals("");
     }
     
     /**
@@ -533,6 +553,23 @@ public abstract class ORMetadata {
         for (ORMetadata metadata : (List<ORMetadata>) metadatas) {
             metadata.initXMLObject(accessibleObject, m_entityMappings);
         }
+    }
+    
+    /**
+     * INTERNAL:
+     * This is to support legacy orm instance docs. In some cases, previous
+     * simple text elements may have been changed to a list of ORMetadata 
+     * through spec churn. (e.g. <convert>). Method helps support backwards 
+     * compatibility.
+     */
+    protected String initXMLTextObject(List metadatas) {
+        if (metadatas.size() == 1) {
+            if (((ORMetadata) metadatas.get(0)).hasText()) {
+                return ((ORMetadata) metadatas.get(0)).getText();
+            }
+        }
+        
+        return null;
     }
     
     /**

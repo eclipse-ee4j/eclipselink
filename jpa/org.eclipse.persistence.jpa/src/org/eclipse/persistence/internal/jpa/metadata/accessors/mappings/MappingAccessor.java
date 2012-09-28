@@ -73,6 +73,8 @@
  *       - 357474: Address primaryKey option from tenant discriminator column
  *      *     30/05/2012-2.4 Guy Pelletier    
  *       - 354678: Temp classloader is still being used during metadata processing
+ *     10/09/2012-2.5 Guy Pelletier 
+ *       - 374688: JPA 2.1 Converter support
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
@@ -84,7 +86,6 @@ import java.util.Set;
 
 import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.annotations.Convert;
-//import org.eclipse.persistence.annotations.Field;
 import org.eclipse.persistence.annotations.JoinFetchType;
 import org.eclipse.persistence.annotations.Properties;
 import org.eclipse.persistence.annotations.Property;
@@ -116,6 +117,7 @@ import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.AbstractConverterMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.ClassInstanceMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.converters.ConvertMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.EnumeratedMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.LobMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.SerializedMetadata;
@@ -452,6 +454,16 @@ public abstract class MappingAccessor extends MetadataAccessor {
      */
     protected ColumnMetadata getColumn(String loggingCtx) {
         return m_field == null ? new ColumnMetadata(this) : m_field;
+    }
+    
+    /**
+     * INTERNAL:
+     * Return the list of JPA convert metadata. By default mapping accessors 
+     * don't have convert metadata. Those mapping accessors that do support one 
+     * should override this method.
+     */
+    public List<ConvertMetadata> getConverts() {
+        return null;
     }
     
     /**
@@ -927,6 +939,15 @@ public abstract class MappingAccessor extends MetadataAccessor {
      */
     protected boolean hasConvert(boolean isForMapKey) {
         return isAnnotationPresent(Convert.class);
+    }
+    
+    /**
+     * INTERNAL:
+     * Method to check if there is JPA convert(s) metadata. Those mapping 
+     * accessors that do support them should override this method.
+     */
+    public boolean hasConverts() {
+        return false;
     }
     
     /**
@@ -1568,22 +1589,50 @@ public abstract class MappingAccessor extends MetadataAccessor {
     
     /**
      * INTERNAL:
-     * Process an Enumerated, Lob, Temporal, MapKeyEnumerated, MapKeyTempora 
+     * Process an Enumerated, Lob, Temporal, MapKeyEnumerated, MapKeyTemporal 
      * specification. Will default a serialized converter if necessary. JPA 
      * converters can be applied to basics and to map keys/values of a map 
      * accessor.
      */
     protected void processJPAConverters(DatabaseMapping mapping, MetadataClass referenceClass, boolean isForMapKey) {
-        // Check for an enum first since it will fall into a serializable 
-        // mapping otherwise (Enums are serialized)
-        if (isEnumerated(referenceClass, isForMapKey)) {
-            processEnumerated(getEnumerated(isForMapKey), mapping, referenceClass, isForMapKey);
-        } else if (isLob(referenceClass, isForMapKey)) {
-            processLob(getLob(isForMapKey), mapping, referenceClass, isForMapKey);
-        } else if (isTemporal(referenceClass, isForMapKey)) {
-            processTemporal(getTemporal(isForMapKey), mapping, referenceClass, isForMapKey);
-        } else if (isSerialized(referenceClass, isForMapKey)) {
-            processSerialized(mapping, referenceClass, isForMapKey);
+        if (hasConverts()) {
+            // This method will be called twice for map mappings to support 
+            // eclipselink converters. Processing for JPA converters should 
+            // only be done on the first call.
+            //
+            // NOTE: If any convert is specified then it is the source of truth 
+            // for all parts of the mapping and no auto apply converters will be 
+            // applied. E.g. if we have a map and a convert is specified only 
+            // for the value of the map and there exist an auto apply converter 
+            // for the map key type, that auto-apply convert is not applied. 
+            // The same holds true in the reverse case. The user must 
+            // explicitely specify all parts of the convert at this  point.
+            // TODO: check if this flies with the spec ... something tells me no ...
+            if (! isForMapKey) {
+                // If there are converts specified on the descriptor for this
+                // mapping's attribute name, then use those (must override)
+                List<ConvertMetadata> converts = (getDescriptor().hasConverts(getAttributeName())) ? getDescriptor().getConverts(getAttributeName()) : getConverts();
+               
+                for (ConvertMetadata convert : converts) {
+                    convert.process(mapping, referenceClass, isForMapKey);
+                }
+            }
+        } else if (getProject().hasAutoApplyConverter(referenceClass)) {
+            // If no convert is specified and there exist an auto-apply
+            // converter for the reference class, apply it.
+            getProject().getAutoApplyConverter(referenceClass).process(mapping, isForMapKey);
+        } else {
+            // Check for an enum first since it will fall into a serializable 
+            // mapping otherwise (Enums are serialized)
+            if (isEnumerated(referenceClass, isForMapKey)) {
+                processEnumerated(getEnumerated(isForMapKey), mapping, referenceClass, isForMapKey);
+            } else if (isLob(referenceClass, isForMapKey)) {
+                processLob(getLob(isForMapKey), mapping, referenceClass, isForMapKey);
+            } else if (isTemporal(referenceClass, isForMapKey)) {
+                processTemporal(getTemporal(isForMapKey), mapping, referenceClass, isForMapKey);
+            } else if (isSerialized(referenceClass, isForMapKey)) {
+                processSerialized(mapping, referenceClass, isForMapKey);
+            }
         }
     }
     

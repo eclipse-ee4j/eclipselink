@@ -23,6 +23,8 @@
  *       - 356197: Add new VPD type to MultitenantType
  *     22/05/2012-2.4 Guy Pelletier  
  *       - 380008: Multitenant persistence units with a dedicated emf should force tenant property specification up front.
+ *     10/09/2012-2.5 Guy Pelletier 
+ *       - 374688: JPA 2.1 Converter support
  ******************************************************************************/  
 package org.eclipse.persistence.exceptions;
 
@@ -440,6 +442,8 @@ public class ValidationException extends EclipseLinkException {
     
     public static final int MISSING_PROPERTIES_FILE_FOR_METADATA_SOURCE = 7345;
     public static final int MULTITENANT_PROPERTY_FOR_NON_SHARED_EMF_NOT_SPECIFIED = 7346;
+    
+    public static final int MISSING_CONVERT_ATTRIBUTE_NAME = 7347;
     
     /**
      * INTERNAL:
@@ -2242,6 +2246,14 @@ public class ValidationException extends EclipseLinkException {
 
         ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, MISSING_CONTEXT_STRING_FOR_CONTEXT, args));
         validationException.setErrorCode(MISSING_CONTEXT_STRING_FOR_CONTEXT);
+        return validationException;
+    }
+
+    public static ValidationException missingConvertAttributeName(String entityClass) {
+        Object[] args = { entityClass };
+
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, MISSING_CONVERT_ATTRIBUTE_NAME, args));
+        validationException.setErrorCode(MISSING_CONVERT_ATTRIBUTE_NAME);
         return validationException;
     }
     

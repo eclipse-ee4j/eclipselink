@@ -29,6 +29,8 @@
  *       - 337323: Multi-tenant with shared schema support (part 1)
  *     07/06/2011-2.3.1 Guy Pelletier 
  *       - 349906: NPE while using eclipselink in the application
+ *     10/09/2012-2.5 Guy Pelletier 
+ *       - 374688: JPA 2.1 Converter support
  ******************************************************************************/  
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
@@ -45,6 +47,7 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ConverterAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EmbeddableAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.MappedSuperclassAccessor;
@@ -97,6 +100,10 @@ public class XMLEntityMappings extends ORMetadata {
     private ClassLoader m_loader;
     
     private List<EntityAccessor> m_entities;
+    // These are the JPA converters
+    // TODO: temp until mapped in XML
+    private List<ConverterAccessor> m_converterAccessors = new ArrayList<ConverterAccessor>();
+    // These are the named EclipseLink converters.
     private List<ConverterMetadata> m_converters;
     private List<EmbeddableAccessor> m_embeddables;
     private List<MappedSuperclassAccessor> m_mappedSuperclasses;
@@ -182,6 +189,14 @@ public class XMLEntityMappings extends ORMetadata {
      */
     public String getCatalog() {
         return m_catalog;
+    }
+    
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public List<ConverterAccessor> getConverterAccessors() {
+        return m_converterAccessors;   
     }
     
     /**
@@ -565,6 +580,24 @@ public class XMLEntityMappings extends ORMetadata {
                 m_project.addMappedSuperclass(mappedSuperclass);
             }
         }
+        
+        // Process the JPA converter classes.
+        for (ConverterAccessor converterAccessor : getConverterAccessors()) {
+            // Initialize the class with the package from entity mappings.
+            MetadataClass converterClass = getMetadataClass(getPackageQualifiedClassName(converterAccessor.getClassName()), false);
+
+            // Initialize the converter class.
+            // This initialization must be done before a potential merge below.
+            converterAccessor.initXMLObject(converterClass, this);
+            
+            if (m_project.hasConverterAccessor(converterClass)) {
+                // Merge this converter with the existing one (will check for discrepancies between them)
+                m_project.getConverterAccessor(converterClass).merge(converterAccessor);
+            } else {
+                // Add this converter to the project.
+                m_project.addConverterAccessor(converterAccessor);
+            }
+        }
     }
     
     /**
@@ -907,6 +940,14 @@ public class XMLEntityMappings extends ORMetadata {
         m_catalog = catalog;
     }
 
+    /**
+     * INTERNAL:
+     * Used for OX mapping.
+     */
+    public void setConverterAccessors(List<ConverterAccessor> converterAccessors) {
+        m_converterAccessors = converterAccessors;   
+    }
+    
     /**
      * INTERNAL:
      * Used for OX mapping
