@@ -1265,6 +1265,14 @@ public class XMLProcessor {
             // we process the choice elements in AnnotationsProcessor
             oldProperty.setXmlJoinNodesList(xmlElements.getXmlJoinNodes());
         }
+        // handle XmlJavaTypeAdapter
+        if (xmlElements.getXmlJavaTypeAdapter() != null) {
+            try {
+                oldProperty.setXmlJavaTypeAdapter(xmlElements.getXmlJavaTypeAdapter());
+            } catch(JAXBException e) {
+                throw JAXBException.invalidPropertyAdapterClass(xmlElements.getXmlJavaTypeAdapter().getValue(), xmlElements.getJavaAttribute(), tInfo.getJavaClassName());
+            }
+        }
         return oldProperty;
     }
 

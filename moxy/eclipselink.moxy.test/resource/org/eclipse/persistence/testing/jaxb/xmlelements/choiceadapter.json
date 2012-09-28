@@ -1,0 +1,9 @@
+{
+   "employee" : {
+      "id" : 10,
+      "choice" : {
+         "type" : "string",
+         "value" : "Ottawa"
+      }
+   }
+}

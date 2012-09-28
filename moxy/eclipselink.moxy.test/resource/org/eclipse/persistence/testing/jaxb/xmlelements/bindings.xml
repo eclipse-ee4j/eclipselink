@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xml-bindings package-name="org.eclipse.persistence.testing.jaxb.xmlelements" xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm">
+    <java-types>
+        
+        <java-type name="Employee">
+            <xml-root-element/>
+            <java-attributes>
+                <xml-elements java-attribute="choice">
+                    <xml-element type="java.lang.Integer" name="integer" />
+                    <xml-element type="java.lang.String" name="string" />
+                    <xml-element type="org.eclipse.persistence.testing.jaxb.xmlelements.Address" name="address" />
+                    <xml-java-type-adapter value="org.eclipse.persistence.testing.jaxb.xmlelements.ChoiceAdapter" />
+                </xml-elements>
+            </java-attributes>
+        </java-type>
+
+    </java-types>
+</xml-bindings>

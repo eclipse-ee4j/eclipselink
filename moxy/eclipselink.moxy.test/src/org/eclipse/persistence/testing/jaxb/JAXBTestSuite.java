@@ -65,6 +65,7 @@ public class JAXBTestSuite extends TestCase {
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlschema.attributeformdefault.unset.AttributeFormDefaultUnsetTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlschema.defaultns.emptyprefix.DefaultNamespaceEmptyStringTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlelements.XmlElementsStringTestCases.class);
+        suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlelements.XmlElementsAdapterTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlelements.XmlElementsIntegerTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlelements.XmlElementsComplexTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.xmlelements.XmlElementsInheritanceTestCases.class);
