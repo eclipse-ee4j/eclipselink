@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<employee>
+   <id>10</id>
+   <choice xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">Ottawa</choice>
+</employee>

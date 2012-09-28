@@ -33,6 +33,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-access-methods" minOccurs="0"/>
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-element" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-element-wrapper" minOccurs="0"/>
+ *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-java-type-adapter" minOccurs="0"/>
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-properties" minOccurs="0"/>
  *         &lt;element ref="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}xml-join-nodes" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
@@ -53,6 +54,7 @@ import javax.xml.bind.annotation.XmlType;
     "xmlAccessMethods",
     "xmlElement",
     "xmlElementWrapper",
+    "xmlJavaTypeAdapter",
     "xmlProperties",
     "xmlJoinNodes"
 })
@@ -66,6 +68,8 @@ public class XmlElements
     protected List<org.eclipse.persistence.jaxb.xmlmodel.XmlElement> xmlElement;
     @javax.xml.bind.annotation.XmlElement(name = "xml-element-wrapper")
     protected XmlElementWrapper xmlElementWrapper;
+    @javax.xml.bind.annotation.XmlElement(name = "xml-java-type-adapter")
+    protected XmlJavaTypeAdapter xmlJavaTypeAdapter;
     @javax.xml.bind.annotation.XmlElement(name = "xml-properties")
     protected XmlProperties xmlProperties;
     @javax.xml.bind.annotation.XmlElement(name = "xml-join-nodes")
@@ -156,6 +160,30 @@ public class XmlElements
      */
     public void setXmlElementWrapper(XmlElementWrapper value) {
         this.xmlElementWrapper = value;
+    }
+
+    /**
+     * Gets the value of the xmlJavaTypeAdapter property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link XmlJavaTypeAdapter }
+     *     
+     */
+    public XmlJavaTypeAdapter getXmlJavaTypeAdapter() {
+        return xmlJavaTypeAdapter;
+    }
+
+    /**
+     * Sets the value of the xmlJavaTypeAdapter property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link XmlJavaTypeAdapter }
+     *     
+     */
+    public void setXmlJavaTypeAdapter(XmlJavaTypeAdapter value) {
+        this.xmlJavaTypeAdapter = value;
     }
 
     /**
@@ -378,4 +406,5 @@ public class XmlElements
     public void setContainerType(String value) {
         this.containerType = value;
     }
+
 }
