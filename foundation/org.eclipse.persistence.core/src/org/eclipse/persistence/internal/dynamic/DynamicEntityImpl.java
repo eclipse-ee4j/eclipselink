@@ -16,6 +16,8 @@
 package org.eclipse.persistence.internal.dynamic;
 
 //javase imports
+import static org.eclipse.persistence.internal.helper.Helper.getShortClassName;
+
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -23,7 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-//EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
 import org.eclipse.persistence.dynamic.DynamicEntity;
@@ -34,6 +35,7 @@ import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.descriptors.PersistenceEntity;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.internal.jpa.rs.metadata.model.Link;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -50,7 +52,6 @@ import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.remote.RemoteSession;
-import static org.eclipse.persistence.internal.helper.Helper.getShortClassName;
 
 /**
  * This abstract class is used to represent an entity which typically is not
@@ -75,26 +76,42 @@ import static org.eclipse.persistence.internal.helper.Helper.getShortClassName;
 public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEntity,
     ChangeTracker, FetchGroupTracker, PersistenceWeavedRest {
 
+    /**
+     * Fetch properties manager.
+     *
+     * @return the dynamic properties manager
+     */
     public abstract DynamicPropertiesManager fetchPropertiesManager();
     
     protected Map<String, PropertyWrapper> propertiesMap = new HashMap<String, PropertyWrapper>();
     
+    /**
+     * Instantiates a new dynamic entity impl.
+     */
     public DynamicEntityImpl() {
         postConstruct(); // life-cycle callback
     }
     
+    /**
+     * Gets the properties map.
+     *
+     * @return the properties map
+     */
     public Map<String, PropertyWrapper> getPropertiesMap() {
         return propertiesMap;
     }
     
+    /**
+     * Post construct.
+     */
     protected void postConstruct() {
         DynamicPropertiesManager dpm = fetchPropertiesManager();
         dpm.postConstruct(this);
     }
 
     /**
-     * Gets internal impl class of {@link DynamicType}
-     * 
+     * Gets internal impl class of {@link DynamicType}.
+     *
      * @return Dynamic type of this entity
      * @throws DynamicException if type is null
      */
@@ -107,6 +124,9 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
     }
 
     //DynamicEntity API
+    /* (non-Javadoc)
+     * @see org.eclipse.persistence.dynamic.DynamicEntity#get(java.lang.String)
+     */
     public <T> T get(String propertyName) throws DynamicException {
         DynamicPropertiesManager dpm = fetchPropertiesManager();
         if (dpm.contains(propertyName)) {
@@ -150,6 +170,9 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
         }
     }
 
+    /* (non-Javadoc)
+     * @see org.eclipse.persistence.dynamic.DynamicEntity#isSet(java.lang.String)
+     */
     public boolean isSet(String propertyName) throws DynamicException {
         if (fetchPropertiesManager().contains(propertyName)) {
             if (_persistence_getFetchGroup() != null && 
@@ -169,11 +192,23 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
         }
     }
 
+    /* (non-Javadoc)
+     * @see org.eclipse.persistence.dynamic.DynamicEntity#set(java.lang.String, java.lang.Object)
+     */
     public DynamicEntity set(String propertyName, Object value) throws DynamicException {
         return set(propertyName, value, true);
     }
 
     
+    /**
+     * Sets the.
+     *
+     * @param propertyName the property name
+     * @param value the value
+     * @param firePropertyChange the fire property change
+     * @return the dynamic entity
+     * @throws DynamicException the dynamic exception
+     */
     public DynamicEntity set(String propertyName, Object value, boolean firePropertyChange) throws DynamicException {
         DynamicPropertiesManager dpm = fetchPropertiesManager();
         dpm.checkSet(propertyName, value); // life-cycle callback
@@ -214,23 +249,61 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
     public class PropertyWrapper {
         private Object value = null;
         private boolean isSet = false;
+        
+        /**
+         * Instantiates a new property wrapper.
+         */
         public PropertyWrapper() {
         }
+        
+        /**
+         * Instantiates a new property wrapper.
+         *
+         * @param value the value
+         */
         public PropertyWrapper(Object value) {
             setValue(value);
         }
+        
+        /**
+         * Gets the value.
+         *
+         * @return the value
+         */
         public Object getValue() {
             return value;
         }
+        
+        /**
+         * Sets the value.
+         *
+         * @param value the new value
+         */
         public void setValue(Object value) {
             this.value = value;
         }
+        
+        /**
+         * Checks if is sets the.
+         *
+         * @return true, if is sets the
+         */
         public boolean isSet() {
             return isSet;
         }
+        
+        /**
+         * Checks if is set.
+         *
+         * @param isSet the is set
+         */
         public void isSet(boolean isSet) {
             this.isSet = isSet;
         }
+        
+        /* (non-Javadoc)
+         * @see java.lang.Object#toString()
+         */
         @Override
         public String toString() {
             StringBuilder sb = new StringBuilder();
@@ -256,40 +329,90 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
     }
 
     class UnknownMapping extends DatabaseMapping {
+        
+        /**
+         * Instantiates a new unknown mapping.
+         *
+         * @param propertyName the property name
+         */
         public UnknownMapping(String propertyName) {
             setAttributeName(propertyName);
         }
+        
+        /* (non-Javadoc)
+         * @see org.eclipse.persistence.mappings.DatabaseMapping#buildBackupClone(java.lang.Object, java.lang.Object, org.eclipse.persistence.internal.sessions.UnitOfWorkImpl)
+         */
         public void buildBackupClone(Object clone, Object backup, UnitOfWorkImpl unitOfWork) {            
         }
+        
+        /* (non-Javadoc)
+         * @see org.eclipse.persistence.mappings.DatabaseMapping#buildClone(java.lang.Object, org.eclipse.persistence.internal.identitymaps.CacheKey, java.lang.Object, java.lang.Integer, org.eclipse.persistence.internal.sessions.AbstractSession)
+         */
         @Override
         public void buildClone(Object original, CacheKey cacheKey, Object clone, Integer refreshCascade, AbstractSession cloningSession) {
         }
+        
+        /* (non-Javadoc)
+         * @see org.eclipse.persistence.mappings.DatabaseMapping#buildCloneFromRow(org.eclipse.persistence.internal.sessions.AbstractRecord, org.eclipse.persistence.internal.queries.JoinedAttributeManager, java.lang.Object, org.eclipse.persistence.internal.identitymaps.CacheKey, org.eclipse.persistence.queries.ObjectBuildingQuery, org.eclipse.persistence.internal.sessions.UnitOfWorkImpl, org.eclipse.persistence.internal.sessions.AbstractSession)
+         */
         public void buildCloneFromRow(AbstractRecord databaseRow,
             JoinedAttributeManager joinManager, Object clone, CacheKey sharedCacheKey, ObjectBuildingQuery sourceQuery,
             UnitOfWorkImpl unitOfWork, AbstractSession executionSession) {
         }
+        
+        /* (non-Javadoc)
+         * @see org.eclipse.persistence.mappings.DatabaseMapping#cascadePerformRemoveIfRequired(java.lang.Object, org.eclipse.persistence.internal.sessions.UnitOfWorkImpl, java.util.Map)
+         */
         public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow,
             Map visitedObjects) {
         }
+        
+        /* (non-Javadoc)
+         * @see org.eclipse.persistence.mappings.DatabaseMapping#cascadeRegisterNewIfRequired(java.lang.Object, org.eclipse.persistence.internal.sessions.UnitOfWorkImpl, java.util.Map)
+         */
         public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow,
             Map visitedObjects) {
         }
+        
+        /* (non-Javadoc)
+         * @see org.eclipse.persistence.mappings.DatabaseMapping#compareForChange(java.lang.Object, java.lang.Object, org.eclipse.persistence.internal.sessions.ObjectChangeSet, org.eclipse.persistence.internal.sessions.AbstractSession)
+         */
         public ChangeRecord compareForChange(Object clone, Object backup, ObjectChangeSet owner,
             AbstractSession session) {
             return null;
         }
+        
+        /* (non-Javadoc)
+         * @see org.eclipse.persistence.mappings.DatabaseMapping#compareObjects(java.lang.Object, java.lang.Object, org.eclipse.persistence.internal.sessions.AbstractSession)
+         */
         public boolean compareObjects(Object firstObject, Object secondObject,
             AbstractSession session) {
             return false;
         }
+        
+        /* (non-Javadoc)
+         * @see org.eclipse.persistence.mappings.DatabaseMapping#fixObjectReferences(java.lang.Object, java.util.Map, java.util.Map, org.eclipse.persistence.queries.ObjectLevelReadQuery, org.eclipse.persistence.sessions.remote.RemoteSession)
+         */
         public void fixObjectReferences(Object object, Map objectDescriptors, Map processedObjects,
             ObjectLevelReadQuery query, RemoteSession session) {   
         }
+        
+        /* (non-Javadoc)
+         * @see org.eclipse.persistence.mappings.DatabaseMapping#iterate(org.eclipse.persistence.internal.descriptors.DescriptorIterator)
+         */
         public void iterate(DescriptorIterator iterator) {   
         }
+        
+        /* (non-Javadoc)
+         * @see org.eclipse.persistence.mappings.DatabaseMapping#mergeChangesIntoObject(java.lang.Object, org.eclipse.persistence.internal.sessions.ChangeRecord, java.lang.Object, org.eclipse.persistence.internal.sessions.MergeManager, org.eclipse.persistence.internal.sessions.AbstractSession)
+         */
         public void mergeChangesIntoObject(Object target, ChangeRecord changeRecord, Object source,
             MergeManager mergeManager, AbstractSession targetSession) {
         }
+        
+        /* (non-Javadoc)
+         * @see org.eclipse.persistence.mappings.DatabaseMapping#mergeIntoObject(java.lang.Object, boolean, java.lang.Object, org.eclipse.persistence.internal.sessions.MergeManager, org.eclipse.persistence.internal.sessions.AbstractSession)
+         */
         public void mergeIntoObject(Object target, boolean isTargetUninitialized, Object source,
             MergeManager mergeManager, AbstractSession targetSession) {
         }
@@ -305,19 +428,32 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
     
     protected CacheKey cacheKey;
     
+    /* (non-Javadoc)
+     * @see org.eclipse.persistence.internal.descriptors.PersistenceEntity#_persistence_getId()
+     */
     @SuppressWarnings("unchecked")
     public Object _persistence_getId() {
         return this.primaryKey;
     }
+    
+    /* (non-Javadoc)
+     * @see org.eclipse.persistence.internal.descriptors.PersistenceEntity#_persistence_setId(java.lang.Object)
+     */
     @SuppressWarnings("unchecked")
     public void _persistence_setId(Object pk) {
         this.primaryKey = pk;
     }
     
+    /* (non-Javadoc)
+     * @see org.eclipse.persistence.internal.descriptors.PersistenceEntity#_persistence_getCacheKey()
+     */
     public CacheKey _persistence_getCacheKey(){
         return this.cacheKey;
     }
     
+    /* (non-Javadoc)
+     * @see org.eclipse.persistence.internal.descriptors.PersistenceEntity#_persistence_setCacheKey(org.eclipse.persistence.internal.identitymaps.CacheKey)
+     */
     public void _persistence_setCacheKey(CacheKey cacheKey){
         this.cacheKey = cacheKey;
     }
@@ -329,9 +465,17 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
      * {@link ChangeTracker#_persistence_setPropertyChangeListener(PropertyChangeListener)}
      */
     private PropertyChangeListener changeListener = null;
+    
+    /* (non-Javadoc)
+     * @see org.eclipse.persistence.descriptors.changetracking.ChangeTracker#_persistence_getPropertyChangeListener()
+     */
     public PropertyChangeListener _persistence_getPropertyChangeListener() {
         return this.changeListener;
     }
+    
+    /* (non-Javadoc)
+     * @see org.eclipse.persistence.descriptors.changetracking.ChangeTracker#_persistence_setPropertyChangeListener(java.beans.PropertyChangeListener)
+     */
     public void _persistence_setPropertyChangeListener(PropertyChangeListener listener) {
         this.changeListener = listener;
     }
@@ -346,20 +490,40 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
      * {@link FetchGroupTracker#_persistence_setShouldRefreshFetchGroup(boolean)}
      */
     private boolean refreshFetchGroup = false;
+    
+    /* (non-Javadoc)
+     * @see org.eclipse.persistence.queries.FetchGroupTracker#_persistence_getFetchGroup()
+     */
     public FetchGroup _persistence_getFetchGroup() {
         return this.fetchGroup;
     }
+    
+    /* (non-Javadoc)
+     * @see org.eclipse.persistence.queries.FetchGroupTracker#_persistence_setFetchGroup(org.eclipse.persistence.queries.FetchGroup)
+     */
     public void _persistence_setFetchGroup(FetchGroup group) {
         this.fetchGroup = group;
     }
+    
+    /* (non-Javadoc)
+     * @see org.eclipse.persistence.queries.FetchGroupTracker#_persistence_setShouldRefreshFetchGroup(boolean)
+     */
     public void _persistence_setShouldRefreshFetchGroup(boolean shouldRefreshFetchGroup) {
         this.refreshFetchGroup = shouldRefreshFetchGroup;
     }
+    
+    /* (non-Javadoc)
+     * @see org.eclipse.persistence.queries.FetchGroupTracker#_persistence_shouldRefreshFetchGroup()
+     */
     public boolean _persistence_shouldRefreshFetchGroup() {
         return this.refreshFetchGroup;
     }
+    
     /**
      * Return true if the attribute is in the fetch group being tracked.
+     *
+     * @param attribute the attribute
+     * @return true, if successful
      */
     public boolean _persistence_isAttributeFetched(String attribute) {
         return this.fetchGroup == null || this.fetchGroup.containsAttributeInternal(attribute);
@@ -371,6 +535,9 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
     public void _persistence_resetFetchGroup() {
     }
     
+    /* (non-Javadoc)
+     * @see org.eclipse.persistence.internal.weaving.PersistenceWeavedRest#_persistence_getRelationships()
+     */
     public List<RelationshipInfo> _persistence_getRelationships(){
         List<RelationshipInfo> relationships = (List<RelationshipInfo>)get("_persistence_relationshipInfo");
         if (relationships == null){
@@ -380,8 +547,25 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
         return relationships;
     }
     
+    /* (non-Javadoc)
+     * @see org.eclipse.persistence.internal.weaving.PersistenceWeavedRest#_persistence_setRelationships(java.util.List)
+     */
     public void _persistence_setRelationships(List<RelationshipInfo> relationships){
         set("_persistence_relationshipInfo", relationships, false);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.eclipse.persistence.internal.weaving.PersistenceWeavedRest#getPersistence_href()
+     */
+    public Link getPersistence_href() {
+        return get("persistence_href");
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.persistence.internal.weaving.PersistenceWeavedRest#setPersistence_href(sun.awt.image.ImageWatched.Link)
+     */
+    public void setPersistence_href(Link href) {
+        set("persistence_href", href, false);
     }
     
     /**
@@ -389,17 +573,26 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
      * {@link FetchGroupTracker#_persistence_setSession(Session)}
      */
     private Session session;
+    
+    /* (non-Javadoc)
+     * @see org.eclipse.persistence.queries.FetchGroupTracker#_persistence_getSession()
+     */
     public Session _persistence_getSession() {
         return this.session;
     }
     
+    /* (non-Javadoc)
+     * @see org.eclipse.persistence.queries.FetchGroupTracker#_persistence_setSession(org.eclipse.persistence.sessions.Session)
+     */
     public void _persistence_setSession(Session session) {
         this.session = session;
     }
 
     /**
      * String representation of the dynamic entity using the entity type name
-     * and the primary key values - something like {Emp 10} or {Phone 234-5678 10}
+     * and the primary key values - something like {Emp 10} or {Phone 234-5678 10}.
+     *
+     * @return the string
      */
     @Override
     public String toString() {

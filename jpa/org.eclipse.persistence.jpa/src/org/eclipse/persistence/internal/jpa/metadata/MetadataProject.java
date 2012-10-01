@@ -88,6 +88,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata;
 
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_EMBEDDABLE;
+
 import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.util.ArrayList;
@@ -96,8 +98,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.LinkedHashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -109,7 +111,6 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.dynamic.DynamicType;
 import org.eclipse.persistence.exceptions.ValidationException;
-
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
@@ -118,48 +119,35 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.Embeddabl
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.InterfaceAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.MappedSuperclassAccessor;
-
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.DirectCollectionAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.MappingAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.RelationshipAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
-
 import org.eclipse.persistence.internal.jpa.metadata.converters.AbstractConverterMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.StructConverterMetadata;
-
 import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListenerMetadata;
-
-import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
-
 import org.eclipse.persistence.internal.jpa.metadata.partitioning.AbstractPartitioningMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.NamedQueryMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.PLSQLComplexTypeMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.SQLResultSetMappingMetadata;
-
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.GeneratedValueMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.sequencing.TableGeneratorMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.SequenceGeneratorMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.sequencing.TableGeneratorMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.UuidGeneratorMetadata;
-
 import org.eclipse.persistence.internal.jpa.metadata.tables.TableMetadata;
-
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLPersistenceUnitDefaults;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLPersistenceUnitMetadata;
-
+import org.eclipse.persistence.internal.jpa.weaving.RestAdapterClassWriter;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredMethod;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.dynamic.JPADynamicTypeBuilder;
-
 import org.eclipse.persistence.sequencing.Sequence;
-
 import org.eclipse.persistence.sessions.DatasourceLogin;
 import org.eclipse.persistence.sessions.Project;
-
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_EMBEDDABLE;
 
 /**
  * INTERNAL:
@@ -306,6 +294,20 @@ public class MetadataProject {
     // persistence unit (unless they exclude them).
     private Set<EntityListenerMetadata> m_defaultListeners;
     
+    public void createRestInterfaces(ClassLoader loader) {
+        if (DynamicClassLoader.class.isAssignableFrom(loader.getClass())) {
+            DynamicClassLoader dcl = (DynamicClassLoader) loader;
+            for (EntityAccessor accessor : getEntityAccessors()) {
+                String className = accessor.getParentClassName();
+                if (className == null || getEntityAccessor(className) == null) {
+                    RestAdapterClassWriter restAdapter = new RestAdapterClassWriter(
+                            accessor.getJavaClassName());
+                    dcl.addClass(restAdapter.getClassName(), restAdapter);
+                }
+            }
+        }
+    }
+
     /**
      * INTERNAL:
      * Create and return a new MetadataProject with puInfo as its PersistenceUnitInfo, 

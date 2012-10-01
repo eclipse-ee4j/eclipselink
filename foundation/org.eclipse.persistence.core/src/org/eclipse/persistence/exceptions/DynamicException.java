@@ -23,6 +23,8 @@ import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.dynamic.DynamicClassWriter;
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.dynamic.DynamicType;
+import org.eclipse.persistence.dynamic.EclipseLinkClassWriter;
+import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl;
 import org.eclipse.persistence.internal.dynamic.DynamicTypeImpl;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 
@@ -171,7 +173,7 @@ public class DynamicException extends EclipseLinkException {
      * {@link DynamicClassWriter} that is not compatible with the provided
      * writer.
      */
-    public static DynamicException incompatibleDuplicateWriters(String className, DynamicClassWriter existingWriter, DynamicClassWriter writer) {
+    public static DynamicException incompatibleDuplicateWriters(String className, EclipseLinkClassWriter existingWriter, EclipseLinkClassWriter writer) {
         DynamicException de = new DynamicException("Duplicate addClass request with incompatible writer: " + className + " - existing: " + existingWriter + " - new: " + writer);
         de.setErrorCode(INCOMPATIBLE_DYNAMIC_CLASSWRITERS);
         return de;

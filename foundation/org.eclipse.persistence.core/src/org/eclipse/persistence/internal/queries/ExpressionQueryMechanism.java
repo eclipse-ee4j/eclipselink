@@ -2681,7 +2681,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
             // Must also build the call.
             super.prepareSelectAllRows();
             if (shouldPrepare) {
-                if (query.hasJoining() && query.getJoinedAttributeManager().hasJoinedExpressions()) {
+                if (query.hasJoining()) {
                     query.getConcreteSubclassJoinedMappingIndexes().put(query.getReferenceClass(), query.getJoinedAttributeManager().getJoinedMappingIndexes_());
                 }
                 query.getConcreteSubclassCalls().put(query.getReferenceClass(), (DatabaseCall)this.call);

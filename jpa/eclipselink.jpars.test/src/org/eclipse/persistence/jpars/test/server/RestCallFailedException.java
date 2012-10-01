@@ -3,7 +3,7 @@ package org.eclipse.persistence.jpars.test.server;
 import com.sun.jersey.api.client.ClientResponse.Status;
 
 public class RestCallFailedException extends RuntimeException {
-
+    private static final long serialVersionUID = 1L;
     private Status responseStatus = null;
     
     public RestCallFailedException(Status responseStatus){

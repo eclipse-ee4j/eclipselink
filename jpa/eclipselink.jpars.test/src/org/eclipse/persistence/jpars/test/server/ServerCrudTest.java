@@ -6,6 +6,7 @@ import static org.junit.Assert.fail;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
@@ -20,6 +21,7 @@ import javax.xml.bind.JAXBException;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.QueryHints;
+import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.PersistenceFactoryBase;
 import org.eclipse.persistence.jpars.test.model.StaticAddress;
@@ -27,8 +29,8 @@ import org.eclipse.persistence.jpars.test.model.StaticAuction;
 import org.eclipse.persistence.jpars.test.model.StaticBid;
 import org.eclipse.persistence.jpars.test.model.StaticUser;
 import org.eclipse.persistence.jpars.test.model.multitenant.Account;
-import org.eclipse.persistence.jpars.test.util.StaticModelDatabasePopulator;
 import org.eclipse.persistence.jpars.test.util.ExamplePropertiesLoader;
+import org.eclipse.persistence.jpars.test.util.StaticModelDatabasePopulator;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -47,6 +49,25 @@ public class ServerCrudTest {
     private static Client client = null;
     private static PersistenceContext context = null;
     
+    public static ByteArrayOutputStream sampleUserJSONForId(Integer userId, Integer addressId) throws IOException{
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        StringBuffer json = new StringBuffer();
+        json.append("{\"address\":" + 
+                "{\"city\":\"Ottawa\",");
+        if (addressId != null){
+            json.append("\"id\":" + addressId + ",");
+        }
+        json.append("\"postalCode\":\"K1P 1A4\",\"street\":\"Main Street\",\"type\":\"Business\"," + 
+                "\"_relationships\":[{\"href\":\"http://localhost:8080/JPA-RS/auction-static/entity/StaticAddress/123456+Business/user\",\"rel\":\"user\"}]},");
+        if (userId != null){
+            json.append("\"id\":" + userId + ",");
+        }
+        json.append("\"name\":\"LegoLover\",\"version\":0," + 
+                "\"_relationships\":[{\"href\":\"http://localhost:8080/JPA-RS/auction-static/entity/StaticUser/466/address\",\"rel\":\"address\"}]}");
+        stream.write(json.toString().getBytes());
+        return stream;
+    }
+    
     @BeforeClass
     public static void setup() throws URISyntaxException{
         Map<String, Object> properties = new HashMap<String, Object>();
@@ -54,10 +75,12 @@ public class ServerCrudTest {
         properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
         properties.put(PersistenceUnitProperties.JTA_DATASOURCE, null);
         properties.put(PersistenceUnitProperties.DDL_GENERATION, PersistenceUnitProperties.DROP_AND_CREATE);
+        properties.put(PersistenceUnitProperties.CLASSLOADER, new DynamicClassLoader(Thread.currentThread().getContextClassLoader()));
 
         PersistenceFactoryBase factory = new PersistenceFactoryBase();
         EntityManagerFactory emf = Persistence.createEntityManagerFactory(DEFAULT_PU, properties);
-        context = factory.bootstrapPersistenceContext("auction-static", emf, new URI("http://localhost:8080/JPA-RS/"), false);
+        context = factory.bootstrapPersistenceContext("auction-static", emf, new URI(DEFAULT_SERVER_URI_BASE + "/JPA-RS/"), false);
+        
         StaticModelDatabasePopulator.populateDB(emf);
         client = Client.create();
     }
@@ -69,9 +92,21 @@ public class ServerCrudTest {
     
     @Test
     public void testRead(){
+        // Create a user
+        StaticUser user = new StaticUser();
+        user.setId(466);
+        user.setName("LegoLover");
+
+        StaticAddress address = new StaticAddress();
+        address.setCity("Ottawa");
+        address.setId(123456);
+        address.setStreet("Main Street");
+        address.setPostalCode("K1P 1A4");
+        address.setType("Business");
+
         StaticBid bid = restRead(StaticModelDatabasePopulator.BID1_ID, "StaticBid", StaticBid.class);
         StaticBid bid2 = dbRead(StaticModelDatabasePopulator.BID1_ID, StaticBid.class);
-        assertTrue("Wrong big in DB.", bid.getAmount() == bid2.getAmount());
+        assertTrue("Wrong bid in DB.", bid.getAmount() == bid2.getAmount());
     }
     
     @Test
@@ -208,15 +243,15 @@ public class ServerCrudTest {
         StaticAuction auction = new StaticAuction();
         auction.setName("Computer");
         auction = restUpdate(auction, "StaticAuction", StaticAuction.class, true);
-        assertTrue("Wrong User returned.", auction.getName().equals("Computer"));
-        assertTrue("User not sequenced.", auction.getId() > 0);
+        assertTrue("Wrong Auction returned.", auction.getName().equals("Computer"));
+        assertTrue("Auction not sequenced.", auction.getId() > 0);
         StaticAuction dbAuction = dbRead(auction.getId(), StaticAuction.class);
         assertTrue("Wrong user retrieved in db.", auction.getName().equals(dbAuction.getName()));
         restDelete(auction.getId(), "StaticAuction", StaticAuction.class);
     }
     
     @Test(expected = RestCallFailedException.class)
-    public void testUpdateNonExistant(){
+    public void testUpdateNonExistant() {
         StaticUser user = new StaticUser();
         user.setName("Joe");
         user = restUpdate(user, "NonExistant", StaticUser.class, true);
@@ -458,21 +493,13 @@ public class ServerCrudTest {
         auction.setEndPrice(1000);
         auction.setDescription("Lego auction");
         auction = restCreate(auction, "StaticAuction", StaticAuction.class);
-
-        // Create a user
-        StaticUser user = new StaticUser();
-        user.setId(466);
-        user.setName("LegoLover");
-
-        StaticAddress address = new StaticAddress();
-        address.setCity("Ottawa");
-        address.setId(123456);
-        address.setStreet("Main Street");
-        address.setPostalCode("K1P 1A4");
-        address.setType("Business");
-
-        user.setAddress(address);
-        user = restCreate(user, "StaticUser", StaticUser.class);
+        
+        StaticUser user = null;
+        try{
+            user = restCreate(sampleUserJSONForId(466, 123456), "StaticUser", StaticUser.class, DEFAULT_PU, null, MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON_TYPE);
+        } catch (IOException exc){
+            fail(exc.toString());
+        }
 
         // Update bid with the auction
         restUpdateBidirectionalRelationship(String.valueOf(777), "StaticBid",
@@ -523,18 +550,12 @@ public class ServerCrudTest {
         auction = restUpdate(auction, "StaticAuction", StaticAuction.class,
                 false);
 
-        // Create a user (no id)
-        StaticUser user = new StaticUser();
-        user.setName("J. Smith");
-
-        StaticAddress address = new StaticAddress();
-        address.setCity("Ottawa");
-        address.setStreet("Sunrise Street");
-        address.setPostalCode("K1R 1A4");
-        address.setType("Home");
-
-        user.setAddress(address);
-        user = restUpdate(user, "StaticUser", StaticUser.class, false);
+        StaticUser user = null;
+        try{
+            user = restUpdate(sampleUserJSONForId(null, null), "StaticUser", StaticUser.class, DEFAULT_PU, null,MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON_TYPE, true); 
+        } catch (IOException exc){
+            fail(exc.toString());
+        }
 
         // Update bid with the auction
         restUpdateBidirectionalRelationship(String.valueOf(bid.getId()), "StaticBid", "auction", auction, "auction-static",
@@ -590,6 +611,17 @@ public class ServerCrudTest {
     }
     
     private static <T> T restCreate(Object object, String type, Class<T> resultClass, String persistenceUnit, Map<String, String> tenantId, MediaType inputMediaType, MediaType outputMediaType) throws RestCallFailedException {
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        try {
+            context.marshallEntity(object, inputMediaType, os, false);
+        } catch (JAXBException e) {
+            fail("Exception thrown unmarshalling: " + e);
+        }
+        return restCreate(os, type, resultClass, persistenceUnit, null, inputMediaType, outputMediaType);
+    }
+
+    
+    private static <T> T restCreate(OutputStream os, String type, Class<T> resultClass, String persistenceUnit, Map<String, String> tenantId, MediaType inputMediaType, MediaType outputMediaType) throws RestCallFailedException {
         StringBuffer uri = new StringBuffer();
         uri.append(getServerURI() + persistenceUnit);
         if (tenantId != null){
@@ -599,12 +631,6 @@ public class ServerCrudTest {
         }
         uri.append("/entity/" + type);
         WebResource webResource = client.resource(uri.toString());
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-        try{
-               context.marshallEntity(object, inputMediaType, os, false);
-        } catch (JAXBException e){
-            fail("Exception thrown unmarshalling: " + e);
-        }
         ClientResponse response = webResource.type(inputMediaType).accept(outputMediaType).put(ClientResponse.class, os.toString());
         Status status = response.getClientResponseStatus();
         if (status != Status.CREATED){
@@ -751,17 +777,8 @@ public class ServerCrudTest {
     private static <T> T restUpdate(Object object, String type, Class<T> resultClass, boolean sendLinks) throws RestCallFailedException {
         return restUpdate(object, type, resultClass, DEFAULT_PU, null, MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON_TYPE, sendLinks);
     }
-    
+
     private static <T> T restUpdate(Object object, String type, Class<T> resultClass, String persistenceUnit, Map<String, String> tenantId, MediaType inputMediaType, MediaType outputMediaType, boolean sendLinks) throws RestCallFailedException {
-        StringBuffer uri = new StringBuffer();
-        uri.append(getServerURI() + persistenceUnit);
-        if (tenantId != null){
-            for (String key: tenantId.keySet()){
-                uri.append(";" + key + "=" + tenantId.get(key));
-            }
-        }
-        uri.append("/entity/" + type);
-        WebResource webResource = client.resource(uri.toString());
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         try{
             if (sendLinks) {
@@ -772,6 +789,20 @@ public class ServerCrudTest {
         } catch (JAXBException e){
             fail("Exception thrown unmarshalling: " + e);
         }
+        return restUpdate(os, type, resultClass, persistenceUnit, tenantId, inputMediaType, outputMediaType, sendLinks);
+    }
+
+    
+    private static <T> T restUpdate(OutputStream os, String type, Class<T> resultClass, String persistenceUnit, Map<String, String> tenantId, MediaType inputMediaType, MediaType outputMediaType, boolean sendLinks) throws RestCallFailedException {
+        StringBuffer uri = new StringBuffer();
+        uri.append(getServerURI() + persistenceUnit);
+        if (tenantId != null){
+            for (String key: tenantId.keySet()){
+                uri.append(";" + key + "=" + tenantId.get(key));
+            }
+        }
+        uri.append("/entity/" + type);
+        WebResource webResource = client.resource(uri.toString());
         ClientResponse response = webResource.type(inputMediaType).accept(outputMediaType).post(ClientResponse.class, os.toString());
         Status status = response.getClientResponseStatus();
         if (status != Status.OK){
@@ -856,3 +887,4 @@ public class ServerCrudTest {
     }
 
 }
+

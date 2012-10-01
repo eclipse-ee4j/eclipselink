@@ -108,7 +108,10 @@ public class PersistenceFactoryBase {
                     properties.putAll(initializationProperties);
                 }
                 
-                EntityManagerFactory factory =  Persistence.createEntityManagerFactory(persistenceUnit, properties);
+                EntityManagerFactoryImpl factory = (EntityManagerFactoryImpl) Persistence.createEntityManagerFactory(persistenceUnit, properties);
+                if (!factory.getServerSession().getLoader().getClass().isAssignableFrom(DynamicClassLoader.class)) {
+                    factory.refreshMetadata(properties);
+                }
     
                 if (factory != null){
                     app = bootstrapPersistenceContext(persistenceUnit, factory, defaultURI, true);

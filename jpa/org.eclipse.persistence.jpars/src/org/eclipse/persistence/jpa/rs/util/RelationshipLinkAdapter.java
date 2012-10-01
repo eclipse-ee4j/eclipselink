@@ -14,9 +14,9 @@ package org.eclipse.persistence.jpa.rs.util;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
+import org.eclipse.persistence.internal.jpa.rs.metadata.model.Link;
 import org.eclipse.persistence.internal.weaving.RelationshipInfo;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
-import org.eclipse.persistence.jpa.rs.metadata.model.Link;
 
 public class RelationshipLinkAdapter extends XmlAdapter<Link, RelationshipInfo> {
 

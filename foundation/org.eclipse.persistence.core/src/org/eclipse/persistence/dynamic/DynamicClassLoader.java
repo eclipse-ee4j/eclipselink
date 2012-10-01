@@ -21,9 +21,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-//EclipseLink imports
+import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.exceptions.DynamicException;
 import org.eclipse.persistence.internal.helper.ConversionManager;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.sessions.Session;
 
 /**
@@ -50,7 +51,7 @@ public class DynamicClassLoader extends ClassLoader {
      * of the same name, same writer type, and the same parent class are
      * permitted but different parent classes or different writer types are not.
      */
-    protected Map<String, DynamicClassWriter> classWriters = new HashMap<String, DynamicClassWriter>();
+    protected Map<String, EclipseLinkClassWriter> classWriters = new HashMap<String, EclipseLinkClassWriter>();
     protected Map<String, EnumInfo> enumInfoRegistry = new HashMap<String, EnumInfo>();
 
     /**
@@ -79,11 +80,11 @@ public class DynamicClassLoader extends ClassLoader {
         return this.defaultWriter;
     }
 
-    protected Map<String, DynamicClassWriter> getClassWriters() {
+    protected Map<String, EclipseLinkClassWriter> getClassWriters() {
         return this.classWriters;
     }
 
-    public DynamicClassWriter getClassWriter(String className) {
+    public EclipseLinkClassWriter getClassWriter(String className) {
         return getClassWriters().get(className);
     }
 
@@ -136,8 +137,8 @@ public class DynamicClassLoader extends ClassLoader {
      * 
      * @see #findClass(String)
      */
-    public void addClass(String className, DynamicClassWriter writer) throws DynamicException {
-        DynamicClassWriter existingWriter = getClassWriter(className);
+    public void addClass(String className, EclipseLinkClassWriter writer) throws DynamicException {
+        EclipseLinkClassWriter existingWriter = getClassWriter(className);
 
         // Verify that the existing writer is compatible with the requested
         if (existingWriter != null) {
@@ -167,10 +168,11 @@ public class DynamicClassLoader extends ClassLoader {
     }
     
     protected Class<?> checkAssignable(Class<?> clz) {
-        DynamicClassWriter assignedClassWriter = getClassWriters().get(clz.getName());
-        if (!assignedClassWriter.parentClass.isAssignableFrom(clz)) {
-            throw new IllegalArgumentException("DyanmicClassLoader: " + clz.getName() + 
-                " not compatible with parent class " + assignedClassWriter.parentClass.getName());
+        EclipseLinkClassWriter assignedClassWriter = getClassWriters().get(clz.getName());
+        if ((assignedClassWriter.getParentClass() == null && !assignedClassWriter.getParentClassName().equals(clz.getName())) || 
+                !assignedClassWriter.getParentClass().isAssignableFrom(clz)) {
+            throw new IllegalArgumentException("DynamicClassLoader: " + clz.getName() + 
+                   " not compatible with parent class " + assignedClassWriter.getParentClass().getName());
         }
         return clz;
     }
@@ -203,14 +205,22 @@ public class DynamicClassLoader extends ClassLoader {
      */
     @Override
     protected Class<?> findClass(String className) throws ClassNotFoundException {
-        DynamicClassWriter writer = getClassWriter(className);
+        EclipseLinkClassWriter writer = getClassWriter(className);
 
         if (writer != null) {
             try {
                 byte[] bytes = writer.writeClass(this, className);
+                if (bytes != null){
+                    String outputPath = System.getProperty(SystemProperties.WEAVING_OUTPUT_PATH, "");
+                             
+                    if (!outputPath.equals("")) {
+                        Helper.outputClassFile(className, bytes, outputPath);
+                    }
+                }
                 return defineClass(className, bytes, 0, bytes.length);
             }
             catch (ClassFormatError cfe) {
+                cfe.printStackTrace();
                 throw new ClassNotFoundException(className, cfe);
             }
             catch (ClassCircularityError cce) {

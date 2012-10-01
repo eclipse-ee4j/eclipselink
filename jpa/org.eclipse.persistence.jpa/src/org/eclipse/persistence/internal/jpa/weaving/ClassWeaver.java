@@ -17,11 +17,16 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.weaving;
 
-import java.util.*;
+import java.util.Iterator;
 
 import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.libraries.asm.*;
-import org.eclipse.persistence.internal.libraries.asm.commons.*;
+import org.eclipse.persistence.internal.libraries.asm.ClassWriter;
+import org.eclipse.persistence.internal.libraries.asm.FieldVisitor;
+import org.eclipse.persistence.internal.libraries.asm.Label;
+import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
+import org.eclipse.persistence.internal.libraries.asm.Opcodes;
+import org.eclipse.persistence.internal.libraries.asm.Type;
+import org.eclipse.persistence.internal.libraries.asm.commons.SerialVersionUIDAdder;
 
 /**
  * INTERNAL: Weaves classes to allow them to support EclipseLink indirection.
@@ -97,7 +102,9 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
     
     /** Store if JAXB is no the classpath. */
     protected static Boolean isJAXBOnPath;
-
+ 
+    public static final String LINK_SIGNATURE = "Lorg/eclipse/persistence/internal/jpa/rs/metadata/model/Link;";
+    
     /**
      * Stores information on the class gathered from the temp class loader and
      * descriptor.
@@ -111,7 +118,8 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
     public boolean weavedPersistenceEntity = false;
     public boolean weavedChangeTracker = false;
     public boolean weavedFetchGroups = false;
-
+    public boolean weavedRest = false;
+    
     /**
      * Used for primitive conversion. Returns the name of the class that wraps a
      * given type.
@@ -798,10 +806,25 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
         cv_setPKVector.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_relationshipInfo", LIST_RELATIONSHIP_INFO_SIGNATURE);
         cv_setPKVector.visitInsn(RETURN);
         cv_setPKVector.visitMaxs(0, 0);
+        
+        
+        MethodVisitor cv_getHref = cv.visitMethod(ACC_PUBLIC, "getPersistence_href", "()" + LINK_SIGNATURE, null, null);
+        cv_getHref.visitVarInsn(ALOAD, 0);
+        cv_getHref.visitFieldInsn(GETFIELD, classDetails.getClassName(), "persistence_href", LINK_SIGNATURE);
+        cv_getHref.visitInsn(ARETURN);
+        cv_getHref.visitMaxs(0, 0);
+        
+        MethodVisitor cv_setHref = cv.visitMethod(ACC_PUBLIC, "setPersistence_href", "(" + LINK_SIGNATURE + ")V", null, null);
+        cv_setHref.visitVarInsn(ALOAD, 0);
+        cv_setHref.visitVarInsn(ALOAD, 1);
+        cv_setHref.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "persistence_href", LINK_SIGNATURE);
+        cv_setHref.visitInsn(RETURN);
+        cv_setHref.visitMaxs(0, 0);
     }
     
     public void addPersistenceRestVariables() {
         cv.visitField(ACC_PROTECTED + ACC_TRANSIENT, "_persistence_relationshipInfo", LIST_RELATIONSHIP_INFO_SIGNATURE, null, null);
+        cv.visitField(ACC_PROTECTED, "persistence_href", LINK_SIGNATURE, null, null);
     }
     
     /**
@@ -1245,8 +1268,12 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
             newInterfacesLength++;
         }
         
-        int persistenceWeavedRestIndex = newInterfacesLength;
-        newInterfacesLength++;
+        int persistenceWeavedRestIndex = 0;
+        boolean weaveRest = classDetails.shouldWeaveREST() && classDetails.getSuperClassDetails() == null;
+        if (weaveRest) {
+            persistenceWeavedRestIndex = newInterfacesLength;
+            newInterfacesLength++;
+        }
         
         String[] newInterfaces = new String[newInterfacesLength];
         System.arraycopy(interfaces, 0, newInterfaces, 0, interfaces.length);
@@ -1288,10 +1315,17 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
             newInterfaces[persistenceWeavedChangeTrackingIndex] = TW_CT_SHORT_SIGNATURE;
         }
         
-        newInterfaces[persistenceWeavedRestIndex] = WEAVED_REST_LAZY_SHORT_SIGNATURE;
+        if (weaveRest){
+            newInterfaces[persistenceWeavedRestIndex] = WEAVED_REST_LAZY_SHORT_SIGNATURE;
+        }
         
         cv.visit(version, access, name, signature, superName, newInterfaces);
-    }
+        
+        
+        if (weaveRest){
+            cv.visitInnerClass(classDetails.getClassName() + "/"  + RestAdapterClassWriter.ADAPTER_INNER_CLASS_NAME, classDetails.getClassName(), "_persistence_RestAdapter", ACC_PUBLIC + ACC_STATIC);
+        }
+    } 
 
     /**
      * Construct a MethodWeaver and allow it to process the method.
@@ -1405,7 +1439,8 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
                 }
             }
         }
-        if (classDetails.getSuperClassDetails() == null) {
+        if (classDetails.shouldWeaveREST() && classDetails.getSuperClassDetails() == null) {
+            weavedRest = true;
             addPersistenceRestVariables();
             addPersistenceRestMethods(classDetails);
         }

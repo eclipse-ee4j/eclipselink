@@ -21,6 +21,8 @@ import javax.xml.bind.JAXBElement;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.internal.descriptors.VirtualAttributeAccessor;
+import org.eclipse.persistence.internal.jpa.rs.metadata.model.Link;
+import org.eclipse.persistence.internal.jpa.weaving.RestAdapterClassWriter;
 import org.eclipse.persistence.internal.weaving.RelationshipInfo;
 import org.eclipse.persistence.jaxb.metadata.MetadataSource;
 import org.eclipse.persistence.jaxb.xmlmodel.JavaType;
@@ -28,17 +30,17 @@ import org.eclipse.persistence.jaxb.xmlmodel.JavaType.JavaAttributes;
 import org.eclipse.persistence.jaxb.xmlmodel.ObjectFactory;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlAccessMethods;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.JavaTypes;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlElement;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlSchema;
-import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.JavaTypes;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlSchema.XmlNs;
-import org.eclipse.persistence.jaxb.xmlmodel.XmlElement;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlVirtualAccessMethods;
-import org.eclipse.persistence.jpa.rs.metadata.model.Link;
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ObjectReferenceMapping;
 import org.eclipse.persistence.sessions.server.Server;
+
 
 /**
  * {@link MetadataSource} used in the creation of dynamic JAXB contexts for applications.
@@ -69,7 +71,7 @@ public class DynamicXMLMetadataSource implements MetadataSource {
         atomNs.setNamespaceUri(LINK_NAMESPACE_URI);
         xmlSchema.getXmlNs().add(atomNs);
         xmlBindings.setXmlSchema(xmlSchema);
-        
+
         for (ClassDescriptor ormDescriptor : session.getProject().getOrderedDescriptors()) {
             String descriptorPackageName = "";
             if (ormDescriptor.getJavaClassName().lastIndexOf('.') > 0){
@@ -79,8 +81,17 @@ public class DynamicXMLMetadataSource implements MetadataSource {
                 javaTypes.getJavaType().add(createJAXBType(ormDescriptor, objectFactory));
             }
         }
-    }
+     }
     
+    /**
+     * Create a javaType to be used by JAXB to map a particular class.
+     * For static classes, JAXB annotations, xml and defaults will be used to map the class.
+     * For Dynamic classes we create properties for each JPA mapping on the class
+     * thing we create is a 
+     * @param classDescriptor
+     * @param objectFactory
+     * @return
+     */
     private JavaType createJAXBType(ClassDescriptor classDescriptor, ObjectFactory objectFactory) {
         JavaType javaType = new JavaType();
         javaType.setName(classDescriptor.getAlias());
@@ -93,31 +104,45 @@ public class DynamicXMLMetadataSource implements MetadataSource {
             }
         }
         if (isDynamic){
-            javaType.getJavaAttributes().getJavaAttribute().add(createSelfProperty(classDescriptor.getJavaClassName(), objectFactory));
+            javaType.getJavaAttributes().getJavaAttribute().add(createPersistenceHrefProperty(classDescriptor.getJavaClassName(), objectFactory));
             javaType.getJavaAttributes().getJavaAttribute().add(createRelationshipsProperty(classDescriptor.getJavaClassName(), objectFactory));
         }
         // Make them all root elements for now
         javaType.setXmlRootElement(new org.eclipse.persistence.jaxb.xmlmodel.XmlRootElement());
 
+        // Set an adapter that is a subclass of ReferenceAdapter that can adapt the class to create a link for
+        // the persistence_href field that has been weaved in.
+        String name = classDescriptor.getJavaClassName() + "." + RestAdapterClassWriter.ADAPTER_INNER_CLASS_NAME;
+        XmlJavaTypeAdapter adapter = new XmlJavaTypeAdapter();
+        adapter.setValue(name);
+        adapter.setValueType(classDescriptor.getJavaClassName());
+        adapter.setType(classDescriptor.getJavaClassName());
+        javaType.setXmlJavaTypeAdapter(adapter);
+        
         return javaType;
     }
     
+    /**
+     * Create a JAXB property for a particular mapping.
+     * This will only create JAXBProperties for mappings that are virtual - either because their
+     * parent object is a dynamic class, or because the owning static class has virtual properties
+     * @param mapping
+     * @param objectFactory
+     * @param owningType
+     * @param isDynamic
+     * @return
+     */
     private JAXBElement<XmlElement> createJAXBProperty(DatabaseMapping mapping, ObjectFactory objectFactory, JavaType owningType, boolean isDynamic) {
-        if (!mapping.getAttributeAccessor().isVirtualAttributeAccessor() && !isDynamic && (mapping.isPrivateOwned() || (!mapping.isObjectReferenceMapping() &&  !mapping.isCollectionMapping()) )){
+        if (!mapping.getAttributeAccessor().isVirtualAttributeAccessor() && 
+                !isDynamic) {
             return null;
         }
         XmlElement xmlElement = new XmlElement();
         xmlElement.setJavaAttribute(mapping.getAttributeName());
         if (mapping.isObjectReferenceMapping()){
             xmlElement.setType(((ObjectReferenceMapping)mapping).getReferenceClassName());
-            if (!mapping.isPrivateOwned()){
-                xmlElement.setReadOnly(true);
-            }
         } else if (mapping.isCollectionMapping()){
             xmlElement.setType(((CollectionMapping)mapping).getReferenceClassName());
-            if (!mapping.isPrivateOwned()){
-                xmlElement.setReadOnly(true);
-            }
         } else {
             xmlElement.setType(mapping.getAttributeClassification().getName());
         }
@@ -138,19 +163,26 @@ public class DynamicXMLMetadataSource implements MetadataSource {
         }
         return objectFactory.createXmlElement(xmlElement);
     }
-
-    public static JAXBElement<XmlElement> createSelfProperty(String ownerClassName, ObjectFactory objectFactory){
+    
+    public static JAXBElement<XmlElement> createPersistenceHrefProperty(String ownerClassName, ObjectFactory objectFactory){
         XmlElement xmlElement = new XmlElement();
-        xmlElement.setJavaAttribute("self");
-        xmlElement.setType(ownerClassName);
-        addXmlAdapter(xmlElement);
+        xmlElement.setJavaAttribute("persistence_href");
+        xmlElement.setName("_href");
+        xmlElement.setType(Link.class.getName());
+
         return objectFactory.createXmlElement(xmlElement);
     }
     
+    /**
+     * Create a property that allows users to link to the lists of entities an object is related to
+     * @param ownerClassName
+     * @param objectFactory
+     * @return
+     */
     public static JAXBElement<XmlElement> createRelationshipsProperty(String ownerClassName, ObjectFactory objectFactory){
         XmlElement xmlElement = new XmlElement();
         xmlElement.setJavaAttribute("_persistence_relationshipInfo");
-        xmlElement.setName("relationships");
+        xmlElement.setName("_relationships");
         xmlElement.setType(RelationshipInfo.class.getName());
         xmlElement.setContainerType(List.class.getName());
         xmlElement.setWriteOnly(true);
@@ -161,17 +193,6 @@ public class DynamicXMLMetadataSource implements MetadataSource {
         adapter.setType(xmlElement.getType());
         xmlElement.setXmlJavaTypeAdapter(adapter);
         return objectFactory.createXmlElement(xmlElement);
-    }
-    
-    
-    public static void addXmlAdapter(XmlElement xmlElement) {
-        xmlElement.setXmlPath(xmlElement.getJavaAttribute() + "/" + LINK_PREFIX + ":" + LINK_LOCAL_NAME + "[@rel='" + xmlElement.getJavaAttribute() + "']/@href");
-
-        XmlJavaTypeAdapter adapter = new XmlJavaTypeAdapter();
-        adapter.setValue(LinkAdapter.class.getName());
-        adapter.setValueType(String.class.getName());
-        adapter.setType(xmlElement.getType());
-        xmlElement.setXmlJavaTypeAdapter(adapter);
     }
     
     public XmlBindings getXmlBindings(Map<String, ?> properties, ClassLoader classLoader) {

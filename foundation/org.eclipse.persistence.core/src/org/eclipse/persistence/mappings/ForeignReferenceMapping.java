@@ -18,31 +18,74 @@ package org.eclipse.persistence.mappings;
 
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 
 import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.history.*;
-import org.eclipse.persistence.indirection.*;
-import org.eclipse.persistence.internal.descriptors.*;
-import org.eclipse.persistence.internal.expressions.*;
-import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.history.AsOfClause;
+import org.eclipse.persistence.indirection.ValueHolder;
+import org.eclipse.persistence.indirection.ValueHolderInterface;
+import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
+import org.eclipse.persistence.internal.descriptors.InstanceVariableAttributeAccessor;
+import org.eclipse.persistence.internal.descriptors.MethodAttributeAccessor;
+import org.eclipse.persistence.internal.expressions.ForUpdateOfClause;
+import org.eclipse.persistence.internal.expressions.ObjectExpression;
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.helper.NonSynchronizedSubVector;
+import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
-import org.eclipse.persistence.internal.indirection.*;
+import org.eclipse.persistence.internal.indirection.BasicIndirectionPolicy;
+import org.eclipse.persistence.internal.indirection.ContainerIndirectionPolicy;
+import org.eclipse.persistence.internal.indirection.DatabaseValueHolder;
+import org.eclipse.persistence.internal.indirection.IndirectionPolicy;
+import org.eclipse.persistence.internal.indirection.NoIndirectionPolicy;
+import org.eclipse.persistence.internal.indirection.WeavedObjectBasicIndirectionPolicy;
 import org.eclipse.persistence.internal.queries.AttributeItem;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
-import org.eclipse.persistence.internal.sessions.remote.*;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
-import org.eclipse.persistence.internal.sessions.*;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.ChangeRecord;
+import org.eclipse.persistence.internal.sessions.MergeManager;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.internal.sessions.remote.RemoteSessionController;
+import org.eclipse.persistence.internal.sessions.remote.RemoteValueHolder;
 import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.sessions.remote.*;
+import org.eclipse.persistence.queries.BatchFetchPolicy;
+import org.eclipse.persistence.queries.Call;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.FetchGroup;
+import org.eclipse.persistence.queries.ObjectBuildingQuery;
+import org.eclipse.persistence.queries.ObjectLevelModifyQuery;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.queries.ReadObjectQuery;
+import org.eclipse.persistence.queries.ReadQuery;
+import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
+import org.eclipse.persistence.sessions.remote.DistributedSession;
+import org.eclipse.persistence.sessions.remote.RemoteSession;
 
 /**
  * <b>Purpose</b>: Abstract class for relationship mappings
@@ -132,6 +175,9 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
     /** Allow the mapping's queries to be targeted at specific connection pools. */
     protected String partitioningPolicyName;
     
+    /** Stores JPA metadata about whether another mapping is the owning mapping.  Only populated for JPA models **/
+    protected String mappedBy;
+    
     protected ForeignReferenceMapping() {
         this.isPrivateOwned = false;
         this.hasCustomSelectionQuery = false;
@@ -144,7 +190,17 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         this.forceInitializationOfSelectionCriteria = false;
         this.extendPessimisticLockScope = ExtendPessimisticLockScope.NONE;
     }
-    
+   
+    /**
+     * ADVANCED: Allows the retrieval of the owning mapping for a particular
+     * mapping. Note: This will only be set for JPA models
+     * 
+     * @return
+     */
+    public String getMappedBy() {
+        return mappedBy;
+    }
+
     /**
      * PUBLIC:
      * Return the mapping's partitioning policy.
@@ -1894,6 +1950,16 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         return joinFetch;
     }
         
+    /**
+     * INTERNAL: Called by JPA metadata processing to store the owning mapping
+     * for this mapping
+     * 
+     * @param mappedBy
+     */
+    public void setMappedBy(String mappedBy) {
+        this.mappedBy = mappedBy;
+    }        
+    
     /**
      * PUBLIC:
      * Return if this relationship should always be join fetched.

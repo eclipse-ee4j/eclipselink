@@ -50,46 +50,40 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_FETCH_LAZY;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_JOIN_COLUMN;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_JOIN_COLUMNS;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_JOIN_TABLE;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
-import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.mappings.ForeignReferenceMapping;
-import org.eclipse.persistence.mappings.RelationTableMechanism;
-
 import org.eclipse.persistence.annotations.BatchFetch;
 import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.eclipse.persistence.annotations.JoinFetch;
-//import org.eclipse.persistence.annotations.JoinField;
-//import org.eclipse.persistence.annotations.JoinFields;
 import org.eclipse.persistence.annotations.Noncacheable;
 import org.eclipse.persistence.annotations.PrivateOwned;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
-
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProcessor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
-
-import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.mappings.CascadeMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.tables.JoinTableMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
-
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotatedElement;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
-
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_FETCH_LAZY;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_JOIN_COLUMN;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_JOIN_COLUMNS;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_JOIN_TABLE;
+import org.eclipse.persistence.internal.jpa.metadata.columns.JoinColumnMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.mappings.CascadeMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.tables.JoinTableMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.ForeignReferenceMapping;
+import org.eclipse.persistence.mappings.RelationTableMechanism;
 
 /**
  * INTERNAL:
@@ -478,6 +472,12 @@ public abstract class RelationshipAccessor extends MappingAccessor {
             // Make sure the mapping accessor is processed.
             if (! mappingAccessor.isProcessed()) {
                 mappingAccessor.process();
+            }
+            
+            if (this.getMapping() != null
+                    && this.getMapping().isForeignReferenceMapping()) {
+                ((ForeignReferenceMapping) this.getMapping())
+                        .setMappedBy(mappedBy);
             }
         }
         
