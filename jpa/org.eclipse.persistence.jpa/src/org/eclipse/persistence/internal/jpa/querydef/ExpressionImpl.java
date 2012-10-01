@@ -128,9 +128,6 @@ public class ExpressionImpl<X> extends SelectionImpl<X> implements Expression<X>
      * @return predicate testing for membership
      */
     public Predicate in(Expression<Collection<?>> values) {
-        if (((InternalSelection)this).isFrom()){
-            ((FromImpl)this).isLeaf = false;
-        }
         List list = new ArrayList();
         list.add(values);
         list.add(this);

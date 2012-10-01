@@ -88,11 +88,6 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
         findRootAndParameters(selection);
         this.selection = (SelectionImpl) selection;
         if (selection.isCompoundSelection()) {
-            for (Selection select : selection.getCompoundSelectionItems()) {
-                if (((InternalSelection) select).isFrom()) {
-                    ((FromImpl) select).isLeaf = false;
-                }
-            }
             if (selection.getJavaType().equals(Tuple.class)) {
                 this.queryResult = ResultType.TUPLE;
                 this.queryType = Tuple.class;
@@ -108,8 +103,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
             this.queryType = selection.getJavaType();
             TypeImpl type = ((MetamodelImpl)this.metamodel).getType(this.queryType);
             if (type != null && type.getPersistenceType().equals(PersistenceType.ENTITY)) {
-                this.queryResult = ResultType.ENTITY;
-                ((FromImpl) selection).isLeaf = false; // this will be a selection item in a report query
+                this.queryResult = ResultType.ENTITY; // this will be a selection item in a report query
             } else {
                 this.queryResult = ResultType.OTHER;
             }
@@ -163,9 +157,6 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
         }
         for (Selection select : selections) {
             findRootAndParameters(select);
-            if (((InternalSelection) select).isFrom()) {
-                ((FromImpl) select).isLeaf = false;
-            }
         }
         if (this.queryResult == ResultType.CONSTRUCTOR) {
             populateAndSetConstructorSelection(null, this.queryType, selections);
@@ -575,7 +566,6 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                         query.addJoinedAttribute(fetch);
                     }
                     if (!list.isEmpty()) {
-                        query.setShouldFilterDuplicates(false);
                         query.setExpressionBuilder(list.get(0).getBuilder());
                     }
                 } else if (this.roots == null || this.roots.isEmpty()) {
@@ -590,9 +580,6 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                     List<org.eclipse.persistence.expressions.Expression> list = ((FromImpl) this.roots.iterator().next()).findJoinFetches();
                     for (org.eclipse.persistence.expressions.Expression fetch : list) {
                         query.addJoinedAttribute(fetch);
-                    }
-                    if (!list.isEmpty()) {
-                        query.setShouldFilterDuplicates(false);
                     }
                     query.setExpressionBuilder(((InternalSelection)selection).getCurrentNode().getBuilder());
 
@@ -627,7 +614,6 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                 if (this.roots != null && !this.roots.isEmpty()) {
                     List<org.eclipse.persistence.expressions.Expression> list = ((FromImpl) this.roots.iterator().next()).findJoinFetches();
                     if (!list.isEmpty()) {
-                        query.setShouldFilterDuplicates(false);
                         query.setExpressionBuilder(list.get(0).getBuilder()); // set the builder to one of the fetches bases.
                     }
                     for (org.eclipse.persistence.expressions.Expression fetch : list) {
@@ -730,16 +716,17 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
             }
         }
         if (this.joins != null && !joins.isEmpty()) {
-            query.setShouldFilterDuplicates(false);
             for (FromImpl join : this.joins) {
                 query.addNonFetchJoinedAttribute(((InternalSelection) join).getCurrentNode());
             }
         }
         if (this.distinct) {
             query.setDistinctState(ObjectLevelReadQuery.USE_DISTINCT);
-            query.setShouldFilterDuplicates(true);
         } else {
             query.setDistinctState(ObjectLevelReadQuery.DONT_USE_DISTINCT);
+            if (query.hasJoining()) {
+            	query.setShouldFilterDuplicates(false);
+            }
         }
         if (this.orderBy != null && !this.orderBy.isEmpty()) {
             for (Order order : this.orderBy) {

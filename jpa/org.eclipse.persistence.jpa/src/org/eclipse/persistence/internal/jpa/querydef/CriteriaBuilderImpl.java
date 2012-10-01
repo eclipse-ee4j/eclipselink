@@ -553,9 +553,6 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      * @return predicate
      */
     public Predicate isNull(Expression<?> x){
-        if (((InternalSelection)x).isFrom()){
-            ((FromImpl)x).isLeaf = false;
-        }
         return new PredicateImpl(this.metamodel, ((InternalSelection)x).getCurrentNode().isNull(), new ArrayList(), BooleanOperator.AND);
     }
     
@@ -565,9 +562,6 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      * @return predicate
      */
     public Predicate isNotNull(Expression<?> x){
-        if (((InternalSelection)x).isFrom()){
-            ((FromImpl)x).isLeaf = false;
-        }
         return new PredicateImpl(this.metamodel, ((InternalSelection)x).getCurrentNode().notNull(),new ArrayList(), BooleanOperator.AND);
     }
 
@@ -582,12 +576,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      * @return equality predicate
      */
     public Predicate equal(Expression<?> x, Expression<?> y){
-        if (((InternalSelection)x).isFrom()){
-            ((FromImpl)x).isLeaf = false;
-        }
-        if (((InternalSelection)y).isFrom()){
-            ((FromImpl)y).isLeaf = false;
-        }
+
         List list = new ArrayList();
         list.add(x);
         list.add(y);
@@ -610,12 +599,6 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         List list = new ArrayList();
         list.add(x);
         list.add(y);
-        if (((InternalSelection)x).isFrom()){
-            ((FromImpl)x).isLeaf = false;
-        }
-        if (((InternalSelection)y).isFrom()){
-            ((FromImpl)y).isLeaf = false;
-        }
         return new CompoundExpressionImpl(this.metamodel, ((InternalSelection)x).getCurrentNode().notEqual(((InternalSelection)y).getCurrentNode()), list, "not equal");
     }
 
@@ -630,9 +613,6 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      */
     public Predicate equal(Expression<?> x, Object y){
         //parameter is not an expression.
-        if (((InternalSelection)x).isFrom()){
-            ((FromImpl)x).isLeaf = false;
-        }
         if (((InternalSelection)x).getCurrentNode() == null){
             throw new IllegalArgumentException(ExceptionLocalization.buildMessage("OPERATOR_EXPRESSION_IS_CONJUNCTION"));
         }
@@ -661,9 +641,6 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         List list = new ArrayList();
         list.add(x);
         list.add(this.literal(y));
-        if (((InternalSelection)x).isFrom()){
-            ((FromImpl)x).isLeaf = false;
-        }
         return new CompoundExpressionImpl(this.metamodel, ((InternalSelection)x).getCurrentNode().notEqual(y), list, "not equal");
     }
 
@@ -1480,9 +1457,6 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      * @return predicate
      */
     public <E, C extends Collection<E>> Predicate isMember(Expression<E> elem, Expression<C> collection){
-        if (((InternalSelection)elem).isFrom()){
-            ((FromImpl)elem).isLeaf = false;
-        }
         return new CompoundExpressionImpl(metamodel, ((InternalSelection)collection).getCurrentNode().equal(((InternalSelection)elem).getCurrentNode()), buildList(collection, elem), "isMember");
     }
 
@@ -1497,9 +1471,6 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      * @return predicate
      */
     public <E, C extends Collection<E>> Predicate isNotMember(Expression<E> elem, Expression<C> collection){
-        if (((InternalSelection)elem).isFrom()){
-            ((FromImpl)elem).isLeaf = false;
-        }
         ReportQuery subQuery = new ReportQuery();
         subQuery.setReferenceClass(((ExpressionImpl)elem).getJavaType());
         org.eclipse.persistence.expressions.ExpressionBuilder elemBuilder = new org.eclipse.persistence.expressions.ExpressionBuilder();
@@ -2100,9 +2071,6 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      * @return in predicate
      */
     public <T> In<T> in(Expression<? extends T> expression){
-        if (((InternalSelection)expression).isFrom()){
-            ((FromImpl)expression).isLeaf = false;
-        }
         return new InImpl(metamodel, expression, buildList(expression));
     }
 
@@ -2217,9 +2185,6 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         List<org.eclipse.persistence.expressions.Expression> params = new ArrayList<org.eclipse.persistence.expressions.Expression>();
         for (int index = 1; index < args.length; ++index){
             Expression x = args[index];
-            if (((InternalSelection)x).isFrom()){
-                ((FromImpl)x).isLeaf = false;
-            }
             params.add(((InternalSelection)x).getCurrentNode());
         }
         
