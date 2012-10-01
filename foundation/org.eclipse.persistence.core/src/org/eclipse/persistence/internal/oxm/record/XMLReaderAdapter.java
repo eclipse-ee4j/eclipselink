@@ -12,7 +12,6 @@
 ******************************************************************************/
 package org.eclipse.persistence.internal.oxm.record;
 
-import javax.xml.namespace.QName;
 import javax.xml.validation.Schema;
 
 import org.eclipse.persistence.oxm.XMLConstants;
