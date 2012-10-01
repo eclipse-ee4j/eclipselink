@@ -59,7 +59,7 @@ public class XMLReader implements org.xml.sax.XMLReader {
     protected ValidatingContentHandler validatingContentHandler;
     protected boolean namespaceAware;
     protected char namespaceSeparator;
-    protected Locator locator;
+    protected Locator locator;    
 
     public XMLReader(org.xml.sax.XMLReader internalReader) {
         this();
@@ -72,10 +72,20 @@ public class XMLReader implements org.xml.sax.XMLReader {
         namespaceSeparator = XMLConstants.COLON;
     }
     
+    /**
+     * INTERNAL:
+     * return the Locator object associated with this reader
+     * @since 2.4
+     */
     public Locator getLocator(){
     	return locator;
     }
     
+    /**
+     * INTERNAL:
+     * set the Locator object to associate with this reader
+     * @since 2.4
+     */
     public void setLocator(Locator newLocator){
     	locator = newLocator;
     }
