@@ -712,6 +712,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
             XMLStreamReader xmlStreamReader = XML_INPUT_FACTORY.createXMLStreamReader(instream);
 
             ExtendedXMLStreamReaderReader xmlStreamReaderReaderEx = new ExtendedXMLStreamReaderReader();
+            xmlStreamReaderReaderEx.setErrorHandler(((JAXBUnmarshaller) jaxbUnmarshaller).getXMLUnmarshaller().getErrorHandler());
             XMLStreamReaderInputSource xmlStreamReaderInputSource = new XMLStreamReaderInputSource(xmlStreamReader);
             SAXSource saxSource = new SAXSource(xmlStreamReaderReaderEx, xmlStreamReaderInputSource);
             jaxbUnmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, "application/xml");

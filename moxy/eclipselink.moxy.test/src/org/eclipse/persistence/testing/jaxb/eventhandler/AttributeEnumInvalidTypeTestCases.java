@@ -52,6 +52,5 @@ public class AttributeEnumInvalidTypeTestCases extends JAXBWithJSONTestCases{
     }
     
     public void testRoundTrip(){};
-	
-    public void testXMLToObjectFromXMLStreamReaderEx(){};
+
 }

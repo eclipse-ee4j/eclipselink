@@ -52,6 +52,5 @@ public class ElementInvalidTypeTestCases extends JAXBWithJSONTestCases{
     }
     
     public void testRoundTrip(){};
-	
-    public void testXMLToObjectFromXMLStreamReaderEx(){};
+
 }
