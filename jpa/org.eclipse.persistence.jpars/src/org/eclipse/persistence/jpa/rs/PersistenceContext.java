@@ -80,9 +80,13 @@ import org.eclipse.persistence.jpa.rs.util.TransactionWrapper;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.ObjectReferenceMapping;
+import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
+import org.eclipse.persistence.oxm.mappings.XMLInverseReferenceMapping;
+import org.eclipse.persistence.oxm.mappings.XMLMapping;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.FetchGroupTracker;
+import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.server.Server;
 import org.eclipse.persistence.sessions.server.ServerSession;
@@ -311,7 +315,12 @@ public class PersistenceContext {
             em.close();
         }
     }
-
+    
+    public boolean doesExist(Map<String, String> tenantId, Object entity){
+        DatabaseSession session = JpaHelper.getDatabaseSession(getEmf());
+        return session.doesObjectExist(entity);
+    }
+    
     /**
      * A part of the facade over the JPA API
      * Find an entity with the given name and id in JPA
@@ -754,37 +763,40 @@ public class PersistenceContext {
         } 
 
         JAXBElement<?> element = unmarshaller.unmarshal(new StreamSource(in), type);
-        /*if (element.getValue() instanceof List<?>){
+        if (element.getValue() instanceof List<?>){
             for (Object object: (List<?>)element.getValue()){
                 wrap(object);
             }
             return element.getValue();
         } else {
             wrap(element.getValue());
-        }*/
+        }
         return element.getValue();
     }
 
     /**
-     * Make adjustements to an unmarshalled entity based on what is found in the weaved fields
+     * Make adjustments to an unmarshalled entity based on what is found in the weaved fields
      * 
      * @param entity
      * @return
      */
     protected Object wrap(Object entity){
-        ClassDescriptor descriptor = getJpaSession().getDescriptor(entity);
-        if (entity instanceof FetchGroupTracker && entity instanceof PersistenceWeavedRest){
+        if (!doesExist(null, entity)){
+            return entity;
+        }
+        ClassDescriptor descriptor = getJAXBDescriptorForClass(entity.getClass());
+        if (entity instanceof FetchGroupTracker){
             FetchGroup fetchGroup = new FetchGroup();
             for (DatabaseMapping mapping: descriptor.getMappings()){
-                if (!mapping.isForeignReferenceMapping() || mapping.isPrivateOwned()
-                        || !isRelationshipRepresentedInRelationshipInfo(mapping.getAttributeName(), (PersistenceWeavedRest) entity)){
+                if (!(mapping instanceof XMLInverseReferenceMapping)){
                     fetchGroup.addAttribute(mapping.getAttributeName());
                 }
             }
             (new FetchGroupManager()).setObjectFetchGroup(entity, fetchGroup, null);
+            ((FetchGroupTracker) entity)._persistence_setSession(JpaHelper.getDatabaseSession(getEmf()));
         } else if (descriptor.hasRelationships()){
             for (DatabaseMapping mapping: descriptor.getMappings()){
-                if (isRelationshipRepresentedInRelationshipInfo(mapping.getAttributeName(), (PersistenceWeavedRest) entity)){
+                if (mapping instanceof XMLInverseReferenceMapping){
                     // we require Fetch groups to handle relationships
                     throw new JPARSException(LoggingLocalization.buildMessage("weaving_required_for_relationships", new Object[]{}));
                 }
@@ -792,7 +804,7 @@ public class PersistenceContext {
         }
         return entity;
     }
-
+    
     /**
      * Marshall an entity to either JSON or XML
      * Calling this method, will treat relationships as unfetched in the XML/JSON and marshall them as links
@@ -835,19 +847,6 @@ public class PersistenceContext {
             e.printStackTrace();
             throw new RuntimeException(e);
         } 
-
-        marshaller.setListener(new Marshaller.Listener() {
-            @Override
-            public void beforeMarshal(Object source) {   
-                if (source instanceof DynamicEntity){
-                    DynamicEntityImpl sourceImpl = (DynamicEntityImpl)source;
-                    PropertyChangeListener listener = sourceImpl._persistence_getPropertyChangeListener();
-                    sourceImpl._persistence_setPropertyChangeListener(null);
-                    ((DynamicEntity)source).set("self", source);
-                    sourceImpl._persistence_setPropertyChangeListener(listener);
-                }
-            }
-        });
 
         if (mediaType == MediaType.APPLICATION_XML_TYPE && object instanceof List){
             marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
@@ -902,7 +901,6 @@ public class PersistenceContext {
                 for (DatabaseMapping mapping : descriptor.getMappings()){
                     if (mapping.isForeignReferenceMapping()){
                         ForeignReferenceMapping frMapping = (ForeignReferenceMapping)mapping;
-                        if (!frMapping.isPrivateOwned()){
 
                             RelationshipInfo info = new RelationshipInfo();
 
@@ -915,7 +913,6 @@ public class PersistenceContext {
                             //String href = baseURI + this.name + "/entity/"  + info.getOwningEntityAlias() + "/" + 
                             //               IdHelper.stringifyId(info.getOwningEntity(), info.getOwningEntityAlias(), this) + "/" + frMapping.getAttributeName();
                             // ((PersistenceWeavedRest)entity)._persistence_setHref(href);
-                        }
                     }
                 }
             }
@@ -971,8 +968,6 @@ public class PersistenceContext {
                         .getConversionManager().getLoader();
                 Class referenceAdaptorClass = Class.forName(
                         referenceAdapterName, true, cl);
-
-                //adapters.add((XmlAdapter)referenceAdaptorClass.newInstance());
 
                 Class[] argTypes = { String.class, PersistenceContext.class };
                 Constructor referenceAdaptorConstructor = referenceAdaptorClass

@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpars.test.model;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -44,7 +45,7 @@ public class StaticBid {
     
     private long time;
 
-    @OneToOne(fetch=FetchType.LAZY)
+    @OneToOne(fetch=FetchType.LAZY, cascade=CascadeType.ALL)
     private StaticUser user;
 
     @OneToOne(fetch=FetchType.LAZY)

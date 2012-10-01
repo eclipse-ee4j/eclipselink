@@ -64,7 +64,7 @@ public class RestAdapterClassWriter implements EclipseLinkClassWriter, Opcodes {
 
     @Override
     public boolean isCompatible(EclipseLinkClassWriter writer) {
-        return false;
+        return getParentClassName().equals(writer.getParentClassName());
     }
 
     @Override

@@ -56,8 +56,7 @@ public class StaticAddress {
     public void setPostalCode(String postalCode) {
         this.postalCode = postalCode;
     }
-    
-    @XmlInverseReference(mappedBy="address")
+
     public StaticUser getUser() {
         return user;
     }

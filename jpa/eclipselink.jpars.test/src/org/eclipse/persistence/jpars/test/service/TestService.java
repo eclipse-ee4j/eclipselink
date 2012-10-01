@@ -45,6 +45,7 @@ import org.eclipse.persistence.jpa.rs.PersistenceFactoryBase;
 import org.eclipse.persistence.jpa.rs.Service;
 import org.eclipse.persistence.jpa.rs.util.LinkAdapter;
 import org.eclipse.persistence.jpa.rs.util.StreamingOutputMarshaller;
+import org.eclipse.persistence.jpars.test.model.StaticAddress;
 import org.eclipse.persistence.jpars.test.model.StaticAuction;
 import org.eclipse.persistence.jpars.test.model.StaticBid;
 import org.eclipse.persistence.jpars.test.model.StaticUser;
@@ -100,13 +101,12 @@ public class TestService {
             properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
             properties.put(PersistenceUnitProperties.DDL_GENERATION, PersistenceUnitProperties.DROP_AND_CREATE);
             properties.put(PersistenceUnitProperties.DEPLOY_ON_STARTUP, "true");
-           
+            properties.put(PersistenceUnitProperties.CLASSLOADER, new DynamicClassLoader(Thread.currentThread().getContextClassLoader()));
+
             getAuctionPersistenceContext(properties);
 
             getPhoneBookPersistenceContext(properties);
             
-            properties.put(PersistenceUnitProperties.CLASSLOADER, new DynamicClassLoader(Thread.currentThread().getContextClassLoader()));
- 
             EntityManagerFactory emf = Persistence.createEntityManagerFactory("auction-static-local", properties);
             factory.bootstrapPersistenceContext("auction-static-local", emf, BASE_URI, false);
 
@@ -135,7 +135,6 @@ public class TestService {
         em.createQuery("delete from Person p").executeUpdate();
         em.getTransaction().commit();
     }
-    
     
     @Test
     public void testUpdateUserList(){
@@ -390,9 +389,9 @@ public class TestService {
         String resultString = stringifyResults(output);
         
         assertTrue("amount was not in results.", resultString.replace(" ","").contains("\"amount\":201.0"));
-        assertTrue("link was not in results.", resultString.replace(" ","").contains("http://localhost:9090/JPA-RS/auction/entity/Bid/"));
+        assertTrue("link was not in results.", resultString.replace(" ","").contains("http://localhost:8080/JPA-RS/auction/entity/Bid/"));
         assertTrue("rel was not in results.", resultString.replace(" ","").contains("\"rel\":\"user\""));
-        assertTrue("Laptop was not in results.", resultString.replace(" ","").contains("\"name\":\"Laptop\""));
+        assertTrue("Laptop was not a link in results.", !resultString.replace(" ","").contains("\"name\":\"Laptop\""));
         
     }
     
@@ -572,8 +571,7 @@ public class TestService {
 
         TestURIInfo ui = new TestURIInfo();
         ui.addMatrixParameter("bids", "partner", "auction");
-        Response output = service.setOrAddAttribute("auction-static-local", "StaticAuction", String.valueOf(StaticModelDatabasePopulator.AUCTION1_ID), "bids", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), ui, serializeToStream(bid, context, MediaType.APPLICATION_JSON_TYPE));
-        String result = stringifyResults((StreamingOutputMarshaller)output.getEntity());
+        service.setOrAddAttribute("auction-static-local", "StaticAuction", String.valueOf(StaticModelDatabasePopulator.AUCTION1_ID), "bids", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), ui, serializeToStream(bid, context, MediaType.APPLICATION_JSON_TYPE));
         context.getJpaSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         
         auction = (StaticAuction)context.find("StaticAuction", StaticModelDatabasePopulator.AUCTION1_ID);
@@ -589,7 +587,7 @@ public class TestService {
         
         context.getJpaSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         bid = (StaticBid)context.find("StaticBid", bid.getId());
-        output = service.removeAttribute("auction-static-local", "StaticAuction", String.valueOf(StaticModelDatabasePopulator.AUCTION1_ID), "bids", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), ui, serializeToStream(bid, context, MediaType.APPLICATION_JSON_TYPE));
+        service.removeAttribute("auction-static-local", "StaticAuction", String.valueOf(StaticModelDatabasePopulator.AUCTION1_ID), "bids", generateHTTPHeader(MediaType.APPLICATION_JSON_TYPE, MediaType.APPLICATION_JSON), ui, serializeToStream(bid, context, MediaType.APPLICATION_JSON_TYPE));
         context.getJpaSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         
         auction = (StaticAuction)context.find("StaticAuction", StaticModelDatabasePopulator.AUCTION1_ID);
