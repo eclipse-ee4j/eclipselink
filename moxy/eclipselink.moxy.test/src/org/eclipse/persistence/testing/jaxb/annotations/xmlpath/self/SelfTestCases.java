@@ -29,7 +29,7 @@ public class SelfTestCases extends JAXBWithJSONTestCases {
     @Override
     protected Object getControlObject() {
         PaymentInf p = new PaymentInf();
-        p.setId("PAYMENT-ID");
+        p.setPaymentId("PAYMENT-ID");
 
         Creditor c = new Creditor();
         c.setId("CREDITOR-ID");

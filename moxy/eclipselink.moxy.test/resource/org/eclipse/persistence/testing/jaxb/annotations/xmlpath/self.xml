@@ -3,5 +3,5 @@
        <CreditorFrstName>
                <id>CREDITOR-ID</id>
        </CreditorFrstName>
-       <id>PAYMENT-ID</id>
+       <paymentId>PAYMENT-ID</paymentId>
 </PaymentInf>

@@ -883,7 +883,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
     }
 
     public void startUnmappedElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
-        if(this.unmarshaller.getMediaType() == MediaType.APPLICATION_XML && null == selfRecords) {
+        if(this.unmarshaller.getMediaType() == MediaType.APPLICATION_XML && null == selfRecords && !isSelfRecord) {
             ErrorHandler errorHandler = xmlReader.getErrorHandler();
             if(null != errorHandler) {
                 StringBuilder messageBuilder = new StringBuilder("unexpected element (uri:\"");
