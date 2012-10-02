@@ -16,6 +16,7 @@ import java.sql.Time;
 import java.util.*;
 import java.io.Serializable;
 import javax.persistence.*;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.eclipse.persistence.annotations.BasicCollection;
 import org.eclipse.persistence.annotations.Cache;
@@ -41,6 +42,7 @@ import org.eclipse.persistence.annotations.TypeConverter;
 import org.eclipse.persistence.annotations.WriteTransformer;
 import org.eclipse.persistence.annotations.WriteTransformers;
 import org.eclipse.persistence.config.QueryHints;
+import org.eclipse.persistence.oxm.annotations.XmlPath;
 import org.eclipse.persistence.sessions.Record;
 import org.eclipse.persistence.sessions.Session;
 
@@ -526,6 +528,8 @@ public class Employee implements Serializable, Cloneable {
      * Return the first element of the Transformation mapped normalHours.
      */
     @Transient
+    // XmlPath Annotation added as test for bug 390932
+    @XmlPath("")
     public java.sql.Time getStartTime() {
         return getNormalHours()[0];
     }

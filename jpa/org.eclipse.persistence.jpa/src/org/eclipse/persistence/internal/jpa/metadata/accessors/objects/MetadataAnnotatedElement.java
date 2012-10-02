@@ -47,7 +47,6 @@ package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -81,6 +80,7 @@ import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JP
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ONE_TO_ONE;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_TEMPORAL;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_VERSION;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.ECLIPSELINK_OXM_PACKAGE_PREFIX;
 
 /**
  * INTERNAL:
@@ -407,14 +407,13 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
      * persistence annotations.
      */
     public boolean areAnnotationsCompatibleWithTransient(ClassAccessor classAccessor) {
-        int legalAnnotationCount = 1;
-        Iterator annotations = TransientCompatibleAnnotations.getTransientCompatibleAnnotations().iterator();
-        while (annotations.hasNext()){
-            if (m_annotations.containsKey(annotations.next())){
-                legalAnnotationCount++;
+        List<String> annotations = TransientCompatibleAnnotations.getTransientCompatibleAnnotations();
+        for (String key: m_annotations.keySet()){
+            if (!key.startsWith(ECLIPSELINK_OXM_PACKAGE_PREFIX) && !annotations.contains(key)){
+                return false;
             }
         }
-        return getDeclaredAnnotationsCount(classAccessor) <= legalAnnotationCount;
+        return true;
     }
     
     /** 
