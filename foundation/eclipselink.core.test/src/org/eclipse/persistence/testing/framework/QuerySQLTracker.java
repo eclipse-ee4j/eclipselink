@@ -35,6 +35,7 @@ public class QuerySQLTracker extends DefaultSessionLog {
     // Track SQL statements
     private List sqlStatements = new ArrayList();
     private List queries = new ArrayList();
+    private boolean isSuspended;
 
     /**
      * Instantiating a QuerySQLTracker will replace the session's log with the QuerySQLTracker
@@ -61,13 +62,15 @@ public class QuerySQLTracker extends DefaultSessionLog {
     }
 
     public synchronized void log(SessionLogEntry entry) {
-        // Extend SessionLog.log() by also adding SQL statements into a tracking List that are above the FINEST level
-        if ((entry.getNameSpace() != null) && entry.getNameSpace().equalsIgnoreCase(SessionLog.SQL) 
-                && entry.getLevel() > SessionLog.FINER) {  // we will not use shouldLog(level, category) in case the implementation there changes
-            getSqlStatements().add(entry.getMessage());
-        }
-        if (!this.originalLog.shouldLog(entry.getLevel())) {
-            return;
+        if (!isSuspended) {
+            // Extend SessionLog.log() by also adding SQL statements into a tracking List that are above the FINEST level
+            if ((entry.getNameSpace() != null) && entry.getNameSpace().equalsIgnoreCase(SessionLog.SQL) 
+                    && entry.getLevel() > SessionLog.FINER) {  // we will not use shouldLog(level, category) in case the implementation there changes
+                getSqlStatements().add(entry.getMessage());
+            }
+            if (!this.originalLog.shouldLog(entry.getLevel())) {
+                return;
+            }
         }
         this.originalLog.log(entry);
     }
@@ -102,5 +105,17 @@ public class QuerySQLTracker extends DefaultSessionLog {
      */
     public List getQueries() {
         return queries;
+    }
+    
+    public boolean isSuspended() {
+        return isSuspended;
+    }
+    
+    public void suspend() {
+        isSuspended = true;
+    }
+    
+    public void resume() {
+        isSuspended = false;
     }
 }
