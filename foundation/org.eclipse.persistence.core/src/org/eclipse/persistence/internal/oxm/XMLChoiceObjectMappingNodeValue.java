@@ -12,7 +12,10 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.oxm;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.oxm.record.MarshalContext;
@@ -42,6 +45,7 @@ import org.xml.sax.Attributes;
  */
 public class XMLChoiceObjectMappingNodeValue extends NodeValue implements NullCapableValue {
     private NodeValue choiceElementNodeValue;
+    private Map<Class, NodeValue> choiceElementNodeValues;
     private XMLChoiceObjectMapping xmlChoiceMapping;
     //The first node value of the choice will be registered as a null capable value. If any
     //of the choice elements get hit, this needs to be removed as a null value.
@@ -60,17 +64,33 @@ public class XMLChoiceObjectMappingNodeValue extends NodeValue implements NullCa
     
     public void initializeNodeValue() {
         XMLMapping xmlMapping = xmlChoiceMapping.getChoiceElementMappings().get(xmlField);
-        if(xmlMapping instanceof XMLBinaryDataMapping){
-            choiceElementNodeValue = new XMLBinaryDataMappingNodeValue((XMLBinaryDataMapping)xmlMapping);
-        } else if(xmlMapping instanceof XMLDirectMapping) {
-            choiceElementNodeValue = new XMLDirectMappingNodeValue((XMLDirectMapping)xmlMapping);
-        } else if(xmlMapping instanceof XMLObjectReferenceMapping) {
-            choiceElementNodeValue = new XMLObjectReferenceMappingNodeValue((XMLObjectReferenceMapping)xmlMapping, xmlField);
-        } else {
-            choiceElementNodeValue = new XMLCompositeObjectMappingNodeValue((XMLCompositeObjectMapping)xmlMapping);
+        choiceElementNodeValue = getNodeValueForMapping(xmlMapping);
+        //check for mappings to other classes with the same field
+        for(Entry<Class, XMLMapping> entry:xmlChoiceMapping.getChoiceElementMappingsByClass().entrySet()) {
+            XMLField field = xmlChoiceMapping.getClassToFieldMappings().get(entry.getKey());
+            if(field != null && field.equals(this.xmlField)) {
+                XMLMapping mappingForClass = entry.getValue();
+                if(mappingForClass != xmlMapping) {
+                    if(this.choiceElementNodeValues == null) {
+                        choiceElementNodeValues = new HashMap<Class, NodeValue>();
+                    }
+                    choiceElementNodeValues.put(entry.getKey(), getNodeValueForMapping(mappingForClass));
+                }
+            }
         }
     }
     
+    private NodeValue getNodeValueForMapping(XMLMapping xmlMapping) {
+        if(xmlMapping instanceof XMLBinaryDataMapping){
+            return new XMLBinaryDataMappingNodeValue((XMLBinaryDataMapping)xmlMapping);
+        } else if(xmlMapping instanceof XMLDirectMapping) {
+            return new XMLDirectMappingNodeValue((XMLDirectMapping)xmlMapping);
+        } else if(xmlMapping instanceof XMLObjectReferenceMapping) {
+            return new XMLObjectReferenceMappingNodeValue((XMLObjectReferenceMapping)xmlMapping, xmlField);
+        } else {
+            return new XMLCompositeObjectMappingNodeValue((XMLCompositeObjectMapping)xmlMapping);
+        }
+    }
     public void setNullCapableNodeValue(XMLChoiceObjectMappingNodeValue nodeValue) {
         this.nullCapableNodeValue = nodeValue;
     }
@@ -130,7 +150,13 @@ public class XMLChoiceObjectMappingNodeValue extends NodeValue implements NullCa
                 }
                 theClass = theClass.getSuperclass();
             }
-            if (fieldForClass == this.xmlField) {
+            if (fieldForClass != null && fieldForClass.equals(this.xmlField)) {
+                if(this.choiceElementNodeValues != null) {
+                    NodeValue nodeValue = this.choiceElementNodeValues.get(theClass);
+                    if(nodeValue != null) {
+                        return nodeValue.marshalSingleValue(xPathFragment, marshalRecord, object, value, session, namespaceResolver, marshalContext);
+                    }
+                }
                 return this.choiceElementNodeValue.marshalSingleValue(xPathFragment, marshalRecord, object, value, session, namespaceResolver, marshalContext);
             }
             List<XMLField> sourceFields = null;
@@ -169,6 +195,11 @@ public class XMLChoiceObjectMappingNodeValue extends NodeValue implements NullCa
     public void setXPathNode(XPathNode xPathNode) {
         super.setXPathNode(xPathNode);
         this.choiceElementNodeValue.setXPathNode(xPathNode);
+        if(this.choiceElementNodeValues != null) {
+            for(NodeValue next:choiceElementNodeValues.values()) {
+                next.setXPathNode(xPathNode);
+            }
+        }
     }    
 
     /**

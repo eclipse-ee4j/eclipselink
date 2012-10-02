@@ -489,7 +489,15 @@ public class MappingsGenerator {
 
             // if the value type is something we have a descriptor for, create
             // a composite mapping
-            if (typeInfo.containsKey(valueType.getQualifiedName())) {
+            if(property.isChoice()) {
+                if(isCollectionType(property)) {
+                    mapping = generateChoiceCollectionMapping(property, descriptor, namespaceInfo);
+                    ((XMLChoiceCollectionMapping) mapping).setConverter(new XMLJavaTypeConverter(adapterClass.getQualifiedName()));
+                } else {
+                    mapping = generateChoiceMapping(property, descriptor, namespaceInfo);
+                    ((XMLChoiceObjectMapping) mapping).setConverter(new XMLJavaTypeConverter(adapterClass.getQualifiedName()));
+                }
+            } else if (typeInfo.containsKey(valueType.getQualifiedName())) {
                 TypeInfo reference = typeInfo.get(valueType.getQualifiedName());
                 if (isCollectionType(property)) {
                     if (reference.isEnumerationType()) {
