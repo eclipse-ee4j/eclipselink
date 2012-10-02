@@ -19,15 +19,15 @@ import org.eclipse.persistence.oxm.annotations.XmlPath;
 @XmlRootElement(name="PaymentInf")
 public class PaymentInf {
     
-    private String id;
+    private String paymentId;
     private Creditor creditor;
 
-    public String getId() {
-        return id;
+    public String getPaymentId() {
+        return paymentId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setPaymentId(String id) {
+        this.paymentId = id;
     }
 
     @XmlPath(".")
@@ -45,7 +45,7 @@ public class PaymentInf {
             return false;
         }
         PaymentInf test = (PaymentInf) obj;
-        if(!equals(id, test.getId())) {
+        if(!equals(paymentId, test.getPaymentId())) {
             return false;
         }
         if(!equals(creditor, test.getCreditor())) {
