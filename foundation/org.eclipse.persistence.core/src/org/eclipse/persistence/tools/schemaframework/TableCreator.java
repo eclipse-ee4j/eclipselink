@@ -405,9 +405,9 @@ public class TableCreator {
                         //as it is stored internally.  
                         String tableName = table.getTable()==null? table.getName(): table.getTable().getName();
                         boolean usesDelimiting = (table.getTable()!=null && table.getTable().shouldUseDelimiters());
-                        Vector<DatabaseRecord> columnInfo = null;
+                        List<DatabaseRecord> columnInfo = null;
 
-                        //I need the actual table catalogue, schema and tableName for getTableInfo.  Ignoring schema and catalogue for now - see bug 367887 
+                        //I need the actual table catalog, schema and tableName for getTableInfo.
                         columnInfo = abstractSession.getAccessor().getColumnInfo(null, null, tableName, null, abstractSession);
                         
                         if (!usesDelimiting && (columnInfo == null || columnInfo.isEmpty()) ) {
@@ -422,16 +422,43 @@ public class TableCreator {
                             //Table exists, add individual fields as necessary
 
                             //hash the table's existing columns by name
-                            HashMap columns = new HashMap(columnInfo.size());
+                            Map<DatabaseField, DatabaseRecord> columns = new HashMap(columnInfo.size());
                             DatabaseField columnNameLookupField = new DatabaseField("COLUMN_NAME");
+                            DatabaseField schemaLookupField = new DatabaseField("TABLE_SCHEM");
+                            boolean schemaMatchFound = false;
+                            // Determine the probably schema for the table, this is a heuristic, so should not cause issues if wrong.
+                            String qualifier = table.getQualifier();
+                            if ((qualifier == null) || (qualifier.length() == 0)) {
+                                qualifier = session.getDatasourcePlatform().getTableQualifier();
+                                if ((qualifier == null) || (qualifier.length() == 0)) {
+                                    qualifier = session.getLogin().getUserName();
+                                }
+                            }
+                            boolean checkSchema = (qualifier != null) && (qualifier.length() > 0);
                             for (DatabaseRecord record : columnInfo) {
                                 String fieldName = (String)record.get(columnNameLookupField);
-                                if (fieldName !=null && fieldName.length()>0){
+                                if (fieldName != null && fieldName.length() > 0) {
                                     DatabaseField column = new DatabaseField(fieldName);
                                     if (session.getPlatform().shouldForceFieldNamesToUpperCase()) {
                                         column.useUpperCaseForComparisons(true);
                                     }
-                                    columns.put(column,  record);
+                                    String schema = (String)record.get(schemaLookupField);
+                                    // Check the schema as well.  Ignore columns for other schema if a schema match is found.
+                                    if (schemaMatchFound) {
+                                        if (qualifier.equalsIgnoreCase(schema)) {
+                                            columns.put(column,  record);
+                                        }
+                                    } else {
+                                        if (checkSchema) {
+                                            if (qualifier.equalsIgnoreCase(schema)) {
+                                                schemaMatchFound = true;
+                                                // Remove unmatched columns from other schemas.
+                                                columns.clear();
+                                            }
+                                        }
+                                        // If none of the schemas match what is expected, assume what is expected is wrong, and use all columns.
+                                        columns.put(column,  record);
+                                    }
                                 }
                             }
 
