@@ -103,10 +103,6 @@ public class DynamicXMLMetadataSource implements MetadataSource {
                 javaType.getJavaAttributes().getJavaAttribute().add(element);
             }
         }
-        if (isDynamic){
-            javaType.getJavaAttributes().getJavaAttribute().add(createPersistenceHrefProperty(classDescriptor.getJavaClassName(), objectFactory));
-            javaType.getJavaAttributes().getJavaAttribute().add(createRelationshipsProperty(classDescriptor.getJavaClassName(), objectFactory));
-        }
         // Make them all root elements for now
         javaType.setXmlRootElement(new org.eclipse.persistence.jaxb.xmlmodel.XmlRootElement());
 
@@ -161,37 +157,6 @@ public class DynamicXMLMetadataSource implements MetadataSource {
             }
 
         }
-        return objectFactory.createXmlElement(xmlElement);
-    }
-    
-    public static JAXBElement<XmlElement> createPersistenceHrefProperty(String ownerClassName, ObjectFactory objectFactory){
-        XmlElement xmlElement = new XmlElement();
-        xmlElement.setJavaAttribute("persistence_href");
-        xmlElement.setName("_href");
-        xmlElement.setType(Link.class.getName());
-
-        return objectFactory.createXmlElement(xmlElement);
-    }
-    
-    /**
-     * Create a property that allows users to link to the lists of entities an object is related to
-     * @param ownerClassName
-     * @param objectFactory
-     * @return
-     */
-    public static JAXBElement<XmlElement> createRelationshipsProperty(String ownerClassName, ObjectFactory objectFactory){
-        XmlElement xmlElement = new XmlElement();
-        xmlElement.setJavaAttribute("_persistence_relationshipInfo");
-        xmlElement.setName("_relationships");
-        xmlElement.setType(RelationshipInfo.class.getName());
-        xmlElement.setContainerType(List.class.getName());
-        xmlElement.setWriteOnly(true);
-
-        XmlJavaTypeAdapter adapter = new XmlJavaTypeAdapter();
-        adapter.setValue(RelationshipLinkAdapter.class.getName());
-        adapter.setValueType(Link.class.getName());
-        adapter.setType(xmlElement.getType());
-        xmlElement.setXmlJavaTypeAdapter(adapter);
         return objectFactory.createXmlElement(xmlElement);
     }
     

@@ -24,6 +24,6 @@ import org.eclipse.persistence.internal.jpa.rs.metadata.model.Link;
 public interface PersistenceWeavedRest {
     public List<RelationshipInfo> _persistence_getRelationships();
     public void _persistence_setRelationships(List<RelationshipInfo> relationships);
-    Link getPersistence_href();
-    void setPersistence_href(Link href);
+    Link _persistence_getHref();
+    void _persistence_setHref(Link href);
 }

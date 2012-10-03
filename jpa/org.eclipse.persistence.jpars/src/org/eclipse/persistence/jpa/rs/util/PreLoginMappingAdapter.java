@@ -52,12 +52,11 @@ public class PreLoginMappingAdapter extends SessionEventListener {
         for (Object descriptorAlias: project.getAliasDescriptors().keySet()){
             ClassDescriptor descriptor = (ClassDescriptor)project.getAliasDescriptors().get(descriptorAlias);
             Class descriptorClass = descriptor.getJavaClass();
-            if (!DynamicEntity.class.isAssignableFrom(descriptorClass) && PersistenceWeavedRest.class.isAssignableFrom(descriptorClass)){
+            if (PersistenceWeavedRest.class.isAssignableFrom(descriptorClass)){
                 XMLCompositeCollectionMapping relationshipMapping = new XMLCompositeCollectionMapping();
-                InstanceVariableAttributeAccessor accessor = new InstanceVariableAttributeAccessor();
-                accessor.setAttributeName("_persistence_relationshipInfo");
-                relationshipMapping.setAttributeAccessor(accessor);
                 relationshipMapping.setAttributeName("_persistence_relationshipInfo");
+                relationshipMapping.setGetMethodName("_persistence_getRelationships");
+                relationshipMapping.setSetMethodName("_persistence_setRelationships");
                 relationshipMapping.setDescriptor(descriptor);
                 CollectionContainerPolicy containerPolicy = new CollectionContainerPolicy(ArrayList.class);
                 relationshipMapping.setContainerPolicy(containerPolicy);
@@ -68,6 +67,14 @@ public class PreLoginMappingAdapter extends SessionEventListener {
                 relationshipMapping.setConverter(converter);
                 descriptor.addMapping(relationshipMapping);
                 
+                XMLCompositeObjectMapping hrefMapping = new XMLCompositeObjectMapping();
+                hrefMapping.setAttributeName("_persistence_href");
+                hrefMapping.setGetMethodName("_persistence_getHref");
+                hrefMapping.setSetMethodName("_persistence_setHref");
+                hrefMapping.setDescriptor(descriptor);
+                hrefMapping.setField(new XMLField("_link"));
+                hrefMapping.setReferenceClass(Link.class);
+                descriptor.addMapping(hrefMapping);
             }
             ClassDescriptor jpaDescriptor = jpaSession.getDescriptorForAlias(descriptor.getAlias());
             for (DatabaseMapping mapping: descriptor.getMappings()){
@@ -78,10 +85,6 @@ public class PreLoginMappingAdapter extends SessionEventListener {
                                 break;
                             }
                         } else  if (mapping.isAbstractCompositeObjectMapping()){
-                            XMLCompositeObjectMapping compositeMapping = (XMLCompositeObjectMapping)mapping;
-                            if (compositeMapping.getField().getName().equals("persistence_href")){
-                                compositeMapping.getField().setName("_href");
-                            } 
                             if (((XMLCompositeObjectMapping)mapping).getInverseReferenceMapping() != null){
                                 break;
                             }

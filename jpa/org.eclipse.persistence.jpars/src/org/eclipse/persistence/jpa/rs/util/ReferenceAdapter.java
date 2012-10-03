@@ -72,7 +72,7 @@ public class ReferenceAdapter<T extends PersistenceWeavedRest> extends
                 descriptor.getAlias(), context);
         link.setHref(baseURI + context.getName() + "/entity/"
                 + descriptor.getAlias() + "/" + id);
-        descriptor.getMappingForAttributeName("persistence_href")
+        descriptor.getMappingForAttributeName("_persistence_href")
                 .setAttributeValueInObject(returnT, link);
         return returnT;
     }
@@ -86,7 +86,7 @@ public class ReferenceAdapter<T extends PersistenceWeavedRest> extends
     @SuppressWarnings("unchecked")
     @Override
     public T unmarshal(T persistenceWeavedRest) throws Exception {
-        Link href = persistenceWeavedRest.getPersistence_href();
+        Link href = persistenceWeavedRest._persistence_getHref();
         if (null == href) {
             ClassDescriptor descriptor = context.getJAXBDescriptorForClass(persistenceWeavedRest.getClass());
             if (persistenceWeavedRest instanceof FetchGroupTracker && JpaHelper.getDatabaseSession(context.getEmf()).doesObjectExist(persistenceWeavedRest)){

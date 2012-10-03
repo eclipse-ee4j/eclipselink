@@ -1,14 +1,14 @@
 {
     "bids":[
         {
-            "_href":{
+            "_link":{
                 "method":"GET",
                 "href":"http://localhost:9090/JPA-RS/auction-static/entity/StaticBid/1234",
                 "rel":"self"
              }            
         },
         {
-            "_href":{
+            "_link":{
                 "method":"GET",
                 "href":"http://localhost:9090/JPA-RS/auction-static/entity/StaticBid/5678",
                 "rel":"self"

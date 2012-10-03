@@ -557,15 +557,15 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
     /* (non-Javadoc)
      * @see org.eclipse.persistence.internal.weaving.PersistenceWeavedRest#getPersistence_href()
      */
-    public Link getPersistence_href() {
-        return get("persistence_href");
+    public Link _persistence_getHref() {
+        return get("_persistence_href");
     }
 
     /* (non-Javadoc)
      * @see org.eclipse.persistence.internal.weaving.PersistenceWeavedRest#setPersistence_href(sun.awt.image.ImageWatched.Link)
      */
-    public void setPersistence_href(Link href) {
-        set("persistence_href", href, false);
+    public void _persistence_setHref(Link href) {
+        set("_persistence_href", href, false);
     }
     
     /**

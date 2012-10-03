@@ -20,6 +20,7 @@ package org.eclipse.persistence.internal.jpa.weaving;
 import java.util.Iterator;
 
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.libraries.asm.AnnotationVisitor;
 import org.eclipse.persistence.internal.libraries.asm.ClassWriter;
 import org.eclipse.persistence.internal.libraries.asm.FieldVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Label;
@@ -807,14 +808,14 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
         cv_setPKVector.visitInsn(RETURN);
         cv_setPKVector.visitMaxs(0, 0);
         
-        
-        MethodVisitor cv_getHref = cv.visitMethod(ACC_PUBLIC, "getPersistence_href", "()" + LINK_SIGNATURE, null, null);
+
+        MethodVisitor cv_getHref = cv.visitMethod(ACC_PUBLIC, "_persistence_getHref", "()" + LINK_SIGNATURE, null, null);
         cv_getHref.visitVarInsn(ALOAD, 0);
         cv_getHref.visitFieldInsn(GETFIELD, classDetails.getClassName(), "persistence_href", LINK_SIGNATURE);
         cv_getHref.visitInsn(ARETURN);
         cv_getHref.visitMaxs(0, 0);
         
-        MethodVisitor cv_setHref = cv.visitMethod(ACC_PUBLIC, "setPersistence_href", "(" + LINK_SIGNATURE + ")V", null, null);
+        MethodVisitor cv_setHref = cv.visitMethod(ACC_PUBLIC, "_persistence_setHref", "(" + LINK_SIGNATURE + ")V", null, null);
         cv_setHref.visitVarInsn(ALOAD, 0);
         cv_setHref.visitVarInsn(ALOAD, 1);
         cv_setHref.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "persistence_href", LINK_SIGNATURE);
@@ -824,7 +825,7 @@ public class ClassWeaver extends SerialVersionUIDAdder implements Opcodes {
     
     public void addPersistenceRestVariables() {
         cv.visitField(ACC_PROTECTED + ACC_TRANSIENT, "_persistence_relationshipInfo", LIST_RELATIONSHIP_INFO_SIGNATURE, null, null);
-        cv.visitField(ACC_PROTECTED, "persistence_href", LINK_SIGNATURE, null, null);
+        cv.visitField(ACC_PROTECTED + ACC_TRANSIENT, "persistence_href", LINK_SIGNATURE, null, null);
     }
     
     /**
