@@ -154,8 +154,6 @@
         <property name="M2_HOME" value="/shared/common/apache-maven-3.0.3"/>
         <echo message="'M2_HOME' set to: '${M2_HOME}'"/>
 
-        <!-- Set extract.dir appropriately for this build                         -->
-        <property name="extract.dir" value="${build.tool.root}/exported_builds/${release.version}/${version.qualifier}"/>
         <!-- Set location of executed scripts to hudson (is also set in promote-init for milestone publising) -->
         <property name="script.dir" value="${hudson.workspace}/buildsystem"/>
 
@@ -185,7 +183,6 @@
         <echo message="build.deps.dir  ='${build.deps.dir}'"/>
         <echo message="build.tool.root ='${build.tool.root}'"/>
         <echo message="hudson.workspace='${hudson.workspace}'"/>
-        <echo message="extract.dir     ='${extract.dir}'"/>
         <echo message=" "/>
     </target>
 
@@ -195,6 +192,9 @@
         <!-- Set version.string appropriately. variable should only be used for   -->
         <!--    uploaded filenames  or manifest entries.                          -->
         <property name="version.string" value="${release.version}.${version.qualifier}"/>
+
+        <!-- Set extract.dir appropriately for this build  (not used for milestones, but has to be here due to use of "release.version"  -->
+        <property name="extract.dir" value="${build.tool.root}/exported_builds/${release.version}/${version.qualifier}"/>
 
         <!-- For signed archive name need "version.string" defined first -->
         <property name="p2.archive.presigned.zip" value="eclipselink-P2-${version.string}.zip"/>
@@ -217,6 +217,7 @@
         <echo message="branch          ='${branch}'"/>
         <echo message="basedir         ='${basedir}'"/>
         <echo message="build.location  ='${build.location}'"/>
+        <echo message="extract.dir     ='${extract.dir}'"/>
         <echo message="log.dir         ='${log.dir}'"/>
         <echo message="junit.dir       ='${junit.dir}'"/>
         <echo message="junit.lib       ='${junit.lib}'"/>
