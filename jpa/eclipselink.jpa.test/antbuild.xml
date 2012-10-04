@@ -117,6 +117,7 @@
     <property name="modelgen.processor.jar" value="${eclipselink.modelgen.processor.prefix}_${version.string}.jar"/>
     <echo message="jpatest.build.location='${jpatest.build.location}'"/>
     <echo message="modelgen.processor.jar='${modelgen.processor.jar}'"/>
+    <property name="projectcache.dir" value="pcfile"/>
 
     <!-- Allows we run websphere tests from Windows & Linux both. -->
     <target name="detect-os">
@@ -2453,6 +2454,7 @@
         </replace>
         <!-- Replace datasource type, name and transaction type -->
         <antcall target="replace-datasource-type" inheritRefs="true"/>
+        <antcall target="add-project-cache-properties" inheritRefs="true"/>
         <!-- Copy the canonical metamodel and criteria api test -->
         <antcall target="copy-criteria-api-canonical-model" inheritRefs="true"/>
         <!-- Create ejb jar. -->
@@ -2504,6 +2506,23 @@
         <replace dir="${eclipselink.jpa.test}/stage/META-INF" token='%%NONJTA_DS_NAME%%' value="${NONJTA_DS_NAME}">
             <include name="*.xml"/>
         </replace>
+    </target>
+
+    <!-- Modify stage/META-INF/persistence.xml to add persistence properties for Metadata Cache -->
+    <target name="add-project-cache-properties" if="use.project.cache">
+        <echo message="basedir is ${basedir}"/>
+        <replaceregexp file="${eclipselink.jpa.test}/stage/META-INF/persistence.xml" 
+            match='&#60;/properties&#62;' 
+            replace='&#60;property name="eclipselink.project-cache" value="java-serialization"/&#62;&#10;&#60;property name="eclipselink.project-cache.java-serialization.file-location" value="${basedir}&#47;${projectcache.dir}&#47;${EAR_NAME}&#47;MetadataCachingTestProject.file"/&#62;&#10;&#60;/properties&#62;&#10;'
+            flags="s"
+            byline="true"/>
+    </target>
+
+    <!-- Save project cache file MetadataCachingTestProject.file to ${eclipselink.jpa.test}/pcfile/${EAR_NAME}, the file will be used in static weave and runtime in the second run of Metadata Cache Testing -->
+    <target name="store-project-cache-file" if="run.metadata.cache.test.suite">
+        <delete dir="${eclipselink.jpa.test}/${projectcache.dir}/${EAR_NAME}"/>
+        <mkdir dir="${eclipselink.jpa.test}/${projectcache.dir}/${EAR_NAME}"/>
+        <move file="${glassfish.home}/domains/domain1/config/MetadataCachingTestProject.file" todir="${eclipselink.jpa.test}/${projectcache.dir}/${EAR_NAME}" overwrite="true"/>
     </target>
 
     <target name="replace-nonjta-datasource" if="is.nonjta.datasource">
@@ -2912,6 +2931,7 @@
         <antcall target="server-undeploy" inheritRefs="true">
             <param name="application.name" value="${EAR_NAME}"/>
         </antcall>
+        <antcall target="store-project-cache-file" inheritRefs="true"/>
     </target>
 
     <!-- Build, deploy and run a test suite on the server using the prompt runner. -->
@@ -2954,6 +2974,7 @@
             <sysproperty key="server.run" value="TRUE"/>
             <sysproperty key="com.ibm.SSL.ConfigURL" value="${com.ibm.SSL.ConfigURL}"/>
             <sysproperty key="com.ibm.CORBA.ConfigURL" value="${com.ibm.CORBA.ConfigURL}"/>
+            <sysproperty key="run.metadata.cache.test.suite" value="${run.metadata.cache.test.suite}"/>
             <classpath refid="run.path"/>
             <formatter type="xml"/>
             <test name="${TEST_SUITE}" haltonfailure="no" outfile="${report.dir}/${TEST_SUITE}-test-results"/>
@@ -3054,6 +3075,15 @@
         <antcall target="generate-report" inheritRefs="true"/>
     </target>
 
+    <!-- Testing Metadata Cache by running JPA tests in the server -->
+    <target name="server-test-lrg-project-cache" depends="clean-test">
+        <antcall target="server-test-advanced" inheritRefs="true"/>
+        <antcall target="server-test-advanced-multitenantEMF" inheritRefs="true"/>
+        <antcall target="server-test-advanced-multitenant123" inheritRefs="true"/>
+        <!--antcall target="server-test-extensibility" inheritRefs="true"/-->
+        <antcall target="generate-report" inheritRefs="true"/>
+    </target>
+
     <target name="server-test-performance">
         <antcall target="server-run-all" inheritRefs="true">
             <param name="PERSISTENCE_UNIT_NAME" value="performance"/>
@@ -3092,6 +3122,35 @@
             <param name="eclipselink.jpa.test.dir" value="."/>
         </antcall>
     </target>
+
+    <target name="server-test-advanced-multitenantEMF">
+        <antcall target="server-run-all" inheritRefs="true">
+            <param name="PERSISTENCE_UNIT_NAME" value="default"/>
+            <param name="USE_MULTIPLE_PERSISTENCE_UNITS" value="true"/>
+            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/advanced"/>
+            <param name="MODEL_NAME" value="eclipselink-advanced-multitenant-model"/>
+            <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/advanced"/>
+            <param name="TEST_NAME" value="eclipselink-advanced-multitenant-model"/>
+            <param name="EAR_NAME" value="eclipselink-advanced-multitenant-model-EMF"/>
+            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.advanced.multitenant.AdvancedMultiTenantSharedEMFJunitTest"/>
+            <param name="eclipselink.jpa.test.dir" value="."/>
+        </antcall>
+    </target>
+
+    <target name="server-test-advanced-multitenant123">
+        <antcall target="server-run-all" inheritRefs="true">
+            <param name="PERSISTENCE_UNIT_NAME" value="default"/>
+            <param name="USE_MULTIPLE_PERSISTENCE_UNITS" value="true"/>
+            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/advanced"/>
+            <param name="MODEL_NAME" value="eclipselink-advanced-multitenant-model"/>
+            <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/advanced"/>
+            <param name="TEST_NAME" value="eclipselink-advanced-multitenant-model"/>
+            <param name="EAR_NAME" value="eclipselink-advanced-multitenant-model-123"/>
+            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.advanced.multitenant.AdvancedMultiTenant123JunitTest"/>
+            <param name="eclipselink.jpa.test.dir" value="."/>
+        </antcall>
+    </target>
+
     <!--this model is only used for testing that setting eclipselink as default provider on weblogic domain-->
     <target name="weblogic-domain-test" depends="clean-test">
         <ant antfile="${eclipselink.jpa.test}/weblogic.xml" target="weblogic-domain-setup" inheritRefs="true"/>

@@ -39,6 +39,9 @@ public class AdvancedMultiTenantSharedEMFJunitTest extends AdvancedMultiTenantJu
         TestSuite suite = new TestSuite();
         suite.setName("AdvancedMultiTenantSharedEMFJunitTest");
         if (! JUnitTestCase.isJPA10()) {
+            if (System.getProperty("run.metadata.cache.test.suite").compareTo("true") == 0) {
+                suite.addTest(new AdvancedMultiTenantSharedEMFJunitTest("testWriteProjectCache"));
+            }
             suite.addTest(new AdvancedMultiTenantSharedEMFJunitTest("testSetup"));
             suite.addTest(new AdvancedMultiTenantSharedEMFJunitTest("testCreateMafiaFamily707"));
             suite.addTest(new AdvancedMultiTenantSharedEMFJunitTest("testCreateMafiaFamily007"));
@@ -54,6 +57,10 @@ public class AdvancedMultiTenantSharedEMFJunitTest extends AdvancedMultiTenantJu
      */
     public void testSetup() {
         new AdvancedMultiTenantTableCreator().replaceTables(JUnitTestCase.getServerSession(MULTI_TENANT_PU));
+    }
+
+    public void testWriteProjectCache(){
+        new org.eclipse.persistence.testing.tests.jpa.advanced.MetadataCachingTestSuite().testFileBasedProjectCacheLoading("MulitPU-1");
     }
 
 }
