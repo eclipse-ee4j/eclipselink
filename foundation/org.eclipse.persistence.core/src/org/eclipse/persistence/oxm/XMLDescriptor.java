@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -496,11 +497,18 @@ public class XMLDescriptor extends ClassDescriptor {
      */
     public DatabaseField buildField(DatabaseField field) {
         try {
-            XMLField xmlField = (XMLField) field;
-            xmlField.setNamespaceResolver(this.getNamespaceResolver());
-            xmlField.initialize();
+            Map<DatabaseField, DatabaseField> builtFields = getObjectBuilder().getFieldsMap();
+            DatabaseField builtField = builtFields.get(field);
+            if (builtField == null) {
+                XMLField xmlField = (XMLField) field;
+                xmlField.setNamespaceResolver(this.getNamespaceResolver());
+                xmlField.initialize();
+                builtFields.put(xmlField, xmlField);
+                return xmlField;
+            }
+            return builtField;
         } catch (ClassCastException e) {
-            // Assumes fields are always XML.
+            // Assumes field is always an XMLField
         }
         return super.buildField(field);
     }
@@ -679,7 +687,7 @@ public class XMLDescriptor extends ClassDescriptor {
         }
         if(schemaReference != null && schemaReference.getSchemaContext() != null && (schemaReference.getType() == XMLSchemaReference.COMPLEX_TYPE || schemaReference.getType() == XMLSchemaReference.SIMPLE_TYPE) && getDefaultRootElementType() == null){
         	
-        	if(hasInheritance() && isChildDescriptor()){        		
+        	if(hasInheritance() && isChildDescriptor()){
         		XMLField parentField = ((XMLDescriptor)getInheritancePolicy().getParentDescriptor()).getDefaultRootElementField();
         		//if this descriptor has a root element field different than it's parent set the leaf element type of the default root field
         		if(parentField == null || (parentField !=null && !defaultRootElementField.getXPathFragment().equals(parentField.getXPathFragment()))){
