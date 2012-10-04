@@ -28,6 +28,9 @@ public class AdvancedServerTestSuite extends TestSuite {
         JUnitTestCase.initializePlatform();
         TestSuite suite = new TestSuite();
         suite.setName("Advanced ServerTestSuite");
+        if (System.getProperty("run.metadata.cache.test.suite").compareTo("true") == 0) {
+            suite.addTest(new org.eclipse.persistence.testing.tests.jpa.advanced.MetadataCachingTestSuite("testProjectCacheWithDefaultPU"));
+        }
         suite.addTest(EntityManagerJUnitTestSuite.suite());
         suite.addTest(CallbackEventJUnitTestSuite.suite());
         suite.addTest(SQLResultSetMappingTestSuite.suite());
@@ -44,7 +47,6 @@ public class AdvancedServerTestSuite extends TestSuite {
         suite.addTest(ComplexAggregateTestSuite.suite()); 
         if (! JUnitTestCase.isJPA10()) {
             suite.addTest(AdvancedFetchGroupJunitTest.suite());
-            suite.addTest(MetadataCachingTestSuite.suite());
         }
         return suite;
     }

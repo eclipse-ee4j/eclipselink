@@ -53,11 +53,7 @@ public class MetadataCachingTestSuite extends JUnitTestCase {
     public static Test suite() {
         TestSuite suite = new TestSuite();
         suite.setName("MetadataCachingTestSuite");
-        suite.addTest(new MetadataCachingTestSuite("testSetup"));
-        suite.addTest(new MetadataCachingTestSuite("testFileBasedProjectCacheWriting"));
-        suite.addTest(new MetadataCachingTestSuite("testFileBasedProjectCacheReading"));
-        suite.addTest(new MetadataCachingTestSuite("testFileBasedProjectCacheLoading"));
-        
+        suite.addTest(new MetadataCachingTestSuite("testProjectCacheALLWithDefaultPU"));
         return suite;
     }
     
@@ -84,9 +80,8 @@ public class MetadataCachingTestSuite extends JUnitTestCase {
         }
     }
     
-    public void testFileBasedProjectCacheWriting() {
-        EntityManager em = createEntityManager();
-
+    public void testFileBasedProjectCacheWriting(String persistenceUnitName) {
+        EntityManager em = createEntityManager(persistenceUnitName);
         Map properties = getProperties();
 
         // JEE requires a transaction to keep the em open.
@@ -104,9 +99,9 @@ public class MetadataCachingTestSuite extends JUnitTestCase {
         }
     }
     
-    public void testFileBasedProjectCacheReading() {
+    public void testFileBasedProjectCacheReading(String persistenceUnitName) {
         FileBasedProjectCache projectCache = new FileBasedProjectCache();
-        Session session = this.getServerSession();
+        Session session = this.getServerSession(persistenceUnitName);
         Project project = projectCache.retrieveProject(getProperties(), session.getDatasourcePlatform().getConversionManager().getLoader(), session.getSessionLog());
         if (project == null) {
             fail("Project returned from FileBasedProjectCache.retrieveProject() was null");
@@ -117,8 +112,8 @@ public class MetadataCachingTestSuite extends JUnitTestCase {
      * This test just verifies the EM can be refreshed using the cached project written out in testFileBasedProjectCacheWriting
      * It must be run after testFileBasedProjectCacheWriting and testFileBasedProjectCacheReading
      */
-    public void testFileBasedProjectCacheLoading() {
-        EntityManager em = createEntityManager();
+    public void testFileBasedProjectCacheLoading(String persistenceUnitName) {
+        EntityManager em = createEntityManager(persistenceUnitName);
         beginTransaction(em);
         try {
             JpaHelper.getEntityManagerFactory(em).refreshMetadata(getProperties());
@@ -127,4 +122,18 @@ public class MetadataCachingTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
+
+    /* Test project cache in runtime on J2EE with default persistence unit*/
+    public void testProjectCacheALLWithDefaultPU(){
+        testSetup();
+        testFileBasedProjectCacheWriting("default");
+        testFileBasedProjectCacheReading("default");
+        testFileBasedProjectCacheLoading("default");
+    }
+
+    /* Test project cache in runtime on JEE with default persistence unit*/
+    public void testProjectCacheWithDefaultPU(){
+        testFileBasedProjectCacheLoading("default"); 
+    }
+
 }
