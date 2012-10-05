@@ -66,6 +66,7 @@ import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.jaxb.compiler.CompilerHelper;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
+import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
@@ -348,7 +349,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
     	
         if(isUnmarshalTest()) {
             InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
-            jaxbUnmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, "application/xml");
+            jaxbUnmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, getXMLUnmarshalMediaType());
             Object testObject = null;
             if(getUnmarshalClass() != null){
                testObject = ((JAXBUnmarshaller)jaxbUnmarshaller).unmarshal(new StreamSource(instream), getUnmarshalClass());	
@@ -389,8 +390,13 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
     	return null;
     }
     
+    public MediaType getXMLUnmarshalMediaType(){
+    	return MediaType.APPLICATION_XML;
+    }
+    
     public void testRoundTrip() throws Exception{
         if(isUnmarshalTest()) {
+        	jaxbUnmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, getXMLUnmarshalMediaType());
             InputStream instream = null;
             if(writeControlDocumentLocation !=null){
                 instream = ClassLoader.getSystemResourceAsStream(writeControlDocumentLocation);
@@ -661,7 +667,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
     public void testXMLToObjectFromURL() throws Exception {
         if(isUnmarshalTest()) {
             java.net.URL url = ClassLoader.getSystemResource(resourceName);
-            jaxbUnmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, "application/xml");
+            jaxbUnmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, getXMLUnmarshalMediaType());
             
             Object testObject = null;
             if(getUnmarshalClass() != null){
@@ -677,7 +683,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         if(null != XML_INPUT_FACTORY && isUnmarshalTest()) {
             InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
             XMLStreamReader xmlStreamReader = XML_INPUT_FACTORY.createXMLStreamReader(instream);
-            jaxbUnmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, "application/xml");
+            jaxbUnmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, getXMLUnmarshalMediaType());
             
             Object testObject = null;
             if(getUnmarshalClass() != null){                            
@@ -693,7 +699,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         if(isUnmarshalTest()) {
             InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);            
             Node node  = parser.parse(instream);
-            jaxbUnmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, "application/xml");
+            jaxbUnmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, getXMLUnmarshalMediaType());
             Object testObject = null;
             if(getUnmarshalClass() != null){
                testObject = jaxbUnmarshaller.unmarshal(node, getUnmarshalClass());	
@@ -715,7 +721,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
             xmlStreamReaderReaderEx.setErrorHandler(((JAXBUnmarshaller) jaxbUnmarshaller).getXMLUnmarshaller().getErrorHandler());
             XMLStreamReaderInputSource xmlStreamReaderInputSource = new XMLStreamReaderInputSource(xmlStreamReader);
             SAXSource saxSource = new SAXSource(xmlStreamReaderReaderEx, xmlStreamReaderInputSource);
-            jaxbUnmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, "application/xml");
+            jaxbUnmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, getXMLUnmarshalMediaType());
             Object testObject = null;
             if(getUnmarshalClass() != null){
             	 testObject = jaxbUnmarshaller.unmarshal(saxSource, getUnmarshalClass()); 	
@@ -732,7 +738,7 @@ public abstract class JAXBTestCases extends XMLMappingTestCases {
         if(null != XML_INPUT_FACTORY && isUnmarshalTest()) {
             InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
             XMLEventReader xmlEventReader = XML_INPUT_FACTORY.createXMLEventReader(instream);
-            jaxbUnmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, "application/xml");
+            jaxbUnmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, getXMLUnmarshalMediaType());
             Object testObject = null;
             if(getUnmarshalClass() != null){
                testObject = jaxbUnmarshaller.unmarshal(xmlEventReader, getUnmarshalClass());	

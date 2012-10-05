@@ -75,11 +75,20 @@ public class RootWithCompositeObjectTestCases extends JAXBWithJSONTestCases {
         this.getJAXBMarshaller().setListener(listener);
         this.getJAXBUnmarshaller().setListener(unmarshalListener);
     }
-    public void xmlToObjectTest(Object testObject) throws Exception {
+    public void xmlToObjectTest(Object testObject) throws Exception {    	
         super.xmlToObjectTest(testObject);
         assertTrue("Class based callbacks not correct", ((Employee)testObject).triggeredEvents.equals(expectedClassBasedUnmarshalEvents));
         assertTrue("Expected sequence of Unmarshal events not found", expectedUnmarshalEvents.equals(unmarshalListener.events));
+        unmarshalListener.events = new ArrayList();
+
     }
+    
+    public void jsonToObjectTest(Object testObject) throws Exception {
+   	   super.jsonToObjectTest(testObject);
+       assertTrue("Class based callbacks not correct", ((Employee)testObject).triggeredEvents.equals(expectedClassBasedUnmarshalEvents));
+       assertTrue("Expected sequence of Unmarshal events not found", expectedUnmarshalEvents.equals(unmarshalListener.events));
+       unmarshalListener.events = new ArrayList();
+   }
     
     public void objectToXMLDocumentTest(Document testDocument) throws Exception {
         super.objectToXMLDocumentTest(testDocument);

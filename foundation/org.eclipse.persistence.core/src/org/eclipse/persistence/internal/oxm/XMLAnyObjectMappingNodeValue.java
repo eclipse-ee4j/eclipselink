@@ -203,7 +203,7 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
                     if ((prefix == null) && (xPathFragment.getNamespaceURI() != null)) {
                         prefix = unmarshalRecord.resolveNamespaceUri(xPathFragment.getNamespaceURI());
                     }
-                    childObject = workingDescriptor.wrapObjectInXMLRoot(childObject, xPathFragment.getNamespaceURI(), xPathFragment.getLocalName(), prefix, false, unmarshalRecord.isNamespaceAware());
+                    childObject = workingDescriptor.wrapObjectInXMLRoot(childObject, xPathFragment.getNamespaceURI(), xPathFragment.getLocalName(), prefix, false, unmarshalRecord.isNamespaceAware(), unmarshalRecord.getUnmarshaller());
                     workingDescriptor = null;
                 }
             }
@@ -238,6 +238,7 @@ public class XMLAnyObjectMappingNodeValue extends XMLRelationshipMappingNodeValu
             xmlRoot.setSchemaType(unmarshalRecord.getTypeQName());
             xmlRoot.setLocalName(xPathFragment.getLocalName());
             xmlRoot.setObject(value);
+           // xmlRoot.setDeclaredType(type);
             unmarshalRecord.setAttributeValue(xmlRoot, xmlAnyObjectMapping);
         }
     }

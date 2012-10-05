@@ -22,11 +22,13 @@ import java.net.URL;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
+import org.eclipse.persistence.oxm.MediaType;
 import org.xml.sax.InputSource;
 
 public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
@@ -102,7 +104,7 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
     
     public void testJSONUnmarshalFromInputStream() throws Exception {
     	if(isUnmarshalTest()){
-	    	getJSONUnmarshaller().setProperty(UnmarshallerProperties.MEDIA_TYPE, "application/json");
+    		getJSONUnmarshaller().setProperty(UnmarshallerProperties.MEDIA_TYPE, getJSONUnmarshalMediaType());
 	        InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);
 	        Object testObject = null;
 	        if(getUnmarshalClass() != null){
@@ -114,11 +116,45 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
 	        jsonToObjectTest(testObject);
     	}
     }
-      
+    public MediaType getJSONUnmarshalMediaType(){
+    	return MediaType.APPLICATION_JSON;
+    }
+    
+    public void testUnmarshalAutoDetect() throws Exception {
+    	if(isUnmarshalTest()){
+    	   	getJSONUnmarshaller().setProperty(UnmarshallerProperties.AUTO_DETECT_MEDIA_TYPE, true);
+    	    InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);
+	        Object testObject = null;
+	        if(getUnmarshalClass() != null){
+	        	testObject = getJSONUnmarshaller().unmarshal(new StreamSource(inputStream), getUnmarshalClass());
+	        }else{
+	            testObject = getJSONUnmarshaller().unmarshal(inputStream);
+	        }
+	        inputStream.close();
+	        jsonToObjectTest(testObject);
+	        
+	        assertTrue(getJSONUnmarshaller().getProperty(UnmarshallerProperties.AUTO_DETECT_MEDIA_TYPE) == Boolean.TRUE);
+	        if(null != XML_INPUT_FACTORY) {
+	            InputStream instream = ClassLoader.getSystemResourceAsStream(resourceName);
+	            XMLStreamReader xmlStreamReader = XML_INPUT_FACTORY.createXMLStreamReader(instream);
+	            
+	            if(getUnmarshalClass() != null){                            
+	                testObject = getJAXBUnmarshaller().unmarshal(xmlStreamReader, getUnmarshalClass());
+	            }else{
+	            	testObject = jaxbUnmarshaller.unmarshal(xmlStreamReader);
+	            }
+	            instream.close();
+	            xmlToObjectTest(testObject);
+	        }
+	        assertTrue(getJSONUnmarshaller().getProperty(UnmarshallerProperties.AUTO_DETECT_MEDIA_TYPE)== Boolean.TRUE);
 
+    	}
+    }
+    	
     public void testJSONUnmarshalFromInputSource() throws Exception {
     	if(isUnmarshalTest()){
-	    	getJSONUnmarshaller().setProperty(UnmarshallerProperties.MEDIA_TYPE, "application/json");
+    		getJSONUnmarshaller().setProperty(UnmarshallerProperties.MEDIA_TYPE, getJSONUnmarshalMediaType());
+
 	
 	        InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);
 	        InputSource inputSource = new InputSource(inputStream);
@@ -132,10 +168,13 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
 	        jsonToObjectTest(testObject);
     	}
     }
+    
+    
 
     public void testJSONUnmarshalFromReader() throws Exception {
     	if(isUnmarshalTest()){
-	    	getJSONUnmarshaller().setProperty(UnmarshallerProperties.MEDIA_TYPE, "application/json");
+    		getJSONUnmarshaller().setProperty(UnmarshallerProperties.MEDIA_TYPE, getJSONUnmarshalMediaType());
+
 	
 	        InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(controlJSONLocation);
 	        Reader reader = new InputStreamReader(inputStream);
@@ -155,7 +194,8 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
 
     public void testJSONUnmarshalFromSource() throws Exception {
         if(isUnmarshalTest()){
-            getJSONUnmarshaller().setProperty(UnmarshallerProperties.MEDIA_TYPE, "application/json");
+    		getJSONUnmarshaller().setProperty(UnmarshallerProperties.MEDIA_TYPE, getJSONUnmarshalMediaType());
+
     
             Source source = new StreamSource(controlJSONLocation);
             Object testObject = null;
@@ -170,8 +210,7 @@ public abstract class JAXBWithJSONTestCases extends JAXBTestCases {
 
     public void testJSONUnmarshalFromURL() throws Exception {
     	if(isUnmarshalTest()){
-	    	getJSONUnmarshaller().setProperty(UnmarshallerProperties.MEDIA_TYPE, "application/json");
-	
+    		getJSONUnmarshaller().setProperty(UnmarshallerProperties.MEDIA_TYPE, getJSONUnmarshalMediaType());
 	        URL url = getJSONURL();
 	        Object testObject= null;
 	        if(getUnmarshalClass() == null){

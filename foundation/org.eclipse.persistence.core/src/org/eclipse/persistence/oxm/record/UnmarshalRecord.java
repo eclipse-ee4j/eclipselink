@@ -883,7 +883,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
     }
 
     public void startUnmappedElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
-        if(this.unmarshaller.getMediaType() == MediaType.APPLICATION_XML && null == selfRecords && !isSelfRecord) {
+        if(xmlReader.getMediaType() == MediaType.APPLICATION_XML && null == selfRecords && !isSelfRecord) {
             ErrorHandler errorHandler = xmlReader.getErrorHandler();
             if(null != errorHandler) {
                 StringBuilder messageBuilder = new StringBuilder("unexpected element (uri:\"");
@@ -1396,7 +1396,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
     }
     
     public XPathFragment getTextWrapperFragment() {
-    	if(unmarshaller.getMediaType() == MediaType.APPLICATION_JSON){
+    	if(xmlReader.getMediaType() == MediaType.APPLICATION_JSON){
     		if(textWrapperFragment == null){
     			textWrapperFragment = new XPathFragment();
     			textWrapperFragment.setLocalName(unmarshaller.getValueWrapper());

@@ -61,7 +61,6 @@ import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.StrBuffer;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
-import org.eclipse.persistence.internal.oxm.XPathQName;
 import org.eclipse.persistence.internal.oxm.record.namespaces.PrefixMapperNamespaceResolver;
 import org.eclipse.persistence.internal.oxm.record.XMLEventReaderInputSource;
 import org.eclipse.persistence.internal.oxm.record.XMLEventReaderReader;
@@ -129,7 +128,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
 
     public Object unmarshal(InputStream inputStream) throws JAXBException {
         try {        
-            if (xmlUnmarshaller.getMediaType() == MediaType.APPLICATION_JSON || null == jaxbContext.getXMLInputFactory() || XMLUnmarshaller.NONVALIDATING != xmlUnmarshaller.getValidationMode()) {
+            if (xmlUnmarshaller.isAutoDetectMediaType() || xmlUnmarshaller.getMediaType() == MediaType.APPLICATION_JSON || null == jaxbContext.getXMLInputFactory() || XMLUnmarshaller.NONVALIDATING != xmlUnmarshaller.getValidationMode()) {
                 return createJAXBElementOrUnwrapIfRequired(xmlUnmarshaller.unmarshal(inputStream));
             } else {
                 if (null == inputStream) {
@@ -171,8 +170,9 @@ public class JAXBUnmarshaller implements Unmarshaller {
     public Object unmarshal(Reader reader) throws JAXBException {
       
         try {
-            if (xmlUnmarshaller.getMediaType() == MediaType.APPLICATION_JSON || null == jaxbContext.getXMLInputFactory() || XMLUnmarshaller.NONVALIDATING != xmlUnmarshaller.getValidationMode()) {
-                return createJAXBElementOrUnwrapIfRequired(xmlUnmarshaller.unmarshal(reader));
+            if (xmlUnmarshaller.isAutoDetectMediaType()   || xmlUnmarshaller.getMediaType() == MediaType.APPLICATION_JSON || null == jaxbContext.getXMLInputFactory() || XMLUnmarshaller.NONVALIDATING != xmlUnmarshaller.getValidationMode()) {
+        	
+        	return createJAXBElementOrUnwrapIfRequired(xmlUnmarshaller.unmarshal(reader));
             } else {               
                 if (null == reader) {
                     throw XMLMarshalException.nullArgumentException();
@@ -753,6 +753,11 @@ public class JAXBUnmarshaller implements Unmarshaller {
             	throw new PropertyException(key, XMLConstants.EMPTY_STRING);
             }
             xmlUnmarshaller.setMediaType(mType);           
+        } else if (key.equals(UnmarshallerProperties.AUTO_DETECT_MEDIA_TYPE)){
+        	if(value == null){
+        	    throw new PropertyException(key, XMLConstants.EMPTY_STRING);
+        	}        
+        	xmlUnmarshaller.setAutoDetectMediaType((Boolean)value);     
         } else if (key.equals(UnmarshallerProperties.JSON_ATTRIBUTE_PREFIX)){
         	xmlUnmarshaller.setAttributePrefix((String)value);
         } else if (UnmarshallerProperties.JSON_INCLUDE_ROOT.equals(key)) {
@@ -807,6 +812,8 @@ public class JAXBUnmarshaller implements Unmarshaller {
         }
         if (key.equals(UnmarshallerProperties.MEDIA_TYPE)) {
             return xmlUnmarshaller.getMediaType();
+        } else if (key.equals(UnmarshallerProperties.AUTO_DETECT_MEDIA_TYPE)) {
+            return xmlUnmarshaller.isAutoDetectMediaType();
         } else if (key.equals(UnmarshallerProperties.JSON_ATTRIBUTE_PREFIX)) {
             return xmlUnmarshaller.getAttributePrefix();
         } else if (key.equals(UnmarshallerProperties.JSON_INCLUDE_ROOT)) {
@@ -933,8 +940,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
         }
         
         QName qname = new QName(xmlRoot.getNamespaceURI(), xmlRoot.getLocalName());
-        XPathQName xpathQName = new XPathQName(xmlRoot.getNamespaceURI(), xmlRoot.getLocalName(), xmlUnmarshaller.getMediaType() == MediaType.APPLICATION_XML);
-    
+                
         Map<QName, Class> qNamesToDeclaredClasses = jaxbContext.getQNamesToDeclaredClasses();
         if(qNamesToDeclaredClasses != null && qNamesToDeclaredClasses.size() >0){
         	Class declaredClass = qNamesToDeclaredClasses.get(qname);    
@@ -943,18 +949,10 @@ public class JAXBUnmarshaller implements Unmarshaller {
             }
         }
 
-        XMLDescriptor descriptorForQName = xmlUnmarshaller.getXMLContext().getDescriptor(xpathQName);
-        if(descriptorForQName != null){
-            return createJAXBElement(qname, descriptorForQName.getJavaClass(), value);
+        Class xmlRootDeclaredType = xmlRoot.getDeclaredType();
+        if(xmlRootDeclaredType != null){
+        	return createJAXBElement(qname, xmlRootDeclaredType, value);
         }
-
-        if(value != null){
-            XMLConversionManager xcm = ((XMLConversionManager)xmlUnmarshaller.getXMLContext().getSession(0).getDatasourcePlatform().getConversionManager());
-            if( xcm.getDefaultJavaTypes().get(value.getClass()) != null){
-                return createJAXBElement(qname, declaredType, value);
-            }
-        }
-
         return createJAXBElement(qname, declaredType, value);
     }
   

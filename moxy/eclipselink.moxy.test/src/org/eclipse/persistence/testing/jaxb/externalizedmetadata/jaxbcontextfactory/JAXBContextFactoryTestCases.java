@@ -344,7 +344,7 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
         Class[] classes = new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.inputsource.Foo.class };
         JAXBContext jCtx = (JAXBContext) JAXBContextFactory.createContext(classes, properties, loader);
         doTestInputSrc(jCtx);
-    }
+    }  
     
     public void testBindingFormatStringInvalid() throws Exception {
         Map<String, Object> properties = new HashMap<String, Object>();
@@ -354,8 +354,8 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
         try {
             JAXBContext jCtx = (JAXBContext) JAXBContextFactory.createContext(classes, properties, loader);
         } catch(Exception ex) {
-            exceptionThrown = true;
-            assertTrue("Incorrect exception caught", ((org.eclipse.persistence.exceptions.JAXBException)ex).getErrorCode() == 50076);
+        	exceptionThrown = true;
+            assertTrue("Incorrect exception caught", ((org.eclipse.persistence.exceptions.JAXBException)ex).getErrorCode() == 50027);
         }
         if(!exceptionThrown) {
             fail("Expected exception now thrown.");
