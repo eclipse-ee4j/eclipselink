@@ -64,9 +64,11 @@ public class ExtensibilityTests extends JUnitTestCase {
         TestSuite suite = new TestSuite();
         suite.setName("ExtensibilityTestSuite");
         if (! JUnitTestCase.isJPA10()) {
+            /*
             if (System.getProperty("run.metadata.cache.test.suite").compareTo("true") == 0) {
                 suite.addTest(new ExtensibilityTests("testWriteProjectCache"));
             }
+            */
             suite.addTest(new ExtensibilityTests("testSetup"));
             suite.addTest(new ExtensibilityTests("testDescriptors"));
             suite.addTest(new ExtensibilityTests("testBasicMapping"));
