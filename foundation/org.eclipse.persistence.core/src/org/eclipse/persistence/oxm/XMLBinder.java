@@ -172,6 +172,7 @@ public class XMLBinder {
         AbstractSession session = context.getSession(obj);
         if (objNode == associatedNode) {
             DOMRecord root = new DOMRecord((Element)associatedNode);
+            root.setMarshaller(marshaller);            
             root.setDocPresPolicy(this.documentPreservationPolicy);
             XMLDescriptor rootDescriptor = (XMLDescriptor) session.getDescriptor(obj);
             ((XMLObjectBuilder)rootDescriptor.getObjectBuilder()).buildIntoNestedRow(root, obj, session);
