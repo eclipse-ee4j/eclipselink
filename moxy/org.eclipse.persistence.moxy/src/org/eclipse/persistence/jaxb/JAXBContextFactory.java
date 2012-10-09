@@ -347,24 +347,27 @@ public class JAXBContextFactory {
 	            	openedStream = ((URL) metadata).openStream();
 	            	source = new StreamSource(openedStream);
 	            } else if (metadata instanceof String) {	            	
-	            	source = new StreamSource((String)metadata);
+	            	StreamSource streamSource = new StreamSource((String)metadata);
 	            	try{
-		               	bindingsJaxbElement = unmarshaller.unmarshal(source, XmlBindings.class);
-		            }catch(Exception e){		               	        
-			            InputStream is = classLoader.getResourceAsStream((String)metadata);
-			            if(is != null){
-			            	bindingsJaxbElement = unmarshaller.unmarshal(new StreamSource(is), XmlBindings.class);
-                            }
-			            throw org.eclipse.persistence.exceptions.JAXBException.couldNotUnmarshalMetadata(e); 
+		               	bindingsJaxbElement = unmarshaller.unmarshal(streamSource, XmlBindings.class);
+		            }catch(JAXBException e){		               	        
+			            openedStream = classLoader.getResourceAsStream((String)metadata);
+			            if(openedStream != null){
+			            	bindingsJaxbElement = unmarshaller.unmarshal(new StreamSource(openedStream), XmlBindings.class);
+			            }else{
+			                throw org.eclipse.persistence.exceptions.JAXBException.couldNotUnmarshalMetadata(e);
+                        }
 		            }
 	            } else{
 	                throw org.eclipse.persistence.exceptions.JAXBException.incorrectValueParameterTypeForOxmXmlKey();
 	            } 
-	            if(source != null){	            	
-	            	bindingsJaxbElement = unmarshaller.unmarshal(source, XmlBindings.class);
-	            }else{
-	            	throw org.eclipse.persistence.exceptions.JAXBException.incorrectValueParameterTypeForOxmXmlKey();
-	            }
+	            if(bindingsJaxbElement == null){
+	                if(source == null){
+	                    throw org.eclipse.persistence.exceptions.JAXBException.incorrectValueParameterTypeForOxmXmlKey();
+	                }else{
+	                    bindingsJaxbElement = unmarshaller.unmarshal(source, XmlBindings.class); 
+	                }
+	            }	          
             }
             if(bindingsJaxbElement != null){
             	return bindingsJaxbElement.getValue();

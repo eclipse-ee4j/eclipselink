@@ -128,9 +128,8 @@ public class AutoDetectMediaTypeTestCases extends JAXBWithJSONTestCases {
 	}
 	
 	public void testUnmarshalStreamSourceNoProtocolJSONWithClass() throws Exception{
-        File file = new File(ClassLoader.getSystemResource(JSON_RESOURCE).getFile());
-        String systemId = file.toURI().toURL().toExternalForm();
-        systemId = systemId.substring(6, systemId.length());
+        File file = new File(ClassLoader.getSystemResource(JSON_RESOURCE).getFile());        
+        String systemId = file.getAbsolutePath();
 
 		StreamSource ss = new StreamSource(systemId);
 		JAXBElement jbe = jaxbUnmarshaller.unmarshal(ss, EmployeeCollection.class);
@@ -140,30 +139,15 @@ public class AutoDetectMediaTypeTestCases extends JAXBWithJSONTestCases {
 	}
 	
 	public void testUnmarshalStreamSourceNoProtocolXMLWithClass() throws Exception{
-        File file = new File(ClassLoader.getSystemResource(XML_RESOURCE).getFile());
-        String systemId = file.toURI().toURL().toExternalForm();
-        systemId = systemId.substring(6, systemId.length());
+        File file = new File(ClassLoader.getSystemResource(XML_RESOURCE).getFile());        
+        String systemId = file.getAbsolutePath();
 
 		StreamSource ss = new StreamSource(systemId);
 		JAXBElement jbe  = jaxbUnmarshaller.unmarshal(ss, EmployeeCollection.class);
 		xmlToObjectTest(jbe.getValue());
 		
 	}
-	/*
-	public void testRI() throws Exception{
-		JAXBContext ctx = JAXBContext.newInstance(new Class[]{EmployeeCollection.class});
-		Unmarshaller u = ctx.createUnmarshaller();
-        File file = new File(ClassLoader.getSystemResource(XML_RESOURCE).getFile());
-        String systemId = file.toURI().toURL().toExternalForm();
-       // systemId = systemId.substring(6, systemId.length());
-
-		StreamSource ss = new StreamSource(systemId);
-		JAXBElement jbe  = u.unmarshal(ss, EmployeeCollection.class);
-		xmlToObjectTest(jbe.getValue());
 		
-	}
-	*/
-	
 	public void testJSONToObjectFromXMLStreamReader() throws Exception {
 	    if(null != XML_INPUT_FACTORY) {
 	        InputStream instream = ClassLoader.getSystemResourceAsStream(XML_RESOURCE);
