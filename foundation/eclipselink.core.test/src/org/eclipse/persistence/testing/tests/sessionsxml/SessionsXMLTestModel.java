@@ -46,6 +46,8 @@ public class SessionsXMLTestModel extends TestModel {
         suite.setName("Sessions.xml standard loading tests");
         // Added test for bug 2700794 
         suite.addTest(new JavaLogSessionsXMLTest());
+        // Bug 391278
+        suite.addTest(new JavaLogSessionNamespaceTest());
         return suite;
     }
 
