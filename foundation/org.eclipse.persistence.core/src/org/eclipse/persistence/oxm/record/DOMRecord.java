@@ -27,8 +27,10 @@ import java.util.Vector;
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.oxm.ReferenceResolver;
 import org.eclipse.persistence.internal.oxm.UnmarshalXPathEngine;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
+import org.eclipse.persistence.oxm.IDResolver;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLLogin;
@@ -58,6 +60,7 @@ public class DOMRecord extends XMLRecord {
     private Node dom;
     private Node currentNode;
     private XMLField lastUpdatedField;
+    private ReferenceResolver referenceResolver;
 
     /**
      * INTERNAL:
@@ -66,6 +69,7 @@ public class DOMRecord extends XMLRecord {
     public DOMRecord() {
         super();
         namespaceResolver = new NamespaceResolver();
+        referenceResolver = new ReferenceResolver();
         // Required for subclasses.
     }
 
@@ -165,6 +169,27 @@ public class DOMRecord extends XMLRecord {
      */
     public String getNamespaceURI() {
         return getDOM().getNamespaceURI();
+    }
+
+    /**
+     * INTERNAL:
+     * The ReferenceResolver that is leveraged by key based mappings.
+     * @since EclipseLink 2.5.0
+     */
+    public ReferenceResolver getReferenceResolver() {
+        if(null == referenceResolver) {
+            referenceResolver = new ReferenceResolver();
+        }
+    	return referenceResolver;
+    }
+
+    /**
+     * INTERNAL:
+     * Set the ReferenceResolver that will be leveraged by key based mappings.
+     * @since EclipseLink 2.5.0
+     */
+    public void setReferenceResolver(ReferenceResolver referenceResolver) {
+    	this.referenceResolver = referenceResolver;
     }
 
     /**
@@ -517,6 +542,7 @@ public class DOMRecord extends XMLRecord {
         record.setUnmarshaller(this.getUnmarshaller());
         record.setOwningObject(this.getCurrentObject());
         record.setDocPresPolicy(this.getDocPresPolicy());
+        record.setReferenceResolver(referenceResolver);
         return record;
     }
 
@@ -806,4 +832,17 @@ public class DOMRecord extends XMLRecord {
         XMLPlatform xmlPlatform = XMLPlatformFactory.getInstance().getXMLPlatform();
         return xmlPlatform.resolveNamespacePrefix(currentNode, prefix);
     }
+
+    /**
+     * INTERNAL:
+     * If the UnmarshalRecord has a ReferenceResolver, tell it to resolve its
+     * references.
+     * @since EclipseLink 2.5.0
+     */
+    public void resolveReferences(AbstractSession abstractSession, IDResolver idResolver) {
+        if(null != referenceResolver) {
+            referenceResolver.resolveReferences(abstractSession, idResolver);
+        }
+    }
+
 }

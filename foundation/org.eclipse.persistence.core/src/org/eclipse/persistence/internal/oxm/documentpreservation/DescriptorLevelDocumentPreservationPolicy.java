@@ -12,19 +12,9 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.oxm.documentpreservation;
 
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
+import java.util.WeakHashMap;
 
-import org.eclipse.persistence.oxm.XMLContext;
-import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.documentpreservation.AppendNewElementsOrderingPolicy;
-import org.eclipse.persistence.oxm.documentpreservation.DocumentPreservationPolicy;
-import org.eclipse.persistence.oxm.mappings.XMLMapping;
-import org.eclipse.persistence.oxm.record.DOMRecord;
-import org.eclipse.persistence.internal.identitymaps.CacheId;
-import org.eclipse.persistence.internal.identitymaps.CacheKey;
-import org.eclipse.persistence.internal.oxm.WeakObjectWrapper;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
  * INTERNAL:
@@ -39,74 +29,13 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  * @since TopLink 11g
  */
 
-public class DescriptorLevelDocumentPreservationPolicy extends DocumentPreservationPolicy {
+public class DescriptorLevelDocumentPreservationPolicy extends AbstractDocumentPreservationPolicy {
  
-    private XMLContext context;
-    
     public DescriptorLevelDocumentPreservationPolicy() {
         super();
-        this.setNodeOrderingPolicy(new AppendNewElementsOrderingPolicy());        
+        nodesToObjects = new WeakHashMap();
+        objectsToNodes = new WeakHashMap();
+        this.setNodeOrderingPolicy(new AppendNewElementsOrderingPolicy());
     }
-    
-    public void initialize(XMLContext ctx) {
-        context = ctx;
-    }
-    
-    public void addObjectToCache(Object obj, Node node) {
-        this.addObjectToCache(obj, node, null);
-    }
-    
-    public void addObjectToCache(Object obj, Node node, XMLMapping selfRecordMapping) {
-    	// Can't process non-element nodes
-    	if (obj == null || node.getNodeType() != Node.ELEMENT_NODE) {
-    		return;
-    	}
-        AbstractSession session = context.getSession(obj);
-        XMLDescriptor xmlDescriptor = (XMLDescriptor)session.getDescriptor(obj);
-        DOMRecord row = new DOMRecord((Element)node);
-        row.setSession(session);
-        Object pk = xmlDescriptor.getObjectBuilder().extractPrimaryKeyFromRow(row, session);
-        if (xmlDescriptor.shouldPreserveDocument() || xmlDescriptor.getPrimaryKeyFieldNames().size() > 0) {
-            if ((pk == null) || (((CacheId)pk).getPrimaryKey().length == 0)) {
-                pk = new CacheId(new Object[]{ new WeakObjectWrapper(obj) });
-            }
-            CacheKey key = session.getIdentityMapAccessorInstance().acquireDeferredLock(pk, xmlDescriptor.getJavaClass(), xmlDescriptor, false);
-            if ((xmlDescriptor).shouldPreserveDocument()) {
-                key.setRecord(row);
-            }
-            key.setObject(obj);
-            key.releaseDeferredLock();
-        }
-    }
-    
-    public Node getNodeForObject(Object obj) {
-        if(obj == null) {
-            return null;
-        }
-        AbstractSession session = context.getSession(obj);
-        XMLDescriptor xmlDescriptor = (XMLDescriptor)session.getDescriptor(obj);
-        if(xmlDescriptor.shouldPreserveDocument()) {
-            Object pk = xmlDescriptor.getObjectBuilder().extractPrimaryKeyFromObject(obj, session);
-            if ((pk == null) || (pk instanceof CacheId) && (((CacheId)pk).getPrimaryKey().length == 0)) {
-                pk = new CacheId(new Object[]{ new WeakObjectWrapper(obj) });
-            }
-            CacheKey cacheKey = session.getIdentityMapAccessorInstance().getCacheKeyForObject(pk, xmlDescriptor.getJavaClass(), xmlDescriptor,false);
-            if(cacheKey != null && cacheKey.getRecord() != null) {
-                return ((DOMRecord)cacheKey.getRecord()).getDOM();
-            }
-        }
-        return null;
-    }
-    
-    public Object getObjectForNode(Node node) {
-        return getObjectForNode(node, null);
-    }  
-    public Object getObjectForNode(Node node, XMLMapping selfRecordMapping) {
-        return null;
-    }
-    
-    public boolean shouldPreserveDocument() {
-        return true;
-    }
-    
+
 }

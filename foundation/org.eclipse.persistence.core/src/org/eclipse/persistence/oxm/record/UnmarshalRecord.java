@@ -29,7 +29,7 @@ import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
-import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.internal.oxm.ReferenceResolver;
 import org.eclipse.persistence.internal.oxm.XPathPredicate;
 import org.eclipse.persistence.internal.oxm.ContainerValue;
 import org.eclipse.persistence.internal.oxm.MappingNodeValue;
@@ -48,9 +48,11 @@ import org.eclipse.persistence.internal.oxm.record.SequencedUnmarshalContext;
 import org.eclipse.persistence.internal.oxm.record.UnmappedContentHandlerWrapper;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalContext;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
+import org.eclipse.persistence.oxm.IDResolver;
 import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
@@ -125,6 +127,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
     private boolean isXsiNil;
     private boolean xpathNodeIsMixedContent = false;
     private int unmappedLevel = -1;
+    private ReferenceResolver referenceResolver = new ReferenceResolver();
 
     // The "snapshot" location of this object, for @XmlLocation
     private Locator xmlLocation;
@@ -228,6 +231,27 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
 
     public UnmarshalRecord getParentRecord() {
         return this.parentRecord;
+    }
+
+    /**
+     * INTERNAL:
+     * The ReferenceResolver that is leveraged by key based mappings.
+     * @since EclipseLink 2.5.0
+     */
+    public ReferenceResolver getReferenceResolver() {
+        if(null == referenceResolver) {
+            referenceResolver = new ReferenceResolver();
+        }
+        return referenceResolver;
+    }
+
+    /**
+     * INTERNAL:
+     * Set the ReferenceResolver that will be leveraged by key based mappings.
+     * @since EclipseLink 2.5.0
+     */
+    public void setReferenceResolver(ReferenceResolver referenceResolver) {
+        this.referenceResolver = referenceResolver;
     }
 
     /**
@@ -645,7 +669,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
         }
 
         // if the object has any primary key fields set, add it to the cache
-        if (session.isUnitOfWork()) {
+        if(null != referenceResolver) {
             if(null != xmlDescriptor) {
                 List primaryKeyFields = xmlDescriptor.getPrimaryKeyFields();
                 if(null != primaryKeyFields) {
@@ -659,11 +683,8 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
                                 pk.set(x, unmarshaller.getXMLContext().getValueByXPath(currentObject, pkField.getXPath(), pkField.getNamespaceResolver(), Object.class));
                             }
                         }
-                        CacheKey key = session.getIdentityMapAccessorInstance().acquireDeferredLock(pk, xmlDescriptor.getJavaClass(), xmlDescriptor, false);
-                        key.setRecord(this);
-                        key.setObject(currentObject);
-                        key.releaseDeferredLock();
-
+                        referenceResolver.putValue(xmlDescriptor.getJavaClass(), pk, currentObject);
+    
                         if (unmarshaller.getIDResolver() != null) {
                             try {
                                 if (primaryKeyFieldsSize > 1) {
@@ -681,7 +702,7 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
                                 throw XMLMarshalException.unmarshalException(e);
                             }
                         }
-
+    
                     }
                 }
             }
@@ -1356,7 +1377,8 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
 	        childRecord.setXMLReader(this.xmlReader);
 	        childRecord.setFragmentBuilder(fragmentBuilder);
 	        childRecord.setUnmarshalNamespaceResolver(unmarshalNamespaceResolver);
-	        childRecord.setParentRecord(this);        
+	        childRecord.setReferenceResolver(referenceResolver);
+	        childRecord.setParentRecord(this);     
     	}
         return childRecord;    	
     }
@@ -1406,6 +1428,18 @@ public class UnmarshalRecord extends XMLRecord implements ExtendedContentHandler
     		return textWrapperFragment;
     	}
     	return null;
+    }
+
+    /**
+     * INTERNAL:
+     * If the UnmarshalRecord has a ReferenceResolver, tell it to resolve its
+     * references.
+     * @since EclipseLink 2.5.0
+     */
+    public void resolveReferences(AbstractSession abstractSession, IDResolver idResolver) {
+        if(null != referenceResolver) {
+            referenceResolver.resolveReferences(abstractSession, idResolver);
+        }
     }
 
 }

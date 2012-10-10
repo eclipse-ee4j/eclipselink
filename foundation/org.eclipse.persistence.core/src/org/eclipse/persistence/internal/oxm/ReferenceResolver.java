@@ -21,6 +21,7 @@ import java.util.Vector;
 import java.util.concurrent.Callable;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.InheritancePolicy;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
@@ -28,6 +29,7 @@ import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.AttributeAccessor;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.IDResolver;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
@@ -35,28 +37,20 @@ import org.eclipse.persistence.oxm.mappings.XMLCollectionReferenceMapping;
 import org.eclipse.persistence.oxm.mappings.XMLInverseReferenceMapping;
 import org.eclipse.persistence.oxm.mappings.XMLMapping;
 import org.eclipse.persistence.oxm.mappings.XMLObjectReferenceMapping;
-import org.eclipse.persistence.sessions.Session;
-import org.eclipse.persistence.sessions.UnitOfWork;
 
+/**
+ * This class is leveraged by reference mappings. It plays 3 roles:
+ * <ul>
+ * <li>Stores objects with an ID</li>
+ * <li>Stores key based relationships</li>
+ * <li>Resolves key based relationships based on the objects stored by ID</li>
+ * </ul>
+ */
 public class ReferenceResolver {
-
-    public static final String KEY = "REFERENCE_RESOLVER";
 
     private ArrayList<Reference> references;    
     private ReferenceKey lookupKey;
-
-    /**
-     * Return an instance of this class for a given unit of work.
-     *
-     * @param uow
-     * @return
-     */
-    public static ReferenceResolver getInstance(Session unitOfWork) {
-        if (unitOfWork == null) {
-            return null;
-        }
-        return (ReferenceResolver) unitOfWork.getProperty(KEY);
-    }
+    private Map<Class, Map<Object, Object>> cache;
 
     /**
      * The default constructor initializes the list of References.
@@ -64,9 +58,8 @@ public class ReferenceResolver {
     public ReferenceResolver() {
         references = new ArrayList();
         lookupKey = new ReferenceKey(null, null);
+        cache = new HashMap<Class, Map<Object, Object>>();
     }
-
-
 
     /**
      * Add a Reference object to the list - these References will
@@ -280,13 +273,10 @@ public class ReferenceResolver {
                 }
             }
         }
-        // release the unit of work, if required
-        if (session.isUnitOfWork()) {
-            ((UnitOfWork) session).release();
-        }
 
         // reset the references list
         references = new ArrayList<Reference>();
+        cache.clear();
     }
 
     private Object getValue(AbstractSession session, Reference reference, CacheId primaryKey) {
@@ -301,7 +291,7 @@ public class ReferenceResolver {
                     pkField = (XMLField) targetDescriptor.getTypedField(pkField);
                     Class targetType = pkField.getType();
                     if(targetType == ClassConstants.STRING || targetType == ClassConstants.OBJECT) {
-                        value = session.getIdentityMapAccessor().getFromIdentityMap(primaryKey, targetDescriptor.getJavaClass());
+                    	value = getValue(targetDescriptor.getJavaClass(), primaryKey);
                     } else {
                         try {
                             Object[] pkValues = primaryKey.getPrimaryKey();
@@ -309,7 +299,7 @@ public class ReferenceResolver {
                             for(int x=0; x<pkValues.length; x++) {
                                 convertedPkValues[x] = session.getDatasourcePlatform().getConversionManager().convertObject(pkValues[x], targetType);
                             }
-                            value = session.getIdentityMapAccessor().getFromIdentityMap(new CacheId(convertedPkValues), targetDescriptor.getJavaClass());
+                            value = getValue(targetDescriptor.getJavaClass(), new CacheId(convertedPkValues));
                         } catch(ConversionException e) {
                         }
                     }
@@ -320,15 +310,37 @@ public class ReferenceResolver {
             }
             return null;
         } else {
-            return session.getIdentityMapAccessor().getFromIdentityMap(primaryKey, referenceTargetClass);
+            Object value = getValue(referenceTargetClass, primaryKey);
+            if(null == value) {
+                DatabaseMapping mapping = (DatabaseMapping) reference.getMapping();
+                ClassDescriptor targetDescriptor = mapping.getReferenceDescriptor();
+                if(targetDescriptor.hasInheritance()) {
+                    InheritancePolicy inheritancePolicy = targetDescriptor.getInheritancePolicy();
+                    List<ClassDescriptor> childDescriptors = inheritancePolicy.getAllChildDescriptors();
+                    for(ClassDescriptor childDescriptor : childDescriptors) {
+                        value = getValue(childDescriptor.getJavaClass(), primaryKey);
+                        if(null != value) {
+                            return value;
+                        }
+                    }
+                }
+            }
+            return value;
         }
     }
-    
+
+    private Object getValue(Class clazz, CacheId primaryKey) {
+        Map<Object, Object> keyToObject = cache.get(clazz);
+        if(null != keyToObject) {
+        	return keyToObject.get(primaryKey);
+        }
+        return null;
+    }
+
     private class ReferenceKey {
         private Object sourceObject;
         private XMLMapping mapping;
-        
-        
+
         public ReferenceKey(Object sourceObject, XMLMapping mapping) {
             this.sourceObject = sourceObject;
             this.mapping = mapping;
@@ -366,6 +378,20 @@ public class ReferenceResolver {
             ReferenceKey key = (ReferenceKey)obj;
             return this.sourceObject == key.getSourceObject() && this.mapping == key.getMapping();
         }
+    }
+
+    /**
+     * Store an instance by key based on a mapped class.  These values will be 
+     * used when it comes time to resolve the references.
+     * @since EclipseLink 2.5.0
+     */
+    public void putValue(Class clazz, Object key, Object object) {
+        Map<Object, Object> keyToObject = cache.get(clazz);
+        if(null == keyToObject) {
+            keyToObject = new HashMap<Object, Object>();
+            cache.put(clazz, keyToObject);
+        }
+        keyToObject.put(key, object);
     }
 
 }

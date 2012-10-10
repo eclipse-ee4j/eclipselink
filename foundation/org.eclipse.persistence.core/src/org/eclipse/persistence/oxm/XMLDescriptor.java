@@ -38,6 +38,7 @@ import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.oxm.TreeObjectBuilder;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.XPathQName;
+import org.eclipse.persistence.internal.oxm.documentpreservation.NoDocumentPreservationPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.AggregateMapping;
@@ -54,6 +55,7 @@ import org.eclipse.persistence.oxm.mappings.XMLMapping;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
+import org.eclipse.persistence.queries.DoesExistQuery;
 
 /**
  * Use an XML project for nontransactional, nonpersistent (in-memory) conversions between Java objects and XML documents.
@@ -109,7 +111,6 @@ public class XMLDescriptor extends ClassDescriptor {
 
         this.shouldOrderMappings = false;
         descriptorIsAggregate();
-        setIdentityMapSize(100);
     }
 
     /**
@@ -563,6 +564,9 @@ public class XMLDescriptor extends ClassDescriptor {
             }
         }
 
+        getCachePolicy().useNoIdentityMap();
+        getQueryManager().getDoesExistQuery().setExistencePolicy(DoesExistQuery.CheckDatabase);
+ 
         validateBeforeInitialization(session);
 
         preInitializeInheritancePolicy(session);

@@ -145,7 +145,9 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
      * Resolve any mapping references.
      */
     public void resolveReferences() {
-        unmarshaller.resolveReferences(session);
+        if(null != rootRecord) {
+            rootRecord.resolveReferences(session, unmarshaller.getIDResolver());
+        }
     }
 
     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {

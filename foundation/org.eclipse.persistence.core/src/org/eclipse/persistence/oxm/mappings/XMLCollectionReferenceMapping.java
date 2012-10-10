@@ -43,6 +43,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.ContainerMapping;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
+import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
@@ -153,15 +154,9 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
      * Create (if necessary) and populate a reference object that will be used
      * during the mapping reference resolution phase after unmarshalling is
      * complete.
-     * 
-     * @param record
-     * @param xmlField
-     * @param object
-     * @param session
-     * @return
      */
     public void buildReference(UnmarshalRecord record, XMLField xmlField, Object object, AbstractSession session, Object container) {
-         buildReference(record.getCurrentObject(), xmlField, object, session, container);
+         buildReference(record.getCurrentObject(), xmlField, object, session, container, record.getReferenceResolver());
     }
 
     /**
@@ -169,15 +164,8 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
      * Create (if necessary) and populate a reference object that will be used
      * during the mapping reference resolution phase after unmarshalling is
      * complete.
-     * 
-     * @param record
-     * @param xmlField
-     * @param object
-     * @param session
-     * @return
      */
-    public void buildReference(Object srcObject, XMLField xmlField, Object object, AbstractSession session, Object container) {
-        ReferenceResolver resolver = ReferenceResolver.getInstance(session);
+    public void buildReference(Object srcObject, XMLField xmlField, Object object, AbstractSession session, Object container, ReferenceResolver resolver) {
         if (resolver == null) {
             return;
         }
@@ -335,7 +323,8 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
             // and use the converted value when checking the cache.
             for (Iterator valIt = ((Vector) fieldValue).iterator(); valIt.hasNext();) {
                 Object nextValue = valIt.next();
-                this.buildReference(((XMLRecord)databaseRow).getCurrentObject(), fld, nextValue, sourceQuery.getSession(), container);
+                DOMRecord domRecord = (DOMRecord) databaseRow;
+                this.buildReference(domRecord.getCurrentObject(), fld, nextValue, sourceQuery.getSession(), container, domRecord.getReferenceResolver());
             }
         }
         return null;
