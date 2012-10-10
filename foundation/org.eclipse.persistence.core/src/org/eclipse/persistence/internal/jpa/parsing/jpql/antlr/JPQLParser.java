@@ -8248,15 +8248,15 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
 
 
     // $ANTLR start "subselectIdentificationVariableDeclaration"
-    // JPQL.g:1327:1: subselectIdentificationVariableDeclaration[List varDecls] : ( identificationVariableDeclaration[varDecls] | n= associationPathExpression ( AS )? i= IDENT ( join )* | n= collectionMemberDeclaration );
+    // JPQL.g:1327:1: subselectIdentificationVariableDeclaration[List varDecls] : ( identificationVariableDeclaration[varDecls] | n= associationPathExpression ( AS )? i= IDENT (node= join )* | n= collectionMemberDeclaration );
     public final void subselectIdentificationVariableDeclaration(List varDecls) throws RecognitionException {
         Token i=null;
         Object n = null;
 
 
-         Object node; 
+         Object node = null; 
         try {
-            // JPQL.g:1329:5: ( identificationVariableDeclaration[varDecls] | n= associationPathExpression ( AS )? i= IDENT ( join )* | n= collectionMemberDeclaration )
+            // JPQL.g:1329:5: ( identificationVariableDeclaration[varDecls] | n= associationPathExpression ( AS )? i= IDENT (node= join )* | n= collectionMemberDeclaration )
             int alt102=3;
             alt102 = dfa102.predict(input);
             switch (alt102) {
@@ -8272,7 +8272,7 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
                     break;
                 case 2 :
-                    // JPQL.g:1330:7: n= associationPathExpression ( AS )? i= IDENT ( join )*
+                    // JPQL.g:1330:7: n= associationPathExpression ( AS )? i= IDENT (node= join )*
                     {
                     pushFollow(FOLLOW_associationPathExpression_in_subselectIdentificationVariableDeclaration8416);
                     n=associationPathExpression();
@@ -8298,22 +8298,30 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     }
 
                     i=(Token)match(input,IDENT,FOLLOW_IDENT_in_subselectIdentificationVariableDeclaration8425); if (state.failed) return ;
-                    // JPQL.g:1330:51: ( join )*
+
+                    if ( state.backtracking==0 ) {
+                       
+                            varDecls.add(factory.newVariableDecl(i.getLine(), i.getCharPositionInLine(), 
+                                                                n, i.getText())); 
+                              
+                    }
+
+                    // JPQL.g:1330:51: (node= join )*
                     loop101:
                     do {
                         int alt101=2;
                         alt101 = dfa101.predict(input);
                         switch (alt101) {
                     	case 1 :
-                    	    // JPQL.g:1330:52: join
+                    	    // JPQL.g:1330:52: node= join
                     	    {
                     	    pushFollow(FOLLOW_join_in_subselectIdentificationVariableDeclaration8428);
-                    	    join();
+                    	    node = join();
 
                     	    state._fsp--;
                     	    if (state.failed) return ;
                     	    if ( state.backtracking==0 ) {
-                    	       varDecls.add(n); 
+                    	       varDecls.add(node); 
                     	    }
 
                     	    }
@@ -8323,13 +8331,6 @@ public class JPQLParser extends org.eclipse.persistence.internal.jpa.parsing.jpq
                     	    break loop101;
                         }
                     } while (true);
-
-                    if ( state.backtracking==0 ) {
-                       
-                                  varDecls.add(factory.newVariableDecl(i.getLine(), i.getCharPositionInLine(), 
-                                                                       n, i.getText())); 
-                              
-                    }
 
                     }
                     break;

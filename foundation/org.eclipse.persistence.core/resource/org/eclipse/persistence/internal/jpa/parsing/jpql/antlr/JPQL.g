@@ -1325,13 +1325,16 @@ scope{
     ;
 
 subselectIdentificationVariableDeclaration [List varDecls]
-@init { Object node; }
+@init { 
+    Object node = null; 
+}
     : identificationVariableDeclaration[varDecls]
-    | n = associationPathExpression (AS)? i=IDENT (join { varDecls.add($n.node); } )*
+    | n = associationPathExpression (AS)? i=IDENT 
         { 
             $varDecls.add(factory.newVariableDecl($i.getLine(), $i.getCharPositionInLine(), 
                                                  $n.node, $i.getText())); 
         }
+        ( node = join { varDecls.add($node.node); } )*
     | n = collectionMemberDeclaration { $varDecls.add($n.node); }
     ;
 
