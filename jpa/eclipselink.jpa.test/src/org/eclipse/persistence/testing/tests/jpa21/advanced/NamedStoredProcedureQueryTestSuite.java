@@ -111,6 +111,11 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
         suite.addTest(new NamedStoredProcedureQueryTestSuite("testExecuteStoredProcedureQueryWithNamedCursors"));
         suite.addTest(new NamedStoredProcedureQueryTestSuite("testGetResultListStoredProcedureQueryWithNamedCursors"));
         suite.addTest(new NamedStoredProcedureQueryTestSuite("testExecuteStoredProcedureQueryWithUnNamedCursor"));
+        suite.addTest(new NamedStoredProcedureQueryTestSuite("testGetResultListOnUpdateQuery"));
+        suite.addTest(new NamedStoredProcedureQueryTestSuite("testGetSingleResultOnUpdateQuery"));
+        suite.addTest(new NamedStoredProcedureQueryTestSuite("testGetResultListOnDeleteQuery"));
+        suite.addTest(new NamedStoredProcedureQueryTestSuite("testGetSingleResultOnDeleteQuery"));
+        suite.addTest(new NamedStoredProcedureQueryTestSuite("testClassCastExceptionOnExecuteWithNoOutputParameters"));
         
         return suite;
     }
@@ -1123,6 +1128,141 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
                 }
                 
                 throw e;
+            } finally {
+                closeEntityManager(em);
+            }
+        }
+    }
+    
+    /**
+     * Test an expected exception. 
+     */
+    public void testGetSingleResultOnDeleteQuery() {
+        if (supportsStoredProcedures() && getPlatform().isMySQL()) {
+            EntityManager em = createEntityManager();
+            
+            boolean exceptionCaught = false;
+            
+            try {
+                Object result = em.createStoredProcedureQuery("Delete_All_Responsibilities").getSingleResult();
+            } catch (IllegalStateException e) {
+                if (isTransactionActive(em)){
+                    rollbackTransaction(em);
+                }
+                
+                exceptionCaught = true;
+            } finally {
+                closeEntityManager(em);
+            }
+            
+            assertTrue("Expected Illegal state exception was not caught", exceptionCaught);
+        }
+    }
+    
+    /**
+     * Test an expected exception. 
+     */
+    public void testGetResultListOnDeleteQuery() {
+        if (supportsStoredProcedures() && getPlatform().isMySQL()) {
+            EntityManager em = createEntityManager();
+            
+            boolean exceptionCaught = false;
+            
+            try {
+                Object result = em.createStoredProcedureQuery("Delete_All_Responsibilities").getResultList();
+            } catch (IllegalStateException e) {
+                if (isTransactionActive(em)){
+                    rollbackTransaction(em);
+                }
+                
+                exceptionCaught = true;
+            } finally {
+                closeEntityManager(em);
+            }
+            
+            assertTrue("Expected Illegal state exception was not caught", exceptionCaught);
+        }
+    }
+    
+    /**
+     * Test an expected exception. 
+     */
+    public void testGetSingleResultOnUpdateQuery() {
+        if (supportsStoredProcedures() && getPlatform().isMySQL()) {
+            EntityManager em = createEntityManager();
+            
+            boolean exceptionCaught = false;
+            
+            try {
+                String postalCodeTypo = "R3 1B9";
+                String postalCodeCorrection = "R3B 1B9";
+                
+                StoredProcedureQuery query = em.createStoredProcedureQuery("Update_Address_Postal_Code");
+                query.registerStoredProcedureParameter("new_p_code_v", String.class, ParameterMode.IN);
+                query.registerStoredProcedureParameter("old_p_code_v", String.class, ParameterMode.IN);
+                
+                Object results = query.setParameter("new_p_code_v", postalCodeCorrection).setParameter("old_p_code_v", postalCodeTypo).getSingleResult();
+            } catch (IllegalStateException e) {
+                if (isTransactionActive(em)){
+                    rollbackTransaction(em);
+                }
+                
+                exceptionCaught = true;
+            } finally {
+                closeEntityManager(em);
+            }
+            
+            assertTrue("Expected Illegal state exception was not caught", exceptionCaught);
+        }
+    }
+    
+    /**
+     * Test an expected exception. 
+     */
+    public void testGetResultListOnUpdateQuery() {
+        if (supportsStoredProcedures() && getPlatform().isMySQL()) {
+            EntityManager em = createEntityManager();
+            
+            boolean exceptionCaught = false;
+            
+            try {
+                String postalCodeTypo = "R3 1B9";
+                String postalCodeCorrection = "R3B 1B9";
+                
+                StoredProcedureQuery query = em.createStoredProcedureQuery("Update_Address_Postal_Code");
+                query.registerStoredProcedureParameter("new_p_code_v", String.class, ParameterMode.IN);
+                query.registerStoredProcedureParameter("old_p_code_v", String.class, ParameterMode.IN);
+                
+                Object results = query.setParameter("new_p_code_v", postalCodeCorrection).setParameter("old_p_code_v", postalCodeTypo).getResultList();
+            } catch (IllegalStateException e) {
+                if (isTransactionActive(em)){
+                    rollbackTransaction(em);
+                }
+                
+                exceptionCaught = true;
+            } finally {
+                closeEntityManager(em);
+            }
+            
+            assertTrue("Expected Illegal state exception was not caught", exceptionCaught);
+        }
+    }
+    
+    /**
+     * Test a class cast exception. 
+     */
+    public void testClassCastExceptionOnExecuteWithNoOutputParameters() {
+        if (supportsStoredProcedures() && getPlatform().isMySQL()) {
+            EntityManager em = createEntityManager();
+            
+            try {
+                assertTrue("Execute didn't return true", em.createStoredProcedureQuery("Read_All_Employees").execute());
+            } catch (ClassCastException e) {
+                if (isTransactionActive(em)){
+                    rollbackTransaction(em);
+                }
+                
+                fail("ClassCastException caught" + e);
             } finally {
                 closeEntityManager(em);
             }

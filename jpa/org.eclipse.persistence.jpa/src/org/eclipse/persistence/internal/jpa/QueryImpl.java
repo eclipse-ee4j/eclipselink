@@ -250,22 +250,7 @@ public class QueryImpl {
             // Execute the query and return the result.
             return session.executeQuery(query, parameterValues);
         } catch (DatabaseException e) {
-            // If we catch a database exception as a result of executing a
-            // pessimistic locking query we need to ask the platform which
-            // JPA 2.0 locking exception we should throw. It will be either
-            // be a PessimisticLockException or a LockTimeoutException (if
-            // the query was executed using a wait timeout value)
-            if (this.lockMode != null && this.lockMode.name().contains(ObjectLevelReadQuery.PESSIMISTIC_)) {
-                // ask the platform if it is a lock timeout
-                if (session.getPlatform().isLockTimeoutException(e)) {
-                    throw new LockTimeoutException(e);
-                } else {
-                    throw new PessimisticLockException(e);
-                }
-            } else {
-                setRollbackOnly();
-                throw e;
-            }
+            throw getDetailedException(e);
         } catch (RuntimeException e) {
             setRollbackOnly();
             throw e;
@@ -345,6 +330,29 @@ public class QueryImpl {
 
         }
         return this.databaseQuery;
+    }
+    
+    /**
+     * Given a DatabaseException, this method will determine if we should
+     * throw a different more specific exception like a lock timeout exception.
+     */
+    protected RuntimeException getDetailedException(DatabaseException e) {
+        // If we catch a database exception as a result of executing a
+        // pessimistic locking query we need to ask the platform which
+        // JPA 2.0 locking exception we should throw. It will be either
+        // be a PessimisticLockException or a LockTimeoutException (if
+        // the query was executed using a wait timeout value)
+        if (this.lockMode != null && this.lockMode.name().contains(ObjectLevelReadQuery.PESSIMISTIC_)) {
+            // ask the platform if it is a lock timeout
+            if (getActiveSession().getPlatform().isLockTimeoutException(e)) {
+                return new LockTimeoutException(e);
+            } else {
+                return new PessimisticLockException(e);
+            }
+        } else {
+            setRollbackOnly();
+            return e;
+        }
     }
 
     /**
@@ -436,15 +444,26 @@ public class QueryImpl {
             throw exception;
         }
     }
-    
+ 
     /**
-     * Execute a query that returns a single result.
+     * Execute a SELECT query that returns a single untyped result.
      * 
      * @return the result
-     * @throws javax.persistence.EntityNotFoundException
-     *             if there is no result
-     * @throws javax.persistence.NonUniqueResultException
-     *             if more than one result
+     * @throws NoResultException if there is no result
+     * @throws NonUniqueResultException if more than one result
+     * @throws IllegalStateException if called for a Java Persistence query 
+     *         language UPDATE or DELETE statement
+     * @throws QueryTimeoutException if the query execution exceeds the query 
+     *         timeout value set and only the statement is rolled back
+     * @throws TransactionRequiredException if a lock mode other than NONE has 
+     *         been been set and there is no transaction or the persistence 
+     *         context has not been joined to the transaction
+     * @throws PessimisticLockException if pessimistic locking fails and the 
+     *         transaction is rolled back
+     * @throws LockTimeoutException if pessimistic locking fails and only the 
+     *         statement is rolled back
+     * @throws PersistenceException if the query execution exceeds the query 
+     *         timeout value set and the transaction is rolled back
      */
     public Object getSingleResult() {
         boolean rollbackOnException = true;

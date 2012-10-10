@@ -191,7 +191,9 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "cannot_get_unfetched_attribute", "Cannot get unfetched attribute [{1}] from detached object {0}."},
                                            { "jpa21_invalid_parameter_name", "Invalid output parameter name : {0}. {1}"},
                                            { "jpa21_invalid_parameter_position", "Invalid output parameter position : {0}. {1}."},
-                                           { "jpa21_invalid_call_on_un_executed_query", "The query must be executed before calling this method."}
+                                           { "jpa21_invalid_call_on_un_executed_query", "The query must be executed before calling this method."},
+                                           { "jpa21_invalid_call_with_no_output_parameters", "Invalid call on a query that does not return OUT parameters."},
+                                           { "jpa21_invalid_call_with_no_result_sets_returned", "Invalid call on a query that does not return result sets."}
                                         };
     /**
      * Return the lookup table.

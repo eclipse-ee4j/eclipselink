@@ -54,6 +54,7 @@ import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.LOBValueWriter;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.helper.ThreadCursoredList;
+import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.localization.ToStringLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -691,7 +692,13 @@ public class DatabaseAccessor extends DatasourceAccessor {
     public Object processResultSet(ResultSet resultSet, DatabaseCall call, Statement statement, AbstractSession session) throws SQLException {
         Object result = null;
         ResultSetMetaData metaData = resultSet.getMetaData();
-
+        
+        // If there are no columns (and only an update count) throw an exception.
+        if (metaData.getColumnCount() == 0 && statement.getUpdateCount() > -1) {
+            resultSet.close();
+            throw new IllegalStateException(ExceptionLocalization.buildMessage("jpa21_invalid_call_with_no_result_sets_returned"));
+        }
+        
         session.startOperationProfile(SessionProfiler.RowFetch, call.getQuery(), SessionProfiler.ALL);
         try {
             if (call.isOneRowReturned()) {

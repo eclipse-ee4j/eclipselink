@@ -742,6 +742,18 @@ public class EmployeePopulator {
         smallProjectExample10();
     }
     
+    public StoredProcedureDefinition buildMySQL2ResultSetProcedure() {
+        StoredProcedureDefinition proc = new StoredProcedureDefinition();
+        proc.setName("Read_Multiple_Result_Sets");
+        
+        proc.addStatement("SELECT E.*, S.* FROM JPA21_EMPLOYEE E, JPA21_SALARY S WHERE E.EMP_ID = S.EMP_ID");
+        proc.addStatement("SELECT A.* FROM JPA21_ADDRESS A");
+        proc.addStatement("SELECT (t1.BUDGET/t0.PROJ_ID) AS BUDGET_SUM, t0.PROJ_ID, t0.PROJ_TYPE, t0.PROJ_NAME, t0.DESCRIP, t0.LEADER_ID, t0.VERSION, t1.BUDGET, t2.PROJ_ID AS SMALL_ID, t2.PROJ_TYPE AS SMALL_DESCRIM, t2.PROJ_NAME AS SMALL_NAME, t2.DESCRIP AS SMALL_DESCRIPTION, t2.LEADER_ID AS SMALL_TEAMLEAD, t2.VERSION AS SMALL_VERSION FROM JPA21_PROJECT t0, JPA21_PROJECT t2, JPA21_LPROJECT t1 WHERE t1.PROJ_ID = t0.PROJ_ID AND t2.PROJ_TYPE='S'");
+        proc.addStatement("SELECT t0.EMP_ID, t0.F_NAME, t0.L_NAME, COUNT(t2.DESCRIPTION) AS R_COUNT FROM JPA21_EMPLOYEE t0, JPA21_RESPONS t2, JPA21_SALARY t1 WHERE ((t1.EMP_ID = t0.EMP_ID) AND (t2.EMP_ID = t0.EMP_ID)) GROUP BY t0.EMP_ID, t0.F_NAME, t0.L_NAME");
+         
+        return proc;
+    }
+    
     public PackageDefinition buildOraclePackage() {
         PackageDefinition types = new PackageDefinition();
         types.setName("Cursor_Type");
@@ -749,7 +761,75 @@ public class EmployeePopulator {
         return types;
     }
     
-    public StoredProcedureDefinition buildStoredProcedureReadUsingNamedRefCursor(DatabaseSession session) {
+    public StoredProcedureDefinition buildStoredProcedureDeleteAllResponsibilities() {
+        StoredProcedureDefinition proc = new StoredProcedureDefinition();
+        proc.setName("Delete_All_Responsibilities");
+        proc.addStatement("DELETE FROM JPA21_RESPONS");
+        return proc;
+    }
+    
+    public StoredProcedureDefinition buildStoredProcedureReadAllEmployees() {
+        StoredProcedureDefinition proc = new StoredProcedureDefinition();
+        proc.setName("Read_All_Employees");
+        proc.addStatement("SELECT EMP_ID from JPA21_EMPLOYEE");
+        return proc;
+    }
+    
+    public StoredProcedureDefinition buildStoredProcedureReadFromAddress(DatabasePlatform platform) {
+        StoredProcedureDefinition proc = new StoredProcedureDefinition();
+        proc.setName("Read_Address");
+        
+        proc.addInOutputArgument("ADDRESS_ID", Integer.class);
+        proc.addOutputArgument("STREET", String.class);
+        proc.addOutputArgument("CITY", String.class);
+        proc.addOutputArgument("COUNTRY", String.class);
+        proc.addOutputArgument("PROVINCE", String.class);
+        proc.addOutputArgument("P_CODE", String.class);
+        
+        String statement = null;
+        if (platform.isSQLServer() || platform.isSybase()) {
+            // 260263: SQLServer 2005/2008 requires parameter matching in the select clause for stored procedures
+            statement = "SELECT @STREET=STREET, @CITY=CITY, @COUNTRY=COUNTRY, @PROVINCE=PROVINCE, @P_CODE=P_CODE FROM JPA21_ADDRESS WHERE ADDRESS_ID = @ADDRESS_ID";
+        } else {
+            statement = "SELECT t0.STREET, t0.CITY, t0.COUNTRY, t0.PROVINCE, t0.P_CODE INTO STREET, CITY, COUNTRY, PROVINCE, P_CODE FROM JPA21_ADDRESS t0 WHERE (t0.ADDRESS_ID = ADDRESS_ID)";
+        }
+        
+        proc.addStatement(statement);
+        return proc;
+    }
+    
+    public StoredProcedureDefinition buildStoredProcedureReadFromAddressMapped(DatabasePlatform platform) {
+        StoredProcedureDefinition proc = new StoredProcedureDefinition();
+        proc.setName("Read_Address_Mapped");
+        
+        proc.addInOutputArgument("address_id_v", Integer.class);
+        proc.addOutputArgument("street_v", String.class);
+        proc.addOutputArgument("city_v", String.class);
+        proc.addOutputArgument("country_v", String.class);
+        proc.addOutputArgument("province_v", String.class);
+        proc.addOutputArgument("p_code_v", String.class);
+        
+        String statement = null;
+        if (platform.isSQLServer() || platform.isSybase()) {
+            // 260263: SQLServer 2005/2008 requires parameter matching in the select clause for stored procedures
+            statement = "SELECT @street_v=STREET, @city_v=CITY, @country_v=COUNTRY, @province_v=PROVINCE, @p_code_v=P_CODE FROM JPA21_ADDRESS WHERE ADDRESS_ID = @address_id_v";
+        } else {
+            statement = "SELECT STREET, CITY, COUNTRY, PROVINCE, P_CODE INTO street_v, city_v, country_v, province_v, p_code_v FROM JPA21_ADDRESS WHERE (ADDRESS_ID = address_id_v)";
+        }
+        
+        proc.addStatement(statement);
+        return proc;
+    }
+    
+    public StoredProcedureDefinition buildStoredProcedureReadFromAddressResultSet() {
+        StoredProcedureDefinition proc = new StoredProcedureDefinition();
+        proc.setName("Read_Address_Result_Set");        
+        proc.addArgument("address_id_v", Integer.class);
+        proc.addStatement("SELECT a.* FROM JPA21_ADDRESS a WHERE a.address_id = address_id_v");
+        return proc;
+    }
+    
+    public StoredProcedureDefinition buildStoredProcedureReadUsingNamedRefCursor() {
         StoredProcedureDefinition proc = new StoredProcedureDefinition();
         proc.setName("Read_Using_Named_Cursor");
         
@@ -762,7 +842,7 @@ public class EmployeePopulator {
         return proc;
     }
     
-    public StoredProcedureDefinition buildStoredProcedureReadUsingPosRefCursor(DatabaseSession session) {
+    public StoredProcedureDefinition buildStoredProcedureReadUsingPosRefCursor() {
         StoredProcedureDefinition proc = new StoredProcedureDefinition();
         proc.setName("Read_Using_UnNamed_Cursor");
         
@@ -773,51 +853,7 @@ public class EmployeePopulator {
         return proc;
     }
     
-    public StoredProcedureDefinition buildStoredProcedureReadFromAddress(DatabaseSession session) {
-        StoredProcedureDefinition proc = new StoredProcedureDefinition();
-        proc.setName("Read_Address");
-        
-        proc.addInOutputArgument("ADDRESS_ID", Integer.class);
-        proc.addOutputArgument("STREET", String.class);
-        proc.addOutputArgument("CITY", String.class);
-        proc.addOutputArgument("COUNTRY", String.class);
-        proc.addOutputArgument("PROVINCE", String.class);
-        proc.addOutputArgument("P_CODE", String.class);
-        
-        String statement = null;
-        if (session.getPlatform().isSQLServer() || session.getPlatform().isSybase()) {
-            // 260263: SQLServer 2005/2008 requires parameter matching in the select clause for stored procedures
-            statement = "SELECT @STREET=STREET, @CITY=CITY, @COUNTRY=COUNTRY, @PROVINCE=PROVINCE, @P_CODE=P_CODE FROM JPA21_ADDRESS WHERE ADDRESS_ID = @ADDRESS_ID";
-        } else {
-            statement = "SELECT t0.STREET, t0.CITY, t0.COUNTRY, t0.PROVINCE, t0.P_CODE INTO STREET, CITY, COUNTRY, PROVINCE, P_CODE FROM JPA21_ADDRESS t0 WHERE (t0.ADDRESS_ID = ADDRESS_ID)";
-        }
-        
-        proc.addStatement(statement);
-        return proc;
-    }
-    
-    public StoredProcedureDefinition buildStoredProcedureUpdateFromAddress(DatabaseSession session) {
-        StoredProcedureDefinition proc = new StoredProcedureDefinition();
-        proc.setName("Update_Address_Postal_Code");
-        
-        proc.addArgument("new_p_code_v", String.class);
-        proc.addArgument("old_p_code_v", String.class);
-        
-        String statement = null;
-        if (session.getPlatform().isSQLServer() || session.getPlatform().isSybase()) {
-            // 260263: SQLServer 2005/2008 requires parameter matching in the select clause for stored procedures
-            statement = "UPDATE JPA21_ADDRESS SET P_CODE = @new_p_code_v WHERE P_CODE = @old_p_code_v";
-            
-        } else {            
-            statement = "UPDATE JPA21_ADDRESS SET P_CODE = new_p_code_v WHERE P_CODE = old_p_code_v";
-            
-        }
-        
-        proc.addStatement(statement);
-        return proc;
-    }
-    
-    public StoredProcedureDefinition buildStoredProcedureResultSetAndUpdateFromAddress(DatabaseSession session) {
+    public StoredProcedureDefinition buildStoredProcedureResultSetAndUpdateFromAddress(DatabasePlatform platform) {
         StoredProcedureDefinition proc = new StoredProcedureDefinition();
         proc.setName("Result_Set_And_Update_Address");
         
@@ -826,7 +862,7 @@ public class EmployeePopulator {
         proc.addOutputArgument("employee_count_v", Integer.class);
         
         String statement = null;
-        if (session.getPlatform().isSQLServer() || session.getPlatform().isSybase()) {
+        if (platform.isSQLServer() || platform.isSybase()) {
             // 260263: SQLServer 2005/2008 requires parameter matching in the select clause for stored procedures
             proc.addStatement("SELECT A.* FROM JPA21_ADDRESS A WHERE A.P_CODE = @new_p_code_v");
             proc.addStatement("SELECT E.*, S.* FROM JPA21_EMPLOYEE E, JPA21_SALARY S WHERE E.EMP_ID = S.EMP_ID");
@@ -842,46 +878,24 @@ public class EmployeePopulator {
         return proc;
     }
     
-    public StoredProcedureDefinition buildStoredProcedureReadFromAddressMapped(DatabaseSession session) {
+    public StoredProcedureDefinition buildStoredProcedureUpdateFromAddress(DatabasePlatform platform) {
         StoredProcedureDefinition proc = new StoredProcedureDefinition();
-        proc.setName("Read_Address_Mapped");
+        proc.setName("Update_Address_Postal_Code");
         
-        proc.addInOutputArgument("address_id_v", Integer.class);
-        proc.addOutputArgument("street_v", String.class);
-        proc.addOutputArgument("city_v", String.class);
-        proc.addOutputArgument("country_v", String.class);
-        proc.addOutputArgument("province_v", String.class);
-        proc.addOutputArgument("p_code_v", String.class);
+        proc.addArgument("new_p_code_v", String.class);
+        proc.addArgument("old_p_code_v", String.class);
         
         String statement = null;
-        if (session.getPlatform().isSQLServer() || session.getPlatform().isSybase()) {
+        if (platform.isSQLServer() || platform.isSybase()) {
             // 260263: SQLServer 2005/2008 requires parameter matching in the select clause for stored procedures
-            statement = "SELECT @street_v=STREET, @city_v=CITY, @country_v=COUNTRY, @province_v=PROVINCE, @p_code_v=P_CODE FROM JPA21_ADDRESS WHERE ADDRESS_ID = @address_id_v";
-        } else {
-            statement = "SELECT STREET, CITY, COUNTRY, PROVINCE, P_CODE INTO street_v, city_v, country_v, province_v, p_code_v FROM JPA21_ADDRESS WHERE (ADDRESS_ID = address_id_v)";
+            statement = "UPDATE JPA21_ADDRESS SET P_CODE = @new_p_code_v WHERE P_CODE = @old_p_code_v";
+            
+        } else {            
+            statement = "UPDATE JPA21_ADDRESS SET P_CODE = new_p_code_v WHERE P_CODE = old_p_code_v";
+            
         }
         
         proc.addStatement(statement);
-        return proc;
-    }
-    
-    public StoredProcedureDefinition buildMySQL2ResultSetProcedure() {
-        StoredProcedureDefinition proc = new StoredProcedureDefinition();
-        proc.setName("Read_Multiple_Result_Sets");
-        
-        proc.addStatement("SELECT E.*, S.* FROM JPA21_EMPLOYEE E, JPA21_SALARY S WHERE E.EMP_ID = S.EMP_ID");
-        proc.addStatement("SELECT A.* FROM JPA21_ADDRESS A");
-        proc.addStatement("SELECT (t1.BUDGET/t0.PROJ_ID) AS BUDGET_SUM, t0.PROJ_ID, t0.PROJ_TYPE, t0.PROJ_NAME, t0.DESCRIP, t0.LEADER_ID, t0.VERSION, t1.BUDGET, t2.PROJ_ID AS SMALL_ID, t2.PROJ_TYPE AS SMALL_DESCRIM, t2.PROJ_NAME AS SMALL_NAME, t2.DESCRIP AS SMALL_DESCRIPTION, t2.LEADER_ID AS SMALL_TEAMLEAD, t2.VERSION AS SMALL_VERSION FROM JPA21_PROJECT t0, JPA21_PROJECT t2, JPA21_LPROJECT t1 WHERE t1.PROJ_ID = t0.PROJ_ID AND t2.PROJ_TYPE='S'");
-        proc.addStatement("SELECT t0.EMP_ID, t0.F_NAME, t0.L_NAME, COUNT(t2.DESCRIPTION) AS R_COUNT FROM JPA21_EMPLOYEE t0, JPA21_RESPONS t2, JPA21_SALARY t1 WHERE ((t1.EMP_ID = t0.EMP_ID) AND (t2.EMP_ID = t0.EMP_ID)) GROUP BY t0.EMP_ID, t0.F_NAME, t0.L_NAME");
-         
-        return proc;
-    }
-    
-    public StoredProcedureDefinition buildStoredProcedureReadFromAddressResultSet(DatabaseSession session) {
-        StoredProcedureDefinition proc = new StoredProcedureDefinition();
-        proc.setName("Read_Address_Result_Set");        
-        proc.addArgument("address_id_v", Integer.class);
-        proc.addStatement("SELECT a.* FROM JPA21_ADDRESS a WHERE a.address_id = address_id_v");
         return proc;
     }
     
@@ -1354,6 +1368,8 @@ public class EmployeePopulator {
         unitOfWork.registerAllObjects(allObjects);
         unitOfWork.commit();
         
+        DatabasePlatform platform = session.getLogin().getPlatform();
+        
         if (TestCase.supportsStoredProcedures(session)) {
             boolean orig_FAST_TABLE_CREATOR = SchemaManager.FAST_TABLE_CREATOR;
             // on Symfoware, to avoid table locking issues only the first invocation
@@ -1363,21 +1379,22 @@ public class EmployeePopulator {
             }
           
             try {
-                DatabaseSession dbSession = (DatabaseSession) session;
-                SchemaManager schema = new SchemaManager(dbSession);
-                schema.replaceObject(buildStoredProcedureReadFromAddress(dbSession));
-                schema.replaceObject(buildStoredProcedureReadFromAddressMapped(dbSession));
-                schema.replaceObject(buildStoredProcedureReadFromAddressResultSet(dbSession));
-                schema.replaceObject(buildStoredProcedureUpdateFromAddress(dbSession));
-                schema.replaceObject(buildStoredProcedureResultSetAndUpdateFromAddress(dbSession));
+                SchemaManager schema = new SchemaManager((DatabaseSession) session);
+                schema.replaceObject(buildStoredProcedureReadFromAddress(platform));
+                schema.replaceObject(buildStoredProcedureReadFromAddressMapped(platform));
+                schema.replaceObject(buildStoredProcedureReadFromAddressResultSet());
+                schema.replaceObject(buildStoredProcedureUpdateFromAddress(platform));
+                schema.replaceObject(buildStoredProcedureResultSetAndUpdateFromAddress(platform));
+                schema.replaceObject(buildStoredProcedureReadAllEmployees());
+                schema.replaceObject(buildStoredProcedureDeleteAllResponsibilities());
                 
-                if (session.getLogin().getPlatform().isOracle()) {
+                if (platform.isOracle()) {
                     schema.replaceObject(buildOraclePackage());
-                    schema.replaceObject(buildStoredProcedureReadUsingNamedRefCursor(dbSession));
-                    schema.replaceObject(buildStoredProcedureReadUsingPosRefCursor(dbSession));
+                    schema.replaceObject(buildStoredProcedureReadUsingNamedRefCursor());
+                    schema.replaceObject(buildStoredProcedureReadUsingPosRefCursor());
                 }
                 
-                if (session.getLogin().getPlatform().isMySQL()) {
+                if (platform.isMySQL()) {
                     schema.replaceObject(buildMySQL2ResultSetProcedure());
                 }
             } finally {
@@ -1390,7 +1407,7 @@ public class EmployeePopulator {
         }
         
         // Force uppercase for Postgres.
-        if (session.getPlatform().isPostgreSQL()) {
+        if (platform.isPostgreSQL()) {
             session.getLogin().setShouldForceFieldNamesToUpperCase(true);
         }
     }

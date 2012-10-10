@@ -29,6 +29,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa;
 
+import java.sql.Statement;
 import java.sql.CallableStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -49,6 +50,7 @@ import javax.persistence.QueryTimeoutException;
 import javax.persistence.StoredProcedureQuery;
 import javax.persistence.TemporalType;
 
+import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
@@ -72,7 +74,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
     
     // Call will be returned from an execute. From it you can get the result set.
     protected DatabaseCall executeCall;
-    protected CallableStatement executeStatement;
+    protected Statement executeStatement;
     protected int executeResultSetIndex = -1;
     
     /**
@@ -294,9 +296,9 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
                 throw new IllegalStateException(ExceptionLocalization.buildMessage("incorrect_query_for_execute"));
             }
         
-            ((ResultSetMappingQuery) super.getDatabaseQueryInternal()).setIsExecuteCall(true);
+            getResultSetMappingQuery().setIsExecuteCall(true);
             executeCall = (DatabaseCall) executeReadQuery();
-            executeStatement = (CallableStatement) executeCall.getStatement();
+            executeStatement = executeCall.getStatement();
             
             // Add this query to the entity manager open queries list.
             // The query will be closed in the following cases:
@@ -337,7 +339,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
      * Return the stored procedure call associated with this query.
      */
     protected StoredProcedureCall getCall() {
-        return (StoredProcedureCall) getDatabaseQuery().getCall();
+        return (StoredProcedureCall) getDatabaseQueryInternal().getCall();
     }
     
     /**
@@ -351,13 +353,15 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
      * parameter of the query or is not an INOUT or OUT parameter
      */
     public Object getOutputParameterValue(int position) {
-        if (executeStatement != null) {
+        entityManager.verifyOpen();
+        
+        if (isValidCallableStatement()) {
             try {
-                Object obj = executeStatement.getObject(position);
-                
+                Object obj = ((CallableStatement) executeStatement).getObject(position);
+
                 if (obj instanceof ResultSet) {
                     // If a result set is returned we have to build the objects.
-                    return ((ResultSetMappingQuery) executeCall.getQuery()).buildObjectsFromRecords(buildResultRecords((ResultSet) obj), ++executeResultSetIndex);
+                    return getResultSetMappingQuery().buildObjectsFromRecords(buildResultRecords((ResultSet) obj), ++executeResultSetIndex);
                 } else {
                     return obj;
                 }
@@ -365,8 +369,8 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa21_invalid_parameter_position", new Object[] { position, exception.getMessage() }), exception);
             }
         }
-
-        throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa21_invalid_call_on_un_executed_query"));
+        
+        return null;
     }
     
     /**
@@ -381,12 +385,14 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
      * correspond to a parameter of the query or is not an INOUT or OUT parameter
      */
     public Object getOutputParameterValue(String parameterName) {
-        if (executeStatement != null) {
+        entityManager.verifyOpen();
+        
+        if (isValidCallableStatement()) {
             try {
                 Integer position = getCall().getCursorOrdinalPosition(parameterName);
                 
                 if (position == null) {
-                    return executeStatement.getObject(parameterName);
+                    return ((CallableStatement) executeStatement).getObject(parameterName);
                 } else {
                     return getOutputParameterValue(position);
                 }
@@ -395,7 +401,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             }
         }
 
-        throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa21_invalid_call_on_un_executed_query"));
+        return null;
     }
     
     /**
@@ -407,8 +413,8 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
         try {
             if (executeStatement == null) {
                 if (resultList == null) {
-                    if (getDatabaseQueryInternal().isResultSetMappingQuery()) {
-                        ((ResultSetMappingQuery) super.getDatabaseQueryInternal()).setIsExecuteCall(false);
+                    if (getDatabaseQuery().isResultSetMappingQuery()) {
+                        getResultSetMappingQuery().setIsExecuteCall(false);
                     }
 
                     resultList = super.getResultList();
@@ -421,13 +427,15 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
                 }
             } else {
                 if (hasMoreResults()) {
+                    entityManager.verifyOpen();
+                    
                     // Build the result records first.
                     List result = buildResultRecords(executeStatement.getResultSet());
                     
                     // Move the result pointer.
                     moveResultPointer();
                     
-                    return ((ResultSetMappingQuery) executeCall.getQuery()).buildObjectsFromRecords(result, ++executeResultSetIndex);
+                    return getResultSetMappingQuery().buildObjectsFromRecords(result, ++executeResultSetIndex);
                 } else {
                     return null;
                 }
@@ -437,9 +445,23 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
         } catch (PersistenceException e) {
             setRollbackOnly();
             throw e;
+        } catch (IllegalStateException e) {
+            throw e;
         } catch (Exception e) {
             setRollbackOnly();
             throw new PersistenceException(e);
+        }
+    }
+    
+    /**
+     * Return the ResultSetMappingQuery for this stored procedure query. 
+     * NOTE: Methods assumes associated database query is a ResultSetMappingQuery.
+     */
+    protected ResultSetMappingQuery getResultSetMappingQuery() {
+        if (executeCall != null) {
+            return (ResultSetMappingQuery) executeCall.getQuery();
+        } else {
+            return (ResultSetMappingQuery) getDatabaseQuery();
         }
     }
     
@@ -456,6 +478,8 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
      * is rolled back
      */
     public int getUpdateCount() {
+        entityManager.verifyOpen();
+        
         if (executeStatement != null) {
             try {
                 int updateCount = executeStatement.getUpdateCount();
@@ -470,7 +494,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
                 
                 return updateCount;
             } catch (SQLException e) {
-                e.printStackTrace();
+                throw getDetailedException(DatabaseException.sqlException(e, executeCall, executeCall.getQuery().getAccessor(), executeCall.getQuery().getSession(), false));
             }
         }
         
@@ -489,11 +513,30 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
      * timeout value set and the transaction is rolled back
      */
     public boolean hasMoreResults() {
+        entityManager.verifyOpen();
+        
         if (executeStatement != null) {
             return hasMoreResults;
         } else {
             return resultList != null && ! resultList.isEmpty();
         }
+    }
+    
+    /**
+     * Returns true if the execute statement for this query is 1) not null (i.e.
+     * query has been executed and 2) is an instance of callable statement, 
+     * meaning there are out parameters associated with it.
+     */
+    protected boolean isValidCallableStatement() {
+        if (executeStatement == null) {
+            throw new IllegalStateException(ExceptionLocalization.buildMessage("jpa21_invalid_call_on_un_executed_query"));
+        }
+        
+        if (! (executeStatement instanceof CallableStatement)) {
+            throw new IllegalStateException(ExceptionLocalization.buildMessage("jpa21_invalid_call_with_no_output_parameters"));
+        }
+        
+        return true;
     }
     
     /**
