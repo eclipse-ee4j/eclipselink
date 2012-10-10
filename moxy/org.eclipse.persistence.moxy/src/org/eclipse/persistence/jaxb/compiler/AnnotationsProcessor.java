@@ -768,7 +768,7 @@ public class AnnotationsProcessor {
     /*
      * Get virtual property and XmlID information from parent and set it on info if available
      */
-    private void processPropertiesSuperClass(JavaClass cls, TypeInfo info) {
+    public void processPropertiesSuperClass(JavaClass cls, TypeInfo info) {
         JavaClass superClass = (JavaClass) cls.getSuperclass();
         if(superClass == null) {
             return;

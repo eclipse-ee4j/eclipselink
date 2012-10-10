@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rootTwo>
+   <ref>SUB-2</ref>
+   <refList name="SUB-1">
+      <value>111</value>
+   </refList>
+   <refList name="SUB-2">
+      <value>222</value>
+   </refList>
+   <refList name="SUB-3">
+      <value>333</value>
+   </refList>
+</rootTwo>

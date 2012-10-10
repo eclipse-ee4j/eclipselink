@@ -408,6 +408,16 @@ public class XMLProcessor {
         }
         // now trigger the annotations processor to process the classes
         ArrayList<JavaClass> jClasses = aProcessor.getTypeInfoClasses();
+
+        // If multiple bindings (packages) are supplied, re-process super classes
+        // (in case super and sub classes were in different packages)
+        if (xmlBindingMap.size() > 1) {
+            for (JavaClass c : jClasses) {
+                TypeInfo ti = aProcessor.getTypeInfo().get(c.getQualifiedName());
+                aProcessor.processPropertiesSuperClass(c, ti);
+            }
+        }
+
         aProcessor.processPropertyTypes(jClasses.toArray(new JavaClass[jClasses.size()]));
         aProcessor.finalizeProperties();
         aProcessor.createElementsForTypeMappingInfo();
