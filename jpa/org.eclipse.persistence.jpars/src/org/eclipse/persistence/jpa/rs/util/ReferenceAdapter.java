@@ -25,11 +25,10 @@ import org.eclipse.persistence.oxm.mappings.XMLInverseReferenceMapping;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.FetchGroupTracker;
 
-public class ReferenceAdapter<T extends PersistenceWeavedRest> extends
-        XmlAdapter<T, T> {
+public class ReferenceAdapter<T extends PersistenceWeavedRest> extends XmlAdapter<Object, Object> {
     private String baseURI = null;
     private PersistenceContext context = null;
-
+    
     /**
      * Instantiates a new reference adapter.
      */
@@ -58,23 +57,20 @@ public class ReferenceAdapter<T extends PersistenceWeavedRest> extends
      */
     @SuppressWarnings("unchecked")
     @Override
-    public T marshal(T persistenceWeavedRest) throws Exception {
-        if (persistenceWeavedRest == null) {
+    public Link marshal(Object o) throws Exception {
+        if (o == null) {
             return null;
         }
-        ClassDescriptor descriptor = context
-                .getJAXBDescriptorForClass(persistenceWeavedRest.getClass());
-        T returnT = (T) descriptor.getObjectBuilder().buildNewInstance();
+        
+        ClassDescriptor descriptor = context.getJAXBDescriptorForClass(o.getClass());
+        T t = (T) descriptor.getObjectBuilder().buildNewInstance();
         Link link = new Link();
         link.setMethod("GET");
         link.setRel("self");
-        String id = IdHelper.stringifyId(persistenceWeavedRest,
-                descriptor.getAlias(), context);
-        link.setHref(baseURI + context.getName() + "/entity/"
-                + descriptor.getAlias() + "/" + id);
-        descriptor.getMappingForAttributeName("_persistence_href")
-                .setAttributeValueInObject(returnT, link);
-        return returnT;
+        String id = IdHelper.stringifyId(o, descriptor.getAlias(), context);
+        link.setHref(baseURI + context.getName() + "/entity/" + descriptor.getAlias() + "/" + id);
+        descriptor.getMappingForAttributeName("_persistence_href").setAttributeValueInObject(t, link);
+        return link;
     }
 
     /*
@@ -85,9 +81,22 @@ public class ReferenceAdapter<T extends PersistenceWeavedRest> extends
      */
     @SuppressWarnings("unchecked")
     @Override
-    public T unmarshal(T persistenceWeavedRest) throws Exception {
-        Link href = persistenceWeavedRest._persistence_getHref();
-        if (null == href) {
+    public T unmarshal(Object object) throws Exception {
+        if (object == null) {
+            return null;
+        }
+
+        PersistenceWeavedRest persistenceWeavedRest = null;
+        Link link = null;
+
+        if (object instanceof PersistenceWeavedRest) {
+            persistenceWeavedRest = (PersistenceWeavedRest) object;
+            link = persistenceWeavedRest._persistence_getHref();
+        } else {
+            return null;
+        }
+
+        if ((null == link) || ((link != null) && (link.getHref() == null))) {
             ClassDescriptor descriptor = context.getJAXBDescriptorForClass(persistenceWeavedRest.getClass());
             if (persistenceWeavedRest instanceof FetchGroupTracker && JpaHelper.getDatabaseSession(context.getEmf()).doesObjectExist(persistenceWeavedRest)){
                 if (context.doesExist(null, persistenceWeavedRest)){
@@ -100,10 +109,10 @@ public class ReferenceAdapter<T extends PersistenceWeavedRest> extends
                     (new FetchGroupManager()).setObjectFetchGroup(persistenceWeavedRest, fetchGroup, null);
                 }
             }
-            return persistenceWeavedRest;
+            return (T) persistenceWeavedRest;
         }
         // Construct object from the href
-        String uri = href.getHref().replace("\\/", "/");
+        String uri = link.getHref().replace("\\/", "/");
         String entityType = uri.substring(uri.indexOf("/entity/"),
                 uri.lastIndexOf('/'));
         entityType = entityType.substring(entityType.lastIndexOf("/") + 1);

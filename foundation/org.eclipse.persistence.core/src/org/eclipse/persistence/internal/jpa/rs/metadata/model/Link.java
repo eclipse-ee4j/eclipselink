@@ -1,9 +1,9 @@
 package org.eclipse.persistence.internal.jpa.rs.metadata.model;
 
-import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-@XmlRootElement
+import org.eclipse.persistence.oxm.annotations.XmlPath;
+
 @XmlType(propOrder = { "method", "href", "rel" })
 public class Link {
 
@@ -20,6 +20,7 @@ public class Link {
     private String method;
     private String href;
 
+    @XmlPath("_link/@rel")
     public String getRel() {
         return rel;
     }
@@ -28,6 +29,7 @@ public class Link {
         this.rel = rel;
     }
 
+    @XmlPath("_link/@method")
     public String getMethod() {
         return method;
     }
@@ -36,6 +38,7 @@ public class Link {
         this.method = method;
     }
 
+    @XmlPath("_link/@href")
     public String getHref() {
         return href;
     }

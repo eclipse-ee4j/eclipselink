@@ -38,6 +38,7 @@ public class UnmarshalTest {
     private static final String DEFAULT_PU = "auction-static";
     private static PersistenceContext context = null;
     private static final String JSON_REST_MESSAGE_FOLDER = "org/eclipse/persistence/jpars/test/restmessage/json/";
+    private static final String XML_REST_MESSAGE_FOLDER = "org/eclipse/persistence/jpars/test/restmessage/xml/";
 
     /**
      * Setup.
@@ -84,7 +85,7 @@ public class UnmarshalTest {
 
         // "href":"http://localhost:9090/JPA-RS/auction-static/entity/StaticBid/5678",
         StaticBid bid2 = new StaticBid();
-        bid1.setId(5678);
+        bid2.setId(5678);
         bid2.setAmount(111);
         bid2.setTime(System.currentTimeMillis());
         em.persist(bid2);
@@ -175,6 +176,36 @@ public class UnmarshalTest {
         assertTrue("Marshalling user returned null", marshalledUser != null);
     }
 
+    @Test
+    public void testUnmarshalBidWithUserByRef() throws JAXBException, RestCallFailedException, UnsupportedEncodingException {
+        EntityManager em = context.getEmf().createEntityManager();
+        em.getTransaction().begin();
+        StaticBid bid = new StaticBid();
+        bid.setId(1001);
+        bid.setAmount(5000);
+        bid.setTime(System.currentTimeMillis());
+
+        StaticUser user = new StaticUser();
+        user.setId(2002);
+        user.setName("User 2002");
+        bid.setUser(user);
+        em.persist(bid);
+        em.getTransaction().commit();
+       
+        marshal(bid);
+       
+        String xmlMessage = getXMLMessage("bid-UserByRef.xml");
+        StaticBid bidUnmarshalled = unmarshal(xmlMessage,
+                StaticBid.class.getSimpleName(), MediaType.APPLICATION_XML_TYPE);
+
+        assertTrue("Unmarshal returned a null bid", bidUnmarshalled != null);
+        StaticUser userUnmarshalled = bidUnmarshalled.getUser();
+        assertTrue("Unmarshal returned a null user", userUnmarshalled != null);
+
+        dbDelete(bid);
+    }
+    
+    
     @SuppressWarnings("unchecked")
     private static <T> T unmarshal(String msg, String type)
             throws JAXBException {
@@ -185,6 +216,15 @@ public class UnmarshalTest {
         return resultObject;
     }
 
+    @SuppressWarnings("unchecked")
+    private static <T> T unmarshal(String msg, String type, MediaType mediaType)
+            throws JAXBException {
+        T resultObject = null;
+        resultObject = (T) context.unmarshalEntity(type, mediaType,
+                new ByteArrayInputStream(msg.getBytes()));
+        return resultObject;
+    }
+    
     private static <T> String marshal(Object object)
             throws RestCallFailedException, JAXBException,
             UnsupportedEncodingException {
@@ -201,6 +241,12 @@ public class UnmarshalTest {
         return msg;
     }
 
+    private static String getXMLMessage(String inputFile) {
+        InputStream is = Thread.currentThread().getContextClassLoader()
+                .getResourceAsStream(XML_REST_MESSAGE_FOLDER + inputFile);
+        return convertStreamToString(is);
+    }
+    
     private static String convertStreamToString(InputStream is) {
         try {
             return new java.util.Scanner(is).useDelimiter("\\A").next();
