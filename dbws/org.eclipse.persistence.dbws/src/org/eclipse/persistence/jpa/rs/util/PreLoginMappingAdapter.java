@@ -25,7 +25,6 @@ import org.eclipse.persistence.internal.jpa.weaving.RestAdapterClassWriter;
 import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.weaving.PersistenceWeavedRest;
-import org.eclipse.persistence.jaxb.xmlmodel.XmlVirtualAccessMethods;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.oxm.XMLField;
@@ -57,7 +56,7 @@ public class PreLoginMappingAdapter extends SessionEventListener {
         Project project = event.getSession().getProject();
         for (Object descriptorAlias: project.getAliasDescriptors().keySet()){
             ClassDescriptor descriptor = (ClassDescriptor)project.getAliasDescriptors().get(descriptorAlias);
-            Class descriptorClass = descriptor.getJavaClass();
+            Class<?> descriptorClass = descriptor.getJavaClass();
             if (PersistenceWeavedRest.class.isAssignableFrom(descriptorClass)){
                 XMLCompositeCollectionMapping relationshipMapping = new XMLCompositeCollectionMapping();
                 relationshipMapping.setAttributeName("_persistence_relationshipInfo");

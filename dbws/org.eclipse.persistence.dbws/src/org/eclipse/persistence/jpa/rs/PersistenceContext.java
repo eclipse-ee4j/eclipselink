@@ -46,7 +46,6 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.dynamic.DynamicType;
-import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
@@ -113,7 +112,7 @@ public class PersistenceContext {
 
     public static final String JPARS_CONTEXT = "eclipselink.jpars.context";
 
-    List<XmlAdapter> adapters = null;
+    protected List<XmlAdapter> adapters = null;
 
     /**
      * Static setter for the EVENT_LISTENER_FACTORY
@@ -157,12 +156,10 @@ public class PersistenceContext {
         try{
             this.context = createDynamicJAXBContext(emf.getServerSession());
         } catch (JAXBException jaxbe){
-            jaxbe.printStackTrace();
-            JPARSLogger.fine("exception_creating_jaxb_context", new Object[]{emfName, jaxbe.toString()});
+            JPARSLogger.exception("exception_creating_jaxb_context", new Object[]{emfName, jaxbe.toString()}, jaxbe);
             emf.close();
         } catch (IOException e){
-            e.printStackTrace();
-            JPARSLogger.fine("exception_creating_jaxb_context", new Object[]{emfName, e.toString()});
+            JPARSLogger.exception("exception_creating_jaxb_context", new Object[]{emfName, e.toString()}, e);
             emf.close();
         }
         setBaseURI(defaultURI);
@@ -182,7 +179,7 @@ public class PersistenceContext {
         Set<String> packages = new HashSet<String>();
         Iterator<Class> i = session.getDescriptors().keySet().iterator();
         while (i.hasNext()){
-            Class descriptorClass = i.next();
+            Class<?> descriptorClass = i.next();
             String packageName = "";
             if (descriptorClass.getName().lastIndexOf('.') > 0){
                 packageName = descriptorClass.getName().substring(0, descriptorClass.getName().lastIndexOf('.'));
@@ -316,6 +313,12 @@ public class PersistenceContext {
     public boolean doesExist(Map<String, String> tenantId, Object entity){
         DatabaseSession session = JpaHelper.getDatabaseSession(getEmf());
         return session.doesObjectExist(entity);
+    }
+    
+    @Override
+    public void finalize(){
+        this.emf = null;
+        this.context = null;
     }
     
     /**

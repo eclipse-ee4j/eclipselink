@@ -687,7 +687,7 @@ public class ServiceBase {
                         if (((MapEntryExpression)item.getAttributeExpression()).shouldReturnMapEntry()){
                             returnQuery.getReturnTypes().add(Map.Entry.class.getName());
                         } else {
-                            returnQuery.getReturnTypes().add(((Class)((CollectionMapping)item.getMapping()).getContainerPolicy().getKeyType()).getName());
+                            returnQuery.getReturnTypes().add(((Class<?>)((CollectionMapping)item.getMapping()).getContainerPolicy().getKeyType()).getName());
                         }
                     } else {
                         returnQuery.getReturnTypes().add(item.getMapping().getAttributeClassification().getName());
@@ -751,7 +751,7 @@ public class ServiceBase {
 
 
     protected String marshallMetadata(Object metadata, String mediaType) throws JAXBException {
-        Class[] jaxbClasses = new Class[]{Link.class, Attribute.class, Descriptor.class, LinkTemplate.class, PersistenceUnit.class, Query.class};
+        Class<?>[] jaxbClasses = new Class[]{Link.class, Attribute.class, Descriptor.class, LinkTemplate.class, PersistenceUnit.class, Query.class};
         JAXBContext context = (JAXBContext)JAXBContextFactory.createContext(jaxbClasses, null);
         Marshaller marshaller = context.createMarshaller();
         marshaller.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, Boolean.FALSE);
@@ -762,7 +762,7 @@ public class ServiceBase {
     }
 
     protected SessionBeanCall unmarshallSessionBeanCall(InputStream data) throws JAXBException {
-        Class[] jaxbClasses = new Class[]{SessionBeanCall.class};
+        Class<?>[] jaxbClasses = new Class[]{SessionBeanCall.class};
         JAXBContext context = (JAXBContext)JAXBContextFactory.createContext(jaxbClasses, null);
         Unmarshaller unmarshaller = context.createUnmarshaller();
         unmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, Boolean.FALSE);

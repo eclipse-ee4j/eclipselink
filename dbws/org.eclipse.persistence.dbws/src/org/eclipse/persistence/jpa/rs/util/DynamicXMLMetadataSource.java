@@ -20,14 +20,12 @@ import javax.xml.bind.JAXBElement;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.internal.descriptors.VirtualAttributeAccessor;
-import org.eclipse.persistence.internal.dynamic.ValuesAccessor;
 import org.eclipse.persistence.internal.jpa.weaving.RestAdapterClassWriter;
 import org.eclipse.persistence.jaxb.metadata.MetadataSource;
 import org.eclipse.persistence.jaxb.xmlmodel.JavaType;
 import org.eclipse.persistence.jaxb.xmlmodel.JavaType.JavaAttributes;
 import org.eclipse.persistence.jaxb.xmlmodel.ObjectFactory;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlAccessMethods;
-import org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.JavaTypes;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlElement;
@@ -52,7 +50,6 @@ public class DynamicXMLMetadataSource implements MetadataSource {
 
     private static final String LINK_NAMESPACE_URI = "http://www.w3.org/2005/Atom";
     private static final String LINK_PREFIX = "atom";
-    private static final String LINK_LOCAL_NAME = "link";
     
     private XmlBindings xmlBindings;
 

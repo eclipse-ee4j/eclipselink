@@ -62,6 +62,7 @@ public class PersistenceFactoryBase {
         for (String key: dynamicPersistenceContexts.keySet()){
             dynamicPersistenceContexts.get(key).stop();
         }
+        dynamicPersistenceContexts.clear();
     }
     
     /**
