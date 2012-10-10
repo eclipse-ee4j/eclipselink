@@ -75,8 +75,10 @@ public class MessageBodyReaderWriterTestCases extends JUnitTestCase {
 		InputStream xml = connection.getInputStream();
 		PhoneNumber testObject = (PhoneNumber) getJAXBContext()
 				.createUnmarshaller().unmarshal(xml);
+		int response = connection.getResponseCode();		
 		connection.disconnect();
-
+		
+		assertTrue (( response < 300) && ( response >= 200));
 		assertEquals(getControlObject(), testObject);
 	}
 

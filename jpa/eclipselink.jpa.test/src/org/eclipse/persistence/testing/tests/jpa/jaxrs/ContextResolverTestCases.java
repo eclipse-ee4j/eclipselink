@@ -80,8 +80,10 @@ public class ContextResolverTestCases extends JUnitTestCase {
 		InputStream xml = connection.getInputStream();
 		Address testObject = (Address) getJAXBContext().createUnmarshaller()
 				.unmarshal(xml);
+		int response = connection.getResponseCode();		
 		connection.disconnect();
-
+		
+		assertTrue (( response < 300) && ( response >= 200));
 		assertEquals(getControlObject(), testObject);
 	}
 	
@@ -98,8 +100,10 @@ public class ContextResolverTestCases extends JUnitTestCase {
                 u.setProperty("eclipselink.media-type", "application/json");
                 u.setProperty("eclipselink.json.include-root", false);
 		Address testObject = u.unmarshal(json, Address.class).getValue();
-		connection.disconnect();		
-
+		int response = connection.getResponseCode();
+		connection.disconnect();
+		
+		assertTrue (( response < 300) && ( response >= 200));
 		assertEquals(getControlObject(), testObject);
 	}
 

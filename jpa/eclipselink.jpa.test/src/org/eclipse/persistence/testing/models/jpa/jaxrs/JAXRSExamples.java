@@ -132,5 +132,35 @@ public class JAXRSExamples {
 
 		return customer;
 	}
+	
+	public static Customer customerExample6() {
+		Customer customer = new Customer();
 
+		try {
+			customer.setId(6);
+			customer.setFirstName("Penelope");
+			customer.setLastName("Cruz");
+			customer.setAddress(addressExample3());
+
+			List<PhoneNumber> phoneNumbers = new ArrayList<PhoneNumber>(2);
+			PhoneNumber workPhone = new PhoneNumber();
+			workPhone.setId(11);
+			workPhone.setNum("555-1111");
+			workPhone.setType("WORK");
+			workPhone.setCustomer(customer);
+			phoneNumbers.add(workPhone);
+			PhoneNumber homePhone = new PhoneNumber();
+			homePhone.setId(12);
+			homePhone.setNum("555-1212");
+			homePhone.setType("HOME");
+			homePhone.setCustomer(customer);
+			phoneNumbers.add(homePhone);
+
+			customer.setPhoneNumbers(phoneNumbers);
+		} catch (Exception exception) {
+			throw new RuntimeException(exception.toString());
+		}
+
+		return customer;
+	}
 }
