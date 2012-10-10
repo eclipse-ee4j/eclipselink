@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.TransactionException;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
@@ -160,8 +161,11 @@ public abstract class AbstractSynchronizationListener {
             uow.setPendingMerge();
 
         } catch (RuntimeException exception) {
-            // Something went wrong (probably while sending SQL to the database).
-            uow.log(new SessionLogEntry(uow, SessionLog.WARNING, SessionLog.TRANSACTION, exception));
+            // Log the exception if it has not already been logged, or is a non-EclipseLink exception
+            if (!(exception instanceof EclipseLinkException && ((EclipseLinkException)exception).hasBeenLogged())) {
+                uow.logThrowable(SessionLog.WARNING, SessionLog.TRANSACTION, exception);
+            }
+            
             // Handle the exception according to transaction manager requirements
             handleException(exception);
         } finally {
@@ -218,11 +222,14 @@ public abstract class AbstractSynchronizationListener {
                     getSession().releaseJTSConnection();
                     uow.afterExternalTransactionRollback();
                 }
-            } catch (RuntimeException rtEx) {
-                // First log the exception so it gets seen
-                uow.log(new SessionLogEntry(uow, SessionLog.WARNING, SessionLog.TRANSACTION, rtEx));
+            } catch (RuntimeException exception) {
+                // Log the exception if it has not already been logged, or is a non-EclipseLink exception
+                if (!(exception instanceof EclipseLinkException && ((EclipseLinkException)exception).hasBeenLogged())) {
+                    uow.logThrowable(SessionLog.WARNING, SessionLog.TRANSACTION, exception);
+                }
+                    
                 // Rethrow it just for fun (app servers tend to ignore them at this stage)
-                throw rtEx;
+                throw exception;
             } finally {
                 session.endOperationProfile(SessionProfiler.JtsAfterCompletion);
             }
