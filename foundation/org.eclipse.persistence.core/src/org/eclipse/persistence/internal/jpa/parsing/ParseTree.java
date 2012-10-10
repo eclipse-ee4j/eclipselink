@@ -147,7 +147,7 @@ public class ParseTree {
             clazz = getBaseExpressionClass(node.getLeft(), generationContext);
         } else if (node.isVariableNode()) {
             // VariableNode
-            String variable = ((VariableNode)node).getVariableName();
+            String variable = ((VariableNode)node).getCanonicalVariableName();
             if (!context.isRangeVariable(variable)) {
                 Node path = context.pathForVariable(variable);
                 // Variable is defined in JOIN/IN clause => 
