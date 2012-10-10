@@ -477,7 +477,6 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         if (additionalProperties.containsKey(PersistenceUnitProperties.CLASSLOADER)){
             classLoaderToUse = (ClassLoader)additionalProperties.get(PersistenceUnitProperties.CLASSLOADER);
         }
-        
         // indicates whether session has failed to connect, determines whether HALF_DEPLOYED state should be kept in case of exception.
         boolean isLockAcquired = false;
         try {
@@ -486,7 +485,6 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             if (isComposite()) {
                 updateCompositeMembersProperties(deployProperties);
             }
-            
             if (state == STATE_PREDEPLOYED) {
                 deployLock.acquire();
                 isLockAcquired = true;
@@ -505,9 +503,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                             // listeners and queries require the real classes and are therefore built during deploy using the realClassLoader
                             processor.setClassLoader(classLoaderToUse);
                             processor.createDynamicClasses();
-                            if (weaveRest){
-                                processor.createRestInterfaces();
-                            }
+                            processor.createRestInterfaces();
                             
                             processor.addEntityListeners();
 
@@ -1554,6 +1550,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                             }
                             isWeavingStatic = false;
                             String weaving = getConfigPropertyAsString(PersistenceUnitProperties.WEAVING, predeployProperties);
+
                             if (weaving != null && weaving.equalsIgnoreCase("false")) {
                                 enableWeaving = Boolean.FALSE;
                             }else if (weaving != null && weaving.equalsIgnoreCase("static")) {
@@ -1604,6 +1601,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     weaveInternal = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_INTERNAL, predeployProperties, "true", session));
                     weaveRest = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_REST, predeployProperties, "true", session));
                 }
+
             }
             if (shouldBuildProject && !isSessionLoadedFromSessionsXML ) {
                 if (isComposite) {

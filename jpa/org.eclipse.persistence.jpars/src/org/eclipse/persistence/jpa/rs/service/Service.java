@@ -10,10 +10,13 @@
  * Contributors:
  * 		dclarke/tware - initial 
  ******************************************************************************/
-package org.eclipse.persistence.jpa.rs;
+package org.eclipse.persistence.jpa.rs.service;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Singleton;
+
+import org.eclipse.persistence.jpa.rs.ServiceBase;
+import org.eclipse.persistence.jpa.rs.PersistenceFactoryBase;
 
 /**
  * JAX-RS application interface JPA-RS

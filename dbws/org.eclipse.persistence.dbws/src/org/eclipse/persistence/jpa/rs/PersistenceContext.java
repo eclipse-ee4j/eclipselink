@@ -12,7 +12,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs;
 
-import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -80,9 +79,7 @@ import org.eclipse.persistence.jpa.rs.util.TransactionWrapper;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.ObjectReferenceMapping;
-import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLInverseReferenceMapping;
-import org.eclipse.persistence.oxm.mappings.XMLMapping;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.FetchGroupTracker;
@@ -971,7 +968,7 @@ public class PersistenceContext {
 
                 Class[] argTypes = { String.class, PersistenceContext.class };
                 Constructor referenceAdaptorConstructor = referenceAdaptorClass
-                        .getDeclaredConstructor(argTypes);
+                            .getDeclaredConstructor(argTypes);
                 Object[] args = new Object[] { getBaseURI().toString(), this };
                 adapters.add((XmlAdapter) referenceAdaptorConstructor
                         .newInstance(args));

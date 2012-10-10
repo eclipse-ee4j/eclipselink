@@ -117,7 +117,6 @@ public class PersistenceFactoryBase {
                     app = bootstrapPersistenceContext(persistenceUnit, factory, defaultURI, true);
                 }
             } catch (Exception e){
-                e.printStackTrace();
                 JPARSLogger.fine("exception_creating_persistence_context", new Object[]{persistenceUnit, e.toString()});
             }
         }

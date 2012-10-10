@@ -12,6 +12,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.eventlistener;
 
+import java.util.Map;
+
 /**
  * Provides a mechanism for plugging in database event listener creation.
  * @author tware
@@ -19,6 +21,6 @@ package org.eclipse.persistence.jpa.rs.eventlistener;
  */
 public interface DatabaseEventListenerFactory {
     
-    public DescriptorBasedDatabaseEventListener createDatabaseEventListener(int connectionId);
+    public DescriptorBasedDatabaseEventListener createDatabaseEventListener(Map<String, Object> properties);
 
 }

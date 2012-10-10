@@ -155,6 +155,9 @@
         <selectbundle basename="org.eclipse.persistence.jpars" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
             criterion="[2.0.0,3.0.0)" property="jpars.lib" includepath="true"
         />
+        <selectbundle basename="org.eclipse.persistence.dbws" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
+            criterion="[2.0.0,3.0.0)" property="dbws.lib" includepath="true"
+        />
         <available file="${antlr.lib}"        property="antlr.bundle.exist"/>
         <available file="${asm.lib}"          property="asm.bundle.exist"/>
         <available file="${hermes.lib}"       property="hermes.bundle.exist"/>
@@ -178,6 +181,7 @@
              <pathelement path="${moxy.lib}"/>
              <pathelement path="${jpa.lib}"/>
              <pathelement path="${jpars.lib}"/>
+             <pathelement path="${dbws.lib}"/>
         </path>
         <!-- compile path without product components -->
         <path id="jparstest.thirdparty.compile.path">

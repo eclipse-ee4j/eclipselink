@@ -13,7 +13,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.rs.util;
 
-import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.JAXBElement;
@@ -21,14 +20,14 @@ import javax.xml.bind.JAXBElement;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.internal.descriptors.VirtualAttributeAccessor;
-import org.eclipse.persistence.internal.jpa.rs.metadata.model.Link;
+import org.eclipse.persistence.internal.dynamic.ValuesAccessor;
 import org.eclipse.persistence.internal.jpa.weaving.RestAdapterClassWriter;
-import org.eclipse.persistence.internal.weaving.RelationshipInfo;
 import org.eclipse.persistence.jaxb.metadata.MetadataSource;
 import org.eclipse.persistence.jaxb.xmlmodel.JavaType;
 import org.eclipse.persistence.jaxb.xmlmodel.JavaType.JavaAttributes;
 import org.eclipse.persistence.jaxb.xmlmodel.ObjectFactory;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlAccessMethods;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.JavaTypes;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlElement;
@@ -139,6 +138,7 @@ public class DynamicXMLMetadataSource implements MetadataSource {
             xmlElement.setType(((ObjectReferenceMapping)mapping).getReferenceClassName());
         } else if (mapping.isCollectionMapping()){
             xmlElement.setType(((CollectionMapping)mapping).getReferenceClassName());
+            xmlElement.setContainerType(((CollectionMapping)mapping).getContainerPolicy().getContainerClassName());
         } else {
             xmlElement.setType(mapping.getAttributeClassification().getName());
         }
@@ -155,7 +155,6 @@ public class DynamicXMLMetadataSource implements MetadataSource {
                 accessMethods.setSetMethod(jpaAccessor.getSetMethodName());
                 xmlElement.setXmlAccessMethods(accessMethods);
             }
-
         }
         return objectFactory.createXmlElement(xmlElement);
     }

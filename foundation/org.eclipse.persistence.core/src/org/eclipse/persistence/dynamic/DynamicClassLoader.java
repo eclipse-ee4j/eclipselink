@@ -220,7 +220,6 @@ public class DynamicClassLoader extends ClassLoader {
                 return defineClass(className, bytes, 0, bytes.length);
             }
             catch (ClassFormatError cfe) {
-                cfe.printStackTrace();
                 throw new ClassNotFoundException(className, cfe);
             }
             catch (ClassCircularityError cce) {
