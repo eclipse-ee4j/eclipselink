@@ -1,0 +1,15 @@
+{
+   "rootTwo" : {
+      "ref" : "SUB-2",
+      "refList" : [ {
+         "name" : "SUB-1",
+         "value" : 111
+      }, {
+         "name" : "SUB-2",
+         "value" : 222
+      }, {
+         "name" : "SUB-3",
+         "value" : 333
+      } ]
+   }
+}
