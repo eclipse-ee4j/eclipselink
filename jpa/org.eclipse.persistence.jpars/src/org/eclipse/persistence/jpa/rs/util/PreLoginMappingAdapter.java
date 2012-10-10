@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.internal.descriptors.VirtualAttributeAccessor;
+import org.eclipse.persistence.internal.dynamic.ValuesAccessor;
 import org.eclipse.persistence.internal.jaxb.SessionEventListener;
 import org.eclipse.persistence.internal.jaxb.XMLJavaTypeConverter;
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.Link;
@@ -133,6 +135,28 @@ public class PreLoginMappingAdapter extends SessionEventListener {
     }
     
     /**
+     * Update the targetMapping to have the same accessor as the originMapping
+     * @param originMapping
+     * @param targetMapping
+     */
+    public static void copyAccessorToMapping(DatabaseMapping originMapping, DatabaseMapping targetMapping){
+        if (originMapping.getAttributeAccessor().isVirtualAttributeAccessor()){
+            VirtualAttributeAccessor accessor = new VirtualAttributeAccessor();
+            accessor.setGetMethodName(originMapping.getGetMethodName());
+            accessor.setSetMethodName(originMapping.getSetMethodName());
+            targetMapping.setAttributeAccessor(accessor);
+        } if (originMapping.getAttributeAccessor().isValuesAccessor()){
+            ValuesAccessor accessor = new ValuesAccessor(originMapping);
+            accessor.setAttributeName(originMapping.getAttributeAccessor().getAttributeName());
+            targetMapping.setAttributeAccessor(accessor);
+        }else {
+            targetMapping.setAttributeName(originMapping.getAttributeName());
+            targetMapping.setGetMethodName(originMapping.getGetMethodName());
+            targetMapping.setSetMethodName(originMapping.getSetMethodName());
+        }
+    }
+    
+    /**
      * Build an XMLInverseMapping based on a particular mapping and replace that mapping with
      * the newly created XMLInverseMapping in jaxbDescriptor
      * @param jaxbDescriptor
@@ -144,10 +168,7 @@ public class PreLoginMappingAdapter extends SessionEventListener {
             return;
         }
         XMLInverseReferenceMapping jaxbInverseMapping = new XMLInverseReferenceMapping();
-        jaxbInverseMapping.setAttributeName(mapping.getAttributeName());
-        jaxbInverseMapping.setGetMethodName(mapping.getGetMethodName());
-        jaxbInverseMapping.setSetMethodName(mapping.getSetMethodName());
-
+        copyAccessorToMapping(mapping, jaxbInverseMapping);
         jaxbInverseMapping.setProperties(mapping.getProperties());
         jaxbInverseMapping.setIsReadOnly(mapping.isReadOnly());
         jaxbInverseMapping.setMappedBy(mappedBy);
@@ -161,7 +182,6 @@ public class PreLoginMappingAdapter extends SessionEventListener {
         jaxbDescriptor.addMapping(jaxbInverseMapping);
     }
     
-
     /**
      * Build an XMLChoiceObjectMapping based on a particular mapping and replace that mapping with
      * the newly created XMLChoiceObjectMapping in jaxbDescriptor.
@@ -181,8 +201,7 @@ public class PreLoginMappingAdapter extends SessionEventListener {
                 if (jaxbMapping.isAbstractCompositeObjectMapping()) {
                     XMLChoiceObjectMapping xmlChoiceMapping = new XMLChoiceObjectMapping();
                     xmlChoiceMapping.setAttributeName(attributeName);
-                    xmlChoiceMapping.setGetMethodName(jaxbMapping.getGetMethodName());
-                    xmlChoiceMapping.setSetMethodName(jaxbMapping.getSetMethodName());
+                    copyAccessorToMapping(jaxbMapping, xmlChoiceMapping);
                     xmlChoiceMapping.setProperties(jaxbMapping.getProperties());
                     xmlChoiceMapping.addChoiceElement(attributeName, jpaMapping.getReferenceDescriptor().getJavaClass());
                     xmlChoiceMapping.addChoiceElement(attributeName, Link.class);
@@ -192,8 +211,7 @@ public class PreLoginMappingAdapter extends SessionEventListener {
                 } else if (jaxbMapping.isAbstractCompositeCollectionMapping()) {
                     XMLChoiceCollectionMapping xmlChoiceMapping = new XMLChoiceCollectionMapping();
                     xmlChoiceMapping.setAttributeName(attributeName);
-                    xmlChoiceMapping.setGetMethodName(jaxbMapping.getGetMethodName());
-                    xmlChoiceMapping.setSetMethodName(jaxbMapping.getSetMethodName());
+                    copyAccessorToMapping(jaxbMapping, xmlChoiceMapping);
                     xmlChoiceMapping.setProperties(jaxbMapping.getProperties());
                     xmlChoiceMapping.addChoiceElement(attributeName, Link.class);
                     xmlChoiceMapping.addChoiceElement(attributeName, jpaMapping.getReferenceDescriptor().getJavaClass());
