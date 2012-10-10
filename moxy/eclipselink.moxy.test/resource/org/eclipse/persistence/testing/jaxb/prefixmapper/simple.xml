@@ -1,0 +1,4 @@
+<ns3:simple xmlns:ns1="namespace1" xmlns="namespace2" xmlns:ns3="namespace3">
+   <ns1:thing1>1</ns1:thing1>
+   <thing2>2</thing2>
+</ns3:simple>
