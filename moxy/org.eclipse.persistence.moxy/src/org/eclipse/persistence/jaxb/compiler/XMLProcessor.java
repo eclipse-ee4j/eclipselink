@@ -673,7 +673,7 @@ public class XMLProcessor {
             return processXmlTransformation((XmlTransformation)javaAttribute, oldProperty, typeInfo);
         }
         if (javaAttribute instanceof XmlJoinNodes) {
-            return processXmlJoinNodes((XmlJoinNodes) javaAttribute, oldProperty); 
+            return processXmlJoinNodes((XmlJoinNodes) javaAttribute, oldProperty, typeInfo); 
         }
         getLogger().logWarning("jaxb_metadata_warning_invalid_java_attribute", new Object[] { javaAttribute.getClass() });
         return null;
@@ -1554,7 +1554,10 @@ public class XMLProcessor {
      * @param oldProperty
      * @return
      */
-    private Property processXmlJoinNodes(XmlJoinNodes xmlJoinNodes, Property oldProperty) {
+    private Property processXmlJoinNodes(XmlJoinNodes xmlJoinNodes, Property oldProperty, TypeInfo typeInfo) {
+        // reset any existing values
+        resetProperty(oldProperty, typeInfo);
+
         oldProperty.setXmlJoinNodes(xmlJoinNodes);
         
         // check for container type
