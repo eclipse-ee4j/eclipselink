@@ -12,6 +12,7 @@
  ******************************************************************************/
 package org.eclipse.persistence.jaxb.javamodel.reflection;
 
+import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
@@ -88,6 +89,10 @@ public class JavaModelInputImpl implements JavaModelInput {
         // type should be a Class or ParameterizedType
         if (type instanceof Class) {
             return (JavaClassImpl) jModel.getClass((Class) type);
+        } else if (type instanceof GenericArrayType) {
+            Class genericTypeClass = (Class) ((GenericArrayType) type).getGenericComponentType();
+            genericTypeClass = java.lang.reflect.Array.newInstance(genericTypeClass, 0).getClass();
+            return new JavaClassImpl(genericTypeClass, (JavaModelImpl) jModel);
         } else {
             // assume parameterized type
             ParameterizedType pType = (ParameterizedType) type;
