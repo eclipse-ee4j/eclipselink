@@ -13,15 +13,17 @@
 package org.eclipse.persistence.testing.jaxb.xmlelement.model;
 
 import javax.xml.bind.annotation.XmlSchemaType;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
-@XmlType(propOrder={"street", "city"})
+@XmlType(propOrder={"street", "city","id"})
 public class Address {
 	@XmlSchemaType(name="integer")
     private String id;
     private String street;
     private String city;
 
+    @XmlTransient
     public String getId() {
         return id;
     }

@@ -17,12 +17,14 @@ import java.util.Arrays;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.eclipse.persistence.oxm.annotations.XmlPath;
 
 @XmlRootElement
 public class Order {
 
+	@XmlTransient
     private int id;
     @XmlPath(value="items/item")
     private List<Item> items;

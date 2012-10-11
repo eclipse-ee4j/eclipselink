@@ -12,10 +12,18 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.xmlelement.model;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.stream.StreamSource;
+
+import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class FullTestCases extends JAXBWithJSONTestCases{
@@ -74,5 +82,5 @@ public class FullTestCases extends JAXBWithJSONTestCases{
 
         return o;
     }
-
+ 
 }

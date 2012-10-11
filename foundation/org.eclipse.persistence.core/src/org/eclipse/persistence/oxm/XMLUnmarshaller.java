@@ -94,8 +94,8 @@ public class XMLUnmarshaller implements Cloneable {
     private static Constructor xmlStreamReaderInputSourceConstructor;
     private static Constructor xmlEventReaderReaderConstructor;
     private static Constructor xmlEventReaderInputSourceConstructor;
-
-    /**
+    
+   	/**
      * @since EclipseLink 2.4
      */
     private static final ErrorHandler DEFAULT_ERROR_HANDLER = new ErrorHandler() {
@@ -138,6 +138,7 @@ public class XMLUnmarshaller implements Cloneable {
     private String attributePrefix;
     private boolean includeRoot = true;
     private NamespaceResolver namespaceResolver;    
+    private boolean autoDetectMediaType = false;
 
     static {
         try {
@@ -764,10 +765,7 @@ public class XMLUnmarshaller implements Cloneable {
      * @since 2.4
      */
     public boolean isIncludeRoot() {
-        if(mediaType == MediaType.APPLICATION_JSON){
             return includeRoot;
-        }
-        return true;
     }
 
     /**
@@ -779,6 +777,25 @@ public class XMLUnmarshaller implements Cloneable {
     public void setIncludeRoot(boolean includeRoot) {
          this.includeRoot = includeRoot;
     }
+    
+    /**
+     * Return if this XMLUnmarshaller should try to automatically determine
+     * the MediaType of the document (instead of using the MediaType set
+     * by setMediaType)
+     */
+    public boolean isAutoDetectMediaType() {
+		return autoDetectMediaType;
+	}
+
+    /**
+     * Set if this XMLUnmarshaller should try to automatically determine
+     * the MediaType of the document (instead of using the MediaType set
+     * by setMediaType)
+     */
+	public void setAutoDetectMediaType(boolean autoDetectMediaType) {
+		this.autoDetectMediaType = autoDetectMediaType;
+	}
+
     
     
     /**

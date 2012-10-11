@@ -17,6 +17,7 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 
 import javax.xml.bind.annotation.XmlSchemaType;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.eclipse.persistence.oxm.annotations.XmlPath;
 
@@ -30,6 +31,7 @@ public class Item {
    @XmlPath(value="money/price/text()")
    private BigDecimal price;
 
+   @XmlTransient
    public int getId() {
         return id;
     }

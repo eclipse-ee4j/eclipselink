@@ -12,15 +12,12 @@
  ******************************************************************************/
 package org.eclipse.persistence.jaxb;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.lang.reflect.Type;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,13 +28,11 @@ import java.util.Map.Entry;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.ValidationEventHandler;
 import javax.xml.bind.helpers.DefaultValidationEventHandler;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.sax.SAXSource;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContext.JAXBContextInput;
@@ -75,7 +70,6 @@ import org.xml.sax.InputSource;
  */
 public class JAXBContextFactory {
 
-    private static final ValidationEventHandler JSON_BINDING_DOCUMENT_VEH = new DefaultValidationEventHandler();
     /**
      * @deprecated As of release 2.4, replaced by JAXBContextProperties.OXM_METADATA_SOURCE
      * @see org.eclipse.persistence.jaxb.JAXBContextProperties.OXM_METADATA_SOURCE
@@ -311,133 +305,84 @@ public class JAXBContextFactory {
      * @param metadata assumed to be one of:  File, InputSource, InputStream, Reader, Source
      */
     private static XmlBindings getXmlBindings(Object metadata, ClassLoader classLoader, Map<String, Object> properties) {
-        
     	JAXBContext jaxbContext = CompilerHelper.getXmlBindingsModelContext();
-    	BufferedReader metadataBufferedReader = null;
+        InputStream openedStream = null;
+
     	try{
+    		
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-    	    	
-            if(metadata instanceof File){
-            	metadataBufferedReader = new BufferedReader(new FileReader((File) metadata));
-            }
-            else if(metadata instanceof InputSource){        		
-                if(((InputSource)metadata).getByteStream() != null){                	
-                	metadataBufferedReader = new BufferedReader(new InputStreamReader(((InputSource)metadata).getByteStream()));
-                }else if(((InputSource)metadata).getCharacterStream() != null){
-                	metadataBufferedReader = new BufferedReader(((InputSource)metadata).getCharacterStream());
-                }
-            }else if(metadata instanceof InputStream){        		            	
-            	metadataBufferedReader = new BufferedReader(new InputStreamReader(((InputStream)metadata)));
-            } else if (metadata instanceof Node) {
-                return (XmlBindings)unmarshaller.unmarshal((Node)metadata);
-            } else if(metadata instanceof Reader){  
-            	metadataBufferedReader = new BufferedReader((Reader)metadata);
-            }else if(metadata instanceof Source){
-                Source source = (Source)metadata;
-                if(source instanceof StreamSource){        			
-                    StreamSource ss = (StreamSource)metadata;
-                    if(ss.getInputStream() != null){
-                    	metadataBufferedReader = new BufferedReader(new InputStreamReader(ss.getInputStream()));
-                    }else if (ss.getReader() != null){
-                    	metadataBufferedReader = new BufferedReader(ss.getReader());	              
-                    }else if(ss.getSystemId() != null){                        
-                        URL url = getURLFromString((String)ss.getSystemId(), classLoader);               
-                        if(url != null) {                               	
-                           	metadataBufferedReader = new BufferedReader(new InputStreamReader(url.openStream()));
-                        } else {
-                            throw org.eclipse.persistence.exceptions.JAXBException.unableToLoadMetadataFromLocation((String)metadata);
-                        } 
-                    }
-                }else if(source instanceof DOMSource){                	
-                    return (XmlBindings)unmarshaller.unmarshal((DOMSource)source);
-                }else if(source instanceof SAXSource){        			
-                    return (XmlBindings)unmarshaller.unmarshal((SAXSource)source);    
-                }
-            }else if (metadata instanceof URL) {                
-                metadataBufferedReader = new BufferedReader(new InputStreamReader(((URL)metadata).openStream()));
-            } else if (metadata instanceof XMLEventReader) {
-                return (XmlBindings)unmarshaller.unmarshal((XMLEventReader)metadata);
-            } else if (metadata instanceof XMLStreamReader) {            	
-                return (XmlBindings)unmarshaller.unmarshal((XMLStreamReader)metadata);
-            } else if (metadata instanceof MetadataSource){
+            unmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_XML);
+            unmarshaller.setProperty(UnmarshallerProperties.AUTO_DETECT_MEDIA_TYPE, true);
+            unmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, false);
+            unmarshaller.setEventHandler(new DefaultValidationEventHandler());
+            if (metadata instanceof MetadataSource){
                 return ((MetadataSource)metadata).getXmlBindings(properties, classLoader);
-            } else if (metadata instanceof String) {
-            	URL url = getURLFromString((String)metadata, classLoader);               
-                if(url != null) {                               	
-                   	metadataBufferedReader = new BufferedReader(new InputStreamReader(url.openStream()));
-                } else {
-                    throw org.eclipse.persistence.exceptions.JAXBException.unableToLoadMetadataFromLocation((String)metadata);
-                }            	
-            }else{
-                throw org.eclipse.persistence.exceptions.JAXBException.incorrectValueParameterTypeForOxmXmlKey();
-            }       
-            if(metadataBufferedReader != null){
-            	boolean isJSON = isJSONFormat(metadataBufferedReader);
-            	StreamSource metadataSource = new StreamSource(metadataBufferedReader);
-            	if(isJSON){
-            		return getXmlBindingsByMediaType(unmarshaller, metadataSource, classLoader, properties, MediaType.APPLICATION_JSON);	
-            	}else{
-            		return getXmlBindingsByMediaType(unmarshaller, metadataSource, classLoader, properties, MediaType.APPLICATION_XML);	
-            	}            	
-            }else{
-            	 throw org.eclipse.persistence.exceptions.JAXBException.incorrectValueParameterTypeForOxmXmlKey();
+            }  
+            JAXBElement<XmlBindings> bindingsJaxbElement = null;               
+            if (metadata instanceof XMLEventReader) {
+            	bindingsJaxbElement=  unmarshaller.unmarshal((XMLEventReader) metadata, XmlBindings.class);            	
+            } else if (metadata instanceof XMLStreamReader) {
+            	bindingsJaxbElement =  unmarshaller.unmarshal((XMLStreamReader) metadata, XmlBindings.class);
+            } else {
+            	Source source = null;            
+	            if(metadata instanceof File){
+	            	source = new StreamSource(new FileInputStream((File) metadata));            
+	            } else if(metadata instanceof InputSource){    
+	                if(((InputSource)metadata).getByteStream() != null){                	
+	                	source = new StreamSource(((InputSource) metadata).getByteStream());
+	                }else if(((InputSource)metadata).getCharacterStream() != null){                	
+	                	source = new StreamSource(((InputSource) metadata).getCharacterStream());	           
+	                }
+	            }else if(metadata instanceof InputStream){
+	            	source = new StreamSource((InputStream) metadata);            
+	            } else if (metadata instanceof Node) {
+	            	source = new DOMSource((Node) metadata);              
+	            } else if(metadata instanceof Reader){  
+	            	source = new StreamSource((Reader) metadata);
+	            } else if(metadata instanceof Source){
+	                source = (Source)metadata;    	              
+	            } else if (metadata instanceof URL) {
+	            	openedStream = ((URL) metadata).openStream();
+	            	source = new StreamSource(openedStream);
+	            } else if (metadata instanceof String) {	            	
+	            	StreamSource streamSource = new StreamSource((String)metadata);
+	            	try{
+		               	bindingsJaxbElement = unmarshaller.unmarshal(streamSource, XmlBindings.class);
+		            }catch(JAXBException e){		               	        
+			            openedStream = classLoader.getResourceAsStream((String)metadata);
+			            if(openedStream != null){
+			            	bindingsJaxbElement = unmarshaller.unmarshal(new StreamSource(openedStream), XmlBindings.class);
+			            }else{
+			                throw org.eclipse.persistence.exceptions.JAXBException.couldNotUnmarshalMetadata(e);
+                        }
+		            }
+	            } else{
+	                throw org.eclipse.persistence.exceptions.JAXBException.incorrectValueParameterTypeForOxmXmlKey();
+	            } 
+	            if(bindingsJaxbElement == null){
+	                if(source == null){
+	                    throw org.eclipse.persistence.exceptions.JAXBException.incorrectValueParameterTypeForOxmXmlKey();
+	                }else{
+	                    bindingsJaxbElement = unmarshaller.unmarshal(source, XmlBindings.class); 
+	                }
+	            }	          
             }
+            if(bindingsJaxbElement != null){
+            	return bindingsJaxbElement.getValue();
+            }
+            throw org.eclipse.persistence.exceptions.JAXBException.incorrectValueParameterTypeForOxmXmlKey();            
+        }catch(javax.xml.bind.JAXBException ex){        	        	
+            throw org.eclipse.persistence.exceptions.JAXBException.couldNotUnmarshalMetadata(ex);           
         }catch(IOException ioException){
-            throw org.eclipse.persistence.exceptions.JAXBException.couldNotUnmarshalMetadata(ioException);
-        } catch(javax.xml.bind.JAXBException ex){        	        	
-            throw org.eclipse.persistence.exceptions.JAXBException.couldNotUnmarshalMetadata(ex);
-            
+             throw org.eclipse.persistence.exceptions.JAXBException.couldNotUnmarshalMetadata(ioException);
+        }finally{
+        	if(openedStream != null){
+        		try {
+					openedStream.close();
+				} catch (IOException e) {
+					throw org.eclipse.persistence.exceptions.JAXBException.couldNotUnmarshalMetadata(e);
+				}
+        	}
         }
-		
     }
-    
-    private static boolean isJSONFormat(BufferedReader reader) throws IOException{
-    	boolean isJSONFormat = false;
-    	int readAheadLimit = 5;
-    	reader.mark(readAheadLimit);
-    	
-    	char c;
-    	for(int i=0; i<readAheadLimit; i++){
-    		if(!reader.ready()){
-    			break;
-    		}
-    		c = (char) reader.read(); 
-    	
-    		if(c == '['){
-    			isJSONFormat = true;
-    			break;
-    		}else if (c == '{'){
-    			isJSONFormat = true;
-    			break;
-    		}
-    	}
-    	reader.reset();    	
-    	return isJSONFormat;
-    }
-    
-    private static URL getURLFromString(String stringValue, ClassLoader classLoader){
-    	 if(stringValue.length() == 0) {
-             throw org.eclipse.persistence.exceptions.JAXBException.unableToLoadMetadataFromLocation(stringValue);
-         }
-         URL url = null;
-         try {
-             url = new URL(stringValue);
-         } catch(MalformedURLException ex) {
-             url = classLoader.getResource(stringValue);
-         }
-         return url;
-    }
-    
-    private static XmlBindings getXmlBindingsByMediaType(Unmarshaller unmarshaller, Source metadata, ClassLoader classLoader, Map<String, Object> properties, MediaType mediaType) throws JAXBException {
-        if(MediaType.APPLICATION_XML.equals(mediaType)) {
-            unmarshaller.setEventHandler(JSON_BINDING_DOCUMENT_VEH);
-        } else {
-            unmarshaller.setEventHandler(JAXBContext.DEFAULT_VALIDATION_EVENT_HANDER);
-        }
-        unmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, mediaType);
-        unmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, false);
-        JAXBElement jbe = unmarshaller.unmarshal((Source) metadata, XmlBindings.class);
-        return (XmlBindings) jbe.getValue();
-    }
-  
 }

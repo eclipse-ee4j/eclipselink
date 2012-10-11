@@ -108,4 +108,14 @@ public class UnmarshallerProperties {
     */
     public static final String MEDIA_TYPE = JAXBContextProperties.MEDIA_TYPE;
 
+    /**
+     * The name of the property used to specify if the media type should be  
+     * auto detected (default is false).  Only set to true when the media type
+     * is unknown.  Otherwise set the MEDIA_TYPE property.   If the type can not
+     * be auto-detected an unmarshal with the MEDIA_TYPE value will be performed. 
+     * @since 2.4
+     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties.MEDIA_TYPE
+     * @see org.eclipse.persistence.oxm.MediaType
+     */
+    public static final String AUTO_DETECT_MEDIA_TYPE = "eclipselink.auto-detect-media-type";
 }

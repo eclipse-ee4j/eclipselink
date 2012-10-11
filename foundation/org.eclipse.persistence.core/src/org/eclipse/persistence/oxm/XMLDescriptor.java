@@ -37,6 +37,7 @@ import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.oxm.TreeObjectBuilder;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
+import org.eclipse.persistence.internal.oxm.XPathQName;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.AggregateMapping;
@@ -833,6 +834,8 @@ public class XMLDescriptor extends ClassDescriptor {
             xmlRoot.setSchemaLocation(unmarshalRecord.getSchemaLocation());
             xmlRoot.setNoNamespaceSchemaLocation(unmarshalRecord.getNoNamespaceSchemaLocation());
             xmlRoot.setNil(unmarshalRecord.isNil());
+            setDeclaredTypeOnXMLRoot(xmlRoot, elementNamespaceUri, elementLocalName, unmarshalRecord.isNamespaceAware(), unmarshalRecord.getUnmarshaller());
+            
             return xmlRoot;
         }
         return unmarshalRecord.getCurrentObject();
@@ -853,7 +856,7 @@ public class XMLDescriptor extends ClassDescriptor {
       * @param elementPrefix
       * @return object
       */
-    public Object wrapObjectInXMLRoot(Object object, String elementNamespaceUri, String elementLocalName, String elementPrefix, boolean forceWrap, boolean isNamespaceAware) {
+    public Object wrapObjectInXMLRoot(Object object, String elementNamespaceUri, String elementLocalName, String elementPrefix, boolean forceWrap, boolean isNamespaceAware, XMLUnmarshaller xmlUnmarshaller) {
 
         if (forceWrap || shouldWrapObject(object, elementNamespaceUri, elementLocalName, elementPrefix, isNamespaceAware)) {
             // if the DOMRecord element != descriptor's default 
@@ -862,6 +865,9 @@ public class XMLDescriptor extends ClassDescriptor {
             xmlRoot.setLocalName(elementLocalName);
             xmlRoot.setNamespaceURI(elementNamespaceUri);
             xmlRoot.setObject(object);
+            
+            setDeclaredTypeOnXMLRoot(xmlRoot, elementNamespaceUri, elementLocalName, isNamespaceAware, xmlUnmarshaller);
+            
             return xmlRoot;
         }
         return object;
@@ -871,7 +877,7 @@ public class XMLDescriptor extends ClassDescriptor {
      * INTERNAL:
      * @return
      */
-    public Object wrapObjectInXMLRoot(Object object, String elementNamespaceUri, String elementLocalName, String elementPrefix, String encoding, String version, boolean forceWrap, boolean isNamespaceAware) {
+    public Object wrapObjectInXMLRoot(Object object, String elementNamespaceUri, String elementLocalName, String elementPrefix, String encoding, String version, boolean forceWrap, boolean isNamespaceAware, XMLUnmarshaller unmarshaller) {
         if (forceWrap || shouldWrapObject(object, elementNamespaceUri, elementLocalName, elementPrefix, isNamespaceAware)) {
             // if the DOMRecord element != descriptor's default 
             // root element, create an XMLRoot, populate and return it
@@ -880,11 +886,21 @@ public class XMLDescriptor extends ClassDescriptor {
             xmlRoot.setNamespaceURI(elementNamespaceUri);
             xmlRoot.setObject(object);
             xmlRoot.setEncoding(encoding);
-            xmlRoot.setVersion(version);                        
+            xmlRoot.setVersion(version);  
+            setDeclaredTypeOnXMLRoot(xmlRoot, elementNamespaceUri, elementLocalName, isNamespaceAware, unmarshaller);
+
             return xmlRoot;
         }
         return object;
 
+    }
+    
+    private void setDeclaredTypeOnXMLRoot(XMLRoot xmlRoot, String elementNamespaceUri, String elementLocalName, boolean isNamespaceAware, XMLUnmarshaller unmarshaller){
+    	XPathQName xpathQName = new XPathQName(elementNamespaceUri, elementLocalName, isNamespaceAware);
+    	XMLDescriptor desc = unmarshaller.getXMLContext().getDescriptor(xpathQName);
+    	if(desc != null){
+    		xmlRoot.setDeclaredType(desc.getJavaClass());
+    	}
     }
     
     /**

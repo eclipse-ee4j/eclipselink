@@ -42,6 +42,7 @@ import org.eclipse.persistence.internal.oxm.record.SAXUnmarshallerHandler;
 import org.eclipse.persistence.internal.oxm.XPathNode;
 import org.eclipse.persistence.internal.oxm.record.XMLReaderAdapter;
 import org.eclipse.persistence.internal.oxm.record.deferred.DeferredContentHandler;
+import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
@@ -468,6 +469,16 @@ public class JSONReader extends XMLReaderAdapter {
         return value;
     }
 
+    
+    /**
+     * INTERNAL:
+     * The MediaType associated with this reader     
+     * @return
+     */
+    public MediaType getMediaType(){
+    	return MediaType.APPLICATION_JSON;
+    }
+    
     private static class JSONAttributes extends IndexedAttributeList {
 
         private Tree tree;

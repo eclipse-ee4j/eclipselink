@@ -20,6 +20,7 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -338,13 +339,28 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
         doTestInputSrc(jCtx);
     }
     
-    public void testBindingFormatString() throws Exception {
+    public void testBindingFormatString() throws Exception {      
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, INPUT_SRC_OXM_XML);
         Class[] classes = new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.inputsource.Foo.class };
         JAXBContext jCtx = (JAXBContext) JAXBContextFactory.createContext(classes, properties, loader);
         doTestInputSrc(jCtx);
-    }
+    }  
+    
+    public void testBindingFormatStringClasspath() throws Exception {
+        URL[] urls = new URL[1];  
+        File f = new File("./org/eclipse/persistence/testing/jaxb/externalizedmetadata/jaxbcontextfactory/bindingformat/testfolder");
+        urls[0] = f.toURL();
+        URLClassLoader testLoader = new URLClassLoader(urls);
+        
+        
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY, "subfolder/foo-oxm.xml");
+        
+        Class[] classes = new Class[] { org.eclipse.persistence.testing.jaxb.externalizedmetadata.jaxbcontextfactory.bindingformat.inputsource.Foo.class };
+        JAXBContext jCtx = (JAXBContext) JAXBContextFactory.createContext(classes, properties, testLoader);
+        doTestInputSrc(jCtx);
+    }  
     
     public void testBindingFormatStringInvalid() throws Exception {
         Map<String, Object> properties = new HashMap<String, Object>();
@@ -354,8 +370,8 @@ public class JAXBContextFactoryTestCases extends ExternalizedMetadataTestCases {
         try {
             JAXBContext jCtx = (JAXBContext) JAXBContextFactory.createContext(classes, properties, loader);
         } catch(Exception ex) {
-            exceptionThrown = true;
-            assertTrue("Incorrect exception caught", ((org.eclipse.persistence.exceptions.JAXBException)ex).getErrorCode() == 50076);
+        	exceptionThrown = true;
+            assertTrue("Incorrect exception caught", ((org.eclipse.persistence.exceptions.JAXBException)ex).getErrorCode() == 50027);
         }
         if(!exceptionThrown) {
             fail("Expected exception now thrown.");
