@@ -781,6 +781,9 @@ public class SessionsFactory {
      * Process the common elements from a SessionConfig.
      */
     protected void processSessionConfig(SessionConfig sessionConfig, AbstractSession session) {
+        // Name
+        session.setName(sessionConfig.getName());
+        
         // Session Event Manager
         processSessionEventManagerConfig(sessionConfig.getSessionEventManagerConfig(), session);
 
@@ -792,12 +795,9 @@ public class SessionsFactory {
         if (log != null) {
             session.setSessionLog(log);
         }
-
+        
         // Remote command manager    
         buildRemoteCommandManagerConfig(sessionConfig.getRemoteCommandManagerConfig(), session);
-
-        // Name
-        session.setName(sessionConfig.getName());
 
         // Profiler - XML Schema default is null
         if (sessionConfig.getProfiler() != null) {
