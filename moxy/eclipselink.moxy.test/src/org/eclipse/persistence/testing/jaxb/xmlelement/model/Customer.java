@@ -19,12 +19,13 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSchemaType;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import org.eclipse.persistence.oxm.annotations.XmlPath;
 
 @XmlRootElement
-@XmlType(propOrder={"firstName", "lastName", "address", "phoneNumbers"})
+@XmlType(propOrder={"id","firstName", "lastName","address", "phoneNumbers", "firstTimeCustomer","orderNumbers"})
 public class Customer {
 
 	@XmlAttribute
@@ -42,10 +43,11 @@ public class Customer {
         phoneNumbers = new ArrayList<PhoneNumber>();
     }
 
+    @XmlTransient
     public int getId() {
         return id;
     }
-
+    
     public void setId(int id) {
         this.id = id;
     }

@@ -12,12 +12,15 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.oxm.record;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
 
@@ -165,19 +168,29 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     
     private XMLReader getXMLReader(Class clazz) {
         if(null == xmlReader) {        	
-        	if(xmlUnmarshaller.getMediaType() == MediaType.APPLICATION_JSON){        		
-        	 	xmlReader = new JSONReader(xmlUnmarshaller.getAttributePrefix(), xmlUnmarshaller.getNamespaceResolver(), xmlUnmarshaller.getNamespaceResolver() != null, xmlUnmarshaller.isIncludeRoot(), xmlUnmarshaller.getNamespaceSeparator(), xmlUnmarshaller.getErrorHandler(), xmlUnmarshaller.getValueWrapper(), clazz);
-        		return xmlReader;
+        	 xmlReader = getNewXMLReader(clazz, xmlUnmarshaller.getMediaType() );
+        }
+        return xmlReader;
+    }
+    
+    private XMLReader getNewXMLReader(MediaType mediaType) {
+    	return getNewXMLReader(null, mediaType);
+    }
+    
+    private XMLReader getNewXMLReader(Class clazz, MediaType mediaType) {
+              	
+        	if(mediaType == MediaType.APPLICATION_JSON){        	
+        	 	return new JSONReader(xmlUnmarshaller.getAttributePrefix(), xmlUnmarshaller.getNamespaceResolver(), xmlUnmarshaller.getNamespaceResolver() != null, xmlUnmarshaller.isIncludeRoot(), xmlUnmarshaller.getNamespaceSeparator(), xmlUnmarshaller.getErrorHandler(), xmlUnmarshaller.getValueWrapper(), clazz);        	 	
         	}
             try {
-                xmlReader = new XMLReader(getSAXParser().getXMLReader());
+            	XMLReader xmlReader = new XMLReader(getSAXParser().getXMLReader());
                 if(null != errorHandler) {
                     xmlReader.setErrorHandler(errorHandler);
                 }
                 if(null != entityResolver) {
                     xmlReader.setEntityResolver(entityResolver);
                 }
-                setValidationMode(getValidationMode());
+                setValidationMode(xmlReader, getValidationMode());
                 if(null != getSchema()) {
                     xmlReader.setFeature(VALIDATING, xmlReader.getFeature(VALIDATING));
                 }
@@ -185,8 +198,6 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
             } catch (Exception e) {
                 throw XMLMarshalException.errorInstantiatingSchemaPlatform(e);
             }
-        }
-        return xmlReader;
     }
 
     public EntityResolver getEntityResolver() {
@@ -222,6 +233,10 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     }
 
     public void setValidationMode(int validationMode) {
+    	setValidationMode(xmlReader, validationMode);
+    }
+
+    public void setValidationMode(XMLReader xmlReader, int validationMode) {
         try {
             this.validationMode = validationMode;
             if(null != xmlParser) {
@@ -254,7 +269,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
             // Don't change the validation mode.
         }
     }
-
+    
     public void setWhitespacePreserving(boolean isWhitespacePreserving) {
         this.isWhitespacePreserving =  isWhitespacePreserving;
         if(null != xmlParser) {
@@ -347,6 +362,12 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
         if (inputSource != null && null == inputSource.getSystemId()) {
             inputSource.setSystemId(this.systemId);
         }
+        
+        if(xmlUnmarshaller.isAutoDetectMediaType()){
+        	BufferedReader bufferedReader = getBufferedReaderForInputSource(inputSource);        	
+        	MediaType mediaType = getMediaType(bufferedReader);				
+            return unmarshal(getNewXMLReader(mediaType), new InputSource(bufferedReader));			
+        }
         return unmarshal(getXMLReader(), inputSource);
     }
 
@@ -377,6 +398,12 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     public Object unmarshal(InputSource inputSource, Class clazz) {
         if (inputSource != null && null == inputSource.getSystemId()) {
             inputSource.setSystemId(this.systemId);
+        }
+
+        if(xmlUnmarshaller.isAutoDetectMediaType()){
+        	BufferedReader bufferedReader = getBufferedReaderForInputSource(inputSource);        	
+        	MediaType mediaType = getMediaType(bufferedReader);				
+            return unmarshal(getNewXMLReader(clazz, mediaType), new InputSource(bufferedReader), clazz);        	 
         }
         return unmarshal(getXMLReader(clazz), inputSource, clazz);
     }
@@ -679,9 +706,9 @@ if(clazz == ClassConstants.OBJECT) {
             hasThrownException = true;
             throw runtimeException;
         } finally {
+        	xmlUnmarshaller.getStringBuffer().reset();
             try {
-                inputStream.close();
-                xmlUnmarshaller.getStringBuffer().reset();                
+                inputStream.close();                              
             } catch (IOException e) {
                 if (!hasThrownException) {
                     throw XMLMarshalException.unmarshalException(e);
@@ -691,21 +718,32 @@ if(clazz == ClassConstants.OBJECT) {
     }
 
     public Object unmarshal(URL url, Class clazz) {
+    	InputStream inputStream = null;
         try {
-            InputStream inputStream = url.openStream();
-            this.systemId = url.toExternalForm();
-            Object result = unmarshal(inputStream, clazz);
-            inputStream.close();
-            return result;
-        } catch (IOException e) {
+            inputStream = url.openStream();
+        }catch (IOException e) {
             throw XMLMarshalException.unmarshalException(e);
-        } finally {
+        }            
+        this.systemId = url.toExternalForm();
+        try {
+            return unmarshal(inputStream, clazz);                        
+        }  finally {
         	xmlUnmarshaller.getStringBuffer().reset();
+        	try{
+        	    inputStream.close();
+        	}catch (IOException e) {
+                throw XMLMarshalException.unmarshalException(e);
+            }
         }
     }
 
     public Object unmarshal(String systemId) {
-        try {
+        try {        	
+            if(xmlUnmarshaller.isAutoDetectMediaType()){
+            	InputSource inputSource = new InputSource(systemId);                
+                return unmarshal(inputSource);        	     	
+            }
+        	
             XMLReader xmlReader = getXMLReader();
             SAXUnmarshallerHandler saxUnmarshallerHandler = new SAXUnmarshallerHandler(xmlUnmarshaller.getXMLContext());
             saxUnmarshallerHandler.setXMLReader(xmlReader);
@@ -726,6 +764,10 @@ if(clazz == ClassConstants.OBJECT) {
     }
 
     public Object unmarshal(String systemId, Class clazz) {
+    	if(xmlUnmarshaller.isAutoDetectMediaType()){   
+            return unmarshal(new InputSource(systemId), clazz);        	     	
+        }
+    
         UnmarshalRecord unmarshalRecord = null;
         boolean isPrimitiveWrapper = false;
         XMLDescriptor xmlDescriptor = null;
@@ -969,4 +1011,65 @@ if(clazz == ClassConstants.OBJECT) {
          xmlReader = null;		
 	}
 
+    private InputStream getInputStreamFromString(String stringValue){
+   	    if(stringValue.length() == 0) {
+   	    	throw org.eclipse.persistence.exceptions.XMLMarshalException.unmarshalFromStringException(stringValue, null);
+        }
+        URL url = null;
+        try {
+            url = new URL(stringValue);
+            if(url != null){
+                try {
+                   return url.openStream();
+                } catch (IOException e) {
+              	  	throw org.eclipse.persistence.exceptions.XMLMarshalException.unmarshalFromStringException(stringValue, e);
+                }
+            }   
+        } catch(MalformedURLException ex) {     
+            try {
+                  return new FileInputStream(stringValue);
+            } catch (FileNotFoundException e) {            
+            	throw org.eclipse.persistence.exceptions.XMLMarshalException.unmarshalFromStringException(stringValue, e);
+            }          
+        }		
+	    throw org.eclipse.persistence.exceptions.XMLMarshalException.unmarshalFromStringException(stringValue, null);
+   }
+
+	
+	private BufferedReader getBufferedReaderForInputSource(InputSource inputSource){
+   	    if(inputSource.getByteStream() != null){                	
+         	return new BufferedReader(new InputStreamReader(inputSource.getByteStream()));
+        }else if(inputSource.getCharacterStream() != null){
+        	return new BufferedReader(inputSource.getCharacterStream());
+        }else if (inputSource.getSystemId() != null){        	
+        	InputStream is = getInputStreamFromString(inputSource.getSystemId());        	
+			return new BufferedReader(new InputStreamReader(is));			
+        }   
+   	    return null;
+	}
+	
+	private MediaType getMediaType(BufferedReader br) {
+	    	int READ_AHEAD_LIMIT = 25;
+	    	try{
+	    	    br.mark(READ_AHEAD_LIMIT);
+		    	try {
+		            char c = 0;
+		            for (int i = 0; c != -1 && i < READ_AHEAD_LIMIT; i++) {
+		                c = (char) br.read();
+		                if (c == '[' || c == '{') {
+		                    return MediaType.APPLICATION_JSON;
+		                }else if (c == '<'){
+		                	return MediaType.APPLICATION_XML;	
+		                }
+		                
+		            }
+		            
+		        } finally {	            
+						br.reset();				
+		        }
+	    	}catch(IOException ioException){
+	    		throw XMLMarshalException.unmarshalException(ioException);
+	    	}	    
+	    	return xmlUnmarshaller.getMediaType();
+	    }
 }
