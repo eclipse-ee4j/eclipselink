@@ -26,6 +26,7 @@ import org.eclipse.persistence.jpa.jpql.parser.IdentifierRole;
 import org.eclipse.persistence.jpa.jpql.parser.JPQLGrammar;
 import org.eclipse.persistence.jpa.jpql.spi.IEntity;
 import org.eclipse.persistence.jpa.jpql.spi.IMapping;
+import org.eclipse.persistence.jpa.jpql.util.XmlEscapeCharacterConverter;
 import org.eclipse.persistence.jpa.jpql.util.iterable.SnapshotCloneIterable;
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
@@ -48,6 +49,13 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
 	 * The set of possible abstract schema types.
 	 */
 	private Set<IEntity> abstractSchemaTypes;
+
+	/**
+	 * The prefix that is used to filter the list TODO.
+	 *
+	 * @since 2.5
+	 */
+	private String classNamePrefix;
 
 	/**
 	 * The helper can be used to provide additional information that is outside the scope of simply
@@ -80,16 +88,19 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
 	private Set<IMapping> mappings;
 
 	/**
-	 * The prefix that is used to filter the list TODO.
-	 *
-	 * @since 2.5
-	 */
-	private String prefix;
-
-	/**
 	 * The identification variables mapped to their abstract schema types.
 	 */
 	private Map<String, IEntity> rangeIdentificationVariables;
+
+	/**
+	 * @since 2.5
+	 */
+	private String tableName;
+
+	/**
+	 * @since 2.5
+	 */
+	private String tableNamePrefix;
 
 	/**
 	 * A JPQL identifier that is mapped to its longest counterpart.
@@ -189,15 +200,6 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
 	}
 
 	/**
-	 * Adds the given prefix that will be used to filter the list of TODO.
-	 *
-	 * @param prefix The prefix that is used to filter the list of TODO
-	 */
-	public void addClassNames(String prefix) {
-		this.prefix = prefix;
-	}
-
-	/**
 	 * Adds the given identification variable as a proposal.
 	 *
 	 * @param identificationVariable The identification variable that is a valid proposal
@@ -246,15 +248,6 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
 	                                           IEntity abstractSchemaType) {
 
 		rangeIdentificationVariables.put(identificationVariable, abstractSchemaType);
-	}
-
-	/**
-	 * Adds
-	 *
-	 * @param prefix
-	 * @return
-	 */
-	public void addTableNames(String prefix) {
 	}
 
 	/**
@@ -416,15 +409,49 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
 	/**
 	 * {@inheritDoc}
 	 */
+	public ResultQuery buildXmlQuery(String jpqlQuery, String proposal, int position, boolean insert) {
+
+		// Nothing to replace
+		if (ExpressionTools.stringIsEmpty(proposal)) {
+			return new Result(jpqlQuery, position);
+		}
+
+		int[] positions = { position };
+
+		// First convert the escape characters into their unicode characters
+		String query = XmlEscapeCharacterConverter.unescape(jpqlQuery, positions);
+
+		// Calculate the start and end positions
+		WordParser wordParser = new WordParser(query);
+		wordParser.setPosition(positions[0]);
+		int[] proposalPositions = buildPositions(wordParser, proposal, insert);
+
+		// Escape the proposal
+		proposal = XmlEscapeCharacterConverter.escape(proposal, new int[1]);
+
+		// Adjust the positions so it's in the original JPQL query, which may contain escaped characters
+		XmlEscapeCharacterConverter.reposition(jpqlQuery, proposalPositions);
+
+		// Create the new JPQL query
+		StringBuilder sb = new StringBuilder(jpqlQuery);
+		sb.replace(proposalPositions[0], proposalPositions[1], proposal);
+
+		// Return the result
+		return new Result(sb.toString(), proposalPositions[0] + proposal.length());
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public Iterable<String> classNames() {
-		return helper.classNames(prefix);
+		return helper.classNames(classNamePrefix);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public Iterable<String> columnNames() {
-		return helper.columnNames(prefix);
+		return helper.columnNames(tableName);
 	}
 
 	/**
@@ -539,6 +566,36 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
 		return removed;
 	}
 
+	/**
+	 * Adds the given prefix that will be used to filter the list of TODO.
+	 *
+	 * @param tableNamePrefix The prefix that is used to filter the list of TODO
+	 * @since 2.5
+	 */
+	public void setClassNamePrefix(String tableNamePrefix) {
+		this.tableNamePrefix = tableNamePrefix;
+	}
+
+	/**
+	 * Sets
+	 *
+	 * @param tableName
+	 * @since 2.5
+	 */
+	public void setTableName(String tableName) {
+		this.tableName = tableName;
+	}
+
+	/**
+	 * Adds
+	 *
+	 * @param tableNamePrefix
+	 * @since 2.5
+	 */
+	public void setTableNamePrefix(String tableNamePrefix) {
+		this.tableNamePrefix = tableNamePrefix;
+	}
+
 	private int startPositionImp(WordParser wordParser, String proposal) {
 
 		int index = wordParser.position();
@@ -559,7 +616,7 @@ public final class DefaultContentAssistProposals implements ContentAssistProposa
 	 * {@inheritDoc}
 	 */
 	public Iterable<String> tableNames() {
-		return helper.tableNames();
+		return helper.tableNames(tableNamePrefix);
 	}
 
 	/**

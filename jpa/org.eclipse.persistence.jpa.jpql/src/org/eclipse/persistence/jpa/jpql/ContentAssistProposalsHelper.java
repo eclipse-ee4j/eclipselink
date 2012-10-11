@@ -32,7 +32,7 @@ public interface ContentAssistProposalsHelper {
 		public Iterable<String> columnNames(String tableName) {
 			return EmptyIterable.instance();
 		}
-		public Iterable<String> tableNames() {
+		public Iterable<String> tableNames(String tableNamePrefix) {
 			return EmptyIterable.instance();
 		}
 	};
@@ -56,7 +56,8 @@ public interface ContentAssistProposalsHelper {
 	/**
 	 * Returns
 	 *
+	 * @param tableNamePrefix
 	 * @return
 	 */
-	Iterable<String> tableNames();
+	Iterable<String> tableNames(String tableNamePrefix);
 }

@@ -11,17 +11,20 @@
  *     Oracle - initial API and implementation
  *
  ******************************************************************************/
-package org.eclipse.persistence.jpa.tests.jpql.parser;
+package org.eclipse.persistence.jpa.tests.jpql;
 
+import org.eclipse.persistence.jpa.tests.jpql.parser.WordParserTest;
+import org.eclipse.persistence.jpa.tests.jpql.util.XmlEscapeCharacterConverterTest;
 import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @SuiteClasses({
+	DefaultContentAssistProposalsTest.class,
+	XmlEscapeCharacterConverterTest.class,
 	ExpressionToolsTest.class,
 	WordParserTest.class,
 })
-@RunWith(Suite.class)
+@RunWith(JPQLTestRunner.class)
 public final class AllUtilityTests {
 
 	private AllUtilityTests() {

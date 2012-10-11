@@ -36,6 +36,7 @@ import org.eclipse.persistence.jpa.jpql.parser.TableExpression;
 import org.eclipse.persistence.jpa.jpql.parser.TableVariableDeclaration;
 import org.eclipse.persistence.jpa.jpql.parser.UnionClause;
 import org.eclipse.persistence.jpa.jpql.parser.WhereClause;
+
 import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
 /**
@@ -425,7 +426,7 @@ public class EclipseLinkContentAssistVisitor extends AbstractContentAssistVisito
 
 			if ((position >= length) && (position <= length + tableNameLength)) {
 				String prefix = ExpressionTools.unquote(tableName).substring(position - length);
-				proposals.addTableNames(prefix);
+				proposals.setTableNamePrefix(prefix);
 			}
 		}
 	}

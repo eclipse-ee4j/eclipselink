@@ -13,7 +13,6 @@
  ******************************************************************************/
 package org.eclipse.persistence.jpa.jpql;
 
-import org.eclipse.persistence.jpa.jpql.parser.AbstractExpression;
 
 /**
  * A utility class containing various methods related to the Hermes parser.
@@ -71,7 +70,7 @@ public final class ExpressionTools {
 		for (int index = 0, count = value.length(); index < count; index++) {
 			char character = value.charAt(index);
 
-			switch(character) {
+			switch (character) {
 				case '\b': sb.append("\\b");  if (index < originalPosition) position[0]++; break;
 				case '\t': sb.append("\\t");  if (index < originalPosition) position[0]++; break;
 				case '\n': sb.append("\\n");  if (index < originalPosition) position[0]++; break;
@@ -110,12 +109,42 @@ public final class ExpressionTools {
 
 		// Check to see if ( is following the identifier
 		int whitespace = wordParser.skipLeadingWhitespace();
-		boolean function = wordParser.startsWith(AbstractExpression.LEFT_PARENTHESIS);
+		boolean function = wordParser.startsWith('(');
 
 		// Revert the changes
 		wordParser.moveBackward(count + whitespace);
 
 		return function;
+	}
+
+	/**
+	 * Determines whether the given character should be escaped when being part of a string, i.e.
+	 * '\r' should be "\\r".
+	 *
+	 * @param character The character to check if it can directly be used in a string or should be escaped
+	 * @return <code>true</code> if the given character cannot be used directly in a string
+	 * @since 2.5
+	 */
+	public static boolean isJavaEscapedCharacter(char character) {
+
+		switch (character) {
+			case '\b':
+			case '\t':
+			case '\n':
+			case '\f':
+			case '\r':
+			case '\"':
+			case '\\':
+			case '\0':
+			case '\1':
+			case '\2':
+			case '\3':
+			case '\4':
+			case '\5':
+			case '\6':
+			case '\7': return true;
+			default:   return false;
+		}
 	}
 
 	/**
@@ -156,54 +185,72 @@ public final class ExpressionTools {
 	}
 
 	/**
-	 * Re-adjusts the given position, which is based on <em>query1</em>, by making sure it is
-	 * pointing at the same position within <em>query2</em>. Usually the position is moved because
-	 * the two queries don't have the same amount of whitespace.
+	 * Adjusts the positions contained by the given array of either one or two elements, which is
+	 * based on the given <em>query1</em>, by translating those positions to be at the equivalent
+	 * position within <em>query2</em>.
+	 * <p>
+	 * <b>Important:</b> The two JPQL queries should contain the same characters but the amount of
+	 * whitespace can differ. One cannot have the escape characters and the other one has the Unicode
+	 * characters.
 	 *
-	 * @param query1 The query associated to the position
-	 * @param position1 The position within <em>query1</em>
-	 * @param query2 The query for which the position might need adjustment
-	 * @return The adjusted position by moving it based on the difference between <em>query1</em> and
-	 * <em>query2</em>
+	 * @param query1 The query where the positions are pointing
+	 * @param positions An array of either one or two elements positioned within <em>query1</em>
+	 * @param query2 The query for which the positions might need adjustment
+	 * @since 2.5
 	 */
-	public static int repositionCursor(CharSequence query1, int position1, CharSequence query2) {
+	public static void reposition(CharSequence query1, int[] positions, CharSequence query2) {
 
 		// Nothing to adjust
-		if (position1 <= 0) {
-			return 0;
+		if ((positions[0] <= 0) && (positions.length == 1)) {
+			return;
 		}
 
 		int queryLength1 = query1.length();
 		int queryLength2 = query2.length();
 
-		// Queries 1 and 2 have the same length, the position doesn't need to move
+		// Queries 1 and 2 have the same length, no translation required
 		if (queryLength1 == queryLength2) {
-			return position1;
+			return;
 		}
 
-		int position2 = position1;
 		int index1 = 0;
 		int index2 = 0;
+		boolean position1Done = false;
+		boolean position2Done = false;
 
-		while ((index1 < queryLength1) && (index2 < queryLength2)) {
+		while ((index1 < queryLength1) && (index2 < queryLength2) && (!position1Done || !position2Done)) {
 
 			char character1 = Character.toUpperCase(query1.charAt(index1));
 			char character2 = Character.toUpperCase(query2.charAt(index2));
 
-			if (character1 != character2) {
+			boolean whitespace1 = Character.isWhitespace(character1);
+			boolean whitespace2 = Character.isWhitespace(character2);
 
-				boolean whitespace1 = Character.isWhitespace(character1);
-				boolean whitespace2 = Character.isWhitespace(character2);
+			if (character1 != character2) {
 
 				// Query 2 does not have a whitespace but query 1 does
 				if (whitespace1 && !whitespace2) {
 					index1++;
-					position2--;
+
+					if (!position1Done) {
+						positions[0]--;
+					}
+
+					if (!position2Done && (positions.length > 1)) {
+						positions[1]--;
+					}
 				}
 				// Query 1 does not have a whitespace but the query 2 does
 				else if (!whitespace1 && whitespace2) {
 					index2++;
-					position2++;
+
+					if (!position1Done) {
+						positions[0]++;
+					}
+
+					if (!position2Done && (positions.length > 1)) {
+						positions[1]++;
+					}
 				}
 				// Continue with the next character
 				else {
@@ -217,34 +264,94 @@ public final class ExpressionTools {
 				index2++;
 			}
 
-			// The new position is most likely adjusted
-			if (position2 == index2) {
+			// Check to see if the position has been fully updated
+			if ((!whitespace1 && !whitespace2) || (queryLength1 > queryLength2)) {
 
-				// Nothing more to adjust
-				if (character1 == character2) {
-					break;
+				if (positions[0] <= index2) {
+					position1Done = true;
 				}
 
-				// Now verify that query2 doesn't have more whitespace
-				while (index2 < queryLength2) {
-
-					character2 = Character.toUpperCase(query2.charAt(index2));
-
-					// Query 2 does not have a whitespace but query 1 does
-					if (Character.isWhitespace(character2)) {
-						position2++;
-						index2++;
-					}
-					else {
-						break;
-					}
+				if ((positions.length > 1) && positions[1] <= index2) {
+					position2Done = true;
 				}
-
-				break;
 			}
 		}
 
-		return Math.min(position2, queryLength2);
+		// Make sure the positions are not outside of length of query2
+		positions[0] = Math.min(positions[0], queryLength2);
+		positions[0] = Math.max(positions[0], 0);
+
+		if (positions.length > 1) {
+			positions[1] = Math.min(positions[1], queryLength2);
+			positions[1] = Math.max(positions[1], 0);
+		}
+	}
+
+	/**
+	 * Adjusts the position, which is based on the given <em>query1</em>, by translating it to be at
+	 * the equivalent position within <em>query2</em>.
+	 * <p>
+	 * <b>Important:</b> The two JPQL queries should contain the same characters but the amount of
+	 * whitespace can differ. One cannot have the escape characters and the other one has the Unicode
+	 * characters.
+	 *
+	 * @param query1 The query where the positions are pointing
+	 * @param position The position of a cursor within <em>query1</em>
+	 * @param query2 The query for which the position might need adjustment
+	 * @return The adjusted position by moving it based on the difference between <em>query1</em> and
+	 * <em>query2</em>
+	 * @see #reposition(CharSequence, int[], CharSequence)
+	 */
+	public static int repositionCursor(CharSequence query1, int position1, CharSequence query2) {
+		int[] positions = { position1, position1 };
+		reposition(query1, positions, query2);
+		return positions[0];
+	}
+
+	/**
+	 * Re-adjusts the given positions, which is based on the non-escaped version of the given
+	 * <em>query</em>, by making sure it is pointing at the same position within <em>query</em>,
+	 * which contains references (escape characters).
+	 * <p>
+	 * The escape characters are either \b, \t, \n, \f, \r, \", \' and \0 through \7.
+	 * <p>
+	 * <b>Important:</b> The given query should contain the exact same amount of whitespace than the
+	 * query used to calculate the given positions.
+	 *
+	 * @param query The query that may contain escape characters
+	 * @param positions The position within the non-escaped version of the given query, which is
+	 * either a single element position or two positions that is used as a text range
+	 * @return The adjusted positions by moving it based on the difference between the escape and
+	 * non-escaped versions of the query
+	 * @since 2.5
+	 */
+	public static void repositionJava(CharSequence query, int[] positions) {
+
+		if ((query == null) || (query.length() == 0)) {
+			return;
+		}
+
+		StringBuilder sb = new StringBuilder(query);
+
+		for (int index = 0, count = sb.length(); index < count; index++) {
+
+			char character = sb.charAt(index);
+
+			if (isJavaEscapedCharacter(character)) {
+
+				// Translate both positions because the special
+				// character is written with its escape character
+				if (index < positions[0]) {
+					positions[0]++;
+					positions[1]++;
+				}
+				// Only translate the end position because the start
+				// position is before the current index
+				else if (index < positions[1]) {
+					positions[1]++;
+				}
+			}
+		}
 	}
 
 	/**

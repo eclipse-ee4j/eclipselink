@@ -18,7 +18,6 @@ import org.eclipse.persistence.jpa.tests.jpql.model.AllStateObjectTest1_0;
 import org.eclipse.persistence.jpa.tests.jpql.model.AllStateObjectTest2_0;
 import org.eclipse.persistence.jpa.tests.jpql.model.AllStateObjectTests;
 import org.eclipse.persistence.jpa.tests.jpql.parser.AllJPQLParserTests;
-import org.eclipse.persistence.jpa.tests.jpql.parser.AllUtilityTests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite.SuiteClasses;
 
