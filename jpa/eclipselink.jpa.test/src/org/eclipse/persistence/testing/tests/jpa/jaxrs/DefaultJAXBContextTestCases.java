@@ -56,7 +56,7 @@ public class DefaultJAXBContextTestCases extends JUnitTestCase {
 		jaxrsPopulator.persistExample(session);
 	}
 
-	/* READ operation */
+	/* READ operation : reads in pre-populated Customer 1 */
 	public void testGetCustomer() throws Exception {
 		URL url = new URL(getURL() + "/" + getID());
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -66,12 +66,15 @@ public class DefaultJAXBContextTestCases extends JUnitTestCase {
 		InputStream xml = connection.getInputStream();
 		Customer testObject = (Customer) getJAXBContext().createUnmarshaller()
 				.unmarshal(xml);
+		int response = connection.getResponseCode();		
 		connection.disconnect();
+		
+		assertTrue (( response < 300) && ( response >= 200));
 		assertEquals(getControlObject(), testObject);
 	}
 
-	/* READ operation */
-	public void testGetCustomerJSON() throws Exception {
+	/* JSON - READ operation : reads in pre-populated Customer 1 */
+ 	public void testGetCustomerJSON() throws Exception {
 		URL url = new URL(getURL() + "/" + getID());
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 		connection.setRequestMethod("GET");
@@ -83,12 +86,15 @@ public class DefaultJAXBContextTestCases extends JUnitTestCase {
                 u.setProperty("eclipselink.media-type", "application/json");
                 u.setProperty("eclipselink.json.include-root", false);
 		Customer testObject = u.unmarshal(json, Customer.class).getValue();
+		int response = connection.getResponseCode();
 		connection.disconnect();
+		
+		assertTrue (( response < 300) && ( response >= 200));
 		assertEquals(getControlObject(), testObject);
-	}
+	} 
 	
-	/* READ operation: CollectionOfObjects */
-	public void testGetCollectionOfObjects() throws Exception {
+	/* READ operation: CollectionOfObjects - reads in pre-populated Customers 1 & 3 */
+ 	public void testGetCollectionOfObjects() throws Exception {
 		URL url = new URL(getURL() + "/" + "findCustomerByCity" + "/"
 				+ "Ottawa");
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -98,13 +104,15 @@ public class DefaultJAXBContextTestCases extends JUnitTestCase {
 		InputStream xml = connection.getInputStream();
 		Customers testObject = (Customers) getJAXBContext()
 				.createUnmarshaller().unmarshal(xml);
+		int response = connection.getResponseCode();		
 		connection.disconnect();
-		assertEquals(getControlObjects(), testObject);
 
+		assertTrue (( response < 300) && ( response >= 200));		
+		assertEquals(getControlObjects(), testObject);
 	}
 
-	/* READ operation: CollectionOfObjects */
-	public void testGetCollectionOfObjectsJSON() throws Exception {
+	/* JSON - READ operation: CollectionOfObjects - reads in pre-populated Customers 1 & 3 */
+ 	public void testGetCollectionOfObjectsJSON() throws Exception {
 		URL url = new URL(getURL() + "/" + "findCustomerByCity" + "/"
 				+ "Ottawa");
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -117,28 +125,30 @@ public class DefaultJAXBContextTestCases extends JUnitTestCase {
                 u.setProperty("eclipselink.media-type", "application/json");
                 u.setProperty("eclipselink.json.include-root", false);
 		List<Customer> customers = (List<Customer>) u.unmarshal(json, Customer.class).getValue();				
-
+		int response = connection.getResponseCode();
 		connection.disconnect();
 		
 		Customers testObject = new Customers();
 		testObject.setCustomer(customers);
+		
+		assertTrue (( response < 300) && ( response >= 200));		
 		assertEquals(getControlObjects(), testObject);
-
-	}	
-	/* DELETE operation */
-	public void testDeleteCustomer() throws Exception {
+	} 
+	
+	/* DELETE operation - deletes Customer 2 */
+ 	public void testDeleteCustomer() throws Exception {
 
 		URL url = new URL(getURL() + "/" + 2);
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 		connection.setRequestMethod("DELETE");
 		int response = connection.getResponseCode();
-
 		connection.disconnect();
+		
 		assertEquals(204, response);
-	}
+	} 
 
-	/* INSERT operation */
-	public void testPostCustomer() throws Exception {
+	/* INSERT operation  : inserts Customer 5 */
+ 	public void testPostInsertCustomer() throws Exception {
 
 		URL url = new URL(getURL());
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -148,17 +158,18 @@ public class DefaultJAXBContextTestCases extends JUnitTestCase {
 		connection.setRequestProperty("Content-Type", "application/xml");
 
 		OutputStream os = connection.getOutputStream();
-		getJAXBContext().createMarshaller().marshal(getControlObject2(), os);
+		getJAXBContext().createMarshaller().marshal(getControlObject5(), os);
 		os.flush();
-		connection.getResponseCode();
-		Customer testObject = verifyHelperForPostPut(4);
+		int response = connection.getResponseCode();
+		Customer testObject = verifyHelperForPostPut(5);
 		connection.disconnect();
-		assertEquals(getControlObject2(), testObject);
+		
+		assertTrue (( response < 300) && ( response >= 200));
+		assertEquals(getControlObject5(), testObject);
+	} 
 
-	}
-
-		/* INSERT operation */
-	public void testPostCustomerJSON() throws Exception {
+	/* JSON - INSERT operation : inserts Customer 4 */
+	public void testPostInsertCustomerJSON() throws Exception {
 
 		URL url = new URL(getURL());
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -168,17 +179,21 @@ public class DefaultJAXBContextTestCases extends JUnitTestCase {
 		connection.setRequestProperty("Content-Type", "application/json");
 
 		OutputStream os = connection.getOutputStream();
-		getJAXBContext().createMarshaller().marshal(getControlObject2(), os);
+		Marshaller m = getJAXBContext().createMarshaller();
+		m.setProperty("eclipselink.media-type", "application/json");
+		m.setProperty("eclipselink.json.include-root", false);
+		m.marshal(getControlObject4(), os);
 		os.flush();
-		connection.getResponseCode();
+		int response = connection.getResponseCode();		
 		Customer testObject = verifyHelperForPostPutJSON(4);
 		connection.disconnect();
-		assertEquals(getControlObject2(), testObject);
-
-	}
+		
+		assertTrue (( response < 300) && ( response >= 200));
+		assertEquals(getControlObject4(), testObject);
+	} 
 	
-	/* UPDATE operation */
-	public void testPutCustomer() throws Exception {
+	/* UPDATE operation  : updates Customer 6 */
+  	public void testPutUpdateCustomer() throws Exception {
 
 		URL url = new URL(getURL());
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -189,18 +204,18 @@ public class DefaultJAXBContextTestCases extends JUnitTestCase {
 
 		OutputStream os = connection.getOutputStream();
 
-		getJAXBContext().createMarshaller().marshal(getControlObject3(), os);
+		getJAXBContext().createMarshaller().marshal(getControlObject6(), os);
 		os.flush();
-		connection.getResponseCode();
-		Customer testObject = verifyHelperForPostPut(3);
+		int response = connection.getResponseCode();
+		Customer testObject = verifyHelperForPostPut(6);
 		connection.disconnect();
 
-		assertEquals(getControlObject3(), testObject);
-
-	}
+		assertTrue (( response < 300) && ( response >= 200));		
+		assertEquals(getControlObject6(), testObject);
+	}  
 	
-	/* UPDATE operation */
-	public void testPutCustomerJSON() throws Exception {
+	/* JSON - UPDATE operation : updates Customer 3 */
+ 	public void testPutUpdateCustomerJSON() throws Exception {
 
 		URL url = new URL(getURL());
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -211,18 +226,21 @@ public class DefaultJAXBContextTestCases extends JUnitTestCase {
 
 		OutputStream os = connection.getOutputStream();
 
-		getJAXBContext().createMarshaller().marshal(getControlObject3(), os);
+		Marshaller m = getJAXBContext().createMarshaller();
+		m.setProperty("eclipselink.media-type", "application/json");
+		m.setProperty("eclipselink.json.include-root", false);
+		m.marshal(getControlObject3(), os);
 		os.flush();
-		connection.getResponseCode();
+		int response = connection.getResponseCode();
 		Customer testObject = verifyHelperForPostPutJSON(3);
 		connection.disconnect();
-
+		
+		assertTrue (( response < 300) && ( response >= 200));
 		assertEquals(getControlObject3(), testObject);
-
-	}
+	} 
 	
 	/* assertion helper method */
-	public Customer verifyHelperForPostPut(int id) throws Exception {
+ 	public Customer verifyHelperForPostPut(int id) throws Exception {
 		URL url = new URL(getURL() + "/" + id);
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 		connection.setRequestMethod("GET");
@@ -233,7 +251,7 @@ public class DefaultJAXBContextTestCases extends JUnitTestCase {
 				.unmarshal(xml);
 		connection.disconnect();
 		return testObject;
-	}
+	} 
 
 	/* assertion helper method for JSON*/
 	public Customer verifyHelperForPostPutJSON(int id) throws Exception {
@@ -284,7 +302,67 @@ public class DefaultJAXBContextTestCases extends JUnitTestCase {
 		return customer;
 	}
 
-	protected Customer getControlObject2() {
+	protected Customer getControlObject6() {
+		Customer customer = new Customer();
+		customer.setId(6);
+		customer.setFirstName("Sera");
+		customer.setLastName("Quesera");
+
+		Address address = new Address();
+		address.setId(6);
+		address.setStreet("101 espanol route");
+		address.setCity("Barcelona");
+		customer.setAddress(address);
+
+ 		List<PhoneNumber> phoneNumbers = new ArrayList<PhoneNumber>(2);
+		PhoneNumber workPhone = new PhoneNumber();
+		workPhone.setId(11);
+		workPhone.setNum("555-1111");
+		workPhone.setType("WORK");
+		workPhone.setCustomer(customer);
+		phoneNumbers.add(workPhone);
+		PhoneNumber homePhone = new PhoneNumber();
+		homePhone.setId(12);
+		homePhone.setNum("555-1212");
+		homePhone.setType("HOME");
+		homePhone.setCustomer(customer);
+		phoneNumbers.add(homePhone);
+		customer.setPhoneNumbers(phoneNumbers); 
+
+		return customer;
+	}
+	
+	protected Customer getControlObject5() {
+		Customer customer = new Customer();
+		customer.setId(5);
+		customer.setFirstName("Jack");
+		customer.setLastName("Daniel");
+
+		Address address = new Address();
+		address.setId(5);
+		address.setStreet("5 B Street");
+		address.setCity("YourTown");
+		customer.setAddress(address);
+
+		List<PhoneNumber> phoneNumbers = new ArrayList<PhoneNumber>(2);
+		PhoneNumber workPhone = new PhoneNumber();
+		workPhone.setId(9);
+		workPhone.setNum("555-9999");
+		workPhone.setType("WORK");
+		workPhone.setCustomer(customer);
+		phoneNumbers.add(workPhone);
+		PhoneNumber homePhone = new PhoneNumber();
+		homePhone.setId(10);
+		homePhone.setNum("555-1010");
+		homePhone.setType("HOME");
+		homePhone.setCustomer(customer);
+		phoneNumbers.add(homePhone);
+		customer.setPhoneNumbers(phoneNumbers);
+
+		return customer;
+	}
+	
+	protected Customer getControlObject4() {
 		Customer customer = new Customer();
 		customer.setId(4);
 		customer.setFirstName("John");
@@ -326,7 +404,7 @@ public class DefaultJAXBContextTestCases extends JUnitTestCase {
 		address.setCity("Ottawa");
 		customer.setAddress(address);
 
-		List<PhoneNumber> phoneNumbers = new ArrayList<PhoneNumber>(2);
+ 		List<PhoneNumber> phoneNumbers = new ArrayList<PhoneNumber>(2);
 		PhoneNumber workPhone = new PhoneNumber();
 		workPhone.setId(5);
 		workPhone.setNum("555-5555");
@@ -339,7 +417,7 @@ public class DefaultJAXBContextTestCases extends JUnitTestCase {
 		homePhone.setType("HOME");
 		homePhone.setCustomer(customer);
 		phoneNumbers.add(homePhone);
-		customer.setPhoneNumbers(phoneNumbers);
+		customer.setPhoneNumbers(phoneNumbers); 
 
 		return customer;
 	}
