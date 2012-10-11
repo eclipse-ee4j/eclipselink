@@ -1,0 +1,22 @@
+{
+   "company" : {
+      "employee" : [ {
+         "id" : 0,
+         "name" : "Octimus",
+         "manager" : {
+            "id" : 2,
+            "name" : "Fco"
+         }
+      }, {
+         "id" : 1,
+         "name" : "Lauris",
+         "manager" : {
+            "id" : 2,
+            "name" : "Fco"
+         }
+      }, {
+         "id" : 2,
+         "name" : "Fco"
+      } ]
+   }
+}

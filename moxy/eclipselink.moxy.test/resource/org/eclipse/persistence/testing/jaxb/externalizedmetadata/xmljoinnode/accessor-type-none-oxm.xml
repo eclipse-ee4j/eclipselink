@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xml-bindings package-name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmljoinnode" xmlns="http://www.eclipse.org/eclipselink/xsds/persistence/oxm"
+    xml-accessor-type="NONE" xml-accessor-order="UNDEFINED"
+    xml-mapping-metadata-complete="true">
+    
+    <java-types>
+        
+        <java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmljoinnode.AtnCompany">
+            <xml-root-element name="company"/>
+            <java-attributes>
+                <xml-element java-attribute="employees" name="employee"/>
+            </java-attributes>
+        </java-type>
+        
+        <java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmljoinnode.AtnEmployee">
+            <java-attributes>
+                <xml-attribute java-attribute="id" xml-key="true" />
+                <xml-attribute java-attribute="name" xml-key="true" />
+                <xml-join-nodes java-attribute="manager">
+                    <xml-join-node xml-path="manager/@id" referenced-xml-path="@id" />
+                    <xml-join-node xml-path="manager/@name" referenced-xml-path="@name" />
+                </xml-join-nodes>
+                <xml-join-nodes java-attribute="reports" container-type="java.util.ArrayList">
+                    <xml-join-node xml-path="report/@id" referenced-xml-path="@id" />
+                    <xml-join-node xml-path="report/@name" referenced-xml-path="@name" />
+                </xml-join-nodes>
+            </java-attributes>
+        </java-type>
+
+    </java-types>
+    
+</xml-bindings>
